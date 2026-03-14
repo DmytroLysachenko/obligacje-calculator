@@ -1,0 +1,123 @@
+{
+  "common": {
+    "title": "Bonds Calculator",
+    "description": "Professional calculator for Polish treasury bonds.",
+    "calculate": "Calculate",
+    "reset": "Reset",
+    "year": "Year",
+    "years": "Years",
+    "currency": "PLN",
+    "nominal_value": "Nominal Value",
+    "real_value": "Real Value",
+    "net_profit": "Net Profit",
+    "tax_deducted": "Belka Tax",
+    "inflation": "Inflation",
+    "interest_rate": "Interest Rate",
+    "loading": "Loading...",
+    "language": "Language",
+    "period": "Period"
+  },
+  "nav": {
+    "education": "Education / Basics",
+    "single_calculator": "Single Calculator",
+    "regular_investment": "Regular Investment",
+    "economic_data": "Economic Data"
+  },
+  "education": {
+    "subtitle": "Understand the mechanisms of the Polish treasury bond market and make informed investment decisions.",
+    "concepts_title": "Fundamental Financial Concepts",
+    "concepts_subtitle": "Key terms essential to understanding your investments.",
+    "bond_types": "Current Bond Offers",
+    "faq": "Frequently Asked Questions",
+    "q_inflation": "How does inflation indexing work?",
+    "a_inflation": "Inflation-indexed bonds (e.g., COI or EDO) have a fixed rate in the first year. In subsequent years, the interest rate is calculated as the inflation rate from the previous year plus a fixed margin.",
+    "q_tax": "How are bonds taxed?",
+    "a_tax": "Profits from bonds are subject to a 19% capital gains tax (Belka tax) in Poland. The tax is automatically deducted when interest is paid or the bond is redeemed.",
+    "q_early_exit": "Can I withdraw money early?",
+    "a_early_exit": "Yes, you can request early redemption. A fixed fee is charged for each bond. The fee is deducted from the accrued interest.",
+    "q_monthly_payout": "How do monthly payout bonds work?",
+    "a_monthly_payout": "Bonds like ROR and DOR pay interest every month directly to your account. This interest is not added to the principal (no capitalization).",
+    "concepts": {
+      "inflation": {
+        "title": "Inflation",
+        "desc": "The increase in prices of goods and services in the economy. For an investor, it means a decrease in the purchasing power of money.",
+        "formula": "Real return = (1 + Nominal return) / (1 + Inflation) - 1"
+      },
+      "margin": {
+        "title": "Margin",
+        "desc": "A fixed addition to the inflation rate or the NBP reference rate, guaranteeing a return above these indicators.",
+        "formula": "Interest Rate = Indicator (e.g. Inflation) + Margin"
+      },
+      "capitalization": {
+        "title": "Capitalization",
+        "desc": "The process of adding earned interest to the initial capital. In subsequent periods, interest is calculated on a larger amount.",
+        "formula": "Final Capital = Initial Capital * (1 + r)^n"
+      },
+      "belka_tax": {
+        "title": "Belka Tax",
+        "desc": "A flat capital gains tax in Poland, currently 19%.",
+        "formula": "Net Profit = Gross Profit * (1 - 0.19)"
+      },
+      "early_redemption": {
+        "title": "Early Redemption",
+        "desc": "The possibility of withdrawing funds before the bond's maturity date for a fee specified in the emission letter.",
+        "formula": "Payout = Capital + Interest - Redemption Fee"
+      }
+    }
+  },
+  "bonds": {
+    "single_calculator": "Investment Simulation",
+    "bond_type": "Bond Type",
+    "bond_type_selection": "Selected bond parameters",
+    "initial_investment": "Purchase Amount",
+    "units": "units",
+    "purchase_date": "Purchase Date",
+    "withdrawal_date": "Planned Withdrawal Date",
+    "maturity_date": "Maturity Date",
+    "inflation_rate": "Expected Inflation (%)",
+    "margin": "Margin (%)",
+    "custom_tax_rate": "Custom Tax Rate",
+    "belka_tax_desc": "Default 19%",
+    "tax_rate": "Tax (%)",
+    "duration": "Duration",
+    "first_year_rate": "1st Year Rate",
+    "payout_type": "Capitalization",
+    "early_withdrawal_fee": "Early Redemption Fee",
+    "gross_value": "Gross Value",
+    "net_payout": "Net Payout (Cash in Hand)",
+    "early_withdrawal": "Early Withdrawal",
+    "fees_and_tax": "Fees and Taxes",
+    "calculation_breakdown": "Detailed Schedule",
+    "breakdown_desc": "Year-by-year summary including capital growth and taxes.",
+    "nominal_before": "Nominal (Start)",
+    "nominal_after": "Nominal (End)",
+    "interest_rate": "Interest Rate",
+    "interest_earned": "Interest",
+    "tax": "Tax",
+    "withdrawal": "WITHDRAWAL",
+    "error_100_pln": "Must be a multiple of 100 PLN",
+    "regular_calculator": "Monthly Investment",
+    "regular_calc_desc": "Simulation of building a portfolio through regular purchases.",
+    "monthly_investment": "Recurring Amount",
+    "frequency": "Frequency",
+    "freq_monthly": "Monthly",
+    "freq_quarterly": "Quarterly",
+    "freq_yearly": "Yearly",
+    "start_date": "Start Date",
+    "investment_horizon": "Investment Horizon",
+    "investment_lots": "Your Bond Lots",
+    "lots_desc": "Each bond purchase is tracked as a separate lot with its own maturity date.",
+    "total_fees_and_tax": "Total fees and taxes",
+    "invested": "Invested",
+    "interest": "Interest",
+    "tax_and_fees": "Tax + Fee",
+    "net_value": "Net Value",
+    "matured": "Matured",
+    "active": "Active",
+    "status": "Status",
+    "regular_calc_info": "In this simulation, each subsequent lot of bonds is purchased on the same day of each month/quarter. Calculations account for the fact that lots purchased at the end of the period will have less time to earn a profit.",
+    "investment_growth": "Portfolio Value Growth",
+    "capitalization": "YES",
+    "payout": "NO"
+  }
+}

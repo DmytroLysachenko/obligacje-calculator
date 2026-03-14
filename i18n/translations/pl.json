@@ -1,0 +1,123 @@
+{
+  "common": {
+    "title": "Obligacje Calculator",
+    "description": "Profesjonalny kalkulator polskich obligacji skarbowych.",
+    "calculate": "Oblicz",
+    "reset": "Resetuj",
+    "year": "Rok",
+    "years": "Lata",
+    "currency": "PLN",
+    "nominal_value": "Wartość Nominalna",
+    "real_value": "Wartość Realna",
+    "net_profit": "Zysk Netto",
+    "tax_deducted": "Podatek Belki",
+    "inflation": "Inflacja",
+    "interest_rate": "Oprocentowanie",
+    "loading": "Ładowanie...",
+    "language": "Język",
+    "period": "Okres"
+  },
+  "nav": {
+    "education": "Edukacja / Podstawy",
+    "single_calculator": "Kalkulator Pojedynczy",
+    "regular_investment": "Inwestycje Regularne",
+    "economic_data": "Dane Ekonomiczne"
+  },
+  "education": {
+    "subtitle": "Zrozum mechanizmy polskiego rynku obligacji skarbowych i podejmuj świadome decyzje inwestycyjne.",
+    "concepts_title": "Podstawowe Pojęcia Finansowe",
+    "concepts_subtitle": "Kluczowe terminy niezbędne do zrozumienia Twoich inwestycji.",
+    "bond_types": "Aktualna Oferta Obligacji",
+    "faq": "Często Zadawane Pytania",
+    "q_inflation": "Jak działa indeksowanie inflacją?",
+    "a_inflation": "Obligacje indeksowane inflacją (np. COI lub EDO) mają stałe oprocentowanie w pierwszym roku. W kolejnych latach oprocentowanie jest obliczane jako stopa inflacji z poprzedniego roku plus stała marża.",
+    "q_tax": "Jak opodatkowane są obligacje?",
+    "a_tax": "Zyski z obligacji podlegają 19% podatkowi od zysków kapitałowych (podatek Belki). Podatek jest automatycznie potrącany przy wypłacie odsetek lub wykupie obligacji.",
+    "q_early_exit": "Czy mogę wcześniej wycofać pieniądze?",
+    "a_early_exit": "Tak, możesz poprosić o wcześniejszy wykup. Pobierana jest stała opłata za każdą obligację. Opłata jest potrącana z narosłych odsetek.",
+    "q_monthly_payout": "Jak działają obligacje z miesięczną wypłatą?",
+    "a_monthly_payout": "Obligacje takie jak ROR i DOR wypłacają odsetki co miesiąc bezpośrednio na konto. Odsetki te nie są doliczane do nominału (brak kapitalizacji).",
+    "concepts": {
+      "inflation": {
+        "title": "Inflacja",
+        "desc": "Wzrost cen towarów i usług w gospodarce. Dla inwestora oznacza spadek siły nabywczej pieniądza.",
+        "formula": "Realny zysk = (1 + Zysk nominalny) / (1 + Inflacja) - 1"
+      },
+      "margin": {
+        "title": "Marża",
+        "desc": "Stały dodatek do stopy inflacji lub stopy referencyjnej NBP, gwarantujący zysk powyżej tych wskaźników.",
+        "formula": "Oprocentowanie = Wskaźnik (np. Inflacja) + Marża"
+      },
+      "capitalization": {
+        "title": "Kapitalizacja",
+        "desc": "Proces dopisywania wypracowanych odsetek do kapitału początkowego. W kolejnych okresach odsetki naliczane są od większej kwoty.",
+        "formula": "Kapitał końcowy = Kapitał początkowy * (1 + r)^n"
+      },
+      "belka_tax": {
+        "title": "Podatek Belki",
+        "desc": "Zryczałtowany podatek od zysków kapitałowych w Polsce, wynoszący obecnie 19%.",
+        "formula": "Zysk netto = Zysk brutto * (1 - 0.19)"
+      },
+      "early_redemption": {
+        "title": "Wcześniejszy Wykup",
+        "desc": "Możliwość wycofania środków przed terminem zapadalności obligacji za opłatą określoną w liście emisyjnym.",
+        "formula": "Wypłata = Kapitał + Odsetki - Opłata za wykup"
+      }
+    }
+  },
+  "bonds": {
+    "single_calculator": "Symulacja Inwestycji",
+    "bond_type": "Rodzaj Obligacji",
+    "bond_type_selection": "Parametry wybranej obligacji",
+    "initial_investment": "Kwota Zakupu",
+    "units": "sztuk",
+    "purchase_date": "Data Zakupu",
+    "withdrawal_date": "Planowana Data Wypłaty",
+    "maturity_date": "Data Zapadalności (Wykupu)",
+    "inflation_rate": "Przewidywana Inflacja (%)",
+    "margin": "Marża (%)",
+    "custom_tax_rate": "Własna Stawka Podatku",
+    "belka_tax_desc": "Domyślnie 19%",
+    "tax_rate": "Podatek (%)",
+    "duration": "Okres",
+    "first_year_rate": "Oprocentowanie 1. Rok",
+    "payout_type": "Kapitalizacja",
+    "early_withdrawal_fee": "Opłata za Wcześniejszy Wykup",
+    "gross_value": "Wartość Brutto",
+    "net_payout": "Wypłata Netto (Do Ręki)",
+    "early_withdrawal": "Wcześniejszy Wykup",
+    "fees_and_tax": "Opłaty i Podatki",
+    "calculation_breakdown": "Szczegółowy Harmonogram",
+    "breakdown_desc": "Zestawienie rok po roku uwzględniające narastanie kapitału i podatki.",
+    "nominal_before": "Nominał (Początek)",
+    "nominal_after": "Nominał (Koniec)",
+    "interest_rate": "Oprocentowanie",
+    "interest_earned": "Odsetki",
+    "tax": "Podatek",
+    "withdrawal": "WYPŁATA",
+    "error_100_pln": "Musi być wielokrotnością 100 PLN",
+    "regular_calculator": "Inwestycje Miesięczne",
+    "regular_calc_desc": "Symulacja budowania portfela poprzez regularne zakupy.",
+    "monthly_investment": "Kwota Cyklicznej Wpłaty",
+    "frequency": "Częstotliwość",
+    "freq_monthly": "Miesięcznie",
+    "freq_quarterly": "Kwartalnie",
+    "freq_yearly": "Rocznie",
+    "start_date": "Data Pierwszej Wpłaty",
+    "investment_horizon": "Czas Inwestowania",
+    "investment_lots": "Twoje Partie Obligacji",
+    "lots_desc": "Każdy zakup obligacji jest śledzony jako osobna partia z własną datą wykupu.",
+    "total_fees_and_tax": "Suma opłat i podatków",
+    "invested": "Wpłacono",
+    "interest": "Odsetki",
+    "tax_and_fees": "Podatek + Opłata",
+    "net_value": "Wartość Netto",
+    "matured": "Zapadła",
+    "active": "W Toku",
+    "status": "Status",
+    "regular_calc_info": "W tej symulacji każda kolejna partia obligacji jest kupowana tego samego dnia każdego miesiąca/kwartału. Obliczenia uwzględniają, że partie kupione pod koniec okresu będą miały mniej czasu na wypracowanie zysku.",
+    "investment_growth": "Wzrost Wartości Portfela",
+    "capitalization": "TAK",
+    "payout": "NIE"
+  }
+}
