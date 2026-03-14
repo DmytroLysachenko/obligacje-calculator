@@ -69,7 +69,8 @@ export default function EconomicDataPage() {
                     axisLine={false}
                   />
                   <Tooltip 
-                    formatter={(value: number | string) => [`${value}%`, t('common.inflation')]}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    formatter={(value: any) => [`${value}%`, t('common.inflation')]}
                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
                   />
                   <ReferenceLine y={0} stroke="#000" strokeWidth={1} />

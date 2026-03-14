@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { useLanguage } from '@/i18n';
-import { BOND_DEFINITIONS } from '@/features/bonds-calculator/constants/bond-definitions';
-import { BondEducationCard } from '@/features/bonds-calculator/components/BondEducationCard';
+import { BOND_DEFINITIONS } from '@/features/bond-core/constants/bond-definitions';
+import { BondEducationCard } from '@/features/education/components/BondEducationCard';
 import { 
   Info, 
   HelpCircle, 

@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
-import { BondInputs, BondType } from '../types';
-import { calculateBondInvestment } from '../utils/calculations';
-import { BOND_DEFINITIONS } from '../constants/bond-definitions';
+import { BondInputs, BondType } from '../../bond-core/types';
+import { calculateBondInvestment } from '../../bond-core/utils/calculations';
+import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { addMonths } from 'date-fns';
 
 const DEFAULT_BOND = BondType.COI;

@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { CalculationResult } from '../types';
+import { CalculationResult } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
 import { Badge } from '@/components/ui/badge';
 

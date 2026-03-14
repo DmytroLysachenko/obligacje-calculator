@@ -1,6 +1,6 @@
 'use client';
 
-import { RegularInvestmentCalculatorContainer } from '@/features/bonds-calculator/components/RegularInvestmentCalculatorContainer';
+import { RegularInvestmentCalculatorContainer } from '@/features/regular-investment/components/RegularInvestmentCalculatorContainer';
 
 export default function RegularInvestmentPage() {
   return (

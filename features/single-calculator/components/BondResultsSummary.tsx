@@ -3,7 +3,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { CalculationResult } from '../types';
+import { CalculationResult } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
 import { Badge } from '@/components/ui/badge';
 

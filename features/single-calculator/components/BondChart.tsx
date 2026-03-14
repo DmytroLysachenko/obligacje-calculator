@@ -2,37 +2,44 @@
 
 import React from 'react';
 import {
-  AreaChart,
-  Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
   ResponsiveContainer,
+  AreaChart,
+  Area
 } from 'recharts';
-import { RegularInvestmentResult } from '../types';
+import { CalculationResult } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
-import { format, parseISO } from 'date-fns';
-import { pl, enGB } from 'date-fns/locale';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
-interface RegularInvestmentChartProps {
-  results: RegularInvestmentResult;
+interface BondChartProps {
+  results: CalculationResult;
+  initialInvestment: number;
 }
 
-export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ results }) => {
+export const BondChart: React.FC<BondChartProps> = ({ results, initialInvestment }) => {
   const { t, language } = useLanguage();
-  const dateLocale = language === 'pl' ? pl : enGB;
 
-  const chartData = results.timeline.map((point) => ({
-    date: format(parseISO(point.date), 'MM.yy', { locale: dateLocale }),
-    invested: Number(point.totalInvested.toFixed(2)),
-    nominal: Number(point.nominalValue.toFixed(2)),
-    real: Number(point.realValue.toFixed(2)),
-  }));
+  const chartData = [
+    {
+      label: 'Start',
+      nominal: initialInvestment,
+      real: initialInvestment,
+      profit: 0,
+    },
+    ...results.timeline.map((point) => ({
+      label: point.periodLabel,
+      nominal: Number(point.nominalValueAfterInterest.toFixed(2)),
+      real: Number(point.realValue.toFixed(2)),
+      profit: Number(point.netProfit.toFixed(2)),
+    })),
+  ];
 
-  const formatCurrency = (value: number | string) => 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const formatCurrency = (value: any) => 
     new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', { 
       style: 'currency', 
       currency: 'PLN',
@@ -45,17 +52,13 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ 
         <CardTitle className="text-base font-semibold">{t('bonds.investment_growth')}</CardTitle>
       </CardHeader>
       <CardContent className="pt-4">
-        <div className="h-[400px] w-full">
+        <div className="h-[350px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={chartData}
-              margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
+              margin={{ top: 5, right: 10, left: 10, bottom: 0 }}
             >
               <defs>
-                <linearGradient id="colorInvested" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.1}/>
-                  <stop offset="95%" stopColor="#94a3b8" stopOpacity={0}/>
-                </linearGradient>
                 <linearGradient id="colorNominal" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>
                   <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
@@ -67,7 +70,7 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ 
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
               <XAxis 
-                dataKey="date" 
+                dataKey="label" 
                 tick={{ fontSize: 10 }}
                 tickLine={false}
                 axisLine={false}
@@ -80,18 +83,10 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ 
               />
               <Tooltip 
                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                formatter={(value: number | string) => formatCurrency(value)}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                formatter={(value: any) => formatCurrency(value)}
               />
               <Legend verticalAlign="top" height={36} iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
-              <Area
-                type="monotone"
-                dataKey="invested"
-                name={t('bonds.total_invested')}
-                stroke="#94a3b8"
-                strokeWidth={2}
-                fillOpacity={1}
-                fill="url(#colorInvested)"
-              />
               <Area
                 type="monotone"
                 dataKey="nominal"

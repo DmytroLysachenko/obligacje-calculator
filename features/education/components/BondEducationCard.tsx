@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { BondDefinition } from '../constants/bond-definitions';
+import { BondDefinition } from '../../bond-core/constants/bond-definitions';
 import { useLanguage } from '@/i18n';
 import { 
   Clock, 

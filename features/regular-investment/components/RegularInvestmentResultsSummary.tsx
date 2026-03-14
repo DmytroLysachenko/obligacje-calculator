@@ -3,7 +3,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { RegularInvestmentResult } from '../types';
+import { RegularInvestmentResult } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
 import { 
   Wallet, 

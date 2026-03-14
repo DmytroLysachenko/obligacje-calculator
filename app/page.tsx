@@ -1,6 +1,6 @@
 'use client';
 
-import { BondCalculatorContainer } from '@/features/bonds-calculator/components/BondCalculatorContainer';
+import { BondCalculatorContainer } from '@/features/single-calculator/components/BondCalculatorContainer';
 import { useLanguage } from '@/i18n';
 
 export default function Home() {
