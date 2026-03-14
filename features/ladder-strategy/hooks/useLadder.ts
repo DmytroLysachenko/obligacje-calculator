@@ -1,14 +1,14 @@
+'use client';
+
 import { useState, useMemo } from 'react';
-import { RegularInvestmentInputs, BondType, InvestmentFrequency, TaxStrategy } from '../../bond-core/types';
+import { BondType, RegularInvestmentInputs, InvestmentFrequency, TaxStrategy } from '../../bond-core/types';
 import { calculateRegularInvestment } from '../../bond-core/utils/calculations';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { addYears } from 'date-fns';
-import { useQuerySync } from '@/shared/hooks/useQuerySync';
 
-const DEFAULT_BOND = BondType.COI;
+const DEFAULT_BOND = BondType.EDO;
 const def = BOND_DEFINITIONS[DEFAULT_BOND];
 const today = new Date();
-const defaultWithdrawal = addYears(today, 10);
 
 const DEFAULT_INPUTS: RegularInvestmentInputs = {
   bondType: DEFAULT_BOND,
@@ -24,19 +24,14 @@ const DEFAULT_INPUTS: RegularInvestmentInputs = {
   isCapitalized: def.isCapitalized,
   payoutFrequency: def.payoutFrequency,
   purchaseDate: today.toISOString(),
-  withdrawalDate: defaultWithdrawal.toISOString(),
+  withdrawalDate: addYears(today, 10).toISOString(),
   isRebought: false,
   rebuyDiscount: def.rebuyDiscount,
   taxStrategy: TaxStrategy.STANDARD,
 };
 
-export function useRegularInvestmentCalculator() {
+export function useLadder() {
   const [inputs, setInputs] = useState<RegularInvestmentInputs>(DEFAULT_INPUTS);
-
-  // Sync state with URL
-  useQuerySync(inputs, (initial) => {
-    setInputs(prev => ({ ...prev, ...initial }));
-  });
 
   const results = useMemo(() => {
     return calculateRegularInvestment(inputs);
@@ -45,13 +40,9 @@ export function useRegularInvestmentCalculator() {
   const updateInput = (key: keyof RegularInvestmentInputs, value: string | number | boolean | undefined) => {
     setInputs((prev) => {
       const newInputs = { ...prev, [key]: value };
-      
-      // If totalHorizon changes, update withdrawal date
       if (key === 'totalHorizon') {
-        const start = new Date(prev.purchaseDate);
-        newInputs.withdrawalDate = addYears(start, Number(value)).toISOString();
+        newInputs.withdrawalDate = addYears(new Date(prev.purchaseDate), Number(value)).toISOString();
       }
-      
       return newInputs;
     });
   };
@@ -68,7 +59,6 @@ export function useRegularInvestmentCalculator() {
       isCapitalized: def.isCapitalized,
       payoutFrequency: def.payoutFrequency,
       rebuyDiscount: def.rebuyDiscount,
-      isRebought: false, // Reset to false on type change
     }));
   };
 

@@ -8,7 +8,8 @@ import {
   RegularInvestmentResult,
   InvestmentFrequency,
   RegularTimelinePoint,
-  LotBreakdown
+  LotBreakdown,
+  TaxStrategy
 } from '../types';
 import { addMonths, addYears, differenceInDays, differenceInMonths, isAfter, isBefore, parseISO, min, format } from 'date-fns';
 
@@ -31,8 +32,14 @@ export function calculateBondInvestment(inputs: BondInputs): CalculationResult {
     purchaseDate,
     withdrawalDate,
     isRebought,
-    rebuyDiscount
+    rebuyDiscount,
+    taxStrategy
   } = inputs;
+
+  // Determine effective tax rate based on strategy
+  let effectiveTaxRate = inputs.taxRate;
+  if (taxStrategy === TaxStrategy.IKE) effectiveTaxRate = 0;
+  if (taxStrategy === TaxStrategy.IKZE) effectiveTaxRate = 5;
 
   const startDate = parseISO(purchaseDate);
   const targetWithdrawalDate = parseISO(withdrawalDate);
@@ -148,13 +155,18 @@ export function calculateBondInvestment(inputs: BondInputs): CalculationResult {
   const lastPoint = timeline[timeline.length - 1];
   const totalEarlyWithdrawalFee = isEarlyWithdrawal ? Math.min(totalInterestEarnedSoFar, numberOfBonds * earlyWithdrawalFee) : 0;
   
-  const grossValue = lastPoint.nominalValueAfterInterest;
-  const totalTax = isCapitalized ? (totalInterestEarnedSoFar * (taxRate / 100)) : totalTaxPaidSoFar;
-  const netPayoutValue = grossValue - (isCapitalized ? totalTax : 0) - totalEarlyWithdrawalFee;
+  // For non-capitalized bonds, currentNominalValue remains at the starting principal.
+  // We need to add the earned interest to get the total gross value.
+  const finalPrincipal = lastPoint.nominalValueAfterInterest;
+  const totalGrossInterest = totalInterestEarnedSoFar;
+  const grossValue = finalPrincipal + (isCapitalized ? 0 : totalGrossInterest);
+  
+  const totalTax = isCapitalized ? (totalGrossInterest * (taxRate / 100)) : totalTaxPaidSoFar;
+  const netPayoutValue = grossValue - totalTax - totalEarlyWithdrawalFee;
 
   return {
     timeline,
-    finalNominalValue: grossValue,
+    finalNominalValue: finalPrincipal,
     finalRealValue: lastPoint.realValue,
     totalProfit: netPayoutValue - actualInitialInvestment,
     totalTax,
@@ -185,8 +197,13 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
     purchaseDate,
     withdrawalDate,
     isRebought,
-    rebuyDiscount
+    rebuyDiscount,
+    taxStrategy
   } = inputs;
+
+  let effectiveTaxRate = inputs.taxRate;
+  if (taxStrategy === TaxStrategy.IKE) effectiveTaxRate = 0;
+  if (taxStrategy === TaxStrategy.IKZE) effectiveTaxRate = 5;
 
   const startPurchaseDate = parseISO(purchaseDate);
   const targetWithdrawalDate = parseISO(withdrawalDate);

@@ -15,6 +15,12 @@ export enum InterestPayout {
   MATURITY = 'MATURITY',
 }
 
+export enum TaxStrategy {
+  STANDARD = 'STANDARD', // 19% Belka
+  IKE = 'IKE', // 0% tax (Individual Retirement Account)
+  IKZE = 'IKZE', // 5% tax at payout (Individual Tax Saving Account)
+}
+
 export interface BondInputs {
   bondType: BondType;
   initialInvestment: number;
@@ -30,6 +36,8 @@ export interface BondInputs {
   withdrawalDate: string; // ISO string
   isRebought: boolean;
   rebuyDiscount: number;
+  taxStrategy: TaxStrategy;
+  savingsGoal?: number;
 }
 
 export interface YearlyTimelinePoint {

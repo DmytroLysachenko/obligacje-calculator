@@ -3,6 +3,7 @@
 import { BondCalculatorContainer } from '@/features/single-calculator/components/BondCalculatorContainer';
 import { useLanguage } from '@/i18n';
 import { PageTransition } from '@/shared/components/PageTransition';
+import { Suspense } from 'react';
 
 export default function Home() {
   const { t } = useLanguage();
@@ -15,7 +16,9 @@ export default function Home() {
           <p className="text-muted-foreground mt-2">{t('common.description')}</p>
         </header>
         
-        <BondCalculatorContainer />
+        <Suspense fallback={<div>Loading calculator...</div>}>
+          <BondCalculatorContainer />
+        </Suspense>
       </div>
     </PageTransition>
   );

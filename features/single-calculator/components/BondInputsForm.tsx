@@ -10,17 +10,21 @@ import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
-import { BondType, BondInputs } from '../../bond-core/types';
+import { BondType, BondInputs, TaxStrategy } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
-import { AlertCircle, CalendarIcon, Info } from 'lucide-react';
+import { AlertCircle, CalendarIcon, Info, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, parseISO, addMonths } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
 
+import { Slider } from '@/components/ui/slider';
+
+import { Badge } from '@/components/ui/badge';
+
 interface BondInputsFormProps {
   inputs: BondInputs;
-  onUpdate: (key: keyof BondInputs, value: string | number | boolean) => void;
+  onUpdate: (key: keyof BondInputs, value: string | number | boolean | undefined) => void;
   onBondTypeChange: (type: BondType) => void;
 }
 
@@ -34,7 +38,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
   const currentDef = BOND_DEFINITIONS[inputs.bondType];
   const dateLocale = language === 'pl' ? pl : enGB;
 
-  const handleInvestmentChange = (value: string) => {
+  const handleInvestmentChange = (value: string | number) => {
     const numValue = Number(value);
     onUpdate('initialInvestment', numValue);
   };
@@ -53,6 +57,28 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Savings Goal */}
+        <div className="space-y-3">
+          <Label className="font-semibold flex items-center gap-2">
+            <Target className="h-4 w-4 text-primary" />
+            Savings Goal (Optional)
+          </Label>
+          <div className="relative">
+            <Input
+              type="number"
+              placeholder="e.g. 50000"
+              className="h-11 pl-4 pr-12"
+              value={inputs.savingsGoal || ''}
+              onChange={(e) => onUpdate('savingsGoal', e.target.value ? Number(e.target.value) : undefined)}
+            />
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium text-xs">
+              PLN
+            </div>
+          </div>
+        </div>
+
+        <Separator />
+
         {/* Bond Type Selection */}
         <div className="space-y-3">
           <Label htmlFor="bondType" className="font-semibold">{t('bonds.bond_type')}</Label>
@@ -90,8 +116,34 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
         <Separator />
 
-        {/* Investment Amount */}
+        {/* Tax Wrap (IKE/IKZE) */}
         <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Label className="font-semibold">Account Type (Tax Wrap)</Label>
+            <Badge variant="secondary" className="text-[10px]">Optimization</Badge>
+          </div>
+          <Select
+            value={inputs.taxStrategy}
+            onValueChange={(value) => onUpdate('taxStrategy', value as TaxStrategy)}
+          >
+            <SelectTrigger className="h-11">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={TaxStrategy.STANDARD}>Standard Account (19% Tax)</SelectItem>
+              <SelectItem value={TaxStrategy.IKE}>IKE Account (0% Tax)</SelectItem>
+              <SelectItem value={TaxStrategy.IKZE}>IKZE Account (5% Tax at end)</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-[10px] text-muted-foreground px-1">
+            Using IKE or IKZE can significantly increase your long-term net profit by avoiding or reducing the capital gains tax.
+          </p>
+        </div>
+
+        <Separator />
+
+        {/* Investment Amount */}
+        <div className="space-y-4">
           <div className="flex justify-between items-center">
             <Label htmlFor="initialInvestment" className="font-semibold">
               {t('bonds.initial_investment')}
@@ -100,20 +152,30 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               {Math.floor(inputs.initialInvestment / 100)} {t('bonds.units')}
             </span>
           </div>
-          <div className="relative">
-            <Input
-              id="initialInvestment"
-              type="number"
-              className={cn(
-                "h-11 pl-4 pr-12 text-lg font-medium",
-                !isDivisibleBy100 && "border-destructive focus-visible:ring-destructive"
-              )}
-              value={inputs.initialInvestment}
-              onChange={(e) => handleInvestmentChange(e.target.value)}
-            />
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
-              PLN
+          <div className="space-y-4">
+            <div className="relative">
+              <Input
+                id="initialInvestment"
+                type="number"
+                className={cn(
+                  "h-11 pl-4 pr-12 text-lg font-medium",
+                  !isDivisibleBy100 && "border-destructive focus-visible:ring-destructive"
+                )}
+                value={inputs.initialInvestment}
+                onChange={(e) => handleInvestmentChange(e.target.value)}
+              />
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
+                PLN
+              </div>
             </div>
+            <Slider 
+              value={[inputs.initialInvestment]} 
+              min={100} 
+              max={100000} 
+              step={100} 
+              onValueChange={([val]) => handleInvestmentChange(val)}
+              className="py-2"
+            />
           </div>
           {!isDivisibleBy100 && inputs.initialInvestment > 0 && (
             <div className="flex items-center gap-2 text-destructive text-xs font-medium animate-in fade-in slide-in-from-top-1">
@@ -182,20 +244,28 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
         </div>
 
         {/* Inflation & Margin */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="expectedInflation" className="text-xs font-semibold uppercase text-muted-foreground">
-              {t('bonds.inflation_rate')} (%)
-            </Label>
-            <Input
-              id="expectedInflation"
-              type="number"
-              step="0.1"
-              className="h-10"
-              value={inputs.expectedInflation}
-              onChange={(e) => onUpdate('expectedInflation', Number(e.target.value))}
+        <div className="space-y-6">
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <Label htmlFor="expectedInflation" className="text-xs font-semibold uppercase text-muted-foreground">
+                {t('bonds.inflation_rate')} (%)
+              </Label>
+              <div className="flex gap-1">
+                <Button variant="ghost" size="icon" className="h-6 w-12 text-[10px]" onClick={() => onUpdate('expectedInflation', 2.5)}>Stable</Button>
+                <Button variant="ghost" size="icon" className="h-6 w-12 text-[10px]" onClick={() => onUpdate('expectedInflation', 10)}>High</Button>
+                <Button variant="ghost" size="icon" className="h-6 w-12 text-[10px]" onClick={() => onUpdate('expectedInflation', -1)}>Deflation</Button>
+              </div>
+              <span className="text-sm font-bold text-primary">{inputs.expectedInflation}%</span>
+            </div>
+            <Slider 
+              value={[inputs.expectedInflation]} 
+              min={-2} 
+              max={25} 
+              step={0.1} 
+              onValueChange={([val]) => onUpdate('expectedInflation', val)}
             />
           </div>
+          
           <div className="space-y-2">
             <Label htmlFor="margin" className="text-xs font-semibold uppercase text-muted-foreground">
               {t('bonds.margin')} (%)

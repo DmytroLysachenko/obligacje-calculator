@@ -21,7 +21,9 @@
     "education": "Edukacja / Podstawy",
     "single_calculator": "Kalkulator Pojedynczy",
     "regular_investment": "Inwestycje Regularne",
-    "economic_data": "Dane Ekonomiczne"
+    "economic_data": "Dane Ekonomiczne",
+    "comparison": "Porównywarka",
+    "ladder": "Strategia Drabiny"
   },
   "education": {
     "subtitle": "Zrozum mechanizmy polskiego rynku obligacji skarbowych i podejmuj świadome decyzje inwestycyjne.",

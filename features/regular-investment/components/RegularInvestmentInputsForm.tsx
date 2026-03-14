@@ -10,7 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
-import { BondType, RegularInvestmentInputs, InvestmentFrequency } from '../../bond-core/types';
+import { BondType, RegularInvestmentInputs, InvestmentFrequency, TaxStrategy } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { AlertCircle, CalendarIcon, Info } from 'lucide-react';
@@ -18,11 +18,17 @@ import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
 
+import { Slider } from '@/components/ui/slider';
+
+import { Badge } from '@/components/ui/badge';
+
 interface RegularInvestmentInputsFormProps {
   inputs: RegularInvestmentInputs;
-  onUpdate: (key: keyof RegularInvestmentInputs, value: string | number | boolean) => void;
+  onUpdate: (key: keyof RegularInvestmentInputs, value: string | number | boolean | undefined) => void;
   onBondTypeChange: (type: BondType) => void;
 }
+
+import { Target } from "lucide-react";
 
 export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormProps> = ({
   inputs,
@@ -45,6 +51,28 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Savings Goal */}
+        <div className="space-y-3">
+          <Label className="font-semibold flex items-center gap-2">
+            <Target className="h-4 w-4 text-primary" />
+            Savings Goal (Optional)
+          </Label>
+          <div className="relative">
+            <Input
+              type="number"
+              placeholder="e.g. 100000"
+              className="h-11 pl-4 pr-12"
+              value={inputs.savingsGoal || ''}
+              onChange={(e) => onUpdate('savingsGoal', e.target.value ? Number(e.target.value) : undefined)}
+            />
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium text-xs">
+              PLN
+            </div>
+          </div>
+        </div>
+
+        <Separator />
+
         {/* Bond Type */}
         <div className="space-y-3">
           <Label htmlFor="bondType" className="font-semibold">{t('bonds.bond_type')}</Label>
@@ -82,26 +110,61 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
 
         <Separator />
 
+        {/* Tax Wrap (IKE/IKZE) */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Label className="font-semibold">Account Type (Tax Wrap)</Label>
+            <Badge variant="secondary" className="text-[10px]">Optimization</Badge>
+          </div>
+          <Select
+            value={inputs.taxStrategy}
+            onValueChange={(value) => onUpdate('taxStrategy', value as TaxStrategy)}
+          >
+            <SelectTrigger className="h-11">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={TaxStrategy.STANDARD}>Standard Account (19% Tax)</SelectItem>
+              <SelectItem value={TaxStrategy.IKE}>IKE Account (0% Tax)</SelectItem>
+              <SelectItem value={TaxStrategy.IKZE}>IKZE Account (5% Tax at end)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Separator />
+
         {/* Amount & Frequency */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-3">
-            <Label htmlFor="contributionAmount" className="font-semibold">
-              {t('bonds.monthly_investment')}
-            </Label>
-            <div className="relative">
-              <Input
-                id="contributionAmount"
-                type="number"
-                className={cn(
-                  "h-11 pl-4 pr-12 text-lg font-medium",
-                  !isDivisibleBy100 && "border-destructive focus-visible:ring-destructive"
-                )}
-                value={inputs.contributionAmount}
-                onChange={(e) => onUpdate('contributionAmount', Number(e.target.value))}
-              />
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium text-xs">
-                PLN
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <Label htmlFor="contributionAmount" className="font-semibold">
+                {t('bonds.monthly_investment')}
+              </Label>
+              <span className="text-sm font-bold text-primary">{inputs.contributionAmount} PLN</span>
+            </div>
+            <div className="space-y-4">
+              <div className="relative">
+                <Input
+                  id="contributionAmount"
+                  type="number"
+                  className={cn(
+                    "h-11 pl-4 pr-12 text-lg font-medium",
+                    !isDivisibleBy100 && "border-destructive focus-visible:ring-destructive"
+                  )}
+                  value={inputs.contributionAmount}
+                  onChange={(e) => onUpdate('contributionAmount', Number(e.target.value))}
+                />
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium text-xs">
+                  PLN
+                </div>
               </div>
+              <Slider 
+                value={[inputs.contributionAmount]} 
+                min={100} 
+                max={20000} 
+                step={100} 
+                onValueChange={([val]) => onUpdate('contributionAmount', val)}
+              />
             </div>
             {!isDivisibleBy100 && inputs.contributionAmount > 0 && (
               <div className="flex items-center gap-2 text-destructive text-[10px] font-medium">
@@ -197,15 +260,13 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
             {t('bonds.investment_horizon')}
           </Label>
           <div className="flex items-center gap-4">
-            <Input
-              id="totalHorizon"
-              type="range"
-              min="1"
-              max="30"
-              step="1"
+            <Slider 
+              value={[inputs.totalHorizon]} 
+              min={1} 
+              max={30} 
+              step={1} 
+              onValueChange={([val]) => onUpdate('totalHorizon', val)}
               className="flex-1"
-              value={inputs.totalHorizon}
-              onChange={(e) => onUpdate('totalHorizon', Number(e.target.value))}
             />
             <span className="text-lg font-bold min-w-[3rem] text-center">
               {inputs.totalHorizon}
@@ -217,20 +278,28 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
         <Separator />
 
         {/* Inflation & Margin */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="expectedInflation" className="text-xs font-semibold uppercase text-muted-foreground">
-              {t('bonds.inflation_rate')} (%)
-            </Label>
-            <Input
-              id="expectedInflation"
-              type="number"
-              step="0.1"
-              className="h-10"
-              value={inputs.expectedInflation}
-              onChange={(e) => onUpdate('expectedInflation', Number(e.target.value))}
+        <div className="space-y-6">
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <Label htmlFor="expectedInflation" className="text-xs font-semibold uppercase text-muted-foreground">
+                {t('bonds.inflation_rate')} (%)
+              </Label>
+              <div className="flex gap-1">
+                <Button variant="ghost" size="icon" className="h-6 w-12 text-[10px]" onClick={() => onUpdate('expectedInflation', 2.5)}>Stable</Button>
+                <Button variant="ghost" size="icon" className="h-6 w-12 text-[10px]" onClick={() => onUpdate('expectedInflation', 10)}>High</Button>
+                <Button variant="ghost" size="icon" className="h-6 w-12 text-[10px]" onClick={() => onUpdate('expectedInflation', -1)}>Deflation</Button>
+              </div>
+              <span className="text-sm font-bold text-primary">{inputs.expectedInflation}%</span>
+            </div>
+            <Slider 
+              value={[inputs.expectedInflation]} 
+              min={-2} 
+              max={25} 
+              step={0.1} 
+              onValueChange={([val]) => onUpdate('expectedInflation', val)}
             />
           </div>
+          
           <div className="space-y-2">
             <Label htmlFor="margin" className="text-xs font-semibold uppercase text-muted-foreground">
               {t('bonds.margin')} (%)

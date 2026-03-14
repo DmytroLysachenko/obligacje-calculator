@@ -21,7 +21,9 @@
     "education": "Education / Basics",
     "single_calculator": "Single Calculator",
     "regular_investment": "Regular Investment",
-    "economic_data": "Economic Data"
+    "economic_data": "Economic Data",
+    "comparison": "Comparison",
+    "ladder": "Ladder Strategy"
   },
   "education": {
     "subtitle": "Understand the mechanisms of the Polish treasury bond market and make informed investment decisions.",

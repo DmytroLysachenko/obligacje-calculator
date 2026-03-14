@@ -10,7 +10,9 @@ import {
   TrendingUp, 
   BarChart2,
   Menu,
-  X
+  X,
+  Scale,
+  Layers
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -32,6 +34,16 @@ export function Sidebar() {
       href: '/',
       label: t('nav.single_calculator'),
       icon: Calculator,
+    },
+    {
+      href: '/compare',
+      label: t('nav.comparison'),
+      icon: Scale,
+    },
+    {
+      href: '/ladder',
+      label: t('nav.ladder'),
+      icon: Layers,
     },
     {
       href: '/regular-investment',

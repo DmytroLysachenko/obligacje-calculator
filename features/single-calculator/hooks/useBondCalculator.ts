@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react';
-import { BondInputs, BondType } from '../../bond-core/types';
+import { BondInputs, BondType, TaxStrategy } from '../../bond-core/types';
 import { calculateBondInvestment } from '../../bond-core/utils/calculations';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { addMonths } from 'date-fns';
+import { useQuerySync } from '@/shared/hooks/useQuerySync';
 
 const DEFAULT_BOND = BondType.COI;
 const def = BOND_DEFINITIONS[DEFAULT_BOND];
@@ -24,16 +25,22 @@ const DEFAULT_INPUTS: BondInputs = {
   withdrawalDate: defaultWithdrawal.toISOString(),
   isRebought: false,
   rebuyDiscount: def.rebuyDiscount,
+  taxStrategy: TaxStrategy.STANDARD,
 };
 
 export function useBondCalculator() {
   const [inputs, setInputs] = useState<BondInputs>(DEFAULT_INPUTS);
 
+  // Sync state with URL
+  useQuerySync(inputs, (initial) => {
+    setInputs(prev => ({ ...prev, ...initial }));
+  });
+
   const results = useMemo(() => {
     return calculateBondInvestment(inputs);
   }, [inputs]);
 
-  const updateInput = (key: keyof BondInputs, value: string | number | boolean) => {
+  const updateInput = (key: keyof BondInputs, value: string | number | boolean | undefined) => {
     setInputs((prev) => {
       const newInputs = { ...prev, [key]: value };
       
