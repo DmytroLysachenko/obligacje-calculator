@@ -20,6 +20,8 @@ import {
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
+import { PageTransition } from '@/shared/components/PageTransition';
+
 export default function EducationPage() {
   const { t } = useLanguage();
 
@@ -32,7 +34,8 @@ export default function EducationPage() {
   ];
 
   return (
-    <div className="space-y-16 pb-12">
+    <PageTransition>
+      <div className="space-y-16 pb-12">
       <header className="space-y-4">
         <h2 className="text-4xl font-bold tracking-tight text-primary">{t('nav.education')}</h2>
         <p className="text-xl text-muted-foreground max-w-3xl">
@@ -147,5 +150,6 @@ export default function EducationPage() {
         </Accordion>
       </section>
     </div>
+    </PageTransition>
   );
 }

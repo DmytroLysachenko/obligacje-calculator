@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { useLanguage } from '@/i18n';
 import { TrendingUp, Info, Activity } from 'lucide-react';
 
+import { PageTransition } from '@/shared/components/PageTransition';
+
 const InflationChart = dynamic(() => import('@/features/economic-data/components/InflationChart').then(mod => mod.InflationChart), {
   ssr: false,
   loading: () => <div className="h-[400px] w-full flex items-center justify-center text-muted-foreground animate-pulse">Loading chart...</div>
@@ -15,7 +17,8 @@ export default function EconomicDataPage() {
   const { t } = useLanguage();
 
   return (
-    <div className="space-y-8">
+    <PageTransition>
+      <div className="space-y-8">
       <header className="space-y-4">
         <h2 className="text-4xl font-bold tracking-tight text-primary">{t('nav.economic_data')}</h2>
         <p className="text-xl text-muted-foreground max-w-3xl">
@@ -64,5 +67,6 @@ export default function EconomicDataPage() {
         </div>
       </div>
     </div>
+    </PageTransition>
   );
 }
