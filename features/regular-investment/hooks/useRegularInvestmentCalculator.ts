@@ -24,6 +24,8 @@ const DEFAULT_INPUTS: RegularInvestmentInputs = {
   payoutFrequency: def.payoutFrequency,
   purchaseDate: today.toISOString(),
   withdrawalDate: defaultWithdrawal.toISOString(),
+  isRebought: false,
+  rebuyDiscount: def.rebuyDiscount,
 };
 
 export function useRegularInvestmentCalculator() {
@@ -58,6 +60,8 @@ export function useRegularInvestmentCalculator() {
       earlyWithdrawalFee: def.earlyWithdrawalFee,
       isCapitalized: def.isCapitalized,
       payoutFrequency: def.payoutFrequency,
+      rebuyDiscount: def.rebuyDiscount,
+      isRebought: false, // Reset to false on type change
     }));
   };
 

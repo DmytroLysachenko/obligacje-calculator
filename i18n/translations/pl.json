@@ -118,6 +118,8 @@
     "regular_calc_info": "W tej symulacji każda kolejna partia obligacji jest kupowana tego samego dnia każdego miesiąca/kwartału. Obliczenia uwzględniają, że partie kupione pod koniec okresu będą miały mniej czasu na wypracowanie zysku.",
     "investment_growth": "Wzrost Wartości Portfela",
     "capitalization": "TAK",
-    "payout": "NIE"
+    "payout": "NIE",
+    "is_rebought": "Zamiana obligacji (z dyskontem)",
+    "is_rebought_desc": "Kupno nowych obligacji za środki z zapadających starych."
   }
 }

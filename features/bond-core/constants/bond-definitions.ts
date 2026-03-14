@@ -19,6 +19,7 @@ export interface BondDefinition {
   earlyWithdrawalFee: number; // PLN per bond
   isInflationIndexed: boolean;
   isFamilyOnly?: boolean;
+  rebuyDiscount: number; // PLN discount per 100 PLN bond when swapping
 }
 
 export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
@@ -40,6 +41,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     margin: 0,
     earlyWithdrawalFee: 0,
     isInflationIndexed: false,
+    rebuyDiscount: 0.00,
   },
   [BondType.ROR]: {
     type: BondType.ROR,
@@ -59,6 +61,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     margin: 0,
     earlyWithdrawalFee: 0.50,
     isInflationIndexed: false,
+    rebuyDiscount: 0.10,
   },
   [BondType.DOR]: {
     type: BondType.DOR,
@@ -78,6 +81,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     margin: 0.15,
     earlyWithdrawalFee: 0.70,
     isInflationIndexed: false,
+    rebuyDiscount: 0.10,
   },
   [BondType.TOS]: {
     type: BondType.TOS,
@@ -97,6 +101,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     margin: 0,
     earlyWithdrawalFee: 1.00,
     isInflationIndexed: false,
+    rebuyDiscount: 0.10,
   },
   [BondType.COI]: {
     type: BondType.COI,
@@ -116,6 +121,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     margin: 1.50,
     earlyWithdrawalFee: 2.00,
     isInflationIndexed: true,
+    rebuyDiscount: 0.10,
   },
   [BondType.ROS]: {
     type: BondType.ROS,
@@ -136,6 +142,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     earlyWithdrawalFee: 2.00,
     isInflationIndexed: true,
     isFamilyOnly: true,
+    rebuyDiscount: 0.00, // Typically family bonds do not have a swap discount since they can't be bought via standard swap, but let's leave 0.
   },
   [BondType.EDO]: {
     type: BondType.EDO,
@@ -155,6 +162,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     margin: 2.00,
     earlyWithdrawalFee: 3.00,
     isInflationIndexed: true,
+    rebuyDiscount: 0.10,
   },
   [BondType.ROD]: {
     type: BondType.ROD,
@@ -175,5 +183,6 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     earlyWithdrawalFee: 2.00,
     isInflationIndexed: true,
     isFamilyOnly: true,
+    rebuyDiscount: 0.00,
   },
 };

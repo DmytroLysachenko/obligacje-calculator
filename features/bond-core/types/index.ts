@@ -28,6 +28,8 @@ export interface BondInputs {
   payoutFrequency: InterestPayout;
   purchaseDate: string; // ISO string
   withdrawalDate: string; // ISO string
+  isRebought: boolean;
+  rebuyDiscount: number;
 }
 
 export interface YearlyTimelinePoint {

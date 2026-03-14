@@ -246,6 +246,25 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
           </div>
         </div>
 
+        {/* Rebuy / Swap Toggle (if applicable) */}
+        {currentDef.rebuyDiscount > 0 && (
+          <div className="space-y-4 pt-2">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label className="text-sm font-semibold">{t('bonds.is_rebought')}</Label>
+                <p className="text-[10px] text-muted-foreground">
+                  {t('bonds.is_rebought_desc')} (-{currentDef.rebuyDiscount.toFixed(2)} PLN/szt)
+                </p>
+              </div>
+              <Switch
+                checked={inputs.isRebought}
+                onCheckedChange={(checked) => onUpdate('isRebought', checked)}
+              />
+            </div>
+            <Separator />
+          </div>
+        )}
+
         {/* Tax */}
         <div className="space-y-4 pt-2">
           <div className="flex items-center justify-between">

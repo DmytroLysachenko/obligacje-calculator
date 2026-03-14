@@ -118,6 +118,8 @@
     "regular_calc_info": "In this simulation, each subsequent lot of bonds is purchased on the same day of each month/quarter. Calculations account for the fact that lots purchased at the end of the period will have less time to earn a profit.",
     "investment_growth": "Portfolio Value Growth",
     "capitalization": "YES",
-    "payout": "NO"
+    "payout": "NO",
+    "is_rebought": "Bond Swap (with discount)",
+    "is_rebought_desc": "Buying new bonds using funds from maturing ones."
   }
 }

@@ -22,6 +22,8 @@ const DEFAULT_INPUTS: BondInputs = {
   payoutFrequency: def.payoutFrequency,
   purchaseDate: today.toISOString(),
   withdrawalDate: defaultWithdrawal.toISOString(),
+  isRebought: false,
+  rebuyDiscount: def.rebuyDiscount,
 };
 
 export function useBondCalculator() {
@@ -66,6 +68,8 @@ export function useBondCalculator() {
       isCapitalized: def.isCapitalized,
       payoutFrequency: def.payoutFrequency,
       withdrawalDate: newMaturityDate.toISOString(),
+      rebuyDiscount: def.rebuyDiscount,
+      isRebought: false, // Reset to false on type change to avoid accidental discount
     }));
   };
 

@@ -29,7 +29,9 @@ export function calculateBondInvestment(inputs: BondInputs): CalculationResult {
     bondType,
     isCapitalized,
     purchaseDate,
-    withdrawalDate
+    withdrawalDate,
+    isRebought,
+    rebuyDiscount
   } = inputs;
 
   const startDate = parseISO(purchaseDate);
@@ -42,11 +44,13 @@ export function calculateBondInvestment(inputs: BondInputs): CalculationResult {
 
   const timeline: YearlyTimelinePoint[] = [];
   
-  // Bond units are 100 PLN.
-  const numberOfBonds = Math.floor(initialInvestment / 100);
-  const actualInitialInvestment = numberOfBonds * 100;
+  const bondPrice = isRebought ? (100 - rebuyDiscount) : 100;
+  const numberOfBonds = Math.floor(initialInvestment / bondPrice);
+  const actualInitialInvestment = numberOfBonds * bondPrice;
+  // Interest is calculated on the nominal value (always 100 PLN per bond)
+  const nominalStartingValue = numberOfBonds * 100;
 
-  let currentNominalValue = actualInitialInvestment;
+  let currentNominalValue = nominalStartingValue;
   let cumulativeInflation = 1;
   let totalInterestEarnedSoFar = 0;
   let totalTaxPaidSoFar = 0;
@@ -179,7 +183,9 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
     taxRate,
     isCapitalized,
     purchaseDate,
-    withdrawalDate
+    withdrawalDate,
+    isRebought,
+    rebuyDiscount
   } = inputs;
 
   const startPurchaseDate = parseISO(purchaseDate);
@@ -195,6 +201,7 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
   let totalInvested = 0;
   let cumulativeInflation = 1;
   const monthlyInflation = expectedInflation / 12 / 100;
+  const bondPrice = isRebought ? (100 - rebuyDiscount) : 100;
 
   // Simulate month by month
   for (let m = 0; m <= totalMonths; m++) {
@@ -205,22 +212,24 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
 
     // 1. Add new contribution
     if (m % interval === 0 && m < totalMonths) {
-      const units = Math.floor(contributionAmount / 100);
-      const amount = units * 100;
-      if (amount > 0) {
+      const units = Math.floor(contributionAmount / bondPrice);
+      const investedAmount = units * bondPrice;
+      const nominalAmount = units * 100;
+      
+      if (units > 0) {
         const lotMaturityDate = addMonths(currentMonthDate, Math.round((bondType === BondType.OTS ? 0.25 : inputs.duration) * 12));
         lots.push({
           purchaseDate: currentMonthDate.toISOString(),
           maturityDate: lotMaturityDate.toISOString(),
           isMatured: false,
-          investedAmount: amount,
+          investedAmount: investedAmount,
           accumulatedInterest: 0,
           tax: 0,
           earlyWithdrawalFee: 0,
-          grossValue: amount,
-          netValue: amount
+          grossValue: nominalAmount, // start with nominal amount for interest calc
+          netValue: nominalAmount
         });
-        totalInvested += amount;
+        totalInvested += investedAmount;
       }
     }
 
