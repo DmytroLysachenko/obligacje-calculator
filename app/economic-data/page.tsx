@@ -13,6 +13,11 @@ const InflationChart = dynamic(() => import('@/features/economic-data/components
   loading: () => <div className="h-[400px] w-full flex items-center justify-center text-muted-foreground animate-pulse">Loading chart...</div>
 });
 
+const NBPRateChart = dynamic(() => import('@/features/economic-data/components/NBPRateChart').then(mod => mod.NBPRateChart), {
+  ssr: false,
+  loading: () => <div className="h-[400px] w-full flex items-center justify-center text-muted-foreground animate-pulse">Loading chart...</div>
+});
+
 export default function EconomicDataPage() {
   const { t } = useLanguage();
 
@@ -27,18 +32,33 @@ export default function EconomicDataPage() {
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <Card className="lg:col-span-2 shadow-lg border-primary/5">
-          <CardHeader>
-            <div className="flex items-center gap-2 mb-2">
-              <Activity className="h-5 w-5 text-primary" />
-              <CardTitle>{t('economic.inflation_title')}</CardTitle>
-            </div>
-            <CardDescription>{t('economic.inflation_desc')}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <InflationChart />
-          </CardContent>
-        </Card>
+        <div className="lg:col-span-2 space-y-8">
+          <Card className="shadow-lg border-primary/5">
+            <CardHeader>
+              <div className="flex items-center gap-2 mb-2">
+                <Activity className="h-5 w-5 text-primary" />
+                <CardTitle>{t('economic.inflation_title')}</CardTitle>
+              </div>
+              <CardDescription>{t('economic.inflation_desc')}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <InflationChart />
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-lg border-primary/5">
+            <CardHeader>
+              <div className="flex items-center gap-2 mb-2">
+                <Activity className="h-5 w-5 text-primary" />
+                <CardTitle>NBP Reference Rate</CardTitle>
+              </div>
+              <CardDescription>Historical reference rate set by the National Bank of Poland</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <NBPRateChart />
+            </CardContent>
+          </Card>
+        </div>
 
         <div className="space-y-6">
           <Card className="shadow-md border-blue-100 bg-blue-50/20">
