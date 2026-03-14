@@ -15,10 +15,24 @@ import {
 import { format, parseISO } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
+import { motion } from 'framer-motion';
 
 interface RegularInvestmentResultsSummaryProps {
   results: RegularInvestmentResult;
 }
+
+const containerVariant = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const itemVariant = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300 } }
+};
 
 export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsSummaryProps> = ({ results }) => {
   const { t, language } = useLanguage();
@@ -64,25 +78,33 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
 
   return (
     <div className="space-y-6 w-full">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+        variants={containerVariant}
+        initial="hidden"
+        animate="show"
+        key={results.finalNominalValue}
+      >
         {cards.map((card, index) => (
-          <Card key={index} className="overflow-hidden border-primary/10 shadow-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-2">
-                <div className={`p-2 rounded-lg ${card.bg}`}>
-                  <card.icon className={`h-4 w-4 ${card.color}`} />
+          <motion.div key={index} variants={itemVariant}>
+            <Card className="overflow-hidden border-primary/10 shadow-sm h-full">
+              <CardContent className="p-6 flex flex-col h-full justify-between">
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`p-2 rounded-lg ${card.bg}`}>
+                    <card.icon className={`h-4 w-4 ${card.color}`} />
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground text-right">
+                    {card.title}
+                  </span>
                 </div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  {card.title}
-                </span>
-              </div>
-              <div className="text-2xl font-bold tracking-tight">
-                {card.value}
-              </div>
-            </CardContent>
-          </Card>
+                <div className="text-2xl font-bold tracking-tight">
+                  {card.value}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       <Card className="border-primary/10 overflow-hidden shadow-sm">
         <CardHeader className="bg-muted/30 pb-4">

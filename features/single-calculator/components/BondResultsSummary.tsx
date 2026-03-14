@@ -6,10 +6,24 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { CalculationResult } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
 import { Badge } from '@/components/ui/badge';
+import { motion } from 'framer-motion';
 
 interface BondResultsSummaryProps {
   results: CalculationResult;
 }
+
+const containerVariant = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+const itemVariant = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300 } }
+};
 
 export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results }) => {
   const { t, language } = useLanguage();
@@ -23,65 +37,79 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
 
   return (
     <div className="space-y-6 w-full">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border-primary/20 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-semibold uppercase text-muted-foreground">
-              {t('bonds.gross_value')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(results.grossValue)}</div>
-          </CardContent>
-        </Card>
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+        variants={containerVariant}
+        initial="hidden"
+        animate="show"
+        key={results.finalNominalValue} // re-trigger animation on result change
+      >
+        <motion.div variants={itemVariant}>
+          <Card className="border-primary/20 shadow-sm h-full">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-semibold uppercase text-muted-foreground">
+                {t('bonds.gross_value')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{formatCurrency(results.grossValue)}</div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        <Card className="border-green-200 bg-green-50/30 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-semibold uppercase text-green-700">
-              {t('bonds.net_payout')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-700">
-              {formatCurrency(results.netPayoutValue)}
-            </div>
-            {results.isEarlyWithdrawal && (
-              <Badge variant="outline" className="mt-1 text-[10px] border-orange-200 text-orange-700 bg-orange-50">
-                {t('bonds.early_withdrawal')}
-              </Badge>
-            )}
-          </CardContent>
-        </Card>
+        <motion.div variants={itemVariant}>
+          <Card className="border-green-200 bg-green-50/30 shadow-sm h-full">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-semibold uppercase text-green-700">
+                {t('bonds.net_payout')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-700">
+                {formatCurrency(results.netPayoutValue)}
+              </div>
+              {results.isEarlyWithdrawal && (
+                <Badge variant="outline" className="mt-1 text-[10px] border-orange-200 text-orange-700 bg-orange-50">
+                  {t('bonds.early_withdrawal')}
+                </Badge>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        <Card className="border-primary/10 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-semibold uppercase text-muted-foreground">
-              {t('common.net_profit')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className={cn("text-2xl font-bold", results.totalProfit >= 0 ? "text-primary" : "text-destructive")}>
-              {formatCurrency(results.totalProfit)}
-            </div>
-          </CardContent>
-        </Card>
+        <motion.div variants={itemVariant}>
+          <Card className="border-primary/10 shadow-sm h-full">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-semibold uppercase text-muted-foreground">
+                {t('common.net_profit')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className={cn("text-2xl font-bold", results.totalProfit >= 0 ? "text-primary" : "text-destructive")}>
+                {formatCurrency(results.totalProfit)}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        <Card className="border-destructive/10 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-semibold uppercase text-destructive/70">
-              {t('bonds.fees_and_tax')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-lg font-semibold text-destructive/80">
-              {formatCurrency(results.totalTax + results.totalEarlyWithdrawalFee)}
-            </div>
-            <p className="text-[10px] text-muted-foreground">
-              Tax: {formatCurrency(results.totalTax)} | Fee: {formatCurrency(results.totalEarlyWithdrawalFee)}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+        <motion.div variants={itemVariant}>
+          <Card className="border-destructive/10 shadow-sm h-full">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-semibold uppercase text-destructive/70">
+                {t('bonds.fees_and_tax')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-lg font-semibold text-destructive/80">
+                {formatCurrency(results.totalTax + results.totalEarlyWithdrawalFee)}
+              </div>
+              <p className="text-[10px] text-muted-foreground">
+                Tax: {formatCurrency(results.totalTax)} | Fee: {formatCurrency(results.totalEarlyWithdrawalFee)}
+              </p>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </motion.div>
 
       <Card className="overflow-hidden border-primary/10">
         <CardHeader className="bg-muted/30">
