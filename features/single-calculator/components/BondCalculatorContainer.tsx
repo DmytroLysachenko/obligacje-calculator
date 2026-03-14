@@ -5,9 +5,15 @@ import { useBondCalculator } from '../hooks/useBondCalculator';
 import { BondInputsForm } from './BondInputsForm';
 import { BondResultsSummary } from './BondResultsSummary';
 import { BondTimeline } from './BondTimeline';
-import { BondChart } from './BondChart';
+import dynamic from 'next/dynamic';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLanguage } from '@/i18n';
+
+// Dynamically import chart to reduce initial bundle size
+const BondChart = dynamic(() => import('./BondChart').then(mod => mod.BondChart), { 
+  ssr: false,
+  loading: () => <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground animate-pulse">Loading chart...</div>
+});
 
 export const BondCalculatorContainer: React.FC = () => {
   const { inputs, results, updateInput, setBondType } = useBondCalculator();

@@ -4,10 +4,14 @@ import React from 'react';
 import { useRegularInvestmentCalculator } from '../hooks/useRegularInvestmentCalculator';
 import { RegularInvestmentInputsForm } from './RegularInvestmentInputsForm';
 import { RegularInvestmentResultsSummary } from './RegularInvestmentResultsSummary';
-import { RegularInvestmentChart } from './RegularInvestmentChart';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import dynamic from 'next/dynamic';
 import { useLanguage } from '@/i18n';
 import { Info } from 'lucide-react';
+
+const RegularInvestmentChart = dynamic(() => import('./RegularInvestmentChart').then(mod => mod.RegularInvestmentChart), {
+  ssr: false,
+  loading: () => <div className="h-[400px] w-full flex items-center justify-center text-muted-foreground animate-pulse">Loading chart...</div>
+});
 
 export const RegularInvestmentCalculatorContainer: React.FC = () => {
   const { inputs, results, updateInput, setBondType } = useRegularInvestmentCalculator();
