@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { 
-  LineChart, 
-  Line, 
+  AreaChart, 
+  Area, 
   XAxis, 
   YAxis, 
   CartesianGrid, 
@@ -14,14 +14,14 @@ import {
 import { useLanguage } from '@/i18n';
 import { useChartData } from '@/shared/hooks/useChartData';
 
-interface InflationDataPoint {
-  year: string;
+interface NBPRateDataPoint {
+  date: string;
   rate: number;
 }
 
-export const InflationChart = () => {
+export const NBPRateChart = () => {
   const { t } = useLanguage();
-  const { data: chartData, isLoading, isError } = useChartData<InflationDataPoint[]>('/api/charts/inflation');
+  const { data: chartData, isLoading, isError } = useChartData<NBPRateDataPoint[]>('/api/charts/nbp-rate');
 
   if (isLoading) {
     return <div className="h-[400px] w-full flex items-center justify-center text-muted-foreground animate-pulse">{t('common.loading')}</div>;
@@ -34,10 +34,16 @@ export const InflationChart = () => {
   return (
     <div className="h-[400px] w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={chartData}>
+        <AreaChart data={chartData}>
+          <defs>
+            <linearGradient id="colorRate" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.2}/>
+              <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
+            </linearGradient>
+          </defs>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
           <XAxis 
-            dataKey="year" 
+            dataKey="date" 
             fontSize={12}
             tickLine={false}
             axisLine={false}
@@ -50,20 +56,19 @@ export const InflationChart = () => {
           />
           <Tooltip 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            formatter={(value: any) => [`${value}%`, t('common.inflation')]}
+            formatter={(value: any) => [`${value}%`, 'NBP Rate']}
             contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
           />
           <ReferenceLine y={0} stroke="#000" strokeWidth={1} />
-          <ReferenceLine y={2.5} label={{ value: 'NBP Target', position: 'right', fontSize: 10, fill: '#ef4444' }} stroke="#ef4444" strokeDasharray="3 3" />
-          <Line 
-            type="monotone" 
+          <Area 
+            type="stepAfter" 
             dataKey="rate" 
-            stroke="#2563eb" 
+            stroke="#f59e0b" 
             strokeWidth={3}
-            dot={{ r: 4, fill: '#2563eb', strokeWidth: 2, stroke: '#fff' }}
-            activeDot={{ r: 6, strokeWidth: 0 }}
+            fill="url(#colorRate)"
+            activeDot={{ r: 6, strokeWidth: 0, fill: '#f59e0b' }}
           />
-        </LineChart>
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   );
