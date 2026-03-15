@@ -1,9 +1,11 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
-export function useQuerySync<T extends Record<string, any>>(
+type QuerySyncValue = string | number | boolean | undefined | null;
+
+export function useQuerySync<T extends Record<string, QuerySyncValue>>(
   state: T,
   onLoad: (initialState: Partial<T>) => void
 ) {
@@ -11,6 +13,11 @@ export function useQuerySync<T extends Record<string, any>>(
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const isInitialMount = useRef(true);
+  const onLoadRef = useRef(onLoad);
+  
+  useEffect(() => {
+    onLoadRef.current = onLoad;
+  }, [onLoad]);
 
   // Load from URL on mount
   useEffect(() => {
@@ -19,33 +26,46 @@ export function useQuerySync<T extends Record<string, any>>(
     
     for (const [key, value] of Object.entries(params)) {
       // Try to parse numbers or booleans
-      if (value === 'true') (initial as any)[key] = true;
-      else if (value === 'false') (initial as any)[key] = false;
-      else if (!isNaN(Number(value))) (initial as any)[key] = Number(value);
-      else (initial as any)[key] = value;
+      let parsedValue: QuerySyncValue = value;
+      if (value === 'true') parsedValue = true;
+      else if (value === 'false') parsedValue = false;
+      else if (value !== '' && !isNaN(Number(value))) parsedValue = Number(value);
+      
+      (initial as Record<string, QuerySyncValue>)[key] = parsedValue;
     }
 
     if (Object.keys(initial).length > 0) {
-      onLoad(initial);
+      onLoadRef.current(initial);
     }
     isInitialMount.current = false;
-  }, []); // Only on mount
+    // We only want this to run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); 
 
   // Sync to URL on state change
-  useEffect(() => {
+  const stateString = JSON.stringify(state);
+  
+  const updateUrl = useCallback(() => {
     if (isInitialMount.current) return;
 
     const params = new URLSearchParams();
     for (const [key, value] of Object.entries(state)) {
-      if (value !== undefined && value !== null) {
+      if (value !== undefined && value !== null && value !== '') {
         params.set(key, String(value));
       }
     }
 
     const query = params.toString();
-    const url = query ? `${pathname}?${query}` : pathname;
+    const currentQuery = searchParams.toString();
     
-    // Use replace to avoid polluting history with every slider tick
-    router.replace(url, { scroll: false });
-  }, [state, pathname, router]);
+    // Only update if the query actually changed to avoid infinite loops
+    if (query !== currentQuery) {
+      const url = query ? `${pathname}?${query}` : pathname;
+      router.replace(url, { scroll: false });
+    }
+  }, [state, pathname, router, searchParams]);
+
+  useEffect(() => {
+    updateUrl();
+  }, [stateString, updateUrl]);
 }

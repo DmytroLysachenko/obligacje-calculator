@@ -1,6 +1,5 @@
-import { useState, useMemo } from 'react';
-import { BondInputs, BondType, TaxStrategy } from '../../bond-core/types';
-import { calculateBondInvestment } from '../../bond-core/utils/calculations';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { BondInputs, BondType, TaxStrategy, CalculationResult } from '../../bond-core/types';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { addMonths } from 'date-fns';
 import { useQuerySync } from '@/shared/hooks/useQuerySync';
@@ -30,15 +29,45 @@ const DEFAULT_INPUTS: BondInputs = {
 
 export function useBondCalculator() {
   const [inputs, setInputs] = useState<BondInputs>(DEFAULT_INPUTS);
+  const [results, setResults] = useState<CalculationResult | null>(null);
+  const [isCalculating, setIsCalculating] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const initialCalculated = useRef(false);
 
   // Sync state with URL
   useQuerySync(inputs, (initial) => {
     setInputs(prev => ({ ...prev, ...initial }));
   });
 
-  const results = useMemo(() => {
-    return calculateBondInvestment(inputs);
+  const calculate = useCallback(async (currentInputs = inputs) => {
+    setIsCalculating(true);
+    setIsError(false);
+    try {
+      const response = await fetch('/api/calculate/single', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(currentInputs),
+      });
+      
+      if (!response.ok) throw new Error('Calculation failed');
+      
+      const data = await response.json();
+      setResults(data);
+    } catch (error) {
+      console.error('Calculation error:', error);
+      setIsError(true);
+    } finally {
+      setIsCalculating(false);
+    }
   }, [inputs]);
+
+  // Initial calculation once state is loaded from URL or defaulted
+  useEffect(() => {
+    if (!initialCalculated.current) {
+      calculate();
+      initialCalculated.current = true;
+    }
+  }, [calculate]);
 
   const updateInput = (key: keyof BondInputs, value: string | number | boolean | undefined) => {
     setInputs((prev) => {
@@ -76,13 +105,16 @@ export function useBondCalculator() {
       payoutFrequency: def.payoutFrequency,
       withdrawalDate: newMaturityDate.toISOString(),
       rebuyDiscount: def.rebuyDiscount,
-      isRebought: false, // Reset to false on type change to avoid accidental discount
+      isRebought: false,
     }));
   };
 
   return {
     inputs,
     results,
+    isCalculating,
+    isError,
+    calculate,
     updateInput,
     setBondType,
     definitions: BOND_DEFINITIONS,

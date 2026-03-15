@@ -1,6 +1,5 @@
-import { useState, useMemo } from 'react';
-import { RegularInvestmentInputs, BondType, InvestmentFrequency, TaxStrategy } from '../../bond-core/types';
-import { calculateRegularInvestment } from '../../bond-core/utils/calculations';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { RegularInvestmentInputs, BondType, InvestmentFrequency, TaxStrategy, RegularInvestmentResult } from '../../bond-core/types';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { addYears } from 'date-fns';
 import { useQuerySync } from '@/shared/hooks/useQuerySync';
@@ -32,15 +31,44 @@ const DEFAULT_INPUTS: RegularInvestmentInputs = {
 
 export function useRegularInvestmentCalculator() {
   const [inputs, setInputs] = useState<RegularInvestmentInputs>(DEFAULT_INPUTS);
+  const [results, setResults] = useState<RegularInvestmentResult | null>(null);
+  const [isCalculating, setIsCalculating] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const initialCalculated = useRef(false);
 
   // Sync state with URL
   useQuerySync(inputs, (initial) => {
     setInputs(prev => ({ ...prev, ...initial }));
   });
 
-  const results = useMemo(() => {
-    return calculateRegularInvestment(inputs);
+  const calculate = useCallback(async (currentInputs = inputs) => {
+    setIsCalculating(true);
+    setIsError(false);
+    try {
+      const response = await fetch('/api/calculate/regular', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(currentInputs),
+      });
+      
+      if (!response.ok) throw new Error('Calculation failed');
+      
+      const data = await response.json();
+      setResults(data);
+    } catch (error) {
+      console.error('Calculation error:', error);
+      setIsError(true);
+    } finally {
+      setIsCalculating(false);
+    }
   }, [inputs]);
+
+  useEffect(() => {
+    if (!initialCalculated.current) {
+      calculate();
+      initialCalculated.current = true;
+    }
+  }, [calculate]);
 
   const updateInput = (key: keyof RegularInvestmentInputs, value: string | number | boolean | undefined) => {
     setInputs((prev) => {
@@ -68,13 +96,16 @@ export function useRegularInvestmentCalculator() {
       isCapitalized: def.isCapitalized,
       payoutFrequency: def.payoutFrequency,
       rebuyDiscount: def.rebuyDiscount,
-      isRebought: false, // Reset to false on type change
+      isRebought: false,
     }));
   };
 
   return {
     inputs,
     results,
+    isCalculating,
+    isError,
+    calculate,
     updateInput,
     setBondType,
     definitions: BOND_DEFINITIONS,

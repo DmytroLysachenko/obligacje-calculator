@@ -1,57 +1,98 @@
 import { useState, useMemo } from 'react';
-import { calculateAssetGrowth } from '../../bond-core/utils/asset-calculations';
-import { BondInputs, BondType } from '../../bond-core/types';
-import { calculateBondInvestment } from '../../bond-core/utils/calculations';
-import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
+import { calculateAssetPerformance, calculateBondsPerformance } from '../../bond-core/utils/asset-calculations';
+import { AssetMetadata } from '../../bond-core/types/assets';
+import { HISTORICAL_RETURNS } from '../../bond-core/constants/historical-data';
+import { useQuerySync } from '@/shared/hooks/useQuerySync';
+
+const ASSETS_METADATA: Record<string, AssetMetadata> = {
+  sp500: {
+    id: 'sp500',
+    name: 'S&P 500 (Stocks)',
+    color: '#3b82f6',
+    description: {
+      en: '500 largest US companies. High growth, high volatility.',
+      pl: '500 największych spółek w USA. Wysoki wzrost, wysoka zmienność.',
+    },
+  },
+  gold: {
+    id: 'gold',
+    name: 'Gold (XAU)',
+    color: '#f59e0b',
+    description: {
+      en: 'Safe-haven asset. Protects purchasing power.',
+      pl: 'Aktywo "bezpieczna przystań". Chroni siłę nabywczą.',
+    },
+  },
+  bonds: {
+    id: 'bonds',
+    name: 'Bonds (EDO)',
+    color: '#10b981',
+    description: {
+      en: 'Inflation-indexed government bonds. Safe and steady.',
+      pl: 'Obligacje skarbowe indeksowane inflacją. Bezpieczne i stabilne.',
+    },
+  },
+  savings: {
+    id: 'savings',
+    name: 'Savings Account',
+    color: '#94a3b8',
+    description: {
+      en: 'Low-risk, low-reward cash account.',
+      pl: 'Niskie ryzyko, niski zysk. Konto oszczędnościowe.',
+    },
+  },
+};
 
 export function useMultiAssetComparison() {
   const [initialSum, setInitialSum] = useState(10000);
+  const [monthlyContribution, setMonthlyContribution] = useState(500);
+  const [startDate, setStartDate] = useState(HISTORICAL_RETURNS[0].date);
+  const [showRealValue, setShowRealValue] = useState(false);
   
-  const sp500 = useMemo(() => calculateAssetGrowth(initialSum, 'sp500'), [initialSum]);
-  const gold = useMemo(() => calculateAssetGrowth(initialSum, 'gold'), [initialSum]);
-  const savings = useMemo(() => calculateAssetGrowth(initialSum, 'savings'), [initialSum]);
-  
-  // Benchmark Bond (EDO 10y)
-  const bondResults = useMemo(() => {
-    const def = BOND_DEFINITIONS[BondType.EDO];
-    const inputs: BondInputs = {
-      bondType: BondType.EDO,
-      initialInvestment: initialSum,
-      firstYearRate: def.firstYearRate,
-      expectedInflation: 3.5, // Representative average
-      margin: def.margin,
-      duration: 10,
-      earlyWithdrawalFee: def.earlyWithdrawalFee,
-      taxRate: 19,
-      isCapitalized: true,
-      payoutFrequency: def.payoutFrequency,
-      purchaseDate: new Date('2020-01-01').toISOString(),
-      withdrawalDate: new Date('2030-01-01').toISOString(),
-      isRebought: false,
-      rebuyDiscount: def.rebuyDiscount,
-      taxStrategy: 0 as any // STANDARD
-    };
-    return calculateBondInvestment(inputs);
-  }, [initialSum]);
+  // URL Sync
+  useQuerySync({
+    sum: initialSum,
+    monthly: monthlyContribution,
+    start: startDate,
+    real: showRealValue
+  }, (initial) => {
+    if (initial.sum) setInitialSum(Number(initial.sum));
+    if (initial.monthly) setMonthlyContribution(Number(initial.monthly));
+    if (initial.start) setStartDate(String(initial.start));
+    if (initial.real !== undefined) setShowRealValue(String(initial.real) === 'true');
+  });
 
-  // Transform bond results to match AssetResult format for the chart
-  const bondsFormatted = useMemo(() => {
-    return bondResults.timeline.map(p => ({
-      date: `Year ${p.year}`,
-      nominalValue: p.nominalValueAfterInterest,
-      realValue: p.realValue,
-      drawdown: 0 // Bonds don't have price drawdown in this model
-    }));
-  }, [bondResults]);
+  const filteredData = useMemo(() => {
+    return HISTORICAL_RETURNS.filter(row => row.date >= startDate);
+  }, [startDate]);
+
+  const sp500 = useMemo(() => 
+    calculateAssetPerformance(initialSum, monthlyContribution, 'sp500', ASSETS_METADATA.sp500, filteredData), 
+  [initialSum, monthlyContribution, filteredData]);
+  
+  const gold = useMemo(() => 
+    calculateAssetPerformance(initialSum, monthlyContribution, 'gold', ASSETS_METADATA.gold, filteredData), 
+  [initialSum, monthlyContribution, filteredData]);
+  
+  const bonds = useMemo(() => 
+    calculateBondsPerformance(initialSum, monthlyContribution, ASSETS_METADATA.bonds, filteredData),
+  [initialSum, monthlyContribution, filteredData]);
+  
+  const savings = useMemo(() => 
+    calculateAssetPerformance(initialSum, monthlyContribution, 'savings', ASSETS_METADATA.savings, filteredData), 
+  [initialSum, monthlyContribution, filteredData]);
 
   return {
     initialSum,
     setInitialSum,
-    assets: {
-      sp500,
-      gold,
-      savings,
-      bonds: bondsFormatted
-    }
+    monthlyContribution,
+    setMonthlyContribution,
+    startDate,
+    setStartDate,
+    showRealValue,
+    setShowRealValue,
+    assets: [sp500, gold, bonds, savings],
+    metadata: ASSETS_METADATA,
+    availableDates: HISTORICAL_RETURNS.map(r => r.date),
   };
 }

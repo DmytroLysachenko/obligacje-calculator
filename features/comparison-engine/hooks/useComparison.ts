@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { BondInputs, BondType, TaxStrategy } from '../../bond-core/types';
-import { calculateBondInvestment } from '../../bond-core/utils/calculations';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { BondInputs, BondType, TaxStrategy, CalculationResult } from '../../bond-core/types';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { addMonths } from 'date-fns';
+import { useQuerySync } from '@/shared/hooks/useQuerySync';
 
 const createDefaultInputs = (type: BondType): BondInputs => {
   const def = BOND_DEFINITIONS[type];
@@ -31,9 +31,70 @@ const createDefaultInputs = (type: BondType): BondInputs => {
 export function useComparison() {
   const [inputsA, setInputsA] = useState<BondInputs>(createDefaultInputs(BondType.COI));
   const [inputsB, setInputsB] = useState<BondInputs>(createDefaultInputs(BondType.EDO));
+  const [resultsA, setResultsA] = useState<CalculationResult | null>(null);
+  const [resultsB, setResultsB] = useState<CalculationResult | null>(null);
+  const [isCalculating, setIsCalculating] = useState(false);
+  const initialCalculated = useRef(false);
 
-  const resultsA = useMemo(() => calculateBondInvestment(inputsA), [inputsA]);
-  const resultsB = useMemo(() => calculateBondInvestment(inputsB), [inputsB]);
+  // Sync state with URL using prefixes to avoid collisions
+  const combinedState = {
+    ...Object.fromEntries(Object.entries(inputsA).map(([k, v]) => [`a_${k}`, v])),
+    ...Object.fromEntries(Object.entries(inputsB).map(([k, v]) => [`b_${k}`, v])),
+  };
+
+  useQuerySync(combinedState, (initial) => {
+    const newA: Partial<BondInputs> = {};
+    const newB: Partial<BondInputs> = {};
+    
+    Object.entries(initial).forEach(([key, val]) => {
+      if (key.startsWith('a_')) {
+        const inputKey = key.replace('a_', '') as keyof BondInputs;
+        (newA as Record<string, unknown>)[inputKey] = val;
+      }
+      if (key.startsWith('b_')) {
+        const inputKey = key.replace('b_', '') as keyof BondInputs;
+        (newB as Record<string, unknown>)[inputKey] = val;
+      }
+    });
+
+    if (Object.keys(newA).length > 0) setInputsA(prev => ({ ...prev, ...newA }));
+    if (Object.keys(newB).length > 0) setInputsB(prev => ({ ...prev, ...newB }));
+  });
+
+  const calculate = useCallback(async () => {
+    setIsCalculating(true);
+    try {
+      const [resA, resB] = await Promise.all([
+        fetch('/api/calculate/single', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(inputsA),
+        }),
+        fetch('/api/calculate/single', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(inputsB),
+        })
+      ]);
+      
+      if (!resA.ok || !resB.ok) throw new Error('Comparison calculation failed');
+      
+      const [dataA, dataB] = await Promise.all([resA.json(), resB.json()]);
+      setResultsA(dataA);
+      setResultsB(dataB);
+    } catch (error) {
+      console.error('Comparison error:', error);
+    } finally {
+      setIsCalculating(false);
+    }
+  }, [inputsA, inputsB]);
+
+  useEffect(() => {
+    if (!initialCalculated.current) {
+      calculate();
+      initialCalculated.current = true;
+    }
+  }, [calculate]);
 
   const updateInputA = (key: keyof BondInputs, value: string | number | boolean | undefined) => {
     setInputsA(prev => ({ ...prev, [key]: value }));
@@ -45,7 +106,6 @@ export function useComparison() {
 
   const setBondTypeA = (type: BondType) => {
     const def = BOND_DEFINITIONS[type];
-    const today = new Date();
     setInputsA(prev => ({
       ...prev,
       bondType: type,
@@ -79,6 +139,8 @@ export function useComparison() {
   return {
     inputsA, inputsB,
     resultsA, resultsB,
+    isCalculating,
+    calculate,
     updateInputA, updateInputB,
     setBondTypeA, setBondTypeB,
     definitions: BOND_DEFINITIONS
