@@ -5,7 +5,7 @@ import { useLadder } from '../hooks/useLadder';
 import { RegularInvestmentInputsForm } from '../../regular-investment/components/RegularInvestmentInputsForm';
 import { RegularInvestmentResultsSummary } from '../../regular-investment/components/RegularInvestmentResultsSummary';
 import { useLanguage } from '@/i18n';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Info, Layers } from 'lucide-react';
 
 export const LadderContainer: React.FC = () => {
@@ -20,7 +20,7 @@ export const LadderContainer: React.FC = () => {
             <Layers className="h-8 w-8 text-primary" />
             {t('nav.ladder')}
           </h2>
-          <p className="text-muted-foreground mt-2">Build a "Bond Ladder" to ensure monthly liquidity and steady growth.</p>
+          <p className="text-muted-foreground mt-2">Build a &quot;Bond Ladder&quot; to ensure monthly liquidity and steady growth.</p>
         </div>
       </header>
 
@@ -43,7 +43,7 @@ export const LadderContainer: React.FC = () => {
             <CardContent className="text-xs text-muted-foreground leading-relaxed">
               A bond ladder is a strategy where you buy bonds regularly (e.g., every month). 
               After the first full cycle (e.g., 4 years for COI), one bond will mature every month, 
-              providing you with a "salary" or funds to reinvest, creating a perpetual cycle of liquidity and growth.
+              providing you with a &quot;salary&quot; or funds to reinvest, creating a perpetual cycle of liquidity and growth.
             </CardContent>
           </Card>
           

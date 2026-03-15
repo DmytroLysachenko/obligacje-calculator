@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { calculateBondInvestment } from './calculations';
 import { BondType, InterestPayout } from '../types';
-import { parseISO, addMonths } from 'date-fns';
 
 describe('Bond Calculations', () => {
   const baseInputs = {

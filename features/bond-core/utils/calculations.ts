@@ -3,15 +3,13 @@ import {
   BondType, 
   CalculationResult, 
   YearlyTimelinePoint, 
-  InterestPayout,
   RegularInvestmentInputs,
   RegularInvestmentResult,
   InvestmentFrequency,
   RegularTimelinePoint,
-  LotBreakdown,
-  TaxStrategy
+  LotBreakdown
 } from '../types';
-import { addMonths, addYears, differenceInDays, differenceInMonths, isAfter, isBefore, parseISO, min, format } from 'date-fns';
+import { addMonths, addYears, differenceInDays, differenceInMonths, isAfter, isBefore, parseISO, min } from 'date-fns';
 
 /**
  * Standard calculation for a single bond investment.
@@ -32,14 +30,8 @@ export function calculateBondInvestment(inputs: BondInputs): CalculationResult {
     purchaseDate,
     withdrawalDate,
     isRebought,
-    rebuyDiscount,
-    taxStrategy
+    rebuyDiscount
   } = inputs;
-
-  // Determine effective tax rate based on strategy
-  let effectiveTaxRate = inputs.taxRate;
-  if (taxStrategy === TaxStrategy.IKE) effectiveTaxRate = 0;
-  if (taxStrategy === TaxStrategy.IKZE) effectiveTaxRate = 5;
 
   const startDate = parseISO(purchaseDate);
   const targetWithdrawalDate = parseISO(withdrawalDate);
@@ -63,8 +55,6 @@ export function calculateBondInvestment(inputs: BondInputs): CalculationResult {
   let totalTaxPaidSoFar = 0;
 
   // We calculate year by year up to the bond's maturity OR withdrawal
-  const totalMonthsHeld = differenceInMonths(actualWithdrawalDate, startDate);
-  const yearsHeld = Math.ceil(totalMonthsHeld / 12);
   const maxYears = Math.ceil(duration);
 
   for (let year = 1; year <= maxYears; year++) {
@@ -197,13 +187,8 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
     purchaseDate,
     withdrawalDate,
     isRebought,
-    rebuyDiscount,
-    taxStrategy
+    rebuyDiscount
   } = inputs;
-
-  let effectiveTaxRate = inputs.taxRate;
-  if (taxStrategy === TaxStrategy.IKE) effectiveTaxRate = 0;
-  if (taxStrategy === TaxStrategy.IKZE) effectiveTaxRate = 5;
 
   const startPurchaseDate = parseISO(purchaseDate);
   const targetWithdrawalDate = parseISO(withdrawalDate);

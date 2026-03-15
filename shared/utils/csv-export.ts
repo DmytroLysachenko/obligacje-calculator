@@ -1,7 +1,7 @@
 /**
  * Converts an array of objects into a CSV string and triggers a download.
  */
-export function exportToCSV(data: any[], fileName: string) {
+export function exportToCSV(data: Record<string, string | number | boolean | null | undefined>[], fileName: string) {
   if (data.length === 0) return;
 
   const headers = Object.keys(data[0]);

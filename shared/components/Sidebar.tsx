@@ -12,58 +12,58 @@ import {
   Menu,
   X,
   Scale,
-  Layers
+  Layers,
+  Globe
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from './LanguageSwitcher';
-Scale,
-Layers,
-Globe
-} from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export function Sidebar() {
-const pathname = usePathname();
-const { t } = useLanguage();
-const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+  const { t } = useLanguage();
+  const [isOpen, setIsOpen] = useState(false);
 
-const navItems = [
-  {
-    href: '/education',
-    label: t('nav.education'),
-    icon: BookOpen,
-  },
-  {
-    href: '/',
-    label: t('nav.single_calculator'),
-    icon: Calculator,
-  },
-  {
-    href: '/compare',
-    label: t('nav.comparison'),
-    icon: Scale,
-  },
-  {
-    href: '/multi-asset',
-    label: t('nav.multi_asset'),
-    icon: Globe,
-  },
-  {
-    href: '/ladder',
-    label: t('nav.ladder'),
-    icon: Layers,
-  },
-  {
-    href: '/regular-investment',
-    label: t('nav.regular_investment'),
-    icon: TrendingUp,
-  },
-  {
-    href: '/economic-data',
-    label: t('nav.economic_data'),
-    icon: BarChart2,
-  },
-];
+  const navItems = [
+    {
+      href: '/education',
+      label: t('nav.education'),
+      icon: BookOpen,
+    },
+    {
+      href: '/',
+      label: t('nav.single_calculator'),
+      icon: Calculator,
+    },
+    {
+      href: '/compare',
+      label: t('nav.comparison'),
+      icon: Scale,
+    },
+    {
+      href: '/multi-asset',
+      label: t('nav.multi_asset'),
+      icon: Globe,
+    },
+    {
+      href: '/ladder',
+      label: t('nav.ladder'),
+      icon: Layers,
+    },
+    {
+      href: '/regular-investment',
+      label: t('nav.regular_investment'),
+      icon: TrendingUp,
+    },
+    {
+      href: '/economic-data',
+      label: t('nav.economic_data'),
+      icon: BarChart2,
+    },
+  ];
+
+  return (
     <>
       {/* Mobile Menu Toggle */}
       <div className="lg:hidden fixed top-4 left-4 z-50">
