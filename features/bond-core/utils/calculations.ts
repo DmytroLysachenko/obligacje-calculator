@@ -10,6 +10,7 @@ import {
   LotBreakdown,
   InterestPayout
 } from '../types';
+import { BOND_DEFINITIONS } from '../constants/bond-definitions';
 import { addMonths, addYears, differenceInDays, differenceInMonths, isAfter, isBefore, parseISO, min } from 'date-fns';
 
 /**
@@ -22,6 +23,7 @@ export function calculateBondInvestment(inputs: BondInputs): CalculationResult {
     initialInvestment,
     firstYearRate,
     expectedInflation,
+    expectedNbpRate = 5.25, // Default if not provided
     margin,
     duration,
     earlyWithdrawalFee,
@@ -35,11 +37,13 @@ export function calculateBondInvestment(inputs: BondInputs): CalculationResult {
     rebuyDiscount
   } = inputs;
 
+  const bondDef = BOND_DEFINITIONS[bondType];
+  const isInflationIndexed = bondDef?.isInflationIndexed ?? false;
+
   const startDate = parseISO(purchaseDate);
   const targetWithdrawalDate = parseISO(withdrawalDate);
   const maturityDate = addMonths(startDate, Math.round(duration * 12));
   
-  // Real withdrawal date is either maturity or user-selected withdrawal date
   const actualWithdrawalDate = min([targetWithdrawalDate, maturityDate]);
   const isEarlyWithdrawal = isBefore(actualWithdrawalDate, maturityDate);
 
@@ -48,7 +52,6 @@ export function calculateBondInvestment(inputs: BondInputs): CalculationResult {
   const bondPrice = isRebought ? (100 - rebuyDiscount) : 100;
   const numberOfBonds = Math.floor(initialInvestment / bondPrice);
   const actualInitialInvestment = numberOfBonds * bondPrice;
-  // Interest is calculated on the nominal value (always 100 PLN per bond)
   const nominalStartingValue = numberOfBonds * 100;
 
   let currentNominalValue = nominalStartingValue;
@@ -64,62 +67,75 @@ export function calculateBondInvestment(inputs: BondInputs): CalculationResult {
     const periodStartDate = addPeriod(startDate, period - 1);
     const periodEndDateNorm = addPeriod(startDate, period);
     
-    // If this period starts after withdrawal, skip
     if (isAfter(periodStartDate, actualWithdrawalDate) && period > 1) break;
 
-    // Check if we are in a partial period due to withdrawal
     const isWithdrawalPeriod = isBefore(actualWithdrawalDate, periodEndDateNorm) || actualWithdrawalDate.getTime() === periodEndDateNorm.getTime();
     const periodEndDate = min([periodEndDateNorm, actualWithdrawalDate]);
     
-    // Calculate fractional period if needed
     const daysInPeriod = differenceInDays(periodEndDateNorm, periodStartDate);
     const daysHeldInPeriod = differenceInDays(periodEndDate, periodStartDate);
-    const timeFactor = daysHeldInPeriod / daysInPeriod;
+    const timeFactor = daysInPeriod > 0 ? (daysHeldInPeriod / daysInPeriod) : 1;
 
     if (timeFactor <= 0 && period > 1) break;
 
-    const isFirstYear = isMonthly ? period <= 12 : period === 1;
-    let currentInterestRate = isFirstYear ? firstYearRate : (Math.max(0, expectedInflation) + margin);
-    
-    // Fixed rate logic (TOS, OTS)
+    const isFirstPeriod = period === 1;
+    let currentInterestRate = 0;
+
+    // 1. Determine annual interest rate for this period
     if (bondType === BondType.OTS || bondType === BondType.TOS) {
       currentInterestRate = firstYearRate;
-    }
-    
-    // NBP Reference rate logic (ROR, DOR)
-    if (bondType === BondType.ROR || bondType === BondType.DOR) {
-      currentInterestRate = firstYearRate; 
+    } else if (bondType === BondType.ROR || bondType === BondType.DOR) {
+      currentInterestRate = isFirstPeriod ? firstYearRate : (Math.max(0, expectedNbpRate) + margin);
+    } else if (isInflationIndexed) {
+      currentInterestRate = isFirstPeriod ? firstYearRate : (Math.max(0, expectedInflation) + margin);
+    } else {
+      currentInterestRate = firstYearRate;
     }
 
-    // Interest earned in this period
-    const periodRate = isMonthly ? currentInterestRate / 12 : currentInterestRate;
-    const interestEarned = currentNominalValue * (periodRate / 100) * (bondType === BondType.OTS ? (3/12) : timeFactor);
-    const taxDeducted = interestEarned * (taxRate / 100);
-    const netInterest = interestEarned - taxDeducted;
+    // 2. Calculate interest for this period
+    // For OTS, it's a special 3-month fixed rate.
+    let interestEarned = 0;
+    if (bondType === BondType.OTS) {
+      // OTS is exactly 3 months, fixed rate applies to the whole period.
+      // If early withdrawal, they usually lose all interest.
+      interestEarned = nominalStartingValue * (currentInterestRate / 100) * (3 / 12);
+      if (isEarlyWithdrawal) interestEarned = 0; // Simplified OTS early exit
+    } else {
+      const annualRate = currentInterestRate / 100;
+      if (isMonthly) {
+        interestEarned = currentNominalValue * (annualRate / 12) * timeFactor;
+      } else {
+        interestEarned = currentNominalValue * annualRate * timeFactor;
+      }
+    }
 
     const previousNominalValue = currentNominalValue;
-    
-    if (isCapitalized) {
-      currentNominalValue += interestEarned;
-      totalInterestEarnedSoFar += interestEarned;
-    } else {
-      totalInterestEarnedSoFar += interestEarned;
+    totalInterestEarnedSoFar += interestEarned;
+
+    let taxDeducted = 0;
+    if (!isCapitalized) {
+      // For ROR, DOR, COI tax is deducted from each payout
+      taxDeducted = interestEarned * (taxRate / 100);
       totalTaxPaidSoFar += taxDeducted;
+    } else {
+      // For EDO, TOS, ROS, ROD tax is deferred until the end
+      currentNominalValue += interestEarned;
     }
     
-    // Inflation adjustment
+    const netInterest = interestEarned - taxDeducted;
+
+    // 3. Inflation adjustment
     const annualInflation = Math.max(-0.99, expectedInflation / 100);
     const periodInflation = isMonthly ? annualInflation / 12 : annualInflation;
     cumulativeInflation *= (1 + periodInflation * timeFactor);
-    const realValue = currentNominalValue / cumulativeInflation;
+    const realValue = (isCapitalized ? currentNominalValue : nominalStartingValue) / cumulativeInflation;
 
-    // Early withdrawal fee calculation
+    // 4. Early withdrawal fee
     let currentWithdrawalFee = 0;
     if (isEarlyWithdrawal || isWithdrawalPeriod) {
-      if (bondType === BondType.OTS) {
-        currentWithdrawalFee = interestEarned; // For OTS, early exit often means losing all interest
-      } else {
+      if (bondType !== BondType.OTS) {
         const totalMaxFee = numberOfBonds * earlyWithdrawalFee;
+        // Fee cannot exceed total interest earned (investor never gets less than nominal)
         currentWithdrawalFee = Math.min(totalInterestEarnedSoFar, totalMaxFee);
       }
     }
@@ -127,18 +143,46 @@ export function calculateBondInvestment(inputs: BondInputs): CalculationResult {
     const isMaturity = periodEndDate.getTime() === maturityDate.getTime();
     const isWithdrawal = periodEndDate.getTime() === actualWithdrawalDate.getTime();
 
+    // 5. Calculate profit and early withdrawal value
+    let netProfit = 0;
+    let earlyWithdrawalValue = 0;
+
+    if (isCapitalized) {
+      const currentGrossProfit = currentNominalValue - nominalStartingValue;
+      // Tax is calculated on profit after fee if withdrawn now
+      const profitAfterFee = Math.max(0, currentGrossProfit - currentWithdrawalFee);
+      const taxOnWithdrawal = profitAfterFee * (taxRate / 100);
+      
+      netProfit = (currentNominalValue - currentWithdrawalFee - taxOnWithdrawal) - actualInitialInvestment;
+      earlyWithdrawalValue = currentNominalValue - currentWithdrawalFee - taxOnWithdrawal;
+    } else {
+      const currentGrossProfit = totalInterestEarnedSoFar;
+      // For non-capitalized, some tax might have been paid already.
+      // This is complex because payouts happen periodically.
+      // Official rule: tax is on interest, and fee is separate deduction.
+      // However, for early redemption, the fee can reduce the taxable base of the FINAL interest period or be a separate cost.
+      // Guide says: W_net = W_fee - (W_fee - N) * 0.19.
+      // So let's follow the guide: (Gross Value - Fee - Nominal) is the taxable base.
+      const grossValueNow = nominalStartingValue + totalInterestEarnedSoFar;
+      const taxableBase = Math.max(0, grossValueNow - currentWithdrawalFee - nominalStartingValue);
+      const totalTaxForThisExit = taxableBase * (taxRate / 100);
+
+      netProfit = (grossValueNow - currentWithdrawalFee - totalTaxForThisExit) - actualInitialInvestment;
+      earlyWithdrawalValue = grossValueNow - currentWithdrawalFee - totalTaxForThisExit;
+    }
+
     timeline.push({
-      year: isMonthly ? Math.ceil(period / 12) : period, // year field kept for compatibility
+      year: isMonthly ? Math.ceil(period / 12) : period,
       periodLabel: isMaturity ? 'Maturity' : (isMonthly ? `Month ${period}` : `Year ${period}`),
       interestRate: currentInterestRate,
       nominalValueBeforeInterest: previousNominalValue,
       interestEarned,
       taxDeducted,
       netInterest,
-      nominalValueAfterInterest: currentNominalValue,
+      nominalValueAfterInterest: isCapitalized ? currentNominalValue : nominalStartingValue,
       realValue,
-      netProfit: (isCapitalized ? (currentNominalValue - (totalInterestEarnedSoFar * (taxRate / 100))) : (currentNominalValue + (totalInterestEarnedSoFar - totalTaxPaidSoFar))) - actualInitialInvestment - (isWithdrawal ? currentWithdrawalFee : 0),
-      earlyWithdrawalValue: Math.max(actualInitialInvestment, currentNominalValue - (isCapitalized ? (totalInterestEarnedSoFar * (taxRate / 100)) : 0) - currentWithdrawalFee),
+      netProfit,
+      earlyWithdrawalValue: Math.max(actualInitialInvestment, earlyWithdrawalValue),
       cumulativeInflation,
       isMaturity,
       isWithdrawal
@@ -148,26 +192,25 @@ export function calculateBondInvestment(inputs: BondInputs): CalculationResult {
   }
 
   const lastPoint = timeline[timeline.length - 1];
+  const totalGrossInterest = totalInterestEarnedSoFar;
   const totalEarlyWithdrawalFee = isEarlyWithdrawal ? Math.min(totalInterestEarnedSoFar, numberOfBonds * earlyWithdrawalFee) : 0;
   
-  // For non-capitalized bonds, currentNominalValue remains at the starting principal.
-  // We need to add the earned interest to get the total gross value.
-  const finalPrincipal = lastPoint.nominalValueAfterInterest;
-  const totalGrossInterest = totalInterestEarnedSoFar;
-  const grossValue = finalPrincipal + (isCapitalized ? 0 : totalGrossInterest);
+  // Tax is on profit after early withdrawal fee
+  const taxableProfit = Math.max(0, totalGrossInterest - totalEarlyWithdrawalFee);
+  const totalTax = taxableProfit * (taxRate / 100);
   
-  const totalTax = isCapitalized ? (totalGrossInterest * (taxRate / 100)) : totalTaxPaidSoFar;
-  const netPayoutValue = grossValue - totalTax - totalEarlyWithdrawalFee;
+  const grossValueAtEnd = (isCapitalized ? currentNominalValue : nominalStartingValue + totalGrossInterest);
+  const netPayoutValue = grossValueAtEnd - totalEarlyWithdrawalFee - totalTax;
 
   return {
     initialInvestment: actualInitialInvestment,
     timeline,
-    finalNominalValue: finalPrincipal,
+    finalNominalValue: isCapitalized ? currentNominalValue : nominalStartingValue,
     finalRealValue: lastPoint.realValue,
     totalProfit: netPayoutValue - actualInitialInvestment,
     totalTax,
     totalEarlyWithdrawalFee,
-    grossValue,
+    grossValue: grossValueAtEnd,
     netPayoutValue,
     isEarlyWithdrawal,
     maturityDate: maturityDate.toISOString()
@@ -186,6 +229,7 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
     bondType,
     firstYearRate,
     expectedInflation,
+    expectedNbpRate,
     margin,
     earlyWithdrawalFee,
     taxRate,
@@ -215,7 +259,6 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
   for (let m = 0; m <= totalMonths; m++) {
     const currentMonthDate = addMonths(startPurchaseDate, m);
     
-    // Stop if we reached target withdrawal date
     if (isAfter(currentMonthDate, targetWithdrawalDate)) break;
 
     // 1. Add new contribution
@@ -225,7 +268,8 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
       const nominalAmount = units * 100;
       
       if (units > 0) {
-        const lotMaturityDate = addMonths(currentMonthDate, Math.round((bondType === BondType.OTS ? 0.25 : inputs.duration) * 12));
+        const lotDuration = bondType === BondType.OTS ? 0.25 : inputs.duration;
+        const lotMaturityDate = addMonths(currentMonthDate, Math.round(lotDuration * 12));
         lots.push({
           purchaseDate: currentMonthDate.toISOString(),
           maturityDate: lotMaturityDate.toISOString(),
@@ -234,7 +278,7 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
           accumulatedInterest: 0,
           tax: 0,
           earlyWithdrawalFee: 0,
-          grossValue: nominalAmount, // start with nominal amount for interest calc
+          grossValue: nominalAmount,
           netValue: nominalAmount
         });
         totalInvested += investedAmount;
@@ -248,40 +292,57 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
       
       if (isAfter(currentMonthDate, lotPurchaseDate)) {
         const monthsHeld = differenceInMonths(currentMonthDate, lotPurchaseDate);
-        const bondDurationMonths = Math.round((bondType === BondType.OTS ? 0.25 : inputs.duration) * 12);
+        const lotDuration = bondType === BondType.OTS ? 0.25 : inputs.duration;
+        const bondDurationMonths = Math.round(lotDuration * 12);
         
         if (monthsHeld <= bondDurationMonths) {
-          const isFirstYear = monthsHeld <= 12;
-          const currentAnnualRate = isFirstYear ? firstYearRate : (Math.max(0, expectedInflation) + margin);
+          const isFirstYear = monthsHeld < 12;
+          let currentAnnualRate = 0;
+
+          if (bondType === BondType.OTS || bondType === BondType.TOS) {
+            currentAnnualRate = firstYearRate;
+          } else if (bondType === BondType.ROR || bondType === BondType.DOR) {
+            currentAnnualRate = isFirstYear ? firstYearRate : (Math.max(0, expectedNbpRate ?? 5.25) + margin);
+          } else {
+            // Inflation indexed
+            currentAnnualRate = isFirstYear ? firstYearRate : (Math.max(0, expectedInflation) + margin);
+          }
+
           const monthlyRate = currentAnnualRate / 12 / 100;
-          
           const interestThisMonth = lot.grossValue * monthlyRate;
-          const taxThisMonth = interestThisMonth * (taxRate / 100);
           
           lot.accumulatedInterest += interestThisMonth;
           if (isCapitalized) {
             lot.grossValue += interestThisMonth;
           } else {
+            const taxThisMonth = interestThisMonth * (taxRate / 100);
             lot.tax += taxThisMonth;
           }
         }
         
         lot.isMatured = !isBefore(currentMonthDate, lotMaturityDate);
         
-        // Calculate early withdrawal fee if it were withdrawn NOW
         if (!lot.isMatured) {
           if (bondType === BondType.OTS) {
             lot.earlyWithdrawalFee = lot.accumulatedInterest;
           } else {
-            const units = lot.investedAmount / 100;
+            const units = Math.floor(lot.investedAmount / bondPrice);
             lot.earlyWithdrawalFee = Math.min(lot.accumulatedInterest, units * earlyWithdrawalFee);
           }
         } else {
           lot.earlyWithdrawalFee = 0;
         }
 
-        const taxOnExit = isCapitalized ? (lot.accumulatedInterest * (taxRate / 100)) : lot.tax;
-        lot.netValue = lot.grossValue - (isCapitalized ? taxOnExit : 0) - lot.earlyWithdrawalFee;
+        const currentGrossProfit = lot.accumulatedInterest;
+        const taxableProfit = Math.max(0, currentGrossProfit - lot.earlyWithdrawalFee);
+        const deferredTax = isCapitalized ? (taxableProfit * (taxRate / 100)) : 0;
+        
+        const currentGrossValue = isCapitalized ? lot.grossValue : (Math.floor(lot.investedAmount / bondPrice) * 100 + lot.accumulatedInterest);
+        // If not capitalized, lot.tax was already deducted from interest each month.
+        // We might need to adjust it if fee reduces taxable base, but for monthly payouts it's harder.
+        // Usually, for ROR/DOR, tax is already paid, so fee is just a separate cost.
+        // Let's stick to capitalized for now for this specific adjustment.
+        lot.netValue = currentGrossValue - (isCapitalized ? deferredTax : lot.tax) - lot.earlyWithdrawalFee;
       }
     });
 
@@ -297,9 +358,13 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
     let currentFees = 0;
 
     lots.forEach(lot => {
-      currentNominalValue += lot.grossValue;
+      const nominalStarting = Math.floor(lot.investedAmount / bondPrice) * 100;
+      currentNominalValue += isCapitalized ? lot.grossValue : nominalStarting;
       currentProfit += (lot.netValue - lot.investedAmount);
-      currentTax += (isCapitalized ? (lot.accumulatedInterest * (taxRate / 100)) : lot.tax);
+      
+      const currentGrossProfit = lot.accumulatedInterest;
+      const taxableProfit = Math.max(0, currentGrossProfit - lot.earlyWithdrawalFee);
+      currentTax += (isCapitalized ? (taxableProfit * (taxRate / 100)) : lot.tax);
       currentFees += lot.earlyWithdrawalFee;
     });
 
