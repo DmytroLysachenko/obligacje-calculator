@@ -58,6 +58,7 @@ export interface YearlyTimelinePoint {
 }
 
 export interface CalculationResult {
+  initialInvestment: number;
   timeline: YearlyTimelinePoint[];
   finalNominalValue: number;
   finalRealValue: number;

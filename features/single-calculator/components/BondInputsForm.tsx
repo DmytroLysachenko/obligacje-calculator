@@ -277,6 +277,9 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
+                  captionLayout="dropdown-buttons"
+                  fromYear={2010}
+                  toYear={2050}
                   selected={parseISO(inputs.purchaseDate)}
                   onSelect={(date) => date && onUpdate('purchaseDate', date.toISOString())}
                   initialFocus
@@ -316,6 +319,9 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
+                  captionLayout="dropdown-buttons"
+                  fromYear={2010}
+                  toYear={2050}
                   selected={parseISO(inputs.withdrawalDate)}
                   onSelect={(date) => date && onUpdate('withdrawalDate', date.toISOString())}
                   initialFocus
@@ -325,9 +331,38 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           </div>
         </div>
 
-        {/* Inflation & Margin */}
+        {/* Inflation & Margin & First Year Rate */}
         <div className="space-y-6">
+          {(inputs.bondType === 'ROR' || inputs.bondType === 'DOR') && (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Label htmlFor="firstYearRate" className="text-xs font-semibold uppercase text-muted-foreground">
+                  {language === 'pl' ? 'Oprocentowanie w pierwszym okresie' : 'Initial Interest Rate'} (%)
+                </Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">For ROR and DOR, the interest rate is tied to the NBP reference rate. You can customize the starting rate here.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <Input
+                id="firstYearRate"
+                type="number"
+                step="0.01"
+                className="h-10"
+                value={inputs.firstYearRate}
+                onChange={(e) => onUpdate('firstYearRate', Number(e.target.value))}
+              />
+            </div>
+          )}
+          
           <div className="space-y-3">
+
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <Label htmlFor="expectedInflation" className="text-xs font-semibold uppercase text-muted-foreground">

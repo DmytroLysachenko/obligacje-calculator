@@ -185,7 +185,7 @@ export const BondCalculatorContainer: React.FC = () => {
                   {hasMounted && (
                     <BondChart
                       results={results}
-                      initialInvestment={inputs.initialInvestment}
+                      initialInvestment={results.initialInvestment}
                     />
                   )}
                 </TabsContent>

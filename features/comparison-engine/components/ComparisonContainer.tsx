@@ -65,11 +65,11 @@ export const ComparisonContainer: React.FC = () => {
 
   // Prepare combined chart data
   const chartData = resultsA && resultsB ? Array.from({ length: Math.max(resultsA.timeline.length, resultsB.timeline.length) + 1 }).map((_, i) => {
-    const pointA = i === 0 ? { nominalValueAfterInterest: inputsA.initialInvestment } : resultsA.timeline[i - 1];
-    const pointB = i === 0 ? { nominalValueAfterInterest: inputsB.initialInvestment } : resultsB.timeline[i - 1];
+    const pointA = i === 0 ? { nominalValueAfterInterest: resultsA.initialInvestment } : resultsA.timeline[i - 1];
+    const pointB = i === 0 ? { nominalValueAfterInterest: resultsB.initialInvestment } : resultsB.timeline[i - 1];
     
     return {
-      label: i === 0 ? 'Start' : `Year ${i}`,
+      label: i === 0 ? 'Start' : `Period ${i}`,
       valA: pointA ? pointA.nominalValueAfterInterest : null,
       valB: pointB ? pointB.nominalValueAfterInterest : null,
     };

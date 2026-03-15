@@ -54,42 +54,44 @@ export function calculateBondInvestment(inputs: BondInputs): CalculationResult {
   let totalInterestEarnedSoFar = 0;
   let totalTaxPaidSoFar = 0;
 
-  // We calculate year by year up to the bond's maturity OR withdrawal
-  const maxYears = Math.ceil(duration);
+  const isMonthly = payoutFrequency === InterestPayout.MONTHLY;
+  const periods = isMonthly ? Math.round(duration * 12) : Math.ceil(duration);
+  const addPeriod = isMonthly ? addMonths : addYears;
 
-  for (let year = 1; year <= maxYears; year++) {
-    const yearStartDate = addYears(startDate, year - 1);
-    const yearEndDate = addYears(startDate, year);
+  for (let period = 1; period <= periods; period++) {
+    const periodStartDate = addPeriod(startDate, period - 1);
+    const periodEndDateNorm = addPeriod(startDate, period);
     
-    // If this year starts after withdrawal, skip
-    if (isAfter(yearStartDate, actualWithdrawalDate) && year > 1) break;
+    // If this period starts after withdrawal, skip
+    if (isAfter(periodStartDate, actualWithdrawalDate) && period > 1) break;
 
-    // Check if we are in a partial year due to withdrawal
-    const isWithdrawalYear = isBefore(actualWithdrawalDate, yearEndDate) || actualWithdrawalDate.getTime() === yearEndDate.getTime();
-    const periodEndDate = min([yearEndDate, actualWithdrawalDate]);
+    // Check if we are in a partial period due to withdrawal
+    const isWithdrawalPeriod = isBefore(actualWithdrawalDate, periodEndDateNorm) || actualWithdrawalDate.getTime() === periodEndDateNorm.getTime();
+    const periodEndDate = min([periodEndDateNorm, actualWithdrawalDate]);
     
-    // Calculate fractional year if needed
-    const daysInYear = differenceInDays(yearEndDate, yearStartDate);
-    const daysHeldInPeriod = differenceInDays(periodEndDate, yearStartDate);
-    const timeFactor = daysHeldInPeriod / daysInYear;
+    // Calculate fractional period if needed
+    const daysInPeriod = differenceInDays(periodEndDateNorm, periodStartDate);
+    const daysHeldInPeriod = differenceInDays(periodEndDate, periodStartDate);
+    const timeFactor = daysHeldInPeriod / daysInPeriod;
 
-    if (timeFactor <= 0 && year > 1) break;
+    if (timeFactor <= 0 && period > 1) break;
 
-    const isFirstYear = year === 1;
-    let currentInterestRate = isFirstYear ? firstYearRate : (expectedInflation + margin);
+    const isFirstYear = isMonthly ? period <= 12 : period === 1;
+    let currentInterestRate = isFirstYear ? firstYearRate : (Math.max(0, expectedInflation) + margin);
     
     // Fixed rate logic (TOS, OTS)
     if (bondType === BondType.OTS || bondType === BondType.TOS) {
       currentInterestRate = firstYearRate;
     }
     
-    // NBP Reference rate logic (ROR, DOR) - Simplified to use firstYearRate for now
+    // NBP Reference rate logic (ROR, DOR)
     if (bondType === BondType.ROR || bondType === BondType.DOR) {
       currentInterestRate = firstYearRate; 
     }
 
     // Interest earned in this period
-    const interestEarned = currentNominalValue * (currentInterestRate / 100) * (bondType === BondType.OTS ? (3/12) : timeFactor);
+    const periodRate = isMonthly ? currentInterestRate / 12 : currentInterestRate;
+    const interestEarned = currentNominalValue * (periodRate / 100) * (bondType === BondType.OTS ? (3/12) : timeFactor);
     const taxDeducted = interestEarned * (taxRate / 100);
     const netInterest = interestEarned - taxDeducted;
 
@@ -105,12 +107,13 @@ export function calculateBondInvestment(inputs: BondInputs): CalculationResult {
     
     // Inflation adjustment
     const annualInflation = Math.max(-0.99, expectedInflation / 100);
-    cumulativeInflation *= (1 + annualInflation * timeFactor);
+    const periodInflation = isMonthly ? annualInflation / 12 : annualInflation;
+    cumulativeInflation *= (1 + periodInflation * timeFactor);
     const realValue = currentNominalValue / cumulativeInflation;
 
     // Early withdrawal fee calculation
     let currentWithdrawalFee = 0;
-    if (isEarlyWithdrawal || isWithdrawalYear) {
+    if (isEarlyWithdrawal || isWithdrawalPeriod) {
       if (bondType === BondType.OTS) {
         currentWithdrawalFee = interestEarned; // For OTS, early exit often means losing all interest
       } else {
@@ -123,8 +126,8 @@ export function calculateBondInvestment(inputs: BondInputs): CalculationResult {
     const isWithdrawal = periodEndDate.getTime() === actualWithdrawalDate.getTime();
 
     timeline.push({
-      year,
-      periodLabel: isMaturity ? 'Maturity' : `Year ${year}`,
+      year: isMonthly ? Math.ceil(period / 12) : period, // year field kept for compatibility
+      periodLabel: isMaturity ? 'Maturity' : (isMonthly ? `Month ${period}` : `Year ${period}`),
       interestRate: currentInterestRate,
       nominalValueBeforeInterest: previousNominalValue,
       interestEarned,
@@ -155,6 +158,7 @@ export function calculateBondInvestment(inputs: BondInputs): CalculationResult {
   const netPayoutValue = grossValue - totalTax - totalEarlyWithdrawalFee;
 
   return {
+    initialInvestment: actualInitialInvestment,
     timeline,
     finalNominalValue: finalPrincipal,
     finalRealValue: lastPoint.realValue,
@@ -246,7 +250,7 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
         
         if (monthsHeld <= bondDurationMonths) {
           const isFirstYear = monthsHeld <= 12;
-          const currentAnnualRate = isFirstYear ? firstYearRate : (expectedInflation + margin);
+          const currentAnnualRate = isFirstYear ? firstYearRate : (Math.max(0, expectedInflation) + margin);
           const monthlyRate = currentAnnualRate / 12 / 100;
           
           const interestThisMonth = lot.grossValue * monthlyRate;
