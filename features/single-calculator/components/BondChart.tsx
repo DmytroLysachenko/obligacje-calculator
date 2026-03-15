@@ -9,7 +9,8 @@ import {
   Legend,
   ResponsiveContainer,
   AreaChart,
-  Area
+  Area,
+  TooltipProps
 } from 'recharts';
 import { CalculationResult } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
@@ -19,6 +20,28 @@ interface BondChartProps {
   results: CalculationResult;
   initialInvestment: number;
 }
+
+const CustomTooltip = ({ active, payload, label, formatCurrency }: TooltipProps<number, string> & { formatCurrency: (val: number) => string }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-popover border border-border p-3 shadow-xl rounded-none text-popover-foreground min-w-[150px]">
+        <p className="font-bold mb-2 border-b pb-1 border-border/50">{label}</p>
+        <div className="space-y-1.5">
+          {payload.map((entry, index) => (
+            <div key={index} className="flex justify-between items-center gap-4 text-xs">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+                {entry.name}:
+              </span>
+              <span className="font-mono font-bold">{formatCurrency(entry.value as number)}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
 
 export const BondChart: React.FC<BondChartProps> = ({ results, initialInvestment }) => {
   const { t, language } = useLanguage();
@@ -38,13 +61,12 @@ export const BondChart: React.FC<BondChartProps> = ({ results, initialInvestment
     })),
   ];
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const formatCurrency = (value: any) => 
+  const formatCurrency = (value: number) => 
     new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', { 
       style: 'currency', 
       currency: 'PLN',
       maximumFractionDigits: 0 
-    }).format(Number(value));
+    }).format(value);
 
   return (
     <Card className="border-primary/10 shadow-sm">
@@ -81,11 +103,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results, initialInvestment
                 axisLine={false}
                 tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
               />
-              <Tooltip 
-                contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                formatter={(value: any) => formatCurrency(value)}
-              />
+              <Tooltip content={<CustomTooltip formatCurrency={formatCurrency} />} />
               <Legend verticalAlign="top" height={36} iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
               <Area
                 type="monotone"

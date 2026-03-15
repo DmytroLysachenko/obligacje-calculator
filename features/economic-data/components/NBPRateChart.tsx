@@ -9,7 +9,8 @@ import {
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer,
-  ReferenceLine
+  ReferenceLine,
+  TooltipProps
 } from 'recharts';
 import { useLanguage } from '@/i18n';
 import { useChartData } from '@/shared/hooks/useChartData';
@@ -18,6 +19,28 @@ interface NBPRateDataPoint {
   date: string;
   rate: number;
 }
+
+const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-popover border border-border p-3 shadow-xl rounded-none text-popover-foreground min-w-[120px]">
+        <p className="font-bold mb-2 border-b pb-1 border-border/50 text-xs">{label}</p>
+        <div className="space-y-1.5">
+          {payload.map((entry, index) => (
+            <div key={index} className="flex justify-between items-center gap-4 text-xs">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+                NBP Rate:
+              </span>
+              <span className="font-mono font-bold">{entry.value}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
 
 export const NBPRateChart = () => {
   const { t } = useLanguage();
@@ -54,11 +77,7 @@ export const NBPRateChart = () => {
             tickLine={false}
             axisLine={false}
           />
-          <Tooltip 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            formatter={(value: any) => [`${value}%`, 'NBP Rate']}
-            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
-          />
+          <Tooltip content={<CustomTooltip />} />
           <ReferenceLine y={0} stroke="#000" strokeWidth={1} />
           <Area 
             type="stepAfter" 

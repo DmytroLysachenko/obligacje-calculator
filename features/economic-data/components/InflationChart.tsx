@@ -9,7 +9,8 @@ import {
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer,
-  ReferenceLine
+  ReferenceLine,
+  TooltipProps
 } from 'recharts';
 import { useLanguage } from '@/i18n';
 import { useChartData } from '@/shared/hooks/useChartData';
@@ -18,6 +19,28 @@ interface InflationDataPoint {
   year: string;
   rate: number;
 }
+
+const CustomTooltip = ({ active, payload, label, t }: TooltipProps<number, string> & { t: (key: string) => string }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-popover border border-border p-3 shadow-xl rounded-none text-popover-foreground min-w-[120px]">
+        <p className="font-bold mb-2 border-b pb-1 border-border/50 text-xs">{label}</p>
+        <div className="space-y-1.5">
+          {payload.map((entry, index) => (
+            <div key={index} className="flex justify-between items-center gap-4 text-xs">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+                {t('common.inflation')}:
+              </span>
+              <span className="font-mono font-bold">{entry.value}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
 
 export const InflationChart = () => {
   const { t } = useLanguage();
@@ -48,11 +71,7 @@ export const InflationChart = () => {
             tickLine={false}
             axisLine={false}
           />
-          <Tooltip 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            formatter={(value: any) => [`${value}%`, t('common.inflation')]}
-            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
-          />
+          <Tooltip content={<CustomTooltip t={t} />} />
           <ReferenceLine y={0} stroke="#000" strokeWidth={1} />
           <ReferenceLine y={2.5} label={{ value: 'NBP Target', position: 'right', fontSize: 10, fill: '#ef4444' }} stroke="#ef4444" strokeDasharray="3 3" />
           <Line 
