@@ -334,30 +334,60 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
         {/* Inflation & Margin & First Year Rate */}
         <div className="space-y-6">
           {(inputs.bondType === 'ROR' || inputs.bondType === 'DOR') && (
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Label htmlFor="firstYearRate" className="text-xs font-semibold uppercase text-muted-foreground">
-                  {language === 'pl' ? 'Oprocentowanie w pierwszym okresie' : 'Initial Interest Rate'} (%)
-                </Label>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs">For ROR and DOR, the interest rate is tied to the NBP reference rate. You can customize the starting rate here.</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="firstYearRate" className="text-xs font-semibold uppercase text-muted-foreground">
+                    {language === 'pl' ? 'Oprocentowanie w pierwszym okresie' : 'Initial Interest Rate'} (%)
+                  </Label>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">For ROR and DOR, the interest rate is tied to the NBP reference rate. You can customize the starting rate here.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                <Input
+                  id="firstYearRate"
+                  type="number"
+                  step="0.01"
+                  className="h-10"
+                  value={inputs.firstYearRate}
+                  onChange={(e) => onUpdate('firstYearRate', Number(e.target.value))}
+                />
               </div>
-              <Input
-                id="firstYearRate"
-                type="number"
-                step="0.01"
-                className="h-10"
-                value={inputs.firstYearRate}
-                onChange={(e) => onUpdate('firstYearRate', Number(e.target.value))}
-              />
+
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="expectedNbpRate" className="text-xs font-semibold uppercase text-muted-foreground">
+                      Expected NBP Rate (%)
+                    </Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs">The Narodowy Bank Polski reference rate. Used for ROR and DOR bonds for month 2+.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                  <span className="text-sm font-bold text-primary">{inputs.expectedNbpRate}%</span>
+                </div>
+                <Slider 
+                  value={[inputs.expectedNbpRate ?? 5.25]} 
+                  min={0} 
+                  max={20} 
+                  step={0.05} 
+                  onValueChange={([val]) => onUpdate('expectedNbpRate', val)}
+                />
+              </div>
             </div>
           )}
           

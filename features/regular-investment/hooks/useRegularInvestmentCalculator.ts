@@ -16,6 +16,7 @@ const DEFAULT_INPUTS: RegularInvestmentInputs = {
   totalHorizon: 10,
   firstYearRate: def.firstYearRate,
   expectedInflation: 3.5,
+  expectedNbpRate: 5.25,
   margin: def.margin,
   duration: def.duration,
   earlyWithdrawalFee: def.earlyWithdrawalFee,
