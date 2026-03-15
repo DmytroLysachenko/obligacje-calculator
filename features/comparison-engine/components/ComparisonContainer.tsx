@@ -129,9 +129,9 @@ export const ComparisonContainer: React.FC = () => {
               <CardTitle className="text-xl font-black">Growth Comparison</CardTitle>
             </CardHeader>
             <CardContent className="p-8">
-              <div className="h-[450px] w-full">
+              <div className="w-full min-h-[450px] relative" style={{ minWidth: 0 }}>
                 {hasMounted && (
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height={450} key={`comp-chart-${chartData.length}`}>
                     <AreaChart 
                       data={chartData}
                       margin={{ top: 20, right: 30, left: 40, bottom: 20 }}

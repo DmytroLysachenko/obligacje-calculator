@@ -10,8 +10,8 @@ import {
   TrendingUp, 
   ShieldCheck,
   ArrowUpRight,
-  ChevronDown,
-  Calendar
+  Calendar,
+  Info
 } from 'lucide-react';
 import { format, parseISO, getYear } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';

@@ -55,8 +55,8 @@ export const InflationChart = () => {
   }
 
   return (
-    <div className="h-[400px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
+    <div className="w-full min-h-[400px] relative" style={{ minWidth: 0 }}>
+      <ResponsiveContainer width="100%" height={400} key={`inflation-chart-${chartData.length}`}>
         <LineChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
           <XAxis 
