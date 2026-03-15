@@ -22,6 +22,12 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
   useLanguage();
 
   const [copied, setCopied] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setHasMounted(true);
+  }, []);
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -116,7 +122,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
                   <span className="w-1.5 h-6 bg-primary rounded-full" />
                   Growth Projection
                 </h3>
-                <RegularInvestmentChart results={results} />
+                {hasMounted && <RegularInvestmentChart results={results} />}
               </div>
 
               <div className="bg-blue-50/50 border border-blue-100 p-6 rounded-2xl space-y-4 relative overflow-hidden group">

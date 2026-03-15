@@ -19,8 +19,14 @@ interface BondTimelineProps {
 
 export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
   const { t, language } = useLanguage();
+  const [hasMounted, setHasMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   const formatCurrency = (value: number) => {
+    if (!hasMounted) return '---';
     return new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', {
       style: 'currency',
       currency: 'PLN',
@@ -28,6 +34,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
   };
 
   const formatPercent = (value: number) => {
+    if (!hasMounted) return '---%';
     return `${value.toFixed(2)}%`;
   };
 

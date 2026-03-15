@@ -23,6 +23,12 @@ export const BondCalculatorContainer: React.FC = () => {
   const { inputs, results, isCalculating, isError, calculate, updateInput, setBondType } = useBondCalculator();
   const { t } = useLanguage();
   const [copied, setCopied] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setHasMounted(true);
+  }, []);
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -123,8 +129,8 @@ export const BondCalculatorContainer: React.FC = () => {
                     {t('bonds.timeline')}
                   </TabsTrigger>
                 </TabsList>
-                <TabsContent value="chart" className="mt-6 border rounded-3xl p-6 bg-card shadow-xl overflow-hidden">
-                  <BondChart results={results} initialInvestment={inputs.initialInvestment} />
+                <TabsContent value="chart" className="mt-6 border rounded-3xl p-6 bg-card shadow-xl overflow-hidden text-card-foreground">
+                  {hasMounted && <BondChart results={results} initialInvestment={inputs.initialInvestment} />}
                 </TabsContent>
                 <TabsContent value="timeline" className="mt-6 border rounded-3xl overflow-hidden shadow-xl">
                   <BondTimeline results={results} />
