@@ -26,6 +26,7 @@ export interface BondInputs {
   initialInvestment: number;
   firstYearRate: number;
   expectedInflation: number;
+  expectedNbpRate?: number; // Optional to distinguish from inflation for ROR/DOR
   margin: number;
   duration: number; // in years (OTS will be 0.25)
   earlyWithdrawalFee: number; // per bond (100 PLN)
