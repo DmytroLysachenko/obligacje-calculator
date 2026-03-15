@@ -22,6 +22,13 @@ import { Slider } from '@/components/ui/slider';
 
 import { Badge } from '@/components/ui/badge';
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 interface BondInputsFormProps {
   inputs: BondInputs;
   onUpdate: (key: keyof BondInputs, value: string | number | boolean | undefined) => void;
@@ -35,6 +42,12 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 }) => {
   const { t, language } = useLanguage();
   const [showCustomTax, setShowCustomTax] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
+  
+  React.useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
   const currentDef = BOND_DEFINITIONS[inputs.bondType];
   const dateLocale = language === 'pl' ? pl : enGB;
 
@@ -59,10 +72,22 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
       <CardContent className="space-y-6">
         {/* Savings Goal */}
         <div className="space-y-3">
-          <Label className="font-semibold flex items-center gap-2">
-            <Target className="h-4 w-4 text-primary" />
-            Savings Goal (Optional)
-          </Label>
+          <div className="flex items-center gap-2">
+            <Label className="font-semibold flex items-center gap-2">
+              <Target className="h-4 w-4 text-primary" />
+              Savings Goal (Optional)
+            </Label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs">Set a target amount to see a progress bar towards your financial goal.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
           <div className="relative">
             <Input
               type="number"
@@ -81,7 +106,19 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
         {/* Bond Type Selection */}
         <div className="space-y-3">
-          <Label htmlFor="bondType" className="font-semibold">{t('bonds.bond_type')}</Label>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="bondType" className="font-semibold">{t('bonds.bond_type')}</Label>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs">Polish Treasury offers various bonds: OTS (3m), TOS (3y), COI (4y), EDO (10y), etc. Each has different interest rules.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
           <Select
             value={inputs.bondType}
             onValueChange={(value) => onBondTypeChange(value as BondType)}
@@ -119,7 +156,19 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
         {/* Tax Wrap (IKE/IKZE) */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <Label className="font-semibold">Account Type (Tax Wrap)</Label>
+            <div className="flex items-center gap-2">
+              <Label className="font-semibold">Account Type (Tax Wrap)</Label>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs">IKE and IKZE are tax-advantaged accounts in Poland that allow you to avoid or defer the 19% &quot;Belka&quot; tax.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             <Badge variant="secondary" className="text-[10px]">Optimization</Badge>
           </div>
           <Select
@@ -135,9 +184,6 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               <SelectItem value={TaxStrategy.IKZE}>IKZE Account (5% Tax at end)</SelectItem>
             </SelectContent>
           </Select>
-          <p className="text-[10px] text-muted-foreground px-1">
-            Using IKE or IKZE can significantly increase your long-term net profit by avoiding or reducing the capital gains tax.
-          </p>
         </div>
 
         <Separator />
@@ -145,9 +191,21 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
         {/* Investment Amount */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <Label htmlFor="initialInvestment" className="font-semibold">
-              {t('bonds.initial_investment')}
-            </Label>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="initialInvestment" className="font-semibold">
+                {t('bonds.initial_investment')}
+              </Label>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs">The amount you want to invest. Each bond costs 100 PLN.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             <span className="text-xs font-medium text-muted-foreground">
               {Math.floor(inputs.initialInvestment / 100)} {t('bonds.units')}
             </span>
@@ -188,9 +246,21 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
         {/* Dates Selection */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label className="text-xs font-semibold uppercase text-muted-foreground">
-              {t('bonds.purchase_date')}
-            </Label>
+            <div className="flex items-center gap-2">
+              <Label className="text-xs font-semibold uppercase text-muted-foreground">
+                {t('bonds.purchase_date')}
+              </Label>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs">When you buy the bonds. Affects maturity calculation.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -201,7 +271,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {inputs.purchaseDate ? format(parseISO(inputs.purchaseDate), 'PPP', { locale: dateLocale }) : <span>Pick a date</span>}
+                  {hasMounted && inputs.purchaseDate ? format(parseISO(inputs.purchaseDate), 'PPP', { locale: dateLocale }) : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -215,9 +285,21 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
             </Popover>
           </div>
           <div className="space-y-2">
-            <Label className="text-xs font-semibold uppercase text-muted-foreground">
-              {t('bonds.withdrawal_date')}
-            </Label>
+            <div className="flex items-center gap-2">
+              <Label className="text-xs font-semibold uppercase text-muted-foreground">
+                {t('bonds.withdrawal_date')}
+              </Label>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs">When you plan to cash out. If before maturity, early withdrawal fees may apply.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -228,7 +310,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {inputs.withdrawalDate ? format(parseISO(inputs.withdrawalDate), 'PPP', { locale: dateLocale }) : <span>Pick a date</span>}
+                  {hasMounted && inputs.withdrawalDate ? format(parseISO(inputs.withdrawalDate), 'PPP', { locale: dateLocale }) : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -247,9 +329,21 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
         <div className="space-y-6">
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <Label htmlFor="expectedInflation" className="text-xs font-semibold uppercase text-muted-foreground">
-                {t('bonds.inflation_rate')} (%)
-              </Label>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="expectedInflation" className="text-xs font-semibold uppercase text-muted-foreground">
+                  {t('bonds.inflation_rate')} (%)
+                </Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">For inflation-indexed bonds (COI, EDO), this rate determines interest for year 2+. Also used to calculate &quot;Real Value&quot;.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
               <div className="flex gap-1">
                 <Button variant="ghost" size="icon" className="h-6 w-12 text-[10px]" onClick={() => onUpdate('expectedInflation', 2.5)}>Stable</Button>
                 <Button variant="ghost" size="icon" className="h-6 w-12 text-[10px]" onClick={() => onUpdate('expectedInflation', 10)}>High</Button>
@@ -267,9 +361,21 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="margin" className="text-xs font-semibold uppercase text-muted-foreground">
-              {t('bonds.margin')} (%)
-            </Label>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="margin" className="text-xs font-semibold uppercase text-muted-foreground">
+                {t('bonds.margin')} (%)
+              </Label>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs">Guaranteed margin added to the inflation rate or NBP rate for variable bonds.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             <Input
               id="margin"
               type="number"
@@ -288,7 +394,19 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           <div className="space-y-4 pt-2">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label className="text-sm font-semibold">{t('bonds.is_rebought')}</Label>
+                <div className="flex items-center gap-2">
+                  <Label className="text-sm font-semibold">{t('bonds.is_rebought')}</Label>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">If you use money from maturing bonds to buy new ones, you get a discount (usually 0.10 PLN per bond).</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <p className="text-[10px] text-muted-foreground">
                   {t('bonds.is_rebought_desc')} (-{currentDef.rebuyDiscount.toFixed(2)} PLN/szt)
                 </p>
@@ -306,7 +424,19 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label className="text-sm font-semibold">{t('bonds.custom_tax_rate')}</Label>
+              <div className="flex items-center gap-2">
+                <Label className="text-sm font-semibold">{t('bonds.custom_tax_rate')}</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">Standard &quot;Belka&quot; tax in Poland is 19%. You can adjust it if laws change.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
               <p className="text-[10px] text-muted-foreground">
                 {t('bonds.belka_tax_desc')}
               </p>
@@ -338,15 +468,27 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           <div className="text-[10px] text-muted-foreground space-y-1 bg-muted/30 p-3 rounded-lg border border-dashed">
             <div className="flex justify-between">
               <span>{t('bonds.duration')}:</span>
-              <span className="font-bold">{inputs.duration} {t('common.years')}</span>
+              <span className="font-bold">
+                {inputs.duration < 1 ? `${inputs.duration * 12} ${language === 'pl' ? 'Miesięcy' : 'Months'}` : `${inputs.duration} ${t('common.years')}`}
+              </span>
             </div>
             <div className="flex justify-between">
-              <span>{t('bonds.first_year_rate')}:</span>
+              <span>
+                {inputs.bondType === 'OTS' ? (language === 'pl' ? 'Zysk (3m)' : 'Yield (3m)') : 
+                 inputs.bondType === 'ROR' || inputs.bondType === 'DOR' ? (language === 'pl' ? '1. Miesiąc' : '1st Month') : 
+                 t('bonds.first_year_rate')}:
+              </span>
               <span className="font-bold">{inputs.firstYearRate}%</span>
             </div>
+            {currentDef.margin > 0 && (
+              <div className="flex justify-between">
+                <span>{t('bonds.margin')}:</span>
+                <span className="font-bold">{inputs.margin}%</span>
+              </div>
+            )}
             <div className="flex justify-between">
               <span>{t('bonds.maturity_date')}:</span>
-              <span className="font-bold">{format(maturityDate, 'PPP', { locale: dateLocale })}</span>
+              <span className="font-bold">{hasMounted ? format(maturityDate, 'PPP', { locale: dateLocale }) : '---'}</span>
             </div>
             <div className="flex justify-between">
               <span>{t('bonds.payout_type')}:</span>
