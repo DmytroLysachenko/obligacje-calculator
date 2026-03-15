@@ -123,6 +123,16 @@
     "capitalization": "TAK",
     "payout": "NIE",
     "is_rebought": "Zamiana obligacji (z dyskontem)",
-    "is_rebought_desc": "Kupno nowych obligacji za środki z zapadających starych."
-  }
-}
+    "is_rebought_desc": "Kupno nowych obligacji za środki z zapadających starych.",
+    "fixed_rate": "Stałe oprocentowanie",
+    "inflation_indexed": "Indeksowane inflacją",
+    "family_only": "Rodzinne 800+",
+    "first_year": "1. rok",
+    "early_exit_title": "Wcześniejszy Wykup",
+    "early_exit_desc": "Opłata {fee} PLN za sztukę przy wypłacie przed terminem.",
+    "evolution": "Ewolucja Wartości",
+    "timeline": "Szczegółowy Harmonogram",
+    "explanation_inflation": "Obliczenia wykorzystują przewidywaną stopę inflacji do indeksacji. Wartość realna jest korygowana o skumulowaną inflację, pokazując dzisiejszą siłę nabywczą.",
+    "explanation_tax": "Podatek Belki 19% jest naliczany od wypracowanych odsetek. W przypadku obligacji kapitalizowanych, jest pobierany na koniec lub przy wypłacie."
+    }
+    }

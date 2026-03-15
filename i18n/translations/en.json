@@ -123,6 +123,16 @@
     "capitalization": "YES",
     "payout": "NO",
     "is_rebought": "Bond Swap (with discount)",
-    "is_rebought_desc": "Buying new bonds using funds from maturing ones."
-  }
-}
+    "is_rebought_desc": "Buying new bonds using funds from maturing ones.",
+    "fixed_rate": "Fixed Rate",
+    "inflation_indexed": "Inflation Indexed",
+    "family_only": "Family 800+",
+    "first_year": "1st Year",
+    "early_exit_title": "Early Redemption",
+    "early_exit_desc": "Fee of {fee} PLN per bond applies if cashed before maturity.",
+    "evolution": "Value Evolution",
+    "timeline": "Detailed Schedule",
+    "explanation_inflation": "Calculations use the expected inflation rate for indexing. Real value is adjusted for cumulative inflation to show today's purchasing power.",
+    "explanation_tax": "The 19% Belka tax is calculated on earned interest. For capitalized bonds, it's deducted at the end or upon withdrawal."
+    }
+    }
