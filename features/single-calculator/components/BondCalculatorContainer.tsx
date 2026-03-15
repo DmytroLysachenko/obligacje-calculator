@@ -8,10 +8,11 @@ import { BondTimeline } from './BondTimeline';
 import dynamic from 'next/dynamic';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLanguage } from '@/i18n';
-import { Share2, Check, Target, Trophy } from 'lucide-react';
+import { Share2, Check, Target, Trophy, Info } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const BondChart = dynamic(() => import('./BondChart').then(mod => mod.BondChart), { 
   ssr: false,
@@ -19,7 +20,7 @@ const BondChart = dynamic(() => import('./BondChart').then(mod => mod.BondChart)
 });
 
 export const BondCalculatorContainer: React.FC = () => {
-  const { inputs, results, updateInput, setBondType } = useBondCalculator();
+  const { inputs, results, isCalculating, isError, calculate, updateInput, setBondType } = useBondCalculator();
   const { t } = useLanguage();
   const [copied, setCopied] = useState(false);
 
@@ -29,13 +30,13 @@ export const BondCalculatorContainer: React.FC = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const goalProgress = inputs.savingsGoal ? (results.netPayoutValue / inputs.savingsGoal) * 100 : 0;
+  const goalProgress = (inputs.savingsGoal && results) ? (results.netPayoutValue / inputs.savingsGoal) * 100 : 0;
   const isGoalReached = goalProgress >= 100;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-20">
       {/* Goal Progress Bar */}
-      {inputs.savingsGoal && (
+      {inputs.savingsGoal && results && (
         <Card className="border-primary/20 bg-primary/5 shadow-sm overflow-hidden">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
@@ -54,7 +55,24 @@ export const BondCalculatorContainer: React.FC = () => {
         </Card>
       )}
 
-      <div className="flex justify-end">
+      <div className="flex justify-between items-center bg-card p-4 rounded-xl border border-primary/10 shadow-sm sticky top-4 z-30">
+        <div className="flex items-center gap-4">
+          <Button 
+            onClick={() => calculate()} 
+            disabled={isCalculating}
+            className="px-8 font-bold shadow-lg shadow-primary/20 gap-2"
+          >
+            {isCalculating ? (
+              <span className="flex items-center gap-2">
+                <span className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                Calculating...
+              </span>
+            ) : (
+              'Calculate Results'
+            )}
+          </Button>
+          {isError && <span className="text-destructive text-sm font-medium">Calculation error!</span>}
+        </div>
         <Button 
           variant="outline" 
           size="sm" 
@@ -65,8 +83,9 @@ export const BondCalculatorContainer: React.FC = () => {
           {copied ? 'Copied!' : 'Share Scenario'}
         </Button>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <aside className="lg:col-span-4">
+
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+        <aside className="xl:col-span-4 h-fit xl:sticky xl:top-24">
           <BondInputsForm
             inputs={inputs}
             onUpdate={updateInput}
@@ -74,36 +93,57 @@ export const BondCalculatorContainer: React.FC = () => {
           />
         </aside>
         
-        <div className="lg:col-span-8 space-y-8">
-          <BondResultsSummary results={results} />
-          
-          <Tabs defaultValue="chart" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="chart">{t('bonds.evolution')}</TabsTrigger>
-              <TabsTrigger value="timeline">{t('bonds.timeline')}</TabsTrigger>
-            </TabsList>
-            <TabsContent value="chart" className="mt-4 border rounded-xl p-4 bg-card">
-              <BondChart results={results} initialInvestment={inputs.initialInvestment} />
-            </TabsContent>
-            <TabsContent value="timeline" className="mt-4 border rounded-xl overflow-hidden">
-              <BondTimeline results={results} />
-            </TabsContent>
-          </Tabs>
+        <div className="xl:col-span-8 space-y-8">
+          {!results && !isCalculating && (
+            <div className="h-[400px] flex flex-col items-center justify-center border-2 border-dashed rounded-3xl opacity-50 space-y-4">
+              <Target className="h-12 w-12 text-muted-foreground" />
+              <p className="font-medium text-muted-foreground">Click &apos;Calculate Results&apos; to see the projection</p>
+            </div>
+          )}
 
-          <div className="bg-muted/50 border p-6 rounded-xl space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="mt-1">
-                <div className="h-2 w-2 rounded-full bg-primary" />
-              </div>
-              <p className="text-sm leading-relaxed">{t('bonds.explanation_inflation')}</p>
+          {isCalculating && !results && (
+            <div className="h-[400px] flex flex-col items-center justify-center space-y-4">
+              <span className="h-12 w-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+              <p className="font-medium text-primary">Simulating investment growth...</p>
             </div>
-            <div className="flex items-start gap-3">
-              <div className="mt-1">
-                <div className="h-2 w-2 rounded-full bg-primary" />
+          )}
+
+          {results && (
+            <div className={cn("space-y-8 transition-opacity duration-300", isCalculating && "opacity-50 pointer-events-none")}>
+              <BondResultsSummary results={results} />
+              
+              <Tabs defaultValue="chart" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="chart">{t('bonds.evolution')}</TabsTrigger>
+                  <TabsTrigger value="timeline">{t('bonds.timeline')}</TabsTrigger>
+                </TabsList>
+                <TabsContent value="chart" className="mt-4 border rounded-xl p-4 bg-card shadow-sm">
+                  <BondChart results={results} initialInvestment={inputs.initialInvestment} />
+                </TabsContent>
+                <TabsContent value="timeline" className="mt-4 border rounded-xl overflow-hidden shadow-sm">
+                  <BondTimeline results={results} />
+                </TabsContent>
+              </Tabs>
+
+              <div className="bg-muted/30 border p-6 rounded-2xl space-y-4 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <Info className="h-24 w-24 -rotate-12" />
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="mt-1 p-2 bg-primary/10 rounded-lg">
+                    <div className="h-2 w-2 rounded-full bg-primary" />
+                  </div>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{t('bonds.explanation_inflation')}</p>
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="mt-1 p-2 bg-primary/10 rounded-lg">
+                    <div className="h-2 w-2 rounded-full bg-primary" />
+                  </div>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{t('bonds.explanation_tax')}</p>
+                </div>
               </div>
-              <p className="text-sm leading-relaxed">{t('bonds.explanation_tax')}</p>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
