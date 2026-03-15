@@ -9,8 +9,7 @@ import {
   Coins, 
   TrendingUp, 
   ShieldCheck, 
-  AlertCircle,
-  ArrowRight
+  AlertCircle
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
@@ -50,19 +49,26 @@ export const BondEducationCard: React.FC<BondEducationCardProps> = ({ bond }) =>
         <div className="grid grid-cols-2 gap-3 pt-2">
           <div className="flex items-center gap-2 text-xs">
             <Clock className="h-3.5 w-3.5 text-primary" />
-            <span>{t('bonds.duration')}: <strong>{bond.duration} {t('common.years')}</strong></span>
+            <span>{t('bonds.duration')}: <strong>{bond.duration < 1 ? `${bond.duration * 12} ${language === 'pl' ? 'Miesięcy' : 'Months'}` : `${bond.duration} ${t('common.years')}`}</strong></span>
           </div>
           <div className="flex items-center gap-2 text-xs">
             <Coins className="h-3.5 w-3.5 text-primary" />
-            <span>{t('bonds.payout')}: <strong>{bond.isCapitalized ? t('bonds.capitalization') : t('bonds.payout')}</strong></span>
+            <span>{t('bonds.payout_type')}: <strong>{bond.isCapitalized ? t('bonds.capitalization') : t('bonds.payout')}</strong></span>
           </div>
-          <div className="flex items-center gap-2 text-xs">
-            <TrendingUp className="h-3.5 w-3.5 text-primary" />
-            <span>{t('bonds.margin')}: <strong>{bond.margin}%</strong></span>
-          </div>
+          {bond.margin > 0 && (
+            <div className="flex items-center gap-2 text-xs">
+              <TrendingUp className="h-3.5 w-3.5 text-primary" />
+              <span>{t('bonds.margin')}: <strong>{bond.margin}%</strong></span>
+            </div>
+          )}
           <div className="flex items-center gap-2 text-xs">
             <ShieldCheck className="h-3.5 w-3.5 text-primary" />
-            <span>{t('bonds.first_year')}: <strong>{bond.firstYearRate}%</strong></span>
+            <span>
+              {bond.type === 'OTS' ? (language === 'pl' ? 'Zysk (3m)' : 'Yield (3m)') : 
+               bond.type === 'ROR' || bond.type === 'DOR' ? (language === 'pl' ? '1. Miesiąc' : '1st Month') : 
+               t('bonds.first_year')}: 
+              <strong> {bond.firstYearRate}%</strong>
+            </span>
           </div>
         </div>
 
