@@ -8,7 +8,7 @@ import { BondTimeline } from './BondTimeline';
 import dynamic from 'next/dynamic';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLanguage } from '@/i18n';
-import { Share2, Check, Target, Trophy, Info } from 'lucide-react';
+import { Share2, Check, Target, Trophy, Info, LineChart, Table } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -113,14 +113,20 @@ export const BondCalculatorContainer: React.FC = () => {
               <BondResultsSummary results={results} />
               
               <Tabs defaultValue="chart" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="chart">{t('bonds.evolution')}</TabsTrigger>
-                  <TabsTrigger value="timeline">{t('bonds.timeline')}</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 h-12 p-1.5 bg-muted/50 rounded-xl border-none">
+                  <TabsTrigger value="chart" className="rounded-lg gap-2 data-[state=active]:shadow-md">
+                    <LineChart className="h-4 w-4" />
+                    {t('bonds.evolution')}
+                  </TabsTrigger>
+                  <TabsTrigger value="timeline" className="rounded-lg gap-2 data-[state=active]:shadow-md">
+                    <Table className="h-4 w-4" />
+                    {t('bonds.timeline')}
+                  </TabsTrigger>
                 </TabsList>
-                <TabsContent value="chart" className="mt-4 border rounded-xl p-4 bg-card shadow-sm">
+                <TabsContent value="chart" className="mt-6 border rounded-3xl p-6 bg-card shadow-xl overflow-hidden">
                   <BondChart results={results} initialInvestment={inputs.initialInvestment} />
                 </TabsContent>
-                <TabsContent value="timeline" className="mt-4 border rounded-xl overflow-hidden shadow-sm">
+                <TabsContent value="timeline" className="mt-6 border rounded-3xl overflow-hidden shadow-xl">
                   <BondTimeline results={results} />
                 </TabsContent>
               </Tabs>
