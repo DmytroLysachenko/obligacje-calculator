@@ -133,6 +133,19 @@
     "evolution": "Ewolucja Wartości",
     "timeline": "Szczegółowy Harmonogram",
     "explanation_inflation": "Obliczenia wykorzystują przewidywaną stopę inflacji do indeksacji. Wartość realna jest korygowana o skumulowaną inflację, pokazując dzisiejszą siłę nabywczą.",
-    "explanation_tax": "Podatek Belki 19% jest naliczany od wypracowanych odsetek. W przypadku obligacji kapitalizowanych, jest pobierany na koniec lub przy wypłacie."
+    "explanation_tax": "Podatek Belki 19% jest naliczany od wypracowanych odsetek. W przypadku obligacji kapitalizowanych, jest pobierany na koniec lub przy wypłacie.",
+    "total_invested": "Całkowita inwestycja",
+    "final_nominal_value": "Końcowa wartość nominalna",
+    "total_net_profit": "Całkowity zysk netto",
+    "real_value_inflation": "Wartość realna (skorygowana o inflację)"
+    },
+    "economic": {
+    "subtitle": "Kontekst historyczny polskiej inflacji i stóp procentowych.",
+    "inflation_title": "Wskaźnik inflacji (CPI)",
+    "inflation_desc": "Zmiana cen towarów i usług konsumpcyjnych rok do roku.",
+    "why_it_matters": "Dlaczego to ma znaczenie?",
+    "inflation_impact_desc": "Inflacja obniża siłę nabywczą Twoich pieniędzy. Jeśli zwrot z inwestycji jest niższy niż inflacja, tracisz pieniądze w ujęciu realnym.",
+    "data_source": "Źródło danych",
+    "source_desc": "Dane historyczne dostarczane przez Główny Urząd Statystyczny (GUS) oraz Narodowy Bank Polski (NBP)."
     }
     }

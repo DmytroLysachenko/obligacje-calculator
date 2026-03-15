@@ -133,6 +133,19 @@
     "evolution": "Value Evolution",
     "timeline": "Detailed Schedule",
     "explanation_inflation": "Calculations use the expected inflation rate for indexing. Real value is adjusted for cumulative inflation to show today's purchasing power.",
-    "explanation_tax": "The 19% Belka tax is calculated on earned interest. For capitalized bonds, it's deducted at the end or upon withdrawal."
+    "explanation_tax": "The 19% Belka tax is calculated on earned interest. For capitalized bonds, it's deducted at the end or upon withdrawal.",
+    "total_invested": "Total Invested",
+    "final_nominal_value": "Final Nominal Value",
+    "total_net_profit": "Total Net Profit",
+    "real_value_inflation": "Real Value (Inflation Adjusted)"
+    },
+    "economic": {
+    "subtitle": "Historical context of Polish inflation and interest rates.",
+    "inflation_title": "Inflation Rate (CPI)",
+    "inflation_desc": "Year-over-year change in the price of goods and services.",
+    "why_it_matters": "Why it matters?",
+    "inflation_impact_desc": "Inflation erodes the purchasing power of your money. If your investment return is lower than inflation, you are losing money in real terms.",
+    "data_source": "Data Source",
+    "source_desc": "Historical data provided by Statistics Poland (GUS) and the National Bank of Poland (NBP)."
     }
     }
