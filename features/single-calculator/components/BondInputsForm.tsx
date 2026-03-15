@@ -277,7 +277,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
-                  captionLayout="dropdown-buttons"
+                  captionLayout="dropdown"
                   fromYear={2010}
                   toYear={2050}
                   selected={parseISO(inputs.purchaseDate)}
@@ -319,7 +319,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
-                  captionLayout="dropdown-buttons"
+                  captionLayout="dropdown"
                   fromYear={2010}
                   toYear={2050}
                   selected={parseISO(inputs.withdrawalDate)}

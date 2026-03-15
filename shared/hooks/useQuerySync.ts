@@ -5,7 +5,7 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
 type QuerySyncValue = string | number | boolean | undefined | null;
 
-export function useQuerySync<T extends Record<string, QuerySyncValue>>(
+export function useQuerySync<T extends object>(
   state: T,
   onLoad: (initialState: Partial<T>) => void
 ) {

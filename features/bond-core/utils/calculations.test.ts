@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { calculateBondInvestment } from './calculations';
-import { BondType, InterestPayout } from '../types';
+import { BondType, InterestPayout, TaxStrategy } from '../types';
 
 describe('Bond Calculations', () => {
   const baseInputs = {
@@ -18,6 +18,7 @@ describe('Bond Calculations', () => {
     withdrawalDate: '2028-01-01T00:00:00.000Z',
     isRebought: false,
     rebuyDiscount: 0.1,
+    taxStrategy: TaxStrategy.STANDARD,
   };
 
   it('calculates 3-month OTS bond correctly', () => {

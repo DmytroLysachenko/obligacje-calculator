@@ -171,7 +171,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                   ))}
                 </Pie>
                 <RechartsTooltip 
-                  formatter={(value: number) => formatCurrency(Number(value))}
+                  formatter={(value: any) => formatCurrency(Number(value || 0))}
                   contentStyle={{ backgroundColor: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }}
                 />
                 <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: '10px', paddingBottom: '10px' }} />

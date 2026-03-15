@@ -303,7 +303,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
-                  captionLayout="dropdown-buttons"
+                  captionLayout="dropdown"
                   fromYear={2010}
                   toYear={2050}
                   selected={parseISO(inputs.purchaseDate)}
@@ -345,7 +345,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
-                  captionLayout="dropdown-buttons"
+                  captionLayout="dropdown"
                   fromYear={2010}
                   toYear={2050}
                   selected={parseISO(inputs.withdrawalDate)}

@@ -7,7 +7,8 @@ import {
   RegularInvestmentResult,
   InvestmentFrequency,
   RegularTimelinePoint,
-  LotBreakdown
+  LotBreakdown,
+  InterestPayout
 } from '../types';
 import { addMonths, addYears, differenceInDays, differenceInMonths, isAfter, isBefore, parseISO, min } from 'date-fns';
 
@@ -27,6 +28,7 @@ export function calculateBondInvestment(inputs: BondInputs): CalculationResult {
     taxRate,
     bondType,
     isCapitalized,
+    payoutFrequency,
     purchaseDate,
     withdrawalDate,
     isRebought,

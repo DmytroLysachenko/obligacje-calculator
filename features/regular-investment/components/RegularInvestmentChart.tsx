@@ -21,13 +21,14 @@ interface RegularInvestmentChartProps {
   results: RegularInvestmentResult;
 }
 
-const CustomTooltip = ({ active, payload, label, formatCurrency }: TooltipProps<number, string> & { formatCurrency: (val: number) => string }) => {
+const CustomTooltip = (props: any) => {
+  const { active, payload, label, formatCurrency } = props;
   if (active && payload && payload.length) {
     return (
       <div className="bg-popover border border-border p-3 shadow-xl rounded-none text-popover-foreground min-w-[150px]">
         <p className="font-bold mb-2 border-b pb-1 border-border/50">{label}</p>
         <div className="space-y-1.5">
-          {payload.map((entry, index) => (
+          {payload.map((entry: any, index: number) => (
             <div key={index} className="flex justify-between items-center gap-4 text-xs">
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
@@ -42,6 +43,7 @@ const CustomTooltip = ({ active, payload, label, formatCurrency }: TooltipProps<
   }
   return null;
 };
+
 
 export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ results }) => {
   const { t, language } = useLanguage();
