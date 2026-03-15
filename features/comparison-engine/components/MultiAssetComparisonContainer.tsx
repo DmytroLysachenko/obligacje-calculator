@@ -471,7 +471,10 @@ export const MultiAssetComparisonContainer = () => {
                 <CardContent className="p-8">
                   <div className="h-[450px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={chartData}>
+                      <AreaChart 
+                        data={chartData}
+                        margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
+                      >
                         <defs>
                           {assets.map(asset => (
                             <linearGradient key={asset.metadata.id} id={`color_${asset.metadata.id}`} x1="0" y1="0" x2="0" y2="1">
@@ -480,9 +483,9 @@ export const MultiAssetComparisonContainer = () => {
                             </linearGradient>
                           ))}
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
                         <XAxis dataKey="date" fontSize={10} tickLine={false} axisLine={false} dy={10} />
-                        <YAxis fontSize={10} tickLine={false} axisLine={false} tickFormatter={(v) => `${v/1000}k`} dx={-10} />
+                        <YAxis fontSize={10} tickLine={false} axisLine={false} tickFormatter={(v) => `${v/1000}k`} />
                         <RechartsTooltip content={<CustomTooltip formatCurrency={formatCurrency} />} />
                         <Legend verticalAlign="top" align="right" height={40} iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase' }} />
                         {assets.map(asset => (

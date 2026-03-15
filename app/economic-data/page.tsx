@@ -1,29 +1,25 @@
 'use client';
 
-import React from 'react';
-import dynamic from 'next/dynamic';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useLanguage } from '@/i18n';
 import { TrendingUp, Info, Activity } from 'lucide-react';
-
 import { PageTransition } from '@/shared/components/PageTransition';
-
-const InflationChart = dynamic(() => import('@/features/economic-data/components/InflationChart').then(mod => mod.InflationChart), {
-  ssr: false,
-  loading: () => <div className="h-[400px] w-full flex items-center justify-center text-muted-foreground animate-pulse">Loading chart...</div>
-});
-
-const NBPRateChart = dynamic(() => import('@/features/economic-data/components/NBPRateChart').then(mod => mod.NBPRateChart), {
-  ssr: false,
-  loading: () => <div className="h-[400px] w-full flex items-center justify-center text-muted-foreground animate-pulse">Loading chart...</div>
-});
+import { InflationChart } from '@/features/economic-data/components/InflationChart';
+import { NBPRateChart } from '@/features/economic-data/components/NBPRateChart';
 
 export default function EconomicDataPage() {
   const { t } = useLanguage();
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setHasMounted(true);
+  }, []);
 
   return (
     <PageTransition>
-      <div className="space-y-8">
+      <div className="space-y-8 pb-20">
       <header className="space-y-4">
         <h2 className="text-4xl font-bold tracking-tight text-primary">{t('nav.economic_data')}</h2>
         <p className="text-xl text-muted-foreground max-w-3xl">
@@ -33,7 +29,7 @@ export default function EconomicDataPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
-          <Card className="shadow-lg border-primary/5">
+          <Card className="shadow-lg border-primary/5 min-h-[500px]">
             <CardHeader>
               <div className="flex items-center gap-2 mb-2">
                 <Activity className="h-5 w-5 text-primary" />
@@ -42,11 +38,11 @@ export default function EconomicDataPage() {
               <CardDescription>{t('economic.inflation_desc')}</CardDescription>
             </CardHeader>
             <CardContent>
-              <InflationChart />
+              {hasMounted ? <InflationChart /> : <div className="h-[400px] w-full flex items-center justify-center text-muted-foreground animate-pulse">Loading chart...</div>}
             </CardContent>
           </Card>
 
-          <Card className="shadow-lg border-primary/5">
+          <Card className="shadow-lg border-primary/5 min-h-[500px]">
             <CardHeader>
               <div className="flex items-center gap-2 mb-2">
                 <Activity className="h-5 w-5 text-primary" />
@@ -55,7 +51,7 @@ export default function EconomicDataPage() {
               <CardDescription>Historical reference rate set by the National Bank of Poland</CardDescription>
             </CardHeader>
             <CardContent>
-              <NBPRateChart />
+              {hasMounted ? <NBPRateChart /> : <div className="h-[400px] w-full flex items-center justify-center text-muted-foreground animate-pulse">Loading chart...</div>}
             </CardContent>
           </Card>
         </div>

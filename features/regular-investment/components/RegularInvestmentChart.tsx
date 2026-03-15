@@ -66,7 +66,7 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ 
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
           data={chartData}
-          margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+          margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
         >
           <defs>
             <linearGradient id="colorInvested" x1="0" y1="0" x2="0" y2="1">
@@ -95,7 +95,6 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ 
             tickLine={false}
             axisLine={false}
             tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
-            dx={-10}
           />
           <Tooltip content={<CustomTooltip formatCurrency={formatCurrency} />} />
           <Legend verticalAlign="top" align="right" height={40} iconType="circle" wrapperStyle={{ fontSize: '12px', fontWeight: '500' }} />

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useComparison } from '../hooks/useComparison';
 import { BondInputsForm } from '../../single-calculator/components/BondInputsForm';
 import { useLanguage } from '@/i18n';
@@ -11,7 +11,11 @@ import { Button } from '@/components/ui/button';
 import { Loader2, Scale } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const CustomTooltip = ({ active, payload, label, formatCurrency }: TooltipProps<number, string> & { formatCurrency: (val: number) => string }) => {
+interface CustomTooltipProps extends TooltipProps<number, string> {
+  formatCurrency: (val: number) => string;
+}
+
+const CustomTooltip = ({ active, payload, label, formatCurrency }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-popover border border-border p-3 shadow-xl rounded-none text-popover-foreground min-w-[150px]">
@@ -43,8 +47,15 @@ export const ComparisonContainer: React.FC = () => {
     setBondTypeA, setBondTypeB 
   } = useComparison();
   const { t, language } = useLanguage();
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setHasMounted(true);
+  }, []);
 
   const formatCurrency = (value: number) => {
+    if (!hasMounted) return '---';
     return new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', {
       style: 'currency',
       currency: 'PLN',
@@ -74,14 +85,16 @@ export const ComparisonContainer: React.FC = () => {
           </h2>
           <p className="text-muted-foreground mt-2">Compare two different bond investment scenarios side-by-side.</p>
         </div>
-        <Button 
-          onClick={() => calculate()} 
-          disabled={isCalculating}
-          className="px-8 font-bold shadow-lg shadow-primary/20 gap-2 h-12 min-w-[200px]"
-        >
-          {isCalculating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Scale className="h-4 w-4" />}
-          {isCalculating ? 'Comparing...' : 'Compare Scenarios'}
-        </Button>
+        <div className="flex items-center gap-4">
+          <Button 
+            onClick={() => calculate()} 
+            disabled={isCalculating}
+            className="px-8 font-bold shadow-lg shadow-primary/20 gap-2 h-12 min-w-[200px]"
+          >
+            {isCalculating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Scale className="h-4 w-4" />}
+            {isCalculating ? 'Comparing...' : 'Compare Scenarios'}
+          </Button>
+        </div>
       </header>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -117,45 +130,50 @@ export const ComparisonContainer: React.FC = () => {
             </CardHeader>
             <CardContent className="p-8">
               <div className="h-[450px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData}>
-                    <defs>
-                      <linearGradient id="colorA" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.15}/>
-                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorB" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.15}/>
-                        <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
-                    <XAxis dataKey="label" axisLine={false} tickLine={false} fontSize={10} dy={10} />
-                    <YAxis axisLine={false} tickLine={false} fontSize={10} tickFormatter={(v) => `${(v/1000).toFixed(0)}k`} dx={-10} />
-                    <Tooltip content={<CustomTooltip formatCurrency={formatCurrency} />} />
-                    <Legend verticalAlign="top" align="right" height={40} iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 'bold' }} />
-                    <Area 
-                      type="monotone" 
-                      dataKey="valA" 
-                      name={`${inputsA.bondType} (A)`} 
-                      stroke="#3b82f6" 
-                      strokeWidth={3} 
-                      fill="url(#colorA)"
-                      connectNulls
-                      animationDuration={1500}
-                    />
-                    <Area 
-                      type="monotone" 
-                      dataKey="valB" 
-                      name={`${inputsB.bondType} (B)`} 
-                      stroke="#10b981" 
-                      strokeWidth={3} 
-                      fill="url(#colorB)" 
-                      connectNulls
-                      animationDuration={1500}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
+                {hasMounted && (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart 
+                      data={chartData}
+                      margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
+                    >
+                      <defs>
+                        <linearGradient id="colorA" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.15}/>
+                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                        </linearGradient>
+                        <linearGradient id="colorB" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.15}/>
+                          <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+                      <XAxis dataKey="label" axisLine={false} tickLine={false} fontSize={10} dy={10} />
+                      <YAxis axisLine={false} tickLine={false} fontSize={10} tickFormatter={(v) => `${(v/1000).toFixed(0)}k`} />
+                      <Tooltip content={<CustomTooltip formatCurrency={formatCurrency} />} />
+                      <Legend verticalAlign="top" align="right" height={40} iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 'bold' }} />
+                      <Area 
+                        type="monotone" 
+                        dataKey="valA" 
+                        name={`${inputsA.bondType} (A)`} 
+                        stroke="#3b82f6" 
+                        strokeWidth={3} 
+                        fill="url(#colorA)"
+                        connectNulls
+                        animationDuration={1500}
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="valB" 
+                        name={`${inputsB.bondType} (B)`} 
+                        stroke="#10b981" 
+                        strokeWidth={3} 
+                        fill="url(#colorB)" 
+                        connectNulls
+                        animationDuration={1500}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                )}
               </div>
             </CardContent>
           </Card>

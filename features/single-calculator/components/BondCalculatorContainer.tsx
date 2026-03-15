@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useBondCalculator } from '../hooks/useBondCalculator';
 import { BondInputsForm } from './BondInputsForm';
 import { BondResultsSummary } from './BondResultsSummary';
 import { BondTimeline } from './BondTimeline';
-import dynamic from 'next/dynamic';
+import { BondChart } from './BondChart';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLanguage } from '@/i18n';
 import { Share2, Check, Target, Trophy, Info, LineChart, Table } from 'lucide-react';
@@ -13,11 +13,6 @@ import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
-const BondChart = dynamic(() => import('./BondChart').then(mod => mod.BondChart), { 
-  ssr: false,
-  loading: () => <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground animate-pulse">Loading chart...</div>
-});
 
 export const BondCalculatorContainer: React.FC = () => {
   const { inputs, results, isCalculating, isError, calculate, updateInput, setBondType } = useBondCalculator();
@@ -118,7 +113,7 @@ export const BondCalculatorContainer: React.FC = () => {
             <div className={cn("space-y-8 transition-opacity duration-300", isCalculating && "opacity-50 pointer-events-none")}>
               <BondResultsSummary results={results} />
               
-              <Tabs defaultValue="chart" className="w-full">
+              <Tabs defaultValue="chart" className="w-full text-foreground">
                 <TabsList className="grid w-full grid-cols-2 h-12 p-1.5 bg-muted/50 rounded-xl border-none">
                   <TabsTrigger value="chart" className="rounded-lg gap-2 data-[state=active]:shadow-md">
                     <LineChart className="h-4 w-4" />
@@ -129,10 +124,10 @@ export const BondCalculatorContainer: React.FC = () => {
                     {t('bonds.timeline')}
                   </TabsTrigger>
                 </TabsList>
-                <TabsContent value="chart" className="mt-6 border rounded-3xl p-6 bg-card shadow-xl overflow-hidden text-card-foreground">
+                <TabsContent value="chart" className="mt-6 border rounded-3xl p-6 bg-card shadow-xl overflow-hidden text-card-foreground min-h-[450px]">
                   {hasMounted && <BondChart results={results} initialInvestment={inputs.initialInvestment} />}
                 </TabsContent>
-                <TabsContent value="timeline" className="mt-6 border rounded-3xl overflow-hidden shadow-xl">
+                <TabsContent value="timeline" className="mt-6 border rounded-3xl overflow-hidden shadow-xl min-h-[450px]">
                   <BondTimeline results={results} />
                 </TabsContent>
               </Tabs>
