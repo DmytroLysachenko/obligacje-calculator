@@ -12,6 +12,10 @@ import {
   ReferenceLine,
   TooltipProps
 } from 'recharts';
+import {
+  ValueType,
+  NameType,
+} from 'recharts/types/component/DefaultTooltipContent';
 import { useLanguage } from '@/i18n';
 import { useChartData } from '@/shared/hooks/useChartData';
 
@@ -20,8 +24,14 @@ interface InflationDataPoint {
   rate: number;
 }
 
-const CustomTooltip = (props: any) => {
-  const { active, payload, label, t } = props;
+interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
+  active?: boolean;
+  payload?: any[];
+  label?: NameType;
+  t: (key: string) => string;
+}
+
+const CustomTooltip = ({ active, payload, label, t }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-popover border border-border p-3 shadow-xl rounded-none text-popover-foreground min-w-[120px]">
@@ -31,7 +41,7 @@ const CustomTooltip = (props: any) => {
             <div key={index} className="flex justify-between items-center gap-4 text-xs">
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
-                {t('common.inflation')}:
+                {t('bonds.inflation_rate')}:
               </span>
               <span className="font-mono font-bold">{entry.value}%</span>
             </div>
@@ -42,7 +52,6 @@ const CustomTooltip = (props: any) => {
   }
   return null;
 };
-
 
 export const InflationChart = () => {
   const { t } = useLanguage();
@@ -69,7 +78,7 @@ export const InflationChart = () => {
           />
           <YAxis 
             fontSize={12}
-            tickFormatter={(v) => `${v}%`}
+            tickFormatter={(v: number) => `${v}%`}
             tickLine={false}
             axisLine={false}
           />

@@ -18,6 +18,7 @@ import { pl, enGB } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from 'recharts';
+import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { exportToCSV } from "@/shared/utils/csv-export";
@@ -171,7 +172,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                   ))}
                 </Pie>
                 <RechartsTooltip 
-                  formatter={(value: any) => formatCurrency(Number(value || 0))}
+                  formatter={(value: ValueType | undefined) => formatCurrency(Number(value || 0))}
                   contentStyle={{ backgroundColor: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }}
                 />
                 <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: '10px', paddingBottom: '10px' }} />

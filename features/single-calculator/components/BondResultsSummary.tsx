@@ -8,6 +8,7 @@ import { useLanguage } from '@/i18n';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from 'recharts';
+import { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent';
 
 import { 
   Popover,
@@ -199,8 +200,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
                   ))}
                 </Pie>
                 <RechartsTooltip 
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  formatter={(value: any) => formatCurrency(Number(value))}
+                  formatter={(value: ValueType | undefined) => formatCurrency(Number(value || 0))}
                   contentStyle={{ borderRadius: '8px', border: 'none', fontSize: '12px' }}
                 />
                 <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: '10px', paddingBottom: '10px' }} />

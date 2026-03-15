@@ -12,6 +12,10 @@ import {
   ReferenceLine,
   TooltipProps
 } from 'recharts';
+import {
+  ValueType,
+  NameType,
+} from 'recharts/types/component/DefaultTooltipContent';
 import { useLanguage } from '@/i18n';
 import { useChartData } from '@/shared/hooks/useChartData';
 
@@ -20,8 +24,15 @@ interface NBPRateDataPoint {
   rate: number;
 }
 
-const CustomTooltip = (props: any) => {
-  const { active, payload, label } = props;
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: any[];
+  label?: string;
+}) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-popover border border-border p-3 shadow-xl rounded-none text-popover-foreground min-w-[120px]">
@@ -42,7 +53,6 @@ const CustomTooltip = (props: any) => {
   }
   return null;
 };
-
 
 export const NBPRateChart = () => {
   const { t } = useLanguage();
@@ -75,7 +85,7 @@ export const NBPRateChart = () => {
           />
           <YAxis 
             fontSize={12}
-            tickFormatter={(v) => `${v}%`}
+            tickFormatter={(v: number) => `${v}%`}
             tickLine={false}
             axisLine={false}
           />

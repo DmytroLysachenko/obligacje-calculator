@@ -12,6 +12,10 @@ import {
   ResponsiveContainer,
   TooltipProps,
 } from 'recharts';
+import {
+  ValueType,
+  NameType,
+} from 'recharts/types/component/DefaultTooltipContent';
 import { RegularInvestmentResult } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
 import { format, parseISO } from 'date-fns';
@@ -21,12 +25,18 @@ interface RegularInvestmentChartProps {
   results: RegularInvestmentResult;
 }
 
-const CustomTooltip = (props: any) => {
-  const { active, payload, label, formatCurrency } = props;
+interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
+  active?: boolean;
+  payload?: any[];
+  label?: NameType;
+  formatCurrency: (value: number) => string;
+}
+
+const CustomTooltip = ({ active, payload, label, formatCurrency }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-popover border border-border p-3 shadow-xl rounded-none text-popover-foreground min-w-[150px]">
-        <p className="font-bold mb-2 border-b pb-1 border-border/50">{label}</p>
+        <p className="font-bold mb-2 border-b pb-1 border-border/50 text-xs">{label}</p>
         <div className="space-y-1.5">
           {payload.map((entry: any, index: number) => (
             <div key={index} className="flex justify-between items-center gap-4 text-xs">
@@ -34,7 +44,7 @@ const CustomTooltip = (props: any) => {
                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
                 {entry.name}:
               </span>
-              <span className="font-mono font-bold">{formatCurrency(entry.value as number)}</span>
+              <span className="font-mono font-bold">{formatCurrency(Number(entry.value))}</span>
             </div>
           ))}
         </div>
@@ -43,7 +53,6 @@ const CustomTooltip = (props: any) => {
   }
   return null;
 };
-
 
 export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ results }) => {
   const { t, language } = useLanguage();
@@ -96,7 +105,7 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ 
             tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
             tickLine={false}
             axisLine={false}
-            tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
+            tickFormatter={(value: number) => `${(value / 1000).toFixed(0)}k`}
           />
           <Tooltip content={<CustomTooltip formatCurrency={formatCurrency} />} />
           <Legend verticalAlign="top" align="right" height={40} iconType="circle" wrapperStyle={{ fontSize: '12px', fontWeight: '500' }} />
