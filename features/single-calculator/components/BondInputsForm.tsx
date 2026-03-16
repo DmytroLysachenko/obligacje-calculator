@@ -331,54 +331,30 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           </div>
         </div>
 
-        {/* Inflation & Margin & First Year Rate */}
+        {/* Inflation, Margin, NBP Section */}
         <div className="space-y-6">
           {(inputs.bondType === 'ROR' || inputs.bondType === 'DOR') && (
-            <div className="space-y-6">
+            <div className="space-y-6 p-4 bg-muted/30 rounded-xl border">
               <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="firstYearRate" className="text-xs font-semibold uppercase text-muted-foreground">
-                    {language === 'pl' ? 'Oprocentowanie w pierwszym okresie' : 'Initial Interest Rate'} (%)
-                  </Label>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs">For ROR and DOR, the interest rate is tied to the NBP reference rate. You can customize the starting rate here.</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
+                <Label htmlFor="firstYearRate" className="text-xs font-bold uppercase text-muted-foreground flex items-center gap-2">
+                  Initial Interest Rate (%)
+                </Label>
                 <Input
                   id="firstYearRate"
                   type="number"
                   step="0.01"
-                  className="h-10"
+                  className="h-10 font-bold"
                   value={inputs.firstYearRate}
                   onChange={(e) => onUpdate('firstYearRate', Number(e.target.value))}
                 />
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="expectedNbpRate" className="text-xs font-semibold uppercase text-muted-foreground">
-                      Expected NBP Rate (%)
-                    </Label>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">The Narodowy Bank Polski reference rate. Used for ROR and DOR bonds for month 2+.</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                  <span className="text-sm font-bold text-primary">{inputs.expectedNbpRate}%</span>
+                  <Label htmlFor="expectedNbpRate" className="text-xs font-bold uppercase text-muted-foreground">
+                    Expected NBP Rate (%)
+                  </Label>
+                  <span className="text-lg font-black text-primary">{inputs.expectedNbpRate}%</span>
                 </div>
                 <Slider 
                   value={[inputs.expectedNbpRate ?? 5.25]} 
@@ -391,31 +367,43 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
             </div>
           )}
           
-          <div className="space-y-3">
-
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <Label htmlFor="expectedInflation" className="text-xs font-semibold uppercase text-muted-foreground">
-                  {t('bonds.inflation_rate')} (%)
-                </Label>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs">For inflation-indexed bonds (COI, EDO), this rate determines interest for year 2+. Also used to calculate &quot;Real Value&quot;.</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+          <div className="space-y-4 p-4 bg-primary/5 rounded-xl border border-primary/10">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="expectedInflation" className="text-xs font-bold text-primary uppercase tracking-wider">
+                {t('bonds.inflation_rate')} (%)
+              </Label>
+              <div className="text-2xl font-black text-primary bg-background px-3 py-1 rounded-lg border shadow-sm">
+                {inputs.expectedInflation}%
               </div>
-              <div className="flex gap-1">
-                <Button variant="ghost" size="icon" className="h-6 w-12 text-[10px]" onClick={() => onUpdate('expectedInflation', 2.5)}>Stable</Button>
-                <Button variant="ghost" size="icon" className="h-6 w-12 text-[10px]" onClick={() => onUpdate('expectedInflation', 10)}>High</Button>
-                <Button variant="ghost" size="icon" className="h-6 w-12 text-[10px]" onClick={() => onUpdate('expectedInflation', -1)}>Deflation</Button>
-              </div>
-              <span className="text-sm font-bold text-primary">{inputs.expectedInflation}%</span>
             </div>
+
+            <div className="grid grid-cols-3 gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className={cn("h-8 text-[10px] font-bold uppercase", inputs.expectedInflation === 2.5 && "bg-primary text-primary-foreground")} 
+                onClick={() => onUpdate('expectedInflation', 2.5)}
+              >
+                Stable (2.5%)
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className={cn("h-8 text-[10px] font-bold uppercase", inputs.expectedInflation === 10 && "bg-primary text-primary-foreground")} 
+                onClick={() => onUpdate('expectedInflation', 10)}
+              >
+                High (10%)
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className={cn("h-8 text-[10px] font-bold uppercase", inputs.expectedInflation === -1 && "bg-primary text-primary-foreground")} 
+                onClick={() => onUpdate('expectedInflation', -1)}
+              >
+                Deflation (-1%)
+              </Button>
+            </div>
+
             <Slider 
               value={[inputs.expectedInflation]} 
               min={-2} 
@@ -425,55 +413,33 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
             />
           </div>
           
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Label htmlFor="margin" className="text-xs font-semibold uppercase text-muted-foreground">
+          <div className="space-y-4 p-4 bg-muted/30 rounded-xl border">
+            <div className="flex justify-between items-center">
+              <Label htmlFor="margin" className="text-xs font-bold uppercase text-muted-foreground">
                 {t('bonds.margin')} (%)
               </Label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="text-xs">Guaranteed margin added to the inflation rate or NBP rate for variable bonds.</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <span className="text-lg font-black text-primary">{inputs.margin}%</span>
             </div>
-            <Input
-              id="margin"
-              type="number"
-              step="0.01"
-              className="h-10"
-              value={inputs.margin}
-              onChange={(e) => onUpdate('margin', Number(e.target.value))}
+            <Slider 
+              value={[inputs.margin]} 
+              min={0} 
+              max={10} 
+              step={0.05} 
+              onValueChange={([val]) => onUpdate('margin', val)}
             />
           </div>
         </div>
 
         <Separator />
 
-        {/* Rebuy / Swap Toggle (if applicable) */}
+        {/* Rebuy / Swap Toggle */}
         {currentDef.rebuyDiscount > 0 && (
-          <div className="space-y-4 pt-2">
+          <div className="space-y-4 p-4 bg-green-50/30 rounded-xl border border-green-100">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <div className="flex items-center gap-2">
-                  <Label className="text-sm font-semibold">{t('bonds.is_rebought')}</Label>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs">If you use money from maturing bonds to buy new ones, you get a discount (usually 0.10 PLN per bond).</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-                <p className="text-[10px] text-muted-foreground">
-                  {t('bonds.is_rebought_desc')} (-{currentDef.rebuyDiscount.toFixed(2)} PLN/szt)
+                <Label className="text-sm font-bold text-green-800">{t('bonds.is_rebought')}</Label>
+                <p className="text-[10px] text-green-600 font-medium">
+                  Discount: -{currentDef.rebuyDiscount.toFixed(2)} PLN per bond
                 </p>
               </div>
               <Switch
@@ -481,29 +447,16 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                 onCheckedChange={(checked) => onUpdate('isRebought', checked)}
               />
             </div>
-            <Separator />
           </div>
         )}
 
         {/* Tax Switch */}
-        <div className="space-y-4">
+        <div className="space-y-4 p-4 bg-slate-50/50 rounded-xl border">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <div className="flex items-center gap-2">
-                <Label className="text-sm font-semibold">{t('bonds.custom_tax_rate')}</Label>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs">Standard &quot;Belka&quot; tax in Poland is 19%. You can adjust it if laws change.</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-              <p className="text-[10px] text-muted-foreground">
-                {t('bonds.belka_tax_desc')}
+              <Label className="text-sm font-bold">{t('bonds.custom_tax_rate')}</Label>
+              <p className="text-[10px] text-muted-foreground font-medium">
+                Standard Belka tax is 19%
               </p>
             </div>
             <Switch
@@ -514,13 +467,13 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
           {showCustomTax && (
             <div className="space-y-2 animate-in fade-in zoom-in-95 duration-200">
-              <Label htmlFor="taxRate" className="text-xs font-semibold uppercase text-muted-foreground">
+              <Label htmlFor="taxRate" className="text-xs font-bold uppercase text-muted-foreground">
                 {t('bonds.tax_rate')} (%)
               </Label>
               <Input
                 id="taxRate"
                 type="number"
-                className="h-10"
+                className="h-10 font-bold"
                 value={inputs.taxRate}
                 onChange={(e) => onUpdate('taxRate', Number(e.target.value))}
               />
