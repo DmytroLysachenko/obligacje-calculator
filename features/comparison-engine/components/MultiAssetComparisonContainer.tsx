@@ -603,7 +603,7 @@ export const MultiAssetComparisonContainer = () => {
 
           <Tabs
             defaultValue="growth"
-            className="w-full"
+            className="w-full flex flex-col gap-6"
           >
             <TabsList className="grid w-full grid-cols-2 max-w-md h-12 p-1 bg-muted/50 rounded-xl">
               <TabsTrigger
@@ -624,7 +624,7 @@ export const MultiAssetComparisonContainer = () => {
 
             <TabsContent
               value="growth"
-              className="mt-6"
+              className="mt-0"
             >
               <Card className="border shadow-xl overflow-hidden rounded-3xl">
                 <CardHeader className="bg-muted/30 px-8 py-6 border-b">
@@ -733,7 +733,7 @@ export const MultiAssetComparisonContainer = () => {
 
             <TabsContent
               value="risk"
-              className="mt-6"
+              className="mt-0"
             >
               <Card className="border shadow-xl overflow-hidden rounded-3xl">
                 <CardHeader className="bg-red-50/20 px-8 py-6 border-b">

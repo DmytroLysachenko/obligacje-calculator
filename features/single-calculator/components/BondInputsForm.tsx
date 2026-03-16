@@ -232,7 +232,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               max={100000} 
               step={100} 
               onValueChange={([val]) => handleInvestmentChange(val)}
-              className="py-2"
+              className="py-4"
             />
           </div>
           {!isDivisibleBy100 && inputs.initialInvestment > 0 && (
