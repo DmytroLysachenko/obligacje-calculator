@@ -258,8 +258,8 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {results.timeline.map((point) => (
-                  <TableRow key={point.year} className={cn(point.isWithdrawal && "bg-primary/5 font-semibold")}>
+                {results.timeline.map((point, index) => (
+                  <TableRow key={`${point.year}-${point.periodLabel}-${index}`} className={cn(point.isWithdrawal && "bg-primary/5 font-semibold")}>
                     <TableCell>
                       {point.periodLabel}
                       {point.isWithdrawal && (
