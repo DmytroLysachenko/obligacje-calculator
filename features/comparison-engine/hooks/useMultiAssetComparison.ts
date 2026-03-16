@@ -46,24 +46,32 @@ const ASSETS_METADATA: Record<string, AssetMetadata> = {
 export function useMultiAssetComparison() {
   const [initialSum, setInitialSum] = useState(10000);
   const [monthlyContribution, setMonthlyContribution] = useState(500);
-  const [startDate, setStartDate] = useState(HISTORICAL_RETURNS[0].date);
+  
+  const currentYear = new Date().getFullYear();
+  const [startYear, setStartYear] = useState('2020');
+  const [startMonth, setStartMonth] = useState('01');
+  
+  const startDate = `${startYear}-${startMonth}`;
   const [showRealValue, setShowRealValue] = useState(false);
   
   // URL Sync
   useQuerySync({
     sum: initialSum,
     monthly: monthlyContribution,
-    start: startDate,
+    year: startYear,
+    month: startMonth,
     real: showRealValue
   }, (initial) => {
     if (initial.sum) setInitialSum(Number(initial.sum));
     if (initial.monthly) setMonthlyContribution(Number(initial.monthly));
-    if (initial.start) setStartDate(String(initial.start));
+    if (initial.year) setStartYear(String(initial.year));
+    if (initial.month) setStartMonth(String(initial.month));
     if (initial.real !== undefined) setShowRealValue(String(initial.real) === 'true');
   });
 
   const filteredData = useMemo(() => {
-    return HISTORICAL_RETURNS.filter(row => row.date >= startDate);
+    const data = HISTORICAL_RETURNS.filter(row => row.date >= startDate);
+    return data.length > 0 ? data : HISTORICAL_RETURNS.slice(-12); // Fallback
   }, [startDate]);
 
   const sp500 = useMemo(() => 
@@ -82,13 +90,21 @@ export function useMultiAssetComparison() {
     calculateAssetPerformance(initialSum, monthlyContribution, 'savings', ASSETS_METADATA.savings, filteredData), 
   [initialSum, monthlyContribution, filteredData]);
 
+  const years = Array.from({ length: currentYear - 1950 }, (_, i) => (1950 + i).toString()).reverse();
+  const months = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'));
+
   return {
     initialSum,
     setInitialSum,
     monthlyContribution,
     setMonthlyContribution,
     startDate,
-    setStartDate,
+    startYear,
+    setStartYear,
+    startMonth,
+    setStartMonth,
+    years,
+    months,
     showRealValue,
     setShowRealValue,
     assets: [sp500, gold, bonds, savings],
