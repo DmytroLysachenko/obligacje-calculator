@@ -20,11 +20,12 @@
   "nav": {
     "education": "Edukacja / Podstawy",
     "single_calculator": "Kalkulator Pojedynczy",
-    "regular_investment": "Inwestycje Regularne",
+    "regular_investment": "Regularne Inwestowanie",
     "economic_data": "Dane Ekonomiczne",
     "comparison": "Porównywarka",
     "ladder": "Strategia Drabiny",
-    "multi_asset": "Rynek vs Obligacje"
+    "multi_asset": "Giełda vs Obligacje",
+    "notebook": "Mój Portfel / Notatnik"
   },
   "education": {
     "subtitle": "Zrozum mechanizmy polskiego rynku obligacji skarbowych i podejmuj świadome decyzje inwestycyjne.",
@@ -136,8 +137,25 @@
     "explanation_tax": "Podatek Belki 19% jest naliczany od wypracowanych odsetek. W przypadku obligacji kapitalizowanych, jest pobierany na koniec lub przy wypłacie.",
     "total_invested": "Całkowita inwestycja",
     "final_nominal_value": "Końcowa wartość nominalna",
-    "total_net_profit": "Całkowity zysk netto",
-    "real_value_inflation": "Wartość realna (skorygowana o inflację)"
+    "total_net_profit": "Całkowity Zysk Netto",
+    "real_value_inflation": "Wartość Realna (skorygowana o inflację)",
+    "maturity_schedule": "Harmonogram Wykupu (Drabina)",
+    "bond_plural": "Obligacje",
+    "bond_singular": "Obligacja",
+    "maturing": "Wykup",
+    "strategy_tip": "Wskazówka Strategiczna",
+    "ladder_tip_desc": "Gdy obligacja zapada (zostaje wykupiona), otrzymujesz pełny kapitał wraz z odsetkami. Ponowne zainwestowanie tych środków w nową obligację tego samego typu kontynuuje drabinę, zapewniając stałą płynność."
+    },
+    "notebook": {
+      "title": "Mój Portfel / Notatnik",
+      "subtitle": "Śledź swoje rzeczywiste zakupy obligacji i symuluj ich przyszłą wartość na podstawie bieżących danych.",
+      "new_portfolio": "Nowy Portfel",
+      "open_portfolio": "Otwórz Portfel",
+      "empty_title": "Twój notatnik jest pusty",
+      "empty_desc": "Utwórz swój pierwszy portfel, aby zacząć śledzić swoje inwestycje w obligacje i zarządzać swoim majątkiem.",
+      "create_first": "Utwórz mój pierwszy portfel",
+      "active": "Aktywny",
+      "created": "Utworzono"
     },
     "economic": {
     "subtitle": "Kontekst historyczny polskiej inflacji i stóp procentowych.",

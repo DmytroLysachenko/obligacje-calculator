@@ -24,7 +24,8 @@
     "economic_data": "Economic Data",
     "comparison": "Comparison",
     "ladder": "Ladder Strategy",
-    "multi_asset": "Market vs Bonds"
+    "multi_asset": "Market vs Bonds",
+    "notebook": "My Portfolio / Notebook"
   },
   "education": {
     "subtitle": "Understand the mechanisms of the Polish treasury bond market and make informed investment decisions.",
@@ -137,7 +138,24 @@
     "total_invested": "Total Invested",
     "final_nominal_value": "Final Nominal Value",
     "total_net_profit": "Total Net Profit",
-    "real_value_inflation": "Real Value (Inflation Adjusted)"
+    "real_value_inflation": "Real Value (Inflation Adjusted)",
+    "maturity_schedule": "Maturity Schedule (The Ladder)",
+    "bond_plural": "Bonds",
+    "bond_singular": "Bond",
+    "maturing": "Maturing",
+    "strategy_tip": "Strategy Tip",
+    "ladder_tip_desc": "When a bond matures, you receive the full capital plus interest. Reinvesting these funds into a new bond of the same type continues the ladder, ensuring constant liquidity."
+    },
+    "notebook": {
+      "title": "My Portfolio / Notebook",
+      "subtitle": "Track your real-world bond purchases and simulate their future value based on live data.",
+      "new_portfolio": "New Portfolio",
+      "open_portfolio": "Open Portfolio",
+      "empty_title": "Your notebook is empty",
+      "empty_desc": "Create your first portfolio to start tracking your bond investments and managing your wealth.",
+      "create_first": "Create My First Portfolio",
+      "active": "Active",
+      "created": "Created"
     },
     "economic": {
     "subtitle": "Historical context of Polish inflation and interest rates.",
