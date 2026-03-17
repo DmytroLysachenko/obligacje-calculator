@@ -38,3 +38,40 @@ export const instrumentPriceHistory = pgTable("instrument_price_history", {
   priceClose: numeric("price_close", { precision: 20, scale: 8 }).notNull(),
   inflationValue: numeric("inflation_value", { precision: 5, scale: 2 }),
 });
+
+export const economicIndicators = pgTable("economic_indicators", {
+  id: serial("id").primaryKey(),
+  indicatorName: text("indicator_name").notNull(),
+  date: date("date").notNull(),
+  value: numeric("value", { precision: 10, scale: 4 }).notNull(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const userPortfolios = pgTable("user_portfolios", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("user_id").notNull(), // Placeholder for future Auth
+  name: text("name").notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const userInvestmentLots = pgTable("user_investment_lots", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  portfolioId: uuid("portfolio_id").references(() => userPortfolios.id, { onDelete: 'cascade' }),
+  bondType: text("bond_type").notNull(), // Symbol like EDO, COI
+  purchaseDate: date("purchase_date").notNull(),
+  amount: numeric("amount", { precision: 15, scale: 2 }).notNull(), // Invested amount
+  isRebought: boolean("is_rebought").default(false),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type NewEconomicIndicator = typeof economicIndicators.$inferInsert;
+export type EconomicIndicator = typeof economicIndicators.$inferSelect;
+
+export type NewUserPortfolio = typeof userPortfolios.$inferInsert;
+export type UserPortfolio = typeof userPortfolios.$inferSelect;
+
+export type NewUserInvestmentLot = typeof userInvestmentLots.$inferInsert;
+export type UserInvestmentLot = typeof userInvestmentLots.$inferSelect;
