@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getIndicatorHistory } from '@/lib/data-access';
+import { EconomicIndicator } from '@/db/schema';
 
 const FALLBACK_NBP = [
   { date: '2021-01', rate: 0.1 },
@@ -28,9 +29,9 @@ export async function GET() {
       return NextResponse.json(FALLBACK_NBP);
     }
 
-    const formatted = data.map(d => ({
+    const formatted = data.map((d: EconomicIndicator) => ({
       date: d.date.substring(0, 7),
-      rate: d.value,
+      rate: parseFloat(d.value),
     }));
 
     return NextResponse.json(formatted);
