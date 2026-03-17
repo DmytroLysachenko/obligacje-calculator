@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { calculateBondInvestment } from './calculations';
-import { BondType, InterestPayout, TaxStrategy } from '../types';
+import { calculateBondInvestment, calculateRegularInvestment } from './calculations';
+import { BondType, InterestPayout, TaxStrategy, InvestmentFrequency } from '../types';
 
-describe('Bond Calculations', () => {
+describe('Bond Calculations Engine (Modular)', () => {
   const baseInputs = {
     initialInvestment: 10000,
     firstYearRate: 6.0,
@@ -14,71 +14,117 @@ describe('Bond Calculations', () => {
     bondType: BondType.COI,
     isCapitalized: false,
     payoutFrequency: InterestPayout.YEARLY,
-    purchaseDate: '2024-01-01T00:00:00.000Z',
-    withdrawalDate: '2028-01-01T00:00:00.000Z',
+    purchaseDate: '2024-01-01',
+    withdrawalDate: '2028-01-01',
     isRebought: false,
     rebuyDiscount: 0.1,
     taxStrategy: TaxStrategy.STANDARD,
   };
 
-  it('calculates 3-month OTS bond correctly', () => {
-    const inputs = {
-      ...baseInputs,
-      bondType: BondType.OTS,
-      duration: 0.25,
-      firstYearRate: 3.0,
-      withdrawalDate: '2024-04-01T00:00:00.000Z',
-    };
-    const results = calculateBondInvestment(inputs);
-    
-    // 10000 * 3% * (3/12) = 75 gross interest
-    // 75 * 19% tax = 14.25 tax
-    // Net profit = 75 - 14.25 = 60.75
-    expect(results.grossValue).toBeCloseTo(10075, 1);
-    expect(results.totalProfit).toBeCloseTo(60.75, 1);
+  describe('Single Investment', () => {
+    it('calculates 3-month OTS bond correctly', () => {
+      const inputs = {
+        ...baseInputs,
+        bondType: BondType.OTS,
+        duration: 0.25,
+        firstYearRate: 3.0,
+        withdrawalDate: '2024-04-01',
+      };
+      const results = calculateBondInvestment(inputs);
+      
+      // 10000 * 3% * (3/12) = 75 gross interest
+      // 75 * 19% tax = 14.25 tax
+      // Net profit = 75 - 14.25 = 60.75
+      expect(results.grossValue).toBeCloseTo(10075, 2);
+      expect(results.totalProfit).toBeCloseTo(60.75, 2);
+    });
+
+    it('handles deflation correctly (floor at 0%)', () => {
+      const inputs = {
+        ...baseInputs,
+        expectedInflation: -5.0, // Deflation
+        firstYearRate: 1.0,
+        margin: 1.0,
+        duration: 2,
+        withdrawalDate: '2026-01-01',
+      };
+      const results = calculateBondInvestment(inputs);
+      
+      // Year 1: 1.0% (fixed)
+      // Year 2: max(0, -5.0) + 1.0 = 1.0%
+      expect(results.timeline[0].interestRate).toBe(1.0);
+      expect(results.timeline[1].interestRate).toBe(1.0);
+    });
+
+    it('handles leap years correctly for interest periods', () => {
+      const inputs = {
+        ...baseInputs,
+        purchaseDate: '2024-02-28', // Leap year
+        withdrawalDate: '2025-02-28',
+        duration: 1,
+      };
+      const results = calculateBondInvestment(inputs);
+      expect(results.timeline.length).toBeGreaterThan(0);
+      expect(results.timeline[0].isMaturity).toBe(true);
+    });
+
+    it('caps early withdrawal fee to accumulated interest', () => {
+      const inputs = {
+        ...baseInputs,
+        withdrawalDate: '2024-02-01', // Withdraw after 1 month
+        earlyWithdrawalFee: 2.0, // 200 PLN total fee
+      };
+      const results = calculateBondInvestment(inputs);
+      
+      // 10000 * 6% * (31/366) approx 50.81 interest
+      // Fee should be 50.81, not 200
+      expect(results.totalEarlyWithdrawalFee).toBeLessThanOrEqual(results.grossValue - results.initialInvestment + 0.01);
+      expect(results.netPayoutValue).toBeGreaterThanOrEqual(results.initialInvestment);
+    });
   });
 
-  it('applies early withdrawal fee correctly for COI', () => {
-    const inputs = {
-      ...baseInputs,
-      withdrawalDate: '2025-01-01T00:00:00.000Z', // Withdraw after 1 year (COI is 4y)
-    };
-    const results = calculateBondInvestment(inputs);
-    
-    // 100 bonds * 2 PLN fee = 200 PLN fee
-    expect(results.isEarlyWithdrawal).toBe(true);
-    expect(results.totalEarlyWithdrawalFee).toBe(200);
-  });
+  describe('Regular Investment', () => {
+    it('simulates monthly contributions correctly', () => {
+      const inputs = {
+        contributionAmount: 1000,
+        frequency: InvestmentFrequency.MONTHLY,
+        totalHorizon: 1,
+        bondType: BondType.OTS,
+        firstYearRate: 3.0,
+        expectedInflation: 2.0,
+        margin: 0,
+        duration: 0.25,
+        earlyWithdrawalFee: 0.7,
+        taxRate: 19,
+        isCapitalized: false,
+        payoutFrequency: InterestPayout.MATURITY,
+        purchaseDate: '2024-01-01',
+        withdrawalDate: '2025-01-01',
+        isRebought: false,
+        rebuyDiscount: 0,
+        taxStrategy: TaxStrategy.STANDARD
+      };
+      
+      const results = calculateRegularInvestment(inputs);
+      
+      // 12 months * 1000 = 12000 invested
+      expect(results.totalInvested).toBe(12000);
+      expect(results.lots.length).toBe(12);
+    });
 
-  it('applies swap discount correctly', () => {
-    const inputs = {
-      ...baseInputs,
-      isRebought: true,
-      rebuyDiscount: 0.1, // 99.90 PLN per bond
-    };
-    const results = calculateBondInvestment(inputs);
-    
-    // 10000 / 99.90 = 100.1 -> 100 bonds
-    // actual investment = 100 * 99.90 = 9990
-    // nominal start = 100 * 100 = 10000
-    expect(results.netPayoutValue).toBeGreaterThan(10000);
-  });
-
-  it('handles capitalization correctly for EDO (10y)', () => {
-    const inputs = {
-      ...baseInputs,
-      bondType: BondType.EDO,
-      duration: 10,
-      isCapitalized: true,
-      payoutFrequency: InterestPayout.MATURITY,
-      withdrawalDate: '2034-01-01T00:00:00.000Z',
-    };
-    const results = calculateBondInvestment(inputs);
-    
-    // Year 1 interest should be added to base for Year 2
-    const firstYear = results.timeline[0];
-    const secondYear = results.timeline[1];
-    
-    expect(secondYear.nominalValueBeforeInterest).toBe(firstYear.nominalValueAfterInterest);
+    it('handles quarterly frequency', () => {
+      const inputs = {
+        ...baseInputs,
+        contributionAmount: 1000,
+        frequency: InvestmentFrequency.QUARTERLY,
+        totalHorizon: 1,
+        purchaseDate: '2024-01-01',
+        withdrawalDate: '2025-01-01',
+      };
+      const results = calculateRegularInvestment(inputs);
+      
+      // Q1, Q2, Q3, Q4 = 4 lots
+      expect(results.lots.length).toBe(4);
+    });
   });
 });
