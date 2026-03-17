@@ -13,7 +13,7 @@
   "lint-staged": {
     "*.{ts,tsx}": [
       "eslint --fix",
-      "pnpm exec tsc --noEmit"
+      "bash -c \"pnpm exec tsc --noEmit\""
     ]
   },
   "dependencies": {
