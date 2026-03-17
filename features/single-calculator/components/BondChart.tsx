@@ -12,6 +12,10 @@ import {
   Area,
   TooltipProps,
 } from "recharts";
+import {
+  ValueType,
+  NameType,
+} from "recharts/types/component/DefaultTooltipContent";
 import { CalculationResult } from "../../bond-core/types";
 import { useLanguage } from "@/i18n";
 
@@ -20,14 +24,16 @@ interface BondChartProps {
   initialInvestment: number;
 }
 
-import {
-  NameType,
-  ValueType,
-} from "recharts/types/component/DefaultTooltipContent";
+interface PayloadEntry {
+  name: string;
+  value: number;
+  color: string;
+  dataKey?: string | number;
+}
 
 interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
   active?: boolean;
-  payload?: any[];
+  payload?: PayloadEntry[];
   label?: NameType;
   formatCurrency: (value: number) => string;
 }
@@ -45,7 +51,7 @@ const CustomTooltip = ({
           {label}
         </p>
         <div className="space-y-1.5">
-          {payload.map((entry: any, index: number) => (
+          {payload.map((entry, index) => (
             <div
               key={index}
               className="flex justify-between items-center gap-4 text-xs"

@@ -24,9 +24,16 @@ interface InflationDataPoint {
   rate: number;
 }
 
+interface PayloadEntry {
+  name: string;
+  value: number;
+  color: string;
+  dataKey?: string | number;
+}
+
 interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
   active?: boolean;
-  payload?: any[];
+  payload?: PayloadEntry[];
   label?: NameType;
   t: (key: string) => string;
 }
@@ -37,7 +44,7 @@ const CustomTooltip = ({ active, payload, label, t }: CustomTooltipProps) => {
       <div className="bg-popover border border-border p-3 shadow-xl rounded-none text-popover-foreground min-w-[120px]">
         <p className="font-bold mb-2 border-b pb-1 border-border/50 text-xs">{label}</p>
         <div className="space-y-1.5">
-          {payload.map((entry: any, index: number) => (
+          {payload.map((entry, index) => (
             <div key={index} className="flex justify-between items-center gap-4 text-xs">
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />

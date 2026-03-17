@@ -75,9 +75,16 @@ interface ChartDataRow {
   [key: string]: string | number;
 }
 
+interface PayloadEntry {
+  name: string;
+  value: number;
+  color: string;
+  dataKey?: string | number;
+}
+
 interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
   active?: boolean;
-  payload?: any[];
+  payload?: PayloadEntry[];
   label?: NameType;
   formatCurrency: (value: number) => string;
 }
@@ -98,9 +105,9 @@ const CustomTooltip = ({
       <div className="space-y-1.5">
         {payload
           .filter(
-            (p: any) => p.dataKey && !String(p.dataKey).includes("_drawdown"),
+            (p) => p.dataKey && !String(p.dataKey).includes("_drawdown"),
           )
-          .map((entry: any, index: number) => (
+          .map((entry, index: number) => (
             <div
               key={index}
               className="flex justify-between items-center gap-4 text-xs"
@@ -128,7 +135,7 @@ const DrawdownTooltip = ({
   label,
 }: {
   active?: boolean;
-  payload?: any[];
+  payload?: PayloadEntry[];
   label?: NameType;
 }) => {
   if (!active || !payload || !payload.length) return null;
@@ -139,7 +146,7 @@ const DrawdownTooltip = ({
         {label}
       </p>
       <div className="space-y-1.5">
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry, index: number) => (
           <div
             key={index}
             className="flex justify-between items-center gap-4 text-xs"
@@ -481,7 +488,7 @@ export const MultiAssetComparisonContainer = () => {
                           </Label>
                         </div>
                         <p className="text-[10px] text-muted-foreground font-bold italic">
-                          Shows "Real" value
+                          Shows &quot;Real&quot; value
                         </p>
                       </div>
                       <Switch
@@ -494,233 +501,6 @@ export const MultiAssetComparisonContainer = () => {
               </Accordion>
             </CardContent>
           </Card>
-
-          {/* Savings Disclaimer */}
-          <Card className="bg-slate-900 text-white shadow-2xl border-none overflow-hidden">
-            <CardHeader className="bg-slate-800/50 pb-2">
-              <CardTitle className="text-[10px] font-black flex items-center gap-2 uppercase tracking-widest text-slate-400">
-                <Info className="h-4 w-4" />
-                SAVINGS CONTEXT
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <p className="text-xs leading-relaxed text-slate-300 font-medium italic">
-                "Savings Account" interest is not unified. It varies heavily between banks. 
-                This model assumes an average retail rate based on historical NBP margins (approx. 0.5-2%).
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Main Chart Area */}
-        <div className="xl:col-span-3 space-y-8">
-          {/* Verdict Card */}
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
-            <Card className="border-l-[12px] border-l-primary bg-primary/5 shadow-2xl border-y-0 border-r-0 rounded-r-3xl">
-              <CardContent className="py-8 flex items-start gap-8">
-                <div className="p-5 bg-primary rounded-3xl shadow-lg shadow-primary/20">
-                  <Zap className="h-10 w-10 text-white fill-white/20" />
-                </div>
-                <div className="space-y-3">
-                  <h3 className="text-2xl font-black text-primary uppercase tracking-tight">
-                    {verdict.title}
-                  </h3>
-                  <p className="text-base text-slate-600 font-medium leading-relaxed max-w-4xl">
-                    {verdict.text}
-                  </p>
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border-2 border-primary/20 rounded-full text-xs font-black text-primary mt-4 shadow-sm">
-                    <Info className="h-4 w-4" />
-                    INSIGHT: {verdict.recommendation}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <Tabs defaultValue="growth" className="w-full flex flex-col gap-8">
-            <TabsList className="flex w-full max-w-xl h-16 p-2 bg-slate-100 rounded-3xl border-4 border-white shadow-xl">
-              <TabsTrigger value="growth" className="flex-1 gap-3 rounded-2xl text-base font-black uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-lg transition-all">
-                <TrendingUp className="h-5 w-5" />
-                GROWTH
-              </TabsTrigger>
-              <TabsTrigger value="risk" className="flex-1 gap-3 rounded-2xl text-base font-black uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-destructive data-[state=active]:shadow-lg transition-all">
-                <Activity className="h-5 w-5" />
-                RISK
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="growth" className="mt-0 outline-none">
-              <Card className="border-4 border-primary/5 shadow-2xl overflow-hidden rounded-[40px] bg-white">
-                <CardHeader className="bg-slate-50/50 px-10 py-8 border-b-2">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <CardTitle className="text-2xl font-black text-slate-800">
-                        {showRealValue ? "REAL PURCHASING POWER" : "NOMINAL CAPITAL GROWTH"}
-                      </CardTitle>
-                      <CardDescription className="text-sm font-bold text-slate-400 mt-1">
-                        Performance timeline from {startDate} to latest available data.
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-10">
-                  <div className="w-full h-[500px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={chartData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
-                        <defs>
-                          {assets.map((asset) => (
-                            <linearGradient key={asset.metadata.id} id={`color_${asset.metadata.id}`} x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor={asset.metadata.color} stopOpacity={0.2}/>
-                              <stop offset="95%" stopColor={asset.metadata.color} stopOpacity={0}/>
-                            </linearGradient>
-                          ))}
-                        </defs>
-                        <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="rgba(0,0,0,0.08)" />
-                        <XAxis 
-                          dataKey="date" 
-                          fontSize={11} 
-                          fontWeight="bold"
-                          tickLine={false} 
-                          axisLine={false} 
-                          dy={15} 
-                          stroke="#64748b"
-                        />
-                        <YAxis 
-                          fontSize={11} 
-                          fontWeight="bold"
-                          tickLine={false} 
-                          axisLine={false} 
-                          tickFormatter={(v: number) => `${v / 1000}k`} 
-                          stroke="#64748b"
-                        />
-                        <RechartsTooltip content={<CustomTooltip formatCurrency={formatCurrency} />} />
-                        <Legend verticalAlign="top" align="right" height={50} iconType="circle" wrapperStyle={{ fontSize: "11px", fontWeight: "900", textTransform: "uppercase", paddingBottom: "20px" }} />
-                        {assets.map((asset) => (
-                          <Area
-                            key={asset.metadata.id}
-                            type="monotone"
-                            dataKey={asset.metadata.id}
-                            name={asset.metadata.name}
-                            stroke={asset.metadata.color}
-                            strokeWidth={4}
-                            fill={`url(#color_${asset.metadata.id})`}
-                            animationDuration={1500}
-                          />
-                        ))}
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="risk" className="mt-0 outline-none">
-              <Card className="border-4 border-destructive/5 shadow-2xl overflow-hidden rounded-[40px] bg-white">
-                <CardHeader className="bg-red-50/30 px-10 py-8 border-b-2">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 bg-red-100 rounded-2xl">
-                      <Activity className="h-6 w-6 text-red-600" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-2xl font-black text-slate-800 uppercase">
-                        Historical Drawdown (%)
-                      </CardTitle>
-                      <CardDescription className="text-sm font-bold text-slate-400 mt-1">
-                        Peak-to-trough decline during market volatility.
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-10">
-                  <div className="w-full h-[500px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={chartData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
-                        <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="rgba(0,0,0,0.08)" />
-                        <XAxis dataKey="date" fontSize={11} fontWeight="bold" tickLine={false} axisLine={false} dy={15} stroke="#64748b" />
-                        <YAxis 
-                          fontSize={11} 
-                          fontWeight="bold" 
-                          tickLine={false} 
-                          axisLine={false} 
-                          tickFormatter={(v: number) => `${v}%`} 
-                          reversed 
-                          stroke="#64748b"
-                        />
-                        <RechartsTooltip content={<DrawdownTooltip />} />
-                        <Legend verticalAlign="top" align="right" height={50} iconType="circle" wrapperStyle={{ fontSize: "11px", fontWeight: "900", textTransform: "uppercase" }} />
-                        {assets.map((asset) => (
-                          <Line
-                            key={asset.metadata.id}
-                            type="stepAfter"
-                            dataKey={`${asset.metadata.id}_drawdown`}
-                            name={asset.metadata.name}
-                            stroke={asset.metadata.color}
-                            strokeWidth={4}
-                            dot={false}
-                            animationDuration={1500}
-                          />
-                        ))}
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-
-          {/* Asset Breakdown Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {assets.map((asset, idx) => {
-              const last = asset.series[asset.series.length - 1];
-              const maxDrawdown = Math.max(...asset.series.map((s) => s.drawdown));
-              const finalValue = showRealValue ? last.realValue! : last.value;
-              const netProfit = finalValue - totalInvested;
-              const isProfit = netProfit >= 0;
-
-              return (
-                <motion.div key={asset.metadata.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}>
-                  <Card className="border-4 border-slate-50 shadow-xl h-full flex flex-col hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 bg-white rounded-3xl overflow-hidden">
-                    <CardHeader className="pb-4 bg-slate-50/50 border-b">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="w-3 h-8 rounded-full" style={{ backgroundColor: asset.metadata.color }} />
-                          <CardTitle className="text-xs font-black uppercase tracking-widest text-slate-700">
-                            {asset.metadata.name}
-                          </CardTitle>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-8 flex-1 flex flex-col justify-between p-8">
-                      <div className="space-y-2">
-                        <p className="text-4xl font-black text-slate-900 tracking-tighter">
-                          {formatCurrency(finalValue)}
-                        </p>
-                        <div className={cn("inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider", isProfit ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700")}>
-                          {isProfit ? <TrendingUp className="h-3 w-3" /> : <Activity className="h-3 w-3" />}
-                          {isProfit ? "+" : ""}{formatCurrency(netProfit)}
-                        </div>
-                      </div>
-                      <div className="pt-6 border-t-2 border-slate-100 space-y-4">
-                        <div className="flex justify-between items-center">
-                          <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Max Risk</span>
-                          <span className="text-red-600 font-black text-sm">-{maxDrawdown.toFixed(1)}%</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Net ROI</span>
-                          <span className="text-green-600 font-black text-sm">+{((finalValue / totalInvested - 1) * 100).toFixed(1)}%</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
 
           {/* Purchasing Power Visual */}
           <Card className="border-orange-100 bg-orange-50/20 shadow-sm overflow-hidden border-2">
@@ -764,6 +544,22 @@ export const MultiAssetComparisonContainer = () => {
                 &quot;Due to inflation, your capital lost nearly{" "}
                 {purchasingPower.powerLoss.toFixed(0)}% of its effective buying
                 power.&quot;
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Savings Disclaimer */}
+          <Card className="bg-slate-900 text-white shadow-2xl border-none overflow-hidden">
+            <CardHeader className="bg-slate-800/50 pb-2">
+              <CardTitle className="text-[10px] font-black flex items-center gap-2 uppercase tracking-widest text-slate-400">
+                <Info className="h-4 w-4" />
+                SAVINGS CONTEXT
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <p className="text-xs leading-relaxed text-slate-300 font-medium italic">
+                &quot;Savings Account&quot; interest is not unified. It varies heavily between banks. 
+                This model assumes an average retail rate based on historical NBP margins (approx. 0.5-2%).
               </p>
             </CardContent>
           </Card>
@@ -1092,7 +888,7 @@ export const MultiAssetComparisonContainer = () => {
                         <p className="text-3xl font-black text-primary tracking-tight">
                           {formatCurrency(finalValue)}
                         </p>
-                        <p
+                        <div
                           className={cn(
                             "text-sm font-black flex items-center gap-1.5",
                             isProfit ? "text-green-600" : "text-destructive",
@@ -1105,7 +901,7 @@ export const MultiAssetComparisonContainer = () => {
                           )}
                           {isProfit ? "+" : ""}
                           {formatCurrency(netProfit)}
-                        </p>
+                        </div>
                       </div>
                       <div className="pt-6 border-t border-muted-foreground/10 space-y-3">
                         <div className="flex justify-between items-center text-[10px]">

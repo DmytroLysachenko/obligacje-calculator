@@ -8,7 +8,7 @@ import { useLanguage } from '@/i18n';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from 'recharts';
-import { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent';
+import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 
 import { 
   Popover,
@@ -39,6 +39,7 @@ const itemVariant = {
 import { Download, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { exportToCSV } from "@/shared/utils/csv-export";
+import { cn } from "@/lib/utils";
 
 export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results }) => {
   const { t, language } = useLanguage();
@@ -285,7 +286,3 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
     </div>
   );
 };
-
-function cn(...inputs: (string | undefined | null | false)[]) {
-  return inputs.filter(Boolean).join(' ');
-}

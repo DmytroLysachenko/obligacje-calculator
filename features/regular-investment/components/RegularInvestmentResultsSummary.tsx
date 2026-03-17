@@ -204,7 +204,6 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
               const yearLots = groupedLots[Number(year)];
               const yearInvested = yearLots.reduce((sum, l) => sum + l.investedAmount, 0);
               const yearNetValue = yearLots.reduce((sum, l) => sum + l.netValue, 0);
-              const yearInterest = yearLots.reduce((sum, l) => sum + l.accumulatedInterest, 0);
 
               return (
                 <AccordionItem key={year} value={`year-${year}`} className="border-b last:border-0 px-6">

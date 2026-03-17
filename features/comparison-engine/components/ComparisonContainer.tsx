@@ -25,9 +25,16 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Scale } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+interface PayloadEntry {
+  name: string;
+  value: number;
+  color: string;
+  dataKey?: string | number;
+}
+
 interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
   active?: boolean;
-  payload?: any[];
+  payload?: PayloadEntry[];
   label?: NameType;
   formatCurrency: (val: number) => string;
 }
@@ -46,7 +53,7 @@ const CustomTooltip = ({
         {label}
       </p>
       <div className="space-y-1.5">
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry, index) => (
           <div
             key={index}
             className="flex justify-between items-center gap-4 text-xs"
