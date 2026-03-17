@@ -1,48 +1,29 @@
 # 06. Bond Calculation Engine
 
-The Bond Calculation Engine is the mathematical heart of the platform. It must be deterministic, highly tested, and capable of handling complex Polish retail bond rules.
+The Bond Calculation Engine is the mathematical heart of the platform. It is deterministic, modular, and highly tested using `Decimal.js` for financial precision.
 
-## 1. Engine Responsibilities
-1.  **Accrual Logic:** Calculate how much interest is earned day-by-day or month-by-month.
-2.  **Event Scheduling:** Determine when capitalization happens and when taxes are due.
-3.  **Inflation Tracking:** Apply CPI data to inflation-linked bonds with the correct 2-month lag.
-4.  **Redemption Simulation:** Calculate the net payout if a user withdraws at any arbitrary point in time.
+## 1. Engine Architecture
 
-## 2. The Iterative Calculation Loop
+The engine has been refactored into specialized modules to improve maintainability:
 
-The engine calculates values using a monthly resolution (or daily for higher precision):
+-   **`calculations.ts`**: The main entry point coordinating the calculation flow.
+-   **`engine/interest-rates.ts`**: Logic for determining the annual interest rate for a given period, including support for historical inflation lookups with a 2-month lag.
+-   **`engine/tax-logic.ts`**: Handles the "Belka" tax calculation, supporting both standard precision and official rounding rules.
+-   **`engine/redemption-engine.ts`**: Implements early withdrawal fees and rules (e.g., fee cannot exceed earned interest).
 
-```pseudo
-For each Month in Duration:
-  1. Determine current Interest Rate for this period.
-     - If Inflation-Linked: Rate = CPI[Month-2] + Margin
-     - If Fixed: Rate = Constant
-  2. Calculate Accrued Interest: Principal * (Rate / 12)
-  3. If Capitalization Month:
-     - Add Accrued Interest to Principal
-     - Reset Accrued Interest to 0
-  4. Record state (Gross Value, Tax Liability)
-End Loop
-```
+## 2. Mathematical Precision
 
-## 3. Handling the "Belka" Tax
-Tax is not calculated every month. It is a "deferred liability."
-- **At Maturity:** `Tax = (FinalValue - InitialInvestment) * 0.19`
-- **At Early Redemption:** `Tax = (CurrentValue - RedemptionFee - InitialInvestment) * 0.19`
-- **Important:** Tax is rounded to 2 decimal places in favor of the tax authority (standard Polish banking practice).
+-   **Library:** All currency and interest accrual logic uses `Decimal.js`.
+-   **Configuration:** 20 decimal places of precision with `ROUND_HALF_UP`.
+-   **Return Types:** The final results are converted back to standard `number` types for UI compatibility, but only at the very end of the calculation pipeline.
 
-## 4. The Inflation Lag Mechanic
-For bonds like EDO and COI, the interest rate for a new year depends on the "Inflation for the month two months prior to the first month of the new interest period."
+## 3. Key Domain Rules Implemented
 
-*Example:*
-- Bond Interest Period starts: **June 1st**
-- Inflation data used: **April CPI** (usually published mid-May)
+-   **Inflation Lag:** Indexed bonds (EDO, COI) use the annual inflation rate published 2 months prior to the interest period start.
+-   **Tax Rounding:** Supports Article 30a rules where the taxable base and tax amount are rounded to the nearest full zloty (when enabled).
+-   **Fee Floor:** For retail bonds, the early withdrawal fee is capped at the total accumulated interest to ensure the nominal capital is protected.
+-   **OTS Special Case:** 3-month fixed bonds lose all interest upon early withdrawal.
 
-## 5. Early Redemption Penalty
-The penalty is a fixed amount (e.g., 2.00 PLN for EDO). 
-- **The "Floor" Rule:** The penalty can never reduce the user's initial capital.
-- `Payout = Max(InitialCapital, GrossValue - Penalty - Tax)`
+## 4. Input Validation
 
-## 6. Mathematical Precision
-- **Data Type:** Use `Decimal.js` or `Big.js`. Never use standard JavaScript `Number` (floating point) for currency.
-- **Rounding:** Follow the official bond prospectus rules (usually 2 or 4 decimal places depending on the step).
+All inputs are strictly validated using **Zod** schemas (`BondInputsSchema`, `RegularInvestmentInputsSchema`) at the API and internal logic boundaries.
