@@ -14,9 +14,8 @@ export abstract class BaseApiClient {
   protected mapToDbSchema(indicators: StandardizedIndicator[]): NewEconomicIndicator[] {
     return indicators.map(ind => ({
       indicatorName: ind.name,
-      value: ind.value,
+      value: ind.value.toString(),
       date: ind.date,
-      metadata: ind.metadata,
     }));
   }
 }

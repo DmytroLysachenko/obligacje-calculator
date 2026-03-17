@@ -21,6 +21,8 @@ export enum TaxStrategy {
   IKZE = 'IKZE', // 5% tax at payout (Individual Tax Saving Account)
 }
 
+export type HistoricalDataMap = Record<string, { inflation?: number; nbpRate?: number }>;
+
 export interface BondInputs {
   bondType: BondType;
   initialInvestment: number;
@@ -39,6 +41,7 @@ export interface BondInputs {
   rebuyDiscount: number;
   taxStrategy: TaxStrategy;
   savingsGoal?: number;
+  historicalData?: HistoricalDataMap;
 }
 
 export interface YearlyTimelinePoint {

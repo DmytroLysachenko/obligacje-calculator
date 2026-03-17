@@ -19,11 +19,26 @@ export const getIndicatorHistory = cache(async (name: string, fromDate: string, 
 });
 
 /**
- * Fetches the latest value for a specific indicator.
+ * Fetches historical data for multiple indicators and returns them as a map keyed by YYYY-MM.
  */
-export const getLatestIndicatorValue = cache(async (name: string) => {
-  return await db.query.economicIndicators.findFirst({
-    where: eq(economicIndicators.indicatorName, name),
-    orderBy: (indicators, { desc }) => [desc(indicators.date)],
+export const getHistoricalDataMap = cache(async (fromDate: string, toDate: string) => {
+  const data = await db.query.economicIndicators.findMany({
+    where: and(
+      gte(economicIndicators.date, fromDate),
+      lte(economicIndicators.date, toDate)
+    ),
   });
+
+  const map: Record<string, { inflation?: number; nbpRate?: number }> = {};
+  
+  data.forEach(item => {
+    const key = item.date.substring(0, 7); // YYYY-MM
+    if (!map[key]) map[key] = {};
+    
+    const val = parseFloat(item.value);
+    if (item.indicatorName === 'inflation_pl') map[key].inflation = val;
+    if (item.indicatorName === 'nbp_rate') map[key].nbpRate = val;
+  });
+
+  return map;
 });
