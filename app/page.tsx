@@ -1,25 +1,11 @@
-'use client';
+import { Metadata } from 'next';
+import HomeClient from './HomeClient';
 
-import { BondCalculatorContainer } from '@/features/single-calculator/components/BondCalculatorContainer';
-import { useLanguage } from '@/i18n';
-import { PageTransition } from '@/shared/components/PageTransition';
-import { Suspense } from 'react';
+export const metadata: Metadata = {
+  title: 'Bonds Calculator - Polish Treasury Bonds Simulator',
+  description: 'Professional and educational calculator for Polish retail treasury bonds (EDO, COI, ROR, etc.).',
+};
 
 export default function Home() {
-  const { t } = useLanguage();
-
-  return (
-    <PageTransition>
-      <div className="space-y-6">
-        <header className="mb-8">
-          <h2 className="text-3xl font-bold tracking-tight">{t('bonds.single_calculator')}</h2>
-          <p className="text-muted-foreground mt-2">{t('common.description')}</p>
-        </header>
-        
-        <Suspense fallback={<div>Loading calculator...</div>}>
-          <BondCalculatorContainer />
-        </Suspense>
-      </div>
-    </PageTransition>
-  );
+  return <HomeClient />;
 }
