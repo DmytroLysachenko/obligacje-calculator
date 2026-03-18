@@ -1,9 +1,169 @@
 {
-  "id": "fbecab4e-5de6-469e-8c1a-ff236dccda23",
+  "id": "bffbefb2-c94a-4b13-9894-fb51be5f8c17",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.data_points": {
+      "name": "data_points",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "series_id": {
+          "name": "series_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "numeric(20, 8)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "series_date_idx": {
+          "name": "series_date_idx",
+          "columns": [
+            {
+              "expression": "series_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "data_points_series_id_data_series_id_fk": {
+          "name": "data_points_series_id_data_series_id_fk",
+          "tableFrom": "data_points",
+          "tableTo": "data_series",
+          "columnsFrom": [
+            "series_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.data_series": {
+      "name": "data_series",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "category": {
+          "name": "category",
+          "type": "series_category",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'macro'"
+        },
+        "unit": {
+          "name": "unit",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "frequency": {
+          "name": "frequency",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'monthly'"
+        },
+        "data_source": {
+          "name": "data_source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "data_series_slug_unique": {
+          "name": "data_series_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.economic_indicators": {
       "name": "economic_indicators",
       "schema": "",
@@ -28,7 +188,7 @@
         },
         "value": {
           "name": "value",
-          "type": "numeric(10, 4)",
+          "type": "numeric(15, 6)",
           "primaryKey": false,
           "notNull": true
         },
@@ -48,63 +208,6 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.instrument_price_history": {
-      "name": "instrument_price_history",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "instrument_id": {
-          "name": "instrument_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "date": {
-          "name": "date",
-          "type": "date",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "price_close": {
-          "name": "price_close",
-          "type": "numeric(20, 8)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "inflation_value": {
-          "name": "inflation_value",
-          "type": "numeric(5, 2)",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "instrument_price_history_instrument_id_investment_instruments_id_fk": {
-          "name": "instrument_price_history_instrument_id_investment_instruments_id_fk",
-          "tableFrom": "instrument_price_history",
-          "tableTo": "investment_instruments",
-          "columnsFrom": [
-            "instrument_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
-    },
     "public.investment_instruments": {
       "name": "investment_instruments",
       "schema": "",
@@ -116,12 +219,11 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "category": {
-          "name": "category",
-          "type": "instrument_type",
-          "typeSchema": "public",
+        "series_id": {
+          "name": "series_id",
+          "type": "uuid",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "ticker": {
           "name": "ticker",
@@ -141,12 +243,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "data_source": {
-          "name": "data_source",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "currency": {
           "name": "currency",
           "type": "text",
@@ -163,7 +259,21 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "investment_instruments_series_id_data_series_id_fk": {
+          "name": "investment_instruments_series_id_data_series_id_fk",
+          "tableFrom": "investment_instruments",
+          "tableTo": "data_series",
+          "columnsFrom": [
+            "series_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "investment_instruments_ticker_unique": {
@@ -440,6 +550,16 @@
         "fixed",
         "floating_nbp",
         "inflation_linked"
+      ]
+    },
+    "public.series_category": {
+      "name": "series_category",
+      "schema": "public",
+      "values": [
+        "macro",
+        "instrument",
+        "index",
+        "currency"
       ]
     }
   },

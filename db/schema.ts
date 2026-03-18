@@ -2,6 +2,37 @@ import { pgTable, text, timestamp, uuid, numeric, integer, boolean, pgEnum, seri
 
 export const instrumentTypeEnum = pgEnum("instrument_type", ["bond", "equity", "commodity", "crypto"]);
 export const interestTypeEnum = pgEnum("interest_type", ["fixed", "floating_nbp", "inflation_linked"]);
+export const seriesCategoryEnum = pgEnum("series_category", ["macro", "instrument", "index", "currency"]);
+
+/**
+ * Metadata for any time-series data (Inflation, NBP Rate, S&P500, etc.)
+ */
+export const dataSeries = pgTable("data_series", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  slug: text("slug").notNull().unique(), // e.g. 'pl-cpi', 'nbp-ref-rate', 'sp500'
+  name: text("name").notNull(),
+  description: text("description"),
+  category: seriesCategoryEnum("category").notNull().default("macro"),
+  unit: text("unit").notNull(), // %, PLN, USD, etc.
+  frequency: text("frequency").notNull().default("monthly"), // daily, monthly, quarterly, yearly
+  dataSource: text("data_source"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+/**
+ * The actual data points for all series
+ */
+export const dataPoints = pgTable("data_points", {
+  id: serial("id").primaryKey(),
+  seriesId: uuid("series_id").references(() => dataSeries.id, { onDelete: 'cascade' }).notNull(),
+  date: date("date").notNull(),
+  value: numeric("value", { precision: 20, scale: 8 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => {
+  return {
+    seriesDateIdx: uniqueIndex("series_date_idx").on(table.seriesId, table.date),
+  };
+});
 
 export const polishBonds = pgTable("polish_bonds", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -22,38 +53,17 @@ export const polishBonds = pgTable("polish_bonds", {
 
 export const investmentInstruments = pgTable("investment_instruments", {
   id: uuid("id").primaryKey().defaultRandom(),
-  category: instrumentTypeEnum("category").notNull(),
+  seriesId: uuid("series_id").references(() => dataSeries.id),
   ticker: text("ticker").notNull().unique(),
   displayName: text("display_name").notNull(),
   riskScore: integer("risk_score").notNull(),
-  dataSource: text("data_source").notNull(),
   currency: text("currency").default("PLN"),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const instrumentPriceHistory = pgTable("instrument_price_history", {
-  id: serial("id").primaryKey(),
-  instrumentId: uuid("instrument_id").references(() => investmentInstruments.id),
-  date: date("date").notNull(),
-  priceClose: numeric("price_close", { precision: 20, scale: 8 }).notNull(),
-  inflationValue: numeric("inflation_value", { precision: 5, scale: 2 }),
-});
-
-export const economicIndicators = pgTable("economic_indicators", {
-  id: serial("id").primaryKey(),
-  indicatorName: text("indicator_name").notNull(),
-  date: date("date").notNull(),
-  value: numeric("value", { precision: 15, scale: 6 }).notNull(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-}, (table) => {
-  return {
-    indicatorDateIdx: uniqueIndex("indicator_date_idx").on(table.indicatorName, table.date),
-  };
-});
-
 export const userPortfolios = pgTable("user_portfolios", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: text("user_id").notNull(), // Placeholder for future Auth
+  userId: text("user_id").notNull(),
   name: text("name").notNull(),
   description: text("description"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -63,16 +73,28 @@ export const userPortfolios = pgTable("user_portfolios", {
 export const userInvestmentLots = pgTable("user_investment_lots", {
   id: uuid("id").primaryKey().defaultRandom(),
   portfolioId: uuid("portfolio_id").references(() => userPortfolios.id, { onDelete: 'cascade' }),
-  bondType: text("bond_type").notNull(), // Symbol like EDO, COI
+  bondType: text("bond_type").notNull(),
   purchaseDate: date("purchase_date").notNull(),
-  amount: numeric("amount", { precision: 15, scale: 2 }).notNull(), // Invested amount
+  amount: numeric("amount", { precision: 15, scale: 2 }).notNull(),
   isRebought: boolean("is_rebought").default(false),
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export type NewEconomicIndicator = typeof economicIndicators.$inferInsert;
-export type EconomicIndicator = typeof economicIndicators.$inferSelect;
+// LEGACY TABLES - To be dropped after migration
+export const economicIndicators = pgTable("economic_indicators", {
+  id: serial("id").primaryKey(),
+  indicatorName: text("indicator_name").notNull(),
+  date: date("date").notNull(),
+  value: numeric("value", { precision: 15, scale: 6 }).notNull(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type NewDataSeries = typeof dataSeries.$inferInsert;
+export type DataSeries = typeof dataSeries.$inferSelect;
+
+export type NewDataPoint = typeof dataPoints.$inferInsert;
+export type DataPoint = typeof dataPoints.$inferSelect;
 
 export type NewUserPortfolio = typeof userPortfolios.$inferInsert;
 export type UserPortfolio = typeof userPortfolios.$inferSelect;
