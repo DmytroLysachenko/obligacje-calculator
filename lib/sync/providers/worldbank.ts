@@ -24,7 +24,7 @@ export class WorldBankSyncProvider implements SyncProvider {
       .map((item: WorldBankRecord) => {
         if (item.value === null) return null;
         return {
-          indicatorName: 'inflation_pl',
+          seriesSlug: 'pl-cpi',
           date: `${item.date}-01-01`, 
           value: typeof item.value === 'string' ? parseFloat(item.value) : item.value
         };

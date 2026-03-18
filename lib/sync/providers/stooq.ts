@@ -6,31 +6,33 @@ export class StooqSyncProvider implements SyncProvider {
 
   async fetchData(startDate: string, endDate: string): Promise<SyncRecord[]> {
     const results: SyncRecord[] = [];
-    const symbols = ["^SPX", "GC.F"]; // S&P 500, Gold Futures
+    const symbols = [
+      { symbol: "^SPX", slug: "sp500" },
+      { symbol: "GC.F", slug: "gold-usd" }
+    ];
 
-    for (const symbol of symbols) {
+    for (const item of symbols) {
       try {
-        const data = await this.fetchSymbol(symbol);
+        const data = await this.fetchSymbol(item.symbol, item.slug);
         const filtered = data.filter(d => 
           (d.date >= startDate && d.date <= endDate)
         );
         results.push(...filtered);
         await new Promise(resolve => setTimeout(resolve, 500));
       } catch (error) {
-        console.error(`[Stooq Provider] Failed for ${symbol}:`, error);
+        console.error(`[Stooq Provider] Failed for ${item.symbol}:`, error);
       }
     }
 
     return results;
   }
 
-  private async fetchSymbol(symbol: string): Promise<SyncRecord[]> {
+  private async fetchSymbol(symbol: string, seriesSlug: string): Promise<SyncRecord[]> {
     const response = await fetch(`${this.baseUrl}?s=${symbol}&i=m`);
     if (!response.ok) return [];
     
     const csvText = await response.text();
     const lines = csvText.split("\n").slice(1);
-    const indicatorName = symbol === "^SPX" ? "sp500" : (symbol === "GC.F" ? "gold_futures" : symbol.toLowerCase());
 
     return lines
       .map(line => {
@@ -38,7 +40,7 @@ export class StooqSyncProvider implements SyncProvider {
         if (parts.length < 5) return null;
         const [date, , , , close] = parts;
         return {
-          indicatorName,
+          seriesSlug,
           date: date.trim(), 
           value: parseFloat(close)
         };

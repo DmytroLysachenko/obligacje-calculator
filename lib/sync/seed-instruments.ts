@@ -31,18 +31,14 @@ async function seed() {
       await db.insert(investmentInstruments).values({
         ticker: inst.ticker,
         displayName: inst.displayName,
-        category: inst.category,
         riskScore: inst.riskScore,
-        dataSource: inst.dataSource,
         currency: inst.currency,
         updatedAt: new Date()
       }).onConflictDoUpdate({
         target: investmentInstruments.ticker,
         set: {
           displayName: inst.displayName,
-          category: inst.category,
           riskScore: inst.riskScore,
-          dataSource: inst.dataSource,
           currency: inst.currency,
           updatedAt: new Date()
         }

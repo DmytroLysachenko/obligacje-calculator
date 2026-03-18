@@ -1,6 +1,6 @@
 import { db } from "@/db";
-import { economicIndicators } from "@/db/schema";
-import { desc, eq, inArray } from "drizzle-orm";
+import { dataSeries, dataPoints } from "@/db/schema";
+import { desc, eq } from "drizzle-orm";
 import { SyncProvider } from "./types";
 import { format, addMonths, startOfMonth, parseISO, isBefore } from "date-fns";
 
@@ -23,32 +23,32 @@ export class SyncEngine {
   }
 
   private async syncProvider(provider: SyncProvider, startYear: number) {
-    // 1. Determine which indicators this provider handles
-    // We'll dry-run fetch to see indicator names or use a mapping
-    // For now, let's assume we fetch all and let the engine find the "oldest" last date 
-    // among typical indicators for that provider.
-    
-    // Better: let's just use the specific provider's logic to fetch data
-    // and let the DB handle the "already exists" part.
-    // However, to know WHERE TO START, we need a hint.
-    
-    const indicatorHint = provider.name.includes("Inflation") ? "inflation_pl" : 
-                         (provider.name.includes("NBP") ? "gold_price" : "sp500");
+    // Determine typical slug for this provider to find last sync date
+    const slugHint = provider.name.includes("Inflation") ? "pl-cpi" : 
+                    (provider.name.includes("NBP") ? "gold-usd" : "sp500");
 
-    const lastRecord = await db.query.economicIndicators.findFirst({
-      where: eq(economicIndicators.indicatorName, indicatorHint),
-      orderBy: [desc(economicIndicators.date)],
+    const series = await db.query.dataSeries.findFirst({
+      where: eq(dataSeries.slug, slugHint),
     });
 
-    let currentStartDate = lastRecord 
-      ? addMonths(parseISO(lastRecord.date), 1) 
+    if (!series) {
+      throw new Error(`Base series metadata for ${slugHint} not found. Run seed-series first.`);
+    }
+
+    const lastPoint = await db.query.dataPoints.findFirst({
+      where: eq(dataPoints.seriesId, series.id),
+      orderBy: [desc(dataPoints.date)],
+    });
+
+    let currentStartDate = lastPoint 
+      ? addMonths(parseISO(lastPoint.date), 1) 
       : parseISO(`${startYear}-01-01`);
     
     currentStartDate = startOfMonth(currentStartDate);
     const today = startOfMonth(new Date());
 
     if (isBefore(today, currentStartDate)) {
-      console.log(`[SyncEngine] ${provider.name} (${indicatorHint}) is already up to date.`);
+      console.log(`[SyncEngine] ${provider.name} (${slugHint}) is already up to date.`);
       return { provider: provider.name, status: 'up-to-date' };
     }
 
@@ -56,7 +56,6 @@ export class SyncEngine {
     const endDateStr = format(today, 'yyyy-MM-dd');
 
     console.log(`[SyncEngine] Fetching ${provider.name} from ${startDateStr} to ${endDateStr}...`);
-    
     const data = await provider.fetchData(startDateStr, endDateStr);
     
     if (data.length === 0) {
@@ -64,34 +63,39 @@ export class SyncEngine {
       return { provider: provider.name, status: 'no-new-data' };
     }
 
-    console.log(`[SyncEngine] Saving ${data.length} records for ${provider.name}...`);
+    // Cache slug -> UUID mapping for this run
+    const slugToId: Record<string, string> = {};
     
+    console.log(`[SyncEngine] Saving ${data.length} records...`);
     let savedCount = 0;
-    const chunkSize = 100;
-    for (let i = 0; i < data.length; i += chunkSize) {
-      const chunk = data.slice(i, i + chunkSize);
-      
-      for (const record of chunk) {
-        try {
-          await db.insert(economicIndicators).values({
-            indicatorName: record.indicatorName,
-            date: record.date,
-            value: record.value.toString(),
-            updatedAt: new Date(),
-          }).onConflictDoUpdate({
-            target: [economicIndicators.indicatorName, economicIndicators.date],
-            set: { 
-              value: record.value.toString(),
-              updatedAt: new Date()
-            }
-          });
-          savedCount++;
-        } catch (err) {
-          console.error(`[SyncEngine] Error saving record ${record.indicatorName} for ${record.date}:`, err);
-        }
+
+    for (const record of data) {
+      if (!slugToId[record.seriesSlug]) {
+        const s = await db.query.dataSeries.findFirst({
+          where: eq(dataSeries.slug, record.seriesSlug),
+        });
+        if (s) slugToId[record.seriesSlug] = s.id;
       }
-      
-      await new Promise(resolve => setTimeout(resolve, 50));
+
+      const seriesId = slugToId[record.seriesSlug];
+      if (!seriesId) {
+        console.warn(`[SyncEngine] Skipping record: series slug '${record.seriesSlug}' not found in DB.`);
+        continue;
+      }
+
+      try {
+        await db.insert(dataPoints).values({
+          seriesId,
+          date: record.date,
+          value: record.value.toString(),
+        }).onConflictDoUpdate({
+          target: [dataPoints.seriesId, dataPoints.date],
+          set: { value: record.value.toString() }
+        });
+        savedCount++;
+      } catch (err) {
+        console.error(`[SyncEngine] Error saving data point for ${record.seriesSlug} at ${record.date}:`, err);
+      }
     }
 
     return { provider: provider.name, status: 'success', imported: savedCount };
