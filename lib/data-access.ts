@@ -1,44 +1,63 @@
 import { db } from "@/db";
-import { economicIndicators } from "@/db/schema";
-import { eq, and, gte, lte, asc } from "drizzle-orm";
+import { dataSeries, dataPoints } from "@/db/schema";
+import { eq, and, gte, lte, asc, inArray } from "drizzle-orm";
 import { cache } from "react";
-
-/**
- * Fetches historical data for a specific indicator within a date range.
- * Cached for the duration of a single request.
- */
-export const getIndicatorHistory = cache(async (name: string, fromDate: string, toDate: string) => {
-  return await db.query.economicIndicators.findMany({
-    where: and(
-      eq(economicIndicators.indicatorName, name),
-      gte(economicIndicators.date, fromDate),
-      lte(economicIndicators.date, toDate)
-    ),
-    orderBy: [asc(economicIndicators.date)],
-  });
-});
 
 /**
  * Fetches historical data for multiple indicators and returns them as a map keyed by YYYY-MM.
  */
 export const getHistoricalDataMap = cache(async (fromDate: string, toDate: string) => {
-  const data = await db.query.economicIndicators.findMany({
+  // Find the IDs for the relevant series
+  const series = await db.query.dataSeries.findMany({
+    where: inArray(dataSeries.slug, ['pl-cpi', 'nbp-ref-rate']),
+  });
+
+  const cpiSeries = series.find(s => s.slug === 'pl-cpi');
+  const nbpSeries = series.find(s => s.slug === 'nbp-ref-rate');
+
+  if (!cpiSeries && !nbpSeries) return {};
+
+  const seriesIds = series.map(s => s.id);
+
+  const points = await db.query.dataPoints.findMany({
     where: and(
-      gte(economicIndicators.date, fromDate),
-      lte(economicIndicators.date, toDate)
+      inArray(dataPoints.seriesId, seriesIds),
+      gte(dataPoints.date, fromDate),
+      lte(dataPoints.date, toDate)
     ),
+    orderBy: [asc(dataPoints.date)],
   });
 
   const map: Record<string, { inflation?: number; nbpRate?: number }> = {};
   
-  data.forEach(item => {
+  points.forEach(item => {
     const key = item.date.substring(0, 7); // YYYY-MM
     if (!map[key]) map[key] = {};
     
     const val = parseFloat(item.value);
-    if (item.indicatorName === 'inflation_pl') map[key].inflation = val;
-    if (item.indicatorName === 'nbp_rate') map[key].nbpRate = val;
+    if (item.seriesId === cpiSeries?.id) map[key].inflation = val;
+    if (item.seriesId === nbpSeries?.id) map[key].nbpRate = val;
   });
 
   return map;
+});
+
+/**
+ * LEGACY - Keep for compatibility if needed elsewhere, but updated to use new schema
+ */
+export const getIndicatorHistory = cache(async (slug: string, fromDate: string, toDate: string) => {
+  const series = await db.query.dataSeries.findFirst({
+    where: eq(dataSeries.slug, slug),
+  });
+
+  if (!series) return [];
+
+  return await db.query.dataPoints.findMany({
+    where: and(
+      eq(dataPoints.seriesId, series.id),
+      gte(dataPoints.date, fromDate),
+      lte(dataPoints.date, toDate)
+    ),
+    orderBy: [asc(dataPoints.date)],
+  });
 });

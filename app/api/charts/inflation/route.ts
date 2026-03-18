@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { getIndicatorHistory } from '@/lib/data-access';
-import { EconomicIndicator } from '@/db/schema';
+import { db } from '@/db';
+import { dataSeries, dataPoints } from '@/db/schema';
+import { eq, desc } from 'drizzle-orm';
 
 const FALLBACK_INFLATION = [
   { year: '2015', rate: -0.9 },
@@ -18,16 +19,26 @@ const FALLBACK_INFLATION = [
 
 export async function GET() {
   try {
-    const data = await getIndicatorHistory('inflation_pl', '2015-01-01', '2026-12-31');
+    const series = await db.query.dataSeries.findFirst({
+      where: eq(dataSeries.slug, 'pl-cpi'),
+    });
+
+    if (!series) return NextResponse.json(FALLBACK_INFLATION);
+
+    const data = await db.query.dataPoints.findMany({
+      where: eq(dataPoints.seriesId, series.id),
+      orderBy: [desc(dataPoints.date)],
+      limit: 100,
+    });
     
     if (!data || data.length === 0) {
       return NextResponse.json(FALLBACK_INFLATION);
     }
 
-    const formatted = data.map((d: EconomicIndicator) => ({
+    const formatted = data.map((d) => ({
       year: d.date.substring(0, 4),
       rate: parseFloat(d.value),
-    }));
+    })).reverse();
 
     return NextResponse.json(formatted);
   } catch (error) {
