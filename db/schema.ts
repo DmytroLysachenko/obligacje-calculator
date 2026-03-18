@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, numeric, integer, boolean, pgEnum, serial, date } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, numeric, integer, boolean, pgEnum, serial, date, uniqueIndex } from "drizzle-orm/pg-core";
 
 export const instrumentTypeEnum = pgEnum("instrument_type", ["bond", "equity", "commodity", "crypto"]);
 export const interestTypeEnum = pgEnum("interest_type", ["fixed", "floating_nbp", "inflation_linked"]);
@@ -43,8 +43,12 @@ export const economicIndicators = pgTable("economic_indicators", {
   id: serial("id").primaryKey(),
   indicatorName: text("indicator_name").notNull(),
   date: date("date").notNull(),
-  value: numeric("value", { precision: 10, scale: 4 }).notNull(),
+  value: numeric("value", { precision: 15, scale: 6 }).notNull(),
   updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => {
+  return {
+    indicatorDateIdx: uniqueIndex("indicator_date_idx").on(table.indicatorName, table.date),
+  };
 });
 
 export const userPortfolios = pgTable("user_portfolios", {

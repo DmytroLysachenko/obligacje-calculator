@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { economicIndicators } from "@/db/schema";
-import { desc } from "drizzle-orm";
+import { desc, eq, inArray } from "drizzle-orm";
 import { SyncProvider } from "./types";
 import { format, addMonths, startOfMonth, parseISO, isBefore } from "date-fns";
 
@@ -23,7 +23,20 @@ export class SyncEngine {
   }
 
   private async syncProvider(provider: SyncProvider, startYear: number) {
+    // 1. Determine which indicators this provider handles
+    // We'll dry-run fetch to see indicator names or use a mapping
+    // For now, let's assume we fetch all and let the engine find the "oldest" last date 
+    // among typical indicators for that provider.
+    
+    // Better: let's just use the specific provider's logic to fetch data
+    // and let the DB handle the "already exists" part.
+    // However, to know WHERE TO START, we need a hint.
+    
+    const indicatorHint = provider.name.includes("Inflation") ? "inflation_pl" : 
+                         (provider.name.includes("NBP") ? "gold_price" : "sp500");
+
     const lastRecord = await db.query.economicIndicators.findFirst({
+      where: eq(economicIndicators.indicatorName, indicatorHint),
       orderBy: [desc(economicIndicators.date)],
     });
 
@@ -35,7 +48,7 @@ export class SyncEngine {
     const today = startOfMonth(new Date());
 
     if (isBefore(today, currentStartDate)) {
-      console.log(`[SyncEngine] ${provider.name} is already up to date.`);
+      console.log(`[SyncEngine] ${provider.name} (${indicatorHint}) is already up to date.`);
       return { provider: provider.name, status: 'up-to-date' };
     }
 
@@ -59,22 +72,26 @@ export class SyncEngine {
       const chunk = data.slice(i, i + chunkSize);
       
       for (const record of chunk) {
-        await db.insert(economicIndicators).values({
-          indicatorName: record.indicatorName,
-          date: record.date,
-          value: record.value.toString(),
-          updatedAt: new Date(),
-        }).onConflictDoUpdate({
-          target: [economicIndicators.indicatorName, economicIndicators.date],
-          set: { 
+        try {
+          await db.insert(economicIndicators).values({
+            indicatorName: record.indicatorName,
+            date: record.date,
             value: record.value.toString(),
-            updatedAt: new Date()
-          }
-        });
-        savedCount++;
+            updatedAt: new Date(),
+          }).onConflictDoUpdate({
+            target: [economicIndicators.indicatorName, economicIndicators.date],
+            set: { 
+              value: record.value.toString(),
+              updatedAt: new Date()
+            }
+          });
+          savedCount++;
+        } catch (err) {
+          console.error(`[SyncEngine] Error saving record ${record.indicatorName} for ${record.date}:`, err);
+        }
       }
       
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 50));
     }
 
     return { provider: provider.name, status: 'success', imported: savedCount };
