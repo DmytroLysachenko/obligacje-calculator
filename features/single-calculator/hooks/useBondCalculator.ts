@@ -33,7 +33,6 @@ export function useBondCalculator() {
   const [results, setResults] = useState<CalculationResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [isError, setIsError] = useState(false);
-  const initialCalculated = useRef(false);
 
   // Sync state with URL
   useQuerySync(inputs, (initial) => {
@@ -62,13 +61,14 @@ export function useBondCalculator() {
     }
   }, [inputs]);
 
-  // Initial calculation once state is loaded from URL or defaulted
+  // Auto-calculate with debounce
   useEffect(() => {
-    if (!initialCalculated.current) {
+    const timer = setTimeout(() => {
       calculate();
-      initialCalculated.current = true;
-    }
-  }, [calculate]);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [inputs, calculate]);
 
   const updateInput = (key: keyof BondInputs, value: string | number | boolean | undefined) => {
     setInputs((prev) => {

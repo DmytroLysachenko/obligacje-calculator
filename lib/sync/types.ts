@@ -6,5 +6,6 @@ export interface SyncRecord {
 
 export interface SyncProvider {
   name: string;
+  seriesSlug: string;
   fetchData(startDate: string, endDate: string): Promise<SyncRecord[]>;
 }

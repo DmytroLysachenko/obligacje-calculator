@@ -34,7 +34,6 @@ export function useComparison() {
   const [resultsA, setResultsA] = useState<CalculationResult | null>(null);
   const [resultsB, setResultsB] = useState<CalculationResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
-  const initialCalculated = useRef(false);
 
   // Sync state with URL using prefixes to avoid collisions
   const combinedState = {
@@ -89,12 +88,14 @@ export function useComparison() {
     }
   }, [inputsA, inputsB]);
 
+  // Auto-calculate with debounce
   useEffect(() => {
-    if (!initialCalculated.current) {
+    const timer = setTimeout(() => {
       calculate();
-      initialCalculated.current = true;
-    }
-  }, [calculate]);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [inputsA, inputsB, calculate]);
 
   const updateInputA = (key: keyof BondInputs, value: string | number | boolean | undefined) => {
     setInputsA(prev => ({ ...prev, [key]: value }));

@@ -6,7 +6,7 @@ import { TaxStrategy } from '../../types';
  * 
  * STANDARD: 19% Belka tax on interest.
  * IKE: 0% tax.
- * IKZE: 5% flat tax on the WHOLE amount (principal + interest) at withdrawal.
+ * IKZE: 5% flat tax on the WHOLE withdrawal amount (principal + interest).
  */
 export function calculateTaxAmount(
   amount: Decimal, 
@@ -21,7 +21,7 @@ export function calculateTaxAmount(
     case TaxStrategy.IKE:
       return new Decimal(0);
     case TaxStrategy.IKZE:
-      rate = 5;
+      rate = 5; // Flat 5% on total value
       break;
     case TaxStrategy.STANDARD:
     default:
@@ -30,6 +30,8 @@ export function calculateTaxAmount(
   }
 
   if (useOfficialRounding) {
+    // For IKZE, the base is the full amount. For standard, it is the interest.
+    // The calling function handles passing the correct 'amount' (base).
     const taxableBase = amount.toDecimalPlaces(0, Decimal.ROUND_HALF_UP);
     const tax = taxableBase.times(new Decimal(rate).dividedBy(100));
     return tax.toDecimalPlaces(0, Decimal.ROUND_HALF_UP);

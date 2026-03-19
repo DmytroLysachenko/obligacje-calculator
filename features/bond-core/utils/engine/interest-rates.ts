@@ -31,11 +31,16 @@ export function determineInterestRate(
   } 
   
   if (bondType === BondType.ROR || bondType === BondType.DOR) {
+    // Variable rate bonds (ROR/DOR) often have a fixed rate only for the first month or first year
+    // For ROR (1y) it is monthly, so period 1 is month 1.
     return isFirstPeriod ? new Decimal(firstYearRate) : Decimal.max(0, expectedNbpRate).plus(margin);
   } 
   
   if (isInflationIndexed) {
     if (isFirstPeriod) return new Decimal(firstYearRate);
+    
+    // Note: If this is the very last day of maturity, some EDO series use 
+    // the previous period's rate for the final fractional accrual.
     
     // Use the specific lagged value if provided, otherwise fallback to expected inflation
     const baseInflation = inflationLagValue !== undefined ? inflationLagValue : expectedInflation;

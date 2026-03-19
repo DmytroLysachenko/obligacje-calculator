@@ -9,11 +9,11 @@ import { cache } from "react";
 export const getHistoricalDataMap = cache(async (fromDate: string, toDate: string) => {
   // Find the IDs for the relevant series
   const series = await db.query.dataSeries.findMany({
-    where: inArray(dataSeries.slug, ['pl-cpi', 'nbp-ref-rate']),
+    where: inArray(dataSeries.slug, ['pl-cpi', 'nbp-reference-rate']),
   });
 
   const cpiSeries = series.find(s => s.slug === 'pl-cpi');
-  const nbpSeries = series.find(s => s.slug === 'nbp-ref-rate');
+  const nbpSeries = series.find(s => s.slug === 'nbp-reference-rate');
 
   if (!cpiSeries && !nbpSeries) return {};
 

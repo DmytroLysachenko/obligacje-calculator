@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { SyncEngine } from '@/lib/sync/sync-engine';
 import { NbpSyncProvider } from '@/lib/sync/providers/nbp';
 import { StooqSyncProvider } from '@/lib/sync/providers/stooq';
+import { GusSyncProvider } from '@/lib/sync/providers/gus';
 import { WorldBankSyncProvider } from '@/lib/sync/providers/worldbank';
 
 export async function GET(req: NextRequest) {
@@ -18,6 +19,7 @@ export async function GET(req: NextRequest) {
   const engine = new SyncEngine([
     new NbpSyncProvider(),
     new StooqSyncProvider(),
+    new GusSyncProvider(),
     new WorldBankSyncProvider()
   ]);
 

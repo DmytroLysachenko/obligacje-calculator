@@ -60,17 +60,24 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
           <Button 
             onClick={() => calculate()} 
             disabled={isCalculating}
+            variant={isCalculating ? "outline" : "default"}
             className="px-8 font-bold shadow-lg shadow-primary/20 gap-2 h-12"
           >
             {isCalculating ? (
               <span className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Calculating...
+                Updating...
               </span>
             ) : (
               'Simulate Investment'
             )}
           </Button>
+          {!isCalculating && !isError && (
+            <span className="text-xs text-muted-foreground flex items-center gap-1 animate-in fade-in duration-500">
+              <Check className="h-3 w-3 text-green-500" />
+              Live results
+            </span>
+          )}
           {isError && <span className="text-destructive text-sm font-medium">Simulation error!</span>}
         </div>
         <Button 

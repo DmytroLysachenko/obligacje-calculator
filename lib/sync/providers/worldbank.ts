@@ -7,6 +7,7 @@ interface WorldBankRecord {
 
 export class WorldBankSyncProvider implements SyncProvider {
   name = "World Bank (Inflation)";
+  seriesSlug = "pl-cpi";
   private baseUrl = "https://api.worldbank.org/v2/country/POL/indicator/FP.CPI.TOTL.ZG?format=json";
 
   async fetchData(startDate: string, endDate: string): Promise<SyncRecord[]> {

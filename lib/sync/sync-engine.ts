@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { dataSeries, dataPoints } from "@/db/schema";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { SyncProvider } from "./types";
 import { format, addMonths, startOfMonth, parseISO, isBefore } from "date-fns";
 
@@ -23,16 +23,12 @@ export class SyncEngine {
   }
 
   private async syncProvider(provider: SyncProvider, startYear: number) {
-    // Determine typical slug for this provider to find last sync date
-    const slugHint = provider.name.includes("Inflation") ? "pl-cpi" : 
-                    (provider.name.includes("NBP") ? "gold-usd" : "sp500");
-
     const series = await db.query.dataSeries.findFirst({
-      where: eq(dataSeries.slug, slugHint),
+      where: eq(dataSeries.slug, provider.seriesSlug),
     });
 
     if (!series) {
-      throw new Error(`Base series metadata for ${slugHint} not found. Run seed-series first.`);
+      throw new Error(`Base series metadata for ${provider.seriesSlug} not found. Run seed-series first.`);
     }
 
     const lastPoint = await db.query.dataPoints.findFirst({
@@ -48,7 +44,7 @@ export class SyncEngine {
     const today = startOfMonth(new Date());
 
     if (isBefore(today, currentStartDate)) {
-      console.log(`[SyncEngine] ${provider.name} (${slugHint}) is already up to date.`);
+      console.log(`[SyncEngine] ${provider.name} (${provider.seriesSlug}) is already up to date.`);
       return { provider: provider.name, status: 'up-to-date' };
     }
 
@@ -64,11 +60,14 @@ export class SyncEngine {
     }
 
     // Cache slug -> UUID mapping for this run
-    const slugToId: Record<string, string> = {};
+    const slugToId: Record<string, string> = {
+      [provider.seriesSlug]: series.id
+    };
     
-    console.log(`[SyncEngine] Saving ${data.length} records...`);
-    let savedCount = 0;
-
+    console.log(`[SyncEngine] Saving ${data.length} records in batches...`);
+    
+    // Prepare records for batch insert
+    const recordsToInsert = [];
     for (const record of data) {
       if (!slugToId[record.seriesSlug]) {
         const s = await db.query.dataSeries.findFirst({
@@ -78,26 +77,22 @@ export class SyncEngine {
       }
 
       const seriesId = slugToId[record.seriesSlug];
-      if (!seriesId) {
-        console.warn(`[SyncEngine] Skipping record: series slug '${record.seriesSlug}' not found in DB.`);
-        continue;
-      }
+      if (!seriesId) continue;
 
-      try {
-        await db.insert(dataPoints).values({
-          seriesId,
-          date: record.date,
-          value: record.value.toString(),
-        }).onConflictDoUpdate({
-          target: [dataPoints.seriesId, dataPoints.date],
-          set: { value: record.value.toString() }
-        });
-        savedCount++;
-      } catch (err) {
-        console.error(`[SyncEngine] Error saving data point for ${record.seriesSlug} at ${record.date}:`, err);
-      }
+      recordsToInsert.push({
+        seriesId,
+        date: record.date,
+        value: record.value.toString(),
+      });
     }
 
-    return { provider: provider.name, status: 'success', imported: savedCount };
+    if (recordsToInsert.length > 0) {
+      await db.insert(dataPoints).values(recordsToInsert).onConflictDoUpdate({
+        target: [dataPoints.seriesId, dataPoints.date],
+        set: { value: sql`EXCLUDED.value` }
+      });
+    }
+
+    return { provider: provider.name, status: 'success', imported: recordsToInsert.length };
   }
 }

@@ -105,6 +105,13 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
       icon: ShieldCheck,
       color: "text-orange-500",
       bg: "bg-orange-500/10"
+    },
+    {
+      title: t('bonds.real_cagr'),
+      value: `${results.realAnnualizedReturn.toFixed(2)}%`,
+      icon: TrendingUp,
+      color: "text-purple-500",
+      bg: "bg-purple-500/10"
     }
   ];
 

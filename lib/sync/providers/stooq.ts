@@ -1,7 +1,8 @@
 import { SyncProvider, SyncRecord } from "../types";
 
 export class StooqSyncProvider implements SyncProvider {
-  name = "Stooq (Market Data)";
+  name = 'Stooq Market Data';
+  seriesSlug = 'sp500';
   private baseUrl = "https://stooq.com/q/d/l/";
 
   async fetchData(startDate: string, endDate: string): Promise<SyncRecord[]> {

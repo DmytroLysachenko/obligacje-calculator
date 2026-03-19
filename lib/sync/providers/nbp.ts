@@ -8,6 +8,7 @@ interface NbpGoldData {
 
 export class NbpSyncProvider implements SyncProvider {
   name = "NBP API";
+  seriesSlug = "nbp-reference-rate";
   private baseUrl = "https://api.nbp.pl/api";
 
   async fetchData(startDate: string, endDate: string): Promise<SyncRecord[]> {

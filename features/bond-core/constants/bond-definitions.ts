@@ -12,6 +12,7 @@ export interface BondDefinition {
     pl: string;
   };
   duration: number; // in years
+  nominalValue: number; // usually 100 PLN
   isCapitalized: boolean;
   payoutFrequency: InterestPayout;
   firstYearRate: number; // %
@@ -35,6 +36,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
       pl: 'Stałe oprocentowanie przez cały okres 3 miesięcy. Idealne na krótkoterminowe oszczędności.',
     },
     duration: 0.25,
+    nominalValue: 100,
     isCapitalized: false,
     payoutFrequency: InterestPayout.MATURITY,
     firstYearRate: 2.50,
@@ -55,6 +57,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
       pl: 'Oprocentowanie oparte na stopie referencyjnej NBP. Odsetki wypłacane co miesiąc.',
     },
     duration: 1,
+    nominalValue: 100,
     isCapitalized: false,
     payoutFrequency: InterestPayout.MONTHLY,
     firstYearRate: 4.25,
@@ -75,6 +78,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
       pl: 'Oprocentowanie oparte na stopie referencyjnej NBP plus marża. Wypłata co miesiąc.',
     },
     duration: 2,
+    nominalValue: 100,
     isCapitalized: false,
     payoutFrequency: InterestPayout.MONTHLY,
     firstYearRate: 4.40,
@@ -95,6 +99,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
       pl: 'Stałe oprocentowanie przez 3 lata z coroczną kapitalizacją odsetek.',
     },
     duration: 3,
+    nominalValue: 100,
     isCapitalized: true,
     payoutFrequency: InterestPayout.MATURITY,
     firstYearRate: 4.65,
@@ -115,6 +120,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
       pl: 'Oprocentowanie oparte na inflacji po pierwszym roku. Roczna wypłata odsetek.',
     },
     duration: 4,
+    nominalValue: 100,
     isCapitalized: false,
     payoutFrequency: InterestPayout.YEARLY,
     firstYearRate: 5.00,
@@ -135,6 +141,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
       pl: 'Dla beneficjentów programu 800+. Wyższa marża ponad inflację i coroczna kapitalizacja.',
     },
     duration: 6,
+    nominalValue: 100,
     isCapitalized: true,
     payoutFrequency: InterestPayout.MATURITY,
     firstYearRate: 5.20,
@@ -156,6 +163,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
       pl: 'Długoterminowe oszczędności indeksowane inflacją z coroczną kapitalizacją. Wysoka marża.',
     },
     duration: 10,
+    nominalValue: 100,
     isCapitalized: true,
     payoutFrequency: InterestPayout.MATURITY,
     firstYearRate: 5.60,
@@ -176,6 +184,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
       pl: 'Najdłuższe obligacje rodzinne z najwyższą marżą i coroczną kapitalizacją.',
     },
     duration: 12,
+    nominalValue: 100,
     isCapitalized: true,
     payoutFrequency: InterestPayout.MATURITY,
     firstYearRate: 5.85,

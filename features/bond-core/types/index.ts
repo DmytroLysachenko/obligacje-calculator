@@ -59,6 +59,7 @@ export interface YearlyTimelinePoint {
   cumulativeInflation: number;
   isMaturity: boolean;
   isWithdrawal: boolean;
+  isProjected?: boolean;
 }
 
 export interface CalculationResult {
@@ -106,6 +107,7 @@ export interface RegularInvestmentResult {
   totalProfit: number;
   totalTax: number;
   totalEarlyWithdrawalFees: number;
+  realAnnualizedReturn: number; // CAGR adjusted for inflation
   timeline: RegularTimelinePoint[];
   lots: LotBreakdown[];
 }
@@ -119,4 +121,5 @@ export interface RegularTimelinePoint {
   profit: number;
   tax: number;
   earlyWithdrawalFees: number;
+  isProjected?: boolean;
 }

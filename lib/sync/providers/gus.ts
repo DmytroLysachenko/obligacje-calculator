@@ -8,6 +8,7 @@ interface GusBdlValue {
 
 export class GusSyncProvider implements SyncProvider {
   name = "GUS BDL (Polish Economic Data)";
+  seriesSlug = "pl-cpi";
   private baseUrl = "https://bdl.stat.gov.pl/api/v1/data/by-variable";
 
   private indicators = [

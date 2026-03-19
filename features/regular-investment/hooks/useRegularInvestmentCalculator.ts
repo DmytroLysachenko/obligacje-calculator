@@ -35,7 +35,6 @@ export function useRegularInvestmentCalculator() {
   const [results, setResults] = useState<RegularInvestmentResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [isError, setIsError] = useState(false);
-  const initialCalculated = useRef(false);
 
   // Sync state with URL
   useQuerySync(inputs, (initial) => {
@@ -64,12 +63,14 @@ export function useRegularInvestmentCalculator() {
     }
   }, [inputs]);
 
+  // Auto-calculate with debounce
   useEffect(() => {
-    if (!initialCalculated.current) {
+    const timer = setTimeout(() => {
       calculate();
-      initialCalculated.current = true;
-    }
-  }, [calculate]);
+    }, 600); // Slightly longer for regular investment as it is heavier
+
+    return () => clearTimeout(timer);
+  }, [inputs, calculate]);
 
   const updateInput = (key: keyof RegularInvestmentInputs, value: string | number | boolean | undefined) => {
     setInputs((prev) => {

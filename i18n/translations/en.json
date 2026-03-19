@@ -139,6 +139,7 @@
     "final_nominal_value": "Final Nominal Value",
     "total_net_profit": "Total Net Profit",
     "real_value_inflation": "Real Value (Inflation Adjusted)",
+    "real_cagr": "Real Annualized Return (CAGR)",
     "maturity_schedule": "Maturity Schedule (The Ladder)",
     "bond_plural": "Bonds",
     "bond_singular": "Bond",

@@ -139,6 +139,7 @@
     "final_nominal_value": "Końcowa wartość nominalna",
     "total_net_profit": "Całkowity Zysk Netto",
     "real_value_inflation": "Wartość Realna (skorygowana o inflację)",
+    "real_cagr": "Realna Stopa Zwrotu (CAGR)",
     "maturity_schedule": "Harmonogram Wykupu (Drabina)",
     "bond_plural": "Obligacje",
     "bond_singular": "Obligacja",
