@@ -1,229 +1,73 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip as RechartsTooltip,
-  ResponsiveContainer,
-  Legend,
-  LineChart,
-  Line,
-  TooltipProps,
-} from "recharts";
-import {
-  ValueType,
-  NameType,
-} from "recharts/types/component/DefaultTooltipContent";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
 import { useMultiAssetComparison } from "../hooks/useMultiAssetComparison";
-import { Slider } from "@/components/ui/slider";
-import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/i18n";
-import {
-  TrendingUp,
-  Wallet,
-  Activity,
-  History,
-  Info,
-  Download,
-  Share2,
-  ShoppingCart,
+import { 
+  Activity, 
+  Share2, 
+  Download, 
   CheckCircle2,
-  Zap,
-  Settings2,
-  RefreshCw,
-  Loader2,
 } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { exportToCSV } from "@/shared/utils/csv-export";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { exportToCSV } from "@/shared/utils/csv-export";
+import { RecalculateButton } from "@/shared/components/RecalculateButton";
+
+// Sub-components
+import { ComparisonControls } from "./ComparisonControls";
+import { ComparisonChart } from "./ComparisonChart";
+import { ComparisonSummary } from "./ComparisonSummary";
+import { ComparisonAssetBreakdown } from "./ComparisonAssetBreakdown";
 
 interface ChartDataRow {
   date: string;
   [key: string]: string | number;
 }
 
-interface PayloadEntry {
-  name: string;
-  value: number;
-  color: string;
-  dataKey?: string | number;
-}
-
-interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
-  active?: boolean;
-  payload?: PayloadEntry[];
-  label?: NameType;
-  formatCurrency: (value: number) => string;
-}
-
-const CustomTooltip = ({
-  active,
-  payload,
-  label,
-  formatCurrency,
-}: CustomTooltipProps) => {
-  if (!active || !payload || !payload.length) return null;
-
-  return (
-    <div className="bg-popover border border-border p-3 shadow-xl rounded-none text-popover-foreground min-w-[180px]">
-      <p className="font-bold mb-2 border-b pb-1 border-border/50 text-xs">
-        {label}
-      </p>
-      <div className="space-y-1.5">
-        {payload
-          .filter(
-            (p) => p.dataKey && !String(p.dataKey).includes("_drawdown"),
-          )
-          .map((entry, index: number) => (
-            <div
-              key={index}
-              className="flex justify-between items-center gap-4 text-xs"
-            >
-              <span className="flex items-center gap-1.5">
-                <span
-                  className="w-2 h-2 rounded-full"
-                  style={{ backgroundColor: entry.color }}
-                />
-                {entry.name}:
-              </span>
-              <span className="font-mono font-bold">
-                {formatCurrency(Number(entry.value))}
-              </span>
-            </div>
-          ))}
-      </div>
-    </div>
-  );
-};
-
-const DrawdownTooltip = ({
-  active,
-  payload,
-  label,
-}: {
-  active?: boolean;
-  payload?: PayloadEntry[];
-  label?: NameType;
-}) => {
-  if (!active || !payload || !payload.length) return null;
-
-  return (
-    <div className="bg-popover border border-border p-3 shadow-xl rounded-none text-popover-foreground min-w-[180px]">
-      <p className="font-bold mb-2 border-b pb-1 border-border/50 text-xs">
-        {label}
-      </p>
-      <div className="space-y-1.5">
-        {payload.map((entry, index: number) => (
-          <div
-            key={index}
-            className="flex justify-between items-center gap-4 text-xs"
-          >
-            <span className="flex items-center gap-1.5">
-              <span
-                className="w-2 h-2 rounded-full"
-                style={{ backgroundColor: entry.color }}
-              />
-              {entry.name}:
-            </span>
-            <span className="font-mono font-bold text-destructive">
-              -{Number(entry.value).toFixed(2)}%
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
 export const MultiAssetComparisonContainer = () => {
   const {
     initialSum,
-    setInitialSum,
+    updateInitialSum,
     monthlyContribution,
-    setMonthlyContribution,
+    updateMonthlyContribution,
     assets,
     startDate,
     startYear,
-    setStartYear,
+    updateStartYear,
     startMonth,
-    setStartMonth,
+    updateStartMonth,
     years,
     months,
     showRealValue,
-    setShowRealValue,
+    updateShowRealValue,
+    isDirty,
+    recalculate
   } = useMultiAssetComparison();
+  
   const { language } = useLanguage();
   const [copied, setCopied] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
 
-  const formatCurrency = (val: number) =>
-    new Intl.NumberFormat(language === "pl" ? "pl-PL" : "en-US", {
+  const handleRecalculate = () => {
+    setIsCalculating(true);
+    recalculate();
+    setTimeout(() => setIsCalculating(false), 400);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && isDirty) {
+      handleRecalculate();
+    }
+  };
+
+  const formatCurrency = (val: number) => {
+    return new Intl.NumberFormat(language === "pl" ? "pl-PL" : "en-GB", {
       style: "currency",
       currency: "PLN",
       maximumFractionDigits: 0,
     }).format(val);
-
-  // Align data for chart
-  const chartData: ChartDataRow[] = assets[0].series.map((point, i) => {
-    const dataRow: ChartDataRow = { date: point.date };
-    assets.forEach((asset) => {
-      dataRow[asset.metadata.id] = showRealValue
-        ? Math.round(asset.series[i]?.realValue || 0)
-        : Math.round(asset.series[i]?.value || 0);
-      dataRow[`${asset.metadata.id}_drawdown`] = Number(
-        (asset.series[i]?.drawdown || 0).toFixed(2),
-      );
-    });
-    return dataRow;
-  });
-
-  const totalInvested =
-    initialSum + monthlyContribution * (assets[0].series.length - 1);
-
-  const handleExport = () => {
-    const exportData = chartData.map((row) => {
-      const flatRow: Record<string, string | number> = { Date: row.date };
-      assets.forEach((a) => {
-        flatRow[`${a.metadata.name} (Value)`] = row[a.metadata.id];
-        flatRow[`${a.metadata.name} (Drawdown %)`] =
-          row[`${a.metadata.id}_drawdown`];
-      });
-      return flatRow;
-    });
-    exportToCSV(exportData, `multi-asset-comparison-${startDate}`);
   };
 
   const handleShare = () => {
@@ -232,54 +76,47 @@ export const MultiAssetComparisonContainer = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleRefresh = useCallback(() => {
-    setIsCalculating(true);
-    setTimeout(() => setIsCalculating(false), 600);
-  }, []);
-
-  const presets = [
-    { label: "Bull Run 2021", year: "2021", month: "01" },
-    { label: "War Start 2022", year: "2022", month: "02" },
-    { label: "Recovery 2023", year: "2023", month: "01" },
-  ];
-
-  // Verdict Logic
-  const verdict = (() => {
-    const sortedByReturn = [...assets].sort((a, b) => {
-      const aVal = a.series[a.series.length - 1].value;
-      const bVal = b.series[b.series.length - 1].value;
-      return bVal - aVal;
+  // Build chart data from series
+  const chartData: ChartDataRow[] = assets[0].series.map((point, idx) => {
+    const row: ChartDataRow = { date: point.date };
+    assets.forEach((asset) => {
+      row[asset.metadata.id] = showRealValue
+        ? asset.series[idx].realValue!
+        : asset.series[idx].value;
     });
+    return row;
+  });
 
-    const best = sortedByReturn[0];
-    const riskies = [...assets].sort((a, b) => {
-      const aMax = Math.max(...a.series.map((s) => s.drawdown));
-      const bMax = Math.max(...b.series.map((s) => s.drawdown));
-      return bMax - aMax;
-    })[0];
+  const handleExport = () => {
+    const csvData = chartData.map(row => ({
+      Date: row.date,
+      ...Object.fromEntries(
+        assets.map(a => [a.metadata.name, row[a.metadata.id]])
+      )
+    }));
+    exportToCSV(csvData, `market-vs-bonds-${startDate}.csv`);
+  };
 
-    const lastPoint = best.series[best.series.length - 1];
-    const bestReturn = ((lastPoint.value / totalInvested - 1) * 100).toFixed(1);
-    const riskiesDD = Math.max(
-      ...riskies.series.map((s) => s.drawdown),
-    ).toFixed(1);
-
+  const totalInvested = initialSum + (monthlyContribution * (assets[0].series.length - 1));
+  
+  const verdict = (() => {
+    const sorted = [...assets].sort((a, b) => {
+      const valA = showRealValue ? a.series[a.series.length-1].realValue! : a.series[a.series.length-1].value;
+      const valB = showRealValue ? b.series[b.series.length-1].realValue! : b.series[b.series.length-1].value;
+      return valB - valA;
+    });
+    const winner = sorted[0];
     return {
-      title: `${best.metadata.name} is the winner`,
-      text: `${best.metadata.name} provided the highest return of ${bestReturn}% during this period. However, ${riskies.metadata.name} was the most volatile with a maximum drawdown of ${riskiesDD}%.`,
-      recommendation:
-        best.metadata.id === "sp500"
-          ? "Aggressive growth strategy worked best here, but required strong stomach for volatility."
-          : "Conservative strategy won due to market instability.",
+      title: winner.metadata.name,
+      text: `Based on historical data from ${startDate}, the best performing asset was ${winner.metadata.name}.`,
+      recommendation: winner.metadata.id === 'bonds' ? "Bonds provided the best risk-adjusted return in this period." : "Equities outperformed but with significantly higher volatility."
     };
   })();
 
-  const purchasingPower = (() => {
+  const purchasingPowerLoss = (() => {
     const lastPoint = assets[0].series[assets[0].series.length - 1];
-    const cumulativeInflation = lastPoint.value / lastPoint.realValue! || 1;
-    const powerLoss = (1 - 1 / cumulativeInflation) * 100;
-
-    return { powerLoss };
+    const cumulativeInflation = lastPoint.value / (lastPoint.realValue || 1);
+    return (1 - 1 / cumulativeInflation) * 100;
   })();
 
   return (
@@ -287,30 +124,12 @@ export const MultiAssetComparisonContainer = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="relative space-y-8 pb-32"
+      onKeyDown={handleKeyDown}
     >
-      {/* Fixed Calculate Button */}
-      <div className="fixed bottom-8 right-8 z-50">
-        <Button
-          onClick={handleRefresh}
-          disabled={isCalculating}
-          className={cn(
-            "h-16 px-10 rounded-full text-xl font-black shadow-[0_10px_40px_rgba(0,0,0,0.3)] gap-3 transition-all active:scale-95",
-            !isCalculating ? "bg-primary hover:bg-primary/90" : "bg-muted cursor-not-allowed"
-          )}
-        >
-          {isCalculating ? (
-            <Loader2 className="h-6 w-6 animate-spin" />
-          ) : (
-            <RefreshCw className="h-6 w-6" />
-          )}
-          RECALCULATE
-        </Button>
-      </div>
-
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-card p-6 rounded-2xl border-4 border-primary/10 shadow-xl">
         <div className="space-y-2">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary rounded-lg">
+            <div className="p-2 bg-primary rounded-xl">
               <Activity className="h-6 w-6 text-white" />
             </div>
             <h2 className="text-3xl font-black tracking-tight text-primary">
@@ -350,589 +169,56 @@ export const MultiAssetComparisonContainer = () => {
       </header>
 
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-        {/* Controls */}
-        <div className="xl:col-span-1 space-y-6">
-          <Card className="border-4 border-primary/5 shadow-2xl overflow-hidden sticky top-24">
-            <CardHeader className="bg-primary/5 border-b pb-4">
-              <CardTitle className="text-lg flex items-center gap-2 font-black text-primary">
-                <Settings2 className="h-5 w-5" />
-                CONFIGURATION
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <Accordion
-                type="single"
-                collapsible
-                defaultValue="capital"
-                className="w-full"
-              >
-                <AccordionItem
-                  value="capital"
-                  className="border-b px-6 py-2"
-                >
-                  <AccordionTrigger className="hover:no-underline py-4">
-                    <span className="text-sm font-black flex items-center gap-2 uppercase tracking-widest text-slate-700">
-                      <Wallet className="h-4 w-4 text-primary" />
-                      1. Capital
-                    </span>
-                  </AccordionTrigger>
-                  <AccordionContent className="space-y-8 pb-8">
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
-                          Initial Sum
-                        </Label>
-                        <span className="text-xl font-black text-primary">
-                          {formatCurrency(initialSum)}
-                        </span>
-                      </div>
-                      <Slider
-                        value={[initialSum]}
-                        min={0}
-                        max={500000}
-                        step={1000}
-                        onValueChange={([v]) => setInitialSum(v)}
-                      />
-                    </div>
-                    <div className="space-y-4 pt-6 border-t-2 border-dashed">
-                      <div className="flex justify-between items-center">
-                        <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
-                          Monthly Pay-in
-                        </Label>
-                        <span className="text-xl font-black text-primary">
-                          {formatCurrency(monthlyContribution)}
-                        </span>
-                      </div>
-                      <Slider
-                        value={[monthlyContribution]}
-                        min={0}
-                        max={20000}
-                        step={100}
-                        onValueChange={([v]) => setMonthlyContribution(v)}
-                      />
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem
-                  value="time"
-                  className="border-b px-6 py-2"
-                >
-                  <AccordionTrigger className="hover:no-underline py-4">
-                    <span className="text-sm font-black flex items-center gap-2 uppercase tracking-widest text-slate-700">
-                      <History className="h-4 w-4 text-primary" />
-                      2. Timeline
-                    </span>
-                  </AccordionTrigger>
-                  <AccordionContent className="space-y-6 pb-8">
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-2">
-                        <Label className="text-[10px] font-black text-muted-foreground uppercase">Year</Label>
-                        <Select value={startYear} onValueChange={setStartYear}>
-                          <SelectTrigger className="h-12 border-2 font-bold">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {years.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-[10px] font-black text-muted-foreground uppercase">Month</Label>
-                        <Select value={startMonth} onValueChange={setStartMonth}>
-                          <SelectTrigger className="h-12 border-2 font-bold">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {months.map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-2 mt-4">
-                      {presets.map((p) => (
-                        <Button
-                          key={p.label}
-                          variant="outline"
-                          size="sm"
-                          className={cn(
-                            "text-[10px] h-10 font-bold border-2 uppercase",
-                            startYear === p.year && startMonth === p.month ? "bg-primary text-white border-primary" : ""
-                          )}
-                          onClick={() => { setStartYear(p.year); setStartMonth(p.month); }}
-                        >
-                          {p.label}
-                        </Button>
-                      ))}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-
-                <AccordionItem
-                  value="display"
-                  className="border-0 px-6 py-2"
-                >
-                  <AccordionTrigger className="hover:no-underline py-4">
-                    <span className="text-sm font-black flex items-center gap-2 uppercase tracking-widest text-slate-700">
-                      <Zap className="h-4 w-4 text-primary" />
-                      3. Logic
-                    </span>
-                  </AccordionTrigger>
-                  <AccordionContent className="pb-8">
-                    <div className="flex items-center justify-between p-4 bg-primary/5 rounded-2xl border-2 border-primary/10">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <Label className="text-sm font-black text-primary uppercase">
-                            Inflation Adjusted
-                          </Label>
-                        </div>
-                        <p className="text-[10px] text-muted-foreground font-bold italic">
-                          Shows &quot;Real&quot; value
-                        </p>
-                      </div>
-                      <Switch
-                        checked={showRealValue}
-                        onCheckedChange={setShowRealValue}
-                      />
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </CardContent>
-          </Card>
-
-          {/* Purchasing Power Visual */}
-          <Card className="border-orange-100 bg-orange-50/20 shadow-sm overflow-hidden border-2">
-            <CardHeader className="pb-2 bg-orange-100/50">
-              <CardTitle className="text-xs font-black flex items-center gap-2 text-orange-700 uppercase tracking-widest">
-                <ShoppingCart className="h-4 w-4" />
-                Purchasing Power Loss
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="text-center space-y-1">
-                  <p className="text-[10px] font-black text-muted-foreground uppercase">
-                    Start
-                  </p>
-                  <div className="p-2 bg-white rounded-lg shadow-sm">
-                    <ShoppingCart className="h-5 w-5 text-orange-500" />
-                  </div>
-                </div>
-                <div className="h-1 flex-1 mx-4 bg-orange-200 rounded-full relative overflow-hidden">
-                  <motion.div
-                    className="absolute inset-0 bg-orange-500"
-                    initial={{ width: "0%" }}
-                    animate={{ width: `${purchasingPower.powerLoss}%` }}
-                    transition={{ duration: 1 }}
-                  />
-                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-black text-orange-600">
-                    -{purchasingPower.powerLoss.toFixed(1)}%
-                  </div>
-                </div>
-                <div className="text-center space-y-1">
-                  <p className="text-[10px] font-black text-muted-foreground uppercase">
-                    End
-                  </p>
-                  <div className="p-2 bg-white/50 rounded-lg border border-dashed border-orange-200">
-                    <ShoppingCart className="h-5 w-5 text-orange-300" />
-                  </div>
-                </div>
-              </div>
-              <p className="text-[11px] text-orange-800 leading-relaxed italic text-center font-medium bg-white/50 p-3 rounded-xl">
-                &quot;Due to inflation, your capital lost nearly{" "}
-                {purchasingPower.powerLoss.toFixed(0)}% of its effective buying
-                power.&quot;
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Savings Disclaimer */}
-          <Card className="bg-slate-900 text-white shadow-2xl border-none overflow-hidden">
-            <CardHeader className="bg-slate-800/50 pb-2">
-              <CardTitle className="text-[10px] font-black flex items-center gap-2 uppercase tracking-widest text-slate-400">
-                <Info className="h-4 w-4" />
-                SAVINGS CONTEXT
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <p className="text-xs leading-relaxed text-slate-300 font-medium italic">
-                &quot;Savings Account&quot; interest is not unified. It varies heavily between banks. 
-                This model assumes an average retail rate based on historical NBP margins (approx. 0.5-2%).
-              </p>
-            </CardContent>
-          </Card>
+        <div className="xl:col-span-1">
+          <ComparisonControls 
+            initialSum={initialSum}
+            updateInitialSum={updateInitialSum}
+            monthlyContribution={monthlyContribution}
+            updateMonthlyContribution={updateMonthlyContribution}
+            startYear={startYear}
+            updateStartYear={updateStartYear}
+            startMonth={startMonth}
+            updateStartMonth={updateStartMonth}
+            years={years}
+            months={months}
+            showRealValue={showRealValue}
+            updateShowRealValue={updateShowRealValue}
+            purchasingPowerLoss={purchasingPowerLoss}
+            formatCurrency={formatCurrency}
+          />
         </div>
 
-        {/* Main Chart Area */}
         <div className="xl:col-span-3 space-y-8">
-          {/* Verdict Card */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-          >
-            <Card className="border-l-8 border-l-primary bg-primary/5 shadow-lg border-y-0 border-r-0">
-              <CardContent className="py-6 flex items-start gap-6">
-                <div className="p-4 bg-primary/10 rounded-2xl">
-                  <Zap className="h-8 w-8 text-primary fill-primary/20" />
-                </div>
-                <div className="space-y-2">
-                  <h3 className="text-xl font-black text-primary flex items-center gap-2">
-                    Winner: {verdict.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
-                    {verdict.text}
-                  </p>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full text-xs font-bold text-primary mt-2">
-                    <Info className="h-3 w-3" />
-                    Insight: {verdict.recommendation}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+          <ComparisonSummary 
+            verdict={verdict}
+            totalInvested={totalInvested}
+            durationMonths={assets[0].series.length - 1}
+            isCalculating={isCalculating}
+            formatCurrency={formatCurrency}
+          />
 
-          <div className="flex flex-wrap items-center justify-between gap-4 px-6 bg-muted/30 py-6 rounded-2xl border">
-            <div className="flex gap-10">
-              <div className="space-y-1">
-                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
-                  Total Invested
-                </p>
-                <p className="text-2xl font-black text-primary">
-                  {formatCurrency(totalInvested)}
-                </p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
-                  Duration
-                </p>
-                <p className="text-2xl font-black text-primary">
-                  {assets[0].series.length - 1} Months
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 bg-background rounded-xl border shadow-sm">
-              <div
-                className={cn(
-                  "h-2 w-2 rounded-full animate-pulse",
-                  isCalculating ? "bg-orange-500" : "bg-green-500",
-                )}
-              />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                {isCalculating ? "Live Calculation..." : "Sync Data Stable"}
-              </span>
-            </div>
-          </div>
+          <ComparisonChart 
+            chartData={chartData}
+            assets={assets}
+            showRealValue={showRealValue}
+            formatCurrency={formatCurrency}
+          />
 
-          <Tabs
-            defaultValue="growth"
-            className="w-full flex flex-col gap-6"
-          >
-            <TabsList className="grid w-full grid-cols-2 max-w-md h-12 p-1 bg-muted/50 rounded-xl">
-              <TabsTrigger
-                value="growth"
-                className="gap-2 rounded-lg data-[state=active]:shadow-md"
-              >
-                <TrendingUp className="h-4 w-4" />
-                Capital Growth
-              </TabsTrigger>
-              <TabsTrigger
-                value="risk"
-                className="gap-2 rounded-lg data-[state=active]:shadow-md"
-              >
-                <Activity className="h-4 w-4" />
-                Risk / Drawdown
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent
-              value="growth"
-              className="mt-0"
-            >
-              <Card className="border shadow-xl overflow-hidden rounded-3xl">
-                <CardHeader className="bg-muted/30 px-8 py-6 border-b">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <CardTitle className="text-xl font-black">
-                        {showRealValue
-                          ? "Real Value Projection"
-                          : "Nominal Growth"}
-                      </CardTitle>
-                      <CardDescription>
-                        Performance comparison including monthly contributions.
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-8">
-                  <div
-                    className="w-full min-h-[450px] relative"
-                    style={{ minWidth: 0 }}
-                  >
-                    <ResponsiveContainer
-                      width="100%"
-                      height={450}
-                      key={`growth-chart-${chartData.length}`}
-                    >
-                      <AreaChart
-                        data={chartData}
-                        margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
-                      >
-                        <defs>
-                          {assets.map((asset) => (
-                            <linearGradient
-                              key={asset.metadata.id}
-                              id={`color_${asset.metadata.id}`}
-                              x1="0"
-                              y1="0"
-                              x2="0"
-                              y2="1"
-                            >
-                              <stop
-                                offset="5%"
-                                stopColor={asset.metadata.color}
-                                stopOpacity={0.15}
-                              />
-                              <stop
-                                offset="95%"
-                                stopColor={asset.metadata.color}
-                                stopOpacity={0}
-                              />
-                            </linearGradient>
-                          ))}
-                        </defs>
-                        <CartesianGrid
-                          strokeDasharray="3 3"
-                          vertical={false}
-                          stroke="rgba(0,0,0,0.05)"
-                        />
-                        <XAxis
-                          dataKey="date"
-                          fontSize={10}
-                          tickLine={false}
-                          axisLine={false}
-                          dy={10}
-                        />
-                        <YAxis
-                          fontSize={10}
-                          tickLine={false}
-                          axisLine={false}
-                          tickFormatter={(v: number) => `${v / 1000}k`}
-                        />
-                        <RechartsTooltip
-                          content={
-                            <CustomTooltip formatCurrency={formatCurrency} />
-                          }
-                        />
-                        <Legend
-                          verticalAlign="top"
-                          align="right"
-                          height={40}
-                          iconType="circle"
-                          wrapperStyle={{
-                            fontSize: "10px",
-                            fontWeight: "bold",
-                            textTransform: "uppercase",
-                          }}
-                        />
-                        {assets.map((asset) => (
-                          <Area
-                            key={asset.metadata.id}
-                            type="monotone"
-                            dataKey={asset.metadata.id}
-                            name={asset.metadata.name}
-                            stroke={asset.metadata.color}
-                            strokeWidth={3}
-                            fill={`url(#color_${asset.metadata.id})`}
-                            animationDuration={1500}
-                          />
-                        ))}
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent
-              value="risk"
-              className="mt-0"
-            >
-              <Card className="border shadow-xl overflow-hidden rounded-3xl">
-                <CardHeader className="bg-red-50/20 px-8 py-6 border-b">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-red-100 rounded-lg">
-                      <Activity className="h-5 w-5 text-red-600" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-xl font-black">
-                        Historical Drawdown (%)
-                      </CardTitle>
-                      <CardDescription>
-                        Maximum drops from peak value during market crashes.
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-8">
-                  <div
-                    className="w-full min-h-[450px] relative"
-                    style={{ minWidth: 0 }}
-                  >
-                    <ResponsiveContainer
-                      width="100%"
-                      height={450}
-                      key={`risk-chart-${chartData.length}`}
-                    >
-                      <LineChart
-                        data={chartData}
-                        margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
-                      >
-                        <CartesianGrid
-                          strokeDasharray="3 3"
-                          vertical={false}
-                          stroke="rgba(0,0,0,0.05)"
-                        />
-                        <XAxis
-                          dataKey="date"
-                          fontSize={10}
-                          tickLine={false}
-                          axisLine={false}
-                          dy={10}
-                        />
-                        <YAxis
-                          fontSize={10}
-                          tickLine={false}
-                          axisLine={false}
-                          tickFormatter={(v: number) => `${v}%`}
-                          reversed
-                        />
-                        <RechartsTooltip content={<DrawdownTooltip />} />
-                        <Legend
-                          verticalAlign="top"
-                          align="right"
-                          height={40}
-                          iconType="circle"
-                          wrapperStyle={{
-                            fontSize: "10px",
-                            fontWeight: "bold",
-                          }}
-                        />
-                        {assets.map((asset) => (
-                          <Line
-                            key={asset.metadata.id}
-                            type="stepAfter"
-                            dataKey={`${asset.metadata.id}_drawdown`}
-                            name={asset.metadata.name}
-                            stroke={asset.metadata.color}
-                            strokeWidth={3}
-                            dot={false}
-                            animationDuration={1500}
-                          />
-                        ))}
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-
-          {/* Asset Breakdown Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {assets.map((asset, idx) => {
-              const last = asset.series[asset.series.length - 1];
-              const maxDrawdown = Math.max(
-                ...asset.series.map((s) => s.drawdown),
-              );
-              const finalValue = showRealValue ? last.realValue! : last.value;
-              const netProfit = finalValue - totalInvested;
-              const isProfit = netProfit >= 0;
-
-              return (
-                <motion.div
-                  key={asset.metadata.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.1 }}
-                >
-                  <Card className="border-none shadow-lg h-full flex flex-col hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-card to-muted/20">
-                    <CardHeader className="pb-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div
-                            className="w-2 h-6 rounded-full"
-                            style={{ backgroundColor: asset.metadata.color }}
-                          />
-                          <CardTitle className="text-[10px] font-black uppercase tracking-widest">
-                            {asset.metadata.name}
-                          </CardTitle>
-                        </div>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="text-xs">
-                                {asset.metadata.description[language]}
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-6 flex-1 flex flex-col justify-between">
-                      <div className="space-y-2">
-                        <p className="text-3xl font-black text-primary tracking-tight">
-                          {formatCurrency(finalValue)}
-                        </p>
-                        <div
-                          className={cn(
-                            "text-sm font-black flex items-center gap-1.5",
-                            isProfit ? "text-green-600" : "text-destructive",
-                          )}
-                        >
-                          {isProfit ? (
-                            <TrendingUp className="h-4 w-4" />
-                          ) : (
-                            <Activity className="h-4 w-4" />
-                          )}
-                          {isProfit ? "+" : ""}
-                          {formatCurrency(netProfit)}
-                        </div>
-                      </div>
-                      <div className="pt-6 border-t border-muted-foreground/10 space-y-3">
-                        <div className="flex justify-between items-center text-[10px]">
-                          <span className="font-bold uppercase text-muted-foreground tracking-widest">
-                            Max Drawdown
-                          </span>
-                          <span className="text-destructive font-black">
-                            -{maxDrawdown.toFixed(1)}%
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center text-[10px]">
-                          <span className="font-bold uppercase text-muted-foreground tracking-widest">
-                            Total Return
-                          </span>
-                          <span className="text-green-600 font-black">
-                            +
-                            {((finalValue / totalInvested - 1) * 100).toFixed(
-                              1,
-                            )}
-                            %
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </div>
+          <ComparisonAssetBreakdown 
+            assets={assets}
+            totalInvested={totalInvested}
+            showRealValue={showRealValue}
+            formatCurrency={formatCurrency}
+            language={language as 'en' | 'pl'}
+          />
         </div>
       </div>
+
+      <RecalculateButton 
+        isDirty={isDirty}
+        loading={isCalculating}
+        onClick={handleRecalculate}
+      />
     </motion.div>
   );
 };

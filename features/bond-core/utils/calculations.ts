@@ -57,15 +57,16 @@ function getHistoricalValue(
 
 /**
  * Standard calculation for a single bond investment.
+ * Supports "rollover" (re-investing at maturity) for multi-year comparisons.
  */
-export function calculateBondInvestment(inputs: BondInputs): CalculationResult {
+export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolean }): CalculationResult {
   const {
     initialInvestment,
     firstYearRate,
     expectedInflation,
     expectedNbpRate = 5.25,
     margin,
-    duration,
+    duration: bondDuration,
     earlyWithdrawalFee,
     bondType,
     isCapitalized,
@@ -75,174 +76,232 @@ export function calculateBondInvestment(inputs: BondInputs): CalculationResult {
     isRebought,
     rebuyDiscount,
     historicalData,
-    taxStrategy
+    taxStrategy,
+    rollover = false
   } = inputs;
-
-  const bondDef = BOND_DEFINITIONS[bondType];
-  const isInflationIndexed = bondDef?.isInflationIndexed ?? false;
-  const nominalValue = bondDef?.nominalValue ?? 100;
 
   const startDate = parseISO(purchaseDate);
   const targetWithdrawalDate = parseISO(withdrawalDate);
-  const maturityDate = addMonths(startDate, Math.round(duration * 12));
   
-  const actualWithdrawalDate = min([targetWithdrawalDate, maturityDate]);
-  const isEarlyWithdrawal = isBefore(actualWithdrawalDate, maturityDate);
+  let currentInitialInvestment = new Decimal(initialInvestment);
+  let leftoverCash = new Decimal(0);
+  const globalTimeline: YearlyTimelinePoint[] = [];
+  let totalTaxAcc = new Decimal(0);
+  let totalFeeAcc = new Decimal(0);
+  let globalAccumulatedNetInterest = new Decimal(0);
+  let currentPurchaseDate = startDate;
+  let isCurrentlyRebought = isRebought;
 
-  const timeline: YearlyTimelinePoint[] = [];
-  
-  const dBondPrice = isRebought ? new Decimal(nominalValue).minus(rebuyDiscount) : new Decimal(nominalValue);
-  const numberOfBonds = new Decimal(initialInvestment).dividedBy(dBondPrice).floor();
-  const actualInitialInvestment = numberOfBonds.times(dBondPrice);
-  const nominalStartingValue = numberOfBonds.times(nominalValue);
+  // Add initial starting point for the whole simulation
+  globalTimeline.push({
+    year: 0,
+    periodLabel: format(startDate, 'MMM yyyy'),
+    interestRate: firstYearRate,
+    nominalValueBeforeInterest: initialInvestment,
+    interestEarned: 0,
+    taxDeducted: 0,
+    netInterest: 0,
+    nominalValueAfterInterest: initialInvestment,
+    accumulatedNetInterest: 0,
+    totalValue: initialInvestment,
+    realValue: initialInvestment,
+    netProfit: 0,
+    earlyWithdrawalValue: 0,
+    cumulativeInflation: 1,
+    isMaturity: false,
+    isWithdrawal: false,
+    isProjected: false,
+    inflationReference: expectedInflation,
+    nbpReference: expectedNbpRate,
+  });
 
-  let currentNominalValue = new Decimal(nominalStartingValue);
-  let cumulativeInflation = new Decimal(1);
-  let totalInterestEarnedSoFar = new Decimal(0);
-
-  const isMonthly = payoutFrequency === InterestPayout.MONTHLY;
-  const periods = isMonthly ? Math.round(duration * 12) : Math.ceil(duration);
-  const addPeriod = isMonthly ? addMonths : addYears;
-
-  for (let period = 1; period <= periods; period++) {
-    const periodStartDate = addPeriod(startDate, period - 1);
-    const periodEndDateNorm = addPeriod(startDate, period);
+  // We loop until we cover the whole simulation period (supporting multiple rollovers)
+  while (isBefore(currentPurchaseDate, targetWithdrawalDate)) {
+    const bondDef = BOND_DEFINITIONS[bondType];
+    const isInflationIndexed = bondDef?.isInflationIndexed ?? false;
+    const nominalValue = bondDef?.nominalValue ?? 100;
     
-    if (isAfter(periodStartDate, actualWithdrawalDate) && period > 1) break;
+    // Duration of THIS specific cycle
+    const cycleMaturityDate = addMonths(currentPurchaseDate, Math.round(bondDuration * 12));
+    const actualCycleEndDate = min([targetWithdrawalDate, cycleMaturityDate]);
+    const isEarlyWithdrawal = isBefore(actualCycleEndDate, cycleMaturityDate);
 
-    const isWithdrawalPeriod = isBefore(actualWithdrawalDate, periodEndDateNorm) || actualWithdrawalDate.getTime() === periodEndDateNorm.getTime();
-    const periodEndDate = min([periodEndDateNorm, actualWithdrawalDate]);
+    const dBondPrice = isCurrentlyRebought ? new Decimal(nominalValue).minus(rebuyDiscount) : new Decimal(nominalValue);
     
-    const daysInPeriod = differenceInDays(periodEndDateNorm, periodStartDate);
-    const daysHeldInPeriod = differenceInDays(periodEndDate, periodStartDate);
-    const timeFactor = daysInPeriod > 0 ? new Decimal(daysHeldInPeriod).dividedBy(daysInPeriod) : new Decimal(1);
-
-    if (timeFactor.lte(0) && period > 1) break;
-
-    const { value: lagInflation, isProjected } = getHistoricalValue(periodStartDate, 'inflation', 2, historicalData);
-
-    const currentInterestRate = determineInterestRate(
-      bondType,
-      period,
-      firstYearRate,
-      expectedInflation,
-      expectedNbpRate,
-      margin,
-      isInflationIndexed,
-      lagInflation
-    );
-
-    let interestEarned = new Decimal(0);
-    if (bondType === BondType.OTS) {
-      interestEarned = nominalStartingValue.times(currentInterestRate.dividedBy(100)).times(3).dividedBy(12);
-      if (isEarlyWithdrawal) interestEarned = new Decimal(0);
-    } else {
-      const annualRate = currentInterestRate.dividedBy(100);
-      if (isMonthly) {
-        interestEarned = currentNominalValue.times(annualRate.dividedBy(12)).times(timeFactor);
-      } else {
-        interestEarned = currentNominalValue.times(annualRate).times(timeFactor);
-      }
-    }
-
-    const previousNominalValue = new Decimal(currentNominalValue);
-    totalInterestEarnedSoFar = totalInterestEarnedSoFar.plus(interestEarned);
-
-    let taxDeducted = new Decimal(0);
-    if (!isCapitalized) {
-      if (taxStrategy === TaxStrategy.STANDARD) {
-        taxDeducted = calculateTaxAmount(interestEarned, taxStrategy);
-      }
-    } else {
-      currentNominalValue = currentNominalValue.plus(interestEarned);
-    }
+    // Investment for THIS cycle = cash from previous cycle + any leftovers
+    const totalAvailable = currentInitialInvestment.plus(leftoverCash);
+    const numberOfBonds = totalAvailable.dividedBy(dBondPrice).floor();
+    const cycleInitialInvestment = numberOfBonds.times(dBondPrice);
+    leftoverCash = totalAvailable.minus(cycleInitialInvestment);
     
-    const netInterest = interestEarned.minus(taxDeducted);
+    const nominalStartingValue = numberOfBonds.times(nominalValue);
 
-    const annualInflation = Decimal.max(-0.99, new Decimal(expectedInflation).dividedBy(100));
-    const periodInflation = isMonthly ? annualInflation.dividedBy(12) : annualInflation;
-    cumulativeInflation = cumulativeInflation.times(new Decimal(1).plus(periodInflation.times(timeFactor)));
-    const realValue = (isCapitalized ? currentNominalValue : nominalStartingValue).dividedBy(cumulativeInflation);
+    let currentNominalValue = new Decimal(nominalStartingValue);
+    let totalInterestEarnedSoFar = new Decimal(0);
 
-    const currentWithdrawalFee = calculateEarlyWithdrawalFee(
-      bondType,
-      isEarlyWithdrawal,
-      isWithdrawalPeriod,
-      totalInterestEarnedSoFar,
-      numberOfBonds,
-      earlyWithdrawalFee
-    );
+    const isMonthly = payoutFrequency === InterestPayout.MONTHLY;
+    const periods = isMonthly ? Math.round(bondDuration * 12) : Math.ceil(bondDuration);
+    const addPeriod = isMonthly ? addMonths : addYears;
 
-    const isMaturity = periodEndDate.getTime() === maturityDate.getTime();
-    const isWithdrawal = periodEndDate.getTime() === actualWithdrawalDate.getTime();
-
-    let netProfit = new Decimal(0);
-    let earlyWithdrawalValue = new Decimal(0);
-
-    // Apply official rounding for tax at withdrawal
-    const useOfficialRounding = isWithdrawal;
-
-    if (isCapitalized) {
-      const grossValueNow = currentNominalValue;
-      const totalProfitNow = grossValueNow.minus(nominalStartingValue);
-      const taxableBase = taxStrategy === TaxStrategy.IKZE ? grossValueNow.minus(currentWithdrawalFee) : totalProfitNow.minus(currentWithdrawalFee);
-      const taxOnWithdrawal = calculateTaxAmount(Decimal.max(0, taxableBase), taxStrategy, useOfficialRounding);
+    for (let period = 1; period <= periods; period++) {
+      const periodStartDate = addPeriod(currentPurchaseDate, period - 1);
+      const periodEndDateNorm = addPeriod(currentPurchaseDate, period);
       
-      netProfit = grossValueNow.minus(currentWithdrawalFee).minus(taxOnWithdrawal).minus(actualInitialInvestment);
-      earlyWithdrawalValue = grossValueNow.minus(currentWithdrawalFee).minus(taxOnWithdrawal);
-    } else {
-      const grossValueNow = nominalStartingValue.plus(totalInterestEarnedSoFar);
-      const taxableBase = taxStrategy === TaxStrategy.IKZE ? grossValueNow.minus(currentWithdrawalFee) : totalInterestEarnedSoFar.minus(currentWithdrawalFee);
-      const taxOnWithdrawal = calculateTaxAmount(Decimal.max(0, taxableBase), taxStrategy, useOfficialRounding);
+      if (isAfter(periodStartDate, actualCycleEndDate) && period > 1) break;
 
-      netProfit = grossValueNow.minus(currentWithdrawalFee).minus(taxOnWithdrawal).minus(actualInitialInvestment);
-      earlyWithdrawalValue = grossValueNow.minus(currentWithdrawalFee).minus(taxOnWithdrawal);
+      const isWithdrawalPeriod = isBefore(actualCycleEndDate, periodEndDateNorm) || actualCycleEndDate.getTime() === periodEndDateNorm.getTime();
+      const periodEndDate = min([periodEndDateNorm, actualCycleEndDate]);
+      
+      const daysInPeriod = differenceInDays(periodEndDateNorm, periodStartDate);
+      const daysHeldInPeriod = differenceInDays(periodEndDate, periodStartDate);
+      const timeFactor = daysInPeriod > 0 ? new Decimal(daysHeldInPeriod).dividedBy(daysInPeriod) : new Decimal(1);
+
+      if (timeFactor.lte(0) && period > 1) break;
+
+      const { value: lagInflation, isProjected } = getHistoricalValue(periodStartDate, 'inflation', 2, historicalData);
+
+      const currentInterestRate = determineInterestRate(
+        bondType,
+        period,
+        firstYearRate,
+        expectedInflation,
+        expectedNbpRate,
+        margin,
+        isInflationIndexed,
+        lagInflation
+      );
+
+      let interestEarned = new Decimal(0);
+      if (bondType === BondType.OTS) {
+        interestEarned = nominalStartingValue.times(currentInterestRate.dividedBy(100)).times(3).dividedBy(12);
+        if (isEarlyWithdrawal) interestEarned = new Decimal(0);
+      } else {
+        const annualRate = currentInterestRate.dividedBy(100);
+        if (isMonthly) {
+          interestEarned = currentNominalValue.times(annualRate.dividedBy(12)).times(timeFactor);
+        } else {
+          interestEarned = currentNominalValue.times(annualRate).times(timeFactor);
+        }
+      }
+
+      const previousNominalValue = new Decimal(currentNominalValue);
+      totalInterestEarnedSoFar = totalInterestEarnedSoFar.plus(interestEarned);
+
+      let taxDeducted = new Decimal(0);
+      if (!isCapitalized) {
+        if (taxStrategy === TaxStrategy.STANDARD) {
+          taxDeducted = calculateTaxAmount(interestEarned, taxStrategy);
+        }
+      } else {
+        currentNominalValue = currentNominalValue.plus(interestEarned);
+      }
+      
+      const netInterest = interestEarned.minus(taxDeducted);
+      globalAccumulatedNetInterest = globalAccumulatedNetInterest.plus(netInterest);
+
+      // Inflation tracking for global real value
+      const totalMonthsSoFar = differenceInMonths(periodEndDate, startDate);
+      const cumulativeInflation = new Decimal(1).plus(new Decimal(expectedInflation).dividedBy(100)).pow(totalMonthsSoFar / 12);
+      
+      const currentNominalPrincipal = isCapitalized ? currentNominalValue : nominalStartingValue;
+      
+      const isMaturity = periodEndDate.getTime() === cycleMaturityDate.getTime();
+      const isWithdrawal = periodEndDate.getTime() === actualCycleEndDate.getTime();
+
+      const currentWithdrawalFee = calculateEarlyWithdrawalFee(
+        bondType,
+        isEarlyWithdrawal,
+        isWithdrawalPeriod,
+        totalInterestEarnedSoFar,
+        numberOfBonds,
+        earlyWithdrawalFee
+      );
+
+      // Official rounding for tax at exit
+      const useOfficialRounding = isWithdrawal;
+
+      const currentGrossValue = isCapitalized ? currentNominalValue : nominalStartingValue.plus(totalInterestEarnedSoFar);
+      const taxableBase = taxStrategy === TaxStrategy.IKZE ? currentGrossValue.minus(currentWithdrawalFee) : totalInterestEarnedSoFar.minus(currentWithdrawalFee);
+      const currentTaxAtPoint = calculateTaxAmount(Decimal.max(0, taxableBase), taxStrategy, useOfficialRounding);
+      
+      const liquidationValue = currentGrossValue.minus(currentWithdrawalFee).minus(currentTaxAtPoint);
+      const totalValue = liquidationValue;
+      const realValue = totalValue.dividedBy(cumulativeInflation);
+
+      const { value: lagNbp } = getHistoricalValue(periodStartDate, 'nbpRate', 0, historicalData);
+
+      globalTimeline.push({
+        year: totalMonthsSoFar / 12, // accurate fractional years
+        periodLabel: format(periodEndDate, 'MMM yyyy'),
+        interestRate: currentInterestRate.toNumber(),
+        nominalValueBeforeInterest: previousNominalValue.toNumber(),
+        interestEarned: interestEarned.toNumber(),
+        taxDeducted: taxDeducted.toNumber(),
+        netInterest: netInterest.toNumber(),
+        nominalValueAfterInterest: currentNominalPrincipal.toNumber(),
+        accumulatedNetInterest: globalAccumulatedNetInterest.toNumber(),
+        totalValue: totalValue.toNumber(),
+        realValue: realValue.toNumber(),
+        netProfit: 0, // calculated at very end
+        earlyWithdrawalValue: 0, // legacy
+        cumulativeInflation: cumulativeInflation.toNumber(),
+        isMaturity,
+        isWithdrawal: periodEndDate.getTime() === targetWithdrawalDate.getTime(),
+        isProjected,
+        inflationReference: lagInflation !== undefined ? lagInflation : expectedInflation,
+        nbpReference: lagNbp !== undefined ? lagNbp : expectedNbpRate,
+      });
+
+      if (isWithdrawal) break;
     }
 
-    timeline.push({
-      year: isMonthly ? Math.ceil(period / 12) : period,
-      periodLabel: isMaturity ? 'Maturity' : (isMonthly ? `Month ${period}` : `Year ${period}`),
-      interestRate: currentInterestRate.toNumber(),
-      nominalValueBeforeInterest: previousNominalValue.toNumber(),
-      interestEarned: interestEarned.toNumber(),
-      taxDeducted: taxDeducted.toNumber(),
-      netInterest: netInterest.toNumber(),
-      nominalValueAfterInterest: isCapitalized ? currentNominalValue.toNumber() : nominalStartingValue.toNumber(),
-      realValue: realValue.toNumber(),
-      netProfit: netProfit.toNumber(),
-      earlyWithdrawalValue: Decimal.max(actualInitialInvestment, earlyWithdrawalValue).toNumber(),
-      cumulativeInflation: cumulativeInflation.toNumber(),
-      isMaturity,
-      isWithdrawal,
-      isProjected
-    });
+    // End of cycle: calculate net cash
+    const cycleLastPoint = globalTimeline[globalTimeline.length - 1];
+    const cycleFee = isEarlyWithdrawal ? calculateEarlyWithdrawalFee(bondType, true, true, totalInterestEarnedSoFar, numberOfBonds, earlyWithdrawalFee) : new Decimal(0);
+    const cycleGrossValue = isCapitalized ? currentNominalValue : nominalStartingValue.plus(totalInterestEarnedSoFar);
+    const cycleTaxableBase = taxStrategy === TaxStrategy.IKZE ? cycleGrossValue.minus(cycleFee) : totalInterestEarnedSoFar.minus(cycleFee);
+    
+    // Total cycle tax calculation for final proceeds
+    const cycleTax = calculateTaxAmount(Decimal.max(0, cycleTaxableBase), taxStrategy, true);
+    
+    // Important: if not capitalized, we already paid tax monthly (in STANDARD strategy)
+    // But calculateTaxAmount(..., true) handles rounding. 
+    // For ROR, cycleTax here will be the total tax for the year.
+    // If we were paying monthly, we need to make sure we don't double count or have rounding issues.
+    // The current engine reinvests netProceeds.
+    
+    totalTaxAcc = totalTaxAcc.plus(cycleTax);
+    totalFeeAcc = totalFeeAcc.plus(cycleFee);
 
-    if (isWithdrawal) break;
+    const netProceeds = cycleGrossValue.minus(cycleFee).minus(cycleTax);
+
+    if (!rollover || isEarlyWithdrawal || actualCycleEndDate.getTime() === targetWithdrawalDate.getTime()) {
+      // End simulation
+      return {
+        initialInvestment: initialInvestment,
+        timeline: globalTimeline,
+        finalNominalValue: cycleGrossValue.toNumber(),
+        finalRealValue: cycleLastPoint.realValue,
+        totalProfit: netProceeds.minus(initialInvestment).toNumber(),
+        totalTax: totalTaxAcc.toNumber(),
+        totalEarlyWithdrawalFee: totalFeeAcc.toNumber(),
+        grossValue: cycleGrossValue.toNumber(),
+        netPayoutValue: netProceeds.toNumber(),
+        isEarlyWithdrawal,
+        maturityDate: cycleMaturityDate.toISOString()
+      };
+    }
+
+    // Roll over: Re-invest netProceeds into next cycle
+    currentInitialInvestment = netProceeds;
+    // RESET globalAccumulatedNetInterest for the next cycle because they are now part of the principal
+    globalAccumulatedNetInterest = new Decimal(0);
+    currentPurchaseDate = actualCycleEndDate;
+    isCurrentlyRebought = true; // Sub-sequent cycles always use re-buy discount
   }
 
-  const lastPoint = timeline[timeline.length - 1];
-  const finalFee = isEarlyWithdrawal ? calculateEarlyWithdrawalFee(bondType, true, true, totalInterestEarnedSoFar, numberOfBonds, earlyWithdrawalFee) : new Decimal(0);
-  
-  const grossValueAtEnd = isCapitalized ? currentNominalValue : nominalStartingValue.plus(totalInterestEarnedSoFar);
-  const finalTaxableBase = taxStrategy === TaxStrategy.IKZE ? grossValueAtEnd.minus(finalFee) : totalInterestEarnedSoFar.minus(finalFee);
-  // Final payout ALWAYS uses official rounding
-  const totalTax = calculateTaxAmount(Decimal.max(0, finalTaxableBase), taxStrategy, true);
-  
-  const netPayoutValue = grossValueAtEnd.minus(finalFee).minus(totalTax);
-
-  return {
-    initialInvestment: actualInitialInvestment.toNumber(),
-    timeline,
-    finalNominalValue: (isCapitalized ? currentNominalValue : nominalStartingValue).toNumber(),
-    finalRealValue: lastPoint.realValue,
-    totalProfit: netPayoutValue.minus(actualInitialInvestment).toNumber(),
-    totalTax: totalTax.toNumber(),
-    totalEarlyWithdrawalFee: finalFee.toNumber(),
-    grossValue: grossValueAtEnd.toNumber(),
-    netPayoutValue: netPayoutValue.toNumber(),
-    isEarlyWithdrawal,
-    maturityDate: maturityDate.toISOString()
-  };
+  // Fallback (should not be reached)
+  return {} as CalculationResult;
 }
 
 /**

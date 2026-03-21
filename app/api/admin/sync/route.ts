@@ -2,35 +2,40 @@ import { NextRequest, NextResponse } from 'next/server';
 import { SyncEngine } from '@/lib/sync/sync-engine';
 import { NbpSyncProvider } from '@/lib/sync/providers/nbp';
 import { StooqSyncProvider } from '@/lib/sync/providers/stooq';
-import { GusSyncProvider } from '@/lib/sync/providers/gus';
-import { WorldBankSyncProvider } from '@/lib/sync/providers/worldbank';
 
-export async function GET(req: NextRequest) {
-  // Simple auth check for local development or specific key
-  const { searchParams } = new URL(req.url);
-  const key = searchParams.get('key');
-  
-  if (process.env.NODE_ENV === 'production' && key !== process.env.SYNC_KEY) {
+export async function POST(req: NextRequest) {
+  // Simple auth check (in a real app, use a secret header or Clerk/NextAuth)
+  const authHeader = req.headers.get('authorization');
+  if (process.env.NODE_ENV === 'production' && authHeader !== `Bearer ${process.env.SYNC_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const startYear = parseInt(searchParams.get('startYear') || '1990');
-
-  const engine = new SyncEngine([
-    new NbpSyncProvider(),
-    new StooqSyncProvider(),
-    new GusSyncProvider(),
-    new WorldBankSyncProvider()
-  ]);
-
   try {
-    const results = await engine.syncAll(startYear);
-    return NextResponse.json({ 
-      message: 'Sync process completed', 
-      results 
+    const providers = [
+      new NbpSyncProvider(),
+      new StooqSyncProvider(),
+    ];
+
+    const engine = new SyncEngine(providers);
+    const results = await engine.runFullSync();
+
+    return NextResponse.json({
+      message: 'Sync completed successfully',
+      timestamp: new Date().toISOString(),
+      results
     });
   } catch (error) {
-    console.error('Sync failed:', error);
-    return NextResponse.json({ error: 'Sync failed', details: String(error) }, { status: 500 });
+    console.error('[AdminSync] Sync failed:', error);
+    return NextResponse.json({ 
+      error: 'Sync failed', 
+      details: String(error) 
+    }, { status: 500 });
   }
+}
+
+export async function GET() {
+  return NextResponse.json({ 
+    status: 'Sync endpoint ready',
+    instructions: 'POST to this endpoint to trigger a full financial data sync.'
+  });
 }

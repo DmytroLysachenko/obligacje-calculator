@@ -130,3 +130,66 @@ export function calculateBondsPerformance(
     series,
   };
 }
+
+/**
+ * Specialized calculation for Savings Account using historical NBP rates.
+ * Assumes monthly capitalization and Belka tax (19%).
+ */
+export function calculateSavingsPerformance(
+  initialSum: number,
+  monthlyContribution: number,
+  metadata: AssetMetadata,
+  data: MonthlyReturn[] = HISTORICAL_RETURNS,
+  config = { nbpMargin: 1.0, taxRate: 19 }
+): AssetPerformanceSeries {
+  const series: DataPoint[] = [];
+  let currentValue = initialSum;
+  let peakValue = initialSum;
+  let cumulativeInflation = 1;
+
+  // Initial Point
+  series.push({
+    date: 'Start',
+    value: initialSum,
+    percentChange: 0,
+    drawdown: 0,
+    realValue: initialSum,
+  });
+
+  for (const row of data) {
+    const monthlyInflation = row.inflation;
+    cumulativeInflation *= (1 + monthlyInflation / 100);
+
+    // 1. Add contribution
+    currentValue += monthlyContribution;
+
+    // 2. Calculate Interest based on NBP rate
+    const annualRate = Math.max(0, row.nbpRate + config.nbpMargin);
+    const monthlyRate = (Math.pow(1 + annualRate / 100, 1 / 12) - 1) * 100;
+    
+    const grossInterest = currentValue * (monthlyRate / 100);
+    const tax = grossInterest * (config.taxRate / 100);
+    const netInterest = grossInterest - tax;
+    
+    currentValue += netInterest;
+
+    // 3. Track Drawdown
+    if (currentValue > peakValue) {
+      peakValue = currentValue;
+    }
+    const drawdown = ((peakValue - currentValue) / peakValue) * 100;
+
+    series.push({
+      date: row.date,
+      value: currentValue,
+      percentChange: monthlyRate,
+      drawdown: drawdown,
+      realValue: currentValue / cumulativeInflation,
+    });
+  }
+
+  return {
+    metadata,
+    series,
+  };
+}

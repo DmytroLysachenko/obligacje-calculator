@@ -34,9 +34,10 @@ describe('Bond Calculations Engine (Modular)', () => {
       
       // 10000 * 3% * (3/12) = 75 gross interest
       // 75 * 19% tax = 14.25 tax
-      // Net profit = 75 - 14.25 = 60.75
+      // Rounded tax (official) = 14 (base 75 * 0.19 = 14.25 -> rounded to 14)
+      // Net profit = 75 - 14 = 61
       expect(results.grossValue).toBeCloseTo(10075, 2);
-      expect(results.totalProfit).toBeCloseTo(60.75, 2);
+      expect(results.totalProfit).toBeCloseTo(61, 2);
     });
 
     it('handles deflation correctly (floor at 0%)', () => {
@@ -50,10 +51,11 @@ describe('Bond Calculations Engine (Modular)', () => {
       };
       const results = calculateBondInvestment(inputs);
       
+      // Index 0 is Year 0. Index 1 is Year 1.
       // Year 1: 1.0% (fixed)
       // Year 2: max(0, -5.0) + 1.0 = 1.0%
-      expect(results.timeline[0].interestRate).toBe(1.0);
       expect(results.timeline[1].interestRate).toBe(1.0);
+      expect(results.timeline[2].interestRate).toBe(1.0);
     });
 
     it('handles leap years correctly for interest periods', () => {
@@ -64,8 +66,8 @@ describe('Bond Calculations Engine (Modular)', () => {
         duration: 1,
       };
       const results = calculateBondInvestment(inputs);
-      expect(results.timeline.length).toBeGreaterThan(0);
-      expect(results.timeline[0].isMaturity).toBe(true);
+      expect(results.timeline.length).toBeGreaterThan(1);
+      expect(results.timeline[1].isMaturity).toBe(true);
     });
 
     it('caps early withdrawal fee to accumulated interest', () => {

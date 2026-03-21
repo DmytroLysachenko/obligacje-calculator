@@ -42,6 +42,7 @@ export interface BondInputs {
   taxStrategy: TaxStrategy;
   savingsGoal?: number;
   historicalData?: HistoricalDataMap;
+  showRealValue?: boolean;
 }
 
 export interface YearlyTimelinePoint {
@@ -53,6 +54,8 @@ export interface YearlyTimelinePoint {
   taxDeducted: number;
   netInterest: number;
   nominalValueAfterInterest: number;
+  accumulatedNetInterest: number; // For non-capitalized bonds, this stores payouts
+  totalValue: number; // nominalValue + accumulatedNetInterest
   realValue: number;
   netProfit: number;
   earlyWithdrawalValue: number;
@@ -60,6 +63,8 @@ export interface YearlyTimelinePoint {
   isMaturity: boolean;
   isWithdrawal: boolean;
   isProjected?: boolean;
+  inflationReference?: number;
+  nbpReference?: number;
 }
 
 export interface CalculationResult {
@@ -86,6 +91,7 @@ export interface RegularInvestmentInputs extends Omit<BondInputs, 'initialInvest
   contributionAmount: number;
   frequency: InvestmentFrequency;
   totalHorizon: number; // in years
+  showRealValue?: boolean;
 }
 
 export interface LotBreakdown {

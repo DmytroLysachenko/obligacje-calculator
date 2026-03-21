@@ -43,6 +43,7 @@ export const polishBonds = pgTable("polish_bonds", {
   capitalizationFreqDays: integer("capitalization_freq_days").default(0),
   payoutFreqDays: integer("payout_freq_days").default(0),
   interestType: interestTypeEnum("interest_type").notNull(),
+  firstYearRate: numeric("first_year_rate", { precision: 5, scale: 2 }),
   baseMargin: numeric("base_margin", { precision: 5, scale: 2 }),
   withdrawalFee: numeric("withdrawal_fee", { precision: 5, scale: 2 }),
   withdrawalFeeCap: boolean("withdrawal_fee_cap").default(true),

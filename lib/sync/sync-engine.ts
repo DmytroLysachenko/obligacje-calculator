@@ -1,11 +1,49 @@
 import { db } from "@/db";
-import { dataSeries, dataPoints } from "@/db/schema";
+import { dataSeries, dataPoints, polishBonds } from "@/db/schema";
 import { desc, eq, sql } from "drizzle-orm";
 import { SyncProvider } from "./types";
 import { format, addMonths, startOfMonth, parseISO, isBefore } from "date-fns";
+import { scrapeCurrentBondRates } from "./bond-scraper";
+import { syncMacroData } from "./macro-data-sync";
 
 export class SyncEngine {
-  constructor(private providers: SyncProvider[]) {}
+  constructor(private providers: SyncProvider[] = []) {}
+
+  /**
+   * High-level orchestrator for ALL data sync tasks.
+   * Can be called by a cron job or manual trigger.
+   */
+  async runFullSync() {
+    console.log('[SyncEngine] Starting full financial sync...');
+    
+    // 1. Sync Macro Data (Inflation, NBP)
+    const macro = await syncMacroData();
+    console.log('[SyncEngine] Macro data sync complete:', macro);
+
+    // 2. Scrape & Sync Current Bond Offers
+    const bondOffers = await scrapeCurrentBondRates();
+    console.log('[SyncEngine] Bond offer scraping complete:', bondOffers.length, 'rates found');
+
+    for (const offer of bondOffers) {
+      // Update the polishBonds table with current rates
+      await db.update(polishBonds)
+        .set({
+          firstYearRate: offer.firstYearRate.toString(),
+          baseMargin: offer.margin.toString(),
+          updatedAt: new Date()
+        })
+        .where(eq(polishBonds.symbol, offer.symbol));
+    }
+
+    // 3. Sync Historical Providers (Stooq, etc.)
+    const providerResults = await this.syncAll();
+
+    return {
+      macro,
+      bondOffers: bondOffers.length,
+      historical: providerResults
+    };
+  }
 
   async syncAll(startYear: number = 1910) {
     const results = [];
