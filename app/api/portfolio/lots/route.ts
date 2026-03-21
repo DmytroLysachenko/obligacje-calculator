@@ -1,34 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { userInvestmentLots, userPortfolios } from '@/db/schema';
+import { userInvestmentLots } from '@/db/schema';
 import { InvestmentLotSchema } from '@/features/bond-core/types/portfolio-schemas';
-import { eq, and } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 
-// Mock user for MVP
-const MOCK_USER_ID = 'anonymous-user-123';
-
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const portfolioId = searchParams.get('portfolioId');
-
-  if (!portfolioId) {
-    return NextResponse.json({ error: 'Portfolio ID required' }, { status: 400 });
-  }
-
   try {
-    // Verify ownership indirectly
-    const portfolio = await db.query.userPortfolios.findFirst({
-      where: and(eq(userPortfolios.id, portfolioId), eq(userPortfolios.userId, MOCK_USER_ID)),
-    });
+    const url = new URL(req.url);
+    const portfolioId = url.searchParams.get('portfolioId');
 
-    if (!portfolio) {
-      return NextResponse.json({ error: 'Portfolio not found' }, { status: 404 });
+    if (!portfolioId) {
+      return NextResponse.json({ error: 'Portfolio ID is required' }, { status: 400 });
     }
 
     const lots = await db.query.userInvestmentLots.findMany({
       where: eq(userInvestmentLots.portfolioId, portfolioId),
-      orderBy: (l, { desc }) => [desc(l.purchaseDate)],
+      orderBy: (p, { desc }) => [desc(p.purchaseDate)],
     });
     
     return NextResponse.json(lots);
@@ -42,15 +30,6 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const validated = InvestmentLotSchema.parse(body);
-
-    // Verify ownership
-    const portfolio = await db.query.userPortfolios.findFirst({
-      where: and(eq(userPortfolios.id, validated.portfolioId), eq(userPortfolios.userId, MOCK_USER_ID)),
-    });
-
-    if (!portfolio) {
-      return NextResponse.json({ error: 'Portfolio not found' }, { status: 404 });
-    }
 
     const [newLot] = await db.insert(userInvestmentLots).values({
       portfolioId: validated.portfolioId,
@@ -66,7 +45,7 @@ export async function POST(req: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Validation failed', details: error.issues }, { status: 400 });
     }
-    console.error('Failed to create lot:', error);
+    console.error('Failed to create investment lot:', error);
     return NextResponse.json({ error: 'Database error' }, { status: 500 });
   }
 }

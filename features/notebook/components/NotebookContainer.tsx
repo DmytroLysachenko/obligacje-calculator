@@ -17,12 +17,14 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserPortfolio } from '@/db/schema';
 import { cn } from '@/lib/utils';
+import { PortfolioDetails } from './PortfolioDetails';
 
 export const NotebookContainer: React.FC = () => {
   const { t } = useLanguage();
   const [portfolios, setPortfolios] = useState<UserPortfolio[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedPortfolioId, setSelectedPortfolioId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchPortfolios();
@@ -65,6 +67,16 @@ export const NotebookContainer: React.FC = () => {
         <Loader2 className="h-8 w-8 text-primary animate-spin" />
         <p className="text-muted-foreground font-medium">{t('common.loading')}</p>
       </div>
+    );
+  }
+
+  if (selectedPortfolioId) {
+    const portfolio = portfolios.find(p => p.id === selectedPortfolioId);
+    return (
+      <PortfolioDetails 
+        portfolio={portfolio!} 
+        onBack={() => setSelectedPortfolioId(null)} 
+      />
     );
   }
 
@@ -111,6 +123,7 @@ export const NotebookContainer: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
+              onClick={() => setSelectedPortfolioId(p.id)}
             >
               <Card className="group cursor-pointer hover:border-primary/50 transition-all duration-300 shadow-lg hover:shadow-2xl rounded-3xl overflow-hidden border-2 h-full flex flex-col bg-card">
                 <CardHeader className="bg-muted/30 pb-4">
@@ -140,6 +153,10 @@ export const NotebookContainer: React.FC = () => {
                   <Button 
                     variant="outline" 
                     className="w-full mt-8 h-12 rounded-xl font-black gap-2 group-hover:bg-primary group-hover:text-white transition-all"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedPortfolioId(p.id);
+                    }}
                   >
                     {t('notebook.open_portfolio').toUpperCase()}
                     <ChevronRight className="h-4 w-4" />
