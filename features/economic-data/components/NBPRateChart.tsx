@@ -56,9 +56,20 @@ const CustomTooltip = ({
   return null;
 };
 
-export const NBPRateChart = () => {
+export const NBPRateChart = ({ period = 'ALL' }: { period?: '1Y' | '5Y' | '10Y' | 'ALL' }) => {
   const { t } = useLanguage();
-  const { data: chartData, isLoading, isError } = useChartData<NBPRateDataPoint[]>('/api/charts/nbp-rate');
+  const { data: rawData, isLoading, isError } = useChartData<NBPRateDataPoint[]>('/api/charts/nbp-rate');
+
+  const chartData = React.useMemo(() => {
+    if (!rawData) return [];
+    if (period === 'ALL') return rawData;
+    
+    // NBP rates are typically daily/weekly, let's assume monthly for filtering simplicity if it is a map
+    // but the API returns what it returns. If it is high frequency, we slice more.
+    // Let's assume the data is roughly monthly.
+    const count = period === '1Y' ? 12 : period === '5Y' ? 60 : 120;
+    return rawData.slice(-count);
+  }, [rawData, period]);
 
   if (isLoading) {
     return <div className="h-[400px] w-full flex items-center justify-center text-muted-foreground animate-pulse">{t('common.loading')}</div>;

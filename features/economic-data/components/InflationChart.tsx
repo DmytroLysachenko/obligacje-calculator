@@ -60,9 +60,17 @@ const CustomTooltip = ({ active, payload, label, t }: CustomTooltipProps) => {
   return null;
 };
 
-export const InflationChart = () => {
+export const InflationChart = ({ period = 'ALL' }: { period?: '1Y' | '5Y' | '10Y' | 'ALL' }) => {
   const { t } = useLanguage();
-  const { data: chartData, isLoading, isError } = useChartData<InflationDataPoint[]>('/api/charts/inflation');
+  const { data: rawData, isLoading, isError } = useChartData<InflationDataPoint[]>('/api/charts/inflation');
+
+  const chartData = React.useMemo(() => {
+    if (!rawData) return [];
+    if (period === 'ALL') return rawData;
+    
+    const count = period === '1Y' ? 12 : period === '5Y' ? 60 : 120;
+    return rawData.slice(-count);
+  }, [rawData, period]);
 
   if (isLoading) {
     return <div className="h-[400px] w-full flex items-center justify-center text-muted-foreground animate-pulse">{t('common.loading')}</div>;
