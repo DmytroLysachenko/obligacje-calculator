@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { BondType, RegularInvestmentInputs, InvestmentFrequency, TaxStrategy } from '../../bond-core/types';
+import { useState, useCallback, useEffect } from 'react';
+import { BondType, RegularInvestmentInputs, InvestmentFrequency, TaxStrategy, RegularInvestmentResult } from '../../bond-core/types';
 import { calculateRegularInvestment } from '../../bond-core/utils/calculations';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { addYears } from 'date-fns';
@@ -32,12 +32,38 @@ const DEFAULT_INPUTS: RegularInvestmentInputs = {
 
 export function useLadder() {
   const [inputs, setInputs] = useState<RegularInvestmentInputs>(DEFAULT_INPUTS);
+  const [results, setResults] = useState<RegularInvestmentResult | null>(null);
+  const [isDirty, setIsDirty] = useState(true);
+  const [isCalculating, setIsCalculating] = useState(false);
 
-  const results = useMemo(() => {
-    return calculateRegularInvestment(inputs);
+  const calculate = useCallback(async () => {
+    setIsCalculating(true);
+    try {
+      const response = await fetch('/api/calculate/regular', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(inputs),
+      });
+      
+      if (!response.ok) throw new Error('Calculation failed');
+      
+      const data = await response.json();
+      setResults(data);
+      setIsDirty(false);
+    } catch (error) {
+      console.error('Ladder calculation error:', error);
+    } finally {
+      setIsCalculating(false);
+    }
   }, [inputs]);
 
+  // Initial calculation - REMOVED to prevent excessive requests on remount
+  // useEffect(() => {
+  //   calculate();
+  // }, []);
+
   const updateInput = (key: keyof RegularInvestmentInputs, value: string | number | boolean | undefined) => {
+    setIsDirty(true);
     setInputs((prev) => {
       const newInputs = { ...prev, [key]: value };
       if (key === 'totalHorizon') {
@@ -48,6 +74,7 @@ export function useLadder() {
   };
 
   const setBondType = (type: BondType) => {
+    setIsDirty(true);
     const def = BOND_DEFINITIONS[type];
     setInputs((prev) => ({
       ...prev,
@@ -65,6 +92,9 @@ export function useLadder() {
   return {
     inputs,
     results,
+    isDirty,
+    isCalculating,
+    calculate,
     updateInput,
     setBondType,
     definitions: BOND_DEFINITIONS,

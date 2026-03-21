@@ -22,8 +22,9 @@ import {
 } from "recharts/types/component/DefaultTooltipContent";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2, Scale } from "lucide-react";
+import { Info, Loader2, Scale, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { RecalculateButton } from "@/shared/components/RecalculateButton";
 
 interface PayloadEntry {
   name: string;
@@ -87,6 +88,7 @@ export const ComparisonContainer: React.FC = () => {
     updateInputB,
     setBondTypeA,
     setBondTypeB,
+    isDirty
   } = useComparison();
   const { t, language } = useLanguage();
   const [hasMounted, setHasMounted] = useState(false);
@@ -95,6 +97,12 @@ export const ComparisonContainer: React.FC = () => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setHasMounted(true);
   }, []);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && (isDirty || !resultsA)) {
+      calculate();
+    }
+  };
 
   const formatCurrency = (value: number) => {
     if (!hasMounted) return "---";
@@ -130,7 +138,7 @@ export const ComparisonContainer: React.FC = () => {
       : [];
 
   return (
-    <div className="space-y-8 pb-20">
+    <div className="space-y-8 pb-20" onKeyDown={handleKeyDown}>
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-card p-6 rounded-2xl border shadow-sm">
         <div>
           <h2 className="text-3xl font-black tracking-tight flex items-center gap-2">
@@ -142,18 +150,24 @@ export const ComparisonContainer: React.FC = () => {
           </p>
         </div>
         <div className="flex items-center gap-4">
-          <Button
-            onClick={() => calculate()}
-            disabled={isCalculating}
-            className="px-8 font-bold shadow-lg shadow-primary/20 gap-2 h-12 min-w-[200px]"
-          >
-            {isCalculating ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Scale className="h-4 w-4" />
-            )}
-            {isCalculating ? "Comparing..." : "Compare Scenarios"}
-          </Button>
+          {isCalculating && (
+            <span className="text-xs text-muted-foreground flex items-center gap-2 animate-in fade-in duration-500">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              Updating scenarios...
+            </span>
+          )}
+          {!isCalculating && isDirty && resultsA && (
+            <span className="text-xs text-orange-500 flex items-center gap-1 animate-in fade-in duration-500 font-medium">
+              <Info className="h-3 w-3" />
+              Scenarios changed. Recalculate to update.
+            </span>
+          )}
+          {!isCalculating && !isDirty && resultsA && (
+            <span className="text-xs text-green-600 flex items-center gap-1 animate-in fade-in duration-500 font-medium">
+              <Check className="h-3 w-3" />
+              Comparison up to date
+            </span>
+          )}
         </div>
       </header>
 
@@ -392,6 +406,12 @@ export const ComparisonContainer: React.FC = () => {
           </div>
         </div>
       )}
+
+      <RecalculateButton 
+        isDirty={isDirty}
+        loading={isCalculating}
+        onClick={() => calculate()}
+      />
     </div>
   );
 };

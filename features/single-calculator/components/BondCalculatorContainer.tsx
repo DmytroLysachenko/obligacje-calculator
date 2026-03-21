@@ -22,6 +22,7 @@ import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { RecalculateButton } from "@/shared/components/RecalculateButton";
 
 export const BondCalculatorContainer: React.FC = () => {
   const {
@@ -32,8 +33,10 @@ export const BondCalculatorContainer: React.FC = () => {
     calculate,
     updateInput,
     setBondType,
-  } = useBondCalculator();
-  const { t } = useLanguage();
+    isDirty
+    } = useBondCalculator();
+    const { t } = useLanguage();
+
   const [copied, setCopied] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
 
@@ -54,8 +57,14 @@ export const BondCalculatorContainer: React.FC = () => {
       : 0;
   const isGoalReached = goalProgress >= 100;
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && (isDirty || !results)) {
+      calculate();
+    }
+  };
+
   return (
-    <div className="space-y-8 pb-20">
+    <div className="space-y-8 pb-20" onKeyDown={handleKeyDown}>
       {/* Goal Progress Bar */}
       {inputs.savingsGoal && results && (
         <Card className="border-primary/20 bg-primary/5 shadow-sm overflow-hidden">
@@ -85,27 +94,24 @@ export const BondCalculatorContainer: React.FC = () => {
         </Card>
       )}
 
-      <div className="flex justify-between items-center bg-card p-4 rounded-xl border border-primary/10 shadow-sm sticky top-4 z-30">
+      <div className="flex justify-between items-center py-2">
         <div className="flex items-center gap-4">
-          <Button
-            onClick={() => calculate()}
-            disabled={isCalculating}
-            variant={isCalculating ? "outline" : "default"}
-            className="px-8 font-bold shadow-lg shadow-primary/20 gap-2"
-          >
-            {isCalculating ? (
-              <span className="flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Updating...
-              </span>
-            ) : (
-              "Recalculate Now"
-            )}
-          </Button>
-          {!isCalculating && !isError && (
-            <span className="text-xs text-muted-foreground flex items-center gap-1 animate-in fade-in duration-500">
-              <Check className="h-3 w-3 text-green-500" />
-              Live results
+          {isCalculating && (
+            <span className="text-xs text-muted-foreground flex items-center gap-2 animate-in fade-in duration-500">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              Updating simulation...
+            </span>
+          )}
+          {!isCalculating && isDirty && results && (
+            <span className="text-xs text-orange-500 flex items-center gap-1 animate-in fade-in duration-500 font-medium">
+              <Info className="h-3 w-3" />
+              Inputs changed. Recalculate to update.
+            </span>
+          )}
+          {!isCalculating && !isDirty && results && (
+            <span className="text-xs text-green-600 flex items-center gap-1 animate-in fade-in duration-500 font-medium">
+              <Check className="h-3 w-3" />
+              Results up to date
             </span>
           )}
           {isError && (
@@ -115,7 +121,7 @@ export const BondCalculatorContainer: React.FC = () => {
           )}
         </div>
         <Button
-          variant="outline"
+          variant="ghost"
           size="sm"
           className="gap-2 text-xs"
           onClick={handleShare}
@@ -230,6 +236,12 @@ export const BondCalculatorContainer: React.FC = () => {
           )}
         </div>
       </div>
+
+      <RecalculateButton 
+        isDirty={isDirty}
+        loading={isCalculating}
+        onClick={() => calculate()}
+      />
     </div>
   );
 };

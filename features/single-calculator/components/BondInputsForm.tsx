@@ -29,6 +29,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+
 interface BondInputsFormProps {
   inputs: BondInputs;
   onUpdate: (key: keyof BondInputs, value: string | number | boolean | undefined) => void;
@@ -60,429 +67,344 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
   const maturityDate = addMonths(parseISO(inputs.purchaseDate), Math.round(inputs.duration * 12));
 
   return (
-    <Card className="w-full shadow-lg border-primary/10">
-      <CardHeader className="pb-4">
+    <Card className="w-full shadow-lg border-primary/10 overflow-hidden">
+      <CardHeader className="pb-4 bg-muted/30 border-b mb-4">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-xl">{t('bonds.single_calculator')}</CardTitle>
+          <CardTitle className="text-xl flex items-center gap-2">
+            <Target className="h-5 w-5 text-primary" />
+            {t('bonds.single_calculator')}
+          </CardTitle>
         </div>
         <CardDescription>
           {t('bonds.bond_type_selection')}
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Savings Goal */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <Label className="font-semibold flex items-center gap-2">
-              <Target className="h-4 w-4 text-primary" />
-              Savings Goal (Optional)
-            </Label>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="text-xs">Set a target amount to see a progress bar towards your financial goal.</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-          <div className="relative">
-            <Input
-              type="number"
-              placeholder="e.g. 50000"
-              className="h-11 pl-4 pr-12"
-              value={inputs.savingsGoal || ''}
-              onChange={(e) => onUpdate('savingsGoal', e.target.value ? Number(e.target.value) : undefined)}
-            />
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium text-xs">
-              PLN
-            </div>
-          </div>
-        </div>
-
-        <Separator />
-
-        {/* Bond Type Selection */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <Label htmlFor="bondType" className="font-semibold">{t('bonds.bond_type')}</Label>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="text-xs">Polish Treasury offers various bonds: OTS (3m), TOS (3y), COI (4y), EDO (10y), etc. Each has different interest rules.</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-          <Select
-            value={inputs.bondType}
-            onValueChange={(value) => onBondTypeChange(value as BondType)}
-          >
-            <SelectTrigger id="bondType" className="h-11">
-              <SelectValue placeholder="Select bond type" />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.values(BondType).map((type) => (
-                <SelectItem key={type} value={type}>
-                  <div className="flex flex-col">
-                    <span className="font-bold">{type}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {BOND_DEFINITIONS[type].fullName[language]}
-                    </span>
+      <CardContent className="p-0">
+        <Accordion type="multiple" defaultValue={['core', 'timing']} className="w-full">
+          {/* Core Configuration */}
+          <AccordionItem value="core" className="border-b px-6 py-2">
+            <AccordionTrigger className="hover:no-underline py-4">
+              <span className="text-sm font-black flex items-center gap-2 uppercase tracking-widest text-slate-700">
+                {t('bonds.step_core')}
+              </span>
+            </AccordionTrigger>
+            <AccordionContent className="space-y-6 pb-6">
+              {/* Savings Goal */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Label className="font-semibold flex items-center gap-2">
+                    Savings Goal (Optional)
+                  </Label>
+                </div>
+                <div className="relative">
+                  <Input
+                    type="number"
+                    placeholder="e.g. 50000"
+                    className="h-11 pl-4 pr-12"
+                    value={inputs.savingsGoal || ''}
+                    onChange={(e) => onUpdate('savingsGoal', e.target.value ? Number(e.target.value) : undefined)}
+                  />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium text-xs">
+                    PLN
                   </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          
-          <div className="p-3 bg-muted/50 rounded-lg text-xs space-y-1 border border-primary/5">
-            <div className="flex items-center gap-2 font-semibold text-primary">
-              <Info className="h-3 w-3" />
-              <span>{currentDef.fullName[language]}</span>
-            </div>
-            <p className="text-muted-foreground leading-relaxed">
-              {currentDef.description[language]}
-            </p>
-          </div>
-        </div>
-
-        <Separator />
-
-        {/* Tax Wrap (IKE/IKZE) */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Label className="font-semibold">Account Type (Tax Wrap)</Label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="text-xs">IKE and IKZE are tax-advantaged accounts in Poland that allow you to avoid or defer the 19% &quot;Belka&quot; tax.</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            <Badge variant="secondary" className="text-[10px]">Optimization</Badge>
-          </div>
-          <Select
-            value={inputs.taxStrategy}
-            onValueChange={(value) => onUpdate('taxStrategy', value as TaxStrategy)}
-          >
-            <SelectTrigger className="h-11">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={TaxStrategy.STANDARD}>Standard Account (19% Tax)</SelectItem>
-              <SelectItem value={TaxStrategy.IKE}>IKE Account (0% Tax)</SelectItem>
-              <SelectItem value={TaxStrategy.IKZE}>IKZE Account (5% Tax at end)</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Separator />
-
-        {/* Investment Amount */}
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <Label htmlFor="initialInvestment" className="font-semibold">
-                {t('bonds.initial_investment')}
-              </Label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="text-xs">The amount you want to invest. Each bond costs 100 PLN.</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            <span className="text-xs font-medium text-muted-foreground">
-              {Math.floor(inputs.initialInvestment / 100)} {t('bonds.units')}
-            </span>
-          </div>
-          <div className="space-y-4">
-            <div className="relative">
-              <Input
-                id="initialInvestment"
-                type="number"
-                className={cn(
-                  "h-11 pl-4 pr-12 text-lg font-medium",
-                  !isDivisibleBy100 && "border-destructive focus-visible:ring-destructive"
-                )}
-                value={inputs.initialInvestment}
-                onChange={(e) => handleInvestmentChange(e.target.value)}
-              />
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
-                PLN
-              </div>
-            </div>
-            <Slider 
-              value={[inputs.initialInvestment]} 
-              min={100} 
-              max={100000} 
-              step={100} 
-              onValueChange={([val]) => handleInvestmentChange(val)}
-              className="py-4"
-            />
-          </div>
-          {!isDivisibleBy100 && inputs.initialInvestment > 0 && (
-            <div className="flex items-center gap-2 text-destructive text-xs font-medium animate-in fade-in slide-in-from-top-1">
-              <AlertCircle className="h-3 w-3" />
-              <span>{t('bonds.error_100_pln')}</span>
-            </div>
-          )}
-        </div>
-
-        {/* Dates Selection */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Label className="text-xs font-semibold uppercase text-muted-foreground">
-                {t('bonds.purchase_date')}
-              </Label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="text-xs">When you buy the bonds. Affects maturity calculation.</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal h-10 px-3",
-                    !inputs.purchaseDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {hasMounted && inputs.purchaseDate ? format(parseISO(inputs.purchaseDate), 'PPP', { locale: dateLocale }) : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  captionLayout="dropdown"
-                  fromYear={2010}
-                  toYear={2050}
-                  selected={parseISO(inputs.purchaseDate)}
-                  onSelect={(date) => date && onUpdate('purchaseDate', date.toISOString())}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Label className="text-xs font-semibold uppercase text-muted-foreground">
-                {t('bonds.withdrawal_date')}
-              </Label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="text-xs">When you plan to cash out. If before maturity, early withdrawal fees may apply.</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal h-10 px-3",
-                    !inputs.withdrawalDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {hasMounted && inputs.withdrawalDate ? format(parseISO(inputs.withdrawalDate), 'PPP', { locale: dateLocale }) : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  captionLayout="dropdown"
-                  fromYear={2010}
-                  toYear={2050}
-                  selected={parseISO(inputs.withdrawalDate)}
-                  onSelect={(date) => date && onUpdate('withdrawalDate', date.toISOString())}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-        </div>
-
-        {/* Inflation, Margin, NBP Section */}
-        <div className="space-y-6">
-          {(inputs.bondType === 'ROR' || inputs.bondType === 'DOR') && (
-            <div className="space-y-6 p-4 bg-muted/30 rounded-xl border">
-              <div className="space-y-2">
-                <Label htmlFor="firstYearRate" className="text-xs font-bold uppercase text-muted-foreground flex items-center gap-2">
-                  Initial Interest Rate (%)
-                </Label>
-                <Input
-                  id="firstYearRate"
-                  type="number"
-                  step="0.01"
-                  className="h-10 font-bold"
-                  value={inputs.firstYearRate}
-                  onChange={(e) => onUpdate('firstYearRate', Number(e.target.value))}
-                />
+                </div>
               </div>
 
+              {/* Bond Type Selection */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="bondType" className="font-semibold">{t('bonds.bond_type')}</Label>
+                </div>
+                <Select
+                  value={inputs.bondType}
+                  onValueChange={(value) => onBondTypeChange(value as BondType)}
+                >
+                  <SelectTrigger id="bondType" className="h-11">
+                    <SelectValue placeholder="Select bond type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.values(BondType).map((type) => (
+                      <SelectItem key={type} value={type}>
+                        <div className="flex flex-col">
+                          <span className="font-bold">{type}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {BOND_DEFINITIONS[type].fullName[language]}
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                <div className="p-3 bg-primary/5 rounded-lg text-xs space-y-1 border border-primary/10">
+                  <div className="flex items-center gap-2 font-semibold text-primary">
+                    <Info className="h-3 w-3" />
+                    <span>{currentDef.fullName[language]}</span>
+                  </div>
+                  <p className="text-muted-foreground leading-relaxed italic">
+                    {currentDef.description[language]}
+                  </p>
+                </div>
+              </div>
+
+              {/* Investment Amount */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <Label htmlFor="expectedNbpRate" className="text-xs font-bold uppercase text-muted-foreground">
-                    Expected NBP Rate (%)
+                  <Label htmlFor="initialInvestment" className="font-semibold">
+                    {t('bonds.initial_investment')}
                   </Label>
-                  <span className="text-lg font-black text-primary">{inputs.expectedNbpRate}%</span>
+                  <span className="text-xs font-medium text-muted-foreground">
+                    {Math.floor(inputs.initialInvestment / 100)} {t('bonds.units')}
+                  </span>
                 </div>
+                <div className="space-y-4">
+                  <div className="relative">
+                    <Input
+                      id="initialInvestment"
+                      type="number"
+                      className={cn(
+                        "h-11 pl-4 pr-12 text-lg font-medium",
+                        !isDivisibleBy100 && "border-destructive focus-visible:ring-destructive"
+                      )}
+                      value={inputs.initialInvestment}
+                      onChange={(e) => handleInvestmentChange(e.target.value)}
+                    />
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
+                      PLN
+                    </div>
+                  </div>
+                  <Slider 
+                    value={[inputs.initialInvestment]} 
+                    min={100} 
+                    max={100000} 
+                    step={100} 
+                    onValueChange={([val]) => handleInvestmentChange(val)}
+                    className="py-4"
+                  />
+                </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+
+          {/* Timing & Withdrawal */}
+          <AccordionItem value="timing" className="border-b px-6 py-2">
+            <AccordionTrigger className="hover:no-underline py-4">
+              <span className="text-sm font-black flex items-center gap-2 uppercase tracking-widest text-slate-700">
+                {t('bonds.step_timing')}
+              </span>
+            </AccordionTrigger>
+            <AccordionContent className="space-y-6 pb-6">
+              <div className="grid grid-cols-1 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-xs font-semibold uppercase text-muted-foreground">
+                    {t('bonds.purchase_date')}
+                  </Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal h-11 px-3",
+                          !inputs.purchaseDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {hasMounted && inputs.purchaseDate ? format(parseISO(inputs.purchaseDate), 'PPP', { locale: dateLocale }) : <span>Pick a date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        captionLayout="dropdown"
+                        fromYear={2010}
+                        toYear={2050}
+                        selected={parseISO(inputs.purchaseDate)}
+                        onSelect={(date) => date && onUpdate('purchaseDate', date.toISOString())}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs font-semibold uppercase text-muted-foreground">
+                    {t('bonds.withdrawal_date')}
+                  </Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal h-11 px-3",
+                          !inputs.withdrawalDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {hasMounted && inputs.withdrawalDate ? format(parseISO(inputs.withdrawalDate), 'PPP', { locale: dateLocale }) : <span>Pick a date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        captionLayout="dropdown"
+                        fromYear={2010}
+                        toYear={2050}
+                        selected={parseISO(inputs.withdrawalDate)}
+                        onSelect={(date) => date && onUpdate('withdrawalDate', date.toISOString())}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <Label className="font-semibold">Account Type (Tax Strategy)</Label>
+                <Select
+                  value={inputs.taxStrategy}
+                  onValueChange={(value) => onUpdate('taxStrategy', value as TaxStrategy)}
+                >
+                  <SelectTrigger className="h-11">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={TaxStrategy.STANDARD}>Standard Account (19% Tax)</SelectItem>
+                    <SelectItem value={TaxStrategy.IKE}>IKE Account (0% Tax)</SelectItem>
+                    <SelectItem value={TaxStrategy.IKZE}>IKZE Account (5% Tax at end)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {currentDef.rebuyDiscount > 0 && (
+                <div className="flex items-center justify-between p-4 bg-green-50/50 rounded-xl border border-green-100">
+                  <div className="space-y-0.5">
+                    <Label className="text-sm font-bold text-green-800">{t('bonds.is_rebought')}</Label>
+                    <p className="text-[10px] text-green-600 font-medium italic">
+                      Discount: -{currentDef.rebuyDiscount.toFixed(2)} PLN per bond
+                    </p>
+                  </div>
+                  <Switch
+                    checked={inputs.isRebought}
+                    onCheckedChange={(checked) => onUpdate('isRebought', checked)}
+                  />
+                </div>
+              )}
+            </AccordionContent>
+          </AccordionItem>
+
+          {/* Market Assumptions */}
+          <AccordionItem value="assumptions" className="border-b px-6 py-2">
+            <AccordionTrigger className="hover:no-underline py-4">
+              <span className="text-sm font-black flex items-center gap-2 uppercase tracking-widest text-slate-700">
+                {t('bonds.step_market')}
+              </span>
+            </AccordionTrigger>
+            <AccordionContent className="space-y-6 pb-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="expectedInflation" className="text-xs font-bold text-primary uppercase tracking-wider">
+                    {t('bonds.inflation_rate')} (%)
+                  </Label>
+                  <div className="text-2xl font-black text-primary bg-background px-3 py-1 rounded-lg border shadow-sm">
+                    {inputs.expectedInflation}%
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  {[2.5, 10, -1].map((val) => (
+                    <Button 
+                      key={val}
+                      variant="outline" 
+                      size="sm" 
+                      className={cn(
+                        "h-8 text-[10px] font-black uppercase", 
+                        inputs.expectedInflation === val && "bg-primary text-primary-foreground border-primary"
+                      )} 
+                      onClick={() => onUpdate('expectedInflation', val)}
+                    >
+                      {val === 2.5 ? 'Stable' : val === 10 ? 'High' : 'Deflation'} ({val}%)
+                    </Button>
+                  ))}
+                </div>
+
                 <Slider 
-                  value={[inputs.expectedNbpRate ?? 5.25]} 
-                  min={0} 
-                  max={20} 
-                  step={0.05} 
-                  onValueChange={([val]) => onUpdate('expectedNbpRate', val)}
+                  value={[inputs.expectedInflation]} 
+                  min={-2} 
+                  max={25} 
+                  step={0.1} 
+                  onValueChange={([val]) => onUpdate('expectedInflation', val)}
                 />
               </div>
-            </div>
-          )}
-          
-          <div className="space-y-4 p-4 bg-primary/5 rounded-xl border border-primary/10">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="expectedInflation" className="text-xs font-bold text-primary uppercase tracking-wider">
-                {t('bonds.inflation_rate')} (%)
-              </Label>
-              <div className="text-2xl font-black text-primary bg-background px-3 py-1 rounded-lg border shadow-sm">
-                {inputs.expectedInflation}%
+
+              {(inputs.bondType === 'ROR' || inputs.bondType === 'DOR') && (
+                <div className="space-y-4 pt-4 border-t border-dashed">
+                  <div className="flex justify-between items-center">
+                    <Label htmlFor="expectedNbpRate" className="text-xs font-bold uppercase text-muted-foreground">
+                      Expected NBP Rate (%)
+                    </Label>
+                    <span className="text-lg font-black text-primary">{inputs.expectedNbpRate}%</span>
+                  </div>
+                  <Slider 
+                    value={[inputs.expectedNbpRate ?? 5.25]} 
+                    min={0} 
+max={20} 
+                    step={0.05} 
+                    onValueChange={([val]) => onUpdate('expectedNbpRate', val)}
+                  />
+                </div>
+              )}
+            </AccordionContent>
+          </AccordionItem>
+
+          {/* Display & Logic */}
+          <AccordionItem value="display" className="border-0 px-6 py-2">
+            <AccordionTrigger className="hover:no-underline py-4">
+              <span className="text-sm font-black flex items-center gap-2 uppercase tracking-widest text-slate-700">
+                {t('bonds.step_display')}
+              </span>
+            </AccordionTrigger>
+            <AccordionContent className="space-y-4 pb-6">
+              <div className="flex items-center justify-between p-4 bg-primary/5 rounded-xl border border-primary/10">
+                <div className="space-y-0.5">
+                  <Label className="text-sm font-bold text-primary uppercase">Inflation Adjusted</Label>
+                  <p className="text-[10px] text-muted-foreground font-medium italic">
+                    Show purchasing power values
+                  </p>
+                </div>
+                <Switch
+                  checked={inputs.showRealValue}
+                  onCheckedChange={(checked) => onUpdate('showRealValue', checked)}
+                />
               </div>
-            </div>
 
-            <div className="grid grid-cols-3 gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className={cn("h-8 text-[10px] font-bold uppercase", inputs.expectedInflation === 2.5 && "bg-primary text-primary-foreground")} 
-                onClick={() => onUpdate('expectedInflation', 2.5)}
-              >
-                Stable (2.5%)
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className={cn("h-8 text-[10px] font-bold uppercase", inputs.expectedInflation === 10 && "bg-primary text-primary-foreground")} 
-                onClick={() => onUpdate('expectedInflation', 10)}
-              >
-                High (10%)
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className={cn("h-8 text-[10px] font-bold uppercase", inputs.expectedInflation === -1 && "bg-primary text-primary-foreground")} 
-                onClick={() => onUpdate('expectedInflation', -1)}
-              >
-                Deflation (-1%)
-              </Button>
-            </div>
-
-            <Slider 
-              value={[inputs.expectedInflation]} 
-              min={-2} 
-              max={25} 
-              step={0.1} 
-              onValueChange={([val]) => onUpdate('expectedInflation', val)}
-            />
-          </div>
-          
-          <div className="space-y-4 p-4 bg-muted/30 rounded-xl border">
-            <div className="flex justify-between items-center">
-              <Label htmlFor="margin" className="text-xs font-bold uppercase text-muted-foreground">
-                {t('bonds.margin')} (%)
-              </Label>
-              <span className="text-lg font-black text-primary">{inputs.margin}%</span>
-            </div>
-            <Slider 
-              value={[inputs.margin]} 
-              min={0} 
-              max={10} 
-              step={0.05} 
-              onValueChange={([val]) => onUpdate('margin', val)}
-            />
-          </div>
-        </div>
-
-        <Separator />
-
-        {/* Rebuy / Swap Toggle */}
-        {currentDef.rebuyDiscount > 0 && (
-          <div className="space-y-4 p-4 bg-green-50/30 rounded-xl border border-green-100">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label className="text-sm font-bold text-green-800">{t('bonds.is_rebought')}</Label>
-                <p className="text-[10px] text-green-600 font-medium">
-                  Discount: -{currentDef.rebuyDiscount.toFixed(2)} PLN per bond
-                </p>
+              <div className="flex items-center justify-between p-4 bg-muted/50 rounded-xl border">
+                <div className="space-y-0.5">
+                  <Label className="text-sm font-bold">{t('bonds.custom_tax_rate')}</Label>
+                  <p className="text-[10px] text-muted-foreground font-medium italic">
+                    Standard is 19%
+                  </p>
+                </div>
+                <Switch
+                  checked={showCustomTax}
+                  onCheckedChange={setShowCustomTax}
+                />
               </div>
-              <Switch
-                checked={inputs.isRebought}
-                onCheckedChange={(checked) => onUpdate('isRebought', checked)}
-              />
-            </div>
-          </div>
-        )}
 
-        {/* Tax Switch */}
-        <div className="space-y-4 p-4 bg-slate-50/50 rounded-xl border">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label className="text-sm font-bold">{t('bonds.custom_tax_rate')}</Label>
-              <p className="text-[10px] text-muted-foreground font-medium">
-                Standard Belka tax is 19%
-              </p>
-            </div>
-            <Switch
-              checked={showCustomTax}
-              onCheckedChange={setShowCustomTax}
-            />
-          </div>
-
-          {showCustomTax && (
-            <div className="space-y-2 animate-in fade-in zoom-in-95 duration-200">
-              <Label htmlFor="taxRate" className="text-xs font-bold uppercase text-muted-foreground">
-                {t('bonds.tax_rate')} (%)
-              </Label>
-              <Input
-                id="taxRate"
-                type="number"
-                className="h-10 font-bold"
-                value={inputs.taxRate}
-                onChange={(e) => onUpdate('taxRate', Number(e.target.value))}
-              />
-            </div>
-          )}
-        </div>
+              {showCustomTax && (
+                <div className="px-4 py-2 animate-in fade-in zoom-in-95 duration-200">
+                  <Input
+                    type="number"
+                    className="h-10 font-bold"
+                    value={inputs.taxRate}
+                    onChange={(e) => onUpdate('taxRate', Number(e.target.value))}
+                  />
+                </div>
+              )}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
 
         {/* Summary Details */}
-        <div className="pt-2">
+        <div className="pt-2 px-6 pb-6">
           <div className="text-[10px] text-muted-foreground space-y-1 bg-muted/30 p-3 rounded-lg border border-dashed">
             <div className="flex justify-between">
               <span>{t('bonds.duration')}:</span>

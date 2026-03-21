@@ -1,5 +1,3 @@
-'use client';
-
 import { LadderContainer } from '@/features/ladder-strategy/components/LadderContainer';
 import { PageTransition } from '@/shared/components/PageTransition';
 import { Suspense } from 'react';

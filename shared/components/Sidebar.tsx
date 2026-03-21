@@ -33,7 +33,7 @@ export function Sidebar() {
       icon: BookOpen,
     },
     {
-      href: '/',
+      href: '/single-calculator',
       label: t('nav.single_calculator'),
       icon: Calculator,
     },
@@ -124,13 +124,13 @@ export function Sidebar() {
                   {isActive && (
                     <motion.div
                       layoutId="active-nav-indicator"
-                      className="absolute left-0 w-1 h-6 bg-primary rounded-full shadow-[0_0_10px_rgba(var(--primary-rgb),0.8)]"
+                      className="absolute left-0 w-1.5 h-6 bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.8)]"
                       initial={false}
                     />
                   )}
                   <item.icon className={cn(
                     "h-5 w-5 shrink-0 z-10 transition-transform duration-300 group-hover:scale-110", 
-                    isActive ? "text-primary" : "text-slate-500 group-hover:text-primary/70"
+                    isActive ? "text-white" : "text-slate-500 group-hover:text-white"
                   )} />
                   <span className="z-10 font-bold text-sm tracking-wide">{item.label}</span>
                 </Link>

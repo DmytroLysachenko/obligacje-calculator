@@ -7,14 +7,21 @@ import { RegularInvestmentResultsSummary } from '../../regular-investment/compon
 import { LadderTimeline } from './LadderTimeline';
 import { useLanguage } from '@/i18n';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Info, Layers } from 'lucide-react';
+import { Info, Layers, Loader2, Check } from 'lucide-react';
+import { RecalculateButton } from '@/shared/components/RecalculateButton';
 
 export const LadderContainer: React.FC = () => {
-  const { inputs, results, updateInput, setBondType } = useLadder();
+  const { inputs, results, updateInput, setBondType, isDirty, isCalculating, calculate } = useLadder();
   const { t } = useLanguage();
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && (isDirty || !results)) {
+      calculate();
+    }
+  };
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-20" onKeyDown={handleKeyDown}>
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-3xl font-black tracking-tight flex items-center gap-2 text-primary">
@@ -22,6 +29,26 @@ export const LadderContainer: React.FC = () => {
             {t('nav.ladder')}
           </h2>
           <p className="text-muted-foreground mt-2 text-sm font-medium">Build a &quot;Bond Ladder&quot; to ensure monthly liquidity and steady growth.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          {isCalculating && (
+            <span className="text-xs text-muted-foreground flex items-center gap-2 animate-in fade-in duration-500">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              Building ladder...
+            </span>
+          )}
+          {!isCalculating && isDirty && results && (
+            <span className="text-xs text-orange-500 flex items-center gap-1 animate-in fade-in duration-500 font-medium">
+              <Info className="h-3 w-3" />
+              Settings changed. Recalculate to update.
+            </span>
+          )}
+          {!isCalculating && !isDirty && results && (
+            <span className="text-xs text-green-600 flex items-center gap-1 animate-in fade-in duration-500 font-medium">
+              <Check className="h-3 w-3" />
+              Ladder optimized
+            </span>
+          )}
         </div>
       </header>
 
@@ -56,6 +83,12 @@ export const LadderContainer: React.FC = () => {
           )}
         </div>
       </div>
+
+      <RecalculateButton 
+        isDirty={isDirty}
+        loading={isCalculating}
+        onClick={() => calculate()}
+      />
     </div>
   );
 };

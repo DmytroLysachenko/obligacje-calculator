@@ -145,7 +145,11 @@
     "bond_singular": "Bond",
     "maturing": "Maturing",
     "strategy_tip": "Strategy Tip",
-    "ladder_tip_desc": "When a bond matures, you receive the full capital plus interest. Reinvesting these funds into a new bond of the same type continues the ladder, ensuring constant liquidity."
+    "ladder_tip_desc": "When a bond matures, you receive the full capital plus interest. Reinvesting these funds into a new bond of the same type continues the ladder, ensuring constant liquidity.",
+    "step_core": "1. Core Configuration",
+    "step_timing": "2. Timing & Strategy",
+    "step_market": "3. Market Assumptions",
+    "step_display": "4. Display Options"
     },
     "notebook": {
       "title": "My Portfolio / Notebook",

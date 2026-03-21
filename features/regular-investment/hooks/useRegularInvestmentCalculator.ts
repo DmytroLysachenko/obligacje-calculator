@@ -35,6 +35,7 @@ export function useRegularInvestmentCalculator() {
   const [results, setResults] = useState<RegularInvestmentResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [isDirty, setIsDirty] = useState(true); // Default to true so first calculation happens
 
   // Sync state with URL
   useQuerySync(inputs, (initial) => {
@@ -44,6 +45,7 @@ export function useRegularInvestmentCalculator() {
   const calculate = useCallback(async (currentInputs = inputs) => {
     setIsCalculating(true);
     setIsError(false);
+    setIsDirty(false);
     try {
       const response = await fetch('/api/calculate/regular', {
         method: 'POST',
@@ -63,16 +65,13 @@ export function useRegularInvestmentCalculator() {
     }
   }, [inputs]);
 
-  // Auto-calculate with debounce
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      calculate();
-    }, 600); // Slightly longer for regular investment as it is heavier
-
-    return () => clearTimeout(timer);
-  }, [inputs, calculate]);
+  // Initial calculation - REMOVED to prevent excessive requests on remount
+  // useEffect(() => {
+  //   calculate();
+  // }, []);
 
   const updateInput = (key: keyof RegularInvestmentInputs, value: string | number | boolean | undefined) => {
+    setIsDirty(true);
     setInputs((prev) => {
       const newInputs = { ...prev, [key]: value };
       
@@ -87,6 +86,7 @@ export function useRegularInvestmentCalculator() {
   };
 
   const setBondType = (type: BondType) => {
+    setIsDirty(true);
     const def = BOND_DEFINITIONS[type];
     setInputs((prev) => ({
       ...prev,
@@ -107,6 +107,7 @@ export function useRegularInvestmentCalculator() {
     results,
     isCalculating,
     isError,
+    isDirty,
     calculate,
     updateInput,
     setBondType,

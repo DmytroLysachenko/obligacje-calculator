@@ -1,5 +1,3 @@
-'use client';
-
 import { RegularInvestmentCalculatorContainer } from '@/features/regular-investment/components/RegularInvestmentCalculatorContainer';
 import { PageTransition } from '@/shared/components/PageTransition';
 import { Suspense } from 'react';

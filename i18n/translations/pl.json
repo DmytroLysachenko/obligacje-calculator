@@ -145,7 +145,11 @@
     "bond_singular": "Obligacja",
     "maturing": "Wykup",
     "strategy_tip": "Wskazówka Strategiczna",
-    "ladder_tip_desc": "Gdy obligacja zapada (zostaje wykupiona), otrzymujesz pełny kapitał wraz z odsetkami. Ponowne zainwestowanie tych środków w nową obligację tego samego typu kontynuuje drabinę, zapewniając stałą płynność."
+    "ladder_tip_desc": "Gdy obligacja zapada (zostaje wykupiona), otrzymujesz pełny kapitał wraz z odsetkami. Ponowne zainwestowanie tych środków w nową obligację tego samego typu kontynuuje drabinę, zapewniając stałą płynność.",
+    "step_core": "1. Konfiguracja Podstawowa",
+    "step_timing": "2. Harmonogram i Strategia",
+    "step_market": "3. Założenia Rynkowe",
+    "step_display": "4. Opcje Wyświetlania"
     },
     "notebook": {
       "title": "Mój Portfel / Notatnik",

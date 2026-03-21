@@ -53,6 +53,38 @@ export function useMultiAssetComparison() {
   
   const startDate = `${startYear}-${startMonth}`;
   const [showRealValue, setShowRealValue] = useState(false);
+  const [isDirty, setIsDirty] = useState(true);
+
+  const updateInitialSum = (val: number) => {
+    setInitialSum(val);
+    setIsDirty(true);
+  };
+
+  const updateMonthlyContribution = (val: number) => {
+    setMonthlyContribution(val);
+    setIsDirty(true);
+  };
+
+  const updateStartYear = (val: string) => {
+    setStartYear(val);
+    setIsDirty(true);
+  };
+
+  const updateStartMonth = (val: string) => {
+    setStartMonth(val);
+    setIsDirty(true);
+  };
+
+  const updateShowRealValue = (val: boolean) => {
+    setShowRealValue(val);
+    // Real value toggle usually doesn't need recalculation if it's just a view change, 
+    // but if it triggers heavy useMemo, we might want it. 
+    // In this hook it affects useMemo below.
+  };
+
+  const recalculate = () => {
+    setIsDirty(false);
+  };
   
   // URL Sync
   useQuerySync({
@@ -95,18 +127,20 @@ export function useMultiAssetComparison() {
 
   return {
     initialSum,
-    setInitialSum,
+    updateInitialSum,
     monthlyContribution,
-    setMonthlyContribution,
+    updateMonthlyContribution,
     startDate,
     startYear,
-    setStartYear,
+    updateStartYear,
     startMonth,
-    setStartMonth,
+    updateStartMonth,
     years,
     months,
     showRealValue,
-    setShowRealValue,
+    updateShowRealValue,
+    isDirty,
+    recalculate,
     assets: [sp500, gold, bonds, savings],
     metadata: ASSETS_METADATA,
     availableDates: HISTORICAL_RETURNS.map(r => r.date),

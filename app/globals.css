@@ -39,6 +39,18 @@
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
+
+  @keyframes subtle-pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
+    50% { transform: scale(1.03); box-shadow: 0 30px 60px rgba(0,0,0,0.15); }
+  }
+
+  @keyframes ping-slow {
+    75%, 100% { transform: scale(1.5); opacity: 0; }
+  }
+
+  --animate-subtle-pulse: subtle-pulse 2s ease-in-out infinite;
+  --animate-ping-slow: ping-slow 3s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
 :root {

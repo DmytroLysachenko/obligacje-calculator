@@ -61,11 +61,15 @@ export function useQuerySync<T extends object>(
     // Only update if the query actually changed to avoid infinite loops
     if (query !== currentQuery) {
       const url = query ? `${pathname}?${query}` : pathname;
-      router.replace(url, { scroll: false });
+      // Use history.replaceState for a 'silent' update that doesn't trigger Next.js RSC data fetches
+      window.history.replaceState({ ...window.history.state, as: url, url }, '', url);
     }
-  }, [state, pathname, router, searchParams]);
+  }, [state, pathname, searchParams]);
 
   useEffect(() => {
-    updateUrl();
+    const timer = setTimeout(() => {
+      updateUrl();
+    }, 500);
+    return () => clearTimeout(timer);
   }, [stateString, updateUrl]);
 }

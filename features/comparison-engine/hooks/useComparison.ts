@@ -34,6 +34,7 @@ export function useComparison() {
   const [resultsA, setResultsA] = useState<CalculationResult | null>(null);
   const [resultsB, setResultsB] = useState<CalculationResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [isDirty, setIsDirty] = useState(true);
 
   // Sync state with URL using prefixes to avoid collisions
   const combinedState = {
@@ -62,6 +63,7 @@ export function useComparison() {
 
   const calculate = useCallback(async () => {
     setIsCalculating(true);
+    setIsDirty(false);
     try {
       const [resA, resB] = await Promise.all([
         fetch('/api/calculate/single', {
@@ -88,24 +90,23 @@ export function useComparison() {
     }
   }, [inputsA, inputsB]);
 
-  // Auto-calculate with debounce
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      calculate();
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [inputsA, inputsB, calculate]);
+  // Initial calculation - REMOVED to prevent excessive requests on remount
+  // useEffect(() => {
+  //   calculate();
+  // }, []);
 
   const updateInputA = (key: keyof BondInputs, value: string | number | boolean | undefined) => {
+    setIsDirty(true);
     setInputsA(prev => ({ ...prev, [key]: value }));
   };
 
   const updateInputB = (key: keyof BondInputs, value: string | number | boolean | undefined) => {
+    setIsDirty(true);
     setInputsB(prev => ({ ...prev, [key]: value }));
   };
 
   const setBondTypeA = (type: BondType) => {
+    setIsDirty(true);
     const def = BOND_DEFINITIONS[type];
     setInputsA(prev => ({
       ...prev,
@@ -122,6 +123,7 @@ export function useComparison() {
   };
 
   const setBondTypeB = (type: BondType) => {
+    setIsDirty(true);
     const def = BOND_DEFINITIONS[type];
     setInputsB(prev => ({
       ...prev,
@@ -141,6 +143,7 @@ export function useComparison() {
     inputsA, inputsB,
     resultsA, resultsB,
     isCalculating,
+    isDirty,
     calculate,
     updateInputA, updateInputB,
     setBondTypeA, setBondTypeB,

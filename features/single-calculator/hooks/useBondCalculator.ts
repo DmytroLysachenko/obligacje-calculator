@@ -26,6 +26,7 @@ const DEFAULT_INPUTS: BondInputs = {
   isRebought: false,
   rebuyDiscount: def.rebuyDiscount,
   taxStrategy: TaxStrategy.STANDARD,
+  showRealValue: false,
 };
 
 export function useBondCalculator() {
@@ -33,6 +34,7 @@ export function useBondCalculator() {
   const [results, setResults] = useState<CalculationResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [isDirty, setIsDirty] = useState(true);
 
   // Sync state with URL
   useQuerySync(inputs, (initial) => {
@@ -42,6 +44,7 @@ export function useBondCalculator() {
   const calculate = useCallback(async (currentInputs = inputs) => {
     setIsCalculating(true);
     setIsError(false);
+    setIsDirty(false);
     try {
       const response = await fetch('/api/calculate/single', {
         method: 'POST',
@@ -61,16 +64,13 @@ export function useBondCalculator() {
     }
   }, [inputs]);
 
-  // Auto-calculate with debounce
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      calculate();
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [inputs, calculate]);
+  // Initial calculation - REMOVED to prevent excessive requests on remount
+  // useEffect(() => {
+  //   calculate();
+  // }, []);
 
   const updateInput = (key: keyof BondInputs, value: string | number | boolean | undefined) => {
+    setIsDirty(true);
     setInputs((prev) => {
       const newInputs = { ...prev, [key]: value };
       
@@ -91,6 +91,7 @@ export function useBondCalculator() {
   };
 
   const setBondType = (type: BondType) => {
+    setIsDirty(true);
     const def = BOND_DEFINITIONS[type];
     const purchaseDate = new Date(inputs.purchaseDate);
     const newMaturityDate = addMonths(purchaseDate, Math.round(def.duration * 12));
@@ -115,6 +116,7 @@ export function useBondCalculator() {
     results,
     isCalculating,
     isError,
+    isDirty,
     calculate,
     updateInput,
     setBondType,
