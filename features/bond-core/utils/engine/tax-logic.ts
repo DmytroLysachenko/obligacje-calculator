@@ -30,11 +30,11 @@ export function calculateTaxAmount(
   }
 
   if (useOfficialRounding) {
-    // For IKZE, the base is the full amount. For standard, it is the interest.
-    // The calling function handles passing the correct 'amount' (base).
-    const taxableBase = amount.toDecimalPlaces(0, Decimal.ROUND_HALF_UP);
+    // Official rounding for fixed income (zryczałtowany) is to 2 decimal places (grosze).
+    // NOT to 0 decimal places (which would be full PLN, used only for annual PIT stock declarations).
+    const taxableBase = amount.toDecimalPlaces(2, Decimal.ROUND_HALF_UP);
     const tax = taxableBase.times(new Decimal(rate).dividedBy(100));
-    return tax.toDecimalPlaces(0, Decimal.ROUND_HALF_UP);
+    return tax.toDecimalPlaces(2, Decimal.ROUND_HALF_UP);
   }
 
   return amount.times(new Decimal(rate).dividedBy(100));

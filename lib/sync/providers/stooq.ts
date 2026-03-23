@@ -9,7 +9,9 @@ export class StooqSyncProvider implements SyncProvider {
     const results: SyncRecord[] = [];
     const symbols = [
       { symbol: "^SPX", slug: "sp500" },
-      { symbol: "GC.F", slug: "gold-usd" }
+      { symbol: "GC.F", slug: "gold-usd" },
+      { symbol: "PLOPLN3M", slug: "wibor-3m" },
+      { symbol: "PLOPLN6M", slug: "wibor-6m" }
     ];
 
     for (const item of symbols) {

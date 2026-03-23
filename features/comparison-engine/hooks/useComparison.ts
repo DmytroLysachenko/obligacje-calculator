@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback } from 'react';
 import { BondInputs, BondType, TaxStrategy, CalculationResult } from '../../bond-core/types';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { addMonths } from 'date-fns';
@@ -95,12 +95,12 @@ export function useComparison() {
   //   calculate();
   // }, []);
 
-  const updateInputA = (key: keyof BondInputs, value: string | number | boolean | undefined) => {
+  const updateInputA = (key: keyof BondInputs, value: string | number | boolean | number[] | undefined) => {
     setIsDirty(true);
     setInputsA(prev => ({ ...prev, [key]: value }));
   };
 
-  const updateInputB = (key: keyof BondInputs, value: string | number | boolean | undefined) => {
+  const updateInputB = (key: keyof BondInputs, value: string | number | boolean | number[] | undefined) => {
     setIsDirty(true);
     setInputsB(prev => ({ ...prev, [key]: value }));
   };

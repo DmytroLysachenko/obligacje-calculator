@@ -14,7 +14,7 @@ export type Language = keyof typeof translations;
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  t: (key: string, variables?: Record<string, string | number>) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -36,7 +36,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('app-language', lang);
   };
 
-  const t = (key: string): string => {
+  const t = (key: string, variables?: Record<string, string | number>): string => {
     const keys = key.split('.');
     let current: unknown = translations[language];
 
@@ -48,7 +48,15 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    return typeof current === 'string' ? current : key;
+    let text = typeof current === 'string' ? current : key;
+
+    if (variables) {
+      Object.entries(variables).forEach(([name, value]) => {
+        text = text.replace(new RegExp(`{{${name}}}`, 'g'), String(value));
+      });
+    }
+
+    return text;
   };
 
   return (

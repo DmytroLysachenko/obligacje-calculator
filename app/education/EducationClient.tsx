@@ -87,7 +87,7 @@ export default function EducationClient() {
           ))}
         </div>
         <p className="text-xs text-muted-foreground italic bg-muted/50 p-4 rounded-lg border border-dashed">
-          Note: Bond conditions may change over time. Always verify the current parameters on the official Polish government bond website (obligacjeskarbowe.pl).
+          {t('education.disclaimer')}
         </p>
       </section>
 

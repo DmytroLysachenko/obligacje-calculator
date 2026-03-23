@@ -32,7 +32,7 @@ import { cn } from "@/lib/utils";
 import { RecalculateButton } from "@/shared/components/RecalculateButton";
 
 export const BondComparisonContainer = () => {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const [initialInvestment, setInitialInvestment] = useState(10000);
   const [expectedInflation, setExpectedInflation] = useState(3.5);
   const [duration, setDuration] = useState(10);
@@ -136,9 +136,9 @@ export const BondComparisonContainer = () => {
             <div className="p-2 bg-primary rounded-xl">
               <ArrowRightLeft className="h-6 w-6 text-white" />
             </div>
-            <h2 className="text-3xl font-black tracking-tight text-primary">Bond vs Bond</h2>
+            <h2 className="text-3xl font-black tracking-tight text-primary">{t('comparison.title_bond_vs_bond')}</h2>
           </div>
-          <p className="text-muted-foreground font-medium">Compare different Polish Treasury Bonds under the same conditions with automatic rollover.</p>
+          <p className="text-muted-foreground font-medium">{t('comparison.desc_bond_vs_bond')}</p>
         </div>
       </header>
 
@@ -147,7 +147,7 @@ export const BondComparisonContainer = () => {
         <aside className="lg:col-span-1 space-y-6">
           <Card className="border-2 shadow-xl">
             <CardHeader className="bg-muted/30 border-b">
-              <CardTitle className="text-sm font-black uppercase tracking-widest">Shared Scenario</CardTitle>
+              <CardTitle className="text-sm font-black uppercase tracking-widest">{t('comparison.shared_scenario')}</CardTitle>
             </CardHeader>
             <CardContent className="pt-6 space-y-8">
               <div className="space-y-4">
@@ -167,8 +167,8 @@ export const BondComparisonContainer = () => {
 
               <div className="space-y-4 pt-4 border-t border-dashed">
                 <div className="flex justify-between">
-                  <Label className="font-bold">Horizon (Years)</Label>
-                  <span className="font-black text-primary">{duration} Years</span>
+                  <Label className="font-bold">{t('comparison.horizon_years')}</Label>
+                  <span className="font-black text-primary">{duration} {t('common.years')}</span>
                 </div>
                 <Slider 
                   value={[duration]} 
@@ -182,7 +182,7 @@ export const BondComparisonContainer = () => {
 
               <div className="space-y-4 pt-4 border-t border-dashed">
                 <div className="flex justify-between">
-                  <Label className="font-bold">Expected Inflation</Label>
+                  <Label className="font-bold">{t('bonds.inflation_rate')}</Label>
                   <span className="font-black text-orange-600">{expectedInflation}%</span>
                 </div>
                 <Slider 
@@ -197,14 +197,14 @@ export const BondComparisonContainer = () => {
 
               <div className="flex flex-col gap-4 pt-4 border-t border-dashed">
                 <div className="flex items-center justify-between p-4 bg-primary/5 rounded-2xl border border-primary/10">
-                  <Label className="text-xs font-black uppercase text-primary">Real Value</Label>
+                  <Label className="text-xs font-black uppercase text-primary">{t('bonds.inflation_adjusted')}</Label>
                   <Switch checked={showRealValue} onCheckedChange={setShowRealValue} />
                 </div>
                 
                 <div className="flex items-center justify-between p-4 bg-green-50 rounded-2xl border border-green-100">
                   <div className="space-y-0.5">
-                    <Label className="text-xs font-black uppercase text-green-700">Reinvest</Label>
-                    <p className="text-[8px] text-green-600 font-bold uppercase leading-tight">Rollover at maturity</p>
+                    <Label className="text-xs font-black uppercase text-green-700">{t('bonds.reinvest')}</Label>
+                    <p className="text-[8px] text-green-600 font-bold uppercase leading-tight">{t('bonds.rollover_desc')}</p>
                   </div>
                   <Switch checked={reinvest} onCheckedChange={(v) => {
                     setReinvest(v);
@@ -217,7 +217,7 @@ export const BondComparisonContainer = () => {
 
           <Card className="border-2 shadow-xl">
             <CardHeader className="bg-muted/30 border-b">
-              <CardTitle className="text-sm font-black uppercase tracking-widest">Bonds to compare</CardTitle>
+              <CardTitle className="text-sm font-black uppercase tracking-widest">{t('comparison.bonds_to_compare')}</CardTitle>
             </CardHeader>
             <CardContent className="pt-4 grid grid-cols-2 gap-2">
               {Object.values(BondType).map(type => (
@@ -248,12 +248,12 @@ export const BondComparisonContainer = () => {
               <Card className="border-2 shadow-2xl overflow-hidden rounded-3xl">
                 <CardHeader className="bg-muted/30 border-b flex flex-row items-center justify-between px-8 py-6">
                   <div>
-                    <CardTitle className="text-xl font-black">Performance Over Time</CardTitle>
-                    <CardDescription>Comparison based on automatic renewal at maturity.</CardDescription>
+                    <CardTitle className="text-xl font-black">{t('comparison.performance_over_time')}</CardTitle>
+                    <CardDescription>{t('comparison.comparison_desc')}</CardDescription>
                   </div>
                   <div className="flex items-center gap-2 px-4 py-2 bg-background rounded-full border shadow-sm">
                     <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Live Projection</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">{t('comparison.live_projection')}</span>
                   </div>
                 </CardHeader>
                 <CardContent className="p-8">
@@ -316,11 +316,11 @@ export const BondComparisonContainer = () => {
                       </CardHeader>
                       <CardContent className="space-y-4">
                         <div className="flex justify-between text-xs font-bold">
-                          <span className="text-muted-foreground uppercase">Net Profit</span>
+                          <span className="text-muted-foreground uppercase">{t('comparison.net_profit')}</span>
                           <span className="text-green-600">+{formatCurrency(profit)}</span>
                         </div>
                         <div className="flex justify-between text-xs font-bold">
-                          <span className="text-muted-foreground uppercase">Total ROI</span>
+                          <span className="text-muted-foreground uppercase">{t('bonds.total_roi')}</span>
                           <span className="text-primary">{roi}%</span>
                         </div>
                         <div className="pt-4 border-t border-dashed space-y-1">

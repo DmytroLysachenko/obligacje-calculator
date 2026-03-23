@@ -5,6 +5,7 @@ import React from "react";
 import { Button as ShadcnButton } from "@/components/ui/button";
 import { Loader2, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/i18n";
 
 interface RecalculateButtonProps {
   isDirty: boolean;
@@ -13,6 +14,7 @@ interface RecalculateButtonProps {
 }
 
 export const RecalculateButton = ({ isDirty, loading, onClick }: RecalculateButtonProps) => {
+  const { t } = useLanguage();
   if (!isDirty && !loading) return null;
 
   return (
@@ -31,7 +33,7 @@ export const RecalculateButton = ({ isDirty, loading, onClick }: RecalculateButt
         {loading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Calculating...
+            {t('common.calculating')}
           </>
         ) : (
           <>
@@ -39,7 +41,7 @@ export const RecalculateButton = ({ isDirty, loading, onClick }: RecalculateButt
               "mr-2 h-4 w-4 transition-transform group-hover:scale-110",
               isDirty && "text-white"
             )} />
-            Recalculate
+            {t('common.recalculate')}
           </>
         )}
       </ShadcnButton>

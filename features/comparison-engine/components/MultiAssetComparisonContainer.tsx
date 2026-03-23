@@ -46,7 +46,7 @@ export const MultiAssetComparisonContainer = () => {
     recalculate
   } = useMultiAssetComparison();
   
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const [copied, setCopied] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
 
@@ -108,8 +108,12 @@ export const MultiAssetComparisonContainer = () => {
     const winner = sorted[0];
     return {
       title: winner.metadata.name,
-      text: `Based on historical data from ${startDate}, the best performing asset was ${winner.metadata.name}.`,
-      recommendation: winner.metadata.id === 'bonds' ? "Bonds provided the best risk-adjusted return in this period." : "Equities outperformed but with significantly higher volatility."
+      text: language === 'pl' 
+        ? `Na podstawie danych historycznych od ${startDate}, najlepiej radzącym sobie aktywem było ${winner.metadata.name}.`
+        : `Based on historical data from ${startDate}, the best performing asset was ${winner.metadata.name}.`,
+      recommendation: winner.metadata.id === 'bonds' 
+        ? (language === 'pl' ? "Obligacje zapewniły najlepszy zwrot skorygowany o ryzyko w tym okresie." : "Bonds provided the best risk-adjusted return in this period.")
+        : (language === 'pl' ? "Akcje radziły sobie lepiej, ale przy znacznie wyższej zmienności." : "Equities outperformed but with significantly higher volatility.")
     };
   })();
 
@@ -133,11 +137,11 @@ export const MultiAssetComparisonContainer = () => {
               <Activity className="h-6 w-6 text-white" />
             </div>
             <h2 className="text-3xl font-black tracking-tight text-primary">
-              Market vs Bonds
+              {t('comparison.market_vs_bonds')}
             </h2>
           </div>
           <p className="text-muted-foreground max-w-2xl text-sm font-medium">
-            Historical simulator: Compare asset performance with monthly contributions adjusted for inflation.
+            {t('comparison.market_vs_bonds_desc')}
           </p>
         </div>
         <div className="flex gap-3">
@@ -155,7 +159,7 @@ export const MultiAssetComparisonContainer = () => {
             ) : (
               <Share2 className="h-5 w-5" />
             )}
-            {copied ? "COPIED!" : "SHARE SCENARIO"}
+            {copied ? t('comparison.copied') : t('comparison.share_scenario')}
           </Button>
           <Button
             variant="outline"
@@ -163,7 +167,7 @@ export const MultiAssetComparisonContainer = () => {
             onClick={handleExport}
             className="gap-2 font-bold border-2 hover:border-primary hover:text-primary"
           >
-            <Download className="h-5 w-5" /> EXPORT
+            <Download className="h-5 w-5" /> {t('comparison.export')}
           </Button>
         </div>
       </header>

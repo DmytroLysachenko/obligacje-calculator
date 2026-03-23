@@ -3,8 +3,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Zap, Info } from "lucide-react";
+import { Info, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/i18n";
 import { ComparisonSummaryProps } from "./types";
 
 export const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({
@@ -14,6 +15,7 @@ export const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({
   isCalculating,
   formatCurrency,
 }) => {
+  const { t } = useLanguage();
   return (
     <div className="space-y-8">
       <motion.div
@@ -27,14 +29,14 @@ export const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({
             </div>
             <div className="space-y-2">
               <h3 className="text-xl font-black text-primary flex items-center gap-2">
-                Winner: {verdict.title}
+                {t('comparison.winner')}: {verdict.title}
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
                 {verdict.text}
               </p>
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full text-xs font-bold text-primary mt-2">
                 <Info className="h-3 w-3" />
-                Insight: {verdict.recommendation}
+                {t('comparison.insight')}: {verdict.recommendation}
               </div>
             </div>
           </CardContent>
@@ -45,7 +47,7 @@ export const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({
         <div className="flex gap-10">
           <div className="space-y-1">
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
-              Total Invested
+              {t('comparison.total_invested')}
             </p>
             <p className="text-2xl font-black text-primary">
               {formatCurrency(totalInvested)}
@@ -53,10 +55,10 @@ export const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({
           </div>
           <div className="space-y-1">
             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
-              Duration
+              {t('comparison.duration')}
             </p>
             <p className="text-2xl font-black text-primary">
-              {durationMonths} Months
+              {durationMonths} {t('common.period')}
             </p>
           </div>
         </div>
@@ -68,7 +70,7 @@ export const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({
             )}
           />
           <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-            {isCalculating ? "Live Calculation..." : "Sync Data Stable"}
+            {isCalculating ? t('comparison.live_calculation') : t('comparison.sync_data_stable')}
           </span>
         </div>
       </div>

@@ -11,7 +11,7 @@ export const translations = {
 export type Language = keyof typeof translations;
 
 // Simple server-side t function (defaults to en)
-export function t(key: string, lang: Language = 'en'): string {
+export function t(key: string, variables?: Record<string, string | number>, lang: Language = 'en'): string {
   const keys = key.split('.');
   let current: unknown = translations[lang];
 
@@ -23,5 +23,13 @@ export function t(key: string, lang: Language = 'en'): string {
     }
   }
 
-  return typeof current === 'string' ? current : key;
+  let text = typeof current === 'string' ? current : key;
+
+  if (variables) {
+    Object.entries(variables).forEach(([name, value]) => {
+      text = text.replace(new RegExp(`{{${name}}}`, 'g'), String(value));
+    });
+  }
+
+  return text;
 }

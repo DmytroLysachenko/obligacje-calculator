@@ -43,6 +43,8 @@ export interface BondInputs {
   savingsGoal?: number;
   historicalData?: HistoricalDataMap;
   showRealValue?: boolean;
+  calculatorMode?: 'standard' | 'reverse';
+  customInflation?: number[];
 }
 
 export interface YearlyTimelinePoint {

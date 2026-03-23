@@ -1,6 +1,7 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback } from 'react';
 import { BondInputs, BondType, TaxStrategy, CalculationResult } from '../../bond-core/types';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
+import { calculateBondInvestment } from '../../bond-core/utils/calculations';
 import { addMonths } from 'date-fns';
 import { useQuerySync } from '@/shared/hooks/useQuerySync';
 
@@ -46,15 +47,27 @@ export function useBondCalculator() {
     setIsError(false);
     setIsDirty(false);
     try {
-      const response = await fetch('/api/calculate/single', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(currentInputs),
+      // Execute the heavy calculation in a non-blocking macro-task to preserve UI fluidity (pseudo-worker)
+      const data = await new Promise<CalculationResult>((resolve, reject) => {
+        setTimeout(() => {
+          try {
+            const finalInputs = { ...currentInputs };
+            if (currentInputs.calculatorMode === 'reverse' && currentInputs.savingsGoal) {
+              const testBase = 10000;
+              const simTest = calculateBondInvestment({ ...currentInputs, initialInvestment: testBase });
+              const netMultiplier = simTest.netPayoutValue / testBase;
+              const requiredInvestmentRaw = currentInputs.savingsGoal / netMultiplier;
+              const bondPrice = currentInputs.isRebought ? (100 - (currentInputs.rebuyDiscount || 0)) : 100;
+              const requiredBonds = Math.ceil(requiredInvestmentRaw / bondPrice);
+              finalInputs.initialInvestment = requiredBonds * bondPrice;
+            }
+            resolve(calculateBondInvestment(finalInputs));
+          } catch (e) {
+            reject(e);
+          }
+        }, 10);
       });
       
-      if (!response.ok) throw new Error('Calculation failed');
-      
-      const data = await response.json();
       setResults(data);
     } catch (error) {
       console.error('Calculation error:', error);
@@ -69,7 +82,7 @@ export function useBondCalculator() {
   //   calculate();
   // }, []);
 
-  const updateInput = (key: keyof BondInputs, value: string | number | boolean | undefined) => {
+  const updateInput = (key: keyof BondInputs, value: string | number | boolean | number[] | undefined) => {
     setIsDirty(true);
     setInputs((prev) => {
       const newInputs = { ...prev, [key]: value };

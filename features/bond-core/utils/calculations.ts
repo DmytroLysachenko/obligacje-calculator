@@ -154,9 +154,20 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
       
       const daysInPeriod = differenceInDays(periodEndDateNorm, periodStartDate);
       const daysHeldInPeriod = differenceInDays(periodEndDate, periodStartDate);
-      const timeFactor = daysInPeriod > 0 ? new Decimal(daysHeldInPeriod).dividedBy(daysInPeriod) : new Decimal(1);
+      
+      // Polish Ministry of Finance convention: exact 1.0 for completed periods.
+      // For early withdrawals (partial periods), the standard Act/365 convention is used.
+      let timeFactor = new Decimal(1);
+      if (daysHeldInPeriod < daysInPeriod && daysInPeriod > 0) {
+        timeFactor = new Decimal(daysHeldInPeriod).dividedBy(isMonthly ? (365 / 12) : 365);
+      } else if (daysInPeriod === 0) {
+        timeFactor = new Decimal(0);
+      }
 
-      if (timeFactor.lte(0) && period > 1) break;
+      const periodYearIndex = Math.floor(differenceInMonths(periodStartDate, startDate) / 12);
+      const activeExpectedInflation = (inputs.customInflation && inputs.customInflation.length > periodYearIndex)
+        ? inputs.customInflation[periodYearIndex]
+        : expectedInflation;
 
       const { value: lagInflation, isProjected } = getHistoricalValue(periodStartDate, 'inflation', 2, historicalData);
 
@@ -164,7 +175,7 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
         bondType,
         period,
         firstYearRate,
-        expectedInflation,
+        activeExpectedInflation,
         expectedNbpRate,
         margin,
         isInflationIndexed,
@@ -199,9 +210,14 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
       const netInterest = interestEarned.minus(taxDeducted);
       globalAccumulatedNetInterest = globalAccumulatedNetInterest.plus(netInterest);
 
-      // Inflation tracking for global real value
+      // Inflation tracking for global real value with exact yearly compounding
       const totalMonthsSoFar = differenceInMonths(periodEndDate, startDate);
-      const cumulativeInflation = new Decimal(1).plus(new Decimal(expectedInflation).dividedBy(100)).pow(totalMonthsSoFar / 12);
+      let cumulativeInflation = new Decimal(1);
+      for (let m = 1; m <= totalMonthsSoFar; m++) {
+        const yIdx = Math.floor((m - 1) / 12);
+        const yInf = (inputs.customInflation && inputs.customInflation.length > yIdx) ? inputs.customInflation[yIdx] : expectedInflation;
+        cumulativeInflation = cumulativeInflation.times(new Decimal(1).plus(new Decimal(yInf).dividedBy(12).dividedBy(100)));
+      }
       
       const currentNominalPrincipal = isCapitalized ? currentNominalValue : nominalStartingValue;
       
@@ -248,7 +264,7 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
         isMaturity,
         isWithdrawal: periodEndDate.getTime() === targetWithdrawalDate.getTime(),
         isProjected,
-        inflationReference: lagInflation !== undefined ? lagInflation : expectedInflation,
+        inflationReference: lagInflation !== undefined ? lagInflation : activeExpectedInflation,
         nbpReference: lagNbp !== undefined ? lagNbp : expectedNbpRate,
       });
 

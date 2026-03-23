@@ -19,7 +19,6 @@ import {
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from './LanguageSwitcher';
-import { ThemeToggle } from './ThemeToggle';
 import { motion } from 'framer-motion';
 
 export function Sidebar() {
@@ -82,18 +81,18 @@ export function Sidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 w-72 bg-slate-950 border-r border-white/5 shadow-2xl transition-transform lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-40 w-72 bg-white border-r shadow-lg transition-transform lg:translate-x-0",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="flex flex-col h-full bg-gradient-to-b from-slate-900 via-slate-950 to-black text-white">
-          <div className="p-8 border-b border-white/5 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <div className="flex flex-col h-full bg-slate-50 text-slate-900 border-r">
+          <div className="p-8 border-b relative overflow-hidden group">
+            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <h1 className="text-2xl font-black tracking-tighter flex items-center gap-3 relative z-10">
-              <div className="p-2 bg-primary rounded-xl shadow-[0_0_20px_rgba(var(--primary-rgb),0.4)]">
+              <div className="p-2 bg-primary rounded-xl shadow-md">
                 <TrendingUp className="h-6 w-6 text-white" />
               </div>
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+              <span className="text-slate-900">
                 {t('common.title')}
               </span>
             </h1>
@@ -110,14 +109,14 @@ export function Sidebar() {
                   className={cn(
                     "relative flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group",
                     isActive
-                      ? "text-white"
-                      : "text-slate-400 hover:text-white hover:bg-white/5"
+                      ? "text-primary"
+                      : "text-slate-500 hover:text-slate-900 hover:bg-black/5"
                   )}
                 >
                   {isActive && (
                     <motion.div
                       layoutId="active-nav-bg"
-                      className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/5 rounded-2xl border border-primary/20 shadow-[inset_0_0_20px_rgba(var(--primary-rgb),0.1)]"
+                      className="absolute inset-0 bg-primary/10 rounded-2xl border border-primary/20 shadow-sm"
                       initial={false}
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
@@ -125,13 +124,13 @@ export function Sidebar() {
                   {isActive && (
                     <motion.div
                       layoutId="active-nav-indicator"
-                      className="absolute left-0 w-1.5 h-6 bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.8)]"
+                      className="absolute left-0 w-1.5 h-6 bg-primary rounded-full shadow-sm"
                       initial={false}
                     />
                   )}
                   <item.icon className={cn(
                     "h-5 w-5 shrink-0 z-10 transition-transform duration-300 group-hover:scale-110", 
-                    isActive ? "text-white" : "text-slate-500 group-hover:text-white"
+                    isActive ? "text-primary" : "text-slate-400 group-hover:text-primary"
                   )} />
                   <span className="z-10 font-bold text-sm tracking-wide">{item.label}</span>
                 </Link>
@@ -139,17 +138,16 @@ export function Sidebar() {
             })}
           </nav>
 
-          <div className="p-8 border-t border-white/5 bg-black/20 space-y-8">
+          <div className="p-8 border-t bg-slate-100 space-y-8">
             <div className="flex flex-col gap-3">
               <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] px-1">
                 {t('common.language')}
               </span>
-              <div className="bg-white/5 p-1.5 rounded-2xl border border-white/5 space-y-1">
+              <div className="bg-white p-1.5 rounded-2xl border shadow-sm space-y-1">
                 <LanguageSwitcher />
-                <ThemeToggle />
               </div>
             </div>
-            <div className="text-[10px] text-slate-600 font-bold text-center uppercase tracking-widest">
+            <div className="text-[10px] text-slate-500 font-bold text-center uppercase tracking-widest">
               © {new Date().getFullYear()} {t('common.title')}
             </div>
           </div>
@@ -159,7 +157,7 @@ export function Sidebar() {
       {/* Overlay for mobile */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 lg:hidden"
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 lg:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}

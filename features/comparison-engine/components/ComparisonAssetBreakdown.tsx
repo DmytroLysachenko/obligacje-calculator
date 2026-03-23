@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/tooltip";
 import { TrendingUp, Activity, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/i18n";
 import { ComparisonAssetBreakdownProps } from "./types";
 
 export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> = ({
@@ -23,8 +24,9 @@ export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> =
   totalInvested,
   showRealValue,
   formatCurrency,
-  language,
+  language: _language,
 }) => {
+  const { t, language } = useLanguage();
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {assets.map((asset, idx) => {
@@ -92,7 +94,7 @@ export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> =
                 <div className="pt-6 border-t border-muted-foreground/10 space-y-3">
                   <div className="flex justify-between items-center text-[10px]">
                     <span className="font-bold uppercase text-muted-foreground tracking-widest">
-                      Max Drawdown
+                      {t('comparison.max_drawdown')}
                     </span>
                     <span className="text-destructive font-black">
                       -{maxDrawdown.toFixed(1)}%
@@ -100,7 +102,7 @@ export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> =
                   </div>
                   <div className="flex justify-between items-center text-[10px]">
                     <span className="font-bold uppercase text-muted-foreground tracking-widest">
-                      Total Return
+                      {t('comparison.total_return')}
                     </span>
                     <span className="text-green-600 font-black">
                       +

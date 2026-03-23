@@ -33,6 +33,7 @@ import {
   ShoppingCart,
   Info,
 } from "lucide-react";
+import { useLanguage } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { ComparisonControlsProps } from "./types";
 
@@ -52,6 +53,7 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
   purchasingPowerLoss,
   formatCurrency,
 }) => {
+  const { t } = useLanguage();
   const presets = [
     { label: "Bull Run 2021", year: "2021", month: "01" },
     { label: "War Start 2022", year: "2022", month: "02" },
@@ -64,7 +66,7 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
         <CardHeader className="bg-primary/5 border-b pb-4">
           <CardTitle className="text-lg flex items-center gap-2 font-black text-primary">
             <Settings2 className="h-5 w-5" />
-            CONFIGURATION
+            {t('comparison.configuration')}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -78,14 +80,14 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
               <AccordionTrigger className="hover:no-underline py-4">
                 <span className="text-sm font-black flex items-center gap-2 uppercase tracking-widest text-slate-700">
                   <Wallet className="h-4 w-4 text-primary" />
-                  1. Capital
+                  {t('comparison.step_capital')}
                 </span>
               </AccordionTrigger>
               <AccordionContent className="space-y-8 pb-8">
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
                     <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
-                      Initial Sum
+                      {t('comparison.initial_sum')}
                     </Label>
                     <span className="text-xl font-black text-primary">
                       {formatCurrency(initialSum)}
@@ -102,7 +104,7 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
                 <div className="space-y-4 pt-6 border-t-2 border-dashed">
                   <div className="flex justify-between items-center">
                     <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
-                      Monthly Pay-in
+                      {t('comparison.monthly_payin')}
                     </Label>
                     <span className="text-xl font-black text-primary">
                       {formatCurrency(monthlyContribution)}
@@ -123,13 +125,13 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
               <AccordionTrigger className="hover:no-underline py-4">
                 <span className="text-sm font-black flex items-center gap-2 uppercase tracking-widest text-slate-700">
                   <History className="h-4 w-4 text-primary" />
-                  2. Timeline
+                  {t('comparison.step_timeline')}
                 </span>
               </AccordionTrigger>
               <AccordionContent className="space-y-6 pb-8">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black text-muted-foreground uppercase">Year</Label>
+                    <Label className="text-[10px] font-black text-muted-foreground uppercase">{t('comparison.year')}</Label>
                     <Select value={startYear} onValueChange={updateStartYear}>
                       <SelectTrigger className="h-12 border-2 font-bold">
                         <SelectValue />
@@ -144,7 +146,7 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black text-muted-foreground uppercase">Month</Label>
+                    <Label className="text-[10px] font-black text-muted-foreground uppercase">{t('comparison.month')}</Label>
                     <Select value={startMonth} onValueChange={updateStartMonth}>
                       <SelectTrigger className="h-12 border-2 font-bold">
                         <SelectValue />
@@ -188,7 +190,7 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
               <AccordionTrigger className="hover:no-underline py-4">
                 <span className="text-sm font-black flex items-center gap-2 uppercase tracking-widest text-slate-700">
                   <Zap className="h-4 w-4 text-primary" />
-                  3. Logic
+                  {t('comparison.step_logic')}
                 </span>
               </AccordionTrigger>
               <AccordionContent className="pb-8">
@@ -196,11 +198,11 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <Label className="text-sm font-black text-primary uppercase">
-                        Inflation Adjusted
+                        {t('bonds.inflation_adjusted')}
                       </Label>
                     </div>
                     <p className="text-[10px] text-muted-foreground font-bold italic">
-                      Shows &quot;Real&quot; value
+                      {t('bonds.show_purchasing_power')}
                     </p>
                   </div>
                   <Switch
@@ -218,13 +220,13 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
         <CardHeader className="pb-2 bg-orange-100/50">
           <CardTitle className="text-xs font-black flex items-center gap-2 text-orange-700 uppercase tracking-widest">
             <ShoppingCart className="h-4 w-4" />
-            Purchasing Power Loss
+            {t('comparison.purchasing_power_loss')}
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-6 space-y-4">
           <div className="flex items-center justify-between">
             <div className="text-center space-y-1">
-              <p className="text-[10px] font-black text-muted-foreground uppercase">Start</p>
+              <p className="text-[10px] font-black text-muted-foreground uppercase">{t('comparison.start')}</p>
               <div className="p-2 bg-white rounded-lg shadow-sm">
                 <ShoppingCart className="h-5 w-5 text-orange-500" />
               </div>
@@ -241,30 +243,28 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
               </div>
             </div>
             <div className="text-center space-y-1">
-              <p className="text-[10px] font-black text-muted-foreground uppercase">End</p>
+              <p className="text-[10px] font-black text-muted-foreground uppercase">{t('comparison.end')}</p>
               <div className="p-2 bg-white/50 rounded-lg border border-dashed border-orange-200">
                 <ShoppingCart className="h-5 w-5 text-orange-300" />
               </div>
             </div>
           </div>
           <p className="text-[11px] text-orange-800 leading-relaxed italic text-center font-medium bg-white/50 p-3 rounded-xl">
-            &quot;Due to inflation, your capital lost nearly{" "}
-            {purchasingPowerLoss.toFixed(0)}% of its effective buying power.&quot;
+            {t('comparison.inflation_loss_context', { percent: purchasingPowerLoss.toFixed(1) })}
           </p>
         </CardContent>
       </Card>
 
-      <Card className="bg-slate-900 text-white shadow-2xl border-none overflow-hidden">
-        <CardHeader className="bg-slate-800/50 pb-2">
-          <CardTitle className="text-[10px] font-black flex items-center gap-2 uppercase tracking-widest text-slate-400">
+      <Card className="bg-muted shadow-lg border-none overflow-hidden rounded-2xl">
+        <CardHeader className="bg-muted-foreground/5 pb-2 border-b border-muted-foreground/10">
+          <CardTitle className="text-[10px] font-black flex items-center gap-2 uppercase tracking-widest text-muted-foreground">
             <Info className="h-4 w-4" />
-            SAVINGS CONTEXT
+            {t('comparison.savings_context_title')}
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-6">
-          <p className="text-xs leading-relaxed text-slate-300 font-medium italic">
-            &quot;Savings Account&quot; interest is not unified. It varies heavily between banks.
-            This model assumes an average retail rate based on historical NBP margins (approx. 0.5-2%).
+          <p className="text-xs leading-relaxed text-muted-foreground font-medium italic">
+            {t('comparison.savings_context_desc')}
           </p>
         </CardContent>
       </Card>

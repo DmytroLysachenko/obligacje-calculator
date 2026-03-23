@@ -49,3 +49,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Database error' }, { status: 500 });
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const url = new URL(req.url);
+    const id = url.searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ error: 'Lot ID is required' }, { status: 400 });
+    }
+
+    await db.delete(userInvestmentLots).where(eq(userInvestmentLots.id, id));
+    
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Failed to delete lot:', error);
+    return NextResponse.json({ error: 'Database error' }, { status: 500 });
+  }
+}

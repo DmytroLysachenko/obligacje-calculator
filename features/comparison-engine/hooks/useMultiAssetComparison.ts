@@ -47,7 +47,6 @@ export function useMultiAssetComparison() {
   const [initialSum, setInitialSum] = useState(10000);
   const [monthlyContribution, setMonthlyContribution] = useState(500);
   
-  const currentYear = new Date().getFullYear();
   const [startYear, setStartYear] = useState('2020');
   const [startMonth, setStartMonth] = useState('01');
   
@@ -122,7 +121,11 @@ export function useMultiAssetComparison() {
     calculateAssetPerformance(initialSum, monthlyContribution, 'savings', ASSETS_METADATA.savings, filteredData), 
   [initialSum, monthlyContribution, filteredData]);
 
-  const years = Array.from({ length: currentYear - 1950 }, (_, i) => (1950 + i).toString()).reverse();
+  const years = useMemo(() => {
+    const uniqueYears = Array.from(new Set(HISTORICAL_RETURNS.map(r => r.date.substring(0, 4))));
+    return uniqueYears.sort((a, b) => b.localeCompare(a));
+  }, []);
+  
   const months = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'));
 
   return {

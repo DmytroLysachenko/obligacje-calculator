@@ -6,28 +6,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import { BondType, BondInputs, TaxStrategy } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
-import { AlertCircle, CalendarIcon, Info, Target } from 'lucide-react';
+import { CalendarIcon, Info, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, parseISO, addMonths } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
 
 import { Slider } from '@/components/ui/slider';
-
-import { Badge } from '@/components/ui/badge';
-
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 import {
   Accordion,
@@ -38,7 +28,7 @@ import {
 
 interface BondInputsFormProps {
   inputs: BondInputs;
-  onUpdate: (key: keyof BondInputs, value: string | number | boolean | undefined) => void;
+  onUpdate: (key: keyof BondInputs, value: string | number | boolean | number[] | undefined) => void;
   onBondTypeChange: (type: BondType) => void;
 }
 
@@ -89,11 +79,29 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               </span>
             </AccordionTrigger>
             <AccordionContent className="space-y-6 pb-6">
+              {/* Calculator Mode */}
+              <div className="p-1 mb-4 bg-muted/50 rounded-xl flex gap-1">
+                <Button 
+                  variant={(!inputs.calculatorMode || inputs.calculatorMode === 'standard') ? 'default' : 'ghost'} 
+                  className="flex-1 rounded-lg h-10 text-xs font-bold"
+                  onClick={() => onUpdate('calculatorMode', 'standard')}
+                >
+                  {t('bonds.standard_payout')}
+                </Button>
+                <Button 
+                  variant={inputs.calculatorMode === 'reverse' ? 'default' : 'ghost'} 
+                  className="flex-1 rounded-lg h-10 text-xs font-bold"
+                  onClick={() => onUpdate('calculatorMode', 'reverse')}
+                >
+                  {t('bonds.reverse_target')}
+                </Button>
+              </div>
+
               {/* Savings Goal */}
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <Label className="font-semibold flex items-center gap-2">
-                    Savings Goal (Optional)
+                    {inputs.calculatorMode === 'reverse' ? t('bonds.target_goal_req') : t('bonds.savings_goal_opt')}
                   </Label>
                 </div>
                 <div className="relative">
@@ -120,7 +128,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                   onValueChange={(value) => onBondTypeChange(value as BondType)}
                 >
                   <SelectTrigger id="bondType" className="h-11">
-                    <SelectValue placeholder="Select bond type" />
+                    <SelectValue placeholder={t('bonds.select_bond_type')} />
                   </SelectTrigger>
                   <SelectContent>
                     {Object.values(BondType).map((type) => (
@@ -148,41 +156,43 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               </div>
 
               {/* Investment Amount */}
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <Label htmlFor="initialInvestment" className="font-semibold">
-                    {t('bonds.initial_investment')}
-                  </Label>
-                  <span className="text-xs font-medium text-muted-foreground">
-                    {Math.floor(inputs.initialInvestment / 100)} {t('bonds.units')}
-                  </span>
-                </div>
+              {(!inputs.calculatorMode || inputs.calculatorMode === 'standard') && (
                 <div className="space-y-4">
-                  <div className="relative">
-                    <Input
-                      id="initialInvestment"
-                      type="number"
-                      className={cn(
-                        "h-11 pl-4 pr-12 text-lg font-medium",
-                        !isDivisibleBy100 && "border-destructive focus-visible:ring-destructive"
-                      )}
-                      value={inputs.initialInvestment}
-                      onChange={(e) => handleInvestmentChange(e.target.value)}
-                    />
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
-                      PLN
-                    </div>
+                  <div className="flex justify-between items-center">
+                    <Label htmlFor="initialInvestment" className="font-semibold">
+                      {t('bonds.initial_investment')}
+                    </Label>
+                    <span className="text-xs font-medium text-muted-foreground">
+                      {Math.floor(inputs.initialInvestment / 100)} {t('bonds.units')}
+                    </span>
                   </div>
-                  <Slider 
-                    value={[inputs.initialInvestment]} 
-                    min={100} 
-                    max={100000} 
-                    step={100} 
-                    onValueChange={([val]) => handleInvestmentChange(val)}
-                    className="py-4"
-                  />
+                  <div className="space-y-4">
+                    <div className="relative">
+                      <Input
+                        id="initialInvestment"
+                        type="number"
+                        className={cn(
+                          "h-11 pl-4 pr-12 text-lg font-medium",
+                          !isDivisibleBy100 && "border-destructive focus-visible:ring-destructive"
+                        )}
+                        value={inputs.initialInvestment}
+                        onChange={(e) => handleInvestmentChange(e.target.value)}
+                      />
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
+                        PLN
+                      </div>
+                    </div>
+                    <Slider 
+                      value={[inputs.initialInvestment]} 
+                      min={100} 
+                      max={100000} 
+                      step={100} 
+                      onValueChange={([val]) => handleInvestmentChange(val)}
+                      className="py-4"
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
             </AccordionContent>
           </AccordionItem>
 
@@ -209,7 +219,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                         )}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {hasMounted && inputs.purchaseDate ? format(parseISO(inputs.purchaseDate), 'PPP', { locale: dateLocale }) : <span>Pick a date</span>}
+                        {hasMounted && inputs.purchaseDate ? format(parseISO(inputs.purchaseDate), 'PPP', { locale: dateLocale }) : <span>{t('bonds.pick_date')}</span>}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
@@ -239,7 +249,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                         )}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {hasMounted && inputs.withdrawalDate ? format(parseISO(inputs.withdrawalDate), 'PPP', { locale: dateLocale }) : <span>Pick a date</span>}
+                        {hasMounted && inputs.withdrawalDate ? format(parseISO(inputs.withdrawalDate), 'PPP', { locale: dateLocale }) : <span>{t('bonds.pick_date')}</span>}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
@@ -258,7 +268,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               </div>
 
               <div className="space-y-3">
-                <Label className="font-semibold">Account Type (Tax Strategy)</Label>
+                <Label className="font-semibold">{t('bonds.tax_strategy')}</Label>
                 <Select
                   value={inputs.taxStrategy}
                   onValueChange={(value) => onUpdate('taxStrategy', value as TaxStrategy)}
@@ -267,9 +277,9 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={TaxStrategy.STANDARD}>Standard Account (19% Tax)</SelectItem>
-                    <SelectItem value={TaxStrategy.IKE}>IKE Account (0% Tax)</SelectItem>
-                    <SelectItem value={TaxStrategy.IKZE}>IKZE Account (5% Tax at end)</SelectItem>
+                    <SelectItem value={TaxStrategy.STANDARD}>{t('bonds.tax_standard')}</SelectItem>
+                    <SelectItem value={TaxStrategy.IKE}>{t('bonds.tax_ike')}</SelectItem>
+                    <SelectItem value={TaxStrategy.IKZE}>{t('bonds.tax_ikze')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -321,25 +331,62 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                       )} 
                       onClick={() => onUpdate('expectedInflation', val)}
                     >
-                      {val === 2.5 ? 'Stable' : val === 10 ? 'High' : 'Deflation'} ({val}%)
+                      {val === 2.5 ? t('bonds.stable') : val === 10 ? t('bonds.high') : t('bonds.deflation')} ({val}%)
                     </Button>
                   ))}
                 </div>
 
                 <Slider 
                   value={[inputs.expectedInflation]} 
+                  disabled={!!inputs.customInflation}
                   min={-2} 
                   max={25} 
                   step={0.1} 
                   onValueChange={([val]) => onUpdate('expectedInflation', val)}
                 />
+
+                <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-primary/10 mt-4">
+                  <Label className="text-xs font-bold">{t('bonds.advanced_inflation')}</Label>
+                  <Switch 
+                    checked={!!inputs.customInflation} 
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        const years = Math.ceil(Math.max(1, inputs.duration));
+                        onUpdate('customInflation', Array(years).fill(inputs.expectedInflation));
+                      } else {
+                        onUpdate('customInflation', undefined);
+                      }
+                    }} 
+                  />
+                </div>
+                
+                {inputs.customInflation && (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-4 max-h-64 overflow-y-auto p-2 bg-muted/20 border rounded-xl custom-scrollbar relative z-10">
+                    {inputs.customInflation.map((val, idx) => (
+                      <div key={idx} className="flex gap-2 items-center bg-background p-1.5 rounded border">
+                        <Label className="text-[10px] text-muted-foreground font-black uppercase w-8">Y{idx + 1}</Label>
+                        <Input 
+                          type="number" 
+                          step={0.1}
+                          className="h-7 text-xs font-bold border-none bg-transparent shadow-none px-1"
+                          value={val}
+                          onChange={(e) => {
+                            const newArr = [...inputs.customInflation!];
+                            newArr[idx] = Number(e.target.value);
+                            onUpdate('customInflation', newArr);
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {(inputs.bondType === 'ROR' || inputs.bondType === 'DOR') && (
                 <div className="space-y-4 pt-4 border-t border-dashed">
                   <div className="flex justify-between items-center">
                     <Label htmlFor="expectedNbpRate" className="text-xs font-bold uppercase text-muted-foreground">
-                      Expected NBP Rate (%)
+                      {t('bonds.nbp_rate_label')}
                     </Label>
                     <span className="text-lg font-black text-primary">{inputs.expectedNbpRate}%</span>
                   </div>
@@ -365,9 +412,9 @@ max={20}
             <AccordionContent className="space-y-4 pb-6">
               <div className="flex items-center justify-between p-4 bg-primary/5 rounded-xl border border-primary/10">
                 <div className="space-y-0.5">
-                  <Label className="text-sm font-bold text-primary uppercase">Inflation Adjusted</Label>
+                  <Label className="text-sm font-bold text-primary uppercase">{t('bonds.inflation_adjusted')}</Label>
                   <p className="text-[10px] text-muted-foreground font-medium italic">
-                    Show purchasing power values
+                    {t('bonds.show_purchasing_power')}
                   </p>
                 </div>
                 <Switch
@@ -380,7 +427,7 @@ max={20}
                 <div className="space-y-0.5">
                   <Label className="text-sm font-bold">{t('bonds.custom_tax_rate')}</Label>
                   <p className="text-[10px] text-muted-foreground font-medium italic">
-                    Standard is 19%
+                    {t('bonds.standard_tax_note')}
                   </p>
                 </div>
                 <Switch

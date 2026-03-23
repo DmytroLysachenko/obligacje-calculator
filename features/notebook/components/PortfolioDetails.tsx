@@ -6,13 +6,11 @@ import { UserPortfolio, UserInvestmentLot } from '@/db/schema';
 import { useLanguage } from '@/i18n';
 import { 
   ArrowLeft, 
-  Plus, 
   TrendingUp, 
   History, 
   PieChart, 
   ArrowUpRight,
   Loader2,
-  Trash2,
   ExternalLink
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -69,7 +67,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
             <TrendingUp className="h-24 w-24" />
           </div>
           <CardHeader className="pb-2">
-            <CardDescription className="text-white/70 font-black uppercase text-[10px] tracking-widest">Total Invested</CardDescription>
+            <CardDescription className="text-white/70 font-black uppercase text-[10px] tracking-widest">{t('notebook.total_invested')}</CardDescription>
             <CardTitle className="text-4xl font-black">
               {new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', { style: 'currency', currency: 'PLN' }).format(totalValue)}
             </CardTitle>
@@ -77,28 +75,28 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
           <CardContent>
             <div className="flex items-center gap-1 text-xs font-bold bg-white/10 w-fit px-2 py-1 rounded-lg">
               <ArrowUpRight className="h-3 w-3" />
-              <span>LIVE DATA</span>
+              <span>{t('notebook.live_data')}</span>
             </div>
           </CardContent>
         </Card>
 
         <Card className="shadow-lg border-primary/5">
           <CardHeader className="pb-2">
-            <CardDescription className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">Active Lots</CardDescription>
+            <CardDescription className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">{t('notebook.active_lots')}</CardDescription>
             <CardTitle className="text-4xl font-black text-slate-800">{lots.length}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-[10px] text-muted-foreground font-medium uppercase">Diversified across instruments</p>
+            <p className="text-[10px] text-muted-foreground font-medium uppercase">{t('notebook.diversified')}</p>
           </CardContent>
         </Card>
 
         <Card className="shadow-lg border-primary/5">
           <CardHeader className="pb-2">
-            <CardDescription className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">Est. Annual Profit</CardDescription>
+            <CardDescription className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">{t('notebook.est_profit')}</CardDescription>
             <CardTitle className="text-4xl font-black text-green-600">~5.2%</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-[10px] text-muted-foreground font-medium uppercase">Weighted average yield</p>
+            <p className="text-[10px] text-muted-foreground font-medium uppercase">{t('notebook.weighted_yield')}</p>
           </CardContent>
         </Card>
       </div>
@@ -107,38 +105,31 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
         <TabsList className="bg-muted/50 p-1 rounded-2xl mb-8">
           <TabsTrigger value="lots" className="rounded-xl px-8 font-black uppercase text-xs gap-2">
             <History className="h-4 w-4" />
-            Invested Lots
+            {t('notebook.invested_lots_tab')}
           </TabsTrigger>
           <TabsTrigger value="analytics" className="rounded-xl px-8 font-black uppercase text-xs gap-2">
             <PieChart className="h-4 w-4" />
-            Analytics
+            {t('notebook.analytics_tab')}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="lots" className="space-y-6">
           <div className="flex justify-between items-center">
-            <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Active Bond Holdings</h3>
-            <Button className="rounded-xl font-black gap-2 shadow-lg shadow-primary/10">
-              <Plus className="h-4 w-4" />
-              ADD NEW LOT
-            </Button>
+            <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">{t('notebook.holdings')}</h3>
           </div>
 
           <div className="grid grid-cols-1 gap-4">
             {isLoading ? (
               <div className="py-20 flex flex-col items-center justify-center gap-4 text-muted-foreground">
                 <Loader2 className="h-8 w-8 animate-spin" />
-                <p className="font-bold uppercase text-xs tracking-widest">Updating Portfolio...</p>
+                <p className="font-bold uppercase text-xs tracking-widest">{t('notebook.updating')}</p>
               </div>
             ) : lots.length === 0 ? (
               <div className="py-20 text-center bg-muted/20 border-2 border-dashed rounded-3xl space-y-4">
                 <div className="p-4 bg-muted w-fit mx-auto rounded-full text-muted-foreground">
                   <History className="h-8 w-8" />
                 </div>
-                <p className="text-muted-foreground font-bold uppercase text-xs tracking-widest">No active lots in this portfolio yet</p>
-                <Button variant="outline" className="rounded-xl font-black">
-                  CREATE YOUR FIRST LOT
-                </Button>
+                <p className="text-muted-foreground font-bold uppercase text-xs tracking-widest">{t('notebook.no_lots')}</p>
               </div>
             ) : (
               lots.map((lot) => (
@@ -146,28 +137,25 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                   <CardContent className="p-0">
                     <div className="flex flex-col md:flex-row items-center">
                       <div className="p-6 bg-muted/30 border-r border-dashed border-primary/10 min-w-[120px] flex flex-col items-center justify-center">
-                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1">Type</span>
+                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1">{t('notebook.type')}</span>
                         <span className="text-2xl font-black text-primary">{lot.bondType}</span>
                       </div>
                       <div className="flex-1 p-6 grid grid-cols-2 md:grid-cols-4 gap-8">
                         <div>
-                          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Amount</p>
-                          <p className="text-lg font-black">{lot.amount} Bonds</p>
-                          <p className="text-[10px] font-bold text-slate-400">Nominal: {Number(lot.amount) * 100} PLN</p>
+                          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{t('notebook.amount')}</p>
+                          <p className="text-lg font-black">{lot.amount} {t('notebook.bond_count')}</p>
+                          <p className="text-[10px] font-bold text-slate-400">{t('notebook.nominal_val')}: {Number(lot.amount) * 100} PLN</p>
                         </div>
                         <div>
-                          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Purchase Date</p>
+                          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{t('notebook.purchase_date')}</p>
                           <p className="text-lg font-black">{format(new Date(lot.purchaseDate), 'MMM yyyy')}</p>
                         </div>
                         <div>
-                          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Current Yield</p>
+                          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{t('notebook.current_yield')}</p>
                           <p className="text-lg font-black text-green-600">5.75%</p>
                         </div>
                         <div className="flex items-center justify-end gap-2">
-                          <Button variant="ghost" size="icon" className="rounded-lg hover:bg-destructive/10 hover:text-destructive">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                          <Button variant="outline" size="icon" className="rounded-lg">
+                          <Button variant="outline" size="icon" className="rounded-lg hover:border-primary hover:text-primary transition-colors">
                             <ExternalLink className="h-4 w-4" />
                           </Button>
                         </div>
@@ -184,7 +172,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
           <Card className="border-dashed border-2 py-20 text-center">
             <CardContent className="space-y-4">
               <PieChart className="h-12 w-12 mx-auto text-muted-foreground opacity-20" />
-              <p className="text-muted-foreground font-black uppercase text-xs tracking-widest">Detailed analytics coming soon</p>
+              <p className="text-muted-foreground font-black uppercase text-xs tracking-widest">{t('notebook.detailed_soon')}</p>
             </CardContent>
           </Card>
         </TabsContent>

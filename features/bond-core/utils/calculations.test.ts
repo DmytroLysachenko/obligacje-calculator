@@ -83,6 +83,26 @@ describe('Bond Calculations Engine (Modular)', () => {
       expect(results.totalEarlyWithdrawalFee).toBeLessThanOrEqual(results.grossValue - results.initialInvestment + 0.01);
       expect(results.netPayoutValue).toBeGreaterThanOrEqual(results.initialInvestment);
     });
+
+    it('correctly calculates EDO 10-year early withdrawal fee boundaries', () => {
+      const inputs = {
+        ...baseInputs,
+        bondType: BondType.EDO,
+        duration: 10,
+        firstYearRate: 7.0,
+        earlyWithdrawalFee: 2.0, 
+        withdrawalDate: '2024-02-01', // 1 month in => Fee must be capped
+      };
+      const resultsCapped = calculateBondInvestment(inputs);
+      expect(resultsCapped.totalEarlyWithdrawalFee).toBeLessThan(200);
+
+      const inputsYear9 = {
+        ...inputs,
+        withdrawalDate: '2033-06-01', // 9.5 years in => Massive accumulated interest
+      };
+      const resultsNotCapped = calculateBondInvestment(inputsYear9);
+      expect(resultsNotCapped.totalEarlyWithdrawalFee).toBeCloseTo(200, 1); // Full 2.00 fee applies perfectly
+    });
   });
 
   describe('Regular Investment', () => {
