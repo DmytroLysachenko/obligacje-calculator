@@ -19,6 +19,7 @@ import {
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { ThemeToggle } from './ThemeToggle';
 import { motion } from 'framer-motion';
 
 export function Sidebar() {
@@ -143,8 +144,9 @@ export function Sidebar() {
               <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] px-1">
                 {t('common.language')}
               </span>
-              <div className="bg-white/5 p-1.5 rounded-2xl border border-white/5">
+              <div className="bg-white/5 p-1.5 rounded-2xl border border-white/5 space-y-1">
                 <LanguageSwitcher />
+                <ThemeToggle />
               </div>
             </div>
             <div className="text-[10px] text-slate-600 font-bold text-center uppercase tracking-widest">
