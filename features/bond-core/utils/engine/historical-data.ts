@@ -21,8 +21,8 @@ export function getHistoricalValue(
   }
 
   const record = HISTORICAL_DATA_MAP.get(key);
-  if (record && type === 'inflation') {
-    return { value: record.inflation, isProjected: false };
+  if (record && record[type] !== undefined) {
+    return { value: record[type], isProjected: false };
   }
 
   return { value: undefined, isProjected: true };

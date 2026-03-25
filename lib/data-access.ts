@@ -3,17 +3,20 @@ import { dataSeries, dataPoints } from "@/db/schema";
 import { eq, and, gte, lte, asc, inArray } from "drizzle-orm";
 import { cache } from "react";
 
+const CPI_SLUGS = ['pl-cpi', 'inflation-pl'];
+const NBP_RATE_SLUGS = ['nbp-ref-rate', 'nbp-reference-rate', 'nbp-rate'];
+
 /**
  * Fetches historical data for multiple indicators and returns them as a map keyed by YYYY-MM.
  */
 export const getHistoricalDataMap = cache(async (fromDate: string, toDate: string) => {
   // Find the IDs for the relevant series
   const series = await db.query.dataSeries.findMany({
-    where: inArray(dataSeries.slug, ['pl-cpi', 'nbp-reference-rate']),
+    where: inArray(dataSeries.slug, [...CPI_SLUGS, ...NBP_RATE_SLUGS]),
   });
 
-  const cpiSeries = series.find(s => s.slug === 'pl-cpi');
-  const nbpSeries = series.find(s => s.slug === 'nbp-reference-rate');
+  const cpiSeries = series.find(s => CPI_SLUGS.includes(s.slug));
+  const nbpSeries = series.find(s => NBP_RATE_SLUGS.includes(s.slug));
 
   if (!cpiSeries && !nbpSeries) return {};
 

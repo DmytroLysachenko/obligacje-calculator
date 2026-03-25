@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { dataSeries, dataPoints } from '@/db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { inArray, eq, desc } from 'drizzle-orm';
 
 const FALLBACK_INFLATION = [
   { year: '2015', rate: -0.9 },
@@ -20,7 +20,7 @@ const FALLBACK_INFLATION = [
 export async function GET() {
   try {
     const series = await db.query.dataSeries.findFirst({
-      where: eq(dataSeries.slug, 'pl-cpi'),
+      where: inArray(dataSeries.slug, ['pl-cpi', 'inflation-pl']),
     });
 
     if (!series) return NextResponse.json(FALLBACK_INFLATION);

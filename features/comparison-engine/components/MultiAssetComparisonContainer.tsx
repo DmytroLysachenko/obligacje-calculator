@@ -80,9 +80,11 @@ export const MultiAssetComparisonContainer = () => {
   const chartData: ChartDataRow[] = assets[0].series.map((point, idx) => {
     const row: ChartDataRow = { date: point.date };
     assets.forEach((asset) => {
+      const seriesPoint = asset.series[idx];
       row[asset.metadata.id] = showRealValue
-        ? asset.series[idx].realValue!
-        : asset.series[idx].value;
+        ? seriesPoint.realValue!
+        : seriesPoint.value;
+      row[`${asset.metadata.id}_drawdown`] = seriesPoint.drawdown;
     });
     return row;
   });

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { dataSeries, dataPoints } from '@/db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { inArray, eq, desc } from 'drizzle-orm';
 
 const FALLBACK_NBP = [
   { date: '2021-01', rate: 0.1 },
@@ -25,7 +25,7 @@ const FALLBACK_NBP = [
 export async function GET() {
   try {
     const series = await db.query.dataSeries.findFirst({
-      where: eq(dataSeries.slug, 'nbp-ref-rate'),
+      where: inArray(dataSeries.slug, ['nbp-ref-rate', 'nbp-reference-rate', 'nbp-rate']),
     });
 
     if (!series) return NextResponse.json(FALLBACK_NBP);
