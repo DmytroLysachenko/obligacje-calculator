@@ -16,6 +16,27 @@ The refactor must deliver the following outcomes:
 - Clearer boundaries between domain logic, application logic, UI state, and infrastructure.
 - A more testable codebase with strong regression coverage for financial edge cases.
 
+### 1.1 Priority Update: Calculation Trustworthiness First
+
+The refactor priorities are updated to reflect the most important real product risks found during implementation and manual review on **March 25, 2026**.
+
+The next phases must prioritize these items before further feature expansion:
+
+- **Separate bond duration from investment horizon.**
+  The app must allow a user to hold a 1-year bond for a 5-year or 7-year strategy by explicitly simulating rollover cycles. Bond type selection must not silently reset a longer user-selected horizon back to the native bond duration.
+- **Support independent comparison scenarios on `/compare`.**
+  The compare experience must support scenarios such as `EDO for 7 years` versus `ROR for 5 years`, with separate withdrawal dates, rollover flags, and assumptions per side. The normalized "same horizon for all bonds" compare mode can remain as a secondary mode, but it cannot be the only compare path.
+- **Remove silent macro-data mismatches.**
+  Inflation and NBP history currently risk becoming inconsistent because read paths and sync/write paths use different slug conventions. Data access must normalize aliases and surface freshness clearly so variable-rate and inflation-indexed bonds do not quietly fall back to projections.
+- **Make compare outputs explainable, not just numerically plausible.**
+  Every compare result must expose the rate path, rollover assumptions, inflation assumptions, taxation mode, and whether the result depends on projected or historical data. If a result surprises the user, the explanation should be inspectable directly in the UI.
+- **Replace multi-asset mock history with DB-backed history.**
+  The multi-asset simulator should use database series when available, with a target historical range of at least `1990-01` onward. Embedded mock series may remain only as an explicit fallback, never as the primary production path.
+- **Treat drawdown as a required metric contract.**
+  Risk views and asset breakdown cards must always receive populated drawdown data. Missing drawdown values should fail tests and be visible as a data contract bug, not degrade silently in the UI.
+- **Finish i18n cleanup on high-traffic calculator screens first.**
+  `/single-calculator`, `/compare`, `/multi-asset`, and `/ladder` must not ship mixed hardcoded English copy in otherwise localized flows.
+
 ## 2. Current State Summary
 
 The current app already contains the main user-facing flows:
@@ -40,6 +61,9 @@ The current codebase has a solid foundation, but there are structural issues tha
 - Build succeeds, but chart rendering emits a width/height warning that indicates a rendering/layout issue.
 - Lint passes with warnings, which points to stale code and partially completed refactors.
 - There are visible text encoding issues in some UI strings and localized content.
+- The single-calculation UX still risks conflating **one bond cycle** with the **full investment horizon**, which creates misleading charts for short-duration bonds unless rollover is explicit.
+- The current `/compare` page implementation can become brittle when the UI expects a different response shape than the route returns, and it does not sufficiently optimize for comparing different horizons per scenario.
+- The multi-asset flow still depends primarily on embedded mock monthly returns, which limits date range depth and weakens trust in historical backtests.
 
 ## 3. Target Architecture
 
