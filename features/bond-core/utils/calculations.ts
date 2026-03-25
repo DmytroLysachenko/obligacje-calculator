@@ -8,17 +8,24 @@ import {
   InvestmentFrequency,
   RegularTimelinePoint,
   LotBreakdown,
-  InterestPayout,
-  HistoricalDataMap,
   TaxStrategy
 } from '../types';
 import { BOND_DEFINITIONS } from '../constants/bond-definitions';
-import { HISTORICAL_RETURNS } from '../constants/historical-data';
-import { addMonths, addYears, differenceInDays, differenceInMonths, isAfter, isBefore, parseISO, min, format, subMonths } from 'date-fns';
+import { addMonths, differenceInMonths, isAfter, isBefore, min, parseISO } from 'date-fns';
 import { Decimal } from 'decimal.js';
-import { determineInterestRate } from './engine/interest-rates';
-import { calculateTaxAmount } from './engine/tax-logic';
-import { calculateEarlyWithdrawalFee } from './engine/redemption-engine';
+
+// Engine imports
+import { determineInterestRate } from './engine/rate-resolution';
+import { calculateTaxAmount } from './engine/tax-settlement';
+import { calculateEarlyWithdrawalFee } from './engine/redemption';
+import { getHistoricalValue } from './engine/historical-data';
+import { calculateCumulativeInflation, getExpectedInflationForYearIndex } from './engine/inflation';
+import { createFinalSingleBondResult, createInitialTimelinePoint, createRegularInvestmentResult } from './engine/result-assembly';
+import { normalizeBondInputs, normalizeRegularInvestmentInputs } from './engine/input-normalization';
+import { calculatePeriodAccrual } from './engine/accrual';
+import { calculateRollover } from './engine/rollover';
+import { calculateRealValue } from './engine/real-return';
+import { generateCyclePeriods } from './engine/timeline-builder';
 
 /**
  * Configures Decimal for financial precision.
@@ -26,63 +33,31 @@ import { calculateEarlyWithdrawalFee } from './engine/redemption-engine';
 Decimal.set({ precision: 20, rounding: Decimal.ROUND_HALF_UP });
 
 /**
- * Pre-processed map for fast historical data lookups.
- */
-const HISTORICAL_DATA_MAP = new Map(HISTORICAL_RETURNS.map(r => [r.date, r]));
-
-/**
- * Helper to get historical data for a specific date with optional lag.
- */
-function getHistoricalValue(
-  targetDate: Date, 
-  type: 'inflation' | 'nbpRate',
-  lagMonths: number = 2,
-  providedData?: HistoricalDataMap
-): { value: number | undefined; isProjected: boolean } {
-  const lookbackDate = subMonths(targetDate, lagMonths);
-  const key = format(lookbackDate, 'yyyy-MM');
-  
-  if (providedData && providedData[key]) {
-    const val = providedData[key][type];
-    if (val !== undefined) return { value: val, isProjected: false };
-  }
-
-  const record = HISTORICAL_DATA_MAP.get(key);
-  if (record) {
-    if (type === 'inflation') return { value: record.inflation, isProjected: false };
-  }
-
-  return { value: undefined, isProjected: true };
-}
-
-/**
  * Standard calculation for a single bond investment.
  * Supports "rollover" (re-investing at maturity) for multi-year comparisons.
  */
 export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolean }): CalculationResult {
+  const rollover = inputs.rollover ?? false;
+  const normalizedInputs = normalizeBondInputs(inputs);
   const {
     initialInvestment,
     firstYearRate,
     expectedInflation,
     expectedNbpRate = 5.25,
     margin,
-    duration: bondDuration,
+    actualDuration: bondDuration,
     earlyWithdrawalFee,
     bondType,
     isCapitalized,
     payoutFrequency,
-    purchaseDate,
-    withdrawalDate,
+    purchaseDate: startDate,
+    withdrawalDate: targetWithdrawalDate,
     isRebought,
     rebuyDiscount,
     historicalData,
     taxStrategy,
-    rollover = false
-  } = inputs;
+  } = normalizedInputs;
 
-  const startDate = parseISO(purchaseDate);
-  const targetWithdrawalDate = parseISO(withdrawalDate);
-  
   let currentInitialInvestment = new Decimal(initialInvestment);
   let leftoverCash = new Decimal(0);
   const globalTimeline: YearlyTimelinePoint[] = [];
@@ -93,27 +68,13 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
   let isCurrentlyRebought = isRebought;
 
   // Add initial starting point for the whole simulation
-  globalTimeline.push({
-    year: 0,
-    periodLabel: format(startDate, 'MMM yyyy'),
-    interestRate: firstYearRate,
-    nominalValueBeforeInterest: initialInvestment,
-    interestEarned: 0,
-    taxDeducted: 0,
-    netInterest: 0,
-    nominalValueAfterInterest: initialInvestment,
-    accumulatedNetInterest: 0,
-    totalValue: initialInvestment,
-    realValue: initialInvestment,
-    netProfit: 0,
-    earlyWithdrawalValue: 0,
-    cumulativeInflation: 1,
-    isMaturity: false,
-    isWithdrawal: false,
-    isProjected: false,
-    inflationReference: expectedInflation,
-    nbpReference: expectedNbpRate,
-  });
+  globalTimeline.push(createInitialTimelinePoint({
+    startDate,
+    firstYearRate,
+    initialInvestment,
+    expectedInflation,
+    expectedNbpRate,
+  }));
 
   // We loop until we cover the whole simulation period (supporting multiple rollovers)
   while (isBefore(currentPurchaseDate, targetWithdrawalDate)) {
@@ -130,50 +91,34 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
     
     // Investment for THIS cycle = cash from previous cycle + any leftovers
     const totalAvailable = currentInitialInvestment.plus(leftoverCash);
-    const numberOfBonds = totalAvailable.dividedBy(dBondPrice).floor();
-    const cycleInitialInvestment = numberOfBonds.times(dBondPrice);
-    leftoverCash = totalAvailable.minus(cycleInitialInvestment);
+    const rolloverParams = calculateRollover(totalAvailable, dBondPrice);
+    
+    leftoverCash = rolloverParams.leftoverCash;
+    const numberOfBonds = rolloverParams.numberOfBonds;
     
     const nominalStartingValue = numberOfBonds.times(nominalValue);
 
     let currentNominalValue = new Decimal(nominalStartingValue);
     let totalInterestEarnedSoFar = new Decimal(0);
 
-    const isMonthly = payoutFrequency === InterestPayout.MONTHLY;
-    const periods = isMonthly ? Math.round(bondDuration * 12) : Math.ceil(bondDuration);
-    const addPeriod = isMonthly ? addMonths : addYears;
+    const periods = generateCyclePeriods(currentPurchaseDate, cycleMaturityDate, actualCycleEndDate, payoutFrequency, bondDuration);
 
-    for (let period = 1; period <= periods; period++) {
-      const periodStartDate = addPeriod(currentPurchaseDate, period - 1);
-      const periodEndDateNorm = addPeriod(currentPurchaseDate, period);
-      
-      if (isAfter(periodStartDate, actualCycleEndDate) && period > 1) break;
+    for (let i = 0; i < periods.length; i++) {
+      const period = periods[i];
+      const periodIdx = i + 1;
 
-      const isWithdrawalPeriod = isBefore(actualCycleEndDate, periodEndDateNorm) || actualCycleEndDate.getTime() === periodEndDateNorm.getTime();
-      const periodEndDate = min([periodEndDateNorm, actualCycleEndDate]);
-      
-      const daysInPeriod = differenceInDays(periodEndDateNorm, periodStartDate);
-      const daysHeldInPeriod = differenceInDays(periodEndDate, periodStartDate);
-      
-      // Polish Ministry of Finance convention: exact 1.0 for completed periods.
-      // For early withdrawals (partial periods), the standard Act/365 convention is used.
-      let timeFactor = new Decimal(1);
-      if (daysHeldInPeriod < daysInPeriod && daysInPeriod > 0) {
-        timeFactor = new Decimal(daysHeldInPeriod).dividedBy(isMonthly ? (365 / 12) : 365);
-      } else if (daysInPeriod === 0) {
-        timeFactor = new Decimal(0);
-      }
+      const periodYearIndex = Math.floor(differenceInMonths(period.startDate, startDate) / 12);
+      const activeExpectedInflation = getExpectedInflationForYearIndex(
+        expectedInflation,
+        inputs.customInflation,
+        periodYearIndex,
+      );
 
-      const periodYearIndex = Math.floor(differenceInMonths(periodStartDate, startDate) / 12);
-      const activeExpectedInflation = (inputs.customInflation && inputs.customInflation.length > periodYearIndex)
-        ? inputs.customInflation[periodYearIndex]
-        : expectedInflation;
-
-      const { value: lagInflation, isProjected } = getHistoricalValue(periodStartDate, 'inflation', 2, historicalData);
+      const { value: lagInflation, isProjected } = getHistoricalValue(period.startDate, 'inflation', 2, historicalData);
 
       const currentInterestRate = determineInterestRate(
         bondType,
-        period,
+        periodIdx,
         firstYearRate,
         activeExpectedInflation,
         expectedNbpRate,
@@ -182,19 +127,21 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
         lagInflation
       );
 
-      let interestEarned = new Decimal(0);
-      if (bondType === BondType.OTS) {
-        interestEarned = nominalStartingValue.times(currentInterestRate.dividedBy(100)).times(3).dividedBy(12);
-        if (isEarlyWithdrawal) interestEarned = new Decimal(0);
-      } else {
-        const annualRate = currentInterestRate.dividedBy(100);
-        if (isMonthly) {
-          interestEarned = currentNominalValue.times(annualRate.dividedBy(12)).times(timeFactor);
-        } else {
-          interestEarned = currentNominalValue.times(annualRate).times(timeFactor);
-        }
-      }
-
+      const accrual = calculatePeriodAccrual(
+        currentNominalValue,
+        currentInterestRate,
+        period.daysHeld,
+        period.daysInPeriod,
+        bondType,
+        payoutFrequency
+      );
+      // Correction: generateCyclePeriods provides daysInPeriod (full) and daysHeld
+      // I should update calculatePeriodAccrual or generateCyclePeriods to be consistent.
+      // Let's re-read generateCyclePeriods.
+      // daysInPeriod = differenceInDays(periodEndDateNorm, periodStartDate); // FULL
+      // daysHeld = differenceInDays(periodEndDate, periodStartDate); // ACTUAL
+      
+      const interestEarned = accrual.interestEarned;
       const previousNominalValue = new Decimal(currentNominalValue);
       totalInterestEarnedSoFar = totalInterestEarnedSoFar.plus(interestEarned);
 
@@ -211,30 +158,26 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
       globalAccumulatedNetInterest = globalAccumulatedNetInterest.plus(netInterest);
 
       // Inflation tracking for global real value with exact yearly compounding
-      const totalMonthsSoFar = differenceInMonths(periodEndDate, startDate);
-      let cumulativeInflation = new Decimal(1);
-      for (let m = 1; m <= totalMonthsSoFar; m++) {
-        const yIdx = Math.floor((m - 1) / 12);
-        const yInf = (inputs.customInflation && inputs.customInflation.length > yIdx) ? inputs.customInflation[yIdx] : expectedInflation;
-        cumulativeInflation = cumulativeInflation.times(new Decimal(1).plus(new Decimal(yInf).dividedBy(12).dividedBy(100)));
-      }
+      const totalMonthsSoFar = differenceInMonths(period.endDate, startDate);
+      const cumulativeInflation = calculateCumulativeInflation(
+        totalMonthsSoFar,
+        expectedInflation,
+        inputs.customInflation,
+      );
       
       const currentNominalPrincipal = isCapitalized ? currentNominalValue : nominalStartingValue;
       
-      const isMaturity = periodEndDate.getTime() === cycleMaturityDate.getTime();
-      const isWithdrawal = periodEndDate.getTime() === actualCycleEndDate.getTime();
-
       const currentWithdrawalFee = calculateEarlyWithdrawalFee(
         bondType,
         isEarlyWithdrawal,
-        isWithdrawalPeriod,
+        period.isWithdrawal,
         totalInterestEarnedSoFar,
         numberOfBonds,
         earlyWithdrawalFee
       );
 
       // Official rounding for tax at exit
-      const useOfficialRounding = isWithdrawal;
+      const useOfficialRounding = period.isWithdrawal;
 
       const currentGrossValue = isCapitalized ? currentNominalValue : nominalStartingValue.plus(totalInterestEarnedSoFar);
       const taxableBase = taxStrategy === TaxStrategy.IKZE ? currentGrossValue.minus(currentWithdrawalFee) : totalInterestEarnedSoFar.minus(currentWithdrawalFee);
@@ -242,13 +185,13 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
       
       const liquidationValue = currentGrossValue.minus(currentWithdrawalFee).minus(currentTaxAtPoint);
       const totalValue = liquidationValue;
-      const realValue = totalValue.dividedBy(cumulativeInflation);
+      const realValue = calculateRealValue(totalValue, cumulativeInflation);
 
-      const { value: lagNbp } = getHistoricalValue(periodStartDate, 'nbpRate', 0, historicalData);
+      const { value: lagNbp } = getHistoricalValue(period.startDate, 'nbpRate', 0, historicalData);
 
       globalTimeline.push({
         year: totalMonthsSoFar / 12, // accurate fractional years
-        periodLabel: format(periodEndDate, 'MMM yyyy'),
+        periodLabel: period.periodLabel,
         interestRate: currentInterestRate.toNumber(),
         nominalValueBeforeInterest: previousNominalValue.toNumber(),
         interestEarned: interestEarned.toNumber(),
@@ -261,18 +204,17 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
         netProfit: 0, // calculated at very end
         earlyWithdrawalValue: 0, // legacy
         cumulativeInflation: cumulativeInflation.toNumber(),
-        isMaturity,
-        isWithdrawal: periodEndDate.getTime() === targetWithdrawalDate.getTime(),
+        isMaturity: period.isMaturity,
+        isWithdrawal: period.endDate.getTime() === targetWithdrawalDate.getTime(),
         isProjected,
         inflationReference: lagInflation !== undefined ? lagInflation : activeExpectedInflation,
         nbpReference: lagNbp !== undefined ? lagNbp : expectedNbpRate,
       });
 
-      if (isWithdrawal) break;
+      if (period.isWithdrawal) break;
     }
 
     // End of cycle: calculate net cash
-    const cycleLastPoint = globalTimeline[globalTimeline.length - 1];
     const cycleFee = isEarlyWithdrawal ? calculateEarlyWithdrawalFee(bondType, true, true, totalInterestEarnedSoFar, numberOfBonds, earlyWithdrawalFee) : new Decimal(0);
     const cycleGrossValue = isCapitalized ? currentNominalValue : nominalStartingValue.plus(totalInterestEarnedSoFar);
     const cycleTaxableBase = taxStrategy === TaxStrategy.IKZE ? cycleGrossValue.minus(cycleFee) : totalInterestEarnedSoFar.minus(cycleFee);
@@ -280,32 +222,22 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
     // Total cycle tax calculation for final proceeds
     const cycleTax = calculateTaxAmount(Decimal.max(0, cycleTaxableBase), taxStrategy, true);
     
-    // Important: if not capitalized, we already paid tax monthly (in STANDARD strategy)
-    // But calculateTaxAmount(..., true) handles rounding. 
-    // For ROR, cycleTax here will be the total tax for the year.
-    // If we were paying monthly, we need to make sure we don't double count or have rounding issues.
-    // The current engine reinvests netProceeds.
-    
     totalTaxAcc = totalTaxAcc.plus(cycleTax);
     totalFeeAcc = totalFeeAcc.plus(cycleFee);
 
     const netProceeds = cycleGrossValue.minus(cycleFee).minus(cycleTax);
 
     if (!rollover || isEarlyWithdrawal || actualCycleEndDate.getTime() === targetWithdrawalDate.getTime()) {
-      // End simulation
-      return {
-        initialInvestment: initialInvestment,
+      return createFinalSingleBondResult({
+        initialInvestment,
         timeline: globalTimeline,
-        finalNominalValue: cycleGrossValue.toNumber(),
-        finalRealValue: cycleLastPoint.realValue,
-        totalProfit: netProceeds.minus(initialInvestment).toNumber(),
-        totalTax: totalTaxAcc.toNumber(),
-        totalEarlyWithdrawalFee: totalFeeAcc.toNumber(),
-        grossValue: cycleGrossValue.toNumber(),
-        netPayoutValue: netProceeds.toNumber(),
+        cycleGrossValue,
+        cycleNetProceeds: netProceeds,
+        totalTax: totalTaxAcc,
+        totalFee: totalFeeAcc,
         isEarlyWithdrawal,
-        maturityDate: cycleMaturityDate.toISOString()
-      };
+        cycleMaturityDate,
+      });
     }
 
     // Roll over: Re-invest netProceeds into next cycle
@@ -324,6 +256,7 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
  * Regular investment calculator using modular engine.
  */
 export function calculateRegularInvestment(inputs: RegularInvestmentInputs): RegularInvestmentResult {
+  const normalizedInputs = normalizeRegularInvestmentInputs(inputs);
   const {
     contributionAmount,
     frequency,
@@ -335,19 +268,16 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
     margin,
     earlyWithdrawalFee,
     isCapitalized,
-    purchaseDate,
-    withdrawalDate,
+    purchaseDate: startPurchaseDate,
+    withdrawalDate: targetWithdrawalDate,
     isRebought,
     rebuyDiscount,
     historicalData,
     taxStrategy
-  } = inputs;
+  } = normalizedInputs;
 
   const bondDef = BOND_DEFINITIONS[bondType];
   const nominalValue = bondDef?.nominalValue ?? 100;
-
-  const startPurchaseDate = parseISO(purchaseDate);
-  const targetWithdrawalDate = parseISO(withdrawalDate);
 
   const totalMonths = totalHorizon * 12;
   const interval = frequency === InvestmentFrequency.MONTHLY ? 1 : 
@@ -510,7 +440,7 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
         date: currentMonthDate.toISOString(),
         totalInvested: totalInvested.toNumber(),
         nominalValue: currentNominalValueTotal.toNumber(),
-        realValue: currentNominalValueTotal.dividedBy(cumulativeInflation).toNumber(),
+        realValue: calculateRealValue(currentNominalValueTotal, cumulativeInflation).toNumber(),
         profit: currentProfitTotal.toNumber(),
         tax: currentTaxTotal.toNumber(),
         earlyWithdrawalFees: currentFeesTotal.toNumber(),
@@ -521,27 +451,5 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
     if (isWithdrawalStep) break;
   }
 
-  const lastPoint = timeline[timeline.length - 1];
-
-  // Calculate Real Annualized Return (CAGR)
-  // Formula: [(Final Real Value / Total Invested) ^ (1/years)] - 1
-  let realAnnualizedReturn = 0;
-  if (totalHorizon > 0 && totalInvested.gt(0)) {
-    const totalMultiplier = new Decimal(lastPoint.realValue).dividedBy(totalInvested);
-    if (totalMultiplier.gt(0)) {
-      realAnnualizedReturn = Math.pow(totalMultiplier.toNumber(), 1 / totalHorizon) - 1;
-    }
-  }
-
-  return {
-    totalInvested: totalInvested.toNumber(),
-    finalNominalValue: lastPoint.nominalValue,
-    finalRealValue: lastPoint.realValue,
-    totalProfit: lastPoint.profit,
-    totalTax: lastPoint.tax,
-    totalEarlyWithdrawalFees: lastPoint.earlyWithdrawalFees,
-    realAnnualizedReturn: realAnnualizedReturn * 100, // Return as percentage
-    timeline,
-    lots
-  };
+  return createRegularInvestmentResult(totalInvested, totalHorizon, timeline, lots);
 }

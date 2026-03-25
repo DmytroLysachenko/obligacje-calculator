@@ -1,0 +1,46 @@
+[
+  {
+    "name": "COI 4-Year Standard",
+    "inputs": {
+      "initialInvestment": 10000,
+      "firstYearRate": 6.5,
+      "expectedInflation": 3.0,
+      "margin": 1.5,
+      "duration": 4,
+      "earlyWithdrawalFee": 0.7,
+      "bondType": "COI",
+      "isCapitalized": false,
+      "payoutFrequency": "YEARLY",
+      "purchaseDate": "2024-01-01T00:00:00.000Z",
+      "withdrawalDate": "2028-01-01T00:00:00.000Z",
+      "taxStrategy": "STANDARD"
+    },
+    "expected": {
+      "totalProfit": 1620,
+      "totalTax": 380,
+      "grossValue": 12000
+    }
+  },
+  {
+    "name": "EDO 10-Year Capitalized",
+    "inputs": {
+      "initialInvestment": 1000,
+      "firstYearRate": 7.0,
+      "expectedInflation": 4.0,
+      "margin": 2.0,
+      "duration": 10,
+      "earlyWithdrawalFee": 2.0,
+      "bondType": "EDO",
+      "isCapitalized": true,
+      "payoutFrequency": "MATURITY",
+      "purchaseDate": "2024-01-01T00:00:00.000Z",
+      "withdrawalDate": "2034-01-01T00:00:00.000Z",
+      "taxStrategy": "STANDARD"
+    },
+    "expected": {
+      "totalProfit": 654,
+      "totalTax": 154,
+      "finalNominalValue": 1808
+    }
+  }
+]

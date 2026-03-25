@@ -4,12 +4,21 @@ The Bond Calculation Engine is the mathematical heart of the platform. It is det
 
 ## 1. Engine Architecture
 
-The engine has been refactored into specialized modules to improve maintainability:
+The engine has been refactored into focused, specialized modules following the 2026 refactoring plan:
 
--   **`calculations.ts`**: The main entry point coordinating the calculation flow.
--   **`engine/interest-rates.ts`**: Logic for determining the annual interest rate for a given period, including support for historical inflation lookups with a 2-month lag.
--   **`engine/tax-logic.ts`**: Handles the "Belka" tax calculation, supporting both standard precision and official rounding rules.
--   **`engine/redemption-engine.ts`**: Implements early withdrawal fees and rules (e.g., fee cannot exceed earned interest).
+-   **`application-service.ts`**: The application layer entry point coordinating input validation, historical data enrichment, and results assembly.
+-   **`calculations.ts`**: The main domain entry point orchestrating the calculation flow.
+-   **`engine/input-normalization.ts`**: Standardizes and validates input dates and parameters.
+-   **`engine/timeline-builder.ts`**: Generates the discrete periods for the bond lifecycle.
+-   **`engine/accrual.ts`**: Pure logic for interest accrual within a single period.
+-   **`engine/rate-resolution.ts`**: Logic for determining the annual interest rate for a given period, including support for historical inflation lookups with a 2-month lag.
+-   **`engine/tax-settlement.ts`**: Handles the "Belka" tax calculation with official rounding rules.
+-   **`engine/redemption.ts`**: Implements early withdrawal fees and fee capping.
+-   **`engine/rollover.ts`**: Manages the logic for reinvesting matured capital into subsequent cycles.
+-   **`engine/real-return.ts`**: Standardizes real-value and CAGR (Compound Annual Growth Rate) calculations.
+-   **`engine/result-assembly.ts`**: Formats raw calculation results into the public-facing DTOs and envelopes.
+-   **`engine/inflation.ts`**: Specialized logic for cumulative inflation tracking and lag resolution.
+-   **`engine/historical-data.ts`**: Utilities for looking up lagged historical values in the enriched data map.
 
 ## 2. Mathematical Precision
 

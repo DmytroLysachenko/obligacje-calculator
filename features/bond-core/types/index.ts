@@ -131,3 +131,5 @@ export interface RegularTimelinePoint {
   earlyWithdrawalFees: number;
   isProjected?: boolean;
 }
+
+export * from './scenarios';
