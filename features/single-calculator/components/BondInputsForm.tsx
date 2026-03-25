@@ -14,7 +14,7 @@ import { useLanguage } from '@/i18n';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { CalendarIcon, Info, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { format, parseISO, addMonths } from 'date-fns';
+import { format, parseISO, addMonths, differenceInMonths } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
 
 import { Slider } from '@/components/ui/slider';
@@ -47,6 +47,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
   const currentDef = BOND_DEFINITIONS[inputs.bondType];
   const dateLocale = language === 'pl' ? pl : enGB;
+  const investmentHorizonYears = Math.max(0.25, differenceInMonths(parseISO(inputs.withdrawalDate), parseISO(inputs.purchaseDate)) / 12);
 
   const handleInvestmentChange = (value: string | number) => {
     const numValue = Number(value);
@@ -267,6 +268,22 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                 </div>
               </div>
 
+              <div className="space-y-4 pt-2">
+                <div className="flex justify-between items-center">
+                  <Label className="font-semibold">{t('bonds.investment_horizon')}</Label>
+                  <span className="text-sm font-black text-primary">
+                    {investmentHorizonYears % 1 === 0 ? investmentHorizonYears.toFixed(0) : investmentHorizonYears.toFixed(2)} {t('common.years')}
+                  </span>
+                </div>
+                <Slider
+                  value={[investmentHorizonYears]}
+                  min={0.25}
+                  max={30}
+                  step={0.25}
+                  onValueChange={([val]) => onUpdate('withdrawalDate', addMonths(parseISO(inputs.purchaseDate), Math.round(val * 12)).toISOString())}
+                />
+              </div>
+
               <div className="space-y-3">
                 <Label className="font-semibold">{t('bonds.tax_strategy')}</Label>
                 <Select
@@ -298,6 +315,19 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                   />
                 </div>
               )}
+
+              <div className="flex items-center justify-between p-4 bg-primary/5 rounded-xl border border-primary/10">
+                <div className="space-y-0.5">
+                  <Label className="text-sm font-bold text-primary">{t('bonds.reinvest')}</Label>
+                  <p className="text-[10px] text-muted-foreground font-medium italic">
+                    {t('bonds.rollover_desc')}
+                  </p>
+                </div>
+                <Switch
+                  checked={!!inputs.rollover}
+                  onCheckedChange={(checked) => onUpdate('rollover', checked)}
+                />
+              </div>
             </AccordionContent>
           </AccordionItem>
 

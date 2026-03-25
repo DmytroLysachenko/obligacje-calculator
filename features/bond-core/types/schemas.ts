@@ -39,6 +39,7 @@ export const BondInputsSchema = withDateOrderValidation(BaseInstrumentInputsSche
   taxStrategy: z.nativeEnum(TaxStrategy),
   savingsGoal: z.number().optional(),
   historicalData: HistoricalDataMapSchema,
+  rollover: z.boolean().optional(),
 }));
 
 export const RegularInvestmentInputsSchema = withDateOrderValidation(BaseInstrumentInputsSchema.extend({

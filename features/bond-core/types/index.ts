@@ -45,6 +45,7 @@ export interface BondInputs {
   showRealValue?: boolean;
   calculatorMode?: 'standard' | 'reverse';
   customInflation?: number[];
+  rollover?: boolean;
 }
 
 export interface YearlyTimelinePoint {

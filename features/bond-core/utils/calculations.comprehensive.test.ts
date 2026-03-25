@@ -71,6 +71,27 @@ describe('Comprehensive Bond Calculations', () => {
     expect(results.totalProfit).toBeCloseTo(28.42, 1);
   });
 
+  it('supports multi-cycle rollover for short-duration bonds across a longer horizon', () => {
+    const inputs = {
+      ...baseInputs,
+      bondType: BondType.ROR,
+      duration: 1,
+      firstYearRate: 4.25,
+      expectedNbpRate: 5.25,
+      margin: 0,
+      payoutFrequency: InterestPayout.MONTHLY,
+      purchaseDate: '2026-03-01T00:00:00.000Z',
+      withdrawalDate: '2031-03-01T00:00:00.000Z',
+      rollover: true,
+    };
+
+    const results = calculateBondInvestment(inputs);
+
+    expect(results.timeline.length).toBeGreaterThan(40);
+    expect(results.maturityDate).toBe('2031-03-01T00:00:00.000Z');
+    expect(results.netPayoutValue).toBeGreaterThan(results.initialInvestment);
+  });
+
   it('EDO: 10-year inflation-indexed, capitalization, tax at end', () => {
     const inputs = {
       ...baseInputs,

@@ -1,4 +1,4 @@
-import { BondComparisonContainer } from '@/features/comparison-engine/components/BondComparisonContainer';
+import { ComparisonContainer } from '@/features/comparison-engine/components/ComparisonContainer';
 import { PageTransition } from '@/shared/components/PageTransition';
 import { Suspense } from 'react';
 
@@ -7,7 +7,7 @@ export default function ComparePage() {
     <PageTransition>
       <div className="max-w-7xl mx-auto">
         <Suspense fallback={<div>Loading comparison engine...</div>}>
-          <BondComparisonContainer />
+          <ComparisonContainer />
         </Suspense>
       </div>
     </PageTransition>

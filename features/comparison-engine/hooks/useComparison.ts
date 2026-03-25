@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import { BondInputs, BondType, TaxStrategy } from '../../bond-core/types';
 import { SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
-import { addMonths } from 'date-fns';
+import { addMonths, differenceInMonths } from 'date-fns';
 import { useQuerySync } from '@/shared/hooks/useQuerySync';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { postCalculation } from '@/shared/lib/calculation-client';
@@ -28,7 +28,13 @@ const createDefaultInputs = (type: BondType): BondInputs => {
     isRebought: false,
     rebuyDiscount: def.rebuyDiscount,
     taxStrategy: TaxStrategy.STANDARD,
+    rollover: false,
   };
+};
+
+const getHorizonMonths = (purchaseDate: string, withdrawalDate: string) => {
+  const months = differenceInMonths(new Date(withdrawalDate), new Date(purchaseDate));
+  return Math.max(0, months);
 };
 
 export function useComparison() {
@@ -91,12 +97,26 @@ export function useComparison() {
 
   const updateInputA = (key: keyof BondInputs, value: string | number | boolean | number[] | undefined) => {
     setIsDirty(true);
-    setInputsA(prev => ({ ...prev, [key]: value }));
+    setInputsA(prev => {
+      const next = { ...prev, [key]: value };
+      if (key === 'purchaseDate') {
+        const horizonMonths = getHorizonMonths(prev.purchaseDate, prev.withdrawalDate);
+        next.withdrawalDate = addMonths(new Date(value as string), horizonMonths).toISOString();
+      }
+      return next;
+    });
   };
 
   const updateInputB = (key: keyof BondInputs, value: string | number | boolean | number[] | undefined) => {
     setIsDirty(true);
-    setInputsB(prev => ({ ...prev, [key]: value }));
+    setInputsB(prev => {
+      const next = { ...prev, [key]: value };
+      if (key === 'purchaseDate') {
+        const horizonMonths = getHorizonMonths(prev.purchaseDate, prev.withdrawalDate);
+        next.withdrawalDate = addMonths(new Date(value as string), horizonMonths).toISOString();
+      }
+      return next;
+    });
   };
 
   const setBondTypeA = (type: BondType) => {
@@ -112,7 +132,10 @@ export function useComparison() {
       isCapitalized: def.isCapitalized,
       payoutFrequency: def.payoutFrequency,
       rebuyDiscount: def.rebuyDiscount,
-      withdrawalDate: addMonths(new Date(prev.purchaseDate), Math.round(def.duration * 12)).toISOString(),
+      withdrawalDate: addMonths(
+        new Date(prev.purchaseDate),
+        Math.max(getHorizonMonths(prev.purchaseDate, prev.withdrawalDate), Math.round(def.duration * 12)),
+      ).toISOString(),
     }));
   };
 
@@ -129,7 +152,10 @@ export function useComparison() {
       isCapitalized: def.isCapitalized,
       payoutFrequency: def.payoutFrequency,
       rebuyDiscount: def.rebuyDiscount,
-      withdrawalDate: addMonths(new Date(prev.purchaseDate), Math.round(def.duration * 12)).toISOString(),
+      withdrawalDate: addMonths(
+        new Date(prev.purchaseDate),
+        Math.max(getHorizonMonths(prev.purchaseDate, prev.withdrawalDate), Math.round(def.duration * 12)),
+      ).toISOString(),
     }));
   };
 

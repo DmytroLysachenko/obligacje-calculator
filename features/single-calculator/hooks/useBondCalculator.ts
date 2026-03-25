@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { BondInputs, BondType, TaxStrategy } from '../../bond-core/types';
 import { SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
-import { addMonths } from 'date-fns';
+import { addMonths, differenceInMonths } from 'date-fns';
 import { useQuerySync } from '@/shared/hooks/useQuerySync';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { postCalculation } from '@/shared/lib/calculation-client';
@@ -30,6 +30,12 @@ const DEFAULT_INPUTS: BondInputs = {
   rebuyDiscount: def.rebuyDiscount,
   taxStrategy: TaxStrategy.STANDARD,
   showRealValue: false,
+  rollover: false,
+};
+
+const getHorizonMonths = (purchaseDate: string, withdrawalDate: string) => {
+  const months = differenceInMonths(new Date(withdrawalDate), new Date(purchaseDate));
+  return Math.max(0, months);
 };
 
 export function useBondCalculator() {
@@ -84,16 +90,10 @@ export function useBondCalculator() {
     setInputs((prev) => {
       const newInputs = { ...prev, [key]: value };
       
-      // If purchase date changes, also update withdrawal date if it was at maturity
       if (key === 'purchaseDate') {
-        const oldPurchaseDate = new Date(prev.purchaseDate);
-        const oldMaturityDate = addMonths(oldPurchaseDate, Math.round(prev.duration * 12));
-        const wasAtMaturity = prev.withdrawalDate === oldMaturityDate.toISOString();
-        
-        if (wasAtMaturity) {
-          const newPurchaseDate = new Date(value as string);
-          newInputs.withdrawalDate = addMonths(newPurchaseDate, Math.round(prev.duration * 12)).toISOString();
-        }
+        const horizonMonths = getHorizonMonths(prev.purchaseDate, prev.withdrawalDate);
+        const newPurchaseDate = new Date(value as string);
+        newInputs.withdrawalDate = addMonths(newPurchaseDate, horizonMonths).toISOString();
       }
 
       return newInputs;
@@ -104,7 +104,9 @@ export function useBondCalculator() {
     setIsDirty(true);
     const def = BOND_DEFINITIONS[type];
     const purchaseDate = new Date(inputs.purchaseDate);
-    const newMaturityDate = addMonths(purchaseDate, Math.round(def.duration * 12));
+    const previousHorizonMonths = getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);
+    const fallbackHorizonMonths = Math.round(def.duration * 12);
+    const nextHorizonMonths = Math.max(previousHorizonMonths, fallbackHorizonMonths);
     
     setInputs((prev) => ({
       ...prev,
@@ -115,7 +117,7 @@ export function useBondCalculator() {
       earlyWithdrawalFee: def.earlyWithdrawalFee,
       isCapitalized: def.isCapitalized,
       payoutFrequency: def.payoutFrequency,
-      withdrawalDate: newMaturityDate.toISOString(),
+      withdrawalDate: addMonths(purchaseDate, nextHorizonMonths).toISOString(),
       rebuyDiscount: def.rebuyDiscount,
       isRebought: false,
     }));

@@ -146,7 +146,7 @@ export const ComparisonContainer: React.FC = () => {
             {t("nav.comparison")}
           </h2>
           <p className="text-muted-foreground mt-2">
-            Compare two different bond investment scenarios side-by-side.
+            {t('comparison.desc_bond_vs_bond')}
           </p>
         </div>
         <div className="flex items-center gap-4">
@@ -203,18 +203,18 @@ export const ComparisonContainer: React.FC = () => {
       {!resultsA && !isCalculating && (
         <div className="h-[400px] flex flex-col items-center justify-center border-2 border-dashed rounded-3xl opacity-50 space-y-4">
           <Scale className="h-12 w-12 text-muted-foreground" />
-          <p className="font-medium text-muted-foreground">
-            Adjust inputs and click &apos;Compare Scenarios&apos; to see results
-          </p>
+              <p className="font-medium text-muted-foreground">
+                {t('comparison.desc_bond_vs_bond')}
+              </p>
         </div>
       )}
 
       {isCalculating && !resultsA && (
         <div className="h-[400px] flex flex-col items-center justify-center space-y-4">
           <Loader2 className="h-12 w-12 text-primary animate-spin" />
-          <p className="font-medium text-primary">
-            Analyzing both scenarios...
-          </p>
+              <p className="font-medium text-primary">
+                {t('comparison.live_calculation')}
+              </p>
         </div>
       )}
 
@@ -226,9 +226,9 @@ export const ComparisonContainer: React.FC = () => {
           )}
         >
           <Card className="border shadow-xl overflow-hidden rounded-3xl">
-            <CardHeader className="bg-muted/30 px-8 py-6 border-b">
+              <CardHeader className="bg-muted/30 px-8 py-6 border-b">
               <CardTitle className="text-xl font-black">
-                Growth Comparison
+                {t('comparison.performance_over_time')}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-8">
@@ -350,7 +350,7 @@ export const ComparisonContainer: React.FC = () => {
               <CardContent className="space-y-4 pt-6">
                 <div className="flex justify-between items-end border-b border-blue-100 pb-4">
                   <span className="text-xs font-bold text-blue-800/60 uppercase">
-                    Net Payout:
+                    {t('bonds.net_payout')}:
                   </span>
                   <span className="text-3xl font-black text-blue-700">
                     {formatCurrency(resultsA.netPayoutValue)}
@@ -358,14 +358,14 @@ export const ComparisonContainer: React.FC = () => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-xs font-bold text-blue-800/60 uppercase">
-                    Total Profit:
+                    {t('comparison.net_profit')}:
                   </span>
                   <span className="text-xl font-black text-green-600">
                     +{formatCurrency(resultsA.totalProfit)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center text-[10px] font-bold text-muted-foreground uppercase pt-2">
-                  <span>Tax Paid:</span>
+                  <span>{t('bonds.tax')}:</span>
                   <span>{formatCurrency(resultsA.totalTax)}</span>
                 </div>
               </CardContent>
@@ -380,7 +380,7 @@ export const ComparisonContainer: React.FC = () => {
               <CardContent className="space-y-4 pt-6">
                 <div className="flex justify-between items-end border-b border-emerald-100 pb-4">
                   <span className="text-xs font-bold text-emerald-800/60 uppercase">
-                    Net Payout:
+                    {t('bonds.net_payout')}:
                   </span>
                   <span className="text-3xl font-black text-emerald-700">
                     {formatCurrency(resultsB.netPayoutValue)}
@@ -388,14 +388,14 @@ export const ComparisonContainer: React.FC = () => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-xs font-bold text-emerald-800/60 uppercase">
-                    Total Profit:
+                    {t('comparison.net_profit')}:
                   </span>
                   <span className="text-xl font-black text-green-600">
                     +{formatCurrency(resultsB.totalProfit)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center text-[10px] font-bold text-muted-foreground uppercase pt-2">
-                  <span>Tax Paid:</span>
+                  <span>{t('bonds.tax')}:</span>
                   <span>{formatCurrency(resultsB.totalTax)}</span>
                 </div>
               </CardContent>

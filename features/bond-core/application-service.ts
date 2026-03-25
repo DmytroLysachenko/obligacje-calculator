@@ -62,7 +62,10 @@ export class CalculationApplicationService {
     const warnings = this.buildHistoricalDataWarnings(enrichedInputs.historicalData);
     const assumptions = this.generateAssumptions(enrichedInputs);
 
-    const result = calculateBondInvestment(enrichedInputs);
+    const result = calculateBondInvestment({
+      ...enrichedInputs,
+      rollover: enrichedInputs.rollover ?? false,
+    });
 
     return this.createEnvelope(result, warnings, assumptions);
   }
