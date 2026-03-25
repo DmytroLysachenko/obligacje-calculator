@@ -3,10 +3,17 @@ import { db } from '@/db';
 import { userInvestmentLots } from '@/db/schema';
 import { InvestmentLotSchema } from '@/features/bond-core/types/portfolio-schemas';
 import { eq } from 'drizzle-orm';
+import {
+  applyPortfolioOwnerCookie,
+  getOwnedLot,
+  getOwnedPortfolio,
+  resolvePortfolioOwner,
+} from '@/lib/portfolio-access';
 import { z } from 'zod';
 
 export async function GET(req: NextRequest) {
   try {
+    const owner = await resolvePortfolioOwner();
     const url = new URL(req.url);
     const portfolioId = url.searchParams.get('portfolioId');
 
@@ -14,12 +21,17 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Portfolio ID is required' }, { status: 400 });
     }
 
+    const portfolio = await getOwnedPortfolio(owner.ownerId, portfolioId);
+    if (!portfolio) {
+      return NextResponse.json({ error: 'Portfolio not found' }, { status: 404 });
+    }
+
     const lots = await db.query.userInvestmentLots.findMany({
       where: eq(userInvestmentLots.portfolioId, portfolioId),
       orderBy: (p, { desc }) => [desc(p.purchaseDate)],
     });
-    
-    return NextResponse.json(lots);
+
+    return applyPortfolioOwnerCookie(NextResponse.json(lots), owner);
   } catch (error) {
     console.error('Failed to fetch lots:', error);
     return NextResponse.json({ error: 'Database error' }, { status: 500 });
@@ -28,8 +40,14 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const owner = await resolvePortfolioOwner();
     const body = await req.json();
     const validated = InvestmentLotSchema.parse(body);
+
+    const portfolio = await getOwnedPortfolio(owner.ownerId, validated.portfolioId);
+    if (!portfolio) {
+      return NextResponse.json({ error: 'Portfolio not found' }, { status: 404 });
+    }
 
     const [newLot] = await db.insert(userInvestmentLots).values({
       portfolioId: validated.portfolioId,
@@ -40,7 +58,7 @@ export async function POST(req: NextRequest) {
       notes: validated.notes,
     }).returning();
 
-    return NextResponse.json(newLot);
+    return applyPortfolioOwnerCookie(NextResponse.json(newLot), owner);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Validation failed', details: error.issues }, { status: 400 });
@@ -52,6 +70,7 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
+    const owner = await resolvePortfolioOwner();
     const url = new URL(req.url);
     const id = url.searchParams.get('id');
 
@@ -59,9 +78,14 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Lot ID is required' }, { status: 400 });
     }
 
+    const lot = await getOwnedLot(owner.ownerId, id);
+    if (!lot) {
+      return NextResponse.json({ error: 'Lot not found' }, { status: 404 });
+    }
+
     await db.delete(userInvestmentLots).where(eq(userInvestmentLots.id, id));
-    
-    return NextResponse.json({ success: true });
+
+    return applyPortfolioOwnerCookie(NextResponse.json({ success: true }), owner);
   } catch (error) {
     console.error('Failed to delete lot:', error);
     return NextResponse.json({ error: 'Database error' }, { status: 500 });
