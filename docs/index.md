@@ -38,6 +38,7 @@ Welcome to the official product documentation for the **Financial Education & In
 - [23. Testing & Quality Assurance](./23_testing_and_quality_assurance.md) - Ensuring mathematical and technical correctness.
 - [24. Deployment & DevOps](./24_deployment_and_devops.md) - CI/CD and infrastructure strategy.
 - [25. Roadmap & MVP Definition](./25_roadmap_and_mvp_definition.md) - Phases of development from Polish Bonds to Multi-Asset.
+- [26. Full App Refactoring Plan](./26_app_refactoring_plan.md) - Detailed execution plan for the next architecture, calculation, performance, and reliability refactor.
 
 ---
 *Last Updated: March 2026*
