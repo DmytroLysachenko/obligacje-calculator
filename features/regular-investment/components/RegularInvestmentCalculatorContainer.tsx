@@ -14,8 +14,8 @@ import { cn } from "@/lib/utils";
 import { RecalculateButton } from '@/shared/components/RecalculateButton';
 
 export const RegularInvestmentCalculatorContainer: React.FC = () => {
-  const { inputs, results, isCalculating, isError, calculate, updateInput, setBondType, isDirty } = useRegularInvestmentCalculator();
-  useLanguage();
+  const { inputs, results, warnings, assumptions, isCalculating, calculate, updateInput, setBondType, isDirty } = useRegularInvestmentCalculator();
+  const { t } = useLanguage();
 
   const [copied, setCopied] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
@@ -121,6 +121,35 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
           {results && (
             <div className={cn("space-y-8 transition-opacity duration-300", isCalculating && "opacity-50 pointer-events-none")}>
               <RegularInvestmentResultsSummary results={results} />
+
+              {(warnings.length > 0 || assumptions.length > 0) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {warnings.length > 0 && (
+                    <div className="p-4 bg-orange-50 border-2 border-orange-200 rounded-2xl shadow-sm">
+                      <h4 className="text-xs font-black uppercase text-orange-800 mb-2 flex items-center gap-2">
+                        <Info className="h-4 w-4" /> {t('common.warnings')}
+                      </h4>
+                      <ul className="list-disc list-inside space-y-1">
+                        {warnings.map((w: string, i: number) => (
+                          <li key={i} className="text-[10px] text-orange-700 font-bold">{w}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {assumptions.length > 0 && (
+                    <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-2xl shadow-sm">
+                      <h4 className="text-xs font-black uppercase text-blue-800 mb-2 flex items-center gap-2">
+                        <Target className="h-4 w-4" /> {t('common.assumptions')}
+                      </h4>
+                      <ul className="list-disc list-inside space-y-1">
+                        {assumptions.map((a: string, i: number) => (
+                          <li key={i} className="text-[10px] text-blue-700 font-bold">{a}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="bg-card border rounded-2xl p-6 shadow-sm overflow-hidden min-h-[500px]">
                 <h3 className="text-lg font-bold mb-6 flex items-center gap-2">

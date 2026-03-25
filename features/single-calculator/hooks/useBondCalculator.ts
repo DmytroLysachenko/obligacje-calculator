@@ -1,9 +1,11 @@
 import { useState, useCallback } from 'react';
-import { BondInputs, BondType, TaxStrategy, CalculationResult } from '../../bond-core/types';
+import { BondInputs, BondType, TaxStrategy } from '../../bond-core/types';
+import { SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
-import { calculateBondInvestment } from '../../bond-core/utils/calculations';
 import { addMonths } from 'date-fns';
 import { useQuerySync } from '@/shared/hooks/useQuerySync';
+import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
+import { postCalculation } from '@/shared/lib/calculation-client';
 
 const DEFAULT_BOND = BondType.COI;
 const def = BOND_DEFINITIONS[DEFAULT_BOND];
@@ -32,10 +34,12 @@ const DEFAULT_INPUTS: BondInputs = {
 
 export function useBondCalculator() {
   const [inputs, setInputs] = useState<BondInputs>(DEFAULT_INPUTS);
-  const [results, setResults] = useState<CalculationResult | null>(null);
-  const [isCalculating, setIsCalculating] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [envelope, setEnvelope] = useState<SingleBondCalculationEnvelope | null>(null);
   const [isDirty, setIsDirty] = useState(true);
+  const { isCalculating, isError, run, clearError } = useCalculationRequest();
+
+  // Derived results for compatibility
+  const results = envelope?.result || null;
 
   // Sync state with URL
   useQuerySync(inputs, (initial) => {
@@ -43,39 +47,32 @@ export function useBondCalculator() {
   });
 
   const calculate = useCallback(async (currentInputs = inputs) => {
-    setIsCalculating(true);
-    setIsError(false);
     setIsDirty(false);
     try {
-      // Execute the heavy calculation in a non-blocking macro-task to preserve UI fluidity (pseudo-worker)
-      const data = await new Promise<CalculationResult>((resolve, reject) => {
-        setTimeout(() => {
-          try {
-            const finalInputs = { ...currentInputs };
-            if (currentInputs.calculatorMode === 'reverse' && currentInputs.savingsGoal) {
-              const testBase = 10000;
-              const simTest = calculateBondInvestment({ ...currentInputs, initialInvestment: testBase });
-              const netMultiplier = simTest.netPayoutValue / testBase;
-              const requiredInvestmentRaw = currentInputs.savingsGoal / netMultiplier;
-              const bondPrice = currentInputs.isRebought ? (100 - (currentInputs.rebuyDiscount || 0)) : 100;
-              const requiredBonds = Math.ceil(requiredInvestmentRaw / bondPrice);
-              finalInputs.initialInvestment = requiredBonds * bondPrice;
-            }
-            resolve(calculateBondInvestment(finalInputs));
-          } catch (e) {
-            reject(e);
-          }
-        }, 10);
-      });
-      
-      setResults(data);
+      clearError();
+      const finalInputs = { ...currentInputs };
+
+      if (currentInputs.calculatorMode === 'reverse' && currentInputs.savingsGoal) {
+        const testBase = 10000;
+        const simEnvelope = await run(() =>
+          postCalculation<SingleBondCalculationEnvelope>('/api/calculate/single', {
+            ...currentInputs,
+            initialInvestment: testBase,
+          }),
+        );
+        const netMultiplier = simEnvelope.result.netPayoutValue / testBase;
+        const bondPrice = currentInputs.isRebought ? (100 - (currentInputs.rebuyDiscount || 0)) : 100;
+        const requiredInvestmentRaw = currentInputs.savingsGoal / netMultiplier;
+        const requiredBonds = Math.ceil(requiredInvestmentRaw / bondPrice);
+        finalInputs.initialInvestment = requiredBonds * bondPrice;
+      }
+
+      const data = await run(() => postCalculation<SingleBondCalculationEnvelope>('/api/calculate/single', finalInputs));
+      setEnvelope(data);
     } catch (error) {
       console.error('Calculation error:', error);
-      setIsError(true);
-    } finally {
-      setIsCalculating(false);
     }
-  }, [inputs]);
+  }, [clearError, inputs, run]);
 
   // Initial calculation - REMOVED to prevent excessive requests on remount
   // useEffect(() => {
@@ -127,6 +124,10 @@ export function useBondCalculator() {
   return {
     inputs,
     results,
+    envelope,
+    warnings: envelope?.warnings || [],
+    assumptions: envelope?.assumptions || [],
+    dataFreshness: envelope?.dataFreshness,
     isCalculating,
     isError,
     isDirty,
@@ -136,3 +137,4 @@ export function useBondCalculator() {
     definitions: BOND_DEFINITIONS,
   };
 }
+

@@ -28,6 +28,8 @@ export const BondCalculatorContainer: React.FC = () => {
   const {
     inputs,
     results,
+    warnings,
+    assumptions,
     isCalculating,
     isError,
     calculate,
@@ -171,6 +173,35 @@ export const BondCalculatorContainer: React.FC = () => {
               )}
             >
               <BondResultsSummary results={results} />
+
+              {(warnings.length > 0 || assumptions.length > 0) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {warnings.length > 0 && (
+                    <div className="p-4 bg-orange-50 border-2 border-orange-200 rounded-2xl shadow-sm">
+                      <h4 className="text-xs font-black uppercase text-orange-800 mb-2 flex items-center gap-2">
+                        <Info className="h-4 w-4" /> {t('common.warnings')}
+                      </h4>
+                      <ul className="list-disc list-inside space-y-1">
+                        {warnings.map((w: string, i: number) => (
+                          <li key={i} className="text-[10px] text-orange-700 font-bold">{w}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {assumptions.length > 0 && (
+                    <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-2xl shadow-sm">
+                      <h4 className="text-xs font-black uppercase text-blue-800 mb-2 flex items-center gap-2">
+                        <Target className="h-4 w-4" /> {t('common.assumptions')}
+                      </h4>
+                      <ul className="list-disc list-inside space-y-1">
+                        {assumptions.map((a: string, i: number) => (
+                          <li key={i} className="text-[10px] text-blue-700 font-bold">{a}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <Tabs
                 defaultValue="chart"

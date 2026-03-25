@@ -1,8 +1,11 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
-import { RegularInvestmentInputs, BondType, InvestmentFrequency, TaxStrategy, RegularInvestmentResult } from '../../bond-core/types';
+import { useState, useCallback } from 'react';
+import { RegularInvestmentInputs, BondType, InvestmentFrequency, TaxStrategy } from '../../bond-core/types';
+import { RegularInvestmentCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { addYears } from 'date-fns';
 import { useQuerySync } from '@/shared/hooks/useQuerySync';
+import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
+import { postCalculation } from '@/shared/lib/calculation-client';
 
 const DEFAULT_BOND = BondType.COI;
 const def = BOND_DEFINITIONS[DEFAULT_BOND];
@@ -32,10 +35,12 @@ const DEFAULT_INPUTS: RegularInvestmentInputs = {
 
 export function useRegularInvestmentCalculator() {
   const [inputs, setInputs] = useState<RegularInvestmentInputs>(DEFAULT_INPUTS);
-  const [results, setResults] = useState<RegularInvestmentResult | null>(null);
-  const [isCalculating, setIsCalculating] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [envelope, setEnvelope] = useState<RegularInvestmentCalculationEnvelope | null>(null);
   const [isDirty, setIsDirty] = useState(true); // Default to true so first calculation happens
+  const { isCalculating, isError, run, clearError } = useCalculationRequest();
+
+  // Derived results for compatibility
+  const results = envelope?.result || null;
 
   // Sync state with URL
   useQuerySync(inputs, (initial) => {
@@ -43,27 +48,15 @@ export function useRegularInvestmentCalculator() {
   });
 
   const calculate = useCallback(async (currentInputs = inputs) => {
-    setIsCalculating(true);
-    setIsError(false);
     setIsDirty(false);
     try {
-      const response = await fetch('/api/calculate/regular', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(currentInputs),
-      });
-      
-      if (!response.ok) throw new Error('Calculation failed');
-      
-      const data = await response.json();
-      setResults(data);
+      clearError();
+      const data = await run(() => postCalculation<RegularInvestmentCalculationEnvelope>('/api/calculate/regular', currentInputs));
+      setEnvelope(data);
     } catch (error) {
       console.error('Calculation error:', error);
-      setIsError(true);
-    } finally {
-      setIsCalculating(false);
     }
-  }, [inputs]);
+  }, [clearError, inputs, run]);
 
   // Initial calculation - REMOVED to prevent excessive requests on remount
   // useEffect(() => {
@@ -105,6 +98,10 @@ export function useRegularInvestmentCalculator() {
   return {
     inputs,
     results,
+    envelope,
+    warnings: envelope?.warnings || [],
+    assumptions: envelope?.assumptions || [],
+    dataFreshness: envelope?.dataFreshness,
     isCalculating,
     isError,
     isDirty,
@@ -114,3 +111,4 @@ export function useRegularInvestmentCalculator() {
     definitions: BOND_DEFINITIONS,
   };
 }
+

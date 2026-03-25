@@ -1,32 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { calculateBondInvestment } from '@/features/bond-core/utils/calculations';
-import { BondInputsSchema } from '@/features/bond-core/types/schemas';
+import { calculationService } from '@/features/bond-core/application-service';
+import { ScenarioKind } from '@/features/bond-core/types/scenarios';
 import { z } from 'zod';
-import { getHistoricalDataMap } from '@/lib/data-access';
-import { subMonths, format } from 'date-fns';
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const validatedInputs = BondInputsSchema.parse(body);
-
-    // Pre-fetch historical data from DB
-    const startDate = new Date(validatedInputs.purchaseDate);
-    // Look back at least 2 months for lag
-    const fromDate = format(subMonths(startDate, 3), 'yyyy-MM-01');
-    const toDate = validatedInputs.withdrawalDate.substring(0, 10);
-    
-    const dbHistoricalData = await getHistoricalDataMap(fromDate, toDate);
-    
-    // Merge with inputs
-    validatedInputs.historicalData = {
-      ...dbHistoricalData,
-      ...validatedInputs.historicalData
-    };
-
-    const result = calculateBondInvestment(validatedInputs);
-    
-    return NextResponse.json(result);
+    const envelope = await calculationService.calculate({
+      kind: ScenarioKind.SINGLE_BOND,
+      payload: body,
+    });
+    // The previous implementation returned envelope.result directly.
+    // To maintain compatibility with existing client hooks (Phase 3 will refactor hooks),
+    // I will still return results in a way that doesn't break everything immediately,
+    // but the plan says "routes validate the same contracts" and "return typed result envelopes".
+    // I'll return the full envelope now, as it's better for Phase 3.
+    return NextResponse.json(envelope);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Validation failed', details: error.issues }, { status: 400 });

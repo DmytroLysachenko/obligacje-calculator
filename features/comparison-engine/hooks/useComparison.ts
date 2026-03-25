@@ -1,10 +1,13 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { BondInputs, BondType, TaxStrategy, CalculationResult } from '../../bond-core/types';
+import { BondInputs, BondType, TaxStrategy } from '../../bond-core/types';
+import { SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { addMonths } from 'date-fns';
 import { useQuerySync } from '@/shared/hooks/useQuerySync';
+import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
+import { postCalculation } from '@/shared/lib/calculation-client';
 
 const createDefaultInputs = (type: BondType): BondInputs => {
   const def = BOND_DEFINITIONS[type];
@@ -31,10 +34,14 @@ const createDefaultInputs = (type: BondType): BondInputs => {
 export function useComparison() {
   const [inputsA, setInputsA] = useState<BondInputs>(createDefaultInputs(BondType.COI));
   const [inputsB, setInputsB] = useState<BondInputs>(createDefaultInputs(BondType.EDO));
-  const [resultsA, setResultsA] = useState<CalculationResult | null>(null);
-  const [resultsB, setResultsB] = useState<CalculationResult | null>(null);
-  const [isCalculating, setIsCalculating] = useState(false);
+  const [envelopeA, setEnvelopeA] = useState<SingleBondCalculationEnvelope | null>(null);
+  const [envelopeB, setEnvelopeB] = useState<SingleBondCalculationEnvelope | null>(null);
   const [isDirty, setIsDirty] = useState(true);
+  const { isCalculating, run } = useCalculationRequest();
+
+  // Derived results for compatibility
+  const resultsA = envelopeA?.result || null;
+  const resultsB = envelopeB?.result || null;
 
   // Sync state with URL using prefixes to avoid collisions
   const combinedState = {
@@ -62,33 +69,20 @@ export function useComparison() {
   });
 
   const calculate = useCallback(async () => {
-    setIsCalculating(true);
     setIsDirty(false);
     try {
-      const [resA, resB] = await Promise.all([
-        fetch('/api/calculate/single', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(inputsA),
-        }),
-        fetch('/api/calculate/single', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(inputsB),
-        })
-      ]);
-      
-      if (!resA.ok || !resB.ok) throw new Error('Comparison calculation failed');
-      
-      const [dataA, dataB] = await Promise.all([resA.json(), resB.json()]);
-      setResultsA(dataA);
-      setResultsB(dataB);
+      const [dataA, dataB] = await run(() =>
+        Promise.all([
+          postCalculation<SingleBondCalculationEnvelope>('/api/calculate/single', inputsA),
+          postCalculation<SingleBondCalculationEnvelope>('/api/calculate/single', inputsB),
+        ]),
+      );
+      setEnvelopeA(dataA);
+      setEnvelopeB(dataB);
     } catch (error) {
       console.error('Comparison error:', error);
-    } finally {
-      setIsCalculating(false);
     }
-  }, [inputsA, inputsB]);
+  }, [inputsA, inputsB, run]);
 
   // Initial calculation - REMOVED to prevent excessive requests on remount
   // useEffect(() => {
@@ -142,6 +136,9 @@ export function useComparison() {
   return {
     inputsA, inputsB,
     resultsA, resultsB,
+    envelopeA, envelopeB,
+    warningsA: envelopeA?.warnings || [],
+    warningsB: envelopeB?.warnings || [],
     isCalculating,
     isDirty,
     calculate,
@@ -150,3 +147,4 @@ export function useComparison() {
     definitions: BOND_DEFINITIONS
   };
 }
+

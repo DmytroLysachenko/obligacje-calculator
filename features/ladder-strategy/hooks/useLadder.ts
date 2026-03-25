@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
-import { BondType, RegularInvestmentInputs, InvestmentFrequency, TaxStrategy, RegularInvestmentResult } from '../../bond-core/types';
-import { calculateRegularInvestment } from '../../bond-core/utils/calculations';
+import { useState, useCallback } from 'react';
+import { BondType, RegularInvestmentInputs, InvestmentFrequency, TaxStrategy } from '../../bond-core/types';
+import { RegularInvestmentCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { addYears } from 'date-fns';
+import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
+import { postCalculation } from '@/shared/lib/calculation-client';
 
 const DEFAULT_BOND = BondType.EDO;
 const def = BOND_DEFINITIONS[DEFAULT_BOND];
@@ -32,30 +34,22 @@ const DEFAULT_INPUTS: RegularInvestmentInputs = {
 
 export function useLadder() {
   const [inputs, setInputs] = useState<RegularInvestmentInputs>(DEFAULT_INPUTS);
-  const [results, setResults] = useState<RegularInvestmentResult | null>(null);
+  const [envelope, setEnvelope] = useState<RegularInvestmentCalculationEnvelope | null>(null);
   const [isDirty, setIsDirty] = useState(true);
-  const [isCalculating, setIsCalculating] = useState(false);
+  const { isCalculating, run } = useCalculationRequest();
+
+  // Derived results for compatibility
+  const results = envelope?.result || null;
 
   const calculate = useCallback(async () => {
-    setIsCalculating(true);
     try {
-      const response = await fetch('/api/calculate/regular', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(inputs),
-      });
-      
-      if (!response.ok) throw new Error('Calculation failed');
-      
-      const data = await response.json();
-      setResults(data);
+      const data = await run(() => postCalculation<RegularInvestmentCalculationEnvelope>('/api/calculate/regular', inputs));
+      setEnvelope(data);
       setIsDirty(false);
     } catch (error) {
       console.error('Ladder calculation error:', error);
-    } finally {
-      setIsCalculating(false);
     }
-  }, [inputs]);
+  }, [inputs, run]);
 
   // Initial calculation - REMOVED to prevent excessive requests on remount
   // useEffect(() => {
@@ -92,6 +86,10 @@ export function useLadder() {
   return {
     inputs,
     results,
+    envelope,
+    warnings: envelope?.warnings || [],
+    assumptions: envelope?.assumptions || [],
+    dataFreshness: envelope?.dataFreshness,
     isDirty,
     isCalculating,
     calculate,
