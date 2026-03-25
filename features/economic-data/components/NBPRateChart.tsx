@@ -13,6 +13,7 @@ import {
 } from 'recharts';
 import { useLanguage } from '@/i18n';
 import { useChartData } from '@/shared/hooks/useChartData';
+import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 
 interface NBPRateDataPoint {
   date: string;
@@ -80,7 +81,7 @@ export const NBPRateChart = ({ period = 'ALL' }: { period?: '1Y' | '5Y' | '10Y' 
   }
 
   return (
-    <div className="w-full min-h-[400px] relative" style={{ minWidth: 0 }}>
+    <ChartContainer height={400}>
       <ResponsiveContainer width="100%" height={400} key={`nbp-chart-${chartData.length}`}>
         <AreaChart data={chartData}>
           <defs>
@@ -114,6 +115,6 @@ export const NBPRateChart = ({ period = 'ALL' }: { period?: '1Y' | '5Y' | '10Y' 
           />
         </AreaChart>
       </ResponsiveContainer>
-    </div>
+    </ChartContainer>
   );
 };

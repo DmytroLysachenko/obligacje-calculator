@@ -28,6 +28,7 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { TrendingUp, Activity } from "lucide-react";
 import { ComparisonChartProps } from "./types";
+import { ChartContainer } from "@/shared/components/charts/ChartContainer";
 
 interface PayloadEntry {
   name: string;
@@ -160,7 +161,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
             </div>
           </CardHeader>
           <CardContent className="p-8">
-            <div className="w-full min-h-[450px] relative">
+            <ChartContainer height={450}>
               <ResponsiveContainer width="100%" height={450}>
                 <AreaChart
                   data={chartData}
@@ -236,7 +237,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
                   ))}
                 </AreaChart>
               </ResponsiveContainer>
-            </div>
+            </ChartContainer>
           </CardContent>
         </Card>
       </TabsContent>
@@ -259,7 +260,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
             </div>
           </CardHeader>
           <CardContent className="p-8">
-            <div className="w-full min-h-[450px] relative">
+            <ChartContainer height={450}>
               <ResponsiveContainer width="100%" height={450}>
                 <LineChart
                   data={chartData}
@@ -309,7 +310,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
                   ))}
                 </LineChart>
               </ResponsiveContainer>
-            </div>
+            </ChartContainer>
           </CardContent>
         </Card>
       </TabsContent>

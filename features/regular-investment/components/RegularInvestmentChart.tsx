@@ -20,6 +20,7 @@ import { RegularInvestmentResult } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
 import { format, parseISO } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
+import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 
 interface RegularInvestmentChartProps {
   results: RegularInvestmentResult;
@@ -80,7 +81,7 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ 
     }).format(value);
 
   return (
-    <div className="w-full min-h-[450px] relative" style={{ minWidth: 0 }}>
+    <ChartContainer height={450}>
       <ResponsiveContainer width="100%" height={450} key={`chart-${chartData.length}`}>
         <AreaChart
           data={chartData}
@@ -148,6 +149,6 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ 
           />
         </AreaChart>
       </ResponsiveContainer>
-    </div>
+    </ChartContainer>
   );
 };

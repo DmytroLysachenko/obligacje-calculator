@@ -40,6 +40,7 @@ import { Download, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { exportToCSV } from "@/shared/utils/csv-export";
 import { cn } from "@/lib/utils";
+import { ChartContainer } from "@/shared/components/charts/ChartContainer";
 
 export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results }) => {
   const { t, language } = useLanguage();
@@ -185,28 +186,30 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
             <CardTitle className="text-xs font-bold uppercase text-center text-muted-foreground">Composition</CardTitle>
           </CardHeader>
           <CardContent className="p-0 h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={chartData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />
-                  ))}
-                </Pie>
-                <RechartsTooltip 
-                  formatter={(value: ValueType | undefined) => formatCurrency(Number(value || 0))}
-                  contentStyle={{ borderRadius: '8px', border: 'none', fontSize: '12px' }}
-                />
-                <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: '10px', paddingBottom: '10px' }} />
-              </PieChart>
-            </ResponsiveContainer>
+            <ChartContainer height={256}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={chartData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />
+                    ))}
+                  </Pie>
+                  <RechartsTooltip 
+                    formatter={(value: ValueType | undefined) => formatCurrency(Number(value || 0))}
+                    contentStyle={{ borderRadius: '8px', border: 'none', fontSize: '12px' }}
+                  />
+                  <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: '10px', paddingBottom: '10px' }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </ChartContainer>
           </CardContent>
         </Card>
       </div>

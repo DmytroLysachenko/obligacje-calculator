@@ -19,6 +19,7 @@ import {
 import { CalculationResult } from "../../bond-core/types";
 import { useLanguage } from "@/i18n";
 import { cn } from "@/lib/utils";
+import { ChartContainer } from "@/shared/components/charts/ChartContainer";
 
 interface BondChartProps {
   results: CalculationResult;
@@ -144,10 +145,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
   ];
 
   return (
-    <div
-      className="w-full min-h-[400px] relative"
-      style={{ minWidth: 0 }}
-    >
+    <ChartContainer height={400}>
       <ResponsiveContainer
         width="100%"
         height={400}
@@ -246,6 +244,6 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
           />
         </AreaChart>
       </ResponsiveContainer>
-    </div>
+    </ChartContainer>
   );
 };

@@ -25,11 +25,20 @@ import {
   Legend, 
   ResponsiveContainer 
 } from "recharts";
+import { ValueType } from "recharts/types/component/DefaultTooltipContent";
 import { addYears } from "date-fns";
-import { Loader2, ArrowRightLeft, TrendingUp } from "lucide-react";
+import { Loader2, ArrowRightLeft, TrendingUp, Info } from "lucide-react";
 import { useLanguage } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { RecalculateButton } from "@/shared/components/RecalculateButton";
+import { ChartContainer } from "@/shared/components/charts/ChartContainer";
+import { BondComparisonCalculationEnvelope } from "@/features/bond-core/types/scenarios";
+
+type ComparisonResultItem = BondComparisonCalculationEnvelope["result"][number];
+type ChartDataPoint = {
+  date: string;
+  year: number;
+} & Partial<Record<BondType, number>>;
 
 export const BondComparisonContainer = () => {
   const { language, t } = useLanguage();
@@ -37,12 +46,14 @@ export const BondComparisonContainer = () => {
   const [expectedInflation, setExpectedInflation] = useState(3.5);
   const [duration, setDuration] = useState(10);
   const [selectedBonds, setSelectedBonds] = useState<BondType[]>([BondType.EDO, BondType.COI, BondType.ROR]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [results, setResults] = useState<Array<{ type: BondType; results: any }>>([]);
+  const [envelope, setEnvelope] = useState<BondComparisonCalculationEnvelope | null>(null);
   const [loading, setLoading] = useState(false);
   const [showRealValue, setShowRealValue] = useState(false);
   const [reinvest, setReinvest] = useState(true);
   const [isDirty, setIsDirty] = useState(false);
+
+  const results = envelope?.result || [];
+  const warnings = envelope?.warnings || [];
 
   const purchaseDate = new Date().toISOString().split('T')[0];
   const withdrawalDate = addYears(new Date(purchaseDate), duration).toISOString().split('T')[0];
@@ -65,7 +76,7 @@ export const BondComparisonContainer = () => {
         }),
       });
       const data = await response.json();
-      setResults(data);
+      setEnvelope(data);
     } catch (error) {
       console.error('Comparison failed:', error);
     } finally {
@@ -96,20 +107,19 @@ export const BondComparisonContainer = () => {
     if (results.length === 0) return [];
     
     // Map of date string -> chart data point
-    const dataMap = new Map<string, Record<string, unknown>>();
+    const dataMap = new Map<string, ChartDataPoint>();
     
-    results.forEach(res => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      res.results.timeline.forEach((point: any) => {
+    results.forEach((res: ComparisonResultItem) => {
+      res.result.timeline.forEach((point) => {
         const key = point.periodLabel;
         if (!dataMap.has(key)) {
            
           dataMap.set(key, { 
             date: key, 
             year: point.year 
-          });
+          } as ChartDataPoint);
         }
-        const entry = dataMap.get(key);
+        const entry = dataMap.get(key) as ChartDataPoint | undefined;
         if (entry) {
           entry[res.type] = showRealValue ? point.realValue : point.totalValue;
         }
@@ -117,8 +127,7 @@ export const BondComparisonContainer = () => {
     });
     
     // Convert to array and sort by year
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return Array.from(dataMap.values()).sort((a: any, b: any) => a.year - b.year);
+    return Array.from(dataMap.values()).sort((a, b) => a.year - b.year);
   };
   
   const chartData = prepareChartData();
@@ -257,7 +266,7 @@ export const BondComparisonContainer = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="p-8">
-                  <div className="h-[450px] w-full">
+                  <ChartContainer height={450}>
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={chartData}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
@@ -276,8 +285,7 @@ export const BondComparisonContainer = () => {
                         />
                         <Tooltip 
                           contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 20px 50px rgba(0,0,0,0.1)' }}
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          formatter={(val: any) => formatCurrency(Number(val))}
+                          formatter={(val: ValueType | undefined) => formatCurrency(Number(val ?? 0))}
                         />
                         <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px', fontSize: '12px', fontWeight: 'bold' }} />
                         {selectedBonds.map((type, idx) => (
@@ -295,14 +303,14 @@ export const BondComparisonContainer = () => {
                         ))}
                       </LineChart>
                     </ResponsiveContainer>
-                  </div>
+                  </ChartContainer>
                 </CardContent>
               </Card>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {results.map((res) => {
-                  const profit = res.results.totalProfit;
-                  const finalVal = res.results.netPayoutValue;
+                  const profit = res.result.totalProfit;
+                  const finalVal = res.result.netPayoutValue;
                   const roi = ((finalVal / initialInvestment - 1) * 100).toFixed(1);
                   
                   return (
@@ -337,6 +345,19 @@ export const BondComparisonContainer = () => {
           )}
         </div>
       </div>
+
+      {warnings.length > 0 && (
+        <div className="mt-8 p-4 bg-orange-50 border-2 border-orange-200 rounded-2xl shadow-sm">
+          <h4 className="text-sm font-black uppercase text-orange-800 mb-2 flex items-center gap-2">
+             <Info className="h-4 w-4" /> {t('common.warnings')}
+          </h4>
+          <ul className="list-disc list-inside space-y-1">
+            {warnings.map((w: string, i: number) => (
+              <li key={i} className="text-xs text-orange-700 font-bold">{w}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <RecalculateButton 
         isDirty={isDirty}

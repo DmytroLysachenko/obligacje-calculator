@@ -21,10 +21,10 @@ import {
   NameType,
 } from "recharts/types/component/DefaultTooltipContent";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Info, Loader2, Scale, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RecalculateButton } from "@/shared/components/RecalculateButton";
+import { ChartContainer } from "@/shared/components/charts/ChartContainer";
 
 interface PayloadEntry {
   name: string;
@@ -232,10 +232,7 @@ export const ComparisonContainer: React.FC = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-8">
-              <div
-                className="w-full min-h-[450px] relative"
-                style={{ minWidth: 0 }}
-              >
+              <ChartContainer height={450}>
                 {hasMounted && (
                   <ResponsiveContainer
                     width="100%"
@@ -339,7 +336,7 @@ export const ComparisonContainer: React.FC = () => {
                     </AreaChart>
                   </ResponsiveContainer>
                 )}
-              </div>
+              </ChartContainer>
             </CardContent>
           </Card>
 

@@ -24,7 +24,6 @@ export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> =
   totalInvested,
   showRealValue,
   formatCurrency,
-  language: _language,
 }) => {
   const { t, language } = useLanguage();
   return (

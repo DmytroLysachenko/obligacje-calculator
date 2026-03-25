@@ -16,6 +16,7 @@ import {
   ValueType,
   NameType,
 } from 'recharts/types/component/DefaultTooltipContent';
+import { ChartContainer } from './ChartContainer';
 
 interface ChartData {
   [key: string]: string | number;
@@ -47,7 +48,7 @@ export const BaseAreaChart: React.FC<BaseAreaChartProps> = ({
   customTooltip: CustomTooltipComponent,
 }) => {
   return (
-    <div className="w-full" style={{ height }}>
+    <ChartContainer height={height}>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
           <defs>
@@ -95,6 +96,6 @@ export const BaseAreaChart: React.FC<BaseAreaChartProps> = ({
           ))}
         </AreaChart>
       </ResponsiveContainer>
-    </div>
+    </ChartContainer>
   );
 };

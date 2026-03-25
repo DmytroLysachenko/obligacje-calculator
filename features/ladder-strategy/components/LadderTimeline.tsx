@@ -16,7 +16,8 @@ import {
   ResponsiveContainer, 
   Cell
 } from 'recharts';
-import { Coins, TrendingUp, Wallet } from 'lucide-react';
+import { Coins, TrendingUp } from 'lucide-react';
+import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 
 interface LadderTimelineProps {
   results: RegularInvestmentResult;
@@ -115,7 +116,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
-        <div className="h-[300px] w-full">
+        <ChartContainer height={300}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
@@ -164,7 +165,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
               </Bar>
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </ChartContainer>
         
         <div className="mt-6 p-4 bg-orange-50 rounded-xl border border-orange-100">
           <p className="text-xs text-orange-800 leading-relaxed italic">
