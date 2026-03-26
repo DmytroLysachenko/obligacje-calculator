@@ -22,13 +22,26 @@ const FALLBACK_NBP = [
   { date: '2025-01', rate: 5.75 },
 ];
 
+interface ChartSeriesEnvelope<T> {
+  data: T[];
+  source: 'database' | 'fallback';
+  usedFallback: boolean;
+  asOf?: string;
+}
+
 export async function GET() {
   try {
     const series = await db.query.dataSeries.findFirst({
       where: inArray(dataSeries.slug, ['nbp-ref-rate', 'nbp-reference-rate', 'nbp-rate']),
     });
 
-    if (!series) return NextResponse.json(FALLBACK_NBP);
+    if (!series) {
+      return NextResponse.json<ChartSeriesEnvelope<(typeof FALLBACK_NBP)[number]>>({
+        data: FALLBACK_NBP,
+        source: 'fallback',
+        usedFallback: true,
+      });
+    }
 
     const data = await db.query.dataPoints.findMany({
       where: eq(dataPoints.seriesId, series.id),
@@ -37,7 +50,11 @@ export async function GET() {
     });
     
     if (!data || data.length === 0) {
-      return NextResponse.json(FALLBACK_NBP);
+      return NextResponse.json<ChartSeriesEnvelope<(typeof FALLBACK_NBP)[number]>>({
+        data: FALLBACK_NBP,
+        source: 'fallback',
+        usedFallback: true,
+      });
     }
 
     const formatted = data.map((d) => ({
@@ -45,9 +62,18 @@ export async function GET() {
       rate: parseFloat(d.value),
     })).reverse();
 
-    return NextResponse.json(formatted);
+    return NextResponse.json<ChartSeriesEnvelope<(typeof formatted)[number]>>({
+      data: formatted,
+      source: 'database',
+      usedFallback: false,
+      asOf: data[0]?.date,
+    });
   } catch (error) {
     console.error('Failed to fetch NBP data:', error);
-    return NextResponse.json(FALLBACK_NBP);
+    return NextResponse.json<ChartSeriesEnvelope<(typeof FALLBACK_NBP)[number]>>({
+      data: FALLBACK_NBP,
+      source: 'fallback',
+      usedFallback: true,
+    });
   }
 }

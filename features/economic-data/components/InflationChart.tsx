@@ -25,6 +25,13 @@ interface InflationDataPoint {
   rate: number;
 }
 
+interface ChartSeriesEnvelope<T> {
+  data: T[];
+  source: 'database' | 'fallback';
+  usedFallback: boolean;
+  asOf?: string;
+}
+
 interface PayloadEntry {
   name: string;
   value: number;
@@ -63,7 +70,8 @@ const CustomTooltip = ({ active, payload, label, t }: CustomTooltipProps) => {
 
 export const InflationChart = ({ period = 'ALL' }: { period?: '1Y' | '5Y' | '10Y' | 'ALL' }) => {
   const { t } = useLanguage();
-  const { data: rawData, isLoading, isError } = useChartData<InflationDataPoint[]>('/api/charts/inflation');
+  const { data: response, isLoading, isError } = useChartData<ChartSeriesEnvelope<InflationDataPoint>>('/api/charts/inflation');
+  const rawData = response?.data;
 
   const chartData = React.useMemo(() => {
     if (!rawData) return [];
@@ -78,39 +86,46 @@ export const InflationChart = ({ period = 'ALL' }: { period?: '1Y' | '5Y' | '10Y
   }
 
   if (isError || !chartData) {
-    return <div className="h-[400px] w-full flex items-center justify-center text-destructive">Failed to load data</div>;
+    return <div className="h-[400px] w-full flex items-center justify-center text-destructive">{t('economic.failed_to_load')}</div>;
   }
 
   return (
-    <ChartContainer height={400}>
-      <ResponsiveContainer width="100%" height={400} key={`inflation-chart-${chartData.length}`}>
-        <LineChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
-          <XAxis 
-            dataKey="year" 
-            fontSize={12}
-            tickLine={false}
-            axisLine={false}
-          />
-          <YAxis 
-            fontSize={12}
-            tickFormatter={(v: number) => `${v}%`}
-            tickLine={false}
-            axisLine={false}
-          />
-          <Tooltip content={<CustomTooltip t={t} />} />
-          <ReferenceLine y={0} stroke="#000" strokeWidth={1} />
-          <ReferenceLine y={2.5} label={{ value: 'NBP Target', position: 'right', fontSize: 10, fill: '#ef4444' }} stroke="#ef4444" strokeDasharray="3 3" />
-          <Line 
-            type="monotone" 
-            dataKey="rate" 
-            stroke="#2563eb" 
-            strokeWidth={3}
-            dot={{ r: 4, fill: '#2563eb', strokeWidth: 2, stroke: '#fff' }}
-            activeDot={{ r: 6, strokeWidth: 0 }}
-          />
-        </LineChart>
-      </ResponsiveContainer>
-    </ChartContainer>
+    <div className="space-y-3">
+      <div className="rounded-xl border bg-muted/30 px-3 py-2 text-[11px] text-muted-foreground">
+        <span className="font-bold">{t('economic.data_source')}:</span> {response?.source ?? 'unknown'}
+        {response?.asOf ? ` | ${t('economic.as_of')}: ${response.asOf}` : ''}
+        {response?.usedFallback ? ` | ${t('economic.fallback_in_use')}` : ''}
+      </div>
+      <ChartContainer height={400}>
+        <ResponsiveContainer width="100%" height={400} key={`inflation-chart-${chartData.length}`}>
+          <LineChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+            <XAxis 
+              dataKey="year" 
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+            />
+            <YAxis 
+              fontSize={12}
+              tickFormatter={(v: number) => `${v}%`}
+              tickLine={false}
+              axisLine={false}
+            />
+            <Tooltip content={<CustomTooltip t={t} />} />
+            <ReferenceLine y={0} stroke="#000" strokeWidth={1} />
+            <ReferenceLine y={2.5} label={{ value: t('economic.nbp_target'), position: 'right', fontSize: 10, fill: '#ef4444' }} stroke="#ef4444" strokeDasharray="3 3" />
+            <Line 
+              type="monotone" 
+              dataKey="rate" 
+              stroke="#2563eb" 
+              strokeWidth={3}
+              dot={{ r: 4, fill: '#2563eb', strokeWidth: 2, stroke: '#fff' }}
+              activeDot={{ r: 6, strokeWidth: 0 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </ChartContainer>
+    </div>
   );
 };

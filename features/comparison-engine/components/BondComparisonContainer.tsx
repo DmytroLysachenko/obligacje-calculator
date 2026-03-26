@@ -349,6 +349,14 @@ export const BondComparisonContainer = () => {
         </div>
       </div>
 
+      {envelope?.dataFreshness && (
+        <div className="rounded-xl border bg-muted/30 px-4 py-3 text-xs text-muted-foreground">
+          <span className="font-bold">{t('comparison.freshness_status')}:</span>{' '}
+          {t(`comparison.status_${envelope.dataFreshness.status}`)}
+          {envelope.dataFreshness.usedFallback ? ` | ${t('comparison.fallback_used')}` : ''}
+        </div>
+      )}
+
       {warnings.length > 0 && (
         <div className="mt-8 p-4 bg-orange-50 border-2 border-orange-200 rounded-2xl shadow-sm">
           <h4 className="text-sm font-black uppercase text-orange-800 mb-2 flex items-center gap-2">

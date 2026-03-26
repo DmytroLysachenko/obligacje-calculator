@@ -20,6 +20,13 @@ interface NBPRateDataPoint {
   rate: number;
 }
 
+interface ChartSeriesEnvelope<T> {
+  data: T[];
+  source: 'database' | 'fallback';
+  usedFallback: boolean;
+  asOf?: string;
+}
+
 interface PayloadEntry {
   name: string;
   value: number;
@@ -59,7 +66,8 @@ const CustomTooltip = ({
 
 export const NBPRateChart = ({ period = 'ALL' }: { period?: '1Y' | '5Y' | '10Y' | 'ALL' }) => {
   const { t } = useLanguage();
-  const { data: rawData, isLoading, isError } = useChartData<NBPRateDataPoint[]>('/api/charts/nbp-rate');
+  const { data: response, isLoading, isError } = useChartData<ChartSeriesEnvelope<NBPRateDataPoint>>('/api/charts/nbp-rate');
+  const rawData = response?.data;
 
   const chartData = React.useMemo(() => {
     if (!rawData) return [];
@@ -77,44 +85,51 @@ export const NBPRateChart = ({ period = 'ALL' }: { period?: '1Y' | '5Y' | '10Y' 
   }
 
   if (isError || !chartData) {
-    return <div className="h-[400px] w-full flex items-center justify-center text-destructive">Failed to load data</div>;
+    return <div className="h-[400px] w-full flex items-center justify-center text-destructive">{t('economic.failed_to_load')}</div>;
   }
 
   return (
-    <ChartContainer height={400}>
-      <ResponsiveContainer width="100%" height={400} key={`nbp-chart-${chartData.length}`}>
-        <AreaChart data={chartData}>
-          <defs>
-            <linearGradient id="colorRate" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.2}/>
-              <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
-            </linearGradient>
-          </defs>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
-          <XAxis 
-            dataKey="date" 
-            fontSize={12}
-            tickLine={false}
-            axisLine={false}
-          />
-          <YAxis 
-            fontSize={12}
-            tickFormatter={(v: number) => `${v}%`}
-            tickLine={false}
-            axisLine={false}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <ReferenceLine y={0} stroke="#000" strokeWidth={1} />
-          <Area 
-            type="stepAfter" 
-            dataKey="rate" 
-            stroke="#f59e0b" 
-            strokeWidth={3}
-            fill="url(#colorRate)"
-            activeDot={{ r: 6, strokeWidth: 0, fill: '#f59e0b' }}
-          />
-        </AreaChart>
-      </ResponsiveContainer>
-    </ChartContainer>
+    <div className="space-y-3">
+      <div className="rounded-xl border bg-muted/30 px-3 py-2 text-[11px] text-muted-foreground">
+        <span className="font-bold">{t('economic.data_source')}:</span> {response?.source ?? 'unknown'}
+        {response?.asOf ? ` | ${t('economic.as_of')}: ${response.asOf}` : ''}
+        {response?.usedFallback ? ` | ${t('economic.fallback_in_use')}` : ''}
+      </div>
+      <ChartContainer height={400}>
+        <ResponsiveContainer width="100%" height={400} key={`nbp-chart-${chartData.length}`}>
+          <AreaChart data={chartData}>
+            <defs>
+              <linearGradient id="colorRate" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.2}/>
+                <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+            <XAxis 
+              dataKey="date" 
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+            />
+            <YAxis 
+              fontSize={12}
+              tickFormatter={(v: number) => `${v}%`}
+              tickLine={false}
+              axisLine={false}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <ReferenceLine y={0} stroke="#000" strokeWidth={1} />
+            <Area 
+              type="stepAfter" 
+              dataKey="rate" 
+              stroke="#f59e0b" 
+              strokeWidth={3}
+              fill="url(#colorRate)"
+              activeDot={{ r: 6, strokeWidth: 0, fill: '#f59e0b' }}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </ChartContainer>
+    </div>
   );
 };

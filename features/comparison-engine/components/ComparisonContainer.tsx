@@ -196,6 +196,16 @@ export const ComparisonContainer: React.FC = () => {
         </Badge>
       </div>
 
+      {(envelopeA?.dataFreshness || envelopeB?.dataFreshness) && (
+        <div className="rounded-xl border bg-muted/30 px-4 py-3 text-xs text-muted-foreground">
+          <span className="font-bold">{t('comparison.freshness_status')}:</span>{' '}
+          {t(`comparison.status_${envelopeA?.dataFreshness.status ?? 'unknown'}`)} / {t(`comparison.status_${envelopeB?.dataFreshness.status ?? 'unknown'}`)}
+          {envelopeA?.dataFreshness.usedFallback || envelopeB?.dataFreshness.usedFallback
+            ? ` | ${t('comparison.fallback_used')}`
+            : ''}
+        </div>
+      )}
+
       {compareMode === 'normalized' ? (
         <BondComparisonContainer />
       ) : (

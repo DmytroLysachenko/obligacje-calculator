@@ -66,7 +66,7 @@ export default function EconomicDataPage() {
                 <CardDescription>{t('economic.inflation_desc')}</CardDescription>
               </CardHeader>
               <CardContent>
-                {hasMounted ? <InflationChart period={period} /> : <div className="h-[400px] w-full flex items-center justify-center text-muted-foreground animate-pulse">Loading chart...</div>}
+                {hasMounted ? <InflationChart period={period} /> : <div className="h-[400px] w-full flex items-center justify-center text-muted-foreground animate-pulse">{t('economic.loading_chart')}</div>}
               </CardContent>
             </Card>
 
@@ -74,12 +74,12 @@ export default function EconomicDataPage() {
               <CardHeader>
                 <div className="flex items-center gap-2 mb-2">
                   <Activity className="h-5 w-5 text-primary" />
-                  <CardTitle>NBP Reference Rate</CardTitle>
+                  <CardTitle>{t('economic.nbp_rate_title')}</CardTitle>
                 </div>
-                <CardDescription>Historical reference rate set by the National Bank of Poland</CardDescription>
+                <CardDescription>{t('economic.nbp_rate_desc')}</CardDescription>
               </CardHeader>
               <CardContent>
-                {hasMounted ? <NBPRateChart period={period} /> : <div className="h-[400px] w-full flex items-center justify-center text-muted-foreground animate-pulse">Loading chart...</div>}
+                {hasMounted ? <NBPRateChart period={period} /> : <div className="h-[400px] w-full flex items-center justify-center text-muted-foreground animate-pulse">{t('economic.loading_chart')}</div>}
               </CardContent>
             </Card>
           </div>
