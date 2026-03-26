@@ -20,6 +20,8 @@ export interface CalculationEnvelope<T> {
   result: T;
   warnings: string[];
   assumptions: string[];
+  calculationNotes: string[];
+  dataQualityFlags: string[];
   dataFreshness: CalculationDataFreshness;
   calculationVersion: string;
 }
@@ -43,6 +45,7 @@ export interface BondComparisonScenarioItem {
 export interface BondComparisonScenarioRequest {
   kind: ScenarioKind.BOND_COMPARISON;
   payload: {
+    mode?: 'normalized' | 'independent';
     bondTypes: BondType[];
     initialInvestment: number;
     purchaseDate: string;

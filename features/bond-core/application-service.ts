@@ -107,7 +107,11 @@ export class CalculationApplicationService {
 
     const warnings = this.buildHistoricalDataWarnings(enrichedScenarios[0]?.historicalData);
     const assumptions = this.generateAssumptions(request.payload);
-    assumptions.push('Comparison scenarios are normalized through the shared single-bond calculation path.');
+    assumptions.push(
+      request.payload.mode === 'independent'
+        ? 'Comparison scenarios are evaluated as independent single-bond simulations.'
+        : 'Comparison scenarios are normalized through the shared single-bond calculation path.',
+    );
 
     return this.createEnvelope(results, warnings, assumptions);
   }
@@ -132,10 +136,19 @@ export class CalculationApplicationService {
 
   private createEnvelope<T>(result: T, warnings: string[] = [], assumptions: string[] = []): CalculationEnvelope<T> {
     const hasProjectedData = warnings.some((warning) => warning.includes('projected') || warning.includes('unavailable') || warning.includes('missing'));
+    const dataQualityFlags = hasProjectedData ? ['projected_macro_inputs'] : [];
+    const calculationNotes = [
+      'Results are produced by the shared calculation engine.',
+      hasProjectedData
+        ? 'Some macro inputs were projected or filled from fallback data.'
+        : 'Macro inputs were resolved from historical data where available.',
+    ];
     return {
       result,
       warnings,
       assumptions,
+      calculationNotes,
+      dataQualityFlags,
       dataFreshness: {
         status: hasProjectedData ? 'projected' : 'fresh',
         usedFallback: hasProjectedData,

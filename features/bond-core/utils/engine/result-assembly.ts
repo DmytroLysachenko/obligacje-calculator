@@ -20,7 +20,14 @@ export function createInitialTimelinePoint({
   return {
     year: 0,
     periodLabel: format(startDate, 'MMM yyyy'),
+    cycleIndex: 0,
+    cycleStartDate: startDate.toISOString(),
+    cycleEndDate: startDate.toISOString(),
     interestRate: firstYearRate,
+    rateSource: 'initial_principal',
+    rateReferenceValue: undefined,
+    rateMarginApplied: 0,
+    usedProjectedRate: false,
     nominalValueBeforeInterest: initialInvestment,
     interestEarned: 0,
     taxDeducted: 0,
@@ -49,6 +56,8 @@ interface FinalSingleBondResultParams {
   totalFee: Decimal;
   isEarlyWithdrawal: boolean;
   cycleMaturityDate: Date;
+  calculationNotes?: string[];
+  dataQualityFlags?: string[];
 }
 
 export function createFinalSingleBondResult({
@@ -60,6 +69,8 @@ export function createFinalSingleBondResult({
   totalFee,
   isEarlyWithdrawal,
   cycleMaturityDate,
+  calculationNotes = [],
+  dataQualityFlags = [],
 }: FinalSingleBondResultParams): CalculationResult {
   const lastPoint = timeline[timeline.length - 1];
 
@@ -75,6 +86,8 @@ export function createFinalSingleBondResult({
     netPayoutValue: cycleNetProceeds.toNumber(),
     isEarlyWithdrawal,
     maturityDate: cycleMaturityDate.toISOString(),
+    calculationNotes,
+    dataQualityFlags,
   };
 }
 

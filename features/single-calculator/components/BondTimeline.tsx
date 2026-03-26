@@ -44,7 +44,9 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
         <TableHeader>
           <TableRow className="bg-muted/50">
             <TableHead className="w-[120px]">{t('common.period')}</TableHead>
+            <TableHead>Cycle</TableHead>
             <TableHead>{t('common.interest_rate')}</TableHead>
+            <TableHead>Rate Source</TableHead>
             <TableHead>{t('common.nominal_value')}</TableHead>
             <TableHead>{t('common.net_profit')}</TableHead>
             <TableHead>{t('common.real_value')}</TableHead>
@@ -64,7 +66,18 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
                   )}
                 </div>
               </TableCell>
+              <TableCell>{point.cycleIndex}</TableCell>
               <TableCell>{formatPercent(point.interestRate)}</TableCell>
+              <TableCell>
+                <div className="flex flex-col">
+                  <span>{point.rateSource}</span>
+                  {typeof point.rateReferenceValue === 'number' && (
+                    <span className="text-[10px] text-muted-foreground">
+                      ref {formatPercent(point.rateReferenceValue)}
+                    </span>
+                  )}
+                </div>
+              </TableCell>
               <TableCell>{formatCurrency(point.nominalValueAfterInterest)}</TableCell>
               <TableCell className={point.netProfit >= 0 ? "text-green-600" : "text-destructive"}>
                 {formatCurrency(point.netProfit)}

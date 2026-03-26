@@ -30,6 +30,8 @@ export const BondCalculatorContainer: React.FC = () => {
     results,
     warnings,
     assumptions,
+    calculationNotes,
+    dataQualityFlags,
     isCalculating,
     isError,
     calculate,
@@ -174,7 +176,7 @@ export const BondCalculatorContainer: React.FC = () => {
             >
               <BondResultsSummary results={results} />
 
-              {(warnings.length > 0 || assumptions.length > 0) && (
+              {(warnings.length > 0 || assumptions.length > 0 || calculationNotes.length > 0 || dataQualityFlags.length > 0) && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {warnings.length > 0 && (
                     <div className="p-4 bg-orange-50 border-2 border-orange-200 rounded-2xl shadow-sm">
@@ -196,6 +198,30 @@ export const BondCalculatorContainer: React.FC = () => {
                       <ul className="list-disc list-inside space-y-1">
                         {assumptions.map((a: string, i: number) => (
                           <li key={i} className="text-[10px] text-blue-700 font-bold">{a}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {calculationNotes.length > 0 && (
+                    <div className="p-4 bg-emerald-50 border-2 border-emerald-200 rounded-2xl shadow-sm">
+                      <h4 className="text-xs font-black uppercase text-emerald-800 mb-2 flex items-center gap-2">
+                        <Info className="h-4 w-4" /> Calculation Notes
+                      </h4>
+                      <ul className="list-disc list-inside space-y-1">
+                        {calculationNotes.map((note: string, i: number) => (
+                          <li key={i} className="text-[10px] text-emerald-700 font-bold">{note}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {dataQualityFlags.length > 0 && (
+                    <div className="p-4 bg-amber-50 border-2 border-amber-200 rounded-2xl shadow-sm">
+                      <h4 className="text-xs font-black uppercase text-amber-800 mb-2 flex items-center gap-2">
+                        <Info className="h-4 w-4" /> Data Quality
+                      </h4>
+                      <ul className="list-disc list-inside space-y-1">
+                        {dataQualityFlags.map((flag: string, i: number) => (
+                          <li key={i} className="text-[10px] text-amber-700 font-bold">{flag}</li>
                         ))}
                       </ul>
                     </div>

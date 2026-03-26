@@ -64,6 +64,7 @@ export const RegularInvestmentInputsSchema = withDateOrderValidation(BaseInstrum
 }));
 
 export const BondComparisonScenarioPayloadSchema = withDateOrderValidation(z.object({
+  mode: z.enum(['normalized', 'independent']).optional(),
   bondTypes: z.array(z.nativeEnum(BondType)).min(1),
   initialInvestment: z.number().min(100),
   purchaseDate: DateStringSchema,

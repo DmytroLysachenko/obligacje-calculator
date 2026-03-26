@@ -129,6 +129,8 @@ export function useBondCalculator() {
     envelope,
     warnings: envelope?.warnings || [],
     assumptions: envelope?.assumptions || [],
+    calculationNotes: envelope?.calculationNotes || [],
+    dataQualityFlags: envelope?.dataQualityFlags || [],
     dataFreshness: envelope?.dataFreshness,
     isCalculating,
     isError,

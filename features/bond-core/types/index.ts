@@ -22,6 +22,14 @@ export enum TaxStrategy {
 }
 
 export type HistoricalDataMap = Record<string, { inflation?: number; nbpRate?: number }>;
+export type RateSource =
+  | 'initial_principal'
+  | 'fixed_rate'
+  | 'first_year_fixed'
+  | 'historical_cpi_lag'
+  | 'projected_cpi'
+  | 'historical_nbp'
+  | 'projected_nbp';
 
 export interface BondInputs {
   bondType: BondType;
@@ -51,7 +59,14 @@ export interface BondInputs {
 export interface YearlyTimelinePoint {
   year: number;
   periodLabel: string; // e.g., "Year 1", "Maturity"
+  cycleIndex: number;
+  cycleStartDate: string;
+  cycleEndDate: string;
   interestRate: number;
+  rateSource: RateSource;
+  rateReferenceValue?: number;
+  rateMarginApplied?: number;
+  usedProjectedRate: boolean;
   nominalValueBeforeInterest: number;
   interestEarned: number;
   taxDeducted: number;
@@ -82,6 +97,8 @@ export interface CalculationResult {
   netPayoutValue: number;
   isEarlyWithdrawal: boolean;
   maturityDate: string;
+  calculationNotes?: string[];
+  dataQualityFlags?: string[];
 }
 
 export enum InvestmentFrequency {
