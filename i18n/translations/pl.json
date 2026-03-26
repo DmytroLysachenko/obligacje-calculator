@@ -23,7 +23,10 @@
     "notes": "Notatki obliczeń",
     "data_quality": "Jakość danych",
     "share": "Udostępnij",
-    "copied": "Skopiowano!"
+    "copied": "Skopiowano!",
+    "start": "Start",
+    "how_it_works": "Jak to działa",
+    "context_rates": "Stopy referencyjne"
   },
   "nav": {
     "education": "Edukacja / Podstawy",
@@ -191,9 +194,28 @@
     "target": "Cel",
     "click_calculate": "Kliknij 'Oblicz wyniki', aby zobaczyć projekcję",
     "simulating_growth": "Symulacja wzrostu inwestycji...",
+    "click_simulate_regular": "Kliknij 'Symuluj inwestycję', aby zobaczyć projekcję",
+    "simulating_regular": "Symulacja regularnych wpłat...",
+    "growth_projection": "Projekcja wzrostu",
+    "regular_how_it_works": "Regularne inwestowanie śledzi każdy miesięczny zakup jako osobną partię. Ta symulacja liczy odsetki, podatki i opłaty dla każdej partii osobno zgodnie z jej własnym harmonogramem zapadalności.",
     "cycle": "Cykl",
     "rate_source": "Źródło stopy",
-    "early_exit_payout": "Wypłata przy wcześniejszym wyjściu"
+    "early_exit_payout": "Wypłata przy wcześniejszym wyjściu",
+    "wait_capitalization": "Poczekaj! Okazja do kapitalizacji",
+    "wait_capitalization_desc": "Wycofujesz środki tuż przed dużą wypłatą odsetek lub kapitalizacją. Odczekanie kilku dni może zwiększyć Twój zysk netto nawet o {{amount}}.",
+    "payout_calculation": "Wyliczenie wypłaty",
+    "actual_cash_in_hand": "To rzeczywista kwota gotówki, którą otrzymujesz.",
+    "composition": "Struktura wyniku",
+    "tax_fee_breakdown": "Podatek: {{tax}} | Opłata: {{fee}}",
+    "how_interest_works": "Jak liczymy odsetki:",
+    "interest_indexed_desc": "Indeksowane inflacją: stopa = inflacja + marża. Stosowane do wartości nominalnej.",
+    "capitalization_desc": "Kapitalizacja: naliczone odsetki są dodawane do kapitału na kolejny okres.",
+    "belka_desc": "Podatek Belki: 19% jest potrącane od naliczonych odsetek w każdym okresie albo przy wypłacie dla obligacji kapitalizowanych.",
+    "interest_formula": "Odsetki = Nominał × Stopa × (Dni w okresie / Dni w roku)",
+    "ref_inflation": "Ref. inflacja",
+    "nbp_rate_short": "Stopa NBP",
+    "projected": "Prognozowane",
+    "historical": "Historyczne"
     },
     "notebook": {
       "title": "Mój Portfel / Notatnik",
@@ -233,7 +255,14 @@
     "why_it_matters": "Dlaczego to ma znaczenie?",
     "inflation_impact_desc": "Inflacja obniża siłę nabywczą Twoich pieniędzy. Jeśli zwrot z inwestycji jest niższy niż inflacja, tracisz pieniądze w ujęciu realnym.",
     "data_source": "Źródło danych",
-    "source_desc": "Dane historyczne dostarczane przez Główny Urząd Statystyczny (GUS) oraz Narodowy Bank Polski (NBP)."
+    "source_desc": "Dane historyczne dostarczane przez Główny Urząd Statystyczny (GUS) oraz Narodowy Bank Polski (NBP).",
+    "nbp_rate_title": "Stopa referencyjna NBP",
+    "nbp_rate_desc": "Historyczna stopa referencyjna ustalana przez Narodowy Bank Polski.",
+    "failed_to_load": "Nie udało się załadować danych",
+    "as_of": "Stan na",
+    "fallback_in_use": "użyto danych zapasowych",
+    "nbp_target": "Cel NBP",
+    "loading_chart": "Ładowanie wykresu..."
     },
     "comparison": {
       "title_bond_vs_bond": "Bond vs Bond",
@@ -292,6 +321,12 @@
       "scenario_b_summary": "Podsumowanie scenariusza B",
       "history_source": "Źródło historii",
       "fallback_history": "użyto danych zapasowych",
-      "history_loading": "ładowanie zaktualizowanej historii"
+      "history_loading": "ładowanie zaktualizowanej historii",
+      "freshness_status": "Status danych",
+      "status_fresh": "świeże",
+      "status_projected": "prognozowane",
+      "status_stale": "nieaktualne",
+      "status_unknown": "nieznany",
+      "fallback_used": "użyto fallbacku"
     }
   }

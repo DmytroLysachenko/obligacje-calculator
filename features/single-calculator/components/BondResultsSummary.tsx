@@ -88,8 +88,8 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
           <CardContent className="p-4 flex items-center gap-3">
             <AlertTriangle className="h-5 w-5 text-orange-600 shrink-0" />
             <div className="text-xs text-orange-800">
-              <p className="font-bold">Wait! Capitalization Opportunity</p>
-              <p>You are withdrawing just before a major interest payout or capitalization. Waiting a few more days could significantly increase your net profit by up to <span className="font-bold">{formatCurrency(nextMilestoneProfit)}</span>.</p>
+              <p className="font-bold">{t('bonds.wait_capitalization')}</p>
+              <p>{t('bonds.wait_capitalization_desc', { amount: formatCurrency(nextMilestoneProfit) })}</p>
             </div>
           </CardContent>
         </Card>
@@ -127,9 +127,9 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
                       <HelpCircle className="h-3 w-3 text-green-600 cursor-help" />
                     </PopoverTrigger>
                     <PopoverContent className="text-xs p-3 space-y-2">
-                      <p className="font-bold">Payout Calculation:</p>
+                      <p className="font-bold">{t('bonds.payout_calculation')}:</p>
                       <code className="block bg-muted p-1 rounded">Gross Value - Tax - Early Fee</code>
-                      <p className="text-muted-foreground italic">The actual cash you get in hand.</p>
+                      <p className="text-muted-foreground italic">{t('bonds.actual_cash_in_hand')}</p>
                     </PopoverContent>
                   </Popover>
                 </CardHeader>
@@ -173,7 +173,10 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
                     {formatCurrency(results.totalTax + results.totalEarlyWithdrawalFee)}
                   </div>
                   <p className="text-[10px] text-muted-foreground">
-                    Tax: {formatCurrency(results.totalTax)} | Fee: {formatCurrency(results.totalEarlyWithdrawalFee)}
+                    {t('bonds.tax_fee_breakdown', {
+                      tax: formatCurrency(results.totalTax),
+                      fee: formatCurrency(results.totalEarlyWithdrawalFee),
+                    })}
                   </p>
                 </CardContent>
               </Card>
@@ -183,7 +186,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
 
         <Card className="lg:w-80 border-primary/10 shadow-sm overflow-hidden">
           <CardHeader className="pb-0 pt-4">
-            <CardTitle className="text-xs font-bold uppercase text-center text-muted-foreground">Composition</CardTitle>
+            <CardTitle className="text-xs font-bold uppercase text-center text-muted-foreground">{t('bonds.composition')}</CardTitle>
           </CardHeader>
           <CardContent className="p-0 h-64">
             <ChartContainer height={256}>
@@ -224,11 +227,11 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
                   <Info className="h-4 w-4 text-muted-foreground hover:text-primary cursor-help" />
                 </PopoverTrigger>
                 <PopoverContent className="w-80 text-sm space-y-3">
-                  <p className="font-semibold">How we calculate interest:</p>
+                  <p className="font-semibold">{t('bonds.how_interest_works')}</p>
                   <div className="space-y-2 text-xs">
-                    <p><span className="font-medium">Inflation-Indexed:</span> Rate = Inflation + Margin. Applied to Nominal Value.</p>
-                    <p><span className="font-medium">Capitalization:</span> Earned interest is added to the principal for the next period.</p>
-                    <p><span className="font-medium">Belka Tax:</span> 19% is deducted from interest earned in each period (or at withdrawal for capitalized bonds).</p>
+                    <p>{t('bonds.interest_indexed_desc')}</p>
+                    <p>{t('bonds.capitalization_desc')}</p>
+                    <p>{t('bonds.belka_desc')}</p>
                   </div>
                 </PopoverContent>
               </Popover>
@@ -237,7 +240,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
           </div>
           <Button variant="outline" size="sm" onClick={handleExport} className="gap-2 text-xs">
             <Download className="h-3 w-3" />
-            Export CSV
+            {t('comparison.export')}
           </Button>
         </CardHeader>
         <CardContent className="p-0">
@@ -253,7 +256,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
                       {t('bonds.interest_earned')}
                       <Popover>
                         <PopoverTrigger><HelpCircle className="h-3 w-3" /></PopoverTrigger>
-                        <PopoverContent className="text-xs">Interest = Nominal × Rate × (Days in Period / Days in Year)</PopoverContent>
+                        <PopoverContent className="text-xs">{t('bonds.interest_formula')}</PopoverContent>
                       </Popover>
                     </div>
                   </TableHead>

@@ -40,6 +40,7 @@ interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
   payload?: PayloadEntry[];
   label?: NameType;
   formatCurrency: (value: number) => string;
+  t: (key: string) => string;
 }
 
 const CustomTooltip = ({
@@ -47,6 +48,7 @@ const CustomTooltip = ({
   payload,
   label,
   formatCurrency,
+  t,
 }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
@@ -65,7 +67,7 @@ const CustomTooltip = ({
               "text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-tighter",
               isProjected ? "bg-orange-100 text-orange-700" : "bg-blue-100 text-blue-700"
             )}>
-              {isProjected ? "Projected" : "Historical"}
+              {isProjected ? t("bonds.projected") : t("bonds.historical")}
             </span>
           )}
         </div>
@@ -93,16 +95,16 @@ const CustomTooltip = ({
 
           {(inflation !== undefined || nbp !== undefined) && (
             <div className="pt-2 mt-2 border-t border-dashed border-border/50 space-y-1.5">
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Context Rates</p>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">{t("common.context_rates")}</p>
               {inflation !== undefined && (
                 <div className="flex justify-between items-center text-[10px]">
-                  <span className="text-muted-foreground font-medium">Ref. Inflation:</span>
+                  <span className="text-muted-foreground font-medium">{t("bonds.ref_inflation")}:</span>
                   <span className="font-black text-orange-600">{inflation.toFixed(2)}%</span>
                 </div>
               )}
               {nbp !== undefined && (
                 <div className="flex justify-between items-center text-[10px]">
-                  <span className="text-muted-foreground font-medium">NBP Rate:</span>
+                  <span className="text-muted-foreground font-medium">{t("bonds.nbp_rate_short")}:</span>
                   <span className="font-black text-blue-600">{nbp.toFixed(2)}%</span>
                 </div>
               )}
@@ -127,8 +129,8 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
 
   const chartData = [
     {
-      label: "Start",
-      date: results.timeline[0]?.periodLabel || "Start",
+      label: t("common.start"),
+      date: results.timeline[0]?.periodLabel || t("common.start"),
       nominal: results.initialInvestment,
       real: results.initialInvestment,
       isProjected: false,
@@ -213,7 +215,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
             tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
           />
           <Tooltip
-            content={<CustomTooltip formatCurrency={formatCurrency} />}
+            content={<CustomTooltip formatCurrency={formatCurrency} t={t} />}
           />
           <Legend
             verticalAlign="top"

@@ -23,7 +23,10 @@
     "notes": "Calculation Notes",
     "data_quality": "Data Quality",
     "share": "Share",
-    "copied": "Copied!"
+    "copied": "Copied!",
+    "start": "Start",
+    "how_it_works": "How it works",
+    "context_rates": "Context Rates"
   },
   "nav": {
     "education": "Education / Basics",
@@ -191,9 +194,28 @@
     "target": "Target",
     "click_calculate": "Click 'Calculate Results' to see the projection",
     "simulating_growth": "Simulating investment growth...",
+    "click_simulate_regular": "Click 'Simulate Investment' to see the projection",
+    "simulating_regular": "Simulating regular contributions...",
+    "growth_projection": "Growth Projection",
+    "regular_how_it_works": "Regular investments track each monthly purchase as a separate lot. This simulation calculates the interest, taxes, and fees for each lot individually based on its own maturity timeline.",
     "cycle": "Cycle",
     "rate_source": "Rate Source",
-    "early_exit_payout": "Early Exit Payout"
+    "early_exit_payout": "Early Exit Payout",
+    "wait_capitalization": "Wait! Capitalization Opportunity",
+    "wait_capitalization_desc": "You are withdrawing just before a major interest payout or capitalization. Waiting a few more days could significantly increase your net profit by up to {{amount}}.",
+    "payout_calculation": "Payout Calculation",
+    "actual_cash_in_hand": "The actual cash you get in hand.",
+    "composition": "Composition",
+    "tax_fee_breakdown": "Tax: {{tax}} | Fee: {{fee}}",
+    "how_interest_works": "How we calculate interest:",
+    "interest_indexed_desc": "Inflation-indexed: Rate = Inflation + Margin. Applied to nominal value.",
+    "capitalization_desc": "Capitalization: Earned interest is added to the principal for the next period.",
+    "belka_desc": "Belka tax: 19% is deducted from interest earned in each period or at withdrawal for capitalized bonds.",
+    "interest_formula": "Interest = Nominal × Rate × (Days in Period / Days in Year)",
+    "ref_inflation": "Ref. Inflation",
+    "nbp_rate_short": "NBP Rate",
+    "projected": "Projected",
+    "historical": "Historical"
     },
     "notebook": {
       "title": "My Portfolio / Notebook",
@@ -233,7 +255,14 @@
     "why_it_matters": "Why it matters?",
     "inflation_impact_desc": "Inflation erodes the purchasing power of your money. If your investment return is lower than inflation, you are losing money in real terms.",
     "data_source": "Data Source",
-    "source_desc": "Historical data provided by Statistics Poland (GUS) and the National Bank of Poland (NBP)."
+    "source_desc": "Historical data provided by Statistics Poland (GUS) and the National Bank of Poland (NBP).",
+    "nbp_rate_title": "NBP Reference Rate",
+    "nbp_rate_desc": "Historical reference rate set by the National Bank of Poland.",
+    "failed_to_load": "Failed to load data",
+    "as_of": "As of",
+    "fallback_in_use": "fallback data in use",
+    "nbp_target": "NBP Target",
+    "loading_chart": "Loading chart..."
     },
     "comparison": {
       "title_bond_vs_bond": "Bond vs Bond",
@@ -293,5 +322,12 @@
       "history_source": "History source",
       "fallback_history": "fallback data in use",
       "history_loading": "loading updated history"
+      ,
+      "freshness_status": "Data status",
+      "status_fresh": "fresh",
+      "status_projected": "projected",
+      "status_stale": "stale",
+      "status_unknown": "unknown",
+      "fallback_used": "fallback used"
     }
   }

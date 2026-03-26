@@ -50,11 +50,11 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
               <div className="flex items-center gap-2">
                 {isGoalReached ? <Trophy className="h-5 w-5 text-yellow-500" /> : <Target className="h-5 w-5 text-primary" />}
                 <span className="font-bold">
-                  {isGoalReached ? 'Goal Reached!' : `Goal Progress: ${goalProgress.toFixed(1)}%`}
+                  {isGoalReached ? t('bonds.goal_reached') : t('bonds.goal_progress', { percent: goalProgress.toFixed(1) })}
                 </span>
               </div>
               <span className="text-sm font-medium text-muted-foreground">
-                Target: {new Intl.NumberFormat().format(inputs.savingsGoal)} PLN
+                {t('bonds.target')}: {new Intl.NumberFormat().format(inputs.savingsGoal)} PLN
               </span>
             </div>
             <Progress value={goalProgress} className="h-2" />
@@ -67,19 +67,19 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
           {isCalculating && (
             <span className="text-xs text-muted-foreground flex items-center gap-2 animate-in fade-in duration-500">
               <Loader2 className="h-3 w-3 animate-spin" />
-              Updating simulation...
+              {t('common.calculating')}
             </span>
           )}
           {!isCalculating && isDirty && results && (
             <span className="text-xs text-orange-500 flex items-center gap-1 animate-in fade-in duration-500 font-medium">
               <Info className="h-3 w-3" />
-              Inputs changed. Recalculate to update.
+              {t('comparison.needs_recalculation')}
             </span>
           )}
           {!isCalculating && !isDirty && results && (
             <span className="text-xs text-green-600 flex items-center gap-1 animate-in fade-in duration-500 font-medium">
               <Check className="h-3 w-3" />
-              Simulation up to date
+              {t('comparison.up_to_date')}
             </span>
           )}
         </div>
@@ -90,7 +90,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
           onClick={handleShare}
         >
           {copied ? <Check className="h-3 w-3 text-green-600" /> : <Share2 className="h-3 w-3" />}
-          {copied ? 'Copied!' : 'Share Scenario'}
+          {copied ? t('common.copied') : t('comparison.share_scenario')}
         </Button>
       </div>
 
@@ -107,14 +107,14 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
           {!results && !isCalculating && (
             <div className="h-[400px] flex flex-col items-center justify-center border-2 border-dashed rounded-3xl opacity-50 space-y-4">
               <Target className="h-12 w-12 text-muted-foreground" />
-              <p className="font-medium text-muted-foreground">Click &apos;Simulate Investment&apos; to see the projection</p>
+              <p className="font-medium text-muted-foreground">{t('bonds.click_simulate_regular')}</p>
             </div>
           )}
 
           {isCalculating && !results && (
             <div className="h-[400px] flex flex-col items-center justify-center space-y-4">
               <Loader2 className="h-12 w-12 text-primary animate-spin" />
-              <p className="font-medium text-primary">Simulating regular contributions...</p>
+              <p className="font-medium text-primary">{t('bonds.simulating_regular')}</p>
             </div>
           )}
 
@@ -154,7 +154,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
               <div className="bg-card border rounded-2xl p-6 shadow-sm overflow-hidden min-h-[500px]">
                 <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
                   <span className="w-1.5 h-6 bg-primary rounded-full" />
-                  Growth Projection
+                  {t('bonds.growth_projection')}
                 </h3>
                 {hasMounted && <RegularInvestmentChart results={results} />}
               </div>
@@ -168,8 +168,8 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
                     <Info className="h-5 w-5 text-blue-600 shrink-0" />
                   </div>
                   <div className="text-sm text-blue-800 leading-relaxed">
-                    <p className="font-bold mb-1">How it works</p>
-                    <p>Regular investments track each monthly purchase as a separate &quot;lot&quot;. This simulation calculates the interest, taxes, and fees for each lot individually based on its own maturity timeline.</p>
+                    <p className="font-bold mb-1">{t('common.how_it_works')}</p>
+                    <p>{t('bonds.regular_how_it_works')}</p>
                   </div>
                 </div>
               </div>
