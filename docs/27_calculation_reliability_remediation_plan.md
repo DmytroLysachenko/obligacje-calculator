@@ -15,17 +15,18 @@ Implemented so far:
 
 - separation of bond cycle versus investment horizon for long-horizon rollover simulations
 - rate-resolution audit metadata on timeline points
-- explicit normalized versus independent compare modes in the UI
+- explicit normalized versus independent compare modes routed through the shared comparison service
 - DB-backed multi-asset history with explicit fallback/source metadata
 - first-year rate handling fixed for monthly-payout variable-rate bonds
 - fee/tax settlement corrected so payout bonds do not get re-taxed at exit and maturity points do not show early-redemption fees
-- initial golden fixtures for rollover and early-exit scenarios
+- golden fixtures for rollover, early exit, IKZE, deflation, and rebuy-discount scenarios
+- economic-data screens expose source, fallback, and as-of status
 
 Still to expand:
 
-- more fixture coverage for IKZE, deflation, and missing macro-history cases
+- more fixture coverage for missing macro-history and stale-data cases
 - stronger explanation UI for per-period tax and rebuy-discount decisions
-- fuller freshness and stale-data messaging on all macro-data screens
+- fuller freshness and stale-data messaging on compare screens
 
 ## 1. Core Problems
 

@@ -15,18 +15,19 @@ Implemented so far:
 - chart container hardening and build-clean chart rendering
 - notebook ownership split into authenticated and guest-safe access
 - compare split into independent and normalized UI modes
+- independent compare routed through the shared comparison service contract
 - DB-backed multi-asset history endpoint with fallback metadata
 - timeline audit metadata for rate source and cycle tracking
 - first-year bond rate correction across the full first cycle
 - tax and early-redemption settlement fixes for payout versus capitalized bonds
-- expanded regression fixtures for rollover and early-exit scenarios
+- expanded regression fixtures for rollover, early exit, IKZE, deflation, and rebuy-discount scenarios
 - high-traffic i18n cleanup on single, compare, multi-asset, and ladder surfaces
+- economic-data screens now surface source, fallback, and as-of metadata
 
 Still remaining:
 
-- deeper compare consolidation behind one canonical comparison scenario service
-- broader fixture coverage for IKZE, deflation, missing-data, and rebuy-discount edge cases
-- fuller freshness/status UX across economic-data and compare views
+- broader fixture coverage for missing-data and stale-data edge cases
+- fuller freshness/status UX across compare views
 - broader mojibake cleanup outside the highest-traffic calculator flows
 - worker-based execution path for heavy scenarios
 
