@@ -161,6 +161,49 @@ describe('Comprehensive Bond Calculations', () => {
     expect(results.netPayoutValue).toBeGreaterThanOrEqual(10000);
   });
 
+  it('does not apply early withdrawal fee when the bond is held to maturity', () => {
+    const inputs = {
+      ...baseInputs,
+      bondType: BondType.COI,
+      duration: 4,
+      earlyWithdrawalFee: 2.0,
+      purchaseDate: '2026-03-01T00:00:00.000Z',
+      withdrawalDate: '2030-03-01T00:00:00.000Z',
+      payoutFrequency: InterestPayout.YEARLY,
+      isCapitalized: false,
+    };
+
+    const results = calculateBondInvestment(inputs);
+    const finalPoint = results.timeline[results.timeline.length - 1];
+
+    expect(results.totalEarlyWithdrawalFee).toBe(0);
+    expect(finalPoint.isMaturity).toBe(true);
+  });
+
+  it('tracks periodic withholding tax for payout bonds without taxing again at exit', () => {
+    const inputs = {
+      ...baseInputs,
+      bondType: BondType.COI,
+      duration: 4,
+      firstYearRate: 5.0,
+      expectedInflation: 3.0,
+      margin: 1.5,
+      payoutFrequency: InterestPayout.YEARLY,
+      isCapitalized: false,
+      purchaseDate: '2026-03-01T00:00:00.000Z',
+      withdrawalDate: '2030-03-01T00:00:00.000Z',
+    };
+
+    const results = calculateBondInvestment(inputs);
+    const timelineTax = results.timeline.reduce((sum, point) => sum + point.taxDeducted, 0);
+
+    expect(results.totalTax).toBeCloseTo(timelineTax, 2);
+    expect(results.netPayoutValue).toBeCloseTo(
+      results.grossValue - results.totalTax - results.totalEarlyWithdrawalFee,
+      2,
+    );
+  });
+
   it('Deflation: inflation floor of 0% applied to indexed bonds', () => {
     const inputs = {
       ...baseInputs,

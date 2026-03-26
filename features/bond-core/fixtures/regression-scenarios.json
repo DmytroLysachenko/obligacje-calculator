@@ -42,5 +42,53 @@
       "totalTax": 154,
       "finalNominalValue": 1808
     }
+  },
+  {
+    "name": "ROR 5-Year Rollover",
+    "inputs": {
+      "initialInvestment": 10000,
+      "firstYearRate": 4.25,
+      "expectedInflation": 3.0,
+      "expectedNbpRate": 5.25,
+      "margin": 0,
+      "duration": 1,
+      "earlyWithdrawalFee": 0.5,
+      "bondType": "ROR",
+      "isCapitalized": false,
+      "payoutFrequency": "MONTHLY",
+      "purchaseDate": "2026-03-01T00:00:00.000Z",
+      "withdrawalDate": "2031-03-01T00:00:00.000Z",
+      "taxStrategy": "STANDARD",
+      "rollover": true
+    },
+    "expected": {
+      "totalProfit": 1792.44,
+      "totalTax": 431.2,
+      "grossValue": 11884.5,
+      "finalNominalValue": 11884.5
+    }
+  },
+  {
+    "name": "EDO Early Exit Year 7",
+    "inputs": {
+      "initialInvestment": 10000,
+      "firstYearRate": 5.6,
+      "expectedInflation": 4.0,
+      "margin": 2.0,
+      "duration": 10,
+      "earlyWithdrawalFee": 3.0,
+      "bondType": "EDO",
+      "isCapitalized": true,
+      "payoutFrequency": "MATURITY",
+      "purchaseDate": "2026-03-01T00:00:00.000Z",
+      "withdrawalDate": "2033-03-01T00:00:00.000Z",
+      "taxStrategy": "STANDARD"
+    },
+    "expected": {
+      "totalProfit": 3790.56,
+      "totalTax": 889,
+      "grossValue": 14979.56,
+      "finalNominalValue": 14979.56
+    }
   }
 ]

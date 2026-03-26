@@ -17,7 +17,7 @@ import { Decimal } from 'decimal.js';
 
 // Engine imports
 import { determineInterestRate } from './engine/rate-resolution';
-import { calculateTaxAmount } from './engine/tax-settlement';
+import { calculateTaxAmount, shouldWithholdPeriodicTax } from './engine/tax-settlement';
 import { calculateEarlyWithdrawalFee } from './engine/redemption';
 import { getHistoricalValue } from './engine/historical-data';
 import { calculateCumulativeInflation, getExpectedInflationForYearIndex } from './engine/inflation';
@@ -104,6 +104,7 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
 
     let currentNominalValue = new Decimal(nominalStartingValue);
     let totalInterestEarnedSoFar = new Decimal(0);
+    let periodicTaxPaidSoFar = new Decimal(0);
 
     const periods = generateCyclePeriods(currentPurchaseDate, cycleMaturityDate, actualCycleEndDate, payoutFrequency, bondDuration);
 
@@ -177,12 +178,13 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
       totalInterestEarnedSoFar = totalInterestEarnedSoFar.plus(interestEarned);
 
       let taxDeducted = new Decimal(0);
-      if (!isCapitalized) {
-        if (taxStrategy === TaxStrategy.STANDARD) {
-          taxDeducted = calculateTaxAmount(interestEarned, taxStrategy);
-        }
+      if (shouldWithholdPeriodicTax(taxStrategy, isCapitalized)) {
+        taxDeducted = calculateTaxAmount(interestEarned, taxStrategy);
+        periodicTaxPaidSoFar = periodicTaxPaidSoFar.plus(taxDeducted);
       } else {
-        currentNominalValue = currentNominalValue.plus(interestEarned);
+        if (isCapitalized) {
+          currentNominalValue = currentNominalValue.plus(interestEarned);
+        }
       }
       
       const netInterest = interestEarned.minus(taxDeducted);
@@ -201,7 +203,7 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
       const currentWithdrawalFee = calculateEarlyWithdrawalFee(
         bondType,
         isEarlyWithdrawal,
-        period.isWithdrawal,
+        period.isWithdrawal && isEarlyWithdrawal,
         totalInterestEarnedSoFar,
         numberOfBonds,
         earlyWithdrawalFee
@@ -211,8 +213,18 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
       const useOfficialRounding = period.isWithdrawal;
 
       const currentGrossValue = isCapitalized ? currentNominalValue : nominalStartingValue.plus(totalInterestEarnedSoFar);
-      const taxableBase = taxStrategy === TaxStrategy.IKZE ? currentGrossValue.minus(currentWithdrawalFee) : totalInterestEarnedSoFar.minus(currentWithdrawalFee);
-      const currentTaxAtPoint = calculateTaxAmount(Decimal.max(0, taxableBase), taxStrategy, useOfficialRounding);
+      const currentTaxAtPoint = shouldWithholdPeriodicTax(taxStrategy, isCapitalized)
+        ? periodicTaxPaidSoFar
+        : calculateTaxAmount(
+            Decimal.max(
+              0,
+              taxStrategy === TaxStrategy.IKZE
+                ? currentGrossValue.minus(currentWithdrawalFee)
+                : totalInterestEarnedSoFar.minus(currentWithdrawalFee),
+            ),
+            taxStrategy,
+            useOfficialRounding,
+          );
       
       const liquidationValue = currentGrossValue.minus(currentWithdrawalFee).minus(currentTaxAtPoint);
       const totalValue = liquidationValue;
@@ -253,10 +265,18 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
     // End of cycle: calculate net cash
     const cycleFee = isEarlyWithdrawal ? calculateEarlyWithdrawalFee(bondType, true, true, totalInterestEarnedSoFar, numberOfBonds, earlyWithdrawalFee) : new Decimal(0);
     const cycleGrossValue = isCapitalized ? currentNominalValue : nominalStartingValue.plus(totalInterestEarnedSoFar);
-    const cycleTaxableBase = taxStrategy === TaxStrategy.IKZE ? cycleGrossValue.minus(cycleFee) : totalInterestEarnedSoFar.minus(cycleFee);
-    
-    // Total cycle tax calculation for final proceeds
-    const cycleTax = calculateTaxAmount(Decimal.max(0, cycleTaxableBase), taxStrategy, true);
+    const cycleTax = shouldWithholdPeriodicTax(taxStrategy, isCapitalized)
+      ? periodicTaxPaidSoFar
+      : calculateTaxAmount(
+          Decimal.max(
+            0,
+            taxStrategy === TaxStrategy.IKZE
+              ? cycleGrossValue.minus(cycleFee)
+              : totalInterestEarnedSoFar.minus(cycleFee),
+          ),
+          taxStrategy,
+          true,
+        );
     
     totalTaxAcc = totalTaxAcc.plus(cycleTax);
     totalFeeAcc = totalFeeAcc.plus(cycleFee);
@@ -291,7 +311,7 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
     // RESET globalAccumulatedNetInterest for the next cycle because they are now part of the principal
     globalAccumulatedNetInterest = new Decimal(0);
     currentPurchaseDate = actualCycleEndDate;
-    isCurrentlyRebought = true; // Sub-sequent cycles always use re-buy discount
+    isCurrentlyRebought = rebuyDiscount > 0; // Only eligible rollover cycles should use swap pricing
     cycleIndex += 1;
   }
 
@@ -410,6 +430,7 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
         const dLotGrossValue = new Decimal(lot.grossValue);
         const dLotAccumulatedInterest = new Decimal(lot.accumulatedInterest);
         const dLotTax = new Decimal(lot.tax);
+        const shouldWithholdTaxForLot = shouldWithholdPeriodicTax(taxStrategy, isCapitalized);
 
         if (monthsHeld <= bondDurationMonths) {
           const cycleYearIndex = Math.floor(Math.max(0, monthsHeld - 1) / 12) + 1;
@@ -423,7 +444,7 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
           if (isCapitalized) {
             lot.grossValue = dLotGrossValue.plus(interestThisMonth).toNumber();
           } else {
-            if (taxStrategy === TaxStrategy.STANDARD) {
+            if (shouldWithholdTaxForLot) {
               const taxThisMonth = calculateTaxAmount(interestThisMonth, taxStrategy);
               lot.tax = dLotTax.plus(taxThisMonth).toNumber();
             }
@@ -435,10 +456,11 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
         const dFinalAccumulatedInterest = new Decimal(lot.accumulatedInterest);
         const units = new Decimal(lot.investedAmount).dividedBy(bondPrice).floor();
 
+        const isLotEarlyWithdrawal = !lot.isMatured;
         const dFinalFee = calculateEarlyWithdrawalFee(
           bondType,
-          !lot.isMatured,
-          !lot.isMatured,
+          isLotEarlyWithdrawal,
+          isLotEarlyWithdrawal,
           dFinalAccumulatedInterest,
           units,
           earlyWithdrawalFee
@@ -446,18 +468,23 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
         lot.earlyWithdrawalFee = dFinalFee.toNumber();
 
         const currentGrossValue = isCapitalized ? new Decimal(lot.grossValue) : units.times(nominalValue).plus(dFinalAccumulatedInterest);
-        const finalTaxableBase = taxStrategy === TaxStrategy.IKZE ? currentGrossValue.minus(dFinalFee) : dFinalAccumulatedInterest.minus(dFinalFee);
-
-        // Apply official rounding ONLY at withdrawal step for the lot
-        const useOfficialRounding = isWithdrawalStep;
-        const exitTax = calculateTaxAmount(Decimal.max(0, finalTaxableBase), taxStrategy, useOfficialRounding);
-
-        const currentTaxPaid = (isCapitalized || taxStrategy !== TaxStrategy.STANDARD) ? exitTax : new Decimal(lot.tax);
+        const currentTaxPaid = shouldWithholdTaxForLot
+          ? new Decimal(lot.tax)
+          : calculateTaxAmount(
+              Decimal.max(
+                0,
+                taxStrategy === TaxStrategy.IKZE
+                  ? currentGrossValue.minus(dFinalFee)
+                  : dFinalAccumulatedInterest.minus(dFinalFee),
+              ),
+              taxStrategy,
+              isWithdrawalStep,
+            );
 
         const finalNetValue = currentGrossValue.minus(currentTaxPaid).minus(dFinalFee);
         lot.netValue = finalNetValue.toNumber();
-        if (isCapitalized || taxStrategy !== TaxStrategy.STANDARD) {
-          lot.tax = exitTax.toNumber();
+        if (!shouldWithholdTaxForLot) {
+          lot.tax = currentTaxPaid.toNumber();
         }
       }
     });

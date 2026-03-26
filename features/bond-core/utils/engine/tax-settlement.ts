@@ -39,3 +39,10 @@ export function calculateTaxAmount(
 
   return amount.times(new Decimal(rate).dividedBy(100));
 }
+
+export function shouldWithholdPeriodicTax(
+  strategy: TaxStrategy,
+  isCapitalized: boolean,
+): boolean {
+  return strategy === TaxStrategy.STANDARD && !isCapitalized;
+}

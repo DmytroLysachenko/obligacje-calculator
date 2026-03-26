@@ -9,16 +9,16 @@ describe('Regression Parity Tests', () => {
       const results = calculateBondInvestment(scenario.inputs as BondInputs);
       
       if (scenario.expected.totalProfit !== undefined) {
-        expect(results.totalProfit).toBeCloseTo(scenario.expected.totalProfit, 0);
+        expect(results.totalProfit).toBeCloseTo(scenario.expected.totalProfit, 2);
       }
       if (scenario.expected.totalTax !== undefined) {
-        expect(results.totalTax).toBeCloseTo(scenario.expected.totalTax, 0);
+        expect(results.totalTax).toBeCloseTo(scenario.expected.totalTax, 2);
       }
       if (scenario.expected.grossValue !== undefined) {
-        expect(results.grossValue).toBeCloseTo(scenario.expected.grossValue, 0);
+        expect(results.grossValue).toBeCloseTo(scenario.expected.grossValue, 2);
       }
       if (scenario.expected.finalNominalValue !== undefined) {
-        expect(results.finalNominalValue).toBeCloseTo(scenario.expected.finalNominalValue, 0);
+        expect(results.finalNominalValue).toBeCloseTo(scenario.expected.finalNominalValue, 2);
       }
     });
   });
