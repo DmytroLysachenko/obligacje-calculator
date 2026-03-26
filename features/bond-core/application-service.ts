@@ -7,7 +7,8 @@ import {
   RegularInvestmentCalculationEnvelope,
   BondComparisonCalculationEnvelope,
   BondComparisonScenarioItem,
-  BondComparisonScenarioRequest,
+  IndependentBondComparisonPayload,
+  NormalizedBondComparisonPayload,
 } from './types/scenarios';
 import { BondInputsSchema, RegularInvestmentInputsSchema, BondComparisonScenarioRequestSchema } from './types/schemas';
 import { calculateBondInvestment, calculateRegularInvestment } from './utils/calculations';
@@ -87,31 +88,72 @@ export class CalculationApplicationService {
       payload: input,
     });
 
-    const scenarioInputs = this.buildComparisonScenarioInputs(request.payload);
+    if (request.payload.mode === 'independent') {
+      return this.calculateIndependentComparison(request.payload);
+    }
+
+    return this.calculateNormalizedComparison(request.payload);
+  }
+
+  private async calculateNormalizedComparison(
+    payload: NormalizedBondComparisonPayload,
+  ): Promise<BondComparisonCalculationEnvelope> {
+    const scenarioInputs = this.buildComparisonScenarioInputs(payload);
     const enrichedScenarios = await Promise.all(
       scenarioInputs.map((scenarioInput) => this.withHistoricalData(scenarioInput))
     );
 
-    const results = await Promise.all(
-      enrichedScenarios.map(async (enrichedInputs): Promise<BondComparisonScenarioItem> => {
-        return {
-          type: enrichedInputs.bondType,
-          name: BOND_DEFINITIONS[enrichedInputs.bondType].fullName.en,
-          result: calculateBondInvestment({
-            ...enrichedInputs,
-            rollover: request.payload.reinvest ?? true,
-          }),
-        };
-      })
-    );
+    const results = enrichedScenarios.map((enrichedInputs): BondComparisonScenarioItem => ({
+      type: enrichedInputs.bondType,
+      name: BOND_DEFINITIONS[enrichedInputs.bondType].fullName.en,
+      result: calculateBondInvestment({
+        ...enrichedInputs,
+        rollover: payload.reinvest ?? true,
+      }),
+    }));
 
-    const warnings = this.buildHistoricalDataWarnings(enrichedScenarios[0]?.historicalData);
-    const assumptions = this.generateAssumptions(request.payload);
-    assumptions.push(
-      request.payload.mode === 'independent'
-        ? 'Comparison scenarios are evaluated as independent single-bond simulations.'
-        : 'Comparison scenarios are normalized through the shared single-bond calculation path.',
-    );
+    const warnings = this.collectHistoricalWarnings(enrichedScenarios.map((scenario) => scenario.historicalData));
+    const assumptions = this.generateAssumptions(payload);
+    assumptions.push('Comparison scenarios are normalized through the shared comparison service.');
+
+    return this.createEnvelope(results, warnings, assumptions);
+  }
+
+  private async calculateIndependentComparison(
+    payload: IndependentBondComparisonPayload,
+  ): Promise<BondComparisonCalculationEnvelope> {
+    const [scenarioA, scenarioB] = await Promise.all([
+      this.withHistoricalData(payload.scenarioA),
+      this.withHistoricalData(payload.scenarioB),
+    ]);
+
+    const results: BondComparisonScenarioItem[] = [
+      {
+        scenarioKey: 'scenarioA',
+        type: scenarioA.bondType,
+        name: BOND_DEFINITIONS[scenarioA.bondType].fullName.en,
+        result: calculateBondInvestment({
+          ...scenarioA,
+          rollover: scenarioA.rollover ?? false,
+        }),
+      },
+      {
+        scenarioKey: 'scenarioB',
+        type: scenarioB.bondType,
+        name: BOND_DEFINITIONS[scenarioB.bondType].fullName.en,
+        result: calculateBondInvestment({
+          ...scenarioB,
+          rollover: scenarioB.rollover ?? false,
+        }),
+      },
+    ];
+
+    const warnings = this.collectHistoricalWarnings([scenarioA.historicalData, scenarioB.historicalData]);
+    const assumptions = [
+      ...this.generateScenarioAssumptions('Scenario A', scenarioA),
+      ...this.generateScenarioAssumptions('Scenario B', scenarioB),
+      'Comparison scenarios are evaluated as independent single-bond simulations through the shared comparison service.',
+    ];
 
     return this.createEnvelope(results, warnings, assumptions);
   }
@@ -176,6 +218,12 @@ export class CalculationApplicationService {
     return warnings;
   }
 
+  private collectHistoricalWarnings(historicalSets: Array<BondInputs['historicalData'] | undefined>): string[] {
+    return Array.from(
+      new Set(historicalSets.flatMap((historicalData) => this.buildHistoricalDataWarnings(historicalData))),
+    );
+  }
+
   private generateAssumptions(inputs: Partial<BondInputs> & {
     expectedInflation?: number;
     expectedNbpRate?: number;
@@ -194,7 +242,18 @@ export class CalculationApplicationService {
     return assumptions;
   }
 
-  private buildComparisonScenarioInputs(request: BondComparisonScenarioRequest['payload']): BondInputs[] {
+  private generateScenarioAssumptions(
+    label: string,
+    inputs: Partial<BondInputs> & {
+      expectedInflation?: number;
+      expectedNbpRate?: number;
+      customInflation?: number[];
+    },
+  ): string[] {
+    return this.generateAssumptions(inputs).map((assumption) => `${label}: ${assumption}`);
+  }
+
+  private buildComparisonScenarioInputs(request: NormalizedBondComparisonPayload): BondInputs[] {
     return request.bondTypes.map((type) => {
       const definition = BOND_DEFINITIONS[type];
 

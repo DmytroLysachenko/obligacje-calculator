@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { BondInputs, BondType, TaxStrategy } from '../../bond-core/types';
-import { SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
+import { BondComparisonCalculationEnvelope, SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { addMonths, differenceInMonths } from 'date-fns';
 import { useQuerySync } from '@/shared/hooks/useQuerySync';
@@ -40,14 +40,40 @@ const getHorizonMonths = (purchaseDate: string, withdrawalDate: string) => {
 export function useComparison() {
   const [inputsA, setInputsA] = useState<BondInputs>(createDefaultInputs(BondType.COI));
   const [inputsB, setInputsB] = useState<BondInputs>(createDefaultInputs(BondType.EDO));
-  const [envelopeA, setEnvelopeA] = useState<SingleBondCalculationEnvelope | null>(null);
-  const [envelopeB, setEnvelopeB] = useState<SingleBondCalculationEnvelope | null>(null);
+  const [comparisonEnvelope, setComparisonEnvelope] = useState<BondComparisonCalculationEnvelope | null>(null);
   const [isDirty, setIsDirty] = useState(true);
   const { isCalculating, run } = useCalculationRequest();
 
-  // Derived results for compatibility
-  const resultsA = envelopeA?.result || null;
-  const resultsB = envelopeB?.result || null;
+  const scenarioAResult = comparisonEnvelope?.result.find((item) => item.scenarioKey === 'scenarioA');
+  const scenarioBResult = comparisonEnvelope?.result.find((item) => item.scenarioKey === 'scenarioB');
+  const resultsA = scenarioAResult?.result || null;
+  const resultsB = scenarioBResult?.result || null;
+  const sharedWarnings = comparisonEnvelope?.warnings || [];
+  const sharedAssumptions = comparisonEnvelope?.assumptions || [];
+  const sharedNotes = comparisonEnvelope?.calculationNotes || [];
+  const sharedFlags = comparisonEnvelope?.dataQualityFlags || [];
+  const envelopeA: SingleBondCalculationEnvelope | null = resultsA
+    ? {
+        result: resultsA,
+        warnings: sharedWarnings,
+        assumptions: sharedAssumptions,
+        calculationNotes: sharedNotes,
+        dataQualityFlags: sharedFlags,
+        dataFreshness: comparisonEnvelope?.dataFreshness ?? { status: 'unknown', usedFallback: false },
+        calculationVersion: comparisonEnvelope?.calculationVersion ?? 'unknown',
+      }
+    : null;
+  const envelopeB: SingleBondCalculationEnvelope | null = resultsB
+    ? {
+        result: resultsB,
+        warnings: sharedWarnings,
+        assumptions: sharedAssumptions,
+        calculationNotes: sharedNotes,
+        dataQualityFlags: sharedFlags,
+        dataFreshness: comparisonEnvelope?.dataFreshness ?? { status: 'unknown', usedFallback: false },
+        calculationVersion: comparisonEnvelope?.calculationVersion ?? 'unknown',
+      }
+    : null;
 
   // Sync state with URL using prefixes to avoid collisions
   const combinedState = {
@@ -77,14 +103,14 @@ export function useComparison() {
   const calculate = useCallback(async () => {
     setIsDirty(false);
     try {
-      const [dataA, dataB] = await run(() =>
-        Promise.all([
-          postCalculation<SingleBondCalculationEnvelope>('/api/calculate/single', inputsA),
-          postCalculation<SingleBondCalculationEnvelope>('/api/calculate/single', inputsB),
-        ]),
+      const envelope = await run(() =>
+        postCalculation<BondComparisonCalculationEnvelope>('/api/calculate/compare', {
+          mode: 'independent',
+          scenarioA: inputsA,
+          scenarioB: inputsB,
+        }),
       );
-      setEnvelopeA(dataA);
-      setEnvelopeB(dataB);
+      setComparisonEnvelope(envelope);
     } catch (error) {
       console.error('Comparison error:', error);
     }

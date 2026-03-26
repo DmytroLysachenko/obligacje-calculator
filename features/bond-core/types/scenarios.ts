@@ -37,24 +37,33 @@ export interface RegularInvestmentScenarioRequest {
 }
 
 export interface BondComparisonScenarioItem {
+  scenarioKey?: 'scenarioA' | 'scenarioB';
   type: BondType;
   name: string;
   result: CalculationResult;
 }
 
+export interface NormalizedBondComparisonPayload {
+  mode?: 'normalized';
+  bondTypes: BondType[];
+  initialInvestment: number;
+  purchaseDate: string;
+  withdrawalDate: string;
+  expectedInflation: number;
+  expectedNbpRate?: number;
+  taxStrategy?: TaxStrategy;
+  reinvest?: boolean;
+}
+
+export interface IndependentBondComparisonPayload {
+  mode: 'independent';
+  scenarioA: BondInputs;
+  scenarioB: BondInputs;
+}
+
 export interface BondComparisonScenarioRequest {
   kind: ScenarioKind.BOND_COMPARISON;
-  payload: {
-    mode?: 'normalized' | 'independent';
-    bondTypes: BondType[];
-    initialInvestment: number;
-    purchaseDate: string;
-    withdrawalDate: string;
-    expectedInflation: number;
-    expectedNbpRate?: number;
-    taxStrategy?: TaxStrategy;
-    reinvest?: boolean;
-  };
+  payload: NormalizedBondComparisonPayload | IndependentBondComparisonPayload;
 }
 
 export type CalculationScenarioRequest =

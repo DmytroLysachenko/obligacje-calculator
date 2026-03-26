@@ -63,8 +63,8 @@ export const RegularInvestmentInputsSchema = withDateOrderValidation(BaseInstrum
   historicalData: HistoricalDataMapSchema,
 }));
 
-export const BondComparisonScenarioPayloadSchema = withDateOrderValidation(z.object({
-  mode: z.enum(['normalized', 'independent']).optional(),
+const NormalizedBondComparisonPayloadSchema = withDateOrderValidation(z.object({
+  mode: z.literal('normalized').optional(),
   bondTypes: z.array(z.nativeEnum(BondType)).min(1),
   initialInvestment: z.number().min(100),
   purchaseDate: DateStringSchema,
@@ -74,6 +74,17 @@ export const BondComparisonScenarioPayloadSchema = withDateOrderValidation(z.obj
   taxStrategy: z.nativeEnum(TaxStrategy).optional(),
   reinvest: z.boolean().optional(),
 }));
+
+const IndependentBondComparisonPayloadSchema = z.object({
+  mode: z.literal('independent'),
+  scenarioA: BondInputsSchema,
+  scenarioB: BondInputsSchema,
+});
+
+export const BondComparisonScenarioPayloadSchema = z.union([
+  NormalizedBondComparisonPayloadSchema,
+  IndependentBondComparisonPayloadSchema,
+]);
 
 export const BondComparisonScenarioRequestSchema = z.object({
   kind: z.literal(ScenarioKind.BOND_COMPARISON),
