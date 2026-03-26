@@ -4,6 +4,32 @@ This document defines the implementation plan for the next major refactor of the
 
 The goal is not to change the product direction. The goal is to make the existing product more correct, more reliable, easier to maintain, and easier to extend.
 
+## Implementation Status
+
+The refactor is partially implemented as of **March 26, 2026**.
+
+Implemented so far:
+
+- shared calculation application service and result envelopes
+- scenario typing with warnings, assumptions, calculation notes, and data-quality flags
+- chart container hardening and build-clean chart rendering
+- notebook ownership split into authenticated and guest-safe access
+- compare split into independent and normalized UI modes
+- DB-backed multi-asset history endpoint with fallback metadata
+- timeline audit metadata for rate source and cycle tracking
+- first-year bond rate correction across the full first cycle
+- tax and early-redemption settlement fixes for payout versus capitalized bonds
+- expanded regression fixtures for rollover and early-exit scenarios
+- high-traffic i18n cleanup on single, compare, multi-asset, and ladder surfaces
+
+Still remaining:
+
+- deeper compare consolidation behind one canonical comparison scenario service
+- broader fixture coverage for IKZE, deflation, missing-data, and rebuy-discount edge cases
+- fuller freshness/status UX across economic-data and compare views
+- broader mojibake cleanup outside the highest-traffic calculator flows
+- worker-based execution path for heavy scenarios
+
 ## 1. Refactor Goals
 
 The refactor must deliver the following outcomes:

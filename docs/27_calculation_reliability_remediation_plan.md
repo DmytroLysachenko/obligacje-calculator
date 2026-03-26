@@ -9,6 +9,24 @@ The goal is simple:
 - remove silent data inconsistencies
 - ensure long-horizon simulations behave as users expect
 
+## Current Progress
+
+Implemented so far:
+
+- separation of bond cycle versus investment horizon for long-horizon rollover simulations
+- rate-resolution audit metadata on timeline points
+- explicit normalized versus independent compare modes in the UI
+- DB-backed multi-asset history with explicit fallback/source metadata
+- first-year rate handling fixed for monthly-payout variable-rate bonds
+- fee/tax settlement corrected so payout bonds do not get re-taxed at exit and maturity points do not show early-redemption fees
+- initial golden fixtures for rollover and early-exit scenarios
+
+Still to expand:
+
+- more fixture coverage for IKZE, deflation, and missing macro-history cases
+- stronger explanation UI for per-period tax and rebuy-discount decisions
+- fuller freshness and stale-data messaging on all macro-data screens
+
 ## 1. Core Problems
 
 The current issues fall into a few categories.
