@@ -39,7 +39,7 @@ export const BondCalculatorContainer: React.FC = () => {
     setBondType,
     isDirty
     } = useBondCalculator();
-    const { t } = useLanguage();
+  const { t } = useLanguage();
 
   const [copied, setCopied] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
@@ -82,12 +82,12 @@ export const BondCalculatorContainer: React.FC = () => {
                 )}
                 <span className="font-bold">
                   {isGoalReached
-                    ? "Goal Reached!"
-                    : `Goal Progress: ${goalProgress.toFixed(1)}%`}
+                    ? t("bonds.goal_reached")
+                    : t("bonds.goal_progress", { percent: goalProgress.toFixed(1) })}
                 </span>
               </div>
               <span className="text-sm font-medium text-muted-foreground">
-                Target: {new Intl.NumberFormat().format(inputs.savingsGoal)} PLN
+                {t("bonds.target")}: {new Intl.NumberFormat().format(inputs.savingsGoal)} PLN
               </span>
             </div>
             <Progress
@@ -103,19 +103,19 @@ export const BondCalculatorContainer: React.FC = () => {
           {isCalculating && (
             <span className="text-xs text-muted-foreground flex items-center gap-2 animate-in fade-in duration-500">
               <Loader2 className="h-3 w-3 animate-spin" />
-              Updating simulation...
+              {t("common.calculating")}
             </span>
           )}
           {!isCalculating && isDirty && results && (
             <span className="text-xs text-orange-500 flex items-center gap-1 animate-in fade-in duration-500 font-medium">
               <Info className="h-3 w-3" />
-              Inputs changed. Recalculate to update.
+              {t("comparison.needs_recalculation")}
             </span>
           )}
           {!isCalculating && !isDirty && results && (
             <span className="text-xs text-green-600 flex items-center gap-1 animate-in fade-in duration-500 font-medium">
               <Check className="h-3 w-3" />
-              Results up to date
+              {t("comparison.up_to_date")}
             </span>
           )}
           {isError && (
@@ -135,7 +135,7 @@ export const BondCalculatorContainer: React.FC = () => {
           ) : (
             <Share2 className="h-3 w-3" />
           )}
-          {copied ? "Copied!" : "Share Scenario"}
+          {copied ? t("common.copied") : t("comparison.share_scenario")}
         </Button>
       </div>
 
@@ -153,7 +153,7 @@ export const BondCalculatorContainer: React.FC = () => {
             <div className="h-[400px] flex flex-col items-center justify-center border-2 border-dashed rounded-3xl opacity-50 space-y-4">
               <Target className="h-12 w-12 text-muted-foreground" />
               <p className="font-medium text-muted-foreground">
-                Click &apos;Calculate Results&apos; to see the projection
+                {t("bonds.click_calculate")}
               </p>
             </div>
           )}
@@ -162,7 +162,7 @@ export const BondCalculatorContainer: React.FC = () => {
             <div className="h-[400px] flex flex-col items-center justify-center space-y-4">
               <span className="h-12 w-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
               <p className="font-medium text-primary">
-                Simulating investment growth...
+                {t("bonds.simulating_growth")}
               </p>
             </div>
           )}
@@ -205,7 +205,7 @@ export const BondCalculatorContainer: React.FC = () => {
                   {calculationNotes.length > 0 && (
                     <div className="p-4 bg-emerald-50 border-2 border-emerald-200 rounded-2xl shadow-sm">
                       <h4 className="text-xs font-black uppercase text-emerald-800 mb-2 flex items-center gap-2">
-                        <Info className="h-4 w-4" /> Calculation Notes
+                        <Info className="h-4 w-4" /> {t("common.notes")}
                       </h4>
                       <ul className="list-disc list-inside space-y-1">
                         {calculationNotes.map((note: string, i: number) => (
@@ -217,7 +217,7 @@ export const BondCalculatorContainer: React.FC = () => {
                   {dataQualityFlags.length > 0 && (
                     <div className="p-4 bg-amber-50 border-2 border-amber-200 rounded-2xl shadow-sm">
                       <h4 className="text-xs font-black uppercase text-amber-800 mb-2 flex items-center gap-2">
-                        <Info className="h-4 w-4" /> Data Quality
+                        <Info className="h-4 w-4" /> {t("common.data_quality")}
                       </h4>
                       <ul className="list-disc list-inside space-y-1">
                         {dataQualityFlags.map((flag: string, i: number) => (

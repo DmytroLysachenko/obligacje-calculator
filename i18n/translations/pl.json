@@ -17,7 +17,13 @@
     "language": "Język",
     "period": "Okres",
     "recalculate": "Przelicz",
-    "calculating": "Obliczanie..."
+    "calculating": "Obliczanie...",
+    "warnings": "Ostrzeżenia",
+    "assumptions": "Założenia",
+    "notes": "Notatki obliczeń",
+    "data_quality": "Jakość danych",
+    "share": "Udostępnij",
+    "copied": "Skopiowano!"
   },
   "nav": {
     "education": "Edukacja / Podstawy",
@@ -147,6 +153,12 @@
     "bond_plural": "Obligacje",
     "bond_singular": "Obligacja",
     "maturing": "Wykup",
+    "monthly_liquidity": "Miesięczna płynność",
+    "net_passive_income": "Pasywny dochód netto",
+    "per_month": "/ miesiąc",
+    "per_month_profit": "/ miesiąc zysku",
+    "monthly_liquidity_desc": "Po domknięciu cyklu drabiny jest to średnia miesięczna kwota odblokowywana do reinwestycji lub wydania.",
+    "net_passive_income_desc": "To pokazuje zysk netto (odsetki po podatku), jaki drabina generuje co miesiąc ponad pierwotny kapitał.",
     "strategy_tip": "Wskazówka Strategiczna",
     "ladder_tip_desc": "Gdy obligacja zapada (zostaje wykupiona), otrzymujesz pełny kapitał wraz z odsetkami. Ponowne zainwestowanie tych środków w nową obligację tego samego typu kontynuuje drabinę, zapewniając stałą płynność.",
     "step_core": "1. Konfiguracja Podstawowa",
@@ -173,7 +185,15 @@
     "deflation": "Deflacja",
     "reinvest": "Reinwestuj",
     "rollover_desc": "Odnowienie w terminie wykupu",
-    "total_roi": "Całkowity ROI"
+    "total_roi": "Całkowity ROI",
+    "goal_reached": "Cel osiągnięty!",
+    "goal_progress": "Postęp celu: {{percent}}%",
+    "target": "Cel",
+    "click_calculate": "Kliknij 'Oblicz wyniki', aby zobaczyć projekcję",
+    "simulating_growth": "Symulacja wzrostu inwestycji...",
+    "cycle": "Cykl",
+    "rate_source": "Źródło stopy",
+    "early_exit_payout": "Wypłata przy wcześniejszym wyjściu"
     },
     "notebook": {
       "title": "Mój Portfel / Notatnik",
@@ -259,6 +279,19 @@
       "live_calculation": "Obliczanie na żywo...",
       "sync_data_stable": "Dane Zsynchronizowane",
       "max_drawdown": "Maks. Obsunięcie",
-      "total_return": "Całkowity Zwrot"
+      "total_return": "Całkowity Zwrot",
+      "mode_independent": "Niezależne scenariusze",
+      "mode_normalized": "Porównanie ujednolicone",
+      "desc_independent": "Porównaj dwie w pełni niezależne strategie obligacyjne z własnym horyzontem, rolloverem i założeniami podatkowymi.",
+      "updating": "Aktualizacja scenariuszy...",
+      "needs_recalculation": "Scenariusze się zmieniły. Przelicz, aby zaktualizować wynik.",
+      "up_to_date": "Porównanie jest aktualne",
+      "scenario_a": "Scenariusz A",
+      "scenario_b": "Scenariusz B",
+      "scenario_a_summary": "Podsumowanie scenariusza A",
+      "scenario_b_summary": "Podsumowanie scenariusza B",
+      "history_source": "Źródło historii",
+      "fallback_history": "użyto danych zapasowych",
+      "history_loading": "ładowanie zaktualizowanej historii"
     }
   }

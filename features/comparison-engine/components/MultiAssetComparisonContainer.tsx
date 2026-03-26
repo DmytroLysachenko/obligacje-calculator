@@ -179,9 +179,9 @@ export const MultiAssetComparisonContainer = () => {
       </header>
 
       <div className="rounded-2xl border bg-muted/30 px-4 py-3 text-xs font-medium text-muted-foreground">
-        <span className="font-bold">History source:</span> {historySource} | {historyCoverageStart} to {historyCoverageEnd}
-        {usedFallbackHistory && " | fallback data in use"}
-        {isLoading && " | loading updated history"}
+        <span className="font-bold">{t("comparison.history_source")}:</span> {historySource} | {historyCoverageStart} to {historyCoverageEnd}
+        {usedFallbackHistory && ` | ${t("comparison.fallback_history")}`}
+        {isLoading && ` | ${t("comparison.history_loading")}`}
       </div>
 
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-4">

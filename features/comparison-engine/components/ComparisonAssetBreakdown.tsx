@@ -31,7 +31,7 @@ export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> =
       {assets.map((asset, idx) => {
         const last = asset.series[asset.series.length - 1];
         const maxDrawdown = Math.max(
-          ...asset.series.map((s) => s.drawdown)
+          ...asset.series.map((s) => (Number.isFinite(s.drawdown) ? s.drawdown : 0))
         );
         const finalValue = showRealValue ? last.realValue! : last.value;
         const netProfit = finalValue - totalInvested;

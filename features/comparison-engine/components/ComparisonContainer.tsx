@@ -136,7 +136,7 @@ export const ComparisonContainer: React.FC = () => {
               : resultsB.timeline[i - 1];
 
           return {
-            label: i === 0 ? "Start" : `Period ${i}`,
+            label: i === 0 ? t('comparison.start') : `${t('common.period')} ${i}`,
             valA: pointA ? pointA.nominalValueAfterInterest : null,
             valB: pointB ? pointB.nominalValueAfterInterest : null,
           };
@@ -153,7 +153,7 @@ export const ComparisonContainer: React.FC = () => {
           </h2>
           <p className="text-muted-foreground mt-2">
             {compareMode === 'independent'
-              ? 'Compare two fully independent bond strategies with their own horizon, rollover, and tax assumptions.'
+              ? t('comparison.desc_independent')
               : t('comparison.desc_bond_vs_bond')}
           </p>
         </div>
@@ -161,19 +161,19 @@ export const ComparisonContainer: React.FC = () => {
           {isCalculating && (
             <span className="text-xs text-muted-foreground flex items-center gap-2 animate-in fade-in duration-500">
               <Loader2 className="h-3 w-3 animate-spin" />
-              Updating scenarios...
+              {t('comparison.updating')}
             </span>
           )}
           {!isCalculating && isDirty && resultsA && (
             <span className="text-xs text-orange-500 flex items-center gap-1 animate-in fade-in duration-500 font-medium">
               <Info className="h-3 w-3" />
-              Scenarios changed. Recalculate to update.
+              {t('comparison.needs_recalculation')}
             </span>
           )}
           {!isCalculating && !isDirty && resultsA && (
             <span className="text-xs text-green-600 flex items-center gap-1 animate-in fade-in duration-500 font-medium">
               <Check className="h-3 w-3" />
-              Comparison up to date
+              {t('comparison.up_to_date')}
             </span>
           )}
         </div>
@@ -185,14 +185,14 @@ export const ComparisonContainer: React.FC = () => {
           className="cursor-pointer px-4 py-2"
           onClick={() => setCompareMode('independent')}
         >
-          Independent Scenarios
+          {t('comparison.mode_independent')}
         </Badge>
         <Badge
           variant={compareMode === 'normalized' ? 'default' : 'outline'}
           className="cursor-pointer px-4 py-2"
           onClick={() => setCompareMode('normalized')}
         >
-          Normalized Compare
+          {t('comparison.mode_normalized')}
         </Badge>
       </div>
 
@@ -207,7 +207,7 @@ export const ComparisonContainer: React.FC = () => {
             variant="outline"
             className="bg-blue-50 text-blue-700 border-blue-200 px-4 py-1 font-bold uppercase tracking-widest text-[10px]"
           >
-            Scenario A
+            {t('comparison.scenario_a')}
           </Badge>
           <BondInputsForm
             inputs={inputsA}
@@ -220,7 +220,7 @@ export const ComparisonContainer: React.FC = () => {
             variant="outline"
             className="bg-emerald-50 text-emerald-700 border-emerald-200 px-4 py-1 font-bold uppercase tracking-widest text-[10px]"
           >
-            Scenario B
+            {t('comparison.scenario_b')}
           </Badge>
           <BondInputsForm
             inputs={inputsB}
@@ -374,7 +374,7 @@ export const ComparisonContainer: React.FC = () => {
             <Card className="border-none shadow-lg bg-gradient-to-br from-blue-50 to-white rounded-3xl overflow-hidden">
               <CardHeader className="border-b border-blue-100/50 bg-blue-100/20">
                 <CardTitle className="text-lg font-black text-blue-900 uppercase tracking-widest">
-                  Scenario A Summary
+                  {t('comparison.scenario_a_summary')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 pt-6">
@@ -404,7 +404,7 @@ export const ComparisonContainer: React.FC = () => {
             <Card className="border-none shadow-lg bg-gradient-to-br from-emerald-50 to-white rounded-3xl overflow-hidden">
               <CardHeader className="border-b border-emerald-100/50 bg-emerald-100/20">
                 <CardTitle className="text-lg font-black text-emerald-900 uppercase tracking-widest">
-                  Scenario B Summary
+                  {t('comparison.scenario_b_summary')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 pt-6">
@@ -438,7 +438,7 @@ export const ComparisonContainer: React.FC = () => {
             (envelopeA?.dataQualityFlags.length ?? 0) > 0 ||
             (envelopeB?.dataQualityFlags.length ?? 0) > 0) && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[{ label: 'Scenario A', envelope: envelopeA, warnings: warningsA }, { label: 'Scenario B', envelope: envelopeB, warnings: warningsB }].map((entry) => (
+              {[{ label: t('comparison.scenario_a'), envelope: envelopeA, warnings: warningsA }, { label: t('comparison.scenario_b'), envelope: envelopeB, warnings: warningsB }].map((entry) => (
                 <Card key={entry.label} className="border shadow-sm">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-sm font-black uppercase tracking-widest">{entry.label} Notes</CardTitle>

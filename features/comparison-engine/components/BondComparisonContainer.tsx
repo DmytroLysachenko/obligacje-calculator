@@ -164,7 +164,7 @@ export const BondComparisonContainer = () => {
             <CardContent className="pt-6 space-y-8">
               <div className="space-y-4">
                 <div className="flex justify-between">
-                  <Label className="font-bold">Initial Amount</Label>
+                  <Label className="font-bold">{t('comparison.initial_sum')}</Label>
                   <span className="font-black text-primary">{formatCurrency(initialInvestment)}</span>
                 </div>
                 <Slider 
@@ -367,7 +367,7 @@ export const BondComparisonContainer = () => {
           {calculationNotes.length > 0 && (
             <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-2xl shadow-sm">
               <h4 className="text-sm font-black uppercase text-blue-800 mb-2">
-                Calculation Notes
+                {t('common.notes')}
               </h4>
               <ul className="list-disc list-inside space-y-1">
                 {calculationNotes.map((note, index) => (
@@ -381,7 +381,7 @@ export const BondComparisonContainer = () => {
           {dataQualityFlags.length > 0 && (
             <div className="p-4 bg-amber-50 border-2 border-amber-200 rounded-2xl shadow-sm">
               <h4 className="text-sm font-black uppercase text-amber-800 mb-2">
-                Data Quality
+                {t('common.data_quality')}
               </h4>
               <ul className="list-disc list-inside space-y-1">
                 {dataQualityFlags.map((flag, index) => (

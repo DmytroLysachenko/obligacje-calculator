@@ -42,15 +42,15 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
     <div className="w-full overflow-x-auto border rounded-lg bg-card shadow-sm">
       <Table>
         <TableHeader>
-          <TableRow className="bg-muted/50">
+            <TableRow className="bg-muted/50">
             <TableHead className="w-[120px]">{t('common.period')}</TableHead>
-            <TableHead>Cycle</TableHead>
+            <TableHead>{t('bonds.cycle')}</TableHead>
             <TableHead>{t('common.interest_rate')}</TableHead>
-            <TableHead>Rate Source</TableHead>
+            <TableHead>{t('bonds.rate_source')}</TableHead>
             <TableHead>{t('common.nominal_value')}</TableHead>
             <TableHead>{t('common.net_profit')}</TableHead>
             <TableHead>{t('common.real_value')}</TableHead>
-            <TableHead className="text-right">Early Exit Payout</TableHead>
+            <TableHead className="text-right">{t('bonds.early_exit_payout')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
