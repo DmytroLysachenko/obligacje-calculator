@@ -2,9 +2,20 @@ import { db } from "@/db";
 import { dataSeries, dataPoints } from "@/db/schema";
 import { eq, and, gte, lte, asc, inArray } from "drizzle-orm";
 import { cache } from "react";
+import { HISTORICAL_RETURNS, type MonthlyReturn } from "@/features/bond-core/constants/historical-data";
 
 const CPI_SLUGS = ['pl-cpi', 'inflation-pl'];
 const NBP_RATE_SLUGS = ['nbp-ref-rate', 'nbp-reference-rate', 'nbp-rate'];
+const SP500_SLUGS = ['sp500'];
+const GOLD_SLUGS = ['gold-usd', 'gold'];
+
+interface MultiAssetHistoryEnvelope {
+  data: MonthlyReturn[];
+  source: 'database' | 'fallback';
+  usedFallback: boolean;
+  coverageStart: string;
+  coverageEnd: string;
+}
 
 /**
  * Fetches historical data for multiple indicators and returns them as a map keyed by YYYY-MM.
@@ -63,4 +74,128 @@ export const getIndicatorHistory = cache(async (slug: string, fromDate: string, 
     ),
     orderBy: [asc(dataPoints.date)],
   });
+});
+
+const getSeriesPointsByAliases = async (aliases: string[], fromDate: string, toDate: string) => {
+  const series = await db.query.dataSeries.findMany({
+    where: inArray(dataSeries.slug, aliases),
+  });
+  const selectedSeries = series[0];
+
+  if (!selectedSeries) {
+    return [];
+  }
+
+  const points = await db.query.dataPoints.findMany({
+    where: and(
+      eq(dataPoints.seriesId, selectedSeries.id),
+      gte(dataPoints.date, fromDate),
+      lte(dataPoints.date, toDate),
+    ),
+    orderBy: [asc(dataPoints.date)],
+  });
+
+  return points.map((point) => ({
+    date: point.date.substring(0, 7),
+    value: parseFloat(point.value),
+  }));
+};
+
+const buildMonthlyPercentChangeMap = (series: { date: string; value: number }[]) => {
+  const result = new Map<string, number>();
+
+  for (let i = 0; i < series.length; i += 1) {
+    const current = series[i];
+    const previous = series[i - 1];
+
+    if (!previous || previous.value === 0) {
+      result.set(current.date, 0);
+      continue;
+    }
+
+    result.set(current.date, ((current.value - previous.value) / previous.value) * 100);
+  }
+
+  return result;
+};
+
+export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnvelope> => {
+  const fallbackCoverageStart = HISTORICAL_RETURNS[0]?.date ?? '2020-01';
+  const fallbackCoverageEnd = HISTORICAL_RETURNS[HISTORICAL_RETURNS.length - 1]?.date ?? '2024-06';
+  const fromDate = '1990-01-01';
+  const toDate = new Date().toISOString().slice(0, 10);
+
+  try {
+    const [sp500Points, goldPoints, inflationPoints, nbpPoints] = await Promise.all([
+      getSeriesPointsByAliases(SP500_SLUGS, fromDate, toDate),
+      getSeriesPointsByAliases(GOLD_SLUGS, fromDate, toDate),
+      getSeriesPointsByAliases(CPI_SLUGS, fromDate, toDate),
+      getSeriesPointsByAliases(NBP_RATE_SLUGS, fromDate, toDate),
+    ]);
+
+    if (sp500Points.length < 2 || goldPoints.length < 2 || inflationPoints.length === 0 || nbpPoints.length === 0) {
+      return {
+        data: HISTORICAL_RETURNS,
+        source: 'fallback',
+        usedFallback: true,
+        coverageStart: fallbackCoverageStart,
+        coverageEnd: fallbackCoverageEnd,
+      };
+    }
+
+    const sp500Returns = buildMonthlyPercentChangeMap(sp500Points);
+    const goldReturns = buildMonthlyPercentChangeMap(goldPoints);
+    const inflationMap = new Map(inflationPoints.map((point) => [point.date, point.value]));
+    const nbpMap = new Map(nbpPoints.map((point) => [point.date, point.value]));
+
+    const dates = Array.from(new Set([
+      ...sp500Returns.keys(),
+      ...goldReturns.keys(),
+      ...inflationMap.keys(),
+      ...nbpMap.keys(),
+    ])).sort();
+
+    const data = dates
+      .filter((date) => inflationMap.has(date) && nbpMap.has(date))
+      .map((date) => {
+        const nbpRate = nbpMap.get(date) ?? 0;
+        const annualSavingsRate = Math.max(0, nbpRate + 1);
+        const monthlySavingsRate = (Math.pow(1 + annualSavingsRate / 100, 1 / 12) - 1) * 100 * 0.81;
+
+        return {
+          date,
+          sp500: sp500Returns.get(date) ?? 0,
+          gold: goldReturns.get(date) ?? 0,
+          savings: monthlySavingsRate,
+          inflation: inflationMap.get(date) ?? 0,
+          nbpRate,
+        };
+      });
+
+    if (data.length === 0) {
+      return {
+        data: HISTORICAL_RETURNS,
+        source: 'fallback',
+        usedFallback: true,
+        coverageStart: fallbackCoverageStart,
+        coverageEnd: fallbackCoverageEnd,
+      };
+    }
+
+    return {
+      data,
+      source: 'database',
+      usedFallback: false,
+      coverageStart: data[0].date,
+      coverageEnd: data[data.length - 1].date,
+    };
+  } catch {
+    return {
+      data: HISTORICAL_RETURNS,
+      source: 'fallback',
+      usedFallback: true,
+      coverageStart: fallbackCoverageStart,
+      coverageEnd: fallbackCoverageEnd,
+    };
+  }
 });

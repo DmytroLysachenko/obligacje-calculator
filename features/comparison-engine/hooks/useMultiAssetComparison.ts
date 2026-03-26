@@ -1,8 +1,17 @@
 import { useState, useMemo } from 'react';
 import { calculateAssetPerformance, calculateBondsPerformance } from '../../bond-core/utils/asset-calculations';
 import { AssetMetadata } from '../../bond-core/types/assets';
-import { HISTORICAL_RETURNS } from '../../bond-core/constants/historical-data';
+import { HISTORICAL_RETURNS, type MonthlyReturn } from '../../bond-core/constants/historical-data';
 import { useQuerySync } from '@/shared/hooks/useQuerySync';
+import { useChartData } from '@/shared/hooks/useChartData';
+
+interface MultiAssetHistoryResponse {
+  data: MonthlyReturn[];
+  source: 'database' | 'fallback';
+  usedFallback: boolean;
+  coverageStart: string;
+  coverageEnd: string;
+}
 
 const ASSETS_METADATA: Record<string, AssetMetadata> = {
   sp500: {
@@ -11,7 +20,7 @@ const ASSETS_METADATA: Record<string, AssetMetadata> = {
     color: '#3b82f6',
     description: {
       en: '500 largest US companies. High growth, high volatility.',
-      pl: '500 największych spółek w USA. Wysoki wzrost, wysoka zmienność.',
+      pl: '500 najwiekszych spolek w USA. Wysoki wzrost, wysoka zmiennosc.',
     },
   },
   gold: {
@@ -20,7 +29,7 @@ const ASSETS_METADATA: Record<string, AssetMetadata> = {
     color: '#f59e0b',
     description: {
       en: 'Safe-haven asset. Protects purchasing power.',
-      pl: 'Aktywo "bezpieczna przystań". Chroni siłę nabywczą.',
+      pl: 'Aktywo "bezpieczna przystan". Chroni sile nabywcza.',
     },
   },
   bonds: {
@@ -29,7 +38,7 @@ const ASSETS_METADATA: Record<string, AssetMetadata> = {
     color: '#10b981',
     description: {
       en: 'Inflation-indexed government bonds. Safe and steady.',
-      pl: 'Obligacje skarbowe indeksowane inflacją. Bezpieczne i stabilne.',
+      pl: 'Obligacje skarbowe indeksowane inflacja. Bezpieczne i stabilne.',
     },
   },
   savings: {
@@ -38,7 +47,7 @@ const ASSETS_METADATA: Record<string, AssetMetadata> = {
     color: '#94a3b8',
     description: {
       en: 'Low-risk, low-reward cash account.',
-      pl: 'Niskie ryzyko, niski zysk. Konto oszczędnościowe.',
+      pl: 'Niskie ryzyko, niski zysk. Konto oszczednosciowe.',
     },
   },
 };
@@ -46,13 +55,12 @@ const ASSETS_METADATA: Record<string, AssetMetadata> = {
 export function useMultiAssetComparison() {
   const [initialSum, setInitialSum] = useState(10000);
   const [monthlyContribution, setMonthlyContribution] = useState(500);
-  
   const [startYear, setStartYear] = useState('2020');
   const [startMonth, setStartMonth] = useState('01');
-  
   const startDate = `${startYear}-${startMonth}`;
   const [showRealValue, setShowRealValue] = useState(false);
   const [isDirty, setIsDirty] = useState(true);
+  const { data: historyResponse, isLoading } = useChartData<MultiAssetHistoryResponse>('/api/charts/multi-asset-history');
 
   const updateInitialSum = (val: number) => {
     setInitialSum(val);
@@ -76,56 +84,61 @@ export function useMultiAssetComparison() {
 
   const updateShowRealValue = (val: boolean) => {
     setShowRealValue(val);
-    // Real value toggle usually doesn't need recalculation if it's just a view change, 
-    // but if it triggers heavy useMemo, we might want it. 
-    // In this hook it affects useMemo below.
   };
 
   const recalculate = () => {
     setIsDirty(false);
   };
-  
-  // URL Sync
-  useQuerySync({
-    sum: initialSum,
-    monthly: monthlyContribution,
-    year: startYear,
-    month: startMonth,
-    real: showRealValue
-  }, (initial) => {
-    if (initial.sum) setInitialSum(Number(initial.sum));
-    if (initial.monthly) setMonthlyContribution(Number(initial.monthly));
-    if (initial.year) setStartYear(String(initial.year));
-    if (initial.month) setStartMonth(String(initial.month));
-    if (initial.real !== undefined) setShowRealValue(String(initial.real) === 'true');
-  });
+
+  useQuerySync(
+    {
+      sum: initialSum,
+      monthly: monthlyContribution,
+      year: startYear,
+      month: startMonth,
+      real: showRealValue,
+    },
+    (initial) => {
+      if (initial.sum) setInitialSum(Number(initial.sum));
+      if (initial.monthly) setMonthlyContribution(Number(initial.monthly));
+      if (initial.year) setStartYear(String(initial.year));
+      if (initial.month) setStartMonth(String(initial.month));
+      if (initial.real !== undefined) setShowRealValue(String(initial.real) === 'true');
+    },
+  );
+
+  const sourceData = historyResponse?.data?.length ? historyResponse.data : HISTORICAL_RETURNS;
 
   const filteredData = useMemo(() => {
-    const data = HISTORICAL_RETURNS.filter(row => row.date >= startDate);
-    return data.length > 0 ? data : HISTORICAL_RETURNS.slice(-12); // Fallback
-  }, [startDate]);
+    const data = sourceData.filter((row) => row.date >= startDate);
+    return data.length > 0 ? data : sourceData;
+  }, [sourceData, startDate]);
 
-  const sp500 = useMemo(() => 
-    calculateAssetPerformance(initialSum, monthlyContribution, 'sp500', ASSETS_METADATA.sp500, filteredData), 
-  [initialSum, monthlyContribution, filteredData]);
-  
-  const gold = useMemo(() => 
-    calculateAssetPerformance(initialSum, monthlyContribution, 'gold', ASSETS_METADATA.gold, filteredData), 
-  [initialSum, monthlyContribution, filteredData]);
-  
-  const bonds = useMemo(() => 
-    calculateBondsPerformance(initialSum, monthlyContribution, ASSETS_METADATA.bonds, filteredData),
-  [initialSum, monthlyContribution, filteredData]);
-  
-  const savings = useMemo(() => 
-    calculateAssetPerformance(initialSum, monthlyContribution, 'savings', ASSETS_METADATA.savings, filteredData), 
-  [initialSum, monthlyContribution, filteredData]);
+  const sp500 = useMemo(
+    () => calculateAssetPerformance(initialSum, monthlyContribution, 'sp500', ASSETS_METADATA.sp500, filteredData),
+    [initialSum, monthlyContribution, filteredData],
+  );
+
+  const gold = useMemo(
+    () => calculateAssetPerformance(initialSum, monthlyContribution, 'gold', ASSETS_METADATA.gold, filteredData),
+    [initialSum, monthlyContribution, filteredData],
+  );
+
+  const bonds = useMemo(
+    () => calculateBondsPerformance(initialSum, monthlyContribution, ASSETS_METADATA.bonds, filteredData),
+    [initialSum, monthlyContribution, filteredData],
+  );
+
+  const savings = useMemo(
+    () => calculateAssetPerformance(initialSum, monthlyContribution, 'savings', ASSETS_METADATA.savings, filteredData),
+    [initialSum, monthlyContribution, filteredData],
+  );
 
   const years = useMemo(() => {
-    const uniqueYears = Array.from(new Set(HISTORICAL_RETURNS.map(r => r.date.substring(0, 4))));
+    const uniqueYears = Array.from(new Set(sourceData.map((row) => row.date.substring(0, 4))));
     return uniqueYears.sort((a, b) => b.localeCompare(a));
-  }, []);
-  
+  }, [sourceData]);
+
   const months = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'));
 
   return {
@@ -143,9 +156,14 @@ export function useMultiAssetComparison() {
     showRealValue,
     updateShowRealValue,
     isDirty,
+    isLoading,
     recalculate,
     assets: [sp500, gold, bonds, savings],
     metadata: ASSETS_METADATA,
-    availableDates: HISTORICAL_RETURNS.map(r => r.date),
+    availableDates: sourceData.map((row) => row.date),
+    historySource: historyResponse?.source ?? 'fallback',
+    historyCoverageStart: historyResponse?.coverageStart ?? HISTORICAL_RETURNS[0]?.date,
+    historyCoverageEnd: historyResponse?.coverageEnd ?? HISTORICAL_RETURNS[HISTORICAL_RETURNS.length - 1]?.date,
+    usedFallbackHistory: historyResponse?.usedFallback ?? true,
   };
 }
