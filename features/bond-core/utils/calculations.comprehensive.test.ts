@@ -118,6 +118,27 @@ describe('Comprehensive Bond Calculations', () => {
     expect(Array.isArray(results.dataQualityFlags)).toBe(true);
   });
 
+  it('marks projected macro segments when historical data is unavailable', () => {
+    const inputs = {
+      ...baseInputs,
+      bondType: BondType.ROR,
+      duration: 1,
+      firstYearRate: 4.25,
+      expectedNbpRate: 5.25,
+      payoutFrequency: InterestPayout.MONTHLY,
+      purchaseDate: '2026-03-01T00:00:00.000Z',
+      withdrawalDate: '2027-03-01T00:00:00.000Z',
+      historicalData: {},
+    };
+
+    const results = calculateBondInvestment(inputs);
+    const projectedPoints = results.timeline.filter((point) => point.usedProjectedRate);
+
+    expect(projectedPoints.length).toBeGreaterThan(0);
+    expect(projectedPoints.some((point) => point.rateSource === 'projected_nbp')).toBe(true);
+    expect(results.dataQualityFlags).toContain('projected_rate_segment');
+  });
+
   it('EDO: 10-year inflation-indexed, capitalization, tax at end', () => {
     const inputs = {
       ...baseInputs,
@@ -223,6 +244,26 @@ describe('Comprehensive Bond Calculations', () => {
     expect(results.timeline[2].interestRate).toBe(1.5);
   });
 
+  it('IKZE applies exit tax to withdrawal value rather than periodic payout tax', () => {
+    const inputs = {
+      ...baseInputs,
+      bondType: BondType.EDO,
+      duration: 10,
+      firstYearRate: 5.6,
+      expectedInflation: 4.0,
+      margin: 2.0,
+      isCapitalized: true,
+      payoutFrequency: InterestPayout.MATURITY,
+      withdrawalDate: '2036-03-01T00:00:00.000Z',
+      taxStrategy: TaxStrategy.IKZE,
+    };
+
+    const results = calculateBondInvestment(inputs);
+
+    expect(results.totalTax).toBeGreaterThan(0);
+    expect(results.timeline.every((point) => point.taxDeducted === 0)).toBe(true);
+  });
+
   it('Swap discount: calculates initial investment and units correctly', () => {
     const inputs = {
       ...baseInputs,
@@ -238,5 +279,24 @@ describe('Comprehensive Bond Calculations', () => {
     // because the 1 PLN leftover is technically still part of the initial capital.
     expect(results.initialInvestment).toBe(1000);
     expect(results.timeline[1].nominalValueBeforeInterest).toBe(1000);
+  });
+
+  it('applies rebuy discount only on eligible rollover purchases', () => {
+    const inputs = {
+      ...baseInputs,
+      bondType: BondType.COI,
+      duration: 4,
+      purchaseDate: '2026-03-01T00:00:00.000Z',
+      withdrawalDate: '2034-03-01T00:00:00.000Z',
+      isRebought: true,
+      rebuyDiscount: 0.1,
+      rollover: true,
+    };
+
+    const results = calculateBondInvestment(inputs);
+    const cycleIndexes = new Set(results.timeline.slice(1).map((point) => point.cycleIndex));
+
+    expect(cycleIndexes.size).toBeGreaterThan(1);
+    expect(results.netPayoutValue).toBeGreaterThan(results.initialInvestment);
   });
 });

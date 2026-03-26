@@ -90,5 +90,77 @@
       "grossValue": 14979.56,
       "finalNominalValue": 14979.56
     }
+  },
+  {
+    "name": "COI Deflation Floor",
+    "inputs": {
+      "initialInvestment": 10000,
+      "firstYearRate": 5.0,
+      "expectedInflation": -2.0,
+      "margin": 1.5,
+      "duration": 4,
+      "earlyWithdrawalFee": 2.0,
+      "bondType": "COI",
+      "isCapitalized": false,
+      "payoutFrequency": "YEARLY",
+      "purchaseDate": "2026-03-01T00:00:00.000Z",
+      "withdrawalDate": "2030-03-01T00:00:00.000Z",
+      "taxStrategy": "STANDARD"
+    },
+    "expected": {
+      "totalProfit": 769.5,
+      "totalTax": 180.5,
+      "grossValue": 10950,
+      "finalNominalValue": 10950
+    }
+  },
+  {
+    "name": "EDO IKZE Exit",
+    "inputs": {
+      "initialInvestment": 10000,
+      "firstYearRate": 5.6,
+      "expectedInflation": 4.0,
+      "margin": 2.0,
+      "duration": 10,
+      "earlyWithdrawalFee": 3.0,
+      "bondType": "EDO",
+      "isCapitalized": true,
+      "payoutFrequency": "MATURITY",
+      "purchaseDate": "2026-03-01T00:00:00.000Z",
+      "withdrawalDate": "2036-03-01T00:00:00.000Z",
+      "taxStrategy": "IKZE"
+    },
+    "expected": {
+      "totalProfit": 6948.9,
+      "totalTax": 892,
+      "grossValue": 17840.9,
+      "finalNominalValue": 17840.9
+    }
+  },
+  {
+    "name": "COI Rebuy Discount",
+    "inputs": {
+      "initialInvestment": 10000,
+      "firstYearRate": 5.0,
+      "expectedInflation": 3.0,
+      "margin": 1.5,
+      "duration": 4,
+      "earlyWithdrawalFee": 2.0,
+      "bondType": "COI",
+      "isCapitalized": false,
+      "payoutFrequency": "YEARLY",
+      "purchaseDate": "2026-03-01T00:00:00.000Z",
+      "withdrawalDate": "2034-03-01T00:00:00.000Z",
+      "taxStrategy": "STANDARD",
+      "isRebought": true,
+      "rebuyDiscount": 0.1,
+      "rollover": true
+    },
+    "expected": {
+      "totalProfit": 3223.28,
+      "totalTax": 755.73,
+      "grossValue": 13627.5,
+      "finalNominalValue": 13627.5
+    }
   }
 ]
