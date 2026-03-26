@@ -54,6 +54,8 @@ export const BondComparisonContainer = () => {
 
   const results = envelope?.result || [];
   const warnings = envelope?.warnings || [];
+  const calculationNotes = envelope?.calculationNotes || [];
+  const dataQualityFlags = envelope?.dataQualityFlags || [];
 
   const purchaseDate = new Date().toISOString().split('T')[0];
   const withdrawalDate = addYears(new Date(purchaseDate), duration).toISOString().split('T')[0];
@@ -66,6 +68,7 @@ export const BondComparisonContainer = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          mode: 'normalized',
           bondTypes: selectedBonds,
           initialInvestment,
           purchaseDate,
@@ -356,6 +359,39 @@ export const BondComparisonContainer = () => {
               <li key={i} className="text-xs text-orange-700 font-bold">{w}</li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {(calculationNotes.length > 0 || dataQualityFlags.length > 0) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {calculationNotes.length > 0 && (
+            <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-2xl shadow-sm">
+              <h4 className="text-sm font-black uppercase text-blue-800 mb-2">
+                Calculation Notes
+              </h4>
+              <ul className="list-disc list-inside space-y-1">
+                {calculationNotes.map((note, index) => (
+                  <li key={`note-${index}`} className="text-xs text-blue-900 font-medium">
+                    {note}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {dataQualityFlags.length > 0 && (
+            <div className="p-4 bg-amber-50 border-2 border-amber-200 rounded-2xl shadow-sm">
+              <h4 className="text-sm font-black uppercase text-amber-800 mb-2">
+                Data Quality
+              </h4>
+              <ul className="list-disc list-inside space-y-1">
+                {dataQualityFlags.map((flag, index) => (
+                  <li key={`quality-${index}`} className="text-xs text-amber-900 font-medium">
+                    {flag}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
 

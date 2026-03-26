@@ -2,6 +2,7 @@ import {
   BondInputs, 
   BondType, 
   CalculationResult, 
+  RateSource,
   YearlyTimelinePoint, 
   RegularInvestmentInputs,
   RegularInvestmentResult,
@@ -66,6 +67,9 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
   let globalAccumulatedNetInterest = new Decimal(0);
   let currentPurchaseDate = startDate;
   let isCurrentlyRebought = isRebought;
+  let cycleIndex = 1;
+  const calculationNotes: string[] = [];
+  const dataQualityFlags = new Set<string>();
 
   // Add initial starting point for the whole simulation
   globalTimeline.push(createInitialTimelinePoint({
@@ -105,7 +109,8 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
 
     for (let i = 0; i < periods.length; i++) {
       const period = periods[i];
-      const periodIdx = i + 1;
+      const monthsIntoCycle = differenceInMonths(period.startDate, currentPurchaseDate);
+      const cycleYearIndex = Math.floor(monthsIntoCycle / 12) + 1;
 
       const periodYearIndex = Math.floor(differenceInMonths(period.startDate, startDate) / 12);
       const activeExpectedInflation = getExpectedInflationForYearIndex(
@@ -115,10 +120,11 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
       );
 
       const { value: lagInflation, isProjected } = getHistoricalValue(period.startDate, 'inflation', 2, historicalData);
+      const { value: lagNbp, isProjected: isNbpProjected } = getHistoricalValue(period.startDate, 'nbpRate', 0, historicalData);
 
       const currentInterestRate = determineInterestRate(
         bondType,
-        periodIdx,
+        cycleYearIndex,
         firstYearRate,
         activeExpectedInflation,
         expectedNbpRate,
@@ -126,6 +132,31 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
         isInflationIndexed,
         lagInflation
       );
+      let rateSource: RateSource = 'fixed_rate';
+      let rateReferenceValue: number | undefined;
+      let rateMarginApplied = margin;
+      let usedProjectedRate = false;
+
+      if (cycleYearIndex === 1) {
+        rateSource = 'first_year_fixed';
+        rateReferenceValue = firstYearRate;
+        rateMarginApplied = 0;
+      } else if (bondType === BondType.ROR || bondType === BondType.DOR) {
+        usedProjectedRate = isNbpProjected;
+        rateSource = lagNbp !== undefined ? 'historical_nbp' : 'projected_nbp';
+        rateReferenceValue = lagNbp !== undefined ? lagNbp : expectedNbpRate;
+      } else if (isInflationIndexed) {
+        usedProjectedRate = isProjected;
+        rateSource = lagInflation !== undefined ? 'historical_cpi_lag' : 'projected_cpi';
+        rateReferenceValue = lagInflation !== undefined ? lagInflation : activeExpectedInflation;
+      } else {
+        rateSource = 'fixed_rate';
+        rateReferenceValue = firstYearRate;
+        rateMarginApplied = 0;
+      }
+      if (usedProjectedRate) {
+        dataQualityFlags.add('projected_rate_segment');
+      }
 
       const accrual = calculatePeriodAccrual(
         currentNominalValue,
@@ -187,12 +218,17 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
       const totalValue = liquidationValue;
       const realValue = calculateRealValue(totalValue, cumulativeInflation);
 
-      const { value: lagNbp } = getHistoricalValue(period.startDate, 'nbpRate', 0, historicalData);
-
       globalTimeline.push({
         year: totalMonthsSoFar / 12, // accurate fractional years
         periodLabel: period.periodLabel,
+        cycleIndex,
+        cycleStartDate: currentPurchaseDate.toISOString(),
+        cycleEndDate: actualCycleEndDate.toISOString(),
         interestRate: currentInterestRate.toNumber(),
+        rateSource,
+        rateReferenceValue,
+        rateMarginApplied,
+        usedProjectedRate,
         nominalValueBeforeInterest: previousNominalValue.toNumber(),
         interestEarned: interestEarned.toNumber(),
         taxDeducted: taxDeducted.toNumber(),
@@ -228,6 +264,14 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
     const netProceeds = cycleGrossValue.minus(cycleFee).minus(cycleTax);
 
     if (!rollover || isEarlyWithdrawal || actualCycleEndDate.getTime() === targetWithdrawalDate.getTime()) {
+      if (rollover) {
+        calculationNotes.push(`Simulation covered ${cycleIndex} bond cycle${cycleIndex === 1 ? '' : 's'} across the selected horizon.`);
+      } else {
+        calculationNotes.push('Rollover is disabled; the simulation stops at the first bond cycle or selected withdrawal date.');
+      }
+      if (isEarlyWithdrawal) {
+        calculationNotes.push('Early redemption fee logic was applied before the native maturity date.');
+      }
       return createFinalSingleBondResult({
         initialInvestment,
         timeline: globalTimeline,
@@ -237,6 +281,8 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
         totalFee: totalFeeAcc,
         isEarlyWithdrawal,
         cycleMaturityDate,
+        calculationNotes,
+        dataQualityFlags: Array.from(dataQualityFlags),
       });
     }
 
@@ -246,6 +292,7 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
     globalAccumulatedNetInterest = new Decimal(0);
     currentPurchaseDate = actualCycleEndDate;
     isCurrentlyRebought = true; // Sub-sequent cycles always use re-buy discount
+    cycleIndex += 1;
   }
 
   // Fallback (should not be reached)
@@ -365,9 +412,8 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
         const dLotTax = new Decimal(lot.tax);
 
         if (monthsHeld <= bondDurationMonths) {
-          // Re-calculate periodIdx only once per lot update
-          const periodIdx = Math.ceil(monthsHeld / 12) || 1;
-          const currentMonthlyRate = periodIdx === 1 ? monthlyRateYear1 : monthlyRateIndexed;
+          const cycleYearIndex = Math.floor(Math.max(0, monthsHeld - 1) / 12) + 1;
+          const currentMonthlyRate = cycleYearIndex === 1 ? monthlyRateYear1 : monthlyRateIndexed;
 
           const interestThisMonth = dLotGrossValue.times(currentMonthlyRate);
 

@@ -6,8 +6,8 @@ import { BondType } from '../../types';
  * Implements the "inflation lag" rule: most indexed bonds use inflation from 2 months prior.
  * 
  * @param bondType Type of the bond (EDO, COI, etc.)
- * @param period The current period number (1-based)
- * @param firstYearRate The fixed rate for the first year/period
+ * @param period The current bond-year number within a cycle (1-based)
+ * @param firstYearRate The fixed rate for the first bond year
  * @param expectedInflation Current/Expected annual inflation
  * @param expectedNbpRate Current/Expected NBP reference rate
  * @param margin The bond's margin over the base rate
@@ -31,8 +31,7 @@ export function determineInterestRate(
   } 
   
   if (bondType === BondType.ROR || bondType === BondType.DOR) {
-    // Variable rate bonds (ROR/DOR) often have a fixed rate only for the first month or first year
-    // For ROR (1y) it is monthly, so period 1 is month 1.
+    // The offer rate applies across the first bond year, even if interest is paid monthly.
     return isFirstPeriod ? new Decimal(firstYearRate) : Decimal.max(0, expectedNbpRate).plus(margin);
   } 
   

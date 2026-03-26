@@ -48,27 +48,23 @@ describe('Comprehensive Bond Calculations', () => {
     expect(earlyResults.totalProfit).toBe(0); // OTS loses all interest on early exit
   });
 
-  it('ROR: 1-year variable, monthly payout, NBP floor', () => {
+  it('ROR: first-year rate applies across the full first bond year', () => {
     const inputs = {
       ...baseInputs,
       bondType: BondType.ROR,
       duration: 1,
       firstYearRate: 4.25,
-      expectedNbpRate: -1.0, // Test NBP floor
+      expectedNbpRate: -1.0,
       margin: 0.0,
       payoutFrequency: InterestPayout.MONTHLY,
       withdrawalDate: '2027-03-01T00:00:00.000Z',
     };
     const results = calculateBondInvestment(inputs);
-    
-    // Month 1: 4.25% / 12 * 10000 = 35.42 PLN
-    // Months 2-12: max(0, -1.0) + 0.0 = 0% interest
-    // timeline[0] = initial, timeline[1] = month 1, timeline[2] = month 2
+
     expect(results.timeline[1].interestRate).toBe(4.25);
-    expect(results.timeline[2].interestRate).toBe(0);
-    // tax = 35.42 * 0.19 = 6.7298 -> 7 PLN
-    // profit = 35.42 - 7 = 28.42
-    expect(results.totalProfit).toBeCloseTo(28.42, 1);
+    expect(results.timeline[2].interestRate).toBe(4.25);
+    expect(results.timeline[12].interestRate).toBe(4.25);
+    expect(results.totalProfit).toBeGreaterThan(250);
   });
 
   it('supports multi-cycle rollover for short-duration bonds across a longer horizon', () => {
@@ -90,6 +86,36 @@ describe('Comprehensive Bond Calculations', () => {
     expect(results.timeline.length).toBeGreaterThan(40);
     expect(results.maturityDate).toBe('2031-03-01T00:00:00.000Z');
     expect(results.netPayoutValue).toBeGreaterThan(results.initialInvestment);
+    expect(new Set(results.timeline.slice(1).map((point) => point.cycleIndex)).size).toBeGreaterThan(1);
+  });
+
+  it('adds calculation audit metadata to timeline points', () => {
+    const inputs = {
+      ...baseInputs,
+      bondType: BondType.EDO,
+      duration: 10,
+      firstYearRate: 5.6,
+      expectedInflation: 4.0,
+      margin: 2.0,
+      isCapitalized: true,
+      payoutFrequency: InterestPayout.MATURITY,
+      purchaseDate: '2026-03-01T00:00:00.000Z',
+      withdrawalDate: '2028-03-01T00:00:00.000Z',
+      rollover: false,
+    };
+
+    const results = calculateBondInvestment(inputs);
+    const initialPoint = results.timeline[0];
+    const firstAccrualPoint = results.timeline[1];
+    const secondAccrualPoint = results.timeline[2];
+
+    expect(initialPoint.rateSource).toBe('initial_principal');
+    expect(firstAccrualPoint.rateSource).toBe('first_year_fixed');
+    expect(firstAccrualPoint.cycleIndex).toBe(1);
+    expect(firstAccrualPoint.cycleStartDate).toBe('2026-03-01T00:00:00.000Z');
+    expect(secondAccrualPoint.rateSource).toMatch(/cpi|fixed/);
+    expect(Array.isArray(results.calculationNotes)).toBe(true);
+    expect(Array.isArray(results.dataQualityFlags)).toBe(true);
   });
 
   it('EDO: 10-year inflation-indexed, capitalization, tax at end', () => {

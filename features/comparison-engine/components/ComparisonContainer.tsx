@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useComparison } from "../hooks/useComparison";
 import { BondInputsForm } from "../../single-calculator/components/BondInputsForm";
+import { BondComparisonContainer } from "./BondComparisonContainer";
 import { useLanguage } from "@/i18n";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -82,6 +83,10 @@ export const ComparisonContainer: React.FC = () => {
     inputsB,
     resultsA,
     resultsB,
+    envelopeA,
+    envelopeB,
+    warningsA,
+    warningsB,
     isCalculating,
     calculate,
     updateInputA,
@@ -92,6 +97,7 @@ export const ComparisonContainer: React.FC = () => {
   } = useComparison();
   const { t, language } = useLanguage();
   const [hasMounted, setHasMounted] = useState(false);
+  const [compareMode, setCompareMode] = useState<'independent' | 'normalized'>('independent');
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -146,7 +152,9 @@ export const ComparisonContainer: React.FC = () => {
             {t("nav.comparison")}
           </h2>
           <p className="text-muted-foreground mt-2">
-            {t('comparison.desc_bond_vs_bond')}
+            {compareMode === 'independent'
+              ? 'Compare two fully independent bond strategies with their own horizon, rollover, and tax assumptions.'
+              : t('comparison.desc_bond_vs_bond')}
           </p>
         </div>
         <div className="flex items-center gap-4">
@@ -170,6 +178,28 @@ export const ComparisonContainer: React.FC = () => {
           )}
         </div>
       </header>
+
+      <div className="flex gap-3">
+        <Badge
+          variant={compareMode === 'independent' ? 'default' : 'outline'}
+          className="cursor-pointer px-4 py-2"
+          onClick={() => setCompareMode('independent')}
+        >
+          Independent Scenarios
+        </Badge>
+        <Badge
+          variant={compareMode === 'normalized' ? 'default' : 'outline'}
+          className="cursor-pointer px-4 py-2"
+          onClick={() => setCompareMode('normalized')}
+        >
+          Normalized Compare
+        </Badge>
+      </div>
+
+      {compareMode === 'normalized' ? (
+        <BondComparisonContainer />
+      ) : (
+        <>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         <div className="space-y-6">
@@ -401,6 +431,45 @@ export const ComparisonContainer: React.FC = () => {
               </CardContent>
             </Card>
           </div>
+
+          {((warningsA.length + warningsB.length) > 0 ||
+            (envelopeA?.calculationNotes.length ?? 0) > 0 ||
+            (envelopeB?.calculationNotes.length ?? 0) > 0 ||
+            (envelopeA?.dataQualityFlags.length ?? 0) > 0 ||
+            (envelopeB?.dataQualityFlags.length ?? 0) > 0) && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[{ label: 'Scenario A', envelope: envelopeA, warnings: warningsA }, { label: 'Scenario B', envelope: envelopeB, warnings: warningsB }].map((entry) => (
+                <Card key={entry.label} className="border shadow-sm">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-black uppercase tracking-widest">{entry.label} Notes</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3 text-xs">
+                    {entry.envelope?.calculationNotes?.length ? (
+                      <ul className="list-disc list-inside space-y-1">
+                        {entry.envelope.calculationNotes.map((note, index) => (
+                          <li key={`${entry.label}-note-${index}`}>{note}</li>
+                        ))}
+                      </ul>
+                    ) : null}
+                    {entry.warnings.length ? (
+                      <ul className="list-disc list-inside space-y-1 text-orange-700">
+                        {entry.warnings.map((warning, index) => (
+                          <li key={`${entry.label}-warning-${index}`}>{warning}</li>
+                        ))}
+                      </ul>
+                    ) : null}
+                    {entry.envelope?.dataQualityFlags?.length ? (
+                      <ul className="list-disc list-inside space-y-1 text-amber-700">
+                        {entry.envelope.dataQualityFlags.map((flag, index) => (
+                          <li key={`${entry.label}-quality-${index}`}>{flag}</li>
+                        ))}
+                      </ul>
+                    ) : null}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -409,6 +478,8 @@ export const ComparisonContainer: React.FC = () => {
         loading={isCalculating}
         onClick={() => calculate()}
       />
+        </>
+      )}
     </div>
   );
 };
