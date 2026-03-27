@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
   LineChart, 
   Line, 
+  Brush,
   XAxis, 
   YAxis, 
   CartesianGrid, 
@@ -291,6 +292,7 @@ export const BondComparisonContainer = () => {
                           formatter={(val: ValueType | undefined) => formatCurrency(Number(val ?? 0))}
                         />
                         <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px', fontSize: '12px', fontWeight: 'bold' }} />
+                        {chartData.length > 24 ? <Brush dataKey="date" height={22} stroke="#64748b" travellerWidth={8} /> : null}
                         {selectedBonds.map((type, idx) => (
                           <Line
                             key={type}

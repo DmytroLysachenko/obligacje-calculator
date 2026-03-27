@@ -6,7 +6,7 @@ export default function ComparePage() {
   return (
     <PageTransition>
       <div className="max-w-7xl mx-auto">
-        <Suspense fallback={<div>Loading comparison engine...</div>}>
+        <Suspense fallback={<div className="py-12 text-center text-sm text-muted-foreground">Loading…</div>}>
           <ComparisonContainer />
         </Suspense>
       </div>

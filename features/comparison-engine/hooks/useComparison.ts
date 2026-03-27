@@ -1,48 +1,90 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { BondInputs, BondType, TaxStrategy } from '../../bond-core/types';
-import { BondComparisonCalculationEnvelope, SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
+import {
+  BondComparisonCalculationEnvelope,
+  IndependentBondComparisonPayload,
+  SingleBondCalculationEnvelope,
+} from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
-import { addMonths, differenceInMonths } from 'date-fns';
 import { useQuerySync } from '@/shared/hooks/useQuerySync';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
-import { postCalculation } from '@/shared/lib/calculation-client';
+import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 
-const createDefaultInputs = (type: BondType): BondInputs => {
-  const def = BOND_DEFINITIONS[type];
-  const today = new Date();
+type SharedComparisonConfig = IndependentBondComparisonPayload['sharedConfig'];
+type ScenarioOverride = IndependentBondComparisonPayload['scenarioA'];
+
+const DEFAULT_HORIZON_MONTHS = 120;
+const today = toDateString(new Date());
+
+const DEFAULT_SHARED_CONFIG: SharedComparisonConfig = {
+  initialInvestment: 10000,
+  purchaseDate: today,
+  withdrawalDate: getWithdrawalDateFromMonths(today, DEFAULT_HORIZON_MONTHS),
+  expectedInflation: 3.5,
+  expectedNbpRate: 5.25,
+  taxStrategy: TaxStrategy.STANDARD,
+  timingMode: 'general',
+  investmentHorizonMonths: DEFAULT_HORIZON_MONTHS,
+};
+
+const DEFAULT_SCENARIO_A: ScenarioOverride = {
+  bondType: BondType.COI,
+  rollover: false,
+  isRebought: false,
+};
+
+const DEFAULT_SCENARIO_B: ScenarioOverride = {
+  bondType: BondType.EDO,
+  rollover: false,
+  isRebought: false,
+};
+
+function buildScenarioInputs(sharedConfig: SharedComparisonConfig, scenario: ScenarioOverride): BondInputs {
+  const definition = BOND_DEFINITIONS[scenario.bondType];
+  const purchaseDate = scenario.purchaseDate ?? sharedConfig.purchaseDate;
+  const timingMode = scenario.timingMode ?? sharedConfig.timingMode ?? 'general';
+  const horizonMonths = scenario.investmentHorizonMonths ?? sharedConfig.investmentHorizonMonths ?? DEFAULT_HORIZON_MONTHS;
+  const withdrawalDate =
+    scenario.withdrawalDate
+    ?? (timingMode === 'general'
+      ? getWithdrawalDateFromMonths(purchaseDate, horizonMonths)
+      : sharedConfig.withdrawalDate);
+
   return {
-    bondType: type,
-    initialInvestment: 10000,
-    firstYearRate: def.firstYearRate,
-    expectedInflation: 3.5,
-    margin: def.margin,
-    duration: def.duration,
-    earlyWithdrawalFee: def.earlyWithdrawalFee,
+    bondType: scenario.bondType,
+    initialInvestment: sharedConfig.initialInvestment,
+    firstYearRate: definition.firstYearRate,
+    expectedInflation: sharedConfig.expectedInflation,
+    expectedNbpRate: sharedConfig.expectedNbpRate ?? 5.25,
+    margin: definition.margin,
+    duration: definition.duration,
+    earlyWithdrawalFee: definition.earlyWithdrawalFee,
     taxRate: 19,
-    isCapitalized: def.isCapitalized,
-    payoutFrequency: def.payoutFrequency,
-    purchaseDate: today.toISOString(),
-    withdrawalDate: addMonths(today, Math.round(def.duration * 12)).toISOString(),
-    isRebought: false,
-    rebuyDiscount: def.rebuyDiscount,
-    taxStrategy: TaxStrategy.STANDARD,
-    rollover: false,
+    isCapitalized: definition.isCapitalized,
+    payoutFrequency: definition.payoutFrequency,
+    purchaseDate,
+    withdrawalDate,
+    isRebought: scenario.isRebought ?? false,
+    rebuyDiscount: definition.rebuyDiscount,
+    taxStrategy: scenario.taxStrategy ?? sharedConfig.taxStrategy ?? TaxStrategy.STANDARD,
+    rollover: scenario.rollover ?? false,
+    timingMode,
+    investmentHorizonMonths: horizonMonths,
   };
-};
-
-const getHorizonMonths = (purchaseDate: string, withdrawalDate: string) => {
-  const months = differenceInMonths(new Date(withdrawalDate), new Date(purchaseDate));
-  return Math.max(0, months);
-};
+}
 
 export function useComparison() {
-  const [inputsA, setInputsA] = useState<BondInputs>(createDefaultInputs(BondType.COI));
-  const [inputsB, setInputsB] = useState<BondInputs>(createDefaultInputs(BondType.EDO));
+  const [sharedConfig, setSharedConfig] = useState<SharedComparisonConfig>(DEFAULT_SHARED_CONFIG);
+  const [scenarioA, setScenarioA] = useState<ScenarioOverride>(DEFAULT_SCENARIO_A);
+  const [scenarioB, setScenarioB] = useState<ScenarioOverride>(DEFAULT_SCENARIO_B);
   const [comparisonEnvelope, setComparisonEnvelope] = useState<BondComparisonCalculationEnvelope | null>(null);
   const [isDirty, setIsDirty] = useState(true);
-  const { isCalculating, run } = useCalculationRequest();
+  const { isCalculating, post } = useCalculationRequest();
+
+  const inputsA = useMemo(() => buildScenarioInputs(sharedConfig, scenarioA), [sharedConfig, scenarioA]);
+  const inputsB = useMemo(() => buildScenarioInputs(sharedConfig, scenarioB), [sharedConfig, scenarioB]);
 
   const scenarioAResult = comparisonEnvelope?.result.find((item) => item.scenarioKey === 'scenarioA');
   const scenarioBResult = comparisonEnvelope?.result.find((item) => item.scenarioKey === 'scenarioB');
@@ -52,6 +94,7 @@ export function useComparison() {
   const sharedAssumptions = comparisonEnvelope?.assumptions || [];
   const sharedNotes = comparisonEnvelope?.calculationNotes || [];
   const sharedFlags = comparisonEnvelope?.dataQualityFlags || [];
+
   const envelopeA: SingleBondCalculationEnvelope | null = resultsA
     ? {
         result: resultsA,
@@ -63,6 +106,7 @@ export function useComparison() {
         calculationVersion: comparisonEnvelope?.calculationVersion ?? 'unknown',
       }
     : null;
+
   const envelopeB: SingleBondCalculationEnvelope | null = resultsB
     ? {
         result: resultsB,
@@ -75,128 +119,146 @@ export function useComparison() {
       }
     : null;
 
-  // Sync state with URL using prefixes to avoid collisions
-  const combinedState = {
-    ...Object.fromEntries(Object.entries(inputsA).map(([k, v]) => [`a_${k}`, v])),
-    ...Object.fromEntries(Object.entries(inputsB).map(([k, v]) => [`b_${k}`, v])),
-  };
+  useQuerySync(
+    {
+      common_initialInvestment: sharedConfig.initialInvestment,
+      common_purchaseDate: sharedConfig.purchaseDate,
+      common_withdrawalDate: sharedConfig.withdrawalDate,
+      common_expectedInflation: sharedConfig.expectedInflation,
+      common_expectedNbpRate: sharedConfig.expectedNbpRate,
+      common_taxStrategy: sharedConfig.taxStrategy,
+      common_timingMode: sharedConfig.timingMode,
+      common_investmentHorizonMonths: sharedConfig.investmentHorizonMonths,
+      scenarioA_bondType: scenarioA.bondType,
+      scenarioA_rollover: scenarioA.rollover,
+      scenarioA_isRebought: scenarioA.isRebought,
+      scenarioA_taxStrategy: scenarioA.taxStrategy,
+      scenarioA_investmentHorizonMonths: scenarioA.investmentHorizonMonths,
+      scenarioB_bondType: scenarioB.bondType,
+      scenarioB_rollover: scenarioB.rollover,
+      scenarioB_isRebought: scenarioB.isRebought,
+      scenarioB_taxStrategy: scenarioB.taxStrategy,
+      scenarioB_investmentHorizonMonths: scenarioB.investmentHorizonMonths,
+    },
+    (initial) => {
+      const nextShared = { ...DEFAULT_SHARED_CONFIG } as SharedComparisonConfig;
+      const nextScenarioA = { ...DEFAULT_SCENARIO_A } as ScenarioOverride;
+      const nextScenarioB = { ...DEFAULT_SCENARIO_B } as ScenarioOverride;
 
-  useQuerySync(combinedState, (initial) => {
-    const newA: Partial<BondInputs> = {};
-    const newB: Partial<BondInputs> = {};
-    
-    Object.entries(initial).forEach(([key, val]) => {
-      if (key.startsWith('a_')) {
-        const inputKey = key.replace('a_', '') as keyof BondInputs;
-        (newA as Record<string, unknown>)[inputKey] = val;
-      }
-      if (key.startsWith('b_')) {
-        const inputKey = key.replace('b_', '') as keyof BondInputs;
-        (newB as Record<string, unknown>)[inputKey] = val;
-      }
-    });
+      Object.entries(initial).forEach(([key, value]) => {
+        if (key.startsWith('common_')) {
+          (nextShared as Record<string, unknown>)[key.replace('common_', '')] = value;
+        } else if (key.startsWith('scenarioA_')) {
+          (nextScenarioA as Record<string, unknown>)[key.replace('scenarioA_', '')] = value;
+        } else if (key.startsWith('scenarioB_')) {
+          (nextScenarioB as Record<string, unknown>)[key.replace('scenarioB_', '')] = value;
+        }
+      });
 
-    if (Object.keys(newA).length > 0) setInputsA(prev => ({ ...prev, ...newA }));
-    if (Object.keys(newB).length > 0) setInputsB(prev => ({ ...prev, ...newB }));
-  });
+      setSharedConfig(nextShared);
+      setScenarioA(nextScenarioA);
+      setScenarioB(nextScenarioB);
+    },
+  );
 
   const calculate = useCallback(async () => {
     setIsDirty(false);
     try {
-      const envelope = await run(() =>
-        postCalculation<BondComparisonCalculationEnvelope>('/api/calculate/compare', {
+      const envelope = await post<BondComparisonCalculationEnvelope>(
+        '/api/calculate/compare',
+        {
           mode: 'independent',
-          scenarioA: inputsA,
-          scenarioB: inputsB,
-        }),
+          sharedConfig,
+          scenarioA,
+          scenarioB,
+        },
+        { preferWorker: true },
       );
       setComparisonEnvelope(envelope);
     } catch (error) {
       console.error('Comparison error:', error);
     }
-  }, [inputsA, inputsB, run]);
+  }, [post, scenarioA, scenarioB, sharedConfig]);
 
-  // Initial calculation - REMOVED to prevent excessive requests on remount
-  // useEffect(() => {
-  //   calculate();
-  // }, []);
-
-  const updateInputA = (key: keyof BondInputs, value: string | number | boolean | number[] | undefined) => {
+  const updateSharedConfig = (key: keyof SharedComparisonConfig, value: string | number | boolean | undefined) => {
     setIsDirty(true);
-    setInputsA(prev => {
+    setSharedConfig((prev) => {
       const next = { ...prev, [key]: value };
+
       if (key === 'purchaseDate') {
-        const horizonMonths = getHorizonMonths(prev.purchaseDate, prev.withdrawalDate);
-        next.withdrawalDate = addMonths(new Date(value as string), horizonMonths).toISOString();
+        const months = prev.investmentHorizonMonths ?? getHorizonMonths(prev.purchaseDate, prev.withdrawalDate);
+        next.withdrawalDate = getWithdrawalDateFromMonths(String(value), months);
       }
+
+      if (key === 'investmentHorizonMonths') {
+        next.withdrawalDate = getWithdrawalDateFromMonths(prev.purchaseDate, Number(value));
+      }
+
+      if (key === 'withdrawalDate') {
+        next.investmentHorizonMonths = getHorizonMonths(prev.purchaseDate, String(value));
+        next.timingMode = 'exact';
+      }
+
+      if (key === 'timingMode' && value === 'general') {
+        const months = prev.investmentHorizonMonths ?? getHorizonMonths(prev.purchaseDate, prev.withdrawalDate);
+        next.investmentHorizonMonths = months;
+        next.withdrawalDate = getWithdrawalDateFromMonths(prev.purchaseDate, months);
+      }
+
       return next;
     });
   };
 
-  const updateInputB = (key: keyof BondInputs, value: string | number | boolean | number[] | undefined) => {
+  const updateScenarioA = (key: keyof ScenarioOverride, value: string | number | boolean | undefined) => {
     setIsDirty(true);
-    setInputsB(prev => {
-      const next = { ...prev, [key]: value };
-      if (key === 'purchaseDate') {
-        const horizonMonths = getHorizonMonths(prev.purchaseDate, prev.withdrawalDate);
-        next.withdrawalDate = addMonths(new Date(value as string), horizonMonths).toISOString();
-      }
-      return next;
-    });
+    setScenarioA((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const updateScenarioB = (key: keyof ScenarioOverride, value: string | number | boolean | undefined) => {
+    setIsDirty(true);
+    setScenarioB((prev) => ({ ...prev, [key]: value }));
   };
 
   const setBondTypeA = (type: BondType) => {
     setIsDirty(true);
-    const def = BOND_DEFINITIONS[type];
-    setInputsA(prev => ({
+    setScenarioA((prev) => ({
       ...prev,
       bondType: type,
-      duration: def.duration,
-      firstYearRate: def.firstYearRate,
-      margin: def.margin,
-      earlyWithdrawalFee: def.earlyWithdrawalFee,
-      isCapitalized: def.isCapitalized,
-      payoutFrequency: def.payoutFrequency,
-      rebuyDiscount: def.rebuyDiscount,
-      withdrawalDate: addMonths(
-        new Date(prev.purchaseDate),
-        Math.max(getHorizonMonths(prev.purchaseDate, prev.withdrawalDate), Math.round(def.duration * 12)),
-      ).toISOString(),
+      isRebought: false,
+      investmentHorizonMonths: Math.max(prev.investmentHorizonMonths ?? 0, Math.round(BOND_DEFINITIONS[type].duration * 12)),
     }));
   };
 
   const setBondTypeB = (type: BondType) => {
     setIsDirty(true);
-    const def = BOND_DEFINITIONS[type];
-    setInputsB(prev => ({
+    setScenarioB((prev) => ({
       ...prev,
       bondType: type,
-      duration: def.duration,
-      firstYearRate: def.firstYearRate,
-      margin: def.margin,
-      earlyWithdrawalFee: def.earlyWithdrawalFee,
-      isCapitalized: def.isCapitalized,
-      payoutFrequency: def.payoutFrequency,
-      rebuyDiscount: def.rebuyDiscount,
-      withdrawalDate: addMonths(
-        new Date(prev.purchaseDate),
-        Math.max(getHorizonMonths(prev.purchaseDate, prev.withdrawalDate), Math.round(def.duration * 12)),
-      ).toISOString(),
+      isRebought: false,
+      investmentHorizonMonths: Math.max(prev.investmentHorizonMonths ?? 0, Math.round(BOND_DEFINITIONS[type].duration * 12)),
     }));
   };
 
   return {
-    inputsA, inputsB,
-    resultsA, resultsB,
-    envelopeA, envelopeB,
+    sharedConfig,
+    scenarioA,
+    scenarioB,
+    inputsA,
+    inputsB,
+    resultsA,
+    resultsB,
+    envelopeA,
+    envelopeB,
     warningsA: envelopeA?.warnings || [],
     warningsB: envelopeB?.warnings || [],
     isCalculating,
     isDirty,
     calculate,
-    updateInputA, updateInputB,
-    setBondTypeA, setBondTypeB,
-    definitions: BOND_DEFINITIONS
+    updateSharedConfig,
+    updateScenarioA,
+    updateScenarioB,
+    setBondTypeA,
+    setBondTypeB,
+    definitions: BOND_DEFINITIONS,
   };
 }
-
