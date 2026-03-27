@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest",
+    "seed:market-history": "tsx lib/sync/seed-market-history.ts",
+    "sync:market-history": "tsx lib/sync/sync-market-history.ts",
     "prepare": "husky"
   },
   "lint-staged": {
