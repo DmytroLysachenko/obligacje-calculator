@@ -16,8 +16,17 @@ export async function GET() {
 
     return applyPortfolioOwnerCookie(NextResponse.json(portfolios), owner);
   } catch (error) {
-    console.error('Failed to fetch portfolios:', error);
-    return NextResponse.json({ error: 'Database error' }, { status: 500 });
+    console.error('Failed to fetch portfolios:', {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    return NextResponse.json(
+      {
+        items: [],
+        error: 'Portfolio storage is temporarily unavailable',
+      },
+      { status: 200 },
+    );
   }
 }
 
@@ -38,7 +47,10 @@ export async function POST(req: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Validation failed', details: error.issues }, { status: 400 });
     }
-    console.error('Failed to create portfolio:', error);
-    return NextResponse.json({ error: 'Database error' }, { status: 500 });
+    console.error('Failed to create portfolio:', {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    return NextResponse.json({ error: 'Portfolio storage is temporarily unavailable' }, { status: 500 });
   }
 }

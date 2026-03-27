@@ -247,6 +247,11 @@
       "purchase_date": "Data Zakupu",
       "current_yield": "Obecna Stopa",
       "detailed_soon": "Szczegółowa analityka wkrótce"
+      ,
+      "load_error": "Nie udało się załadować portfeli. Spróbuj ponownie później.",
+      "default_description": "Główne oszczędności",
+      "estimated_yield_placeholder": "~5,2%",
+      "current_yield_placeholder": "5,75%"
     },
     "economic": {
     "subtitle": "Kontekst historyczny polskiej inflacji i stóp procentowych.",
@@ -328,5 +333,30 @@
       "status_stale": "nieaktualne",
       "status_unknown": "nieznany",
       "fallback_used": "użyto fallbacku"
+    },
+    "regular_form": {
+      "contribution_help": "Kwota, którą planujesz inwestować cyklicznie.",
+      "frequency_help": "Jak często planujesz dokonywać zakupu. Najczęściej wybierany jest wariant miesięczny.",
+      "start_date_help": "Moment rozpoczęcia planu regularnego inwestowania.",
+      "withdrawal_date_help": "Moment, w którym planujesz zakończyć inwestowanie i wypłacić zgromadzony kapitał.",
+      "horizon_help": "Przez ile lat planujesz kontynuować regularne inwestowanie.",
+      "initial_rate_help": "Dla ROR i DOR możesz ustawić początkowe oprocentowanie przed kolejnymi aktualizacjami stopy referencyjnej.",
+      "nbp_help": "Stopa referencyjna Narodowego Banku Polskiego używana dla ROR i DOR po pierwszym okresie.",
+      "inflation_help": "Oczekiwana średnia inflacja w całym okresie. Jest używana do projekcji odsetek i wartości realnej.",
+      "margin_help": "Gwarantowana marża dodawana do bazowej stopy indeksowanej w kolejnych okresach obligacji.",
+      "rebuy_help": "Włącz tę opcję, jeśli planujesz skorzystać z promocji zamiany dającej niewielki rabat na nowe obligacje.",
+      "tax_help": "Tutaj możesz skorygować standardową 19% stawkę podatku od zysków kapitałowych."
+    },
+    "regular_summary": {
+      "portfolio_composition": "Struktura portfela",
+      "lot": "partia",
+      "lots": "partie",
+      "year_invested": "Wpłacono w roku",
+      "current_net": "Aktualna wartość netto",
+      "month": "Miesiąc",
+      "maturity": "Zapadalność",
+      "invested": "Zainwestowano",
+      "interest": "Odsetki",
+      "net_value": "Wartość netto"
     }
   }

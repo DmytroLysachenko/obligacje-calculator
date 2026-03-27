@@ -161,7 +161,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
 
         <Card className="lg:w-80 border-primary/10 shadow-sm overflow-hidden bg-card">
           <CardHeader className="pb-0 pt-4">
-            <CardTitle className="text-xs font-bold uppercase text-center text-muted-foreground">Portfolio Composition</CardTitle>
+            <CardTitle className="text-xs font-bold uppercase text-center text-muted-foreground">{t('regular_summary.portfolio_composition')}</CardTitle>
           </CardHeader>
           <CardContent className="p-0 h-64">
             <ChartContainer height={256}>
@@ -204,7 +204,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
           <div className="flex items-center gap-4">
             <Button variant="outline" size="sm" onClick={handleExport} className="gap-2 text-xs">
               <Download className="h-3 w-3" />
-              Export CSV
+              {t('comparison.export')}
             </Button>
           </div>
         </CardHeader>
@@ -222,16 +222,16 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                       <div className="flex items-center gap-4">
                         <span className="text-lg font-black text-primary">{year}</span>
                         <Badge variant="secondary" className="text-[10px] uppercase font-bold">
-                          {yearLots.length} {yearLots.length === 1 ? 'lot' : 'lots'}
+                          {yearLots.length} {yearLots.length === 1 ? t('regular_summary.lot') : t('regular_summary.lots')}
                         </Badge>
                       </div>
                       <div className="flex gap-8 text-right">
                         <div className="hidden sm:block">
-                          <p className="text-[10px] text-muted-foreground uppercase font-bold">Year Invested</p>
+                          <p className="text-[10px] text-muted-foreground uppercase font-bold">{t('regular_summary.year_invested')}</p>
                           <p className="text-sm font-bold">{formatCurrency(yearInvested)}</p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-muted-foreground uppercase font-bold">Current Net</p>
+                          <p className="text-[10px] text-muted-foreground uppercase font-bold">{t('regular_summary.current_net')}</p>
                           <p className="text-sm font-bold text-green-600">{formatCurrency(yearNetValue)}</p>
                         </div>
                       </div>
@@ -242,11 +242,11 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                       <Table>
                         <TableHeader>
                           <TableRow className="bg-muted/50 hover:bg-muted/50">
-                            <TableHead className="h-9 text-[10px] uppercase font-bold text-muted-foreground">Month</TableHead>
-                            <TableHead className="h-9 text-[10px] uppercase font-bold text-muted-foreground">Maturity</TableHead>
-                            <TableHead className="h-9 text-[10px] uppercase font-bold text-muted-foreground text-right">Invested</TableHead>
-                            <TableHead className="h-9 text-[10px] uppercase font-bold text-muted-foreground text-right">Interest</TableHead>
-                            <TableHead className="h-9 text-[10px] uppercase font-bold text-muted-foreground text-right">Net Value</TableHead>
+                            <TableHead className="h-9 text-[10px] uppercase font-bold text-muted-foreground">{t('regular_summary.month')}</TableHead>
+                            <TableHead className="h-9 text-[10px] uppercase font-bold text-muted-foreground">{t('regular_summary.maturity')}</TableHead>
+                            <TableHead className="h-9 text-[10px] uppercase font-bold text-muted-foreground text-right">{t('regular_summary.invested')}</TableHead>
+                            <TableHead className="h-9 text-[10px] uppercase font-bold text-muted-foreground text-right">{t('regular_summary.interest')}</TableHead>
+                            <TableHead className="h-9 text-[10px] uppercase font-bold text-muted-foreground text-right">{t('regular_summary.net_value')}</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>

@@ -19,7 +19,15 @@ export function t(key: string, variables?: Record<string, string | number>, lang
     if (current && typeof current === 'object' && k in current) {
       current = (current as Record<string, unknown>)[k];
     } else {
-      return key;
+      current = translations.en;
+      for (const fallbackKey of keys) {
+        if (current && typeof current === 'object' && fallbackKey in current) {
+          current = (current as Record<string, unknown>)[fallbackKey];
+        } else {
+          return key;
+        }
+      }
+      break;
     }
   }
 

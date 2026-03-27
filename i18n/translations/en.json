@@ -175,6 +175,7 @@
     "savings_goal_opt": "Savings Goal (Optional)",
     "select_bond_type": "Select bond type",
     "pick_date": "Pick a date",
+    "example_goal": "e.g. 50000",
     "tax_strategy": "Account Type (Tax Strategy)",
     "tax_standard": "Standard Account (19% Tax)",
     "tax_ike": "IKE Account (0% Tax)",
@@ -188,6 +189,7 @@
     "deflation": "Deflation",
     "reinvest": "Reinvest",
     "rollover_desc": "Rollover at maturity",
+    "discount_per_bond": "Discount: -{{amount}} PLN per bond",
     "total_roi": "Total ROI",
     "goal_reached": "Goal Reached!",
     "goal_progress": "Goal Progress: {{percent}}%",
@@ -215,7 +217,9 @@
     "ref_inflation": "Ref. Inflation",
     "nbp_rate_short": "NBP Rate",
     "projected": "Projected",
-    "historical": "Historical"
+    "historical": "Historical",
+    "yield_three_months": "Yield (3m)",
+    "first_month_rate": "1st Month Rate"
     },
     "notebook": {
       "title": "My Portfolio / Notebook",
@@ -246,7 +250,12 @@
       "nominal_val": "Nominal",
       "purchase_date": "Purchase Date",
       "current_yield": "Current Yield",
-      "detailed_soon": "Detailed analytics coming soon"
+    "detailed_soon": "Detailed analytics coming soon"
+    ,
+    "load_error": "Could not load portfolios. Please try again later.",
+    "default_description": "Primary savings",
+    "estimated_yield_placeholder": "~5.2%",
+    "current_yield_placeholder": "5.75%"
     },
     "economic": {
     "subtitle": "Historical context of Polish inflation and interest rates.",
@@ -263,6 +272,10 @@
     "fallback_in_use": "fallback data in use",
     "nbp_target": "NBP Target",
     "loading_chart": "Loading chart..."
+    ,
+    "readable_scale": "Readable scale",
+    "full_scale": "Full scale",
+    "inflation_scale_notice": "Readable mode caps the early spike so the rest of the series stays readable. Peak visible history exceeds {{max}}%."
     },
     "comparison": {
       "title_bond_vs_bond": "Bond vs Bond",
@@ -321,13 +334,61 @@
       "scenario_b_summary": "Scenario B Summary",
       "history_source": "History source",
       "fallback_history": "fallback data in use",
-      "history_loading": "loading updated history"
-      ,
-      "freshness_status": "Data status",
+    "history_loading": "loading updated history",
+    "freshness_status": "Data status",
       "status_fresh": "fresh",
       "status_projected": "projected",
       "status_stale": "stale",
       "status_unknown": "unknown",
-      "fallback_used": "fallback used"
+      "fallback_used": "fallback used",
+      "timing_mode": "Timing mode",
+      "timing_general": "General",
+      "timing_exact": "Exact dates",
+      "use_shared_tax": "Use shared tax strategy",
+      "custom_horizon": "Custom horizon",
+      "custom_horizon_desc": "Override the shared timing for this scenario only.",
+      "scenario_horizon": "Scenario horizon",
+      "capital_growth": "Capital Growth",
+      "risk_drawdown": "Risk / Drawdown",
+      "real_value_projection": "Real Value Projection",
+      "nominal_growth": "Nominal Growth",
+      "performance_with_contributions": "Performance comparison including monthly contributions.",
+      "historical_drawdown": "Historical Drawdown (%)",
+      "historical_drawdown_desc": "Maximum drops from peak value during market crashes.",
+    "preset_bull_2021": "Bull Run 2021",
+    "preset_war_2022": "War Start 2022",
+    "preset_recovery_2023": "Recovery 2023"
+    },
+    "regular_form": {
+      "contribution_help": "The amount you plan to invest periodically.",
+      "frequency_help": "How often you plan to make a purchase. Monthly is the most common setup.",
+      "start_date_help": "When you begin your regular investment plan.",
+      "withdrawal_date_help": "When you plan to stop investing and withdraw the accumulated capital.",
+      "horizon_help": "How many years you plan to continue this periodic investment.",
+      "initial_rate_help": "For ROR and DOR, you can customize the starting rate used before later reference-rate updates.",
+      "nbp_help": "The National Bank of Poland reference rate used for ROR and DOR after the first period.",
+      "inflation_help": "Expected average inflation over the period. Used for interest projection and real purchasing power.",
+      "margin_help": "Guaranteed margin added to the indexed base rate for later bond periods.",
+      "rebuy_help": "Enable this when you plan to use the swap promotion that applies a small discount on new bonds.",
+      "tax_help": "You can adjust the standard 19% capital-gains tax rate here."
+    },
+    "regular_summary": {
+      "portfolio_composition": "Portfolio Composition",
+      "lot": "lot",
+      "lots": "lots",
+      "year_invested": "Year Invested",
+      "current_net": "Current Net",
+      "month": "Month",
+      "maturity": "Maturity",
+      "invested": "Invested",
+      "interest": "Interest",
+      "net_value": "Net Value"
+    },
+    "ladder": {
+      "description": "Build a bond ladder to ensure recurring liquidity and steady growth.",
+      "building": "Building ladder...",
+      "optimized": "Ladder optimized",
+      "what_is_title": "What is a Bond Ladder?",
+      "what_is_desc": "A bond ladder is a strategy where you buy bonds regularly. After the first full cycle, one bond can mature on a recurring schedule, giving you liquidity for spending or reinvestment."
     }
   }

@@ -69,7 +69,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
           <div className="flex items-center gap-2">
             <Label className="font-semibold flex items-center gap-2">
               <Target className="h-4 w-4 text-primary" />
-              Savings Goal (Optional)
+              {t('bonds.savings_goal_opt')}
             </Label>
             <TooltipProvider>
               <Tooltip>
@@ -77,7 +77,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                   <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p className="text-xs">Set a target amount to see a progress bar towards your financial goal.</p>
+                  <p className="text-xs">{t('bonds.savings_goal_opt')}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -85,7 +85,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
           <div className="relative">
             <Input
               type="number"
-              placeholder="e.g. 100000"
+              placeholder={t('bonds.example_goal')}
               className="h-11 pl-4 pr-12"
               value={inputs.savingsGoal || ''}
               onChange={(e) => onUpdate('savingsGoal', e.target.value ? Number(e.target.value) : undefined)}
@@ -108,7 +108,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                   <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p className="text-xs">Select the type of bond you plan to purchase regularly. Most people choose EDO (10y) for long-term savings.</p>
+                    <p className="text-xs">{t('bonds.bond_type_selection')}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -118,7 +118,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
             onValueChange={(value) => onBondTypeChange(value as BondType)}
           >
             <SelectTrigger id="bondType" className="h-11">
-              <SelectValue placeholder="Select bond type" />
+              <SelectValue placeholder={t('bonds.select_bond_type')} />
             </SelectTrigger>
             <SelectContent>
               {Object.values(BondType).map((type) => (
@@ -151,19 +151,19 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Label className="font-semibold">Account Type (Tax Wrap)</Label>
+              <Label className="font-semibold">{t('bonds.tax_strategy')}</Label>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="text-xs">IKE and IKZE accounts help avoid or reduce the 19% Belka tax on your profits.</p>
+                  <p className="text-xs">{t('bonds.tax_strategy')}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </div>
-            <Badge variant="secondary" className="text-[10px]">Optimization</Badge>
+            <Badge variant="secondary" className="text-[10px]">{t('comparison.configuration')}</Badge>
           </div>
           <Select
             value={inputs.taxStrategy}
@@ -173,9 +173,9 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={TaxStrategy.STANDARD}>Standard Account (19% Tax)</SelectItem>
-              <SelectItem value={TaxStrategy.IKE}>IKE Account (0% Tax)</SelectItem>
-              <SelectItem value={TaxStrategy.IKZE}>IKZE Account (5% Tax at end)</SelectItem>
+              <SelectItem value={TaxStrategy.STANDARD}>{t('bonds.tax_standard')}</SelectItem>
+              <SelectItem value={TaxStrategy.IKE}>{t('bonds.tax_ike')}</SelectItem>
+              <SelectItem value={TaxStrategy.IKZE}>{t('bonds.tax_ikze')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -196,7 +196,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                       <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p className="text-xs">The amount you plan to invest periodically.</p>
+                      <p className="text-xs">{t('regular_form.contribution_help')}</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -245,9 +245,9 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                   <TooltipTrigger asChild>
                     <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="text-xs">How often you plan to make a purchase (Monthly is most common).</p>
-                  </TooltipContent>
+                    <TooltipContent>
+                      <p className="text-xs">{t('regular_form.frequency_help')}</p>
+                    </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </div>
@@ -281,9 +281,9 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                   <TooltipTrigger asChild>
                     <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="text-xs">When you begin your regular investment plan.</p>
-                  </TooltipContent>
+                    <TooltipContent>
+                      <p className="text-xs">{t('regular_form.start_date_help')}</p>
+                    </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </div>
@@ -297,7 +297,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {hasMounted && inputs.purchaseDate ? format(parseISO(inputs.purchaseDate), 'PPP', { locale: dateLocale }) : <span>Pick a date</span>}
+                  {hasMounted && inputs.purchaseDate ? format(parseISO(inputs.purchaseDate), 'PPP', { locale: dateLocale }) : <span>{t('bonds.pick_date')}</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -307,7 +307,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                   fromYear={2010}
                   toYear={2050}
                   selected={parseISO(inputs.purchaseDate)}
-                  onSelect={(date) => date && onUpdate('purchaseDate', date.toISOString())}
+                  onSelect={(date) => date && onUpdate('purchaseDate', format(date, 'yyyy-MM-dd'))}
                   initialFocus
                 />
               </PopoverContent>
@@ -323,9 +323,9 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                   <TooltipTrigger asChild>
                     <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="text-xs">When you plan to stop investing and withdraw the accumulated capital.</p>
-                  </TooltipContent>
+                    <TooltipContent>
+                      <p className="text-xs">{t('regular_form.withdrawal_date_help')}</p>
+                    </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </div>
@@ -339,7 +339,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {hasMounted && inputs.withdrawalDate ? format(parseISO(inputs.withdrawalDate), 'PPP', { locale: dateLocale }) : <span>Pick a date</span>}
+                  {hasMounted && inputs.withdrawalDate ? format(parseISO(inputs.withdrawalDate), 'PPP', { locale: dateLocale }) : <span>{t('bonds.pick_date')}</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -349,7 +349,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                   fromYear={2010}
                   toYear={2050}
                   selected={parseISO(inputs.withdrawalDate)}
-                  onSelect={(date) => date && onUpdate('withdrawalDate', date.toISOString())}
+                  onSelect={(date) => date && onUpdate('withdrawalDate', format(date, 'yyyy-MM-dd'))}
                   initialFocus
                 />
               </PopoverContent>
@@ -368,9 +368,9 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                 <TooltipTrigger asChild>
                   <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                 </TooltipTrigger>
-                <TooltipContent>
-                  <p className="text-xs">How many years you plan to continue this periodic investment.</p>
-                </TooltipContent>
+                    <TooltipContent>
+                      <p className="text-xs">{t('regular_form.horizon_help')}</p>
+                    </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
@@ -407,7 +407,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                         <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p className="text-xs">For ROR and DOR, the interest rate is tied to the NBP reference rate. You can customize the starting rate here.</p>
+                        <p className="text-xs">{t('regular_form.initial_rate_help')}</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -426,7 +426,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-2">
                     <Label htmlFor="expectedNbpRate" className="text-xs font-semibold uppercase text-muted-foreground">
-                      Expected NBP Rate (%)
+                      {t('bonds.nbp_rate_label')}
                     </Label>
                     <TooltipProvider>
                       <Tooltip>
@@ -434,7 +434,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                           <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p className="text-xs">The Narodowy Bank Polski reference rate. Used for ROR and DOR bonds for month 2+.</p>
+                          <p className="text-xs">{t('regular_form.nbp_help')}</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -464,15 +464,15 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                       <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p className="text-xs">Expected average inflation over the period. Used for calculating interest and real purchasing power.</p>
+                      <p className="text-xs">{t('regular_form.inflation_help')}</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>
               <div className="flex gap-1">
-                <Button variant="ghost" size="icon" className="h-6 w-12 text-[10px]" onClick={() => onUpdate('expectedInflation', 2.5)}>Stable</Button>
-                <Button variant="ghost" size="icon" className="h-6 w-12 text-[10px]" onClick={() => onUpdate('expectedInflation', 10)}>High</Button>
-                <Button variant="ghost" size="icon" className="h-6 w-12 text-[10px]" onClick={() => onUpdate('expectedInflation', -1)}>Deflation</Button>
+                <Button variant="ghost" size="icon" className="h-6 w-12 text-[10px]" onClick={() => onUpdate('expectedInflation', 2.5)}>{t('bonds.stable')}</Button>
+                <Button variant="ghost" size="icon" className="h-6 w-12 text-[10px]" onClick={() => onUpdate('expectedInflation', 10)}>{t('bonds.high')}</Button>
+                <Button variant="ghost" size="icon" className="h-6 w-12 text-[10px]" onClick={() => onUpdate('expectedInflation', -1)}>{t('bonds.deflation')}</Button>
               </div>
               <span className="text-sm font-bold text-primary">{inputs.expectedInflation}%</span>
             </div>
@@ -495,9 +495,9 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                   <TooltipTrigger asChild>
                     <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="text-xs">Guaranteed margin added to inflation for year 2+ of each bond lot.</p>
-                  </TooltipContent>
+                    <TooltipContent>
+                      <p className="text-xs">{t('regular_form.margin_help')}</p>
+                    </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </div>
@@ -525,7 +525,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                         <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p className="text-xs">Check this if you plan to use the &quot;Promocja na zamianę&quot; which offers a small discount on each new bond.</p>
+                        <p className="text-xs">{t('regular_form.rebuy_help')}</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -555,7 +555,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                       <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p className="text-xs">You can adjust the standard 19% Belka tax rate here.</p>
+                      <p className="text-xs">{t('regular_form.tax_help')}</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -592,13 +592,13 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
             <div className="flex justify-between">
               <span>{t('bonds.duration')}:</span>
               <span className="font-bold">
-                {inputs.duration < 1 ? `${inputs.duration * 12} ${language === 'pl' ? 'Miesięcy' : 'Months'}` : `${inputs.duration} ${t('common.years')}`}
+                {inputs.duration < 1 ? `${inputs.duration * 12} ${t('comparison.month')}` : `${inputs.duration} ${t('common.years')}`}
               </span>
             </div>
             <div className="flex justify-between">
               <span>
-                {inputs.bondType === 'OTS' ? (language === 'pl' ? 'Zysk (3m)' : 'Yield (3m)') : 
-                 inputs.bondType === 'ROR' || inputs.bondType === 'DOR' ? (language === 'pl' ? '1. Miesiąc' : '1st Month') : 
+                {inputs.bondType === 'OTS' ? t('bonds.yield_three_months') : 
+                 inputs.bondType === 'ROR' || inputs.bondType === 'DOR' ? t('bonds.first_month_rate') : 
                  t('bonds.first_year_rate')}:
               </span>
               <span className="font-bold">{inputs.firstYearRate}%</span>

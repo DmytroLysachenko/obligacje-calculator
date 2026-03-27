@@ -44,7 +44,15 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       if (current && typeof current === 'object' && k in current) {
         current = (current as Record<string, unknown>)[k];
       } else {
-        return key; // Return the key itself if not found
+        current = translations.en;
+        for (const fallbackKey of keys) {
+          if (current && typeof current === 'object' && fallbackKey in current) {
+            current = (current as Record<string, unknown>)[fallbackKey];
+          } else {
+            return key;
+          }
+        }
+        break;
       }
     }
 

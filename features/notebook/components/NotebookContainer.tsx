@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useLanguage } from '@/i18n';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,24 +26,24 @@ export const NotebookContainer: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedPortfolioId, setSelectedPortfolioId] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchPortfolios();
-  }, []);
-
-  const fetchPortfolios = async () => {
+  const fetchPortfolios = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
       const response = await fetch('/api/portfolio');
       if (!response.ok) throw new Error('Failed to fetch');
       const data = await response.json();
-      setPortfolios(data);
+      setPortfolios(Array.isArray(data) ? data : (data.items ?? []));
     } catch {
-      setError('Could not load portfolios. Please try again later.');
+      setError(t('notebook.load_error'));
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [t]);
+
+  useEffect(() => {
+    fetchPortfolios();
+  }, [fetchPortfolios]);
 
   const handleCreateDefault = async () => {
     try {
@@ -52,7 +52,7 @@ export const NotebookContainer: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           name: t('notebook.new_portfolio'), 
-          description: 'Primary savings' 
+          description: t('notebook.default_description') 
         }),
       });
       if (response.ok) fetchPortfolios();
@@ -137,7 +137,7 @@ export const NotebookContainer: React.FC = () => {
                     {p.name}
                   </CardTitle>
                   <CardDescription className="line-clamp-2 font-medium">
-                    {p.description || '...'}
+                    {p.description || t('notebook.portfolio_details')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="pt-6 flex-1 flex flex-col justify-between">

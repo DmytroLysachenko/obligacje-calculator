@@ -34,7 +34,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
       const response = await fetch(`/api/portfolio/lots?portfolioId=${portfolio.id}`);
       if (response.ok) {
         const data = await response.json();
-        setLots(data);
+        setLots(Array.isArray(data) ? data : []);
       }
     } catch (err) {
       console.error('Failed to fetch lots:', err);
@@ -93,7 +93,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
         <Card className="shadow-lg border-primary/5">
           <CardHeader className="pb-2">
             <CardDescription className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">{t('notebook.est_profit')}</CardDescription>
-            <CardTitle className="text-4xl font-black text-green-600">~5.2%</CardTitle>
+            <CardTitle className="text-4xl font-black text-green-600">{t('notebook.estimated_yield_placeholder')}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-[10px] text-muted-foreground font-medium uppercase">{t('notebook.weighted_yield')}</p>
@@ -152,7 +152,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                         </div>
                         <div>
                           <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{t('notebook.current_yield')}</p>
-                          <p className="text-lg font-black text-green-600">5.75%</p>
+                          <p className="text-lg font-black text-green-600">{t('notebook.current_yield_placeholder')}</p>
                         </div>
                         <div className="flex items-center justify-end gap-2">
                           <Button variant="outline" size="icon" className="rounded-lg hover:border-primary hover:text-primary transition-colors">

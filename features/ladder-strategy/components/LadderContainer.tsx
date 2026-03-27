@@ -28,25 +28,25 @@ export const LadderContainer: React.FC = () => {
             <Layers className="h-8 w-8" />
             {t('nav.ladder')}
           </h2>
-          <p className="text-muted-foreground mt-2 text-sm font-medium">Build a &quot;Bond Ladder&quot; to ensure monthly liquidity and steady growth.</p>
+          <p className="text-muted-foreground mt-2 text-sm font-medium">{t('ladder.description')}</p>
         </div>
         <div className="flex items-center gap-2">
           {isCalculating && (
             <span className="text-xs text-muted-foreground flex items-center gap-2 animate-in fade-in duration-500">
               <Loader2 className="h-3 w-3 animate-spin" />
-              Building ladder...
+              {t('ladder.building')}
             </span>
           )}
           {!isCalculating && isDirty && results && (
             <span className="text-xs text-orange-500 flex items-center gap-1 animate-in fade-in duration-500 font-medium">
               <Info className="h-3 w-3" />
-              Settings changed. Recalculate to update.
+              {t('comparison.needs_recalculation')}
             </span>
           )}
           {!isCalculating && !isDirty && results && (
             <span className="text-xs text-green-600 flex items-center gap-1 animate-in fade-in duration-500 font-medium">
               <Check className="h-3 w-3" />
-              Ladder optimized
+              {t('ladder.optimized')}
             </span>
           )}
         </div>
@@ -65,13 +65,11 @@ export const LadderContainer: React.FC = () => {
             <CardHeader className="pb-2 bg-blue-100/50">
               <CardTitle className="text-xs font-black flex items-center gap-2 text-blue-700 uppercase tracking-widest">
                 <Info className="h-4 w-4" />
-                What is a Bond Ladder?
+                {t('ladder.what_is_title')}
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-4 text-xs text-blue-900 leading-relaxed font-medium">
-              A bond ladder is a strategy where you buy bonds regularly (e.g., every month). 
-              After the first full cycle (e.g., 4 years for COI), one bond will mature every month, 
-              providing you with a &quot;salary&quot; or funds to reinvest, creating a perpetual cycle of liquidity and growth.
+              {t('ladder.what_is_desc')}
             </CardContent>
           </Card>
           

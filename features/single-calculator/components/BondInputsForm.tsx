@@ -14,8 +14,9 @@ import { useLanguage } from '@/i18n';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { CalendarIcon, Info, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { format, parseISO, addMonths, differenceInMonths } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
+import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 
 import { Slider } from '@/components/ui/slider';
 
@@ -47,7 +48,8 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
   const currentDef = BOND_DEFINITIONS[inputs.bondType];
   const dateLocale = language === 'pl' ? pl : enGB;
-  const investmentHorizonYears = Math.max(0.25, differenceInMonths(parseISO(inputs.withdrawalDate), parseISO(inputs.purchaseDate)) / 12);
+  const investmentHorizonMonths = inputs.investmentHorizonMonths ?? getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);
+  const investmentHorizonYears = Math.max(1 / 12, investmentHorizonMonths / 12);
 
   const handleInvestmentChange = (value: string | number) => {
     const numValue = Number(value);
@@ -55,7 +57,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
   };
 
   const isDivisibleBy100 = inputs.initialInvestment % 100 === 0 && inputs.initialInvestment > 0;
-  const maturityDate = addMonths(parseISO(inputs.purchaseDate), Math.round(inputs.duration * 12));
+  const maturityDate = parseISO(getWithdrawalDateFromMonths(inputs.purchaseDate, Math.round(inputs.duration * 12)));
 
   return (
     <Card className="w-full shadow-lg border-primary/10 overflow-hidden">
@@ -108,7 +110,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                 <div className="relative">
                   <Input
                     type="number"
-                    placeholder="e.g. 50000"
+                    placeholder={t('bonds.example_goal')}
                     className="h-11 pl-4 pr-12"
                     value={inputs.savingsGoal || ''}
                     onChange={(e) => onUpdate('savingsGoal', e.target.value ? Number(e.target.value) : undefined)}
@@ -205,6 +207,28 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               </span>
             </AccordionTrigger>
             <AccordionContent className="space-y-6 pb-6">
+              <div className="space-y-3">
+                <Label className="font-semibold">{t('comparison.timing_mode')}</Label>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant={inputs.timingMode !== 'exact' ? 'default' : 'outline'}
+                    className="flex-1"
+                    onClick={() => onUpdate('timingMode', 'general')}
+                  >
+                    {t('comparison.timing_general')}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={inputs.timingMode === 'exact' ? 'default' : 'outline'}
+                    className="flex-1"
+                    onClick={() => onUpdate('timingMode', 'exact')}
+                  >
+                    {t('comparison.timing_exact')}
+                  </Button>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 gap-4">
                 <div className="space-y-2">
                   <Label className="text-xs font-semibold uppercase text-muted-foreground">
@@ -230,42 +254,44 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                         fromYear={2010}
                         toYear={2050}
                         selected={parseISO(inputs.purchaseDate)}
-                        onSelect={(date) => date && onUpdate('purchaseDate', date.toISOString())}
+                        onSelect={(date) => date && onUpdate('purchaseDate', toDateString(date))}
                         initialFocus
                       />
                     </PopoverContent>
                   </Popover>
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-xs font-semibold uppercase text-muted-foreground">
-                    {t('bonds.withdrawal_date')}
-                  </Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal h-11 px-3",
-                          !inputs.withdrawalDate && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {hasMounted && inputs.withdrawalDate ? format(parseISO(inputs.withdrawalDate), 'PPP', { locale: dateLocale }) : <span>{t('bonds.pick_date')}</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        captionLayout="dropdown"
-                        fromYear={2010}
-                        toYear={2050}
-                        selected={parseISO(inputs.withdrawalDate)}
-                        onSelect={(date) => date && onUpdate('withdrawalDate', date.toISOString())}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
+                {inputs.timingMode === 'exact' ? (
+                  <div className="space-y-2">
+                    <Label className="text-xs font-semibold uppercase text-muted-foreground">
+                      {t('bonds.withdrawal_date')}
+                    </Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal h-11 px-3",
+                            !inputs.withdrawalDate && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {hasMounted && inputs.withdrawalDate ? format(parseISO(inputs.withdrawalDate), 'PPP', { locale: dateLocale }) : <span>{t('bonds.pick_date')}</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          captionLayout="dropdown"
+                          fromYear={2010}
+                          toYear={2050}
+                          selected={parseISO(inputs.withdrawalDate)}
+                          onSelect={(date) => date && onUpdate('withdrawalDate', toDateString(date))}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                ) : null}
               </div>
 
               <div className="space-y-4 pt-2">
@@ -276,11 +302,11 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                   </span>
                 </div>
                 <Slider
-                  value={[investmentHorizonYears]}
-                  min={0.25}
-                  max={30}
-                  step={0.25}
-                  onValueChange={([val]) => onUpdate('withdrawalDate', addMonths(parseISO(inputs.purchaseDate), Math.round(val * 12)).toISOString())}
+                  value={[investmentHorizonMonths]}
+                  min={1}
+                  max={360}
+                  step={1}
+                  onValueChange={([value]) => onUpdate('investmentHorizonMonths', value)}
                 />
               </div>
 
@@ -306,7 +332,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                   <div className="space-y-0.5">
                     <Label className="text-sm font-bold text-green-800">{t('bonds.is_rebought')}</Label>
                     <p className="text-[10px] text-green-600 font-medium italic">
-                      Discount: -{currentDef.rebuyDiscount.toFixed(2)} PLN per bond
+                      {t('bonds.discount_per_bond', { amount: currentDef.rebuyDiscount.toFixed(2) })}
                     </p>
                   </div>
                   <Switch
@@ -486,13 +512,13 @@ max={20}
             <div className="flex justify-between">
               <span>{t('bonds.duration')}:</span>
               <span className="font-bold">
-                {inputs.duration < 1 ? `${inputs.duration * 12} ${language === 'pl' ? 'Miesięcy' : 'Months'}` : `${inputs.duration} ${t('common.years')}`}
+                {inputs.duration < 1 ? `${inputs.duration * 12} ${t('comparison.month')}` : `${inputs.duration} ${t('common.years')}`}
               </span>
             </div>
             <div className="flex justify-between">
               <span>
-                {inputs.bondType === 'OTS' ? (language === 'pl' ? 'Zysk (3m)' : 'Yield (3m)') : 
-                 inputs.bondType === 'ROR' || inputs.bondType === 'DOR' ? (language === 'pl' ? '1. Miesiąc' : '1st Month') : 
+                {inputs.bondType === 'OTS' ? t('bonds.yield_three_months') : 
+                 inputs.bondType === 'ROR' || inputs.bondType === 'DOR' ? t('bonds.first_month_rate') : 
                  t('bonds.first_year_rate')}:
               </span>
               <span className="font-bold">{inputs.firstYearRate}%</span>
