@@ -47,6 +47,7 @@ export const MultiAssetComparisonContainer = () => {
     historyCoverageStart,
     historyCoverageEnd,
     usedFallbackHistory,
+    historyLastSyncedAt,
   } = useMultiAssetComparison();
 
   const { language, t } = useLanguage();
@@ -180,6 +181,7 @@ export const MultiAssetComparisonContainer = () => {
 
       <div className="rounded-2xl border bg-muted/30 px-4 py-3 text-xs font-medium text-muted-foreground">
         <span className="font-bold">{t("comparison.history_source")}:</span> {historySource} | {historyCoverageStart} to {historyCoverageEnd}
+        {historyLastSyncedAt ? ` | ${t("economic.as_of")}: ${historyLastSyncedAt}` : ""}
         {usedFallbackHistory && ` | ${t("comparison.fallback_history")}`}
         {isLoading && ` | ${t("comparison.history_loading")}`}
       </div>

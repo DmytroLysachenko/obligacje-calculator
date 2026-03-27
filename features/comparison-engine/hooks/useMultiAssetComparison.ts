@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { calculateAssetPerformance, calculateBondsPerformance } from '../../bond-core/utils/asset-calculations';
 import { AssetMetadata } from '../../bond-core/types/assets';
 import { HISTORICAL_RETURNS, type MonthlyReturn } from '../../bond-core/constants/historical-data';
@@ -11,6 +11,7 @@ interface MultiAssetHistoryResponse {
   usedFallback: boolean;
   coverageStart: string;
   coverageEnd: string;
+  lastSyncedAt?: string;
 }
 
 const ASSETS_METADATA: Record<string, AssetMetadata> = {
@@ -57,7 +58,6 @@ export function useMultiAssetComparison() {
   const [monthlyContribution, setMonthlyContribution] = useState(500);
   const [startYear, setStartYear] = useState('2020');
   const [startMonth, setStartMonth] = useState('01');
-  const startDate = `${startYear}-${startMonth}`;
   const [showRealValue, setShowRealValue] = useState(false);
   const [isDirty, setIsDirty] = useState(true);
   const { data: historyResponse, isLoading } = useChartData<MultiAssetHistoryResponse>('/api/charts/multi-asset-history');
@@ -108,11 +108,16 @@ export function useMultiAssetComparison() {
   );
 
   const sourceData = historyResponse?.data?.length ? historyResponse.data : HISTORICAL_RETURNS;
+  const effectiveCoverageStart = historyResponse?.coverageStart ?? HISTORICAL_RETURNS[0]?.date ?? '2020-01';
+  const [coverageYear, coverageMonth] = effectiveCoverageStart.split('-');
+  const effectiveStartYear = startYear === '2020' ? coverageYear : startYear;
+  const effectiveStartMonth = startYear === '2020' ? coverageMonth : startMonth;
 
   const filteredData = useMemo(() => {
-    const data = sourceData.filter((row) => row.date >= startDate);
+    const effectiveStartDate = `${effectiveStartYear}-${effectiveStartMonth}`;
+    const data = sourceData.filter((row) => row.date >= effectiveStartDate);
     return data.length > 0 ? data : sourceData;
-  }, [sourceData, startDate]);
+  }, [effectiveStartMonth, effectiveStartYear, sourceData]);
 
   const sp500 = useMemo(
     () => calculateAssetPerformance(initialSum, monthlyContribution, 'sp500', ASSETS_METADATA.sp500, filteredData),
@@ -146,10 +151,10 @@ export function useMultiAssetComparison() {
     updateInitialSum,
     monthlyContribution,
     updateMonthlyContribution,
-    startDate,
-    startYear,
+    startDate: `${effectiveStartYear}-${effectiveStartMonth}`,
+    startYear: effectiveStartYear,
     updateStartYear,
-    startMonth,
+    startMonth: effectiveStartMonth,
     updateStartMonth,
     years,
     months,
@@ -165,5 +170,6 @@ export function useMultiAssetComparison() {
     historyCoverageStart: historyResponse?.coverageStart ?? HISTORICAL_RETURNS[0]?.date,
     historyCoverageEnd: historyResponse?.coverageEnd ?? HISTORICAL_RETURNS[HISTORICAL_RETURNS.length - 1]?.date,
     usedFallbackHistory: historyResponse?.usedFallback ?? true,
+    historyLastSyncedAt: historyResponse?.lastSyncedAt,
   };
 }

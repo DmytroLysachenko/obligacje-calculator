@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 export default function EconomicDataPage() {
   const { t } = useLanguage();
   const [hasMounted, setHasMounted] = useState(false);
-  const [period, setPeriod] = useState<'1Y' | '5Y' | '10Y' | 'ALL'>('ALL');
+  const [period, setPeriod] = useState<'1Y' | '5Y' | '10Y' | '30Y' | 'ALL'>('10Y');
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -23,6 +23,7 @@ export default function EconomicDataPage() {
     { label: '1Y', value: '1Y' },
     { label: '5Y', value: '5Y' },
     { label: '10Y', value: '10Y' },
+    { label: '30Y', value: '30Y' },
     { label: 'MAX', value: 'ALL' },
   ];
 
@@ -41,7 +42,7 @@ export default function EconomicDataPage() {
             {periods.map((p) => (
               <button
                 key={p.value}
-                onClick={() => setPeriod(p.value as '1Y' | '5Y' | '10Y' | 'ALL')}
+                onClick={() => setPeriod(p.value as '1Y' | '5Y' | '10Y' | '30Y' | 'ALL')}
                 className={cn(
                   "px-4 py-2 text-xs font-black uppercase tracking-widest rounded-lg transition-all",
                   period === p.value 

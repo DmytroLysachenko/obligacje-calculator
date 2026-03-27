@@ -55,9 +55,9 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
 }) => {
   const { t } = useLanguage();
   const presets = [
-    { label: "Bull Run 2021", year: "2021", month: "01" },
-    { label: "War Start 2022", year: "2022", month: "02" },
-    { label: "Recovery 2023", year: "2023", month: "01" },
+    { label: t('comparison.preset_bull_2021'), year: "2021", month: "01" },
+    { label: t('comparison.preset_war_2022'), year: "2022", month: "02" },
+    { label: t('comparison.preset_recovery_2023'), year: "2023", month: "01" },
   ];
 
   return (

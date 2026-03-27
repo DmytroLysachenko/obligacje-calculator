@@ -15,6 +15,7 @@ interface MultiAssetHistoryEnvelope {
   usedFallback: boolean;
   coverageStart: string;
   coverageEnd: string;
+  lastSyncedAt?: string;
 }
 
 /**
@@ -133,7 +134,7 @@ export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnv
       getSeriesPointsByAliases(NBP_RATE_SLUGS, fromDate, toDate),
     ]);
 
-    if (sp500Points.length < 2 || goldPoints.length < 2 || inflationPoints.length === 0 || nbpPoints.length === 0) {
+    if (sp500Points.length < 2 || goldPoints.length < 2 || inflationPoints.length === 0) {
       return {
         data: HISTORICAL_RETURNS,
         source: 'fallback',
@@ -156,7 +157,7 @@ export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnv
     ])).sort();
 
     const data = dates
-      .filter((date) => inflationMap.has(date) && nbpMap.has(date))
+      .filter((date) => inflationMap.has(date))
       .map((date) => {
         const nbpRate = nbpMap.get(date) ?? 0;
         const annualSavingsRate = Math.max(0, nbpRate + 1);
@@ -182,12 +183,19 @@ export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnv
       };
     }
 
+    const lastSyncedAt = [sp500Points, goldPoints, inflationPoints, nbpPoints]
+      .flat()
+      .map((point) => point.date)
+      .sort()
+      .at(-1);
+
     return {
       data,
       source: 'database',
-      usedFallback: false,
+      usedFallback: nbpPoints.length === 0,
       coverageStart: data[0].date,
       coverageEnd: data[data.length - 1].date,
+      lastSyncedAt,
     };
   } catch {
     return {

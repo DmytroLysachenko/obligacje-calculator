@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { dataSeries, dataPoints } from '@/db/schema';
-import { inArray, eq, desc } from 'drizzle-orm';
+import { desc, eq, inArray } from 'drizzle-orm';
 
 const FALLBACK_NBP = [
   { date: '2021-01', rate: 0.1 },
@@ -27,6 +27,18 @@ interface ChartSeriesEnvelope<T> {
   source: 'database' | 'fallback';
   usedFallback: boolean;
   asOf?: string;
+  coverageStart?: string;
+  coverageEnd?: string;
+}
+
+function fallbackResponse() {
+  return NextResponse.json<ChartSeriesEnvelope<(typeof FALLBACK_NBP)[number]>>({
+    data: FALLBACK_NBP,
+    source: 'fallback',
+    usedFallback: true,
+    coverageStart: FALLBACK_NBP[0]?.date,
+    coverageEnd: FALLBACK_NBP[FALLBACK_NBP.length - 1]?.date,
+  });
 }
 
 export async function GET() {
@@ -36,44 +48,36 @@ export async function GET() {
     });
 
     if (!series) {
-      return NextResponse.json<ChartSeriesEnvelope<(typeof FALLBACK_NBP)[number]>>({
-        data: FALLBACK_NBP,
-        source: 'fallback',
-        usedFallback: true,
-      });
+      return fallbackResponse();
     }
 
     const data = await db.query.dataPoints.findMany({
       where: eq(dataPoints.seriesId, series.id),
       orderBy: [desc(dataPoints.date)],
-      limit: 100,
+      limit: 500,
     });
-    
-    if (!data || data.length === 0) {
-      return NextResponse.json<ChartSeriesEnvelope<(typeof FALLBACK_NBP)[number]>>({
-        data: FALLBACK_NBP,
-        source: 'fallback',
-        usedFallback: true,
-      });
+
+    if (!data.length) {
+      return fallbackResponse();
     }
 
-    const formatted = data.map((d) => ({
-      date: d.date.substring(0, 7),
-      rate: parseFloat(d.value),
-    })).reverse();
+    const formatted = data
+      .map((point) => ({
+        date: point.date.substring(0, 7),
+        rate: parseFloat(point.value),
+      }))
+      .reverse();
 
     return NextResponse.json<ChartSeriesEnvelope<(typeof formatted)[number]>>({
       data: formatted,
       source: 'database',
       usedFallback: false,
       asOf: data[0]?.date,
+      coverageStart: formatted[0]?.date,
+      coverageEnd: formatted[formatted.length - 1]?.date,
     });
   } catch (error) {
     console.error('Failed to fetch NBP data:', error);
-    return NextResponse.json<ChartSeriesEnvelope<(typeof FALLBACK_NBP)[number]>>({
-      data: FALLBACK_NBP,
-      source: 'fallback',
-      usedFallback: true,
-    });
+    return fallbackResponse();
   }
 }

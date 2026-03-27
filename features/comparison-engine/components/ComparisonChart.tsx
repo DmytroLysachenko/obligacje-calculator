@@ -4,6 +4,7 @@ import React from "react";
 import {
   AreaChart,
   Area,
+  Brush,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -29,6 +30,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { TrendingUp, Activity } from "lucide-react";
 import { ComparisonChartProps } from "./types";
 import { ChartContainer } from "@/shared/components/charts/ChartContainer";
+import { useLanguage } from "@/i18n";
 
 interface PayloadEntry {
   name: string;
@@ -129,6 +131,8 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
   showRealValue,
   formatCurrency,
 }) => {
+  const { t } = useLanguage();
+
   return (
     <Tabs defaultValue="growth" className="w-full flex flex-col gap-6">
       <TabsList className="grid w-full grid-cols-2 max-w-md h-12 p-1 bg-muted/50 rounded-xl">
@@ -137,14 +141,14 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
           className="gap-2 rounded-lg data-[state=active]:shadow-md"
         >
           <TrendingUp className="h-4 w-4" />
-          Capital Growth
+          {t('comparison.capital_growth')}
         </TabsTrigger>
         <TabsTrigger
           value="risk"
           className="gap-2 rounded-lg data-[state=active]:shadow-md"
         >
           <Activity className="h-4 w-4" />
-          Risk / Drawdown
+          {t('comparison.risk_drawdown')}
         </TabsTrigger>
       </TabsList>
 
@@ -153,10 +157,10 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
           <CardHeader className="bg-muted/30 px-8 py-6 border-b">
             <div>
               <CardTitle className="text-xl font-black">
-                {showRealValue ? "Real Value Projection" : "Nominal Growth"}
+                {showRealValue ? t('comparison.real_value_projection') : t('comparison.nominal_growth')}
               </CardTitle>
               <CardDescription>
-                Performance comparison including monthly contributions.
+                {t('comparison.performance_with_contributions')}
               </CardDescription>
             </div>
           </CardHeader>
@@ -222,6 +226,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
                       textTransform: "uppercase",
                     }}
                   />
+                  {chartData.length > 24 ? <Brush dataKey="date" height={22} stroke="#64748b" travellerWidth={8} /> : null}
                   {assets.map((asset) => (
                     <Area
                       key={asset.metadata.id}
@@ -251,10 +256,10 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
               </div>
               <div>
                 <CardTitle className="text-xl font-black">
-                  Historical Drawdown (%)
+                  {t('comparison.historical_drawdown')}
                 </CardTitle>
                 <CardDescription>
-                  Maximum drops from peak value during market crashes.
+                  {t('comparison.historical_drawdown_desc')}
                 </CardDescription>
               </div>
             </div>
@@ -296,6 +301,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
                       fontWeight: "bold",
                     }}
                   />
+                  {chartData.length > 24 ? <Brush dataKey="date" height={22} stroke="#64748b" travellerWidth={8} /> : null}
                   {assets.map((asset) => (
                     <Line
                       key={asset.metadata.id}
