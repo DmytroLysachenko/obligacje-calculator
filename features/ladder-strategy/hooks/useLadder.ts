@@ -4,19 +4,21 @@ import { useState, useCallback } from 'react';
 import { BondType, RegularInvestmentInputs, InvestmentFrequency, TaxStrategy } from '../../bond-core/types';
 import { RegularInvestmentCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
-import { addYears } from 'date-fns';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
-import { postCalculation } from '@/shared/lib/calculation-client';
+import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 
 const DEFAULT_BOND = BondType.EDO;
 const def = BOND_DEFINITIONS[DEFAULT_BOND];
 const today = new Date();
+const purchaseDate = toDateString(today);
+const defaultHorizonYears = 10;
+const defaultHorizonMonths = defaultHorizonYears * 12;
 
 const DEFAULT_INPUTS: RegularInvestmentInputs = {
   bondType: DEFAULT_BOND,
   contributionAmount: 1000,
   frequency: InvestmentFrequency.MONTHLY,
-  totalHorizon: 10,
+  totalHorizon: defaultHorizonYears,
   firstYearRate: def.firstYearRate,
   expectedInflation: 3.5,
   margin: def.margin,
@@ -25,31 +27,33 @@ const DEFAULT_INPUTS: RegularInvestmentInputs = {
   taxRate: 19,
   isCapitalized: def.isCapitalized,
   payoutFrequency: def.payoutFrequency,
-  purchaseDate: today.toISOString(),
-  withdrawalDate: addYears(today, 10).toISOString(),
+  purchaseDate,
+  withdrawalDate: getWithdrawalDateFromMonths(purchaseDate, defaultHorizonMonths),
   isRebought: false,
   rebuyDiscount: def.rebuyDiscount,
   taxStrategy: TaxStrategy.STANDARD,
+  timingMode: 'general',
+  investmentHorizonMonths: defaultHorizonMonths,
 };
 
 export function useLadder() {
   const [inputs, setInputs] = useState<RegularInvestmentInputs>(DEFAULT_INPUTS);
   const [envelope, setEnvelope] = useState<RegularInvestmentCalculationEnvelope | null>(null);
   const [isDirty, setIsDirty] = useState(true);
-  const { isCalculating, run } = useCalculationRequest();
+  const { isCalculating, post } = useCalculationRequest();
 
   // Derived results for compatibility
   const results = envelope?.result || null;
 
   const calculate = useCallback(async () => {
     try {
-      const data = await run(() => postCalculation<RegularInvestmentCalculationEnvelope>('/api/calculate/regular', inputs));
+      const data = await post<RegularInvestmentCalculationEnvelope>('/api/calculate/regular', inputs, { preferWorker: true });
       setEnvelope(data);
       setIsDirty(false);
     } catch (error) {
       console.error('Ladder calculation error:', error);
     }
-  }, [inputs, run]);
+  }, [inputs, post]);
 
   // Initial calculation - REMOVED to prevent excessive requests on remount
   // useEffect(() => {
@@ -61,7 +65,13 @@ export function useLadder() {
     setInputs((prev) => {
       const newInputs = { ...prev, [key]: value };
       if (key === 'totalHorizon') {
-        newInputs.withdrawalDate = addYears(new Date(prev.purchaseDate), Number(value)).toISOString();
+        const months = Number(value) * 12;
+        newInputs.investmentHorizonMonths = months;
+        newInputs.withdrawalDate = getWithdrawalDateFromMonths(prev.purchaseDate, months);
+      }
+      if (key === 'purchaseDate') {
+        const months = prev.investmentHorizonMonths ?? getHorizonMonths(prev.purchaseDate, prev.withdrawalDate);
+        newInputs.withdrawalDate = getWithdrawalDateFromMonths(String(value), months);
       }
       return newInputs;
     });

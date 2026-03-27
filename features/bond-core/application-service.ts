@@ -15,6 +15,7 @@ import { calculateBondInvestment, calculateRegularInvestment } from './utils/cal
 import { getHistoricalDataMap } from '@/lib/data-access';
 import { BondInputs, TaxStrategy } from './types';
 import { BOND_DEFINITIONS } from './constants/bond-definitions';
+import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 
 const CALCULATION_VERSION = '2.0.0-foundation';
 
@@ -123,8 +124,8 @@ export class CalculationApplicationService {
     payload: IndependentBondComparisonPayload,
   ): Promise<BondComparisonCalculationEnvelope> {
     const [scenarioA, scenarioB] = await Promise.all([
-      this.withHistoricalData(payload.scenarioA),
-      this.withHistoricalData(payload.scenarioB),
+      this.withHistoricalData(this.buildIndependentScenarioInputs(payload.sharedConfig, payload.scenarioA)),
+      this.withHistoricalData(this.buildIndependentScenarioInputs(payload.sharedConfig, payload.scenarioB)),
     ]);
 
     const results: BondComparisonScenarioItem[] = [
@@ -274,8 +275,46 @@ export class CalculationApplicationService {
         isRebought: false,
         rebuyDiscount: definition.rebuyDiscount,
         taxStrategy: request.taxStrategy ?? TaxStrategy.STANDARD,
+        timingMode: 'exact',
+        investmentHorizonMonths: undefined,
       };
     });
+  }
+
+  private buildIndependentScenarioInputs(
+    sharedConfig: IndependentBondComparisonPayload['sharedConfig'],
+    scenario: IndependentBondComparisonPayload['scenarioA'],
+  ): BondInputs {
+    const definition = BOND_DEFINITIONS[scenario.bondType];
+    const purchaseDate = scenario.purchaseDate ?? sharedConfig.purchaseDate;
+    const timingMode = scenario.timingMode ?? sharedConfig.timingMode ?? 'general';
+    const investmentHorizonMonths = scenario.investmentHorizonMonths ?? sharedConfig.investmentHorizonMonths;
+    const withdrawalDate = scenario.withdrawalDate
+      ?? (timingMode === 'general' && investmentHorizonMonths
+        ? getWithdrawalDateFromMonths(purchaseDate, investmentHorizonMonths)
+        : sharedConfig.withdrawalDate);
+
+    return {
+      bondType: scenario.bondType,
+      initialInvestment: sharedConfig.initialInvestment,
+      firstYearRate: definition.firstYearRate,
+      expectedInflation: sharedConfig.expectedInflation,
+      expectedNbpRate: sharedConfig.expectedNbpRate ?? 5.25,
+      margin: definition.margin,
+      duration: definition.duration,
+      earlyWithdrawalFee: definition.earlyWithdrawalFee,
+      taxRate: 19,
+      isCapitalized: definition.isCapitalized,
+      payoutFrequency: definition.payoutFrequency,
+      purchaseDate,
+      withdrawalDate,
+      isRebought: scenario.isRebought ?? false,
+      rebuyDiscount: definition.rebuyDiscount,
+      taxStrategy: scenario.taxStrategy ?? sharedConfig.taxStrategy ?? TaxStrategy.STANDARD,
+      rollover: scenario.rollover ?? false,
+      timingMode,
+      investmentHorizonMonths,
+    };
   }
 }
 

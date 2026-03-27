@@ -11,6 +11,11 @@ const DateStringSchema = z.string().refine((value) => !Number.isNaN(Date.parse(v
   message: 'Invalid date string',
 });
 
+const DateRangeInputsSchema = z.object({
+  purchaseDate: DateStringSchema,
+  withdrawalDate: DateStringSchema,
+});
+
 const withDateOrderValidation = <T extends z.ZodRawShape & { purchaseDate: z.ZodType<string>; withdrawalDate: z.ZodType<string> }>(schema: z.ZodObject<T>) =>
   schema.refine(
     (value) => {
@@ -40,9 +45,11 @@ export const BondInputsSchema = withDateOrderValidation(BaseInstrumentInputsSche
   savingsGoal: z.number().optional(),
   historicalData: HistoricalDataMapSchema,
   rollover: z.boolean().optional(),
+  timingMode: z.enum(['general', 'exact']).optional(),
+  investmentHorizonMonths: z.number().min(1).max(360).optional(),
 }));
 
-export const RegularInvestmentInputsSchema = withDateOrderValidation(BaseInstrumentInputsSchema.extend({
+export const RegularInvestmentInputsSchema = withDateOrderValidation(DateRangeInputsSchema.extend({
   contributionAmount: z.number().min(100),
   frequency: z.nativeEnum(InvestmentFrequency),
   totalHorizon: z.number().min(1).max(50),
@@ -61,6 +68,8 @@ export const RegularInvestmentInputsSchema = withDateOrderValidation(BaseInstrum
   taxStrategy: z.nativeEnum(TaxStrategy),
   savingsGoal: z.number().optional(),
   historicalData: HistoricalDataMapSchema,
+  timingMode: z.enum(['general', 'exact']).optional(),
+  investmentHorizonMonths: z.number().min(1).max(600).optional(),
 }));
 
 const NormalizedBondComparisonPayloadSchema = withDateOrderValidation(z.object({
@@ -75,10 +84,33 @@ const NormalizedBondComparisonPayloadSchema = withDateOrderValidation(z.object({
   reinvest: z.boolean().optional(),
 }));
 
+const ComparisonSharedConfigSchema = withDateOrderValidation(z.object({
+  initialInvestment: z.number().min(100),
+  purchaseDate: DateStringSchema,
+  withdrawalDate: DateStringSchema,
+  expectedInflation: z.number().min(-20).max(100),
+  expectedNbpRate: z.number().min(-10).max(100).optional(),
+  taxStrategy: z.nativeEnum(TaxStrategy).optional(),
+  timingMode: z.enum(['general', 'exact']).optional(),
+  investmentHorizonMonths: z.number().min(1).max(360).optional(),
+}));
+
+const ComparisonScenarioOverrideSchema = z.object({
+  bondType: z.nativeEnum(BondType),
+  rollover: z.boolean().optional(),
+  isRebought: z.boolean().optional(),
+  taxStrategy: z.nativeEnum(TaxStrategy).optional(),
+  purchaseDate: DateStringSchema.optional(),
+  withdrawalDate: DateStringSchema.optional(),
+  timingMode: z.enum(['general', 'exact']).optional(),
+  investmentHorizonMonths: z.number().min(1).max(360).optional(),
+});
+
 const IndependentBondComparisonPayloadSchema = z.object({
   mode: z.literal('independent'),
-  scenarioA: BondInputsSchema,
-  scenarioB: BondInputsSchema,
+  sharedConfig: ComparisonSharedConfigSchema,
+  scenarioA: ComparisonScenarioOverrideSchema,
+  scenarioB: ComparisonScenarioOverrideSchema,
 });
 
 export const BondComparisonScenarioPayloadSchema = z.union([

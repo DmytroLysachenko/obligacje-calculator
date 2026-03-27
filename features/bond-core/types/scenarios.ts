@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { BondInputs, BondType, CalculationResult, RegularInvestmentInputs, RegularInvestmentResult, TaxStrategy } from './index';
+import { TimingMode } from '@/shared/lib/date-timing';
 
 export enum ScenarioKind {
   SINGLE_BOND = 'single-bond',
@@ -57,8 +58,36 @@ export interface NormalizedBondComparisonPayload {
 
 export interface IndependentBondComparisonPayload {
   mode: 'independent';
-  scenarioA: BondInputs;
-  scenarioB: BondInputs;
+  sharedConfig: {
+    initialInvestment: number;
+    purchaseDate: string;
+    withdrawalDate: string;
+    expectedInflation: number;
+    expectedNbpRate?: number;
+    taxStrategy?: TaxStrategy;
+    timingMode?: TimingMode;
+    investmentHorizonMonths?: number;
+  };
+  scenarioA: {
+    bondType: BondType;
+    rollover?: boolean;
+    isRebought?: boolean;
+    taxStrategy?: TaxStrategy;
+    purchaseDate?: string;
+    withdrawalDate?: string;
+    timingMode?: TimingMode;
+    investmentHorizonMonths?: number;
+  };
+  scenarioB: {
+    bondType: BondType;
+    rollover?: boolean;
+    isRebought?: boolean;
+    taxStrategy?: TaxStrategy;
+    purchaseDate?: string;
+    withdrawalDate?: string;
+    timingMode?: TimingMode;
+    investmentHorizonMonths?: number;
+  };
 }
 
 export interface BondComparisonScenarioRequest {

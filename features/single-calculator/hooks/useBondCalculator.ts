@@ -2,15 +2,16 @@ import { useState, useCallback } from 'react';
 import { BondInputs, BondType, TaxStrategy } from '../../bond-core/types';
 import { SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
-import { addMonths, differenceInMonths } from 'date-fns';
 import { useQuerySync } from '@/shared/hooks/useQuerySync';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
-import { postCalculation } from '@/shared/lib/calculation-client';
+import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 
 const DEFAULT_BOND = BondType.COI;
 const def = BOND_DEFINITIONS[DEFAULT_BOND];
 const today = new Date();
-const defaultWithdrawal = addMonths(today, Math.round(def.duration * 12));
+const purchaseDate = toDateString(today);
+const defaultHorizonMonths = Math.round(def.duration * 12);
+const defaultWithdrawal = getWithdrawalDateFromMonths(purchaseDate, defaultHorizonMonths);
 
 const DEFAULT_INPUTS: BondInputs = {
   bondType: DEFAULT_BOND,
@@ -24,25 +25,22 @@ const DEFAULT_INPUTS: BondInputs = {
   taxRate: 19,
   isCapitalized: def.isCapitalized,
   payoutFrequency: def.payoutFrequency,
-  purchaseDate: today.toISOString(),
-  withdrawalDate: defaultWithdrawal.toISOString(),
+  purchaseDate,
+  withdrawalDate: defaultWithdrawal,
   isRebought: false,
   rebuyDiscount: def.rebuyDiscount,
   taxStrategy: TaxStrategy.STANDARD,
   showRealValue: false,
   rollover: false,
-};
-
-const getHorizonMonths = (purchaseDate: string, withdrawalDate: string) => {
-  const months = differenceInMonths(new Date(withdrawalDate), new Date(purchaseDate));
-  return Math.max(0, months);
+  timingMode: 'general',
+  investmentHorizonMonths: defaultHorizonMonths,
 };
 
 export function useBondCalculator() {
   const [inputs, setInputs] = useState<BondInputs>(DEFAULT_INPUTS);
   const [envelope, setEnvelope] = useState<SingleBondCalculationEnvelope | null>(null);
   const [isDirty, setIsDirty] = useState(true);
-  const { isCalculating, isError, run, clearError } = useCalculationRequest();
+  const { isCalculating, isError, clearError, post } = useCalculationRequest();
 
   // Derived results for compatibility
   const results = envelope?.result || null;
@@ -60,11 +58,13 @@ export function useBondCalculator() {
 
       if (currentInputs.calculatorMode === 'reverse' && currentInputs.savingsGoal) {
         const testBase = 10000;
-        const simEnvelope = await run(() =>
-          postCalculation<SingleBondCalculationEnvelope>('/api/calculate/single', {
+        const simEnvelope = await post<SingleBondCalculationEnvelope>(
+          '/api/calculate/single',
+          {
             ...currentInputs,
             initialInvestment: testBase,
-          }),
+          },
+          { preferWorker: true },
         );
         const netMultiplier = simEnvelope.result.netPayoutValue / testBase;
         const bondPrice = currentInputs.isRebought ? (100 - (currentInputs.rebuyDiscount || 0)) : 100;
@@ -73,12 +73,12 @@ export function useBondCalculator() {
         finalInputs.initialInvestment = requiredBonds * bondPrice;
       }
 
-      const data = await run(() => postCalculation<SingleBondCalculationEnvelope>('/api/calculate/single', finalInputs));
+      const data = await post<SingleBondCalculationEnvelope>('/api/calculate/single', finalInputs, { preferWorker: true });
       setEnvelope(data);
     } catch (error) {
       console.error('Calculation error:', error);
     }
-  }, [clearError, inputs, run]);
+  }, [clearError, inputs, post]);
 
   // Initial calculation - REMOVED to prevent excessive requests on remount
   // useEffect(() => {
@@ -89,11 +89,25 @@ export function useBondCalculator() {
     setIsDirty(true);
     setInputs((prev) => {
       const newInputs = { ...prev, [key]: value };
-      
+
       if (key === 'purchaseDate') {
-        const horizonMonths = getHorizonMonths(prev.purchaseDate, prev.withdrawalDate);
-        const newPurchaseDate = new Date(value as string);
-        newInputs.withdrawalDate = addMonths(newPurchaseDate, horizonMonths).toISOString();
+        const horizonMonths = prev.investmentHorizonMonths ?? getHorizonMonths(prev.purchaseDate, prev.withdrawalDate);
+        newInputs.withdrawalDate = getWithdrawalDateFromMonths(String(value), horizonMonths);
+      }
+
+      if (key === 'investmentHorizonMonths') {
+        newInputs.withdrawalDate = getWithdrawalDateFromMonths(prev.purchaseDate, Number(value));
+      }
+
+      if (key === 'withdrawalDate') {
+        newInputs.investmentHorizonMonths = getHorizonMonths(prev.purchaseDate, String(value));
+        newInputs.timingMode = 'exact';
+      }
+
+      if (key === 'timingMode' && value === 'general') {
+        const horizonMonths = prev.investmentHorizonMonths ?? getHorizonMonths(prev.purchaseDate, prev.withdrawalDate);
+        newInputs.investmentHorizonMonths = horizonMonths;
+        newInputs.withdrawalDate = getWithdrawalDateFromMonths(prev.purchaseDate, horizonMonths);
       }
 
       return newInputs;
@@ -103,7 +117,6 @@ export function useBondCalculator() {
   const setBondType = (type: BondType) => {
     setIsDirty(true);
     const def = BOND_DEFINITIONS[type];
-    const purchaseDate = new Date(inputs.purchaseDate);
     const previousHorizonMonths = getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);
     const fallbackHorizonMonths = Math.round(def.duration * 12);
     const nextHorizonMonths = Math.max(previousHorizonMonths, fallbackHorizonMonths);
@@ -117,9 +130,10 @@ export function useBondCalculator() {
       earlyWithdrawalFee: def.earlyWithdrawalFee,
       isCapitalized: def.isCapitalized,
       payoutFrequency: def.payoutFrequency,
-      withdrawalDate: addMonths(purchaseDate, nextHorizonMonths).toISOString(),
+      withdrawalDate: getWithdrawalDateFromMonths(prev.purchaseDate, nextHorizonMonths),
       rebuyDiscount: def.rebuyDiscount,
       isRebought: false,
+      investmentHorizonMonths: nextHorizonMonths,
     }));
   };
 

@@ -54,6 +54,8 @@ export interface BondInputs {
   calculatorMode?: 'standard' | 'reverse';
   customInflation?: number[];
   rollover?: boolean;
+  timingMode?: import('@/shared/lib/date-timing').TimingMode;
+  investmentHorizonMonths?: number;
 }
 
 export interface YearlyTimelinePoint {
