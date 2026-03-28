@@ -27,6 +27,19 @@ function isMissingSecretError(error: unknown) {
   return error.message.includes('MissingSecret');
 }
 
+function isMissingAuthTableError(error: unknown) {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  return (
+    error.message.includes('relation "user" does not exist')
+    || error.message.includes('relation "session" does not exist')
+    || error.message.includes('relation "account" does not exist')
+    || error.message.includes('relation "verificationToken" does not exist')
+  );
+}
+
 async function resolveAuthenticatedOwner() {
   if (!isAuthConfigured()) {
     return null;
@@ -45,8 +58,8 @@ async function resolveAuthenticatedOwner() {
       authMode: 'authenticated' as const,
     };
   } catch (error) {
-    if (isMissingSecretError(error)) {
-      console.warn('[PortfolioAccess] Auth secret missing, falling back to guest notebook mode.');
+    if (isMissingSecretError(error) || isMissingAuthTableError(error)) {
+      console.warn('[PortfolioAccess] Auth unavailable, falling back to guest notebook mode.');
       return null;
     }
 
@@ -55,13 +68,24 @@ async function resolveAuthenticatedOwner() {
 }
 
 async function ensureGuestOwner(ownerId: string) {
-  await db
-    .insert(users)
-    .values({
-      id: ownerId,
-      name: 'Guest Notebook User',
-    })
-    .onConflictDoNothing();
+  try {
+    await db
+      .insert(users)
+      .values({
+        id: ownerId,
+        name: 'Guest Notebook User',
+      })
+      .onConflictDoNothing();
+  } catch (error) {
+    if (isMissingAuthTableError(error)) {
+      // Some deployed/dev databases were created before Auth.js tables were added.
+      // Guest notebook mode can still work because portfolio ownership uses a text owner id.
+      console.warn('[PortfolioAccess] Auth user table missing, using detached guest notebook owner.');
+      return;
+    }
+
+    throw error;
+  }
 }
 
 export async function resolvePortfolioOwner(): Promise<PortfolioOwnerContext> {

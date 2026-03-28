@@ -255,6 +255,7 @@
     ,
     "load_error": "Could not load portfolios. Please try again later.",
     "create_error": "Could not create a portfolio right now. Please try again later.",
+    "storage_unavailable": "Portfolio storage is temporarily unavailable.",
     "guest_mode": "Guest notebook mode",
     "guest_desc": "You can create and manage a local guest notebook even when sign-in is not configured.",
     "default_description": "Primary savings",

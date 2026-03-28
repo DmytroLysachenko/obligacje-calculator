@@ -28,20 +28,40 @@ export const NotebookContainer: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedPortfolioId, setSelectedPortfolioId] = useState<string | null>(null);
 
+  const resolvePortfolioError = useCallback(
+    (payload?: { error?: string; code?: string } | null) => {
+      if (payload?.code === 'portfolio_storage_unavailable') {
+        return t('notebook.storage_unavailable');
+      }
+
+      return payload?.error || t('notebook.create_error');
+    },
+    [t],
+  );
+
   const fetchPortfolios = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
       const response = await fetch('/api/portfolio');
-      if (!response.ok) throw new Error('Failed to fetch');
       const data = await response.json();
+      if (!response.ok) {
+        setError(resolvePortfolioError(data));
+        setPortfolios([]);
+        return;
+      }
+
+      if (!Array.isArray(data) && data?.error) {
+        setError(resolvePortfolioError(data));
+      }
+
       setPortfolios(Array.isArray(data) ? data : (data.items ?? []));
     } catch {
       setError(t('notebook.load_error'));
     } finally {
       setIsLoading(false);
     }
-  }, [t]);
+  }, [resolvePortfolioError, t]);
 
   useEffect(() => {
     fetchPortfolios();
@@ -59,7 +79,7 @@ export const NotebookContainer: React.FC = () => {
       });
       if (!response.ok) {
         const payload = await response.json().catch(() => null);
-        setError(payload?.error || t('notebook.create_error'));
+        setError(resolvePortfolioError(payload));
         return;
       }
 
