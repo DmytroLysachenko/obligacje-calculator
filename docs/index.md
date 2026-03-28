@@ -40,6 +40,7 @@ Welcome to the official product documentation for the **Financial Education & In
 - [25. Roadmap & MVP Definition](./25_roadmap_and_mvp_definition.md) - Phases of development from Polish Bonds to Multi-Asset.
 - [26. Full App Refactoring Plan](./26_app_refactoring_plan.md) - Detailed execution plan for the next architecture, calculation, performance, and reliability refactor.
 - [27. Calculation Reliability Remediation Plan](./27_calculation_reliability_remediation_plan.md) - Required actions for fixing calculation trustworthiness and compare reliability.
+- [28. Remaining Backlog](./28_remaining_backlog.md) - Outstanding post-refactor UX, data, testing, and operational follow-up work.
 
 ---
 *Last Updated: March 2026*
