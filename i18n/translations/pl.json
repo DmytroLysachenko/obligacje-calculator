@@ -26,7 +26,8 @@
     "copied": "Skopiowano!",
     "start": "Start",
     "how_it_works": "Jak to działa",
-    "context_rates": "Stopy referencyjne"
+    "context_rates": "Stopy referencyjne",
+    "retry": "Spróbuj ponownie"
   },
   "nav": {
     "education": "Edukacja / Podstawy",
@@ -250,6 +251,8 @@
       ,
       "load_error": "Nie udało się załadować portfeli. Spróbuj ponownie później.",
       "create_error": "Nie udało się teraz utworzyć portfela. Spróbuj ponownie później.",
+      "guest_mode": "Tryb notatnika gościa",
+      "guest_desc": "Możesz tworzyć i prowadzić lokalny notatnik gościa nawet bez skonfigurowanego logowania.",
       "default_description": "Główne oszczędności",
       "estimated_yield_placeholder": "~5,2%",
       "current_yield_placeholder": "5,75%"

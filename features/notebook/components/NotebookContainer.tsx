@@ -12,7 +12,9 @@ import {
   Loader2, 
   AlertCircle,
   FileText,
-  Calendar
+  Calendar,
+  RefreshCcw,
+  ShieldCheck,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserPortfolio } from '@/db/schema';
@@ -117,11 +119,34 @@ export const NotebookContainer: React.FC = () => {
       </header>
 
       {error && (
-        <div className="bg-destructive/10 border-2 border-destructive/20 p-4 rounded-2xl flex items-center gap-3 text-destructive font-bold text-sm">
-          <AlertCircle className="h-5 w-5" />
-          {error}
+        <div className="rounded-2xl border-2 border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
+          <div className="flex items-center gap-3 font-bold">
+            <AlertCircle className="h-5 w-5" />
+            {error}
+          </div>
+          <div className="mt-3">
+            <Button variant="outline" size="sm" className="gap-2" onClick={fetchPortfolios}>
+              <RefreshCcw className="h-4 w-4" />
+              {t('common.retry')}
+            </Button>
+          </div>
         </div>
       )}
+
+      <Card className="border-blue-100 bg-blue-50/20 shadow-sm">
+        <CardContent className="flex flex-col gap-2 py-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-start gap-3">
+            <ShieldCheck className="mt-0.5 h-5 w-5 text-blue-600" />
+            <div>
+              <p className="font-semibold text-blue-900">{t('notebook.guest_mode')}</p>
+              <p className="text-xs text-blue-800/80">{t('notebook.guest_desc')}</p>
+            </div>
+          </div>
+          <Button variant="outline" size="sm" onClick={handleCreateDefault}>
+            {t('notebook.new_portfolio')}
+          </Button>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <AnimatePresence>

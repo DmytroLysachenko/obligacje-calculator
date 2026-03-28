@@ -26,7 +26,8 @@
     "copied": "Copied!",
     "start": "Start",
     "how_it_works": "How it works",
-    "context_rates": "Context Rates"
+    "context_rates": "Context Rates",
+    "retry": "Retry"
   },
   "nav": {
     "education": "Education / Basics",
@@ -254,6 +255,8 @@
     ,
     "load_error": "Could not load portfolios. Please try again later.",
     "create_error": "Could not create a portfolio right now. Please try again later.",
+    "guest_mode": "Guest notebook mode",
+    "guest_desc": "You can create and manage a local guest notebook even when sign-in is not configured.",
     "default_description": "Primary savings",
     "estimated_yield_placeholder": "~5.2%",
     "current_yield_placeholder": "5.75%"
