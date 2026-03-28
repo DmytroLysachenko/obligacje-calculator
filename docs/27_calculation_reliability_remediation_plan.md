@@ -21,12 +21,16 @@ Implemented so far:
 - fee/tax settlement corrected so payout bonds do not get re-taxed at exit and maturity points do not show early-redemption fees
 - golden fixtures for rollover, early exit, IKZE, deflation, and rebuy-discount scenarios
 - economic-data screens expose source, fallback, and as-of status
+- centralized repair/fallback for translated calculation labels and chart metadata
+- shared explanation panels for warnings, assumptions, notes, freshness, and data-quality flags
+- expanded operational sync modes for deterministic metadata seed, market-history seed, and incremental market sync
 
 Still to expand:
 
 - more fixture coverage for missing macro-history and stale-data cases
 - stronger explanation UI for per-period tax and rebuy-discount decisions
 - fuller freshness and stale-data messaging on compare screens
+- broader UX convergence of timing controls across all calculator entrypoints
 
 ## 1. Core Problems
 

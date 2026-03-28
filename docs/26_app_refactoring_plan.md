@@ -23,6 +23,11 @@ Implemented so far:
 - expanded regression fixtures for rollover, early exit, IKZE, deflation, and rebuy-discount scenarios
 - high-traffic i18n cleanup on single, compare, multi-asset, and ladder surfaces
 - economic-data screens now surface source, fallback, and as-of metadata
+- auth-safe guest portfolio fallback for notebook APIs in local/dev mode
+- centralized translation repair/fallback to prevent raw key rendering and repair mojibake at runtime
+- shared calculation metadata panels across single and compare result flows
+- operational admin sync modes for metadata seed, historical backfill, and incremental market sync
+- multi-asset history defaults now derive from DB coverage instead of a hardcoded 2020 baseline
 
 Still remaining:
 
@@ -30,6 +35,7 @@ Still remaining:
 - fuller freshness/status UX across compare views
 - broader mojibake cleanup outside the highest-traffic calculator flows
 - worker-based execution path for heavy scenarios
+- deeper timing UX unification across single, compare, ladder, and regular-investment forms
 
 ## 1. Refactor Goals
 
