@@ -3,14 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useLanguage } from '@/i18n';
-import { TrendingUp, Info, Activity } from 'lucide-react';
+import { TrendingUp, Info, Activity, CalendarRange, CheckCircle2 } from 'lucide-react';
 import { PageTransition } from '@/shared/components/PageTransition';
 import { InflationChart } from '@/features/economic-data/components/InflationChart';
 import { NBPRateChart } from '@/features/economic-data/components/NBPRateChart';
 import { cn } from '@/lib/utils';
 
 export default function EconomicDataPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [hasMounted, setHasMounted] = useState(false);
   const [period, setPeriod] = useState<'1Y' | '5Y' | '10Y' | '30Y' | 'ALL'>('10Y');
 
@@ -30,29 +30,39 @@ export default function EconomicDataPage() {
   return (
     <PageTransition>
       <div className="space-y-8 pb-20">
-        <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-4">
-            <h2 className="text-4xl font-bold tracking-tight text-primary">{t('nav.economic_data')}</h2>
-            <p className="text-xl text-muted-foreground max-w-3xl">
+        <header className="flex flex-col justify-between gap-6 rounded-2xl border bg-card p-6 shadow-sm md:flex-row md:items-center">
+          <div className="space-y-3">
+            <h2 className="text-3xl font-black tracking-tight text-primary">{t('nav.economic_data')}</h2>
+            <p className="max-w-3xl text-muted-foreground">
               {t('economic.subtitle')}
             </p>
           </div>
-          
-          <div className="flex bg-muted p-1 rounded-xl border border-border shadow-sm">
-            {periods.map((p) => (
-              <button
-                key={p.value}
-                onClick={() => setPeriod(p.value as '1Y' | '5Y' | '10Y' | '30Y' | 'ALL')}
-                className={cn(
-                  "px-4 py-2 text-xs font-black uppercase tracking-widest rounded-lg transition-all",
-                  period === p.value 
-                    ? "bg-background text-primary shadow-sm" 
-                    : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                )}
-              >
-                {p.label}
-              </button>
-            ))}
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-end gap-2 text-xs font-medium text-muted-foreground">
+              <CheckCircle2 className="h-3 w-3 text-emerald-500" />
+              <span>{t('comparison.up_to_date')}</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 rounded-xl border bg-muted/30 p-1 shadow-sm">
+              <span className="inline-flex items-center gap-1 px-3 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                <CalendarRange className="h-3.5 w-3.5" />
+                {language === 'pl' ? 'Zakres' : 'Range'}
+              </span>
+              {periods.map((p) => (
+                <button
+                  key={p.value}
+                  onClick={() => setPeriod(p.value as '1Y' | '5Y' | '10Y' | '30Y' | 'ALL')}
+                  className={cn(
+                    'rounded-lg px-4 py-2 text-xs font-black uppercase tracking-widest transition-all',
+                    period === p.value
+                      ? 'bg-background text-primary shadow-sm'
+                      : 'text-muted-foreground hover:bg-background/50 hover:text-foreground'
+                  )}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
           </div>
         </header>
 
@@ -86,27 +96,32 @@ export default function EconomicDataPage() {
           </div>
 
           <div className="space-y-6">
-            <Card className="shadow-md border-blue-100 bg-blue-50/20">
+            <Card className="border-blue-100 bg-blue-50/20 shadow-md">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-bold flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-sm font-bold">
                   <TrendingUp className="h-4 w-4 text-blue-500" />
                   {t('economic.why_it_matters')}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-xs text-muted-foreground leading-relaxed">
+              <CardContent className="text-xs leading-relaxed text-muted-foreground">
                 {t('economic.inflation_impact_desc')}
               </CardContent>
             </Card>
 
-            <Card className="shadow-md border-primary/5">
+            <Card className="border-primary/5 shadow-md">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-bold flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-sm font-bold">
                   <Info className="h-4 w-4 text-primary" />
                   {t('economic.data_source')}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-xs text-muted-foreground">
+              <CardContent className="space-y-2 text-xs text-muted-foreground">
                 {t('economic.source_desc')}
+                <div className="rounded-lg border bg-muted/30 px-3 py-2">
+                  {language === 'pl'
+                    ? 'Wybierz krótszy zakres, aby szybciej ocenić najnowsze zmiany, albo MAX do pełnego kontekstu historycznego.'
+                    : 'Use a shorter range to inspect recent moves quickly, or MAX for full historical context.'}
+                </div>
               </CardContent>
             </Card>
           </div>
