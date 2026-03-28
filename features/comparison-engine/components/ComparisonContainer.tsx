@@ -16,6 +16,7 @@ import { Info, Loader2, Scale, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RecalculateButton } from "@/shared/components/RecalculateButton";
 import { ChartContainer } from "@/shared/components/charts/ChartContainer";
+import { CalculationMetaPanel } from "@/shared/components/CalculationMetaPanel";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -456,14 +457,6 @@ export const ComparisonContainer: React.FC = () => {
                 />
               </div>
 
-              {(envelopeA?.dataFreshness || envelopeB?.dataFreshness) && (
-                <div className="rounded-xl border bg-muted/30 px-4 py-3 text-xs text-muted-foreground">
-                  <span className="font-bold">{t("comparison.freshness_status")}:</span>{" "}
-                  {t(`comparison.status_${envelopeA?.dataFreshness.status ?? "unknown"}`)} /{" "}
-                  {t(`comparison.status_${envelopeB?.dataFreshness.status ?? "unknown"}`)}
-                  {envelopeA?.dataFreshness.usedFallback || envelopeB?.dataFreshness.usedFallback ? ` | ${t("comparison.fallback_used")}` : ""}
-                </div>
-              )}
             </div>
           </div>
 
@@ -560,10 +553,14 @@ export const ComparisonContainer: React.FC = () => {
               </div>
 
               {((warningsA.length + warningsB.length) > 0 ||
+                (envelopeA?.assumptions.length ?? 0) > 0 ||
+                (envelopeB?.assumptions.length ?? 0) > 0 ||
                 (envelopeA?.calculationNotes.length ?? 0) > 0 ||
                 (envelopeB?.calculationNotes.length ?? 0) > 0 ||
                 (envelopeA?.dataQualityFlags.length ?? 0) > 0 ||
-                (envelopeB?.dataQualityFlags.length ?? 0) > 0) && (
+                (envelopeB?.dataQualityFlags.length ?? 0) > 0 ||
+                envelopeA?.dataFreshness ||
+                envelopeB?.dataFreshness) && (
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   {[{ label: t("comparison.scenario_a"), envelope: envelopeA, warnings: warningsA }, { label: t("comparison.scenario_b"), envelope: envelopeB, warnings: warningsB }].map((entry) => (
                     <Card key={entry.label} className="border shadow-sm">
@@ -573,27 +570,14 @@ export const ComparisonContainer: React.FC = () => {
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-3 text-xs">
-                        {entry.envelope?.calculationNotes?.length ? (
-                          <ul className="list-inside list-disc space-y-1">
-                            {entry.envelope.calculationNotes.map((note, index) => (
-                              <li key={`${entry.label}-note-${index}`}>{note}</li>
-                            ))}
-                          </ul>
-                        ) : null}
-                        {entry.warnings.length ? (
-                          <ul className="list-inside list-disc space-y-1 text-orange-700">
-                            {entry.warnings.map((warning, index) => (
-                              <li key={`${entry.label}-warning-${index}`}>{warning}</li>
-                            ))}
-                          </ul>
-                        ) : null}
-                        {entry.envelope?.dataQualityFlags?.length ? (
-                          <ul className="list-inside list-disc space-y-1 text-amber-700">
-                            {entry.envelope.dataQualityFlags.map((flag, index) => (
-                              <li key={`${entry.label}-quality-${index}`}>{flag}</li>
-                            ))}
-                          </ul>
-                        ) : null}
+                        <CalculationMetaPanel
+                          warnings={entry.warnings}
+                          assumptions={entry.envelope?.assumptions}
+                          calculationNotes={entry.envelope?.calculationNotes}
+                          dataQualityFlags={entry.envelope?.dataQualityFlags}
+                          dataFreshness={entry.envelope?.dataFreshness}
+                          compact
+                        />
                       </CardContent>
                     </Card>
                   ))}

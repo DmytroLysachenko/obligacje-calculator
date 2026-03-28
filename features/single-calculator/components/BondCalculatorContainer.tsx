@@ -23,6 +23,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { RecalculateButton } from "@/shared/components/RecalculateButton";
+import { CalculationMetaPanel } from "@/shared/components/CalculationMetaPanel";
 
 export const BondCalculatorContainer: React.FC = () => {
   const {
@@ -32,6 +33,7 @@ export const BondCalculatorContainer: React.FC = () => {
     assumptions,
     calculationNotes,
     dataQualityFlags,
+    envelope,
     isCalculating,
     isError,
     calculate,
@@ -176,58 +178,13 @@ export const BondCalculatorContainer: React.FC = () => {
             >
               <BondResultsSummary results={results} />
 
-              {(warnings.length > 0 || assumptions.length > 0 || calculationNotes.length > 0 || dataQualityFlags.length > 0) && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {warnings.length > 0 && (
-                    <div className="p-4 bg-orange-50 border-2 border-orange-200 rounded-2xl shadow-sm">
-                      <h4 className="text-xs font-black uppercase text-orange-800 mb-2 flex items-center gap-2">
-                        <Info className="h-4 w-4" /> {t('common.warnings')}
-                      </h4>
-                      <ul className="list-disc list-inside space-y-1">
-                        {warnings.map((w: string, i: number) => (
-                          <li key={i} className="text-[10px] text-orange-700 font-bold">{w}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  {assumptions.length > 0 && (
-                    <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-2xl shadow-sm">
-                      <h4 className="text-xs font-black uppercase text-blue-800 mb-2 flex items-center gap-2">
-                        <Target className="h-4 w-4" /> {t('common.assumptions')}
-                      </h4>
-                      <ul className="list-disc list-inside space-y-1">
-                        {assumptions.map((a: string, i: number) => (
-                          <li key={i} className="text-[10px] text-blue-700 font-bold">{a}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  {calculationNotes.length > 0 && (
-                    <div className="p-4 bg-emerald-50 border-2 border-emerald-200 rounded-2xl shadow-sm">
-                      <h4 className="text-xs font-black uppercase text-emerald-800 mb-2 flex items-center gap-2">
-                        <Info className="h-4 w-4" /> {t("common.notes")}
-                      </h4>
-                      <ul className="list-disc list-inside space-y-1">
-                        {calculationNotes.map((note: string, i: number) => (
-                          <li key={i} className="text-[10px] text-emerald-700 font-bold">{note}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  {dataQualityFlags.length > 0 && (
-                    <div className="p-4 bg-amber-50 border-2 border-amber-200 rounded-2xl shadow-sm">
-                      <h4 className="text-xs font-black uppercase text-amber-800 mb-2 flex items-center gap-2">
-                        <Info className="h-4 w-4" /> {t("common.data_quality")}
-                      </h4>
-                      <ul className="list-disc list-inside space-y-1">
-                        {dataQualityFlags.map((flag: string, i: number) => (
-                          <li key={i} className="text-[10px] text-amber-700 font-bold">{flag}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              )}
+              <CalculationMetaPanel
+                warnings={warnings}
+                assumptions={assumptions}
+                calculationNotes={calculationNotes}
+                dataQualityFlags={dataQualityFlags}
+                dataFreshness={envelope?.dataFreshness}
+              />
 
               <Tabs
                 defaultValue="chart"

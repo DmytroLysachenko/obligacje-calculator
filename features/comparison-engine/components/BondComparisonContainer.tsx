@@ -28,11 +28,12 @@ import {
 } from "recharts";
 import { ValueType } from "recharts/types/component/DefaultTooltipContent";
 import { addYears } from "date-fns";
-import { Loader2, ArrowRightLeft, TrendingUp, Info } from "lucide-react";
+import { Loader2, ArrowRightLeft, TrendingUp } from "lucide-react";
 import { useLanguage } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { RecalculateButton } from "@/shared/components/RecalculateButton";
 import { ChartContainer } from "@/shared/components/charts/ChartContainer";
+import { CalculationMetaPanel } from "@/shared/components/CalculationMetaPanel";
 import { BondComparisonCalculationEnvelope } from "@/features/bond-core/types/scenarios";
 
 type ComparisonResultItem = BondComparisonCalculationEnvelope["result"][number];
@@ -351,59 +352,12 @@ export const BondComparisonContainer = () => {
         </div>
       </div>
 
-      {envelope?.dataFreshness && (
-        <div className="rounded-xl border bg-muted/30 px-4 py-3 text-xs text-muted-foreground">
-          <span className="font-bold">{t('comparison.freshness_status')}:</span>{' '}
-          {t(`comparison.status_${envelope.dataFreshness.status}`)}
-          {envelope.dataFreshness.usedFallback ? ` | ${t('comparison.fallback_used')}` : ''}
-        </div>
-      )}
-
-      {warnings.length > 0 && (
-        <div className="mt-8 p-4 bg-orange-50 border-2 border-orange-200 rounded-2xl shadow-sm">
-          <h4 className="text-sm font-black uppercase text-orange-800 mb-2 flex items-center gap-2">
-             <Info className="h-4 w-4" /> {t('common.warnings')}
-          </h4>
-          <ul className="list-disc list-inside space-y-1">
-            {warnings.map((w: string, i: number) => (
-              <li key={i} className="text-xs text-orange-700 font-bold">{w}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {(calculationNotes.length > 0 || dataQualityFlags.length > 0) && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {calculationNotes.length > 0 && (
-            <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-2xl shadow-sm">
-              <h4 className="text-sm font-black uppercase text-blue-800 mb-2">
-                {t('common.notes')}
-              </h4>
-              <ul className="list-disc list-inside space-y-1">
-                {calculationNotes.map((note, index) => (
-                  <li key={`note-${index}`} className="text-xs text-blue-900 font-medium">
-                    {note}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {dataQualityFlags.length > 0 && (
-            <div className="p-4 bg-amber-50 border-2 border-amber-200 rounded-2xl shadow-sm">
-              <h4 className="text-sm font-black uppercase text-amber-800 mb-2">
-                {t('common.data_quality')}
-              </h4>
-              <ul className="list-disc list-inside space-y-1">
-                {dataQualityFlags.map((flag, index) => (
-                  <li key={`quality-${index}`} className="text-xs text-amber-900 font-medium">
-                    {flag}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
+      <CalculationMetaPanel
+        warnings={warnings}
+        calculationNotes={calculationNotes}
+        dataQualityFlags={dataQualityFlags}
+        dataFreshness={envelope?.dataFreshness}
+      />
 
       <RecalculateButton 
         isDirty={isDirty}
