@@ -55,9 +55,17 @@ export const NotebookContainer: React.FC = () => {
           description: t('notebook.default_description') 
         }),
       });
-      if (response.ok) fetchPortfolios();
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null);
+        setError(payload?.error || t('notebook.create_error'));
+        return;
+      }
+
+      setError(null);
+      fetchPortfolios();
     } catch (err) {
       console.error(err);
+      setError(t('notebook.create_error'));
     }
   };
 

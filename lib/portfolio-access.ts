@@ -12,16 +12,62 @@ export interface PortfolioOwnerContext {
   ownerId: string;
   isGuest: boolean;
   shouldPersistGuestCookie: boolean;
+  authMode: 'authenticated' | 'guest' | 'auth_unavailable_guest_fallback';
 }
 
-export async function resolvePortfolioOwner(): Promise<PortfolioOwnerContext> {
-  const session = await auth();
-  if (session?.user?.id) {
+function isAuthConfigured() {
+  return Boolean(process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET);
+}
+
+function isMissingSecretError(error: unknown) {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  return error.message.includes('MissingSecret');
+}
+
+async function resolveAuthenticatedOwner() {
+  if (!isAuthConfigured()) {
+    return null;
+  }
+
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return null;
+    }
+
     return {
       ownerId: session.user.id,
       isGuest: false,
       shouldPersistGuestCookie: false,
+      authMode: 'authenticated' as const,
     };
+  } catch (error) {
+    if (isMissingSecretError(error)) {
+      console.warn('[PortfolioAccess] Auth secret missing, falling back to guest notebook mode.');
+      return null;
+    }
+
+    throw error;
+  }
+}
+
+async function ensureGuestOwner(ownerId: string) {
+  await db
+    .insert(users)
+    .values({
+      id: ownerId,
+      name: 'Guest Notebook User',
+    })
+    .onConflictDoNothing();
+}
+
+export async function resolvePortfolioOwner(): Promise<PortfolioOwnerContext> {
+  const authenticatedOwner = await resolveAuthenticatedOwner();
+  if (authenticatedOwner) {
+    return authenticatedOwner;
   }
 
   const cookieStore = await cookies();
@@ -33,18 +79,13 @@ export async function resolvePortfolioOwner(): Promise<PortfolioOwnerContext> {
     shouldPersistGuestCookie = true;
   }
 
-  await db
-    .insert(users)
-    .values({
-      id: guestOwnerId,
-      name: 'Guest Notebook User',
-    })
-    .onConflictDoNothing();
+  await ensureGuestOwner(guestOwnerId);
 
   return {
     ownerId: guestOwnerId,
     isGuest: true,
     shouldPersistGuestCookie,
+    authMode: isAuthConfigured() ? 'guest' : 'auth_unavailable_guest_fallback',
   };
 }
 

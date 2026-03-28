@@ -51,6 +51,12 @@ export async function POST(req: NextRequest) {
       message: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
     });
-    return NextResponse.json({ error: 'Portfolio storage is temporarily unavailable' }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Portfolio storage is temporarily unavailable',
+        code: 'portfolio_storage_unavailable',
+      },
+      { status: 503 },
+    );
   }
 }
