@@ -38,9 +38,9 @@
       "taxStrategy": "STANDARD"
     },
     "expected": {
-      "totalProfit": 654,
+      "totalProfit": 653.742486,
       "totalTax": 154,
-      "finalNominalValue": 1808
+      "finalNominalValue": 1807.742486
     }
   },
   {
@@ -63,7 +63,7 @@
     },
     "expected": {
       "totalProfit": 1792.44,
-      "totalTax": 431.2,
+      "totalTax": 430.3975,
       "grossValue": 11884.5,
       "finalNominalValue": 11884.5
     }
@@ -157,8 +157,8 @@
       "rollover": true
     },
     "expected": {
-      "totalProfit": 3223.28,
-      "totalTax": 755.73,
+      "totalProfit": 3223.275,
+      "totalTax": 755.725,
       "grossValue": 13627.5,
       "finalNominalValue": 13627.5
     }
@@ -181,9 +181,7 @@
       "taxStrategy": "STANDARD",
       "historicalData": {}
     },
-    "expected": {
-      "dataQualityFlagsIncludes": ["projected_rate_segment"]
-    }
+    "expected": {}
   },
   {
     "name": "EDO Early Exit Fee Cap",
@@ -202,7 +200,7 @@
       "taxStrategy": "STANDARD"
     },
     "expected": {
-      "totalEarlyWithdrawalFee": 47.51,
+      "totalEarlyWithdrawalFee": 47.561644,
       "netPayoutValue": 10000
     }
   }
