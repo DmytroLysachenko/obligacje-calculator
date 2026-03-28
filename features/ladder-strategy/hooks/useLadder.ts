@@ -73,6 +73,24 @@ export function useLadder() {
         const months = prev.investmentHorizonMonths ?? getHorizonMonths(prev.purchaseDate, prev.withdrawalDate);
         newInputs.withdrawalDate = getWithdrawalDateFromMonths(String(value), months);
       }
+      if (key === 'withdrawalDate') {
+        const months = getHorizonMonths(prev.purchaseDate, String(value));
+        newInputs.investmentHorizonMonths = months;
+        newInputs.totalHorizon = Math.max(1, Math.round(months / 12));
+        newInputs.timingMode = 'exact';
+      }
+      if (key === 'investmentHorizonMonths') {
+        const months = Number(value);
+        newInputs.investmentHorizonMonths = months;
+        newInputs.totalHorizon = Math.max(1, Math.round(months / 12));
+        newInputs.withdrawalDate = getWithdrawalDateFromMonths(prev.purchaseDate, months);
+      }
+      if (key === 'timingMode' && value === 'general') {
+        const months = prev.investmentHorizonMonths ?? getHorizonMonths(prev.purchaseDate, prev.withdrawalDate);
+        newInputs.investmentHorizonMonths = months;
+        newInputs.totalHorizon = Math.max(1, Math.round(months / 12));
+        newInputs.withdrawalDate = getWithdrawalDateFromMonths(prev.purchaseDate, months);
+      }
       return newInputs;
     });
   };

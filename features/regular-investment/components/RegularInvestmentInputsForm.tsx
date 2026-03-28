@@ -17,6 +17,7 @@ import { AlertCircle, CalendarIcon, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
+import { getHorizonMonths } from '@/shared/lib/date-timing';
 
 import { Slider } from '@/components/ui/slider';
 
@@ -52,6 +53,8 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
 
   const currentDef = BOND_DEFINITIONS[inputs.bondType];
   const dateLocale = language === 'pl' ? pl : enGB;
+  const investmentHorizonMonths = inputs.investmentHorizonMonths ?? getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);
+  const investmentHorizonYears = Math.max(1 / 12, investmentHorizonMonths / 12);
 
   const isDivisibleBy100 = inputs.contributionAmount % 100 === 0 && inputs.contributionAmount > 0;
 
@@ -269,8 +272,29 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
           </div>
         </div>
 
-        {/* Dates */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-3">
+          <Label className="font-semibold">{t('comparison.timing_mode')}</Label>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant={inputs.timingMode !== 'exact' ? 'default' : 'outline'}
+              className="flex-1"
+              onClick={() => onUpdate('timingMode', 'general')}
+            >
+              {t('comparison.timing_general')}
+            </Button>
+            <Button
+              type="button"
+              variant={inputs.timingMode === 'exact' ? 'default' : 'outline'}
+              className="flex-1"
+              onClick={() => onUpdate('timingMode', 'exact')}
+            >
+              {t('comparison.timing_exact')}
+            </Button>
+          </div>
+        </div>
+
+        <div className={cn("grid gap-4", inputs.timingMode === 'exact' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1')}>
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Label className="text-xs font-semibold uppercase text-muted-foreground">
@@ -281,9 +305,9 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                   <TooltipTrigger asChild>
                     <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                   </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs">{t('regular_form.start_date_help')}</p>
-                    </TooltipContent>
+                  <TooltipContent>
+                    <p className="text-xs">{t('regular_form.start_date_help')}</p>
+                  </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </div>
@@ -313,51 +337,53 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
               </PopoverContent>
             </Popover>
           </div>
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Label className="text-xs font-semibold uppercase text-muted-foreground">
-                {t('bonds.withdrawal_date')}
-              </Label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                  </TooltipTrigger>
+
+          {inputs.timingMode === 'exact' ? (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Label className="text-xs font-semibold uppercase text-muted-foreground">
+                  {t('bonds.withdrawal_date')}
+                </Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
                     <TooltipContent>
                       <p className="text-xs">{t('regular_form.withdrawal_date_help')}</p>
                     </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal h-10 px-3",
+                      !inputs.withdrawalDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {hasMounted && inputs.withdrawalDate ? format(parseISO(inputs.withdrawalDate), 'PPP', { locale: dateLocale }) : <span>{t('bonds.pick_date')}</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    captionLayout="dropdown"
+                    fromYear={2010}
+                    toYear={2050}
+                    selected={parseISO(inputs.withdrawalDate)}
+                    onSelect={(date) => date && onUpdate('withdrawalDate', format(date, 'yyyy-MM-dd'))}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal h-10 px-3",
-                    !inputs.withdrawalDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {hasMounted && inputs.withdrawalDate ? format(parseISO(inputs.withdrawalDate), 'PPP', { locale: dateLocale }) : <span>{t('bonds.pick_date')}</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  captionLayout="dropdown"
-                  fromYear={2010}
-                  toYear={2050}
-                  selected={parseISO(inputs.withdrawalDate)}
-                  onSelect={(date) => date && onUpdate('withdrawalDate', format(date, 'yyyy-MM-dd'))}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
+          ) : null}
         </div>
 
-        {/* Horizon */}
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <Label htmlFor="totalHorizon" className="font-semibold">
@@ -368,26 +394,36 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                 <TooltipTrigger asChild>
                   <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                 </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs">{t('regular_form.horizon_help')}</p>
-                    </TooltipContent>
+                <TooltipContent>
+                  <p className="text-xs">{t('regular_form.horizon_help')}</p>
+                </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
-          <div className="flex items-center gap-4">
-            <Slider 
-              value={[inputs.totalHorizon]} 
-              min={1} 
-              max={30} 
-              step={1} 
-              onValueChange={([val]) => onUpdate('totalHorizon', val)}
-              className="flex-1"
-            />
-            <span className="text-lg font-bold min-w-[3rem] text-center">
-              {inputs.totalHorizon}
-            </span>
-            <span className="text-sm text-muted-foreground">{t('common.years')}</span>
-          </div>
+
+          {inputs.timingMode === 'exact' ? (
+            <div className="rounded-lg border bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
+              <span className="font-semibold text-foreground">
+                {investmentHorizonYears % 1 === 0 ? investmentHorizonYears.toFixed(0) : investmentHorizonYears.toFixed(2)} {t('common.years')}
+              </span>
+              {' '}· {t('regular_form.horizon_help')}
+            </div>
+          ) : (
+            <div className="flex items-center gap-4">
+              <Slider 
+                value={[inputs.totalHorizon]} 
+                min={1} 
+                max={30} 
+                step={1} 
+                onValueChange={([val]) => onUpdate('totalHorizon', val)}
+                className="flex-1"
+              />
+              <span className="text-lg font-bold min-w-[3rem] text-center">
+                {inputs.totalHorizon}
+              </span>
+              <span className="text-sm text-muted-foreground">{t('common.years')}</span>
+            </div>
+          )}
         </div>
 
         <Separator />
