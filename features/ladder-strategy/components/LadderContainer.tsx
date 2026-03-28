@@ -7,7 +7,7 @@ import { RegularInvestmentResultsSummary } from '../../regular-investment/compon
 import { LadderTimeline } from './LadderTimeline';
 import { useLanguage } from '@/i18n';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Info, Layers, Loader2, Check } from 'lucide-react';
+import { Info, Layers, Loader2, Check, CalendarRange } from 'lucide-react';
 import { RecalculateButton } from '@/shared/components/RecalculateButton';
 
 export const LadderContainer: React.FC = () => {
@@ -78,6 +78,20 @@ export const LadderContainer: React.FC = () => {
               <LadderTimeline results={results} />
               <RegularInvestmentResultsSummary results={results} />
             </>
+          )}
+          {!results && (
+            <Card className="border shadow-sm">
+              <CardHeader className="border-b bg-muted/20">
+                <CardTitle className="flex items-center gap-2 text-lg font-black">
+                  <CalendarRange className="h-5 w-5 text-primary" />
+                  {t('bonds.maturity_schedule')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 py-8 text-sm text-muted-foreground">
+                <p>{t('ladder.what_is_desc')}</p>
+                <p>{t('bonds.click_simulate_regular')}</p>
+              </CardContent>
+            </Card>
           )}
         </div>
       </div>

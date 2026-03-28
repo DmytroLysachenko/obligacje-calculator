@@ -3,10 +3,11 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import en from './translations/en.json';
 import pl from './translations/pl.json';
+import { normalizeTranslations, resolveTranslationValue } from './translation-utils';
 
 export const translations = {
-  en,
-  pl,
+  en: normalizeTranslations(en),
+  pl: normalizeTranslations(pl),
 };
 
 export type Language = keyof typeof translations;
@@ -37,26 +38,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   };
 
   const t = (key: string, variables?: Record<string, string | number>): string => {
-    const keys = key.split('.');
-    let current: unknown = translations[language];
-
-    for (const k of keys) {
-      if (current && typeof current === 'object' && k in current) {
-        current = (current as Record<string, unknown>)[k];
-      } else {
-        current = translations.en;
-        for (const fallbackKey of keys) {
-          if (current && typeof current === 'object' && fallbackKey in current) {
-            current = (current as Record<string, unknown>)[fallbackKey];
-          } else {
-            return key;
-          }
-        }
-        break;
-      }
-    }
-
-    let text = typeof current === 'string' ? current : key;
+    let text = resolveTranslationValue(translations, language, key);
 
     if (variables) {
       Object.entries(variables).forEach(([name, value]) => {

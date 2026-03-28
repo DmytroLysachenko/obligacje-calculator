@@ -253,6 +253,7 @@
     "detailed_soon": "Detailed analytics coming soon"
     ,
     "load_error": "Could not load portfolios. Please try again later.",
+    "create_error": "Could not create a portfolio right now. Please try again later.",
     "default_description": "Primary savings",
     "estimated_yield_placeholder": "~5.2%",
     "current_yield_placeholder": "5.75%"
@@ -355,9 +356,9 @@
       "performance_with_contributions": "Performance comparison including monthly contributions.",
       "historical_drawdown": "Historical Drawdown (%)",
       "historical_drawdown_desc": "Maximum drops from peak value during market crashes.",
-    "preset_bull_2021": "Bull Run 2021",
-    "preset_war_2022": "War Start 2022",
-    "preset_recovery_2023": "Recovery 2023"
+      "preset_bull_2021": "Bull Run 2021",
+      "preset_war_2022": "War Start 2022",
+      "preset_recovery_2023": "Recovery 2023"
     },
     "regular_form": {
       "contribution_help": "The amount you plan to invest periodically.",

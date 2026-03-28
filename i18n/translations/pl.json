@@ -249,6 +249,7 @@
       "detailed_soon": "Szczegółowa analityka wkrótce"
       ,
       "load_error": "Nie udało się załadować portfeli. Spróbuj ponownie później.",
+      "create_error": "Nie udało się teraz utworzyć portfela. Spróbuj ponownie później.",
       "default_description": "Główne oszczędności",
       "estimated_yield_placeholder": "~5,2%",
       "current_yield_placeholder": "5,75%"
@@ -267,7 +268,10 @@
     "as_of": "Stan na",
     "fallback_in_use": "użyto danych zapasowych",
     "nbp_target": "Cel NBP",
-    "loading_chart": "Ładowanie wykresu..."
+    "loading_chart": "Ładowanie wykresu...",
+    "readable_scale": "Czytelna skala",
+    "full_scale": "Pełna skala",
+    "inflation_scale_notice": "Tryb czytelny ogranicza wczesny skok, aby reszta serii pozostała czytelna. Szczyt widocznej historii przekracza {{max}}%."
     },
     "comparison": {
       "title_bond_vs_bond": "Bond vs Bond",
@@ -332,7 +336,24 @@
       "status_projected": "prognozowane",
       "status_stale": "nieaktualne",
       "status_unknown": "nieznany",
-      "fallback_used": "użyto fallbacku"
+      "fallback_used": "użyto danych zapasowych",
+      "timing_mode": "Tryb czasu",
+      "timing_general": "Ogólny",
+      "timing_exact": "Dokładne daty",
+      "use_shared_tax": "Użyj wspólnej strategii podatkowej",
+      "custom_horizon": "Własny horyzont",
+      "custom_horizon_desc": "Nadpisz wspólne ustawienie czasu tylko dla tego scenariusza.",
+      "scenario_horizon": "Horyzont scenariusza",
+      "capital_growth": "Wzrost kapitału",
+      "risk_drawdown": "Ryzyko / obsunięcie",
+      "real_value_projection": "Projekcja wartości realnej",
+      "nominal_growth": "Wzrost nominalny",
+      "performance_with_contributions": "Porównanie wyników z uwzględnieniem miesięcznych wpłat.",
+      "historical_drawdown": "Historyczne obsunięcie (%)",
+      "historical_drawdown_desc": "Największe spadki od lokalnego szczytu podczas załamań rynku.",
+      "preset_bull_2021": "Hossa 2021",
+      "preset_war_2022": "Start wojny 2022",
+      "preset_recovery_2023": "Odbicie 2023"
     },
     "regular_form": {
       "contribution_help": "Kwota, którą planujesz inwestować cyklicznie.",
@@ -358,5 +379,12 @@
       "invested": "Zainwestowano",
       "interest": "Odsetki",
       "net_value": "Wartość netto"
+    },
+    "ladder": {
+      "description": "Buduj drabinę obligacji, aby zapewnić cykliczną płynność i stabilny wzrost.",
+      "building": "Budowanie drabiny...",
+      "optimized": "Drabina zoptymalizowana",
+      "what_is_title": "Czym jest drabina obligacji?",
+      "what_is_desc": "Drabina obligacji to strategia regularnego kupowania obligacji o powtarzalnym rytmie zapadalności. Po zamknięciu pierwszego pełnego cyklu jedna partia może zapadać cyklicznie, zapewniając środki na wydatki lub reinwestycję."
     }
   }
