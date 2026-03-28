@@ -9,6 +9,8 @@ import {
   Share2,
   Download,
   CheckCircle2,
+  Database,
+  CalendarRange,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -18,6 +20,7 @@ import { ComparisonControls } from "./ComparisonControls";
 import { ComparisonChart } from "./ComparisonChart";
 import { ComparisonSummary } from "./ComparisonSummary";
 import { ComparisonAssetBreakdown } from "./ComparisonAssetBreakdown";
+import { Badge } from "@/components/ui/badge";
 
 interface ChartDataRow {
   date: string;
@@ -48,6 +51,7 @@ export const MultiAssetComparisonContainer = () => {
     historyCoverageEnd,
     usedFallbackHistory,
     historyLastSyncedAt,
+    historySeriesAvailability,
   } = useMultiAssetComparison();
 
   const { language, t } = useLanguage();
@@ -101,6 +105,14 @@ export const MultiAssetComparisonContainer = () => {
   };
 
   const totalInvested = initialSum + monthlyContribution * (assets[0].series.length - 1);
+  const historySourceLabel =
+    historySource === "database"
+      ? language === "pl"
+        ? "baza danych"
+        : "database"
+      : language === "pl"
+        ? "zapasowe"
+        : "fallback";
 
   const verdict = (() => {
     const sorted = [...assets].sort((a, b) => {
@@ -179,11 +191,46 @@ export const MultiAssetComparisonContainer = () => {
         </div>
       </header>
 
-      <div className="rounded-2xl border bg-muted/30 px-4 py-3 text-xs font-medium text-muted-foreground">
-        <span className="font-bold">{t("comparison.history_source")}:</span> {historySource} | {historyCoverageStart} to {historyCoverageEnd}
-        {historyLastSyncedAt ? ` | ${t("economic.as_of")}: ${historyLastSyncedAt}` : ""}
-        {usedFallbackHistory && ` | ${t("comparison.fallback_history")}`}
-        {isLoading && ` | ${t("comparison.history_loading")}`}
+      <div className="grid gap-4 rounded-2xl border bg-muted/20 p-4 md:grid-cols-[1.2fr_1fr]">
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-sm font-bold">
+            <Database className="h-4 w-4 text-primary" />
+            <span>{t("comparison.history_source")}</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="secondary">{historySourceLabel}</Badge>
+            {usedFallbackHistory ? <Badge variant="outline">{t("comparison.fallback_history")}</Badge> : null}
+            {isLoading ? <Badge variant="outline">{t("comparison.history_loading")}</Badge> : null}
+          </div>
+          <div className="text-xs text-muted-foreground">
+            <span className="font-semibold text-foreground">{historyCoverageStart}</span> {" - "}
+            <span className="font-semibold text-foreground">{historyCoverageEnd}</span>
+            {historyLastSyncedAt ? ` | ${t("economic.as_of")}: ${historyLastSyncedAt}` : ""}
+          </div>
+        </div>
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-sm font-bold">
+            <CalendarRange className="h-4 w-4 text-primary" />
+            <span>{language === "pl" ? "Dostępność serii" : "Series availability"}</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {assets.map((asset) => {
+              const isAvailable =
+                asset.metadata.id === "bonds"
+                  ? historySeriesAvailability?.inflation ?? true
+                  : asset.metadata.id === "savings"
+                    ? historySeriesAvailability?.nbpRate ?? true
+                    : asset.metadata.id === "sp500"
+                      ? historySeriesAvailability?.sp500 ?? true
+                      : historySeriesAvailability?.gold ?? true;
+              return (
+                <Badge key={asset.metadata.id} variant={isAvailable ? "secondary" : "outline"}>
+                  {asset.metadata.name}
+                </Badge>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-4">
