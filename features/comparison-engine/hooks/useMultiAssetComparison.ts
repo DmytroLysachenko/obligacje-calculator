@@ -12,6 +12,12 @@ interface MultiAssetHistoryResponse {
   coverageStart: string;
   coverageEnd: string;
   lastSyncedAt?: string;
+  seriesAvailability?: {
+    sp500: boolean;
+    gold: boolean;
+    inflation: boolean;
+    nbpRate: boolean;
+  };
 }
 
 const ASSETS_METADATA: Record<string, AssetMetadata> = {
@@ -56,8 +62,8 @@ const ASSETS_METADATA: Record<string, AssetMetadata> = {
 export function useMultiAssetComparison() {
   const [initialSum, setInitialSum] = useState(10000);
   const [monthlyContribution, setMonthlyContribution] = useState(500);
-  const [startYear, setStartYear] = useState('2020');
-  const [startMonth, setStartMonth] = useState('01');
+  const [startYear, setStartYear] = useState('');
+  const [startMonth, setStartMonth] = useState('');
   const [showRealValue, setShowRealValue] = useState(false);
   const [isDirty, setIsDirty] = useState(true);
   const { data: historyResponse, isLoading } = useChartData<MultiAssetHistoryResponse>('/api/charts/multi-asset-history');
@@ -94,8 +100,8 @@ export function useMultiAssetComparison() {
     {
       sum: initialSum,
       monthly: monthlyContribution,
-      year: startYear,
-      month: startMonth,
+      year: startYear || undefined,
+      month: startMonth || undefined,
       real: showRealValue,
     },
     (initial) => {
@@ -109,9 +115,10 @@ export function useMultiAssetComparison() {
 
   const sourceData = historyResponse?.data?.length ? historyResponse.data : HISTORICAL_RETURNS;
   const effectiveCoverageStart = historyResponse?.coverageStart ?? HISTORICAL_RETURNS[0]?.date ?? '2020-01';
+  const effectiveCoverageEnd = historyResponse?.coverageEnd ?? HISTORICAL_RETURNS[HISTORICAL_RETURNS.length - 1]?.date ?? '2024-06';
   const [coverageYear, coverageMonth] = effectiveCoverageStart.split('-');
-  const effectiveStartYear = startYear === '2020' ? coverageYear : startYear;
-  const effectiveStartMonth = startYear === '2020' ? coverageMonth : startMonth;
+  const effectiveStartYear = startYear || coverageYear;
+  const effectiveStartMonth = startMonth || coverageMonth;
 
   const filteredData = useMemo(() => {
     const effectiveStartDate = `${effectiveStartYear}-${effectiveStartMonth}`;
@@ -167,9 +174,10 @@ export function useMultiAssetComparison() {
     metadata: ASSETS_METADATA,
     availableDates: sourceData.map((row) => row.date),
     historySource: historyResponse?.source ?? 'fallback',
-    historyCoverageStart: historyResponse?.coverageStart ?? HISTORICAL_RETURNS[0]?.date,
-    historyCoverageEnd: historyResponse?.coverageEnd ?? HISTORICAL_RETURNS[HISTORICAL_RETURNS.length - 1]?.date,
+    historyCoverageStart: effectiveCoverageStart,
+    historyCoverageEnd: effectiveCoverageEnd,
     usedFallbackHistory: historyResponse?.usedFallback ?? true,
     historyLastSyncedAt: historyResponse?.lastSyncedAt,
+    historySeriesAvailability: historyResponse?.seriesAvailability,
   };
 }

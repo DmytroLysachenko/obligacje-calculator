@@ -39,6 +39,7 @@ export class SyncEngine {
     const providerResults = await this.syncAll();
 
     return {
+      mode: 'full-sync',
       macro,
       bondOffers: bondOffers.length,
       historical: providerResults
@@ -80,21 +81,38 @@ export class SyncEngine {
     
     currentStartDate = startOfMonth(currentStartDate);
     const today = startOfMonth(new Date());
+    const startDateStr = format(currentStartDate, 'yyyy-MM-dd');
+    const endDateStr = format(today, 'yyyy-MM-dd');
 
     if (isBefore(today, currentStartDate)) {
       console.log(`[SyncEngine] ${provider.name} (${provider.seriesSlug}) is already up to date.`);
-      return { provider: provider.name, status: 'up-to-date' };
+      return {
+        provider: provider.name,
+        seriesSlug: provider.seriesSlug,
+        status: 'up-to-date',
+        rangeStart: startDateStr,
+        rangeEnd: endDateStr,
+        inserted: 0,
+        updated: 0,
+        skipped: 0,
+      };
     }
-
-    const startDateStr = format(currentStartDate, 'yyyy-MM-dd');
-    const endDateStr = format(today, 'yyyy-MM-dd');
 
     console.log(`[SyncEngine] Fetching ${provider.name} from ${startDateStr} to ${endDateStr}...`);
     const data = await provider.fetchData(startDateStr, endDateStr);
     
     if (data.length === 0) {
       console.log(`[SyncEngine] No new data found for ${provider.name}.`);
-      return { provider: provider.name, status: 'no-new-data' };
+      return {
+        provider: provider.name,
+        seriesSlug: provider.seriesSlug,
+        status: 'no-new-data',
+        rangeStart: startDateStr,
+        rangeEnd: endDateStr,
+        inserted: 0,
+        updated: 0,
+        skipped: data.length,
+      };
     }
 
     // Cache slug -> UUID mapping for this run
@@ -131,6 +149,15 @@ export class SyncEngine {
       });
     }
 
-    return { provider: provider.name, status: 'success', imported: recordsToInsert.length };
+    return {
+      provider: provider.name,
+      seriesSlug: provider.seriesSlug,
+      status: 'success',
+      rangeStart: startDateStr,
+      rangeEnd: endDateStr,
+      inserted: recordsToInsert.length,
+      updated: 0,
+      skipped: Math.max(0, data.length - recordsToInsert.length),
+    };
   }
 }

@@ -16,6 +16,12 @@ interface MultiAssetHistoryEnvelope {
   coverageStart: string;
   coverageEnd: string;
   lastSyncedAt?: string;
+  seriesAvailability?: {
+    sp500: boolean;
+    gold: boolean;
+    inflation: boolean;
+    nbpRate: boolean;
+  };
 }
 
 /**
@@ -133,6 +139,12 @@ export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnv
       getSeriesPointsByAliases(CPI_SLUGS, fromDate, toDate),
       getSeriesPointsByAliases(NBP_RATE_SLUGS, fromDate, toDate),
     ]);
+    const seriesAvailability = {
+      sp500: sp500Points.length >= 2,
+      gold: goldPoints.length >= 2,
+      inflation: inflationPoints.length > 0,
+      nbpRate: nbpPoints.length > 0,
+    };
 
     if (sp500Points.length < 2 || goldPoints.length < 2 || inflationPoints.length === 0) {
       return {
@@ -141,6 +153,7 @@ export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnv
         usedFallback: true,
         coverageStart: fallbackCoverageStart,
         coverageEnd: fallbackCoverageEnd,
+        seriesAvailability,
       };
     }
 
@@ -180,6 +193,7 @@ export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnv
         usedFallback: true,
         coverageStart: fallbackCoverageStart,
         coverageEnd: fallbackCoverageEnd,
+        seriesAvailability,
       };
     }
 
@@ -196,6 +210,7 @@ export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnv
       coverageStart: data[0].date,
       coverageEnd: data[data.length - 1].date,
       lastSyncedAt,
+      seriesAvailability,
     };
   } catch {
     return {
@@ -204,6 +219,12 @@ export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnv
       usedFallback: true,
       coverageStart: fallbackCoverageStart,
       coverageEnd: fallbackCoverageEnd,
+      seriesAvailability: {
+        sp500: false,
+        gold: false,
+        inflation: false,
+        nbpRate: false,
+      },
     };
   }
 });

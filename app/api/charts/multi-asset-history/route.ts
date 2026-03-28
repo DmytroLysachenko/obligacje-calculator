@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getMultiAssetHistory } from '@/lib/data-access';
+import { HISTORICAL_RETURNS } from '@/features/bond-core/constants/historical-data';
 
 export async function GET() {
   try {
@@ -9,13 +10,19 @@ export async function GET() {
     console.error('Failed to fetch multi-asset history:', error);
     return NextResponse.json(
       {
-        data: [],
+        data: HISTORICAL_RETURNS,
         source: 'fallback',
         usedFallback: true,
-        coverageStart: '2020-01',
-        coverageEnd: '2020-01',
+        coverageStart: HISTORICAL_RETURNS[0]?.date ?? '2020-01',
+        coverageEnd: HISTORICAL_RETURNS[HISTORICAL_RETURNS.length - 1]?.date ?? '2024-06',
+        seriesAvailability: {
+          sp500: false,
+          gold: false,
+          inflation: false,
+          nbpRate: false,
+        },
       },
-      { status: 500 },
+      { status: 200 },
     );
   }
 }
