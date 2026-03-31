@@ -83,13 +83,26 @@ export const userInvestmentLots = pgTable("user_investment_lots", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// LEGACY TABLES - To be dropped after migration
-export const economicIndicators = pgTable("economic_indicators", {
-  id: serial("id").primaryKey(),
-  indicatorName: text("indicator_name").notNull(),
+export const bondSeries = pgTable("bond_series", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  bondTypeId: uuid("bond_type_id").references(() => polishBonds.id, { onDelete: 'cascade' }).notNull(),
+  seriesCode: text("series_code").notNull().unique(), // e.g. EDO1033
+  emissionMonth: date("emission_month").notNull(),
+  sellStartDate: date("sell_start_date").notNull(),
+  sellEndDate: date("sell_end_date").notNull(),
+  maturityDate: date("maturity_date").notNull(),
+  firstYearRate: numeric("first_year_rate", { precision: 5, scale: 2 }).notNull(),
+  baseMargin: numeric("base_margin", { precision: 5, scale: 2 }),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const userTransactions = pgTable("user_transactions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  lotId: uuid("lot_id").references(() => userInvestmentLots.id, { onDelete: 'cascade' }).notNull(),
+  transactionType: text("transaction_type").notNull(), // 'buy', 'sell', 'interest_payout', 'tax_withheld'
   date: date("date").notNull(),
-  value: numeric("value", { precision: 15, scale: 6 }).notNull(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  amount: numeric("amount", { precision: 15, scale: 2 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export type NewDataSeries = typeof dataSeries.$inferInsert;
@@ -103,6 +116,12 @@ export type UserPortfolio = typeof userPortfolios.$inferSelect;
 
 export type NewUserInvestmentLot = typeof userInvestmentLots.$inferInsert;
 export type UserInvestmentLot = typeof userInvestmentLots.$inferSelect;
+
+export type NewBondSeries = typeof bondSeries.$inferInsert;
+export type BondSeries = typeof bondSeries.$inferSelect;
+
+export type NewUserTransaction = typeof userTransactions.$inferInsert;
+export type UserTransaction = typeof userTransactions.$inferSelect;
 
 // --- NEXTAUTH (AUTH.JS) REQUIRED TABLES --- //
 export const users = pgTable("user", {
