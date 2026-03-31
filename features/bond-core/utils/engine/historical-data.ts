@@ -1,8 +1,5 @@
 import { format, subMonths } from 'date-fns';
 import { HistoricalDataMap } from '../../types';
-import { HISTORICAL_RETURNS } from '../../constants/historical-data';
-
-const HISTORICAL_DATA_MAP = new Map(HISTORICAL_RETURNS.map((row) => [row.date, row]));
 
 export function getHistoricalValue(
   targetDate: Date,
@@ -18,11 +15,6 @@ export function getHistoricalValue(
       value: providedData[key][type],
       isProjected: false,
     };
-  }
-
-  const record = HISTORICAL_DATA_MAP.get(key);
-  if (record && record[type] !== undefined) {
-    return { value: record[type], isProjected: false };
   }
 
   return { value: undefined, isProjected: true };
