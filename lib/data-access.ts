@@ -83,6 +83,30 @@ export const getIndicatorHistory = cache(async (slug: string, fromDate: string, 
   });
 });
 
+import { BondType } from "@/features/bond-core/types";
+
+/**
+ * Fetches all bond definitions from the database and maps them to BondDefinition interface.
+ */
+export const getBondDefinitions = cache(async () => {
+  const bonds = await db.query.polishBonds.findMany();
+  
+  return bonds.map(b => ({
+    type: b.symbol as BondType,
+    name: b.symbol,
+    duration: b.durationDays / 365,
+    nominalValue: parseFloat(b.nominalValue || "100"),
+    isCapitalized: (b.capitalizationFreqDays || 0) > 0,
+    payoutFrequency: (b.payoutFreqDays || 0) === 30 ? "monthly" : (b.payoutFreqDays || 0) === 365 ? "yearly" : "maturity",
+    firstYearRate: parseFloat(b.firstYearRate || "0"),
+    margin: parseFloat(b.baseMargin || "0"),
+    earlyWithdrawalFee: parseFloat(b.withdrawalFee || "0"),
+    isInflationIndexed: b.interestType === "inflation_linked",
+    isFamilyOnly: b.isFamilyOnly,
+    rebuyDiscount: parseFloat(b.rolloverDiscount || "0"),
+  }));
+});
+
 const getSeriesPointsByAliases = async (aliases: string[], fromDate: string, toDate: string) => {
   const series = await db.query.dataSeries.findMany({
     where: inArray(dataSeries.slug, aliases),

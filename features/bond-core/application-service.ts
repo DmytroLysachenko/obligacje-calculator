@@ -17,7 +17,7 @@ import { BondInputs, TaxStrategy } from './types';
 import { BOND_DEFINITIONS } from './constants/bond-definitions';
 import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 
-const CALCULATION_VERSION = '2.0.0-foundation';
+const CALCULATION_VERSION = '2.1.0-production-ready';
 
 export class CalculationApplicationService {
   /**
