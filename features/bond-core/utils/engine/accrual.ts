@@ -25,32 +25,36 @@ export function calculatePeriodAccrual(
   payoutFrequency: InterestPayout
 ): AccrualResult {
   const isMonthly = payoutFrequency === InterestPayout.MONTHLY;
-  
-  // Polish Ministry of Finance convention: exact 1.0 for completed periods.
-  // For early withdrawals (partial periods), the standard Act/365 convention is used.
-  let timeFactor = new Decimal(1);
-  if (daysHeldInPeriod < daysInFullPeriod && daysInFullPeriod > 0) {
-    timeFactor = new Decimal(daysHeldInPeriod).dividedBy(isMonthly ? (365 / 12) : 365);
-  } else if (daysInFullPeriod === 0) {
-    timeFactor = new Decimal(0);
-  }
-
   const rate = annualRate.dividedBy(100);
   let interestEarned = new Decimal(0);
 
   if (bondType === BondType.OTS) {
-    // OTS is always 3 months, fixed formula: principal * rate * 3 / 12
+    // OTS (3 months) always uses a fixed 1/4 year factor
     interestEarned = principal.times(rate).times(3).dividedBy(12);
-  } else {
-    if (isMonthly) {
-      interestEarned = principal.times(rate.dividedBy(12)).times(timeFactor);
+    return { interestEarned, timeFactor: new Decimal(0.25) };
+  }
+
+  // ROR/DOR special case: monthly payout is exactly annualRate / 12 for full periods
+  if (isMonthly) {
+    const monthlyRate = rate.dividedBy(12);
+    if (daysHeldInPeriod >= daysInFullPeriod) {
+      interestEarned = principal.times(monthlyRate);
+      return { interestEarned, timeFactor: new Decimal(1).dividedBy(12) };
     } else {
+      // Pro-rata for partial months (Act/Act or Act/365 depending on prospectus, Act/365 is safer proxy)
+      const timeFactor = new Decimal(daysHeldInPeriod).dividedBy(365);
       interestEarned = principal.times(rate).times(timeFactor);
+      return { interestEarned, timeFactor };
     }
   }
 
-  return {
-    interestEarned,
-    timeFactor
-  };
+  // Yearly or Maturity payout
+  if (daysHeldInPeriod >= daysInFullPeriod) {
+    interestEarned = principal.times(rate);
+    return { interestEarned, timeFactor: new Decimal(1) };
+  } else {
+    const timeFactor = new Decimal(daysHeldInPeriod).dividedBy(365);
+    interestEarned = principal.times(rate).times(timeFactor);
+    return { interestEarned, timeFactor };
+  }
 }

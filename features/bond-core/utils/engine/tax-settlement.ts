@@ -15,29 +15,21 @@ export function calculateTaxAmount(
 ): Decimal {
   if (amount.lte(0)) return new Decimal(0);
   
-  let rate = 0;
+  if (strategy === TaxStrategy.IKE) return new Decimal(0);
 
-  switch (strategy) {
-    case TaxStrategy.IKE:
-      return new Decimal(0);
-    case TaxStrategy.IKZE:
-      rate = 5; // Flat 5% on total value
-      break;
-    case TaxStrategy.STANDARD:
-    default:
-      rate = 19;
-      break;
-  }
+  const rate = strategy === TaxStrategy.IKZE ? new Decimal(0.05) : new Decimal(0.19);
 
   if (useOfficialRounding) {
-    // Official rounding for PIT-8C (Belka) as per Article 30a rules 
-    // is to 0 decimal places (full PLN).
+    // Article 63 § 1 Tax Ordinance: Tax base is rounded to full PLN. 
+    // Article 63 § 1 Tax Ordinance: Tax amount is rounded to full PLN.
+    // .toDecimalPlaces(0) in Decimal.js with default ROUND_HALF_UP is exactly what's needed for Polish Tax.
     const taxableBase = amount.toDecimalPlaces(0, Decimal.ROUND_HALF_UP);
-    const tax = taxableBase.times(new Decimal(rate).dividedBy(100));
-    return tax.toDecimalPlaces(0, Decimal.ROUND_HALF_UP);
+    const taxValue = taxableBase.times(rate);
+    return taxValue.toDecimalPlaces(0, Decimal.ROUND_HALF_UP);
   }
 
-  return amount.times(new Decimal(rate).dividedBy(100));
+  // Fractional tax for intermediary points/simulations
+  return amount.times(rate);
 }
 
 export function shouldWithholdPeriodicTax(
