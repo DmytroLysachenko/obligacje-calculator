@@ -103,3 +103,8 @@ This document tracks the remaining post-refactor backlog after the major calcula
 3. Chart UX polish for long-range views
 4. Historical DB backfill execution and sync observability
 5. Vitest environment repair
+
+## Production Execution & Data Realism (New)
+6. Implement fully featured Drizzle DB schemas (`drizzle/schema.ts`).
+7. Implement API-driven seeding of real WIBOR, GUS, and bond issuance data instead of fallback mocks.
+8. Validate calculation output purely against real seeded database results to confirm 100% accuracy.

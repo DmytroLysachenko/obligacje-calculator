@@ -694,3 +694,11 @@ The refactor is complete only when all of the following are true:
 - Treat the financial engine as the highest-risk area. Correctness and regression safety take priority over cosmetic cleanup.
 - Avoid mixing UI cleanup with domain changes in the same PR wherever possible.
 - Prefer incremental migration behind stable interfaces instead of a large rewrite in one step.
+
+## 14. Production Scale & KPIs (New)
+
+As part of transitioning to a production-ready application, the following KPIs must be met:
+1. **Data Accuracy:** 100% of calculations match official treasury results for known scenarios.
+2. **Real Data Fetching:** 100% elimination of static/mocked WIBOR and inflation rates, relying entirely on automated background syncs (e.g., Inngest).
+3. **Database Performance:** API response time for portfolio evaluation under 200ms using indexed PostgreSQL/Drizzle queries.
+4. **Test Coverage:** 90%+ branch coverage on `features/bond-core/` and DB interaction layers.
