@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Obligacje Calculator - Production Ready
 
-## Getting Started
+The most trusted, accurate, and educational investment simulation platform for Polish Treasury Bonds and other assets.
 
-First, run the development server:
+## Core Features
+- **Production-Grade Bond Math:** Exact interest accrual, day-count conventions, and Belka tax rounding.
+- **Real Data Integration:** Automated sync with NBP (rates) and Stooq (S&P 500, Gold).
+- **Background Sync:** Reliable cron-driven data updates via Inngest.
+- **Unified Calculation Domain:** Shared engine across Single, Regular, and Comparison simulations.
+- **User Portfolios:** Scaffolding for tracking real investments with authenticated or guest access.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Tech Stack
+- **Framework:** Next.js 16 (App Router)
+- **Database:** PostgreSQL with Drizzle ORM
+- **Worker Engine:** Inngest
+- **Math:** Decimal.js for financial precision
+- **Styling:** Tailwind CSS
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Documentation
+The documentation is now segregated for better readability:
+- [Product Strategy](./docs/product/01_product_vision_and_purpose.md)
+- [System Architecture](./docs/architecture/19_system_architecture.md)
+- [Bond Domain Guide](./docs/domain/04_polish_bonds_domain_guide.md)
+- [Implementation Roadmap](./docs/plans/roadmap.md)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+See the full [Documentation Index](./docs/index.md) for more details.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Development
 
-## Learn More
+### Setup
+1. Clone the repository.
+2. Install dependencies: `pnpm install`.
+3. Set up environment variables in `.env` (see `.env.example`).
+4. Generate DB migrations: `npx drizzle-kit generate`.
+5. Seed production data: `pnpm run db:seed:production`.
+6. Start dev server: `pnpm run dev`.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Testing
+- `pnpm run test`: Run all Vitest suites.
+- `pnpm run lint`: Run ESLint checks.
