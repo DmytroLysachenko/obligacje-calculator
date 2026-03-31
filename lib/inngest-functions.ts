@@ -20,11 +20,9 @@ export const syncEconomicData = inngest.createFunction(
     ]);
 
     // Perform a full sync from the last known point in the DB
-    // (SyncEngine internally handles finding the last date)
     const results = await step.run("unified-sync", async () => {
       try {
-        const startYear = 2020; // Default lookback if series is empty
-        return await engine.syncAll(startYear);
+        return await engine.runFullSync();
       } catch (error) {
         console.error('Unified Sync Error:', error);
         throw error; 
