@@ -76,6 +76,8 @@ export const userInvestmentLots = pgTable("user_investment_lots", {
   id: uuid("id").primaryKey().defaultRandom(),
   portfolioId: uuid("portfolio_id").references(() => userPortfolios.id, { onDelete: 'cascade' }),
   bondType: text("bond_type").notNull(),
+  bondTypeId: uuid("bond_type_id").references(() => polishBonds.id),
+  bondSeriesId: uuid("bond_series_id").references(() => bondSeries.id),
   purchaseDate: date("purchase_date").notNull(),
   amount: numeric("amount", { precision: 15, scale: 2 }).notNull(),
   isRebought: boolean("is_rebought").default(false),
