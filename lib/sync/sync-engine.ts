@@ -147,6 +147,17 @@ export class SyncEngine {
         target: [dataPoints.seriesId, dataPoints.date],
         set: { value: sql`EXCLUDED.value` }
       });
+
+      // Update series metadata with the latest data point date
+      const latestDate = recordsToInsert.map(r => r.date).sort().at(-1);
+      if (latestDate) {
+        await db.update(dataSeries)
+          .set({ 
+            lastDataPointDate: latestDate,
+            updatedAt: new Date()
+          })
+          .where(eq(dataSeries.id, series.id));
+      }
     }
 
     return {
