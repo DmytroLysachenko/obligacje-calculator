@@ -10,6 +10,7 @@ import {
   resolvePortfolioOwner,
 } from '@/lib/portfolio-access';
 import { z } from 'zod';
+import { createSuccessResponse, createErrorResponse } from '@/shared/types/api';
 
 export async function GET(req: NextRequest) {
   try {
@@ -18,12 +19,18 @@ export async function GET(req: NextRequest) {
     const portfolioId = url.searchParams.get('portfolioId');
 
     if (!portfolioId) {
-      return NextResponse.json({ error: 'Portfolio ID is required' }, { status: 400 });
+      return NextResponse.json(
+        createErrorResponse('Portfolio ID is required', 'MISSING_PARAM'), 
+        { status: 400 }
+      );
     }
 
     const portfolio = await getOwnedPortfolio(owner.ownerId, portfolioId);
     if (!portfolio) {
-      return NextResponse.json({ error: 'Portfolio not found' }, { status: 404 });
+      return NextResponse.json(
+        createErrorResponse('Portfolio not found', 'NOT_FOUND'), 
+        { status: 404 }
+      );
     }
 
     const lots = await db.query.userInvestmentLots.findMany({
@@ -31,10 +38,13 @@ export async function GET(req: NextRequest) {
       orderBy: (p, { desc }) => [desc(p.purchaseDate)],
     });
 
-    return applyPortfolioOwnerCookie(NextResponse.json(lots), owner);
+    return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(lots)), owner);
   } catch (error) {
     console.error('Failed to fetch lots:', error);
-    return NextResponse.json({ error: 'Database error' }, { status: 500 });
+    return NextResponse.json(
+      createErrorResponse('Database error', 'DATABASE_ERROR'), 
+      { status: 500 }
+    );
   }
 }
 
@@ -46,7 +56,10 @@ export async function POST(req: NextRequest) {
 
     const portfolio = await getOwnedPortfolio(owner.ownerId, validated.portfolioId);
     if (!portfolio) {
-      return NextResponse.json({ error: 'Portfolio not found' }, { status: 404 });
+      return NextResponse.json(
+        createErrorResponse('Portfolio not found', 'NOT_FOUND'), 
+        { status: 404 }
+      );
     }
 
     const [newLot] = await db.insert(userInvestmentLots).values({
@@ -58,13 +71,19 @@ export async function POST(req: NextRequest) {
       notes: validated.notes,
     }).returning();
 
-    return applyPortfolioOwnerCookie(NextResponse.json(newLot), owner);
+    return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(newLot)), owner);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Validation failed', details: error.issues }, { status: 400 });
+      return NextResponse.json(
+        createErrorResponse('Validation failed', 'VALIDATION_ERROR', error.issues), 
+        { status: 400 }
+      );
     }
     console.error('Failed to create investment lot:', error);
-    return NextResponse.json({ error: 'Database error' }, { status: 500 });
+    return NextResponse.json(
+      createErrorResponse('Database error', 'DATABASE_ERROR'), 
+      { status: 500 }
+    );
   }
 }
 
@@ -75,19 +94,28 @@ export async function DELETE(req: NextRequest) {
     const id = url.searchParams.get('id');
 
     if (!id) {
-      return NextResponse.json({ error: 'Lot ID is required' }, { status: 400 });
+      return NextResponse.json(
+        createErrorResponse('Lot ID is required', 'MISSING_PARAM'), 
+        { status: 400 }
+      );
     }
 
     const lot = await getOwnedLot(owner.ownerId, id);
     if (!lot) {
-      return NextResponse.json({ error: 'Lot not found' }, { status: 404 });
+      return NextResponse.json(
+        createErrorResponse('Lot not found', 'NOT_FOUND'), 
+        { status: 404 }
+      );
     }
 
     await db.delete(userInvestmentLots).where(eq(userInvestmentLots.id, id));
 
-    return applyPortfolioOwnerCookie(NextResponse.json({ success: true }), owner);
+    return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse({ success: true })), owner);
   } catch (error) {
     console.error('Failed to delete lot:', error);
-    return NextResponse.json({ error: 'Database error' }, { status: 500 });
+    return NextResponse.json(
+      createErrorResponse('Database error', 'DATABASE_ERROR'), 
+      { status: 500 }
+    );
   }
 }

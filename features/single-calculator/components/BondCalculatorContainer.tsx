@@ -11,8 +11,10 @@ import {
   LineChart,
   Table,
   Target,
+  Briefcase,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { CalculationMetaPanel } from "@/shared/components/CalculationMetaPanel";
@@ -44,6 +46,41 @@ export const BondCalculatorContainer: React.FC = () => {
     }
   };
 
+  const handleSaveScenario = async () => {
+    if (!results) return;
+    try {
+      // Find or create default portfolio
+      const pRes = await fetch('/api/portfolio');
+      const pData = await pRes.json();
+      let portfolioId = pData.data?.[0]?.id || pData?.[0]?.id;
+
+      if (!portfolioId) {
+        const createRes = await fetch('/api/portfolio', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: t('notebook.my_first_portfolio'), description: '' }),
+        });
+        const createData = await createRes.json();
+        portfolioId = createData.data?.id || createData?.id;
+      }
+
+      await fetch('/api/portfolio/lots', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          portfolioId,
+          bondType: inputs.bondType,
+          purchaseDate: inputs.purchaseDate,
+          amount: Math.floor(inputs.initialInvestment / 100),
+          isRebought: inputs.isRebought,
+        }),
+      });
+      alert(t('notebook.scenario_saved'));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <CalculatorPageShell
       title={t("nav.single_calculator")}
@@ -56,6 +93,19 @@ export const BondCalculatorContainer: React.FC = () => {
       savingsGoal={inputs.savingsGoal}
       currentValue={results?.netPayoutValue}
       onKeyDown={handleKeyDown}
+      extraHeaderActions={
+        results && (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="gap-2 text-xs font-bold border-2 border-primary/20 text-primary hover:bg-primary hover:text-white transition-all"
+            onClick={handleSaveScenario}
+          >
+            <Briefcase className="h-3 w-3" />
+            {t('notebook.save_to_notebook')}
+          </Button>
+        )
+      }
     >
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
         <aside className="xl:col-span-4 h-fit xl:sticky xl:top-24">

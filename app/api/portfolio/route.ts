@@ -5,6 +5,7 @@ import { PortfolioSchema } from '@/features/bond-core/types/portfolio-schemas';
 import { eq } from 'drizzle-orm';
 import { applyPortfolioOwnerCookie, resolvePortfolioOwner } from '@/lib/portfolio-access';
 import { z } from 'zod';
+import { createSuccessResponse, createErrorResponse } from '@/shared/types/api';
 
 export async function GET() {
   try {
@@ -14,18 +15,12 @@ export async function GET() {
       orderBy: (p, { desc }) => [desc(p.updatedAt)],
     });
 
-    return applyPortfolioOwnerCookie(NextResponse.json(portfolios), owner);
+    return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(portfolios)), owner);
   } catch (error) {
-    console.error('Failed to fetch portfolios:', {
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-    });
+    console.error('Failed to fetch portfolios:', error);
     return NextResponse.json(
-      {
-        items: [],
-        error: 'Portfolio storage is temporarily unavailable',
-      },
-      { status: 200 },
+      createErrorResponse('Portfolio storage is temporarily unavailable', 'DATABASE_ERROR'),
+      { status: 500 }
     );
   }
 }
@@ -42,21 +37,18 @@ export async function POST(req: NextRequest) {
       description: validated.description,
     }).returning();
 
-    return applyPortfolioOwnerCookie(NextResponse.json(newPortfolio), owner);
+    return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(newPortfolio)), owner);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Validation failed', details: error.issues }, { status: 400 });
+      return NextResponse.json(
+        createErrorResponse('Validation failed', 'VALIDATION_ERROR', error.issues), 
+        { status: 400 }
+      );
     }
-    console.error('Failed to create portfolio:', {
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-    });
+    console.error('Failed to create portfolio:', error);
     return NextResponse.json(
-      {
-        error: 'Portfolio storage is temporarily unavailable',
-        code: 'portfolio_storage_unavailable',
-      },
-      { status: 503 },
+      createErrorResponse('Portfolio storage is temporarily unavailable', 'DATABASE_ERROR'),
+      { status: 503 }
     );
   }
 }
