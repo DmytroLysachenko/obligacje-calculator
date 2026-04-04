@@ -1,3 +1,5 @@
+import { ApiResponse } from '../types/api';
+
 export interface CalculationClientErrorPayload {
   error?: string;
   details?: unknown;
@@ -5,10 +7,12 @@ export interface CalculationClientErrorPayload {
 
 export class CalculationClientError extends Error {
   details?: unknown;
+  code?: string;
 
-  constructor(message: string, details?: unknown) {
+  constructor(message: string, code?: string, details?: unknown) {
     super(message);
     this.name = 'CalculationClientError';
+    this.code = code;
     this.details = details;
   }
 }
@@ -20,16 +24,15 @@ export async function postCalculation<TResponse>(url: string, payload: unknown):
     body: JSON.stringify(payload),
   });
 
-  if (!response.ok) {
-    let errorPayload: CalculationClientErrorPayload | undefined;
-    try {
-      errorPayload = (await response.json()) as CalculationClientErrorPayload;
-    } catch {
-      errorPayload = undefined;
-    }
+  const result: ApiResponse<TResponse> = await response.json();
 
-    throw new CalculationClientError(errorPayload?.error ?? 'Calculation failed', errorPayload?.details);
+  if (!response.ok || result.error) {
+    throw new CalculationClientError(
+      result.error?.message ?? 'Calculation failed', 
+      result.error?.code,
+      result.error?.details
+    );
   }
 
-  return (await response.json()) as TResponse;
+  return result.data as TResponse;
 }

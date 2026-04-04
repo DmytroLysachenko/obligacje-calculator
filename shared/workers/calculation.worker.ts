@@ -1,3 +1,5 @@
+import { ApiResponse } from '../types/api';
+
 type WorkerRequestMessage = {
   id: string;
   url: string;
@@ -14,6 +16,7 @@ type WorkerErrorMessage = {
   id: string;
   ok: false;
   error: string;
+  code?: string;
   details?: unknown;
 };
 
@@ -27,29 +30,24 @@ self.onmessage = async (event: MessageEvent<WorkerRequestMessage>) => {
       body: JSON.stringify(payload),
     });
 
-    if (!response.ok) {
-      let errorPayload: { error?: string; details?: unknown } | undefined;
-      try {
-        errorPayload = (await response.json()) as { error?: string; details?: unknown };
-      } catch {
-        errorPayload = undefined;
-      }
+    const result: ApiResponse<unknown> = await response.json();
 
+    if (!response.ok || result.error) {
       const errorMessage: WorkerErrorMessage = {
         id,
         ok: false,
-        error: errorPayload?.error ?? 'Calculation failed',
-        details: errorPayload?.details,
+        error: result.error?.message ?? 'Calculation failed',
+        code: result.error?.code,
+        details: result.error?.details,
       };
       self.postMessage(errorMessage);
       return;
     }
 
-    const data = await response.json();
     const successMessage: WorkerSuccessMessage<unknown> = {
       id,
       ok: true,
-      data,
+      data: result.data,
     };
     self.postMessage(successMessage);
   } catch (error) {

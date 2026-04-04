@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { calculationService } from '@/features/bond-core/application-service';
 import { ScenarioKind } from '@/features/bond-core/types/scenarios';
 import { z } from 'zod';
+import { createSuccessResponse, createErrorResponse } from '@/shared/types/api';
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,17 +11,19 @@ export async function POST(req: NextRequest) {
       kind: ScenarioKind.SINGLE_BOND,
       payload: body,
     });
-    // The previous implementation returned envelope.result directly.
-    // To maintain compatibility with existing client hooks (Phase 3 will refactor hooks),
-    // I will still return results in a way that doesn't break everything immediately,
-    // but the plan says "routes validate the same contracts" and "return typed result envelopes".
-    // I'll return the full envelope now, as it's better for Phase 3.
-    return NextResponse.json(envelope);
+    
+    return NextResponse.json(createSuccessResponse(envelope));
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Validation failed', details: error.issues }, { status: 400 });
+      return NextResponse.json(
+        createErrorResponse('Validation failed', 'VALIDATION_ERROR', error.issues),
+        { status: 400 }
+      );
     }
     console.error('Calculation error:', error);
-    return NextResponse.json({ error: 'Failed to calculate' }, { status: 500 });
+    return NextResponse.json(
+      createErrorResponse('Failed to calculate', 'INTERNAL_ERROR'),
+      { status: 500 }
+    );
   }
 }

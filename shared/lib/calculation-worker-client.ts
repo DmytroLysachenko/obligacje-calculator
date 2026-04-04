@@ -10,6 +10,7 @@ type WorkerErrorMessage = {
   id: string;
   ok: false;
   error: string;
+  code?: string;
   details?: unknown;
 };
 
@@ -47,7 +48,7 @@ export async function postCalculationInWorker<TResponse>(url: string, payload: u
       if (event.data.ok) {
         resolve(event.data.data);
       } else {
-        reject(new CalculationClientError(event.data.error, event.data.details));
+        reject(new CalculationClientError(event.data.error, event.data.code, event.data.details));
       }
     };
 

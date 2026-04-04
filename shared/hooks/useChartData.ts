@@ -1,11 +1,23 @@
 import useSWR from 'swr';
+import { ApiResponse } from '../types/api';
+
+interface ErrorWithContext extends Error {
+  code?: string;
+  details?: unknown;
+}
 
 const fetcher = async <T>(url: string): Promise<T> => {
   const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error('An error occurred while fetching the data.');
+  const result: ApiResponse<T> = await response.json();
+  
+  if (!response.ok || result.error) {
+    const error = new Error(result.error?.message || 'An error occurred while fetching the data.') as ErrorWithContext;
+    error.code = result.error?.code;
+    error.details = result.error?.details;
+    throw error;
   }
-  return response.json();
+  
+  return result.data as T;
 };
 
 export function useChartData<T>(endpoint: string) {
@@ -17,6 +29,7 @@ export function useChartData<T>(endpoint: string) {
   return {
     data,
     isLoading,
-    isError: error
+    isError: !!error,
+    errorDetails: error as ErrorWithContext | undefined
   };
 }
