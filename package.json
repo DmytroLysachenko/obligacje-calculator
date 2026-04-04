@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest",
+    "test:ci": "vitest run",
+    "test:core": "vitest run features/bond-core",
     "seed:series": "tsx lib/sync/seed-series-runner.ts",
     "seed:market-history": "tsx lib/sync/seed-market-history.ts",
     "db:seed:production": "tsx lib/sync/seed-production-bonds.ts && tsx lib/sync/seed-production-data.ts",
@@ -18,7 +20,8 @@
   "lint-staged": {
     "*.{ts,tsx}": [
       "eslint --fix",
-      "bash -c \"pnpm exec tsc --noEmit\""
+      "bash -c \"pnpm exec tsc --noEmit\"",
+      "pnpm test:core"
     ]
   },
   "dependencies": {
