@@ -1,29 +1,22 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useMemo } from "react";
 import { useMultiAssetComparison } from "../hooks/useMultiAssetComparison";
 import { useLanguage } from "@/i18n";
 import {
-  Activity,
-  Share2,
-  Download,
-  CheckCircle2,
-  Database,
-  CalendarRange,
+  Scale,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { exportToCSV } from "@/shared/utils/csv-export";
 import { RecalculateButton } from "@/shared/components/RecalculateButton";
 import { ComparisonControls } from "./ComparisonControls";
 import { ComparisonChart } from "./ComparisonChart";
-import { ComparisonSummary } from "./ComparisonSummary";
 import { ComparisonAssetBreakdown } from "./ComparisonAssetBreakdown";
-import { Badge } from "@/components/ui/badge";
+import { CalculatorPageShell } from "@/shared/components/CalculatorPageShell";
+import { MonthlyReturn } from "@/features/bond-core/constants/historical-data";
 
 interface ChartDataRow {
   date: string;
+  inflation: number;
+  nbp: number;
   [key: string]: string | number;
 }
 
@@ -34,7 +27,6 @@ export const MultiAssetComparisonContainer = () => {
     monthlyContribution,
     updateMonthlyContribution,
     assets,
-    startDate,
     startYear,
     updateStartYear,
     startMonth,
@@ -44,18 +36,11 @@ export const MultiAssetComparisonContainer = () => {
     showRealValue,
     updateShowRealValue,
     isDirty,
-    isLoading,
     recalculate,
-    historySource,
-    historyCoverageStart,
-    historyCoverageEnd,
-    usedFallbackHistory,
-    historyLastSyncedAt,
-    historySeriesAvailability,
+    historyData,
   } = useMultiAssetComparison();
 
   const { language, t } = useLanguage();
-  const [copied, setCopied] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
 
   const handleRecalculate = () => {
@@ -78,163 +63,42 @@ export const MultiAssetComparisonContainer = () => {
     }).format(val);
   };
 
-  const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const chartData: ChartDataRow[] = assets[0].series.map((point, idx) => {
-    const row: ChartDataRow = { date: point.date };
-    assets.forEach((asset) => {
-      const seriesPoint = asset.series[idx];
-      row[asset.metadata.id] = showRealValue
-        ? seriesPoint.realValue!
-        : seriesPoint.value;
-      row[`${asset.metadata.id}_drawdown`] = seriesPoint.drawdown;
+  const chartData: ChartDataRow[] = useMemo(() => {
+    if (!assets || !assets[0] || !assets[0].series) return [];
+    
+    return assets[0].series.map((point, idx) => {
+      const historyPoint = historyData.find((h: MonthlyReturn) => h.date === point.date);
+      const row: ChartDataRow = { 
+        date: point.date,
+        inflation: historyPoint?.inflation ?? 0,
+        nbp: historyPoint?.nbpRate ?? 0
+      };
+      
+      assets.forEach((asset) => {
+        const seriesPoint = asset.series[idx];
+        if (seriesPoint) {
+          row[asset.metadata.id] = showRealValue
+            ? seriesPoint.realValue!
+            : seriesPoint.value;
+          row[`${asset.metadata.id}_drawdown`] = seriesPoint.drawdown;
+        }
+      });
+      return row;
     });
-    return row;
-  });
-
-  const handleExport = () => {
-    const csvData = chartData.map((row) => ({
-      Date: row.date,
-      ...Object.fromEntries(assets.map((asset) => [asset.metadata.name, row[asset.metadata.id]])),
-    }));
-    exportToCSV(csvData, `market-vs-bonds-${startDate}.csv`);
-  };
-
-  const totalInvested = initialSum + monthlyContribution * (assets[0].series.length - 1);
-  const historySourceLabel =
-    historySource === "database"
-      ? language === "pl"
-        ? "baza danych"
-        : "database"
-      : language === "pl"
-        ? "zapasowe"
-        : "fallback";
-
-  const verdict = (() => {
-    const sorted = [...assets].sort((a, b) => {
-      const valA = showRealValue ? a.series[a.series.length - 1].realValue! : a.series[a.series.length - 1].value;
-      const valB = showRealValue ? b.series[b.series.length - 1].realValue! : b.series[b.series.length - 1].value;
-      return valB - valA;
-    });
-
-    const winner = sorted[0];
-
-    return {
-      title: winner.metadata.name,
-      text:
-        language === "pl"
-          ? `Na podstawie danych historycznych od ${startDate}, najlepiej radzacym sobie aktywem bylo ${winner.metadata.name}.`
-          : `Based on historical data from ${startDate}, the best performing asset was ${winner.metadata.name}.`,
-      recommendation:
-        winner.metadata.id === "bonds"
-          ? language === "pl"
-            ? "Obligacje zapewnily najlepszy zwrot skorygowany o ryzyko w tym okresie."
-            : "Bonds provided the best risk-adjusted return in this period."
-          : language === "pl"
-            ? "Akcje radzily sobie lepiej, ale przy znacznie wyzszej zmiennosci."
-            : "Equities outperformed but with significantly higher volatility.",
-    };
-  })();
-
-  const purchasingPowerLoss = (() => {
-    const lastPoint = assets[0].series[assets[0].series.length - 1];
-    const cumulativeInflation = lastPoint.value / (lastPoint.realValue || 1);
-    return (1 - 1 / cumulativeInflation) * 100;
-  })();
+  }, [assets, showRealValue, historyData]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="relative space-y-8 pb-32"
+    <CalculatorPageShell
+      title={t("nav.multi_asset")}
+      description={t("comparison.desc_multi_asset")}
+      icon={<Scale className="h-8 w-8" />}
+      isCalculating={isCalculating}
+      isDirty={isDirty}
+      hasResults={assets.length > 0 && assets[0].series.length > 0}
       onKeyDown={handleKeyDown}
     >
-      <header className="flex flex-col gap-6 rounded-2xl border-4 border-primary/10 bg-card p-6 shadow-xl md:flex-row md:items-center md:justify-between">
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <div className="rounded-xl bg-primary p-2">
-              <Activity className="h-6 w-6 text-white" />
-            </div>
-            <h2 className="text-3xl font-black tracking-tight text-primary">
-              {t("comparison.market_vs_bonds")}
-            </h2>
-          </div>
-          <p className="max-w-2xl text-sm font-medium text-muted-foreground">
-            {t("comparison.market_vs_bonds_desc")}
-          </p>
-        </div>
-        <div className="flex gap-3">
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={handleShare}
-            className={cn(
-              "gap-2 border-2 font-bold transition-all",
-              copied ? "border-green-600 bg-green-500 text-white" : "hover:border-primary hover:text-primary",
-            )}
-          >
-            {copied ? <CheckCircle2 className="h-5 w-5" /> : <Share2 className="h-5 w-5" />}
-            {copied ? t("comparison.copied") : t("comparison.share_scenario")}
-          </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={handleExport}
-            className="gap-2 border-2 font-bold hover:border-primary hover:text-primary"
-          >
-            <Download className="h-5 w-5" /> {t("comparison.export")}
-          </Button>
-        </div>
-      </header>
-
-      <div className="grid gap-4 rounded-2xl border bg-muted/20 p-4 md:grid-cols-[1.2fr_1fr]">
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 text-sm font-bold">
-            <Database className="h-4 w-4 text-primary" />
-            <span>{t("comparison.history_source")}</span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary">{historySourceLabel}</Badge>
-            {usedFallbackHistory ? <Badge variant="outline">{t("comparison.fallback_history")}</Badge> : null}
-            {isLoading ? <Badge variant="outline">{t("comparison.history_loading")}</Badge> : null}
-          </div>
-          <div className="text-xs text-muted-foreground">
-            <span className="font-semibold text-foreground">{historyCoverageStart}</span> {" - "}
-            <span className="font-semibold text-foreground">{historyCoverageEnd}</span>
-            {historyLastSyncedAt ? ` | ${t("economic.as_of")}: ${historyLastSyncedAt}` : ""}
-          </div>
-        </div>
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 text-sm font-bold">
-            <CalendarRange className="h-4 w-4 text-primary" />
-            <span>{language === "pl" ? "Dostępność serii" : "Series availability"}</span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {assets.map((asset) => {
-              const isAvailable =
-                asset.metadata.id === "bonds"
-                  ? historySeriesAvailability?.inflation ?? true
-                  : asset.metadata.id === "savings"
-                    ? historySeriesAvailability?.nbpRate ?? true
-                    : asset.metadata.id === "sp500"
-                      ? historySeriesAvailability?.sp500 ?? true
-                      : historySeriesAvailability?.gold ?? true;
-              return (
-                <Badge key={asset.metadata.id} variant={isAvailable ? "secondary" : "outline"}>
-                  {asset.metadata.name}
-                </Badge>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-8 xl:grid-cols-4">
-        <div className="xl:col-span-1">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="lg:col-span-1">
           <ComparisonControls
             initialSum={initialSum}
             updateInitialSum={updateInitialSum}
@@ -248,20 +112,12 @@ export const MultiAssetComparisonContainer = () => {
             months={months}
             showRealValue={showRealValue}
             updateShowRealValue={updateShowRealValue}
-            purchasingPowerLoss={purchasingPowerLoss}
+            purchasingPowerLoss={0}
             formatCurrency={formatCurrency}
           />
         </div>
 
-        <div className="space-y-8 xl:col-span-3">
-          <ComparisonSummary
-            verdict={verdict}
-            totalInvested={totalInvested}
-            durationMonths={assets[0].series.length - 1}
-            isCalculating={isCalculating}
-            formatCurrency={formatCurrency}
-          />
-
+        <div className="lg:col-span-3 space-y-8">
           <ComparisonChart
             chartData={chartData}
             assets={assets}
@@ -271,7 +127,7 @@ export const MultiAssetComparisonContainer = () => {
 
           <ComparisonAssetBreakdown
             assets={assets}
-            totalInvested={totalInvested}
+            totalInvested={initialSum + monthlyContribution * assets[0].series.length}
             showRealValue={showRealValue}
             formatCurrency={formatCurrency}
             language={language as "en" | "pl"}
@@ -284,6 +140,6 @@ export const MultiAssetComparisonContainer = () => {
         loading={isCalculating}
         onClick={handleRecalculate}
       />
-    </motion.div>
+    </CalculatorPageShell>
   );
 };

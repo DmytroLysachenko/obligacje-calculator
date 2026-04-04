@@ -8,8 +8,9 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  AreaChart,
   Area,
+  Line,
+  ComposedChart,
   TooltipProps,
 } from "recharts";
 import {
@@ -74,7 +75,7 @@ const CustomTooltip = ({
         
         <div className="space-y-3">
           <div className="space-y-1.5">
-            {payload.map((entry, index) => (
+            {payload.filter(e => ['nominal', 'real'].includes(e.dataKey as string)).map((entry, index) => (
               <div
                 key={index}
                 className="flex justify-between items-center gap-4 text-xs"
@@ -98,13 +99,19 @@ const CustomTooltip = ({
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">{t("common.context_rates")}</p>
               {inflation !== undefined && (
                 <div className="flex justify-between items-center text-[10px]">
-                  <span className="text-muted-foreground font-medium">{t("bonds.ref_inflation")}:</span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+                    <span className="text-muted-foreground font-medium">{t("bonds.ref_inflation")}:</span>
+                  </span>
                   <span className="font-black text-orange-600">{inflation.toFixed(2)}%</span>
                 </div>
               )}
               {nbp !== undefined && (
                 <div className="flex justify-between items-center text-[10px]">
-                  <span className="text-muted-foreground font-medium">{t("bonds.nbp_rate_short")}:</span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                    <span className="text-muted-foreground font-medium">{t("bonds.nbp_rate_short")}:</span>
+                  </span>
                   <span className="font-black text-blue-600">{nbp.toFixed(2)}%</span>
                 </div>
               )}
@@ -134,6 +141,8 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
       nominal: results.initialInvestment,
       real: results.initialInvestment,
       isProjected: false,
+      inflation: results.timeline[0]?.inflationReference,
+      nbp: results.timeline[0]?.nbpReference,
     },
     ...results.timeline.map((point) => ({
       label: point.periodLabel,
@@ -153,7 +162,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
         height={400}
         key={`chart-${chartData.length}`}
       >
-        <AreaChart
+        <ComposedChart
           data={chartData}
           margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
         >
@@ -202,17 +211,27 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
           />
           <XAxis
             dataKey="date"
-            tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
+            tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))", fontWeight: 'bold' }}
             tickLine={false}
             axisLine={false}
             dy={10}
             minTickGap={30}
           />
           <YAxis
-            tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
+            yAxisId="left"
+            tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))", fontWeight: 'bold' }}
             tickLine={false}
             axisLine={false}
             tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
+          />
+          <YAxis
+            yAxisId="right"
+            orientation="right"
+            tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))", opacity: 0.5 }}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={(value) => `${value}%`}
+            domain={[0, 'auto']}
           />
           <Tooltip
             content={<CustomTooltip formatCurrency={formatCurrency} t={t} />}
@@ -222,9 +241,10 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
             align="right"
             height={40}
             iconType="circle"
-            wrapperStyle={{ fontSize: "12px", fontWeight: "500" }}
+            wrapperStyle={{ fontSize: "10px", fontWeight: "black", textTransform: "uppercase", letterSpacing: '0.05em' }}
           />
           <Area
+            yAxisId="left"
             type="monotone"
             dataKey="nominal"
             name={t("common.nominal_value")}
@@ -235,6 +255,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
             animationDuration={1500}
           />
           <Area
+            yAxisId="left"
             type="monotone"
             dataKey="real"
             name={t("common.real_value")}
@@ -244,7 +265,29 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
             fill="url(#colorReal)"
             animationDuration={1500}
           />
-        </AreaChart>
+          <Line
+            yAxisId="right"
+            type="monotone"
+            dataKey="inflation"
+            name={t("bonds.ref_inflation")}
+            stroke="#f59e0b"
+            strokeWidth={2}
+            strokeDasharray="5 5"
+            dot={false}
+            opacity={0.6}
+          />
+          <Line
+            yAxisId="right"
+            type="monotone"
+            dataKey="nbp"
+            name={t("bonds.nbp_rate_short")}
+            stroke="#94a3b8"
+            strokeWidth={2}
+            strokeDasharray="3 3"
+            dot={false}
+            opacity={0.4}
+          />
+        </ComposedChart>
       </ResponsiveContainer>
     </ChartContainer>
   );

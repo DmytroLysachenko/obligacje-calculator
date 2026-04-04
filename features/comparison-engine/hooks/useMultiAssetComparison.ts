@@ -179,5 +179,6 @@ export function useMultiAssetComparison() {
     usedFallbackHistory: historyResponse?.usedFallback ?? true,
     historyLastSyncedAt: historyResponse?.lastSyncedAt,
     historySeriesAvailability: historyResponse?.seriesAvailability,
+    historyData: sourceData,
   };
 }
