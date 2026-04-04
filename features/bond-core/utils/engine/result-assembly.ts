@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
 import { Decimal } from 'decimal.js';
 import { CalculationResult, RegularInvestmentResult, RegularTimelinePoint, YearlyTimelinePoint } from '../../types';
+import { calculateCAGR } from './real-return';
 
 interface SingleBondResultParams {
   startDate: Date;
@@ -56,6 +57,7 @@ interface FinalSingleBondResultParams {
   totalFee: Decimal;
   isEarlyWithdrawal: boolean;
   cycleMaturityDate: Date;
+  totalHorizonYears: number;
   calculationNotes?: string[];
   dataQualityFlags?: string[];
 }
@@ -69,10 +71,23 @@ export function createFinalSingleBondResult({
   totalFee,
   isEarlyWithdrawal,
   cycleMaturityDate,
+  totalHorizonYears,
   calculationNotes = [],
   dataQualityFlags = [],
 }: FinalSingleBondResultParams): CalculationResult {
   const lastPoint = timeline[timeline.length - 1];
+
+  const nominalAnnualizedReturn = calculateCAGR(
+    new Decimal(initialInvestment),
+    cycleNetProceeds,
+    totalHorizonYears
+  ).toNumber();
+
+  const realAnnualizedReturn = calculateCAGR(
+    new Decimal(initialInvestment),
+    new Decimal(lastPoint.realValue),
+    totalHorizonYears
+  ).toNumber();
 
   return {
     initialInvestment,
@@ -86,6 +101,8 @@ export function createFinalSingleBondResult({
     netPayoutValue: cycleNetProceeds.toNumber(),
     isEarlyWithdrawal,
     maturityDate: cycleMaturityDate.toISOString(),
+    nominalAnnualizedReturn,
+    realAnnualizedReturn,
     calculationNotes,
     dataQualityFlags,
   };

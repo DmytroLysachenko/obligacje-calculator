@@ -99,6 +99,8 @@ export interface CalculationResult {
   netPayoutValue: number;
   isEarlyWithdrawal: boolean;
   maturityDate: string;
+  nominalAnnualizedReturn: number;
+  realAnnualizedReturn: number;
   calculationNotes?: string[];
   dataQualityFlags?: string[];
 }

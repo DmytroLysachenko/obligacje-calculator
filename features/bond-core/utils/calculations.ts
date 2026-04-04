@@ -302,6 +302,8 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
       if (isEarlyWithdrawal) {
         calculationNotes.push('Early redemption fee logic was applied before the native maturity date.');
       }
+      const totalHorizonYears = differenceInDays(actualCycleEndDate, startDate) / 365.25;
+
       return createFinalSingleBondResult({
         initialInvestment,
         timeline: globalTimeline,
@@ -311,6 +313,7 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
         totalFee: totalFeeAcc,
         isEarlyWithdrawal,
         cycleMaturityDate,
+        totalHorizonYears,
         calculationNotes,
         dataQualityFlags: Array.from(dataQualityFlags),
       });
