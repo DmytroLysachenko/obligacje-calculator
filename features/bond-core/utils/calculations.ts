@@ -12,7 +12,7 @@ import {
   TaxStrategy
 } from '../types';
 import { BOND_DEFINITIONS } from '../constants/bond-definitions';
-import { addMonths, differenceInMonths, isAfter, isBefore, min, parseISO } from 'date-fns';
+import { addMonths, differenceInDays, differenceInMonths, getDaysInYear, isAfter, isBefore, min, parseISO } from 'date-fns';
 import { Decimal } from 'decimal.js';
 
 // Engine imports
@@ -205,6 +205,7 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
         totalMonthsSoFar,
         expectedInflation,
         inputs.customInflation,
+        startDate
       );
       
       const currentNominalPrincipal = isCapitalized ? currentNominalValue : nominalStartingValue;
@@ -364,12 +365,28 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
 
   let totalInvested = new Decimal(0);
   let cumulativeInflation = new Decimal(1);
-  const monthlyInflation = new Decimal(expectedInflation).dividedBy(12).dividedBy(100);
   const bondPrice = isRebought ? new Decimal(nominalValue).minus(rebuyDiscount) : new Decimal(nominalValue);
 
   for (let m = 0; m <= totalMonths; m++) {
     const currentMonthDate = addMonths(startPurchaseDate, m);
     if (isAfter(currentMonthDate, targetWithdrawalDate)) break;
+
+    // Accurate inflation compounding for THIS month
+    if (m > 0) {
+      const prevMonthDate = addMonths(startPurchaseDate, m - 1);
+      const daysInMonth = differenceInDays(currentMonthDate, prevMonthDate);
+      const daysInYear = getDaysInYear(prevMonthDate);
+      
+      const yearIndex = Math.floor((m - 1) / 12);
+      const annualInflation = getExpectedInflationForYearIndex(expectedInflation, inputs.customInflation, yearIndex);
+      
+      const monthlyFactor = new Decimal(annualInflation)
+        .dividedBy(100)
+        .times(daysInMonth)
+        .dividedBy(daysInYear);
+        
+      cumulativeInflation = cumulativeInflation.times(new Decimal(1).plus(monthlyFactor));
+    }
 
     const isWithdrawalStep = currentMonthDate.getTime() === targetWithdrawalDate.getTime();
 
@@ -490,10 +507,6 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
         }
       }
     });
-
-    if (m > 0) {
-      cumulativeInflation = cumulativeInflation.times(new Decimal(1).plus(monthlyInflation));
-    }
 
     let currentNominalValueTotal = new Decimal(0);
     let currentProfitTotal = new Decimal(0);
