@@ -174,7 +174,8 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
         period.daysHeld,
         period.daysInPeriod,
         bondType,
-        payoutFrequency
+        payoutFrequency,
+        period.startDate
       );
       
       const interestEarned = accrual.interestEarned;
