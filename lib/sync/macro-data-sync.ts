@@ -1,31 +1,30 @@
 import { db } from "@/db";
 import { dataSeries, dataPoints } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { NbpApiClient } from "../api-clients/nbp";
+import { StooqApiClient } from "../api-clients/stooq";
 
 /**
- * Syncs macroeconomic data (Inflation, NBP Rate)
+ * Syncs macroeconomic data (Inflation, NBP Rate) from real sources.
  */
 export async function syncMacroData() {
-  const now = new Date();
-  const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const nbpClient = new NbpApiClient();
+  const stooqClient = new StooqApiClient();
   
   try {
     // 1. Fetch NBP Reference Rate
-    // API: https://api.nbp.pl/api/exchangerates/tables/A?format=json (Exchange rates)
-    // Rate API: https://api.nbp.pl/api/cenyzlota/last/1?format=json (Example)
-    // Real NBP Rate: http://api.nbp.pl/api/statystyka/stopy/ (This is more complex, usually easier to get last 1)
+    const nbpIndicators = await nbpClient.fetchLatestData();
+    const nbpRefRate = nbpIndicators.find(i => i.name === 'nbp_reference_rate');
     
-    // const nbpResponse = await fetch('http://api.nbp.pl/api/statystyka/stopy/');
-    // Note: NBP API returns XML for stopy by default. We'll use a simpler source or mock for now
-    // as XML parsing in Node is a bit heavy.
-    const currentNbpRate = 5.75; // Currently 5.75% in Poland
+    // 2. Fetch Inflation (CPI) from Stooq (using PL-CPI proxy symbol if available, otherwise fallback)
+    // Common Stooq symbols: 'cpip' for Poland CPI
+    const inflationIndicators = await stooqClient.fetchHistoricalData(
+      new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      'cpip.pl' 
+    );
+    const latestInflation = inflationIndicators.at(-1);
 
-    // 2. Fetch Inflation (GUS)
-    // For MVP, we can use a reliable proxy or a simpler GUS endpoint
-    const currentInflation = 2.0; // Currently approx 2.0%
-
-    // 3. Update Database
-    // Ensure Series exist
+    // 3. Ensure Series exist and Update Points
     let inflationSeries = await db.query.dataSeries.findFirst({
       where: eq(dataSeries.slug, 'inflation-pl')
     });
@@ -36,7 +35,7 @@ export async function syncMacroData() {
         slug: 'inflation-pl',
         category: 'macro',
         unit: '%',
-        dataSource: 'GUS',
+        dataSource: 'Stooq/GUS',
       }).returning();
     }
 
@@ -54,24 +53,55 @@ export async function syncMacroData() {
       }).returning();
     }
 
-    // Insert data points for current month
-    await db.insert(dataPoints).values([
-      {
-        seriesId: inflationSeries.id,
-        date: `${yearMonth}-01`,
-        value: currentInflation.toString(),
-      },
-      {
-        seriesId: nbpSeries.id,
-        date: `${yearMonth}-01`,
-        value: currentNbpRate.toString(),
-      }
-    ]).onConflictDoUpdate({
-      target: [dataPoints.seriesId, dataPoints.date],
-      set: { value: currentInflation.toString() } // simplified
-    });
+    const updates = [];
 
-    return { inflation: currentInflation, nbp: currentNbpRate };
+    if (latestInflation) {
+      updates.push({
+        seriesId: inflationSeries.id,
+        date: latestInflation.date,
+        value: latestInflation.value.toString(),
+      });
+      // Update series metadata
+      await db.update(dataSeries)
+        .set({ 
+          lastDataPointDate: latestInflation.date,
+          updatedAt: new Date()
+        })
+        .where(eq(dataSeries.id, inflationSeries.id));
+    }
+
+    if (nbpRefRate) {
+      updates.push({
+        seriesId: nbpSeries.id,
+        date: nbpRefRate.date,
+        value: nbpRefRate.value.toString(),
+      });
+      // Update series metadata
+      await db.update(dataSeries)
+        .set({ 
+          lastDataPointDate: nbpRefRate.date,
+          updatedAt: new Date()
+        })
+        .where(eq(dataSeries.id, nbpSeries.id));
+    }
+
+    if (updates.length > 0) {
+      for (const update of updates) {
+        await db.insert(dataPoints)
+          .values(update)
+          .onConflictDoUpdate({
+            target: [dataPoints.seriesId, dataPoints.date],
+            set: { value: update.value }
+          });
+      }
+    }
+
+    return { 
+      inflation: latestInflation?.value, 
+      nbp: nbpRefRate?.value,
+      inflationDate: latestInflation?.date,
+      nbpDate: nbpRefRate?.date
+    };
   } catch (error) {
     console.error('Macro sync failed:', error);
     return null;
