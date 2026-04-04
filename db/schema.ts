@@ -17,6 +17,7 @@ export const dataSeries = pgTable("data_series", {
   unit: text("unit").notNull(), // %, PLN, USD, etc.
   frequency: text("frequency").notNull().default("monthly"), // daily, monthly, quarterly, yearly
   dataSource: text("data_source"),
+  lastDataPointDate: date("last_data_point_date"),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 

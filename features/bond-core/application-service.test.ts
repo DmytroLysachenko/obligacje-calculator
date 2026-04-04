@@ -11,6 +11,7 @@ vi.mock('@/lib/data-access', () => ({
     '2023-03': { inflation: 16.1, nbpRate: 6.75 },
   }),
   getBondDefinitions: vi.fn().mockResolvedValue([]),
+  getGlobalDataFreshness: vi.fn().mockResolvedValue({ status: 'fresh', usedFallback: false }),
 }));
 
 describe('CalculationApplicationService - Integration', () => {
@@ -45,8 +46,9 @@ describe('CalculationApplicationService - Integration', () => {
 
     expect(envelope.calculationVersion).toContain('production-ready');
     expect(envelope.result).toBeDefined();
-    // Verify it used the historical data for the first year if applicable
-    // (EDO uses fixed first year, but let's check envelope metadata)
-    expect(envelope.calculationNotes).toContain('Macro inputs were resolved from historical data where available.');
+    
+    // Verify calculation notes reflect the simulation state
+    expect(envelope.calculationNotes).toContain('Rollover is disabled; the simulation stops at the first bond cycle or selected withdrawal date.');
+    expect(envelope.calculationNotes).toContain('Early redemption fee logic was applied before the native maturity date.');
   });
 });

@@ -4,6 +4,54 @@ import { eq, and, gte, lte, asc, inArray } from "drizzle-orm";
 import { cache } from "react";
 import { HISTORICAL_RETURNS, type MonthlyReturn } from "@/features/bond-core/constants/historical-data";
 
+import { CalculationDataFreshness } from "@/features/bond-core/types/scenarios";
+import { differenceInDays, parseISO, format } from "date-fns";
+
+/**
+ * Calculates the global data freshness status based on the oldest macro series.
+ */
+export const getGlobalDataFreshness = cache(async (): Promise<CalculationDataFreshness> => {
+  const allSeries = await db.query.dataSeries.findMany();
+  
+  if (allSeries.length === 0) {
+    return {
+      status: 'unknown',
+      usedFallback: true,
+    };
+  }
+
+  // Define what we consider "stale" (e.g. older than 45 days for monthly macro data)
+  const STALE_THRESHOLD_DAYS = 45;
+  const today = new Date();
+  
+  let oldestDate: Date | null = null;
+  let usedFallback = false;
+
+  allSeries.forEach(s => {
+    if (!s.lastDataPointDate) {
+      usedFallback = true;
+      return;
+    }
+    const d = parseISO(s.lastDataPointDate);
+    if (!oldestDate || d < oldestDate) {
+      oldestDate = d;
+    }
+  });
+
+  if (!oldestDate) {
+    return { status: 'unknown', usedFallback: true };
+  }
+
+  const daysOld = differenceInDays(today, oldestDate);
+  const status = daysOld > STALE_THRESHOLD_DAYS ? 'stale' : 'fresh';
+
+  return {
+    status,
+    asOf: format(oldestDate, 'yyyy-MM'),
+    usedFallback
+  };
+});
+
 const CPI_SLUGS = ['pl-cpi', 'inflation-pl'];
 const NBP_RATE_SLUGS = ['nbp-ref-rate', 'nbp-reference-rate', 'nbp-rate'];
 const SP500_SLUGS = ['sp500'];

@@ -9,11 +9,12 @@ export enum ScenarioKind {
   MULTI_ASSET = 'multi-asset',
 }
 
-export type DataFreshnessStatus = 'fresh' | 'stale' | 'projected' | 'unknown';
+export type DataFreshnessStatus = 'fresh' | 'stale' | 'projected' | 'unknown' | 'fallback';
 
 export interface CalculationDataFreshness {
   status: DataFreshnessStatus;
   asOf?: string;
+  lastCheck?: string;
   usedFallback: boolean;
 }
 
@@ -24,7 +25,7 @@ export interface CalculationEnvelope<T> {
   calculationNotes: string[];
   dataQualityFlags: string[];
   dataFreshness: CalculationDataFreshness;
-  calculationVersion: string;
+  calculationVersion?: string;
 }
 
 export interface SingleBondScenarioRequest {

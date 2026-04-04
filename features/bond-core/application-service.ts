@@ -9,15 +9,16 @@ import {
   BondComparisonScenarioItem,
   IndependentBondComparisonPayload,
   NormalizedBondComparisonPayload,
+  CalculationDataFreshness,
 } from './types/scenarios';
 import { BondInputsSchema, RegularInvestmentInputsSchema, BondComparisonScenarioRequestSchema } from './types/schemas';
 import { calculateBondInvestment, calculateRegularInvestment } from './utils/calculations';
-import { getHistoricalDataMap } from '@/lib/data-access';
+import { getHistoricalDataMap, getGlobalDataFreshness } from '@/lib/data-access';
 import { BondInputs, TaxStrategy } from './types';
 import { BOND_DEFINITIONS } from './constants/bond-definitions';
 import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 
-const CALCULATION_VERSION = '2.1.0-production-ready';
+export const MODEL_VERSION = '2.1.0-production-ready';
 
 export class CalculationApplicationService {
   /**
@@ -25,40 +26,35 @@ export class CalculationApplicationService {
    */
   async calculate(request: CalculationScenarioRequest): Promise<CalculationEnvelope<unknown>> {
     const startTime = performance.now();
-    const fingerprint = this.generateFingerprint(request);
+    const dataFreshness = await getGlobalDataFreshness();
     
     try {
       let response: CalculationEnvelope<unknown>;
       switch (request.kind) {
         case ScenarioKind.SINGLE_BOND:
-          response = await this.calculateSingleBond(request.payload);
+          response = await this.calculateSingleBond(request.payload, dataFreshness);
           break;
         case ScenarioKind.REGULAR_INVESTMENT:
-          response = await this.calculateRegularInvestment(request.payload);
+          response = await this.calculateRegularInvestment(request.payload, dataFreshness);
           break;
         case ScenarioKind.BOND_COMPARISON:
-          response = await this.calculateComparison(request.payload);
+          response = await this.calculateComparison(request.payload, dataFreshness);
           break;
         default:
           throw new Error('Unsupported scenario kind');
       }
 
       const duration = performance.now() - startTime;
-      console.log(`[CalculationService] kind=${request.kind} duration=${duration.toFixed(2)}ms fingerprint=${fingerprint}`);
+      console.log(`[CalculationService] v=${MODEL_VERSION} kind=${request.kind} duration=${duration.toFixed(2)}ms`);
       
       return response;
     } catch (error) {
-      console.error(`[CalculationService] FAILED kind=${request.kind} fingerprint=${fingerprint}`, error);
+      console.error(`[CalculationService] FAILED v=${MODEL_VERSION} kind=${request.kind}`, error);
       throw error;
     }
   }
 
-  private generateFingerprint(request: CalculationScenarioRequest): string {
-    // Simple hash-like string for tracking/debugging
-    return `${request.kind}-${JSON.stringify(request.payload).length}`;
-  }
-
-  private async calculateSingleBond(input: unknown): Promise<SingleBondCalculationEnvelope> {
+  private async calculateSingleBond(input: unknown, dataFreshness: CalculationDataFreshness): Promise<SingleBondCalculationEnvelope> {
     const validatedInputs = BondInputsSchema.parse(input);
     const enrichedInputs = await this.withHistoricalData(validatedInputs);
     const warnings = this.buildHistoricalDataWarnings(enrichedInputs.historicalData);
@@ -69,10 +65,10 @@ export class CalculationApplicationService {
       rollover: enrichedInputs.rollover ?? false,
     });
 
-    return this.createEnvelope(result, warnings, assumptions);
+    return this.createEnvelope(result, warnings, assumptions, dataFreshness);
   }
 
-  private async calculateRegularInvestment(input: unknown): Promise<RegularInvestmentCalculationEnvelope> {
+  private async calculateRegularInvestment(input: unknown, dataFreshness: CalculationDataFreshness): Promise<RegularInvestmentCalculationEnvelope> {
     const validatedInputs = RegularInvestmentInputsSchema.parse(input);
     const enrichedInputs = await this.withHistoricalData(validatedInputs);
     const warnings = this.buildHistoricalDataWarnings(enrichedInputs.historicalData);
@@ -80,24 +76,25 @@ export class CalculationApplicationService {
 
     const result = calculateRegularInvestment(enrichedInputs);
 
-    return this.createEnvelope(result, warnings, assumptions);
+    return this.createEnvelope(result, warnings, assumptions, dataFreshness);
   }
 
-  private async calculateComparison(input: unknown): Promise<BondComparisonCalculationEnvelope> {
+  private async calculateComparison(input: unknown, dataFreshness: CalculationDataFreshness): Promise<BondComparisonCalculationEnvelope> {
     const request = BondComparisonScenarioRequestSchema.parse({
       kind: ScenarioKind.BOND_COMPARISON,
       payload: input,
     });
 
     if (request.payload.mode === 'independent') {
-      return this.calculateIndependentComparison(request.payload);
+      return this.calculateIndependentComparison(request.payload, dataFreshness);
     }
 
-    return this.calculateNormalizedComparison(request.payload);
+    return this.calculateNormalizedComparison(request.payload, dataFreshness);
   }
 
   private async calculateNormalizedComparison(
     payload: NormalizedBondComparisonPayload,
+    dataFreshness: CalculationDataFreshness
   ): Promise<BondComparisonCalculationEnvelope> {
     const scenarioInputs = this.buildComparisonScenarioInputs(payload);
     const enrichedScenarios = await Promise.all(
@@ -117,11 +114,12 @@ export class CalculationApplicationService {
     const assumptions = this.generateAssumptions(payload);
     assumptions.push('Comparison scenarios are normalized through the shared comparison service.');
 
-    return this.createEnvelope(results, warnings, assumptions);
+    return this.createEnvelope(results, warnings, assumptions, dataFreshness);
   }
 
   private async calculateIndependentComparison(
     payload: IndependentBondComparisonPayload,
+    dataFreshness: CalculationDataFreshness
   ): Promise<BondComparisonCalculationEnvelope> {
     const [scenarioA, scenarioB] = await Promise.all([
       this.withHistoricalData(this.buildIndependentScenarioInputs(payload.sharedConfig, payload.scenarioA)),
@@ -151,52 +149,42 @@ export class CalculationApplicationService {
 
     const warnings = this.collectHistoricalWarnings([scenarioA.historicalData, scenarioB.historicalData]);
     const assumptions = [
-      ...this.generateScenarioAssumptions('Scenario A', scenarioA),
-      ...this.generateScenarioAssumptions('Scenario B', scenarioB),
-      'Comparison scenarios are evaluated as independent single-bond simulations through the shared comparison service.',
+      ...this.generateScenarioAssumptions('Scenario A', payload.scenarioA),
+      ...this.generateScenarioAssumptions('Scenario B', payload.scenarioB),
     ];
 
-    return this.createEnvelope(results, warnings, assumptions);
+    return this.createEnvelope(results, warnings, assumptions, dataFreshness);
   }
 
-  private async withHistoricalData<T extends { purchaseDate: string; withdrawalDate: string; historicalData?: BondInputs['historicalData'] }>(
-    inputs: T,
-  ): Promise<T & { historicalData: BondInputs['historicalData'] }> {
-    const startDate = parseISO(inputs.purchaseDate);
-    // Fetch some context before the purchase for lag lookups
-    const fromDate = format(subMonths(startDate, 3), 'yyyy-MM-01');
-    const toDate = inputs.withdrawalDate.substring(0, 10);
-    const dbHistoricalData = await getHistoricalDataMap(fromDate, toDate);
-
-    return {
-      ...inputs,
-      historicalData: {
-        ...dbHistoricalData,
-        ...inputs.historicalData,
-      },
-    };
-  }
-
-  private createEnvelope<T>(result: T, warnings: string[] = [], assumptions: string[] = []): CalculationEnvelope<T> {
-    const hasProjectedData = warnings.some((warning) => warning.includes('projected') || warning.includes('unavailable') || warning.includes('missing'));
-    const dataQualityFlags = hasProjectedData ? ['projected_macro_inputs'] : [];
-    const calculationNotes = [
-      'Results are produced by the shared calculation engine.',
-      hasProjectedData
-        ? 'Some macro inputs were projected or filled from fallback data.'
-        : 'Macro inputs were resolved from historical data where available.',
-    ];
+  private createEnvelope<T>(
+    result: T,
+    warnings: string[],
+    assumptions: string[],
+    dataFreshness: CalculationDataFreshness
+  ): CalculationEnvelope<T> {
+    const resultAsRecord = result as Record<string, unknown>;
     return {
       result,
       warnings,
       assumptions,
-      calculationNotes,
-      dataQualityFlags,
-      dataFreshness: {
-        status: hasProjectedData ? 'projected' : 'fresh',
-        usedFallback: hasProjectedData,
-      },
-      calculationVersion: CALCULATION_VERSION,
+      calculationNotes: Array.isArray(resultAsRecord?.calculationNotes) ? (resultAsRecord.calculationNotes as string[]) : [],
+      dataQualityFlags: Array.isArray(resultAsRecord?.dataQualityFlags) ? (resultAsRecord.dataQualityFlags as string[]) : [],
+      dataFreshness,
+      calculationVersion: MODEL_VERSION,
+    };
+  }
+
+  private async withHistoricalData<T extends { purchaseDate: string; withdrawalDate: string }>(
+    inputs: T,
+  ): Promise<T & { historicalData: BondInputs['historicalData'] }> {
+    const historicalData = await getHistoricalDataMap(
+      format(subMonths(parseISO(inputs.purchaseDate), 3), 'yyyy-MM-dd'),
+      inputs.withdrawalDate,
+    );
+
+    return {
+      ...inputs,
+      historicalData,
     };
   }
 
