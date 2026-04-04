@@ -111,7 +111,6 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
     for (let i = 0; i < periods.length; i++) {
       const period = periods[i];
       const monthsIntoCycle = differenceInMonths(period.startDate, currentPurchaseDate);
-      const cycleYearIndex = Math.floor(monthsIntoCycle / 12) + 1;
 
       const periodYearIndex = Math.floor(differenceInMonths(period.startDate, startDate) / 12);
       const activeExpectedInflation = getExpectedInflationForYearIndex(
@@ -125,7 +124,7 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
 
       const currentInterestRate = determineInterestRate(
         bondType,
-        cycleYearIndex,
+        monthsIntoCycle,
         firstYearRate,
         activeExpectedInflation,
         expectedNbpRate,
@@ -138,18 +137,28 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
       let rateMarginApplied = margin;
       let usedProjectedRate = false;
 
-      if (cycleYearIndex === 1) {
-        rateSource = 'first_year_fixed';
-        rateReferenceValue = firstYearRate;
-        rateMarginApplied = 0;
-      } else if (bondType === BondType.ROR || bondType === BondType.DOR) {
-        usedProjectedRate = isNbpProjected;
-        rateSource = lagNbp !== undefined ? 'historical_nbp' : 'projected_nbp';
-        rateReferenceValue = lagNbp !== undefined ? lagNbp : expectedNbpRate;
+      if (bondType === BondType.ROR || bondType === BondType.DOR) {
+        const isFirstMonth = monthsIntoCycle === 0;
+        if (isFirstMonth) {
+          rateSource = 'first_year_fixed';
+          rateReferenceValue = firstYearRate;
+          rateMarginApplied = 0;
+        } else {
+          usedProjectedRate = isNbpProjected;
+          rateSource = lagNbp !== undefined ? 'historical_nbp' : 'projected_nbp';
+          rateReferenceValue = lagNbp !== undefined ? lagNbp : expectedNbpRate;
+        }
       } else if (isInflationIndexed) {
-        usedProjectedRate = isProjected;
-        rateSource = lagInflation !== undefined ? 'historical_cpi_lag' : 'projected_cpi';
-        rateReferenceValue = lagInflation !== undefined ? lagInflation : activeExpectedInflation;
+        const isFirstYear = monthsIntoCycle < 12;
+        if (isFirstYear) {
+          rateSource = 'first_year_fixed';
+          rateReferenceValue = firstYearRate;
+          rateMarginApplied = 0;
+        } else {
+          usedProjectedRate = isProjected;
+          rateSource = lagInflation !== undefined ? 'historical_cpi_lag' : 'projected_cpi';
+          rateReferenceValue = lagInflation !== undefined ? lagInflation : activeExpectedInflation;
+        }
       } else {
         rateSource = 'fixed_rate';
         rateReferenceValue = firstYearRate;
@@ -167,11 +176,6 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
         bondType,
         payoutFrequency
       );
-      // Correction: generateCyclePeriods provides daysInPeriod (full) and daysHeld
-      // I should update calculatePeriodAccrual or generateCyclePeriods to be consistent.
-      // Let's re-read generateCyclePeriods.
-      // daysInPeriod = differenceInDays(periodEndDateNorm, periodStartDate); // FULL
-      // daysHeld = differenceInDays(periodEndDate, periodStartDate); // ACTUAL
       
       const interestEarned = accrual.interestEarned;
       const previousNominalValue = new Decimal(currentNominalValue);
@@ -179,8 +183,12 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
 
       let taxDeducted = new Decimal(0);
       if (shouldWithholdPeriodicTax(taxStrategy, isCapitalized)) {
-        taxDeducted = calculateTaxAmount(interestEarned, taxStrategy);
-        periodicTaxPaidSoFar = periodicTaxPaidSoFar.plus(taxDeducted);
+        // Only withhold in the loop if it's NOT an early withdrawal point
+        // In Poland, every periodic interest payout is taxed and rounded.
+        if (!period.isWithdrawal || !isEarlyWithdrawal) {
+          taxDeducted = calculateTaxAmount(interestEarned, taxStrategy, true);
+          periodicTaxPaidSoFar = periodicTaxPaidSoFar.plus(taxDeducted);
+        }
       } else {
         if (isCapitalized) {
           currentNominalValue = currentNominalValue.plus(interestEarned);
@@ -404,19 +412,6 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
     // 2. Pre-calculate rates for this month to avoid N*H lookups
     const { value: currentLagInflation, isProjected: currentIsProjected } = getHistoricalValue(currentMonthDate, 'inflation', 2, historicalData);
 
-    // We only need two potential interest rates per month: Year 1 and Year 2+
-    const rateYear1 = determineInterestRate(
-      bondType, 1, firstYearRate, expectedInflation, expectedNbpRate, margin, 
-      bondDef.isInflationIndexed, currentLagInflation
-    );
-    const rateIndexed = determineInterestRate(
-      bondType, 2, firstYearRate, expectedInflation, expectedNbpRate, margin, 
-      bondDef.isInflationIndexed, currentLagInflation
-    );
-
-    const monthlyRateYear1 = rateYear1.dividedBy(12).dividedBy(100);
-    const monthlyRateIndexed = rateIndexed.dividedBy(12).dividedBy(100);
-
     // 3. Update all active lots
     lots.forEach(lot => {
       const lotPurchaseDate = parseISO(lot.purchaseDate);
@@ -433,8 +428,14 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
         const shouldWithholdTaxForLot = shouldWithholdPeriodicTax(taxStrategy, isCapitalized);
 
         if (monthsHeld <= bondDurationMonths) {
-          const cycleYearIndex = Math.floor(Math.max(0, monthsHeld - 1) / 12) + 1;
-          const currentMonthlyRate = cycleYearIndex === 1 ? monthlyRateYear1 : monthlyRateIndexed;
+          // Pass monthsIntoCycle (0-based) to DetermineInterestRate
+          // monthsHeld is 1 after first month. So month index is monthsHeld - 1.
+          const monthIndex = monthsHeld - 1;
+          const currentInterestRate = determineInterestRate(
+            bondType, monthIndex, firstYearRate, expectedInflation, expectedNbpRate, margin, 
+            bondDef.isInflationIndexed, currentLagInflation
+          );
+          const currentMonthlyRate = currentInterestRate.dividedBy(12).dividedBy(100);
 
           const interestThisMonth = dLotGrossValue.times(currentMonthlyRate);
 

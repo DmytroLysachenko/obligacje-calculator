@@ -4,7 +4,7 @@
     "inputs": {
       "initialInvestment": 10000,
       "firstYearRate": 6.5,
-      "expectedInflation": 3.0,
+      "expectedInflation": 3,
       "margin": 1.5,
       "duration": 4,
       "earlyWithdrawalFee": 0.7,
@@ -16,20 +16,23 @@
       "taxStrategy": "STANDARD"
     },
     "expected": {
-      "totalProfit": 1620,
-      "totalTax": 380,
-      "grossValue": 12000
+      "totalProfit": 1618,
+      "totalTax": 382,
+      "grossValue": 12000,
+      "finalNominalValue": 12000,
+      "netPayoutValue": 11618,
+      "totalEarlyWithdrawalFee": 0
     }
   },
   {
     "name": "EDO 10-Year Capitalized",
     "inputs": {
       "initialInvestment": 1000,
-      "firstYearRate": 7.0,
-      "expectedInflation": 4.0,
-      "margin": 2.0,
+      "firstYearRate": 7,
+      "expectedInflation": 4,
+      "margin": 2,
       "duration": 10,
-      "earlyWithdrawalFee": 2.0,
+      "earlyWithdrawalFee": 2,
       "bondType": "EDO",
       "isCapitalized": true,
       "payoutFrequency": "MATURITY",
@@ -38,9 +41,9 @@
       "taxStrategy": "STANDARD"
     },
     "expected": {
-      "totalProfit": 653.742486,
+      "totalProfit": 653.7424861328806,
       "totalTax": 154,
-      "finalNominalValue": 1807.742486
+      "finalNominalValue": 1807.7424861328805
     }
   },
   {
@@ -48,7 +51,7 @@
     "inputs": {
       "initialInvestment": 10000,
       "firstYearRate": 4.25,
-      "expectedInflation": 3.0,
+      "expectedInflation": 3,
       "expectedNbpRate": 5.25,
       "margin": 0,
       "duration": 1,
@@ -62,10 +65,11 @@
       "rollover": true
     },
     "expected": {
-      "totalProfit": 1792.44,
-      "totalTax": 430.3975,
-      "grossValue": 11884.5,
-      "finalNominalValue": 11884.5
+      "totalProfit": 2186.5,
+      "totalTax": 532,
+      "grossValue": 12304.5,
+      "finalNominalValue": 12304.5,
+      "netPayoutValue": 12186.5
     }
   },
   {
@@ -73,10 +77,10 @@
     "inputs": {
       "initialInvestment": 10000,
       "firstYearRate": 5.6,
-      "expectedInflation": 4.0,
-      "margin": 2.0,
+      "expectedInflation": 4,
+      "margin": 2,
       "duration": 10,
-      "earlyWithdrawalFee": 3.0,
+      "earlyWithdrawalFee": 3,
       "bondType": "EDO",
       "isCapitalized": true,
       "payoutFrequency": "MATURITY",
@@ -85,21 +89,23 @@
       "taxStrategy": "STANDARD"
     },
     "expected": {
-      "totalProfit": 3790.56,
+      "totalProfit": 3790.56182542336,
       "totalTax": 889,
-      "grossValue": 14979.56,
-      "finalNominalValue": 14979.56
+      "grossValue": 14979.56182542336,
+      "finalNominalValue": 14979.56182542336,
+      "netPayoutValue": 13790.56182542336,
+      "totalEarlyWithdrawalFee": 300
     }
   },
   {
     "name": "COI Deflation Floor",
     "inputs": {
       "initialInvestment": 10000,
-      "firstYearRate": 5.0,
-      "expectedInflation": -2.0,
+      "firstYearRate": 5,
+      "expectedInflation": -2,
       "margin": 1.5,
       "duration": 4,
-      "earlyWithdrawalFee": 2.0,
+      "earlyWithdrawalFee": 2,
       "bondType": "COI",
       "isCapitalized": false,
       "payoutFrequency": "YEARLY",
@@ -108,10 +114,11 @@
       "taxStrategy": "STANDARD"
     },
     "expected": {
-      "totalProfit": 769.5,
-      "totalTax": 180.5,
+      "totalProfit": 768,
+      "totalTax": 182,
       "grossValue": 10950,
-      "finalNominalValue": 10950
+      "finalNominalValue": 10950,
+      "netPayoutValue": 10768
     }
   },
   {
@@ -119,10 +126,10 @@
     "inputs": {
       "initialInvestment": 10000,
       "firstYearRate": 5.6,
-      "expectedInflation": 4.0,
-      "margin": 2.0,
+      "expectedInflation": 4,
+      "margin": 2,
       "duration": 10,
-      "earlyWithdrawalFee": 3.0,
+      "earlyWithdrawalFee": 3,
       "bondType": "EDO",
       "isCapitalized": true,
       "payoutFrequency": "MATURITY",
@@ -131,21 +138,22 @@
       "taxStrategy": "IKZE"
     },
     "expected": {
-      "totalProfit": 6948.9,
+      "totalProfit": 6948.897807068429,
       "totalTax": 892,
-      "grossValue": 17840.9,
-      "finalNominalValue": 17840.9
+      "grossValue": 17840.897807068428,
+      "finalNominalValue": 17840.897807068428,
+      "netPayoutValue": 16948.897807068428
     }
   },
   {
     "name": "COI Rebuy Discount",
     "inputs": {
       "initialInvestment": 10000,
-      "firstYearRate": 5.0,
-      "expectedInflation": 3.0,
+      "firstYearRate": 5,
+      "expectedInflation": 3,
       "margin": 1.5,
       "duration": 4,
-      "earlyWithdrawalFee": 2.0,
+      "earlyWithdrawalFee": 2,
       "bondType": "COI",
       "isCapitalized": false,
       "payoutFrequency": "YEARLY",
@@ -157,10 +165,11 @@
       "rollover": true
     },
     "expected": {
-      "totalProfit": 3223.275,
-      "totalTax": 755.725,
+      "totalProfit": 3224.5,
+      "totalTax": 756,
       "grossValue": 13627.5,
-      "finalNominalValue": 13627.5
+      "finalNominalValue": 13627.5,
+      "netPayoutValue": 13224.5
     }
   },
   {
@@ -168,7 +177,7 @@
     "inputs": {
       "initialInvestment": 10000,
       "firstYearRate": 4.25,
-      "expectedInflation": 3.0,
+      "expectedInflation": 3,
       "expectedNbpRate": 5.25,
       "margin": 0,
       "duration": 1,
@@ -181,17 +190,23 @@
       "taxStrategy": "STANDARD",
       "historicalData": {}
     },
-    "expected": {}
+    "expected": {
+      "totalProfit": 421.6666666666667,
+      "totalTax": 95,
+      "grossValue": 10516.666666666666,
+      "finalNominalValue": 10516.666666666666,
+      "netPayoutValue": 10421.666666666666
+    }
   },
   {
     "name": "EDO Early Exit Fee Cap",
     "inputs": {
       "initialInvestment": 10000,
       "firstYearRate": 5.6,
-      "expectedInflation": 4.0,
-      "margin": 2.0,
+      "expectedInflation": 4,
+      "margin": 2,
       "duration": 10,
-      "earlyWithdrawalFee": 3.0,
+      "earlyWithdrawalFee": 3,
       "bondType": "EDO",
       "isCapitalized": true,
       "payoutFrequency": "MATURITY",
@@ -200,8 +215,12 @@
       "taxStrategy": "STANDARD"
     },
     "expected": {
-      "totalEarlyWithdrawalFee": 47.561644,
-      "netPayoutValue": 10000
+      "totalEarlyWithdrawalFee": 47.56164383561644,
+      "netPayoutValue": 10000,
+      "totalProfit": 0,
+      "totalTax": 0,
+      "grossValue": 10047.561643835616,
+      "finalNominalValue": 10047.561643835616
     }
   }
 ]

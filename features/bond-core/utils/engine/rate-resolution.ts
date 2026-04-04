@@ -6,8 +6,8 @@ import { BondType } from '../../types';
  * Implements the "inflation lag" rule: most indexed bonds use inflation from 2 months prior.
  * 
  * @param bondType Type of the bond (EDO, COI, etc.)
- * @param period The current bond-year number within a cycle (1-based)
- * @param firstYearRate The fixed rate for the first bond year
+ * @param monthsIntoCycle The current number of months since the bond was purchased (0-based)
+ * @param firstYearRate The fixed rate for the first bond year (or first month for some types)
  * @param expectedInflation Current/Expected annual inflation
  * @param expectedNbpRate Current/Expected NBP reference rate
  * @param margin The bond's margin over the base rate
@@ -16,7 +16,7 @@ import { BondType } from '../../types';
  */
 export function determineInterestRate(
   bondType: BondType,
-  period: number,
+  monthsIntoCycle: number,
   firstYearRate: number,
   expectedInflation: number,
   expectedNbpRate: number,
@@ -24,27 +24,27 @@ export function determineInterestRate(
   isInflationIndexed: boolean,
   inflationLagValue?: number
 ): Decimal {
-  const isFirstPeriod = period === 1;
-
   if (bondType === BondType.OTS || bondType === BondType.TOS) {
     return new Decimal(firstYearRate);
   } 
   
   if (bondType === BondType.ROR || bondType === BondType.DOR) {
-    // The offer rate applies across the first bond year, even if interest is paid monthly.
-    return isFirstPeriod ? new Decimal(firstYearRate) : Decimal.max(0, expectedNbpRate).plus(margin);
+    // ROR/DOR: The fixed offer rate applies ONLY to the first month.
+    // After that, it's NBP rate + margin.
+    const isFirstMonth = monthsIntoCycle === 0;
+    return isFirstMonth ? new Decimal(firstYearRate) : Decimal.max(0, expectedNbpRate).plus(margin);
   } 
   
   if (isInflationIndexed) {
-    if (isFirstPeriod) return new Decimal(firstYearRate);
-    
-    // Note: If this is the very last day of maturity, some EDO series use 
-    // the previous period's rate for the final fractional accrual.
+    // COI/EDO/ROS/ROD: Fixed rate for the first 12 months (year 1)
+    const isFirstYear = monthsIntoCycle < 12;
+    if (isFirstYear) return new Decimal(firstYearRate);
     
     // Use the specific lagged value if provided, otherwise fallback to expected inflation
     const baseInflation = inflationLagValue !== undefined ? inflationLagValue : expectedInflation;
     return Decimal.max(0, baseInflation).plus(margin);
   }
 
+  // Fallback for any other fixed-rate types (e.g. COI in year 1 if not handled above)
   return new Decimal(firstYearRate);
 }

@@ -216,7 +216,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                     className="flex-1"
                     onClick={() => onUpdate('timingMode', 'general')}
                   >
-                    {t('comparison.timing_general')}
+                    {t('bonds.timing_general')}
                   </Button>
                   <Button
                     type="button"
@@ -224,7 +224,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                     className="flex-1"
                     onClick={() => onUpdate('timingMode', 'exact')}
                   >
-                    {t('comparison.timing_exact')}
+                    {t('bonds.timing_exact')}
                   </Button>
                 </div>
               </div>
@@ -232,7 +232,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               <div className="grid grid-cols-1 gap-4">
                 <div className="space-y-2">
                   <Label className="text-xs font-semibold uppercase text-muted-foreground">
-                    {t('bonds.purchase_date')}
+                    {t('bonds.start_date')}
                   </Label>
                   <Popover>
                     <PopoverTrigger asChild>

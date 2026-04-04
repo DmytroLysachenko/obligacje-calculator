@@ -1,38 +1,27 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useBondCalculator } from "../hooks/useBondCalculator";
 import { BondInputsForm } from "./BondInputsForm";
 import { BondResultsSummary } from "./BondResultsSummary";
 import { BondTimeline } from "./BondTimeline";
 import { BondChart } from "./BondChart";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useLanguage } from "@/i18n";
 import {
-  Share2,
-  Check,
-  Target,
-  Trophy,
   Info,
   LineChart,
   Table,
-  Loader2,
+  Target,
 } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useLanguage } from "@/i18n";
 import { cn } from "@/lib/utils";
-import { RecalculateButton } from "@/shared/components/RecalculateButton";
 import { CalculationMetaPanel } from "@/shared/components/CalculationMetaPanel";
+import { CalculatorPageShell } from "@/shared/components/CalculatorPageShell";
 
 export const BondCalculatorContainer: React.FC = () => {
   const {
     inputs,
     results,
-    warnings,
-    assumptions,
-    calculationNotes,
-    dataQualityFlags,
     envelope,
     isCalculating,
     isError,
@@ -43,25 +32,11 @@ export const BondCalculatorContainer: React.FC = () => {
     } = useBondCalculator();
   const { t } = useLanguage();
 
-  const [copied, setCopied] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+  React.useEffect(() => {
     setHasMounted(true);
   }, []);
-
-  const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const goalProgress =
-    inputs.savingsGoal && results
-      ? (results.netPayoutValue / inputs.savingsGoal) * 100
-      : 0;
-  const isGoalReached = goalProgress >= 100;
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && (isDirty || !results)) {
@@ -70,77 +45,18 @@ export const BondCalculatorContainer: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 pb-20" onKeyDown={handleKeyDown}>
-      {/* Goal Progress Bar */}
-      {inputs.savingsGoal && results && (
-        <Card className="border-primary/20 bg-primary/5 shadow-sm overflow-hidden">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                {isGoalReached ? (
-                  <Trophy className="h-5 w-5 text-yellow-500" />
-                ) : (
-                  <Target className="h-5 w-5 text-primary" />
-                )}
-                <span className="font-bold">
-                  {isGoalReached
-                    ? t("bonds.goal_reached")
-                    : t("bonds.goal_progress", { percent: goalProgress.toFixed(1) })}
-                </span>
-              </div>
-              <span className="text-sm font-medium text-muted-foreground">
-                {t("bonds.target")}: {new Intl.NumberFormat().format(inputs.savingsGoal)} PLN
-              </span>
-            </div>
-            <Progress
-              value={goalProgress}
-              className="h-2"
-            />
-          </CardContent>
-        </Card>
-      )}
-
-      <div className="flex justify-between items-center py-2">
-        <div className="flex items-center gap-4">
-          {isCalculating && (
-            <span className="text-xs text-muted-foreground flex items-center gap-2 animate-in fade-in duration-500">
-              <Loader2 className="h-3 w-3 animate-spin" />
-              {t("common.calculating")}
-            </span>
-          )}
-          {!isCalculating && isDirty && results && (
-            <span className="text-xs text-orange-500 flex items-center gap-1 animate-in fade-in duration-500 font-medium">
-              <Info className="h-3 w-3" />
-              {t("comparison.needs_recalculation")}
-            </span>
-          )}
-          {!isCalculating && !isDirty && results && (
-            <span className="text-xs text-green-600 flex items-center gap-1 animate-in fade-in duration-500 font-medium">
-              <Check className="h-3 w-3" />
-              {t("comparison.up_to_date")}
-            </span>
-          )}
-          {isError && (
-            <span className="text-destructive text-sm font-medium">
-              Calculation error!
-            </span>
-          )}
-        </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="gap-2 text-xs"
-          onClick={handleShare}
-        >
-          {copied ? (
-            <Check className="h-3 w-3 text-green-600" />
-          ) : (
-            <Share2 className="h-3 w-3" />
-          )}
-          {copied ? t("common.copied") : t("comparison.share_scenario")}
-        </Button>
-      </div>
-
+    <CalculatorPageShell
+      title={t("nav.single_calculator")}
+      description={t("bonds.single_calculator")}
+      icon={<Target className="h-8 w-8" />}
+      isCalculating={isCalculating}
+      isDirty={isDirty}
+      isError={isError}
+      hasResults={!!results}
+      savingsGoal={inputs.savingsGoal}
+      currentValue={results?.netPayoutValue}
+      onKeyDown={handleKeyDown}
+    >
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
         <aside className="xl:col-span-4 h-fit xl:sticky xl:top-24">
           <BondInputsForm
@@ -179,10 +95,10 @@ export const BondCalculatorContainer: React.FC = () => {
               <BondResultsSummary results={results} />
 
               <CalculationMetaPanel
-                warnings={warnings}
-                assumptions={assumptions}
-                calculationNotes={calculationNotes}
-                dataQualityFlags={dataQualityFlags}
+                warnings={envelope?.warnings}
+                assumptions={envelope?.assumptions}
+                calculationNotes={envelope?.calculationNotes}
+                dataQualityFlags={envelope?.dataQualityFlags}
                 dataFreshness={envelope?.dataFreshness}
               />
 
@@ -250,12 +166,6 @@ export const BondCalculatorContainer: React.FC = () => {
           )}
         </div>
       </div>
-
-      <RecalculateButton 
-        isDirty={isDirty}
-        loading={isCalculating}
-        onClick={() => calculate()}
-      />
-    </div>
+    </CalculatorPageShell>
   );
 };

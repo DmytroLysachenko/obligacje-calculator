@@ -15,7 +15,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Info, HelpCircle } from "lucide-react";
+import { Info, HelpCircle, Download, AlertTriangle, TrendingUp, TrendingDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { exportToCSV } from "@/shared/utils/csv-export";
+import { cn } from "@/lib/utils";
+import { ChartContainer } from "@/shared/components/charts/ChartContainer";
 
 interface BondResultsSummaryProps {
   results: CalculationResult;
@@ -35,12 +39,6 @@ const itemVariant = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300 } }
 };
-
-import { Download, AlertTriangle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { exportToCSV } from "@/shared/utils/csv-export";
-import { cn } from "@/lib/utils";
-import { ChartContainer } from "@/shared/components/charts/ChartContainer";
 
 export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results }) => {
   const { t, language } = useLanguage();
@@ -84,12 +82,12 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
   return (
     <div className="space-y-6 w-full">
       {isNearMaturity && (
-        <Card className="border-orange-200 bg-orange-50/50 shadow-sm animate-pulse">
+        <Card className="border-orange-200 bg-orange-50/50 shadow-sm animate-pulse border-2">
           <CardContent className="p-4 flex items-center gap-3">
             <AlertTriangle className="h-5 w-5 text-orange-600 shrink-0" />
-            <div className="text-xs text-orange-800">
-              <p className="font-bold">{t('bonds.wait_capitalization')}</p>
-              <p>{t('bonds.wait_capitalization_desc', { amount: formatCurrency(nextMilestoneProfit) })}</p>
+            <div className="text-xs text-orange-800 font-medium">
+              <p className="font-black uppercase tracking-widest mb-1">{t('bonds.wait_capitalization')}</p>
+              <p className="leading-relaxed">{t('bonds.wait_capitalization_desc', { amount: formatCurrency(nextMilestoneProfit) })}</p>
             </div>
           </CardContent>
         </Card>
@@ -104,22 +102,31 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
             key={results.finalNominalValue} // re-trigger animation on result change
           >
             <motion.div variants={itemVariant}>
-              <Card className="border-primary/20 shadow-sm h-full">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-xs font-semibold uppercase text-muted-foreground">
+              <Card className="border-primary/20 shadow-sm h-full overflow-hidden">
+                <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
+                  <CardTitle className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">
                     {t('bonds.gross_value')}
                   </CardTitle>
+                  <Popover>
+                    <PopoverTrigger>
+                      <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
+                    </PopoverTrigger>
+                    <PopoverContent className="text-xs p-3 space-y-2">
+                      <p className="font-bold">{t('bonds.gross_value')}:</p>
+                      <p>{t('bonds.gross_value_desc') || "Total value before any taxes and fees are deducted."}</p>
+                    </PopoverContent>
+                  </Popover>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{formatCurrency(results.grossValue)}</div>
+                  <div className="text-2xl font-black text-slate-800">{formatCurrency(results.grossValue)}</div>
                 </CardContent>
               </Card>
             </motion.div>
 
             <motion.div variants={itemVariant}>
-              <Card className="border-green-200 bg-green-50/30 shadow-sm h-full">
+              <Card className="border-green-200 bg-green-50/30 shadow-sm h-full overflow-hidden">
                 <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-                  <CardTitle className="text-xs font-semibold uppercase text-green-700">
+                  <CardTitle className="text-[10px] font-black uppercase text-green-700 tracking-widest">
                     {t('bonds.net_payout')}
                   </CardTitle>
                   <Popover>
@@ -128,17 +135,17 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
                     </PopoverTrigger>
                     <PopoverContent className="text-xs p-3 space-y-2">
                       <p className="font-bold">{t('bonds.payout_calculation')}:</p>
-                      <code className="block bg-muted p-1 rounded">Gross Value - Tax - Early Fee</code>
-                      <p className="text-muted-foreground italic">{t('bonds.actual_cash_in_hand')}</p>
+                      <code className="block bg-muted p-1 rounded font-mono text-[10px]">Gross Value - Tax - Early Fee</code>
+                      <p className="text-muted-foreground italic leading-relaxed">{t('bonds.actual_cash_in_hand')}</p>
                     </PopoverContent>
                   </Popover>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-green-700">
+                  <div className="text-2xl font-black text-green-700">
                     {formatCurrency(results.netPayoutValue)}
                   </div>
                   {results.isEarlyWithdrawal && (
-                    <Badge variant="outline" className="mt-1 text-[10px] border-orange-200 text-orange-700 bg-orange-50">
+                    <Badge variant="outline" className="mt-1 text-[10px] border-orange-200 text-orange-700 bg-orange-50 font-black uppercase tracking-tighter">
                       {t('bonds.early_withdrawal')}
                     </Badge>
                   )}
@@ -147,32 +154,63 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
             </motion.div>
 
             <motion.div variants={itemVariant}>
-              <Card className="border-primary/10 shadow-sm h-full">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-xs font-semibold uppercase text-muted-foreground">
+              <Card className="border-primary/10 shadow-sm h-full overflow-hidden">
+                <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
+                  <CardTitle className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">
                     {t('common.net_profit')}
                   </CardTitle>
+                  <Popover>
+                    <PopoverTrigger>
+                      <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
+                    </PopoverTrigger>
+                    <PopoverContent className="text-xs p-3 space-y-2">
+                      <p className="font-bold">{t('common.net_profit')}:</p>
+                      <p>{t('bonds.net_profit_desc') || "Your total earnings after paying all taxes and potential early withdrawal fees."}</p>
+                    </PopoverContent>
+                  </Popover>
                 </CardHeader>
                 <CardContent>
-                  <div className={cn("text-2xl font-bold", results.totalProfit >= 0 ? "text-primary" : "text-destructive")}>
+                  <div className={cn("text-2xl font-black", results.totalProfit >= 0 ? "text-primary" : "text-destructive")}>
                     {formatCurrency(results.totalProfit)}
+                  </div>
+                  <div className="flex items-center gap-1 text-[10px] font-black text-muted-foreground mt-1 uppercase tracking-widest">
+                    {results.totalProfit >= 0 ? <TrendingUp className="h-3 w-3 text-green-500" /> : <TrendingDown className="h-3 w-3 text-red-500" />}
+                    ROI: {((results.totalProfit / results.initialInvestment) * 100).toFixed(2)}%
                   </div>
                 </CardContent>
               </Card>
             </motion.div>
 
             <motion.div variants={itemVariant}>
-              <Card className="border-destructive/10 shadow-sm h-full">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-xs font-semibold uppercase text-destructive/70">
+              <Card className="border-destructive/10 bg-destructive/5 shadow-sm h-full overflow-hidden">
+                <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
+                  <CardTitle className="text-[10px] font-black uppercase text-destructive/70 tracking-widest">
                     {t('bonds.fees_and_tax')}
                   </CardTitle>
+                  <Popover>
+                    <PopoverTrigger>
+                      <HelpCircle className="h-3 w-3 text-destructive/40 cursor-help" />
+                    </PopoverTrigger>
+                    <PopoverContent className="text-xs p-3 space-y-2">
+                      <p className="font-bold">{t('bonds.fees_and_tax')}:</p>
+                      <div className="space-y-1 mt-1 font-medium">
+                        <div className="flex justify-between gap-4">
+                          <span>{t('bonds.tax')}:</span>
+                          <span className="font-bold">{formatCurrency(results.totalTax)}</span>
+                        </div>
+                        <div className="flex justify-between gap-4">
+                          <span>{t('bonds.early_withdrawal_fee')}:</span>
+                          <span className="font-bold text-orange-600">{formatCurrency(results.totalEarlyWithdrawalFee)}</span>
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-lg font-semibold text-destructive/80">
+                  <div className="text-lg font-black text-destructive/80">
                     {formatCurrency(results.totalTax + results.totalEarlyWithdrawalFee)}
                   </div>
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-[10px] font-black uppercase text-muted-foreground/60 mt-1 tracking-tighter">
                     {t('bonds.tax_fee_breakdown', {
                       tax: formatCurrency(results.totalTax),
                       fee: formatCurrency(results.totalEarlyWithdrawalFee),
@@ -185,8 +223,8 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
         </div>
 
         <Card className="lg:w-80 border-primary/10 shadow-sm overflow-hidden">
-          <CardHeader className="pb-0 pt-4">
-            <CardTitle className="text-xs font-bold uppercase text-center text-muted-foreground">{t('bonds.composition')}</CardTitle>
+          <CardHeader className="pb-0 pt-4 bg-muted/10 border-b border-dashed">
+            <CardTitle className="text-[10px] font-black uppercase text-center text-muted-foreground tracking-widest pb-3">{t('bonds.composition')}</CardTitle>
           </CardHeader>
           <CardContent className="p-0 h-64">
             <ChartContainer height={256}>
@@ -207,9 +245,9 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
                   </Pie>
                   <RechartsTooltip 
                     formatter={(value: ValueType | undefined) => formatCurrency(Number(value || 0))}
-                    contentStyle={{ borderRadius: '8px', border: 'none', fontSize: '12px' }}
+                    contentStyle={{ borderRadius: '8px', border: 'none', fontSize: '12px', fontWeight: 'bold' }}
                   />
-                  <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: '10px', paddingBottom: '10px' }} />
+                  <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: '10px', paddingBottom: '15px', fontWeight: 'black', textTransform: 'uppercase' }} />
                 </PieChart>
               </ResponsiveContainer>
             </ChartContainer>
@@ -217,18 +255,18 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
         </Card>
       </div>
 
-      <Card className="overflow-hidden border-primary/10">
-        <CardHeader className="bg-muted/30 flex flex-row items-center justify-between space-y-0">
+      <Card className="overflow-hidden border-primary/10 border-2">
+        <CardHeader className="bg-muted/30 flex flex-row items-center justify-between space-y-0 border-b">
           <div className="space-y-1">
-            <CardTitle className="text-lg flex items-center gap-2">
+            <CardTitle className="text-lg flex items-center gap-2 font-black uppercase tracking-tight">
               {t('bonds.calculation_breakdown')}
               <Popover>
                 <PopoverTrigger>
                   <Info className="h-4 w-4 text-muted-foreground hover:text-primary cursor-help" />
                 </PopoverTrigger>
-                <PopoverContent className="w-80 text-sm space-y-3">
-                  <p className="font-semibold">{t('bonds.how_interest_works')}</p>
-                  <div className="space-y-2 text-xs">
+                <PopoverContent className="w-80 text-xs space-y-3 font-medium">
+                  <p className="font-black uppercase tracking-widest text-primary">{t('bonds.how_interest_works')}</p>
+                  <div className="space-y-2 text-muted-foreground leading-relaxed">
                     <p>{t('bonds.interest_indexed_desc')}</p>
                     <p>{t('bonds.capitalization_desc')}</p>
                     <p>{t('bonds.belka_desc')}</p>
@@ -236,10 +274,10 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
                 </PopoverContent>
               </Popover>
             </CardTitle>
-            <CardDescription>{t('bonds.breakdown_desc')}</CardDescription>
+            <CardDescription className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest">{t('bonds.breakdown_desc')}</CardDescription>
           </div>
-          <Button variant="outline" size="sm" onClick={handleExport} className="gap-2 text-xs">
-            <Download className="h-3 w-3" />
+          <Button variant="outline" size="sm" onClick={handleExport} className="gap-2 text-[10px] font-black uppercase border-2 h-9 px-4 hover:bg-primary hover:text-white transition-all">
+            <Download className="h-3.5 w-3.5" />
             {t('comparison.export')}
           </Button>
         </CardHeader>
@@ -247,39 +285,43 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="bg-muted/50">
-                  <TableHead className="w-[100px]">{t('common.period')}</TableHead>
-                  <TableHead>{t('bonds.nominal_before')}</TableHead>
-                  <TableHead>{t('bonds.interest_rate')}</TableHead>
-                  <TableHead>
+                <TableRow className="bg-muted/50 hover:bg-muted/50 border-b">
+                  <TableHead className="w-[120px] text-[10px] font-black uppercase tracking-widest">{t('common.period')}</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest">{t('bonds.nominal_before')}</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest">{t('bonds.interest_rate')}</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest">
                     <div className="flex items-center gap-1">
                       {t('bonds.interest_earned')}
                       <Popover>
-                        <PopoverTrigger><HelpCircle className="h-3 w-3" /></PopoverTrigger>
-                        <PopoverContent className="text-xs">{t('bonds.interest_formula')}</PopoverContent>
+                        <PopoverTrigger><HelpCircle className="h-3 w-3 text-muted-foreground/50" /></PopoverTrigger>
+                        <PopoverContent className="text-[10px] font-bold p-2 bg-slate-800 text-white border-none shadow-xl">{t('bonds.interest_formula')}</PopoverContent>
                       </Popover>
                     </div>
                   </TableHead>
-                  <TableHead>{t('bonds.tax')}</TableHead>
-                  <TableHead className="text-right">{t('bonds.nominal_after')}</TableHead>
+                  <TableHead className="text-[10px] font-black uppercase tracking-widest">{t('bonds.tax')}</TableHead>
+                  <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">{t('bonds.nominal_after')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {results.timeline.map((point, index) => (
-                  <TableRow key={`${point.year}-${point.periodLabel}-${index}`} className={cn(point.isWithdrawal && "bg-primary/5 font-semibold")}>
-                    <TableCell>
+                  <TableRow key={`${point.year}-${point.periodLabel}-${index}`} className={cn("hover:bg-muted/20 border-b transition-colors", point.isWithdrawal && "bg-primary/5 font-bold")}>
+                    <TableCell className="font-bold py-4">
                       {point.periodLabel}
                       {point.isWithdrawal && (
-                        <div className="text-[10px] text-primary font-bold">
+                        <div className="text-[9px] text-primary font-black uppercase mt-0.5">
                           {t('bonds.withdrawal')}
                         </div>
                       )}
                     </TableCell>
-                    <TableCell>{formatCurrency(point.nominalValueBeforeInterest)}</TableCell>
-                    <TableCell>{point.interestRate.toFixed(2)}%</TableCell>
-                    <TableCell className="text-green-600">+{formatCurrency(point.interestEarned)}</TableCell>
-                    <TableCell className="text-red-500">-{formatCurrency(point.taxDeducted)}</TableCell>
-                    <TableCell className="text-right font-medium">
+                    <TableCell className="font-medium text-slate-600">{formatCurrency(point.nominalValueBeforeInterest)}</TableCell>
+                    <TableCell>
+                      <Badge variant="secondary" className="font-black text-[10px] bg-slate-100 text-slate-700 border-none">
+                        {point.interestRate.toFixed(2)}%
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-green-600 font-bold">+{formatCurrency(point.interestEarned)}</TableCell>
+                    <TableCell className="text-red-500/80 font-medium">-{formatCurrency(point.taxDeducted)}</TableCell>
+                    <TableCell className="text-right font-black text-slate-800">
                       {formatCurrency(point.nominalValueAfterInterest)}
                     </TableCell>
                   </TableRow>

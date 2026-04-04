@@ -15,6 +15,16 @@ export interface ComparisonControlsProps {
   updateShowRealValue: (val: boolean) => void;
   purchasingPowerLoss: number;
   formatCurrency: (val: number) => string;
+  inputs?: {
+    timingMode?: 'general' | 'exact';
+    purchaseDate?: string;
+    withdrawalDate?: string;
+    totalHorizon?: number;
+  };
+  updateTimingMode?: (val: 'general' | 'exact') => void;
+  updatePurchaseDate?: (val: string) => void;
+  updateWithdrawalDate?: (val: string) => void;
+  updateHorizon?: (val: number) => void;
 }
 
 export interface ComparisonChartProps {

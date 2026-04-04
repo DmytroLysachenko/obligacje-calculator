@@ -281,7 +281,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
               className="flex-1"
               onClick={() => onUpdate('timingMode', 'general')}
             >
-              {t('comparison.timing_general')}
+              {t('bonds.timing_general')}
             </Button>
             <Button
               type="button"
@@ -289,7 +289,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
               className="flex-1"
               onClick={() => onUpdate('timingMode', 'exact')}
             >
-              {t('comparison.timing_exact')}
+              {t('bonds.timing_exact')}
             </Button>
           </div>
         </div>

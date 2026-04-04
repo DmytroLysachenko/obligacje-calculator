@@ -48,7 +48,7 @@ describe('Comprehensive Bond Calculations', () => {
     expect(earlyResults.totalProfit).toBe(0); // OTS loses all interest on early exit
   });
 
-  it('ROR: first-year rate applies across the full first bond year', () => {
+  it('ROR: first-month rate applies to the first month, then NBP rate applies', () => {
     const inputs = {
       ...baseInputs,
       bondType: BondType.ROR,
@@ -61,10 +61,10 @@ describe('Comprehensive Bond Calculations', () => {
     };
     const results = calculateBondInvestment(inputs);
 
-    expect(results.timeline[1].interestRate).toBe(4.25);
-    expect(results.timeline[2].interestRate).toBe(4.25);
-    expect(results.timeline[12].interestRate).toBe(4.25);
-    expect(results.totalProfit).toBeGreaterThan(250);
+    expect(results.timeline[1].interestRate).toBe(4.25); // First month (end of month 1)
+    expect(results.timeline[2].interestRate).toBe(0); // Month 2 uses NBP (-1.0, floored to 0) + margin 0
+    expect(results.timeline[12].interestRate).toBe(0); // Month 12
+    expect(results.totalProfit).toBeGreaterThan(0);
   });
 
   it('supports multi-cycle rollover for short-duration bonds across a longer horizon', () => {
@@ -133,6 +133,8 @@ describe('Comprehensive Bond Calculations', () => {
 
     const results = calculateBondInvestment(inputs);
     const projectedPoints = results.timeline.filter((point) => point.usedProjectedRate);
+
+    console.log("PROJECTED POINTS: ", projectedPoints.length, projectedPoints);
 
     expect(projectedPoints.length).toBeGreaterThan(0);
     expect(projectedPoints.some((point) => point.rateSource === 'projected_nbp')).toBe(true);

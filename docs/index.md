@@ -43,6 +43,7 @@ Welcome to the official product documentation for the **Financial Education & In
 - [App Refactoring Plan](./plans/26_app_refactoring_plan.md) - Architecture & reliability.
 - [Calculation Reliability Plan](./plans/27_calculation_reliability_remediation_plan.md) - Fixed trustworthiness.
 - [Remaining Backlog](./plans/28_remaining_backlog.md) - Post-refactor work.
+- [Next 15 Commits Execution Plan](./plans/29_next_15_commits_execution_plan.md) - Commit-sized near-term delivery plan.
 
 ---
-*Last Updated: March 2026*
+*Last Updated: April 2026*

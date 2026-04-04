@@ -6,33 +6,21 @@ import { RegularInvestmentInputsForm } from './RegularInvestmentInputsForm';
 import { RegularInvestmentResultsSummary } from './RegularInvestmentResultsSummary';
 import { RegularInvestmentChart } from './RegularInvestmentChart';
 import { useLanguage } from '@/i18n';
-import { Info, Share2, Check, Target, Trophy, Loader2 } from 'lucide-react';
-import { Progress } from "@/components/ui/progress";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Info, Loader2, Target, Trophy } from 'lucide-react';
 import { cn } from "@/lib/utils";
-import { RecalculateButton } from '@/shared/components/RecalculateButton';
+import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
+import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
 
 export const RegularInvestmentCalculatorContainer: React.FC = () => {
-  const { inputs, results, warnings, assumptions, isCalculating, calculate, updateInput, setBondType, isDirty } = useRegularInvestmentCalculator();
+  const { inputs, results, warnings, assumptions, isCalculating, calculate, updateInput, setBondType, isDirty, envelope } = useRegularInvestmentCalculator();
   const { t } = useLanguage();
 
-  const [copied, setCopied] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setHasMounted(true);
   }, []);
-
-  const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const goalProgress = (inputs.savingsGoal && results) ? (results.finalNominalValue / inputs.savingsGoal) * 100 : 0;
-  const isGoalReached = goalProgress >= 100;
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && (isDirty || !results)) {
@@ -41,59 +29,17 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 pb-20" onKeyDown={handleKeyDown}>
-      {/* Goal Progress Bar */}
-      {inputs.savingsGoal && results && (
-        <Card className="border-primary/20 bg-primary/5 shadow-sm overflow-hidden">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                {isGoalReached ? <Trophy className="h-5 w-5 text-yellow-500" /> : <Target className="h-5 w-5 text-primary" />}
-                <span className="font-bold">
-                  {isGoalReached ? t('bonds.goal_reached') : t('bonds.goal_progress', { percent: goalProgress.toFixed(1) })}
-                </span>
-              </div>
-              <span className="text-sm font-medium text-muted-foreground">
-                {t('bonds.target')}: {new Intl.NumberFormat().format(inputs.savingsGoal)} PLN
-              </span>
-            </div>
-            <Progress value={goalProgress} className="h-2" />
-          </CardContent>
-        </Card>
-      )}
-
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-2">
-        <div className="flex items-center gap-2">
-          {isCalculating && (
-            <span className="text-xs text-muted-foreground flex items-center gap-2 animate-in fade-in duration-500">
-              <Loader2 className="h-3 w-3 animate-spin" />
-              {t('common.calculating')}
-            </span>
-          )}
-          {!isCalculating && isDirty && results && (
-            <span className="text-xs text-orange-500 flex items-center gap-1 animate-in fade-in duration-500 font-medium">
-              <Info className="h-3 w-3" />
-              {t('comparison.needs_recalculation')}
-            </span>
-          )}
-          {!isCalculating && !isDirty && results && (
-            <span className="text-xs text-green-600 flex items-center gap-1 animate-in fade-in duration-500 font-medium">
-              <Check className="h-3 w-3" />
-              {t('comparison.up_to_date')}
-            </span>
-          )}
-        </div>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="gap-2 text-xs hover:bg-muted"
-          onClick={handleShare}
-        >
-          {copied ? <Check className="h-3 w-3 text-green-600" /> : <Share2 className="h-3 w-3" />}
-          {copied ? t('common.copied') : t('comparison.share_scenario')}
-        </Button>
-      </div>
-
+    <CalculatorPageShell
+      title={t("nav.regular_investment")}
+      description={t("bonds.regular_calculator")}
+      icon={<Trophy className="h-8 w-8" />}
+      isCalculating={isCalculating}
+      isDirty={isDirty}
+      hasResults={!!results}
+      savingsGoal={inputs.savingsGoal}
+      currentValue={results?.finalNominalValue}
+      onKeyDown={handleKeyDown}
+    >
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
         <aside className="xl:col-span-4 h-fit xl:sticky xl:top-28">
           <RegularInvestmentInputsForm
@@ -122,34 +68,13 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
             <div className={cn("space-y-8 transition-opacity duration-300", isCalculating && "opacity-50 pointer-events-none")}>
               <RegularInvestmentResultsSummary results={results} />
 
-              {(warnings.length > 0 || assumptions.length > 0) && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {warnings.length > 0 && (
-                    <div className="p-4 bg-orange-50 border-2 border-orange-200 rounded-2xl shadow-sm">
-                      <h4 className="text-xs font-black uppercase text-orange-800 mb-2 flex items-center gap-2">
-                        <Info className="h-4 w-4" /> {t('common.warnings')}
-                      </h4>
-                      <ul className="list-disc list-inside space-y-1">
-                        {warnings.map((w: string, i: number) => (
-                          <li key={i} className="text-[10px] text-orange-700 font-bold">{w}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  {assumptions.length > 0 && (
-                    <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-2xl shadow-sm">
-                      <h4 className="text-xs font-black uppercase text-blue-800 mb-2 flex items-center gap-2">
-                        <Target className="h-4 w-4" /> {t('common.assumptions')}
-                      </h4>
-                      <ul className="list-disc list-inside space-y-1">
-                        {assumptions.map((a: string, i: number) => (
-                          <li key={i} className="text-[10px] text-blue-700 font-bold">{a}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              )}
+              <CalculationMetaPanel
+                warnings={warnings}
+                assumptions={assumptions}
+                calculationNotes={envelope?.calculationNotes}
+                dataQualityFlags={envelope?.dataQualityFlags}
+                dataFreshness={envelope?.dataFreshness}
+              />
 
               <div className="bg-card border rounded-2xl p-6 shadow-sm overflow-hidden min-h-[500px]">
                 <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
@@ -177,12 +102,6 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
           )}
         </div>
       </div>
-
-      <RecalculateButton 
-        isDirty={isDirty}
-        loading={isCalculating}
-        onClick={() => calculate()}
-      />
-    </div>
+    </CalculatorPageShell>
   );
 };

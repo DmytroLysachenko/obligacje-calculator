@@ -12,16 +12,9 @@ export const metadata: Metadata = {
 export default function SingleCalculatorPage() {
   return (
     <PageTransition>
-      <div className="space-y-6">
-        <header className="mb-8">
-          <h2 className="text-3xl font-black tracking-tight text-primary uppercase">Single Bond Calculator</h2>
-          <p className="mt-2 font-medium text-muted-foreground">Detailed simulation for individual Polish treasury bonds.</p>
-        </header>
-
-        <Suspense fallback={<PageSuspenseFallback />}>
-          <BondCalculatorContainer />
-        </Suspense>
-      </div>
+      <Suspense fallback={<PageSuspenseFallback />}>
+        <BondCalculatorContainer />
+      </Suspense>
     </PageTransition>
   );
 }
