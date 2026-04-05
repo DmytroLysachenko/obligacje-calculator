@@ -62,7 +62,7 @@ describe('Bond Calculation Precision & Edge Cases', () => {
     expect(results.netPayoutValue).toBe(results.grossValue);
   });
 
-  it('applies flat 5% tax on FULL amount for IKZE strategy', () => {
+  it('applies flat 10% tax on FULL amount for IKZE strategy', () => {
     const initialSum = 10000;
     const results = calculateBondInvestment({
       bondType: BondType.COI,
@@ -82,8 +82,8 @@ describe('Bond Calculation Precision & Edge Cases', () => {
       taxStrategy: TaxStrategy.IKZE
     });
 
-    // IKZE Tax = 5% of (Principal + Total Interest)
-    const expectedTax = Math.round(results.grossValue * 0.05);
+    // IKZE Tax = 10% of (Principal + Total Interest)
+    const expectedTax = Math.round(results.grossValue * 0.10);
     expect(results.totalTax).toBe(expectedTax);
     expect(results.netPayoutValue).toBe(results.grossValue - expectedTax);
   });

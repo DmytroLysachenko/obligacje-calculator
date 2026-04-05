@@ -99,6 +99,17 @@ export const getHistoricalDataMap = cache(async (fromDate: string, toDate: strin
 
   const map: Record<string, { inflation?: number; nbpRate?: number }> = {};
   
+  // Apply fallback data first
+  HISTORICAL_RETURNS.forEach(item => {
+    if (item.date >= fromDate.substring(0, 7) && item.date <= toDate.substring(0, 7)) {
+      map[item.date] = {
+        inflation: item.inflation,
+        nbpRate: item.nbpRate
+      };
+    }
+  });
+
+  // Overwrite with real database points if available
   points.forEach(item => {
     const key = item.date.substring(0, 7); // YYYY-MM
     if (!map[key]) map[key] = {};

@@ -138,11 +138,11 @@
       "taxStrategy": "IKZE"
     },
     "expected": {
-      "totalProfit": 6948.897807068429,
-      "totalTax": 892,
+      "totalProfit": 6056.897807068429,
+      "totalTax": 1784,
       "grossValue": 17840.897807068428,
       "finalNominalValue": 17840.897807068428,
-      "netPayoutValue": 16948.897807068428
+      "netPayoutValue": 16056.897807068428
     }
   },
   {

@@ -44,6 +44,8 @@ Welcome to the official product documentation for the **Financial Education & In
 - [Calculation Reliability Plan](./plans/27_calculation_reliability_remediation_plan.md) - Fixed trustworthiness.
 - [Remaining Backlog](./plans/28_remaining_backlog.md) - Post-refactor work.
 - [Next 15 Commits Execution Plan](./plans/29_next_15_commits_execution_plan.md) - Commit-sized near-term delivery plan.
+- [Next 15 Commits: Data, Charts, and Calculation Depth](./plans/30_next_15_commits_data_charts_calculations.md) - Updated near-term execution plan after recent implementations.
+- [Long-Term Product Foundation Plan](./plans/31_longterm_product_foundation_plan.md) - Longer-horizon product and platform direction.
 
 ---
 *Last Updated: April 2026*

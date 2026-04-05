@@ -46,10 +46,10 @@ describe('Bond Engine - Production Accuracy', () => {
       expect(tax3.toNumber()).toBe(3); // 15 * 0.19 = 2.85 -> 3
     });
 
-    it('should calculate IKZE 5% flat tax on whole amount with official rounding', () => {
-      // 1000 PLN payout -> 50 PLN tax
+    it('should calculate IKZE 10% flat tax on whole amount with official rounding', () => {
+      // 1000 PLN payout -> 100 PLN tax (10%)
       const tax = calculateTaxAmount(new Decimal(1000), TaxStrategy.IKZE, true);
-      expect(tax.toNumber()).toBe(50);
+      expect(tax.toNumber()).toBe(100);
     });
   });
 });

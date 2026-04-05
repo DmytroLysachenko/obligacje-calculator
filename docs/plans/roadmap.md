@@ -1,37 +1,41 @@
 # Obligacje Calculator - Project Roadmap
 
-## Phase 1: Core Foundation (Current)
+## Phase 1: Core Foundation (Done)
 - [x] Initial architecture with feature-based structure.
 - [x] Internationalization (i18n) setup.
 - [x] Core Bond Calculator logic.
 - [x] Single Bond Calculator UI.
 - [x] Documentation for Polish Treasury Bonds.
 
-## Phase 2: Enhanced Calculations & UI
-- [ ] Support for all Polish bond types (OTS, ROR, DOR, TOS, COI, ROS, EDO, ROD).
-- [ ] Improved visualizations (Recharts integration).
-- [ ] Multi-language support (Polish translation).
-- [ ] Detailed yearly reports and PDF exports.
+## Phase 2: Enhanced Calculations & UI (Done)
+- [x] Support for all Polish bond types (OTS, ROR, DOR, TOS, COI, ROS, EDO, ROD).
+- [x] Improved visualizations (Recharts integration).
+- [x] Multi-language support (Polish translation).
+- [x] Detailed yearly reports and timeline audit metadata.
+- [x] Canonical simulation output for unified rendering.
 
-## Phase 3: New Calculators
-- [ ] **Recurring Investment Calculator:** "What if I invest 500 PLN every month?"
-- [ ] **Inflation Simulator:** Deep dive into purchasing power over long periods.
-- [ ] **Portfolio Simulation:** Combining multiple bonds and other assets.
+## Phase 3: Advanced Simulators (Done)
+- [x] **Recurring Investment Calculator:** Monthly/Quarterly/Yearly contribution modeling.
+- [x] **Goal-Seek Mode:** Reverse calculation to find required investment.
+- [x] **Portfolio Simulation:** Aggregating multiple bonds into a single performance view.
+- [x] **Ladder Strategy:** Modeling rolling bond ladders.
 
-## Phase 4: Expansion (Other Asset Classes)
-- [ ] Stock Market Return Estimator (Historical S&P 500 data).
-- [ ] Cryptocurrency Volatility Simulator.
-- [ ] Savings Accounts Comparison.
+## Phase 4: Data & Reliability (Done)
+- [x] DB-backed historical data (Inflation, NBP Rate, WIBOR).
+- [x] Automated bond definition sync via scraping layer.
+- [x] Advanced IKZE modeling with tax relief and payout tax.
+- [x] Extensive regression test suite (40+ cases).
 
-## Phase 5: Personal Features (User Dashboards)
-- [ ] User authentication.
-- [ ] Private portfolio tracking.
-- [ ] Investment notes and history.
+## Phase 5: Personal Features (In Progress)
+- [x] User authentication (NextAuth).
+- [x] Private portfolio tracking (Notebook).
+- [ ] Portfolio performance sharing.
+- [ ] Export to PDF/Excel.
 
 ---
 
 ## Technical Principles
-- **Scalability:** Calculation modules must be asset-agnostic.
-- **Simplicity:** UX first, minimal cognitive load.
-- **Educational:** Every tool should explain *how* it works.
-- **Maintainability:** Strong types, reusable hooks, pure functions for logic.
+- **Accuracy:** Calculations validated against official treasury rules and rounded per Tax Ordinance.
+- **Trust:** Transparent assumptions, warnings, and "How it was calculated" explainer.
+- **Speed:** API response time under 200ms for complex portfolio simulations.
+- **Maintainability:** Pure domain engine, rich schema, and type-safe scenario contracts.
