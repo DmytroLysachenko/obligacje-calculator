@@ -7,7 +7,54 @@ export enum ScenarioKind {
   REGULAR_INVESTMENT = 'regular-investment',
   BOND_COMPARISON = 'bond-comparison',
   MULTI_ASSET = 'multi-asset',
+  PORTFOLIO_SIMULATION = 'portfolio-simulation',
 }
+
+export interface PortfolioSimulationPayload {
+  investments: {
+    bondType: BondType;
+    amount: number;
+    purchaseDate: string;
+    isRebought?: boolean;
+    taxStrategy?: TaxStrategy;
+    rollover?: boolean;
+  }[];
+  expectedInflation: number;
+  expectedNbpRate?: number;
+  withdrawalDate: string;
+}
+
+export interface PortfolioSimulationRequest {
+  kind: ScenarioKind.PORTFOLIO_SIMULATION;
+  payload: PortfolioSimulationPayload;
+}
+
+export interface PortfolioSimulationItem {
+  bondType: BondType;
+  amount: number;
+  purchaseDate: string;
+  result: CalculationResult;
+}
+
+export interface PortfolioSimulationResult {
+  items: PortfolioSimulationItem[];
+  aggregatedTimeline: {
+    date: string;
+    totalNominalValue: number;
+    totalNetValue: number;
+    totalProfit: number;
+    totalTax: number;
+    totalFees: number;
+  }[];
+  summary: {
+    totalInvested: number;
+    totalNetValue: number;
+    totalProfit: number;
+  };
+}
+
+export type PortfolioSimulationCalculationEnvelope = CalculationEnvelope<PortfolioSimulationResult>;
+
 
 export type DataFreshnessStatus = 'fresh' | 'stale' | 'projected' | 'unknown' | 'fallback';
 
@@ -99,7 +146,8 @@ export interface BondComparisonScenarioRequest {
 export type CalculationScenarioRequest =
   | SingleBondScenarioRequest
   | RegularInvestmentScenarioRequest
-  | BondComparisonScenarioRequest;
+  | BondComparisonScenarioRequest
+  | PortfolioSimulationRequest;
 
 export type SingleBondCalculationEnvelope = CalculationEnvelope<CalculationResult>;
 export type RegularInvestmentCalculationEnvelope = CalculationEnvelope<RegularInvestmentResult>;

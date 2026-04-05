@@ -1,4 +1,3 @@
-import { format, subMonths, parseISO } from 'date-fns';
 import { 
   CalculationScenarioRequest, 
   CalculationEnvelope, 
@@ -10,15 +9,24 @@ import {
   IndependentBondComparisonPayload,
   NormalizedBondComparisonPayload,
   CalculationDataFreshness,
+  PortfolioSimulationCalculationEnvelope,
+  PortfolioSimulationPayload,
+  PortfolioSimulationResult,
+  PortfolioSimulationItem,
 } from './types/scenarios';
-import { BondInputsSchema, RegularInvestmentInputsSchema, BondComparisonScenarioRequestSchema } from './types/schemas';
+import { 
+  BondInputsSchema, 
+  RegularInvestmentInputsSchema, 
+  BondComparisonScenarioRequestSchema 
+} from './types/schemas';
 import { calculateBondInvestment, calculateRegularInvestment } from './utils/calculations';
 import { getHistoricalDataMap, getGlobalDataFreshness } from '@/lib/data-access';
 import { BondInputs, TaxStrategy } from './types';
 import { BOND_DEFINITIONS } from './constants/bond-definitions';
 import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
+import { addMonths, format, subMonths, parseISO, isBefore, isSameDay } from 'date-fns';
 
-export const MODEL_VERSION = '2.1.0-production-ready';
+export const MODEL_VERSION = '2.2.0-portfolio-production-ready';
 
 export class CalculationApplicationService {
   /**
@@ -40,6 +48,9 @@ export class CalculationApplicationService {
         case ScenarioKind.BOND_COMPARISON:
           response = await this.calculateComparison(request.payload, dataFreshness);
           break;
+        case ScenarioKind.PORTFOLIO_SIMULATION:
+          response = await this.calculatePortfolioSimulation(request.payload, dataFreshness);
+          break;
         default:
           throw new Error('Unsupported scenario kind');
       }
@@ -52,6 +63,96 @@ export class CalculationApplicationService {
       console.error(`[CalculationService] FAILED v=${MODEL_VERSION} kind=${request.kind}`, error);
       throw error;
     }
+  }
+
+  private async calculatePortfolioSimulation(
+    payload: PortfolioSimulationPayload,
+    dataFreshness: CalculationDataFreshness
+  ): Promise<PortfolioSimulationCalculationEnvelope> {
+    const items: PortfolioSimulationItem[] = [];
+    const allHistoricalData = await this.withHistoricalData({
+      purchaseDate: payload.investments.reduce((min, inv) => isBefore(parseISO(inv.purchaseDate), parseISO(min)) ? inv.purchaseDate : min, payload.investments[0].purchaseDate),
+      withdrawalDate: payload.withdrawalDate
+    });
+
+    for (const inv of payload.investments) {
+      const def = BOND_DEFINITIONS[inv.bondType];
+      const result = calculateBondInvestment({
+        bondType: inv.bondType,
+        initialInvestment: inv.amount,
+        firstYearRate: def.firstYearRate,
+        expectedInflation: payload.expectedInflation,
+        expectedNbpRate: payload.expectedNbpRate ?? 5.25,
+        margin: def.margin,
+        duration: def.duration,
+        earlyWithdrawalFee: def.earlyWithdrawalFee,
+        taxRate: 19,
+        isCapitalized: def.isCapitalized,
+        payoutFrequency: def.payoutFrequency,
+        purchaseDate: inv.purchaseDate,
+        withdrawalDate: payload.withdrawalDate,
+        isRebought: inv.isRebought ?? false,
+        rebuyDiscount: def.rebuyDiscount,
+        taxStrategy: inv.taxStrategy ?? TaxStrategy.STANDARD,
+        rollover: inv.rollover ?? false,
+        historicalData: allHistoricalData.historicalData,
+        chartStep: 'monthly'
+      });
+      items.push({
+        bondType: inv.bondType,
+        amount: inv.amount,
+        purchaseDate: inv.purchaseDate,
+        result
+      });
+    }
+
+    // Aggregate timelines
+    const aggregatedTimeline: PortfolioSimulationResult['aggregatedTimeline'] = [];
+    const minDate = parseISO(allHistoricalData.purchaseDate);
+    const maxDate = parseISO(payload.withdrawalDate);
+    let curr = minDate;
+    while (!isBefore(maxDate, curr)) {
+      const dateStr = format(curr, 'yyyy-MM-dd');
+      let totalNominalValue = 0;
+      let totalNetValue = 0;
+      let totalProfit = 0;
+      let totalTax = 0;
+      let totalFees = 0;
+
+      for (const item of items) {
+        // Find the timeline point closest to this date
+        const point = item.result.timeline.find(p => p.periodLabel === format(curr, 'MMM yyyy'));
+        if (point) {
+          totalNominalValue += point.nominalValueAfterInterest;
+          totalNetValue += point.totalValue;
+          totalProfit += point.netProfit; // netProfit might need better handling
+          totalTax += point.taxDeducted;
+          totalFees += point.earlyWithdrawalValue;
+        }
+      }
+
+      aggregatedTimeline.push({
+        date: dateStr,
+        totalNominalValue,
+        totalNetValue,
+        totalProfit,
+        totalTax,
+        totalFees
+      });
+      curr = addMonths(curr, 1);
+    }
+
+    const result: PortfolioSimulationResult = {
+      items,
+      aggregatedTimeline,
+      summary: {
+        totalInvested: items.reduce((sum, item) => sum + item.amount, 0),
+        totalNetValue: aggregatedTimeline[aggregatedTimeline.length - 1]?.totalNetValue || 0,
+        totalProfit: aggregatedTimeline[aggregatedTimeline.length - 1]?.totalProfit || 0
+      }
+    };
+
+    return this.createEnvelope(result, [], [], dataFreshness);
   }
 
   private async calculateSingleBond(input: unknown, dataFreshness: CalculationDataFreshness): Promise<SingleBondCalculationEnvelope> {
