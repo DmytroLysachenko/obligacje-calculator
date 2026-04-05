@@ -6,7 +6,7 @@ import { TaxStrategy } from '../../types';
  * 
  * STANDARD: 19% Belka tax on interest.
  * IKE: 0% tax.
- * IKZE: 5% flat tax on the WHOLE withdrawal amount (principal + interest).
+ * IKZE: 10% flat tax on the WHOLE withdrawal amount (principal + interest) at retirement.
  */
 export function calculateTaxAmount(
   amount: Decimal, 
@@ -17,7 +17,8 @@ export function calculateTaxAmount(
   
   if (strategy === TaxStrategy.IKE) return new Decimal(0);
 
-  const rate = strategy === TaxStrategy.IKZE ? new Decimal(0.05) : new Decimal(0.19);
+  // IKZE is 10% flat tax on the total payout in the target scenario (retirement)
+  const rate = strategy === TaxStrategy.IKZE ? new Decimal(0.10) : new Decimal(0.19);
 
   if (useOfficialRounding) {
     // Article 63 § 1 Tax Ordinance: Tax base is rounded to full PLN. 

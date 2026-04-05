@@ -31,6 +31,8 @@ export type RateSource =
   | 'historical_nbp'
   | 'projected_nbp';
 
+export type ChartStep = 'daily' | 'monthly' | 'quarterly' | 'yearly';
+
 export interface BondInputs {
   bondType: BondType;
   initialInvestment: number;
@@ -52,10 +54,13 @@ export interface BondInputs {
   historicalData?: HistoricalDataMap;
   showRealValue?: boolean;
   calculatorMode?: 'standard' | 'reverse';
+  targetNetSum?: number;
+  ikzeTaxBracket?: 0.12 | 0.32;
   customInflation?: number[];
   rollover?: boolean;
   timingMode?: import('@/shared/lib/date-timing').TimingMode;
   investmentHorizonMonths?: number;
+  chartStep?: ChartStep;
 }
 
 export interface YearlyTimelinePoint {
@@ -85,6 +90,7 @@ export interface YearlyTimelinePoint {
   isProjected?: boolean;
   inflationReference?: number;
   nbpReference?: number;
+  events?: import('./simulation').SimulationEvent[];
 }
 
 export interface CalculationResult {
@@ -152,6 +158,7 @@ export interface RegularTimelinePoint {
   tax: number;
   earlyWithdrawalFees: number;
   isProjected?: boolean;
+  events?: import('./simulation').SimulationEvent[];
 }
 
 export * from './scenarios';
