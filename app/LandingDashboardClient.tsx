@@ -14,7 +14,7 @@ export function LandingDashboardClient() {
     {
       href: '/single-calculator',
       title: t('nav.single_calculator'),
-      description: 'Run detailed simulations for individual Polish treasury bonds over their entire lifecycle.',
+      description: t('landing.cards.single_calculator'),
       icon: Calculator,
       color: 'text-blue-500',
       bg: 'bg-blue-500/10'
@@ -22,7 +22,7 @@ export function LandingDashboardClient() {
     {
       href: '/compare',
       title: t('nav.comparison'),
-      description: 'Compare multiple bonds side-by-side to find the best yield for your timeline.',
+      description: t('landing.cards.comparison'),
       icon: Scale,
       color: 'text-purple-500',
       bg: 'bg-purple-500/10'
@@ -30,7 +30,7 @@ export function LandingDashboardClient() {
     {
       href: '/regular-investment',
       title: t('nav.regular_investment'),
-      description: 'Simulate monthly or yearly contributions into bonds and watch your wealth grow.',
+      description: t('landing.cards.regular_investment'),
       icon: TrendingUp,
       color: 'text-emerald-500',
       bg: 'bg-emerald-500/10'
@@ -38,7 +38,7 @@ export function LandingDashboardClient() {
     {
       href: '/ladder',
       title: t('nav.ladder'),
-      description: 'Build a bond ladder strategy to ensure consistent liquidity and optimal interest rates.',
+      description: t('landing.cards.ladder'),
       icon: Layers,
       color: 'text-orange-500',
       bg: 'bg-orange-500/10'
@@ -46,7 +46,7 @@ export function LandingDashboardClient() {
     {
       href: '/economic-data',
       title: t('nav.economic_data'),
-      description: 'Track historical inflation and NBP interest rates that affect floating-rate bonds.',
+      description: t('landing.cards.economic_data'),
       icon: BarChart2,
       color: 'text-pink-500',
       bg: 'bg-pink-500/10'
@@ -54,7 +54,7 @@ export function LandingDashboardClient() {
     {
       href: '/education',
       title: t('nav.education'),
-      description: 'Learn the basics of Polish treasury bonds, taxation, and investment strategies.',
+      description: t('landing.cards.education'),
       icon: BookOpen,
       color: 'text-slate-500',
       bg: 'bg-slate-500/10'
@@ -89,7 +89,7 @@ export function LandingDashboardClient() {
             transition={{ duration: 0.7, ease: "easeOut" }}
             className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight"
           >
-            Master Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-primary">Polish Bonds</span> Strategy
+            {t('landing.hero_title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-primary">{t('landing.hero_title_accent')}</span> Strategy
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0 }}
@@ -97,7 +97,7 @@ export function LandingDashboardClient() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="text-lg md:text-xl text-slate-300 font-medium leading-relaxed max-w-xl"
           >
-            A comprehensive toolkit designed for investors matching exact Ministry of Finance logic. Project yields, compare inflation scenarios, and build optimal portfolios.
+            {t('landing.hero_description')}
           </motion.p>
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -107,7 +107,7 @@ export function LandingDashboardClient() {
           >
             <Link href="/single-calculator">
               <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-full font-bold shadow-[0_0_30px_rgba(var(--primary-rgb),0.3)] transition-all hover:scale-105 active:scale-95 flex items-center gap-2">
-                Start Calculating <ArrowRight className="h-5 w-5" />
+                {t('landing.start_calculating')} <ArrowRight className="h-5 w-5" />
               </button>
             </Link>
           </motion.div>
@@ -116,7 +116,7 @@ export function LandingDashboardClient() {
 
       <section className="space-y-8">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-black tracking-tight">Financial Tools</h2>
+          <h2 className="text-2xl font-black tracking-tight">{t('landing.financial_tools')}</h2>
         </div>
 
         <motion.div 

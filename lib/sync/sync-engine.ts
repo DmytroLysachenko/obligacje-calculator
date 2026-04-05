@@ -13,7 +13,7 @@ export class SyncEngine {
    * High-level orchestrator for ALL data sync tasks.
    * Can be called by a cron job or manual trigger.
    */
-  async runFullSync() {
+  async runFullSync(startYear: number = 1910) {
     console.log('[SyncEngine] Starting full financial sync...');
     
     // 1. Sync Macro Data (Inflation, NBP)
@@ -36,7 +36,7 @@ export class SyncEngine {
     }
 
     // 3. Sync Historical Providers (Stooq, etc.)
-    const providerResults = await this.syncAll();
+    const providerResults = await this.syncAll(startYear);
 
     return {
       mode: 'full-sync',

@@ -5,7 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
   --color-background: hsl(var(--background));
@@ -83,6 +84,12 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
   }
   html {
     font-family: var(--font-sans);

@@ -230,6 +230,21 @@
     "yield_three_months": "Yield (3m)",
     "first_month_rate": "1st Month Rate"
     },
+    "landing": {
+      "hero_title": "Master Your",
+      "hero_title_accent": "Polish Bonds",
+      "hero_description": "A comprehensive toolkit designed for investors matching exact Ministry of Finance logic. Project yields, compare inflation scenarios, and build optimal portfolios.",
+      "start_calculating": "Start Calculating",
+      "financial_tools": "Financial Tools",
+      "cards": {
+        "single_calculator": "Run detailed simulations for individual Polish treasury bonds over their entire lifecycle.",
+        "comparison": "Compare multiple bonds side-by-side to find the best yield for your timeline.",
+        "regular_investment": "Simulate monthly or yearly contributions into bonds and watch your wealth grow.",
+        "ladder": "Build a bond ladder strategy to ensure consistent liquidity and optimal interest rates.",
+        "economic_data": "Track historical inflation and NBP interest rates that affect floating-rate bonds.",
+        "education": "Learn the basics of Polish treasury bonds, taxation, and investment strategies."
+      }
+    },
     "notebook": {
       "title": "My Portfolio / Notebook",
       "subtitle": "Track your real-world bond purchases and simulate their future value based on live data.",

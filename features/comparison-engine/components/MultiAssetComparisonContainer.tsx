@@ -38,6 +38,7 @@ export const MultiAssetComparisonContainer = () => {
     isDirty,
     recalculate,
     historyData,
+    purchasingPowerLoss,
   } = useMultiAssetComparison();
 
   const { language, t } = useLanguage();
@@ -112,7 +113,7 @@ export const MultiAssetComparisonContainer = () => {
             months={months}
             showRealValue={showRealValue}
             updateShowRealValue={updateShowRealValue}
-            purchasingPowerLoss={0}
+            purchasingPowerLoss={purchasingPowerLoss}
             formatCurrency={formatCurrency}
           />
         </div>

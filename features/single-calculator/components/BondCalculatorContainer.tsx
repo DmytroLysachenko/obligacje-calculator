@@ -113,6 +113,8 @@ export const BondCalculatorContainer: React.FC = () => {
             inputs={inputs}
             onUpdate={updateInput}
             onBondTypeChange={setBondType}
+            onCalculate={calculate}
+            isCalculating={isCalculating}
           />
         </aside>
 

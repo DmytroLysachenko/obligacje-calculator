@@ -226,6 +226,21 @@
     "projected": "Prognozowane",
     "historical": "Historyczne"
     },
+    "landing": {
+      "hero_title": "Osiągnij Mistrzostwo w Strategii",
+      "hero_title_accent": "Polskich Obligacji",
+      "hero_description": "Kompleksowy zestaw narzędzi zaprojektowany dla inwestorów, dopasowany do logiki Ministerstwa Finansów. Projektuj zyski, porównuj scenariusze inflacyjne i buduj optymalne portfele.",
+      "start_calculating": "Zacznij obliczać",
+      "financial_tools": "Narzędzia Finansowe",
+      "cards": {
+        "single_calculator": "Szczegółowe symulacje dla poszczególnych obligacji skarbowych w całym cyklu ich życia.",
+        "comparison": "Porównuj wiele obligacji obok siebie, aby znaleźć najlepszą stopę zwrotu dla Twojego horyzontu czasowego.",
+        "regular_investment": "Symuluj miesięczne lub roczne wpłaty do obligacji i obserwuj wzrost swojego majątku.",
+        "ladder": "Zbuduj strategię drabiny obligacyjnej, aby zapewnić stałą płynność i optymalne oprocentowanie.",
+        "economic_data": "Śledź historyczną inflację i stopy procentowe NBP, które wpływają na obligacje o zmiennym oprocentowaniu.",
+        "education": "Poznaj podstawy polskich obligacji skarbowych, opodatkowania i strategii inwestycyjnych."
+      }
+    },
     "notebook": {
       "title": "Mój Portfel / Notatnik",
       "subtitle": "Śledź swoje rzeczywiste zakupy obligacji i symuluj ich przyszłą wartość na podstawie bieżących danych.",

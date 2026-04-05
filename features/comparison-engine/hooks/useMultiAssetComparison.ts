@@ -146,6 +146,24 @@ export function useMultiAssetComparison() {
     [initialSum, monthlyContribution, filteredData],
   );
 
+  const purchasingPowerLoss = useMemo(() => {
+    let cumulativeInflation = 1;
+    let totalInvested = initialSum;
+    const realValueTotal = initialSum;
+
+    for (const row of filteredData) {
+      const monthlyInflation = (row.inflation || 0) / 100;
+      cumulativeInflation *= (1 + monthlyInflation);
+      totalInvested += monthlyContribution;
+      
+      // We calculate what the "real" value of the new contribution is relative to the START of the simulation
+      // But actually, simpler: total nominal invested / cumulative inflation = real value today
+      // The loss is totalNominal - (totalNominal / cumulativeInflation)
+    }
+    
+    return totalInvested - (totalInvested / cumulativeInflation);
+  }, [initialSum, monthlyContribution, filteredData]);
+
   const years = useMemo(() => {
     const uniqueYears = Array.from(new Set(sourceData.map((row) => row.date.substring(0, 4))));
     return uniqueYears.sort((a, b) => b.localeCompare(a));
@@ -171,6 +189,7 @@ export function useMultiAssetComparison() {
     isLoading,
     recalculate,
     assets: [sp500, gold, bonds, savings],
+    purchasingPowerLoss,
     metadata: ASSETS_METADATA,
     availableDates: sourceData.map((row) => row.date),
     historySource: historyResponse?.source ?? 'fallback',
