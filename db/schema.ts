@@ -16,6 +16,11 @@ export const dataSeries = pgTable("data_series", {
   category: seriesCategoryEnum("category").notNull().default("macro"),
   unit: text("unit").notNull(), // %, PLN, USD, etc.
   frequency: text("frequency").notNull().default("monthly"), // daily, monthly, quarterly, yearly
+  displayPrecision: integer("display_precision").default(2),
+  displayStepDefault: text("display_step_default").default("monthly"),
+  timezone: text("timezone").default("Europe/Warsaw"),
+  sourcePriority: integer("source_priority").default(1),
+  freshnessPolicy: text("freshness_policy"), // how often it should be synced
   dataSource: text("data_source"),
   lastDataPointDate: date("last_data_point_date"),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -29,6 +34,14 @@ export const dataPoints = pgTable("data_points", {
   seriesId: uuid("series_id").references(() => dataSeries.id, { onDelete: 'cascade' }).notNull(),
   date: date("date").notNull(),
   value: numeric("value", { precision: 20, scale: 8 }).notNull(),
+  open: numeric("open", { precision: 20, scale: 8 }),
+  high: numeric("high", { precision: 20, scale: 8 }),
+  low: numeric("low", { precision: 20, scale: 8 }),
+  close: numeric("close", { precision: 20, scale: 8 }),
+  adjustedClose: numeric("adjusted_close", { precision: 20, scale: 8 }),
+  volume: numeric("volume", { precision: 20, scale: 0 }),
+  qualityFlag: text("quality_flag"), // 'verified', 'estimated', 'projected'
+  sourceMetadata: text("source_metadata"), // any extra info about this point
   createdAt: timestamp("created_at").defaultNow(),
 }, (table) => {
   return {
