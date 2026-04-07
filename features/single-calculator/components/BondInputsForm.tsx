@@ -510,27 +510,6 @@ max={20}
           </AccordionItem>
         </Accordion>
 
-        {/* Action Button */}
-        <div className="px-6 py-4 bg-muted/20 border-t">
-          <Button 
-            className="w-full h-12 rounded-xl font-black text-sm uppercase tracking-widest shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
-            onClick={onCalculate}
-            disabled={isCalculating}
-          >
-            {isCalculating ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                {t('common.calculating')}
-              </>
-            ) : (
-              <>
-                <Target className="h-4 w-4 mr-2" />
-                {t('common.recalculate')}
-              </>
-            )}
-          </Button>
-        </div>
-
         {/* Summary Details */}
         <div className="pt-2 px-6 pb-6">
           <div className="text-[10px] text-muted-foreground space-y-1 bg-muted/30 p-3 rounded-lg border border-dashed">

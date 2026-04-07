@@ -11,6 +11,8 @@ import { cn } from "@/lib/utils";
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
 
+import { RecalculateButton } from '@/shared/components/RecalculateButton';
+
 export const RegularInvestmentCalculatorContainer: React.FC = () => {
   const { inputs, results, warnings, assumptions, isCalculating, calculate, updateInput, setBondType, isDirty, envelope } = useRegularInvestmentCalculator();
   const { t } = useLanguage();
@@ -102,6 +104,11 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
           )}
         </div>
       </div>
+      <RecalculateButton 
+        isDirty={isDirty}
+        loading={isCalculating}
+        onClick={() => calculate()}
+      />
     </CalculatorPageShell>
   );
 };

@@ -19,6 +19,7 @@ import { useLanguage } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { CalculationMetaPanel } from "@/shared/components/CalculationMetaPanel";
 import { CalculatorPageShell } from "@/shared/components/CalculatorPageShell";
+import { RecalculateButton } from "@/shared/components/RecalculateButton";
 
 export const BondCalculatorContainer: React.FC = () => {
   const {
@@ -218,6 +219,11 @@ export const BondCalculatorContainer: React.FC = () => {
           )}
         </div>
       </div>
+      <RecalculateButton 
+        isDirty={isDirty}
+        loading={isCalculating}
+        onClick={() => calculate()}
+      />
     </CalculatorPageShell>
   );
 };
