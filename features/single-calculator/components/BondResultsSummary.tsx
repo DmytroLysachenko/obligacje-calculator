@@ -286,26 +286,22 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50 hover:bg-muted/50 border-b">
-                  <TableHead className="w-[120px] text-[10px] font-black uppercase tracking-widest">{t('common.period')}</TableHead>
-                  <TableHead className="text-[10px] font-black uppercase tracking-widest">{t('bonds.nominal_before')}</TableHead>
+                  <TableHead className="w-[100px] md:w-[120px] text-[10px] font-black uppercase tracking-widest">{t('common.period')}</TableHead>
+                  <TableHead className="hidden md:table-cell text-[10px] font-black uppercase tracking-widest">{t('bonds.nominal_before')}</TableHead>
                   <TableHead className="text-[10px] font-black uppercase tracking-widest">{t('bonds.interest_rate')}</TableHead>
                   <TableHead className="text-[10px] font-black uppercase tracking-widest">
                     <div className="flex items-center gap-1">
                       {t('bonds.interest_earned')}
-                      <Popover>
-                        <PopoverTrigger><HelpCircle className="h-3 w-3 text-muted-foreground/50" /></PopoverTrigger>
-                        <PopoverContent className="text-[10px] font-bold p-2 bg-slate-800 text-white border-none shadow-xl">{t('bonds.interest_formula')}</PopoverContent>
-                      </Popover>
                     </div>
                   </TableHead>
-                  <TableHead className="text-[10px] font-black uppercase tracking-widest">{t('bonds.tax')}</TableHead>
+                  <TableHead className="hidden sm:table-cell text-[10px] font-black uppercase tracking-widest">{t('bonds.tax')}</TableHead>
                   <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">{t('bonds.nominal_after')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {results.timeline.map((point, index) => (
                   <TableRow key={`${point.year}-${point.periodLabel}-${index}`} className={cn("hover:bg-muted/20 border-b transition-colors", point.isWithdrawal && "bg-primary/5 font-bold")}>
-                    <TableCell className="font-bold py-4">
+                    <TableCell className="font-bold py-4 text-xs md:text-sm">
                       {point.periodLabel}
                       {point.isWithdrawal && (
                         <div className="text-[9px] text-primary font-black uppercase mt-0.5">
@@ -313,15 +309,15 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
                         </div>
                       )}
                     </TableCell>
-                    <TableCell className="font-medium text-slate-600">{formatCurrency(point.nominalValueBeforeInterest)}</TableCell>
+                    <TableCell className="hidden md:table-cell font-medium text-slate-600 text-xs">{formatCurrency(point.nominalValueBeforeInterest)}</TableCell>
                     <TableCell>
-                      <Badge variant="secondary" className="font-black text-[10px] bg-slate-100 text-slate-700 border-none">
+                      <Badge variant="secondary" className="font-black text-[9px] md:text-[10px] bg-slate-100 text-slate-700 border-none px-1 md:px-2">
                         {point.interestRate.toFixed(2)}%
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-green-600 font-bold">+{formatCurrency(point.interestEarned)}</TableCell>
-                    <TableCell className="text-red-500/80 font-medium">-{formatCurrency(point.taxDeducted)}</TableCell>
-                    <TableCell className="text-right font-black text-slate-800">
+                    <TableCell className="text-green-600 font-bold text-xs md:text-sm">+{formatCurrency(point.interestEarned)}</TableCell>
+                    <TableCell className="hidden sm:table-cell text-red-500/80 font-medium text-xs">-{formatCurrency(point.taxDeducted)}</TableCell>
+                    <TableCell className="text-right font-black text-slate-800 text-xs md:text-sm">
                       {formatCurrency(point.nominalValueAfterInterest)}
                     </TableCell>
                   </TableRow>

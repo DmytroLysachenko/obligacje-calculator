@@ -35,6 +35,7 @@ import { ChartContainer } from "@/shared/components/charts/ChartContainer";
 import { CalculationMetaPanel } from "@/shared/components/CalculationMetaPanel";
 import { BondComparisonCalculationEnvelope } from "@/features/bond-core/types/scenarios";
 import { useDebounce } from "@/shared/hooks/useDebounce";
+import { getBondColor } from "@/shared/constants/bond-colors";
 
 type ComparisonResultItem = BondComparisonCalculationEnvelope["result"][number];
 type ChartDataPoint = {
@@ -296,13 +297,13 @@ const formatCurrency = (val: number) =>
                         />
                         <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px', fontSize: '12px', fontWeight: 'bold' }} />
                         {chartData.length > 24 ? <Brush dataKey="date" height={22} stroke="#64748b" travellerWidth={8} /> : null}
-                        {selectedBonds.map((type, idx) => (
+                        {selectedBonds.map((type) => (
                           <Line
                             key={type}
                             type="monotone"
                             dataKey={type}
                             name={type}
-                            stroke={["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899", "#06b6d4", "#f97316"][idx % 8]}
+                            stroke={getBondColor(type)}
                             strokeWidth={4}
                             dot={false}
                             animationDuration={1500}

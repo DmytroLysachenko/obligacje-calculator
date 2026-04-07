@@ -270,8 +270,9 @@
       "nominal_val": "Nominał",
       "purchase_date": "Data Zakupu",
       "current_yield": "Obecna Stopa",
-      "detailed_soon": "Szczegółowa analityka wkrótce"
-      ,
+      "detailed_soon": "Szczegółowa analityka wkrótce",
+      "next_maturity": "Najbliższy Wykup",
+      "next_maturity_placeholder": "Brak partii",
       "load_error": "Nie udało się załadować portfeli. Spróbuj ponownie później.",
       "create_error": "Nie udało się teraz utworzyć portfela. Spróbuj ponownie później.",
       "storage_unavailable": "Magazyn portfeli jest tymczasowo niedostępny.",

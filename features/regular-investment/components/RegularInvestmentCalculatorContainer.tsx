@@ -83,7 +83,12 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
                   <span className="w-1.5 h-6 bg-primary rounded-full" />
                   {t('bonds.growth_projection')}
                 </h3>
-                {hasMounted && <RegularInvestmentChart results={results} />}
+                {hasMounted && (
+                  <RegularInvestmentChart 
+                    results={results} 
+                    bondType={inputs.bondType} 
+                  />
+                )}
               </div>
 
               <div className="bg-blue-50/50 border border-blue-100 p-6 rounded-2xl space-y-4 relative overflow-hidden group">

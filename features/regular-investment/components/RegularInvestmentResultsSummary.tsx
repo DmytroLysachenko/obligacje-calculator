@@ -243,8 +243,8 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                         <TableHeader>
                           <TableRow className="bg-muted/50 hover:bg-muted/50">
                             <TableHead className="h-9 text-[10px] uppercase font-bold text-muted-foreground">{t('regular_summary.month')}</TableHead>
-                            <TableHead className="h-9 text-[10px] uppercase font-bold text-muted-foreground">{t('regular_summary.maturity')}</TableHead>
-                            <TableHead className="h-9 text-[10px] uppercase font-bold text-muted-foreground text-right">{t('regular_summary.invested')}</TableHead>
+                            <TableHead className="hidden sm:table-cell h-9 text-[10px] uppercase font-bold text-muted-foreground">{t('regular_summary.maturity')}</TableHead>
+                            <TableHead className="hidden md:table-cell h-9 text-[10px] uppercase font-bold text-muted-foreground text-right">{t('regular_summary.invested')}</TableHead>
                             <TableHead className="h-9 text-[10px] uppercase font-bold text-muted-foreground text-right">{t('regular_summary.interest')}</TableHead>
                             <TableHead className="h-9 text-[10px] uppercase font-bold text-muted-foreground text-right">{t('regular_summary.net_value')}</TableHead>
                           </TableRow>
@@ -255,10 +255,10 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                               <TableCell className="py-2 text-xs font-medium">
                                 {format(parseISO(lot.purchaseDate), 'MMMM', { locale: dateLocale })}
                               </TableCell>
-                              <TableCell className="py-2 text-xs text-muted-foreground">
+                              <TableCell className="hidden sm:table-cell py-2 text-xs text-muted-foreground">
                                 {format(parseISO(lot.maturityDate), 'MMM yyyy', { locale: dateLocale })}
                               </TableCell>
-                              <TableCell className="py-2 text-right text-xs">{formatCurrency(lot.investedAmount)}</TableCell>
+                              <TableCell className="hidden md:table-cell py-2 text-right text-xs">{formatCurrency(lot.investedAmount)}</TableCell>
                               <TableCell className="py-2 text-right text-xs text-green-600">+{formatCurrency(lot.accumulatedInterest)}</TableCell>
                               <TableCell className="py-2 text-right text-xs font-bold">{formatCurrency(lot.netValue)}</TableCell>
                             </TableRow>

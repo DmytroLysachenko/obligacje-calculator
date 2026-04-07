@@ -24,37 +24,37 @@ const ASSETS_METADATA: Record<string, AssetMetadata> = {
   sp500: {
     id: 'sp500',
     name: 'S&P 500 (Stocks)',
-    color: '#3b82f6',
+    color: '#3b82f6', // Blue (matches ROR)
     description: {
       en: '500 largest US companies. High growth, high volatility.',
-      pl: '500 najwiekszych spolek w USA. Wysoki wzrost, wysoka zmiennosc.',
+      pl: '500 największych spółek w USA. Wysoki wzrost, wysoka zmienność.',
     },
   },
   gold: {
     id: 'gold',
     name: 'Gold (XAU)',
-    color: '#f59e0b',
+    color: '#ec4899', // Pink (distinct)
     description: {
       en: 'Safe-haven asset. Protects purchasing power.',
-      pl: 'Aktywo "bezpieczna przystan". Chroni sile nabywcza.',
+      pl: 'Aktywo "bezpieczna przystań". Chroni siłę nabywczą.',
     },
   },
   bonds: {
     id: 'bonds',
     name: 'Bonds (EDO)',
-    color: '#10b981',
+    color: '#f59e0b', // Amber (matches EDO)
     description: {
       en: 'Inflation-indexed government bonds. Safe and steady.',
-      pl: 'Obligacje skarbowe indeksowane inflacja. Bezpieczne i stabilne.',
+      pl: 'Obligacje skarbowe indeksowane inflacją. Bezpieczne i stabilne.',
     },
   },
   savings: {
     id: 'savings',
     name: 'Savings Account',
-    color: '#94a3b8',
+    color: '#94a3b8', // Slate
     description: {
       en: 'Low-risk, low-reward cash account.',
-      pl: 'Niskie ryzyko, niski zysk. Konto oszczednosciowe.',
+      pl: 'Niskie ryzyko, niski zysk. Konto oszczędnościowe.',
     },
   },
 };
@@ -149,7 +149,6 @@ export function useMultiAssetComparison() {
   const purchasingPowerLoss = useMemo(() => {
     let cumulativeInflation = 1;
     let totalInvested = initialSum;
-    const realValueTotal = initialSum;
 
     for (const row of filteredData) {
       const monthlyInflation = (row.inflation || 0) / 100;

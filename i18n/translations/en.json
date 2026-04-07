@@ -274,8 +274,9 @@
       "nominal_val": "Nominal",
       "purchase_date": "Purchase Date",
       "current_yield": "Current Yield",
-    "detailed_soon": "Detailed analytics coming soon"
-    ,
+    "detailed_soon": "Detailed analytics coming soon",
+    "next_maturity": "Next Maturity",
+    "next_maturity_placeholder": "No lots",
     "load_error": "Could not load portfolios. Please try again later.",
     "create_error": "Could not create a portfolio right now. Please try again later.",
     "storage_unavailable": "Portfolio storage is temporarily unavailable.",

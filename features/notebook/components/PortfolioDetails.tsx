@@ -11,12 +11,15 @@ import {
   PieChart, 
   ArrowUpRight,
   Loader2,
-  ExternalLink
+  ExternalLink,
+  Plus
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { format } from 'date-fns';
+import { format, addDays, isAfter, parseISO } from 'date-fns';
+import { BOND_DEFINITIONS } from '@/features/bond-core/constants/bond-definitions';
+import { BondType } from '@/features/bond-core/types';
 
 interface PortfolioDetailsProps {
   portfolio: UserPortfolio;
@@ -32,9 +35,9 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
     setIsLoading(true);
     try {
       const response = await fetch(`/api/portfolio/lots?portfolioId=${portfolio.id}`);
+      const data = await response.json();
       if (response.ok) {
-        const data = await response.json();
-        setLots(Array.isArray(data) ? data : []);
+        setLots(Array.isArray(data.data) ? data.data : (Array.isArray(data) ? data : []));
       }
     } catch (err) {
       console.error('Failed to fetch lots:', err);
@@ -49,27 +52,46 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
 
   const totalValue = lots.reduce((acc, lot) => acc + (Number(lot.amount) * 100), 0);
 
+  const nextMaturity = lots.length > 0 ? lots.map(lot => {
+    const def = BOND_DEFINITIONS[lot.bondType as BondType];
+    if (!def) return null;
+    return {
+      date: addDays(parseISO(lot.purchaseDate), Math.round(def.duration * 365)),
+      lot
+    };
+  })
+  .filter(m => m !== null && isAfter(m.date, new Date()))
+  .sort((a, b) => a!.date.getTime() - b!.date.getTime())[0] : null;
+
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={onBack} className="rounded-full hover:bg-primary/10 hover:text-primary transition-colors">
-          <ArrowLeft className="h-6 w-6" />
-        </Button>
-        <div>
-          <h2 className="text-3xl font-black tracking-tight text-primary uppercase">{portfolio.name}</h2>
-          <p className="text-muted-foreground font-medium">{portfolio.description || t('notebook.portfolio_details')}</p>
+    <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 pb-20">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={onBack} className="rounded-full hover:bg-primary/10 hover:text-primary transition-colors">
+            <ArrowLeft className="h-6 w-6" />
+          </Button>
+          <div>
+            <h2 className="text-3xl font-black tracking-tight text-primary uppercase">{portfolio.name}</h2>
+            <p className="text-muted-foreground font-medium">{portfolio.description || t('notebook.portfolio_details')}</p>
+          </div>
+        </div>
+        <div className="flex gap-2">
+           <Button className="rounded-xl font-black gap-2 shadow-lg shadow-primary/20">
+             <Plus className="h-4 w-4" />
+             {t('notebook.add_lot')}
+           </Button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-primary text-white border-none shadow-xl shadow-primary/20 overflow-hidden relative">
-          <div className="absolute top-0 right-0 p-4 opacity-10">
+        <Card className="bg-primary text-white border-none shadow-xl shadow-primary/20 overflow-hidden relative group">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
             <TrendingUp className="h-24 w-24" />
           </div>
           <CardHeader className="pb-2">
             <CardDescription className="text-white/70 font-black uppercase text-[10px] tracking-widest">{t('notebook.total_invested')}</CardDescription>
             <CardTitle className="text-4xl font-black">
-              {new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', { style: 'currency', currency: 'PLN' }).format(totalValue)}
+              {new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', { style: 'currency', currency: 'PLN', maximumFractionDigits: 0 }).format(totalValue)}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -80,23 +102,29 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg border-primary/5">
+        <Card className="shadow-lg border-primary/5 relative overflow-hidden">
           <CardHeader className="pb-2">
             <CardDescription className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">{t('notebook.active_lots')}</CardDescription>
             <CardTitle className="text-4xl font-black text-slate-800">{lots.length}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-[10px] text-muted-foreground font-medium uppercase">{t('notebook.diversified')}</p>
+            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">
+              {lots.length > 0 ? t('notebook.diversified') : t('notebook.no_lots')}
+            </p>
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg border-primary/5">
+        <Card className="shadow-lg border-primary/5 bg-slate-50/50">
           <CardHeader className="pb-2">
-            <CardDescription className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">{t('notebook.est_profit')}</CardDescription>
-            <CardTitle className="text-4xl font-black text-green-600">{t('notebook.estimated_yield_placeholder')}</CardTitle>
+            <CardDescription className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">{t('notebook.next_maturity')}</CardDescription>
+            <CardTitle className="text-2xl font-black text-slate-800">
+              {nextMaturity ? format(nextMaturity.date, 'dd.MM.yyyy') : t('notebook.next_maturity_placeholder')}
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-[10px] text-muted-foreground font-medium uppercase">{t('notebook.weighted_yield')}</p>
+            <p className="text-[10px] text-primary font-black uppercase tracking-widest">
+              {nextMaturity ? nextMaturity.lot.bondType : '-'}
+            </p>
           </CardContent>
         </Card>
       </div>

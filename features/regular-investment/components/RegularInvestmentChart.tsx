@@ -22,8 +22,12 @@ import { format, parseISO } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { getBondColor } from '@/shared/constants/bond-colors';
+
 interface RegularInvestmentChartProps {
   results: RegularInvestmentResult;
+  bondType: string;
 }
 
 interface PayloadEntry {
@@ -43,16 +47,16 @@ interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
 const CustomTooltip = ({ active, payload, label, formatCurrency }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-popover border border-border p-3 shadow-xl rounded-none text-popover-foreground min-w-[150px]">
-        <p className="font-bold mb-2 border-b pb-1 border-border/50 text-xs">{label}</p>
-        <div className="space-y-1.5">
+      <div className="bg-popover border-2 border-border/50 p-4 shadow-2xl rounded-xl text-popover-foreground min-w-[200px] backdrop-blur-sm bg-opacity-95">
+        <p className="font-black text-xs uppercase tracking-widest mb-3 border-b pb-2 border-border/50">{label}</p>
+        <div className="space-y-2">
           {payload.map((entry, index) => (
             <div key={index} className="flex justify-between items-center gap-4 text-xs">
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1.5 font-medium">
                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
                 {entry.name}:
               </span>
-              <span className="font-mono font-bold">{formatCurrency(Number(entry.value))}</span>
+              <span className="font-mono font-black text-primary">{formatCurrency(Number(entry.value))}</span>
             </div>
           ))}
         </div>
@@ -62,15 +66,16 @@ const CustomTooltip = ({ active, payload, label, formatCurrency }: CustomTooltip
   return null;
 };
 
-export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ results }) => {
+export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ results, bondType }) => {
   const { t, language } = useLanguage();
+  const [view, setView] = React.useState<'nominal' | 'real'>('nominal');
   const dateLocale = language === 'pl' ? pl : enGB;
+  const primaryColor = getBondColor(bondType);
 
   const chartData = results.timeline.map((point) => ({
     date: format(parseISO(point.date), 'MM.yy', { locale: dateLocale }),
     invested: Number(point.totalInvested.toFixed(2)),
-    nominal: Number(point.nominalValue.toFixed(2)),
-    real: Number(point.realValue.toFixed(2)),
+    value: view === 'nominal' ? Number(point.nominalValue.toFixed(2)) : Number(point.realValue.toFixed(2)),
   }));
 
   const formatCurrency = (value: number) => 
@@ -81,74 +86,71 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ 
     }).format(value);
 
   return (
-    <ChartContainer height={450}>
-      <ResponsiveContainer width="100%" height={450} key={`chart-${chartData.length}`}>
-        <AreaChart
-          data={chartData}
-          margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
-        >
-          <defs>
-            <linearGradient id="colorInvested" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.15}/>
-              <stop offset="95%" stopColor="#94a3b8" stopOpacity={0}/>
-            </linearGradient>
-            <linearGradient id="colorNominal" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.15}/>
-              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-            </linearGradient>
-            <linearGradient id="colorReal" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#10b981" stopOpacity={0.15}/>
-              <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-            </linearGradient>
-          </defs>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
-          <XAxis 
-            dataKey="date" 
-            tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
-            tickLine={false}
-            axisLine={false}
-            dy={10}
-          />
-          <YAxis 
-            tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
-            tickLine={false}
-            axisLine={false}
-            tickFormatter={(value: number) => `${(value / 1000).toFixed(0)}k`}
-          />
-          <Tooltip content={<CustomTooltip formatCurrency={formatCurrency} />} />
-          <Legend verticalAlign="top" align="right" height={40} iconType="circle" wrapperStyle={{ fontSize: '12px', fontWeight: '500' }} />
-          <Area
-            type="monotone"
-            dataKey="invested"
-            name={t('bonds.total_invested')}
-            stroke="#94a3b8"
-            strokeWidth={3}
-            fillOpacity={1}
-            fill="url(#colorInvested)"
-            animationDuration={1500}
-          />
-          <Area
-            type="monotone"
-            dataKey="nominal"
-            name={t('common.nominal_value')}
-            stroke="#3b82f6"
-            strokeWidth={3}
-            fillOpacity={1}
-            fill="url(#colorNominal)"
-            animationDuration={1500}
-          />
-          <Area
-            type="monotone"
-            dataKey="real"
-            name={t('common.real_value')}
-            stroke="#10b981"
-            strokeWidth={3}
-            fillOpacity={1}
-            fill="url(#colorReal)"
-            animationDuration={1500}
-          />
-        </AreaChart>
-      </ResponsiveContainer>
-    </ChartContainer>
+    <div className="space-y-6">
+      <div className="flex justify-center">
+        <Tabs value={view} onValueChange={(v) => setView(v as 'nominal' | 'real')} className="w-fit p-1 bg-muted/50 rounded-xl">
+          <TabsList className="grid w-full grid-cols-2 h-10">
+            <TabsTrigger value="nominal" className="text-[10px] font-black uppercase tracking-widest px-6">{t('common.nominal_value')}</TabsTrigger>
+            <TabsTrigger value="real" className="text-[10px] font-black uppercase tracking-widest px-6">{t('common.real_value')}</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+
+      <ChartContainer height={450}>
+        <ResponsiveContainer width="100%" height={450} key={`chart-${chartData.length}-${view}`}>
+          <AreaChart
+            data={chartData}
+            margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
+          >
+            <defs>
+              <linearGradient id="colorInvested" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.15}/>
+                <stop offset="95%" stopColor="#94a3b8" stopOpacity={0}/>
+              </linearGradient>
+              <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={primaryColor} stopOpacity={0.15}/>
+                <stop offset="95%" stopColor={primaryColor} stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+            <XAxis 
+              dataKey="date" 
+              tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))', fontWeight: 'bold' }}
+              tickLine={false}
+              axisLine={false}
+              dy={10}
+            />
+            <YAxis 
+              tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))', fontWeight: 'bold' }}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value: number) => `${(value / 1000).toFixed(0)}k`}
+            />
+            <Tooltip content={<CustomTooltip formatCurrency={formatCurrency} />} />
+            <Legend verticalAlign="top" align="right" height={40} iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 'black', textTransform: 'uppercase', letterSpacing: '0.05em' }} />
+            <Area
+              type="monotone"
+              dataKey="invested"
+              name={t('bonds.total_invested')}
+              stroke="#94a3b8"
+              strokeWidth={3}
+              fillOpacity={1}
+              fill="url(#colorInvested)"
+              animationDuration={1500}
+            />
+            <Area
+              type="monotone"
+              dataKey="value"
+              name={view === 'nominal' ? t('common.nominal_value') : t('common.real_value')}
+              stroke={primaryColor}
+              strokeWidth={4}
+              fillOpacity={1}
+              fill="url(#colorValue)"
+              animationDuration={1500}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </ChartContainer>
+    </div>
   );
 };
