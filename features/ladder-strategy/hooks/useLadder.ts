@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { BondType, RegularInvestmentInputs, InvestmentFrequency, TaxStrategy } from '../../bond-core/types';
 import { RegularInvestmentCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
+import { useDebounce } from '@/shared/hooks/useDebounce';
 
 const DEFAULT_BOND = BondType.EDO;
 const def = BOND_DEFINITIONS[DEFAULT_BOND];
@@ -54,10 +55,12 @@ export function useLadder() {
     }
   }, [inputs, post]);
 
-  // Initial calculation - REMOVED to prevent excessive requests on remount
-  // useEffect(() => {
-  //   calculate();
-  // }, []);
+  const debouncedInputs = useDebounce(inputs, 300);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    calculate();
+  }, [debouncedInputs, calculate]);
 
   const updateInput = (key: keyof RegularInvestmentInputs, value: string | number | boolean | undefined) => {
     setIsDirty(true);

@@ -31,10 +31,10 @@ import { addYears } from "date-fns";
 import { Loader2, ArrowRightLeft, TrendingUp } from "lucide-react";
 import { useLanguage } from "@/i18n";
 import { cn } from "@/lib/utils";
-import { RecalculateButton } from "@/shared/components/RecalculateButton";
 import { ChartContainer } from "@/shared/components/charts/ChartContainer";
 import { CalculationMetaPanel } from "@/shared/components/CalculationMetaPanel";
 import { BondComparisonCalculationEnvelope } from "@/features/bond-core/types/scenarios";
+import { useDebounce } from "@/shared/hooks/useDebounce";
 
 type ComparisonResultItem = BondComparisonCalculationEnvelope["result"][number];
 type ChartDataPoint = {
@@ -89,10 +89,12 @@ export const BondComparisonContainer = () => {
     }
   }, [selectedBonds, initialInvestment, purchaseDate, withdrawalDate, expectedInflation, reinvest]);
 
-  // Only run once on mount
+  const debouncedInputs = useDebounce({ selectedBonds, initialInvestment, purchaseDate, withdrawalDate, expectedInflation, reinvest }, 300);
+
+  // Auto calculate on debounced inputs change
   useEffect(() => {
     calculateComparison();
-  }, [calculateComparison]);
+  }, [debouncedInputs, calculateComparison]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && isDirty) {
@@ -357,12 +359,6 @@ const formatCurrency = (val: number) =>
         calculationNotes={calculationNotes}
         dataQualityFlags={dataQualityFlags}
         dataFreshness={envelope?.dataFreshness}
-      />
-
-      <RecalculateButton 
-        isDirty={isDirty}
-        loading={loading}
-        onClick={calculateComparison}
       />
     </div>
   );

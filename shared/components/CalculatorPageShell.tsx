@@ -5,7 +5,6 @@ import { useLanguage } from '@/i18n';
 import { 
   Share2, 
   Check, 
-  Info, 
   Loader2, 
   Target, 
   Trophy,
@@ -38,7 +37,6 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
   icon,
   children,
   isCalculating,
-  isDirty,
   isError,
   hasResults,
   onShare,
@@ -88,13 +86,7 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
                 {t('common.calculating')}
               </span>
             )}
-            {!isCalculating && isDirty && hasResults && (
-              <span className="text-xs text-orange-600 flex items-center gap-1 animate-in fade-in duration-500 font-bold bg-orange-50 px-3 py-1.5 rounded-full border border-orange-100">
-                <Info className="h-3 w-3" />
-                {t('comparison.needs_recalculation')}
-              </span>
-            )}
-            {!isCalculating && !isDirty && hasResults && (
+            {!isCalculating && hasResults && (
               <span className="text-xs text-green-600 flex items-center gap-1 animate-in fade-in duration-500 font-bold bg-green-50 px-3 py-1.5 rounded-full border border-green-100">
                 <Check className="h-3 w-3" />
                 {t('comparison.up_to_date')}

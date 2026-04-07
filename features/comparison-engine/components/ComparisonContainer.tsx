@@ -14,7 +14,6 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Loader2, Scale, History, Target, LineChart } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { RecalculateButton } from "@/shared/components/RecalculateButton";
 import { ChartContainer } from "@/shared/components/charts/ChartContainer";
 import { CalculationMetaPanel } from "@/shared/components/CalculationMetaPanel";
 import { CalculatorPageShell } from "@/shared/components/CalculatorPageShell";
@@ -636,7 +635,6 @@ export const ComparisonContainer: React.FC = () => {
             </div>
           </div>
 
-          <RecalculateButton isDirty={isDirty} loading={isCalculating} onClick={() => calculate()} />
         </>
       )}
     </CalculatorPageShell>

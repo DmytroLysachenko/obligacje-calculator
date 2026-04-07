@@ -6,8 +6,7 @@ import { RegularInvestmentInputsForm } from '../../regular-investment/components
 import { RegularInvestmentResultsSummary } from '../../regular-investment/components/RegularInvestmentResultsSummary';
 import { LadderTimeline } from './LadderTimeline';
 import { useLanguage } from '@/i18n';
-import { Layers, Loader2, Activity, Target } from 'lucide-react';
-import { RecalculateButton } from '@/shared/components/RecalculateButton';
+import { Layers, Loader2, Activity } from 'lucide-react';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
 import { cn } from '@/lib/utils';
@@ -81,12 +80,6 @@ export const LadderContainer: React.FC = () => {
           )}
         </div>
       </div>
-
-      <RecalculateButton 
-        isDirty={isDirty}
-        loading={isCalculating}
-        onClick={() => calculate()}
-      />
     </CalculatorPageShell>
   );
 };
