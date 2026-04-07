@@ -52,7 +52,7 @@ export const BondInputsSchema = withDateOrderValidation(BaseInstrumentInputsSche
 export const RegularInvestmentInputsSchema = withDateOrderValidation(DateRangeInputsSchema.extend({
   contributionAmount: z.number().min(100),
   frequency: z.nativeEnum(InvestmentFrequency),
-  totalHorizon: z.number().min(1).max(50),
+  investmentHorizonMonths: z.number().min(1).max(600),
   bondType: z.nativeEnum(BondType),
   firstYearRate: z.number().min(0).max(100),
   expectedInflation: z.number().min(-20).max(100),
@@ -69,7 +69,6 @@ export const RegularInvestmentInputsSchema = withDateOrderValidation(DateRangeIn
   savingsGoal: z.number().optional(),
   historicalData: HistoricalDataMapSchema,
   timingMode: z.enum(['general', 'exact']).optional(),
-  investmentHorizonMonths: z.number().min(1).max(600).optional(),
 }));
 
 const NormalizedBondComparisonPayloadSchema = withDateOrderValidation(z.object({

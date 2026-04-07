@@ -201,15 +201,15 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
                       <div className="flex justify-between items-center">
                         <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{t('bonds.investment_horizon')}</Label>
                         <span className="text-xl font-black text-primary">
-                          {inputs?.totalHorizon ?? 5} {t('common.years')}
+                          {Math.round((inputs?.investmentHorizonMonths ?? 60) / 12)} {t('common.years')}
                         </span>
-                      </div>
-                      <Slider
-                        value={[inputs?.totalHorizon ?? 5]}
+                        </div>
+                        <Slider
+                        value={[Math.round((inputs?.investmentHorizonMonths ?? 60) / 12)]}
                         min={1}
                         max={30}
                         step={1}
-                        onValueChange={([v]) => updateHorizon?.(v)}
+                        onValueChange={([val]) => updateHorizon?.(val * 12)}
                       />
                     </div>
                   </>

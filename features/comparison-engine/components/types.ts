@@ -19,7 +19,7 @@ export interface ComparisonControlsProps {
     timingMode?: 'general' | 'exact';
     purchaseDate?: string;
     withdrawalDate?: string;
-    totalHorizon?: number;
+    investmentHorizonMonths?: number;
   };
   updateTimingMode?: (val: 'general' | 'exact') => void;
   updatePurchaseDate?: (val: string) => void;

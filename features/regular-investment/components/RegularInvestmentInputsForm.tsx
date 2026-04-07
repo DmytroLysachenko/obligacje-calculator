@@ -386,7 +386,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
 
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <Label htmlFor="totalHorizon" className="font-semibold">
+            <Label htmlFor="investmentHorizonMonths" className="font-semibold">
               {t('bonds.investment_horizon')}
             </Label>
             <TooltipProvider>
@@ -411,15 +411,15 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
           ) : (
             <div className="flex items-center gap-4">
               <Slider 
-                value={[inputs.totalHorizon]} 
+                value={[investmentHorizonYears]} 
                 min={1} 
                 max={30} 
                 step={1} 
-                onValueChange={([val]) => onUpdate('totalHorizon', val)}
+                onValueChange={([val]) => onUpdate('investmentHorizonMonths', val * 12)}
                 className="flex-1"
               />
               <span className="text-lg font-bold min-w-[3rem] text-center">
-                {inputs.totalHorizon}
+                {Math.round(investmentHorizonYears)}
               </span>
               <span className="text-sm text-muted-foreground">{t('common.years')}</span>
             </div>

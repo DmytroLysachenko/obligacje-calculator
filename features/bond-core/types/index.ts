@@ -120,7 +120,7 @@ export enum InvestmentFrequency {
 export interface RegularInvestmentInputs extends Omit<BondInputs, 'initialInvestment'> {
   contributionAmount: number;
   frequency: InvestmentFrequency;
-  totalHorizon: number; // in years
+  investmentHorizonMonths: number;
   showRealValue?: boolean;
 }
 

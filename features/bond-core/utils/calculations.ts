@@ -458,7 +458,7 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
   const {
     contributionAmount,
     frequency,
-    totalHorizon,
+    investmentHorizonMonths,
     bondType,
     firstYearRate,
     expectedInflation,
@@ -477,7 +477,7 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
   const bondDef = BOND_DEFINITIONS[bondType];
   const nominalValue = bondDef?.nominalValue ?? 100;
 
-  const totalMonths = totalHorizon * 12;
+  const totalMonths = investmentHorizonMonths;
   const interval = frequency === InvestmentFrequency.MONTHLY ? 1 : 
                    frequency === InvestmentFrequency.QUARTERLY ? 3 : 12;
 
@@ -685,5 +685,5 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
     if (isWithdrawalStep) break;
   }
 
-  return createRegularInvestmentResult(totalInvested, totalHorizon, timeline, lots);
+  return createRegularInvestmentResult(totalInvested, investmentHorizonMonths / 12, timeline, lots);
 }

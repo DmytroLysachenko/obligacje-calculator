@@ -18,7 +18,7 @@ const DEFAULT_INPUTS: RegularInvestmentInputs = {
   bondType: DEFAULT_BOND,
   contributionAmount: 1000,
   frequency: InvestmentFrequency.MONTHLY,
-  totalHorizon: defaultHorizonYears,
+  investmentHorizonMonths: defaultHorizonYears * 12,
   firstYearRate: def.firstYearRate,
   expectedInflation: 3.5,
   expectedNbpRate: 5.25,
@@ -34,7 +34,6 @@ const DEFAULT_INPUTS: RegularInvestmentInputs = {
   rebuyDiscount: def.rebuyDiscount,
   taxStrategy: TaxStrategy.STANDARD,
   timingMode: 'general',
-  investmentHorizonMonths: defaultHorizonMonths,
 };
 
 export function useRegularInvestmentCalculator() {
@@ -72,8 +71,8 @@ export function useRegularInvestmentCalculator() {
     setInputs((prev) => {
       const newInputs = { ...prev, [key]: value };
 
-      if (key === 'totalHorizon') {
-        const months = Number(value) * 12;
+      if (key === 'investmentHorizonMonths') {
+        const months = Number(value);
         newInputs.investmentHorizonMonths = months;
         newInputs.withdrawalDate = getWithdrawalDateFromMonths(prev.purchaseDate, months);
       }
@@ -86,21 +85,12 @@ export function useRegularInvestmentCalculator() {
       if (key === 'withdrawalDate') {
         const months = getHorizonMonths(prev.purchaseDate, String(value));
         newInputs.investmentHorizonMonths = months;
-        newInputs.totalHorizon = Math.max(1, Math.round(months / 12));
         newInputs.timingMode = 'exact';
-      }
-
-      if (key === 'investmentHorizonMonths') {
-        const months = Number(value);
-        newInputs.investmentHorizonMonths = months;
-        newInputs.totalHorizon = Math.max(1, Math.round(months / 12));
-        newInputs.withdrawalDate = getWithdrawalDateFromMonths(prev.purchaseDate, months);
       }
 
       if (key === 'timingMode' && value === 'general') {
         const months = prev.investmentHorizonMonths ?? getHorizonMonths(prev.purchaseDate, prev.withdrawalDate);
         newInputs.investmentHorizonMonths = months;
-        newInputs.totalHorizon = Math.max(1, Math.round(months / 12));
         newInputs.withdrawalDate = getWithdrawalDateFromMonths(prev.purchaseDate, months);
       }
       

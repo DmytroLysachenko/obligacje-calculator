@@ -110,7 +110,7 @@ describe('Bond Calculations Engine (Modular)', () => {
       const inputs = {
         contributionAmount: 1000,
         frequency: InvestmentFrequency.MONTHLY,
-        totalHorizon: 1,
+        investmentHorizonMonths: 12,
         bondType: BondType.OTS,
         firstYearRate: 3.0,
         expectedInflation: 2.0,
@@ -139,7 +139,7 @@ describe('Bond Calculations Engine (Modular)', () => {
         ...baseInputs,
         contributionAmount: 1000,
         frequency: InvestmentFrequency.QUARTERLY,
-        totalHorizon: 1,
+        investmentHorizonMonths: 12,
         purchaseDate: '2024-01-01',
         withdrawalDate: '2025-01-01',
       };
