@@ -19,6 +19,7 @@ export interface BondDefinition {
   margin: number; // %
   earlyWithdrawalFee: number; // PLN per bond
   isInflationIndexed: boolean;
+  isFloating: boolean;
   isFamilyOnly?: boolean;
   rebuyDiscount: number; // PLN discount per 100 PLN bond when swapping
 }
@@ -43,6 +44,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     margin: 0,
     earlyWithdrawalFee: 0,
     isInflationIndexed: false,
+    isFloating: false,
     rebuyDiscount: 0.00,
   },
   [BondType.ROR]: {
@@ -64,6 +66,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     margin: 0,
     earlyWithdrawalFee: 0.50,
     isInflationIndexed: false,
+    isFloating: true,
     rebuyDiscount: 0.10,
   },
   [BondType.DOR]: {
@@ -85,6 +88,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     margin: 0.15,
     earlyWithdrawalFee: 0.70,
     isInflationIndexed: false,
+    isFloating: true,
     rebuyDiscount: 0.10,
   },
   [BondType.TOS]: {
@@ -106,6 +110,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     margin: 0,
     earlyWithdrawalFee: 1.00,
     isInflationIndexed: false,
+    isFloating: false,
     rebuyDiscount: 0.10,
   },
   [BondType.COI]: {
@@ -127,6 +132,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     margin: 1.50,
     earlyWithdrawalFee: 2.00,
     isInflationIndexed: true,
+    isFloating: false,
     rebuyDiscount: 0.10,
   },
   [BondType.ROS]: {
@@ -148,6 +154,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     margin: 2.00,
     earlyWithdrawalFee: 2.00,
     isInflationIndexed: true,
+    isFloating: false,
     isFamilyOnly: true,
     rebuyDiscount: 0.00,
   },
@@ -170,6 +177,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     margin: 2.00,
     earlyWithdrawalFee: 3.00,
     isInflationIndexed: true,
+    isFloating: false,
     rebuyDiscount: 0.10,
   },
   [BondType.ROD]: {
@@ -191,6 +199,7 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     margin: 2.50,
     earlyWithdrawalFee: 3.00,
     isInflationIndexed: true,
+    isFloating: false,
     isFamilyOnly: true,
     rebuyDiscount: 0.00,
   },

@@ -10,6 +10,7 @@
     "test": "vitest",
     "test:ci": "vitest run",
     "test:core": "vitest run features/bond-core",
+    "db:seed": "tsx db/seed.ts",
     "seed:series": "tsx lib/sync/seed-series-runner.ts",
     "seed:market-history": "tsx lib/sync/seed-market-history.ts",
     "db:seed:production": "tsx lib/sync/seed-production-bonds.ts && tsx lib/sync/seed-production-data.ts",

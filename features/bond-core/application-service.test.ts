@@ -11,6 +11,7 @@ vi.mock('@/lib/data-access', () => ({
     '2023-03': { inflation: 16.1, nbpRate: 6.75 },
   }),
   getBondDefinitions: vi.fn().mockResolvedValue([]),
+  getBondDefinitionsMap: vi.fn().mockResolvedValue({}),
   getGlobalDataFreshness: vi.fn().mockResolvedValue({ status: 'fresh', usedFallback: false }),
 }));
 

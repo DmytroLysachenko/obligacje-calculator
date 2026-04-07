@@ -118,6 +118,8 @@ export interface IndependentBondComparisonPayload {
   };
   scenarioA: {
     bondType: BondType;
+    firstYearRate?: number;
+    margin?: number;
     rollover?: boolean;
     isRebought?: boolean;
     taxStrategy?: TaxStrategy;
@@ -128,6 +130,8 @@ export interface IndependentBondComparisonPayload {
   };
   scenarioB: {
     bondType: BondType;
+    firstYearRate?: number;
+    margin?: number;
     rollover?: boolean;
     isRebought?: boolean;
     taxStrategy?: TaxStrategy;

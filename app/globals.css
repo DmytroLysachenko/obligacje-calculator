@@ -96,6 +96,21 @@
   }
 }
 
+@layer utilities {
+  .financial-positive {
+    @apply text-emerald-600 font-bold;
+  }
+  .financial-negative {
+    @apply text-red-600 font-bold;
+  }
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-xl;
+  }
+  .animate-in-fade {
+    @apply animate-in fade-in duration-700;
+  }
+}
+
 @media print {
   aside, 
   button, 

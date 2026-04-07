@@ -142,28 +142,48 @@ export const getIndicatorHistory = cache(async (slug: string, fromDate: string, 
   });
 });
 
-import { BondType } from "@/features/bond-core/types";
+import { BondDefinition, BOND_DEFINITIONS } from "@/features/bond-core/constants/bond-definitions";
+import { BondType, InterestPayout } from "@/features/bond-core/types";
 
 /**
  * Fetches all bond definitions from the database and maps them to BondDefinition interface.
  */
-export const getBondDefinitions = cache(async () => {
+export const getBondDefinitions = cache(async (): Promise<BondDefinition[]> => {
   const bonds = await db.query.polishBonds.findMany();
   
-  return bonds.map(b => ({
-    type: b.symbol as BondType,
-    name: b.symbol,
-    duration: b.durationDays / 365,
-    nominalValue: parseFloat(b.nominalValue || "100"),
-    isCapitalized: (b.capitalizationFreqDays || 0) > 0,
-    payoutFrequency: (b.payoutFreqDays || 0) === 30 ? "monthly" : (b.payoutFreqDays || 0) === 365 ? "yearly" : "maturity",
-    firstYearRate: parseFloat(b.firstYearRate || "0"),
-    margin: parseFloat(b.baseMargin || "0"),
-    earlyWithdrawalFee: parseFloat(b.withdrawalFee || "0"),
-    isInflationIndexed: b.interestType === "inflation_linked",
-    isFamilyOnly: b.isFamilyOnly,
-    rebuyDiscount: parseFloat(b.rolloverDiscount || "0"),
-  }));
+  return bonds.map(b => {
+    const symbol = b.symbol as BondType;
+    const fallback = BOND_DEFINITIONS[symbol];
+    
+    return {
+      type: symbol,
+      name: b.symbol,
+      fullName: {
+        pl: b.fullName,
+        en: fallback?.fullName.en || b.fullName,
+      },
+      description: fallback?.description || { pl: '', en: '' },
+      duration: b.durationDays / 365,
+      nominalValue: parseFloat(b.nominalValue || "100"),
+      isCapitalized: (b.capitalizationFreqDays || 0) > 0,
+      payoutFrequency: (b.payoutFreqDays || 0) === 30 ? InterestPayout.MONTHLY : (b.payoutFreqDays || 0) === 365 ? InterestPayout.YEARLY : InterestPayout.MATURITY,
+      firstYearRate: parseFloat(b.firstYearRate || "0"),
+      margin: parseFloat(b.baseMargin || "0"),
+      earlyWithdrawalFee: parseFloat(b.withdrawalFee || "0"),
+      isInflationIndexed: b.interestType === "inflation_linked",
+      isFloating: b.interestType === "floating_nbp",
+      isFamilyOnly: b.isFamilyOnly || false,
+      rebuyDiscount: parseFloat(b.rolloverDiscount || "0"),
+    };
+  });
+});
+
+export const getBondDefinitionsMap = cache(async (): Promise<Record<BondType, BondDefinition>> => {
+  const defs = await getBondDefinitions();
+  return defs.reduce((acc, def) => {
+    acc[def.type] = def;
+    return acc;
+  }, {} as Record<BondType, BondDefinition>);
 });
 
 const getSeriesPointsByAliases = async (aliases: string[], fromDate: string, toDate: string) => {

@@ -20,11 +20,11 @@ import {
   BondComparisonScenarioRequestSchema 
 } from './types/schemas';
 import { calculateBondInvestment, calculateRegularInvestment } from './utils/calculations';
-import { getHistoricalDataMap, getGlobalDataFreshness } from '@/lib/data-access';
-import { BondInputs, TaxStrategy } from './types';
-import { BOND_DEFINITIONS } from './constants/bond-definitions';
+import { getHistoricalDataMap, getGlobalDataFreshness, getBondDefinitionsMap } from '@/lib/data-access';
+import { BondInputs, BondType, TaxStrategy } from './types';
+import { BOND_DEFINITIONS, BondDefinition } from './constants/bond-definitions';
 import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
-import { addMonths, format, subMonths, parseISO, isBefore, isSameDay } from 'date-fns';
+import { addMonths, format, subMonths, parseISO, isBefore } from 'date-fns';
 
 export const MODEL_VERSION = '2.2.0-portfolio-production-ready';
 
@@ -35,21 +35,22 @@ export class CalculationApplicationService {
   async calculate(request: CalculationScenarioRequest): Promise<CalculationEnvelope<unknown>> {
     const startTime = performance.now();
     const dataFreshness = await getGlobalDataFreshness();
+    const dbDefinitions = await getBondDefinitionsMap();
     
     try {
       let response: CalculationEnvelope<unknown>;
       switch (request.kind) {
         case ScenarioKind.SINGLE_BOND:
-          response = await this.calculateSingleBond(request.payload, dataFreshness);
+          response = await this.calculateSingleBond(request.payload, dataFreshness, dbDefinitions);
           break;
         case ScenarioKind.REGULAR_INVESTMENT:
-          response = await this.calculateRegularInvestment(request.payload, dataFreshness);
+          response = await this.calculateRegularInvestment(request.payload, dataFreshness, dbDefinitions);
           break;
         case ScenarioKind.BOND_COMPARISON:
-          response = await this.calculateComparison(request.payload, dataFreshness);
+          response = await this.calculateComparison(request.payload, dataFreshness, dbDefinitions);
           break;
         case ScenarioKind.PORTFOLIO_SIMULATION:
-          response = await this.calculatePortfolioSimulation(request.payload, dataFreshness);
+          response = await this.calculatePortfolioSimulation(request.payload, dataFreshness, dbDefinitions);
           break;
         default:
           throw new Error('Unsupported scenario kind');
@@ -67,7 +68,8 @@ export class CalculationApplicationService {
 
   private async calculatePortfolioSimulation(
     payload: PortfolioSimulationPayload,
-    dataFreshness: CalculationDataFreshness
+    dataFreshness: CalculationDataFreshness,
+    dbDefinitions: Record<BondType, BondDefinition>
   ): Promise<PortfolioSimulationCalculationEnvelope> {
     const items: PortfolioSimulationItem[] = [];
     const allHistoricalData = await this.withHistoricalData({
@@ -76,7 +78,7 @@ export class CalculationApplicationService {
     });
 
     for (const inv of payload.investments) {
-      const def = BOND_DEFINITIONS[inv.bondType];
+      const def = dbDefinitions[inv.bondType] || BOND_DEFINITIONS[inv.bondType];
       const result = calculateBondInvestment({
         bondType: inv.bondType,
         initialInvestment: inv.amount,
@@ -155,9 +157,22 @@ export class CalculationApplicationService {
     return this.createEnvelope(result, [], [], dataFreshness);
   }
 
-  private async calculateSingleBond(input: unknown, dataFreshness: CalculationDataFreshness): Promise<SingleBondCalculationEnvelope> {
+  private async calculateSingleBond(
+    input: unknown, 
+    dataFreshness: CalculationDataFreshness,
+    dbDefinitions: Record<BondType, BondDefinition>
+  ): Promise<SingleBondCalculationEnvelope> {
     const validatedInputs = BondInputsSchema.parse(input);
-    const enrichedInputs = await this.withHistoricalData(validatedInputs);
+    const def = dbDefinitions[validatedInputs.bondType] || BOND_DEFINITIONS[validatedInputs.bondType];
+    
+    // Inject DB values if missing in inputs
+    const inputsWithDefaults = {
+      ...validatedInputs,
+      firstYearRate: validatedInputs.firstYearRate ?? def.firstYearRate,
+      margin: validatedInputs.margin ?? def.margin,
+    };
+
+    const enrichedInputs = await this.withHistoricalData(inputsWithDefaults);
     const warnings = this.buildHistoricalDataWarnings(enrichedInputs.historicalData);
     const assumptions = this.generateAssumptions(enrichedInputs);
 
@@ -169,9 +184,21 @@ export class CalculationApplicationService {
     return this.createEnvelope(result, warnings, assumptions, dataFreshness);
   }
 
-  private async calculateRegularInvestment(input: unknown, dataFreshness: CalculationDataFreshness): Promise<RegularInvestmentCalculationEnvelope> {
+  private async calculateRegularInvestment(
+    input: unknown, 
+    dataFreshness: CalculationDataFreshness,
+    dbDefinitions: Record<BondType, BondDefinition>
+  ): Promise<RegularInvestmentCalculationEnvelope> {
     const validatedInputs = RegularInvestmentInputsSchema.parse(input);
-    const enrichedInputs = await this.withHistoricalData(validatedInputs);
+    const def = dbDefinitions[validatedInputs.bondType] || BOND_DEFINITIONS[validatedInputs.bondType];
+
+    const inputsWithDefaults = {
+      ...validatedInputs,
+      firstYearRate: validatedInputs.firstYearRate ?? def.firstYearRate,
+      margin: validatedInputs.margin ?? def.margin,
+    };
+
+    const enrichedInputs = await this.withHistoricalData(inputsWithDefaults);
     const warnings = this.buildHistoricalDataWarnings(enrichedInputs.historicalData);
     const assumptions = this.generateAssumptions(enrichedInputs);
 
@@ -180,36 +207,44 @@ export class CalculationApplicationService {
     return this.createEnvelope(result, warnings, assumptions, dataFreshness);
   }
 
-  private async calculateComparison(input: unknown, dataFreshness: CalculationDataFreshness): Promise<BondComparisonCalculationEnvelope> {
+  private async calculateComparison(
+    input: unknown, 
+    dataFreshness: CalculationDataFreshness,
+    dbDefinitions: Record<BondType, BondDefinition>
+  ): Promise<BondComparisonCalculationEnvelope> {
     const request = BondComparisonScenarioRequestSchema.parse({
       kind: ScenarioKind.BOND_COMPARISON,
       payload: input,
     });
 
     if (request.payload.mode === 'independent') {
-      return this.calculateIndependentComparison(request.payload, dataFreshness);
+      return this.calculateIndependentComparison(request.payload, dataFreshness, dbDefinitions);
     }
 
-    return this.calculateNormalizedComparison(request.payload, dataFreshness);
+    return this.calculateNormalizedComparison(request.payload, dataFreshness, dbDefinitions);
   }
 
   private async calculateNormalizedComparison(
     payload: NormalizedBondComparisonPayload,
-    dataFreshness: CalculationDataFreshness
+    dataFreshness: CalculationDataFreshness,
+    dbDefinitions: Record<BondType, BondDefinition>
   ): Promise<BondComparisonCalculationEnvelope> {
-    const scenarioInputs = this.buildComparisonScenarioInputs(payload);
+    const scenarioInputs = this.buildComparisonScenarioInputs(payload, dbDefinitions);
     const enrichedScenarios = await Promise.all(
       scenarioInputs.map((scenarioInput) => this.withHistoricalData(scenarioInput))
     );
 
-    const results = enrichedScenarios.map((enrichedInputs): BondComparisonScenarioItem => ({
-      type: enrichedInputs.bondType,
-      name: BOND_DEFINITIONS[enrichedInputs.bondType].fullName.en,
-      result: calculateBondInvestment({
-        ...enrichedInputs,
-        rollover: payload.reinvest ?? true,
-      }),
-    }));
+    const results = enrichedScenarios.map((enrichedInputs): BondComparisonScenarioItem => {
+      const def = dbDefinitions[enrichedInputs.bondType] || BOND_DEFINITIONS[enrichedInputs.bondType];
+      return {
+        type: enrichedInputs.bondType,
+        name: def.fullName.en,
+        result: calculateBondInvestment({
+          ...enrichedInputs,
+          rollover: payload.reinvest ?? true,
+        }),
+      };
+    });
 
     const warnings = this.collectHistoricalWarnings(enrichedScenarios.map((scenario) => scenario.historicalData));
     const assumptions = this.generateAssumptions(payload);
@@ -220,18 +255,19 @@ export class CalculationApplicationService {
 
   private async calculateIndependentComparison(
     payload: IndependentBondComparisonPayload,
-    dataFreshness: CalculationDataFreshness
+    dataFreshness: CalculationDataFreshness,
+    dbDefinitions: Record<BondType, BondDefinition>
   ): Promise<BondComparisonCalculationEnvelope> {
     const [scenarioA, scenarioB] = await Promise.all([
-      this.withHistoricalData(this.buildIndependentScenarioInputs(payload.sharedConfig, payload.scenarioA)),
-      this.withHistoricalData(this.buildIndependentScenarioInputs(payload.sharedConfig, payload.scenarioB)),
+      this.withHistoricalData(this.buildIndependentScenarioInputs(payload.sharedConfig, payload.scenarioA, dbDefinitions)),
+      this.withHistoricalData(this.buildIndependentScenarioInputs(payload.sharedConfig, payload.scenarioB, dbDefinitions)),
     ]);
 
     const results: BondComparisonScenarioItem[] = [
       {
         scenarioKey: 'scenarioA',
         type: scenarioA.bondType,
-        name: BOND_DEFINITIONS[scenarioA.bondType].fullName.en,
+        name: (dbDefinitions[scenarioA.bondType] || BOND_DEFINITIONS[scenarioA.bondType]).fullName.en,
         result: calculateBondInvestment({
           ...scenarioA,
           rollover: scenarioA.rollover ?? false,
@@ -240,7 +276,7 @@ export class CalculationApplicationService {
       {
         scenarioKey: 'scenarioB',
         type: scenarioB.bondType,
-        name: BOND_DEFINITIONS[scenarioB.bondType].fullName.en,
+        name: (dbDefinitions[scenarioB.bondType] || BOND_DEFINITIONS[scenarioB.bondType]).fullName.en,
         result: calculateBondInvestment({
           ...scenarioB,
           rollover: scenarioB.rollover ?? false,
@@ -343,26 +379,29 @@ export class CalculationApplicationService {
     return this.generateAssumptions(inputs).map((assumption) => `${label}: ${assumption}`);
   }
 
-  private buildComparisonScenarioInputs(request: NormalizedBondComparisonPayload): BondInputs[] {
+  private buildComparisonScenarioInputs(
+    request: NormalizedBondComparisonPayload,
+    dbDefinitions: Record<BondType, BondDefinition>
+  ): BondInputs[] {
     return request.bondTypes.map((type) => {
-      const definition = BOND_DEFINITIONS[type];
+      const def = dbDefinitions[type] || BOND_DEFINITIONS[type];
 
       return {
         bondType: type,
         initialInvestment: request.initialInvestment,
-        firstYearRate: definition.firstYearRate,
+        firstYearRate: def.firstYearRate,
         expectedInflation: request.expectedInflation,
         expectedNbpRate: request.expectedNbpRate ?? 5.25,
-        margin: definition.margin,
-        duration: definition.duration,
-        earlyWithdrawalFee: definition.earlyWithdrawalFee,
+        margin: def.margin,
+        duration: def.duration,
+        earlyWithdrawalFee: def.earlyWithdrawalFee,
         taxRate: 19,
-        isCapitalized: definition.isCapitalized,
-        payoutFrequency: definition.payoutFrequency,
+        isCapitalized: def.isCapitalized,
+        payoutFrequency: def.payoutFrequency,
         purchaseDate: request.purchaseDate,
         withdrawalDate: request.withdrawalDate,
         isRebought: false,
-        rebuyDiscount: definition.rebuyDiscount,
+        rebuyDiscount: def.rebuyDiscount,
         taxStrategy: request.taxStrategy ?? TaxStrategy.STANDARD,
         timingMode: 'exact',
         investmentHorizonMonths: undefined,
@@ -373,8 +412,9 @@ export class CalculationApplicationService {
   private buildIndependentScenarioInputs(
     sharedConfig: IndependentBondComparisonPayload['sharedConfig'],
     scenario: IndependentBondComparisonPayload['scenarioA'],
+    dbDefinitions: Record<BondType, BondDefinition>
   ): BondInputs {
-    const definition = BOND_DEFINITIONS[scenario.bondType];
+    const def = dbDefinitions[scenario.bondType] || BOND_DEFINITIONS[scenario.bondType];
     const purchaseDate = scenario.purchaseDate ?? sharedConfig.purchaseDate;
     const timingMode = scenario.timingMode ?? sharedConfig.timingMode ?? 'general';
     const investmentHorizonMonths = scenario.investmentHorizonMonths ?? sharedConfig.investmentHorizonMonths;
@@ -386,19 +426,19 @@ export class CalculationApplicationService {
     return {
       bondType: scenario.bondType,
       initialInvestment: sharedConfig.initialInvestment,
-      firstYearRate: definition.firstYearRate,
+      firstYearRate: scenario.firstYearRate ?? def.firstYearRate,
       expectedInflation: sharedConfig.expectedInflation,
       expectedNbpRate: sharedConfig.expectedNbpRate ?? 5.25,
-      margin: definition.margin,
-      duration: definition.duration,
-      earlyWithdrawalFee: definition.earlyWithdrawalFee,
+      margin: scenario.margin ?? def.margin,
+      duration: def.duration,
+      earlyWithdrawalFee: def.earlyWithdrawalFee,
       taxRate: 19,
-      isCapitalized: definition.isCapitalized,
-      payoutFrequency: definition.payoutFrequency,
+      isCapitalized: def.isCapitalized,
+      payoutFrequency: def.payoutFrequency,
       purchaseDate,
       withdrawalDate,
       isRebought: scenario.isRebought ?? false,
-      rebuyDiscount: definition.rebuyDiscount,
+      rebuyDiscount: def.rebuyDiscount,
       taxStrategy: scenario.taxStrategy ?? sharedConfig.taxStrategy ?? TaxStrategy.STANDARD,
       rollover: scenario.rollover ?? false,
       timingMode,

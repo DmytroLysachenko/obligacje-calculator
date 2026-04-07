@@ -21,6 +21,8 @@ export const dataSeries = pgTable("data_series", {
   timezone: text("timezone").default("Europe/Warsaw"),
   sourcePriority: integer("source_priority").default(1),
   freshnessPolicy: text("freshness_policy"), // how often it should be synced
+  lastSyncStatus: text("last_sync_status"), // 'success', 'failed', 'partial'
+  lastSyncError: text("last_sync_error"),
   dataSource: text("data_source"),
   lastDataPointDate: date("last_data_point_date"),
   updatedAt: timestamp("updated_at").defaultNow(),
