@@ -136,12 +136,12 @@ export const BondComparisonContainer = () => {
   };
   
   const chartData = prepareChartData();
-
-  const formatCurrency = (val: number) => 
-    new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-US', {
-      style: 'currency', currency: 'PLN', maximumFractionDigits: 0
-    }).format(val);
-
+const formatCurrency = (val: number) =>
+  new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', {
+    style: 'currency',
+    currency: 'PLN',
+    maximumFractionDigits: 0,
+  }).format(val);
   return (
     <div className="space-y-8 pb-20" onKeyDown={handleKeyDown}>
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-card p-8 rounded-3xl border-4 border-primary/10 shadow-2xl">

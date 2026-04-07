@@ -34,13 +34,13 @@
   },
   "nav": {
     "education": "Edukacja / Podstawy",
-    "single_calculator": "Kalkulator Pojedynczy",
-    "regular_investment": "Regularne Inwestowanie",
-    "economic_data": "Dane Ekonomiczne",
+    "single_calculator": "Kalkulator pojedynczy",
+    "regular_investment": "Regularne inwestowanie",
+    "economic_data": "Dane ekonomiczne",
     "comparison": "Porównywarka",
-    "ladder": "Strategia Drabiny",
+    "ladder": "Strategia drabiny",
     "multi_asset": "Giełda vs Obligacje",
-    "notebook": "Mój Portfel / Notatnik"
+    "notebook": "Mój portfel / Notatnik"
   },
   "education": {
     "subtitle": "Zrozum mechanizmy polskiego rynku obligacji skarbowych i podejmuj świadome decyzje inwestycyjne.",
@@ -202,9 +202,9 @@
     "goal_progress": "Postęp celu: {{percent}}%",
     "target": "Cel",
     "click_calculate": "Kliknij 'Oblicz wyniki', aby zobaczyć projekcję",
-    "simulating_growth": "Symulacja wzrostu inwestycji...",
-    "click_simulate_regular": "Kliknij 'Symuluj inwestycję', aby zobaczyć projekcję",
-    "simulating_regular": "Symulacja regularnych wpłat...",
+    "simulating_growth": "Projekcja wzrostu inwestycji",
+    "click_simulate_regular": "Kliknij 'Oblicz', aby zobaczyć projekcję",
+    "simulating_regular": "Symulacja regularnych wpłat",
     "growth_projection": "Projekcja wzrostu",
     "regular_how_it_works": "Regularne inwestowanie śledzi każdy miesięczny zakup jako osobną partię. Ta symulacja liczy odsetki, podatki i opłaty dla każdej partii osobno zgodnie z jej własnym harmonogramem zapadalności.",
     "cycle": "Cykl",
@@ -409,7 +409,7 @@
     },
     "ladder": {
       "description": "Buduj drabinę obligacji, aby zapewnić cykliczną płynność i stabilny wzrost.",
-      "building": "Budowanie drabiny...",
+      "building": "Kalkulacja drabiny",
       "optimized": "Drabina zoptymalizowana",
       "what_is_title": "Czym jest drabina obligacji?",
       "what_is_desc": "Drabina obligacji to strategia regularnego kupowania obligacji o powtarzalnym rytmie zapadalności. Po zamknięciu pierwszego pełnego cyklu jedna partia może zapadać cyklicznie, zapewniając środki na wydatki lub reinwestycję."

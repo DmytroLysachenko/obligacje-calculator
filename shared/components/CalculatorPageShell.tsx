@@ -47,7 +47,7 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
   extraHeaderActions,
   onKeyDown
 }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [copied, setCopied] = useState(false);
 
   const handleShare = () => {
@@ -144,7 +144,7 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
                 </span>
               </div>
               <span className="text-sm font-black text-primary">
-                {t('bonds.target')}: {new Intl.NumberFormat().format(savingsGoal)} PLN
+                {t('bonds.target')}: {new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB').format(savingsGoal)} PLN
               </span>
             </div>
             <Progress value={goalProgress} className="h-2" />
