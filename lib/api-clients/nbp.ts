@@ -1,4 +1,4 @@
-import { BaseApiClient, StandardizedIndicator } from "./base";
+import { BaseApiClient, StandardizedIndicator, fetchWithTimeout } from "./base";
 
 interface NbpGoldPrice {
   data: string;
@@ -19,7 +19,7 @@ export class NbpApiClient extends BaseApiClient {
   async fetchHistoricalData(startDate: string): Promise<StandardizedIndicator[]> {
     // Note: NBP API has limitations on range size, usually handled by caller or multiple requests
     // For gold, we fetch last 100 points as per original, but filtering by startDate if needed
-    const response = await fetch(`${this.baseUrl}/cenyzlota/last/100?format=json`);
+    const response = await fetchWithTimeout(`${this.baseUrl}/cenyzlota/last/100?format=json`);
     if (!response.ok) throw new Error(`NBP API error: ${response.statusText}`);
     
     const data: NbpGoldPrice[] = await response.json();
@@ -34,7 +34,7 @@ export class NbpApiClient extends BaseApiClient {
   }
 
   private async fetchGoldPrice(): Promise<StandardizedIndicator> {
-    const response = await fetch(`${this.baseUrl}/cenyzlota?format=json`);
+    const response = await fetchWithTimeout(`${this.baseUrl}/cenyzlota?format=json`);
     if (!response.ok) throw new Error(`NBP API error: ${response.statusText}`);
     const data: NbpGoldPrice[] = await response.json();
     return {
@@ -50,7 +50,7 @@ export class NbpApiClient extends BaseApiClient {
    */
   private async fetchCurrentReferenceRate(): Promise<StandardizedIndicator> {
     // The specific NBP endpoint for interest rates
-    const response = await fetch("https://api.nbp.pl/api/statystyka/stopy/ref?format=json");
+    const response = await fetchWithTimeout("https://api.nbp.pl/api/statystyka/stopy/ref?format=json");
     if (!response.ok) {
       // Fallback if specific endpoint fails
       return { name: "nbp_reference_rate", value: 5.75, date: new Date().toISOString().split('T')[0] };

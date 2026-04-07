@@ -1,4 +1,4 @@
-import { BaseApiClient, StandardizedIndicator } from "./base";
+import { BaseApiClient, StandardizedIndicator, fetchWithTimeout } from "./base";
 
 export class StooqApiClient extends BaseApiClient {
   private baseUrl = "https://stooq.com/q/d/l/";
@@ -10,7 +10,7 @@ export class StooqApiClient extends BaseApiClient {
 
   async fetchHistoricalData(startDate: string, symbol: string = "^SPX"): Promise<StandardizedIndicator[]> {
     // i=d for daily, i=m for monthly. Monthly is better for long-term bond comparisons.
-    const response = await fetch(`${this.baseUrl}?s=${symbol}&i=m`);
+    const response = await fetchWithTimeout(`${this.baseUrl}?s=${symbol}&i=m`);
     if (!response.ok) throw new Error(`Stooq API error: ${response.statusText}`);
     
     const csvText = await response.text();
