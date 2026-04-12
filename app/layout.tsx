@@ -13,9 +13,32 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Obligacje Skarbowe Calculator",
-  description: "Advanced simulator for Polish Treasury Bonds",
-  manifest: "/manifest.json"
+  title: {
+    default: "Obligacje Calculator - Polish Treasury Bonds Simulator",
+    template: "%s | Obligacje Calculator"
+  },
+  description: "The most accurate simulator for Polish Treasury Bonds (EDO, COI, ROR, etc.). Calculate real profit after tax and inflation.",
+  manifest: "/manifest.json",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://obligacje-calculator.vercel.app", // Placeholder
+    siteName: "Obligacje Calculator",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Obligacje Calculator"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Obligacje Calculator",
+    description: "Polish Treasury Bonds Simulator",
+    images: ["/og-image.png"]
+  }
 };
 
 export default function RootLayout({
