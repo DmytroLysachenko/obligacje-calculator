@@ -23,23 +23,21 @@ import {
   BondComparisonScenarioRequestSchema 
 } from './types/schemas';
 import { calculateBondInvestment, calculateRegularInvestment } from './utils/calculations';
-import { getHistoricalDataMap, getGlobalDataFreshness, getBondDefinitionsMap } from '@/lib/data-access';
-import { BondInputs, BondType, TaxStrategy, CalculationResult } from './types';
-import { BOND_DEFINITIONS, BondDefinition } from './constants/bond-definitions';
-import { getLimitForYear } from './constants/tax-limits';
+import { getHistoricalDataMap, getGlobalDataFreshness, getBondDefinitionsMap, getTaxRulesForYear } from '@/lib/data-access';
+import { BondInputs, BondType, TaxStrategy, CalculationResult, RegularInvestmentInputs } from './types';
+import { BondDefinition } from './constants/bond-definitions';
 import { getWithdrawalDateFromMonths, differenceInMonths } from '@/shared/lib/date-timing';
 import { addMonths, format, subMonths, parseISO, isBefore, getYear } from 'date-fns';
 import { db } from '@/db';
 import { bondSeries, polishBonds } from '@/db/schema';
 import { eq, and, lte, desc } from 'drizzle-orm';
 
-export const MODEL_VERSION = '2.6.0-historical-backtesting';
+export const MODEL_VERSION = '2.7.0-db-driven-metadata';
 
 export class CalculationApplicationService {
   /**
    * Main entry point for all calculation requests.
    */
-// ... [rest of the file stays mostly the same, but fixing line 363]
   async calculate(request: CalculationScenarioRequest): Promise<CalculationEnvelope<unknown>> {
     const startTime = performance.now();
     const dataFreshness = await getGlobalDataFreshness();
@@ -103,7 +101,7 @@ export class CalculationApplicationService {
     dataFreshness: CalculationDataFreshness,
     dbDefinitions: Record<BondType, BondDefinition>
   ): Promise<BondOptimizerCalculationEnvelope> {
-    const allBondTypes = Object.keys(BOND_DEFINITIONS) as BondType[];
+    const allBondTypes = Object.keys(dbDefinitions) as BondType[];
     const withdrawalDate = payload.withdrawalDate ?? 
       (payload.investmentHorizonMonths ? getWithdrawalDateFromMonths(payload.purchaseDate, payload.investmentHorizonMonths) : undefined);
 
@@ -117,7 +115,7 @@ export class CalculationApplicationService {
     const rankedBonds: BondOptimizerResultItem[] = [];
 
     for (const bondType of allBondTypes) {
-      const def = dbDefinitions[bondType] || BOND_DEFINITIONS[bondType];
+      const def = dbDefinitions[bondType];
       
       if (def.isFamilyOnly && !payload.includeFamilyBonds) {
         continue;
@@ -144,7 +142,7 @@ export class CalculationApplicationService {
         chartStep: 'monthly' as import('@/features/bond-core/types').ChartStep
       });
 
-      const result = calculateBondInvestment(enrichedInputs as BondInputs & { historicalData: import('@/features/bond-core/types').HistoricalDataMap });
+      const result = calculateBondInvestment(enrichedInputs as BondInputs & { rollover: boolean });
 
       let reason = '';
       if (def.duration === horizonYears) {
@@ -164,7 +162,7 @@ export class CalculationApplicationService {
         name: def.fullName.en,
         netPayoutValue: result.netPayoutValue,
         totalProfit: result.totalProfit,
-        effectiveTaxRate: (result.totalTax / result.totalProfit) * 100, // Roughly
+        effectiveTaxRate: result.totalProfit > 0 ? (result.totalTax / result.totalProfit) * 100 : 0,
         isWinner: false,
         recommendationReason: reason,
         result
@@ -199,7 +197,7 @@ export class CalculationApplicationService {
     });
 
     for (const inv of payload.investments) {
-      const def = dbDefinitions[inv.bondType] || BOND_DEFINITIONS[inv.bondType];
+      const def = dbDefinitions[inv.bondType];
       const result = calculateBondInvestment({
         bondType: inv.bondType,
         initialInvestment: inv.amount,
@@ -220,7 +218,7 @@ export class CalculationApplicationService {
         rollover: inv.rollover ?? false,
         historicalData: allHistoricalData.historicalData as Record<string, import('@/features/bond-core/types').HistoricalEntry>,
         chartStep: 'monthly'
-      });
+      } as BondInputs & { rollover: boolean });
       items.push({
         bondType: inv.bondType,
         amount: inv.amount,
@@ -282,7 +280,7 @@ export class CalculationApplicationService {
     dbDefinitions: Record<BondType, BondDefinition>
   ): Promise<SingleBondCalculationEnvelope> {
     const validatedInputs = BondInputsSchema.parse(input);
-    const def = dbDefinitions[validatedInputs.bondType] || BOND_DEFINITIONS[validatedInputs.bondType];
+    const def = dbDefinitions[validatedInputs.bondType];
     
     let firstYearRate = validatedInputs.firstYearRate;
     let margin = validatedInputs.margin;
@@ -310,15 +308,15 @@ export class CalculationApplicationService {
     const inputsToCalculate = {
       ...enrichedInputs,
       expectedInflation: adjustedInflation,
-    };
+    } as BondInputs & { historicalData: import('@/features/bond-core/types').HistoricalDataMap };
 
     if (inputsToCalculate.useTaxWrapperLimit && (inputsToCalculate.taxStrategy === TaxStrategy.IKE || inputsToCalculate.taxStrategy === TaxStrategy.IKZE)) {
       const purchaseYear = getYear(parseISO(inputsToCalculate.purchaseDate));
-      const limits = getLimitForYear(purchaseYear);
-      const limitValue = inputsToCalculate.taxStrategy === TaxStrategy.IKE ? limits?.ike : limits?.ikze;
+      const rules = await getTaxRulesForYear(purchaseYear);
+      const limitValue = inputsToCalculate.taxStrategy === TaxStrategy.IKE ? parseFloat(rules?.ikeLimit || '0') : parseFloat(rules?.ikzeLimit || '0');
 
-      if (limitValue && inputsToCalculate.initialInvestment > limitValue) {
-        return this.calculateSplitTaxWrapper(inputsToCalculate as BondInputs & { historicalData: import('@/features/bond-core/types').HistoricalDataMap }, limitValue, dataFreshness);
+      if (limitValue > 0 && inputsToCalculate.initialInvestment > limitValue) {
+        return this.calculateSplitTaxWrapper(inputsToCalculate, limitValue, dataFreshness);
       }
     }
 
@@ -328,19 +326,19 @@ export class CalculationApplicationService {
     const result = calculateBondInvestment({
       ...inputsToCalculate,
       rollover: inputsToCalculate.rollover ?? false,
-    });
+    } as BondInputs & { rollover: boolean });
 
     if (inputsToCalculate.inflationScenario) {
       const lowResult = calculateBondInvestment({
         ...inputsToCalculate,
-        expectedInflation: enrichedInputs.expectedInflation - 1.5,
+        expectedInflation: (enrichedInputs.expectedInflation || 0) - 1.5,
         rollover: inputsToCalculate.rollover ?? false,
-      });
+      } as BondInputs & { rollover: boolean });
       const highResult = calculateBondInvestment({
         ...inputsToCalculate,
-        expectedInflation: enrichedInputs.expectedInflation + 2.5,
+        expectedInflation: (enrichedInputs.expectedInflation || 0) + 2.5,
         rollover: inputsToCalculate.rollover ?? false,
-      });
+      } as BondInputs & { rollover: boolean });
       result.comparisonScenarios = {
         low: lowResult.timeline,
         high: highResult.timeline,
@@ -352,7 +350,7 @@ export class CalculationApplicationService {
         ...inputsToCalculate,
         taxStrategy: TaxStrategy.STANDARD,
         rollover: inputsToCalculate.rollover ?? false,
-      });
+      } as BondInputs & { rollover: boolean });
       result.taxSavings = standardResult.totalTax - result.totalTax;
     }
 
@@ -368,14 +366,14 @@ export class CalculationApplicationService {
       ...inputs,
       initialInvestment: limit,
       rollover: inputs.rollover ?? false,
-    });
+    } as BondInputs & { rollover: boolean });
 
     const standardPart = calculateBondInvestment({
       ...inputs,
       initialInvestment: inputs.initialInvestment - limit,
       taxStrategy: TaxStrategy.STANDARD,
       rollover: inputs.rollover ?? false,
-    });
+    } as BondInputs & { rollover: boolean });
 
     const aggregatedResult: CalculationResult = {
       initialInvestment: inputs.initialInvestment,
@@ -423,7 +421,7 @@ export class CalculationApplicationService {
       ...inputs,
       taxStrategy: TaxStrategy.STANDARD,
       rollover: inputs.rollover ?? false,
-    });
+    } as BondInputs & { rollover: boolean });
     aggregatedResult.taxSavings = fullStandardResult.totalTax - aggregatedResult.totalTax;
 
     const warnings = this.collectHistoricalWarnings([inputs.historicalData]);
@@ -438,7 +436,7 @@ export class CalculationApplicationService {
     dbDefinitions: Record<BondType, BondDefinition>
   ): Promise<RegularInvestmentCalculationEnvelope> {
     const validatedInputs = RegularInvestmentInputsSchema.parse(input);
-    const def = dbDefinitions[validatedInputs.bondType] || BOND_DEFINITIONS[validatedInputs.bondType];
+    const def = dbDefinitions[validatedInputs.bondType];
 
     const inputsWithDefaults = {
       ...validatedInputs,
@@ -450,7 +448,7 @@ export class CalculationApplicationService {
     const warnings = this.buildHistoricalDataWarnings(enrichedInputs.historicalData);
     const assumptions = this.generateAssumptions(enrichedInputs);
 
-    const result = calculateRegularInvestment(enrichedInputs);
+    const result = calculateRegularInvestment(enrichedInputs as RegularInvestmentInputs);
 
     return this.createEnvelope(result, warnings, assumptions, dataFreshness);
   }
@@ -483,14 +481,14 @@ export class CalculationApplicationService {
     );
 
     const results = enrichedScenarios.map((enrichedInputs): BondComparisonScenarioItem => {
-      const def = dbDefinitions[enrichedInputs.bondType] || BOND_DEFINITIONS[enrichedInputs.bondType];
+      const def = dbDefinitions[enrichedInputs.bondType];
       return {
         type: enrichedInputs.bondType,
         name: def.fullName.en,
         result: calculateBondInvestment({
           ...enrichedInputs,
           rollover: payload.reinvest ?? true,
-        }),
+        } as BondInputs & { rollover: boolean }),
       };
     });
 
@@ -515,20 +513,20 @@ export class CalculationApplicationService {
       {
         scenarioKey: 'scenarioA',
         type: scenarioA.bondType,
-        name: (dbDefinitions[scenarioA.bondType] || BOND_DEFINITIONS[scenarioA.bondType]).fullName.en,
+        name: dbDefinitions[scenarioA.bondType].fullName.en,
         result: calculateBondInvestment({
           ...scenarioA,
           rollover: scenarioA.rollover ?? false,
-        }),
+        } as BondInputs & { rollover: boolean }),
       },
       {
         scenarioKey: 'scenarioB',
         type: scenarioB.bondType,
-        name: (dbDefinitions[scenarioB.bondType] || BOND_DEFINITIONS[scenarioB.bondType]).fullName.en,
+        name: dbDefinitions[scenarioB.bondType].fullName.en,
         result: calculateBondInvestment({
           ...scenarioB,
           rollover: scenarioB.rollover ?? false,
-        }),
+        } as BondInputs & { rollover: boolean }),
       },
     ];
 
@@ -632,7 +630,7 @@ export class CalculationApplicationService {
     dbDefinitions: Record<BondType, BondDefinition>
   ): BondInputs[] {
     return request.bondTypes.map((type) => {
-      const def = dbDefinitions[type] || BOND_DEFINITIONS[type];
+      const def = dbDefinitions[type];
 
       return {
         bondType: type,
@@ -651,7 +649,7 @@ export class CalculationApplicationService {
         isRebought: false,
         rebuyDiscount: def.rebuyDiscount,
         taxStrategy: request.taxStrategy ?? TaxStrategy.STANDARD,
-        timingMode: 'exact',
+        timingMode: 'exact' as import('@/shared/lib/date-timing').TimingMode,
         investmentHorizonMonths: undefined,
       };
     });
@@ -662,7 +660,7 @@ export class CalculationApplicationService {
     scenario: IndependentBondComparisonPayload['scenarioA'],
     dbDefinitions: Record<BondType, BondDefinition>
   ): BondInputs {
-    const def = dbDefinitions[scenario.bondType] || BOND_DEFINITIONS[scenario.bondType];
+    const def = dbDefinitions[scenario.bondType];
     const purchaseDate = scenario.purchaseDate ?? sharedConfig.purchaseDate;
     const timingMode = scenario.timingMode ?? sharedConfig.timingMode ?? 'general';
     const investmentHorizonMonths = scenario.investmentHorizonMonths ?? sharedConfig.investmentHorizonMonths;
