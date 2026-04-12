@@ -12,11 +12,12 @@ import { Button } from '@/components/ui/button';
 import { BondType, BondInputs, TaxStrategy } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
-import { CalendarIcon, Info, Target, Loader2 } from 'lucide-react';
+import { CalendarIcon, Info, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
+import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 
 import { Slider } from '@/components/ui/slider';
 
@@ -27,20 +28,29 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
+interface BondSeries {
+  id: string;
+  seriesCode: string;
+  firstYearRate: string | number;
+  baseMargin: string | number;
+  emissionMonth: string;
+}
+
 interface BondInputsFormProps {
   inputs: BondInputs;
-  onUpdate: (key: keyof BondInputs, value: string | number | boolean | number[] | undefined) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onUpdate: (key: any, value: any) => void;
   onBondTypeChange: (type: BondType) => void;
-  onCalculate: () => void;
-  isCalculating?: boolean;
+  availableSeries?: BondSeries[];
+  selectedSeriesId?: string | null;
 }
 
 export const BondInputsForm: React.FC<BondInputsFormProps> = ({
   inputs,
   onUpdate,
   onBondTypeChange,
-  onCalculate,
-  isCalculating,
+  availableSeries = [],
+  selectedSeriesId = 'current',
 }) => {
   const { t, language } = useLanguage();
   const [showCustomTax, setShowCustomTax] = useState(false);
@@ -150,6 +160,27 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                     ))}
                   </SelectContent>
                 </Select>
+
+                {/* Series Selection */}
+                <div className="space-y-2 pt-2">
+                  <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">{t('bonds.bond_series')}</Label>
+                  <Select
+                    value={selectedSeriesId || 'current'}
+                    onValueChange={(value) => onUpdate('selectedSeriesId', value)}
+                  >
+                    <SelectTrigger className="h-9 text-xs font-bold bg-muted/30">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="current" className="text-xs font-bold">{t('bonds.current_offer')}</SelectItem>
+                      {availableSeries.map((s) => (
+                        <SelectItem key={s.id} value={s.id} className="text-xs">
+                          {s.seriesCode} ({s.firstYearRate}% + {s.baseMargin}%)
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
                 
                 <div className="p-3 bg-primary/5 rounded-lg text-xs space-y-1 border border-primary/10">
                   <div className="flex items-center gap-2 font-semibold text-primary">
@@ -212,11 +243,11 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
             </AccordionTrigger>
             <AccordionContent className="space-y-6 pb-6">
               <div className="space-y-3">
-                <Label className="font-semibold">{t('comparison.timing_mode')}</Label>
+                <Label className="font-semibold">{t('bonds.timing_mode')}</Label>
                 <div className="flex gap-2">
                   <Button
                     type="button"
-                    variant={inputs.timingMode !== 'exact' ? 'default' : 'outline'}
+                    variant={(!inputs.timingMode || inputs.timingMode === 'general') ? 'default' : 'outline'}
                     className="flex-1"
                     onClick={() => onUpdate('timingMode', 'general')}
                   >
@@ -236,7 +267,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               <div className="grid grid-cols-1 gap-4">
                 <div className="space-y-2">
                   <Label className="text-xs font-semibold uppercase text-muted-foreground">
-                    {t('bonds.start_date')}
+                    {t('bonds.purchase_date')}
                   </Label>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -369,96 +400,13 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               </span>
             </AccordionTrigger>
             <AccordionContent className="space-y-6 pb-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="expectedInflation" className="text-xs font-bold text-primary uppercase tracking-wider">
-                    {t('bonds.inflation_rate')} (%)
-                  </Label>
-                  <div className="text-2xl font-black text-primary bg-background px-3 py-1 rounded-lg border shadow-sm">
-                    {inputs.expectedInflation}%
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-2">
-                  {[2.5, 10, -1].map((val) => (
-                    <Button 
-                      key={val}
-                      variant="outline" 
-                      size="sm" 
-                      className={cn(
-                        "h-8 text-[10px] font-black uppercase", 
-                        inputs.expectedInflation === val && "bg-primary text-primary-foreground border-primary"
-                      )} 
-                      onClick={() => onUpdate('expectedInflation', val)}
-                    >
-                      {val === 2.5 ? t('bonds.stable') : val === 10 ? t('bonds.high') : t('bonds.deflation')} ({val}%)
-                    </Button>
-                  ))}
-                </div>
-
-                <Slider 
-                  value={[inputs.expectedInflation]} 
-                  disabled={!!inputs.customInflation}
-                  min={-2} 
-                  max={25} 
-                  step={0.1} 
-                  onValueChange={([val]) => onUpdate('expectedInflation', val)}
-                />
-
-                <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-primary/10 mt-4">
-                  <Label className="text-xs font-bold">{t('bonds.advanced_inflation')}</Label>
-                  <Switch 
-                    checked={!!inputs.customInflation} 
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        const years = Math.ceil(Math.max(1, inputs.duration));
-                        onUpdate('customInflation', Array(years).fill(inputs.expectedInflation));
-                      } else {
-                        onUpdate('customInflation', undefined);
-                      }
-                    }} 
-                  />
-                </div>
-                
-                {inputs.customInflation && (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-4 max-h-64 overflow-y-auto p-2 bg-muted/20 border rounded-xl custom-scrollbar relative z-10">
-                    {inputs.customInflation.map((val, idx) => (
-                      <div key={idx} className="flex gap-2 items-center bg-background p-1.5 rounded border">
-                        <Label className="text-[10px] text-muted-foreground font-black uppercase w-8">Y{idx + 1}</Label>
-                        <Input 
-                          type="number" 
-                          step={0.1}
-                          className="h-7 text-xs font-bold border-none bg-transparent shadow-none px-1"
-                          value={val}
-                          onChange={(e) => {
-                            const newArr = [...inputs.customInflation!];
-                            newArr[idx] = Number(e.target.value);
-                            onUpdate('customInflation', newArr);
-                          }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {(inputs.bondType === 'ROR' || inputs.bondType === 'DOR') && (
-                <div className="space-y-4 pt-4 border-t border-dashed">
-                  <div className="flex justify-between items-center">
-                    <Label htmlFor="expectedNbpRate" className="text-xs font-bold uppercase text-muted-foreground">
-                      {t('bonds.nbp_rate_label')}
-                    </Label>
-                    <span className="text-lg font-black text-primary">{inputs.expectedNbpRate}%</span>
-                  </div>
-                  <Slider 
-                    value={[inputs.expectedNbpRate ?? 5.25]} 
-                    min={0} 
-max={20} 
-                    step={0.05} 
-                    onValueChange={([val]) => onUpdate('expectedNbpRate', val)}
-                  />
-                </div>
-              )}
+              <MarketAssumptionsForm
+                expectedInflation={inputs.expectedInflation}
+                expectedNbpRate={inputs.expectedNbpRate}
+                bondType={inputs.bondType}
+                customInflation={inputs.customInflation}
+                onUpdate={onUpdate}
+              />
             </AccordionContent>
           </AccordionItem>
 

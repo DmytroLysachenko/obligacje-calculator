@@ -529,9 +529,13 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
       }
     });
 
-    // 2. Add new lot (Standard contribution + Matured liquidity)
+    // 2. Add new lot (Standard contribution + Matured liquidity if rollover enabled)
     if (m % interval === 0 && m < totalMonths) {
-      const totalAvailableForPurchase = new Decimal(contributionAmount).plus(maturedLiquidity);
+      const rolloverEnabled = inputs.rollover ?? true; // Default to true for regular investment
+      const totalAvailableForPurchase = rolloverEnabled 
+        ? new Decimal(contributionAmount).plus(maturedLiquidity)
+        : new Decimal(contributionAmount);
+      
       const units = totalAvailableForPurchase.dividedBy(bondPrice).floor();
       const investedAmount = units.times(bondPrice);
       const nominalAmount = units.times(nominalValue);

@@ -31,7 +31,9 @@ export const BondCalculatorContainer: React.FC = () => {
     calculate,
     updateInput,
     setBondType,
-    isDirty
+    isDirty,
+    availableSeries,
+    selectedSeriesId
     } = useBondCalculator();
   const { t } = useLanguage();
 
@@ -114,8 +116,8 @@ export const BondCalculatorContainer: React.FC = () => {
             inputs={inputs}
             onUpdate={updateInput}
             onBondTypeChange={setBondType}
-            onCalculate={calculate}
-            isCalculating={isCalculating}
+            availableSeries={availableSeries}
+            selectedSeriesId={selectedSeriesId}
           />
         </aside>
 

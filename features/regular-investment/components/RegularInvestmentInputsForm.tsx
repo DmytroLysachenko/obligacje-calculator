@@ -13,11 +13,12 @@ import { Button } from '@/components/ui/button';
 import { BondType, RegularInvestmentInputs, InvestmentFrequency, TaxStrategy } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
-import { AlertCircle, CalendarIcon, Info } from 'lucide-react';
+import { AlertCircle, CalendarIcon, Info, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
-import { getHorizonMonths } from '@/shared/lib/date-timing';
+import { getHorizonMonths, toDateString } from '@/shared/lib/date-timing';
+import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 
 import { Slider } from '@/components/ui/slider';
 
@@ -32,11 +33,10 @@ import {
 
 interface RegularInvestmentInputsFormProps {
   inputs: RegularInvestmentInputs;
-  onUpdate: (key: keyof RegularInvestmentInputs, value: string | number | boolean | undefined) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onUpdate: (key: any, value: any) => void;
   onBondTypeChange: (type: BondType) => void;
 }
-
-import { Target } from "lucide-react";
 
 export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormProps> = ({
   inputs,
@@ -273,11 +273,11 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
         </div>
 
         <div className="space-y-3">
-          <Label className="font-semibold">{t('comparison.timing_mode')}</Label>
+          <Label className="font-semibold">{t('bonds.timing_mode')}</Label>
           <div className="flex gap-2">
             <Button
               type="button"
-              variant={inputs.timingMode !== 'exact' ? 'default' : 'outline'}
+              variant={(!inputs.timingMode || inputs.timingMode === 'general') ? 'default' : 'outline'}
               className="flex-1"
               onClick={() => onUpdate('timingMode', 'general')}
             >
@@ -298,7 +298,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Label className="text-xs font-semibold uppercase text-muted-foreground">
-                {t('bonds.start_date')}
+                {t('bonds.purchase_date')}
               </Label>
               <TooltipProvider>
                 <Tooltip>
@@ -331,7 +331,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                   fromYear={2010}
                   toYear={2050}
                   selected={parseISO(inputs.purchaseDate)}
-                  onSelect={(date) => date && onUpdate('purchaseDate', format(date, 'yyyy-MM-dd'))}
+                  onSelect={(date) => date && onUpdate('purchaseDate', toDateString(date))}
                   initialFocus
                 />
               </PopoverContent>
@@ -375,7 +375,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                     fromYear={2010}
                     toYear={2050}
                     selected={parseISO(inputs.withdrawalDate)}
-                    onSelect={(date) => date && onUpdate('withdrawalDate', format(date, 'yyyy-MM-dd'))}
+                    onSelect={(date) => date && onUpdate('withdrawalDate', toDateString(date))}
                     initialFocus
                   />
                 </PopoverContent>
@@ -428,124 +428,15 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
 
         <Separator />
 
-        {/* Inflation & Margin & First Year Rate */}
-        <div className="space-y-6">
-          {(inputs.bondType === 'ROR' || inputs.bondType === 'DOR') && (
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="firstYearRate" className="text-xs font-semibold uppercase text-muted-foreground">
-                    {language === 'pl' ? 'Oprocentowanie w pierwszym okresie' : 'Initial Interest Rate'} (%)
-                  </Label>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs">{t('regular_form.initial_rate_help')}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-                <Input
-                  id="firstYearRate"
-                  type="number"
-                  step="0.01"
-                  className="h-10"
-                  value={inputs.firstYearRate}
-                  onChange={(e) => onUpdate('firstYearRate', Number(e.target.value))}
-                />
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="expectedNbpRate" className="text-xs font-semibold uppercase text-muted-foreground">
-                      {t('bonds.nbp_rate_label')}
-                    </Label>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">{t('regular_form.nbp_help')}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                  <span className="text-sm font-bold text-primary">{inputs.expectedNbpRate}%</span>
-                </div>
-                <Slider 
-                  value={[inputs.expectedNbpRate ?? 5.25]} 
-                  min={0} 
-                  max={20} 
-                  step={0.05} 
-                  onValueChange={([val]) => onUpdate('expectedNbpRate', val)}
-                />
-              </div>
-            </div>
-          )}
-
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <Label htmlFor="expectedInflation" className="text-xs font-semibold uppercase text-muted-foreground">
-                  {t('bonds.inflation_rate')} (%)
-                </Label>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs">{t('regular_form.inflation_help')}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-              <div className="flex gap-1">
-                <Button variant="ghost" size="icon" className="h-6 w-12 text-[10px]" onClick={() => onUpdate('expectedInflation', 2.5)}>{t('bonds.stable')}</Button>
-                <Button variant="ghost" size="icon" className="h-6 w-12 text-[10px]" onClick={() => onUpdate('expectedInflation', 10)}>{t('bonds.high')}</Button>
-                <Button variant="ghost" size="icon" className="h-6 w-12 text-[10px]" onClick={() => onUpdate('expectedInflation', -1)}>{t('bonds.deflation')}</Button>
-              </div>
-              <span className="text-sm font-bold text-primary">{inputs.expectedInflation}%</span>
-            </div>
-            <Slider 
-              value={[inputs.expectedInflation]} 
-              min={-2} 
-              max={25} 
-              step={0.1} 
-              onValueChange={([val]) => onUpdate('expectedInflation', val)}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Label htmlFor="margin" className="text-xs font-semibold uppercase text-muted-foreground">
-                {t('bonds.margin')} (%)
-              </Label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                  </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs">{t('regular_form.margin_help')}</p>
-                    </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            <Input
-              id="margin"
-              type="number"
-              step="0.01"
-              className="h-10"
-              value={inputs.margin}
-              onChange={(e) => onUpdate('margin', Number(e.target.value))}
-            />
-          </div>
+        {/* Market Assumptions */}
+        <div className="space-y-4">
+          <MarketAssumptionsForm
+            expectedInflation={inputs.expectedInflation}
+            expectedNbpRate={inputs.expectedNbpRate}
+            bondType={inputs.bondType}
+            customInflation={inputs.customInflation}
+            onUpdate={onUpdate}
+          />
         </div>
 
         {/* Rebuy / Swap Toggle (if applicable) */}
@@ -581,6 +472,19 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
 
         {/* Tax */}
         <div className="space-y-4 pt-2">
+          <div className="flex items-center justify-between p-4 bg-primary/5 rounded-xl border border-primary/10">
+            <div className="space-y-0.5">
+              <Label className="text-sm font-bold text-primary">{t('bonds.reinvest')}</Label>
+              <p className="text-[10px] text-muted-foreground font-medium italic">
+                {t('bonds.rollover_desc')}
+              </p>
+            </div>
+            <Switch
+              checked={!!inputs.rollover}
+              onCheckedChange={(checked) => onUpdate('rollover', checked)}
+            />
+          </div>
+
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <div className="flex items-center gap-2">

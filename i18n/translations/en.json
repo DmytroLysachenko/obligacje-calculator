@@ -127,6 +127,7 @@
     "freq_quarterly": "Quarterly",
     "freq_yearly": "Yearly",
     "start_date": "Start Date",
+    "timing_mode": "Timing Mode",
     "timing_general": "General (Years)",
     "timing_exact": "Exact Dates",
     "investment_horizon": "Investment Horizon",
@@ -228,7 +229,29 @@
     "projected": "Projected",
     "historical": "Historical",
     "yield_three_months": "Yield (3m)",
-    "first_month_rate": "1st Month Rate"
+    "first_month_rate": "1st Month Rate",
+    "bond_series": "Emission Series",
+    "current_offer": "Current Offer",
+    "historical_offer": "Historical Offer",
+    "select_series": "Select specific series",
+    "how_calculated": "How it was calculated",
+    "rounding_rules": "Rounding & Tax Rules",
+    "rounding_desc": "All interest is calculated per individual bond (100 PLN) and rounded to the nearest penny (0.01 PLN).",
+    "tax_rounding_desc": "Taxes are withheld according to Polish law, with rounding applied at the moment of payout.",
+    "ike_benefit": "IKE wrapper saved approximately {{amount}} in Belka tax.",
+    "key_dates": "Key Dates & Milestones",
+    "first_cycle_ends": "First Cycle Ends",
+    "early_exit_date": "Early Exit Date",
+    "explanation_title": "About these results",
+    "explanation_text": "These projections are based on current bond terms and your selected macro-economic assumptions.",
+    "step_by_step": "Step-by-Step Interest Trace",
+    "interest_example_title": "Year {{year}} Calculation",
+    "base_value": "Principal at Start",
+    "plus_interest": "Interest Earned",
+    "minus_tax": "Belka Tax Deducted",
+    "net_period_gain": "Net Gain for Period",
+    "protection_visualizer": "Inflation Protection (Real Value)",
+    "nominal_gap": "Nominal vs Real Gap"
     },
     "landing": {
       "hero_title": "Master Your",
@@ -243,7 +266,12 @@
         "ladder": "Build a bond ladder strategy to ensure consistent liquidity and optimal interest rates.",
         "economic_data": "Track historical inflation and NBP interest rates that affect floating-rate bonds.",
         "education": "Learn the basics of Polish treasury bonds, taxation, and investment strategies."
-      }
+      },
+      "portfolio_overview": "Portfolio Overview",
+      "manage_portfolio": "Manage Portfolio",
+      "upcoming_events": "Upcoming Liquidity Events",
+      "no_events_30d": "No major events in the next 30 days.",
+      "diversification": "Total Diversification"
     },
     "notebook": {
       "title": "My Portfolio / Notebook",
@@ -386,7 +414,18 @@
       "historical_drawdown_desc": "Maximum drops from peak value during market crashes.",
       "preset_bull_2021": "Bull Run 2021",
       "preset_war_2022": "War Start 2022",
-      "preset_recovery_2023": "Recovery 2023"
+      "preset_recovery_2023": "Recovery 2023",
+      "verdict": "Expert Verdict",
+      "table_title": "Detailed Side-by-Side Comparison",
+      "winning": "WINS",
+      "losing": "behind",
+      "tie": "TIE",
+      "verdict_title": "Comparison Verdict",
+      "verdict_short_term": "Best for short-term (< 4 years)",
+      "verdict_long_term": "Best for long-term (> 4 years)",
+      "verdict_high_inflation": "Better protection in high inflation",
+      "verdict_tax_efficient": "More tax efficient",
+      "year_by_year": "Year-by-Year Growth"
     },
     "regular_form": {
       "contribution_help": "The amount you plan to invest periodically.",
