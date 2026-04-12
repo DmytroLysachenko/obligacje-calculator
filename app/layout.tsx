@@ -6,6 +6,7 @@ import { LanguageProvider } from "@/i18n";
 import { Sidebar } from "@/shared/components/Sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
+import { OpportunisticSyncTrigger } from "@/shared/components/OpportunisticSyncTrigger";
 import Script from "next/script";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -54,6 +55,7 @@ export default function RootLayout({
             <ErrorBoundary>
               <div className="flex min-h-screen">
                 <Sidebar />
+                <OpportunisticSyncTrigger />
                 <main className="flex-1 lg:pl-72 flex flex-col min-h-screen overflow-x-hidden border-l">
                   <div className="flex-1 p-4 md:p-8">
                     <div className="container mx-auto max-w-7xl">

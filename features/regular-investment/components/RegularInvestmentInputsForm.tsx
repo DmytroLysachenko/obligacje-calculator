@@ -526,6 +526,33 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
           )}
         </div>
 
+        <Separator />
+
+        {/* Display & Logic */}
+        <div className="space-y-4">
+          <div className="space-y-3">
+            <Label className="text-xs font-bold uppercase text-muted-foreground tracking-widest">
+              {t('bonds.chart_granularity')}
+            </Label>
+            <div className="flex gap-1 bg-muted/50 p-1 rounded-xl border">
+              {(['monthly', 'quarterly', 'yearly'] as const).map((step) => (
+                <Button
+                  key={step}
+                  type="button"
+                  variant={inputs.chartStep === step || (!inputs.chartStep && step === 'quarterly') ? 'default' : 'ghost'}
+                  className={cn(
+                    "flex-1 h-8 text-[10px] font-black uppercase tracking-tighter transition-all",
+                    (inputs.chartStep === step || (!inputs.chartStep && step === 'quarterly')) && "shadow-sm"
+                  )}
+                  onClick={() => onUpdate('chartStep', step)}
+                >
+                  {t(`bonds.granularity_${step}`)}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* Summary Details */}
         <div className="pt-2">
           <div className="text-[10px] text-muted-foreground space-y-1 bg-muted/30 p-3 rounded-lg border border-dashed">

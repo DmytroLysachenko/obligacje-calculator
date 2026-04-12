@@ -418,6 +418,28 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               </span>
             </AccordionTrigger>
             <AccordionContent className="space-y-4 pb-6">
+              <div className="space-y-3">
+                <Label className="text-xs font-bold uppercase text-muted-foreground tracking-widest">
+                  {t('bonds.chart_granularity')}
+                </Label>
+                <div className="flex gap-1 bg-muted/50 p-1 rounded-xl border">
+                  {(['monthly', 'quarterly', 'yearly'] as const).map((step) => (
+                    <Button
+                      key={step}
+                      type="button"
+                      variant={inputs.chartStep === step || (!inputs.chartStep && step === 'yearly') ? 'default' : 'ghost'}
+                      className={cn(
+                        "flex-1 h-8 text-[10px] font-black uppercase tracking-tighter transition-all",
+                        (inputs.chartStep === step || (!inputs.chartStep && step === 'yearly')) && "shadow-sm"
+                      )}
+                      onClick={() => onUpdate('chartStep', step)}
+                    >
+                      {t(`bonds.granularity_${step}`)}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
               <div className="flex items-center justify-between p-4 bg-primary/5 rounded-xl border border-primary/10">
                 <div className="space-y-0.5">
                   <Label className="text-sm font-bold text-primary uppercase">{t('bonds.inflation_adjusted')}</Label>

@@ -247,7 +247,12 @@
     "minus_tax": "Pobrany podatek Belki",
     "net_period_gain": "Zysk netto za okres",
     "protection_visualizer": "Ochrona przed inflacją (Wartość realna)",
-    "nominal_gap": "Luka między wartością nominalną a realną"
+    "nominal_gap": "Luka między wartością nominalną a realną",
+    "chart_granularity": "Granulacja Wykresu",
+    "granularity_daily": "Dzienny",
+    "granularity_monthly": "Miesięczny",
+    "granularity_quarterly": "Kwartalny",
+    "granularity_yearly": "Roczny"
     },
     "landing": {
       "hero_title": "Osiągnij Mistrzostwo w Strategii",

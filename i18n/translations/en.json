@@ -251,7 +251,12 @@
     "minus_tax": "Belka Tax Deducted",
     "net_period_gain": "Net Gain for Period",
     "protection_visualizer": "Inflation Protection (Real Value)",
-    "nominal_gap": "Nominal vs Real Gap"
+    "nominal_gap": "Nominal vs Real Gap",
+    "chart_granularity": "Chart Granularity",
+    "granularity_daily": "Daily",
+    "granularity_monthly": "Monthly",
+    "granularity_quarterly": "Quarterly",
+    "granularity_yearly": "Yearly"
     },
     "landing": {
       "hero_title": "Master Your",

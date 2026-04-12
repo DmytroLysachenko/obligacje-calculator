@@ -37,6 +37,8 @@ import { BondComparisonCalculationEnvelope } from "@/features/bond-core/types/sc
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { getBondColor } from "@/shared/constants/bond-colors";
 
+import { MarketAssumptionsForm } from "@/shared/components/MarketAssumptionsForm";
+
 type ComparisonResultItem = BondComparisonCalculationEnvelope["result"][number];
 type ChartDataPoint = {
   date: string;
@@ -47,6 +49,7 @@ export const BondComparisonContainer = () => {
   const { language, t } = useLanguage();
   const [initialInvestment, setInitialInvestment] = useState(10000);
   const [expectedInflation, setExpectedInflation] = useState(3.5);
+  const [expectedNbpRate, setExpectedNbpRate] = useState(5.25);
   const [duration, setDuration] = useState(10);
   const [selectedBonds, setSelectedBonds] = useState<BondType[]>([BondType.EDO, BondType.COI, BondType.ROR]);
   const [envelope, setEnvelope] = useState<BondComparisonCalculationEnvelope | null>(null);
@@ -77,6 +80,7 @@ export const BondComparisonContainer = () => {
           purchaseDate,
           withdrawalDate,
           expectedInflation,
+          expectedNbpRate,
           taxStrategy: TaxStrategy.STANDARD,
           reinvest
         }),
@@ -88,9 +92,9 @@ export const BondComparisonContainer = () => {
     } finally {
       setLoading(false);
     }
-  }, [selectedBonds, initialInvestment, purchaseDate, withdrawalDate, expectedInflation, reinvest]);
+  }, [selectedBonds, initialInvestment, purchaseDate, withdrawalDate, expectedInflation, expectedNbpRate, reinvest]);
 
-  const debouncedInputs = useDebounce({ selectedBonds, initialInvestment, purchaseDate, withdrawalDate, expectedInflation, reinvest }, 300);
+  const debouncedInputs = useDebounce({ selectedBonds, initialInvestment, purchaseDate, withdrawalDate, expectedInflation, expectedNbpRate, reinvest }, 300);
 
   // Auto calculate on debounced inputs change
   useEffect(() => {
@@ -101,6 +105,12 @@ export const BondComparisonContainer = () => {
     if (e.key === 'Enter' && isDirty) {
       calculateComparison();
     }
+  };
+
+  const onUpdateAssumption = (key: string, value: unknown) => {
+    setIsDirty(true);
+    if (key === 'expectedInflation') setExpectedInflation(value as number);
+    if (key === 'expectedNbpRate') setExpectedNbpRate(value as number);
   };
 
   const toggleBond = (type: BondType) => {
@@ -198,17 +208,12 @@ const formatCurrency = (val: number) =>
               </div>
 
               <div className="space-y-4 pt-4 border-t border-dashed">
-                <div className="flex justify-between">
-                  <Label className="font-bold">{t('bonds.inflation_rate')}</Label>
-                  <span className="font-black text-orange-600">{expectedInflation}%</span>
-                </div>
-                <Slider 
-                  value={[expectedInflation]} 
-                  min={0} max={20} step={0.1} 
-                  onValueChange={([v]) => {
-                    setExpectedInflation(v);
-                    setIsDirty(true);
-                  }} 
+                <MarketAssumptionsForm
+                  expectedInflation={expectedInflation}
+                  expectedNbpRate={expectedNbpRate}
+                  bondType={selectedBonds.includes(BondType.ROR) || selectedBonds.includes(BondType.DOR) ? BondType.ROR : BondType.EDO}
+                  onUpdate={onUpdateAssumption}
+                  compact
                 />
               </div>
 
