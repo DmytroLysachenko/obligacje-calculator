@@ -1,16 +1,38 @@
 import { db } from "@/db";
-import { dataSeries, dataPoints } from "@/db/schema";
-import { eq, and, gte, lte, asc, inArray } from "drizzle-orm";
+import { dataSeries, dataPoints, taxRules } from "@/db/schema";
+import { eq, and, gte, lte, asc, inArray, desc } from "drizzle-orm";
 import { cache } from "react";
 import { HISTORICAL_RETURNS, type MonthlyReturn } from "@/features/bond-core/constants/historical-data";
 
 import { CalculationDataFreshness } from "@/features/bond-core/types/scenarios";
 import { differenceInDays, parseISO, format } from "date-fns";
+import { BondDefinition } from "@/features/bond-core/constants/bond-definitions";
+import { BondType, InterestPayout } from "@/features/bond-core/types";
+
+// High-performance cache for macro data and definitions
+const macroCache = new Map<string, { data: unknown, timestamp: number }>();
+const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
+
+function getCached<T>(key: string): T | null {
+  const cached = macroCache.get(key);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.data as T;
+  }
+  return null;
+}
+
+function setCache(key: string, data: unknown) {
+  macroCache.set(key, { data, timestamp: Date.now() });
+}
 
 /**
  * Calculates the global data freshness status based on the oldest macro series.
  */
 export const getGlobalDataFreshness = cache(async (): Promise<CalculationDataFreshness> => {
+  const cacheKey = 'global-freshness';
+  const cached = getCached<CalculationDataFreshness>(cacheKey);
+  if (cached) return cached;
+
   const allSeries = await db.query.dataSeries.findMany();
   
   if (allSeries.length === 0) {
@@ -45,11 +67,13 @@ export const getGlobalDataFreshness = cache(async (): Promise<CalculationDataFre
   const daysOld = differenceInDays(today, oldestDate);
   const status = daysOld > STALE_THRESHOLD_DAYS ? 'stale' : 'fresh';
 
-  return {
-    status,
+  const result: CalculationDataFreshness = {
+    status: status as import('@/features/bond-core/types/scenarios').DataFreshnessStatus,
     asOf: format(oldestDate, 'yyyy-MM'),
     usedFallback
   };
+  setCache(cacheKey, result);
+  return result;
 });
 
 const CPI_SLUGS = ['pl-cpi', 'inflation-pl'];
@@ -76,6 +100,10 @@ interface MultiAssetHistoryEnvelope {
  * Fetches historical data for multiple indicators and returns them as a map keyed by YYYY-MM.
  */
 export const getHistoricalDataMap = cache(async (fromDate: string, toDate: string) => {
+  const cacheKey = `historical-map-${fromDate}-${toDate}`;
+  const cached = getCached<Record<string, { inflation?: number; nbpRate?: number }>>(cacheKey);
+  if (cached) return cached;
+
   // Find the IDs for the relevant series
   const series = await db.query.dataSeries.findMany({
     where: inArray(dataSeries.slug, [...CPI_SLUGS, ...NBP_RATE_SLUGS]),
@@ -99,16 +127,6 @@ export const getHistoricalDataMap = cache(async (fromDate: string, toDate: strin
 
   const map: Record<string, { inflation?: number; nbpRate?: number }> = {};
   
-  // Apply fallback data first
-  HISTORICAL_RETURNS.forEach(item => {
-    if (item.date >= fromDate.substring(0, 7) && item.date <= toDate.substring(0, 7)) {
-      map[item.date] = {
-        inflation: item.inflation,
-        nbpRate: item.nbpRate
-      };
-    }
-  });
-
   // Overwrite with real database points if available
   points.forEach(item => {
     const key = item.date.substring(0, 7); // YYYY-MM
@@ -119,50 +137,34 @@ export const getHistoricalDataMap = cache(async (fromDate: string, toDate: strin
     if (item.seriesId === nbpSeries?.id) map[key].nbpRate = val;
   });
 
+  setCache(cacheKey, map);
   return map;
 });
-
-/**
- * LEGACY - Keep for compatibility if needed elsewhere, but updated to use new schema
- */
-export const getIndicatorHistory = cache(async (slug: string, fromDate: string, toDate: string) => {
-  const series = await db.query.dataSeries.findFirst({
-    where: eq(dataSeries.slug, slug),
-  });
-
-  if (!series) return [];
-
-  return await db.query.dataPoints.findMany({
-    where: and(
-      eq(dataPoints.seriesId, series.id),
-      gte(dataPoints.date, fromDate),
-      lte(dataPoints.date, toDate)
-    ),
-    orderBy: [asc(dataPoints.date)],
-  });
-});
-
-import { BondDefinition, BOND_DEFINITIONS } from "@/features/bond-core/constants/bond-definitions";
-import { BondType, InterestPayout } from "@/features/bond-core/types";
 
 /**
  * Fetches all bond definitions from the database and maps them to BondDefinition interface.
  */
 export const getBondDefinitions = cache(async (): Promise<BondDefinition[]> => {
+  const cacheKey = 'bond-definitions';
+  const cached = getCached<BondDefinition[]>(cacheKey);
+  if (cached) return cached;
+
   const bonds = await db.query.polishBonds.findMany();
   
-  return bonds.map(b => {
+  const result = bonds.map(b => {
     const symbol = b.symbol as BondType;
-    const fallback = BOND_DEFINITIONS[symbol];
     
     return {
       type: symbol,
       name: b.symbol,
       fullName: {
         pl: b.fullName,
-        en: fallback?.fullName.en || b.fullName,
+        en: b.fullNameEn || b.fullName,
       },
-      description: fallback?.description || { pl: '', en: '' },
+      description: {
+        pl: b.description || '',
+        en: b.descriptionEn || '',
+      },
       duration: b.durationDays / 365,
       nominalValue: parseFloat(b.nominalValue || "100"),
       isCapitalized: (b.capitalizationFreqDays || 0) > 0,
@@ -176,6 +178,9 @@ export const getBondDefinitions = cache(async (): Promise<BondDefinition[]> => {
       rebuyDiscount: parseFloat(b.rolloverDiscount || "0"),
     };
   });
+
+  setCache(cacheKey, result);
+  return result;
 });
 
 export const getBondDefinitionsMap = cache(async (): Promise<Record<BondType, BondDefinition>> => {
@@ -184,6 +189,30 @@ export const getBondDefinitionsMap = cache(async (): Promise<Record<BondType, Bo
     acc[def.type] = def;
     return acc;
   }, {} as Record<BondType, BondDefinition>);
+});
+
+/**
+ * Fetches tax limits for a specific year from the DB.
+ */
+export const getTaxRulesForYear = cache(async (year: number) => {
+  const cacheKey = `tax-rules-${year}`;
+  const cached = getCached<typeof taxRules.$inferSelect>(cacheKey);
+  if (cached) return cached;
+
+  const rules = await db.query.taxRules.findFirst({
+    where: eq(taxRules.year, year),
+  });
+
+  if (!rules) {
+    // Fallback to latest available year
+    const latest = await db.query.taxRules.findFirst({
+      orderBy: [desc(taxRules.year)],
+    });
+    return latest;
+  }
+
+  setCache(cacheKey, rules);
+  return rules;
 });
 
 const getSeriesPointsByAliases = async (aliases: string[], fromDate: string, toDate: string) => {
@@ -230,6 +259,10 @@ const buildMonthlyPercentChangeMap = (series: { date: string; value: number }[])
 };
 
 export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnvelope> => {
+  const cacheKey = 'multi-asset-history';
+  const cached = getCached<MultiAssetHistoryEnvelope>(cacheKey);
+  if (cached) return cached;
+
   const fallbackCoverageStart = HISTORICAL_RETURNS[0]?.date ?? '2020-01';
   const fallbackCoverageEnd = HISTORICAL_RETURNS[HISTORICAL_RETURNS.length - 1]?.date ?? '2024-06';
   const fromDate = '1990-01-01';
@@ -250,7 +283,7 @@ export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnv
     };
 
     if (sp500Points.length < 2 || goldPoints.length < 2 || inflationPoints.length === 0) {
-      return {
+      const fbResult: MultiAssetHistoryEnvelope = {
         data: HISTORICAL_RETURNS,
         source: 'fallback',
         usedFallback: true,
@@ -258,6 +291,8 @@ export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnv
         coverageEnd: fallbackCoverageEnd,
         seriesAvailability,
       };
+      setCache(cacheKey, fbResult);
+      return fbResult;
     }
 
     const sp500Returns = buildMonthlyPercentChangeMap(sp500Points);
@@ -290,7 +325,7 @@ export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnv
       });
 
     if (data.length === 0) {
-      return {
+      const fbResult: MultiAssetHistoryEnvelope = {
         data: HISTORICAL_RETURNS,
         source: 'fallback',
         usedFallback: true,
@@ -298,6 +333,8 @@ export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnv
         coverageEnd: fallbackCoverageEnd,
         seriesAvailability,
       };
+      setCache(cacheKey, fbResult);
+      return fbResult;
     }
 
     const lastSyncedAt = [sp500Points, goldPoints, inflationPoints, nbpPoints]
@@ -306,7 +343,7 @@ export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnv
       .sort()
       .at(-1);
 
-    return {
+    const result: MultiAssetHistoryEnvelope = {
       data,
       source: 'database',
       usedFallback: nbpPoints.length === 0,
@@ -315,6 +352,8 @@ export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnv
       lastSyncedAt,
       seriesAvailability,
     };
+    setCache(cacheKey, result);
+    return result;
   } catch {
     return {
       data: HISTORICAL_RETURNS,

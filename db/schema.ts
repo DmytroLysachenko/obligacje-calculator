@@ -3,7 +3,7 @@ import { type AdapterAccountType } from "next-auth/adapters";
 
 export const instrumentTypeEnum = pgEnum("instrument_type", ["bond", "equity", "commodity", "crypto"]);
 export const interestTypeEnum = pgEnum("interest_type", ["fixed", "floating_nbp", "inflation_linked"]);
-export const seriesCategoryEnum = pgEnum("series_category", ["macro", "instrument", "index", "currency"]);
+export const seriesCategoryEnum = pgEnum("series_category", ["macro", "instrument", "index", "currency", "commodity"]);
 
 /**
  * Metadata for any time-series data (Inflation, NBP Rate, S&P500, etc.)
@@ -55,6 +55,9 @@ export const polishBonds = pgTable("polish_bonds", {
   id: uuid("id").primaryKey().defaultRandom(),
   symbol: text("symbol").notNull().unique(),
   fullName: text("full_name").notNull(),
+  fullNameEn: text("full_name_en"),
+  description: text("description"), // Simplified, could be JSON
+  descriptionEn: text("description_en"),
   durationDays: integer("duration_days").notNull(),
   nominalValue: numeric("nominal_value", { precision: 10, scale: 2 }).default("100.00"),
   capitalizationFreqDays: integer("capitalization_freq_days").default(0),
@@ -68,6 +71,18 @@ export const polishBonds = pgTable("polish_bonds", {
   isFamilyOnly: boolean("is_family_only").default(false),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
+
+export const taxRules = pgTable("tax_rules", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  year: integer("year").notNull(),
+  ikeLimit: numeric("ike_limit", { precision: 12, scale: 2 }).notNull(),
+  ikzeLimit: numeric("ikze_limit", { precision: 12, scale: 2 }).notNull(),
+  standardTaxRate: numeric("standard_tax_rate", { precision: 5, scale: 2 }).default("19.00"),
+  ikzePayoutTaxRate: numeric("ikze_payout_tax_rate", { precision: 5, scale: 2 }).default("5.00"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+  yearIdx: uniqueIndex("tax_year_idx").on(table.year),
+}));
 
 export const investmentInstruments = pgTable("investment_instruments", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -99,7 +114,10 @@ export const userInvestmentLots = pgTable("user_investment_lots", {
   isRebought: boolean("is_rebought").default(false),
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
-});
+}, (table) => ({
+  portfolioIdx: uniqueIndex("lot_portfolio_idx").on(table.portfolioId, table.purchaseDate),
+  purchaseDateIdx: uniqueIndex("lot_purchase_date_idx").on(table.purchaseDate),
+}));
 
 export const bondSeries = pgTable("bond_series", {
   id: uuid("id").primaryKey().defaultRandom(),
