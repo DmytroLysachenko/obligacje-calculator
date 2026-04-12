@@ -13,6 +13,7 @@ import { CalculationResult } from '../../bond-core/types';
 import { SimulationEventType } from '../../bond-core/types/simulation';
 import { useLanguage } from '@/i18n';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Filter, ChevronDown, ChevronUp } from 'lucide-react';
@@ -108,7 +109,17 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
               <TableRow key={`${point.cycleIndex}-${point.periodLabel}`} className={point.isWithdrawal ? "bg-primary/5 font-semibold" : ""}>
                 <TableCell>
                   <div className="flex flex-col gap-1">
-                    <span className="font-medium">{point.periodLabel}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{point.periodLabel}</span>
+                      {point.isProjected !== undefined && (
+                        <span className={cn(
+                          "text-[7px] px-1 rounded uppercase font-black tracking-tighter",
+                          point.isProjected ? "bg-orange-100 text-orange-700" : "bg-blue-100 text-blue-700"
+                        )}>
+                          {point.isProjected ? t('bonds.projected') : t('bonds.historical')}
+                        </span>
+                      )}
+                    </div>
                     <div className="flex flex-wrap gap-1">
                       {point.events?.map((e, idx) => (
                         <Badge key={idx} variant="secondary" className="text-[8px] h-3 px-1 leading-none uppercase tracking-tighter">

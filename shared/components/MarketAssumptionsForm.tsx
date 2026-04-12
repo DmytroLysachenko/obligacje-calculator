@@ -28,6 +28,7 @@ interface MarketAssumptionsFormProps {
   expectedNbpRate?: number;
   bondType: BondType;
   customInflation?: number[];
+  inflationScenario?: 'low' | 'base' | 'high';
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onUpdate: (key: any, value: any) => void;
   compact?: boolean;
@@ -77,6 +78,7 @@ export const MarketAssumptionsForm: React.FC<MarketAssumptionsFormProps> = ({
   expectedNbpRate,
   bondType,
   customInflation,
+  inflationScenario = 'base',
   onUpdate,
   compact = false,
 }) => {
@@ -87,6 +89,7 @@ export const MarketAssumptionsForm: React.FC<MarketAssumptionsFormProps> = ({
   return (
     <div className="space-y-6">
       <div className="space-y-4">
+        {/* ... existing inflation slider and inputs ... */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Label htmlFor="expectedInflation" className={cn("font-bold text-primary uppercase tracking-wider", compact ? "text-[10px]" : "text-xs")}>
@@ -135,6 +138,33 @@ export const MarketAssumptionsForm: React.FC<MarketAssumptionsFormProps> = ({
           step={0.1} 
           onValueChange={([val]) => onUpdate('expectedInflation', val)}
         />
+
+        <div className="space-y-3 pt-4 border-t border-dashed">
+          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+            {t('bonds.inflation_scenarios')}
+          </Label>
+          <div className="grid grid-cols-3 gap-2">
+            {(['low', 'base', 'high'] as const).map((s) => (
+              <Button
+                key={s}
+                variant="outline"
+                size="sm"
+                className={cn(
+                  "h-8 text-[9px] font-bold uppercase",
+                  inflationScenario === s && "bg-primary/10 text-primary border-primary/50"
+                )}
+                onClick={() => onUpdate('inflationScenario', s)}
+              >
+                {t(`bonds.scenario_${s}`)}
+              </Button>
+            ))}
+          </div>
+          <p className="text-[9px] text-muted-foreground italic leading-tight">
+            {inflationScenario === 'low' && "Simulates -1.5% below your base expectation."}
+            {inflationScenario === 'base' && "Uses your selected inflation rate exactly."}
+            {inflationScenario === 'high' && "Simulates +2.5% above your base expectation."}
+          </p>
+        </div>
 
         <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-primary/10 mt-4">
           <Label className="text-xs font-bold">{t('bonds.advanced_inflation')}</Label>

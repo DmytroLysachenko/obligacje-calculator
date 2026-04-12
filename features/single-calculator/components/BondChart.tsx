@@ -175,8 +175,10 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
       isProjected: false,
       inflation: results.timeline[0]?.inflationReference,
       nbp: results.timeline[0]?.nbpReference,
+      low: results.comparisonScenarios ? results.initialInvestment : undefined,
+      high: results.comparisonScenarios ? results.initialInvestment : undefined,
     },
-    ...results.timeline.map((point) => ({
+    ...results.timeline.map((point, idx) => ({
       label: point.periodLabel,
       date: point.periodLabel,
       nominal: Number(point.nominalValueAfterInterest.toFixed(2)),
@@ -187,6 +189,8 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
       interestRate: point.interestRate,
       rateSource: point.rateSource,
       rateMargin: point.rateMarginApplied,
+      low: results.comparisonScenarios?.low[idx]?.nominalValueAfterInterest,
+      high: results.comparisonScenarios?.high[idx]?.nominalValueAfterInterest,
     })),
   ];
 
@@ -203,6 +207,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
           data={chartData}
           margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
         >
+          {/* ... defs and axes ... */}
           <defs>
             <linearGradient
               id="colorNominal"
@@ -313,6 +318,32 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
             fill="url(#colorNominal)"
             animationDuration={1500}
           />
+          {results.comparisonScenarios && (
+            <>
+              <Line
+                yAxisId="left"
+                type="monotone"
+                dataKey="high"
+                name={t("bonds.scenario_high")}
+                stroke="#3b82f6"
+                strokeWidth={1}
+                strokeDasharray="3 3"
+                dot={false}
+                opacity={0.5}
+              />
+              <Line
+                yAxisId="left"
+                type="monotone"
+                dataKey="low"
+                name={t("bonds.scenario_low")}
+                stroke="#3b82f6"
+                strokeWidth={1}
+                strokeDasharray="3 3"
+                dot={false}
+                opacity={0.5}
+              />
+            </>
+          )}
           <Area
             yAxisId="left"
             type="monotone"
