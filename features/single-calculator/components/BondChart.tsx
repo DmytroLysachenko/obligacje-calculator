@@ -12,6 +12,8 @@ import {
   Line,
   ComposedChart,
   TooltipProps,
+  ReferenceArea,
+  ReferenceLine,
 } from "recharts";
 import {
   ValueType,
@@ -56,9 +58,24 @@ const CustomTooltip = ({
     const isProjected = data.isProjected;
     const inflation = data.inflation;
     const nbp = data.nbp;
+    const interestRate = data.interestRate;
+    const rateSource = data.rateSource;
+    const rateMargin = data.rateMargin;
+
+    const getSourceLabel = (source: string) => {
+      switch (source) {
+        case 'fixed_rate': return t('bonds.fixed_rate');
+        case 'first_year_fixed': return t('bonds.first_year_fixed');
+        case 'historical_cpi_lag': return t('bonds.historical_cpi_lag');
+        case 'projected_cpi': return t('bonds.projected_cpi');
+        case 'historical_nbp': return t('bonds.historical_nbp');
+        case 'projected_nbp': return t('bonds.projected_nbp');
+        default: return source;
+      }
+    };
 
     return (
-      <div className="bg-popover border-2 border-primary/20 p-4 shadow-2xl rounded-xl text-popover-foreground min-w-[220px] backdrop-blur-sm bg-opacity-95">
+      <div className="bg-popover border-2 border-primary/20 p-4 shadow-2xl rounded-xl text-popover-foreground min-w-[240px] backdrop-blur-sm bg-opacity-95">
         <div className="flex justify-between items-center mb-3 border-b pb-2 border-border/50">
           <p className="font-black text-xs uppercase tracking-widest">
             {label}
@@ -74,6 +91,21 @@ const CustomTooltip = ({
         </div>
         
         <div className="space-y-3">
+          {interestRate !== undefined && (
+            <div className="bg-muted/30 p-2 rounded-lg border border-border/50 mb-2">
+              <div className="flex justify-between items-center">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase">{t('bonds.interest_rate')}</span>
+                <span className="text-sm font-black text-primary">{interestRate.toFixed(2)}%</span>
+              </div>
+              {rateSource && (
+                <p className="text-[9px] text-muted-foreground italic mt-1">
+                  {getSourceLabel(rateSource)} 
+                  {rateMargin ? ` + ${rateMargin.toFixed(2)}% ${t('bonds.margin_short')}` : ''}
+                </p>
+              )}
+            </div>
+          )}
+
           <div className="space-y-1.5">
             {payload.filter(e => ['nominal', 'real'].includes(e.dataKey as string)).map((entry, index) => (
               <div
@@ -152,8 +184,13 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
       isProjected: point.isProjected,
       inflation: point.inflationReference,
       nbp: point.nbpReference,
+      interestRate: point.interestRate,
+      rateSource: point.rateSource,
+      rateMargin: point.rateMarginApplied,
     })),
   ];
+
+  const firstProjectedIndex = chartData.findIndex(d => d.isProjected);
 
   return (
     <ChartContainer height={400}>
@@ -235,6 +272,28 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
           />
           <Tooltip
             content={<CustomTooltip formatCurrency={formatCurrency} t={t} />}
+          />
+          {firstProjectedIndex !== -1 && (
+            <ReferenceLine
+              x={chartData[firstProjectedIndex].date}
+              stroke="#f59e0b"
+              strokeDasharray="3 3"
+              label={{ value: t('bonds.projection_start'), position: 'top', fill: '#f59e0b', fontSize: 10, fontWeight: 'bold' }}
+            />
+          )}
+          <ReferenceArea
+            yAxisId="right"
+            y1={1.5}
+            y2={3.5}
+            fill="#10b981"
+            fillOpacity={0.05}
+          />
+          <ReferenceArea
+            yAxisId="right"
+            y1={-5}
+            y2={0}
+            fill="#ef4444"
+            fillOpacity={0.05}
           />
           <Legend
             verticalAlign="top"
