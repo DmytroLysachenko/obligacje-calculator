@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { BondInputs, BondType, TaxStrategy } from '../../bond-core/types';
 import { SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
@@ -36,11 +36,37 @@ const DEFAULT_INPUTS: BondInputs = {
   investmentHorizonMonths: defaultHorizonMonths,
 };
 
+interface BondSeries {
+  id: string;
+  seriesCode: string;
+  firstYearRate: string | number;
+  baseMargin: string | number;
+  emissionMonth: string;
+}
+
 export function useBondCalculator() {
   const [inputs, setInputs] = useState<BondInputs>(DEFAULT_INPUTS);
   const [envelope, setEnvelope] = useState<SingleBondCalculationEnvelope | null>(null);
   const [isDirty, setIsDirty] = useState(true);
+  const [availableSeries, setAvailableSeries] = useState<BondSeries[]>([]);
+  const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(null);
+  
   const { isCalculating, isError, clearError, post } = useCalculationRequest();
+
+  const fetchSeries = useCallback(async (symbol: BondType) => {
+    try {
+      const response = await fetch(`/api/calculate/bond-series?symbol=${symbol}`);
+      const data = await response.json();
+      setAvailableSeries(data.result || []);
+    } catch (error) {
+      console.error('Failed to fetch series:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchSeries(inputs.bondType);
+  }, [inputs.bondType, fetchSeries]);
 
   // Derived results for compatibility
   const results = envelope?.result || null;
@@ -85,10 +111,35 @@ export function useBondCalculator() {
   //   calculate();
   // }, []);
 
-  const updateInput = (key: keyof BondInputs, value: string | number | boolean | number[] | undefined) => {
+  const updateInput = (key: string, value: unknown) => {
     setIsDirty(true);
+    if (key === 'selectedSeriesId') {
+      const seriesId = value as string | null;
+      setSelectedSeriesId(seriesId);
+      if (seriesId === 'current') {
+        const def = BOND_DEFINITIONS[inputs.bondType];
+        setInputs(prev => ({
+          ...prev,
+          firstYearRate: def.firstYearRate,
+          margin: def.margin,
+        }));
+        return;
+      }
+      const series = availableSeries.find(s => s.id === seriesId);
+      if (series) {
+        setInputs(prev => ({
+          ...prev,
+          firstYearRate: Number(series.firstYearRate),
+          margin: Number(series.baseMargin),
+          purchaseDate: series.emissionMonth,
+          withdrawalDate: getWithdrawalDateFromMonths(series.emissionMonth, prev.investmentHorizonMonths ?? Math.round(prev.duration * 12)),
+        }));
+      }
+      return;
+    }
+
     setInputs((prev) => {
-      const newInputs = { ...prev, [key]: value };
+      const newInputs = { ...prev, [key as keyof BondInputs]: value };
 
       if (key === 'purchaseDate') {
         const horizonMonths = prev.investmentHorizonMonths ?? getHorizonMonths(prev.purchaseDate, prev.withdrawalDate);
@@ -116,6 +167,7 @@ export function useBondCalculator() {
 
   const setBondType = (type: BondType) => {
     setIsDirty(true);
+    setSelectedSeriesId('current');
     const def = BOND_DEFINITIONS[type];
     const previousHorizonMonths = getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);
     const fallbackHorizonMonths = Math.round(def.duration * 12);
@@ -141,6 +193,8 @@ export function useBondCalculator() {
     inputs,
     results,
     envelope,
+    availableSeries,
+    selectedSeriesId,
     warnings: envelope?.warnings || [],
     assumptions: envelope?.assumptions || [],
     calculationNotes: envelope?.calculationNotes || [],
