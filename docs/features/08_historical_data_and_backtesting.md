@@ -18,10 +18,12 @@ To provide realistic simulations, the platform relies on high-quality historical
 - **Data Gap:** For the current month and future months, the engine defaults to a user-defined "Expected Inflation" value.
 
 ## 3. Backtesting Logic
-Users can select a historical start date (e.g., "What if I bought EDO in 2012?").
-- The engine fetches the exact bond rates active in 2012.
-- It applies the actual CPI data from 2012–2022.
-- It shows the *realized* net return.
+Users can select a historical start date (e.g., "What if I bought COI in 2018?").
+- **Automatic Series Discovery:** The engine queries the database to find the exact bond series active on the selected purchase date.
+- **Parameter Mapping:** It automatically applies the first-year rate and margin that were available during that specific emission month.
+- **Historical Data Injection:** It applies actual GUS CPI and NBP rates for all months from purchase until "Today".
+- **Hybrid Projections:** For periods beyond today, it seamlessly switches to the user's "Expected Inflation" assumptions.
+- **Visual Feedback:** Timeline points are badged as "Historical" or "Projected" for full transparency.
 
 ## 4. Currency Normalization
 - Historical data for S&P 500 is in USD.

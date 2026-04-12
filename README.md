@@ -4,10 +4,13 @@ The most trusted, accurate, and educational investment simulation platform for P
 
 ## Core Features
 - **Production-Grade Bond Math:** Exact interest accrual, day-count conventions, and Belka tax rounding.
+- **Smart Bond Finder:** Multi-bond parallel simulation to recommend optimal choices for any duration.
+- **Tax Optimization:** Automatic modeling of annual IKE/IKZE limits and standard account overflow.
 - **Real Data Integration:** Automated sync with NBP (rates) and Stooq (S&P 500, Gold).
-- **Background Sync:** Reliable cron-driven data updates via Inngest.
-- **Unified Calculation Domain:** Shared engine across Single, Regular, and Comparison simulations.
-- **User Portfolios:** Scaffolding for tracking real investments with authenticated or guest access.
+- **Portfolio Intelligence:** Master growth projection, liquidity calendar, and tax health audits.
+- **Advanced Visualization:** Inflation range scenarios (Low/Base/High) and historical backtesting.
+- **Professional Reporting:** Step-by-step calculation audit traces and PDF report export.
+- **User Portfolios:** Private tracking of real investments with secure authenticated access.
 
 ## Tech Stack
 - **Framework:** Next.js 16 (App Router)

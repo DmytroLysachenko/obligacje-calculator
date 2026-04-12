@@ -13,13 +13,14 @@ The Notebook allows users to record their purchases without linking to a bank or
 
 ## 3. Dashboard Views
 - **Total Value:** Sum of all current net values.
-- **Maturity Calendar:** A timeline showing when specific bonds will expire.
-- **Expected Payouts:** A bar chart of upcoming coupon payments (for COI bonds).
-- **Liquidation Value:** "If I sold everything today, how much would hit my bank account?" (Accounts for early redemption fees).
+- **Aggregated Growth:** Area chart showing the evolution of the entire portfolio value over 10+ years.
+- **Liquidity Calendar:** Forecast of cash-flow events, grouping maturities by month to identify "dead zones".
+- **Tax Optimization Audit:** Diagnostic tool flagging taxable holdings that could benefit from IKE/IKZE wrappers.
 
 ## 4. Performance Metrics
 - **Personal Inflation Rate:** How your specific portfolio is performing against current CPI.
-- **Weighted Average Yield:** The effective interest rate across all holdings.
+- **Tax Savings Tracker:** Total amount of Belka tax avoided through tax-sheltered accounts.
+- **Strategy Insight:** Automated advice on ladder maintenance and reinvestment frequency.
 
 ## 5. Persistence & Privacy
 - **Anonymous Mode:** Data is stored in the browser's `IndexedDB`. If the user clears their cache, data is lost.

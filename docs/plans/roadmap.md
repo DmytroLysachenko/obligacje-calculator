@@ -26,11 +26,19 @@
 - [x] Advanced IKZE modeling with tax relief and payout tax.
 - [x] Extensive regression test suite (40+ cases).
 
-## Phase 5: Personal Features (In Progress)
+## Phase 5: Personal Features (Done)
 - [x] User authentication (NextAuth).
 - [x] Private portfolio tracking (Notebook).
-- [ ] Portfolio performance sharing.
-- [ ] Export to PDF/Excel.
+- [x] Portfolio performance tracking.
+- [x] Export to PDF.
+
+## Phase 6: Intelligence & Optimization (Done)
+- [x] **Smart Bond Finder:** Multi-bond parallel simulation for duration-based recommendations.
+- [x] **Tax Wrapper Limits:** Modeling annual contribution caps and taxable overflows.
+- [x] **Portfolio Intelligence:** Liquidity calendars and tax health audits.
+- [x] **Inflation Scenarios:** outcome volatility visualization (Low/Base/High).
+- [x] **Historical Backtesting:** Automatic series matching for past purchases.
+- [x] **Transparency Audit:** Step-by-step interest calculation traces.
 
 ---
 

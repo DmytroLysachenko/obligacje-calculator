@@ -16,9 +16,15 @@ Comparing a Bond to Bitcoin is like comparing an "Escalator" to a "Rollercoaster
 - "Show me 10,000 PLN in EDO vs. S&P 500 between 2015 and 2025."
 - Uses actual historical prices and CPI.
 
-### B. Probabilistic Comparison (Future)
-- "Show me 10,000 PLN in EDO (Fixed Rules) vs. S&P 500 (Assuming 8% average growth with 15% volatility)."
-- Uses a simplified Monte Carlo approach to show a "range of outcomes" for the risky asset.
+### C. Smart Bond Finder (Optimizer)
+- "I want to invest 50,000 PLN for exactly 4.5 years. Which bond is best?"
+- **Parallel Simulation:** The engine runs all 8+ bond types simultaneously for the exact requested duration.
+- **Duration Normalization:** It accounts for early redemption fees if the horizon doesn't match maturity.
+- **Ranked Recommendations:** Returns a ranked list based on `netPayoutValue` with a clear "Winner" reason.
+
+### D. Inflation Scenario Volatility
+- Users can toggle between **Low / Base / High** inflation paths.
+- **Visual Range:** Charts display dotted lines for alternative scenarios, showing how indexed bonds (EDO/COI) respond to macro changes compared to fixed-rate bonds.
 
 ## 3. Visualization Strategy
 - **Overlay Chart:** Multiple lines on one time-axis.
