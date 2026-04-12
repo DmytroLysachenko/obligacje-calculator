@@ -1,7 +1,6 @@
-
 "use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { UserPortfolio, UserInvestmentLot } from '@/db/schema';
 import { useLanguage } from '@/i18n';
 import { 
@@ -12,7 +11,13 @@ import {
   ArrowUpRight,
   Loader2,
   ExternalLink,
-  Plus
+  Plus,
+  CalendarDays,
+  Zap,
+  Calendar,
+  ShieldCheck,
+  AlertCircle,
+  Lightbulb
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,6 +25,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format, addDays, isAfter, parseISO } from 'date-fns';
 import { BOND_DEFINITIONS } from '@/features/bond-core/constants/bond-definitions';
 import { BondType } from '@/features/bond-core/types';
+import { 
+  AreaChart, 
+  Area, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+} from 'recharts';
+import { PortfolioSimulationResult } from '@/features/bond-core/types/scenarios';
+import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 
 interface PortfolioDetailsProps {
   portfolio: UserPortfolio;
@@ -30,6 +46,8 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
   const { t, language } = useLanguage();
   const [lots, setLots] = useState<UserInvestmentLot[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [simulation, setSimulation] = useState<PortfolioSimulationResult | null>(null);
+  const [isSimulating, setIsSimulating] = useState(false);
 
   const fetchLots = useCallback(async () => {
     setIsLoading(true);
@@ -46,22 +64,75 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
     }
   }, [portfolio.id]);
 
+  const runSimulation = useCallback(async () => {
+    if (lots.length === 0) return;
+    setIsSimulating(true);
+    try {
+      const response = await fetch('/api/portfolio/simulate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ portfolioId: portfolio.id }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setSimulation(data.result?.result || data.result);
+      }
+    } catch (err) {
+      console.error('Simulation failed:', err);
+    } finally {
+      setIsSimulating(false);
+    }
+  }, [lots.length, portfolio.id]);
+
   useEffect(() => {
     fetchLots();
   }, [fetchLots]);
 
+  useEffect(() => {
+    if (lots.length > 0) {
+      runSimulation();
+    }
+  }, [lots, runSimulation]);
+
+  const formatCurrency = useCallback((val: number) => 
+    new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', { 
+      style: 'currency', 
+      currency: 'PLN', 
+      maximumFractionDigits: 0 
+    }).format(val), [language]);
+
   const totalValue = lots.reduce((acc, lot) => acc + (Number(lot.amount) * 100), 0);
 
-  const nextMaturity = lots.length > 0 ? lots.map(lot => {
-    const def = BOND_DEFINITIONS[lot.bondType as BondType];
-    if (!def) return null;
+  const upcomingMaturities = useMemo(() => {
+    if (!lots.length) return [];
+    return lots.map(lot => {
+      const def = BOND_DEFINITIONS[lot.bondType as BondType];
+      const maturityDate = addDays(parseISO(lot.purchaseDate), Math.round(def.duration * 365));
+      return {
+        ...lot,
+        maturityDate,
+        formattedMaturity: format(maturityDate, 'MMMM yyyy'),
+        value: Number(lot.amount) * 100
+      };
+    })
+    .filter(m => isAfter(m.maturityDate, new Date()))
+    .sort((a, b) => a.maturityDate.getTime() - b.maturityDate.getTime());
+  }, [lots]);
+
+  const nextMaturity = upcomingMaturities[0] || null;
+
+  const taxAudit = useMemo(() => {
+    const standardLots = lots.filter(l => !l.isRebought); 
+    const totalStandardValue = standardLots.reduce((acc, lot) => acc + (Number(lot.amount) * 100), 0);
+    const potentialSavings = totalStandardValue * 0.05; 
+
     return {
-      date: addDays(parseISO(lot.purchaseDate), Math.round(def.duration * 365)),
-      lot
+      hasLeaks: totalStandardValue > 0,
+      totalStandardValue,
+      potentialSavings,
+      suggestion: `You have ${formatCurrency(totalStandardValue)} in potentially taxable accounts. Moving these to an IKE/IKZE wrapper could increase your long-term net yield.`
     };
-  })
-  .filter(m => m !== null && isAfter(m.date, new Date()))
-  .sort((a, b) => a!.date.getTime() - b!.date.getTime())[0] : null;
+  }, [lots, formatCurrency]);
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 pb-20">
@@ -91,7 +162,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
           <CardHeader className="pb-2">
             <CardDescription className="text-white/70 font-black uppercase text-[10px] tracking-widest">{t('notebook.total_invested')}</CardDescription>
             <CardTitle className="text-4xl font-black">
-              {new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', { style: 'currency', currency: 'PLN', maximumFractionDigits: 0 }).format(totalValue)}
+              {formatCurrency(totalValue)}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -118,12 +189,12 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
           <CardHeader className="pb-2">
             <CardDescription className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">{t('notebook.next_maturity')}</CardDescription>
             <CardTitle className="text-2xl font-black text-slate-800">
-              {nextMaturity ? format(nextMaturity.date, 'dd.MM.yyyy') : t('notebook.next_maturity_placeholder')}
+              {nextMaturity ? format(nextMaturity.maturityDate, 'dd.MM.yyyy') : t('notebook.next_maturity_placeholder')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-[10px] text-primary font-black uppercase tracking-widest">
-              {nextMaturity ? nextMaturity.lot.bondType : '-'}
+              {nextMaturity ? nextMaturity.bondType : '-'}
             </p>
           </CardContent>
         </Card>
@@ -142,67 +213,195 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
         </TabsList>
 
         <TabsContent value="lots" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">{t('notebook.holdings')}</h3>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4">
-            {isLoading ? (
-              <div className="py-20 flex flex-col items-center justify-center gap-4 text-muted-foreground">
-                <Loader2 className="h-8 w-8 animate-spin" />
-                <p className="font-bold uppercase text-xs tracking-widest">{t('notebook.updating')}</p>
-              </div>
-            ) : lots.length === 0 ? (
-              <div className="py-20 text-center bg-muted/20 border-2 border-dashed rounded-3xl space-y-4">
-                <div className="p-4 bg-muted w-fit mx-auto rounded-full text-muted-foreground">
-                  <History className="h-8 w-8" />
-                </div>
-                <p className="text-muted-foreground font-bold uppercase text-xs tracking-widest">{t('notebook.no_lots')}</p>
-              </div>
-            ) : (
-              lots.map((lot) => (
-                <Card key={lot.id} className="group hover:border-primary/30 transition-all border-2 shadow-sm rounded-2xl overflow-hidden">
-                  <CardContent className="p-0">
-                    <div className="flex flex-col md:flex-row items-center">
-                      <div className="p-6 bg-muted/30 border-r border-dashed border-primary/10 min-w-[120px] flex flex-col items-center justify-center">
-                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1">{t('notebook.type')}</span>
-                        <span className="text-2xl font-black text-primary">{lot.bondType}</span>
-                      </div>
-                      <div className="flex-1 p-6 grid grid-cols-2 md:grid-cols-4 gap-8">
-                        <div>
-                          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{t('notebook.amount')}</p>
-                          <p className="text-lg font-black">{lot.amount} {t('notebook.bond_count')}</p>
-                          <p className="text-[10px] font-bold text-slate-400">{t('notebook.nominal_val')}: {Number(lot.amount) * 100} PLN</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{t('notebook.purchase_date')}</p>
-                          <p className="text-lg font-black">{format(new Date(lot.purchaseDate), 'MMM yyyy')}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{t('notebook.current_yield')}</p>
-                          <p className="text-lg font-black text-green-600">{t('notebook.current_yield_placeholder')}</p>
-                        </div>
-                        <div className="flex items-center justify-end gap-2">
-                          <Button variant="outline" size="icon" className="rounded-lg hover:border-primary hover:text-primary transition-colors">
-                            <ExternalLink className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-6">
+              <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">{t('notebook.holdings')}</h3>
+              <div className="grid grid-cols-1 gap-4">
+                {isLoading ? (
+                  <div className="py-20 flex flex-col items-center justify-center gap-4 text-muted-foreground">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                    <p className="font-bold uppercase text-xs tracking-widest">{t('notebook.updating')}</p>
+                  </div>
+                ) : lots.length === 0 ? (
+                  <div className="py-20 text-center bg-muted/20 border-2 border-dashed rounded-3xl space-y-4">
+                    <div className="p-4 bg-muted w-fit mx-auto rounded-full text-muted-foreground">
+                      <History className="h-8 w-8" />
                     </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
+                    <p className="text-muted-foreground font-bold uppercase text-xs tracking-widest">{t('notebook.no_lots')}</p>
+                  </div>
+                ) : (
+                  lots.map((lot) => (
+                    <Card key={lot.id} className="group hover:border-primary/30 transition-all border-2 shadow-sm rounded-2xl overflow-hidden">
+                      <CardContent className="p-0">
+                        <div className="flex flex-col md:flex-row items-center">
+                          <div className="p-6 bg-muted/30 border-r border-dashed border-primary/10 min-w-[120px] flex flex-col items-center justify-center">
+                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1">{t('notebook.type')}</span>
+                            <span className="text-2xl font-black text-primary">{lot.bondType}</span>
+                          </div>
+                          <div className="flex-1 p-6 grid grid-cols-2 md:grid-cols-4 gap-8">
+                            <div>
+                              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{t('notebook.amount')}</p>
+                              <p className="text-lg font-black">{lot.amount} {t('notebook.bond_count')}</p>
+                              <p className="text-[10px] font-bold text-slate-400">{t('notebook.nominal_val')}: {Number(lot.amount) * 100} PLN</p>
+                            </div>
+                            <div>
+                              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{t('notebook.purchase_date')}</p>
+                              <p className="text-lg font-black">{format(new Date(lot.purchaseDate), 'MMM yyyy')}</p>
+                            </div>
+                            <div>
+                              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{t('notebook.current_yield')}</p>
+                              <p className="text-lg font-black text-green-600">{t('notebook.current_yield_placeholder')}</p>
+                            </div>
+                            <div className="flex items-center justify-end gap-2">
+                              <Button variant="outline" size="icon" className="rounded-lg hover:border-primary hover:text-primary transition-colors">
+                                <ExternalLink className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <Card className="border-2 border-primary/10 shadow-lg rounded-2xl">
+                <CardHeader className="pb-2 border-b border-dashed">
+                  <div className="flex items-center gap-2">
+                    <CalendarDays className="h-4 w-4 text-primary" />
+                    <CardTitle className="text-sm font-black uppercase tracking-widest">Liquidity Calendar</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-4">
+                  {upcomingMaturities.length > 0 ? (
+                    <div className="space-y-4">
+                      {upcomingMaturities.slice(0, 5).map((m, idx) => (
+                        <div key={idx} className="flex justify-between items-center p-3 bg-muted/30 rounded-xl border border-border/50">
+                          <div>
+                            <p className="text-[10px] font-black text-primary uppercase tracking-tighter">{m.formattedMaturity}</p>
+                            <p className="text-xs font-bold">{m.bondType} ({m.amount} {t('notebook.bond_count')})</p>
+                          </div>
+                          <p className="font-black text-sm">{formatCurrency(m.value)}</p>
+                        </div>
+                      ))}
+                      {upcomingMaturities.length > 5 && (
+                        <p className="text-center text-[10px] font-bold text-muted-foreground uppercase">+ {upcomingMaturities.length - 5} more events</p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="py-8 text-center space-y-2">
+                      <Calendar className="h-8 w-8 mx-auto text-muted-foreground/30" />
+                      <p className="text-xs text-muted-foreground">No upcoming liquidity events.</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card className="border-2 border-green-600/20 bg-green-50/30 rounded-2xl shadow-sm overflow-hidden">
+                <CardHeader className="pb-2 border-b border-green-100 bg-green-100/20">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="h-4 w-4 text-green-600" />
+                    <CardTitle className="text-sm font-black uppercase tracking-widest text-green-800">Tax Health Audit</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-4 space-y-4">
+                  {taxAudit.hasLeaks ? (
+                    <>
+                      <div className="flex items-start gap-3">
+                        <AlertCircle className="h-5 w-5 text-orange-500 shrink-0 mt-0.5" />
+                        <p className="text-xs text-slate-700 leading-relaxed text-balance">
+                          {taxAudit.suggestion}
+                        </p>
+                      </div>
+                      <div className="bg-white/50 border border-green-200 rounded-xl p-3 flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <Lightbulb className="h-4 w-4 text-green-600" />
+                          <span className="text-[10px] font-bold uppercase text-green-700">Estimated Savings</span>
+                        </div>
+                        <span className="font-black text-green-700">~{formatCurrency(taxAudit.potentialSavings)}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="py-4 text-center">
+                      <p className="text-xs font-bold text-green-700">Your portfolio is tax-optimized! ✨</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card className="bg-amber-50 border-amber-200 border-2 rounded-2xl shadow-sm overflow-hidden">
+                <CardContent className="p-4 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-4 w-4 text-amber-600 fill-amber-600" />
+                    <p className="text-[10px] font-black uppercase text-amber-800 tracking-widest">Strategy Insight</p>
+                  </div>
+                  <p className="text-xs text-amber-900 leading-relaxed font-medium">
+                    {upcomingMaturities.length < 3 
+                      ? "Your portfolio has low liquidity frequency. Consider buying bonds in monthly intervals to create a steady cash-flow stream."
+                      : "You have a good maturity spread. Reinvesting your next payout will maintain your ladder's strength."}
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </TabsContent>
 
         <TabsContent value="analytics">
-          <Card className="border-dashed border-2 py-20 text-center">
-            <CardContent className="space-y-4">
-              <PieChart className="h-12 w-12 mx-auto text-muted-foreground opacity-20" />
-              <p className="text-muted-foreground font-black uppercase text-xs tracking-widest">{t('notebook.detailed_soon')}</p>
-            </CardContent>
-          </Card>
+          <div className="space-y-6">
+            <Card className="border-2 shadow-xl rounded-3xl overflow-hidden">
+              <CardHeader className="bg-muted/30 border-b border-dashed">
+                <CardTitle className="text-xl font-black uppercase tracking-tight">{t('bonds.growth_projection')}</CardTitle>
+                <CardDescription>Aggregated nominal value evolution across all lots</CardDescription>
+              </CardHeader>
+              <CardContent className="p-6">
+                {isSimulating ? (
+                  <div className="h-[400px] flex flex-col items-center justify-center gap-4">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <p className="text-xs font-black uppercase tracking-widest text-muted-foreground animate-pulse">Running Portfolio Simulation...</p>
+                  </div>
+                ) : simulation?.aggregatedTimeline ? (
+                  <div className="h-[400px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={simulation.aggregatedTimeline} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="colorNet" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>
+                            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+                        <XAxis 
+                          dataKey="date" 
+                          tick={{fontSize: 10}} 
+                          tickFormatter={(val) => format(new Date(val), 'yyyy')}
+                          minTickGap={50}
+                        />
+                        <YAxis tick={{fontSize: 10}} tickFormatter={(val) => `${val/1000}k`} />
+                        <Tooltip 
+                          labelFormatter={(val) => format(new Date(val as string), 'MMMM yyyy')}
+                          formatter={(val: ValueType | undefined) => [formatCurrency(Number(val || 0)), 'Total Value']}
+                        />
+                        <Area 
+                          type="monotone" 
+                          dataKey="totalNetValue" 
+                          stroke="#3b82f6" 
+                          strokeWidth={3}
+                          fillOpacity={1} 
+                          fill="url(#colorNet)" 
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                ) : (
+                  <div className="h-[400px] flex items-center justify-center text-muted-foreground italic">
+                    Add lots to see your portfolio evolution.
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
