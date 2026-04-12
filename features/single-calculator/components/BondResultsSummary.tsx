@@ -1,13 +1,15 @@
 'use client';
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { CalculationResult } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
-import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from 'recharts';
+import { cn } from '@/lib/utils';
+import { exportToCSV } from '@/shared/utils/csv-export';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, BarChart, Bar, XAxis, YAxis } from 'recharts';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 
 import { 
@@ -15,40 +17,58 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Info, HelpCircle, Download, AlertTriangle, TrendingUp, TrendingDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { exportToCSV } from "@/shared/utils/csv-export";
-import { cn } from "@/lib/utils";
-import { ChartContainer } from "@/shared/components/charts/ChartContainer";
+import { HelpCircle, Download, AlertTriangle, TrendingUp, PiggyBank, Info } from "lucide-react";
+import { CalculationAuditTrace } from './CalculationAuditTrace';
 
 interface BondResultsSummaryProps {
   results: CalculationResult;
 }
 
-const COLORS = ['#3b82f6', '#10b981', '#ef4444', '#f59e0b'];
-
 const containerVariant = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 }
+    transition: {
+      staggerChildren: 0.1
+    }
   }
 };
 
 const itemVariant = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300 } }
+  hidden: { y: 20, opacity: 0 },
+  show: { y: 0, opacity: 1 }
 };
 
 export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results }) => {
   const { t, language } = useLanguage();
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', {
+      style: 'currency',
+      currency: 'PLN',
+    }).format(value);
+  };
+
+  const hasTaxSavings = results.taxSavings && results.taxSavings > 0;
+  const comparisonData = hasTaxSavings ? [
+    {
+      name: t('bonds.wrapper_profit'),
+      profit: results.totalProfit,
+      fill: '#10b981'
+    },
+    {
+      name: t('bonds.standard_profit'),
+      profit: results.totalProfit - (results.taxSavings || 0),
+      fill: '#64748b'
+    }
+  ] : [];
 
   // Analyzer Logic: Check if withdrawal is just before maturity/capitalization
   const isNearMaturity = results.isEarlyWithdrawal && 
     results.timeline.some(p => p.isMaturity && p.year > 0);
   
   const lastPoint = results.timeline[results.timeline.length - 1];
-  const nextMilestoneProfit = lastPoint.interestEarned * 0.5; // Rough estimate of lost potential
+  const nextMilestoneProfit = lastPoint?.interestEarned * 0.5 || 0; 
 
   const handleExport = () => {
     const csvData = results.timeline.map(p => ({
@@ -63,13 +83,6 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
     exportToCSV(csvData, `bond_simulation_${new Date().toISOString().split('T')[0]}`);
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', {
-      style: 'currency',
-      currency: 'PLN',
-    }).format(value);
-  };
-
   const initialCapital = results.grossValue - results.totalProfit - results.totalTax - results.totalEarlyWithdrawalFee;
   
   const chartData = [
@@ -78,6 +91,8 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
     { name: t('bonds.tax'), value: Math.max(0, results.totalTax) },
     { name: t('bonds.early_withdrawal_fee'), value: Math.max(0, results.totalEarlyWithdrawalFee) },
   ].filter(d => d.value > 0);
+
+  const COLORS = ['#e2e8f0', '#3b82f6', '#f43f5e', '#f59e0b'];
 
   return (
     <div className="space-y-6 w-full">
@@ -92,241 +107,232 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
           </CardContent>
         </Card>
       )}
-      <div className="flex flex-col lg:flex-row gap-6">
-        <div className="flex-1">
-          <motion.div 
-            className="grid grid-cols-1 md:grid-cols-2 gap-4 h-full"
-            variants={containerVariant}
-            initial="hidden"
-            animate="show"
-            key={results.finalNominalValue} // re-trigger animation on result change
-          >
-            <motion.div variants={itemVariant}>
-              <Card className="border-primary/20 shadow-sm h-full overflow-hidden">
-                <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-                  <CardTitle className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">
-                    {t('bonds.gross_value')}
-                  </CardTitle>
-                  <Popover>
-                    <PopoverTrigger>
-                      <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
-                    </PopoverTrigger>
-                    <PopoverContent className="text-xs p-3 space-y-2">
-                      <p className="font-bold">{t('bonds.gross_value')}:</p>
-                      <p>{t('bonds.gross_value_desc') || "Total value before any taxes and fees are deducted."}</p>
-                    </PopoverContent>
-                  </Popover>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-black text-slate-800">{formatCurrency(results.grossValue)}</div>
-                </CardContent>
-              </Card>
-            </motion.div>
 
-            <motion.div variants={itemVariant}>
-              <Card className="border-green-200 bg-green-50/30 shadow-sm h-full overflow-hidden">
-                <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-                  <CardTitle className="text-[10px] font-black uppercase text-green-700 tracking-widest">
-                    {t('bonds.net_payout')}
-                  </CardTitle>
-                  <Popover>
-                    <PopoverTrigger>
-                      <HelpCircle className="h-3 w-3 text-green-600 cursor-help" />
-                    </PopoverTrigger>
-                    <PopoverContent className="text-xs p-3 space-y-2">
-                      <p className="font-bold">{t('bonds.payout_calculation')}:</p>
-                      <code className="block bg-muted p-1 rounded font-mono text-[10px]">Gross Value - Tax - Early Fee</code>
-                      <p className="text-muted-foreground italic leading-relaxed">{t('bonds.actual_cash_in_hand')}</p>
-                    </PopoverContent>
-                  </Popover>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-black text-green-700">
-                    {formatCurrency(results.netPayoutValue)}
-                  </div>
-                  {results.isEarlyWithdrawal && (
-                    <Badge variant="outline" className="mt-1 text-[10px] border-orange-200 text-orange-700 bg-orange-50 font-black uppercase tracking-tighter">
-                      {t('bonds.early_withdrawal')}
-                    </Badge>
-                  )}
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={itemVariant}>
-              <Card className="border-primary/10 shadow-sm h-full overflow-hidden">
-                <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-                  <CardTitle className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">
-                    {t('common.net_profit')}
-                  </CardTitle>
-                  <Popover>
-                    <PopoverTrigger>
-                      <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
-                    </PopoverTrigger>
-                    <PopoverContent className="text-xs p-3 space-y-2">
-                      <p className="font-bold">{t('common.net_profit')}:</p>
-                      <p>{t('bonds.net_profit_desc') || "Your total earnings after paying all taxes and potential early withdrawal fees."}</p>
-                    </PopoverContent>
-                  </Popover>
-                </CardHeader>
-                <CardContent>
-                  <div className={cn("text-2xl font-black", results.totalProfit >= 0 ? "text-primary" : "text-destructive")}>
-                    {formatCurrency(results.totalProfit)}
-                  </div>
-                  <div className="flex items-center gap-1 text-[10px] font-black text-muted-foreground mt-1 uppercase tracking-widest">
-                    {results.totalProfit >= 0 ? <TrendingUp className="h-3 w-3 text-green-500" /> : <TrendingDown className="h-3 w-3 text-red-500" />}
-                    ROI: {((results.totalProfit / results.initialInvestment) * 100).toFixed(2)}%
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div variants={itemVariant}>
-              <Card className="border-destructive/10 bg-destructive/5 shadow-sm h-full overflow-hidden">
-                <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-                  <CardTitle className="text-[10px] font-black uppercase text-destructive/70 tracking-widest">
-                    {t('bonds.fees_and_tax')}
-                  </CardTitle>
-                  <Popover>
-                    <PopoverTrigger>
-                      <HelpCircle className="h-3 w-3 text-destructive/40 cursor-help" />
-                    </PopoverTrigger>
-                    <PopoverContent className="text-xs p-3 space-y-2">
-                      <p className="font-bold">{t('bonds.fees_and_tax')}:</p>
-                      <div className="space-y-1 mt-1 font-medium">
-                        <div className="flex justify-between gap-4">
-                          <span>{t('bonds.tax')}:</span>
-                          <span className="font-bold">{formatCurrency(results.totalTax)}</span>
-                        </div>
-                        <div className="flex justify-between gap-4">
-                          <span>{t('bonds.early_withdrawal_fee')}:</span>
-                          <span className="font-bold text-orange-600">{formatCurrency(results.totalEarlyWithdrawalFee)}</span>
-                        </div>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-lg font-black text-destructive/80">
-                    {formatCurrency(results.totalTax + results.totalEarlyWithdrawalFee)}
-                  </div>
-                  <p className="text-[10px] font-black uppercase text-muted-foreground/60 mt-1 tracking-tighter">
-                    {t('bonds.tax_fee_breakdown', {
-                      tax: formatCurrency(results.totalTax),
-                      fee: formatCurrency(results.totalEarlyWithdrawalFee),
-                    })}
+      {hasTaxSavings && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="md:col-span-2 border-green-200 bg-green-50/30 shadow-sm border-2 overflow-hidden">
+            <CardHeader className="pb-2 border-b border-green-100 bg-green-100/20">
+              <div className="flex items-center gap-2">
+                <PiggyBank className="h-4 w-4 text-green-600" />
+                <CardTitle className="text-[10px] font-black uppercase text-green-700 tracking-widest">{t('bonds.standard_comparison')}</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="w-full h-32 md:w-48">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={comparisonData} layout="vertical" margin={{ left: -20 }}>
+                      <XAxis type="number" hide />
+                      <YAxis dataKey="name" type="category" width={80} tick={{ fontSize: 10, fontWeight: 'bold' }} axisLine={false} tickLine={false} />
+                      <RechartsTooltip 
+                        formatter={(val: ValueType | undefined) => formatCurrency(Number(val || 0))} 
+                        cursor={{ fill: 'transparent' }} 
+                      />
+                      <Bar dataKey="profit" radius={[0, 4, 4, 0]} barSize={20}>
+                        {comparisonData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="flex-1 space-y-2">
+                  <p className="text-sm font-bold text-green-800">
+                    {t('bonds.savings_notice', { amount: formatCurrency(results.taxSavings || 0) })}
                   </p>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </motion.div>
+                  <p className="text-[10px] text-green-700/70 italic leading-tight">
+                    {t('bonds.belka_desc')}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="border-green-600 bg-green-600 shadow-lg flex flex-col items-center justify-center text-white p-6">
+            <TrendingUp className="h-8 w-8 mb-2 opacity-80" />
+            <p className="text-[10px] font-black uppercase tracking-widest opacity-80">{t('bonds.tax_saved')}</p>
+            <p className="text-3xl font-black">{formatCurrency(results.taxSavings || 0)}</p>
+          </Card>
         </div>
+      )}
 
-        <Card className="lg:w-80 border-primary/10 shadow-sm overflow-hidden">
-          <CardHeader className="pb-0 pt-4 bg-muted/10 border-b border-dashed">
-            <CardTitle className="text-[10px] font-black uppercase text-center text-muted-foreground tracking-widest pb-3">{t('bonds.composition')}</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0 h-64">
-            <ChartContainer height={256}>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={chartData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />
-                    ))}
-                  </Pie>
-                  <RechartsTooltip 
-                    formatter={(value: ValueType | undefined) => formatCurrency(Number(value || 0))}
-                    contentStyle={{ borderRadius: '8px', border: 'none', fontSize: '12px', fontWeight: 'bold' }}
-                  />
-                  <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: '10px', paddingBottom: '15px', fontWeight: 'black', textTransform: 'uppercase' }} />
-                </PieChart>
-              </ResponsiveContainer>
-            </ChartContainer>
+      {results.overflowInfo && (
+        <Card className="border-blue-200 bg-blue-50/50 shadow-sm border-2">
+          <CardContent className="p-4 flex items-center gap-3">
+            <Info className="h-5 w-5 text-blue-600 shrink-0" />
+            <div className="text-xs text-blue-800 font-medium">
+              <p className="font-black uppercase tracking-widest mb-1">{t('bonds.use_tax_limit')}</p>
+              <p className="leading-relaxed">
+                {formatCurrency(results.overflowInfo.amountInWrapper)} in wrapper + 
+                {formatCurrency(results.overflowInfo.amountInStandard)} overflow in standard account.
+                Tax paid on overflow: {formatCurrency(results.overflowInfo.standardTaxDeducted)}.
+              </p>
+            </div>
           </CardContent>
         </Card>
-      </div>
+      )}
 
-      <Card className="overflow-hidden border-primary/10 border-2">
-        <CardHeader className="bg-muted/30 flex flex-row items-center justify-between space-y-0 border-b">
-          <div className="space-y-1">
-            <CardTitle className="text-lg flex items-center gap-2 font-black uppercase tracking-tight">
-              {t('bonds.calculation_breakdown')}
-              <Popover>
-                <PopoverTrigger>
-                  <Info className="h-4 w-4 text-muted-foreground hover:text-primary cursor-help" />
-                </PopoverTrigger>
-                <PopoverContent className="w-80 text-xs space-y-3 font-medium">
-                  <p className="font-black uppercase tracking-widest text-primary">{t('bonds.how_interest_works')}</p>
-                  <div className="space-y-2 text-muted-foreground leading-relaxed">
-                    <p>{t('bonds.interest_indexed_desc')}</p>
-                    <p>{t('bonds.capitalization_desc')}</p>
-                    <p>{t('bonds.belka_desc')}</p>
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </CardTitle>
-            <CardDescription className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest">{t('bonds.breakdown_desc')}</CardDescription>
-          </div>
-          <Button variant="outline" size="sm" onClick={handleExport} className="gap-2 text-[10px] font-black uppercase border-2 h-9 px-4 hover:bg-primary hover:text-white transition-all">
-            <Download className="h-3.5 w-3.5" />
-            {t('comparison.export')}
-          </Button>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/50 hover:bg-muted/50 border-b">
-                  <TableHead className="w-[100px] md:w-[120px] text-[10px] font-black uppercase tracking-widest">{t('common.period')}</TableHead>
-                  <TableHead className="hidden md:table-cell text-[10px] font-black uppercase tracking-widest">{t('bonds.nominal_before')}</TableHead>
-                  <TableHead className="text-[10px] font-black uppercase tracking-widest">{t('bonds.interest_rate')}</TableHead>
-                  <TableHead className="text-[10px] font-black uppercase tracking-widest">
-                    <div className="flex items-center gap-1">
-                      {t('bonds.interest_earned')}
-                    </div>
-                  </TableHead>
-                  <TableHead className="hidden sm:table-cell text-[10px] font-black uppercase tracking-widest">{t('bonds.tax')}</TableHead>
-                  <TableHead className="text-right text-[10px] font-black uppercase tracking-widest">{t('bonds.nominal_after')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {results.timeline.map((point, index) => (
-                  <TableRow key={`${point.year}-${point.periodLabel}-${index}`} className={cn("hover:bg-muted/20 border-b transition-colors", point.isWithdrawal && "bg-primary/5 font-bold")}>
-                    <TableCell className="font-bold py-4 text-xs md:text-sm">
-                      {point.periodLabel}
-                      {point.isWithdrawal && (
-                        <div className="text-[9px] text-primary font-black uppercase mt-0.5">
-                          {t('bonds.withdrawal')}
-                        </div>
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <div className="xl:col-span-2">
+          <div className="flex flex-col lg:flex-row gap-6">
+            <div className="flex-1">
+              <motion.div 
+                className="grid grid-cols-1 md:grid-cols-2 gap-4 h-full"
+                variants={containerVariant}
+                initial="hidden"
+                animate="show"
+                key={results.finalNominalValue}
+              >
+                <motion.div variants={itemVariant}>
+                  <Card className="border-primary/20 shadow-sm h-full overflow-hidden">
+                    <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
+                      <CardTitle className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">
+                        {t('bonds.gross_value')}
+                      </CardTitle>
+                      <Popover>
+                        <PopoverTrigger>
+                          <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
+                        </PopoverTrigger>
+                        <PopoverContent className="text-xs p-3 space-y-2">
+                          <p className="font-bold">{t('bonds.gross_value')}:</p>
+                          <p>{t('bonds.gross_value_desc') || "Total value before any taxes and fees are deducted."}</p>
+                        </PopoverContent>
+                      </Popover>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-black text-slate-800">{formatCurrency(results.grossValue)}</div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
+                <motion.div variants={itemVariant}>
+                  <Card className="border-green-200 bg-green-50/30 shadow-sm h-full overflow-hidden">
+                    <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
+                      <CardTitle className="text-[10px] font-black uppercase text-green-700 tracking-widest">
+                        {t('bonds.net_payout')}
+                      </CardTitle>
+                      <Popover>
+                        <PopoverTrigger>
+                          <HelpCircle className="h-3 w-3 text-green-600 cursor-help" />
+                        </PopoverTrigger>
+                        <PopoverContent className="text-xs p-3 space-y-2">
+                          <p className="font-bold">{t('bonds.payout_calculation')}:</p>
+                          <code className="block bg-muted p-1 rounded font-mono text-[10px]">Gross Value - Tax - Early Fee</code>
+                          <p className="text-muted-foreground italic leading-relaxed">{t('bonds.actual_cash_in_hand')}</p>
+                        </PopoverContent>
+                      </Popover>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-black text-green-700">
+                        {formatCurrency(results.netPayoutValue)}
+                      </div>
+                      {results.isEarlyWithdrawal && (
+                        <Badge variant="outline" className="mt-1 text-[10px] border-orange-200 text-orange-700 bg-orange-50 font-black uppercase tracking-tighter">
+                          {t('bonds.early_withdrawal')}
+                        </Badge>
                       )}
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell font-medium text-slate-600 text-xs">{formatCurrency(point.nominalValueBeforeInterest)}</TableCell>
-                    <TableCell>
-                      <Badge variant="secondary" className="font-black text-[9px] md:text-[10px] bg-slate-100 text-slate-700 border-none px-1 md:px-2">
-                        {point.interestRate.toFixed(2)}%
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-green-600 font-bold text-xs md:text-sm">+{formatCurrency(point.interestEarned)}</TableCell>
-                    <TableCell className="hidden sm:table-cell text-red-500/80 font-medium text-xs">-{formatCurrency(point.taxDeducted)}</TableCell>
-                    <TableCell className="text-right font-black text-slate-800 text-xs md:text-sm">
-                      {formatCurrency(point.nominalValueAfterInterest)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
+                <motion.div variants={itemVariant}>
+                  <Card className="border-primary/10 shadow-sm h-full overflow-hidden">
+                    <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
+                      <CardTitle className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">
+                        {t('common.net_profit')}
+                      </CardTitle>
+                      <Popover>
+                        <PopoverTrigger>
+                          <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
+                        </PopoverTrigger>
+                        <PopoverContent className="text-xs p-3 space-y-2">
+                          <p className="font-bold">{t('common.net_profit')}:</p>
+                          <p>{t('bonds.net_profit_desc') || "Your total earnings after paying all taxes and potential early withdrawal fees."}</p>
+                        </PopoverContent>
+                      </Popover>
+                    </CardHeader>
+                    <CardContent>
+                      <div className={cn("text-2xl font-black", results.totalProfit >= 0 ? "text-primary" : "text-destructive")}>
+                        {formatCurrency(results.totalProfit)}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
+                <motion.div variants={itemVariant}>
+                  <Card className="border-blue-100 bg-blue-50/20 shadow-sm h-full overflow-hidden">
+                    <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
+                      <CardTitle className="text-[10px] font-black uppercase text-blue-700 tracking-widest">
+                        {t('bonds.real_cagr')}
+                      </CardTitle>
+                      <Popover>
+                        <PopoverTrigger>
+                          <HelpCircle className="h-3 w-3 text-blue-600 cursor-help" />
+                        </PopoverTrigger>
+                        <PopoverContent className="text-xs p-3 space-y-2">
+                          <p className="font-bold">{t('bonds.real_cagr')}:</p>
+                          <p>{t('bonds.real_cagr_desc')}</p>
+                        </PopoverContent>
+                      </Popover>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-black text-blue-800">
+                        {results.realAnnualizedReturn.toFixed(2)}%
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </motion.div>
+            </div>
+
+            <div className="hidden lg:block w-[200px]">
+              <Card className="border-none shadow-none bg-transparent h-full flex flex-col justify-center">
+                <CardContent className="p-0 h-[160px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={chartData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={45}
+                        outerRadius={70}
+                        paddingAngle={5}
+                        dataKey="value"
+                      >
+                        {chartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <RechartsTooltip 
+                        formatter={(val: ValueType | undefined) => formatCurrency(Number(val || 0))}
+                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+
+        <div className="space-y-6">
+          {results.timeline.length > 0 && (
+            <CalculationAuditTrace 
+              point={results.timeline[0]} 
+              initialInvestment={results.initialInvestment} 
+            />
+          )}
+          
+          <Button 
+            onClick={handleExport}
+            variant="outline" 
+            className="w-full rounded-xl font-bold gap-2 text-xs uppercase tracking-widest border-2 py-6"
+          >
+            <Download className="h-4 w-4" />
+            {t('common.share') || "Export Results"}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };

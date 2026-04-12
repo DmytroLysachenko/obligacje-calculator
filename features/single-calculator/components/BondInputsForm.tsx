@@ -360,6 +360,21 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                     <SelectItem value={TaxStrategy.IKZE}>{t('bonds.tax_ikze')}</SelectItem>
                   </SelectContent>
                 </Select>
+                
+                {(inputs.taxStrategy === TaxStrategy.IKE || inputs.taxStrategy === TaxStrategy.IKZE) && (
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded-xl border border-dashed animate-in fade-in slide-in-from-top-1 duration-200">
+                    <div className="space-y-0.5">
+                      <Label className="text-xs font-bold uppercase tracking-tight">{t('bonds.use_tax_limit')}</Label>
+                      <p className="text-[10px] text-muted-foreground leading-tight max-w-[200px]">
+                        {t('bonds.use_tax_limit_desc')}
+                      </p>
+                    </div>
+                    <Switch
+                      checked={!!inputs.useTaxWrapperLimit}
+                      onCheckedChange={(checked) => onUpdate('useTaxWrapperLimit', checked)}
+                    />
+                  </div>
+                )}
               </div>
 
               {currentDef.rebuyDiscount > 0 && (
