@@ -12,6 +12,7 @@ import {
   Table,
   Target,
   Briefcase,
+  FileText
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { CalculationMetaPanel } from "@/shared/components/CalculationMetaPanel";
 import { CalculatorPageShell } from "@/shared/components/CalculatorPageShell";
 import { RecalculateButton } from "@/shared/components/RecalculateButton";
+import { generatePDF } from "@/shared/lib/pdf-utils";
 
 export const BondCalculatorContainer: React.FC = () => {
   const {
@@ -52,7 +54,6 @@ export const BondCalculatorContainer: React.FC = () => {
   const handleSaveScenario = async () => {
     if (!results) return;
     try {
-      // Find or create default portfolio
       const pRes = await fetch('/api/portfolio');
       const pData = await pRes.json();
       let portfolioId = pData.data?.[0]?.id || pData?.[0]?.id;
@@ -84,6 +85,10 @@ export const BondCalculatorContainer: React.FC = () => {
     }
   };
 
+  const handleExportPDF = async () => {
+    await generatePDF('bond-report-content', `bond_report_${inputs.bondType}_${new Date().toISOString().split('T')[0]}.pdf`);
+  };
+
   return (
     <CalculatorPageShell
       title={t("nav.single_calculator")}
@@ -98,15 +103,26 @@ export const BondCalculatorContainer: React.FC = () => {
       onKeyDown={handleKeyDown}
       extraHeaderActions={
         results && (
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="gap-2 text-xs font-bold border-2 border-primary/20 text-primary hover:bg-primary hover:text-white transition-all"
-            onClick={handleSaveScenario}
-          >
-            <Briefcase className="h-3 w-3" />
-            {t('notebook.save_to_notebook')}
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="gap-2 text-xs font-bold border-2 border-primary/20 text-primary hover:bg-primary hover:text-white transition-all"
+              onClick={handleSaveScenario}
+            >
+              <Briefcase className="h-3 w-3" />
+              {t('notebook.save_to_notebook')}
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="gap-2 text-xs font-bold border-2 border-blue-200 text-blue-700 hover:bg-blue-600 hover:text-white transition-all"
+              onClick={handleExportPDF}
+            >
+              <FileText className="h-3 w-3" />
+              Export PDF
+            </Button>
+          </div>
         )
       }
     >
@@ -121,7 +137,7 @@ export const BondCalculatorContainer: React.FC = () => {
           />
         </aside>
 
-        <div className="xl:col-span-8 space-y-8">
+        <div className="xl:col-span-8 space-y-8" id="bond-report-content">
           {!results && !isCalculating && (
             <div className="h-[400px] flex flex-col items-center justify-center border-2 border-dashed rounded-3xl opacity-50 space-y-4">
               <Target className="h-12 w-12 text-muted-foreground" />
