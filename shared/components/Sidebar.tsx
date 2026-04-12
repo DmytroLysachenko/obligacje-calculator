@@ -43,6 +43,11 @@ export function Sidebar() {
       icon: Scale,
     },
     {
+      href: '/optimize',
+      label: t('nav.optimizer'),
+      icon: TrendingUp,
+    },
+    {
       href: '/multi-asset',
       label: t('nav.multi_asset'),
       icon: Globe,

@@ -45,7 +45,7 @@ describe('CalculationApplicationService - Integration', () => {
       payload,
     });
 
-    expect(envelope.calculationVersion).toContain('production-ready');
+    expect(envelope.calculationVersion).toContain('2.6.0');
     expect(envelope.result).toBeDefined();
     
     // Verify calculation notes reflect the simulation state

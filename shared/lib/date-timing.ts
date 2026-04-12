@@ -23,3 +23,7 @@ export function getHorizonMonths(purchaseDate: string, withdrawalDate: string): 
 export function getWithdrawalDateFromMonths(purchaseDate: string, months: number): string {
   return toDateString(addMonths(parseDateString(purchaseDate), Math.max(1, Math.round(months))));
 }
+
+export function differenceInMonths(start: Date, end: Date): number {
+  return differenceInCalendarMonths(end, start);
+}

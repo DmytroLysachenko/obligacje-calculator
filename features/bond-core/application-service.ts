@@ -13,6 +13,9 @@ import {
   PortfolioSimulationPayload,
   PortfolioSimulationResult,
   PortfolioSimulationItem,
+  BondOptimizerPayload,
+  BondOptimizerResultItem,
+  BondOptimizerCalculationEnvelope,
 } from './types/scenarios';
 import { 
   BondInputsSchema, 
@@ -21,17 +24,22 @@ import {
 } from './types/schemas';
 import { calculateBondInvestment, calculateRegularInvestment } from './utils/calculations';
 import { getHistoricalDataMap, getGlobalDataFreshness, getBondDefinitionsMap } from '@/lib/data-access';
-import { BondInputs, BondType, TaxStrategy } from './types';
+import { BondInputs, BondType, TaxStrategy, CalculationResult } from './types';
 import { BOND_DEFINITIONS, BondDefinition } from './constants/bond-definitions';
-import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
-import { addMonths, format, subMonths, parseISO, isBefore } from 'date-fns';
+import { getLimitForYear } from './constants/tax-limits';
+import { getWithdrawalDateFromMonths, differenceInMonths } from '@/shared/lib/date-timing';
+import { addMonths, format, subMonths, parseISO, isBefore, getYear } from 'date-fns';
+import { db } from '@/db';
+import { bondSeries, polishBonds } from '@/db/schema';
+import { eq, and, lte, desc } from 'drizzle-orm';
 
-export const MODEL_VERSION = '2.2.0-portfolio-production-ready';
+export const MODEL_VERSION = '2.6.0-historical-backtesting';
 
 export class CalculationApplicationService {
   /**
    * Main entry point for all calculation requests.
    */
+// ... [rest of the file stays mostly the same, but fixing line 363]
   async calculate(request: CalculationScenarioRequest): Promise<CalculationEnvelope<unknown>> {
     const startTime = performance.now();
     const dataFreshness = await getGlobalDataFreshness();
@@ -52,6 +60,9 @@ export class CalculationApplicationService {
         case ScenarioKind.PORTFOLIO_SIMULATION:
           response = await this.calculatePortfolioSimulation(request.payload, dataFreshness, dbDefinitions);
           break;
+        case ScenarioKind.BOND_OPTIMIZER:
+          response = await this.calculateOptimizer(request.payload, dataFreshness, dbDefinitions);
+          break;
         default:
           throw new Error('Unsupported scenario kind');
       }
@@ -64,6 +75,116 @@ export class CalculationApplicationService {
       console.error(`[CalculationService] FAILED v=${MODEL_VERSION} kind=${request.kind}`, error);
       throw error;
     }
+  }
+
+  private async findSeriesForDate(symbol: BondType, date: string) {
+    try {
+      const bond = await db.query.polishBonds.findFirst({
+        where: eq(polishBonds.symbol, symbol),
+      });
+      if (!bond) return null;
+
+      const series = await db.query.bondSeries.findFirst({
+        where: and(
+          eq(bondSeries.bondTypeId, bond.id),
+          lte(bondSeries.emissionMonth, date)
+        ),
+        orderBy: [desc(bondSeries.emissionMonth)],
+      });
+      return series;
+    } catch (e) {
+      console.error('Failed to find series for date:', e);
+      return null;
+    }
+  }
+
+  private async calculateOptimizer(
+    payload: BondOptimizerPayload,
+    dataFreshness: CalculationDataFreshness,
+    dbDefinitions: Record<BondType, BondDefinition>
+  ): Promise<BondOptimizerCalculationEnvelope> {
+    const allBondTypes = Object.keys(BOND_DEFINITIONS) as BondType[];
+    const withdrawalDate = payload.withdrawalDate ?? 
+      (payload.investmentHorizonMonths ? getWithdrawalDateFromMonths(payload.purchaseDate, payload.investmentHorizonMonths) : undefined);
+
+    if (!withdrawalDate) {
+      throw new Error('Withdrawal date or investment horizon is required for optimization');
+    }
+
+    const horizonMonths = differenceInMonths(parseISO(payload.purchaseDate), parseISO(withdrawalDate));
+    const horizonYears = horizonMonths / 12;
+
+    const rankedBonds: BondOptimizerResultItem[] = [];
+
+    for (const bondType of allBondTypes) {
+      const def = dbDefinitions[bondType] || BOND_DEFINITIONS[bondType];
+      
+      if (def.isFamilyOnly && !payload.includeFamilyBonds) {
+        continue;
+      }
+
+      const enrichedInputs = await this.withHistoricalData({
+        bondType,
+        initialInvestment: payload.initialInvestment,
+        firstYearRate: def.firstYearRate,
+        expectedInflation: payload.expectedInflation,
+        expectedNbpRate: payload.expectedNbpRate ?? 5.25,
+        margin: def.margin,
+        duration: def.duration,
+        earlyWithdrawalFee: def.earlyWithdrawalFee,
+        taxRate: 19,
+        isCapitalized: def.isCapitalized,
+        payoutFrequency: def.payoutFrequency,
+        purchaseDate: payload.purchaseDate,
+        withdrawalDate,
+        isRebought: false,
+        rebuyDiscount: def.rebuyDiscount,
+        taxStrategy: payload.taxStrategy ?? TaxStrategy.STANDARD,
+        rollover: true, 
+        chartStep: 'monthly' as import('@/features/bond-core/types').ChartStep
+      });
+
+      const result = calculateBondInvestment(enrichedInputs as BondInputs & { historicalData: import('@/features/bond-core/types').HistoricalDataMap });
+
+      let reason = '';
+      if (def.duration === horizonYears) {
+        reason = `Perfect match for your ${horizonYears}-year horizon.`;
+      } else if (def.duration < horizonYears) {
+        reason = `Shorter duration (${def.duration}y) requires rolling over to match your horizon.`;
+      } else {
+        reason = `Longer duration (${def.duration}y) incurs an early redemption fee at year ${horizonYears.toFixed(1)}.`;
+      }
+
+      if (def.isInflationIndexed) {
+        reason += ' Protection against rising inflation.';
+      }
+
+      rankedBonds.push({
+        bondType,
+        name: def.fullName.en,
+        netPayoutValue: result.netPayoutValue,
+        totalProfit: result.totalProfit,
+        effectiveTaxRate: (result.totalTax / result.totalProfit) * 100, // Roughly
+        isWinner: false,
+        recommendationReason: reason,
+        result
+      });
+    }
+
+    rankedBonds.sort((a, b) => b.netPayoutValue - a.netPayoutValue);
+
+    if (rankedBonds.length > 0) {
+      rankedBonds[0].isWinner = true;
+      rankedBonds[0].recommendationReason = `🏆 THE WINNER: ${rankedBonds[0].recommendationReason}`;
+    }
+
+    const assumptions = this.generateAssumptions(payload);
+    assumptions.push(`Optimization target: Highest net payout after ${horizonYears.toFixed(1)} years.`);
+
+    return this.createEnvelope({
+      rankedBonds,
+      winner: rankedBonds[0]
+    }, [], assumptions, dataFreshness);
   }
 
   private async calculatePortfolioSimulation(
@@ -97,7 +218,7 @@ export class CalculationApplicationService {
         rebuyDiscount: def.rebuyDiscount,
         taxStrategy: inv.taxStrategy ?? TaxStrategy.STANDARD,
         rollover: inv.rollover ?? false,
-        historicalData: allHistoricalData.historicalData,
+        historicalData: allHistoricalData.historicalData as Record<string, import('@/features/bond-core/types').HistoricalEntry>,
         chartStep: 'monthly'
       });
       items.push({
@@ -108,7 +229,6 @@ export class CalculationApplicationService {
       });
     }
 
-    // Aggregate timelines
     const aggregatedTimeline: PortfolioSimulationResult['aggregatedTimeline'] = [];
     const minDate = parseISO(allHistoricalData.purchaseDate);
     const maxDate = parseISO(payload.withdrawalDate);
@@ -122,12 +242,11 @@ export class CalculationApplicationService {
       let totalFees = 0;
 
       for (const item of items) {
-        // Find the timeline point closest to this date
         const point = item.result.timeline.find(p => p.periodLabel === format(curr, 'MMM yyyy'));
         if (point) {
           totalNominalValue += point.nominalValueAfterInterest;
           totalNetValue += point.totalValue;
-          totalProfit += point.netProfit; // netProfit might need better handling
+          totalProfit += point.netProfit; 
           totalTax += point.taxDeducted;
           totalFees += point.earlyWithdrawalValue;
         }
@@ -165,23 +284,152 @@ export class CalculationApplicationService {
     const validatedInputs = BondInputsSchema.parse(input);
     const def = dbDefinitions[validatedInputs.bondType] || BOND_DEFINITIONS[validatedInputs.bondType];
     
-    // Inject DB values if missing in inputs
+    let firstYearRate = validatedInputs.firstYearRate;
+    let margin = validatedInputs.margin;
+
+    if ((firstYearRate === undefined || margin === undefined) && isBefore(parseISO(validatedInputs.purchaseDate), subMonths(new Date(), 1))) {
+      const historicalSeries = await this.findSeriesForDate(validatedInputs.bondType, validatedInputs.purchaseDate);
+      if (historicalSeries) {
+        firstYearRate = firstYearRate ?? Number(historicalSeries.firstYearRate);
+        margin = margin ?? Number(historicalSeries.baseMargin);
+      }
+    }
+
     const inputsWithDefaults = {
       ...validatedInputs,
-      firstYearRate: validatedInputs.firstYearRate ?? def.firstYearRate,
-      margin: validatedInputs.margin ?? def.margin,
+      firstYearRate: firstYearRate ?? def.firstYearRate,
+      margin: margin ?? def.margin,
     };
 
     const enrichedInputs = await this.withHistoricalData(inputsWithDefaults);
-    const warnings = this.buildHistoricalDataWarnings(enrichedInputs.historicalData);
-    const assumptions = this.generateAssumptions(enrichedInputs);
+
+    let adjustedInflation = enrichedInputs.expectedInflation;
+    if (enrichedInputs.inflationScenario === 'low') adjustedInflation -= 1.5;
+    if (enrichedInputs.inflationScenario === 'high') adjustedInflation += 2.5;
+
+    const inputsToCalculate = {
+      ...enrichedInputs,
+      expectedInflation: adjustedInflation,
+    };
+
+    if (inputsToCalculate.useTaxWrapperLimit && (inputsToCalculate.taxStrategy === TaxStrategy.IKE || inputsToCalculate.taxStrategy === TaxStrategy.IKZE)) {
+      const purchaseYear = getYear(parseISO(inputsToCalculate.purchaseDate));
+      const limits = getLimitForYear(purchaseYear);
+      const limitValue = inputsToCalculate.taxStrategy === TaxStrategy.IKE ? limits?.ike : limits?.ikze;
+
+      if (limitValue && inputsToCalculate.initialInvestment > limitValue) {
+        return this.calculateSplitTaxWrapper(inputsToCalculate as BondInputs & { historicalData: import('@/features/bond-core/types').HistoricalDataMap }, limitValue, dataFreshness);
+      }
+    }
+
+    const warnings = this.buildHistoricalDataWarnings(inputsToCalculate.historicalData);
+    const assumptions = this.generateAssumptions(inputsToCalculate);
 
     const result = calculateBondInvestment({
-      ...enrichedInputs,
-      rollover: enrichedInputs.rollover ?? false,
+      ...inputsToCalculate,
+      rollover: inputsToCalculate.rollover ?? false,
     });
 
+    if (inputsToCalculate.inflationScenario) {
+      const lowResult = calculateBondInvestment({
+        ...inputsToCalculate,
+        expectedInflation: enrichedInputs.expectedInflation - 1.5,
+        rollover: inputsToCalculate.rollover ?? false,
+      });
+      const highResult = calculateBondInvestment({
+        ...inputsToCalculate,
+        expectedInflation: enrichedInputs.expectedInflation + 2.5,
+        rollover: inputsToCalculate.rollover ?? false,
+      });
+      result.comparisonScenarios = {
+        low: lowResult.timeline,
+        high: highResult.timeline,
+      };
+    }
+
+    if (inputsToCalculate.taxStrategy !== TaxStrategy.STANDARD) {
+      const standardResult = calculateBondInvestment({
+        ...inputsToCalculate,
+        taxStrategy: TaxStrategy.STANDARD,
+        rollover: inputsToCalculate.rollover ?? false,
+      });
+      result.taxSavings = standardResult.totalTax - result.totalTax;
+    }
+
     return this.createEnvelope(result, warnings, assumptions, dataFreshness);
+  }
+
+  private async calculateSplitTaxWrapper(
+    inputs: BondInputs & { historicalData: import('@/features/bond-core/types').HistoricalDataMap },
+    limit: number,
+    dataFreshness: CalculationDataFreshness
+  ): Promise<SingleBondCalculationEnvelope> {
+    const wrapperPart = calculateBondInvestment({
+      ...inputs,
+      initialInvestment: limit,
+      rollover: inputs.rollover ?? false,
+    });
+
+    const standardPart = calculateBondInvestment({
+      ...inputs,
+      initialInvestment: inputs.initialInvestment - limit,
+      taxStrategy: TaxStrategy.STANDARD,
+      rollover: inputs.rollover ?? false,
+    });
+
+    const aggregatedResult: CalculationResult = {
+      initialInvestment: inputs.initialInvestment,
+      timeline: wrapperPart.timeline.map((point, idx) => {
+        const stdPoint = standardPart.timeline[idx];
+        if (!stdPoint) return point;
+        return {
+          ...point,
+          nominalValueBeforeInterest: point.nominalValueBeforeInterest + stdPoint.nominalValueBeforeInterest,
+          interestEarned: point.interestEarned + stdPoint.interestEarned,
+          taxDeducted: point.taxDeducted + stdPoint.taxDeducted,
+          netInterest: point.netInterest + stdPoint.netInterest,
+          nominalValueAfterInterest: point.nominalValueAfterInterest + stdPoint.nominalValueAfterInterest,
+          accumulatedNetInterest: point.accumulatedNetInterest + stdPoint.accumulatedNetInterest,
+          totalValue: point.totalValue + stdPoint.totalValue,
+          realValue: point.realValue + stdPoint.realValue,
+          netProfit: point.netProfit + stdPoint.netProfit,
+          earlyWithdrawalValue: point.earlyWithdrawalValue + stdPoint.earlyWithdrawalValue,
+        };
+      }),
+      finalNominalValue: wrapperPart.finalNominalValue + standardPart.finalNominalValue,
+      finalRealValue: wrapperPart.finalRealValue + standardPart.finalRealValue,
+      totalProfit: wrapperPart.totalProfit + standardPart.totalProfit,
+      totalTax: wrapperPart.totalTax + standardPart.totalTax,
+      totalEarlyWithdrawalFee: wrapperPart.totalEarlyWithdrawalFee + standardPart.totalEarlyWithdrawalFee,
+      grossValue: wrapperPart.grossValue + standardPart.grossValue,
+      netPayoutValue: wrapperPart.netPayoutValue + standardPart.netPayoutValue,
+      isEarlyWithdrawal: wrapperPart.isEarlyWithdrawal,
+      maturityDate: wrapperPart.maturityDate,
+      nominalAnnualizedReturn: (wrapperPart.nominalAnnualizedReturn + standardPart.nominalAnnualizedReturn) / 2, 
+      realAnnualizedReturn: (wrapperPart.realAnnualizedReturn + standardPart.realAnnualizedReturn) / 2, 
+      calculationNotes: [
+        ...(wrapperPart.calculationNotes || []),
+        `Investment split: ${limit} PLN in ${inputs.taxStrategy} wrapper, ${inputs.initialInvestment - limit} PLN in Standard account due to annual limit.`
+      ],
+      overflowInfo: {
+        limitApplied: limit,
+        amountInWrapper: limit,
+        amountInStandard: inputs.initialInvestment - limit,
+        standardTaxDeducted: standardPart.totalTax,
+      }
+    };
+
+    const fullStandardResult = calculateBondInvestment({
+      ...inputs,
+      taxStrategy: TaxStrategy.STANDARD,
+      rollover: inputs.rollover ?? false,
+    });
+    aggregatedResult.taxSavings = fullStandardResult.totalTax - aggregatedResult.totalTax;
+
+    const warnings = this.collectHistoricalWarnings([inputs.historicalData]);
+    const assumptions = this.generateAssumptions(inputs);
+
+    return this.createEnvelope(aggregatedResult, warnings, assumptions, dataFreshness);
   }
 
   private async calculateRegularInvestment(
