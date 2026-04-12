@@ -147,3 +147,13 @@ export async function getOwnedLot(ownerId: string, lotId: string) {
 
   return lot;
 }
+
+export async function getPortfolioSummary(ownerId: string, portfolioId: string) {
+  const result = await db.query.userPortfolios.findFirst({
+    where: and(eq(userPortfolios.id, portfolioId), eq(userPortfolios.userId, ownerId)),
+    with: {
+      lots: true,
+    }
+  });
+  return result;
+}
