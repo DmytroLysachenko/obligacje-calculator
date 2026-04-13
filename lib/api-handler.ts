@@ -28,7 +28,7 @@ function checkRateLimit(ip: string): { success: boolean; limit: number; remainin
   };
 }
 
-export type ApiHandler = (req: NextRequest, ...args: any[]) => Promise<NextResponse> | NextResponse;
+export type ApiHandler = (req: NextRequest, ...args: unknown[]) => Promise<NextResponse> | NextResponse;
 
 /**
  * Standardized API Route Handler wrapper.
@@ -38,7 +38,7 @@ export type ApiHandler = (req: NextRequest, ...args: any[]) => Promise<NextRespo
  * - RFC 7807 Problem Details for 500 errors
  */
 export function apiHandler(handler: ApiHandler) {
-  return async (req: NextRequest, ...args: any[]) => {
+  return async (req: NextRequest, ...args: unknown[]) => {
     // Basic Rate Limiting
     const headersList = await headers();
     const forwardedFor = headersList.get('x-forwarded-for');
