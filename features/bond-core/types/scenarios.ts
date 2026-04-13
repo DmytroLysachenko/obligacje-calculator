@@ -20,6 +20,19 @@ export interface CalculationDataFreshness {
   usedFallback: boolean;
 }
 
+export interface HistoricalAverages {
+  inflation: {
+    "1y": number;
+    "5y": number;
+    "10y": number;
+  };
+  nbpRate: {
+    "1y": number;
+    "5y": number;
+    "10y": number;
+  };
+}
+
 export interface CalculationEnvelope<T> {
   result: T;
   warnings: string[];
@@ -28,6 +41,7 @@ export interface CalculationEnvelope<T> {
   dataQualityFlags: string[];
   dataFreshness: CalculationDataFreshness;
   calculationVersion?: string;
+  historicalAverages?: HistoricalAverages;
 }
 
 export interface SingleBondScenarioRequest {
