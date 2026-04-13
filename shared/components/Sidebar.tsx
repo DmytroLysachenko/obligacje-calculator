@@ -15,7 +15,7 @@ import {
   Globe,
   Wallet
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { motion } from 'framer-motion';
