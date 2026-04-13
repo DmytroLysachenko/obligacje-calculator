@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/sheet";
 import { useLanguage } from '@/i18n';
 import { CalculationResult } from '@/features/bond-core/types';
-import { Info, HelpCircle, ArrowRight, Calculator, Landmark, ShieldCheck, ExternalLink } from "lucide-react";
+import { Info, ArrowRight, Calculator, Landmark, ShieldCheck, ExternalLink } from "lucide-react";
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
