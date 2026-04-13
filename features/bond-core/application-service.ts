@@ -45,7 +45,6 @@ export class CalculationApplicationService {
    * Main entry point for all calculation requests.
    */
   async calculate(request: CalculationScenarioRequest): Promise<CalculationEnvelope<unknown>> {
-    const startTime = performance.now();
     const dataFreshness = await getGlobalDataFreshness();
     const dbDefinitions = await getBondDefinitionsMap();
     
@@ -71,7 +70,7 @@ export class CalculationApplicationService {
           throw new Error('Unsupported scenario kind');
       }
 
-      const duration = performance.now() - startTime;
+      performance.now();
       // Traces are handled by the caller or logging middleware in production if needed
 
       return response;    } catch (error) {
