@@ -30,7 +30,7 @@ export const GET = apiHandler(async () => {
       defaultInflationScenario: 'base',
       chartType: 'area',
       updatedAt: new Date(),
-    } as any;
+    } as typeof userSettings.$inferSelect;
   }
 
   return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(settings)), owner);
