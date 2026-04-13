@@ -57,8 +57,9 @@ export function useBondCalculator() {
   const debouncedInputs = useDebounce(inputs, 500);
 
   const calculate = useCallback(async (currentInputs: BondInputs) => {
-    setIsDirty(false);
     try {
+      await Promise.resolve(); // Defer state updates to avoid synchronous setState in effect
+      setIsDirty(false);
       clearError();
       const finalInputs = { ...currentInputs };
 
@@ -90,11 +91,15 @@ export function useBondCalculator() {
   }, [clearError, post]);
 
   useEffect(() => {
-    calculate(debouncedInputs);
+    const timer = setTimeout(() => {
+      calculate(debouncedInputs);
+    }, 0);
+    return () => clearTimeout(timer);
   }, [debouncedInputs, calculate]);
 
   const fetchSeries = useCallback(async (symbol: BondType) => {
     try {
+      await Promise.resolve();
       const response = await fetch(`/api/calculate/bond-series?symbol=${symbol}`);
       const data = await response.json();
       setAvailableSeries(data.result || []);
@@ -104,8 +109,10 @@ export function useBondCalculator() {
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchSeries(inputs.bondType);
+    const timer = setTimeout(() => {
+      fetchSeries(inputs.bondType);
+    }, 0);
+    return () => clearTimeout(timer);
   }, [inputs.bondType, fetchSeries]);
 
   // Derived results for compatibility
