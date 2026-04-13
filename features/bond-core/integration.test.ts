@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { calculationService } from './application-service';
 import { ScenarioKind } from './types/scenarios';
-import { BondType, InterestPayout, TaxStrategy } from './types';
+import { BondType, InterestPayout, TaxStrategy, CalculationResult, YearlyTimelinePoint } from './types';
 
 // Mock data-access to simulate DB interaction
 vi.mock('@/lib/data-access', () => ({
@@ -49,7 +49,7 @@ describe('Bond Core Integration Tests', () => {
       payload: { ...basePayload, taxStrategy: TaxStrategy.STANDARD },
     });
 
-    const result = envelope.result;
+    const result = envelope.result as CalculationResult;
     expect(result.totalTax).toBeGreaterThan(0);
     // Gross profit = result.grossValue - result.initialInvestment
     const grossProfit = result.grossValue - result.initialInvestment;
@@ -63,7 +63,7 @@ describe('Bond Core Integration Tests', () => {
       payload: { ...basePayload, taxStrategy: TaxStrategy.IKE },
     });
 
-    const result = envelope.result;
+    const result = envelope.result as CalculationResult;
     expect(result.totalTax).toBe(0);
     expect(result.netPayoutValue).toBe(result.grossValue);
   });
@@ -74,7 +74,7 @@ describe('Bond Core Integration Tests', () => {
       payload: { ...basePayload, taxStrategy: TaxStrategy.IKZE },
     });
 
-    const result = envelope.result;
+    const result = envelope.result as CalculationResult;
     // IKZE in this app applies 10% tax on the TOTAL payout (principal + interest)
     expect(result.totalTax).toBeGreaterThan(0);
     const expectedTax = result.grossValue * 0.10;
@@ -94,9 +94,9 @@ describe('Bond Core Integration Tests', () => {
       },
     });
 
-    const result = envelope.result;
+    const result = envelope.result as CalculationResult;
     expect(result.timeline.length).toBeGreaterThan(1);
     // COI is 4 years, should have 4 yearly points + initial
-    expect(result.timeline.filter(p => p.year > 0).length).toBe(4);
+    expect(result.timeline.filter((p: YearlyTimelinePoint) => p.year > 0).length).toBe(4);
   });
 });
