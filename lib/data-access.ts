@@ -4,7 +4,7 @@ import { eq, and, gte, lte, asc, inArray, desc } from "drizzle-orm";
 import { cache } from "react";
 import { HISTORICAL_RETURNS, type MonthlyReturn } from "@/features/bond-core/constants/historical-data";
 
-import { CalculationDataFreshness } from "@/features/bond-core/types/scenarios";
+import { CalculationDataFreshness, HistoricalAverages } from "@/features/bond-core/types/scenarios";
 import { differenceInDays, parseISO, format } from "date-fns";
 import { BondDefinition } from "@/features/bond-core/constants/bond-definitions";
 import { BondType, InterestPayout } from "@/features/bond-core/types";
@@ -369,4 +369,38 @@ export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnv
       },
     };
   }
+});
+
+/**
+ * Calculates historical averages for CPI and NBP rates over various timeframes.
+ */
+export const getHistoricalAverages = cache(async (): Promise<HistoricalAverages> => {
+  const cacheKey = "historical-averages";
+  const cached = getCached<HistoricalAverages>(cacheKey);
+  if (cached) return cached;
+
+  const { data } = await getMultiAssetHistory();
+
+  const calculateAverage = (items: any[], key: "inflation" | "nbpRate", months: number) => {
+    const recent = items.slice(-months);
+    if (recent.length === 0) return 0;
+    const sum = recent.reduce((acc, curr) => acc + (curr[key] || 0), 0);
+    return sum / recent.length;
+  };
+
+  const result: HistoricalAverages = {
+    inflation: {
+      "1y": calculateAverage(data, "inflation", 12),
+      "5y": calculateAverage(data, "inflation", 60),
+      "10y": calculateAverage(data, "inflation", 120),
+    },
+    nbpRate: {
+      "1y": calculateAverage(data, "nbpRate", 12),
+      "5y": calculateAverage(data, "nbpRate", 60),
+      "10y": calculateAverage(data, "nbpRate", 120),
+    },
+  };
+
+  setCache(cacheKey, result);
+  return result;
 });

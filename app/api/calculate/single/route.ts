@@ -1,29 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { calculationService } from '@/features/bond-core/application-service';
 import { ScenarioKind } from '@/features/bond-core/types/scenarios';
-import { z } from 'zod';
-import { createSuccessResponse, createErrorResponse } from '@/shared/types/api';
+import { BondInputsSchema } from '@/features/bond-core/types/schemas';
+import { createSuccessResponse } from '@/shared/types/api';
+import { apiHandler } from '@/lib/api-handler';
 
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json();
-    const envelope = await calculationService.calculate({
-      kind: ScenarioKind.SINGLE_BOND,
-      payload: body,
-    });
-    
-    return NextResponse.json(createSuccessResponse(envelope));
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        createErrorResponse('Validation failed', 'VALIDATION_ERROR', error.issues),
-        { status: 400 }
-      );
-    }
-    console.error('Calculation error:', error);
-    return NextResponse.json(
-      createErrorResponse('Failed to calculate', 'INTERNAL_ERROR'),
-      { status: 500 }
-    );
-  }
-}
+export const POST = apiHandler(async (req: NextRequest) => {
+  const body = await req.json();
+  const validatedBody = BondInputsSchema.parse(body);
+
+  const envelope = await calculationService.calculate({
+    kind: ScenarioKind.SINGLE_BOND,
+    payload: validatedBody,
+  });
+  
+  return NextResponse.json(createSuccessResponse(envelope));
+});

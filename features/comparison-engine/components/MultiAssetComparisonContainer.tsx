@@ -4,7 +4,7 @@ import React, { useState, useMemo } from "react";
 import { useMultiAssetComparison } from "../hooks/useMultiAssetComparison";
 import { useLanguage } from "@/i18n";
 import {
-  Scale,
+  LineChart,
 } from "lucide-react";
 import { RecalculateButton } from "@/shared/components/RecalculateButton";
 import { ComparisonControls } from "./ComparisonControls";
@@ -91,8 +91,8 @@ export const MultiAssetComparisonContainer = () => {
   return (
     <CalculatorPageShell
       title={t("nav.multi_asset")}
-      description={t("comparison.desc_multi_asset")}
-      icon={<Scale className="h-8 w-8" />}
+      description={t("comparison.market_vs_bonds_desc")}
+      icon={<LineChart className="h-8 w-8" />}
       isCalculating={isCalculating}
       isDirty={isDirty}
       hasResults={assets.length > 0 && assets[0].series.length > 0}

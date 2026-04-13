@@ -6,20 +6,27 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { 
   Plus, 
-  Wallet, 
-  Briefcase, 
+  BookOpen, 
   ChevronRight, 
-  Loader2, 
   AlertCircle,
   FileText,
   Calendar,
   RefreshCcw,
   ShieldCheck,
+  FolderOpen,
+  Sparkles,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserPortfolio } from '@/db/schema';
 import { cn } from '@/lib/utils';
 import { PortfolioDetails } from './PortfolioDetails';
+import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
+
+const Badge = ({ children, className }: { children: React.ReactNode, className?: string }) => (
+  <span className={cn("px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border", className)}>
+    {children}
+  </span>
+);
 
 export const NotebookContainer: React.FC = () => {
   const { t } = useLanguage();
@@ -91,14 +98,45 @@ export const NotebookContainer: React.FC = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-        <Loader2 className="h-8 w-8 text-primary animate-spin" />
-        <p className="text-muted-foreground font-medium">{t('common.loading')}</p>
-      </div>
-    );
-  }
+  const handleCreateDemo = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/portfolio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          name: "Demo Portfolio", 
+          description: "Example portfolio with multiple bond types" 
+        }),
+      });
+      
+      if (!response.ok) throw new Error('Failed to create portfolio');
+      const portfolio = await response.json();
+      const portfolioId = portfolio.data?.id || portfolio.id;
+
+      // Add some demo lots
+      const demoLots = [
+        { bondType: 'EDO', amount: 50, purchaseDate: '2023-01-01' },
+        { bondType: 'COI', amount: 100, purchaseDate: '2023-06-15' },
+        { bondType: 'TOS', amount: 200, purchaseDate: '2024-01-10' },
+      ];
+
+      for (const lot of demoLots) {
+        await fetch('/api/portfolio/lots', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ portfolioId, ...lot }),
+        });
+      }
+
+      fetchPortfolios();
+    } catch (err) {
+      console.error(err);
+      setError(t('notebook.create_error'));
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (selectedPortfolioId) {
     const portfolio = portfolios.find(p => p.id === selectedPortfolioId);
@@ -110,34 +148,25 @@ export const NotebookContainer: React.FC = () => {
     );
   }
 
-  return (
-    <div className="space-y-8 pb-20">
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-card p-8 rounded-3xl border-4 border-primary/10 shadow-2xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-8 opacity-5 text-primary">
-          <Wallet className="h-32 w-32" />
-        </div>
-        <div className="space-y-2 relative z-10">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary rounded-xl">
-              <Briefcase className="h-6 w-6 text-white" />
-            </div>
-            <h2 className="text-3xl font-black tracking-tight text-primary uppercase">
-              {t('notebook.title')}
-            </h2>
-          </div>
-          <p className="text-muted-foreground max-w-2xl text-sm font-medium">
-            {t('notebook.subtitle')}
-          </p>
-        </div>
-        <Button 
-          onClick={handleCreateDefault}
-          className="h-14 px-8 rounded-2xl text-lg font-black gap-3 shadow-lg hover:shadow-primary/20 transition-all active:scale-95 z-10"
-        >
-          <Plus className="h-6 w-6" />
-          {t('notebook.new_portfolio').toUpperCase()}
-        </Button>
-      </header>
+  const headerActions = (
+    <Button 
+      onClick={handleCreateDefault}
+      className="h-10 px-4 rounded-xl text-xs font-black gap-2 shadow-sm hover:shadow-primary/20 transition-all active:scale-95"
+    >
+      <Plus className="h-4 w-4" />
+      {t('notebook.new_portfolio').toUpperCase()}
+    </Button>
+  );
 
+  return (
+    <CalculatorPageShell
+      title={t('notebook.title')}
+      description={t('notebook.subtitle')}
+      icon={<BookOpen className="h-8 w-8" />}
+      isCalculating={isLoading}
+      hasResults={portfolios.length > 0}
+      extraHeaderActions={headerActions}
+    >
       {error && (
         <div className="rounded-2xl border-2 border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
           <div className="flex items-center gap-3 font-bold">
@@ -221,32 +250,41 @@ export const NotebookContainer: React.FC = () => {
         </AnimatePresence>
 
         {portfolios.length === 0 && !isLoading && (
-          <div className="col-span-full py-20 text-center space-y-6">
-            <div className="inline-flex p-6 bg-muted rounded-full text-muted-foreground">
-              <Briefcase className="h-12 w-12" />
+          <div className="col-span-full py-20 text-center space-y-8 rounded-3xl border-2 border-dashed border-primary/20 bg-muted/5">
+            <div className="relative inline-flex">
+              <div className="absolute -inset-4 rounded-full bg-primary/10 blur-xl animate-pulse" />
+              <div className="relative p-8 bg-white rounded-full shadow-xl border-2 border-primary/5 text-primary">
+                <FolderOpen className="h-16 w-16" />
+              </div>
             </div>
-            <div className="space-y-2">
-              <h3 className="text-2xl font-black text-slate-800">{t('notebook.empty_title')}</h3>
-              <p className="text-muted-foreground font-medium max-w-md mx-auto">
+            <div className="space-y-3 max-w-md mx-auto px-6">
+              <h3 className="text-3xl font-black text-slate-800 tracking-tight">{t('notebook.empty_title')}</h3>
+              <p className="text-muted-foreground font-medium text-lg leading-relaxed">
                 {t('notebook.empty_desc')}
               </p>
             </div>
-            <Button 
-              size="lg" 
-              onClick={handleCreateDefault}
-              className="h-14 px-10 rounded-2xl font-black shadow-xl"
-            >
-              {t('notebook.create_first').toUpperCase()}
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center px-6">
+              <Button 
+                size="lg" 
+                onClick={handleCreateDefault}
+                className="h-14 px-10 rounded-2xl font-black shadow-xl hover:shadow-primary/30 transition-all active:scale-95 gap-2"
+              >
+                <Plus className="h-5 w-5" />
+                {t('notebook.create_first').toUpperCase()}
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                onClick={handleCreateDemo}
+                className="h-14 px-10 rounded-2xl font-black border-2 gap-2 hover:bg-primary/5 transition-all"
+              >
+                <Sparkles className="h-5 w-5 text-primary" />
+                {t('notebook.load_demo').toUpperCase()}
+              </Button>
+            </div>
           </div>
         )}
       </div>
-    </div>
+    </CalculatorPageShell>
   );
 };
-
-const Badge = ({ children, className }: { children: React.ReactNode, className?: string }) => (
-  <span className={cn("px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border", className)}>
-    {children}
-  </span>
-);

@@ -4,7 +4,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CalculationResult } from '../../bond-core/types';
+import { CalculationResult, BondInputs, BondType, TaxStrategy } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -17,11 +17,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { HelpCircle, Download, AlertTriangle, TrendingUp, PiggyBank, Info } from "lucide-react";
+import { HelpCircle, Download, AlertTriangle, TrendingUp, PiggyBank, Info, Sparkles, Lightbulb } from "lucide-react";
 import { CalculationAuditTrace } from './CalculationAuditTrace';
+import { MathDeepDive } from '@/shared/components/MathDeepDive';
 
 interface BondResultsSummaryProps {
   results: CalculationResult;
+  inputs: BondInputs;
 }
 
 const containerVariant = {
@@ -39,7 +41,98 @@ const itemVariant = {
   show: { y: 0, opacity: 1 }
 };
 
-export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results }) => {
+const StrategyHints: React.FC<{ results: CalculationResult; inputs: BondInputs }> = ({ results, inputs }) => {
+  const { t, language } = useLanguage();
+  
+  const hints: React.ReactNode[] = [];
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', {
+      style: 'currency',
+      currency: 'PLN',
+    }).format(value);
+  };
+
+  const horizonYears = (inputs.investmentHorizonMonths || 0) / 12;
+
+  // 1. COI vs EDO
+  if (inputs.bondType === BondType.COI && horizonYears > 4.5) {
+    hints.push(
+      <div key="edo_better" className="flex items-start gap-3 text-sm">
+        <Sparkles className="h-5 w-5 text-yellow-500 shrink-0 mt-0.5" />
+        <p>{t('strategy_hints.edo_better_than_coi')}</p>
+      </div>
+    );
+  } else if (inputs.bondType === BondType.EDO && horizonYears > 0 && horizonYears < 4) {
+    hints.push(
+      <div key="coi_better" className="flex items-start gap-3 text-sm">
+        <Lightbulb className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
+        <p>{t('strategy_hints.coi_better_than_edo_short')}</p>
+      </div>
+    );
+  }
+
+  // 2. Tax Efficiency
+  if (inputs.taxStrategy === TaxStrategy.STANDARD && results.totalTax > 500) {
+    hints.push(
+      <div key="tax_ike" className="flex items-start gap-3 text-sm">
+        <PiggyBank className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
+        <p>{t('strategy_hints.tax_efficiency_ike', { amount: formatCurrency(results.totalTax) })}</p>
+      </div>
+    );
+  }
+
+  // 3. OTS Repeated
+  if (inputs.bondType === BondType.OTS && (inputs.rollover || inputs.isRebought)) {
+    hints.push(
+      <div key="ots_repeated" className="flex items-start gap-3 text-sm">
+        <TrendingUp className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+        <p>{t('strategy_hints.ots_repeated')}</p>
+      </div>
+    );
+  }
+
+  // 4. Diversification
+  if (results.totalProfit > 0 && !inputs.bondType.includes('COI') && !inputs.bondType.includes('EDO') && !inputs.bondType.includes('ROS') && !inputs.bondType.includes('ROD')) {
+    hints.push(
+      <div key="diversify" className="flex items-start gap-3 text-sm">
+        <Info className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5" />
+        <p>{t('strategy_hints.diversification_hint')}</p>
+      </div>
+    );
+  }
+
+  // 5. IKE Limit Warning
+  if (inputs.useTaxWrapperLimit && results.overflowInfo && results.overflowInfo.amountInStandard > 0) {
+    hints.push(
+      <div key="ike_limit" className="flex items-start gap-3 text-sm">
+        <AlertTriangle className="h-5 w-5 text-orange-500 shrink-0 mt-0.5" />
+        <p>{t('strategy_hints.ike_limit_warning')}</p>
+      </div>
+    );
+  }
+
+  if (hints.length === 0) return null;
+
+  return (
+    <Card className="border-primary/20 bg-primary/5 shadow-sm border-2 overflow-hidden">
+      <CardHeader className="pb-2 border-b border-primary/10 bg-primary/10 py-3">
+        <div className="flex items-center gap-2">
+          <Sparkles className="h-4 w-4 text-primary" />
+          <CardTitle className="text-[10px] font-black uppercase text-primary tracking-widest">{t('strategy_hints.title')}</CardTitle>
+        </div>
+      </CardHeader>
+      <CardContent className="p-4 space-y-4">
+        {hints.map((hint, idx) => (
+          <div key={idx} className={cn(idx !== hints.length - 1 && "pb-4 border-b border-primary/5")}>
+            {hint}
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+};
+
+export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results, inputs }) => {
   const { t, language } = useLanguage();
 
   const formatCurrency = (value: number) => {
@@ -96,6 +189,8 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
 
   return (
     <div className="space-y-6 w-full">
+      <StrategyHints results={results} inputs={inputs} />
+
       {isNearMaturity && (
         <Card className="border-orange-200 bg-orange-50/50 shadow-sm animate-pulse border-2">
           <CardContent className="p-4 flex items-center gap-3">
@@ -189,15 +284,14 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
                       <CardTitle className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">
                         {t('bonds.gross_value')}
                       </CardTitle>
-                      <Popover>
-                        <PopoverTrigger>
-                          <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
-                        </PopoverTrigger>
-                        <PopoverContent className="text-xs p-3 space-y-2">
-                          <p className="font-bold">{t('bonds.gross_value')}:</p>
-                          <p>{t('bonds.gross_value_desc') || "Total value before any taxes and fees are deducted."}</p>
-                        </PopoverContent>
-                      </Popover>
+                      <MathDeepDive 
+                        results={results} 
+                        trigger={
+                          <button className="group">
+                            <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help group-hover:text-primary transition-colors" />
+                          </button>
+                        } 
+                      />
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-black text-slate-800">{formatCurrency(results.grossValue)}</div>
@@ -211,16 +305,14 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
                       <CardTitle className="text-[10px] font-black uppercase text-green-700 tracking-widest">
                         {t('bonds.net_payout')}
                       </CardTitle>
-                      <Popover>
-                        <PopoverTrigger>
-                          <HelpCircle className="h-3 w-3 text-green-600 cursor-help" />
-                        </PopoverTrigger>
-                        <PopoverContent className="text-xs p-3 space-y-2">
-                          <p className="font-bold">{t('bonds.payout_calculation')}:</p>
-                          <code className="block bg-muted p-1 rounded font-mono text-[10px]">Gross Value - Tax - Early Fee</code>
-                          <p className="text-muted-foreground italic leading-relaxed">{t('bonds.actual_cash_in_hand')}</p>
-                        </PopoverContent>
-                      </Popover>
+                      <MathDeepDive 
+                        results={results} 
+                        trigger={
+                          <button className="group">
+                            <Info className="h-3.5 w-3.5 text-green-600 cursor-help group-hover:text-green-800 transition-colors" />
+                          </button>
+                        } 
+                      />
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-black text-green-700">
@@ -241,15 +333,14 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results 
                       <CardTitle className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">
                         {t('common.net_profit')}
                       </CardTitle>
-                      <Popover>
-                        <PopoverTrigger>
-                          <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
-                        </PopoverTrigger>
-                        <PopoverContent className="text-xs p-3 space-y-2">
-                          <p className="font-bold">{t('common.net_profit')}:</p>
-                          <p>{t('bonds.net_profit_desc') || "Your total earnings after paying all taxes and potential early withdrawal fees."}</p>
-                        </PopoverContent>
-                      </Popover>
+                      <MathDeepDive 
+                        results={results} 
+                        trigger={
+                          <button className="group">
+                            <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help group-hover:text-primary transition-colors" />
+                          </button>
+                        } 
+                      />
                     </CardHeader>
                     <CardContent>
                       <div className={cn("text-2xl font-black", results.totalProfit >= 0 ? "text-primary" : "text-destructive")}>

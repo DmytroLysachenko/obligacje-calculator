@@ -17,11 +17,16 @@ export class CalculationClientError extends Error {
   }
 }
 
-export async function postCalculation<TResponse>(url: string, payload: unknown): Promise<TResponse> {
+export async function postCalculation<TResponse>(
+  url: string, 
+  payload: unknown, 
+  signal?: AbortSignal
+): Promise<TResponse> {
   const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
+    signal,
   });
 
   const result: ApiResponse<TResponse> = await response.json();

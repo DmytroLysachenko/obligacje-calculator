@@ -12,8 +12,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { Loader2, Scale, History, Target, LineChart } from "lucide-react";
+import { Scale, History, Target, LineChart, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ChartContainer } from "@/shared/components/charts/ChartContainer";
 import { CalculationMetaPanel } from "@/shared/components/CalculationMetaPanel";
 import { CalculatorPageShell } from "@/shared/components/CalculatorPageShell";
@@ -491,16 +492,39 @@ export const ComparisonContainer: React.FC = () => {
               </div>
 
               {!resultsA && !isCalculating && (
-                <div className="flex h-[400px] flex-col items-center justify-center space-y-4 rounded-3xl border-2 border-dashed border-primary/10 opacity-50 bg-muted/5">
-                  <Scale className="h-12 w-12 text-muted-foreground" />
-                  <p className="font-bold text-muted-foreground uppercase tracking-widest text-xs">{t("comparison.desc_independent")}</p>
+                <div className="flex h-[450px] flex-col items-center justify-center space-y-6 rounded-3xl border-2 border-dashed border-primary/20 bg-muted/5 p-12 text-center transition-all hover:bg-muted/10">
+                  <div className="relative">
+                    <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-blue-500 to-emerald-500 opacity-20 blur-lg animate-pulse" />
+                    <div className="relative bg-white p-6 rounded-full shadow-xl border-2 border-primary/10">
+                      <Scale className="h-12 w-12 text-primary" />
+                    </div>
+                  </div>
+                  <div className="space-y-2 max-w-sm">
+                    <h3 className="text-lg font-black uppercase tracking-widest text-slate-800">
+                      {t("comparison.ready_to_compare")}
+                    </h3>
+                    <p className="text-sm font-medium text-muted-foreground leading-relaxed">
+                      {t("comparison.desc_independent")}
+                    </p>
+                  </div>
+                  <Button 
+                    onClick={() => calculate()}
+                    className="h-12 px-8 rounded-xl font-black gap-2 shadow-lg hover:shadow-primary/30 transition-all active:scale-95"
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    {t("common.calculate").toUpperCase()}
+                  </Button>
                 </div>
               )}
 
               {isCalculating && !resultsA && (
-                <div className="flex h-[400px] flex-col items-center justify-center space-y-4">
-                  <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                  <p className="font-black text-primary uppercase tracking-widest text-xs">{t("comparison.live_calculation")}</p>
+                <div className="space-y-8 animate-in fade-in duration-500">
+                  <Skeleton className="h-[480px] w-full rounded-3xl shadow-xl border border-primary/5" />
+                  <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                    <Skeleton className="h-[120px] rounded-3xl" />
+                    <Skeleton className="h-[120px] rounded-3xl" />
+                  </div>
+                  <Skeleton className="h-[200px] w-full rounded-3xl" />
                 </div>
               )}
 

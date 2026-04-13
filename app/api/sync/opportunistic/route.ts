@@ -29,11 +29,9 @@ export async function GET() {
   // Background sync (don't await)
   (async () => {
     try {
-      console.log('[OpportunisticSync] Starting background sync...');
       const providers = [new WorldBankSyncProvider(), new NbpSyncProvider(), new StooqSyncProvider()];
       const engine = new SyncEngine(providers);
       await engine.runFullSync();
-      console.log('[OpportunisticSync] Background sync completed.');
     } catch (error) {
       console.error('[OpportunisticSync] Background sync failed:', error);
     }

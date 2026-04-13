@@ -28,7 +28,7 @@ import {
 } from "recharts";
 import { ValueType } from "recharts/types/component/DefaultTooltipContent";
 import { addYears } from "date-fns";
-import { Loader2, ArrowRightLeft, TrendingUp } from "lucide-react";
+import { Loader2, TrendingUp } from "lucide-react";
 import { useLanguage } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { ChartContainer } from "@/shared/components/charts/ChartContainer";
@@ -157,18 +157,6 @@ const formatCurrency = (val: number) =>
   }).format(val);
   return (
     <div className="space-y-8 pb-20" onKeyDown={handleKeyDown}>
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-card p-8 rounded-3xl border-4 border-primary/10 shadow-2xl">
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary rounded-xl">
-              <ArrowRightLeft className="h-6 w-6 text-white" />
-            </div>
-            <h2 className="text-3xl font-black tracking-tight text-primary">{t('comparison.title_bond_vs_bond')}</h2>
-          </div>
-          <p className="text-muted-foreground font-medium">{t('comparison.desc_bond_vs_bond')}</p>
-        </div>
-      </header>
-
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Left: Shared Controls */}
         <aside className="lg:col-span-1 space-y-6">

@@ -7,6 +7,7 @@ import { Sidebar } from "@/shared/components/Sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
 import { OpportunisticSyncTrigger } from "@/shared/components/OpportunisticSyncTrigger";
+import { getGlobalDataFreshness } from "@/lib/data-access";
 import Script from "next/script";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://obligacje-calculator.vercel.app", // Placeholder
+    url: "https://obligacje-calculator.vercel.app", 
     siteName: "Obligacje Calculator",
     images: [
       {
@@ -42,19 +43,58 @@ export const metadata: Metadata = {
   }
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const dataFreshness = await getGlobalDataFreshness();
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "name": "Obligacje Calculator",
+        "description": "Professional simulator for Polish Treasury Bonds.",
+        "url": "https://obligacje-calculator.vercel.app",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "All",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "PLN"
+        },
+        "potentialAction": {
+          "@type": "CalculateAction",
+          "name": "Calculate Bond Profit",
+          "target": "https://obligacje-calculator.vercel.app/single-calculator"
+        }
+      },
+      {
+        "@type": "FinancialProduct",
+        "name": "Polish Treasury Bonds",
+        "description": "EDO, COI, ROR, DOR, TOS, OTS bonds simulation.",
+        "provider": {
+          "@type": "GovernmentOrganization",
+          "name": "Ministerstwo Finansów"
+        }
+      }
+    ]
+  };
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased bg-background text-foreground`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <LanguageProvider>
           <TooltipProvider>
             <ErrorBoundary>
               <div className="flex min-h-screen">
-                <Sidebar />
+                <Sidebar dataFreshness={dataFreshness} />
                 <OpportunisticSyncTrigger />
                 <main className="flex-1 lg:pl-72 flex flex-col min-h-screen overflow-x-hidden border-l">
                   <div className="flex-1 p-4 md:p-8">

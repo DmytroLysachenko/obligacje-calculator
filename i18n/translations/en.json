@@ -32,6 +32,15 @@
     "context_rates": "Context Rates",
     "retry": "Retry"
   },
+  "strategy_hints": {
+    "title": "Smart Strategy Hints",
+    "edo_better_than_coi": "Given your horizon (> 4 years) and projected inflation, EDO (10-year) bonds might be more beneficial than COI (4-year) due to higher margins and annual interest capitalization.",
+    "coi_better_than_edo_short": "For a horizon under 4 years, COI bonds offer better liquidity and lower early redemption fees than EDO.",
+    "tax_efficiency_ike": "You are paying significant Belka tax ({{amount}}). Consider using an IKE or IKZE account to keep these funds for yourself.",
+    "ots_repeated": "Do you often renew short-term OTS bonds? At current NBP rates, ROR (1-year) or DOR (2-year) bonds might offer higher returns with similar liquidity.",
+    "diversification_hint": "Your investment is concentrated in one bond type. Consider diversifying with inflation-indexed bonds (COI/EDO) to protect your purchasing power.",
+    "ike_limit_warning": "Your investment amount exceeds the annual IKE/IKZE limit. The surplus will be taxed at the standard 19% rate."
+  },
   "nav": {
     "education": "Education / Basics",
     "single_calculator": "Single Calculator",
@@ -199,6 +208,7 @@
     "standard_profit": "Standard Profit",
     "savings_notice": "Your tax wrapper saved you {{amount}} compared to a standard account.",
     "inflation_adjusted": "Inflation Adjusted",
+    "inflation_scenario": "Inflation Scenario",
     "inflation_scenarios": "Inflation Range Scenarios",
     "scenario_low": "Low Inflation",
     "scenario_base": "Base Case",
@@ -216,6 +226,7 @@
     "goal_reached": "Goal Reached!",
     "goal_progress": "Goal Progress: {{percent}}%",
     "target": "Target",
+    "ready_to_simulate": "Ready to simulate?",
     "click_calculate": "Click 'Calculate Results' to see the projection",
     "simulating_growth": "Simulating investment growth...",
     "click_simulate_regular": "Click 'Simulate Investment' to see the projection",
@@ -268,7 +279,15 @@
     "granularity_daily": "Daily",
     "granularity_monthly": "Monthly",
     "granularity_quarterly": "Quarterly",
-    "granularity_yearly": "Yearly"
+    "granularity_yearly": "Yearly",
+    "pdf": {
+      "executive_summary": "EXECUTIVE SUMMARY",
+      "assumptions_audit": "ASSUMPTIONS AUDIT",
+      "visual_analytics": "VISUAL ANALYTICS",
+      "detailed_breakdown": "DETAILED BREAKDOWN",
+      "metric": "Metric",
+      "value": "Value"
+    }
     },
     "landing": {
       "hero_title": "Master Your",
@@ -298,7 +317,9 @@
       "empty_title": "Your notebook is empty",
       "empty_desc": "Create your first portfolio to start tracking your bond investments and managing your wealth.",
       "create_first": "Create My First Portfolio",
+      "load_demo": "Load Demo Portfolio",
       "active": "Active",
+
       "created": "Created",
       "portfolio_details": "Portfolio Details",
       "total_invested": "Total Invested",
@@ -392,6 +413,7 @@
       "savings_context_desc": "\"Savings Account\" interest is not unified. It varies heavily between banks. This model assumes an average retail rate based on historical NBP margins (approx. 0.5-2%).",
       "winner": "Winner",
       "insight": "Insight",
+      "ready_to_compare": "Ready to compare?",
       "live_calculation": "Live Calculation...",
       "sync_data_stable": "Sync Data Stable",
       "max_drawdown": "Max Drawdown",

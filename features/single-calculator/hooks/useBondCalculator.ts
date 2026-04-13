@@ -4,6 +4,7 @@ import { SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { useQuerySync } from '@/shared/hooks/useQuerySync';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
+import { useDebounce } from '@/shared/hooks/useDebounce';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 
 const DEFAULT_BOND = BondType.COI;
@@ -53,30 +54,9 @@ export function useBondCalculator() {
   
   const { isCalculating, isError, clearError, post } = useCalculationRequest();
 
-  const fetchSeries = useCallback(async (symbol: BondType) => {
-    try {
-      const response = await fetch(`/api/calculate/bond-series?symbol=${symbol}`);
-      const data = await response.json();
-      setAvailableSeries(data.result || []);
-    } catch (error) {
-      console.error('Failed to fetch series:', error);
-    }
-  }, []);
+  const debouncedInputs = useDebounce(inputs, 500);
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchSeries(inputs.bondType);
-  }, [inputs.bondType, fetchSeries]);
-
-  // Derived results for compatibility
-  const results = envelope?.result || null;
-
-  // Sync state with URL
-  useQuerySync(inputs, (initial) => {
-    setInputs(prev => ({ ...prev, ...initial }));
-  });
-
-  const calculate = useCallback(async (currentInputs = inputs) => {
+  const calculate = useCallback(async (currentInputs: BondInputs) => {
     setIsDirty(false);
     try {
       clearError();
@@ -102,9 +82,39 @@ export function useBondCalculator() {
       const data = await post<SingleBondCalculationEnvelope>('/api/calculate/single', finalInputs, { preferWorker: true });
       setEnvelope(data);
     } catch (error) {
+      if (error instanceof Error && error.message === 'Calculation aborted') {
+        return;
+      }
       console.error('Calculation error:', error);
     }
-  }, [clearError, inputs, post]);
+  }, [clearError, post]);
+
+  useEffect(() => {
+    calculate(debouncedInputs);
+  }, [debouncedInputs, calculate]);
+
+  const fetchSeries = useCallback(async (symbol: BondType) => {
+    try {
+      const response = await fetch(`/api/calculate/bond-series?symbol=${symbol}`);
+      const data = await response.json();
+      setAvailableSeries(data.result || []);
+    } catch (error) {
+      console.error('Failed to fetch series:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchSeries(inputs.bondType);
+  }, [inputs.bondType, fetchSeries]);
+
+  // Derived results for compatibility
+  const results = envelope?.result || null;
+
+  // Sync state with URL
+  useQuerySync(inputs, (initial) => {
+    setInputs(prev => ({ ...prev, ...initial }));
+  });
 
   // Initial calculation - REMOVED to prevent excessive requests on remount
   // useEffect(() => {
@@ -203,7 +213,7 @@ export function useBondCalculator() {
     isCalculating,
     isError,
     isDirty,
-    calculate,
+    calculate: () => calculate(inputs),
     updateInput,
     setBondType,
     definitions: BOND_DEFINITIONS,

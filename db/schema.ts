@@ -159,6 +159,19 @@ export type BondSeries = typeof bondSeries.$inferSelect;
 export type NewUserTransaction = typeof userTransactions.$inferInsert;
 export type UserTransaction = typeof userTransactions.$inferSelect;
 
+export const userSettings = pgTable("user_settings", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }).unique(),
+  currency: text("currency").default("PLN").notNull(),
+  theme: text("theme").default("system").notNull(),
+  defaultInflationScenario: text("default_inflation_scenario").default("base").notNull(),
+  chartType: text("chart_type").default("area").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export type UserSettings = typeof userSettings.$inferSelect;
+export type NewUserSettings = typeof userSettings.$inferInsert;
+
 // --- NEXTAUTH (AUTH.JS) REQUIRED TABLES --- //
 export const users = pgTable("user", {
   id: text("id")

@@ -30,7 +30,11 @@ function getCalculationWorker(): Worker | null {
   return calculationWorker;
 }
 
-export async function postCalculationInWorker<TResponse>(url: string, payload: unknown): Promise<TResponse> {
+export async function postCalculationInWorker<TResponse>(
+  url: string, 
+  payload: unknown, 
+  signal?: AbortSignal
+): Promise<TResponse> {
   const worker = getCalculationWorker();
 
   if (!worker) {
@@ -40,10 +44,23 @@ export async function postCalculationInWorker<TResponse>(url: string, payload: u
   const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
   return await new Promise<TResponse>((resolve, reject) => {
+    const handleAbort = () => {
+      worker.postMessage({ id, type: 'abort' });
+      worker.removeEventListener('message', handleMessage);
+      reject(new Error('Calculation aborted'));
+    };
+
+    if (signal?.aborted) {
+      return reject(new Error('Calculation aborted'));
+    }
+
+    signal?.addEventListener('abort', handleAbort, { once: true });
+
     const handleMessage = (event: MessageEvent<WorkerResponse<TResponse>>) => {
       if (event.data.id !== id) return;
 
       worker.removeEventListener('message', handleMessage);
+      signal?.removeEventListener('abort', handleAbort);
 
       if (event.data.ok) {
         resolve(event.data.data);

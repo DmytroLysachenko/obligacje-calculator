@@ -4,51 +4,29 @@ import { userPortfolios } from '@/db/schema';
 import { PortfolioSchema } from '@/features/bond-core/types/portfolio-schemas';
 import { eq } from 'drizzle-orm';
 import { applyPortfolioOwnerCookie, resolvePortfolioOwner } from '@/lib/portfolio-access';
-import { z } from 'zod';
-import { createSuccessResponse, createErrorResponse } from '@/shared/types/api';
+import { createSuccessResponse } from '@/shared/types/api';
+import { apiHandler } from '@/lib/api-handler';
 
-export async function GET() {
-  try {
-    const owner = await resolvePortfolioOwner();
-    const portfolios = await db.query.userPortfolios.findMany({
-      where: eq(userPortfolios.userId, owner.ownerId),
-      orderBy: (p, { desc }) => [desc(p.updatedAt)],
-    });
+export const GET = apiHandler(async () => {
+  const owner = await resolvePortfolioOwner();
+  const portfolios = await db.query.userPortfolios.findMany({
+    where: eq(userPortfolios.userId, owner.ownerId),
+    orderBy: (p, { desc }) => [desc(p.updatedAt)],
+  });
 
-    return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(portfolios)), owner);
-  } catch (error) {
-    console.error('Failed to fetch portfolios:', error);
-    return NextResponse.json(
-      createErrorResponse('Portfolio storage is temporarily unavailable', 'DATABASE_ERROR'),
-      { status: 500 }
-    );
-  }
-}
+  return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(portfolios)), owner);
+});
 
-export async function POST(req: NextRequest) {
-  try {
-    const owner = await resolvePortfolioOwner();
-    const body = await req.json();
-    const validated = PortfolioSchema.parse(body);
+export const POST = apiHandler(async (req: NextRequest) => {
+  const owner = await resolvePortfolioOwner();
+  const body = await req.json();
+  const validated = PortfolioSchema.parse(body);
 
-    const [newPortfolio] = await db.insert(userPortfolios).values({
-      userId: owner.ownerId,
-      name: validated.name,
-      description: validated.description,
-    }).returning();
+  const [newPortfolio] = await db.insert(userPortfolios).values({
+    userId: owner.ownerId,
+    name: validated.name,
+    description: validated.description,
+  }).returning();
 
-    return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(newPortfolio)), owner);
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        createErrorResponse('Validation failed', 'VALIDATION_ERROR', error.issues), 
-        { status: 400 }
-      );
-    }
-    console.error('Failed to create portfolio:', error);
-    return NextResponse.json(
-      createErrorResponse('Portfolio storage is temporarily unavailable', 'DATABASE_ERROR'),
-      { status: 503 }
-    );
-  }
-}
+  return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(newPortfolio)), owner);
+});

@@ -6,7 +6,7 @@ import { RegularInvestmentInputsForm } from '../../regular-investment/components
 import { RegularInvestmentResultsSummary } from '../../regular-investment/components/RegularInvestmentResultsSummary';
 import { LadderTimeline } from './LadderTimeline';
 import { useLanguage } from '@/i18n';
-import { Layers, Loader2, Activity } from 'lucide-react';
+import { ListTree, Loader2, Activity } from 'lucide-react';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
 import { cn } from '@/lib/utils';
@@ -25,7 +25,7 @@ export const LadderContainer: React.FC = () => {
     <CalculatorPageShell
       title={t("nav.ladder")}
       description={t("ladder.what_is_desc")}
-      icon={<Layers className="h-8 w-8" />}
+      icon={<ListTree className="h-8 w-8" />}
       isCalculating={isCalculating}
       isDirty={isDirty}
       hasResults={!!results}

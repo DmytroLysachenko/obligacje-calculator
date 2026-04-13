@@ -6,7 +6,7 @@ import { RegularInvestmentInputsForm } from './RegularInvestmentInputsForm';
 import { RegularInvestmentResultsSummary } from './RegularInvestmentResultsSummary';
 import { RegularInvestmentChart } from './RegularInvestmentChart';
 import { useLanguage } from '@/i18n';
-import { Info, Loader2, Target, Trophy } from 'lucide-react';
+import { Info, Loader2, Target, PiggyBank } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
@@ -34,7 +34,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
     <CalculatorPageShell
       title={t("nav.regular_investment")}
       description={t("bonds.regular_calculator")}
-      icon={<Trophy className="h-8 w-8" />}
+      icon={<PiggyBank className="h-8 w-8" />}
       isCalculating={isCalculating}
       isDirty={isDirty}
       hasResults={!!results}

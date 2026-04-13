@@ -18,15 +18,21 @@ export async function GET(req: NextRequest) {
 
     const stats = await db.select({
       totalPoints: sql<number>`count(*)`,
+      latestDate: sql<string>`max(date)`,
       seriesId: dataPoints.seriesId
     })
     .from(dataPoints)
     .groupBy(dataPoints.seriesId);
 
-    const enrichedSeries = series.map(s => ({
-      ...s,
-      pointCount: stats.find(stat => stat.seriesId === s.id)?.totalPoints || 0
-    }));
+    const enrichedSeries = series.map(s => {
+      const stat = stats.find(stat => stat.seriesId === s.id);
+      return {
+        ...s,
+        pointCount: stat?.totalPoints || 0,
+        // Fallback to max(date) from data_points if lastDataPointDate is missing
+        lastDataPointDate: s.lastDataPointDate || stat?.latestDate || null
+      };
+    });
 
     return NextResponse.json(createSuccessResponse({
       series: enrichedSeries,

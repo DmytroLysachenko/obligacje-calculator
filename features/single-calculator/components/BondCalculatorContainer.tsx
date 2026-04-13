@@ -12,12 +12,14 @@ import {
   Table,
   Target,
   Briefcase,
-  FileText
+  FileText,
+  Sparkles
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 import { CalculationMetaPanel } from "@/shared/components/CalculationMetaPanel";
 import { CalculatorPageShell } from "@/shared/components/CalculatorPageShell";
 import { RecalculateButton } from "@/shared/components/RecalculateButton";
@@ -139,20 +141,36 @@ export const BondCalculatorContainer: React.FC = () => {
 
         <div className="xl:col-span-8 space-y-8" id="bond-report-content">
           {!results && !isCalculating && (
-            <div className="h-[400px] flex flex-col items-center justify-center border-2 border-dashed rounded-3xl opacity-50 space-y-4">
-              <Target className="h-12 w-12 text-muted-foreground" />
-              <p className="font-medium text-muted-foreground">
-                {t("bonds.click_calculate")}
-              </p>
+            <div className="h-[450px] flex flex-col items-center justify-center border-2 border-dashed border-primary/20 rounded-3xl bg-muted/5 p-12 text-center transition-all hover:bg-muted/10 space-y-6">
+              <div className="relative">
+                <div className="absolute -inset-1 rounded-full bg-primary/20 blur-lg animate-pulse" />
+                <div className="relative bg-white p-6 rounded-full shadow-xl border-2 border-primary/10">
+                  <Target className="h-12 w-12 text-primary" />
+                </div>
+              </div>
+              <div className="space-y-2 max-w-sm">
+                <h3 className="text-lg font-black uppercase tracking-widest text-slate-800">
+                  {t("bonds.ready_to_simulate")}
+                </h3>
+                <p className="text-sm font-medium text-muted-foreground leading-relaxed">
+                  {t("bonds.click_calculate")}
+                </p>
+              </div>
+              <Button 
+                onClick={() => calculate()}
+                className="h-12 px-8 rounded-xl font-black gap-2 shadow-lg hover:shadow-primary/30 transition-all active:scale-95"
+              >
+                <Sparkles className="h-4 w-4" />
+                {t("common.calculate").toUpperCase()}
+              </Button>
             </div>
           )}
 
           {isCalculating && !results && (
-            <div className="h-[400px] flex flex-col items-center justify-center space-y-4">
-              <span className="h-12 w-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
-              <p className="font-medium text-primary">
-                {t("bonds.simulating_growth")}
-              </p>
+            <div className="space-y-8 animate-in fade-in duration-500">
+              <Skeleton className="h-[140px] w-full rounded-3xl" />
+              <Skeleton className="h-[200px] w-full rounded-3xl" />
+              <Skeleton className="h-[450px] w-full rounded-3xl shadow-xl border border-primary/5" />
             </div>
           )}
 
@@ -163,7 +181,7 @@ export const BondCalculatorContainer: React.FC = () => {
                 isCalculating && "opacity-50 pointer-events-none",
               )}
             >
-              <BondResultsSummary results={results} />
+              <BondResultsSummary results={results} inputs={inputs} />
 
               <CalculationMetaPanel
                 warnings={envelope?.warnings}

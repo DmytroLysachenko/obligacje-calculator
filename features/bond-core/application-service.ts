@@ -23,7 +23,13 @@ import {
   BondComparisonScenarioRequestSchema 
 } from './types/schemas';
 import { calculateBondInvestment, calculateRegularInvestment } from './utils/calculations';
-import { getHistoricalDataMap, getGlobalDataFreshness, getBondDefinitionsMap, getTaxRulesForYear } from '@/lib/data-access';
+import { 
+  getHistoricalDataMap, 
+  getGlobalDataFreshness, 
+  getBondDefinitionsMap, 
+  getTaxRulesForYear,
+  getHistoricalAverages 
+} from '@/lib/data-access';
 import { BondInputs, BondType, TaxStrategy, CalculationResult, RegularInvestmentInputs } from './types';
 import { BondDefinition } from './constants/bond-definitions';
 import { getWithdrawalDateFromMonths, differenceInMonths } from '@/shared/lib/date-timing';
@@ -66,10 +72,9 @@ export class CalculationApplicationService {
       }
 
       const duration = performance.now() - startTime;
-      console.log(`[CalculationService] v=${MODEL_VERSION} kind=${request.kind} duration=${duration.toFixed(2)}ms`);
-      
-      return response;
-    } catch (error) {
+      // Traces are handled by the caller or logging middleware in production if needed
+
+      return response;    } catch (error) {
       console.error(`[CalculationService] FAILED v=${MODEL_VERSION} kind=${request.kind}`, error);
       throw error;
     }
@@ -354,7 +359,9 @@ export class CalculationApplicationService {
       result.taxSavings = standardResult.totalTax - result.totalTax;
     }
 
-    return this.createEnvelope(result, warnings, assumptions, dataFreshness);
+    const historicalAverages = await getHistoricalAverages();
+
+    return this.createEnvelope(result, warnings, assumptions, dataFreshness, historicalAverages);
   }
 
   private async calculateSplitTaxWrapper(
@@ -427,7 +434,9 @@ export class CalculationApplicationService {
     const warnings = this.collectHistoricalWarnings([inputs.historicalData]);
     const assumptions = this.generateAssumptions(inputs);
 
-    return this.createEnvelope(aggregatedResult, warnings, assumptions, dataFreshness);
+    const historicalAverages = await getHistoricalAverages();
+
+    return this.createEnvelope(aggregatedResult, warnings, assumptions, dataFreshness, historicalAverages);
   }
 
   private async calculateRegularInvestment(
@@ -543,7 +552,8 @@ export class CalculationApplicationService {
     result: T,
     warnings: string[],
     assumptions: string[],
-    dataFreshness: CalculationDataFreshness
+    dataFreshness: CalculationDataFreshness,
+    historicalAverages?: import('./types/scenarios').HistoricalAverages
   ): CalculationEnvelope<T> {
     const resultAsRecord = result as Record<string, unknown>;
     return {
@@ -554,6 +564,7 @@ export class CalculationApplicationService {
       dataQualityFlags: Array.isArray(resultAsRecord?.dataQualityFlags) ? (resultAsRecord.dataQualityFlags as string[]) : [],
       dataFreshness,
       calculationVersion: MODEL_VERSION,
+      historicalAverages,
     };
   }
 

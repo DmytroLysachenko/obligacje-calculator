@@ -20,6 +20,7 @@ import {
   NameType,
 } from "recharts/types/component/DefaultTooltipContent";
 import { CalculationResult } from "../../bond-core/types";
+import { HistoricalAverages } from "../../bond-core/types/scenarios";
 import { useLanguage } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { ChartContainer } from "@/shared/components/charts/ChartContainer";
@@ -27,6 +28,7 @@ import { ChartContainer } from "@/shared/components/charts/ChartContainer";
 interface BondChartProps {
   results: CalculationResult;
   initialInvestment: number;
+  historicalAverages?: HistoricalAverages;
 }
 
 interface PayloadEntry {
