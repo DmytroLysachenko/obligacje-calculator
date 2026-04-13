@@ -381,7 +381,7 @@ export const getHistoricalAverages = cache(async (): Promise<HistoricalAverages>
 
   const { data } = await getMultiAssetHistory();
 
-  const calculateAverage = (items: any[], key: "inflation" | "nbpRate", months: number) => {
+  const calculateAverage = (items: MonthlyReturn[], key: "inflation" | "nbpRate", months: number) => {
     const recent = items.slice(-months);
     if (recent.length === 0) return 0;
     const sum = recent.reduce((acc, curr) => acc + (curr[key] || 0), 0);
