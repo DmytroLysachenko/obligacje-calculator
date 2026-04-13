@@ -182,7 +182,6 @@ export async function generateBrandedReport(data: ReportData, filename: string =
   currentY += 15;
 
   // Assumptions Grid
-  const gridRows = Math.ceil(data.assumptions.length / 2);
   const rowHeight = 16;
   const colWidth = (contentWidth - 10) / 2;
 
@@ -277,7 +276,7 @@ export async function generateBrandedReport(data: ReportData, filename: string =
   currentY += 8;
 
   // Table Rows
-  data.summary.forEach((item, i) => {
+  data.summary.forEach((item) => {
     // Check if we need a new page for long tables
     if (currentY > height - 35) {
         pdf.addPage();
