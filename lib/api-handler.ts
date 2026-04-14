@@ -89,7 +89,9 @@ export function apiHandler(handler: ApiHandler) {
           type: 'https://api.obligacje.pl/errors/internal-server-error',
           title: 'Internal Server Error',
           status: 500,
-          detail: error instanceof Error ? error.message : 'An unexpected error occurred.',
+          detail: process.env.NODE_ENV === 'development' && error instanceof Error 
+            ? error.message 
+            : 'An unexpected internal error occurred. Please try again later.',
         },
         { status: 500 }
       );
