@@ -40,6 +40,14 @@
 - [x] **Historical Backtesting:** Automatic series matching for past purchases.
 - [x] **Transparency Audit:** Step-by-step interest calculation traces.
 
+## Phase 7: Advanced Analytics & Social Connectivity (In Progress)
+- [ ] **Tax Health Audit:** Automated identification of tax-inefficient lots.
+- [ ] **Retirement Planner:** Sustainable withdrawal projections based on bond ladders.
+- [ ] **Interactive Scenario Painter:** User-drawn macro paths for real-time simulation.
+- [ ] **Public Portfolio Sharing:** Secure read-only links for sharing insights.
+- [ ] **Community Insights:** Anonymized market sentiment and popularity index.
+- [ ] **Enterprise-Grade Reliability:** Full Playwright E2E suite and worker resilience.
+
 ---
 
 ## Technical Principles

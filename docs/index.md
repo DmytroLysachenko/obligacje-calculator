@@ -48,7 +48,9 @@ Welcome to the official product documentation for the **Financial Education & In
 - [Long-Term Product Foundation Plan](./plans/31_longterm_product_foundation_plan.md) - Longer-horizon product and platform direction.
 - [Next 10 Commits Plan: Reliability, UX, and Richer Data](./plans/32_next_10_commits_reliability_ux_data.md) - **[COMPLETED]** Focus on product trust, mobile optimization, and DB-backed dataset quality.
 - [33. Next 10 Commits Plan: Optimization, Tax, and Portfolio Intelligence](./plans/33_next_10_commits_optimization_tax_portfolio.md) - **[COMPLETED]** Focus on advisors, tax limits and portfolio audits.
-- [34. Next 10 Commits Plan: End-to-End Database Integration & Performance](./plans/34_db_retrieval_and_performance.md) - **[IN PROGRESS]** Focus on pure DB-driven data retrieval and performance optimization.
+- [34. Next 10 Commits Plan: End-to-End Database Integration & Performance](./plans/34_db_retrieval_and_performance.md) - **[COMPLETED]** Focus on pure DB-driven data retrieval and performance optimization.
+- [35. Next 15 Commits: Production Polish, UX Harmony & Data Reliability](./plans/35_production_polish_and_refinement.md) - **[COMPLETED]** Transitioning to a production-ready application.
+- [36. Next 13 Commits: Advanced Analytics, Social Features & Personalization](./plans/36_advanced_analytics_social_and_scale.md) - **[IN PROGRESS]** Focus on wealth management, community insights, and interactive scenarios.
 
 ---
 *Last Updated: April 2026 - Platform is now DB-backed and mobile-optimized.*

@@ -168,7 +168,9 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
       maximumFractionDigits: 0,
     }).format(value);
 
-  const chartData = [
+  const isLongSimulation = results.timeline.length > 240; // > 20 years (monthly)
+
+  const rawData = [
     {
       label: t("common.start"),
       date: results.timeline[0]?.periodLabel || t("common.start"),
@@ -195,6 +197,11 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
       high: results.comparisonScenarios?.high[idx]?.nominalValueAfterInterest,
     })),
   ];
+
+  // Decimate data if it's a long simulation to prevent SVG "DOM bloat"
+  const chartData = isLongSimulation 
+    ? rawData.filter((_, i) => i === 0 || i === rawData.length - 1 || i % 2 === 0)
+    : rawData;
 
   const firstProjectedIndex = chartData.findIndex(d => d.isProjected);
 
@@ -318,7 +325,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
             strokeWidth={3}
             fillOpacity={1}
             fill="url(#colorNominal)"
-            animationDuration={1500}
+            isAnimationActive={false}
           />
           {results.comparisonScenarios && (
             <>
@@ -332,6 +339,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
                 strokeDasharray="3 3"
                 dot={false}
                 opacity={0.5}
+                isAnimationActive={false}
               />
               <Line
                 yAxisId="left"
@@ -343,6 +351,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
                 strokeDasharray="3 3"
                 dot={false}
                 opacity={0.5}
+                isAnimationActive={false}
               />
             </>
           )}
@@ -355,7 +364,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
             strokeWidth={3}
             fillOpacity={1}
             fill="url(#colorReal)"
-            animationDuration={1500}
+            isAnimationActive={false}
           />
           <Line
             yAxisId="right"
@@ -367,6 +376,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
             strokeDasharray="5 5"
             dot={false}
             opacity={0.6}
+            isAnimationActive={false}
           />
           <Line
             yAxisId="right"
@@ -378,6 +388,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
             strokeDasharray="3 3"
             dot={false}
             opacity={0.4}
+            isAnimationActive={false}
           />
         </ComposedChart>
       </ResponsiveContainer>
