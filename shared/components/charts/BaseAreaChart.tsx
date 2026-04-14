@@ -17,6 +17,7 @@ import {
   NameType,
 } from 'recharts/types/component/DefaultTooltipContent';
 import { ChartContainer } from './ChartContainer';
+import { useChartSync } from '@/shared/context/ChartSyncContext';
 
 interface ChartData {
   [key: string]: string | number;
@@ -39,6 +40,9 @@ interface BaseAreaChartProps {
   customTooltip?: React.FC<TooltipProps<ValueType, NameType>>;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const AreaChartWithTooltipIndex = AreaChart as any;
+
 export const BaseAreaChart: React.FC<BaseAreaChartProps> = ({
   data,
   xAxisKey,
@@ -47,10 +51,23 @@ export const BaseAreaChart: React.FC<BaseAreaChartProps> = ({
   yAxisFormatter,
   customTooltip: CustomTooltipComponent,
 }) => {
+  const { hoverIndex, setHoverIndex } = useChartSync();
+
   return (
     <ChartContainer height={height}>
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+        <AreaChartWithTooltipIndex 
+          data={data} 
+          margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          onMouseMove={(e: any) => {
+            if (e && e.activeTooltipIndex !== undefined) {
+              setHoverIndex(Number(e.activeTooltipIndex));
+            }
+          }}
+          onMouseLeave={() => setHoverIndex(null)}
+          activeTooltipIndex={hoverIndex !== null ? hoverIndex : undefined}
+        >
           <defs>
             {areas.map((area) => (
               <linearGradient key={area.key} id={`color_${area.key}`} x1="0" y1="0" x2="0" y2="1">
@@ -94,7 +111,7 @@ export const BaseAreaChart: React.FC<BaseAreaChartProps> = ({
               animationDuration={1500}
             />
           ))}
-        </AreaChart>
+        </AreaChartWithTooltipIndex>
       </ResponsiveContainer>
     </ChartContainer>
   );
