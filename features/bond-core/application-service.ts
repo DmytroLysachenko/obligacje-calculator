@@ -37,6 +37,7 @@ import { addMonths, format, subMonths, parseISO, isBefore, getYear } from 'date-
 import { db } from '@/db';
 import { bondSeries, polishBonds } from '@/db/schema';
 import { eq, and, lte, desc } from 'drizzle-orm';
+import { calculationCache } from './utils/calculation-cache';
 
 export const MODEL_VERSION = '2.7.0-db-driven-metadata';
 
@@ -45,6 +46,12 @@ export class CalculationApplicationService {
    * Main entry point for all calculation requests.
    */
   async calculate(request: CalculationScenarioRequest): Promise<CalculationEnvelope<unknown>> {
+    const cacheKey = calculationCache.generateKey(request);
+    const cachedResult = calculationCache.get(cacheKey);
+    if (cachedResult) {
+      return cachedResult as CalculationEnvelope<unknown>;
+    }
+
     const dataFreshness = await getGlobalDataFreshness();
     const dbDefinitions = await getBondDefinitionsMap();
     
@@ -73,6 +80,7 @@ export class CalculationApplicationService {
       performance.now();
       // Traces are handled by the caller or logging middleware in production if needed
 
+      calculationCache.set(cacheKey, response);
       return response;    } catch (error) {
       console.error(`[CalculationService] FAILED v=${MODEL_VERSION} kind=${request.kind}`, error);
       throw error;
