@@ -36,12 +36,12 @@ export function withMathGuard<T, R>(fn: (inputs: T) => R): (inputs: T) => R {
       const sanitized = sanitizeInputs(inputs);
       const result = fn(sanitized);
 
-      // Check for unstable math in summary if it exists
-      if (result && typeof result === 'object' && 'summary' in result) {
+      // Check for unstable math in the result
+      if (result && typeof result === 'object' && 'totalProfit' in result) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const summary = (result as any).summary;
-        if (summary && (isNaN(summary.netProfit) || !isFinite(summary.netProfit))) {
-          throw new Error('NaN or Infinite detected in calculation summary');
+        const profit = (result as any).totalProfit;
+        if (profit !== undefined && (isNaN(profit) || !isFinite(profit))) {
+          throw new Error('NaN or Infinite detected in calculation result');
         }
       }
 
@@ -49,18 +49,19 @@ export function withMathGuard<T, R>(fn: (inputs: T) => R): (inputs: T) => R {
     } catch (err) {
       console.warn('Math sanity guard triggered, returning safe default:', err);
       // Return safe default with warning flag
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const initial = (inputs as any).initialInvestment || 0;
       return {
+        initialInvestment: initial,
         timeline: [],
-        summary: {
-          totalInterest: 0,
-          netProfit: 0,
-          totalTax: 0,
-          earlyWithdrawalFees: 0,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          finalNominalValue: (inputs as any).initialInvestment || 0,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          totalValue: (inputs as any).initialInvestment || 0,
-        },
+        finalNominalValue: initial,
+        finalRealValue: initial,
+        totalProfit: 0,
+        totalTax: 0,
+        totalEarlyWithdrawalFee: 0,
+        grossValue: initial,
+        netPayoutValue: initial,
+        isEarlyWithdrawal: false,
         mathWarning: true
       } as unknown as R;
     }
