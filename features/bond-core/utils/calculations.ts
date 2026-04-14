@@ -34,11 +34,13 @@ import { generateCyclePeriods } from './engine/timeline-builder';
  */
 Decimal.set({ precision: 20, rounding: Decimal.ROUND_HALF_UP });
 
+import { withMathGuard } from './engine-guards';
+
 /**
  * Standard calculation for a single bond investment.
  * Supports "rollover" (re-investing at maturity) for multi-year comparisons.
  */
-export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolean }): CalculationResult {
+export const calculateBondInvestment = withMathGuard(function calculateBondInvestment(inputs: BondInputs & { rollover?: boolean }): CalculationResult {
   const rollover = inputs.rollover ?? false;
   const chartStep = inputs.chartStep;
   const normalizedInputs = normalizeBondInputs(inputs);
@@ -415,7 +417,7 @@ export function calculateBondInvestment(inputs: BondInputs & { rollover?: boolea
   }
 
   return {} as CalculationResult;
-}
+});
 
 /**
  * Reverse calculation to find the required initial investment to reach a target net sum.
@@ -453,7 +455,7 @@ export function calculateReverseBondInvestment(inputs: BondInputs & { targetNetS
 /**
  * Regular investment calculator using modular engine.
  */
-export function calculateRegularInvestment(inputs: RegularInvestmentInputs): RegularInvestmentResult {
+export const calculateRegularInvestment = withMathGuard(function calculateRegularInvestment(inputs: RegularInvestmentInputs): RegularInvestmentResult {
   const normalizedInputs = normalizeRegularInvestmentInputs(inputs);
   const {
     contributionAmount,
@@ -690,4 +692,4 @@ export function calculateRegularInvestment(inputs: RegularInvestmentInputs): Reg
   }
 
   return createRegularInvestmentResult(totalInvested, investmentHorizonMonths / 12, timeline, lots);
-}
+});
