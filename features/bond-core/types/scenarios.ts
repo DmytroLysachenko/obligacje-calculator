@@ -9,6 +9,7 @@ export enum ScenarioKind {
   MULTI_ASSET = 'multi-asset',
   PORTFOLIO_SIMULATION = 'portfolio-simulation',
   BOND_OPTIMIZER = 'bond-optimizer',
+  RETIREMENT_PLANNER = 'retirement-planner',
 }
 
 export type DataFreshnessStatus = 'fresh' | 'stale' | 'projected' | 'unknown' | 'fallback';
@@ -53,6 +54,39 @@ export interface RegularInvestmentScenarioRequest {
   kind: ScenarioKind.REGULAR_INVESTMENT;
   payload: RegularInvestmentInputs;
 }
+
+export interface RetirementPlannerPayload {
+  initialCapital: number;
+  monthlyWithdrawal: number;
+  expectedInflation: number;
+  expectedNbpRate?: number;
+  bondType: BondType;
+  taxStrategy?: TaxStrategy;
+  horizonYears: number;
+}
+
+export interface RetirementPlannerRequest {
+  kind: ScenarioKind.RETIREMENT_PLANNER;
+  payload: RetirementPlannerPayload;
+}
+
+export interface RetirementPlannerResult {
+  isSustainable: boolean;
+  exhaustionYear?: number;
+  exhaustionMonth?: number;
+  finalBalance: number;
+  totalWithdrawn: number;
+  timeline: {
+    year: number;
+    month: number;
+    date: string;
+    balance: number;
+    withdrawal: number;
+    isProjected?: boolean;
+  }[];
+}
+
+export type RetirementPlannerCalculationEnvelope = CalculationEnvelope<RetirementPlannerResult>;
 
 export interface BondComparisonScenarioItem {
   scenarioKey?: 'scenarioA' | 'scenarioB';
@@ -200,7 +234,8 @@ export type CalculationScenarioRequest =
   | RegularInvestmentScenarioRequest
   | BondComparisonScenarioRequest
   | PortfolioSimulationRequest
-  | BondOptimizerRequest;
+  | BondOptimizerRequest
+  | RetirementPlannerRequest;
 
 export type SingleBondCalculationEnvelope = CalculationEnvelope<CalculationResult>;
 export type RegularInvestmentCalculationEnvelope = CalculationEnvelope<RegularInvestmentResult>;

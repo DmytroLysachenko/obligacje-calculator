@@ -73,6 +73,11 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
       icon: TrendingUp,
     },
     {
+      href: '/retirement',
+      label: t('nav.retirement') || 'Retirement',
+      icon: Wallet,
+    },
+    {
       href: '/economic-data',
       label: t('nav.economic_data'),
       icon: BarChart2,

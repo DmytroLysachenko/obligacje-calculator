@@ -124,3 +124,18 @@ export const BondComparisonScenarioRequestSchema = z.object({
   kind: z.literal(ScenarioKind.BOND_COMPARISON),
   payload: BondComparisonScenarioPayloadSchema,
 });
+
+export const RetirementPlannerPayloadSchema = z.object({
+  initialCapital: z.number().min(0),
+  monthlyWithdrawal: z.number().min(0),
+  expectedInflation: z.number().min(-20).max(100),
+  expectedNbpRate: z.number().min(-10).max(100).optional(),
+  bondType: z.nativeEnum(BondType),
+  taxStrategy: z.nativeEnum(TaxStrategy).optional(),
+  horizonYears: z.number().min(1).max(50),
+});
+
+export const RetirementPlannerScenarioRequestSchema = z.object({
+  kind: z.literal(ScenarioKind.RETIREMENT_PLANNER),
+  payload: RetirementPlannerPayloadSchema,
+});

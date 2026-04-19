@@ -16,11 +16,14 @@ import {
   BondOptimizerPayload,
   BondOptimizerResultItem,
   BondOptimizerCalculationEnvelope,
+  RetirementPlannerPayload,
+  RetirementPlannerResult,
+  RetirementPlannerCalculationEnvelope,
 } from './types/scenarios';
 import { 
   BondInputsSchema, 
   RegularInvestmentInputsSchema, 
-  BondComparisonScenarioRequestSchema 
+  BondComparisonScenarioRequestSchema,
 } from './types/schemas';
 import { calculateBondInvestment, calculateRegularInvestment } from './utils/calculations';
 import { 
@@ -38,6 +41,7 @@ import { db } from '@/db';
 import { bondSeries, polishBonds } from '@/db/schema';
 import { eq, and, lte, desc } from 'drizzle-orm';
 import { calculationCache } from './utils/calculation-cache';
+import Decimal from 'decimal.js';
 
 export const MODEL_VERSION = '2.7.0-db-driven-metadata';
 
@@ -72,6 +76,9 @@ export class CalculationApplicationService {
           break;
         case ScenarioKind.BOND_OPTIMIZER:
           response = await this.calculateOptimizer(request.payload, dataFreshness, dbDefinitions);
+          break;
+        case ScenarioKind.RETIREMENT_PLANNER:
+          response = await this.calculateRetirementPlanner(request.payload, dataFreshness, dbDefinitions);
           break;
         default:
           throw new Error('Unsupported scenario kind');
@@ -553,6 +560,84 @@ export class CalculationApplicationService {
     ];
 
     return this.createEnvelope(results, warnings, assumptions, dataFreshness);
+  }
+
+  private async calculateRetirementPlanner(
+    payload: RetirementPlannerPayload,
+    dataFreshness: CalculationDataFreshness,
+    dbDefinitions: Record<BondType, BondDefinition>
+  ): Promise<RetirementPlannerCalculationEnvelope> {
+    const horizonMonths = payload.horizonYears * 12;
+    const bondDef = dbDefinitions[payload.bondType];
+    const purchaseDate = format(new Date(), 'yyyy-MM-dd');
+    const withdrawalDate = format(addMonths(parseISO(purchaseDate), horizonMonths), 'yyyy-MM-dd');
+
+    // Simulate capital growth/depletion using monthly steps
+    // For retirement, we model it as a series of bond investments where we withdraw monthly.
+    // To simplify for the first version, we'll use a simplified monthly growth model 
+    // based on the selected bond type's expected return.
+
+    let currentBalance = payload.initialCapital;
+    const timeline: RetirementPlannerResult['timeline'] = [];
+    let totalWithdrawn = 0;
+    let exhaustionMonth: number | undefined;
+
+    const monthlyWithdrawal = payload.monthlyWithdrawal;
+    const start = parseISO(purchaseDate);
+
+    for (let m = 0; m <= horizonMonths; m++) {
+      const currentDate = addMonths(start, m);
+      const dateStr = format(currentDate, 'yyyy-MM-dd');
+      
+      // Withdraw at the start of the month (except month 0)
+      if (m > 0) {
+        const withdrawalAmount = Math.min(currentBalance, monthlyWithdrawal);
+        currentBalance -= withdrawalAmount;
+        totalWithdrawn += withdrawalAmount;
+
+        if (currentBalance <= 0 && exhaustionMonth === undefined) {
+          exhaustionMonth = m;
+        }
+      }
+
+      // Apply monthly growth (simplified bond yield)
+      // We use the bond engine for one month of growth on the remaining balance
+      const monthlyRate = new Decimal(bondDef.firstYearRate).dividedBy(12).dividedBy(100);
+      const interest = new Decimal(currentBalance).times(monthlyRate);
+      
+      // Apply Belka tax if not in tax-free wrapper
+      const tax = payload.taxStrategy === TaxStrategy.STANDARD 
+        ? interest.times(0.19)
+        : new Decimal(0);
+      
+      currentBalance += interest.minus(tax).toNumber();
+
+      timeline.push({
+        year: Math.floor(m / 12),
+        month: m % 12,
+        date: dateStr,
+        balance: Math.max(0, currentBalance),
+        withdrawal: m > 0 ? Math.min(payload.monthlyWithdrawal, currentBalance + (m > 0 ? monthlyWithdrawal : 0)) : 0,
+        isProjected: true
+      });
+
+      if (currentBalance <= 0 && m > 0) break;
+    }
+
+    const result: RetirementPlannerResult = {
+      isSustainable: currentBalance > 0 && (exhaustionMonth === undefined || exhaustionMonth >= horizonMonths),
+      exhaustionYear: exhaustionMonth ? Math.floor(exhaustionMonth / 12) : undefined,
+      exhaustionMonth: exhaustionMonth ? exhaustionMonth % 12 : undefined,
+      finalBalance: Math.max(0, currentBalance),
+      totalWithdrawn,
+      timeline
+    };
+
+    const assumptions = this.generateAssumptions(payload);
+    assumptions.push(`Retirement horizon: ${payload.horizonYears} years`);
+    assumptions.push(`Desired monthly withdrawal: ${payload.monthlyWithdrawal} PLN`);
+
+    return this.createEnvelope(result, [], assumptions, dataFreshness);
   }
 
   private createEnvelope<T>(

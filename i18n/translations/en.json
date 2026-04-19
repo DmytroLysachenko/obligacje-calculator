@@ -50,7 +50,8 @@
     "optimizer": "Smart Bond Finder",
     "ladder": "Ladder Strategy",
     "multi_asset": "Market vs Bonds",
-    "notebook": "My Portfolio / Notebook"
+    "notebook": "My Portfolio / Notebook",
+    "retirement": "Retirement Planner"
   },
   "education": {
     "subtitle": "Understand the mechanisms of the Polish treasury bond market and make informed investment decisions.",
