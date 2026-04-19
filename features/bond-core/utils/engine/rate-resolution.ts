@@ -22,29 +22,40 @@ export function determineInterestRate(
   expectedNbpRate: number,
   margin: number,
   isInflationIndexed: boolean,
-  inflationLagValue?: number
+  inflationLagValue?: number,
+  customInflationValue?: number,
+  customNbpValue?: number
 ): Decimal {
   if (bondType === BondType.OTS || bondType === BondType.TOS) {
     return new Decimal(firstYearRate);
-  } 
-  
+  }
+
   if (bondType === BondType.ROR || bondType === BondType.DOR) {
     // ROR/DOR: The fixed offer rate applies ONLY to the first month.
     // After that, it's NBP rate + margin.
     const isFirstMonth = monthsIntoCycle === 0;
-    return isFirstMonth ? new Decimal(firstYearRate) : Decimal.max(0, expectedNbpRate).plus(margin);
-  } 
-  
+    if (isFirstMonth) return new Decimal(firstYearRate);
+
+    const baseNbp = customNbpValue !== undefined ? customNbpValue : expectedNbpRate;
+    return Decimal.max(0, baseNbp).plus(margin);
+  }
+
   if (isInflationIndexed) {
     // COI/EDO/ROS/ROD: Fixed rate for the first 12 months (year 1)
     const isFirstYear = monthsIntoCycle < 12;
     if (isFirstYear) return new Decimal(firstYearRate);
-    
-    // Use the specific lagged value if provided, otherwise fallback to expected inflation
-    const baseInflation = inflationLagValue !== undefined ? inflationLagValue : expectedInflation;
+
+    // Use specific custom value if provided, then lagged, then fallback to expected inflation
+    let baseInflation = expectedInflation;
+    if (customInflationValue !== undefined) {
+      baseInflation = customInflationValue;
+    } else if (inflationLagValue !== undefined) {
+      baseInflation = inflationLagValue;
+    }
+
     return Decimal.max(0, baseInflation).plus(margin);
   }
 
-  // Fallback for any other fixed-rate types (e.g. COI in year 1 if not handled above)
+  // Fallback for any other fixed-rate types
   return new Decimal(firstYearRate);
 }

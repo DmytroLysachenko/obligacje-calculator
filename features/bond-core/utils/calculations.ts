@@ -152,6 +152,10 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
       const { value: lagInflation, isProjected } = getHistoricalValue(period.startDate, 'inflation', 2, historicalData);
       const { value: lagNbp, isProjected: isNbpProjected } = getHistoricalValue(period.startDate, 'nbpRate', 0, historicalData);
 
+      const yearIntoCycle = Math.floor(monthsIntoCycle / 12);
+      const customInfValue = inputs.customInflation?.[yearIntoCycle];
+      const customNbpVal = inputs.customNbpRate?.[yearIntoCycle];
+
       const currentInterestRate = determineInterestRate(
         bondType,
         monthsIntoCycle,
@@ -160,7 +164,9 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
         expectedNbpRate,
         margin,
         isInflationIndexed,
-        lagInflation
+        lagInflation,
+        customInfValue,
+        customNbpVal
       );
       
       let rateSource: RateSource = 'fixed_rate';

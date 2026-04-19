@@ -24,6 +24,7 @@ import { CalculationMetaPanel } from "@/shared/components/CalculationMetaPanel";
 import { CalculatorPageShell } from "@/shared/components/CalculatorPageShell";
 import { RecalculateButton } from "@/shared/components/RecalculateButton";
 import { generatePDF } from "@/shared/lib/pdf-utils";
+import { MacroAdjuster } from "@/shared/components/MacroAdjuster";
 
 export const BondCalculatorContainer: React.FC = () => {
   const {
@@ -89,6 +90,11 @@ export const BondCalculatorContainer: React.FC = () => {
 
   const handleExportPDF = async () => {
     await generatePDF('bond-report-content', `bond_report_${inputs.bondType}_${new Date().toISOString().split('T')[0]}.pdf`);
+  };
+
+  const handleMacroUpdate = (path: { inflation: number[]; nbpRate: number[] }) => {
+    updateInput('customInflation', path.inflation);
+    updateInput('customNbpRate', path.nbpRate);
   };
 
   return (
@@ -182,6 +188,13 @@ export const BondCalculatorContainer: React.FC = () => {
               )}
             >
               <BondResultsSummary results={results} inputs={inputs} />
+
+              <MacroAdjuster 
+                initialInflation={inputs.expectedInflation}
+                initialNbpRate={inputs.expectedNbpRate ?? 5.25}
+                horizonYears={inputs.duration}
+                onUpdate={handleMacroUpdate}
+              />
 
               <CalculationMetaPanel
                 warnings={envelope?.warnings}

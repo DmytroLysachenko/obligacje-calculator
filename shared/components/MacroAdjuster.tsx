@@ -1,112 +1,177 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Slider } from '@/components/ui/slider';
-import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer,
+  ReferenceArea
+} from 'recharts';
+import { Edit3, Save, RotateCcw, TrendingUp } from 'lucide-react';
 
-interface MacroAdjusterProps {
-  label: string;
-  initialPoints?: [number, number, number]; // [Year 1, Year 5, Year 10]
-  onChange: (monthlyPath: number[]) => void;
-  maxMonths?: number;
+interface MacroPoint {
+  year: number;
+  inflation: number;
+  nbpRate: number;
 }
 
-const lerp = (start: number, end: number, t: number) => {
-  return start * (1 - t) + end * t;
-};
+interface MacroAdjusterProps {
+  initialInflation: number;
+  initialNbpRate: number;
+  horizonYears: number;
+  onUpdate: (path: { inflation: number[]; nbpRate: number[] }) => void;
+}
 
-export const MacroAdjuster: React.FC<MacroAdjusterProps> = ({
-  label,
-  initialPoints = [5, 3, 2.5],
-  onChange,
-  maxMonths = 120,
+export const MacroAdjuster: React.FC<MacroAdjusterProps> = ({ 
+  initialInflation, 
+  initialNbpRate, 
+  horizonYears,
+  onUpdate 
 }) => {
-  const [points, setPoints] = useState<[number, number, number]>(initialPoints);
+  const [data, setData] = useState<MacroPoint[]>([]);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    // Generate full monthly path using linear interpolation between control points
-    const path: number[] = [];
-    
-    // Control points at month 12 (Year 1), month 60 (Year 5), month 120 (Year 10)
-    const p1 = { x: 12, y: points[0] };
-    const p5 = { x: 60, y: points[1] };
-    const p10 = { x: 120, y: points[2] };
+    const initialData = Array.from({ length: horizonYears + 1 }, (_, i) => ({
+      year: i,
+      inflation: initialInflation,
+      nbpRate: initialNbpRate
+    }));
+    setData(initialData);
+  }, [initialInflation, initialNbpRate, horizonYears]);
 
-    for (let m = 1; m <= maxMonths; m++) {
-      if (m <= p1.x) {
-        // Flat before year 1 or lerp from current? Let's just hold it flat before year 1 for simplicity,
-        // or lerp from current (assume current is also p1 for now)
-        path.push(p1.y);
-      } else if (m <= p5.x) {
-        const t = (m - p1.x) / (p5.x - p1.x);
-        path.push(lerp(p1.y, p5.y, t));
-      } else if (m <= p10.x) {
-        const t = (m - p5.x) / (p10.x - p5.x);
-        path.push(lerp(p5.y, p10.y, t));
-      } else {
-        path.push(p10.y); // Flat after year 10
-      }
-    }
+  const handleReset = () => {
+    const resetData = Array.from({ length: horizonYears + 1 }, (_, i) => ({
+      year: i,
+      inflation: initialInflation,
+      nbpRate: initialNbpRate
+    }));
+    setData(resetData);
+    onUpdate({
+      inflation: resetData.map(d => d.inflation),
+      nbpRate: resetData.map(d => d.nbpRate)
+    });
+  };
 
-    onChange(path);
-  }, [points, maxMonths, onChange]);
+  const handlePointMove = (year: number, type: 'inflation' | 'nbpRate', value: number) => {
+    const newData = data.map(d => d.year === year ? { ...d, [type]: Math.max(-5, Math.min(50, value)) } : d);
+    setData(newData);
+  };
 
-  const handlePointChange = (index: 0 | 1 | 2, value: number) => {
-    const newPoints = [...points] as [number, number, number];
-    newPoints[index] = value;
-    setPoints(newPoints);
+  const handleSave = () => {
+    setIsEditing(false);
+    onUpdate({
+      inflation: data.map(d => d.inflation),
+      nbpRate: data.map(d => d.nbpRate)
+    });
   };
 
   return (
-    <div className="space-y-6 p-4 border rounded-lg bg-card">
-      <div>
-        <h4 className="font-semibold">{label} Path</h4>
-        <p className="text-sm text-muted-foreground">Adjust target values at key milestones.</p>
-      </div>
-
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <div className="flex justify-between">
-            <Label>Year 1 Target</Label>
-            <span className="text-sm font-medium">{points[0].toFixed(2)}%</span>
-          </div>
-          <Slider
-            min={-5}
-            max={20}
-            step={0.1}
-            value={[points[0]]}
-            onValueChange={([val]) => handlePointChange(0, val)}
-          />
+    <Card className="border-2 rounded-3xl overflow-hidden shadow-xl">
+      <CardHeader className="bg-muted/30 border-b border-dashed flex flex-row items-center justify-between py-4">
+        <div>
+          <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+            <TrendingUp className="h-4 w-4 text-primary" />
+            Macro Painter
+          </CardTitle>
+          <p className="text-[10px] font-bold text-muted-foreground uppercase">Draw your own economic future</p>
         </div>
-
-        <div className="space-y-2">
-          <div className="flex justify-between">
-            <Label>Year 5 Target</Label>
-            <span className="text-sm font-medium">{points[1].toFixed(2)}%</span>
-          </div>
-          <Slider
-            min={-5}
-            max={20}
-            step={0.1}
-            value={[points[1]]}
-            onValueChange={([val]) => handlePointChange(1, val)}
-          />
+        <div className="flex gap-2">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={handleReset}
+            className="h-8 rounded-xl text-[10px] font-black uppercase gap-1"
+          >
+            <RotateCcw className="h-3 w-3" />
+            Reset
+          </Button>
+          <Button 
+            variant={isEditing ? "primary" : "outline"} 
+            size="sm" 
+            onClick={() => isEditing ? handleSave() : setIsEditing(true)}
+            className="h-8 rounded-xl text-[10px] font-black uppercase gap-1"
+          >
+            {isEditing ? <Save className="h-3 w-3" /> : <Edit3 className="h-3 w-3" />}
+            {isEditing ? "Apply Path" : "Edit Path"}
+          </Button>
         </div>
-
-        <div className="space-y-2">
-          <div className="flex justify-between">
-            <Label>Year 10 Target</Label>
-            <span className="text-sm font-medium">{points[2].toFixed(2)}%</span>
-          </div>
-          <Slider
-            min={-5}
-            max={20}
-            step={0.1}
-            value={[points[2]]}
-            onValueChange={([val]) => handlePointChange(2, val)}
-          />
+      </CardHeader>
+      <CardContent className="p-6">
+        <div className="h-[250px] w-full relative">
+          {!isEditing && (
+            <div className="absolute inset-0 z-10 bg-white/5 backdrop-blur-[1px] flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+               <Button variant="secondary" size="sm" onClick={() => setIsEditing(true)} className="rounded-full font-black uppercase text-[10px]">Click Edit to Painter</Button>
+            </div>
+          )}
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.1} />
+              <XAxis dataKey="year" hide />
+              <YAxis tick={{fontSize: 10}} domain={['auto', 'auto']} />
+              <Tooltip 
+                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                labelFormatter={(year) => `Year ${year}`}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="inflation" 
+                stroke="#ef4444" 
+                strokeWidth={isEditing ? 4 : 2} 
+                dot={isEditing}
+                isAnimationActive={false}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="nbpRate" 
+                stroke="#3b82f6" 
+                strokeWidth={isEditing ? 4 : 2} 
+                dot={isEditing}
+                isAnimationActive={false}
+              />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
-      </div>
-    </div>
+        {isEditing && (
+          <div className="mt-4 grid grid-cols-5 gap-2">
+             {data.filter((_, i) => i % Math.max(1, Math.floor(horizonYears/5)) === 0).map((point) => (
+               <div key={point.year} className="space-y-1">
+                 <p className="text-[9px] font-black text-center uppercase">Y{point.year}</p>
+                 <input 
+                   type="number" 
+                   value={point.inflation}
+                   onChange={(e) => handlePointMove(point.year, 'inflation', Number(e.target.value))}
+                   className="w-full text-[10px] font-bold p-1 rounded border text-red-600 bg-red-50"
+                   step="0.1"
+                 />
+                 <input 
+                   type="number" 
+                   value={point.nbpRate}
+                   onChange={(e) => handlePointMove(point.year, 'nbpRate', Number(e.target.value))}
+                   className="w-full text-[10px] font-bold p-1 rounded border text-blue-600 bg-blue-50"
+                   step="0.1"
+                 />
+               </div>
+             ))}
+          </div>
+        )}
+        <div className="mt-4 flex justify-center gap-6">
+           <div className="flex items-center gap-2">
+             <div className="w-3 h-3 bg-red-500 rounded-full" />
+             <span className="text-[10px] font-bold uppercase text-muted-foreground">Inflation Path</span>
+           </div>
+           <div className="flex items-center gap-2">
+             <div className="w-3 h-3 bg-blue-500 rounded-full" />
+             <span className="text-[10px] font-bold uppercase text-muted-foreground">NBP Rate Path</span>
+           </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };

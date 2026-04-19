@@ -63,6 +63,7 @@ export interface BondInputs {
   targetNetSum?: number;
   ikzeTaxBracket?: 0.12 | 0.32;
   customInflation?: number[];
+  customNbpRate?: number[];
   rollover?: boolean;
   timingMode?: import('@/shared/lib/date-timing').TimingMode;
   investmentHorizonMonths?: number;

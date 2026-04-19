@@ -153,15 +153,31 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
   const nextMaturity = upcomingMaturities[0] || null;
 
   const taxAudit = useMemo(() => {
-    const standardLots = lots.filter(l => !l.isRebought); 
+    const standardLots = lots.filter(l => !l.taxStrategy || l.taxStrategy === TaxStrategy.STANDARD);
     const totalStandardValue = standardLots.reduce((acc, lot) => acc + (Number(lot.amount) * 100), 0);
-    const potentialSavings = totalStandardValue * 0.05; 
+    
+    // Find specifically large lots that are "Tax Leaks"
+    const leakyLots = standardLots
+      .filter(l => Number(l.amount) * 100 > 10000)
+      .sort((a, b) => Number(b.amount) - Number(a.amount));
+
+    const potentialSavings = totalStandardValue * 0.045; // Approx weighted average tax leak over 10y
+
+    let suggestion = "Your portfolio is tax-optimized! ✨";
+    if (totalStandardValue > 0) {
+      if (leakyLots.length > 0) {
+        suggestion = `Action Required: You have ${leakyLots.length} large lots (e.g., ${leakyLots[0].bondType} from ${format(parseISO(leakyLots[0].purchaseDate), 'yyyy')}) totaling ${formatCurrency(totalStandardValue)} outside a tax-free wrapper. Prioritize moving these to IKE/IKZE to avoid 19% Belka tax.`;
+      } else {
+        suggestion = `Small tax leak detected in ${standardLots.length} lots. Consider using IKE/IKZE for future purchases.`;
+      }
+    }
 
     return {
       hasLeaks: totalStandardValue > 0,
       totalStandardValue,
       potentialSavings,
-      suggestion: `You have ${formatCurrency(totalStandardValue)} in potentially taxable accounts. Moving these to an IKE/IKZE wrapper could increase your long-term net yield.`
+      leakyLots,
+      suggestion
     };
   }, [lots, formatCurrency]);
 
