@@ -215,7 +215,7 @@ export const RetirementPlannerContainer: React.FC = () => {
                         />
                         <Tooltip 
                           contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                          formatter={(value: number) => [formatCurrency(value), 'Balance']}
+                          formatter={(value: any) /* eslint-disable-line @typescript-eslint/no-explicit-any */ => [formatCurrency(Number(value || 0)), 'Balance']}
                         />
                         <Area 
                           type="monotone" 

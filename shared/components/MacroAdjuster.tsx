@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
@@ -10,8 +10,7 @@ import {
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  ResponsiveContainer,
-  ReferenceArea
+  ResponsiveContainer
 } from 'recharts';
 import { Edit3, Save, RotateCcw, TrendingUp } from 'lucide-react';
 
@@ -36,15 +35,25 @@ export const MacroAdjuster: React.FC<MacroAdjusterProps> = ({
 }) => {
   const [data, setData] = useState<MacroPoint[]>([]);
   const [isEditing, setIsEditing] = useState(false);
+  const lastSyncProps = useRef({ initialInflation, initialNbpRate, horizonYears });
 
   useEffect(() => {
-    const initialData = Array.from({ length: horizonYears + 1 }, (_, i) => ({
-      year: i,
-      inflation: initialInflation,
-      nbpRate: initialNbpRate
-    }));
-    setData(initialData);
-  }, [initialInflation, initialNbpRate, horizonYears]);
+    const shouldSync = lastSyncProps.current.initialInflation !== initialInflation || 
+                       lastSyncProps.current.initialNbpRate !== initialNbpRate || 
+                       lastSyncProps.current.horizonYears !== horizonYears ||
+                       data.length === 0;
+
+    if (shouldSync) {
+      const initialData = Array.from({ length: horizonYears + 1 }, (_, i) => ({
+        year: i,
+        inflation: initialInflation,
+        nbpRate: initialNbpRate
+      }));
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setData(initialData);
+      lastSyncProps.current = { initialInflation, initialNbpRate, horizonYears };
+    }
+  }, [initialInflation, initialNbpRate, horizonYears, data.length]);
 
   const handleReset = () => {
     const resetData = Array.from({ length: horizonYears + 1 }, (_, i) => ({
@@ -92,8 +101,9 @@ export const MacroAdjuster: React.FC<MacroAdjusterProps> = ({
             <RotateCcw className="h-3 w-3" />
             Reset
           </Button>
-          <Button 
-            variant={isEditing ? "primary" : "outline"} 
+          <Button
+            variant={isEditing ? "default" : "outline"}
+ 
             size="sm" 
             onClick={() => isEditing ? handleSave() : setIsEditing(true)}
             className="h-8 rounded-xl text-[10px] font-black uppercase gap-1"

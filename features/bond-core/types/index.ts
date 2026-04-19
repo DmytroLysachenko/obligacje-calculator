@@ -47,6 +47,8 @@ export interface BondInputs {
   expectedNbpRate?: number; // Optional to distinguish from inflation for ROR/DOR
   margin: number;
   duration: number; // in years (OTS will be 0.25)
+  nominalValue?: number; // Added to decouple from hardcoded constants
+  isInflationIndexed?: boolean; // Added to decouple from hardcoded constants
   earlyWithdrawalFee: number; // per bond (100 PLN)
   taxRate: number;
   isCapitalized: boolean;

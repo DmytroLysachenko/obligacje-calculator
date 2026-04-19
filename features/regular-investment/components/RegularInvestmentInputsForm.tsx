@@ -12,7 +12,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import { BondType, RegularInvestmentInputs, InvestmentFrequency, TaxStrategy } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
-import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
+import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { AlertCircle, CalendarIcon, Info, Target } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
@@ -44,6 +44,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
   onBondTypeChange,
 }) => {
   const { t, language } = useLanguage();
+  const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
   const [showCustomTax, setShowCustomTax] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
   
@@ -51,7 +52,17 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
     setHasMounted(true);
   }, []);
 
-  const currentDef = BOND_DEFINITIONS[inputs.bondType];
+  if (isLoadingDefs || !definitions) {
+    return (
+      <Card className="w-full shadow-lg border-primary/10 animate-pulse">
+        <CardContent className="h-[600px] flex items-center justify-center">
+          <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">{t('common.loading')}</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const currentDef = definitions[inputs.bondType];
   const dateLocale = language === 'pl' ? pl : enGB;
   const investmentHorizonMonths = inputs.investmentHorizonMonths ?? getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);
   const investmentHorizonYears = Math.max(1 / 12, investmentHorizonMonths / 12);
@@ -129,7 +140,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                   <div className="flex flex-col">
                     <span className="font-bold">{type}</span>
                     <span className="text-xs text-muted-foreground">
-                      {BOND_DEFINITIONS[type].fullName[language]}
+                      {definitions[type]?.fullName[language] || type}
                     </span>
                   </div>
                 </SelectItem>

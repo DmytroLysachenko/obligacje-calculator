@@ -47,11 +47,11 @@ export async function postCalculationInWorker<TResponse>(
     const handleAbort = () => {
       worker.postMessage({ id, type: 'abort' });
       worker.removeEventListener('message', handleMessage);
-      reject(new Error('Calculation aborted'));
+      reject(new DOMException('Calculation aborted', 'AbortError'));
     };
 
     if (signal?.aborted) {
-      return reject(new Error('Calculation aborted'));
+      return reject(new DOMException('Calculation aborted', 'AbortError'));
     }
 
     signal?.addEventListener('abort', handleAbort, { once: true });

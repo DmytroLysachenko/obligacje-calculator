@@ -52,7 +52,7 @@ export function useCalculationWorker<TResponse>() {
       } catch (err) {
         // Only update error if this is the latest request and it wasn't an abort
         if (requestId === lastRequestId.current) {
-          if (err instanceof Error && err.message === 'Calculation aborted') {
+          if (err instanceof Error && (err.name === 'AbortError' || err.message === 'Calculation aborted')) {
             // Silently ignore aborts
             return;
           }

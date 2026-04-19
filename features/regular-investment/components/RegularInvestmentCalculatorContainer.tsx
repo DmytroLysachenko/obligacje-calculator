@@ -6,10 +6,11 @@ import { RegularInvestmentInputsForm } from './RegularInvestmentInputsForm';
 import { RegularInvestmentResultsSummary } from './RegularInvestmentResultsSummary';
 import { RegularInvestmentChart } from './RegularInvestmentChart';
 import { useLanguage } from '@/i18n';
-import { Info, Loader2, Target, PiggyBank } from 'lucide-react';
+import { Info, Target, PiggyBank } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { RecalculateButton } from '@/shared/components/RecalculateButton';
 
@@ -60,9 +61,10 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
           )}
 
           {isCalculating && !results && (
-            <div className="h-[400px] flex flex-col items-center justify-center space-y-4">
-              <Loader2 className="h-12 w-12 text-primary animate-spin" />
-              <p className="font-medium text-primary">{t('bonds.simulating_regular')}</p>
+            <div className="space-y-8 animate-in fade-in duration-500">
+              <Skeleton className="h-[140px] w-full rounded-3xl" />
+              <Skeleton className="h-[200px] w-full rounded-3xl" />
+              <Skeleton className="h-[500px] w-full rounded-3xl shadow-xl border border-primary/5" />
             </div>
           )}
 

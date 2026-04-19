@@ -59,7 +59,7 @@ export const CalculationTrace: React.FC<CalculationTraceProps> = ({ timeline }) 
                     <TableCell className="text-right font-medium">{point.nominalValueAfterInterest.toFixed(2)} PLN</TableCell>
                   </TableRow>
                   {point.events?.map((evt, eIdx) => (
-                    <TableRow key={\`evt-\${index}-\${eIdx}\`} className="text-sm text-muted-foreground">
+                    <TableRow key={`evt-${index}-${eIdx}`} className="text-sm text-muted-foreground">
                       <TableCell></TableCell>
                       <TableCell colSpan={5} className="pl-6 italic">↳ {evt.type}: {evt.description}</TableCell>
                       <TableCell className="text-right">{evt.value ? evt.value.toFixed(2) : '-'}</TableCell>

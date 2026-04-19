@@ -11,10 +11,10 @@ import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import { BondType, BondInputs, TaxStrategy } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
-import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
-import { CalendarIcon, Info, Target } from 'lucide-react';
+import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
+import { CalendarIcon, Info, Target, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, isAfter } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
@@ -53,6 +53,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
   selectedSeriesId = 'current',
 }) => {
   const { t, language } = useLanguage();
+  const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
   const [showCustomTax, setShowCustomTax] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
   
@@ -60,7 +61,17 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
     setHasMounted(true);
   }, []);
 
-  const currentDef = BOND_DEFINITIONS[inputs.bondType];
+  if (isLoadingDefs || !definitions) {
+    return (
+      <Card className="w-full shadow-lg border-primary/10 animate-pulse">
+        <CardContent className="h-[600px] flex items-center justify-center">
+          <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">{t('common.loading')}</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const currentDef = definitions[inputs.bondType];
   const dateLocale = language === 'pl' ? pl : enGB;
   const investmentHorizonMonths = inputs.investmentHorizonMonths ?? getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);
   const investmentHorizonYears = Math.max(1 / 12, investmentHorizonMonths / 12);
@@ -71,6 +82,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
   };
 
   const isDivisibleBy100 = inputs.initialInvestment % 100 === 0 && inputs.initialInvestment > 0;
+  const isFutureDate = isAfter(parseISO(inputs.purchaseDate), new Date());
   const maturityDate = parseISO(getWithdrawalDateFromMonths(inputs.purchaseDate, Math.round(inputs.duration * 12)));
 
   return (
@@ -153,7 +165,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                         <div className="flex flex-col">
                           <span className="font-bold">{type}</span>
                           <span className="text-xs text-muted-foreground">
-                            {BOND_DEFINITIONS[type].fullName[language]}
+                            {definitions[type]?.fullName[language] || type}
                           </span>
                         </div>
                       </SelectItem>
@@ -211,7 +223,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                         type="number"
                         className={cn(
                           "h-11 pl-4 pr-12 text-lg font-medium",
-                          !isDivisibleBy100 && "border-destructive focus-visible:ring-destructive"
+                          !isDivisibleBy100 && inputs.initialInvestment > 0 && "border-destructive focus-visible:ring-destructive"
                         )}
                         value={inputs.initialInvestment}
                         onChange={(e) => handleInvestmentChange(e.target.value)}
@@ -220,6 +232,12 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                         PLN
                       </div>
                     </div>
+                    {!isDivisibleBy100 && inputs.initialInvestment > 0 && (
+                      <div className="flex items-center gap-2 text-destructive text-[10px] font-medium animate-in fade-in slide-in-from-top-1">
+                        <AlertCircle className="h-3 w-3" />
+                        <span>{t('bonds.error_100_pln')}</span>
+                      </div>
+                    )}
                     <Slider 
                       value={[inputs.initialInvestment]} 
                       min={100} 
@@ -275,7 +293,8 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                         variant="outline"
                         className={cn(
                           "w-full justify-start text-left font-normal h-11 px-3",
-                          !inputs.purchaseDate && "text-muted-foreground"
+                          !inputs.purchaseDate && "text-muted-foreground",
+                          hasMounted && isFutureDate && "border-destructive focus-visible:ring-destructive"
                         )}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
@@ -294,6 +313,12 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                       />
                     </PopoverContent>
                   </Popover>
+                  {hasMounted && isFutureDate && (
+                    <div className="flex items-center gap-2 text-destructive text-[10px] font-medium animate-in fade-in slide-in-from-top-1">
+                      <AlertCircle className="h-3 w-3" />
+                      <span>{t('bonds.error_future_date')}</span>
+                    </div>
+                  )}
                 </div>
                 {inputs.timingMode === 'exact' ? (
                   <div className="space-y-2">
