@@ -96,11 +96,13 @@ export const investmentInstruments = pgTable("investment_instruments", {
 
 export const userPortfolios = pgTable("user_portfolios", {
   id: uuid("id").primaryKey().defaultRandom(),
-    userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   description: text("description"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+  shareId: uuid("share_id").defaultRandom().unique(),
+  isPublic: boolean("is_public").default(false).notNull(),
 });
 
 export const userInvestmentLots = pgTable("user_investment_lots", {

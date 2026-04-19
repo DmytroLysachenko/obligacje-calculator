@@ -17,7 +17,9 @@ import {
   Calendar,
   ShieldCheck,
   AlertCircle,
-  Lightbulb
+  Lightbulb,
+  Share2,
+  Check
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -48,6 +50,35 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
   const [isLoading, setIsLoading] = useState(true);
   const [simulation, setSimulation] = useState<PortfolioSimulationResult | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
+  const [isPublic, setIsPublic] = useState(portfolio.isPublic || false);
+  const [isSharing, setIsSharing] = useState(false);
+  const [justCopied, setJustCopied] = useState(false);
+
+  const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/p/${portfolio.shareId}` : '';
+
+  const handleToggleShare = async () => {
+    setIsSharing(true);
+    try {
+      const response = await fetch('/api/portfolio/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ portfolioId: portfolio.id, isPublic: !isPublic }),
+      });
+      if (response.ok) {
+        setIsPublic(!isPublic);
+      }
+    } catch (err) {
+      console.error('Failed to update sharing:', err);
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(shareUrl);
+    setJustCopied(true);
+    setTimeout(() => setJustCopied(false), 2000);
+  };
 
   const fetchLots = useCallback(async () => {
     setIsLoading(true);
@@ -147,6 +178,30 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
           </div>
         </div>
         <div className="flex gap-2">
+           <div className="flex bg-muted p-1 rounded-xl border-2">
+             {isPublic && (
+               <Button 
+                 variant="ghost" 
+                 className="rounded-lg h-9 text-xs font-black uppercase gap-2 px-3"
+                 onClick={copyToClipboard}
+               >
+                 {justCopied ? <Check className="h-4 w-4 text-green-600" /> : <Share2 className="h-4 w-4" />}
+                 {justCopied ? "Copied" : "Copy Link"}
+               </Button>
+             )}
+             <Button 
+               variant={isPublic ? "primary" : "ghost"}
+               className={cn(
+                 "rounded-lg h-9 text-xs font-black uppercase gap-2 px-3",
+                 !isPublic && "hover:bg-primary/10 hover:text-primary"
+               )}
+               onClick={handleToggleShare}
+               disabled={isSharing}
+             >
+               {isSharing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
+               {isPublic ? "Public" : "Private"}
+             </Button>
+           </div>
            <Button className="rounded-xl font-black gap-2 shadow-lg shadow-primary/20">
              <Plus className="h-4 w-4" />
              {t('notebook.add_lot')}
