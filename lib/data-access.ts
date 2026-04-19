@@ -141,6 +141,8 @@ export const getHistoricalDataMap = cache(async (fromDate: string, toDate: strin
   return map;
 });
 
+import { BOND_DEFINITIONS } from "@/features/bond-core/constants/bond-definitions";
+
 /**
  * Fetches all bond definitions from the database and maps them to BondDefinition interface.
  */
@@ -150,8 +152,13 @@ export const getBondDefinitions = cache(async (): Promise<BondDefinition[]> => {
   if (cached) return cached;
 
   const bonds = await db.query.polishBonds.findMany();
-  
+
+  if (bonds.length === 0) {
+    return Object.values(BOND_DEFINITIONS);
+  }
+
   const result = bonds.map(b => {
+
     const symbol = b.symbol as BondType;
     
     return {

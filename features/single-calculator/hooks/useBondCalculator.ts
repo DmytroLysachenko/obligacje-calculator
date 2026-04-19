@@ -1,40 +1,38 @@
-import { useState, useCallback, useEffect } from 'react';
-import { BondInputs, BondType, TaxStrategy } from '../../bond-core/types';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { BondInputs, BondType, TaxStrategy, InterestPayout } from '../../bond-core/types';
 import { SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
-import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { useQuerySync } from '@/shared/hooks/useQuerySync';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { useDebounce } from '@/shared/hooks/useDebounce';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
+import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 
 const DEFAULT_BOND = BondType.COI;
-const def = BOND_DEFINITIONS[DEFAULT_BOND];
 const today = new Date();
 const purchaseDate = toDateString(today);
-const defaultHorizonMonths = Math.round(def.duration * 12);
-const defaultWithdrawal = getWithdrawalDateFromMonths(purchaseDate, defaultHorizonMonths);
 
-const DEFAULT_INPUTS: BondInputs = {
+// Fallback values used only until DB definitions are loaded
+const FALLBACK_INPUTS: BondInputs = {
   bondType: DEFAULT_BOND,
   initialInvestment: 10000,
-  firstYearRate: def.firstYearRate,
+  firstYearRate: 5.00,
   expectedInflation: 3.5,
   expectedNbpRate: 5.25,
-  margin: def.margin,
-  duration: def.duration,
-  earlyWithdrawalFee: def.earlyWithdrawalFee,
+  margin: 1.25,
+  duration: 4,
+  earlyWithdrawalFee: 0.70,
   taxRate: 19,
-  isCapitalized: def.isCapitalized,
-  payoutFrequency: def.payoutFrequency,
+  isCapitalized: true,
+  payoutFrequency: InterestPayout.MATURITY,
   purchaseDate,
-  withdrawalDate: defaultWithdrawal,
+  withdrawalDate: getWithdrawalDateFromMonths(purchaseDate, 48),
   isRebought: false,
-  rebuyDiscount: def.rebuyDiscount,
+  rebuyDiscount: 0,
   taxStrategy: TaxStrategy.STANDARD,
   showRealValue: false,
   rollover: false,
   timingMode: 'general',
-  investmentHorizonMonths: defaultHorizonMonths,
+  investmentHorizonMonths: 48,
 };
 
 interface BondSeries {
@@ -46,15 +44,38 @@ interface BondSeries {
 }
 
 export function useBondCalculator() {
-  const [inputs, setInputs] = useState<BondInputs>(DEFAULT_INPUTS);
+  const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
+  const [inputs, setInputs] = useState<BondInputs>(FALLBACK_INPUTS);
   const [envelope, setEnvelope] = useState<SingleBondCalculationEnvelope | null>(null);
   const [isDirty, setIsDirty] = useState(true);
   const [availableSeries, setAvailableSeries] = useState<BondSeries[]>([]);
   const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(null);
+  const definitionsAppliedFor = useRef<string | null>(null);
   
   const { isCalculating, isError, clearError, post } = useCalculationRequest();
 
   const debouncedInputs = useDebounce(inputs, 500);
+
+  // Sync inputs with loaded definitions
+  useEffect(() => {
+    if (definitions && definitions[inputs.bondType] && definitionsAppliedFor.current !== inputs.bondType) {
+      const def = definitions[inputs.bondType];
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setInputs(prev => ({
+        ...prev,
+        firstYearRate: prev.firstYearRate === FALLBACK_INPUTS.firstYearRate ? def.firstYearRate : prev.firstYearRate,
+        margin: prev.margin === FALLBACK_INPUTS.margin ? def.margin : prev.margin,
+        duration: def.duration,
+        earlyWithdrawalFee: def.earlyWithdrawalFee,
+        isCapitalized: def.isCapitalized,
+        payoutFrequency: def.payoutFrequency,
+        rebuyDiscount: def.rebuyDiscount,
+        nominalValue: def.nominalValue,
+        isInflationIndexed: def.isInflationIndexed,
+      }));
+      definitionsAppliedFor.current = inputs.bondType;
+    }
+  }, [definitions, inputs.bondType]);
 
   const calculate = useCallback(async (currentInputs: BondInputs) => {
     try {
@@ -83,7 +104,7 @@ export function useBondCalculator() {
       const data = await post<SingleBondCalculationEnvelope>('/api/calculate/single', finalInputs, { preferWorker: true });
       setEnvelope(data);
     } catch (error) {
-      if (error instanceof Error && error.message === 'Calculation aborted') {
+      if (error instanceof Error && (error.name === 'AbortError' || error.message === 'Calculation aborted')) {
         return;
       }
       console.error('Calculation error:', error);
@@ -123,18 +144,13 @@ export function useBondCalculator() {
     setInputs(prev => ({ ...prev, ...initial }));
   });
 
-  // Initial calculation - REMOVED to prevent excessive requests on remount
-  // useEffect(() => {
-  //   calculate();
-  // }, []);
-
   const updateInput = (key: string, value: unknown) => {
     setIsDirty(true);
     if (key === 'selectedSeriesId') {
       const seriesId = value as string | null;
       setSelectedSeriesId(seriesId);
-      if (seriesId === 'current') {
-        const def = BOND_DEFINITIONS[inputs.bondType];
+      if (seriesId === 'current' && definitions) {
+        const def = definitions[inputs.bondType];
         setInputs(prev => ({
           ...prev,
           firstYearRate: def.firstYearRate,
@@ -183,9 +199,10 @@ export function useBondCalculator() {
   };
 
   const setBondType = (type: BondType) => {
+    if (!definitions) return;
     setIsDirty(true);
     setSelectedSeriesId('current');
-    const def = BOND_DEFINITIONS[type];
+    const def = definitions[type];
     const previousHorizonMonths = getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);
     const fallbackHorizonMonths = Math.round(def.duration * 12);
     const nextHorizonMonths = Math.max(previousHorizonMonths, fallbackHorizonMonths);
@@ -203,6 +220,8 @@ export function useBondCalculator() {
       rebuyDiscount: def.rebuyDiscount,
       isRebought: false,
       investmentHorizonMonths: nextHorizonMonths,
+      nominalValue: def.nominalValue,
+      isInflationIndexed: def.isInflationIndexed,
     }));
   };
 
@@ -223,7 +242,7 @@ export function useBondCalculator() {
     calculate: () => calculate(inputs),
     updateInput,
     setBondType,
-    definitions: BOND_DEFINITIONS,
+    definitions,
+    isLoadingDefs,
   };
 }
-

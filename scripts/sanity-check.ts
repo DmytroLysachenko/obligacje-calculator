@@ -13,13 +13,16 @@ async function runSanityCheck() {
     margin: 1.25,
     expectedInflation: -2.0, // Extreme edge case: Deflation!
     expectedNbpRate: 5.25,
-    actualDuration: 4,
+    duration: 4,
+    taxRate: 19,
+    nominalValue: 100,
+    isInflationIndexed: true,
     earlyWithdrawalFee: 0.70,
     taxStrategy: TaxStrategy.STANDARD,
-    isCapitalized: false,
+    isCapitalized: true,
     payoutFrequency: InterestPayout.YEARLY,
-    purchaseDate: new Date(),
-    withdrawalDate: new Date(new Date().setFullYear(new Date().getFullYear() + 4)),
+    purchaseDate: new Date().toISOString(),
+    withdrawalDate: new Date(new Date().setFullYear(new Date().getFullYear() + 4)).toISOString(),
     isRebought: false,
     rebuyDiscount: 0,
     historicalData: {},
@@ -27,20 +30,20 @@ async function runSanityCheck() {
 
   const coiResult = calculateBondInvestment(coiInputs);
   
-  // @ts-ignore
+  // @ts-expect-error - mathWarning is added by withMathGuard but not present in the base CalculationResult type
   if (coiResult.mathWarning) {
     console.error('❌ Math Guard failed for negative inflation.');
     process.exit(1);
   }
   
-  console.log(\`✅ COI Calculation with deflation succeeded. Final Value: \${coiResult.netPayoutValue.toFixed(2)} PLN\`);
+  console.log('✅ COI Calculation with deflation succeeded. Final Value: ' + coiResult.netPayoutValue.toFixed(2) + ' PLN');
 
   // UX Verification: Advisor Tips
   const tips = generateAdvisorTips(BondType.COI, coiResult, -2.0, 5.25);
-  console.log(\`✅ Generated \${tips.length} Advisor tips for UX.\`);
-  tips.forEach(t => console.log(\`   💡 [\${t.type}] \${t.title}: \${t.message}\`));
+  console.log('✅ Generated ' + tips.length + ' Advisor tips for UX.');
+  tips.forEach(t => console.log('   💡 [' + t.type + '] ' + t.title + ': ' + t.message));
 
-  console.log('\\n🎉 All High-Level Logic & UX Sanity Checks passed!');
+  console.log('\n🎉 All High-Level Logic & UX Sanity Checks passed!');
 }
 
 runSanityCheck().catch(console.error);
