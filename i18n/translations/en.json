@@ -30,7 +30,9 @@
     "start": "Start",
     "how_it_works": "How it works",
     "context_rates": "Context Rates",
-    "retry": "Retry"
+    "retry": "Retry",
+    "version": "Version",
+    "sync_data": "Sync Data"
   },
   "strategy_hints": {
     "title": "Smart Strategy Hints",
@@ -130,6 +132,7 @@
     "tax": "Tax",
     "withdrawal": "WITHDRAWAL",
     "error_100_pln": "Must be a multiple of 100 PLN",
+    "error_future_date": "Date cannot be in the future",
     "regular_calculator": "Monthly Investment",
     "regular_calc_desc": "Simulation of building a portfolio through regular purchases.",
     "monthly_investment": "Recurring Amount",
@@ -351,7 +354,14 @@
     "guest_desc": "You can create and manage a local guest notebook even when sign-in is not configured.",
     "default_description": "Primary savings",
     "estimated_yield_placeholder": "~5.2%",
-    "current_yield_placeholder": "5.75%"
+    "current_yield_placeholder": "5.75%",
+    "demo_name": "Demo Portfolio",
+    "demo_description": "Example portfolio with multiple bond types",
+    "public": "Public",
+    "private": "Private",
+    "tax_optimized_congrats": "Your portfolio is tax-optimized! ✨",
+    "tax_leak_action_required": "Action Required: You have {count} large lots (e.g., {type} from {year}) totaling {value} outside a tax-free wrapper. Prioritize moving these to IKE/IKZE to avoid 19% Belka tax.",
+    "tax_leak_small": "Small tax leak detected in {count} lots. Consider using IKE/IKZE for future purchases."
     },
     "economic": {
     "subtitle": "Historical context of Polish inflation and interest rates.",

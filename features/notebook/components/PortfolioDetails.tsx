@@ -25,8 +25,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format, addDays, isAfter, parseISO } from 'date-fns';
-import { BOND_DEFINITIONS } from '@/features/bond-core/constants/bond-definitions';
-import { BondType } from '@/features/bond-core/types';
+import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
+import { BondType, TaxStrategy } from '@/features/bond-core/types';
+import { cn } from '@/lib/utils';
 import { 
   AreaChart, 
   Area, 
@@ -46,6 +47,7 @@ interface PortfolioDetailsProps {
 
 export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, onBack }) => {
   const { t, language } = useLanguage();
+  const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
   const [lots, setLots] = useState<UserInvestmentLot[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [simulation, setSimulation] = useState<PortfolioSimulationResult | null>(null);
@@ -135,9 +137,10 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
   const totalValue = lots.reduce((acc, lot) => acc + (Number(lot.amount) * 100), 0);
 
   const upcomingMaturities = useMemo(() => {
-    if (!lots.length) return [];
+    if (!lots.length || !definitions) return [];
     return lots.map(lot => {
-      const def = BOND_DEFINITIONS[lot.bondType as BondType];
+      const def = definitions[lot.bondType as BondType];
+      if (!def) return null;
       const maturityDate = addDays(parseISO(lot.purchaseDate), Math.round(def.duration * 365));
       return {
         ...lot,
@@ -146,14 +149,14 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
         value: Number(lot.amount) * 100
       };
     })
-    .filter(m => isAfter(m.maturityDate, new Date()))
+    .filter((m): m is NonNullable<typeof m> => m !== null && isAfter(m.maturityDate, new Date()))
     .sort((a, b) => a.maturityDate.getTime() - b.maturityDate.getTime());
-  }, [lots]);
+  }, [lots, definitions]);
 
   const nextMaturity = upcomingMaturities[0] || null;
 
   const taxAudit = useMemo(() => {
-    const standardLots = lots.filter(l => !l.taxStrategy || l.taxStrategy === TaxStrategy.STANDARD);
+    const standardLots = (lots as (UserInvestmentLot & { taxStrategy?: TaxStrategy })[]).filter(l => !l.taxStrategy || l.taxStrategy === TaxStrategy.STANDARD);
     const totalStandardValue = standardLots.reduce((acc, lot) => acc + (Number(lot.amount) * 100), 0);
     
     // Find specifically large lots that are "Tax Leaks"
@@ -163,12 +166,17 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
 
     const potentialSavings = totalStandardValue * 0.045; // Approx weighted average tax leak over 10y
 
-    let suggestion = "Your portfolio is tax-optimized! ✨";
+    let suggestion = t('notebook.tax_optimized_congrats');
     if (totalStandardValue > 0) {
       if (leakyLots.length > 0) {
-        suggestion = `Action Required: You have ${leakyLots.length} large lots (e.g., ${leakyLots[0].bondType} from ${format(parseISO(leakyLots[0].purchaseDate), 'yyyy')}) totaling ${formatCurrency(totalStandardValue)} outside a tax-free wrapper. Prioritize moving these to IKE/IKZE to avoid 19% Belka tax.`;
+        suggestion = t('notebook.tax_leak_action_required', { 
+          count: leakyLots.length, 
+          type: leakyLots[0].bondType,
+          year: format(parseISO(leakyLots[0].purchaseDate), 'yyyy'),
+          value: formatCurrency(totalStandardValue)
+        });
       } else {
-        suggestion = `Small tax leak detected in ${standardLots.length} lots. Consider using IKE/IKZE for future purchases.`;
+        suggestion = t('notebook.tax_leak_small', { count: standardLots.length });
       }
     }
 
@@ -179,7 +187,20 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
       leakyLots,
       suggestion
     };
-  }, [lots, formatCurrency]);
+  }, [lots, formatCurrency, t]);
+
+  if (isLoadingDefs || !definitions) {
+    return (
+      <div className="space-y-8 animate-pulse">
+        <div className="h-10 bg-muted rounded w-1/4"></div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="h-32 bg-muted rounded"></div>
+          <div className="h-32 bg-muted rounded"></div>
+          <div className="h-32 bg-muted rounded"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 pb-20">
@@ -202,11 +223,12 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                  onClick={copyToClipboard}
                >
                  {justCopied ? <Check className="h-4 w-4 text-green-600" /> : <Share2 className="h-4 w-4" />}
-                 {justCopied ? "Copied" : "Copy Link"}
+                 {justCopied ? t('common.copied') : t('common.copy_link')}
                </Button>
              )}
              <Button 
-               variant={isPublic ? "primary" : "ghost"}
+               variant={isPublic ? "default" : "ghost"}
+
                className={cn(
                  "rounded-lg h-9 text-xs font-black uppercase gap-2 px-3",
                  !isPublic && "hover:bg-primary/10 hover:text-primary"
@@ -215,7 +237,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                disabled={isSharing}
              >
                {isSharing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
-               {isPublic ? "Public" : "Private"}
+               {isPublic ? t('notebook.public') : t('notebook.private')}
              </Button>
            </div>
            <Button className="rounded-xl font-black gap-2 shadow-lg shadow-primary/20">

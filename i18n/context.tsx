@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 import en from './translations/en.json';
 import pl from './translations/pl.json';
 import { normalizeTranslations, resolveTranslationValue } from './translation-utils';
@@ -20,21 +20,28 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Language>('en');
-
-  // Load language from localStorage if available
-  useEffect(() => {
-    const savedLang = localStorage.getItem('app-language') as Language;
-    if (savedLang && (savedLang === 'en' || savedLang === 'pl')) {
-      // Intentionally disable this warning or wait until after mount
-      requestAnimationFrame(() => setLanguage(savedLang));
+export function LanguageProvider({ 
+  children, 
+  initialLanguage = 'en' 
+}: { 
+  children: ReactNode, 
+  initialLanguage?: Language 
+}) {
+  const [language, setLanguage] = useState<Language>(() => {
+    if (typeof window !== 'undefined') {
+      const savedLang = localStorage.getItem('app-language') as Language;
+      if (savedLang && (savedLang === 'en' || savedLang === 'pl')) {
+        return savedLang;
+      }
     }
-  }, []);
+    return initialLanguage;
+  });
 
   const handleSetLanguage = (lang: Language) => {
     setLanguage(lang);
     localStorage.setItem('app-language', lang);
+    // Set cookie for SSR
+    document.cookie = `app-language=${lang}; path=/; max-age=31536000`;
   };
 
   const t = (key: string, variables?: Record<string, string | number>): string => {

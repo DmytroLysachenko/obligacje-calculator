@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useLanguage } from '@/i18n';
-import { BOND_DEFINITIONS } from '@/features/bond-core/constants/bond-definitions';
+import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { BondEducationCard } from '@/features/education/components/BondEducationCard';
 import { 
   Info, 
@@ -23,6 +23,7 @@ import { PageTransition } from '@/shared/components/PageTransition';
 
 export default function EducationClient() {
   const { t } = useLanguage();
+  const { definitions, isLoading } = useBondDefinitions();
 
   const concepts = [
     { key: 'inflation', icon: TrendingDown },
@@ -31,6 +32,20 @@ export default function EducationClient() {
     { key: 'belka_tax', icon: Percent },
     { key: 'early_redemption', icon: LogOut },
   ];
+
+  if (isLoading || !definitions) {
+    return (
+      <div className="space-y-16 animate-pulse">
+        <header className="space-y-4">
+          <div className="h-10 bg-muted rounded w-1/4"></div>
+          <div className="h-6 bg-muted rounded w-2/3"></div>
+        </header>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3].map(i => <div key={i} className="h-64 bg-muted rounded-xl"></div>)}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <PageTransition>
@@ -82,7 +97,7 @@ export default function EducationClient() {
           <h3 className="text-2xl font-semibold">{t('education.bond_types')}</h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {Object.values(BOND_DEFINITIONS).map((bond) => (
+          {Object.values(definitions).map((bond) => (
             <BondEducationCard key={bond.type} bond={bond} />
           ))}
         </div>

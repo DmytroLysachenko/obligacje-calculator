@@ -105,8 +105,8 @@ export const NotebookContainer: React.FC = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          name: "Demo Portfolio", 
-          description: "Example portfolio with multiple bond types" 
+          name: t('notebook.demo_name'), 
+          description: t('notebook.demo_description') 
         }),
       });
       

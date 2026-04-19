@@ -114,7 +114,7 @@ export function LandingDashboardClient() {
             transition={{ duration: 0.7, ease: "easeOut" }}
             className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight"
           >
-            {t('landing.hero_title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-primary">{t('landing.hero_title_accent')}</span> Strategy
+            {t('landing.hero_title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-primary">{t('landing.hero_title_accent')}</span>
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0 }}

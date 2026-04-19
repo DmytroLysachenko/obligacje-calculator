@@ -155,12 +155,12 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
         
         <div className="space-y-2 px-1">
           <div className="flex justify-between items-center text-[9px] text-slate-400 font-bold uppercase tracking-widest">
-            <span>Version</span>
+            <span>{t('common.version')}</span>
             <span className="text-slate-600 bg-slate-200 px-1.5 py-0.5 rounded-md">v1.0.0-prod</span>
           </div>
           {dataFreshness?.asOf && (
             <div className="flex justify-between items-center text-[9px] text-slate-400 font-bold uppercase tracking-widest">
-              <span>Sync Data</span>
+              <span>{t('common.sync_data')}</span>
               <span className={cn(
                 "px-1.5 py-0.5 rounded-md",
                 dataFreshness.status === 'fresh' ? "text-emerald-700 bg-emerald-100" : "text-amber-700 bg-amber-100"

@@ -30,7 +30,9 @@
     "start": "Start",
     "how_it_works": "Jak to działa",
     "context_rates": "Stopy referencyjne",
-    "retry": "Spróbuj ponownie"
+    "retry": "Spróbuj ponownie",
+    "version": "Wersja",
+    "sync_data": "Synchronizacja"
   },
   "strategy_hints": {
     "title": "Inteligentne Wskazówki",
@@ -118,6 +120,7 @@
     "gross_value_desc": "Całkowita wartość Twojej inwestycji wraz ze wszystkimi naliczonymi odsetkami, przed potrąceniem podatków i ewentualnych opłat za wcześniejszy wykup.",
     "net_payout": "Wypłata Netto (Do Ręki)",
     "early_withdrawal": "Wcześniejszy Wykup",
+    "interest_payment": "Wypłata odsetek",
     "fees_and_tax": "Opłaty i Podatki",
     "net_profit_desc": "Twój całkowity zysk netto po odliczeniu podatku Belki oraz ewentualnych opłat za wcześniejszy wykup. To rzeczywisty przyrost Twojego kapitału.",
     "real_cagr_desc": "Średnioroczna realna stopa zwrotu z Twojej inwestycji po uwzględnieniu utraty siły nabywczej pieniądza spowodowanej inflacją.",
@@ -130,6 +133,7 @@
     "tax": "Podatek",
     "withdrawal": "WYPŁATA",
     "error_100_pln": "Musi być wielokrotnością 100 PLN",
+    "error_future_date": "Data nie może być z przyszłości",
     "regular_calculator": "Inwestycje Miesięczne",
     "regular_calc_desc": "Symulacja budowania portfela poprzez regularne zakupy.",
     "monthly_investment": "Kwota Cyklicznej Wpłaty",
@@ -350,7 +354,14 @@
     "guest_desc": "Możesz tworzyć i prowadzić lokalny notatnik gościa nawet bez skonfigurowanego logowania.",
     "default_description": "Główne oszczędności",
     "estimated_yield_placeholder": "~5,2%",
-    "current_yield_placeholder": "5,75%"
+    "current_yield_placeholder": "5,75%",
+    "demo_name": "Portfel Demo",
+    "demo_description": "Przykładowy portfel z wieloma rodzajami obligacji",
+    "public": "Publiczny",
+    "private": "Prywatny",
+    "tax_optimized_congrats": "Twój portfel jest zoptymalizowany pod kątem podatkowym! ✨",
+    "tax_leak_action_required": "Wymagane działanie: Posiadasz {count} dużych partii (np. {type} z {year}) o łącznej wartości {value} poza 'opakowaniem' podatkowym. Rozważ przeniesienie ich do IKE/IKZE, aby uniknąć 19% podatku Belki.",
+    "tax_leak_small": "Wykryto mały wyciek podatkowy w {count} partiach. Rozważ użycie IKE/IKZE dla przyszłych zakupów."
   },
   "economic": {
     "subtitle": "Kontekst historyczny polskiej inflacji i stóp procentowych.",
