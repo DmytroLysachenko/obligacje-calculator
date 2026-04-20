@@ -8,7 +8,7 @@ import { CalculationResult, BondInputs, BondType, TaxStrategy } from '../../bond
 import { useLanguage } from '@/i18n';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { exportToCSV } from '@/shared/utils/csv-export';
+import { convertTimelineToCSV, downloadFile } from '@/shared/lib/csv-utils';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, BarChart, Bar, XAxis, YAxis } from 'recharts';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 
@@ -17,7 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { HelpCircle, Download, AlertTriangle, TrendingUp, PiggyBank, Info, Sparkles, Lightbulb } from "lucide-react";
+import { HelpCircle, Download, AlertTriangle, TrendingUp, PiggyBank, Info, Sparkles, Lightbulb, FileSpreadsheet } from "lucide-react";
 import { CalculationAuditTrace } from './CalculationAuditTrace';
 import { MathDeepDive } from '@/shared/components/MathDeepDive';
 
@@ -163,17 +163,18 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results,
   const lastPoint = results.timeline[results.timeline.length - 1];
   const nextMilestoneProfit = lastPoint?.interestEarned * 0.5 || 0; 
 
-  const handleExport = () => {
-    const csvData = results.timeline.map(p => ({
-      Period: p.periodLabel,
-      'Interest Rate': `${p.interestRate}%`,
-      'Nominal Before': p.nominalValueBeforeInterest.toFixed(2),
-      'Interest Earned': p.interestEarned.toFixed(2),
-      'Tax Deducted': p.taxDeducted.toFixed(2),
-      'Nominal After': p.nominalValueAfterInterest.toFixed(2),
-      'Real Value': p.realValue.toFixed(2),
-    }));
-    exportToCSV(csvData, `bond_simulation_${new Date().toISOString().split('T')[0]}`);
+  const handleExportCSV = () => {
+    const headers = {
+      period: t('bonds.calculation_trace.header_year'),
+      capital: t('bonds.calculation_trace.header_capital'),
+      rate: t('bonds.calculation_trace.header_rate'),
+      interest: t('bonds.calculation_trace.header_interest'),
+      tax: t('bonds.calculation_trace.header_tax'),
+      nominalValue: t('bonds.calculation_trace.header_value_after'),
+      realValue: t('bonds.inflation_adjusted'),
+    };
+    const csv = convertTimelineToCSV(results.timeline, headers);
+    downloadFile(csv, `bond_simulation_${inputs.bondType}_${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
   };
 
   const initialCapital = results.grossValue - results.totalProfit - results.totalTax - results.totalEarlyWithdrawalFee;
@@ -414,14 +415,24 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results,
             />
           )}
           
-          <Button 
-            onClick={handleExport}
-            variant="outline" 
-            className="w-full rounded-xl font-bold gap-2 text-xs uppercase tracking-widest border-2 py-6"
-          >
-            <Download className="h-4 w-4" />
-            {t('common.share') || "Export Results"}
-          </Button>
+          <div className="grid grid-cols-2 gap-2">
+            <Button 
+              onClick={handleExportCSV}
+              variant="outline" 
+              className="rounded-xl font-bold gap-2 text-[10px] uppercase tracking-widest border-2 py-6 border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+            >
+              <FileSpreadsheet className="h-4 w-4" />
+              CSV
+            </Button>
+            <Button 
+              disabled
+              variant="outline" 
+              className="rounded-xl font-bold gap-2 text-[10px] uppercase tracking-widest border-2 py-6"
+            >
+              <Download className="h-4 w-4" />
+              {t('common.share') || "Share"}
+            </Button>
+          </div>
         </div>
       </div>
     </div>

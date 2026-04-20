@@ -11,7 +11,8 @@ import {
   ShieldCheck,
   ArrowUpRight,
   Calendar,
-  Info
+  Info,
+  FileSpreadsheet
 } from 'lucide-react';
 import { format, parseISO, getYear } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
@@ -19,9 +20,8 @@ import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from 'recharts';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
-import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { exportToCSV } from "@/shared/utils/csv-export";
+import { convertLotsToCSV, downloadFile } from "@/shared/lib/csv-utils";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 
@@ -57,18 +57,17 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
   };
 
   const handleExport = () => {
-    const csvData = results.lots.map((l, i) => ({
-      Lot: i + 1,
-      'Purchase Date': l.purchaseDate.split('T')[0],
-      'Maturity Date': l.maturityDate.split('T')[0],
-      Status: l.isMatured ? 'Matured' : 'Active',
-      Invested: l.investedAmount.toFixed(2),
-      'Accumulated Interest': l.accumulatedInterest.toFixed(2),
-      Tax: l.tax.toFixed(2),
-      'Redemption Fee': l.earlyWithdrawalFee.toFixed(2),
-      'Net Value': l.netValue.toFixed(2),
-    }));
-    exportToCSV(csvData, `regular_investment_${new Date().toISOString().split('T')[0]}`);
+    const headers = {
+      purchaseDate: t('bonds.purchase_date'),
+      maturityDate: t('bonds.maturity_date'),
+      invested: t('regular_summary.invested'),
+      interest: t('regular_summary.interest'),
+      tax: t('bonds.tax'),
+      fee: t('bonds.early_withdrawal_fee'),
+      netValue: t('regular_summary.net_value'),
+    };
+    const csv = convertLotsToCSV(results.lots, headers);
+    downloadFile(csv, `regular_investment_${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
   };
 
   const chartData = [
@@ -202,8 +201,8 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
             <CardDescription>{t('bonds.lots_desc')}</CardDescription>
           </div>
           <div className="flex items-center gap-4">
-            <Button variant="outline" size="sm" onClick={handleExport} className="gap-2 text-xs">
-              <Download className="h-3 w-3" />
+            <Button variant="outline" size="sm" onClick={handleExport} className="gap-2 text-[10px] font-black uppercase tracking-widest border-2 border-emerald-200 text-emerald-700 hover:bg-emerald-50 h-9 rounded-xl">
+              <FileSpreadsheet className="h-3.5 w-3.5" />
               {t('comparison.export')}
             </Button>
           </div>

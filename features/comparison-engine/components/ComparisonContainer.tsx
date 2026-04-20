@@ -12,13 +12,14 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { Scale, History, Target, LineChart, Sparkles } from "lucide-react";
+import { Scale, History, Target, LineChart, Sparkles, FileSpreadsheet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChartContainer } from "@/shared/components/charts/ChartContainer";
 import { CalculationMetaPanel } from "@/shared/components/CalculationMetaPanel";
 import { CalculatorPageShell } from "@/shared/components/CalculatorPageShell";
 import { MarketAssumptionsForm } from "@/shared/components/MarketAssumptionsForm";
+import { convertTimelineToCSV, downloadFile } from "@/shared/lib/csv-utils";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -30,7 +31,7 @@ import {
   Legend,
   Brush,
 } from "recharts";
-import { BondType, TaxStrategy } from "@/features/bond-core/types";
+import { BondType, TaxStrategy, CalculationResult } from "@/features/bond-core/types";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format, parseISO } from "date-fns";
@@ -232,6 +233,21 @@ export const ComparisonContainer: React.FC = () => {
     }
   };
 
+  const handleExportCSV = (results: CalculationResult | null, bondType: string) => {
+    if (!results) return;
+    const headers = {
+      period: t('bonds.calculation_trace.header_year'),
+      capital: t('bonds.calculation_trace.header_capital'),
+      rate: t('bonds.calculation_trace.header_rate'),
+      interest: t('bonds.calculation_trace.header_interest'),
+      tax: t('bonds.calculation_trace.header_tax'),
+      nominalValue: t('bonds.calculation_trace.header_value_after'),
+      realValue: t('bonds.inflation_adjusted'),
+    };
+    const csv = convertTimelineToCSV(results.timeline, headers);
+    downloadFile(csv, `bond_comparison_${bondType}_${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
+  };
+
   const formatCurrency = (value: number) => {
     if (!hasMounted) return "---";
     return new Intl.NumberFormat(language === "pl" ? "pl-PL" : "en-GB", {
@@ -261,23 +277,47 @@ export const ComparisonContainer: React.FC = () => {
   );
 
   const headerActions = (
-    <div className="flex gap-2 mr-4 bg-muted/50 p-1 rounded-xl border">
-      <Badge 
-        variant={compareMode === "independent" ? "default" : "ghost"} 
-        className={cn("cursor-pointer px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all", 
-          compareMode === "independent" ? "shadow-md" : "hover:bg-background/50")}
-        onClick={() => setCompareMode("independent")}
-      >
-        {t("comparison.mode_independent")}
-      </Badge>
-      <Badge 
-        variant={compareMode === "normalized" ? "default" : "ghost"} 
-        className={cn("cursor-pointer px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all", 
-          compareMode === "normalized" ? "shadow-md" : "hover:bg-background/50")}
-        onClick={() => setCompareMode("normalized")}
-      >
-        {t("comparison.mode_normalized")}
-      </Badge>
+    <div className="flex items-center gap-4">
+      <div className="flex gap-2 bg-muted/50 p-1 rounded-xl border h-fit">
+        <Badge 
+          variant={compareMode === "independent" ? "default" : "ghost"} 
+          className={cn("cursor-pointer px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all", 
+            compareMode === "independent" ? "shadow-md" : "hover:bg-background/50")}
+          onClick={() => setCompareMode("independent")}
+        >
+          {t("comparison.mode_independent")}
+        </Badge>
+        <Badge 
+          variant={compareMode === "normalized" ? "default" : "ghost"} 
+          className={cn("cursor-pointer px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all", 
+            compareMode === "normalized" ? "shadow-md" : "hover:bg-background/50")}
+          onClick={() => setCompareMode("normalized")}
+        >
+          {t("comparison.mode_normalized")}
+        </Badge>
+      </div>
+      {resultsA && resultsB && (
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="h-9 px-3 rounded-xl font-bold text-[10px] uppercase gap-2 border-2 border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+            onClick={() => handleExportCSV(resultsA, inputsA.bondType)}
+          >
+            <FileSpreadsheet className="h-3.5 w-3.5" />
+            CSV (A)
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="h-9 px-3 rounded-xl font-bold text-[10px] uppercase gap-2 border-2 border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+            onClick={() => handleExportCSV(resultsB, inputsB.bondType)}
+          >
+            <FileSpreadsheet className="h-3.5 w-3.5" />
+            CSV (B)
+          </Button>
+        </div>
+      )}
     </div>
   );
 
