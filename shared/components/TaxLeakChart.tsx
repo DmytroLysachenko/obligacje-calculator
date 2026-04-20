@@ -13,6 +13,7 @@ import {
 } from 'recharts';
 import { ChartContainer } from './charts/ChartContainer';
 import { useChartSync } from '@/shared/context/ChartSyncContext';
+import { useLanguage } from '@/i18n';
 
 export interface TaxLeakDataPoint {
   year: number;
@@ -32,6 +33,8 @@ const AreaChartWithTooltipIndex = AreaChart as any;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const CustomTooltip = ({ active, payload, label }: any) => {
+  const { t } = useLanguage();
+
   if (active && payload && payload.length) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const taxFree = payload.find((p: any) => p.dataKey === 'taxFreeCapital')?.value || 0;
@@ -42,12 +45,12 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
     return (
       <div className="bg-background border rounded p-3 shadow-md">
-        <p className="font-semibold mb-2">Year {label}</p>
+        <p className="font-semibold mb-2">{t('bonds.tax_leak.year', { year: label })}</p>
         <div className="space-y-1 text-sm">
           <p className="text-emerald-500">IKE/IKZE: {taxFree.toFixed(2)} PLN</p>
-          <p className="text-blue-500">Standard: {standard.toFixed(2)} PLN</p>
+          <p className="text-blue-500">{t('bonds.tax_leak.standard_account')}: {standard.toFixed(2)} PLN</p>
           <div className="h-px w-full bg-border my-1" />
-          <p className="text-red-500 font-medium">Tax Leak: {leak.toFixed(2)} PLN</p>
+          <p className="text-red-500 font-medium">{t('bonds.tax_leak.tax_leak_label')}: {leak.toFixed(2)} PLN</p>
         </div>
       </div>
     );
@@ -60,6 +63,7 @@ export const TaxLeakChart: React.FC<TaxLeakChartProps> = ({
   height = 400,
 }) => {
   const { hoverIndex, setHoverIndex } = useChartSync();
+  const { t } = useLanguage();
 
   return (
     <ChartContainer height={height}>
@@ -109,7 +113,7 @@ export const TaxLeakChart: React.FC<TaxLeakChartProps> = ({
             stackId="1"
             stroke="#3b82f6"
             fill="url(#colorStandard)"
-            name="Standard Account"
+            name={t('bonds.tax_leak.standard_account')}
             animationDuration={1500}
           />
           {/* Tax leak area stacked on top to represent total tax-free capital */}
@@ -119,7 +123,7 @@ export const TaxLeakChart: React.FC<TaxLeakChartProps> = ({
             stackId="1"
             stroke="#ef4444"
             fill="url(#colorLeak)"
-            name="Tax Leak (Opportunity Cost)"
+            name={t('bonds.tax_leak.opportunity_cost')}
             animationDuration={1500}
           />
           {/* Invisible line just for the tooltip to show the total tax-free amount easily */}
@@ -128,7 +132,7 @@ export const TaxLeakChart: React.FC<TaxLeakChartProps> = ({
             dataKey="taxFreeCapital"
             stroke="none"
             fill="none"
-            name="IKE/IKZE Potential"
+            name={t('bonds.tax_leak.ike_ikze_potential')}
             activeDot={false}
             legendType="none"
           />

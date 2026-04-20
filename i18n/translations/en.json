@@ -284,6 +284,35 @@
     "granularity_monthly": "Monthly",
     "granularity_quarterly": "Quarterly",
     "granularity_yearly": "Yearly",
+    "tax_leak": {
+      "title": "Tax Leak Analysis",
+      "ike_ikze_potential": "IKE/IKZE Potential",
+      "standard_account": "Standard Account",
+      "tax_leak_label": "Tax Leak",
+      "opportunity_cost": "Tax Leak (Opportunity Cost)",
+      "year": "Year {{year}}"
+    },
+    "macro_painter": {
+      "title": "Macro Painter",
+      "subtitle": "Draw your own economic future",
+      "reset": "Reset",
+      "apply_path": "Apply Path",
+      "edit_path": "Edit Path",
+      "click_to_paint": "Click Edit to Painter",
+      "inflation_path": "Inflation Path",
+      "nbp_path": "NBP Rate Path"
+    },
+    "calculation_trace": {
+      "title": "How was it calculated? (Audit Trail)",
+      "header_year": "Year / Period",
+      "header_event": "Event / Action",
+      "header_capital": "Capital Base",
+      "header_rate": "Rate Used",
+      "header_interest": "Interest",
+      "header_tax": "Tax Withheld",
+      "header_value_after": "Value After",
+      "year_label": "Year {{year}} ({{label}})"
+    },
     "pdf": {
       "executive_summary": "EXECUTIVE SUMMARY",
       "assumptions_audit": "ASSUMPTIONS AUDIT",

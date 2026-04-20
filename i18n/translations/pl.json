@@ -285,6 +285,35 @@
     "granularity_monthly": "Miesięczny",
     "granularity_quarterly": "Kwartalny",
     "granularity_yearly": "Roczny",
+    "tax_leak": {
+      "title": "Analiza Wycieku Podatkowego",
+      "ike_ikze_potential": "Potencjał IKE/IKZE",
+      "standard_account": "Konto Standardowe",
+      "tax_leak_label": "Wyciek Podatkowy",
+      "opportunity_cost": "Wyciek Podatkowy (Koszt Alternatywny)",
+      "year": "Rok {{year}}"
+    },
+    "macro_painter": {
+      "title": "Malarz Makro",
+      "subtitle": "Narysuj własną przyszłość ekonomiczną",
+      "reset": "Resetuj",
+      "apply_path": "Zastosuj Ścieżkę",
+      "edit_path": "Edytuj Ścieżkę",
+      "click_to_paint": "Kliknij Edytuj, aby Malować",
+      "inflation_path": "Ścieżka Inflacji",
+      "nbp_path": "Ścieżka Stóp NBP"
+    },
+    "calculation_trace": {
+      "title": "Jak to zostało obliczone? (Audyt)",
+      "header_year": "Rok / Okres",
+      "header_event": "Zdarzenie / Akcja",
+      "header_capital": "Baza Kapitałowa",
+      "header_rate": "Użyta Stopa",
+      "header_interest": "Odsetki",
+      "header_tax": "Podatek",
+      "header_value_after": "Wartość Po",
+      "year_label": "Rok {{year}} ({{label}})"
+    },
     "pdf": {
       "executive_summary": "PODSUMOWANIE INWESTYCJI",
       "assumptions_audit": "AUDYT ZAŁOŻEŃ",

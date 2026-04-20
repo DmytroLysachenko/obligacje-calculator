@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { YearlyTimelinePoint } from '@/features/bond-core/types';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Search } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -11,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { useLanguage } from '@/i18n';
 
 interface CalculationTraceProps {
   timeline: YearlyTimelinePoint[];
@@ -18,6 +19,7 @@ interface CalculationTraceProps {
 
 export const CalculationTrace: React.FC<CalculationTraceProps> = ({ timeline }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useLanguage();
 
   if (!timeline || timeline.length === 0) return null;
 
@@ -27,7 +29,10 @@ export const CalculationTrace: React.FC<CalculationTraceProps> = ({ timeline }) 
         onClick={() => setIsOpen(!isOpen)}
         className="w-full p-4 flex items-center justify-between font-semibold hover:bg-muted/50 transition-colors"
       >
-        <span>🔍 How was it calculated? (Audit Trail)</span>
+        <span className="flex items-center gap-2">
+          <Search className="w-4 h-4 text-primary" />
+          {t('bonds.calculation_trace.title')}
+        </span>
         {isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
       </button>
 
@@ -36,13 +41,13 @@ export const CalculationTrace: React.FC<CalculationTraceProps> = ({ timeline }) 
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Year / Period</TableHead>
-                <TableHead>Event / Action</TableHead>
-                <TableHead className="text-right">Capital Base</TableHead>
-                <TableHead className="text-right">Rate Used</TableHead>
-                <TableHead className="text-right">Interest</TableHead>
-                <TableHead className="text-right">Tax Withheld</TableHead>
-                <TableHead className="text-right">Value After</TableHead>
+                <TableHead>{t('bonds.calculation_trace.header_year')}</TableHead>
+                <TableHead>{t('bonds.calculation_trace.header_event')}</TableHead>
+                <TableHead className="text-right">{t('bonds.calculation_trace.header_capital')}</TableHead>
+                <TableHead className="text-right">{t('bonds.calculation_trace.header_rate')}</TableHead>
+                <TableHead className="text-right">{t('bonds.calculation_trace.header_interest')}</TableHead>
+                <TableHead className="text-right">{t('bonds.calculation_trace.header_tax')}</TableHead>
+                <TableHead className="text-right">{t('bonds.calculation_trace.header_value_after')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -50,7 +55,7 @@ export const CalculationTrace: React.FC<CalculationTraceProps> = ({ timeline }) 
                 <React.Fragment key={index}>
                   <TableRow className="bg-muted/20">
                     <TableCell className="font-medium" colSpan={2}>
-                      Year {point.year} ({point.periodLabel})
+                      {t('bonds.calculation_trace.year_label', { year: point.year, label: point.periodLabel })}
                     </TableCell>
                     <TableCell className="text-right font-medium">{(point.nominalValueBeforeInterest).toFixed(2)} PLN</TableCell>
                     <TableCell className="text-right font-medium">{point.interestRate.toFixed(2)}%</TableCell>

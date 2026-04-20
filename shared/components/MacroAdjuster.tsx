@@ -13,6 +13,7 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import { Edit3, Save, RotateCcw, TrendingUp } from 'lucide-react';
+import { useLanguage } from '@/i18n';
 
 interface MacroPoint {
   year: number;
@@ -33,6 +34,7 @@ export const MacroAdjuster: React.FC<MacroAdjusterProps> = ({
   horizonYears,
   onUpdate 
 }) => {
+  const { t } = useLanguage();
   const [data, setData] = useState<MacroPoint[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const lastSyncProps = useRef({ initialInflation, initialNbpRate, horizonYears });
@@ -87,9 +89,9 @@ export const MacroAdjuster: React.FC<MacroAdjusterProps> = ({
         <div>
           <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-primary" />
-            Macro Painter
+            {t('bonds.macro_painter.title')}
           </CardTitle>
-          <p className="text-[10px] font-bold text-muted-foreground uppercase">Draw your own economic future</p>
+          <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('bonds.macro_painter.subtitle')}</p>
         </div>
         <div className="flex gap-2">
           <Button 
@@ -99,7 +101,7 @@ export const MacroAdjuster: React.FC<MacroAdjusterProps> = ({
             className="h-8 rounded-xl text-[10px] font-black uppercase gap-1"
           >
             <RotateCcw className="h-3 w-3" />
-            Reset
+            {t('bonds.macro_painter.reset')}
           </Button>
           <Button
             variant={isEditing ? "default" : "outline"}
@@ -109,7 +111,7 @@ export const MacroAdjuster: React.FC<MacroAdjusterProps> = ({
             className="h-8 rounded-xl text-[10px] font-black uppercase gap-1"
           >
             {isEditing ? <Save className="h-3 w-3" /> : <Edit3 className="h-3 w-3" />}
-            {isEditing ? "Apply Path" : "Edit Path"}
+            {isEditing ? t('bonds.macro_painter.apply_path') : t('bonds.macro_painter.edit_path')}
           </Button>
         </div>
       </CardHeader>
@@ -117,7 +119,7 @@ export const MacroAdjuster: React.FC<MacroAdjusterProps> = ({
         <div className="h-[250px] w-full relative">
           {!isEditing && (
             <div className="absolute inset-0 z-10 bg-white/5 backdrop-blur-[1px] flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-               <Button variant="secondary" size="sm" onClick={() => setIsEditing(true)} className="rounded-full font-black uppercase text-[10px]">Click Edit to Painter</Button>
+               <Button variant="secondary" size="sm" onClick={() => setIsEditing(true)} className="rounded-full font-black uppercase text-[10px]">{t('bonds.macro_painter.click_to_edit')}</Button>
             </div>
           )}
           <ResponsiveContainer width="100%" height="100%">
@@ -127,7 +129,7 @@ export const MacroAdjuster: React.FC<MacroAdjusterProps> = ({
               <YAxis tick={{fontSize: 10}} domain={['auto', 'auto']} />
               <Tooltip 
                 contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                labelFormatter={(year) => `Year ${year}`}
+                labelFormatter={(year) => t('bonds.tax_leak.year', { year })}
               />
               <Line 
                 type="monotone" 
@@ -174,11 +176,11 @@ export const MacroAdjuster: React.FC<MacroAdjusterProps> = ({
         <div className="mt-4 flex justify-center gap-6">
            <div className="flex items-center gap-2">
              <div className="w-3 h-3 bg-red-500 rounded-full" />
-             <span className="text-[10px] font-bold uppercase text-muted-foreground">Inflation Path</span>
+             <span className="text-[10px] font-bold uppercase text-muted-foreground">{t('bonds.macro_painter.inflation_path')}</span>
            </div>
            <div className="flex items-center gap-2">
              <div className="w-3 h-3 bg-blue-500 rounded-full" />
-             <span className="text-[10px] font-bold uppercase text-muted-foreground">NBP Rate Path</span>
+             <span className="text-[10px] font-bold uppercase text-muted-foreground">{t('bonds.macro_painter.nbp_path')}</span>
            </div>
         </div>
       </CardContent>
