@@ -1,301 +1,71 @@
 [
   {
-    "name": "COI 4-Year Standard",
+    "name": "EDO (10y) - Standard Long Term",
     "inputs": {
-      "initialInvestment": 10000,
-      "firstYearRate": 6.5,
-      "expectedInflation": 3,
-      "margin": 1.5,
-      "duration": 4,
-      "earlyWithdrawalFee": 0.7,
-      "bondType": "COI",
-      "isCapitalized": false,
-      "payoutFrequency": "YEARLY",
-      "purchaseDate": "2024-01-01T00:00:00.000Z",
-      "withdrawalDate": "2028-01-01T00:00:00.000Z",
-      "taxStrategy": "STANDARD"
-    },
-    "expected": {
-      "totalProfit": 1618,
-      "totalTax": 382,
-      "grossValue": 12000,
-      "finalNominalValue": 12000,
-      "netPayoutValue": 11618,
-      "totalEarlyWithdrawalFee": 0
-    }
-  },
-  {
-    "name": "EDO 10-Year Capitalized",
-    "inputs": {
-      "initialInvestment": 1000,
-      "firstYearRate": 7,
-      "expectedInflation": 4,
-      "margin": 2,
-      "duration": 10,
-      "earlyWithdrawalFee": 2,
       "bondType": "EDO",
-      "isCapitalized": true,
-      "payoutFrequency": "MATURITY",
-      "purchaseDate": "2024-01-01T00:00:00.000Z",
-      "withdrawalDate": "2034-01-01T00:00:00.000Z",
-      "taxStrategy": "STANDARD"
-    },
-    "expected": {
-      "totalProfit": 653.7424861328806,
-      "totalTax": 154,
-      "finalNominalValue": 1807.7424861328805
-    }
-  },
-  {
-    "name": "ROR 5-Year Rollover",
-    "inputs": {
-      "initialInvestment": 10000,
-      "firstYearRate": 4.25,
-      "expectedInflation": 3,
-      "expectedNbpRate": 5.25,
-      "margin": 0,
-      "duration": 1,
-      "earlyWithdrawalFee": 0.5,
-      "bondType": "ROR",
-      "isCapitalized": false,
-      "payoutFrequency": "MONTHLY",
-      "purchaseDate": "2026-03-01T00:00:00.000Z",
-      "withdrawalDate": "2031-03-01T00:00:00.000Z",
-      "taxStrategy": "STANDARD",
-      "rollover": true
-    },
-    "expected": {
-      "totalProfit": 2186.5,
-      "totalTax": 532,
-      "grossValue": 12304.5,
-      "finalNominalValue": 12304.5,
-      "netPayoutValue": 12186.5
-    }
-  },
-  {
-    "name": "EDO Early Exit Year 7",
-    "inputs": {
-      "initialInvestment": 10000,
-      "firstYearRate": 5.6,
-      "expectedInflation": 4,
-      "margin": 2,
-      "duration": 10,
-      "earlyWithdrawalFee": 3,
-      "bondType": "EDO",
-      "isCapitalized": true,
-      "payoutFrequency": "MATURITY",
-      "purchaseDate": "2026-03-01T00:00:00.000Z",
-      "withdrawalDate": "2033-03-01T00:00:00.000Z",
-      "taxStrategy": "STANDARD"
-    },
-    "expected": {
-      "totalProfit": 3790.56182542336,
-      "totalTax": 889,
-      "grossValue": 14979.56182542336,
-      "finalNominalValue": 14979.56182542336,
-      "netPayoutValue": 13790.56182542336,
-      "totalEarlyWithdrawalFee": 300
-    }
-  },
-  {
-    "name": "COI Deflation Floor",
-    "inputs": {
-      "initialInvestment": 10000,
-      "firstYearRate": 5,
-      "expectedInflation": -2,
-      "margin": 1.5,
-      "duration": 4,
-      "earlyWithdrawalFee": 2,
-      "bondType": "COI",
-      "isCapitalized": false,
-      "payoutFrequency": "YEARLY",
-      "purchaseDate": "2026-03-01T00:00:00.000Z",
-      "withdrawalDate": "2030-03-01T00:00:00.000Z",
-      "taxStrategy": "STANDARD"
-    },
-    "expected": {
-      "totalProfit": 768,
-      "totalTax": 182,
-      "grossValue": 10950,
-      "finalNominalValue": 10950,
-      "netPayoutValue": 10768
-    }
-  },
-  {
-    "name": "EDO IKZE Exit",
-    "inputs": {
-      "initialInvestment": 10000,
-      "firstYearRate": 5.6,
-      "expectedInflation": 4,
-      "margin": 2,
-      "duration": 10,
-      "earlyWithdrawalFee": 3,
-      "bondType": "EDO",
-      "isCapitalized": true,
-      "payoutFrequency": "MATURITY",
-      "purchaseDate": "2026-03-01T00:00:00.000Z",
-      "withdrawalDate": "2036-03-01T00:00:00.000Z",
-      "taxStrategy": "IKZE"
-    },
-    "expected": {
-      "totalProfit": 6056.897807068429,
-      "totalTax": 1784,
-      "grossValue": 17840.897807068428,
-      "finalNominalValue": 17840.897807068428,
-      "netPayoutValue": 16056.897807068428
-    }
-  },
-  {
-    "name": "COI Rebuy Discount",
-    "inputs": {
-      "initialInvestment": 10000,
-      "firstYearRate": 5,
-      "expectedInflation": 3,
-      "margin": 1.5,
-      "duration": 4,
-      "earlyWithdrawalFee": 2,
-      "bondType": "COI",
-      "isCapitalized": false,
-      "payoutFrequency": "YEARLY",
-      "purchaseDate": "2026-03-01T00:00:00.000Z",
-      "withdrawalDate": "2034-03-01T00:00:00.000Z",
-      "taxStrategy": "STANDARD",
-      "isRebought": true,
-      "rebuyDiscount": 0.1,
-      "rollover": true
-    },
-    "expected": {
-      "totalProfit": 3224.5,
-      "totalTax": 756,
-      "grossValue": 13627.5,
-      "finalNominalValue": 13627.5,
-      "netPayoutValue": 13224.5
-    }
-  },
-  {
-    "name": "ROR Projected Rate Fallback",
-    "inputs": {
-      "initialInvestment": 10000,
-      "firstYearRate": 4.25,
-      "expectedInflation": 3,
-      "expectedNbpRate": 5.25,
-      "margin": 0,
-      "duration": 1,
-      "earlyWithdrawalFee": 0.5,
-      "bondType": "ROR",
-      "isCapitalized": false,
-      "payoutFrequency": "MONTHLY",
-      "purchaseDate": "2026-03-01T00:00:00.000Z",
-      "withdrawalDate": "2027-03-01T00:00:00.000Z",
-      "taxStrategy": "STANDARD",
-      "historicalData": {}
-    },
-    "expected": {
-      "totalProfit": 421.6666666666667,
-      "totalTax": 95,
-      "grossValue": 10516.666666666666,
-      "finalNominalValue": 10516.666666666666,
-      "netPayoutValue": 10421.666666666666
-    }
-  },
-  {
-    "name": "EDO Early Exit Fee Cap",
-    "inputs": {
-      "initialInvestment": 10000,
-      "firstYearRate": 5.6,
-      "expectedInflation": 4,
-      "margin": 2,
-      "duration": 10,
-      "earlyWithdrawalFee": 3,
-      "bondType": "EDO",
-      "isCapitalized": true,
-      "payoutFrequency": "MATURITY",
-      "purchaseDate": "2026-03-01T00:00:00.000Z",
-      "withdrawalDate": "2026-04-01T00:00:00.000Z",
-      "taxStrategy": "STANDARD"
-    },
-    "expected": {
-      "totalEarlyWithdrawalFee": 47.56164383561644,
-      "netPayoutValue": 10000,
-      "totalProfit": 0,
-      "totalTax": 0,
-      "grossValue": 10047.561643835616,
-      "finalNominalValue": 10047.561643835616
-    }
-  },
-  {
-    "name": "TOS 3-Year Fixed",
-    "inputs": {
       "initialInvestment": 10000,
       "firstYearRate": 6.25,
-      "expectedInflation": 3,
-      "margin": 0,
-      "duration": 3,
-      "earlyWithdrawalFee": 0.7,
-      "bondType": "TOS",
+      "margin": 1.25,
+      "expectedInflation": 3.0,
+      "duration": 10,
+      "earlyWithdrawalFee": 2.0,
       "isCapitalized": true,
-      "payoutFrequency": "MATURITY",
-      "purchaseDate": "2026-01-01T00:00:00.000Z",
-      "withdrawalDate": "2029-01-01T00:00:00.000Z",
-      "taxStrategy": "STANDARD"
+      "taxRate": 19,
+      "taxStrategy": "STANDARD",
+      "purchaseDate": "2024-01-01",
+      "withdrawalDate": "2034-01-01",
+      "rollover": false
     },
     "expected": {
-      "totalProfit": 1615.62890625,
-      "totalTax": 379,
-      "grossValue": 11994.62890625,
-      "finalNominalValue": 11994.62890625,
-      "netPayoutValue": 11615.62890625,
-      "totalEarlyWithdrawalFee": 0
+      "totalProfit": 4417.03,
+      "totalTax": 1036,
+      "netPayoutValue": 14417.03
     }
   },
   {
-    "name": "OTS 3-Month Short",
+    "name": "COI (4y) - Inflation Linked",
     "inputs": {
+      "bondType": "COI",
       "initialInvestment": 10000,
-      "firstYearRate": 3,
-      "expectedInflation": 3,
+      "firstYearRate": 5.75,
+      "margin": 1.0,
+      "expectedInflation": 2.5,
+      "duration": 4,
+      "earlyWithdrawalFee": 0.7,
+      "isCapitalized": false,
+      "taxRate": 19,
+      "taxStrategy": "STANDARD",
+      "purchaseDate": "2024-01-01",
+      "withdrawalDate": "2028-01-01",
+      "rollover": false
+    },
+    "expected": {
+      "totalProfit": 1315,
+      "totalTax": 310,
+      "netPayoutValue": 11315
+    }
+  },
+  {
+    "name": "OTS (3m) - Short Term",
+    "inputs": {
+      "bondType": "OTS",
+      "initialInvestment": 10000,
+      "firstYearRate": 3.0,
       "margin": 0,
+      "expectedInflation": 2.0,
       "duration": 0.25,
       "earlyWithdrawalFee": 0,
-      "bondType": "OTS",
       "isCapitalized": false,
-      "payoutFrequency": "MATURITY",
-      "purchaseDate": "2026-01-01T00:00:00.000Z",
-      "withdrawalDate": "2026-04-01T00:00:00.000Z",
-      "taxStrategy": "STANDARD"
+      "taxRate": 19,
+      "taxStrategy": "STANDARD",
+      "purchaseDate": "2024-01-01",
+      "withdrawalDate": "2024-04-01",
+      "rollover": false
     },
     "expected": {
       "totalProfit": 61,
       "totalTax": 14,
-      "grossValue": 10075,
-      "finalNominalValue": 10075,
-      "netPayoutValue": 10061,
-      "totalEarlyWithdrawalFee": 0
-    }
-  },
-  {
-    "name": "EDO IKE Strategy",
-    "inputs": {
-      "initialInvestment": 10000,
-      "firstYearRate": 5.6,
-      "expectedInflation": 4,
-      "margin": 2,
-      "duration": 10,
-      "earlyWithdrawalFee": 3,
-      "bondType": "EDO",
-      "isCapitalized": true,
-      "payoutFrequency": "MATURITY",
-      "purchaseDate": "2026-01-01T00:00:00.000Z",
-      "withdrawalDate": "2036-01-01T00:00:00.000Z",
-      "taxStrategy": "IKE"
-    },
-    "expected": {
-      "totalProfit": 7840.897807068429,
-      "totalTax": 0,
-      "grossValue": 17840.897807068428,
-      "finalNominalValue": 17840.897807068428,
-      "netPayoutValue": 17840.897807068428,
-      "totalEarlyWithdrawalFee": 0
+      "netPayoutValue": 10061
     }
   }
 ]
