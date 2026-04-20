@@ -12,12 +12,19 @@ import { Button } from '@/components/ui/button';
 import { BondType, BondInputs, TaxStrategy } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
-import { CalendarIcon, Info, Target, AlertCircle } from 'lucide-react';
+import { CalendarIcon, Info, Target, AlertCircle, HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, parseISO, isAfter } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
+import { GLOSSARY } from '@/shared/constants/glossary';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { Slider } from '@/components/ui/slider';
@@ -106,6 +113,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
   const maturityDate = parseISO(getWithdrawalDateFromMonths(inputs.purchaseDate, Math.round(inputs.duration * 12)));
 
   return (
+    <TooltipProvider>
     <Card className="w-full shadow-lg border-primary/10 overflow-hidden">
       {/* Global Validation Warnings */}
       {(isHorizonExtreme || isInflationExtreme || isGoalUnreachable) && (
@@ -175,6 +183,14 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                   <Label className="font-semibold flex items-center gap-2">
                     {inputs.calculatorMode === 'reverse' ? t('bonds.target_goal_req') : t('bonds.savings_goal_opt')}
                   </Label>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {GLOSSARY.SAVINGS_GOAL.definition[language]}
+                    </TooltipContent>
+                  </Tooltip>
                 </div>
                 <div className="relative">
                   <Input
@@ -194,6 +210,16 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <Label htmlFor="bondType" className="font-semibold">{t('bonds.bond_type')}</Label>
+                  {currentDef.isInflationIndexed && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {GLOSSARY.INFLATION_INDEXED.definition[language]}
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
                 </div>
                 <Select
                   value={inputs.bondType}
@@ -414,7 +440,17 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               </div>
 
               <div className="space-y-3">
-                <Label className="font-semibold">{t('bonds.tax_strategy')}</Label>
+                <div className="flex items-center gap-2">
+                  <Label className="font-semibold">{t('bonds.tax_strategy')}</Label>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {GLOSSARY.TAX_WRAPPER.definition[language]}
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
                 <Select
                   value={inputs.taxStrategy}
                   onValueChange={(value) => onUpdate('taxStrategy', value as TaxStrategy)}
@@ -525,7 +561,17 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
               <div className="flex items-center justify-between p-4 bg-primary/5 rounded-xl border border-primary/10">
                 <div className="space-y-0.5">
-                  <Label className="text-sm font-bold text-primary uppercase">{t('bonds.inflation_adjusted')}</Label>
+                  <div className="flex items-center gap-2">
+                    <Label className="text-sm font-bold text-primary uppercase">{t('bonds.inflation_adjusted')}</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="h-3.5 w-3.5 text-primary/60 cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {GLOSSARY.REAL_VALUE.definition[language]}
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
                   <p className="text-[10px] text-muted-foreground font-medium italic">
                     {t('bonds.show_purchasing_power')}
                   </p>
@@ -591,18 +637,39 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               <span className="font-bold">{hasMounted ? format(maturityDate, 'PPP', { locale: dateLocale }) : '---'}</span>
             </div>
             <div className="flex justify-between">
-              <span>{t('bonds.payout_type')}:</span>
+              <span className="flex items-center gap-1">
+                {t('bonds.payout_type')}:
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {GLOSSARY.CAPITALIZATION.definition[language]}
+                  </TooltipContent>
+                </Tooltip>
+              </span>
               <span className="font-bold">
                 {inputs.isCapitalized ? t('bonds.capitalization') : t('bonds.payout')}
               </span>
             </div>
             <div className="flex justify-between">
-              <span>{t('bonds.early_withdrawal_fee')}:</span>
+              <span className="flex items-center gap-1">
+                {t('bonds.early_withdrawal_fee')}:
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {GLOSSARY.EARLY_WITHDRAWAL.definition[language]}
+                  </TooltipContent>
+                </Tooltip>
+              </span>
               <span className="font-bold">{inputs.earlyWithdrawalFee} PLN</span>
             </div>
           </div>
         </div>
       </CardContent>
     </Card>
+    </TooltipProvider>
   );
 };
