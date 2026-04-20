@@ -174,9 +174,16 @@ export const BondCalculatorContainer: React.FC = () => {
 
           {isCalculating && !results && (
             <div className="space-y-8 animate-in fade-in duration-500">
-              <Skeleton className="h-[140px] w-full rounded-3xl" />
-              <Skeleton className="h-[200px] w-full rounded-3xl" />
-              <Skeleton className="h-[450px] w-full rounded-3xl shadow-xl border border-primary/5" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Skeleton className="h-[100px] rounded-3xl" />
+                <Skeleton className="h-[100px] rounded-3xl" />
+                <Skeleton className="h-[100px] rounded-3xl" />
+              </div>
+              <Skeleton className="h-[250px] w-full rounded-3xl" />
+              <div className="space-y-4">
+                <Skeleton className="h-10 w-full rounded-xl" />
+                <Skeleton className="h-[450px] w-full rounded-3xl shadow-xl border border-primary/5" />
+              </div>
             </div>
           )}
 

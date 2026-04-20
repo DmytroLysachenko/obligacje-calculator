@@ -19,6 +19,7 @@ import { pl, enGB } from 'date-fns/locale';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import { Slider } from '@/components/ui/slider';
 
 import {
@@ -63,9 +64,24 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
   if (isLoadingDefs || !definitions) {
     return (
-      <Card className="w-full shadow-lg border-primary/10 animate-pulse">
-        <CardContent className="h-[600px] flex items-center justify-center">
-          <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">{t('common.loading')}</p>
+      <Card className="w-full shadow-lg border-primary/10 overflow-hidden">
+        <CardHeader className="pb-4 bg-muted/30 border-b mb-4">
+          <Skeleton className="h-6 w-48 mb-2" />
+          <Skeleton className="h-4 w-64" />
+        </CardHeader>
+        <CardContent className="p-6 space-y-8">
+          <div className="space-y-4">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-10 w-full rounded-xl" />
+          </div>
+          <div className="space-y-4">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-10 w-full rounded-xl" />
+          </div>
+          <div className="space-y-8 pt-4">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-2 w-full" />
+          </div>
         </CardContent>
       </Card>
     );
@@ -83,10 +99,37 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
   const isDivisibleBy100 = inputs.initialInvestment % 100 === 0 && inputs.initialInvestment > 0;
   const isFutureDate = isAfter(parseISO(inputs.purchaseDate), new Date());
+  const isHorizonExtreme = investmentHorizonYears > 50;
+  const isInflationExtreme = inputs.expectedInflation > 25 || inputs.expectedInflation < -5;
+  const isGoalUnreachable = inputs.savingsGoal && inputs.initialInvestment > inputs.savingsGoal;
+
   const maturityDate = parseISO(getWithdrawalDateFromMonths(inputs.purchaseDate, Math.round(inputs.duration * 12)));
 
   return (
     <Card className="w-full shadow-lg border-primary/10 overflow-hidden">
+      {/* Global Validation Warnings */}
+      {(isHorizonExtreme || isInflationExtreme || isGoalUnreachable) && (
+        <div className="bg-amber-50 border-b border-amber-200 p-3 space-y-1">
+          {isHorizonExtreme && (
+            <div className="flex items-center gap-2 text-[10px] font-bold text-amber-700 uppercase">
+              <AlertCircle className="h-3 w-3" />
+              <span>Horizon exceeds 50 years. Results may be less precise.</span>
+            </div>
+          )}
+          {isInflationExtreme && (
+            <div className="flex items-center gap-2 text-[10px] font-bold text-amber-700 uppercase">
+              <AlertCircle className="h-3 w-3" />
+              <span>Extreme inflation assumptions detected.</span>
+            </div>
+          )}
+          {isGoalUnreachable && (
+            <div className="flex items-center gap-2 text-[10px] font-bold text-amber-700 uppercase">
+              <AlertCircle className="h-3 w-3" />
+              <span>Initial investment exceeds savings goal.</span>
+            </div>
+          )}
+        </div>
+      )}
       <CardHeader className="pb-4 bg-muted/30 border-b mb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl flex items-center gap-2">
