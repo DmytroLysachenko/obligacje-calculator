@@ -13,11 +13,35 @@ export class CalculationCache {
 
   /**
    * Generates a stable key from the calculation request.
+   * Ensures that object key order doesn't affect the resulting string.
    */
   generateKey(request: unknown): string {
-    // We only want to cache based on inputs that affect the math
-    // Some fields like 'kind' or 'scenarioKey' might be relevant or not depending on context
-    return JSON.stringify(request);
+    if (!request || typeof request !== 'object') {
+      return String(request);
+    }
+
+    // Recursive function to sort keys
+    const sortObject = (obj: unknown): unknown => {
+      if (obj === null || typeof obj !== 'object') {
+        return obj;
+      }
+      if (Array.isArray(obj)) {
+        return obj.map(sortObject);
+      }
+      const sortedKeys = Object.keys(obj as Record<string, unknown>).sort();
+      const result: Record<string, unknown> = {};
+      for (const key of sortedKeys) {
+        result[key] = sortObject((obj as Record<string, unknown>)[key]);
+      }
+      return result;
+    };
+
+    try {
+      return JSON.stringify(sortObject(request));
+    } catch (e) {
+      console.warn('[CalculationCache] Failed to generate stable key, falling back to basic stringify', e);
+      return JSON.stringify(request);
+    }
   }
 
   get(key: string): unknown {

@@ -41,6 +41,7 @@ import { db } from '@/db';
 import { bondSeries, polishBonds } from '@/db/schema';
 import { eq, and, lte, desc } from 'drizzle-orm';
 import { calculationCache } from './utils/calculation-cache';
+import { sanitizeInputs } from './utils/engine-guards';
 import Decimal from 'decimal.js';
 
 export const MODEL_VERSION = '2.7.0-db-driven-metadata';
@@ -50,7 +51,14 @@ export class CalculationApplicationService {
    * Main entry point for all calculation requests.
    */
   async calculate(request: CalculationScenarioRequest): Promise<CalculationEnvelope<unknown>> {
-    const cacheKey = calculationCache.generateKey(request);
+    // 1. Sanitize inputs first to prevent extreme values or malicious payloads
+    const sanitizedRequest = {
+      ...request,
+      payload: sanitizeInputs(request.payload as unknown as Record<string, unknown>)
+    } as unknown as CalculationScenarioRequest;
+
+    // 2. Check cache with sanitized inputs
+    const cacheKey = calculationCache.generateKey(sanitizedRequest);
     const cachedResult = calculationCache.get(cacheKey);
     if (cachedResult) {
       return cachedResult as CalculationEnvelope<unknown>;
@@ -61,24 +69,24 @@ export class CalculationApplicationService {
     
     try {
       let response: CalculationEnvelope<unknown>;
-      switch (request.kind) {
+      switch (sanitizedRequest.kind) {
         case ScenarioKind.SINGLE_BOND:
-          response = await this.calculateSingleBond(request.payload, dataFreshness, dbDefinitions);
+          response = await this.calculateSingleBond(sanitizedRequest.payload as BondInputs, dataFreshness, dbDefinitions);
           break;
         case ScenarioKind.REGULAR_INVESTMENT:
-          response = await this.calculateRegularInvestment(request.payload, dataFreshness, dbDefinitions);
+          response = await this.calculateRegularInvestment(sanitizedRequest.payload as RegularInvestmentInputs, dataFreshness, dbDefinitions);
           break;
         case ScenarioKind.BOND_COMPARISON:
-          response = await this.calculateComparison(request.payload, dataFreshness, dbDefinitions);
+          response = await this.calculateComparison(sanitizedRequest.payload, dataFreshness, dbDefinitions);
           break;
         case ScenarioKind.PORTFOLIO_SIMULATION:
-          response = await this.calculatePortfolioSimulation(request.payload, dataFreshness, dbDefinitions);
+          response = await this.calculatePortfolioSimulation(sanitizedRequest.payload as PortfolioSimulationPayload, dataFreshness, dbDefinitions);
           break;
         case ScenarioKind.BOND_OPTIMIZER:
-          response = await this.calculateOptimizer(request.payload, dataFreshness, dbDefinitions);
+          response = await this.calculateOptimizer(sanitizedRequest.payload as BondOptimizerPayload, dataFreshness, dbDefinitions);
           break;
         case ScenarioKind.RETIREMENT_PLANNER:
-          response = await this.calculateRetirementPlanner(request.payload, dataFreshness, dbDefinitions);
+          response = await this.calculateRetirementPlanner(sanitizedRequest.payload as RetirementPlannerPayload, dataFreshness, dbDefinitions);
           break;
         default:
           throw new Error('Unsupported scenario kind');
@@ -327,7 +335,7 @@ export class CalculationApplicationService {
     const inputsToCalculate = {
       ...enrichedInputs,
       expectedInflation: adjustedInflation,
-    } as BondInputs & { historicalData: import('@/features/bond-core/types').HistoricalDataMap };
+    } as unknown as BondInputs & { historicalData: import('@/features/bond-core/types').HistoricalDataMap };
 
     if (inputsToCalculate.useTaxWrapperLimit && (inputsToCalculate.taxStrategy === TaxStrategy.IKE || inputsToCalculate.taxStrategy === TaxStrategy.IKZE)) {
       const purchaseYear = getYear(parseISO(inputsToCalculate.purchaseDate));
@@ -570,7 +578,7 @@ export class CalculationApplicationService {
     const horizonMonths = payload.horizonYears * 12;
     const bondDef = dbDefinitions[payload.bondType];
     const purchaseDate = format(new Date(), 'yyyy-MM-dd');
-    const withdrawalDate = format(addMonths(parseISO(purchaseDate), horizonMonths), 'yyyy-MM-dd');
+    // const withdrawalDate = format(addMonths(parseISO(purchaseDate), horizonMonths), 'yyyy-MM-dd');
 
     // Simulate capital growth/depletion using monthly steps
     // For retirement, we model it as a series of bond investments where we withdraw monthly.
