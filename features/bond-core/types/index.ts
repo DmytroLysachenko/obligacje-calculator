@@ -72,6 +72,7 @@ export interface BondInputs {
   chartStep?: ChartStep;
   useTaxWrapperLimit?: boolean;
   inflationScenario?: 'low' | 'base' | 'high';
+  selectedSeriesId?: string | null;
 }
 
 export interface YearlyTimelinePoint {

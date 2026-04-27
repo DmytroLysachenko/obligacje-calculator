@@ -19,7 +19,7 @@ export function useCalculationWorker<TResponse>() {
   const rafId = useRef<number | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const calculate = useCallback(async (url: string, payload: unknown) => {
+  const calculate = useCallback(async (url: string, payload: unknown, kind?: string) => {
     // 1. Increment request ID for tracking
     const requestId = ++lastRequestId.current;
 
@@ -42,7 +42,17 @@ export function useCalculationWorker<TResponse>() {
       setError(null);
 
       try {
-        const data = await postCalculationInWorker<TResponse>(url, payload, controller.signal);
+        // Attempt local calculation if historicalData is present
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const canCalculateLocally = (payload as any).historicalData && Object.keys((payload as any).historicalData).length > 0;
+        
+        const data = await postCalculationInWorker<TResponse>(
+          url, 
+          payload, 
+          controller.signal,
+          canCalculateLocally ? 'local' : 'remote',
+          kind
+        );
         
         // 5. ID-based abort: Only update state if this is still the latest request
         if (requestId === lastRequestId.current) {

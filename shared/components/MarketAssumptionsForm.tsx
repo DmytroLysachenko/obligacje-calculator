@@ -23,14 +23,15 @@ interface InflationApiResponse {
   data: InflationDataPoint[];
 }
 
-interface MarketAssumptionsFormProps {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+interface MarketAssumptionsFormProps<T = Record<string, any>> {
   expectedInflation: number;
   expectedNbpRate?: number;
   bondType: BondType;
   customInflation?: number[];
   inflationScenario?: 'low' | 'base' | 'high';
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onUpdate: (key: any, value: any) => void;
+  onUpdate: (key: keyof T, value: any) => void;
   compact?: boolean;
 }
 
@@ -73,7 +74,7 @@ const HistoricalInflationContent = () => {
   );
 };
 
-export const MarketAssumptionsForm: React.FC<MarketAssumptionsFormProps> = ({
+export const MarketAssumptionsForm = <T,>({
   expectedInflation,
   expectedNbpRate,
   bondType,
@@ -81,7 +82,7 @@ export const MarketAssumptionsForm: React.FC<MarketAssumptionsFormProps> = ({
   inflationScenario = 'base',
   onUpdate,
   compact = false,
-}) => {
+}: MarketAssumptionsFormProps<T>) => {
   const { t } = useLanguage();
 
   const isNbpRelevant = bondType === BondType.ROR || bondType === BondType.DOR;
@@ -123,7 +124,7 @@ export const MarketAssumptionsForm: React.FC<MarketAssumptionsFormProps> = ({
                 "h-8 text-[10px] font-black uppercase", 
                 expectedInflation === val && "bg-primary text-primary-foreground border-primary"
               )} 
-              onClick={() => onUpdate('expectedInflation', val)}
+              onClick={() => onUpdate('expectedInflation' as keyof T, val)}
             >
               {val === 2.5 ? t('bonds.stable') : val === 10 ? t('bonds.high') : t('bonds.deflation')} ({val}%)
             </Button>
@@ -136,7 +137,7 @@ export const MarketAssumptionsForm: React.FC<MarketAssumptionsFormProps> = ({
           min={-2} 
           max={25} 
           step={0.1} 
-          onValueChange={([val]) => onUpdate('expectedInflation', val)}
+          onValueChange={([val]) => onUpdate('expectedInflation' as keyof T, val)}
         />
 
         <div className="space-y-3 pt-4 border-t border-dashed">
@@ -153,7 +154,7 @@ export const MarketAssumptionsForm: React.FC<MarketAssumptionsFormProps> = ({
                   "h-8 text-[9px] font-bold uppercase",
                   inflationScenario === s && "bg-primary/10 text-primary border-primary/50"
                 )}
-                onClick={() => onUpdate('inflationScenario', s)}
+                onClick={() => onUpdate('inflationScenario' as keyof T, s)}
               >
                 {t(`bonds.scenario_${s}`)}
               </Button>
@@ -174,9 +175,9 @@ export const MarketAssumptionsForm: React.FC<MarketAssumptionsFormProps> = ({
               if (checked) {
                 // Default to 10 years or something if we don't have duration here? 
                 // Actually we should probably pass the duration or handled it in the parent.
-                onUpdate('customInflation', Array(10).fill(expectedInflation));
+                onUpdate('customInflation' as keyof T, Array(10).fill(expectedInflation));
               } else {
-                onUpdate('customInflation', undefined);
+                onUpdate('customInflation' as keyof T, undefined);
               }
             }} 
           />
@@ -195,7 +196,7 @@ export const MarketAssumptionsForm: React.FC<MarketAssumptionsFormProps> = ({
                   onChange={(e) => {
                     const newArr = [...customInflation!];
                     newArr[idx] = Number(e.target.value);
-                    onUpdate('customInflation', newArr);
+                    onUpdate('customInflation' as keyof T, newArr);
                   }}
                 />
               </div>
@@ -217,7 +218,7 @@ export const MarketAssumptionsForm: React.FC<MarketAssumptionsFormProps> = ({
             min={0} 
             max={20} 
             step={0.05} 
-            onValueChange={([val]) => onUpdate('expectedNbpRate', val)}
+            onValueChange={([val]) => onUpdate('expectedNbpRate' as keyof T, val)}
           />
         </div>
       )}

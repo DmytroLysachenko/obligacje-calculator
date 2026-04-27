@@ -33,7 +33,9 @@ function getCalculationWorker(): Worker | null {
 export async function postCalculationInWorker<TResponse>(
   url: string, 
   payload: unknown, 
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  type: 'local' | 'remote' = 'remote',
+  kind?: string
 ): Promise<TResponse> {
   const worker = getCalculationWorker();
 
@@ -70,6 +72,6 @@ export async function postCalculationInWorker<TResponse>(
     };
 
     worker.addEventListener('message', handleMessage);
-    worker.postMessage({ id, url, payload });
+    worker.postMessage({ id, url, payload, type, kind });
   });
 }

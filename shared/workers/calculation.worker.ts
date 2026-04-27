@@ -1,10 +1,13 @@
 import { ApiResponse } from '../types/api';
+import { calculateBondInvestment, calculateRegularInvestment } from '@/features/bond-core/utils/calculations';
+import { ScenarioKind } from '@/features/bond-core/types/scenarios';
 
 type WorkerRequestMessage = {
   id: string;
   url: string;
   payload: unknown;
-  type?: 'abort';
+  type?: 'abort' | 'local';
+  kind?: ScenarioKind;
 };
 
 type WorkerSuccessMessage<T> = {
@@ -25,7 +28,7 @@ type WorkerErrorMessage = {
 const activeControllers = new Map<string, AbortController>();
 
 self.onmessage = async (event: MessageEvent<WorkerRequestMessage>) => {
-  const { id, url, payload, type } = event.data;
+  const { id, url, payload, type, kind } = event.data;
 
   if (type === 'abort') {
     const controller = activeControllers.get(id);
@@ -34,6 +37,27 @@ self.onmessage = async (event: MessageEvent<WorkerRequestMessage>) => {
       activeControllers.delete(id);
     }
     return;
+  }
+
+  // Handle local calculations if payload contains enough data (historicalData, definitions)
+  if (type === 'local' && kind) {
+    try {
+      let resultData: unknown;
+      if (kind === ScenarioKind.SINGLE_BOND) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        resultData = calculateBondInvestment(payload as any);
+      } else if (kind === ScenarioKind.REGULAR_INVESTMENT) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        resultData = calculateRegularInvestment(payload as any);
+      }
+
+      if (resultData) {
+        self.postMessage({ id, ok: true, data: { result: resultData, isLocal: true } } as WorkerSuccessMessage<unknown>);
+        return;
+      }
+    } catch (err) {
+      console.warn('[Worker] Local calculation failed, falling back to API', err);
+    }
   }
 
   const controller = new AbortController();
