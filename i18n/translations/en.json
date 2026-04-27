@@ -320,6 +320,13 @@
       "detailed_breakdown": "DETAILED BREAKDOWN",
       "metric": "Metric",
       "value": "Value"
+    },
+    "community": {
+      "popularity": "Community Popularity",
+      "users": "users",
+      "sentiment": "Market Sentiment",
+      "est_volume": "Est. Total Volume",
+      "anonymized_notice": "Based on anonymized data from other users' notebooks."
     }
     },
     "landing": {

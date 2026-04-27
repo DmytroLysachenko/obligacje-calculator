@@ -25,6 +25,7 @@ import { CalculatorPageShell } from "@/shared/components/CalculatorPageShell";
 import { RecalculateButton } from "@/shared/components/RecalculateButton";
 import { generatePDF } from "@/shared/lib/pdf-utils";
 import { MacroAdjuster } from "@/shared/components/MacroAdjuster";
+import { CommunityInsightsWidget } from "@/shared/components/CommunityInsightsWidget";
 
 export const BondCalculatorContainer: React.FC = () => {
   const {
@@ -135,7 +136,7 @@ export const BondCalculatorContainer: React.FC = () => {
       }
     >
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
-        <aside className="xl:col-span-4 h-fit xl:sticky xl:top-24">
+        <aside className="xl:col-span-4 h-fit xl:sticky xl:top-24 space-y-6">
           <BondInputsForm
             inputs={inputs}
             onUpdate={updateInput}
@@ -143,6 +144,7 @@ export const BondCalculatorContainer: React.FC = () => {
             availableSeries={availableSeries}
             selectedSeriesId={selectedSeriesId}
           />
+          <CommunityInsightsWidget bondType={inputs.bondType} />
         </aside>
 
         <div className="xl:col-span-8 space-y-8" id="bond-report-content">

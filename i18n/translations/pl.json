@@ -315,15 +315,23 @@
       "year_label": "Rok {{year}} ({{label}})"
     },
     "pdf": {
-      "executive_summary": "PODSUMOWANIE INWESTYCJI",
+      "executive_summary": "PODSUMOWANIE",
       "assumptions_audit": "AUDYT ZAŁOŻEŃ",
       "visual_analytics": "ANALIZA WIZUALNA",
-      "detailed_breakdown": "SZCZEGÓŁOWE WYNIKI",
+      "detailed_breakdown": "SZCZEGÓŁOWE ZESTAWIENIE",
       "metric": "Metryka",
       "value": "Wartość"
+    },
+    "community": {
+      "popularity": "Popularność w społeczności",
+      "users": "użytkowników",
+      "sentiment": "Sentyment rynku",
+      "est_volume": "Szacowany wolumen",
+      "anonymized_notice": "Na podstawie zanonimizowanych danych z portfeli innych użytkowników."
     }
-  },
-  "landing": {
+    },
+    "landing": {
+
     "hero_title": "Osiągnij Mistrzostwo w Strategii",
     "hero_title_accent": "Polskich Obligacji",
     "hero_description": "Kompleksowy zestaw narzędzi zaprojektowany dla inwestorów, dopasowany do logiki Ministerstwa Finansów. Projektuj zyski, porównuj scenariusze inflacyjne i buduj optymalne portfele.",

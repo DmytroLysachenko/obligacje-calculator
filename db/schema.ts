@@ -143,6 +143,17 @@ export const userTransactions = pgTable("user_transactions", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const communityInsights = pgTable("community_insights", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  bondType: text("bond_type").notNull(),
+  popularityScore: integer("popularity_score").default(0).notNull(), // number of users holding this bond
+  sentimentScore: numeric("sentiment_score", { precision: 3, scale: 2 }).default("0.00").notNull(), // -1.0 to 1.0
+  totalVolume: numeric("total_volume", { precision: 20, scale: 2 }).default("0.00").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  bondTypeIdx: uniqueIndex("insight_bond_type_idx").on(table.bondType),
+}));
+
 export type NewDataSeries = typeof dataSeries.$inferInsert;
 export type DataSeries = typeof dataSeries.$inferSelect;
 

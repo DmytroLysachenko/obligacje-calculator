@@ -75,6 +75,20 @@ export const MacroAdjuster: React.FC<MacroAdjusterProps> = ({
     setData(newData);
   };
 
+  const handleMouseMove = (state: any) => {
+    if (isEditing && state && state.activeLabel !== undefined && state.activePayload && state.chartX) {
+      // Logic for drawing would go here if we had a mousedown state
+    }
+  };
+
+  const handleClick = (state: any) => {
+    if (isEditing && state && state.activeLabel !== undefined) {
+      const year = Number(state.activeLabel);
+      // We toggle which one to update or update both based on proximity
+      // For a better UX, we'll just use the inputs below for now but enhance the chart dots
+    }
+  };
+
   const handleSave = () => {
     setIsEditing(false);
     onUpdate({
