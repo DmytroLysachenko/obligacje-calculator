@@ -11,8 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
-import { Scale, History, Target, LineChart, Sparkles, FileSpreadsheet } from "lucide-react";
+import { History, Target, LineChart, Sparkles, FileSpreadsheet, Scale } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChartContainer } from "@/shared/components/charts/ChartContainer";
@@ -31,15 +30,16 @@ import {
   Legend,
   Brush,
 } from "recharts";
-import { BondType, TaxStrategy, CalculationResult } from "@/features/bond-core/types";
+import { TaxStrategy } from "@/features/bond-core/types";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format, parseISO } from "date-fns";
 import { pl, enGB } from "date-fns/locale";
 import { toDateString } from "@/shared/lib/date-timing";
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { TrendingDown, Zap, ShieldCheck, Award } from "lucide-react";
+import { ScenarioOverrideCard } from "./ScenarioOverrideCard";
+import { ComparisonVerdict } from "./ComparisonVerdict";
+import { ComparisonTable } from "./ComparisonTable";
 
 interface PayloadEntry {
   name: string;
@@ -47,127 +47,6 @@ interface PayloadEntry {
   color: string;
   dataKey?: string | number;
 }
-
-const ScenarioOverrideCard = ({
-  title,
-  colorClass,
-  bondType,
-  onBondTypeChange,
-  rollover,
-  onRolloverChange,
-  isRebought,
-  onReboughtChange,
-  taxStrategy,
-  onTaxStrategyChange,
-  customHorizonEnabled,
-  onCustomHorizonEnabledChange,
-  customHorizonMonths,
-  onCustomHorizonMonthsChange,
-}: {
-  title: string;
-  colorClass: string;
-  bondType: BondType;
-  onBondTypeChange: (value: BondType) => void;
-  rollover?: boolean;
-  onRolloverChange: (value: boolean) => void;
-  isRebought?: boolean;
-  onReboughtChange: (value: boolean) => void;
-  taxStrategy?: TaxStrategy;
-  onTaxStrategyChange: (value: TaxStrategy | undefined) => void;
-  customHorizonEnabled: boolean;
-  onCustomHorizonEnabledChange: (value: boolean) => void;
-  customHorizonMonths?: number;
-  onCustomHorizonMonthsChange: (value: number | undefined) => void;
-}) => {
-  const { t, language } = useLanguage();
-
-  return (
-    <Card className="border shadow-sm overflow-hidden">
-      <CardHeader className={cn("border-b pb-4", colorClass)}>
-        <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
-          {title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-5 pt-5">
-        <div className="space-y-2">
-          <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">{t("bonds.bond_type")}</Label>
-          <Select value={bondType} onValueChange={(value) => onBondTypeChange(value as BondType)}>
-            <SelectTrigger className="h-11 font-bold">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.values(BondType).map((type) => (
-                <SelectItem key={type} value={type}>
-                  {type} · {language === "pl" ? "Obligacja" : "Bond"}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex items-center justify-between rounded-xl border bg-muted/30 p-3">
-          <div>
-            <p className="text-sm font-bold">{t("bonds.reinvest")}</p>
-            <p className="text-[10px] text-muted-foreground font-medium italic">{t("bonds.rollover_desc")}</p>
-          </div>
-          <Switch checked={!!rollover} onCheckedChange={onRolloverChange} />
-        </div>
-
-        <div className="flex items-center justify-between rounded-xl border bg-muted/30 p-3">
-          <div>
-            <p className="text-sm font-bold">{t("bonds.is_rebought")}</p>
-            <p className="text-[10px] text-muted-foreground font-medium italic">{t("bonds.is_rebought_desc")}</p>
-          </div>
-          <Switch checked={!!isRebought} onCheckedChange={onReboughtChange} />
-        </div>
-
-        <div className="space-y-2">
-          <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">{t("bonds.tax_strategy")}</Label>
-          <Select
-            value={taxStrategy ?? "shared"}
-            onValueChange={(value) => onTaxStrategyChange(value === "shared" ? undefined : (value as TaxStrategy))}
-          >
-            <SelectTrigger className="h-11">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="shared">{t("comparison.use_shared_tax")}</SelectItem>
-              <SelectItem value={TaxStrategy.STANDARD}>{t("bonds.tax_standard")}</SelectItem>
-              <SelectItem value={TaxStrategy.IKE}>{t("bonds.tax_ike")}</SelectItem>
-              <SelectItem value={TaxStrategy.IKZE}>{t("bonds.tax_ikze")}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex items-center justify-between rounded-xl border bg-muted/30 p-3">
-          <div>
-            <p className="text-sm font-bold">{t("comparison.custom_horizon")}</p>
-            <p className="text-[10px] text-muted-foreground font-medium italic">{t("comparison.custom_horizon_desc")}</p>
-          </div>
-          <Switch checked={customHorizonEnabled} onCheckedChange={onCustomHorizonEnabledChange} />
-        </div>
-
-        {customHorizonEnabled ? (
-          <div className="space-y-3">
-            <div className="flex justify-between text-[10px] font-black uppercase text-muted-foreground tracking-widest">
-              <span>{t("comparison.scenario_horizon")}</span>
-              <span className="text-primary font-black">
-                {Math.max(1, Math.round((customHorizonMonths ?? 12) / 12))} {t("common.years")}
-              </span>
-            </div>
-            <Slider
-              value={[customHorizonMonths ?? 12]}
-              min={12}
-              max={360}
-              step={1}
-              onValueChange={([value]) => onCustomHorizonMonthsChange(value)}
-            />
-          </div>
-        ) : null}
-      </CardContent>
-    </Card>
-  );
-};
 
 interface CustomTooltipProps {
   active?: boolean;
@@ -233,7 +112,7 @@ export const ComparisonContainer: React.FC = () => {
     }
   };
 
-  const handleExportCSV = (results: CalculationResult | null, bondType: string) => {
+  const handleExportCSV = (results: any | null, bondType: string) => {
     if (!results) return;
     const headers = {
       period: t('bonds.calculation_trace.header_year'),
@@ -466,7 +345,7 @@ export const ComparisonContainer: React.FC = () => {
                   <MarketAssumptionsForm
                     expectedInflation={sharedConfig.expectedInflation}
                     expectedNbpRate={sharedConfig.expectedNbpRate}
-                    bondType={scenarioA.bondType} // We can use A as a hint, or make it always show NBP if either is ROR/DOR
+                    bondType={scenarioA.bondType}
                     onUpdate={updateSharedConfig}
                     compact
                   />
@@ -607,143 +486,23 @@ export const ComparisonContainer: React.FC = () => {
                     </CardContent>
                   </Card>
 
-                  <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-                    {/* ... (scenario cards remain) ... */}
-                  </div>
+                  <ComparisonVerdict 
+                    resultsA={resultsA}
+                    resultsB={resultsB}
+                    inputsA={inputsA}
+                    inputsB={inputsB}
+                    expectedInflation={sharedConfig.expectedInflation}
+                    taxStrategy={sharedConfig.taxStrategy}
+                    formatCurrency={formatCurrency}
+                  />
 
-                  {/* Verdict Section */}
-                  {resultsA && resultsB && (
-                    <Card className="overflow-hidden border-2 border-primary/20 shadow-2xl bg-primary/5">
-                      <CardHeader className="bg-primary/10 border-b pb-4">
-                        <CardTitle className="text-lg font-black uppercase tracking-widest flex items-center gap-2 text-primary">
-                          <Award className="h-5 w-5" />
-                          {t('comparison.verdict')}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="p-6">
-                        <div className="flex flex-col md:flex-row gap-6 items-center">
-                          <div className="flex-1 space-y-4">
-                            <div className="flex items-center gap-3">
-                              <div className="p-3 bg-white rounded-2xl shadow-sm border border-primary/10">
-                                {resultsA.netPayoutValue > resultsB.netPayoutValue ? (
-                                  <span className="text-2xl font-black text-blue-600">{inputsA.bondType}</span>
-                                ) : (
-                                  <span className="text-2xl font-black text-emerald-600">{inputsB.bondType}</span>
-                                )}
-                              </div>
-                              <div>
-                                <p className="text-[10px] font-black uppercase text-muted-foreground tracking-tighter">{t('comparison.winner')}</p>
-                                <p className="text-xl font-black tracking-tight">
-                                  {resultsA.netPayoutValue > resultsB.netPayoutValue ? t('comparison.scenario_a') : t('comparison.scenario_b')} {t('comparison.winning')}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="space-y-2">
-                              <p className="text-sm font-medium leading-relaxed text-slate-700">
-                                {resultsA.netPayoutValue > resultsB.netPayoutValue 
-                                  ? `${inputsA.bondType} provides ${formatCurrency(resultsA.netPayoutValue - resultsB.netPayoutValue)} more net profit over ${Math.max(resultsA.timeline.length / 12, resultsB.timeline.length / 12)} years.`
-                                  : `${inputsB.bondType} provides ${formatCurrency(resultsB.netPayoutValue - resultsA.netPayoutValue)} more net profit over ${Math.max(resultsA.timeline.length / 12, resultsB.timeline.length / 12)} years.`}
-                              </p>
-                              <div className="flex flex-wrap gap-2 pt-2">
-                                {resultsA.netPayoutValue > resultsB.netPayoutValue ? (
-                                  <>
-                                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 font-bold uppercase text-[9px] py-1">
-                                      <TrendingDown className="h-3 w-3 mr-1" /> {(resultsA.timeline.length / 12) < 4 ? t('comparison.verdict_short_term') : t('comparison.verdict_long_term')}
-                                    </Badge>
-                                    {sharedConfig.expectedInflation > 5 && (
-                                      <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 font-bold uppercase text-[9px] py-1">
-                                        <Zap className="h-3 w-3 mr-1" /> {t('comparison.verdict_high_inflation')}
-                                      </Badge>
-                                    )}
-                                  </>
-                                ) : (
-                                  <>
-                                    <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 font-bold uppercase text-[9px] py-1">
-                                      <TrendingDown className="h-3 w-3 mr-1" /> {(resultsB.timeline.length / 12) < 4 ? t('comparison.verdict_short_term') : t('comparison.verdict_long_term')}
-                                    </Badge>
-                                    {sharedConfig.expectedInflation > 5 && (
-                                      <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 font-bold uppercase text-[9px] py-1">
-                                        <Zap className="h-3 w-3 mr-1" /> {t('comparison.verdict_high_inflation')}
-                                      </Badge>
-                                    )}
-                                  </>
-                                )}
-                                {sharedConfig.taxStrategy !== TaxStrategy.STANDARD && (
-                                  <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 font-bold uppercase text-[9px] py-1">
-                                    <ShieldCheck className="h-3 w-3 mr-1" /> {t('comparison.verdict_tax_efficient')}
-                                  </Badge>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="w-full md:w-48 flex flex-col gap-2">
-                            <div className="bg-white p-4 rounded-2xl border border-primary/10 shadow-sm text-center">
-                              <p className="text-[9px] font-black uppercase text-muted-foreground mb-1">Difference</p>
-                              <p className="text-2xl font-black text-primary">
-                                {Math.abs(((resultsA.netPayoutValue / resultsB.netPayoutValue) - 1) * 100).toFixed(1)}%
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-
-                  {/* Side-by-Side Table */}
-                  <Card className="overflow-hidden border shadow-xl">
-                    <CardHeader className="bg-muted/30 border-b px-8 py-6">
-                      <CardTitle className="text-xl font-black flex items-center gap-2">
-                        <Scale className="h-5 w-5 text-primary" />
-                        {t('comparison.table_title')}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                      <div className="overflow-x-auto">
-                        <Table>
-                          <TableHeader className="bg-muted/20">
-                            <TableRow className="hover:bg-transparent border-b-2">
-                              <TableHead className="w-24 font-black uppercase text-[10px] tracking-widest px-8 h-12">{t('common.year')}</TableHead>
-                              <TableHead className="font-black uppercase text-[10px] tracking-widest text-blue-700 px-4 h-12">
-                                {inputsA.bondType} (A)
-                              </TableHead>
-                              <TableHead className="font-black uppercase text-[10px] tracking-widest text-emerald-700 px-4 h-12">
-                                {inputsB.bondType} (B)
-                              </TableHead>
-                              <TableHead className="text-right font-black uppercase text-[10px] tracking-widest px-8 h-12">{t('comparison.winner')}</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {Array.from({ length: Math.max(resultsA.timeline.length, resultsB.timeline.length) }).map((_, i) => {
-                              const valA = resultsA.timeline[i]?.nominalValueAfterInterest;
-                              const valB = resultsB.timeline[i]?.nominalValueAfterInterest;
-                              const winner = valA && valB ? (valA > valB ? 'A' : 'B') : (valA ? 'A' : 'B');
-                              
-                              return (
-                                <TableRow key={i} className="hover:bg-muted/10 transition-colors">
-                                  <TableCell className="font-bold px-8 py-4">Y{i + 1}</TableCell>
-                                  <TableCell className={cn("px-4 py-4 font-mono text-sm", winner === 'A' ? "font-bold text-blue-700" : "text-slate-500")}>
-                                    {valA ? formatCurrency(valA) : "---"}
-                                  </TableCell>
-                                  <TableCell className={cn("px-4 py-4 font-mono text-sm", winner === 'B' ? "font-bold text-emerald-700" : "text-slate-500")}>
-                                    {valB ? formatCurrency(valB) : "---"}
-                                  </TableCell>
-                                  <TableCell className="text-right px-8 py-4">
-                                    <Badge variant="outline" className={cn(
-                                      "font-black text-[9px] uppercase px-3 py-0.5 border-2",
-                                      winner === 'A' ? "border-blue-200 bg-blue-50 text-blue-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"
-                                    )}>
-                                      {winner === 'A' ? inputsA.bondType : inputsB.bondType} {t('comparison.winning')}
-                                    </Badge>
-                                  </TableCell>
-                                </TableRow>
-                              );
-                            })}
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <ComparisonTable 
+                    resultsA={resultsA}
+                    resultsB={resultsB}
+                    bondTypeA={inputsA.bondType}
+                    bondTypeB={inputsB.bondType}
+                    formatCurrency={formatCurrency}
+                  />
 
                   {((warningsA.length + warningsB.length) > 0 ||
                     (envelopeA?.assumptions.length ?? 0) > 0 ||
@@ -780,7 +539,6 @@ export const ComparisonContainer: React.FC = () => {
               )}
             </div>
           </div>
-
         </>
       )}
     </CalculatorPageShell>

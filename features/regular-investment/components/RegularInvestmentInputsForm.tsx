@@ -33,12 +33,11 @@ import {
 
 interface RegularInvestmentInputsFormProps {
   inputs: RegularInvestmentInputs;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onUpdate: (key: any, value: any) => void;
+  onUpdate: (key: string, value: any) => void;
   onBondTypeChange: (type: BondType) => void;
 }
 
-export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormProps> = ({
+export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormProps> = React.memo(({
   inputs,
   onUpdate,
   onBondTypeChange,
@@ -602,4 +601,6 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
       </CardContent>
     </Card>
   );
-};
+});
+
+RegularInvestmentInputsForm.displayName = 'RegularInvestmentInputsForm';
