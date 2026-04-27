@@ -9,28 +9,28 @@ type SanitizeTarget = Partial<BondInputs> | Partial<RegularInvestmentInputs> | R
 export const sanitizeInputs = <T extends SanitizeTarget>(inputs: T): T => {
   const sanitized = { ...inputs } as Record<string, unknown>;
 
-  const clamp = (val: number | undefined, min = -50, max = 500, fallback = 0) => {
+  const clamp = (val: number | undefined, min = -20, max = 500, fallback = 0) => {
     if (val === undefined || typeof val !== 'number' || isNaN(val)) return fallback;
     return Math.max(min, Math.min(max, val));
   };
 
   if (sanitized.firstYearRate !== undefined) {
-    sanitized.firstYearRate = clamp(sanitized.firstYearRate as number);
+    sanitized.firstYearRate = clamp(sanitized.firstYearRate as number, 0, 100);
   }
   if (sanitized.margin !== undefined) {
-    sanitized.margin = clamp(sanitized.margin as number, -10, 50);
+    sanitized.margin = clamp(sanitized.margin as number, -5, 20);
   }
   if (sanitized.initialInvestment !== undefined) {
-    sanitized.initialInvestment = clamp(sanitized.initialInvestment as number, 0, 1_000_000_000_000); // 1 Trillion limit
+    sanitized.initialInvestment = clamp(sanitized.initialInvestment as number, 0, 100_000_000_000); // 100 Billion limit
   }
   if (sanitized.contributionAmount !== undefined) {
-    sanitized.contributionAmount = clamp(sanitized.contributionAmount as number, 0, 100_000_000); 
+    sanitized.contributionAmount = clamp(sanitized.contributionAmount as number, 0, 10_000_000); 
   }
   if (sanitized.expectedInflation !== undefined) {
-    sanitized.expectedInflation = clamp(sanitized.expectedInflation as number, -50, 500);
+    sanitized.expectedInflation = clamp(sanitized.expectedInflation as number, -20, 500);
   }
   if (sanitized.expectedNbpRate !== undefined) {
-    sanitized.expectedNbpRate = clamp(sanitized.expectedNbpRate as number, -10, 200);
+    sanitized.expectedNbpRate = clamp(sanitized.expectedNbpRate as number, -5, 100);
   }
   if (sanitized.taxRate !== undefined) {
     sanitized.taxRate = clamp(sanitized.taxRate as number, 0, 100, 19);

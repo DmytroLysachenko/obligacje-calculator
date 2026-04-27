@@ -72,4 +72,4 @@ export class CalculationCache {
   }
 }
 
-export const calculationCache = new CalculationCache(100);
+export const calculationCache = new CalculationCache(500);
