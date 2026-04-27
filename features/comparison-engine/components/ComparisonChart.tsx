@@ -202,7 +202,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
             <ChartContainer height={450}>
               <ResponsiveContainer width="100%" height={450}>
                 <ComposedChart
-                  data={chartData}
+                  data={chartData.length > 240 ? chartData.filter((_, i) => i % 2 === 0) : chartData}
                   margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
                 >
                   <defs>
@@ -286,6 +286,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
                       fill={`url(#color_${asset.metadata.id})`}
                       animationDuration={1500}
                       connectNulls={true}
+                      isAnimationActive={false}
                     />
                   ))}
                   <Line
@@ -298,6 +299,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
                     strokeDasharray="5 5"
                     dot={false}
                     opacity={0.4}
+                    isAnimationActive={false}
                   />
                   <Line
                     yAxisId="right"
@@ -309,6 +311,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
                     strokeDasharray="3 3"
                     dot={false}
                     opacity={0.3}
+                    isAnimationActive={false}
                   />
                 </ComposedChart>
               </ResponsiveContainer>

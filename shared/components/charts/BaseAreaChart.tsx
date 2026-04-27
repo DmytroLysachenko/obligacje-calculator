@@ -38,6 +38,7 @@ interface BaseAreaChartProps {
   yAxisFormatter?: (value: number) => string;
   tooltipFormatter?: (value: number) => string;
   customTooltip?: React.FC<TooltipProps<ValueType, NameType>>;
+  isAnimationActive?: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -50,6 +51,7 @@ export const BaseAreaChart: React.FC<BaseAreaChartProps> = ({
   height = 400,
   yAxisFormatter,
   customTooltip: CustomTooltipComponent,
+  isAnimationActive = true,
 }) => {
   const { hoverIndex, setHoverIndex } = useChartSync();
 
@@ -109,6 +111,7 @@ export const BaseAreaChart: React.FC<BaseAreaChartProps> = ({
               fillOpacity={1}
               fill={`url(#color_${area.key})`}
               animationDuration={1500}
+              isAnimationActive={isAnimationActive}
             />
           ))}
         </AreaChartWithTooltipIndex>

@@ -276,12 +276,47 @@ export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnv
   const toDate = new Date().toISOString().slice(0, 10);
 
   try {
-    const [sp500Points, goldPoints, inflationPoints, nbpPoints] = await Promise.all([
-      getSeriesPointsByAliases(SP500_SLUGS, fromDate, toDate),
-      getSeriesPointsByAliases(GOLD_SLUGS, fromDate, toDate),
-      getSeriesPointsByAliases(CPI_SLUGS, fromDate, toDate),
-      getSeriesPointsByAliases(NBP_RATE_SLUGS, fromDate, toDate),
-    ]);
+    // Batch fetch all relevant series in one query
+    const allAliases = [...SP500_SLUGS, ...GOLD_SLUGS, ...CPI_SLUGS, ...NBP_RATE_SLUGS];
+    const series = await db.query.dataSeries.findMany({
+      where: inArray(dataSeries.slug, allAliases),
+    });
+
+    if (series.length === 0) {
+      throw new Error('No data series found');
+    }
+
+    const seriesIds = series.map(s => s.id);
+    const sp500Id = series.find(s => SP500_SLUGS.includes(s.slug))?.id;
+    const goldId = series.find(s => GOLD_SLUGS.includes(s.slug))?.id;
+    const cpiId = series.find(s => CPI_SLUGS.includes(s.slug))?.id;
+    const nbpId = series.find(s => NBP_RATE_SLUGS.includes(s.slug))?.id;
+
+    // Batch fetch all points for all series in one query
+    const allPoints = await db.query.dataPoints.findMany({
+      where: and(
+        inArray(dataPoints.seriesId, seriesIds),
+        gte(dataPoints.date, fromDate),
+        lte(dataPoints.date, toDate),
+      ),
+      orderBy: [asc(dataPoints.date)],
+    });
+
+    // Group points by series
+    const pointsBySeries: Record<string, { date: string; value: number }[]> = {};
+    allPoints.forEach(p => {
+      if (!pointsBySeries[p.seriesId]) pointsBySeries[p.seriesId] = [];
+      pointsBySeries[p.seriesId].push({
+        date: p.date.substring(0, 7),
+        value: parseFloat(p.value)
+      });
+    });
+
+    const sp500Points = sp500Id ? pointsBySeries[sp500Id] || [] : [];
+    const goldPoints = goldId ? pointsBySeries[goldId] || [] : [];
+    const inflationPoints = cpiId ? pointsBySeries[cpiId] || [] : [];
+    const nbpPoints = nbpId ? pointsBySeries[nbpId] || [] : [];
+
     const seriesAvailability = {
       sp500: sp500Points.length >= 2,
       gold: goldPoints.length >= 2,

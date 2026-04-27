@@ -457,7 +457,13 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                 ) : simulation?.aggregatedTimeline ? (
                   <div className="h-[400px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={simulation.aggregatedTimeline} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                      <AreaChart 
+                        data={simulation.aggregatedTimeline.length > 240 
+                          ? simulation.aggregatedTimeline.filter((_, i) => i % 2 === 0) 
+                          : simulation.aggregatedTimeline
+                        } 
+                        margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                      >
                         <defs>
                           <linearGradient id="colorNet" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>
@@ -483,6 +489,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                           strokeWidth={3}
                           fillOpacity={1} 
                           fill="url(#colorNet)" 
+                          isAnimationActive={false}
                         />
                       </AreaChart>
                     </ResponsiveContainer>
