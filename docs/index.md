@@ -53,6 +53,7 @@ Welcome to the official product documentation for the **Financial Education & In
 - [34. Next 10 Commits Plan: End-to-End Database Integration & Performance](./plans/34_db_retrieval_and_performance.md) - **[COMPLETED]** Focus on pure DB-driven data retrieval and performance optimization.
 - [35. Next 15 Commits: Production Polish, UX Harmony & Data Reliability](./plans/35_production_polish_and_refinement.md) - **[COMPLETED]** Transitioning to a production-ready application.
 - [36. Next 13 Commits: Advanced Analytics, Social Features & Personalization](./plans/36_advanced_analytics_social_and_scale.md) - **[IN PROGRESS]** Focus on wealth management, community insights, and interactive scenarios.
+- [37. Next 10 Commits: Experience Activation, Everyday Utility & Retention](./plans/37_next_10_commits_experience_activation_and_retention.md) - Focus on onboarding, saved workflows, mobile usability, notifications, and personalized return journeys.
 
 ---
 *Last Updated: April 2026 - Platform is now DB-backed and mobile-optimized.*
