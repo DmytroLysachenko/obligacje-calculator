@@ -33,7 +33,9 @@ import {
 
 interface RegularInvestmentInputsFormProps {
   inputs: RegularInvestmentInputs;
-  onUpdate: (key: string, value: any) => void;
+  onUpdate: {
+    bivarianceHack: (key: keyof RegularInvestmentInputs | string, value: unknown) => void;
+  }['bivarianceHack'];
   onBondTypeChange: (type: BondType) => void;
 }
 

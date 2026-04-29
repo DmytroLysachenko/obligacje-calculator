@@ -37,7 +37,7 @@ export const LadderContainer: React.FC = () => {
         <aside className="xl:col-span-4 h-fit xl:sticky xl:top-28">
           <RegularInvestmentInputsForm
             inputs={inputs}
-            onUpdate={updateInput}
+            onUpdate={updateInput as (key: string, value: unknown) => void}
             onBondTypeChange={setBondType}
           />
         </aside>

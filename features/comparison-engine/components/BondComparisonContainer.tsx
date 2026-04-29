@@ -200,7 +200,7 @@ const formatCurrency = (val: number) =>
                   expectedInflation={expectedInflation}
                   expectedNbpRate={expectedNbpRate}
                   bondType={selectedBonds.includes(BondType.ROR) || selectedBonds.includes(BondType.DOR) ? BondType.ROR : BondType.EDO}
-                  onUpdate={onUpdateAssumption}
+                  onUpdate={(key, value) => onUpdateAssumption(String(key), value)}
                   compact
                 />
               </div>

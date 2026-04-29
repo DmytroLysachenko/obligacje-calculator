@@ -30,7 +30,7 @@ import {
   Legend,
   Brush,
 } from "recharts";
-import { TaxStrategy } from "@/features/bond-core/types";
+import { CalculationResult, TaxStrategy } from "@/features/bond-core/types";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format, parseISO } from "date-fns";
@@ -112,7 +112,7 @@ export const ComparisonContainer: React.FC = () => {
     }
   };
 
-  const handleExportCSV = (results: any | null, bondType: string) => {
+  const handleExportCSV = (results: CalculationResult | null, bondType: string) => {
     if (!results) return;
     const headers = {
       period: t('bonds.calculation_trace.header_year'),
@@ -346,7 +346,7 @@ export const ComparisonContainer: React.FC = () => {
                     expectedInflation={sharedConfig.expectedInflation}
                     expectedNbpRate={sharedConfig.expectedNbpRate}
                     bondType={scenarioA.bondType}
-                    onUpdate={updateSharedConfig}
+                    onUpdate={updateSharedConfig as (key: string, value: unknown) => void}
                     compact
                   />
                 </div>
