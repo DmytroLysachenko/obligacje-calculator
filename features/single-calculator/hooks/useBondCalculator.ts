@@ -47,6 +47,7 @@ export function useBondCalculator() {
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
   const [inputs, setInputs] = useState<BondInputs>(FALLBACK_INPUTS);
   const [envelope, setEnvelope] = useState<SingleBondCalculationEnvelope | null>(null);
+  const [previousEnvelope, setPreviousEnvelope] = useState<SingleBondCalculationEnvelope | null>(null);
   const [isDirty, setIsDirty] = useState(true);
   const [availableSeries, setAvailableSeries] = useState<BondSeries[]>([]);
   const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(null);
@@ -102,6 +103,7 @@ export function useBondCalculator() {
       }
 
       const data = await post<SingleBondCalculationEnvelope>('/api/calculate/single', finalInputs, { preferWorker: true });
+      setPreviousEnvelope((current) => envelope ?? current);
       setEnvelope(data);
     } catch (error) {
       if (error instanceof Error && (error.name === 'AbortError' || error.message === 'Calculation aborted')) {
@@ -109,7 +111,7 @@ export function useBondCalculator() {
       }
       console.error('Calculation error:', error);
     }
-  }, [clearError, post]);
+  }, [clearError, envelope, post]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -144,6 +146,32 @@ export function useBondCalculator() {
     setInputs(prev => ({ ...prev, ...initial }));
   });
 
+  const normalizeInputs = useCallback((base: BondInputs, nextPartial?: Partial<BondInputs>) => {
+    const merged = { ...base, ...nextPartial };
+
+    if (nextPartial?.purchaseDate) {
+      const horizonMonths = merged.investmentHorizonMonths ?? getHorizonMonths(base.purchaseDate, base.withdrawalDate);
+      merged.withdrawalDate = getWithdrawalDateFromMonths(String(nextPartial.purchaseDate), horizonMonths);
+    }
+
+    if (nextPartial?.investmentHorizonMonths !== undefined) {
+      merged.withdrawalDate = getWithdrawalDateFromMonths(merged.purchaseDate, Number(nextPartial.investmentHorizonMonths));
+    }
+
+    if (nextPartial?.withdrawalDate) {
+      merged.investmentHorizonMonths = getHorizonMonths(merged.purchaseDate, String(nextPartial.withdrawalDate));
+      merged.timingMode = 'exact';
+    }
+
+    if (nextPartial?.timingMode === 'general') {
+      const horizonMonths = merged.investmentHorizonMonths ?? getHorizonMonths(merged.purchaseDate, merged.withdrawalDate);
+      merged.investmentHorizonMonths = horizonMonths;
+      merged.withdrawalDate = getWithdrawalDateFromMonths(merged.purchaseDate, horizonMonths);
+    }
+
+    return merged;
+  }, []);
+
   const updateInput = (key: string, value: unknown) => {
     setIsDirty(true);
     if (key === 'selectedSeriesId') {
@@ -171,32 +199,14 @@ export function useBondCalculator() {
       return;
     }
 
-    setInputs((prev) => {
-      const newInputs = { ...prev, [key as keyof BondInputs]: value };
-
-      if (key === 'purchaseDate') {
-        const horizonMonths = prev.investmentHorizonMonths ?? getHorizonMonths(prev.purchaseDate, prev.withdrawalDate);
-        newInputs.withdrawalDate = getWithdrawalDateFromMonths(String(value), horizonMonths);
-      }
-
-      if (key === 'investmentHorizonMonths') {
-        newInputs.withdrawalDate = getWithdrawalDateFromMonths(prev.purchaseDate, Number(value));
-      }
-
-      if (key === 'withdrawalDate') {
-        newInputs.investmentHorizonMonths = getHorizonMonths(prev.purchaseDate, String(value));
-        newInputs.timingMode = 'exact';
-      }
-
-      if (key === 'timingMode' && value === 'general') {
-        const horizonMonths = prev.investmentHorizonMonths ?? getHorizonMonths(prev.purchaseDate, prev.withdrawalDate);
-        newInputs.investmentHorizonMonths = horizonMonths;
-        newInputs.withdrawalDate = getWithdrawalDateFromMonths(prev.purchaseDate, horizonMonths);
-      }
-
-      return newInputs;
-    });
+    setInputs((prev) => normalizeInputs(prev, { [key as keyof BondInputs]: value } as Partial<BondInputs>));
   };
+
+  const replaceInputs = useCallback((nextInputs: BondInputs) => {
+    setIsDirty(true);
+    setSelectedSeriesId(nextInputs.selectedSeriesId ?? 'current');
+    setInputs(normalizeInputs(inputs, nextInputs));
+  }, [inputs, normalizeInputs]);
 
   const setBondType = (type: BondType) => {
     if (!definitions) return;
@@ -228,6 +238,7 @@ export function useBondCalculator() {
   return {
     inputs,
     results,
+    previousResults: previousEnvelope?.result || null,
     envelope,
     availableSeries,
     selectedSeriesId,
@@ -241,6 +252,7 @@ export function useBondCalculator() {
     isDirty,
     calculate: () => calculate(inputs),
     updateInput,
+    replaceInputs,
     setBondType,
     definitions,
     isLoadingDefs,

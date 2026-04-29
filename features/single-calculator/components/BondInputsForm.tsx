@@ -22,6 +22,8 @@ import { BondTimingSection } from './sections/BondTimingSection';
 import { BondDisplaySection } from './sections/BondDisplaySection';
 import { BondSummaryFooter } from './sections/BondSummaryFooter';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
+import { InputGuardrailIssue } from '../lib/input-guardrails';
+import { Button } from '@/components/ui/button';
 
 interface BondSeries {
   id: string;
@@ -33,10 +35,12 @@ interface BondSeries {
 
 interface BondInputsFormProps {
   inputs: BondInputs;
-  onUpdate: (key: keyof BondInputs, value: any) => void;
+  onUpdate: (key: keyof BondInputs, value: unknown) => void;
   onBondTypeChange: (type: BondType) => void;
   availableSeries?: BondSeries[];
   selectedSeriesId?: string | null;
+  guardrails?: InputGuardrailIssue[];
+  onApplyGuardrailFix?: (issue: InputGuardrailIssue) => void;
 }
 
 export const BondInputsForm: React.FC<BondInputsFormProps> = ({
@@ -45,6 +49,8 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
   onBondTypeChange,
   availableSeries = [],
   selectedSeriesId = 'current',
+  guardrails = [],
+  onApplyGuardrailFix,
 }) => {
   const { t } = useLanguage();
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
@@ -55,7 +61,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
     setHasMounted(true);
   }, []);
 
-  const handleUpdate = useCallback((key: keyof BondInputs, value: any) => {
+  const handleUpdate = useCallback((key: keyof BondInputs, value: unknown) => {
     onUpdate(key, value);
   }, [onUpdate]);
 
@@ -88,35 +94,41 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
   const investmentHorizonMonths = inputs.investmentHorizonMonths ?? getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);
   const investmentHorizonYears = Math.max(1 / 12, investmentHorizonMonths / 12);
 
-  const isHorizonExtreme = investmentHorizonYears > 50;
-  const isInflationExtreme = inputs.expectedInflation > 25 || inputs.expectedInflation < -5;
-  const isGoalUnreachable = inputs.savingsGoal && inputs.initialInvestment > inputs.savingsGoal;
-
   const maturityDate = parseISO(getWithdrawalDateFromMonths(inputs.purchaseDate, Math.round(inputs.duration * 12)));
 
   return (
     <TooltipProvider>
     <Card className="w-full shadow-lg border-primary/10 overflow-hidden">
-      {(isHorizonExtreme || isInflationExtreme || isGoalUnreachable) && (
-        <div className="bg-amber-50 border-b border-amber-200 p-3 space-y-1">
-          {isHorizonExtreme && (
-            <div className="flex items-center gap-2 text-[10px] font-bold text-amber-700 uppercase">
-              <AlertCircle className="h-3 w-3" />
-              <span>Horizon exceeds 50 years. Results may be less precise.</span>
+      {guardrails.length > 0 && (
+        <div className="border-b border-amber-200 bg-amber-50 p-3 space-y-2">
+          {guardrails.map((issue) => (
+            <div
+              key={issue.id}
+              className="rounded-xl border border-amber-200/70 bg-white/70 p-3"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-amber-700">
+                    <AlertCircle className="h-3 w-3" />
+                    <span>{issue.severity}</span>
+                  </div>
+                  <p className="text-sm font-bold text-slate-900">{issue.title}</p>
+                  <p className="text-xs text-slate-700">{issue.description}</p>
+                </div>
+                {issue.autoFixLabel && onApplyGuardrailFix ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="shrink-0 text-xs font-bold"
+                    onClick={() => onApplyGuardrailFix(issue)}
+                  >
+                    {issue.autoFixLabel}
+                  </Button>
+                ) : null}
+              </div>
             </div>
-          )}
-          {isInflationExtreme && (
-            <div className="flex items-center gap-2 text-[10px] font-bold text-amber-700 uppercase">
-              <AlertCircle className="h-3 w-3" />
-              <span>Extreme inflation assumptions detected.</span>
-            </div>
-          )}
-          {isGoalUnreachable && (
-            <div className="flex items-center gap-2 text-[10px] font-bold text-amber-700 uppercase">
-              <AlertCircle className="h-3 w-3" />
-              <span>Initial investment exceeds savings goal.</span>
-            </div>
-          )}
+          ))}
         </div>
       )}
       <CardHeader className="pb-4 bg-muted/30 border-b mb-4">
@@ -180,7 +192,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                 expectedNbpRate={inputs.expectedNbpRate}
                 bondType={inputs.bondType}
                 customInflation={inputs.customInflation}
-                onUpdate={handleUpdate}
+                onUpdate={handleUpdate as (key: string, value: unknown) => void}
               />
             </AccordionContent>
           </AccordionItem>

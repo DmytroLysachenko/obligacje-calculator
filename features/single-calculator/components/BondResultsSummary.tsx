@@ -17,13 +17,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { HelpCircle, Download, AlertTriangle, TrendingUp, PiggyBank, Info, Sparkles, Lightbulb, FileSpreadsheet } from "lucide-react";
+import { HelpCircle, Download, AlertTriangle, TrendingUp, PiggyBank, Info, Sparkles, Lightbulb, FileSpreadsheet, Save, Briefcase, FileText } from "lucide-react";
 import { CalculationAuditTrace } from './CalculationAuditTrace';
 import { MathDeepDive } from '@/shared/components/MathDeepDive';
 
 interface BondResultsSummaryProps {
   results: CalculationResult;
   inputs: BondInputs;
+  previousResults?: CalculationResult | null;
+  onSaveScenario?: () => void;
+  onAddToNotebook?: () => void;
+  onExportPDF?: () => void;
 }
 
 const containerVariant = {
@@ -132,7 +136,14 @@ const StrategyHints: React.FC<{ results: CalculationResult; inputs: BondInputs }
   );
 };
 
-export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results, inputs }) => {
+export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
+  results,
+  inputs,
+  previousResults,
+  onSaveScenario,
+  onAddToNotebook,
+  onExportPDF,
+}) => {
   const { t, language } = useLanguage();
 
   const formatCurrency = (value: number) => {
@@ -187,9 +198,60 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results,
   ].filter(d => d.value > 0);
 
   const COLORS = ['#e2e8f0', '#3b82f6', '#f43f5e', '#f59e0b'];
+  const deltaNet = previousResults ? results.netPayoutValue - previousResults.netPayoutValue : null;
+  const deltaReal = previousResults ? results.realAnnualizedReturn - previousResults.realAnnualizedReturn : null;
 
   return (
     <div className="space-y-6 w-full">
+      <Card className="border-slate-200 bg-white/90 shadow-sm">
+        <CardContent className="flex flex-col gap-4 p-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="outline" className="text-[10px] font-black uppercase tracking-widest">
+                {inputs.bondType}
+              </Badge>
+              <Badge variant="outline" className="text-[10px] font-black uppercase tracking-widest">
+                {inputs.investmentHorizonMonths ?? Math.round(inputs.duration * 12)}M
+              </Badge>
+              <Badge variant="outline" className="text-[10px] font-black uppercase tracking-widest">
+                {inputs.taxStrategy}
+              </Badge>
+            </div>
+            <p className="text-sm font-semibold text-slate-900">
+              Net payout {formatCurrency(results.netPayoutValue)}
+            </p>
+            {deltaNet !== null && deltaReal !== null ? (
+              <p className="text-xs text-muted-foreground">
+                Vs previous run: <span className={cn("font-bold", deltaNet >= 0 ? "text-emerald-700" : "text-destructive")}>
+                  {deltaNet >= 0 ? '+' : ''}{formatCurrency(deltaNet)}
+                </span>{' '}
+                net, <span className={cn("font-bold", deltaReal >= 0 ? "text-emerald-700" : "text-destructive")}>
+                  {deltaReal >= 0 ? '+' : ''}{deltaReal.toFixed(2)} pp real CAGR
+                </span>
+              </p>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Summary first. Deep-dive below if you need formula path, tax drag, and timeline proof.
+              </p>
+            )}
+          </div>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+            <Button variant="outline" className="gap-2 text-xs font-bold" onClick={onSaveScenario}>
+              <Save className="h-4 w-4" />
+              Save Scenario
+            </Button>
+            <Button variant="outline" className="gap-2 text-xs font-bold" onClick={onAddToNotebook}>
+              <Briefcase className="h-4 w-4" />
+              Notebook
+            </Button>
+            <Button variant="outline" className="gap-2 text-xs font-bold" onClick={onExportPDF}>
+              <FileText className="h-4 w-4" />
+              PDF
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       <StrategyHints results={results} inputs={inputs} />
 
       {isNearMaturity && (

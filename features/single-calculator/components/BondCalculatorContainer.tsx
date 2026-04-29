@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useBondCalculator } from "../hooks/useBondCalculator";
 import { BondInputsForm } from "./BondInputsForm";
 import { BondResultsSummary } from "./BondResultsSummary";
@@ -13,7 +13,8 @@ import {
   Target,
   Briefcase,
   FileText,
-  Sparkles
+  Sparkles,
+  Save,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -26,16 +27,31 @@ import { RecalculateButton } from "@/shared/components/RecalculateButton";
 import { generatePDF } from "@/shared/lib/pdf-utils";
 import { MacroAdjuster } from "@/shared/components/MacroAdjuster";
 import { CommunityInsightsWidget } from "@/shared/components/CommunityInsightsWidget";
+import { ScenarioStarterPanel } from "./ScenarioStarterPanel";
+import { SavedScenariosPanel } from "./SavedScenariosPanel";
+import {
+  createSavedScenario,
+  deleteScenarioRecord,
+  duplicateScenarioRecord,
+  getStarterScenarios,
+  loadSavedScenarios,
+  saveScenarioRecord,
+  SavedScenarioRecord,
+  StarterScenarioDefinition,
+} from "../lib/scenario-storage";
+import { applyGuardrailFix, getInputGuardrails, InputGuardrailIssue } from "../lib/input-guardrails";
 
 export const BondCalculatorContainer: React.FC = () => {
   const {
     inputs,
     results,
+    previousResults,
     envelope,
     isCalculating,
     isError,
     calculate,
     updateInput,
+    replaceInputs,
     setBondType,
     isDirty,
     availableSeries,
@@ -44,18 +60,31 @@ export const BondCalculatorContainer: React.FC = () => {
   const { t } = useLanguage();
 
   const [hasMounted, setHasMounted] = useState(false);
+  const [savedScenarios, setSavedScenarios] = useState<SavedScenarioRecord[]>(() =>
+    typeof window === 'undefined' ? [] : loadSavedScenarios(),
+  );
+  const [showQuickStart, setShowQuickStart] = useState(() =>
+    typeof window === 'undefined'
+      ? true
+      : window.localStorage.getItem('obligacje.quick-start.dismissed') !== '1',
+  );
+  const guardrails = useMemo(() => getInputGuardrails(inputs), [inputs]);
+  const blockingGuardrails = useMemo(
+    () => guardrails.filter((issue) => issue.severity === 'blocking'),
+    [guardrails],
+  );
+  const starters = useMemo(() => getStarterScenarios(), []);
 
   React.useEffect(() => {
     setHasMounted(true);
   }, []);
-
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && (isDirty || !results)) {
       calculate();
     }
   };
 
-  const handleSaveScenario = async () => {
+  const handleAddToNotebook = async () => {
     if (!results) return;
     try {
       const pRes = await fetch('/api/portfolio');
@@ -89,6 +118,17 @@ export const BondCalculatorContainer: React.FC = () => {
     }
   };
 
+  const handleSaveScenario = () => {
+    const label = `Single ${inputs.bondType} ${inputs.investmentHorizonMonths ?? Math.round(inputs.duration * 12)}M`;
+    const next = saveScenarioRecord(
+      createSavedScenario(inputs, {
+        name: label,
+        description: `Net payout ${results ? results.netPayoutValue.toFixed(2) : 'pending'} PLN`,
+      }),
+    );
+    setSavedScenarios(next);
+  };
+
   const handleExportPDF = async () => {
     await generatePDF('bond-report-content', `bond_report_${inputs.bondType}_${new Date().toISOString().split('T')[0]}.pdf`);
   };
@@ -96,6 +136,33 @@ export const BondCalculatorContainer: React.FC = () => {
   const handleMacroUpdate = (path: { inflation: number[]; nbpRate: number[] }) => {
     updateInput('customInflation', path.inflation);
     updateInput('customNbpRate', path.nbpRate);
+  };
+
+  const handleApplyStarter = (starter: StarterScenarioDefinition) => {
+    replaceInputs(starter.apply(inputs));
+    setShowQuickStart(false);
+    window.localStorage.setItem('obligacje.quick-start.dismissed', '1');
+  };
+
+  const handleDismissQuickStart = () => {
+    setShowQuickStart(false);
+    window.localStorage.setItem('obligacje.quick-start.dismissed', '1');
+  };
+
+  const handleLoadScenario = (scenario: SavedScenarioRecord) => {
+    replaceInputs(scenario.inputs);
+  };
+
+  const handleDuplicateScenario = (scenario: SavedScenarioRecord) => {
+    setSavedScenarios(duplicateScenarioRecord(scenario.id));
+  };
+
+  const handleDeleteScenario = (scenario: SavedScenarioRecord) => {
+    setSavedScenarios(deleteScenarioRecord(scenario.id));
+  };
+
+  const handleApplyGuardrailFix = (issue: InputGuardrailIssue) => {
+    replaceInputs(applyGuardrailFix(issue, inputs));
   };
 
   return (
@@ -111,7 +178,7 @@ export const BondCalculatorContainer: React.FC = () => {
       currentValue={results?.netPayoutValue}
       onKeyDown={handleKeyDown}
       extraHeaderActions={
-        results && (
+        (
           <div className="flex gap-2">
             <Button 
               variant="outline" 
@@ -119,9 +186,20 @@ export const BondCalculatorContainer: React.FC = () => {
               className="gap-2 text-xs font-bold border-2 border-primary/20 text-primary hover:bg-primary hover:text-white transition-all"
               onClick={handleSaveScenario}
             >
-              <Briefcase className="h-3 w-3" />
-              {t('notebook.save_to_notebook')}
+              <Save className="h-3 w-3" />
+              Save Scenario
             </Button>
+            {results && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="gap-2 text-xs font-bold border-2 border-primary/20 text-primary hover:bg-primary hover:text-white transition-all"
+                onClick={handleAddToNotebook}
+              >
+                <Briefcase className="h-3 w-3" />
+                {t('notebook.save_to_notebook')}
+              </Button>
+            )}
             <Button 
               variant="outline" 
               size="sm" 
@@ -137,17 +215,36 @@ export const BondCalculatorContainer: React.FC = () => {
     >
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
         <aside className="xl:col-span-4 h-fit xl:sticky xl:top-24 space-y-6">
+          {hasMounted && (
+            <SavedScenariosPanel
+              scenarios={savedScenarios}
+              onSaveCurrent={handleSaveScenario}
+              onLoad={handleLoadScenario}
+              onDuplicate={handleDuplicateScenario}
+              onDelete={handleDeleteScenario}
+            />
+          )}
           <BondInputsForm
             inputs={inputs}
             onUpdate={updateInput}
             onBondTypeChange={setBondType}
             availableSeries={availableSeries}
             selectedSeriesId={selectedSeriesId}
+            guardrails={guardrails}
+            onApplyGuardrailFix={handleApplyGuardrailFix}
           />
           <CommunityInsightsWidget bondType={inputs.bondType} />
         </aside>
 
         <div className="xl:col-span-8 space-y-8" id="bond-report-content">
+          {hasMounted && showQuickStart && !results && (
+            <ScenarioStarterPanel
+              starters={starters}
+              onApply={handleApplyStarter}
+              onDismiss={handleDismissQuickStart}
+            />
+          )}
+
           {!results && !isCalculating && (
             <div className="h-[450px] flex flex-col items-center justify-center border-2 border-dashed border-primary/20 rounded-3xl bg-muted/5 p-12 text-center transition-all hover:bg-muted/10 space-y-6">
               <div className="relative">
@@ -166,11 +263,17 @@ export const BondCalculatorContainer: React.FC = () => {
               </div>
               <Button 
                 onClick={() => calculate()}
+                disabled={blockingGuardrails.length > 0}
                 className="h-12 px-8 rounded-xl font-black gap-2 shadow-lg hover:shadow-primary/30 transition-all active:scale-95"
               >
                 <Sparkles className="h-4 w-4" />
                 {t("common.calculate").toUpperCase()}
               </Button>
+              {blockingGuardrails.length > 0 && (
+                <p className="text-xs font-medium text-destructive">
+                  Fix blocking inputs first, then recalculate.
+                </p>
+              )}
             </div>
           )}
 
@@ -196,8 +299,14 @@ export const BondCalculatorContainer: React.FC = () => {
                 isCalculating && "opacity-50 pointer-events-none",
               )}
             >
-              <BondResultsSummary results={results} inputs={inputs} />
-
+              <BondResultsSummary
+                results={results}
+                inputs={inputs}
+                previousResults={previousResults}
+                onSaveScenario={handleSaveScenario}
+                onAddToNotebook={handleAddToNotebook}
+                onExportPDF={handleExportPDF}
+              />
               <MacroAdjuster 
                 initialInflation={inputs.expectedInflation}
                 initialNbpRate={inputs.expectedNbpRate ?? 5.25}
@@ -278,7 +387,7 @@ export const BondCalculatorContainer: React.FC = () => {
         </div>
       </div>
       <RecalculateButton 
-        isDirty={isDirty}
+        isDirty={isDirty && blockingGuardrails.length === 0}
         loading={isCalculating}
         onClick={() => calculate()}
       />
