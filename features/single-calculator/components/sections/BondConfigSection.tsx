@@ -5,13 +5,14 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { HelpCircle, Info, AlertCircle } from 'lucide-react';
 import { BondType, BondInputs } from '@/features/bond-core/types';
+import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { useLanguage } from '@/i18n';
 import { GLOSSARY } from '@/shared/constants/glossary';
 import { cn } from '@/lib/utils';
+import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 
 interface BondSeries {
   id: string;
@@ -23,9 +24,9 @@ interface BondSeries {
 
 interface BondConfigSectionProps {
   inputs: BondInputs;
-  onUpdate: (key: keyof BondInputs, value: any) => void;
+  onUpdate: (key: keyof BondInputs, value: string | number | boolean | undefined) => void;
   onBondTypeChange: (type: BondType) => void;
-  definitions: any;
+  definitions: Record<BondType, BondDefinition>;
   availableSeries: BondSeries[];
   selectedSeriesId: string | null;
 }
@@ -197,13 +198,14 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
                 <span>{t('bonds.error_100_pln')}</span>
               </div>
             )}
-            <Slider 
-              value={[inputs.initialInvestment]} 
-              min={100} 
-              max={100000} 
-              step={100} 
-              onValueChange={([val]) => handleInvestmentChange(val)}
-              className="py-4"
+            <CommittedSliderInput
+              value={inputs.initialInvestment}
+              min={100}
+              max={100000}
+              step={100}
+              unit="PLN"
+              sliderClassName="py-4"
+              onCommit={handleInvestmentChange}
             />
           </div>
         </div>

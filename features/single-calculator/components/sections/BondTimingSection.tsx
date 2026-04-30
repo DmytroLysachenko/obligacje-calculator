@@ -7,23 +7,24 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Slider } from '@/components/ui/slider';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { CalendarIcon, AlertCircle, HelpCircle } from 'lucide-react';
 import { format, parseISO, isAfter } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
 import { BondInputs, TaxStrategy } from '@/features/bond-core/types';
+import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { useLanguage } from '@/i18n';
 import { GLOSSARY } from '@/shared/constants/glossary';
 import { toDateString } from '@/shared/lib/date-timing';
 import { cn } from '@/lib/utils';
+import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 
 interface BondTimingSectionProps {
   inputs: BondInputs;
-  onUpdate: (key: keyof BondInputs, value: any) => void;
+  onUpdate: (key: keyof BondInputs, value: string | number | boolean) => void;
   investmentHorizonYears: number;
   investmentHorizonMonths: number;
-  currentDef: any;
+  currentDef: BondDefinition;
   hasMounted: boolean;
 }
 
@@ -142,12 +143,13 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
             {investmentHorizonYears % 1 === 0 ? investmentHorizonYears.toFixed(0) : investmentHorizonYears.toFixed(2)} {t('common.years')}
           </span>
         </div>
-        <Slider
-          value={[investmentHorizonMonths]}
+        <CommittedSliderInput
+          value={investmentHorizonMonths}
           min={1}
           max={360}
           step={1}
-          onValueChange={([value]) => onUpdate('investmentHorizonMonths', value)}
+          unit="M"
+          onCommit={(value) => onUpdate('investmentHorizonMonths', value)}
         />
       </div>
 

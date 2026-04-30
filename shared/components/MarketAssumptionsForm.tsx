@@ -3,7 +3,6 @@
 import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import { useLanguage } from '@/i18n';
@@ -13,6 +12,7 @@ import { BondInputs, BondType } from '@/features/bond-core/types';
 import { TrendingUp, History, Target, AlertTriangle } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useChartData } from '@/shared/hooks/useChartData';
+import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 
 interface InflationDataPoint {
   date: string;
@@ -133,27 +133,15 @@ export const MarketAssumptionsForm = ({
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
-          <Slider 
-            value={[expectedInflation]} 
-            disabled={!!customInflation}
-            min={-2} 
-            max={15} 
-            step={0.1} 
-            onValueChange={([val]) => onUpdate('expectedInflation', val)}
-            className="flex-1"
-          />
-          <Input
-            type="number"
-            step={0.1}
-            min={-2}
-            max={15}
-            disabled={!!customInflation}
-            className="h-9 w-24 text-right font-bold"
-            value={Number.isFinite(expectedInflation) ? expectedInflation : 0}
-            onChange={(e) => onUpdate('expectedInflation', Number(e.target.value))}
-          />
-        </div>
+        <CommittedSliderInput
+          value={Number.isFinite(expectedInflation) ? expectedInflation : 0}
+          disabled={!!customInflation}
+          min={-2}
+          max={15}
+          step={0.1}
+          unit="%"
+          onCommit={(value) => onUpdate('expectedInflation', value)}
+        />
 
         <div className="space-y-3 pt-4 border-t border-dashed">
           <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
@@ -228,26 +216,14 @@ export const MarketAssumptionsForm = ({
             </Label>
             <span className={cn("font-black text-primary", compact ? "text-lg" : "text-xl")}>{expectedNbpRate ?? 5.25}%</span>
           </div>
-          <div className="flex items-center gap-3">
-            <Slider 
-              value={[expectedNbpRate ?? 5.25]} 
-              min={0} 
-              max={15} 
-              step={0.05} 
-              onValueChange={([val]) => onUpdate('expectedNbpRate', val)}
-              className="flex-1"
-            />
-            <Input
-              id="expectedNbpRate"
-              type="number"
-              step={0.05}
-              min={0}
-              max={15}
-              className="h-9 w-24 text-right font-bold"
-              value={Number.isFinite(expectedNbpRate ?? 5.25) ? (expectedNbpRate ?? 5.25) : 5.25}
-              onChange={(e) => onUpdate('expectedNbpRate', Number(e.target.value))}
-            />
-          </div>
+          <CommittedSliderInput
+            value={Number.isFinite(expectedNbpRate ?? 5.25) ? (expectedNbpRate ?? 5.25) : 5.25}
+            min={0}
+            max={15}
+            step={0.05}
+            unit="%"
+            onCommit={(value) => onUpdate('expectedNbpRate', value)}
+          />
         </div>
       )}
     </div>

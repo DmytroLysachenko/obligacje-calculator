@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -42,6 +41,7 @@ import {
 import { useLanguage } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { ComparisonControlsProps } from "./types";
+import { CommittedSliderInput } from "@/shared/components/CommittedSliderInput";
 
 export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
   initialSum,
@@ -104,12 +104,13 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
                       {formatCurrency(initialSum)}
                     </span>
                   </div>
-                  <Slider
-                    value={[initialSum]}
+                  <CommittedSliderInput
+                    value={initialSum}
                     min={0}
                     max={500000}
                     step={1000}
-                    onValueChange={([v]) => updateInitialSum(v)}
+                    unit="PLN"
+                    onCommit={updateInitialSum}
                   />
                 </div>
                 <div className="space-y-4 pt-6 border-t-2 border-dashed">
@@ -121,12 +122,13 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
                       {formatCurrency(monthlyContribution)}
                     </span>
                   </div>
-                  <Slider
-                    value={[monthlyContribution]}
+                  <CommittedSliderInput
+                    value={monthlyContribution}
                     min={0}
                     max={20000}
                     step={100}
-                    onValueChange={([v]) => updateMonthlyContribution(v)}
+                    unit="PLN"
+                    onCommit={updateMonthlyContribution}
                   />
                 </div>
               </AccordionContent>
@@ -204,12 +206,13 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
                           {Math.round((inputs?.investmentHorizonMonths ?? 60) / 12)} {t('common.years')}
                         </span>
                         </div>
-                        <Slider
-                        value={[Math.round((inputs?.investmentHorizonMonths ?? 60) / 12)]}
+                      <CommittedSliderInput
+                        value={Math.round((inputs?.investmentHorizonMonths ?? 60) / 12)}
                         min={1}
                         max={30}
                         step={1}
-                        onValueChange={([val]) => updateHorizon?.(val * 12)}
+                        unit="Y"
+                        onCommit={(value) => updateHorizon?.(value * 12)}
                       />
                     </div>
                   </>

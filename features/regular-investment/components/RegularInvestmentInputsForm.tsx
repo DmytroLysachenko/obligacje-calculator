@@ -19,10 +19,8 @@ import { format, parseISO } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
 import { getHorizonMonths, toDateString } from '@/shared/lib/date-timing';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
-
-import { Slider } from '@/components/ui/slider';
-
 import { Badge } from '@/components/ui/badge';
+import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 
 import {
   Tooltip,
@@ -47,11 +45,6 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
   const { t, language } = useLanguage();
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
   const [showCustomTax, setShowCustomTax] = useState(false);
-  const [hasMounted, setHasMounted] = useState(false);
-  
-  React.useEffect(() => {
-    setHasMounted(true);
-  }, []);
 
   if (isLoadingDefs || !definitions) {
     return (
@@ -234,12 +227,13 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                   PLN
                 </div>
               </div>
-              <Slider 
-                value={[inputs.contributionAmount]} 
-                min={100} 
-                max={20000} 
-                step={100} 
-                onValueChange={([val]) => onUpdate('contributionAmount', val)}
+              <CommittedSliderInput
+                value={inputs.contributionAmount}
+                min={100}
+                max={20000}
+                step={100}
+                unit="PLN"
+                onCommit={(value) => onUpdate('contributionAmount', value)}
               />
             </div>
             {!isDivisibleBy100 && inputs.contributionAmount > 0 && (
@@ -333,7 +327,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {hasMounted && inputs.purchaseDate ? format(parseISO(inputs.purchaseDate), 'PPP', { locale: dateLocale }) : <span>{t('bonds.pick_date')}</span>}
+                  {inputs.purchaseDate ? format(parseISO(inputs.purchaseDate), 'PPP', { locale: dateLocale }) : <span>{t('bonds.pick_date')}</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -377,7 +371,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {hasMounted && inputs.withdrawalDate ? format(parseISO(inputs.withdrawalDate), 'PPP', { locale: dateLocale }) : <span>{t('bonds.pick_date')}</span>}
+                    {inputs.withdrawalDate ? format(parseISO(inputs.withdrawalDate), 'PPP', { locale: dateLocale }) : <span>{t('bonds.pick_date')}</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -421,20 +415,14 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
               {' '}· {t('regular_form.horizon_help')}
             </div>
           ) : (
-            <div className="flex items-center gap-4">
-              <Slider 
-                value={[investmentHorizonYears]} 
-                min={1} 
-                max={30} 
-                step={1} 
-                onValueChange={([val]) => onUpdate('investmentHorizonMonths', val * 12)}
-                className="flex-1"
-              />
-              <span className="text-lg font-bold min-w-[3rem] text-center">
-                {Math.round(investmentHorizonYears)}
-              </span>
-              <span className="text-sm text-muted-foreground">{t('common.years')}</span>
-            </div>
+            <CommittedSliderInput
+              value={investmentHorizonYears}
+              min={1}
+              max={30}
+              step={1}
+              unit="Y"
+              onCommit={(value) => onUpdate('investmentHorizonMonths', value * 12)}
+            />
           )}
         </div>
 

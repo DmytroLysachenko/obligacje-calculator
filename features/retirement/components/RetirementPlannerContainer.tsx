@@ -16,7 +16,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
 import { 
   Select, 
   SelectContent, 
@@ -37,6 +36,7 @@ import {
   Tooltip, 
   ResponsiveContainer 
 } from 'recharts';
+import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 
 export const RetirementPlannerContainer: React.FC = () => {
   const { isCalculating, post } = useCalculationRequest();
@@ -93,12 +93,13 @@ export const RetirementPlannerContainer: React.FC = () => {
                   <Label className="text-xs font-bold uppercase text-muted-foreground">Monthly Withdrawal</Label>
                   <span className="text-xs font-black text-primary">{formatCurrency(inputs.monthlyWithdrawal)}</span>
                 </div>
-                <Slider 
-                  value={[inputs.monthlyWithdrawal]} 
-                  min={500} 
-                  max={20000} 
-                  step={100} 
-                  onValueChange={([val]) => setInputs(prev => ({ ...prev, monthlyWithdrawal: val }))}
+                <CommittedSliderInput
+                  value={inputs.monthlyWithdrawal}
+                  min={500}
+                  max={20000}
+                  step={100}
+                  unit="PLN"
+                  onCommit={(value) => setInputs(prev => ({ ...prev, monthlyWithdrawal: value }))}
                 />
               </div>
 
@@ -107,11 +108,13 @@ export const RetirementPlannerContainer: React.FC = () => {
                   <Label className="text-xs font-bold uppercase text-muted-foreground">Horizon (Years)</Label>
                   <span className="text-xs font-black text-primary">{inputs.horizonYears}Y</span>
                 </div>
-                <Slider 
-                  value={[inputs.horizonYears]} 
-                  min={1} 
-                  max={50} 
-                  onValueChange={([val]) => setInputs(prev => ({ ...prev, horizonYears: val }))}
+                <CommittedSliderInput
+                  value={inputs.horizonYears}
+                  min={1}
+                  max={50}
+                  step={1}
+                  unit="Y"
+                  onCommit={(value) => setInputs(prev => ({ ...prev, horizonYears: value }))}
                 />
               </div>
 
@@ -125,9 +128,9 @@ export const RetirementPlannerContainer: React.FC = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={BondType.EDO}>EDO (10Y Inflation Indexed)</SelectItem>
-                    <SelectItem value={BondType.COI}>COI (4Y Inflation Indexed)</SelectItem>
-                    <SelectItem value={BondType.TOS}>TOS (3Y Fixed)</SelectItem>
+                    {Object.values(BondType).map((type) => (
+                      <SelectItem key={type} value={type}>{type}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
