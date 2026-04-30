@@ -1,4 +1,4 @@
-# Real Return of Polish Treasury Bonds with Inflation (Mathematical Guide)
+# 08. Real Return of Polish Treasury Bonds with Inflation
 
 This document explains **how to calculate the real profit of Polish
 Treasury bonds after taxes, early redemption fees, and inflation**.

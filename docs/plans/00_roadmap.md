@@ -1,4 +1,4 @@
-# Obligacje Calculator - Project Roadmap
+# 00. Current Product Roadmap
 
 ## Phase 1: Core Foundation (Done)
 - [x] Initial architecture with feature-based structure.

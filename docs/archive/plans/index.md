@@ -2,6 +2,8 @@
 
 This folder contains older or completed planning documents that are no longer the primary execution source.
 
+Historical numbering is preserved in archive.
+
 ## Archived Planning Documents
 
 - [26. App Refactoring Plan](./26_app_refactoring_plan.md)

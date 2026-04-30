@@ -1,4 +1,4 @@
-# Economic Principles for Modeling Bond Investments and Long‑Term Portfolios
+# 09. Economic Principles for Modeling Bond Investments and Long-Term Portfolios
 
 This document describes the **core economic concepts and mathematical
 formulas** useful for building an application that models conservative

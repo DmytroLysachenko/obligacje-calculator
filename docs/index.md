@@ -4,6 +4,9 @@ Welcome to the official product documentation for the **Financial Education & In
 
 ## Table of Contents
 
+### 0. Documentation Governance
+- [Documentation Architecture and Rules](./00_documentation_architecture_and_rules.md) - Structure, naming, numbering, and archive rules for the documentation system.
+
 ### 1. Strategy & Vision (Product)
 - [Product Vision & Purpose](./product/01_product_vision_and_purpose.md) - Why this platform exists and where it is going.
 - [Core Product Philosophy](./product/02_core_philosophy.md) - The fundamental principles guiding development.
@@ -13,7 +16,7 @@ Welcome to the official product documentation for the **Financial Education & In
 - [Content Strategy & Education](./product/15_content_strategy_and_education.md) - Our approach to financial literacy.
 - [Functional Requirements](./product/17_functional_requirements.md) - Detailed feature specifications.
 - [Roadmap & MVP Definition](./product/25_roadmap_and_mvp_definition.md) - Phases of development.
-- [UX Improvement Plan](./product/UX_IMPROVEMENT_PLAN.md) - Continuous enhancement of the user experience.
+- [UX Improvement Plan](./product/18_ux_improvement_plan.md) - Continuous enhancement of the user experience.
 
 ### 2. Technical Architecture
 - [System Architecture](./technical/architecture/19_system_architecture.md) - High-level technical design.
@@ -41,8 +44,8 @@ Welcome to the official product documentation for the **Financial Education & In
 - [User Notebook & Tracking](./technical/features/11_user_notebook_and_tracking.md) - Personal investments.
 
 ### 5. Current Plans & Roadmap
-- [Roadmap](./plans/roadmap.md) - Current development status.
-- [Long-Term Product Foundation Plan](./plans/31_longterm_product_foundation_plan.md) - Longer-horizon product and platform direction.
+- [00. Current Product Roadmap](./plans/00_roadmap.md) - Current development status.
+- [01. Long-Term Product Foundation Plan](./plans/01_longterm_product_foundation_plan.md) - Longer-horizon product and platform direction.
 
 ### 6. Archived Plans
 - [Archived Plans Index](./archive/plans/index.md) - Historical and completed execution plans preserved for reference.

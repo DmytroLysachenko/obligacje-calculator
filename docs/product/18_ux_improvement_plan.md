@@ -1,4 +1,4 @@
-# UX & Feature Improvement Plan - Obligacje Calculator
+# 18. UX Improvement Plan
 
 This document outlines the strategic plan for improving user experience, adding high-value features, and polishing the application to ensure it's a world-class financial tool.
 

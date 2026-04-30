@@ -1,4 +1,4 @@
-# Complete Beginner's Guide to Polish Treasury Bonds
+# 10. Polish Treasury Bonds Guide
 
 This guide explains how Polish Treasury bonds work for someone who has
 never invested before.

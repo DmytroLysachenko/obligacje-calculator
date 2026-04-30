@@ -1,5 +1,5 @@
 
-# Polish Treasury Savings Bonds — Detailed Mathematical Guide for Beginners (Retail Offer, Poland)
+# 11. Polish Treasury Bonds Guide Expanded
 
 **Version:** based on the retail savings-bond offer available in **March 2026**.  
 **Scope:** this file covers the **current retail bond types in the official Polish savings-bond offer**:
@@ -1809,4 +1809,3 @@ total_discount = 0.10 × n
 This file describes the **current retail savings-bond offer structure in Poland** and gives explicit mathematical examples.  
 Each monthly series has its own emission letter, period dates, and precise technical details.  
 For actual investing, always verify the current series parameters before purchase.
-

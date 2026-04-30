@@ -1,4 +1,4 @@
-# 31. Long-Term Product Foundation Plan
+# 01. Long-Term Product Foundation Plan
 
 This document describes the longer-horizon direction of the product after the next focused execution phase.
 
