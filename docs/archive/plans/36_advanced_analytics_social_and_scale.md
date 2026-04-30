@@ -1,6 +1,8 @@
-# 36. Detailed Implementation: Immediate Performance & "Infra-Light" Reactivity
+# 36. Detailed Implementation: Immediate Performance & "Infra-Light" Reactivity (COMPLETED)
 
 This document outlines 18 commits focused on making the platform faster, more reliable, and data-rich using ONLY existing resources (Next.js, Drizzle, React, and Web Workers) and free public APIs.
+
+Status: completed and superseded by newer active planning documents. Retained for historical reference.
 
 ---
 

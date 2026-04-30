@@ -13,6 +13,8 @@ This folder contains older or completed planning documents that are no longer th
 - [33. Next 10 Commits Plan: Optimization, Tax, and Portfolio Intelligence](./33_next_10_commits_optimization_tax_portfolio.md)
 - [34. Next 10 Commits Plan: End-to-End Database Integration & Performance](./34_db_retrieval_and_performance.md)
 - [35. Next 15 Commits: Production Polish, UX Harmony & Data Reliability](./35_production_polish_and_refinement.md)
+- [36. Detailed Implementation: Immediate Performance & "Infra-Light" Reactivity](./36_advanced_analytics_social_and_scale.md)
+- [37. Next 10 Commits: Experience Activation, Everyday Utility & Retention](./37_next_10_commits_experience_activation_and_retention.md)
 
 ## Archive Rule
 

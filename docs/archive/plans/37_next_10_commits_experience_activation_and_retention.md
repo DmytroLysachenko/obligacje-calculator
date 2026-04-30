@@ -1,6 +1,8 @@
-# 37. Next 10 Commits: Experience Activation, Everyday Utility & Retention
+# 37. Next 10 Commits: Experience Activation, Everyday Utility & Retention (COMPLETED)
 
 This plan assumes core engine, data reliability, portfolio tracking, optimization, authentication, and baseline performance work are already in place. Main gap now is not raw capability. Main gap is product activation, continuity, clarity, and retention.
+
+Status: completed and ready for archive. Core outcomes now covered by onboarding presets, saved scenario continuity, guardrails, action-focused results, richer notebook follow-through, in-app notifications, richer export/import flows, and personalized dashboard return surfaces.
 
 Platform already calculates well. Next 10 commits should make users:
 
