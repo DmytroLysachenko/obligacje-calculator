@@ -26,7 +26,11 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
   taxStrategy,
   formatCurrency,
 }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const leadingScenarioLabel = language === 'pl' ? 'Prowadzacy scenariusz' : 'Leading scenario';
+  const leadingText = language === 'pl' ? 'prowadzi w tym porownaniu' : 'currently leads this comparison';
+  const moreNetProfitText = language === 'pl' ? 'wiecej zysku netto' : 'more net profit';
+  const overText = language === 'pl' ? 'w horyzoncie' : 'over';
 
   return (
     <Card className="overflow-hidden border-2 border-primary/20 shadow-2xl bg-primary/5">
@@ -48,17 +52,17 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
                 )}
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase text-muted-foreground tracking-tighter">{t('comparison.winner')}</p>
+                <p className="text-[10px] font-black uppercase text-muted-foreground tracking-tighter">{leadingScenarioLabel}</p>
                 <p className="text-xl font-black tracking-tight">
-                  {resultsA.netPayoutValue > resultsB.netPayoutValue ? t('comparison.scenario_a') : t('comparison.scenario_b')} {t('comparison.winning')}
+                  {resultsA.netPayoutValue > resultsB.netPayoutValue ? t('comparison.scenario_a') : t('comparison.scenario_b')} {leadingText}
                 </p>
               </div>
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium leading-relaxed text-slate-700">
                 {resultsA.netPayoutValue > resultsB.netPayoutValue 
-                  ? `${inputsA.bondType} provides ${formatCurrency(resultsA.netPayoutValue - resultsB.netPayoutValue)} more net profit over ${Math.max(resultsA.timeline.length / 12, resultsB.timeline.length / 12).toFixed(1)} years.`
-                  : `${inputsB.bondType} provides ${formatCurrency(resultsB.netPayoutValue - resultsA.netPayoutValue)} more net profit over ${Math.max(resultsA.timeline.length / 12, resultsB.timeline.length / 12).toFixed(1)} years.`}
+                  ? `${inputsA.bondType} provides ${formatCurrency(resultsA.netPayoutValue - resultsB.netPayoutValue)} ${moreNetProfitText} ${overText} ${Math.max(resultsA.timeline.length / 12, resultsB.timeline.length / 12).toFixed(1)} years.`
+                  : `${inputsB.bondType} provides ${formatCurrency(resultsB.netPayoutValue - resultsA.netPayoutValue)} ${moreNetProfitText} ${overText} ${Math.max(resultsA.timeline.length / 12, resultsB.timeline.length / 12).toFixed(1)} years.`}
               </p>
               <div className="flex flex-wrap gap-2 pt-2">
                 {resultsA.netPayoutValue > resultsB.netPayoutValue ? (

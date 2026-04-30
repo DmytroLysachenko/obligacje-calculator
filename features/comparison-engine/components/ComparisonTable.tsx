@@ -24,7 +24,9 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
   bondTypeB,
   formatCurrency,
 }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const leadingColumnLabel = language === 'pl' ? 'Prowadzi' : 'Leading';
+  const leadingBadgeSuffix = language === 'pl' ? 'prowadzi' : 'leads';
 
   const maxLen = Math.max(resultsA.timeline.length, resultsB.timeline.length);
 
@@ -48,7 +50,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                 <TableHead className="font-black uppercase text-[10px] tracking-widest text-emerald-700 px-4 h-12">
                   {bondTypeB} (B)
                 </TableHead>
-                <TableHead className="text-right font-black uppercase text-[10px] tracking-widest px-8 h-12">{t('comparison.winner')}</TableHead>
+                <TableHead className="text-right font-black uppercase text-[10px] tracking-widest px-8 h-12">{leadingColumnLabel}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -71,7 +73,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                         "font-black text-[9px] uppercase px-3 py-0.5 border-2",
                         winner === 'A' ? "border-blue-200 bg-blue-50 text-blue-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"
                       )}>
-                        {winner === 'A' ? bondTypeA : bondTypeB} {t('comparison.winning')}
+                        {winner === 'A' ? bondTypeA : bondTypeB} {leadingBadgeSuffix}
                       </Badge>
                     </TableCell>
                   </TableRow>
