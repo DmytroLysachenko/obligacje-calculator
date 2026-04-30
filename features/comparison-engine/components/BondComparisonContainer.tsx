@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { 
   Card, 
   CardContent, 
@@ -34,7 +34,6 @@ import { cn } from "@/lib/utils";
 import { ChartContainer } from "@/shared/components/charts/ChartContainer";
 import { CalculationMetaPanel } from "@/shared/components/CalculationMetaPanel";
 import { BondComparisonCalculationEnvelope } from "@/features/bond-core/types/scenarios";
-import { useDebounce } from "@/shared/hooks/useDebounce";
 import { getBondColor } from "@/shared/constants/bond-colors";
 
 import { MarketAssumptionsForm } from "@/shared/components/MarketAssumptionsForm";
@@ -56,7 +55,7 @@ export const BondComparisonContainer = () => {
   const [loading, setLoading] = useState(false);
   const [showRealValue, setShowRealValue] = useState(false);
   const [reinvest, setReinvest] = useState(true);
-  const [isDirty, setIsDirty] = useState(false);
+  const [isDirty, setIsDirty] = useState(true);
 
   const results = envelope?.result || [];
   const warnings = envelope?.warnings || [];
@@ -93,13 +92,6 @@ export const BondComparisonContainer = () => {
       setLoading(false);
     }
   }, [selectedBonds, initialInvestment, purchaseDate, withdrawalDate, expectedInflation, expectedNbpRate, reinvest]);
-
-  const debouncedInputs = useDebounce({ selectedBonds, initialInvestment, purchaseDate, withdrawalDate, expectedInflation, expectedNbpRate, reinvest }, 300);
-
-  // Auto calculate on debounced inputs change
-  useEffect(() => {
-    calculateComparison();
-  }, [debouncedInputs, calculateComparison]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && isDirty) {
@@ -253,6 +245,20 @@ const formatCurrency = (val: number) =>
             <div className="h-[500px] flex items-center justify-center">
               <Loader2 className="h-12 w-12 animate-spin text-primary" />
             </div>
+          ) : !results.length ? (
+            <div className="flex h-[500px] flex-col items-center justify-center space-y-6 rounded-3xl border-2 border-dashed border-primary/20 bg-muted/10 p-10 text-center">
+              <TrendingUp className="h-12 w-12 text-primary/40" />
+              <div className="space-y-2">
+                <p className="text-lg font-bold">{t('comparison.ready_to_compare')}</p>
+                <p className="text-sm text-muted-foreground">{t('comparison.comparison_desc')}</p>
+              </div>
+              <Button
+                className="h-11 px-6 text-sm font-bold"
+                onClick={calculateComparison}
+              >
+                {t('common.calculate')}
+              </Button>
+            </div>
           ) : (
             <>
               <Card className="border-2 shadow-2xl overflow-hidden rounded-3xl">
@@ -308,6 +314,18 @@ const formatCurrency = (val: number) =>
                   </ChartContainer>
                 </CardContent>
               </Card>
+
+              {isDirty && (
+                <div className="flex justify-end">
+                  <Button
+                    variant="outline"
+                    className="h-10 px-4 font-bold"
+                    onClick={calculateComparison}
+                  >
+                    {t('common.recalculate')}
+                  </Button>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {results.map((res) => {

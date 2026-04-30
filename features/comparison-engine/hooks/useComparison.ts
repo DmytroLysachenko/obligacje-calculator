@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { BondInputs, BondType, TaxStrategy } from '../../bond-core/types';
 import {
   BondComparisonCalculationEnvelope,
@@ -11,7 +11,6 @@ import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { useQuerySync } from '@/shared/hooks/useQuerySync';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
-import { useDebounce } from '@/shared/hooks/useDebounce';
 
 type SharedComparisonConfig = IndependentBondComparisonPayload['sharedConfig'];
 type ScenarioOverride = IndependentBondComparisonPayload['scenarioA'];
@@ -180,14 +179,6 @@ export function useComparison() {
       console.error('Comparison error:', error);
     }
   }, [post, scenarioA, scenarioB, sharedConfig]);
-
-  // Use debounced inputs to trigger auto-calculation
-  const debouncedInputs = useDebounce({ sharedConfig, scenarioA, scenarioB }, 300);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    calculate();
-  }, [debouncedInputs, calculate]);
 
   const updateSharedConfig = (key: keyof SharedComparisonConfig, value: string | number | boolean | undefined) => {
     setIsDirty(true);
