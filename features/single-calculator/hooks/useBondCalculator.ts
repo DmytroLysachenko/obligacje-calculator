@@ -3,7 +3,6 @@ import { BondInputs, BondType, TaxStrategy, InterestPayout } from '../../bond-co
 import { SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { useQuerySync } from '@/shared/hooks/useQuerySync';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
-import { useDebounce } from '@/shared/hooks/useDebounce';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 
@@ -55,8 +54,6 @@ export function useBondCalculator() {
   const envelopeRef = useRef<SingleBondCalculationEnvelope | null>(null);
   
   const { isCalculating, isError, clearError, post } = useCalculationRequest();
-
-  const debouncedInputs = useDebounce(inputs, 500);
 
   useEffect(() => {
     envelopeRef.current = envelope;
@@ -117,13 +114,6 @@ export function useBondCalculator() {
       console.error('Calculation error:', error);
     }
   }, [clearError, post]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      calculate(debouncedInputs);
-    }, 0);
-    return () => clearTimeout(timer);
-  }, [debouncedInputs, calculate]);
 
   const fetchSeries = useCallback(async (symbol: BondType) => {
     try {
