@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import EducationClient from './EducationClient';
+import { BondDefinitionsProvider } from '@/shared/context/BondDefinitionsContext';
 
 export const metadata: Metadata = {
   title: 'Education - Bonds Calculator',
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function EducationPage() {
-  return <EducationClient />;
+  return (
+    <BondDefinitionsProvider>
+      <EducationClient />
+    </BondDefinitionsProvider>
+  );
 }

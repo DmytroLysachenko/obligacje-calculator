@@ -52,10 +52,15 @@ export function useBondCalculator() {
   const [availableSeries, setAvailableSeries] = useState<BondSeries[]>([]);
   const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(null);
   const definitionsAppliedFor = useRef<string | null>(null);
+  const envelopeRef = useRef<SingleBondCalculationEnvelope | null>(null);
   
   const { isCalculating, isError, clearError, post } = useCalculationRequest();
 
   const debouncedInputs = useDebounce(inputs, 500);
+
+  useEffect(() => {
+    envelopeRef.current = envelope;
+  }, [envelope]);
 
   // Sync inputs with loaded definitions
   useEffect(() => {
@@ -103,7 +108,7 @@ export function useBondCalculator() {
       }
 
       const data = await post<SingleBondCalculationEnvelope>('/api/calculate/single', finalInputs, { preferWorker: true });
-      setPreviousEnvelope((current) => envelope ?? current);
+      setPreviousEnvelope((current) => envelopeRef.current ?? current);
       setEnvelope(data);
     } catch (error) {
       if (error instanceof Error && (error.name === 'AbortError' || error.message === 'Calculation aborted')) {
@@ -111,7 +116,7 @@ export function useBondCalculator() {
       }
       console.error('Calculation error:', error);
     }
-  }, [clearError, envelope, post]);
+  }, [clearError, post]);
 
   useEffect(() => {
     const timer = setTimeout(() => {

@@ -24,11 +24,11 @@ export function useBondDefinitions() {
           throw new Error('Failed to fetch bond definitions');
         }
         const data = await response.json();
-        if (data.ok) {
-          cachedDefinitions = data.result;
-          setDefinitions(data.result);
+        if (data.data) {
+          cachedDefinitions = data.data;
+          setDefinitions(data.data);
         } else {
-          throw new Error(data.error || 'Failed to fetch bond definitions');
+          throw new Error(data.error?.message || 'Failed to fetch bond definitions');
         }
       } catch (err) {
         setError(err instanceof Error ? err : new Error(String(err)));
