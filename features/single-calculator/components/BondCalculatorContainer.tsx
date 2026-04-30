@@ -25,19 +25,9 @@ import { CalculationMetaPanel } from "@/shared/components/CalculationMetaPanel";
 import { CalculatorPageShell } from "@/shared/components/CalculatorPageShell";
 import { RecalculateButton } from "@/shared/components/RecalculateButton";
 import { generatePDF } from "@/shared/lib/pdf-utils";
-import { MacroAdjuster } from "@/shared/components/MacroAdjuster";
-import { CommunityInsightsWidget } from "@/shared/components/CommunityInsightsWidget";
-import { ScenarioStarterPanel } from "./ScenarioStarterPanel";
-import { SavedScenariosPanel } from "./SavedScenariosPanel";
 import {
   createSavedScenario,
-  deleteScenarioRecord,
-  duplicateScenarioRecord,
-  getStarterScenarios,
-  loadSavedScenarios,
   saveScenarioRecord,
-  SavedScenarioRecord,
-  StarterScenarioDefinition,
 } from "../lib/scenario-storage";
 import { applyGuardrailFix, getInputGuardrails, InputGuardrailIssue } from "../lib/input-guardrails";
 
@@ -60,20 +50,11 @@ export const BondCalculatorContainer: React.FC = () => {
   const { t } = useLanguage();
 
   const [hasMounted, setHasMounted] = useState(false);
-  const [savedScenarios, setSavedScenarios] = useState<SavedScenarioRecord[]>(() =>
-    typeof window === 'undefined' ? [] : loadSavedScenarios(),
-  );
-  const [showQuickStart, setShowQuickStart] = useState(() =>
-    typeof window === 'undefined'
-      ? true
-      : window.localStorage.getItem('obligacje.quick-start.dismissed') !== '1',
-  );
   const guardrails = useMemo(() => getInputGuardrails(inputs), [inputs]);
   const blockingGuardrails = useMemo(
     () => guardrails.filter((issue) => issue.severity === 'blocking'),
     [guardrails],
   );
-  const starters = useMemo(() => getStarterScenarios(), []);
 
   React.useEffect(() => {
     setHasMounted(true);
@@ -120,45 +101,16 @@ export const BondCalculatorContainer: React.FC = () => {
 
   const handleSaveScenario = () => {
     const label = `Single ${inputs.bondType} ${inputs.investmentHorizonMonths ?? Math.round(inputs.duration * 12)}M`;
-    const next = saveScenarioRecord(
+    saveScenarioRecord(
       createSavedScenario(inputs, {
         name: label,
         description: `Net payout ${results ? results.netPayoutValue.toFixed(2) : 'pending'} PLN`,
       }),
     );
-    setSavedScenarios(next);
   };
 
   const handleExportPDF = async () => {
     await generatePDF('bond-report-content', `bond_report_${inputs.bondType}_${new Date().toISOString().split('T')[0]}.pdf`);
-  };
-
-  const handleMacroUpdate = (path: { inflation: number[]; nbpRate: number[] }) => {
-    updateInput('customInflation', path.inflation);
-    updateInput('customNbpRate', path.nbpRate);
-  };
-
-  const handleApplyStarter = (starter: StarterScenarioDefinition) => {
-    replaceInputs(starter.apply(inputs));
-    setShowQuickStart(false);
-    window.localStorage.setItem('obligacje.quick-start.dismissed', '1');
-  };
-
-  const handleDismissQuickStart = () => {
-    setShowQuickStart(false);
-    window.localStorage.setItem('obligacje.quick-start.dismissed', '1');
-  };
-
-  const handleLoadScenario = (scenario: SavedScenarioRecord) => {
-    replaceInputs(scenario.inputs);
-  };
-
-  const handleDuplicateScenario = (scenario: SavedScenarioRecord) => {
-    setSavedScenarios(duplicateScenarioRecord(scenario.id));
-  };
-
-  const handleDeleteScenario = (scenario: SavedScenarioRecord) => {
-    setSavedScenarios(deleteScenarioRecord(scenario.id));
   };
 
   const handleApplyGuardrailFix = (issue: InputGuardrailIssue) => {
@@ -180,15 +132,6 @@ export const BondCalculatorContainer: React.FC = () => {
       extraHeaderActions={
         (
           <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="gap-2 text-xs font-bold border-2 border-primary/20 text-primary hover:bg-primary hover:text-white transition-all"
-              onClick={handleSaveScenario}
-            >
-              <Save className="h-3 w-3" />
-              Save Scenario
-            </Button>
             {results && (
               <Button 
                 variant="outline" 
@@ -200,6 +143,15 @@ export const BondCalculatorContainer: React.FC = () => {
                 {t('notebook.save_to_notebook')}
               </Button>
             )}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="gap-2 text-xs font-bold border-2 border-primary/20 text-primary hover:bg-primary hover:text-white transition-all"
+              onClick={handleSaveScenario}
+            >
+              <Save className="h-3 w-3" />
+              Save Scenario
+            </Button>
             <Button 
               variant="outline" 
               size="sm" 
@@ -215,15 +167,6 @@ export const BondCalculatorContainer: React.FC = () => {
     >
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
         <aside className="xl:col-span-4 h-fit xl:sticky xl:top-24 space-y-6">
-          {hasMounted && (
-            <SavedScenariosPanel
-              scenarios={savedScenarios}
-              onSaveCurrent={handleSaveScenario}
-              onLoad={handleLoadScenario}
-              onDuplicate={handleDuplicateScenario}
-              onDelete={handleDeleteScenario}
-            />
-          )}
           <BondInputsForm
             inputs={inputs}
             onUpdate={updateInput}
@@ -233,18 +176,9 @@ export const BondCalculatorContainer: React.FC = () => {
             guardrails={guardrails}
             onApplyGuardrailFix={handleApplyGuardrailFix}
           />
-          <CommunityInsightsWidget bondType={inputs.bondType} />
         </aside>
 
         <div className="xl:col-span-8 space-y-8" id="bond-report-content">
-          {hasMounted && showQuickStart && !results && (
-            <ScenarioStarterPanel
-              starters={starters}
-              onApply={handleApplyStarter}
-              onDismiss={handleDismissQuickStart}
-            />
-          )}
-
           {!results && !isCalculating && (
             <div className="h-[450px] flex flex-col items-center justify-center border-2 border-dashed border-primary/20 rounded-3xl bg-muted/5 p-12 text-center transition-all hover:bg-muted/10 space-y-6">
               <div className="relative">
@@ -299,6 +233,12 @@ export const BondCalculatorContainer: React.FC = () => {
                 isCalculating && "opacity-50 pointer-events-none",
               )}
             >
+              {isDirty && (
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
+                  Inputs changed. Results below show the last calculated scenario. Use <span className="font-bold">Calculate</span> to refresh them.
+                </div>
+              )}
+
               <BondResultsSummary
                 results={results}
                 inputs={inputs}
@@ -306,12 +246,6 @@ export const BondCalculatorContainer: React.FC = () => {
                 onSaveScenario={handleSaveScenario}
                 onAddToNotebook={handleAddToNotebook}
                 onExportPDF={handleExportPDF}
-              />
-              <MacroAdjuster 
-                initialInflation={inputs.expectedInflation}
-                initialNbpRate={inputs.expectedNbpRate ?? 5.25}
-                horizonYears={inputs.duration}
-                onUpdate={handleMacroUpdate}
               />
 
               <CalculationMetaPanel
@@ -361,26 +295,17 @@ export const BondCalculatorContainer: React.FC = () => {
                 </TabsContent>
               </Tabs>
 
-              <div className="bg-muted/30 border p-6 rounded-2xl space-y-4 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                  <Info className="h-24 w-24 -rotate-12" />
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="mt-1 p-2 bg-primary/10 rounded-lg">
-                    <div className="h-2 w-2 rounded-full bg-primary" />
-                  </div>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    {t("bonds.explanation_inflation")}
-                  </p>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="mt-1 p-2 bg-primary/10 rounded-lg">
-                    <div className="h-2 w-2 rounded-full bg-primary" />
-                  </div>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    {t("bonds.explanation_tax")}
-                  </p>
-                </div>
+              <div className="rounded-2xl border bg-muted/20 p-6 space-y-3">
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-800 flex items-center gap-2">
+                  <Info className="h-4 w-4 text-primary" />
+                  Interpretation notes
+                </h3>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {t("bonds.explanation_inflation")}
+                </p>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {t("bonds.explanation_tax")}
+                </p>
               </div>
             </div>
           )}

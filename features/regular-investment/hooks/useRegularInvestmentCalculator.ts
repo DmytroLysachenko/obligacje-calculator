@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { RegularInvestmentInputs, BondType, InvestmentFrequency, TaxStrategy, InterestPayout } from '../../bond-core/types';
 import { RegularInvestmentCalculationEnvelope } from '../../bond-core/types/scenarios';
-import { useQuerySync } from '@/shared/hooks/useQuerySync';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
@@ -66,11 +65,6 @@ export function useRegularInvestmentCalculator() {
 
   // Derived results for compatibility
   const results = envelope?.result || null;
-
-  // Sync state with URL
-  useQuerySync(inputs, (initial) => {
-    setInputs(prev => ({ ...prev, ...initial }));
-  });
 
   const calculate = useCallback(async (currentInputs = inputs) => {
     setIsDirty(false);

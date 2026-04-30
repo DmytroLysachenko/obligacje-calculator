@@ -6,13 +6,14 @@ import { RegularInvestmentInputsForm } from './RegularInvestmentInputsForm';
 import { RegularInvestmentResultsSummary } from './RegularInvestmentResultsSummary';
 import { RegularInvestmentChart } from './RegularInvestmentChart';
 import { useLanguage } from '@/i18n';
-import { Info, Target, PiggyBank } from 'lucide-react';
+import { Target, PiggyBank } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { RecalculateButton } from '@/shared/components/RecalculateButton';
+import { Button } from '@/components/ui/button';
 
 export const RegularInvestmentCalculatorContainer: React.FC = () => {
   const { inputs, results, warnings, assumptions, isCalculating, calculate, updateInput, setBondType, isDirty, envelope } = useRegularInvestmentCalculator();
@@ -57,6 +58,12 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
             <div className="h-[400px] flex flex-col items-center justify-center border-2 border-dashed rounded-3xl opacity-50 space-y-4">
               <Target className="h-12 w-12 text-muted-foreground" />
               <p className="font-medium text-muted-foreground">{t('bonds.click_simulate_regular')}</p>
+              <Button
+                onClick={() => calculate()}
+                className="h-11 px-6 font-bold"
+              >
+                {t('common.calculate')}
+              </Button>
             </div>
           )}
 
@@ -70,6 +77,12 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
 
           {results && (
             <div className={cn("space-y-8 transition-opacity duration-300", isCalculating && "opacity-50 pointer-events-none")}>
+              {isDirty && (
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
+                  Inputs changed. Results below show the last calculated scenario. Use <span className="font-bold">Recalculate</span> to refresh them.
+                </div>
+              )}
+
               <RegularInvestmentResultsSummary results={results} />
 
               <CalculationMetaPanel
@@ -91,21 +104,6 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
                     bondType={inputs.bondType} 
                   />
                 )}
-              </div>
-
-              <div className="bg-blue-50/50 border border-blue-100 p-6 rounded-2xl space-y-4 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                  <Info className="h-24 w-24" />
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <Info className="h-5 w-5 text-blue-600 shrink-0" />
-                  </div>
-                  <div className="text-sm text-blue-800 leading-relaxed">
-                    <p className="font-bold mb-1">{t('common.how_it_works')}</p>
-                    <p>{t('bonds.regular_how_it_works')}</p>
-                  </div>
-                </div>
               </div>
             </div>
           )}

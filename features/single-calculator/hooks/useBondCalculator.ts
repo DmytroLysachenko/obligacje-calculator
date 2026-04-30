@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { BondInputs, BondType, TaxStrategy, InterestPayout } from '../../bond-core/types';
 import { SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
-import { useQuerySync } from '@/shared/hooks/useQuerySync';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
@@ -135,11 +134,6 @@ export function useBondCalculator() {
 
   // Derived results for compatibility
   const results = envelope?.result || null;
-
-  // Sync state with URL
-  useQuerySync(inputs, (initial) => {
-    setInputs(prev => ({ ...prev, ...initial }));
-  });
 
   const normalizeInputs = useCallback((base: BondInputs, nextPartial?: Partial<BondInputs>) => {
     const merged = { ...base, ...nextPartial };

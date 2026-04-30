@@ -8,7 +8,6 @@ import {
   SingleBondCalculationEnvelope,
 } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
-import { useQuerySync } from '@/shared/hooks/useQuerySync';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 
@@ -118,48 +117,6 @@ export function useComparison() {
         calculationVersion: comparisonEnvelope?.calculationVersion ?? 'unknown',
       }
     : null;
-
-  useQuerySync(
-    {
-      common_initialInvestment: sharedConfig.initialInvestment,
-      common_purchaseDate: sharedConfig.purchaseDate,
-      common_withdrawalDate: sharedConfig.withdrawalDate,
-      common_expectedInflation: sharedConfig.expectedInflation,
-      common_expectedNbpRate: sharedConfig.expectedNbpRate,
-      common_taxStrategy: sharedConfig.taxStrategy,
-      common_timingMode: sharedConfig.timingMode,
-      common_investmentHorizonMonths: sharedConfig.investmentHorizonMonths,
-      scenarioA_bondType: scenarioA.bondType,
-      scenarioA_rollover: scenarioA.rollover,
-      scenarioA_isRebought: scenarioA.isRebought,
-      scenarioA_taxStrategy: scenarioA.taxStrategy,
-      scenarioA_investmentHorizonMonths: scenarioA.investmentHorizonMonths,
-      scenarioB_bondType: scenarioB.bondType,
-      scenarioB_rollover: scenarioB.rollover,
-      scenarioB_isRebought: scenarioB.isRebought,
-      scenarioB_taxStrategy: scenarioB.taxStrategy,
-      scenarioB_investmentHorizonMonths: scenarioB.investmentHorizonMonths,
-    },
-    (initial) => {
-      const nextShared = { ...DEFAULT_SHARED_CONFIG } as SharedComparisonConfig;
-      const nextScenarioA = { ...DEFAULT_SCENARIO_A } as ScenarioOverride;
-      const nextScenarioB = { ...DEFAULT_SCENARIO_B } as ScenarioOverride;
-
-      Object.entries(initial).forEach(([key, value]) => {
-        if (key.startsWith('common_')) {
-          (nextShared as Record<string, unknown>)[key.replace('common_', '')] = value;
-        } else if (key.startsWith('scenarioA_')) {
-          (nextScenarioA as Record<string, unknown>)[key.replace('scenarioA_', '')] = value;
-        } else if (key.startsWith('scenarioB_')) {
-          (nextScenarioB as Record<string, unknown>)[key.replace('scenarioB_', '')] = value;
-        }
-      });
-
-      setSharedConfig(nextShared);
-      setScenarioA(nextScenarioA);
-      setScenarioB(nextScenarioB);
-    },
-  );
 
   const calculate = useCallback(async () => {
     setIsDirty(false);
