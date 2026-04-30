@@ -6,10 +6,12 @@ import { RegularInvestmentInputsForm } from '../../regular-investment/components
 import { RegularInvestmentResultsSummary } from '../../regular-investment/components/RegularInvestmentResultsSummary';
 import { LadderTimeline } from './LadderTimeline';
 import { useLanguage } from '@/i18n';
-import { ListTree, Loader2, Activity } from 'lucide-react';
+import { ListTree, Loader2, Activity, Sparkles } from 'lucide-react';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { RecalculateButton } from '@/shared/components/RecalculateButton';
 
 export const LadderContainer: React.FC = () => {
   const { inputs, results, updateInput, setBondType, isDirty, isCalculating, calculate, envelope } = useLadder();
@@ -47,6 +49,13 @@ export const LadderContainer: React.FC = () => {
             <div className="h-[400px] flex flex-col items-center justify-center border-2 border-dashed rounded-3xl opacity-50 space-y-4">
               <Activity className="h-12 w-12 text-muted-foreground" />
               <p className="font-medium text-muted-foreground">{t('bonds.click_simulate_regular')}</p>
+              <Button
+                onClick={() => calculate()}
+                className="h-11 px-6 font-bold gap-2"
+              >
+                <Sparkles className="h-4 w-4" />
+                {t('common.calculate')}
+              </Button>
             </div>
           )}
 
@@ -80,6 +89,11 @@ export const LadderContainer: React.FC = () => {
           )}
         </div>
       </div>
+      <RecalculateButton
+        isDirty={isDirty}
+        loading={isCalculating}
+        onClick={() => calculate()}
+      />
     </CalculatorPageShell>
   );
 };
