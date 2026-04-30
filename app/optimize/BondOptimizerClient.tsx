@@ -278,7 +278,7 @@ export default function BondOptimizerClient() {
                 <div className="rounded-xl border bg-background/60 p-4 text-sm">
                   <p className="flex items-start gap-2">
                     <Info className="mt-0.5 h-4 w-4 text-primary" />
-                    <span>{leadScenario.recommendationReason}</span>
+                    <span>{leadScenario.scenarioReason}</span>
                   </p>
                 </div>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -344,7 +344,7 @@ export default function BondOptimizerClient() {
                           <div className="space-y-1">
                             <p className="font-semibold">{item.name}</p>
                             <p className="text-xs text-muted-foreground">
-                              {item.recommendationReason}
+                              {item.scenarioReason}
                             </p>
                           </div>
                         </div>

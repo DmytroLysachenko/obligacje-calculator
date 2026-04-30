@@ -38,7 +38,7 @@ export interface ComparisonSummaryProps {
   verdict: {
     title: string;
     text: string;
-    recommendation: string;
+    takeaway: string;
   };
   totalInvested: number;
   durationMonths: number;

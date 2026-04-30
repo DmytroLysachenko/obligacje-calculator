@@ -1,97 +1,122 @@
 'use client';
 
-import React, { useState } from 'react';
-import { 
-  Target, 
-  Wallet, 
-  TrendingDown, 
-  AlertTriangle, 
-  CheckCircle2, 
-  Info,
+import React, { useMemo, useState } from 'react';
+import {
+  AlertTriangle,
+  ArrowRight,
   Calendar,
-  ArrowRight
+  Info,
+  LineChart,
+  Wallet,
 } from 'lucide-react';
-import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
-import { BondType, TaxStrategy } from '@/features/bond-core/types';
-import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
-import { RetirementPlannerCalculationEnvelope } from '@/features/bond-core/types/scenarios';
-import { formatCurrency } from '@/lib/utils';
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer 
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from 'recharts';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { BondType, TaxStrategy } from '@/features/bond-core/types';
+import { RetirementPlannerCalculationEnvelope } from '@/features/bond-core/types/scenarios';
+import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
+import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
+import { formatCurrency } from '@/lib/utils';
+
+function formatRate(value: number) {
+  return `${value.toFixed(2)}%`;
+}
 
 export const RetirementPlannerContainer: React.FC = () => {
   const { isCalculating, post } = useCalculationRequest();
-  
   const [inputs, setInputs] = useState({
     initialCapital: 500000,
     monthlyWithdrawal: 3000,
     expectedInflation: 3.5,
+    expectedNbpRate: 5.25,
     bondType: BondType.EDO,
     taxStrategy: TaxStrategy.STANDARD,
-    horizonYears: 25
+    horizonYears: 25,
   });
-
-  const [results, setResults] = useState<RetirementPlannerCalculationEnvelope | null>(null);
+  const [results, setResults] =
+    useState<RetirementPlannerCalculationEnvelope | null>(null);
 
   const handleCalculate = async () => {
-    const response = await post<RetirementPlannerCalculationEnvelope>('/api/calculate/retirement', inputs);
+    const response = await post<RetirementPlannerCalculationEnvelope>(
+      '/api/calculate/retirement',
+      inputs,
+    );
     setResults(response);
   };
 
-  const chartData = results?.result.timeline.filter((_, idx) => idx % 12 === 0).map(point => ({
-    date: point.date,
-    year: point.year,
-    balance: point.balance,
-  })) || [];
+  const chartData = useMemo(
+    () =>
+      results?.result.timeline
+        .filter((_, index) => index % 12 === 0)
+        .map((point) => ({
+          year: point.year,
+          date: point.date,
+          balance: point.balance,
+          withdrawal: point.withdrawal,
+        })) ?? [],
+    [results],
+  );
 
   return (
     <CalculatorPageShell
-      title="Retirement Sustainability Planner"
-      description="Model how long your capital will last during decumulation."
+      title="Retirement Withdrawal Calculator"
+      description="Test whether a fixed monthly withdrawal can be supported by one simplified bond-rate scenario."
       icon={<Wallet className="h-8 w-8" />}
       isCalculating={isCalculating}
       hasResults={!!results}
     >
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
-        <aside className="xl:col-span-4 space-y-6">
+      <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
+        <aside className="space-y-6 xl:col-span-4">
           <Card className="rounded-2xl border-2">
             <CardHeader>
-              <CardTitle className="text-lg font-black uppercase tracking-widest">Parameters</CardTitle>
+              <CardTitle className="text-lg font-black uppercase tracking-widest">
+                Scenario Inputs
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase text-muted-foreground">Initial Capital (PLN)</Label>
-                <Input 
-                  type="number" 
-                  value={inputs.initialCapital} 
-                  onChange={e => setInputs(prev => ({ ...prev, initialCapital: Number(e.target.value) }))}
+                <Label className="text-xs font-bold uppercase text-muted-foreground">
+                  Initial Capital
+                </Label>
+                <Input
+                  type="number"
+                  value={inputs.initialCapital}
+                  onChange={(event) =>
+                    setInputs((prev) => ({
+                      ...prev,
+                      initialCapital: Number(event.target.value),
+                    }))
+                  }
                   className="rounded-xl font-bold"
                 />
               </div>
 
               <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <Label className="text-xs font-bold uppercase text-muted-foreground">Monthly Withdrawal</Label>
-                  <span className="text-xs font-black text-primary">{formatCurrency(inputs.monthlyWithdrawal)}</span>
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-bold uppercase text-muted-foreground">
+                    Monthly Withdrawal
+                  </Label>
+                  <span className="text-xs font-black text-primary">
+                    {formatCurrency(inputs.monthlyWithdrawal)}
+                  </span>
                 </div>
                 <CommittedSliderInput
                   value={inputs.monthlyWithdrawal}
@@ -99,14 +124,20 @@ export const RetirementPlannerContainer: React.FC = () => {
                   max={20000}
                   step={100}
                   unit="PLN"
-                  onCommit={(value) => setInputs(prev => ({ ...prev, monthlyWithdrawal: value }))}
+                  onCommit={(value) =>
+                    setInputs((prev) => ({ ...prev, monthlyWithdrawal: value }))
+                  }
                 />
               </div>
 
               <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <Label className="text-xs font-bold uppercase text-muted-foreground">Horizon (Years)</Label>
-                  <span className="text-xs font-black text-primary">{inputs.horizonYears}Y</span>
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-bold uppercase text-muted-foreground">
+                    Horizon
+                  </Label>
+                  <span className="text-xs font-black text-primary">
+                    {inputs.horizonYears}Y
+                  </span>
                 </div>
                 <CommittedSliderInput
                   value={inputs.horizonYears}
@@ -114,119 +145,259 @@ export const RetirementPlannerContainer: React.FC = () => {
                   max={50}
                   step={1}
                   unit="Y"
-                  onCommit={(value) => setInputs(prev => ({ ...prev, horizonYears: value }))}
+                  onCommit={(value) =>
+                    setInputs((prev) => ({ ...prev, horizonYears: value }))
+                  }
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase text-muted-foreground">Reinvestment Bond Type</Label>
-                <Select 
-                  value={inputs.bondType} 
-                  onValueChange={val => setInputs(prev => ({ ...prev, bondType: val as BondType }))}
-                >
-                  <SelectTrigger className="rounded-xl font-bold">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.values(BondType).map((type) => (
-                      <SelectItem key={type} value={type}>{type}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-1 gap-4 border-t pt-6 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label className="text-xs font-bold uppercase text-muted-foreground">
+                    Bond Type
+                  </Label>
+                  <Select
+                    value={inputs.bondType}
+                    onValueChange={(value) =>
+                      setInputs((prev) => ({
+                        ...prev,
+                        bondType: value as BondType,
+                      }))
+                    }
+                  >
+                    <SelectTrigger className="rounded-xl font-bold">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.values(BondType).map((type) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-xs font-bold uppercase text-muted-foreground">
+                    Tax Strategy
+                  </Label>
+                  <Select
+                    value={inputs.taxStrategy}
+                    onValueChange={(value) =>
+                      setInputs((prev) => ({
+                        ...prev,
+                        taxStrategy: value as TaxStrategy,
+                      }))
+                    }
+                  >
+                    <SelectTrigger className="rounded-xl font-bold">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={TaxStrategy.STANDARD}>
+                        Standard
+                      </SelectItem>
+                      <SelectItem value={TaxStrategy.IKE}>IKE</SelectItem>
+                      <SelectItem value={TaxStrategy.IKZE}>IKZE</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
-              <Button 
-                className="w-full rounded-xl font-black uppercase tracking-widest h-12 shadow-lg shadow-primary/20"
+              <div className="space-y-4 border-t pt-6">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-bold uppercase text-muted-foreground">
+                      Expected Inflation
+                    </Label>
+                    <span className="text-xs font-black text-primary">
+                      {formatRate(inputs.expectedInflation)}
+                    </span>
+                  </div>
+                  <CommittedSliderInput
+                    value={inputs.expectedInflation}
+                    min={-2}
+                    max={15}
+                    step={0.1}
+                    unit="%"
+                    onCommit={(value) =>
+                      setInputs((prev) => ({ ...prev, expectedInflation: value }))
+                    }
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-bold uppercase text-muted-foreground">
+                      Expected NBP Rate
+                    </Label>
+                    <span className="text-xs font-black text-primary">
+                      {formatRate(inputs.expectedNbpRate)}
+                    </span>
+                  </div>
+                  <CommittedSliderInput
+                    value={inputs.expectedNbpRate}
+                    min={0}
+                    max={15}
+                    step={0.05}
+                    unit="%"
+                    onCommit={(value) =>
+                      setInputs((prev) => ({ ...prev, expectedNbpRate: value }))
+                    }
+                  />
+                </div>
+              </div>
+
+              <Button
+                className="h-12 w-full rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20"
                 onClick={handleCalculate}
                 disabled={isCalculating}
               >
-                {isCalculating ? "Calculating..." : "Run Simulation"}
+                {isCalculating ? 'Calculating...' : 'Run Withdrawal Scenario'}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardContent>
           </Card>
+
+          <Card className="border-amber-200 bg-amber-50/40">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-amber-900">
+                <AlertTriangle className="h-4 w-4" />
+                Model Limits
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm text-amber-900">
+              <p>
+                This is a steady-rate depletion model, not a full retirement
+                planner.
+              </p>
+              <p>
+                It does not model changing withdrawals, reinvestment ladders,
+                taxes outside the selected wrapper, or shifting bond series over
+                time.
+              </p>
+            </CardContent>
+          </Card>
         </aside>
 
-        <div className="xl:col-span-8 space-y-8">
+        <div className="space-y-8 xl:col-span-8">
           {results ? (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className={cn(
-                  "border-2 rounded-2xl overflow-hidden",
-                  results.result.isSustainable ? "border-green-500 bg-green-50/30" : "border-red-500 bg-red-50/30"
-                )}>
-                  <CardContent className="p-6 flex items-center gap-4">
-                    <div className={cn(
-                      "p-3 rounded-2xl",
-                      results.result.isSustainable ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"
-                    )}>
-                      {results.result.isSustainable ? <CheckCircle2 className="h-8 w-8" /> : <TrendingDown className="h-8 w-8" />}
-                    </div>
-                    <div>
-                      <p className="text-xs font-black uppercase text-muted-foreground tracking-tighter">Sustainability Status</p>
-                      <h3 className="text-xl font-black">
-                        {results.result.isSustainable ? "Sustainable Path" : "Capital Depletion Risk"}
-                      </h3>
-                      {!results.result.isSustainable && (
-                        <p className="text-xs font-bold text-red-600">
-                          Capital runs out in Year {results.result.exhaustionYear}, Month {results.result.exhaustionMonth}
-                        </p>
-                      )}
-                    </div>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+                <Card className={results.result.isSustainable ? 'border-emerald-200 bg-emerald-50/40' : 'border-red-200 bg-red-50/40'}>
+                  <CardContent className="p-5">
+                    <p className="text-[10px] font-black uppercase text-muted-foreground">
+                      Scenario Status
+                    </p>
+                    <p className="mt-2 text-lg font-black">
+                      {results.result.isSustainable
+                        ? 'Capital remains positive'
+                        : 'Capital depletes early'}
+                    </p>
+                    {results.result.exhaustionDate ? (
+                      <p className="mt-1 text-xs font-semibold text-red-700">
+                        Exhaustion date: {results.result.exhaustionDate}
+                      </p>
+                    ) : (
+                      <p className="mt-1 text-xs font-semibold text-emerald-700">
+                        No depletion inside selected horizon
+                      </p>
+                    )}
                   </CardContent>
                 </Card>
 
-                <Card className="border-2 rounded-2xl bg-primary text-white overflow-hidden relative">
-                  <div className="absolute top-0 right-0 p-4 opacity-10">
-                    <Target className="h-24 w-24" />
-                  </div>
-                  <CardContent className="p-6">
-                    <p className="text-xs font-black uppercase text-white/70 tracking-tighter">Final Balance (Real Value)</p>
-                    <h3 className="text-3xl font-black">{formatCurrency(results.result.finalBalance)}</h3>
-                    <p className="text-[10px] font-bold mt-1 text-white/50 italic">Adjusted for reinvestment yield and taxes.</p>
+                <Card>
+                  <CardContent className="p-5">
+                    <p className="text-[10px] font-black uppercase text-muted-foreground">
+                      Final Balance
+                    </p>
+                    <p className="mt-2 text-lg font-black text-primary">
+                      {formatCurrency(results.result.finalBalance)}
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      End-of-horizon nominal balance
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardContent className="p-5">
+                    <p className="text-[10px] font-black uppercase text-muted-foreground">
+                      Modeled Annual Rate
+                    </p>
+                    <p className="mt-2 text-lg font-black text-primary">
+                      {formatRate(results.result.modeledAnnualRate)}
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Steady rate used for {results.result.modeledBondType}
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardContent className="p-5">
+                    <p className="text-[10px] font-black uppercase text-muted-foreground">
+                      Tax Paid
+                    </p>
+                    <p className="mt-2 text-lg font-black text-orange-600">
+                      {formatCurrency(results.result.totalTaxPaid)}
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Within modeled horizon
+                    </p>
                   </CardContent>
                 </Card>
               </div>
 
               <Card className="rounded-2xl border-2 overflow-hidden">
                 <CardHeader>
-                  <CardTitle className="text-lg font-black uppercase tracking-widest">Capital Evolution</CardTitle>
+                  <CardTitle className="flex items-center gap-2 text-lg font-black uppercase tracking-widest">
+                    <LineChart className="h-5 w-5 text-primary" />
+                    Capital Path
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
                   <div className="h-[400px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={chartData}>
                         <defs>
-                          <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
-                            <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                          <linearGradient id="retirement-balance" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.25} />
+                            <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                           </linearGradient>
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted-foreground))" strokeOpacity={0.1} />
-                        <XAxis 
-                          dataKey="year" 
-                          axisLine={false} 
-                          tickLine={false} 
-                          tick={{fontSize: 10, fontWeight: 'bold'}}
-                          label={{ value: 'Years', position: 'insideBottom', offset: -5, fontSize: 10, fontWeight: 'black' }}
+                        <XAxis
+                          dataKey="year"
+                          axisLine={false}
+                          tickLine={false}
+                          tick={{ fontSize: 10, fontWeight: 'bold' }}
                         />
-                        <YAxis 
-                          axisLine={false} 
-                          tickLine={false} 
-                          tick={{fontSize: 10, fontWeight: 'bold'}}
+                        <YAxis
+                          axisLine={false}
+                          tickLine={false}
+                          tick={{ fontSize: 10, fontWeight: 'bold' }}
                           tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
                         />
-                        <Tooltip 
-                          contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                          formatter={(value: any) /* eslint-disable-line @typescript-eslint/no-explicit-any */ => [formatCurrency(Number(value || 0)), 'Balance']}
+                        <Tooltip
+                          contentStyle={{
+                            borderRadius: '16px',
+                            border: 'none',
+                            boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+                          }}
+                          formatter={(value, key) => [
+                            formatCurrency(Number(value || 0)),
+                            key === 'balance' ? 'Balance' : 'Withdrawal',
+                          ]}
                         />
-                        <Area 
-                          type="monotone" 
-                          dataKey="balance" 
-                          stroke="hsl(var(--primary))" 
-                          strokeWidth={4}
-                          fillOpacity={1} 
-                          fill="url(#colorBalance)" 
+                        <Area
+                          type="monotone"
+                          dataKey="balance"
+                          stroke="hsl(var(--primary))"
+                          strokeWidth={3}
+                          fillOpacity={1}
+                          fill="url(#retirement-balance)"
                         />
                       </AreaChart>
                     </ResponsiveContainer>
@@ -234,34 +405,46 @@ export const RetirementPlannerContainer: React.FC = () => {
                 </CardContent>
               </Card>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-blue-50 border border-blue-100 p-4 rounded-2xl flex items-start gap-3">
-                  <Info className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div className="flex items-start gap-3 rounded-2xl border border-blue-100 bg-blue-50 p-4">
+                  <Info className="mt-0.5 h-5 w-5 shrink-0 text-blue-600" />
                   <div>
-                    <p className="text-[10px] font-black uppercase text-blue-700">Total Payouts</p>
-                    <p className="text-sm font-bold">{formatCurrency(results.result.totalWithdrawn)}</p>
+                    <p className="text-[10px] font-black uppercase text-blue-700">
+                      Total Withdrawn
+                    </p>
+                    <p className="text-sm font-bold">
+                      {formatCurrency(results.result.totalWithdrawn)}
+                    </p>
                   </div>
                 </div>
-                <div className="bg-amber-50 border border-amber-100 p-4 rounded-2xl flex items-start gap-3">
-                  <Calendar className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+
+                <div className="flex items-start gap-3 rounded-2xl border border-amber-100 bg-amber-50 p-4">
+                  <Calendar className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
                   <div>
-                    <p className="text-[10px] font-black uppercase text-amber-700">Simulation Period</p>
-                    <p className="text-sm font-bold">{inputs.horizonYears} Years</p>
+                    <p className="text-[10px] font-black uppercase text-amber-700">
+                      Scenario Horizon
+                    </p>
+                    <p className="text-sm font-bold">{inputs.horizonYears} years</p>
                   </div>
                 </div>
-                <div className="bg-purple-50 border border-purple-100 p-4 rounded-2xl flex items-start gap-3">
-                  <AlertTriangle className="h-5 w-5 text-purple-600 shrink-0 mt-0.5" />
+
+                <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-slate-600" />
                   <div>
-                    <p className="text-[10px] font-black uppercase text-purple-700">Risk Profile</p>
-                    <p className="text-sm font-bold">Bond-Only (Conservative)</p>
+                    <p className="text-[10px] font-black uppercase text-slate-700">
+                      Model Type
+                    </p>
+                    <p className="text-sm font-bold">Steady-rate depletion</p>
                   </div>
                 </div>
               </div>
             </>
           ) : (
-            <div className="h-[500px] flex flex-col items-center justify-center border-2 border-dashed rounded-3xl opacity-50 space-y-4">
+            <div className="flex h-[500px] flex-col items-center justify-center space-y-4 rounded-3xl border-2 border-dashed opacity-60">
               <Wallet className="h-12 w-12 text-muted-foreground" />
-              <p className="font-medium text-muted-foreground">Adjust parameters and run simulation to see sustainability analysis.</p>
+              <p className="font-medium text-muted-foreground">
+                Build a scenario and run the withdrawal calculation.
+              </p>
             </div>
           )}
         </div>
@@ -269,7 +452,3 @@ export const RetirementPlannerContainer: React.FC = () => {
     </CalculatorPageShell>
   );
 };
-
-function cn(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(' ');
-}

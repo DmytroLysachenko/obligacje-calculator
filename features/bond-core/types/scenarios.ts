@@ -74,8 +74,14 @@ export interface RetirementPlannerResult {
   isSustainable: boolean;
   exhaustionYear?: number;
   exhaustionMonth?: number;
+  exhaustionDate?: string;
   finalBalance: number;
   totalWithdrawn: number;
+  totalTaxPaid: number;
+  modeledAnnualRate: number;
+  modeledMonthlyNetRate: number;
+  modeledBondType: BondType;
+  modelType: 'steady-rate';
   timeline: {
     year: number;
     month: number;
@@ -218,7 +224,7 @@ export interface BondOptimizerResultItem {
   totalProfit: number;
   effectiveTaxRate: number;
   isWinner: boolean;
-  recommendationReason: string;
+  scenarioReason: string;
   result: CalculationResult;
 }
 

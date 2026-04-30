@@ -17,7 +17,7 @@ export const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({
 }) => {
   const { t, language } = useLanguage();
   const leadingLabel = language === 'pl' ? 'Prowadzacy scenariusz' : 'Leading scenario';
-  const insightLabel = language === 'pl' ? 'Wniosek' : 'Insight';
+  const insightLabel = language === 'pl' ? 'Wniosek' : 'Takeaway';
   return (
     <div className="space-y-8">
       <motion.div
@@ -38,7 +38,7 @@ export const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({
               </p>
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full text-xs font-bold text-primary mt-2">
                 <Info className="h-3 w-3" />
-                {insightLabel}: {verdict.recommendation}
+                {insightLabel}: {verdict.takeaway}
               </div>
             </div>
           </CardContent>

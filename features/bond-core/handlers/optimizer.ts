@@ -78,7 +78,7 @@ export class OptimizerHandler extends BaseHandler implements ScenarioHandler<Bon
         totalProfit: result.totalProfit,
         effectiveTaxRate: result.totalProfit > 0 ? (result.totalTax / result.totalProfit) * 100 : 0,
         isWinner: false,
-        recommendationReason: reason,
+        scenarioReason: reason,
         result,
       });
     }

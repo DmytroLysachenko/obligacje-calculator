@@ -27,10 +27,13 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
   formatCurrency,
 }) => {
   const { t, language } = useLanguage();
-  const leadingScenarioLabel = language === 'pl' ? 'Prowadzacy scenariusz' : 'Leading scenario';
-  const leadingText = language === 'pl' ? 'prowadzi w tym porownaniu' : 'currently leads this comparison';
-  const moreNetProfitText = language === 'pl' ? 'wiecej zysku netto' : 'more net profit';
-  const overText = language === 'pl' ? 'w horyzoncie' : 'over';
+  const comparisonSnapshotLabel = language === 'pl' ? 'Snapshot porownania' : 'Comparison snapshot';
+  const higherText = language === 'pl' ? 'ma wyzszy wynik netto' : 'shows the higher net outcome';
+  const overText = language === 'pl' ? 'dla horyzontu' : 'for a';
+  const betterBondType = resultsA.netPayoutValue > resultsB.netPayoutValue ? inputsA.bondType : inputsB.bondType;
+  const betterScenarioLabel = resultsA.netPayoutValue > resultsB.netPayoutValue ? t('comparison.scenario_a') : t('comparison.scenario_b');
+  const gap = Math.abs(resultsA.netPayoutValue - resultsB.netPayoutValue);
+  const horizonYears = Math.max(resultsA.timeline.length / 12, resultsB.timeline.length / 12).toFixed(1);
 
   return (
     <Card className="overflow-hidden border-2 border-primary/20 shadow-2xl bg-primary/5">
@@ -45,24 +48,20 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
           <div className="flex-1 space-y-4">
             <div className="flex items-center gap-3">
               <div className="p-3 bg-white rounded-2xl shadow-sm border border-primary/10">
-                {resultsA.netPayoutValue > resultsB.netPayoutValue ? (
-                  <span className="text-2xl font-black text-blue-600">{inputsA.bondType}</span>
-                ) : (
-                  <span className="text-2xl font-black text-emerald-600">{inputsB.bondType}</span>
-                )}
+                <span className={resultsA.netPayoutValue > resultsB.netPayoutValue ? "text-2xl font-black text-blue-600" : "text-2xl font-black text-emerald-600"}>
+                  {betterBondType}
+                </span>
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase text-muted-foreground tracking-tighter">{leadingScenarioLabel}</p>
+                <p className="text-[10px] font-black uppercase text-muted-foreground tracking-tighter">{comparisonSnapshotLabel}</p>
                 <p className="text-xl font-black tracking-tight">
-                  {resultsA.netPayoutValue > resultsB.netPayoutValue ? t('comparison.scenario_a') : t('comparison.scenario_b')} {leadingText}
+                  {betterScenarioLabel} {higherText}
                 </p>
               </div>
             </div>
             <div className="space-y-2">
               <p className="text-sm font-medium leading-relaxed text-slate-700">
-                {resultsA.netPayoutValue > resultsB.netPayoutValue 
-                  ? `${inputsA.bondType} provides ${formatCurrency(resultsA.netPayoutValue - resultsB.netPayoutValue)} ${moreNetProfitText} ${overText} ${Math.max(resultsA.timeline.length / 12, resultsB.timeline.length / 12).toFixed(1)} years.`
-                  : `${inputsB.bondType} provides ${formatCurrency(resultsB.netPayoutValue - resultsA.netPayoutValue)} ${moreNetProfitText} ${overText} ${Math.max(resultsA.timeline.length / 12, resultsB.timeline.length / 12).toFixed(1)} years.`}
+                {`${betterBondType} ${higherText} by ${formatCurrency(gap)} ${overText} ${horizonYears}-year setup.`}
               </p>
               <div className="flex flex-wrap gap-2 pt-2">
                 {resultsA.netPayoutValue > resultsB.netPayoutValue ? (
@@ -72,7 +71,7 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
                     </Badge>
                     {expectedInflation > 5 && (
                       <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 font-bold uppercase text-[9px] py-1">
-                        <Zap className="h-3 w-3 mr-1" /> {t('comparison.verdict_high_inflation')}
+                        <Zap className="h-3 w-3 mr-1" /> {language === 'pl' ? 'Wysoka wrazliwosc na inflacje' : 'High inflation sensitivity'}
                       </Badge>
                     )}
                   </>
@@ -83,14 +82,14 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
                     </Badge>
                     {expectedInflation > 5 && (
                       <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 font-bold uppercase text-[9px] py-1">
-                        <Zap className="h-3 w-3 mr-1" /> {t('comparison.verdict_high_inflation')}
+                        <Zap className="h-3 w-3 mr-1" /> {language === 'pl' ? 'Wysoka wrazliwosc na inflacje' : 'High inflation sensitivity'}
                       </Badge>
                     )}
                   </>
                 )}
                 {taxStrategy !== TaxStrategy.STANDARD && (
                   <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 font-bold uppercase text-[9px] py-1">
-                    <ShieldCheck className="h-3 w-3 mr-1" /> {t('comparison.verdict_tax_efficient')}
+                    <ShieldCheck className="h-3 w-3 mr-1" /> {language === 'pl' ? 'Rozne zasady podatkowe' : 'Different tax wrapper rules'}
                   </Badge>
                 )}
               </div>
