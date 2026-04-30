@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useLanguage } from '@/i18n';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,8 @@ import {
   ShieldCheck,
   FolderOpen,
   Sparkles,
+  Download,
+  Upload,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserPortfolio } from '@/db/schema';
@@ -34,6 +36,7 @@ export const NotebookContainer: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedPortfolioId, setSelectedPortfolioId] = useState<string | null>(null);
+  const importRef = useRef<HTMLInputElement | null>(null);
 
   const resolvePortfolioError = useCallback(
     (payload?: { error?: string; code?: string } | null) => {
@@ -138,6 +141,38 @@ export const NotebookContainer: React.FC = () => {
     }
   };
 
+  const handleImportClick = () => {
+    importRef.current?.click();
+  };
+
+  const handleImportFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      const response = await fetch('/api/portfolio/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(parsed),
+      });
+
+      if (!response.ok) {
+        throw new Error('Import failed');
+      }
+
+      await fetchPortfolios();
+    } catch (err) {
+      console.error(err);
+      setError('Import failed. Use portfolio export JSON package.');
+    } finally {
+      event.target.value = '';
+    }
+  };
+
   if (selectedPortfolioId) {
     const portfolio = portfolios.find(p => p.id === selectedPortfolioId);
     return (
@@ -149,13 +184,30 @@ export const NotebookContainer: React.FC = () => {
   }
 
   const headerActions = (
-    <Button 
-      onClick={handleCreateDefault}
-      className="h-10 px-4 rounded-xl text-xs font-black gap-2 shadow-sm hover:shadow-primary/20 transition-all active:scale-95"
-    >
-      <Plus className="h-4 w-4" />
-      {t('notebook.new_portfolio').toUpperCase()}
-    </Button>
+    <div className="flex flex-wrap gap-2">
+      <input
+        ref={importRef}
+        type="file"
+        accept="application/json"
+        className="hidden"
+        onChange={handleImportFile}
+      />
+      <Button 
+        variant="outline"
+        onClick={handleImportClick}
+        className="h-10 px-4 rounded-xl text-xs font-black gap-2"
+      >
+        <Upload className="h-4 w-4" />
+        IMPORT JSON
+      </Button>
+      <Button 
+        onClick={handleCreateDefault}
+        className="h-10 px-4 rounded-xl text-xs font-black gap-2 shadow-sm hover:shadow-primary/20 transition-all active:scale-95"
+      >
+        <Plus className="h-4 w-4" />
+        {t('notebook.new_portfolio').toUpperCase()}
+      </Button>
+    </div>
   );
 
   return (
@@ -280,6 +332,15 @@ export const NotebookContainer: React.FC = () => {
               >
                 <Sparkles className="h-5 w-5 text-primary" />
                 {t('notebook.load_demo').toUpperCase()}
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                onClick={handleImportClick}
+                className="h-14 px-10 rounded-2xl font-black border-2 gap-2 hover:bg-primary/5 transition-all"
+              >
+                <Download className="h-5 w-5 text-primary" />
+                IMPORT PACKAGE
               </Button>
             </div>
           </div>

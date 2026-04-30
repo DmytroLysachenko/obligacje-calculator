@@ -19,7 +19,10 @@ import {
   AlertCircle,
   Lightbulb,
   Share2,
-  Check
+  Check,
+  Download,
+  Clock3,
+  Bell,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -55,6 +58,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
   const [isPublic, setIsPublic] = useState(portfolio.isPublic || false);
   const [isSharing, setIsSharing] = useState(false);
   const [justCopied, setJustCopied] = useState(false);
+  const [maturityWindowDays, setMaturityWindowDays] = useState<30 | 90 | 180>(90);
 
   const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/p/${portfolio.shareId}` : '';
 
@@ -154,6 +158,30 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
   }, [lots, definitions]);
 
   const nextMaturity = upcomingMaturities[0] || null;
+  const filteredMaturities = useMemo(() => {
+    const cutoff = addDays(new Date(), maturityWindowDays);
+    return upcomingMaturities.filter((item) => item.maturityDate <= cutoff);
+  }, [maturityWindowDays, upcomingMaturities]);
+
+  const upcomingCashflow = useMemo(() => {
+    return filteredMaturities.reduce((sum, item) => sum + item.value, 0);
+  }, [filteredMaturities]);
+
+  const handleExport = async (format: 'portfolio' | 'advisor' | 'package') => {
+    try {
+      const response = await fetch(`/api/portfolio/export?portfolioId=${portfolio.id}&format=${format}`);
+      const data = await response.json();
+      const blob = new Blob([JSON.stringify(data.data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `${portfolio.name.replace(/\s+/g, '_').toLowerCase()}_${format}.json`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Export failed:', err);
+    }
+  };
 
   const taxAudit = useMemo(() => {
     const standardLots = (lots as (UserInvestmentLot & { taxStrategy?: TaxStrategy })[]).filter(l => !l.taxStrategy || l.taxStrategy === TaxStrategy.STANDARD);
@@ -215,6 +243,16 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
           </div>
         </div>
         <div className="flex gap-2">
+           <div className="flex bg-muted p-1 rounded-xl border-2">
+             <Button 
+               variant="ghost" 
+               className="rounded-lg h-9 text-xs font-black uppercase gap-2 px-3"
+               onClick={() => handleExport('package')}
+             >
+               <Download className="h-4 w-4" />
+               Export
+             </Button>
+           </div>
            <div className="flex bg-muted p-1 rounded-xl border-2">
              {isPublic && (
                <Button 
@@ -289,6 +327,9 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
             <p className="text-[10px] text-primary font-black uppercase tracking-widest">
               {nextMaturity ? nextMaturity.bondType : '-'}
             </p>
+            <p className="mt-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+              Cash in next {maturityWindowDays}d: {formatCurrency(upcomingCashflow)}
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -362,25 +403,62 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
             <div className="space-y-6">
               <Card className="border-2 border-primary/10 shadow-lg rounded-2xl">
                 <CardHeader className="pb-2 border-b border-dashed">
-                  <div className="flex items-center gap-2">
-                    <CalendarDays className="h-4 w-4 text-primary" />
-                    <CardTitle className="text-sm font-black uppercase tracking-widest">Liquidity Calendar</CardTitle>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <CalendarDays className="h-4 w-4 text-primary" />
+                      <CardTitle className="text-sm font-black uppercase tracking-widest">Liquidity Calendar</CardTitle>
+                    </div>
+                    <div className="flex gap-1 rounded-xl border bg-muted/20 p-1">
+                      {[30, 90, 180].map((days) => (
+                        <Button
+                          key={days}
+                          type="button"
+                          variant={maturityWindowDays === days ? 'default' : 'ghost'}
+                          className="h-8 px-3 text-[10px] font-black"
+                          onClick={() => setMaturityWindowDays(days as 30 | 90 | 180)}
+                        >
+                          {days}D
+                        </Button>
+                      ))}
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="p-4">
-                  {upcomingMaturities.length > 0 ? (
+                  {filteredMaturities.length > 0 ? (
                     <div className="space-y-4">
-                      {upcomingMaturities.slice(0, 5).map((m, idx) => (
+                      <div className="rounded-xl border bg-primary/5 p-3">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-primary">Cashflow forecast</p>
+                        <p className="mt-1 text-lg font-black text-slate-900">{formatCurrency(upcomingCashflow)}</p>
+                        <p className="text-xs text-muted-foreground">Expected portfolio liquidity within {maturityWindowDays} days.</p>
+                      </div>
+                      {filteredMaturities.slice(0, 5).map((m, idx) => (
                         <div key={idx} className="flex justify-between items-center p-3 bg-muted/30 rounded-xl border border-border/50">
                           <div>
                             <p className="text-[10px] font-black text-primary uppercase tracking-tighter">{m.formattedMaturity}</p>
                             <p className="text-xs font-bold">{m.bondType} ({m.amount} {t('notebook.bond_count')})</p>
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              <Button asChild size="sm" variant="outline" className="h-7 text-[10px] font-black">
+                                <a href={`/single-calculator?bondType=${m.bondType}&purchaseDate=${m.purchaseDate}`}>
+                                  <Clock3 className="mr-1 h-3 w-3" />
+                                  Rollover
+                                </a>
+                              </Button>
+                              <Button asChild size="sm" variant="outline" className="h-7 text-[10px] font-black">
+                                <a href={`/compare?common_purchaseDate=${m.purchaseDate}&scenarioA_bondType=${m.bondType}&scenarioB_bondType=EDO`}>
+                                  Compare
+                                </a>
+                              </Button>
+                              <Button size="sm" variant="outline" className="h-7 text-[10px] font-black">
+                                <Bell className="mr-1 h-3 w-3" />
+                                Reminder
+                              </Button>
+                            </div>
                           </div>
                           <p className="font-black text-sm">{formatCurrency(m.value)}</p>
                         </div>
                       ))}
-                      {upcomingMaturities.length > 5 && (
-                        <p className="text-center text-[10px] font-bold text-muted-foreground uppercase">+ {upcomingMaturities.length - 5} more events</p>
+                      {filteredMaturities.length > 5 && (
+                        <p className="text-center text-[10px] font-bold text-muted-foreground uppercase">+ {filteredMaturities.length - 5} more events</p>
                       )}
                     </div>
                   ) : (
@@ -435,6 +513,17 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                       ? "Your portfolio has low liquidity frequency. Consider buying bonds in monthly intervals to create a steady cash-flow stream."
                       : "You have a good maturity spread. Reinvesting your next payout will maintain your ladder's strength."}
                   </p>
+                  <div className="flex flex-wrap gap-2">
+                    <Button asChild size="sm" className="text-[10px] font-black">
+                      <a href="/ladder">Open Ladder</a>
+                    </Button>
+                    <Button asChild size="sm" variant="outline" className="text-[10px] font-black">
+                      <a href="/optimize">Find Replacement Bond</a>
+                    </Button>
+                    <Button size="sm" variant="outline" className="text-[10px] font-black" onClick={() => handleExport('advisor')}>
+                      Advisor Summary
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             </div>

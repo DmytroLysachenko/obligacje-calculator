@@ -4,7 +4,7 @@ import React from 'react';
 import { motion, Variants } from 'framer-motion';
 import { useLanguage } from '@/i18n';
 import Link from 'next/link';
-import { Calculator, Scale, Layers, TrendingUp, BookOpen, BarChart2, ArrowRight, Briefcase, PieChart as PieChartIcon, Calendar, CheckCircle2 } from 'lucide-react';
+import { Calculator, Scale, Layers, TrendingUp, BookOpen, BarChart2, ArrowRight, Briefcase, PieChart as PieChartIcon, Calendar, CheckCircle2, Bell, Star, Clock3 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useChartData } from '@/shared/hooks/useChartData';
 import { PortfolioSimulationCalculationEnvelope } from '@/features/bond-core/types/scenarios';
@@ -13,6 +13,17 @@ import { getBondColor } from '@/shared/constants/bond-colors';
 import { BondType } from '@/features/bond-core/types';
 import { isAfter, isBefore, addDays, parseISO } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { loadSavedScenarios } from '@/features/single-calculator/lib/scenario-storage';
+import {
+  buildDashboardNotifications,
+  DashboardNotification,
+  loadUserExperienceState,
+  markNotificationsRead,
+  setLastVisitNow,
+  toggleFavoriteBond,
+  UserExperienceState,
+} from '@/shared/lib/user-experience-storage';
 
 interface DistributionItem {
   name: string;
@@ -22,6 +33,8 @@ interface DistributionItem {
 export function LandingDashboardClient() {
   const { t, language } = useLanguage();
   const { data: summaryEnvelope } = useChartData<PortfolioSimulationCalculationEnvelope>('/api/portfolio/summary');
+  const [experience, setExperience] = React.useState<UserExperienceState | null>(null);
+  const [savedScenarioNames, setSavedScenarioNames] = React.useState<string[]>([]);
   
   const summary = summaryEnvelope?.result;
   const hasPortfolio = summary && summary.items.length > 0;
@@ -34,6 +47,60 @@ export function LandingDashboardClient() {
     });
     return Object.entries(dist).map(([name, value]) => ({ name, value }));
   }, [summary]);
+
+  const upcomingEvents = React.useMemo(() => {
+    if (!summary?.items?.length) {
+      return [];
+    }
+
+    const thirtyDaysFromNow = addDays(new Date(), 30);
+    return summary.items
+      .flatMap(item => item.result.timeline
+        .filter(p => p.isMaturity || p.isWithdrawal)
+        .map(p => ({
+          bondType: item.bondType,
+          date: p.cycleEndDate,
+          label: p.isMaturity ? 'Maturity' : 'Interest payment',
+          amount: p.totalValue || p.netInterest,
+        }))
+      )
+      .filter(e => isAfter(parseISO(e.date), new Date()) && isBefore(parseISO(e.date), thirtyDaysFromNow))
+      .sort((a, b) => parseISO(a.date).getTime() - parseISO(b.date).getTime());
+  }, [summary]);
+
+  React.useEffect(() => {
+    const nextExperience = loadUserExperienceState();
+    setExperience(nextExperience);
+    setSavedScenarioNames(loadSavedScenarios().slice(0, 3).map((scenario) => scenario.name));
+    setLastVisitNow();
+  }, []);
+
+  const notifications = React.useMemo<DashboardNotification[]>(() => {
+    if (!experience) {
+      return [];
+    }
+
+    return buildDashboardNotifications(upcomingEvents, experience);
+  }, [experience, upcomingEvents]);
+
+  const favoriteBonds = experience?.dashboardPreferences.favoriteBonds ?? [];
+  const recentVisitLabel = experience?.lastVisitAt
+    ? new Date(experience.lastVisitAt).toLocaleString()
+    : 'First recorded visit';
+
+  const handleDismissNotifications = () => {
+    if (notifications.length === 0 || !experience) {
+      return;
+    }
+
+    const next = markNotificationsRead(notifications.map((notification) => notification.id));
+    setExperience(next);
+  };
+
+  const handleToggleFavorite = (bondType: BondType) => {
+    const next = toggleFavoriteBond(bondType);
+    setExperience(next);
+  };
 
   const features = [
     {
@@ -239,6 +306,44 @@ export function LandingDashboardClient() {
                 </div>
               </CardContent>
             </Card>
+
+            <Card className="border-2 shadow-sm">
+              <CardHeader className="border-b bg-muted/20">
+                <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest">
+                  <Bell className="h-4 w-4 text-primary" />
+                  Notification Center
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 p-4">
+                {notifications.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No new notifications. Portfolio looks quiet.</p>
+                ) : (
+                  notifications.map((notification) => (
+                    <div key={notification.id} className="rounded-2xl border p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-black text-slate-900">{notification.title}</p>
+                          <p className="text-sm text-muted-foreground">{notification.description}</p>
+                        </div>
+                        <Badge variant="outline" className="text-[10px] font-black uppercase">
+                          {notification.severity}
+                        </Badge>
+                      </div>
+                      {notification.href ? (
+                        <Link href={notification.href} className="mt-3 inline-flex text-xs font-black uppercase tracking-widest text-primary hover:underline">
+                          Open
+                        </Link>
+                      ) : null}
+                    </div>
+                  ))
+                )}
+                {notifications.length > 0 ? (
+                  <Button variant="outline" className="text-xs font-black" onClick={handleDismissNotifications}>
+                    Mark All Read
+                  </Button>
+                ) : null}
+              </CardContent>
+            </Card>
           </div>
 
           <aside className="lg:col-span-4 space-y-6">
@@ -271,6 +376,66 @@ export function LandingDashboardClient() {
                     <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', fontWeight: 'bold' }} />
                   </PieChart>
                 </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 shadow-sm">
+              <CardHeader className="border-b bg-muted/20">
+                <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest">
+                  <Clock3 className="h-4 w-4 text-primary" />
+                  Since Last Visit
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 p-4">
+                <p className="text-sm text-muted-foreground">{recentVisitLabel}</p>
+                <div className="rounded-2xl border bg-primary/5 p-3">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-primary">Suggested next action</p>
+                  <p className="mt-1 text-sm font-semibold text-slate-900">
+                    {upcomingEvents.length > 0 ? 'Review upcoming maturities and rollover options.' : 'Refresh a saved scenario or add a new portfolio lot.'}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Recent saved scenarios</p>
+                  {savedScenarioNames.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">No local saved scenarios yet.</p>
+                  ) : (
+                    savedScenarioNames.map((name) => (
+                      <div key={name} className="rounded-xl border px-3 py-2 text-sm font-semibold text-slate-900">
+                        {name}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 shadow-sm">
+              <CardHeader className="border-b bg-muted/20">
+                <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest">
+                  <Star className="h-4 w-4 text-primary" />
+                  Favorite Bonds
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 p-4">
+                {(distributionData.length > 0 ? distributionData : [
+                  { name: BondType.EDO, value: 0 },
+                  { name: BondType.COI, value: 0 },
+                  { name: BondType.TOS, value: 0 },
+                ]).slice(0, 4).map((entry) => {
+                  const bondType = entry.name as BondType;
+                  const active = favoriteBonds.includes(bondType);
+                  return (
+                    <button
+                      key={bondType}
+                      type="button"
+                      onClick={() => handleToggleFavorite(bondType)}
+                      className="flex w-full items-center justify-between rounded-xl border px-3 py-2 text-left transition-colors hover:border-primary/40"
+                    >
+                      <span className="font-semibold text-slate-900">{bondType}</span>
+                      <Star className={`h-4 w-4 ${active ? 'fill-amber-400 text-amber-500' : 'text-muted-foreground'}`} />
+                    </button>
+                  );
+                })}
               </CardContent>
             </Card>
           </aside>
