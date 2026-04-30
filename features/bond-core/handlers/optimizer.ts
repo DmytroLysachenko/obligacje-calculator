@@ -90,7 +90,7 @@ export class OptimizerHandler extends BaseHandler implements ScenarioHandler<Bon
     }
 
     const assumptions = this.generateAssumptions(payload);
-    assumptions.push(`Ranking metric: Highest projected net payout after ${horizonYears.toFixed(1)} years.`);
+    assumptions.push(`Ranking metric: Highest projected net payout after ${horizonYears.toFixed(1)} years in this scenario.`);
 
     return this.createEnvelope({
       rankedBonds,

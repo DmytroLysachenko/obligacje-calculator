@@ -12,7 +12,7 @@ export default function BondOptimizerPage() {
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight">Bond Scenario Ranking</h1>
         <p className="text-muted-foreground max-w-2xl">
-          Enter your assumptions and compare projected outcomes across available bonds. This page ranks simulated results. It does not provide personal investment advice.
+          Enter one scenario, rank simulated outcomes across available bonds, and inspect the tradeoffs. This page is a calculator view, not a personal recommendation engine.
         </p>
       </div>
 
