@@ -33,44 +33,54 @@ export const getGlobalDataFreshness = cache(async (): Promise<CalculationDataFre
   const cached = getCached<CalculationDataFreshness>(cacheKey);
   if (cached) return cached;
 
-  const allSeries = await db.query.dataSeries.findMany();
-  
-  if (allSeries.length === 0) {
+  const criticalSeries = await db.query.dataSeries.findMany({
+    where: inArray(dataSeries.slug, [...CPI_SLUGS, ...NBP_RATE_SLUGS]),
+  });
+
+  if (criticalSeries.length === 0) {
     return {
       status: 'unknown',
       usedFallback: true,
     };
   }
 
-  // Define what we consider "stale" (e.g. older than 45 days for monthly macro data)
   const STALE_THRESHOLD_DAYS = 45;
-  const today = new Date();
-  
-  let oldestDate: Date | null = null;
-  let usedFallback = false;
+  const now = new Date();
+  const latestSyncCheck = criticalSeries
+    .map((series) => series.updatedAt)
+    .filter((value): value is Date => Boolean(value))
+    .sort((a, b) => b.getTime() - a.getTime())[0];
+  const seriesWithDates = criticalSeries.filter((series) => series.lastDataPointDate);
+  const usedFallback = seriesWithDates.length !== criticalSeries.length
+    || criticalSeries.some((series) => series.lastSyncStatus === 'failed');
 
-  allSeries.forEach(s => {
-    if (!s.lastDataPointDate) {
-      usedFallback = true;
-      return;
-    }
-    const d = parseISO(s.lastDataPointDate);
-    if (!oldestDate || d < oldestDate) {
-      oldestDate = d;
-    }
-  });
-
-  if (!oldestDate) {
-    return { status: 'unknown', usedFallback: true };
+  if (!seriesWithDates.length) {
+    const result: CalculationDataFreshness = {
+      status: 'unknown',
+      asOf: latestSyncCheck ? format(latestSyncCheck, 'yyyy-MM-dd') : undefined,
+      lastCheck: latestSyncCheck?.toISOString(),
+      usedFallback: true,
+    };
+    setCache(cacheKey, result);
+    return result;
   }
 
-  const daysOld = differenceInDays(today, oldestDate);
-  const status = daysOld > STALE_THRESHOLD_DAYS ? 'stale' : 'fresh';
+  const oldestCriticalPoint = seriesWithDates
+    .map((series) => parseISO(series.lastDataPointDate!))
+    .sort((a, b) => a.getTime() - b.getTime())[0];
+
+  const daysOld = differenceInDays(now, oldestCriticalPoint);
+  const status = usedFallback
+    ? 'fallback'
+    : daysOld > STALE_THRESHOLD_DAYS
+      ? 'stale'
+      : 'fresh';
 
   const result: CalculationDataFreshness = {
     status: status as import('@/features/bond-core/types/scenarios').DataFreshnessStatus,
-    asOf: format(oldestDate, 'yyyy-MM'),
-    usedFallback
+    asOf: latestSyncCheck ? format(latestSyncCheck, 'yyyy-MM-dd') : format(oldestCriticalPoint, 'yyyy-MM-dd'),
+    lastCheck: latestSyncCheck?.toISOString(),
+    usedFallback,
   };
   setCache(cacheKey, result);
   return result;
@@ -221,31 +231,6 @@ export const getTaxRulesForYear = cache(async (year: number) => {
   setCache(cacheKey, rules);
   return rules;
 });
-
-const getSeriesPointsByAliases = async (aliases: string[], fromDate: string, toDate: string) => {
-  const series = await db.query.dataSeries.findMany({
-    where: inArray(dataSeries.slug, aliases),
-  });
-  const selectedSeries = series[0];
-
-  if (!selectedSeries) {
-    return [];
-  }
-
-  const points = await db.query.dataPoints.findMany({
-    where: and(
-      eq(dataPoints.seriesId, selectedSeries.id),
-      gte(dataPoints.date, fromDate),
-      lte(dataPoints.date, toDate),
-    ),
-    orderBy: [asc(dataPoints.date)],
-  });
-
-  return points.map((point) => ({
-    date: point.date.substring(0, 7),
-    value: parseFloat(point.value),
-  }));
-};
 
 const buildMonthlyPercentChangeMap = (series: { date: string; value: number }[]) => {
   const result = new Map<string, number>();

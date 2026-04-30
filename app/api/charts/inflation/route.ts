@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { dataSeries, dataPoints } from '@/db/schema';
 import { desc, eq, inArray } from 'drizzle-orm';
+import { createSuccessResponse } from '@/shared/types/api';
 
 const FALLBACK_INFLATION = [
   { date: '2015-01', rate: -0.9 },
@@ -22,18 +23,23 @@ interface ChartSeriesEnvelope<T> {
   source: 'database' | 'fallback';
   usedFallback: boolean;
   asOf?: string;
+  lastCheck?: string;
   coverageStart?: string;
   coverageEnd?: string;
+  dataSource?: string;
+  seriesName?: string;
 }
 
 function fallbackResponse() {
-  return NextResponse.json<ChartSeriesEnvelope<(typeof FALLBACK_INFLATION)[number]>>({
+  return NextResponse.json(createSuccessResponse<ChartSeriesEnvelope<(typeof FALLBACK_INFLATION)[number]>>({
     data: FALLBACK_INFLATION,
     source: 'fallback',
     usedFallback: true,
+    dataSource: 'static fallback dataset',
+    seriesName: 'Inflation fallback',
     coverageStart: FALLBACK_INFLATION[0]?.date,
     coverageEnd: FALLBACK_INFLATION[FALLBACK_INFLATION.length - 1]?.date,
-  });
+  }));
 }
 
 export async function GET() {
@@ -63,14 +69,17 @@ export async function GET() {
       }))
       .reverse();
 
-    return NextResponse.json<ChartSeriesEnvelope<(typeof formatted)[number]>>({
+    return NextResponse.json(createSuccessResponse<ChartSeriesEnvelope<(typeof formatted)[number]>>({
       data: formatted,
       source: 'database',
       usedFallback: false,
       asOf: data[0]?.date,
+      lastCheck: series.updatedAt?.toISOString(),
+      dataSource: series.dataSource ?? 'database',
+      seriesName: series.name,
       coverageStart: formatted[0]?.date,
       coverageEnd: formatted[formatted.length - 1]?.date,
-    });
+    }));
   } catch (error) {
     console.error('Failed to fetch inflation data:', error);
     return fallbackResponse();

@@ -1,24 +1,38 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useLanguage } from '@/i18n';
-import { TrendingUp, Info, Activity, CalendarRange } from 'lucide-react';
+import { TrendingUp, Info, Activity, CalendarRange, Database, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { InflationChart } from '@/features/economic-data/components/InflationChart';
 import { NBPRateChart } from '@/features/economic-data/components/NBPRateChart';
 import { cn } from '@/lib/utils';
 
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
+import { useChartData } from '@/shared/hooks/useChartData';
+
+interface EconomicSeriesPoint {
+  date: string;
+  rate: number;
+}
+
+interface ChartSeriesEnvelope<T> {
+  data: T[];
+  source: 'database' | 'fallback';
+  usedFallback: boolean;
+  asOf?: string;
+  lastCheck?: string;
+  coverageStart?: string;
+  coverageEnd?: string;
+  dataSource?: string;
+  seriesName?: string;
+}
 
 export default function EconomicDataPage() {
   const { t, language } = useLanguage();
-  const [hasMounted, setHasMounted] = useState(false);
   const [period, setPeriod] = useState<'1Y' | '5Y' | '10Y' | '30Y' | 'ALL'>('10Y');
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setHasMounted(true);
-  }, []);
+  const { data: inflationMeta } = useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/inflation');
+  const { data: nbpMeta } = useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/nbp-rate');
 
   const periods = [
     { label: '1Y', value: '1Y' },
@@ -26,6 +40,17 @@ export default function EconomicDataPage() {
     { label: '10Y', value: '10Y' },
     { label: '30Y', value: '30Y' },
     { label: 'MAX', value: 'ALL' },
+  ];
+
+  const sourceCards = [
+    {
+      title: t('economic.inflation_title'),
+      meta: inflationMeta,
+    },
+    {
+      title: t('economic.nbp_rate_title'),
+      meta: nbpMeta,
+    },
   ];
 
   return (
@@ -69,7 +94,7 @@ export default function EconomicDataPage() {
               <CardDescription>{t('economic.inflation_desc')}</CardDescription>
             </CardHeader>
             <CardContent>
-              {hasMounted ? <InflationChart period={period} /> : <div className="h-[400px] w-full flex items-center justify-center text-muted-foreground animate-pulse">{t('economic.loading_chart')}</div>}
+              <InflationChart period={period} />
             </CardContent>
           </Card>
 
@@ -82,12 +107,52 @@ export default function EconomicDataPage() {
               <CardDescription>{t('economic.nbp_rate_desc')}</CardDescription>
             </CardHeader>
             <CardContent>
-              {hasMounted ? <NBPRateChart period={period} /> : <div className="h-[400px] w-full flex items-center justify-center text-muted-foreground animate-pulse">{t('economic.loading_chart')}</div>}
+              <NBPRateChart period={period} />
             </CardContent>
           </Card>
         </div>
 
         <div className="space-y-6">
+          {sourceCards.map((series) => {
+            const isFallback = series.meta?.usedFallback ?? true;
+
+            return (
+              <Card
+                key={series.title}
+                className={cn(
+                  'shadow-md border',
+                  isFallback ? 'border-amber-200 bg-amber-50/40' : 'border-emerald-100 bg-emerald-50/20',
+                )}
+              >
+                <CardHeader className="pb-2">
+                  <CardTitle className="flex items-center gap-2 text-sm font-bold">
+                    <Database className="h-4 w-4 text-primary" />
+                    {series.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-xs text-muted-foreground">
+                  <div><span className="font-bold text-foreground">{t('economic.data_source')}:</span> {series.meta?.dataSource ?? series.meta?.source ?? 'unknown'}</div>
+                  <div><span className="font-bold text-foreground">{t('economic.as_of')}:</span> {series.meta?.asOf ?? 'unknown'}</div>
+                  <div><span className="font-bold text-foreground">Coverage:</span> {series.meta?.coverageStart ?? 'unknown'} - {series.meta?.coverageEnd ?? 'unknown'}</div>
+                  <div className={cn(
+                    'rounded-lg border px-3 py-2',
+                    isFallback ? 'border-amber-200 bg-amber-100/70 text-amber-900' : 'border-emerald-200 bg-emerald-100/70 text-emerald-900',
+                  )}>
+                    <div className="flex items-center gap-2 font-bold mb-1">
+                      {isFallback ? <AlertTriangle className="h-3.5 w-3.5" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
+                      {isFallback ? 'Fallback / partial data' : 'Database-backed data'}
+                    </div>
+                    <p>
+                      {isFallback
+                        ? 'This series is not fully backed by current synced data. Treat it as reference only.'
+                        : 'This series is backed by synced database data and can be used as current context.'}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+
           <Card className="border-blue-100 bg-blue-50/20 shadow-md">
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2 text-sm font-bold">
@@ -111,7 +176,7 @@ export default function EconomicDataPage() {
               {t('economic.source_desc')}
               <div className="rounded-lg border bg-muted/30 px-3 py-2">
                 {language === 'pl'
-                  ? 'Wybierz krótszy zakres, aby szybciej ocenić najnowsze zmiany, albo MAX do pełnego kontekstu historycznego.'
+                  ? 'Wybierz krotszy zakres, aby szybciej ocenic najnowsze zmiany, albo MAX do pelnego kontekstu historycznego.'
                   : 'Use a shorter range to inspect recent moves quickly, or MAX for full historical context.'}
               </div>
             </CardContent>
