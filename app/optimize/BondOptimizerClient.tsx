@@ -122,7 +122,7 @@ export default function BondOptimizerClient() {
               onClick={handleCalculate}
               disabled={isCalculating}
             >
-              {isCalculating ? 'Simulating...' : 'Find Best Bond'}
+              {isCalculating ? 'Simulating...' : 'Compare Bond Scenarios'}
             </Button>
           </CardContent>
         </Card>
@@ -171,7 +171,7 @@ export default function BondOptimizerClient() {
                 <div className="flex justify-between items-start">
                   <div>
                     <Badge variant="default" className="mb-2 bg-primary text-primary-foreground">
-                      <Award className="w-3 h-3 mr-1" /> Best Choice
+                      <Award className="w-3 h-3 mr-1" /> Highest Projected Payout
                     </Badge>
                     <CardTitle className="text-2xl">{results.winner.name} ({results.winner.bondType})</CardTitle>
                   </div>
@@ -212,8 +212,8 @@ export default function BondOptimizerClient() {
             {/* All Options Ranking */}
             <Card>
               <CardHeader>
-                <CardTitle>Ranked Options</CardTitle>
-                <CardDescription>Comparison based on your {inputs.investmentHorizonMonths} months horizon</CardDescription>
+                <CardTitle>Simulated Outcomes</CardTitle>
+                <CardDescription>Ranked by projected net payout for your {inputs.investmentHorizonMonths} month horizon</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -234,7 +234,7 @@ export default function BondOptimizerClient() {
                       <div className="text-right">
                         <p className="font-bold">{formatCurrency(item.netPayoutValue)}</p>
                         <p className={`text-xs font-medium ${index === 0 ? 'text-primary' : 'text-muted-foreground'}`}>
-                          {index === 0 ? 'Top' : `-${formatCurrency(results.winner.netPayoutValue - item.netPayoutValue)}`}
+                          {index === 0 ? 'Highest payout' : `-${formatCurrency(results.winner.netPayoutValue - item.netPayoutValue)}`}
                         </p>
                       </div>
                     </div>
@@ -246,8 +246,8 @@ export default function BondOptimizerClient() {
         ) : (
           <div className="flex flex-col items-center justify-center h-[400px] border-2 border-dashed rounded-xl bg-muted/30 text-muted-foreground">
             <TrendingUp className="w-12 h-12 mb-4 opacity-20" />
-            <p className="text-lg font-medium">Ready to optimize your investment?</p>
-            <p className="text-sm">Adjust your goals and click &quot;Find Best Bond&quot;</p>
+            <p className="text-lg font-medium">Ready to compare scenarios?</p>
+            <p className="text-sm">Adjust your assumptions and click &quot;Compare Bond Scenarios&quot;</p>
           </div>
         )}
       </div>

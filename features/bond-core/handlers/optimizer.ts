@@ -1,9 +1,9 @@
-import { 
-  ScenarioKind, 
-  BondOptimizerCalculationEnvelope, 
+import {
+  ScenarioKind,
+  BondOptimizerCalculationEnvelope,
   BondOptimizerPayload,
   BondOptimizerResult,
-  BondOptimizerResultItem
+  BondOptimizerResultItem,
 } from '../types/scenarios';
 import { calculateBondInvestment } from '../utils/calculations';
 import { BondType, TaxStrategy, BondInputs } from '../types';
@@ -16,8 +16,8 @@ export class OptimizerHandler extends BaseHandler implements ScenarioHandler<Bon
 
   async handle(payload: BondOptimizerPayload, context: HandlerContext): Promise<BondOptimizerCalculationEnvelope> {
     const allBondTypes = Object.keys(context.dbDefinitions) as BondType[];
-    const withdrawalDate = payload.withdrawalDate ?? 
-      (payload.investmentHorizonMonths ? getWithdrawalDateFromMonths(payload.purchaseDate, payload.investmentHorizonMonths) : undefined);
+    const withdrawalDate = payload.withdrawalDate
+      ?? (payload.investmentHorizonMonths ? getWithdrawalDateFromMonths(payload.purchaseDate, payload.investmentHorizonMonths) : undefined);
 
     if (!withdrawalDate) {
       throw new Error('Withdrawal date or investment horizon is required for optimization');
@@ -30,7 +30,7 @@ export class OptimizerHandler extends BaseHandler implements ScenarioHandler<Bon
 
     for (const bondType of allBondTypes) {
       const def = context.dbDefinitions[bondType];
-      
+
       if (def.isFamilyOnly && !payload.includeFamilyBonds) {
         continue;
       }
@@ -52,19 +52,19 @@ export class OptimizerHandler extends BaseHandler implements ScenarioHandler<Bon
         isRebought: false,
         rebuyDiscount: def.rebuyDiscount,
         taxStrategy: payload.taxStrategy ?? TaxStrategy.STANDARD,
-        rollover: true, 
-        chartStep: 'monthly' as import('@/features/bond-core/types').ChartStep
+        rollover: true,
+        chartStep: 'monthly' as import('@/features/bond-core/types').ChartStep,
       });
 
       const result = calculateBondInvestment(enrichedInputs as BondInputs & { rollover: boolean });
 
       let reason = '';
       if (def.duration === horizonYears) {
-        reason = `Perfect match for your ${horizonYears}-year horizon.`;
+        reason = `Duration closely matches your ${horizonYears}-year horizon.`;
       } else if (def.duration < horizonYears) {
-        reason = `Shorter duration (${def.duration}y) requires rolling over to match your horizon.`;
+        reason = `Shorter duration (${def.duration}y) requires rollover to cover your full horizon.`;
       } else {
-        reason = `Longer duration (${def.duration}y) incurs an early redemption fee at year ${horizonYears.toFixed(1)}.`;
+        reason = `Longer duration (${def.duration}y) implies early redemption around year ${horizonYears.toFixed(1)}.`;
       }
 
       if (def.isInflationIndexed) {
@@ -79,7 +79,7 @@ export class OptimizerHandler extends BaseHandler implements ScenarioHandler<Bon
         effectiveTaxRate: result.totalProfit > 0 ? (result.totalTax / result.totalProfit) * 100 : 0,
         isWinner: false,
         recommendationReason: reason,
-        result
+        result,
       });
     }
 
@@ -87,15 +87,14 @@ export class OptimizerHandler extends BaseHandler implements ScenarioHandler<Bon
 
     if (rankedBonds.length > 0) {
       rankedBonds[0].isWinner = true;
-      rankedBonds[0].recommendationReason = `🏆 THE WINNER: ${rankedBonds[0].recommendationReason}`;
     }
 
     const assumptions = this.generateAssumptions(payload);
-    assumptions.push(`Optimization target: Highest net payout after ${horizonYears.toFixed(1)} years.`);
+    assumptions.push(`Ranking metric: Highest projected net payout after ${horizonYears.toFixed(1)} years.`);
 
     return this.createEnvelope({
       rankedBonds,
-      winner: rankedBonds[0]
+      winner: rankedBonds[0],
     }, [], assumptions, context.dataFreshness);
   }
 }
