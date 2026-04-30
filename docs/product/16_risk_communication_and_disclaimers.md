@@ -1,36 +1,58 @@
 # 16. Risk Communication & Disclaimers
 
-Trust is built on honest communication about risk. The platform must clearly distinguish between factual math and estimated projections.
+Trust depends on strict boundaries. This product must clearly separate:
 
-## 1. The Risk Spectrum
-We use a standardized 1-5 risk scale for all instruments:
-- **Level 1 (Lowest):** OTS/TOS (Fixed-rate Polish Bonds).
-- **Level 2:** EDO/COI (Inflation-linked Polish Bonds).
-- **Level 3:** Gold / Global Bonds.
-- **Level 4:** S&P 500 / Blue-chip Equities.
-- **Level 5 (Highest):** Bitcoin / Altcoins.
+- deterministic calculation logic
+- assumption-based projections
+- educational explanation
+
+from anything that resembles personal financial advice.
+
+## 1. Product Boundary
+
+The app is:
+
+- a treasury bond calculator
+- an educational tool
+- a scenario simulator
+
+The app is not:
+
+- a financial advisor
+- a recommendation engine
+- a suitability assessment tool
 
 ## 2. Mandatory Disclaimers
-The footer and every calculator result must include:
+
+The footer and relevant result screens must communicate:
+
 - "This simulation is for educational purposes only and does not constitute financial advice."
-- "Historical performance is not a guarantee of future results."
-- "Future value projections are based on assumptions (Inflation, Growth) that may not materialize."
+- "Projected outcomes depend on assumptions and may differ from reality."
+- "Historical data, where shown, does not guarantee future results."
 
-## 3. Explaining Specific Risks
+## 3. Copy Rules for Results
 
-### Bond Risks
-- **Inflation Risk:** If inflation is higher than the bond's total rate, the *real* value decreases.
-- **Liquidity Risk:** Fees for early redemption.
-- **Default Risk:** The (very low) risk of the Polish State failing to pay.
+Allowed framing:
 
-### Market Risks
-- **Volatility Risk:** Sharp price drops.
-- **Currency Risk:** For USD-denominated assets like S&P 500.
-- **Platform Risk:** Risks associated with specific exchanges or brokerages.
+- projected payout
+- simulated outcome
+- scenario comparison
+- highest result under current assumptions
 
-## 4. Visualizing Risk
-- **The "Red Zone":** In charts, showing historical periods where the asset was down more than 10%.
-- **Confidence Intervals:** In future projections, showing a "fan chart" of possible outcomes rather than a single line.
+Disallowed framing:
 
-## 5. User Acknowledgement
-For high-risk comparisons (e.g., Bitcoin), the UI may show a one-time "Risk Awareness" popover explaining that the volatility shown is significantly higher than bonds.
+- best bond for you
+- winner
+- recommended
+- you should choose
+
+## 4. Risk Communication Requirements
+
+- show when a result depends heavily on user assumptions
+- show when data is stale, partial, or fallback-based
+- show when a scenario includes early redemption or rollover effects
+- avoid presenting ranking output as objective truth
+
+## 5. Scope Control
+
+If a feature cannot communicate its limits clearly, it should be narrowed, relabeled, or removed until it can.

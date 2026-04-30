@@ -1,6 +1,6 @@
 # Platform Documentation Index
 
-Welcome to the official product documentation for the **Financial Education & Investment Simulation Platform**. This documentation serves as the master reference for product planning, system design, and implementation.
+Welcome to the official documentation for **Obligacje Calculator**. This documentation is the master reference for product boundaries, real requirements, technical design, and active recovery/refactor work.
 
 ## Table of Contents
 
@@ -8,14 +8,14 @@ Welcome to the official product documentation for the **Financial Education & In
 - [Documentation Architecture and Rules](./00_documentation_architecture_and_rules.md) - Structure, naming, numbering, and archive rules for the documentation system.
 
 ### 1. Strategy & Vision (Product)
-- [Product Vision & Purpose](./product/01_product_vision_and_purpose.md) - Why this platform exists and where it is going.
+- [Product Vision & Purpose](./product/01_product_vision_and_purpose.md) - Why this calculator exists and what problem it should solve.
 - [Core Product Philosophy](./product/02_core_philosophy.md) - The fundamental principles guiding development.
 - [Target Users & Personas](./product/03_target_users_and_personas.md) - Detailed analysis of who we are building for.
 - [UX & Design Principles](./product/13_ux_and_design_principles.md) - Aesthetic and usability standards.
 - [UI Copy & Tone](./product/14_ui_copy_and_tone.md) - How we communicate with the user.
 - [Content Strategy & Education](./product/15_content_strategy_and_education.md) - Our approach to financial literacy.
-- [Functional Requirements](./product/17_functional_requirements.md) - Detailed feature specifications.
-- [Roadmap & MVP Definition](./product/25_roadmap_and_mvp_definition.md) - Phases of development.
+- [Functional Requirements](./product/17_functional_requirements.md) - Current product requirements after scope reset.
+- [Roadmap & MVP Definition](./product/25_roadmap_and_mvp_definition.md) - Reset MVP and recovery path.
 - [UX Improvement Plan](./product/18_ux_improvement_plan.md) - Continuous enhancement of the user experience.
 
 ### 2. Technical Architecture
@@ -44,11 +44,12 @@ Welcome to the official product documentation for the **Financial Education & In
 - [User Notebook & Tracking](./technical/features/11_user_notebook_and_tracking.md) - Personal investments.
 
 ### 5. Current Plans & Roadmap
-- [00. Current Product Roadmap](./plans/00_roadmap.md) - Current development status.
-- [01. Long-Term Product Foundation Plan](./plans/01_longterm_product_foundation_plan.md) - Longer-horizon product and platform direction.
+- [00. Current Product Roadmap](./plans/00_roadmap.md) - Honest current-state roadmap centered on recovery and simplification.
+- [01. Long-Term Product Foundation Plan](./plans/01_longterm_product_foundation_plan.md) - Long-term direction after scope narrowing.
+- [02. Full App Refactor and Recovery Plan](./plans/02_full_app_refactor_and_recovery_plan.md) - Active refactor plan for stability, calculation trust, UX simplification, and documentation reset.
 
 ### 6. Archived Plans
 - [Archived Plans Index](./archive/plans/index.md) - Historical and completed execution plans preserved for reference.
 
 ---
-*Last Updated: April 2026 - Platform is now DB-backed and mobile-optimized.*
+*Last Updated: April 30, 2026 - App is in active refactor/recovery and is not yet production-ready.*

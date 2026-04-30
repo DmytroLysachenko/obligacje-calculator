@@ -1,62 +1,138 @@
 # 00. Current Product Roadmap
 
-## Phase 1: Core Foundation (Done)
-- [x] Initial architecture with feature-based structure.
-- [x] Internationalization (i18n) setup.
-- [x] Core Bond Calculator logic.
-- [x] Single Bond Calculator UI.
-- [x] Documentation for Polish Treasury Bonds.
+This roadmap reflects the real state of the application as of April 30, 2026.
 
-## Phase 2: Enhanced Calculations & UI (Done)
-- [x] Support for all Polish bond types (OTS, ROR, DOR, TOS, COI, ROS, EDO, ROD).
-- [x] Improved visualizations (Recharts integration).
-- [x] Multi-language support (Polish translation).
-- [x] Detailed yearly reports and timeline audit metadata.
-- [x] Canonical simulation output for unified rendering.
+The app is **not production-ready**.
 
-## Phase 3: Advanced Simulators (Done)
-- [x] **Recurring Investment Calculator:** Monthly/Quarterly/Yearly contribution modeling.
-- [x] **Goal-Seek Mode:** Reverse calculation to find required investment.
-- [x] **Portfolio Simulation:** Aggregating multiple bonds into a single performance view.
-- [x] **Ladder Strategy:** Modeling rolling bond ladders.
+Several calculators exist, but stability, calculation trust, data freshness, UX consistency, and performance are below acceptable release quality. The current priority is not feature expansion. The current priority is **refactor, simplification, and correctness**.
 
-## Phase 4: Data & Reliability (Done)
-- [x] DB-backed historical data (Inflation, NBP Rate, WIBOR).
-- [x] Automated bond definition sync via scraping layer.
-- [x] Advanced IKZE modeling with tax relief and payout tax.
-- [x] Extensive regression test suite (40+ cases).
+## Current Product Position
 
-## Phase 5: Personal Features (Done)
-- [x] User authentication (NextAuth).
-- [x] Private portfolio tracking (Notebook).
-- [x] Portfolio performance tracking.
-- [x] Export to PDF.
+- core bond calculation logic exists and can be evolved
+- the UI surface area is too large relative to current quality
+- some features overshoot the product goal and create confusion
+- some pages expose unstable or incomplete behavior
+- some live surfaces should be treated as experimental until proven stable
+- documentation previously overstated maturity and completion
 
-## Phase 6: Intelligence & Optimization (Done)
-- [x] **Smart Bond Finder:** Multi-bond parallel simulation for duration-based recommendations.
-- [x] **Tax Wrapper Limits:** Modeling annual contribution caps and taxable overflows.
-- [x] **Portfolio Intelligence:** Liquidity calendars and tax health audits.
-- [x] **Inflation Scenarios:** outcome volatility visualization (Low/Base/High).
-- [x] **Historical Backtesting:** Automatic series matching for past purchases.
-- [x] **Transparency Audit:** Step-by-step interest calculation traces.
+## Product Reset Direction
 
-## Phase 7: Advanced Analytics & Social Connectivity (Done)
-- [x] **Tax Health Audit:** Automated identification of tax-inefficient lots.
-- [x] **Retirement Planner:** Sustainable withdrawal projections based on bond ladders.
-- [x] **Public Portfolio Sharing:** Secure read-only links for sharing insights (via `/p/[shareId]`).
-- [x] **Enterprise-Grade Reliability:** Math sanity guards, input boundary enforcement, and standardized API robustness.
-- [x] **Zero-Latency Performance:** Hybrid Client-Side Engine via Web Workers and LRU Memoization.
+The app is being reset around a narrower and clearer goal:
 
-## Phase 8: Scale & Community Intelligence (Upcoming)
-- [ ] **Interactive Scenario Painter:** User-drawn macro paths for real-time simulation.
-- [ ] **Community Insights:** Anonymized market sentiment and popularity index.
-- [ ] **Wealth Management API:** Standardized JSON exports for external analysis tools.
-- [ ] **Advanced Multi-Asset modeling:** Incorporating Gold/Equity indices for comparison.
+- a reliable Polish treasury bond calculator
+- a small set of understandable calculator variants
+- educational context that supports the calculations
+- transparent data freshness and source quality
+- simple, fast, readable screens
 
----
+The app should **not** behave like a recommendation engine, robo-advisor, or wealth management suite.
 
-## Technical Principles
-- **Accuracy:** Calculations validated against official treasury rules and rounded per Tax Ordinance.
-- **Trust:** Transparent assumptions, warnings, and "How it was calculated" explainer.
-- **Speed:** API response time under 200ms for complex portfolio simulations.
-- **Maintainability:** Pure domain engine, rich schema, and type-safe scenario contracts.
+## Active Delivery Phases
+
+### Phase 1. Recovery Refactor
+
+Status: `Current`
+
+Goals:
+
+- stop render/update loops
+- reduce unnecessary recalculation
+- simplify calculator flows
+- remove misleading recommendation language
+- improve contrast, controls, and readability
+- make data source state explicit
+- fix stale sync metadata shown in UI
+- repair or narrow weak data-backed pages
+
+Primary outputs:
+
+- stable calculator mount behavior
+- explicit calculate/recalculate model where needed
+- smaller and more predictable input surfaces
+- consistent slider/input behavior
+- corrected docs and real acceptance criteria
+- support matrix of trusted vs experimental pages
+- neutral copy in choose-bond and compare-style flows
+
+### Phase 2. Calculation Trust
+
+Status: `Next`
+
+Goals:
+
+- validate each bond type against official rules
+- reduce hidden assumptions
+- align timing, fee, and tax logic across calculators
+- remove or quarantine weak scenarios until verified
+
+Primary outputs:
+
+- audited calculation matrix by bond type
+- regression coverage for every supported scenario family
+- consistent result contracts across calculators
+
+### Phase 3. Data Reliability
+
+Status: `Next`
+
+Goals:
+
+- fix stale sync status
+- expand historical coverage where the feature promises history
+- remove pages that rely on weak or mock-like datasets unless clearly labeled
+- show actual source, coverage, and freshness for each data series
+- make economic-data page usable or intentionally unavailable
+
+Primary outputs:
+
+- trustworthy data status surfaces
+- usable economic data page
+- market-vs-bonds data coverage extended or feature scope reduced
+
+### Phase 4. Production Narrowing
+
+Status: `Later`
+
+Goals:
+
+- decide which calculators remain in production scope
+- archive or hide unstable features
+- polish only the set that passes trust and UX thresholds
+
+Primary outputs:
+
+- reduced feature set
+- stronger quality bar
+- believable release candidate path
+
+## In-Scope Product Surfaces
+
+The likely retained core:
+
+- education
+- single bond calculator
+- comparison calculator
+- regular investment / ladder if calculation rules are verified
+- retirement only if rules and scope are narrowed and explained
+- economic data only if source/freshness are real and visible
+
+## Out-of-Scope Until Stabilized
+
+- recommendation-style winner language
+- broad "smart" advisory UX
+- social/community features
+- novelty UI layers that add state churn
+- extra feature growth before trust/performance recovery
+
+## Roadmap Rule
+
+No feature should be marked done only because UI exists.
+
+A feature is done only when:
+
+- calculations are verified
+- behavior is stable
+- performance is acceptable
+- copy is accurate
+- source/freshness state is clear
+- docs describe reality
