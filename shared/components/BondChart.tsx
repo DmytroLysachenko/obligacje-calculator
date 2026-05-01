@@ -5,6 +5,7 @@ import { BaseAreaChart } from './charts/BaseAreaChart';
 import { useChartSync } from '@/shared/context/ChartSyncContext';
 
 interface BondChartProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any[];
   xAxisKey: string;
   areas: {

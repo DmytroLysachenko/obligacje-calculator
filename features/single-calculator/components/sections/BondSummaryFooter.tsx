@@ -6,12 +6,13 @@ import { HelpCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
 import { BondInputs } from '@/features/bond-core/types';
+import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { useLanguage } from '@/i18n';
 import { GLOSSARY } from '@/shared/constants/glossary';
 
 interface BondSummaryFooterProps {
   inputs: BondInputs;
-  currentDef: any;
+  currentDef: BondDefinition;
   maturityDate: Date;
   hasMounted: boolean;
 }

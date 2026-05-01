@@ -223,14 +223,14 @@ export interface BondOptimizerResultItem {
   netPayoutValue: number;
   totalProfit: number;
   effectiveTaxRate: number;
-  isWinner: boolean;
+  isHighestPayout: boolean;
   scenarioReason: string;
   result: CalculationResult;
 }
 
 export interface BondOptimizerResult {
   rankedBonds: BondOptimizerResultItem[];
-  winner: BondOptimizerResultItem;
+  highestPayout: BondOptimizerResultItem;
 }
 
 export type BondOptimizerCalculationEnvelope = CalculationEnvelope<BondOptimizerResult>;

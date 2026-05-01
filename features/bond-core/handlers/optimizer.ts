@@ -77,7 +77,7 @@ export class OptimizerHandler extends BaseHandler implements ScenarioHandler<Bon
         netPayoutValue: result.netPayoutValue,
         totalProfit: result.totalProfit,
         effectiveTaxRate: result.totalProfit > 0 ? (result.totalTax / result.totalProfit) * 100 : 0,
-        isWinner: false,
+        isHighestPayout: false,
         scenarioReason: reason,
         result,
       });
@@ -86,7 +86,7 @@ export class OptimizerHandler extends BaseHandler implements ScenarioHandler<Bon
     rankedBonds.sort((a, b) => b.netPayoutValue - a.netPayoutValue);
 
     if (rankedBonds.length > 0) {
-      rankedBonds[0].isWinner = true;
+      rankedBonds[0].isHighestPayout = true;
     }
 
     const assumptions = this.generateAssumptions(payload);
@@ -94,7 +94,7 @@ export class OptimizerHandler extends BaseHandler implements ScenarioHandler<Bon
 
     return this.createEnvelope({
       rankedBonds,
-      winner: rankedBonds[0],
+      highestPayout: rankedBonds[0],
     }, [], assumptions, context.dataFreshness);
   }
 }

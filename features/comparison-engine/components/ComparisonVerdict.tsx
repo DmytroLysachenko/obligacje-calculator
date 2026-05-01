@@ -3,7 +3,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Award, TrendingDown, Zap, ShieldCheck } from "lucide-react";
+import { TrendingDown, Zap, ShieldCheck } from "lucide-react";
 import { useLanguage } from "@/i18n";
 import { CalculationResult, TaxStrategy, BondInputs } from "@/features/bond-core/types";
 
@@ -28,7 +28,7 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
 }) => {
   const { t, language } = useLanguage();
   const comparisonSnapshotLabel = language === 'pl' ? 'Snapshot porownania' : 'Comparison snapshot';
-  const higherText = language === 'pl' ? 'ma wyzszy wynik netto' : 'shows the higher net outcome';
+  const higherText = language === 'pl' ? 'ma wyższą prognozowaną wypłatę' : 'shows higher projected payout';
   const overText = language === 'pl' ? 'dla horyzontu' : 'for a';
   const betterBondType = resultsA.netPayoutValue > resultsB.netPayoutValue ? inputsA.bondType : inputsB.bondType;
   const betterScenarioLabel = resultsA.netPayoutValue > resultsB.netPayoutValue ? t('comparison.scenario_a') : t('comparison.scenario_b');
@@ -39,8 +39,8 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
     <Card className="overflow-hidden border-2 border-primary/20 shadow-2xl bg-primary/5">
       <CardHeader className="bg-primary/10 border-b pb-4">
         <CardTitle className="text-lg font-black uppercase tracking-widest flex items-center gap-2 text-primary">
-          <Award className="h-5 w-5" />
-          {t('comparison.verdict')}
+          <TrendingDown className="h-5 w-5" />
+          {t('comparison.summary') ?? 'Simulation Summary'}
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">

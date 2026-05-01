@@ -27,7 +27,7 @@ self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
     try {
       const json = payload.json;
       // Eurostat JSON-stat format transformation
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const dataPoints = Object.keys(json.value || {}).map((key: string) => ({
         index: key,
         value: json.value[key]

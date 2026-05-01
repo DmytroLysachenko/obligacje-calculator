@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 
 interface BondDisplaySectionProps {
   inputs: BondInputs;
-  onUpdate: (key: keyof BondInputs, value: any) => void;
+  onUpdate: (key: keyof BondInputs, value: unknown) => void;
   showCustomTax: boolean;
   setShowCustomTax: (value: boolean) => void;
 }

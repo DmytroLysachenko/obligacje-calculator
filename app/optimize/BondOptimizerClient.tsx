@@ -48,7 +48,7 @@ export default function BondOptimizerClient() {
   };
 
   const results = envelope?.result;
-  const leadScenario = results?.winner;
+  const highestPayoutScenario = results?.highestPayout;
   const horizonYears = (inputs.investmentHorizonMonths / 12).toFixed(1);
 
   return (
@@ -246,7 +246,7 @@ export default function BondOptimizerClient() {
             <Skeleton className="h-[240px] w-full" />
             <Skeleton className="h-[420px] w-full" />
           </div>
-        ) : results && leadScenario ? (
+        ) : results && highestPayoutScenario ? (
           <>
             <Card className="border-primary/20 bg-primary/5">
               <CardHeader className="pb-3">
@@ -254,13 +254,13 @@ export default function BondOptimizerClient() {
                   <div className="space-y-2">
                     <Badge className="w-fit bg-primary text-primary-foreground">
                       <Award className="mr-1 h-3 w-3" />
-                      Highest projected payout in this scenario
+                      Highest payout under assumptions
                     </Badge>
                     <CardTitle className="text-2xl">
-                      {leadScenario.name} ({leadScenario.bondType})
+                      {highestPayoutScenario.name} ({highestPayoutScenario.bondType})
                     </CardTitle>
                     <CardDescription>
-                      Lead outcome for your {inputs.investmentHorizonMonths}
+                      Highest ranked outcome for your {inputs.investmentHorizonMonths}
                       -month setup.
                     </CardDescription>
                   </div>
@@ -269,7 +269,7 @@ export default function BondOptimizerClient() {
                       Estimated Net Payout
                     </p>
                     <p className="text-2xl font-black text-primary">
-                      {formatCurrency(leadScenario.netPayoutValue)}
+                      {formatCurrency(highestPayoutScenario.netPayoutValue)}
                     </p>
                   </div>
                 </div>
@@ -278,7 +278,7 @@ export default function BondOptimizerClient() {
                 <div className="rounded-xl border bg-background/60 p-4 text-sm">
                   <p className="flex items-start gap-2">
                     <Info className="mt-0.5 h-4 w-4 text-primary" />
-                    <span>{leadScenario.scenarioReason}</span>
+                    <span>{highestPayoutScenario.scenarioReason}</span>
                   </p>
                 </div>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -287,7 +287,7 @@ export default function BondOptimizerClient() {
                       Net Profit
                     </p>
                     <p className="text-lg font-black text-green-600">
-                      +{formatCurrency(leadScenario.totalProfit)}
+                      +{formatCurrency(highestPayoutScenario.totalProfit)}
                     </p>
                   </div>
                   <div className="rounded-xl border bg-background/70 p-4 text-center">
@@ -296,7 +296,7 @@ export default function BondOptimizerClient() {
                     </p>
                     <p className="text-lg font-black">
                       {formatPercentage(
-                        (leadScenario.totalProfit / inputs.initialInvestment) *
+                        (highestPayoutScenario.totalProfit / inputs.initialInvestment) *
                           100,
                       )}
                     </p>
@@ -306,7 +306,7 @@ export default function BondOptimizerClient() {
                       Tax Paid
                     </p>
                     <p className="text-lg font-black text-orange-600">
-                      {formatCurrency(leadScenario.result.totalTax)}
+                      {formatCurrency(highestPayoutScenario.result.totalTax)}
                     </p>
                   </div>
                 </div>
@@ -325,7 +325,7 @@ export default function BondOptimizerClient() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {results.rankedBonds.map((item, index) => {
-                  const gapToLead = leadScenario.netPayoutValue - item.netPayoutValue;
+                  const gapToLead = highestPayoutScenario.netPayoutValue - item.netPayoutValue;
 
                   return (
                     <div
@@ -360,8 +360,8 @@ export default function BondOptimizerClient() {
                             }`}
                           >
                             {index === 0
-                              ? 'Lead payout in this scenario'
-                              : `-${formatCurrency(gapToLead)} vs lead`}
+                              ? 'Highest payout in this scenario'
+                              : `-${formatCurrency(gapToLead)} vs highest`}
                           </p>
                         </div>
                       </div>
