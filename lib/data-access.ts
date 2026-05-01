@@ -78,7 +78,7 @@ export const getGlobalDataFreshness = cache(async (): Promise<CalculationDataFre
 
   const result: CalculationDataFreshness = {
     status: status as import('@/features/bond-core/types/scenarios').DataFreshnessStatus,
-    asOf: latestSyncCheck ? format(latestSyncCheck, 'yyyy-MM-dd') : format(oldestCriticalPoint, 'yyyy-MM-dd'),
+    asOf: oldestCriticalPoint ? format(oldestCriticalPoint, 'yyyy-MM') : undefined,
     lastCheck: latestSyncCheck?.toISOString(),
     usedFallback,
   };
