@@ -31,8 +31,8 @@ interface ChartSeriesEnvelope<T> {
 export default function EconomicDataPage() {
   const { t, language } = useLanguage();
   const [period, setPeriod] = useState<'1Y' | '5Y' | '10Y' | '30Y' | 'ALL'>('10Y');
-  const { data: inflationMeta } = useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/inflation');
-  const { data: nbpMeta } = useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/nbp-rate');
+  const { data: inflationMeta, isLoading: isLoadingInflation } = useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/inflation');
+  const { data: nbpMeta, isLoading: isLoadingNbp } = useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/nbp-rate');
 
   const periods = [
     { label: '1Y', value: '1Y' },
@@ -46,10 +46,12 @@ export default function EconomicDataPage() {
     {
       title: t('economic.inflation_title'),
       meta: inflationMeta,
+      isLoading: isLoadingInflation,
     },
     {
       title: t('economic.nbp_rate_title'),
       meta: nbpMeta,
+      isLoading: isLoadingNbp,
     },
   ];
 
