@@ -37,6 +37,7 @@ import { BondComparisonCalculationEnvelope } from "@/features/bond-core/types/sc
 import { getBondColor } from "@/shared/constants/bond-colors";
 
 import { MarketAssumptionsForm } from "@/shared/components/MarketAssumptionsForm";
+import { CommittedSliderInput } from "@/shared/components/CommittedSliderInput";
 
 type ComparisonResultItem = BondComparisonCalculationEnvelope["result"][number];
 type ChartDataPoint = {
@@ -157,30 +158,23 @@ const formatCurrency = (val: number) =>
               <CardTitle className="text-sm font-black uppercase tracking-widest">{t('comparison.shared_scenario')}</CardTitle>
             </CardHeader>
             <CardContent className="pt-6 space-y-8">
-              <div className="space-y-4">
-                <div className="flex justify-between">
-                  <Label className="font-bold">{t('comparison.initial_sum')}</Label>
-                  <span className="font-black text-primary">{formatCurrency(initialInvestment)}</span>
-                </div>
-                <Slider 
-                  value={[initialInvestment]} 
-                  min={1000} max={100000} step={1000} 
-                  onValueChange={([v]) => {
+              <div className="space-y-2">
+                <Label className="font-bold">{t('comparison.initial_sum')}</Label>
+                <CommittedSliderInput
+                  value={initialInvestment}
+                  min={1000} max={100000} step={100} unit="PLN"
+                  onCommit={(v) => {
                     setInitialInvestment(v);
                     setIsDirty(true);
-                  }} 
+                  }}
                 />
               </div>
-
-              <div className="space-y-4 pt-4 border-t border-dashed">
-                <div className="flex justify-between">
-                  <Label className="font-bold">{t('comparison.horizon_years')}</Label>
-                  <span className="font-black text-primary">{duration} {t('common.years')}</span>
-                </div>
-                <Slider 
-                  value={[duration]} 
-                  min={1} max={30} step={1} 
-                  onValueChange={([v]) => {
+              <div className="space-y-2 pt-4 border-t border-dashed">
+                <Label className="font-bold">{t('comparison.horizon_years')}</Label>
+                <CommittedSliderInput 
+                  value={duration} 
+                  min={1} max={30} step={1} unit={t('common.years')}
+                  onCommit={(v) => {
                     setDuration(v);
                     setIsDirty(true);
                   }} 

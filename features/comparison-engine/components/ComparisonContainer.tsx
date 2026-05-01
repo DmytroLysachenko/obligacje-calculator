@@ -18,6 +18,7 @@ import { ChartContainer } from "@/shared/components/charts/ChartContainer";
 import { CalculationMetaPanel } from "@/shared/components/CalculationMetaPanel";
 import { CalculatorPageShell } from "@/shared/components/CalculatorPageShell";
 import { MarketAssumptionsForm } from "@/shared/components/MarketAssumptionsForm";
+import { CommittedSliderInput } from "@/shared/components/CommittedSliderInput";
 import { convertTimelineToCSV, downloadFile } from "@/shared/lib/csv-utils";
 import {
   ResponsiveContainer,
@@ -326,18 +327,14 @@ export const ComparisonContainer: React.FC = () => {
                 </div>
 
                 <div className="space-y-4 pt-2 border-t border-dashed">
-                  <div className="flex justify-between items-center">
-                    <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">{t('bonds.investment_horizon')}</Label>
-                    <span className="text-xl font-black text-primary">
-                      {Math.max(1, Math.round((sharedConfig.investmentHorizonMonths ?? 120) / 12))} {t('common.years')}
-                    </span>
-                  </div>
-                  <Slider
-                    value={[sharedConfig.investmentHorizonMonths ?? 120]}
+                  <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">{t('bonds.investment_horizon')}</Label>
+                  <CommittedSliderInput
+                    value={sharedConfig.investmentHorizonMonths ?? 120}
                     min={12}
                     max={360}
                     step={1}
-                    onValueChange={([value]) => updateSharedConfig('investmentHorizonMonths', value)}
+                    unit="Months"
+                    onCommit={(value) => updateSharedConfig('investmentHorizonMonths', value)}
                   />
                 </div>
 

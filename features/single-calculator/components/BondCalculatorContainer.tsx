@@ -243,7 +243,6 @@ export const BondCalculatorContainer: React.FC = () => {
                 results={results}
                 inputs={inputs}
                 previousResults={previousResults}
-                onSaveScenario={handleSaveScenario}
                 onAddToNotebook={handleAddToNotebook}
                 onExportPDF={handleExportPDF}
               />

@@ -205,6 +205,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
               step={100}
               unit="PLN"
               sliderClassName="py-4"
+              showInput={false}
               onCommit={handleInvestmentChange}
             />
           </div>

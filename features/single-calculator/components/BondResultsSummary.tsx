@@ -25,7 +25,6 @@ interface BondResultsSummaryProps {
   results: CalculationResult;
   inputs: BondInputs;
   previousResults?: CalculationResult | null;
-  onSaveScenario?: () => void;
   onAddToNotebook?: () => void;
   onExportPDF?: () => void;
 }
@@ -140,7 +139,6 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
   results,
   inputs,
   previousResults,
-  onSaveScenario,
   onAddToNotebook,
   onExportPDF,
 }) => {
@@ -235,11 +233,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
               </p>
             )}
           </div>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-            <Button variant="outline" className="gap-2 text-xs font-bold" onClick={onSaveScenario}>
-              <Save className="h-4 w-4" />
-              Save Scenario
-            </Button>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <Button variant="outline" className="gap-2 text-xs font-bold" onClick={onAddToNotebook}>
               <Briefcase className="h-4 w-4" />
               Notebook

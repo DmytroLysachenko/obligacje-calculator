@@ -183,33 +183,29 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           <AccordionItem value="assumptions" className="border-b px-6 py-2">
             <AccordionTrigger className="hover:no-underline py-4">
               <span className="text-sm font-black flex items-center gap-2 uppercase tracking-widest text-slate-700">
-                {t('bonds.step_market')}
+                {t('common.advanced')}
               </span>
             </AccordionTrigger>
             <AccordionContent className="pb-6">
-              <MarketAssumptionsForm
-                expectedInflation={inputs.expectedInflation}
-                expectedNbpRate={inputs.expectedNbpRate}
-                bondType={inputs.bondType}
-                customInflation={inputs.customInflation}
-                onUpdate={handleUpdate as (key: string, value: unknown) => void}
-              />
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="display" className="border-0 px-6 py-2">
-            <AccordionTrigger className="hover:no-underline py-4">
-              <span className="text-sm font-black flex items-center gap-2 uppercase tracking-widest text-slate-700">
-                {t('bonds.step_display')}
-              </span>
-            </AccordionTrigger>
-            <AccordionContent>
-              <BondDisplaySection 
-                inputs={inputs}
-                onUpdate={handleUpdate}
-                showCustomTax={showCustomTax}
-                setShowCustomTax={setShowCustomTax}
-              />
+              <div className="space-y-6">
+                <MarketAssumptionsForm
+                  expectedInflation={inputs.expectedInflation}
+                  expectedNbpRate={inputs.expectedNbpRate}
+                  bondType={inputs.bondType}
+                  customInflation={inputs.customInflation}
+                  onUpdate={handleUpdate as (key: string, value: unknown) => void}
+                />
+                
+                <div className="border-t border-dashed pt-6">
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">{t('bonds.step_display')}</h4>
+                  <BondDisplaySection 
+                    inputs={inputs}
+                    onUpdate={handleUpdate}
+                    showCustomTax={showCustomTax}
+                    setShowCustomTax={setShowCustomTax}
+                  />
+                </div>
+              </div>
             </AccordionContent>
           </AccordionItem>
         </Accordion>

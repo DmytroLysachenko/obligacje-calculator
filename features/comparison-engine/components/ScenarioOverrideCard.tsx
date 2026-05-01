@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Slider } from "@/components/ui/slider";
+import { CommittedSliderInput } from "@/shared/components/CommittedSliderInput";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/i18n";
 import { BondType, TaxStrategy } from "@/features/bond-core/types";
@@ -113,18 +113,14 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
 
         {customHorizonEnabled ? (
           <div className="space-y-3">
-            <div className="flex justify-between text-[10px] font-black uppercase text-muted-foreground tracking-widest">
-              <span>{t("comparison.scenario_horizon")}</span>
-              <span className="text-primary font-black">
-                {Math.max(1, Math.round((customHorizonMonths ?? 12) / 12))} {t("common.years")}
-              </span>
-            </div>
-            <Slider
-              value={[customHorizonMonths ?? 12]}
+            <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">{t("comparison.scenario_horizon")}</Label>
+            <CommittedSliderInput
+              value={customHorizonMonths ?? 12}
               min={12}
               max={360}
               step={1}
-              onValueChange={([value]) => onCustomHorizonMonthsChange(value)}
+              unit="Months"
+              onCommit={(value) => onCustomHorizonMonthsChange(value)}
             />
           </div>
         ) : null}
