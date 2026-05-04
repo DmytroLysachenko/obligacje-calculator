@@ -1,13 +1,20 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useLanguage } from '@/i18n';
-import { TrendingUp, Info, Activity, CalendarRange, Database, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import {
+  Activity,
+  AlertTriangle,
+  CalendarRange,
+  CheckCircle2,
+  Database,
+  Info,
+  LineChart,
+} from 'lucide-react';
 import { InflationChart } from '@/features/economic-data/components/InflationChart';
 import { NBPRateChart } from '@/features/economic-data/components/NBPRateChart';
 import { cn } from '@/lib/utils';
-
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { useChartData } from '@/shared/hooks/useChartData';
 
@@ -28,31 +35,96 @@ interface ChartSeriesEnvelope<T> {
   seriesName?: string;
 }
 
+type PeriodValue = '1Y' | '5Y' | '10Y' | '30Y' | 'ALL';
+
+function StatusCard({
+  title,
+  meta,
+  isLoading,
+}: {
+  title: string;
+  meta?: ChartSeriesEnvelope<EconomicSeriesPoint>;
+  isLoading: boolean;
+}) {
+  const isFallback = meta?.usedFallback ?? true;
+
+  return (
+    <Card
+      className={cn(
+        'rounded-2xl border shadow-none',
+        isFallback ? 'border-amber-200 bg-amber-50' : 'bg-card',
+      )}
+    >
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-base">
+          {isFallback ? (
+            <AlertTriangle className="h-4 w-4 text-amber-700" />
+          ) : (
+            <CheckCircle2 className="h-4 w-4 text-emerald-700" />
+          )}
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3 text-sm">
+        <div className="grid grid-cols-1 gap-3">
+          <div className="rounded-xl border bg-background/70 p-3">
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">Source</p>
+            <p className="mt-1 font-medium text-foreground">
+              {isLoading ? 'Loading...' : meta?.dataSource ?? meta?.source ?? 'Unknown'}
+            </p>
+          </div>
+          <div className="rounded-xl border bg-background/70 p-3">
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">Coverage</p>
+            <p className="mt-1 font-medium text-foreground">
+              {isLoading
+                ? 'Loading...'
+                : `${meta?.coverageStart ?? 'Unknown'} - ${meta?.coverageEnd ?? 'Unknown'}`}
+            </p>
+          </div>
+          <div className="rounded-xl border bg-background/70 p-3">
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">As of</p>
+            <p className="mt-1 font-medium text-foreground">
+              {isLoading ? 'Loading...' : meta?.asOf ?? meta?.lastCheck ?? 'Unknown'}
+            </p>
+          </div>
+        </div>
+
+        <div
+          className={cn(
+            'rounded-xl border px-3 py-3 leading-6',
+            isFallback
+              ? 'border-amber-200 bg-amber-100 text-amber-950'
+              : 'border-emerald-200 bg-emerald-50 text-emerald-950',
+          )}
+        >
+          <p className="font-semibold">
+            {isFallback ? 'Fallback or partial data' : 'Database-backed data'}
+          </p>
+          <p className="mt-1 text-sm">
+            {isFallback
+              ? 'Treat this series as reference context until the sync pipeline provides fuller coverage.'
+              : 'This series is backed by the synced data pipeline and can be used as current context.'}
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function EconomicDataPage() {
   const { t, language } = useLanguage();
-  const [period, setPeriod] = useState<'1Y' | '5Y' | '10Y' | '30Y' | 'ALL'>('10Y');
-  const { data: inflationMeta, isLoading: isLoadingInflation } = useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/inflation');
-  const { data: nbpMeta, isLoading: isLoadingNbp } = useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/nbp-rate');
+  const [period, setPeriod] = useState<PeriodValue>('10Y');
+  const { data: inflationMeta, isLoading: isLoadingInflation } =
+    useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/inflation');
+  const { data: nbpMeta, isLoading: isLoadingNbp } =
+    useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/nbp-rate');
 
-  const periods = [
+  const periods: { label: string; value: PeriodValue }[] = [
     { label: '1Y', value: '1Y' },
     { label: '5Y', value: '5Y' },
     { label: '10Y', value: '10Y' },
     { label: '30Y', value: '30Y' },
     { label: 'MAX', value: 'ALL' },
-  ];
-
-  const sourceCards = [
-    {
-      title: t('economic.inflation_title'),
-      meta: inflationMeta,
-      isLoading: isLoadingInflation,
-    },
-    {
-      title: t('economic.nbp_rate_title'),
-      meta: nbpMeta,
-      isLoading: isLoadingNbp,
-    },
   ];
 
   return (
@@ -61,129 +133,112 @@ export default function EconomicDataPage() {
       description={t('economic.subtitle')}
       icon={<Activity className="h-8 w-8" />}
       isCalculating={false}
-      hasResults={true}
+      hasResults
       extraHeaderActions={
-        <div className="flex flex-wrap items-center gap-2 rounded-xl border bg-muted/30 p-1 shadow-sm">
-          <span className="inline-flex items-center gap-1 px-3 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-2 rounded-xl border bg-muted/20 p-1">
+          <span className="inline-flex items-center gap-1 px-3 text-xs font-medium text-muted-foreground">
             <CalendarRange className="h-3.5 w-3.5" />
-            {language === 'pl' ? 'Zakres' : 'Range'}
+            {language === 'pl' ? 'Zakres danych' : 'Range'}
           </span>
-          {periods.map((p) => (
+          {periods.map((item) => (
             <button
-              key={p.value}
-              onClick={() => setPeriod(p.value as '1Y' | '5Y' | '10Y' | '30Y' | 'ALL')}
+              key={item.value}
+              onClick={() => setPeriod(item.value)}
               className={cn(
-                'rounded-lg px-4 py-2 text-xs font-black uppercase tracking-widest transition-all',
-                period === p.value
-                  ? 'bg-background text-primary shadow-sm'
-                  : 'text-muted-foreground hover:bg-background/50 hover:text-foreground'
+                'rounded-lg px-4 py-2 text-sm transition-colors',
+                period === item.value
+                  ? 'bg-background font-semibold text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:bg-background/70 hover:text-foreground',
               )}
             >
-              {p.label}
+              {item.label}
             </button>
           ))}
         </div>
       }
     >
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
-          <Card className="shadow-lg border-primary/5 min-h-[500px]">
-            <CardHeader>
-              <div className="flex items-center gap-2 mb-2">
-                <Activity className="h-5 w-5 text-primary" />
+      <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
+        <section className="space-y-8 xl:col-span-8">
+          <Card className="rounded-2xl border shadow-none">
+            <CardHeader className="border-b pb-4">
+              <div className="flex items-center gap-2">
+                <LineChart className="h-5 w-5 text-primary" />
                 <CardTitle>{t('economic.inflation_title')}</CardTitle>
               </div>
-              <CardDescription>{t('economic.inflation_desc')}</CardDescription>
+              <CardDescription className="text-sm leading-6">
+                {t('economic.inflation_desc')}
+              </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
               <InflationChart period={period} />
             </CardContent>
           </Card>
 
-          <Card className="shadow-lg border-primary/5 min-h-[500px]">
-            <CardHeader>
-              <div className="flex items-center gap-2 mb-2">
-                <Activity className="h-5 w-5 text-primary" />
+          <Card className="rounded-2xl border shadow-none">
+            <CardHeader className="border-b pb-4">
+              <div className="flex items-center gap-2">
+                <LineChart className="h-5 w-5 text-primary" />
                 <CardTitle>{t('economic.nbp_rate_title')}</CardTitle>
               </div>
-              <CardDescription>{t('economic.nbp_rate_desc')}</CardDescription>
+              <CardDescription className="text-sm leading-6">
+                {t('economic.nbp_rate_desc')}
+              </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
               <NBPRateChart period={period} />
             </CardContent>
           </Card>
-        </div>
+        </section>
 
-        <div className="space-y-6">
-          {sourceCards.map((series) => {
-            const isFallback = series.meta?.usedFallback ?? true;
-
-            return (
-              <Card
-                key={series.title}
-                className={cn(
-                  'shadow-md border',
-                  isFallback ? 'border-amber-200 bg-amber-50/40' : 'border-emerald-100 bg-emerald-50/20',
-                )}
-              >
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-sm font-bold">
-                    <Database className="h-4 w-4 text-primary" />
-                    {series.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 text-xs text-muted-foreground">
-                  <div><span className="font-bold text-foreground">{t('economic.data_source')}:</span> {series.meta?.dataSource ?? series.meta?.source ?? 'unknown'}</div>
-                  <div><span className="font-bold text-foreground">{t('economic.as_of')}:</span> {series.meta?.asOf ?? 'unknown'}</div>
-                  <div><span className="font-bold text-foreground">Coverage:</span> {series.meta?.coverageStart ?? 'unknown'} - {series.meta?.coverageEnd ?? 'unknown'}</div>
-                  <div className={cn(
-                    'rounded-lg border px-3 py-2',
-                    isFallback ? 'border-amber-200 bg-amber-100/70 text-amber-900' : 'border-emerald-200 bg-emerald-100/70 text-emerald-900',
-                  )}>
-                    <div className="flex items-center gap-2 font-bold mb-1">
-                      {isFallback ? <AlertTriangle className="h-3.5 w-3.5" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
-                      {isFallback ? 'Fallback / partial data' : 'Database-backed data'}
-                    </div>
-                    <p>
-                      {isFallback
-                        ? 'This series is not fully backed by current synced data. Treat it as reference only.'
-                        : 'This series is backed by synced database data and can be used as current context.'}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-
-          <Card className="border-blue-100 bg-blue-50/20 shadow-md">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-sm font-bold">
-                <TrendingUp className="h-4 w-4 text-blue-500" />
-                {t('economic.why_it_matters')}
+        <aside className="space-y-6 xl:col-span-4">
+          <Card className="rounded-2xl border shadow-none">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Info className="h-4 w-4 text-primary" />
+                Page scope
               </CardTitle>
             </CardHeader>
-            <CardContent className="text-xs leading-relaxed text-muted-foreground">
-              {t('economic.inflation_impact_desc')}
+            <CardContent className="space-y-3 text-sm leading-6 text-muted-foreground">
+              <p>
+                This page is a reference panel for macro context used by the calculators. It is not a
+                forecasting module and it is not a market research product.
+              </p>
+              <p>
+                If a series falls back to partial data, the page should make that obvious instead of
+                pretending full production coverage.
+              </p>
             </CardContent>
           </Card>
 
-          <Card className="border-primary/5 shadow-md">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-sm font-bold">
-                <Info className="h-4 w-4 text-primary" />
-                {t('economic.data_source')}
+          <StatusCard
+            title={t('economic.inflation_title')}
+            meta={inflationMeta}
+            isLoading={isLoadingInflation}
+          />
+
+          <StatusCard
+            title={t('economic.nbp_rate_title')}
+            meta={nbpMeta}
+            isLoading={isLoadingNbp}
+          />
+
+          <Card className="rounded-2xl border shadow-none">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Database className="h-4 w-4 text-primary" />
+                How to use these series
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 text-xs text-muted-foreground">
-              {t('economic.source_desc')}
-              <div className="rounded-lg border bg-muted/30 px-3 py-2">
+            <CardContent className="space-y-3 text-sm leading-6 text-muted-foreground">
+              <p>{t('economic.inflation_impact_desc')}</p>
+              <div className="rounded-xl border bg-muted/20 p-4">
                 {language === 'pl'
-                  ? 'Wybierz krotszy zakres, aby szybciej ocenic najnowsze zmiany, albo MAX do pelnego kontekstu historycznego.'
-                  : 'Use a shorter range to inspect recent moves quickly, or MAX for full historical context.'}
+                  ? 'Krotsze zakresy pomagaja ocenic ostatnie zmiany. MAX daje pelniejszy kontekst historyczny, ale nie poprawia jakosci brakujacych danych.'
+                  : 'Shorter ranges help inspect recent changes. MAX gives broader context, but it does not improve missing data quality.'}
               </div>
             </CardContent>
           </Card>
-        </div>
+        </aside>
       </div>
     </CalculatorPageShell>
   );
