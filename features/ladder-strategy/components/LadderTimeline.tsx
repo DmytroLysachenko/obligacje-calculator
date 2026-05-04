@@ -1,179 +1,203 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { RegularInvestmentResult } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { format, parseISO } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer, 
-  Cell
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from 'recharts';
-import { Coins, TrendingUp } from 'lucide-react';
+import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
+import { Calendar, Coins, TrendingUp } from 'lucide-react';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 
 interface LadderTimelineProps {
   results: RegularInvestmentResult;
 }
 
+type MaturityBucket = {
+  date: string;
+  displayDate: string;
+  amount: number;
+  count: number;
+};
+
 export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
   const dateLocale = language === 'pl' ? pl : enGB;
 
-  const maturityData = results.lots.reduce((acc, lot) => {
-    const maturityDate = parseISO(lot.maturityDate);
-    const key = format(maturityDate, 'yyyy-MM');
-    
-    if (!acc[key]) {
-      acc[key] = {
-        date: key,
-        displayDate: format(maturityDate, 'MMM yyyy', { locale: dateLocale }),
-        amount: 0,
-        count: 0
-      };
-    }
-    
-    acc[key].amount += lot.netValue;
-    acc[key].count += 1;
-    return acc;
-  }, {} as Record<string, { date: string; displayDate: string; amount: number; count: number }>);
-
-  const chartData = Object.values(maturityData).sort((a, b) => a.date.localeCompare(b.date));
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', {
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', {
       style: 'currency',
       currency: 'PLN',
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(value);
-  };
 
-  const averageMaturityValue = chartData.length > 0 
-    ? chartData.reduce((acc, curr) => acc + curr.amount, 0) / chartData.length 
-    : 0;
-    
-  const monthlyContribution = results.lots.length > 0
-    ? results.totalInvested / results.lots.length
-    : 0;
+  const chartData = useMemo<MaturityBucket[]>(() => {
+    const grouped = results.lots.reduce((accumulator, lot) => {
+      const maturityDate = parseISO(lot.maturityDate);
+      const key = format(maturityDate, 'yyyy-MM');
 
-  const monthlyProfit = averageMaturityValue - monthlyContribution;
+      if (!accumulator[key]) {
+        accumulator[key] = {
+          date: key,
+          displayDate: format(maturityDate, 'MMM yyyy', { locale: dateLocale }),
+          amount: 0,
+          count: 0,
+        };
+      }
+
+      accumulator[key].amount += lot.netValue;
+      accumulator[key].count += 1;
+      return accumulator;
+    }, {} as Record<string, MaturityBucket>);
+
+    return Object.values(grouped).sort((left, right) => left.date.localeCompare(right.date));
+  }, [dateLocale, results.lots]);
+
+  const averageMaturityValue =
+    chartData.length > 0
+      ? chartData.reduce((accumulator, item) => accumulator + item.amount, 0) / chartData.length
+      : 0;
+
+  const monthlyContribution = results.lots.length > 0 ? results.totalInvested / results.lots.length : 0;
+  const monthlySpreadGap = averageMaturityValue - monthlyContribution;
+  const peakMonth = chartData.reduce<MaturityBucket | null>(
+    (currentPeak, item) => (!currentPeak || item.amount > currentPeak.amount ? item : currentPeak),
+    null,
+  );
+  const earliestMonth = chartData[0] ?? null;
+  const latestMonth = chartData[chartData.length - 1] ?? null;
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="border-green-100 bg-green-50/20 shadow-sm border-2 overflow-hidden">
-          <CardHeader className="pb-2 bg-green-100/50">
-            <CardTitle className="text-xs font-black flex items-center gap-2 text-green-700 uppercase tracking-widest">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <Card className="rounded-2xl border shadow-none">
+          <CardContent className="space-y-2 p-5">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               <Coins className="h-4 w-4" />
-              {t('bonds.monthly_liquidity')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4">
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-black text-green-600">
-                {formatCurrency(averageMaturityValue)}
-              </span>
-              <span className="text-[10px] font-bold text-green-700/60 uppercase">{t('bonds.per_month')}</span>
-            </div>
-            <p className="text-[10px] mt-2 text-green-800/70 font-medium leading-relaxed">
-              {t('bonds.monthly_liquidity_desc')}
+              Average maturity month
+            </p>
+            <p className="text-2xl font-semibold text-foreground">
+              {formatCurrency(averageMaturityValue)}
+            </p>
+            <p className="text-sm leading-6 text-muted-foreground">
+              Average net cash that returns in each maturity month.
             </p>
           </CardContent>
         </Card>
 
-        <Card className="border-blue-100 bg-blue-50/20 shadow-sm border-2 overflow-hidden">
-          <CardHeader className="pb-2 bg-blue-100/50">
-            <CardTitle className="text-xs font-black flex items-center gap-2 text-blue-700 uppercase tracking-widest">
+        <Card className="rounded-2xl border shadow-none">
+          <CardContent className="space-y-2 p-5">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               <TrendingUp className="h-4 w-4" />
-              {t('bonds.net_passive_income')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4">
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-black text-blue-600">
-                {formatCurrency(monthlyProfit)}
-              </span>
-              <span className="text-[10px] font-bold text-blue-700/60 uppercase">{t('bonds.per_month_profit')}</span>
-            </div>
-            <p className="text-[10px] mt-2 text-blue-800/70 font-medium leading-relaxed">
-              {t('bonds.net_passive_income_desc')}
+              Average month vs contribution
+            </p>
+            <p className="text-2xl font-semibold text-foreground">
+              {formatCurrency(monthlySpreadGap)}
+            </p>
+            <p className="text-sm leading-6 text-muted-foreground">
+              Positive values mean average maturity cash is above the typical lot contribution.
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-2xl border shadow-none">
+          <CardContent className="space-y-2 p-5">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <Calendar className="h-4 w-4" />
+              Ladder coverage
+            </p>
+            <p className="text-xl font-semibold text-foreground">
+              {earliestMonth ? earliestMonth.displayDate : '-'} {latestMonth ? `- ${latestMonth.displayDate}` : ''}
+            </p>
+            <p className="text-sm leading-6 text-muted-foreground">
+              First and last maturity month visible in the current scenario.
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="border-primary/10 shadow-xl overflow-hidden">
-      <CardHeader className="bg-muted/30 border-b">
-        <CardTitle className="text-lg font-black flex items-center gap-2">
-          {t('bonds.maturity_schedule')}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-6">
-        <ChartContainer height={300}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
-              <XAxis 
-                dataKey="displayDate" 
-                fontSize={10}
-                tickLine={false}
-                axisLine={false}
-              />
-              <YAxis 
-                fontSize={10}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(v) => `${v/1000}k`}
-              />
-              <Tooltip 
-                cursor={{ fill: 'rgba(0,0,0,0.05)' }}
-                content={({ active, payload }) => {
-                  if (active && payload && payload.length) {
-                    const data = payload[0].payload;
-                    return (
-                      <div className="bg-popover border border-border p-3 shadow-xl rounded-none text-popover-foreground">
-                        <p className="font-bold text-xs mb-1">{data.displayDate}</p>
-                        <p className="text-primary font-black">{formatCurrency(data.amount)}</p>
-                        <p className="text-[10px] text-muted-foreground uppercase font-bold">
-                          {data.count} {data.count === 1 ? t('bonds.bond_singular') : t('bonds.bond_plural')} {t('bonds.maturing')}
-                        </p>
-                      </div>
-                    );
-                  }
-                  return null;
-                }}
-              />
-              <Bar 
-                dataKey="amount" 
-                fill="hsl(var(--primary))" 
-                radius={[4, 4, 0, 0]}
-                animationDuration={1500}
-              >
-                {chartData.map((entry, index) => (
-                  <Cell 
-                    key={`cell-${index}`} 
-                    fillOpacity={0.8 + (index / chartData.length) * 0.2} 
-                  />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartContainer>
-        
-        <div className="mt-6 p-4 bg-orange-50 rounded-xl border border-orange-100">
-          <p className="text-xs text-orange-800 leading-relaxed italic">
-            <strong>{t('bonds.strategy_tip')}:</strong> {t('bonds.ladder_tip_desc')}
-          </p>
-        </div>
-      </CardContent>
-    </Card>
+      <Card className="rounded-2xl border shadow-none">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg">Maturity schedule</CardTitle>
+          <CardDescription>
+            Use the chart for spacing, then confirm exact month totals in the table below.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <ChartContainer height={320}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData} margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
+                <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+                <XAxis dataKey="displayDate" tickLine={false} axisLine={false} fontSize={11} />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  fontSize={11}
+                  tickFormatter={(value: number) => `${Math.round(value / 1000)}k`}
+                />
+                <Tooltip
+                  cursor={{ fill: 'rgba(15, 23, 42, 0.05)' }}
+                  formatter={(value: ValueType | undefined) => [
+                    formatCurrency(Number(value ?? 0)),
+                    'Net value',
+                  ]}
+                  labelFormatter={(label) => `${label}`}
+                />
+                <Bar dataKey="amount" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartContainer>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Month</TableHead>
+                <TableHead className="text-right">Lots maturing</TableHead>
+                <TableHead className="text-right">Net cash</TableHead>
+                <TableHead className="text-right">Share of timeline</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {chartData.map((item) => (
+                <TableRow key={item.date}>
+                  <TableCell className="font-medium">{item.displayDate}</TableCell>
+                  <TableCell className="text-right">{item.count}</TableCell>
+                  <TableCell className="text-right font-semibold">
+                    {formatCurrency(item.amount)}
+                  </TableCell>
+                  <TableCell className="text-right text-muted-foreground">
+                    {chartData.length > 0 ? `${((item.count / results.lots.length) * 100).toFixed(1)}%` : '-'}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+
+          <div className="rounded-2xl border bg-muted/20 p-4 text-sm leading-6 text-muted-foreground">
+            <p>
+              Peak maturity month:{' '}
+              <span className="font-semibold text-foreground">
+                {peakMonth ? `${peakMonth.displayDate} (${formatCurrency(peakMonth.amount)})` : '-'}
+              </span>
+            </p>
+            <p className="mt-2">
+              If most maturities cluster in one period, the ladder is less even than it looks from a
+              single top-line return number.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

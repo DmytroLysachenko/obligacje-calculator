@@ -6,27 +6,56 @@ import { RegularInvestmentInputsForm } from '../../regular-investment/components
 import { RegularInvestmentResultsSummary } from '../../regular-investment/components/RegularInvestmentResultsSummary';
 import { LadderTimeline } from './LadderTimeline';
 import { useLanguage } from '@/i18n';
-import { ListTree, Loader2, Activity, Sparkles } from 'lucide-react';
+import { ListTree } from 'lucide-react';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { RecalculateButton } from '@/shared/components/RecalculateButton';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const LadderEmptyState = ({
+  onCalculate,
+  label,
+}: {
+  onCalculate: () => void;
+  label: string;
+}) => (
+  <div className="rounded-2xl border border-dashed bg-card px-6 py-12 text-center">
+    <h3 className="text-lg font-semibold text-foreground">Build a plain maturity schedule</h3>
+    <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+      This page should answer one question: when capital becomes available and how even that
+      maturity spread looks over time. Set the scenario, then run the calculation explicitly.
+    </p>
+    <Button onClick={onCalculate} className="mt-6 h-11 px-6 font-semibold">
+      {label}
+    </Button>
+  </div>
+);
+
+const LadderLoadingState = () => (
+  <div className="space-y-4">
+    <Skeleton className="h-28 w-full rounded-2xl" />
+    <Skeleton className="h-48 w-full rounded-2xl" />
+    <Skeleton className="h-[460px] w-full rounded-2xl" />
+  </div>
+);
 
 export const LadderContainer: React.FC = () => {
-  const { inputs, results, updateInput, setBondType, isDirty, isCalculating, calculate, envelope } = useLadder();
+  const { inputs, results, updateInput, setBondType, isDirty, isCalculating, calculate, envelope } =
+    useLadder();
   const { t } = useLanguage();
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && (isDirty || !results)) {
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' && (isDirty || !results)) {
       calculate();
     }
   };
 
   return (
     <CalculatorPageShell
-      title={t("nav.ladder")}
-      description={t("ladder.what_is_desc")}
+      title={t('nav.ladder')}
+      description={t('ladder.what_is_desc')}
       icon={<ListTree className="h-8 w-8" />}
       isCalculating={isCalculating}
       isDirty={isDirty}
@@ -35,8 +64,8 @@ export const LadderContainer: React.FC = () => {
       currentValue={results?.finalNominalValue}
       onKeyDown={handleKeyDown}
     >
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
-        <aside className="xl:col-span-4 h-fit xl:sticky xl:top-28">
+      <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
+        <aside className="xl:col-span-4 xl:sticky xl:top-28 xl:h-fit">
           <RegularInvestmentInputsForm
             inputs={inputs}
             onUpdate={updateInput as (key: string, value: unknown) => void}
@@ -44,51 +73,51 @@ export const LadderContainer: React.FC = () => {
           />
         </aside>
 
-        <div className="xl:col-span-8 space-y-8">
+        <section className="space-y-6 xl:col-span-8">
           {!results && !isCalculating && (
-            <div className="h-[400px] flex flex-col items-center justify-center border-2 border-dashed rounded-3xl opacity-50 space-y-4">
-              <Activity className="h-12 w-12 text-muted-foreground" />
-              <p className="font-medium text-muted-foreground">{t('bonds.click_simulate_regular')}</p>
-              <Button
-                onClick={() => calculate()}
-                className="h-11 px-6 font-bold gap-2"
-              >
-                <Sparkles className="h-4 w-4" />
-                {t('common.calculate')}
-              </Button>
-            </div>
+            <LadderEmptyState onCalculate={() => calculate()} label={t('common.calculate')} />
           )}
 
-          {isCalculating && !results && (
-            <div className="h-[400px] flex flex-col items-center justify-center space-y-4">
-              <Loader2 className="h-12 w-12 text-primary animate-spin" />
-              <p className="font-black text-primary uppercase tracking-widest text-xs">{t('bonds.simulating_regular')}</p>
-            </div>
-          )}
+          {isCalculating && !results && <LadderLoadingState />}
 
           {results && (
-            <div className={cn("space-y-8 transition-opacity duration-300", isCalculating && "opacity-50 pointer-events-none")}>
+            <div
+              className={cn(
+                'space-y-6 transition-opacity duration-200',
+                isCalculating && 'pointer-events-none opacity-50',
+              )}
+            >
+              {isDirty && (
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
+                  Inputs changed. The maturity ladder below still shows the previous calculation.
+                  Recalculate when you want a fresh schedule.
+                </div>
+              )}
+
+              <div className="rounded-2xl border bg-card p-6">
+                <h3 className="text-lg font-semibold text-foreground">What this page is for</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  A ladder is only useful if you can see when cash returns and how concentrated
+                  those maturities are. This page stays focused on liquidity timing, not advice.
+                </p>
+              </div>
+
               <RegularInvestmentResultsSummary results={results} />
-              
-              <CalculationMetaPanel 
+
+              <LadderTimeline results={results} />
+
+              <CalculationMetaPanel
                 warnings={envelope?.warnings}
                 assumptions={envelope?.assumptions}
                 calculationNotes={envelope?.calculationNotes}
                 dataQualityFlags={envelope?.dataQualityFlags}
                 dataFreshness={envelope?.dataFreshness}
               />
-
-              <div className="bg-card border rounded-2xl p-6 shadow-sm overflow-hidden">
-                <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-                  <span className="w-1.5 h-6 bg-primary rounded-full" />
-                  {t('ladder.schedule')}
-                </h3>
-                <LadderTimeline results={results} />
-              </div>
             </div>
           )}
-        </div>
+        </section>
       </div>
+
       <RecalculateButton
         isDirty={isDirty}
         loading={isCalculating}
