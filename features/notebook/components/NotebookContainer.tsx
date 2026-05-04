@@ -2,32 +2,61 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useLanguage } from '@/i18n';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { 
-  Plus, 
-  BookOpen, 
-  ChevronRight, 
+import {
   AlertCircle,
-  FileText,
+  BookOpen,
   Calendar,
-  RefreshCcw,
-  ShieldCheck,
+  FileText,
   FolderOpen,
-  Sparkles,
-  Download,
+  Plus,
+  RefreshCcw,
   Upload,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { UserPortfolio } from '@/db/schema';
-import { cn } from '@/lib/utils';
 import { PortfolioDetails } from './PortfolioDetails';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
+import { Skeleton } from '@/components/ui/skeleton';
 
-const Badge = ({ children, className }: { children: React.ReactNode, className?: string }) => (
-  <span className={cn("px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border", className)}>
-    {children}
-  </span>
+const EmptyPortfolioState = ({
+  onCreate,
+  onCreateDemo,
+  onImport,
+}: {
+  onCreate: () => void;
+  onCreateDemo: () => void;
+  onImport: () => void;
+}) => (
+  <div className="rounded-2xl border border-dashed bg-card px-6 py-12 text-center">
+    <h3 className="text-lg font-semibold text-foreground">Create a simple notebook first</h3>
+    <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+      Use the notebook to store bond lots and review maturity timing. It is a record-keeping
+      workspace, not a recommendation center.
+    </p>
+    <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+      <Button onClick={onCreate} className="h-11 px-6 font-semibold">
+        Create portfolio
+      </Button>
+      <Button variant="outline" onClick={onCreateDemo} className="h-11 px-6 font-semibold">
+        Load demo
+      </Button>
+      <Button variant="outline" onClick={onImport} className="h-11 px-6 font-semibold">
+        Import JSON
+      </Button>
+    </div>
+  </div>
+);
+
+const NotebookLoadingState = () => (
+  <div className="space-y-4">
+    <Skeleton className="h-24 w-full rounded-2xl" />
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <Skeleton className="h-52 w-full rounded-2xl" />
+      <Skeleton className="h-52 w-full rounded-2xl" />
+      <Skeleton className="h-52 w-full rounded-2xl" />
+    </div>
+  </div>
 );
 
 export const NotebookContainer: React.FC = () => {
@@ -52,9 +81,11 @@ export const NotebookContainer: React.FC = () => {
   const fetchPortfolios = useCallback(async () => {
     setIsLoading(true);
     setError(null);
+
     try {
       const response = await fetch('/api/portfolio');
       const data = await response.json();
+
       if (!response.ok) {
         setError(resolvePortfolioError(data));
         setPortfolios([]);
@@ -68,6 +99,7 @@ export const NotebookContainer: React.FC = () => {
       setPortfolios(Array.isArray(data) ? data : (data.items ?? []));
     } catch {
       setError(t('notebook.load_error'));
+      setPortfolios([]);
     } finally {
       setIsLoading(false);
     }
@@ -82,11 +114,12 @@ export const NotebookContainer: React.FC = () => {
       const response = await fetch('/api/portfolio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          name: t('notebook.new_portfolio'), 
-          description: t('notebook.default_description') 
+        body: JSON.stringify({
+          name: t('notebook.new_portfolio'),
+          description: t('notebook.default_description'),
         }),
       });
+
       if (!response.ok) {
         const payload = await response.json().catch(() => null);
         setError(resolvePortfolioError(payload));
@@ -94,30 +127,32 @@ export const NotebookContainer: React.FC = () => {
       }
 
       setError(null);
-      fetchPortfolios();
-    } catch (err) {
-      console.error(err);
+      await fetchPortfolios();
+    } catch (caughtError) {
+      console.error(caughtError);
       setError(t('notebook.create_error'));
     }
   };
 
   const handleCreateDemo = async () => {
     setIsLoading(true);
+
     try {
       const response = await fetch('/api/portfolio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          name: t('notebook.demo_name'), 
-          description: t('notebook.demo_description') 
+        body: JSON.stringify({
+          name: t('notebook.demo_name'),
+          description: t('notebook.demo_description'),
         }),
       });
-      
-      if (!response.ok) throw new Error('Failed to create portfolio');
+
+      if (!response.ok) {
+        throw new Error('Failed to create portfolio');
+      }
+
       const portfolio = await response.json();
       const portfolioId = portfolio.data?.id || portfolio.id;
-
-      // Add some demo lots
       const demoLots = [
         { bondType: 'EDO', amount: 50, purchaseDate: '2023-01-01' },
         { bondType: 'COI', amount: 100, purchaseDate: '2023-06-15' },
@@ -132,9 +167,9 @@ export const NotebookContainer: React.FC = () => {
         });
       }
 
-      fetchPortfolios();
-    } catch (err) {
-      console.error(err);
+      await fetchPortfolios();
+    } catch (caughtError) {
+      console.error(caughtError);
       setError(t('notebook.create_error'));
     } finally {
       setIsLoading(false);
@@ -164,23 +199,22 @@ export const NotebookContainer: React.FC = () => {
         throw new Error('Import failed');
       }
 
+      setError(null);
       await fetchPortfolios();
-    } catch (err) {
-      console.error(err);
-      setError('Import failed. Use portfolio export JSON package.');
+    } catch (caughtError) {
+      console.error(caughtError);
+      setError('Import failed. Use the portfolio export JSON package.');
     } finally {
       event.target.value = '';
     }
   };
 
   if (selectedPortfolioId) {
-    const portfolio = portfolios.find(p => p.id === selectedPortfolioId);
-    return (
-      <PortfolioDetails 
-        portfolio={portfolio!} 
-        onBack={() => setSelectedPortfolioId(null)} 
-      />
-    );
+    const portfolio = portfolios.find((item) => item.id === selectedPortfolioId);
+
+    return portfolio ? (
+      <PortfolioDetails portfolio={portfolio} onBack={() => setSelectedPortfolioId(null)} />
+    ) : null;
   }
 
   const headerActions = (
@@ -192,20 +226,13 @@ export const NotebookContainer: React.FC = () => {
         className="hidden"
         onChange={handleImportFile}
       />
-      <Button 
-        variant="outline"
-        onClick={handleImportClick}
-        className="h-10 px-4 rounded-xl text-xs font-black gap-2"
-      >
+      <Button variant="outline" onClick={handleImportClick} className="h-10 px-4 gap-2">
         <Upload className="h-4 w-4" />
-        IMPORT JSON
+        Import JSON
       </Button>
-      <Button 
-        onClick={handleCreateDefault}
-        className="h-10 px-4 rounded-xl text-xs font-black gap-2 shadow-sm hover:shadow-primary/20 transition-all active:scale-95"
-      >
+      <Button onClick={handleCreateDefault} className="h-10 px-4 gap-2">
         <Plus className="h-4 w-4" />
-        {t('notebook.new_portfolio').toUpperCase()}
+        {t('notebook.new_portfolio')}
       </Button>
     </div>
   );
@@ -220,8 +247,8 @@ export const NotebookContainer: React.FC = () => {
       extraHeaderActions={headerActions}
     >
       {error && (
-        <div className="rounded-2xl border-2 border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
-          <div className="flex items-center gap-3 font-bold">
+        <div className="rounded-2xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
+          <div className="flex items-center gap-3 font-semibold">
             <AlertCircle className="h-5 w-5" />
             {error}
           </div>
@@ -234,118 +261,90 @@ export const NotebookContainer: React.FC = () => {
         </div>
       )}
 
-      <Card className="border-blue-100 bg-blue-50/20 shadow-sm">
-        <CardContent className="flex flex-col gap-2 py-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-start gap-3">
-            <ShieldCheck className="mt-0.5 h-5 w-5 text-blue-600" />
-            <div>
-              <p className="font-semibold text-blue-900">{t('notebook.guest_mode')}</p>
-              <p className="text-xs text-blue-800/80">{t('notebook.guest_desc')}</p>
-            </div>
+      <Card className="rounded-2xl border shadow-none">
+        <CardContent className="flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="font-semibold text-foreground">{t('notebook.guest_mode')}</p>
+            <p className="text-sm leading-6 text-muted-foreground">{t('notebook.guest_desc')}</p>
           </div>
-          <Button variant="outline" size="sm" onClick={handleCreateDefault}>
-            {t('notebook.new_portfolio')}
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleCreateDemo}>
+              Load demo
+            </Button>
+            <Button variant="outline" onClick={fetchPortfolios} className="gap-2">
+              <RefreshCcw className="h-4 w-4" />
+              Refresh
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <AnimatePresence>
-          {portfolios.map((p, idx) => (
-            <motion.div
-              key={p.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 }}
-              onClick={() => setSelectedPortfolioId(p.id)}
-            >
-              <Card className="group cursor-pointer hover:border-primary/50 transition-all duration-300 shadow-lg hover:shadow-2xl rounded-3xl overflow-hidden border-2 h-full flex flex-col bg-card">
-                <CardHeader className="bg-muted/30 pb-4">
-                  <div className="flex justify-between items-start">
-                    <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary group-hover:text-white transition-colors">
-                      <FileText className="h-5 w-5" />
-                    </div>
-                    <Badge className="bg-primary/10 text-primary border-none">{t('notebook.active').toUpperCase()}</Badge>
+      {isLoading ? (
+        <NotebookLoadingState />
+      ) : portfolios.length === 0 ? (
+        <EmptyPortfolioState
+          onCreate={handleCreateDefault}
+          onCreateDemo={handleCreateDemo}
+          onImport={handleImportClick}
+        />
+      ) : (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {portfolios.map((portfolio) => (
+            <Card key={portfolio.id} className="rounded-2xl border shadow-none">
+              <CardHeader className="space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="rounded-xl border bg-muted/30 p-3 text-primary">
+                    <FileText className="h-5 w-5" />
                   </div>
-                  <CardTitle className="text-xl font-black mt-4 group-hover:text-primary transition-colors">
-                    {p.name}
-                  </CardTitle>
-                  <CardDescription className="line-clamp-2 font-medium">
-                    {p.description || t('notebook.portfolio_details')}
+                  <span className="rounded-full border px-3 py-1 text-xs font-medium text-muted-foreground">
+                    {portfolio.isPublic ? 'Public link on' : 'Private'}
+                  </span>
+                </div>
+                <div>
+                  <CardTitle className="text-xl">{portfolio.name}</CardTitle>
+                  <CardDescription className="mt-2 leading-6">
+                    {portfolio.description || t('notebook.portfolio_details')}
                   </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-6 flex-1 flex flex-col justify-between">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                      <span>{t('notebook.created')}</span>
-                      <span className="text-foreground flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        {new Date(p.createdAt!).toLocaleDateString()}
-                      </span>
-                    </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-2">
+                  <div className="rounded-xl border bg-muted/20 p-3">
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">Created</p>
+                    <p className="mt-1 flex items-center gap-2 font-medium text-foreground">
+                      <Calendar className="h-4 w-4" />
+                      {new Date(portfolio.createdAt!).toLocaleDateString()}
+                    </p>
                   </div>
-                  <Button 
-                    variant="outline" 
-                    className="w-full mt-8 h-12 rounded-xl font-black gap-2 group-hover:bg-primary group-hover:text-white transition-all"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedPortfolioId(p.id);
-                    }}
-                  >
-                    {t('notebook.open_portfolio').toUpperCase()}
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
+                  <div className="rounded-xl border bg-muted/20 p-3">
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">Use</p>
+                    <p className="mt-1 font-medium text-foreground">Lots, maturities, exports</p>
+                  </div>
+                </div>
+                <Button className="w-full" onClick={() => setSelectedPortfolioId(portfolio.id)}>
+                  Open portfolio
+                </Button>
+              </CardContent>
+            </Card>
           ))}
-        </AnimatePresence>
+        </div>
+      )}
 
-        {portfolios.length === 0 && !isLoading && (
-          <div className="col-span-full py-20 text-center space-y-8 rounded-3xl border-2 border-dashed border-primary/20 bg-muted/5">
-            <div className="relative inline-flex">
-              <div className="absolute -inset-4 rounded-full bg-primary/10 blur-xl animate-pulse" />
-              <div className="relative p-8 bg-white rounded-full shadow-xl border-2 border-primary/5 text-primary">
-                <FolderOpen className="h-16 w-16" />
-              </div>
-            </div>
-            <div className="space-y-3 max-w-md mx-auto px-6">
-              <h3 className="text-3xl font-black text-slate-800 tracking-tight">{t('notebook.empty_title')}</h3>
-              <p className="text-muted-foreground font-medium text-lg leading-relaxed">
-                {t('notebook.empty_desc')}
+      {!isLoading && portfolios.length > 0 && (
+        <div className="rounded-2xl border bg-muted/20 p-5">
+          <div className="flex items-start gap-3">
+            <FolderOpen className="mt-0.5 h-5 w-5 text-primary" />
+            <div className="space-y-2">
+              <p className="font-semibold text-foreground">Notebook scope</p>
+              <p className="text-sm leading-6 text-muted-foreground">
+                Keep this area focused on stored positions, maturities, and exportable records.
+                More product value comes from accurate calculations than from extra decorative
+                portfolio widgets.
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center px-6">
-              <Button 
-                size="lg" 
-                onClick={handleCreateDefault}
-                className="h-14 px-10 rounded-2xl font-black shadow-xl hover:shadow-primary/30 transition-all active:scale-95 gap-2"
-              >
-                <Plus className="h-5 w-5" />
-                {t('notebook.create_first').toUpperCase()}
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                onClick={handleCreateDemo}
-                className="h-14 px-10 rounded-2xl font-black border-2 gap-2 hover:bg-primary/5 transition-all"
-              >
-                <Sparkles className="h-5 w-5 text-primary" />
-                {t('notebook.load_demo').toUpperCase()}
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                onClick={handleImportClick}
-                className="h-14 px-10 rounded-2xl font-black border-2 gap-2 hover:bg-primary/5 transition-all"
-              >
-                <Download className="h-5 w-5 text-primary" />
-                IMPORT PACKAGE
-              </Button>
-            </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </CalculatorPageShell>
   );
 };

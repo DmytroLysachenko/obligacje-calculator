@@ -1,52 +1,44 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { UserPortfolio, UserInvestmentLot } from '@/db/schema';
 import { useLanguage } from '@/i18n';
-import { 
-  ArrowLeft, 
-  TrendingUp, 
-  History, 
-  PieChart, 
-  ArrowUpRight,
-  Loader2,
-  ExternalLink,
-  Plus,
-  CalendarDays,
-  Zap,
-  Calendar,
-  ShieldCheck,
-  AlertCircle,
-  Lightbulb,
-  Share2,
-  Check,
+import {
+  ArrowLeft,
   Download,
-  Clock3,
-  Bell,
+  ExternalLink,
+  Loader2,
+  Share2,
+  ShieldCheck,
+  TrendingUp,
+  Check,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { format, addDays, isAfter, parseISO } from 'date-fns';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { addDays, format, isAfter, parseISO } from 'date-fns';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
-import { BondType, TaxStrategy } from '@/features/bond-core/types';
+import { BondType } from '@/features/bond-core/types';
 import { cn } from '@/lib/utils';
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
   ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from 'recharts';
 import { PortfolioSimulationResult } from '@/features/bond-core/types/scenarios';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface PortfolioDetailsProps {
   portfolio: UserPortfolio;
   onBack: () => void;
 }
+
+type MaturityWindow = 30 | 90 | 180;
 
 export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, onBack }) => {
   const { t, language } = useLanguage();
@@ -58,64 +50,61 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
   const [isPublic, setIsPublic] = useState(portfolio.isPublic || false);
   const [isSharing, setIsSharing] = useState(false);
   const [justCopied, setJustCopied] = useState(false);
-  const [maturityWindowDays, setMaturityWindowDays] = useState<30 | 90 | 180>(90);
+  const [maturityWindowDays, setMaturityWindowDays] = useState<MaturityWindow>(90);
 
-  const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/p/${portfolio.shareId}` : '';
+  const shareUrl =
+    typeof window !== 'undefined' ? `${window.location.origin}/p/${portfolio.shareId}` : '';
 
-  const handleToggleShare = async () => {
-    setIsSharing(true);
-    try {
-      const response = await fetch('/api/portfolio/share', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ portfolioId: portfolio.id, isPublic: !isPublic }),
-      });
-      if (response.ok) {
-        setIsPublic(!isPublic);
-      }
-    } catch (err) {
-      console.error('Failed to update sharing:', err);
-    } finally {
-      setIsSharing(false);
-    }
-  };
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(shareUrl);
-    setJustCopied(true);
-    setTimeout(() => setJustCopied(false), 2000);
-  };
+  const formatCurrency = useCallback(
+    (value: number) =>
+      new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', {
+        style: 'currency',
+        currency: 'PLN',
+        maximumFractionDigits: 0,
+      }).format(value),
+    [language],
+  );
 
   const fetchLots = useCallback(async () => {
     setIsLoading(true);
+
     try {
       const response = await fetch(`/api/portfolio/lots?portfolioId=${portfolio.id}`);
       const data = await response.json();
+
       if (response.ok) {
-        setLots(Array.isArray(data.data) ? data.data : (Array.isArray(data) ? data : []));
+        setLots(Array.isArray(data.data) ? data.data : Array.isArray(data) ? data : []);
       }
-    } catch (err) {
-      console.error('Failed to fetch lots:', err);
+    } catch (caughtError) {
+      console.error('Failed to fetch lots:', caughtError);
+      setLots([]);
     } finally {
       setIsLoading(false);
     }
   }, [portfolio.id]);
 
   const runSimulation = useCallback(async () => {
-    if (lots.length === 0) return;
+    if (lots.length === 0) {
+      setSimulation(null);
+      return;
+    }
+
     setIsSimulating(true);
+
     try {
       const response = await fetch('/api/portfolio/simulate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ portfolioId: portfolio.id }),
       });
+
       const data = await response.json();
       if (response.ok) {
         setSimulation(data.result?.result || data.result);
       }
-    } catch (err) {
-      console.error('Simulation failed:', err);
+    } catch (caughtError) {
+      console.error('Simulation failed:', caughtError);
+      setSimulation(null);
     } finally {
       setIsSimulating(false);
     }
@@ -126,404 +115,305 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
   }, [fetchLots]);
 
   useEffect(() => {
-    if (lots.length > 0) {
-      runSimulation();
+    void runSimulation();
+  }, [runSimulation]);
+
+  const handleToggleShare = async () => {
+    setIsSharing(true);
+
+    try {
+      const response = await fetch('/api/portfolio/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ portfolioId: portfolio.id, isPublic: !isPublic }),
+      });
+
+      if (response.ok) {
+        setIsPublic(!isPublic);
+      }
+    } catch (caughtError) {
+      console.error('Failed to update sharing:', caughtError);
+    } finally {
+      setIsSharing(false);
     }
-  }, [lots, runSimulation]);
+  };
 
-  const formatCurrency = useCallback((val: number) => 
-    new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', { 
-      style: 'currency', 
-      currency: 'PLN', 
-      maximumFractionDigits: 0 
-    }).format(val), [language]);
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setJustCopied(true);
+      setTimeout(() => setJustCopied(false), 2000);
+    } catch (caughtError) {
+      console.error('Copy failed:', caughtError);
+    }
+  };
 
-  const totalValue = lots.reduce((acc, lot) => acc + (Number(lot.amount) * 100), 0);
+  const handleExport = async (formatName: 'portfolio' | 'package') => {
+    try {
+      const response = await fetch(
+        `/api/portfolio/export?portfolioId=${portfolio.id}&format=${formatName}`,
+      );
+      const data = await response.json();
+      const blob = new Blob([JSON.stringify(data.data, null, 2)], {
+        type: 'application/json',
+      });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `${portfolio.name.replace(/\s+/g, '_').toLowerCase()}_${formatName}.json`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch (caughtError) {
+      console.error('Export failed:', caughtError);
+    }
+  };
+
+  const totalValue = lots.reduce((sum, lot) => sum + Number(lot.amount) * 100, 0);
 
   const upcomingMaturities = useMemo(() => {
-    if (!lots.length || !definitions) return [];
-    return lots.map(lot => {
-      const def = definitions[lot.bondType as BondType];
-      if (!def) return null;
-      const maturityDate = addDays(parseISO(lot.purchaseDate), Math.round(def.duration * 365));
-      return {
-        ...lot,
-        maturityDate,
-        formattedMaturity: format(maturityDate, 'MMMM yyyy'),
-        value: Number(lot.amount) * 100
-      };
-    })
-    .filter((m): m is NonNullable<typeof m> => m !== null && isAfter(m.maturityDate, new Date()))
-    .sort((a, b) => a.maturityDate.getTime() - b.maturityDate.getTime());
-  }, [lots, definitions]);
+    if (!lots.length || !definitions) {
+      return [];
+    }
 
-  const nextMaturity = upcomingMaturities[0] || null;
+    return lots
+      .map((lot) => {
+        const definition = definitions[lot.bondType as BondType];
+        if (!definition) {
+          return null;
+        }
+
+        const maturityDate = addDays(parseISO(lot.purchaseDate), Math.round(definition.duration * 365));
+
+        return {
+          ...lot,
+          maturityDate,
+          value: Number(lot.amount) * 100,
+        };
+      })
+      .filter((item): item is NonNullable<typeof item> => item !== null && isAfter(item.maturityDate, new Date()))
+      .sort((left, right) => left.maturityDate.getTime() - right.maturityDate.getTime());
+  }, [definitions, lots]);
+
   const filteredMaturities = useMemo(() => {
     const cutoff = addDays(new Date(), maturityWindowDays);
     return upcomingMaturities.filter((item) => item.maturityDate <= cutoff);
   }, [maturityWindowDays, upcomingMaturities]);
 
-  const upcomingCashflow = useMemo(() => {
-    return filteredMaturities.reduce((sum, item) => sum + item.value, 0);
-  }, [filteredMaturities]);
-
-  const handleExport = async (format: 'portfolio' | 'advisor' | 'package') => {
-    try {
-      const response = await fetch(`/api/portfolio/export?portfolioId=${portfolio.id}&format=${format}`);
-      const data = await response.json();
-      const blob = new Blob([JSON.stringify(data.data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement('a');
-      anchor.href = url;
-      anchor.download = `${portfolio.name.replace(/\s+/g, '_').toLowerCase()}_${format}.json`;
-      anchor.click();
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error('Export failed:', err);
-    }
-  };
-
-  const taxAudit = useMemo(() => {
-    const standardLots = (lots as (UserInvestmentLot & { taxStrategy?: TaxStrategy })[]).filter(l => !l.taxStrategy || l.taxStrategy === TaxStrategy.STANDARD);
-    const totalStandardValue = standardLots.reduce((acc, lot) => acc + (Number(lot.amount) * 100), 0);
-    
-    // Find specifically large lots that are "Tax Leaks"
-    const leakyLots = standardLots
-      .filter(l => Number(l.amount) * 100 > 10000)
-      .sort((a, b) => Number(b.amount) - Number(a.amount));
-
-    const potentialSavings = totalStandardValue * 0.045; // Approx weighted average tax leak over 10y
-
-    let suggestion = t('notebook.tax_optimized_congrats');
-    if (totalStandardValue > 0) {
-      if (leakyLots.length > 0) {
-        suggestion = t('notebook.tax_leak_action_required', { 
-          count: leakyLots.length, 
-          type: leakyLots[0].bondType,
-          year: format(parseISO(leakyLots[0].purchaseDate), 'yyyy'),
-          value: formatCurrency(totalStandardValue)
-        });
-      } else {
-        suggestion = t('notebook.tax_leak_small', { count: standardLots.length });
-      }
-    }
-
-    return {
-      hasLeaks: totalStandardValue > 0,
-      totalStandardValue,
-      potentialSavings,
-      leakyLots,
-      suggestion
-    };
-  }, [lots, formatCurrency, t]);
+  const upcomingCashflow = filteredMaturities.reduce((sum, item) => sum + item.value, 0);
+  const nextMaturity = upcomingMaturities[0] ?? null;
 
   if (isLoadingDefs || !definitions) {
     return (
-      <div className="space-y-8 animate-pulse">
-        <div className="h-10 bg-muted rounded w-1/4"></div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="h-32 bg-muted rounded"></div>
-          <div className="h-32 bg-muted rounded"></div>
-          <div className="h-32 bg-muted rounded"></div>
+      <div className="space-y-4">
+        <div className="h-10 w-40 rounded bg-muted" />
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="h-32 rounded bg-muted" />
+          <div className="h-32 rounded bg-muted" />
+          <div className="h-32 rounded bg-muted" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 pb-20">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={onBack} className="rounded-full hover:bg-primary/10 hover:text-primary transition-colors">
-            <ArrowLeft className="h-6 w-6" />
+    <div className="space-y-6 pb-16">
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div className="flex items-start gap-3">
+          <Button variant="ghost" size="icon" onClick={onBack} className="rounded-full">
+            <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h2 className="text-3xl font-black tracking-tight text-primary uppercase">{portfolio.name}</h2>
-            <p className="text-muted-foreground font-medium">{portfolio.description || t('notebook.portfolio_details')}</p>
+            <h2 className="text-3xl font-semibold text-foreground">{portfolio.name}</h2>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              {portfolio.description || t('notebook.portfolio_details')}
+            </p>
           </div>
         </div>
-        <div className="flex gap-2">
-           <div className="flex bg-muted p-1 rounded-xl border-2">
-             <Button 
-               variant="ghost" 
-               className="rounded-lg h-9 text-xs font-black uppercase gap-2 px-3"
-               onClick={() => handleExport('package')}
-             >
-               <Download className="h-4 w-4" />
-               Export
-             </Button>
-           </div>
-           <div className="flex bg-muted p-1 rounded-xl border-2">
-             {isPublic && (
-               <Button 
-                 variant="ghost" 
-                 className="rounded-lg h-9 text-xs font-black uppercase gap-2 px-3"
-                 onClick={copyToClipboard}
-               >
-                 {justCopied ? <Check className="h-4 w-4 text-green-600" /> : <Share2 className="h-4 w-4" />}
-                 {justCopied ? t('common.copied') : t('common.copy_link')}
-               </Button>
-             )}
-             <Button 
-               variant={isPublic ? "default" : "ghost"}
 
-               className={cn(
-                 "rounded-lg h-9 text-xs font-black uppercase gap-2 px-3",
-                 !isPublic && "hover:bg-primary/10 hover:text-primary"
-               )}
-               onClick={handleToggleShare}
-               disabled={isSharing}
-             >
-               {isSharing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
-               {isPublic ? t('notebook.public') : t('notebook.private')}
-             </Button>
-           </div>
-           <Button className="rounded-xl font-black gap-2 shadow-lg shadow-primary/20">
-             <Plus className="h-4 w-4" />
-             {t('notebook.add_lot')}
-           </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" className="gap-2" onClick={() => handleExport('package')}>
+            <Download className="h-4 w-4" />
+            Export package
+          </Button>
+          <Button variant="outline" className="gap-2" onClick={() => handleExport('portfolio')}>
+            <Download className="h-4 w-4" />
+            Export summary
+          </Button>
+          {isPublic && (
+            <Button variant="outline" className="gap-2" onClick={copyToClipboard}>
+              {justCopied ? <Check className="h-4 w-4 text-emerald-600" /> : <Share2 className="h-4 w-4" />}
+              {justCopied ? t('common.copied') : t('common.copy_link')}
+            </Button>
+          )}
+          <Button
+            variant={isPublic ? 'default' : 'outline'}
+            className={cn('gap-2', !isPublic && 'bg-background')}
+            onClick={handleToggleShare}
+            disabled={isSharing}
+          >
+            {isSharing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
+            {isPublic ? t('notebook.public') : t('notebook.private')}
+          </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="bg-primary text-white border-none shadow-xl shadow-primary/20 overflow-hidden relative group">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-            <TrendingUp className="h-24 w-24" />
-          </div>
-          <CardHeader className="pb-2">
-            <CardDescription className="text-white/70 font-black uppercase text-[10px] tracking-widest">{t('notebook.total_invested')}</CardDescription>
-            <CardTitle className="text-4xl font-black">
-              {formatCurrency(totalValue)}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-1 text-xs font-bold bg-white/10 w-fit px-2 py-1 rounded-lg">
-              <ArrowUpRight className="h-3 w-3" />
-              <span>{t('notebook.live_data')}</span>
-            </div>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <Card className="rounded-2xl border shadow-none">
+          <CardContent className="space-y-2 p-5">
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">
+              {t('notebook.total_invested')}
+            </p>
+            <p className="text-2xl font-semibold text-foreground">{formatCurrency(totalValue)}</p>
+            <p className="text-sm leading-6 text-muted-foreground">Nominal value of all stored lots.</p>
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg border-primary/5 relative overflow-hidden">
-          <CardHeader className="pb-2">
-            <CardDescription className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">{t('notebook.active_lots')}</CardDescription>
-            <CardTitle className="text-4xl font-black text-slate-800">{lots.length}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">
-              {lots.length > 0 ? t('notebook.diversified') : t('notebook.no_lots')}
+        <Card className="rounded-2xl border shadow-none">
+          <CardContent className="space-y-2 p-5">
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">
+              {t('notebook.active_lots')}
+            </p>
+            <p className="text-2xl font-semibold text-foreground">{lots.length}</p>
+            <p className="text-sm leading-6 text-muted-foreground">
+              Stored lots currently included in this notebook.
             </p>
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg border-primary/5 bg-slate-50/50">
-          <CardHeader className="pb-2">
-            <CardDescription className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">{t('notebook.next_maturity')}</CardDescription>
-            <CardTitle className="text-2xl font-black text-slate-800">
-              {nextMaturity ? format(nextMaturity.maturityDate, 'dd.MM.yyyy') : t('notebook.next_maturity_placeholder')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-[10px] text-primary font-black uppercase tracking-widest">
-              {nextMaturity ? nextMaturity.bondType : '-'}
+        <Card className="rounded-2xl border shadow-none">
+          <CardContent className="space-y-2 p-5">
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">
+              {t('notebook.next_maturity')}
             </p>
-            <p className="mt-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-              Cash in next {maturityWindowDays}d: {formatCurrency(upcomingCashflow)}
+            <p className="text-2xl font-semibold text-foreground">
+              {nextMaturity ? format(nextMaturity.maturityDate, 'dd.MM.yyyy') : '-'}
+            </p>
+            <p className="text-sm leading-6 text-muted-foreground">
+              {nextMaturity ? `${nextMaturity.bondType} lot matures next.` : 'No upcoming maturity found.'}
             </p>
           </CardContent>
         </Card>
       </div>
 
       <Tabs defaultValue="lots" className="w-full">
-        <TabsList className="bg-muted/50 p-1 rounded-2xl mb-8">
-          <TabsTrigger value="lots" className="rounded-xl px-8 font-black uppercase text-xs gap-2">
-            <History className="h-4 w-4" />
-            {t('notebook.invested_lots_tab')}
-          </TabsTrigger>
-          <TabsTrigger value="analytics" className="rounded-xl px-8 font-black uppercase text-xs gap-2">
-            <PieChart className="h-4 w-4" />
-            {t('notebook.analytics_tab')}
-          </TabsTrigger>
+        <TabsList className="mb-4 grid w-full grid-cols-2 md:w-fit">
+          <TabsTrigger value="lots">Lots</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
 
         <TabsContent value="lots" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-6">
-              <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">{t('notebook.holdings')}</h3>
-              <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.4fr_0.8fr]">
+            <Card className="rounded-2xl border shadow-none">
+              <CardHeader>
+                <CardTitle>Stored lots</CardTitle>
+                <CardDescription>
+                  Review each position as a record entry: type, amount, purchase date, and nominal value.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 {isLoading ? (
-                  <div className="py-20 flex flex-col items-center justify-center gap-4 text-muted-foreground">
-                    <Loader2 className="h-8 w-8 animate-spin" />
-                    <p className="font-bold uppercase text-xs tracking-widest">{t('notebook.updating')}</p>
+                  <div className="flex min-h-48 items-center justify-center gap-3 text-sm text-muted-foreground">
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    {t('notebook.updating')}
                   </div>
                 ) : lots.length === 0 ? (
-                  <div className="py-20 text-center bg-muted/20 border-2 border-dashed rounded-3xl space-y-4">
-                    <div className="p-4 bg-muted w-fit mx-auto rounded-full text-muted-foreground">
-                      <History className="h-8 w-8" />
-                    </div>
-                    <p className="text-muted-foreground font-bold uppercase text-xs tracking-widest">{t('notebook.no_lots')}</p>
+                  <div className="rounded-2xl border border-dashed px-6 py-12 text-center">
+                    <p className="text-sm text-muted-foreground">{t('notebook.no_lots')}</p>
                   </div>
                 ) : (
-                  lots.map((lot) => (
-                    <Card key={lot.id} className="group hover:border-primary/30 transition-all border-2 shadow-sm rounded-2xl overflow-hidden">
-                      <CardContent className="p-0">
-                        <div className="flex flex-col md:flex-row items-center">
-                          <div className="p-6 bg-muted/30 border-r border-dashed border-primary/10 min-w-[120px] flex flex-col items-center justify-center">
-                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1">{t('notebook.type')}</span>
-                            <span className="text-2xl font-black text-primary">{lot.bondType}</span>
-                          </div>
-                          <div className="flex-1 p-6 grid grid-cols-2 md:grid-cols-4 gap-8">
-                            <div>
-                              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{t('notebook.amount')}</p>
-                              <p className="text-lg font-black">{lot.amount} {t('notebook.bond_count')}</p>
-                              <p className="text-[10px] font-bold text-slate-400">{t('notebook.nominal_val')}: {Number(lot.amount) * 100} PLN</p>
-                            </div>
-                            <div>
-                              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{t('notebook.purchase_date')}</p>
-                              <p className="text-lg font-black">{format(new Date(lot.purchaseDate), 'MMM yyyy')}</p>
-                            </div>
-                            <div>
-                              <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{t('notebook.current_yield')}</p>
-                              <p className="text-lg font-black text-green-600">{t('notebook.current_yield_placeholder')}</p>
-                            </div>
-                            <div className="flex items-center justify-end gap-2">
-                              <Button variant="outline" size="icon" className="rounded-lg hover:border-primary hover:text-primary transition-colors">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Type</TableHead>
+                        <TableHead className="text-right">Amount</TableHead>
+                        <TableHead>Purchase date</TableHead>
+                        <TableHead className="text-right">Nominal value</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {lots.map((lot) => (
+                        <TableRow key={lot.id}>
+                          <TableCell className="font-medium">{lot.bondType}</TableCell>
+                          <TableCell className="text-right">{lot.amount}</TableCell>
+                          <TableCell>{format(new Date(lot.purchaseDate), 'dd.MM.yyyy')}</TableCell>
+                          <TableCell className="text-right">
+                            {formatCurrency(Number(lot.amount) * 100)}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button variant="outline" size="icon" asChild>
+                              <a href={`/single-calculator?bondType=${lot.bondType}&purchaseDate=${lot.purchaseDate}`}>
                                 <ExternalLink className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))
+                              </a>
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 )}
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
             <div className="space-y-6">
-              <Card className="border-2 border-primary/10 shadow-lg rounded-2xl">
-                <CardHeader className="pb-2 border-b border-dashed">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <CalendarDays className="h-4 w-4 text-primary" />
-                      <CardTitle className="text-sm font-black uppercase tracking-widest">Liquidity Calendar</CardTitle>
-                    </div>
-                    <div className="flex gap-1 rounded-xl border bg-muted/20 p-1">
-                      {[30, 90, 180].map((days) => (
-                        <Button
-                          key={days}
-                          type="button"
-                          variant={maturityWindowDays === days ? 'default' : 'ghost'}
-                          className="h-8 px-3 text-[10px] font-black"
-                          onClick={() => setMaturityWindowDays(days as 30 | 90 | 180)}
-                        >
-                          {days}D
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
+              <Card className="rounded-2xl border shadow-none">
+                <CardHeader>
+                  <CardTitle>Liquidity window</CardTitle>
+                  <CardDescription>
+                    See how much nominal cash returns within a short maturity window.
+                  </CardDescription>
                 </CardHeader>
-                <CardContent className="p-4">
-                  {filteredMaturities.length > 0 ? (
-                    <div className="space-y-4">
-                      <div className="rounded-xl border bg-primary/5 p-3">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-primary">Cashflow forecast</p>
-                        <p className="mt-1 text-lg font-black text-slate-900">{formatCurrency(upcomingCashflow)}</p>
-                        <p className="text-xs text-muted-foreground">Expected portfolio liquidity within {maturityWindowDays} days.</p>
-                      </div>
-                      {filteredMaturities.slice(0, 5).map((m, idx) => (
-                        <div key={idx} className="flex justify-between items-center p-3 bg-muted/30 rounded-xl border border-border/50">
-                          <div>
-                            <p className="text-[10px] font-black text-primary uppercase tracking-tighter">{m.formattedMaturity}</p>
-                            <p className="text-xs font-bold">{m.bondType} ({m.amount} {t('notebook.bond_count')})</p>
-                            <div className="mt-2 flex flex-wrap gap-2">
-                              <Button asChild size="sm" variant="outline" className="h-7 text-[10px] font-black">
-                                <a href={`/single-calculator?bondType=${m.bondType}&purchaseDate=${m.purchaseDate}`}>
-                                  <Clock3 className="mr-1 h-3 w-3" />
-                                  Rollover
-                                </a>
-                              </Button>
-                              <Button asChild size="sm" variant="outline" className="h-7 text-[10px] font-black">
-                                <a href={`/compare?common_purchaseDate=${m.purchaseDate}&scenarioA_bondType=${m.bondType}&scenarioB_bondType=EDO`}>
-                                  Compare
-                                </a>
-                              </Button>
-                              <Button size="sm" variant="outline" className="h-7 text-[10px] font-black">
-                                <Bell className="mr-1 h-3 w-3" />
-                                Reminder
-                              </Button>
-                            </div>
-                          </div>
-                          <p className="font-black text-sm">{formatCurrency(m.value)}</p>
-                        </div>
-                      ))}
-                      {filteredMaturities.length > 5 && (
-                        <p className="text-center text-[10px] font-bold text-muted-foreground uppercase">+ {filteredMaturities.length - 5} more events</p>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="py-8 text-center space-y-2">
-                      <Calendar className="h-8 w-8 mx-auto text-muted-foreground/30" />
-                      <p className="text-xs text-muted-foreground">No upcoming liquidity events.</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card className="border-2 border-green-600/20 bg-green-50/30 rounded-2xl shadow-sm overflow-hidden">
-                <CardHeader className="pb-2 border-b border-green-100 bg-green-100/20">
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck className="h-4 w-4 text-green-600" />
-                    <CardTitle className="text-sm font-black uppercase tracking-widest text-green-800">Tax Health Audit</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-4 space-y-4">
-                  {taxAudit.hasLeaks ? (
-                    <>
-                      <div className="flex items-start gap-3">
-                        <AlertCircle className="h-5 w-5 text-orange-500 shrink-0 mt-0.5" />
-                        <p className="text-xs text-slate-700 leading-relaxed text-balance">
-                          {taxAudit.suggestion}
-                        </p>
-                      </div>
-                      <div className="bg-white/50 border border-green-200 rounded-xl p-3 flex justify-between items-center">
-                        <div className="flex items-center gap-2">
-                          <Lightbulb className="h-4 w-4 text-green-600" />
-                          <span className="text-[10px] font-bold uppercase text-green-700">Estimated Savings</span>
-                        </div>
-                        <span className="font-black text-green-700">~{formatCurrency(taxAudit.potentialSavings)}</span>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="py-4 text-center">
-                      <p className="text-xs font-bold text-green-700">Your portfolio is tax-optimized! ✨</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card className="bg-amber-50 border-amber-200 border-2 rounded-2xl shadow-sm overflow-hidden">
-                <CardContent className="p-4 space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-amber-600 fill-amber-600" />
-                    <p className="text-[10px] font-black uppercase text-amber-800 tracking-widest">Strategy Insight</p>
-                  </div>
-                  <p className="text-xs text-amber-900 leading-relaxed font-medium">
-                    {upcomingMaturities.length < 3 
-                      ? "Your portfolio has low liquidity frequency. Consider buying bonds in monthly intervals to create a steady cash-flow stream."
-                      : "You have a good maturity spread. Reinvesting your next payout will maintain your ladder's strength."}
-                  </p>
+                <CardContent className="space-y-4">
                   <div className="flex flex-wrap gap-2">
-                    <Button asChild size="sm" className="text-[10px] font-black">
-                      <a href="/ladder">Open Ladder</a>
-                    </Button>
-                    <Button asChild size="sm" variant="outline" className="text-[10px] font-black">
-                      <a href="/optimize">Find Replacement Bond</a>
-                    </Button>
-                    <Button size="sm" variant="outline" className="text-[10px] font-black" onClick={() => handleExport('advisor')}>
-                      Advisor Summary
-                    </Button>
+                    {[30, 90, 180].map((days) => (
+                      <Button
+                        key={days}
+                        variant={maturityWindowDays === days ? 'default' : 'outline'}
+                        className="h-9"
+                        onClick={() => setMaturityWindowDays(days as MaturityWindow)}
+                      >
+                        {days}d
+                      </Button>
+                    ))}
                   </div>
+
+                  <div className="rounded-2xl border bg-muted/20 p-4">
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">Cash in window</p>
+                    <p className="mt-2 text-2xl font-semibold text-foreground">
+                      {formatCurrency(upcomingCashflow)}
+                    </p>
+                  </div>
+
+                  {filteredMaturities.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">No maturities in this window.</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {filteredMaturities.slice(0, 6).map((item) => (
+                        <div key={item.id} className="rounded-2xl border p-4">
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <p className="font-medium text-foreground">{item.bondType}</p>
+                              <p className="mt-1 text-sm text-muted-foreground">
+                                {format(item.maturityDate, 'dd.MM.yyyy')}
+                              </p>
+                            </div>
+                            <p className="font-semibold text-foreground">{formatCurrency(item.value)}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card className="rounded-2xl border shadow-none">
+                <CardHeader>
+                  <CardTitle>Notebook usage note</CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm leading-6 text-muted-foreground">
+                  Use this view to store and inspect lots. If you want to test reinvestment,
+                  early withdrawal, or scenario assumptions, jump into a calculator page with the
+                  exported or linked lot details.
                 </CardContent>
               </Card>
             </div>
@@ -531,68 +421,87 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
         </TabsContent>
 
         <TabsContent value="analytics">
-          <div className="space-y-6">
-            <Card className="border-2 shadow-xl rounded-3xl overflow-hidden">
-              <CardHeader className="bg-muted/30 border-b border-dashed">
-                <CardTitle className="text-xl font-black uppercase tracking-tight">{t('bonds.growth_projection')}</CardTitle>
-                <CardDescription>Aggregated nominal value evolution across all lots</CardDescription>
-              </CardHeader>
-              <CardContent className="p-6">
-                {isSimulating ? (
-                  <div className="h-[400px] flex flex-col items-center justify-center gap-4">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    <p className="text-xs font-black uppercase tracking-widest text-muted-foreground animate-pulse">Running Portfolio Simulation...</p>
-                  </div>
-                ) : simulation?.aggregatedTimeline ? (
-                  <div className="h-[400px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart 
-                        data={simulation.aggregatedTimeline.length > 240 
-                          ? simulation.aggregatedTimeline.filter((_, i) => i % 2 === 0) 
+          <Card className="rounded-2xl border shadow-none">
+            <CardHeader>
+              <CardTitle>Portfolio projection</CardTitle>
+              <CardDescription>
+                Aggregated nominal value simulation across all stored lots.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isSimulating ? (
+                <div className="flex min-h-[320px] items-center justify-center gap-3 text-sm text-muted-foreground">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Running portfolio simulation...
+                </div>
+              ) : simulation?.aggregatedTimeline ? (
+                <div className="h-[360px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart
+                      data={
+                        simulation.aggregatedTimeline.length > 240
+                          ? simulation.aggregatedTimeline.filter((_, index) => index % 2 === 0)
                           : simulation.aggregatedTimeline
-                        } 
-                        margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                      >
-                        <defs>
-                          <linearGradient id="colorNet" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>
-                            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
-                        <XAxis 
-                          dataKey="date" 
-                          tick={{fontSize: 10}} 
-                          tickFormatter={(val) => format(new Date(val), 'yyyy')}
-                          minTickGap={50}
-                        />
-                        <YAxis tick={{fontSize: 10}} tickFormatter={(val) => `${val/1000}k`} />
-                        <Tooltip 
-                          labelFormatter={(val) => format(new Date(val as string), 'MMMM yyyy')}
-                          formatter={(val: ValueType | undefined) => [formatCurrency(Number(val || 0)), 'Total Value']}
-                        />
-                        <Area 
-                          type="monotone" 
-                          dataKey="totalNetValue" 
-                          stroke="#3b82f6" 
-                          strokeWidth={3}
-                          fillOpacity={1} 
-                          fill="url(#colorNet)" 
-                          isAnimationActive={false}
-                        />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  </div>
-                ) : (
-                  <div className="h-[400px] flex items-center justify-center text-muted-foreground italic">
-                    Add lots to see your portfolio evolution.
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+                      }
+                      margin={{ top: 12, right: 12, left: 0, bottom: 0 }}
+                    >
+                      <defs>
+                        <linearGradient id="portfolioNet" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#2563eb" stopOpacity={0.18} />
+                          <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+                      <XAxis
+                        dataKey="date"
+                        tick={{ fontSize: 11 }}
+                        tickFormatter={(value) => format(new Date(value), 'yyyy')}
+                        minTickGap={48}
+                      />
+                      <YAxis
+                        tick={{ fontSize: 11 }}
+                        tickFormatter={(value) => `${Math.round(value / 1000)}k`}
+                      />
+                      <Tooltip
+                        labelFormatter={(value) => format(new Date(value as string), 'MMMM yyyy')}
+                        formatter={(value: ValueType | undefined) => [
+                          formatCurrency(Number(value ?? 0)),
+                          'Total value',
+                        ]}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="totalNetValue"
+                        stroke="#2563eb"
+                        strokeWidth={3}
+                        fill="url(#portfolioNet)"
+                        isAnimationActive={false}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              ) : (
+                <div className="flex min-h-[320px] items-center justify-center text-sm text-muted-foreground">
+                  Add lots to see the aggregated projection.
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
+
+      <div className="rounded-2xl border bg-muted/20 p-5">
+        <div className="flex items-start gap-3">
+          <TrendingUp className="mt-0.5 h-5 w-5 text-primary" />
+          <div className="space-y-2">
+            <p className="font-semibold text-foreground">Keep notebook outputs honest</p>
+            <p className="text-sm leading-6 text-muted-foreground">
+              Portfolio pages should stay descriptive. They can summarize stored lots and simulated
+              outcomes, but they should not frame one action as the recommended investor move.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
