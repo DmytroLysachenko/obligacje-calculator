@@ -1,60 +1,119 @@
 'use client';
 
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import React, { useMemo } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { RegularInvestmentResult, LotBreakdown } from '../../bond-core/types';
+import { RegularInvestmentResult } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
-import { 
-  Wallet, 
-  TrendingUp, 
-  ShieldCheck,
-  ArrowUpRight,
-  Calendar,
-  Info,
-  FileSpreadsheet
-} from 'lucide-react';
-import { format, parseISO, getYear } from 'date-fns';
+import { Calendar, FileSpreadsheet, TrendingUp, Wallet } from 'lucide-react';
+import { format, parseISO } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
-import { Badge } from '@/components/ui/badge';
-import { motion } from 'framer-motion';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend } from 'recharts';
-import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
-import { Button } from "@/components/ui/button";
-import { convertLotsToCSV, downloadFile } from "@/shared/lib/csv-utils";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ChartContainer } from '@/shared/components/charts/ChartContainer';
+import { Button } from '@/components/ui/button';
+import { convertLotsToCSV, downloadFile } from '@/shared/lib/csv-utils';
 
 interface RegularInvestmentResultsSummaryProps {
   results: RegularInvestmentResult;
 }
 
-const COLORS = ['#3b82f6', '#10b981', '#ef4444', '#f59e0b'];
-
-const containerVariant = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 }
-  }
+type SummaryStat = {
+  label: string;
+  value: string;
+  helper: string;
 };
 
-const itemVariant = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300 } }
+type YearBucket = {
+  year: string;
+  lots: number;
+  invested: number;
+  interest: number;
+  tax: number;
+  netValue: number;
 };
 
-export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsSummaryProps> = ({ results }) => {
+const MAX_RECENT_LOTS = 12;
+
+export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsSummaryProps> = ({
+  results,
+}) => {
   const { t, language } = useLanguage();
   const dateLocale = language === 'pl' ? pl : enGB;
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', {
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', {
       style: 'currency',
       currency: 'PLN',
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(value);
-  };
+
+  const stats: SummaryStat[] = [
+    {
+      label: t('bonds.total_invested'),
+      value: formatCurrency(results.totalInvested),
+      helper: 'Cash paid into the plan.',
+    },
+    {
+      label: t('bonds.final_nominal_value'),
+      value: formatCurrency(results.finalNominalValue),
+      helper: 'Projected withdrawal value before inflation adjustment.',
+    },
+    {
+      label: t('bonds.total_net_profit'),
+      value: formatCurrency(results.totalProfit),
+      helper: 'Net gain after tax and early withdrawal fees.',
+    },
+    {
+      label: t('bonds.real_value_inflation'),
+      value: formatCurrency(results.finalRealValue),
+      helper: 'Inflation-adjusted purchasing power at the end date.',
+    },
+    {
+      label: t('bonds.real_cagr'),
+      value: `${results.realAnnualizedReturn.toFixed(2)}%`,
+      helper: 'Annualized real return across the full plan.',
+    },
+    {
+      label: t('bonds.tax'),
+      value: formatCurrency(results.totalTax),
+      helper: 'Total tax assumed in the scenario.',
+    },
+  ];
+
+  const yearlyBuckets = useMemo<YearBucket[]>(() => {
+    const grouped = new Map<string, YearBucket>();
+
+    results.lots.forEach((lot) => {
+      const year = format(parseISO(lot.purchaseDate), 'yyyy');
+      const current = grouped.get(year) ?? {
+        year,
+        lots: 0,
+        invested: 0,
+        interest: 0,
+        tax: 0,
+        netValue: 0,
+      };
+
+      current.lots += 1;
+      current.invested += lot.investedAmount;
+      current.interest += lot.accumulatedInterest;
+      current.tax += lot.tax;
+      current.netValue += lot.netValue;
+
+      grouped.set(year, current);
+    });
+
+    return Array.from(grouped.values()).sort((left, right) => left.year.localeCompare(right.year));
+  }, [results.lots]);
+
+  const recentLots = useMemo(
+    () =>
+      [...results.lots]
+        .sort(
+          (left, right) =>
+            parseISO(right.purchaseDate).getTime() - parseISO(left.purchaseDate).getTime(),
+        )
+        .slice(0, MAX_RECENT_LOTS),
+    [results.lots],
+  );
 
   const handleExport = () => {
     const headers = {
@@ -66,218 +125,159 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
       fee: t('bonds.early_withdrawal_fee'),
       netValue: t('regular_summary.net_value'),
     };
+
     const csv = convertLotsToCSV(results.lots, headers);
     downloadFile(csv, `regular_investment_${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
   };
 
-  const chartData = [
-    { name: t('bonds.total_invested'), value: Math.max(0, results.totalInvested) },
-    { name: t('common.net_profit'), value: Math.max(0, results.totalProfit) },
-    { name: t('bonds.tax'), value: Math.max(0, results.totalTax) },
-    { name: t('bonds.early_withdrawal_fee'), value: Math.max(0, results.totalEarlyWithdrawalFees) },
-  ].filter(d => d.value > 0);
-
-  const cards = [
-    {
-      title: t('bonds.total_invested'),
-      value: formatCurrency(results.totalInvested),
-      icon: Wallet,
-      color: "text-blue-500",
-      bg: "bg-blue-500/10"
-    },
-    {
-      title: t('bonds.final_nominal_value'),
-      value: formatCurrency(results.finalNominalValue),
-      icon: TrendingUp,
-      color: "text-green-500",
-      bg: "bg-green-500/10"
-    },
-    {
-      title: t('bonds.total_net_profit'),
-      value: formatCurrency(results.totalProfit),
-      icon: ArrowUpRight,
-      color: "text-primary",
-      bg: "bg-primary/10"
-    },
-    {
-      title: t('bonds.real_value_inflation'),
-      value: formatCurrency(results.finalRealValue),
-      icon: ShieldCheck,
-      color: "text-orange-500",
-      bg: "bg-orange-500/10"
-    },
-    {
-      title: t('bonds.real_cagr'),
-      value: `${results.realAnnualizedReturn.toFixed(2)}%`,
-      icon: TrendingUp,
-      color: "text-purple-500",
-      bg: "bg-purple-500/10"
-    }
-  ];
-
-  // Group lots by year
-  const groupedLots = results.lots.reduce((acc, lot) => {
-    const year = getYear(parseISO(lot.purchaseDate));
-    if (!acc[year]) acc[year] = [];
-    acc[year].push(lot);
-    return acc;
-  }, {} as Record<number, LotBreakdown[]>);
-
-  const years = Object.keys(groupedLots).sort((a, b) => Number(a) - Number(b));
-
   return (
-    <div className="space-y-6 w-full">
-      <div className="flex flex-col lg:flex-row gap-6">
-        <div className="flex-1">
-          <motion.div 
-            className="grid grid-cols-1 md:grid-cols-2 gap-4 h-full"
-            variants={containerVariant}
-            initial="hidden"
-            animate="show"
-            key={results.totalInvested}
-          >
-            {cards.map((card, index) => (
-              <motion.div key={index} variants={itemVariant}>
-                <Card className="overflow-hidden border-primary/10 shadow-sm h-full">
-                  <CardContent className="p-6 flex flex-col h-full justify-between">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className={`p-2 rounded-lg ${card.bg}`}>
-                        <card.icon className={`h-4 w-4 ${card.color}`} />
-                      </div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground text-right">
-                        {card.title}
-                      </span>
-                    </div>
-                    <div className="text-2xl font-bold tracking-tight">
-                      {card.value}
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-
-        <Card className="lg:w-80 border-primary/10 shadow-sm overflow-hidden bg-card">
-          <CardHeader className="pb-0 pt-4">
-            <CardTitle className="text-xs font-bold uppercase text-center text-muted-foreground">{t('regular_summary.portfolio_composition')}</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0 h-64">
-            <ChartContainer height={256}>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={chartData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />
-                    ))}
-                  </Pie>
-                  <RechartsTooltip 
-                    formatter={(value: ValueType | undefined) => formatCurrency(Number(value || 0))}
-                    contentStyle={{ backgroundColor: 'hsl(var(--popover))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }}
-                  />
-                  <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: '10px', paddingBottom: '10px' }} />
-                </PieChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-          </CardContent>
-        </Card>
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {stats.map((stat) => (
+          <Card key={stat.label} className="rounded-2xl border shadow-none">
+            <CardContent className="space-y-2 p-5">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {stat.label}
+              </p>
+              <p className="text-2xl font-semibold text-foreground">{stat.value}</p>
+              <p className="text-sm leading-6 text-muted-foreground">{stat.helper}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      <Card className="border-primary/10 overflow-hidden shadow-sm">
-        <CardHeader className="bg-muted/30 pb-4 flex flex-row items-center justify-between space-y-0">
-          <div>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-primary" />
-              {t('bonds.investment_lots')}
-            </CardTitle>
-            <CardDescription>{t('bonds.lots_desc')}</CardDescription>
-          </div>
-          <div className="flex items-center gap-4">
-            <Button variant="outline" size="sm" onClick={handleExport} className="gap-2 text-[10px] font-black uppercase tracking-widest border-2 border-emerald-200 text-emerald-700 hover:bg-emerald-50 h-9 rounded-xl">
-              <FileSpreadsheet className="h-3.5 w-3.5" />
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+        <Card className="rounded-2xl border shadow-none">
+          <CardHeader className="flex flex-row items-start justify-between gap-4 pb-4">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <TrendingUp className="h-5 w-5" />
+                Year-by-year build-up
+              </CardTitle>
+              <CardDescription>
+                Review how much capital each purchase year contributed to the final outcome.
+              </CardDescription>
+            </div>
+            <Button variant="outline" size="sm" className="gap-2" onClick={handleExport}>
+              <FileSpreadsheet className="h-4 w-4" />
               {t('comparison.export')}
             </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          <Accordion type="multiple" className="w-full">
-            {years.map((year) => {
-              const yearLots = groupedLots[Number(year)];
-              const yearInvested = yearLots.reduce((sum, l) => sum + l.investedAmount, 0);
-              const yearNetValue = yearLots.reduce((sum, l) => sum + l.netValue, 0);
+          </CardHeader>
+          <CardContent className="px-0 pb-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Year</TableHead>
+                  <TableHead className="text-right">Lots</TableHead>
+                  <TableHead className="text-right">{t('regular_summary.invested')}</TableHead>
+                  <TableHead className="text-right">{t('regular_summary.interest')}</TableHead>
+                  <TableHead className="text-right">{t('bonds.tax')}</TableHead>
+                  <TableHead className="text-right">{t('regular_summary.net_value')}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {yearlyBuckets.map((bucket) => (
+                  <TableRow key={bucket.year}>
+                    <TableCell className="font-medium">{bucket.year}</TableCell>
+                    <TableCell className="text-right">{bucket.lots}</TableCell>
+                    <TableCell className="text-right">{formatCurrency(bucket.invested)}</TableCell>
+                    <TableCell className="text-right text-emerald-700">
+                      {formatCurrency(bucket.interest)}
+                    </TableCell>
+                    <TableCell className="text-right text-amber-700">
+                      {formatCurrency(bucket.tax)}
+                    </TableCell>
+                    <TableCell className="text-right font-semibold">
+                      {formatCurrency(bucket.netValue)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
 
-              return (
-                <AccordionItem key={year} value={`year-${year}`} className="border-b last:border-0 px-6">
-                  <AccordionTrigger className="hover:no-underline py-4">
-                    <div className="flex flex-1 items-center justify-between pr-4">
-                      <div className="flex items-center gap-4">
-                        <span className="text-lg font-black text-primary">{year}</span>
-                        <Badge variant="secondary" className="text-[10px] uppercase font-bold">
-                          {yearLots.length} {yearLots.length === 1 ? t('regular_summary.lot') : t('regular_summary.lots')}
-                        </Badge>
-                      </div>
-                      <div className="flex gap-8 text-right">
-                        <div className="hidden sm:block">
-                          <p className="text-[10px] text-muted-foreground uppercase font-bold">{t('regular_summary.year_invested')}</p>
-                          <p className="text-sm font-bold">{formatCurrency(yearInvested)}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] text-muted-foreground uppercase font-bold">{t('regular_summary.current_net')}</p>
-                          <p className="text-sm font-bold text-green-600">{formatCurrency(yearNetValue)}</p>
-                        </div>
-                      </div>
+        <Card className="rounded-2xl border shadow-none">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Calendar className="h-5 w-5" />
+              Recent lots
+            </CardTitle>
+            <CardDescription>
+              The latest purchases help verify timing, maturity dates, and per-lot net value.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 gap-3">
+              {recentLots.map((lot) => (
+                <div
+                  key={`${lot.purchaseDate}-${lot.maturityDate}-${lot.investedAmount}`}
+                  className="rounded-2xl border p-4"
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="space-y-1">
+                      <p className="text-sm font-semibold text-foreground">
+                        {format(parseISO(lot.purchaseDate), 'MMMM yyyy', { locale: dateLocale })}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Matures {format(parseISO(lot.maturityDate), 'MMM yyyy', { locale: dateLocale })}
+                      </p>
                     </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="pb-6">
-                    <div className="rounded-xl border bg-muted/20 overflow-hidden mt-2">
-                      <Table>
-                        <TableHeader>
-                          <TableRow className="bg-muted/50 hover:bg-muted/50">
-                            <TableHead className="h-9 text-[10px] uppercase font-bold text-muted-foreground">{t('regular_summary.month')}</TableHead>
-                            <TableHead className="hidden sm:table-cell h-9 text-[10px] uppercase font-bold text-muted-foreground">{t('regular_summary.maturity')}</TableHead>
-                            <TableHead className="hidden md:table-cell h-9 text-[10px] uppercase font-bold text-muted-foreground text-right">{t('regular_summary.invested')}</TableHead>
-                            <TableHead className="h-9 text-[10px] uppercase font-bold text-muted-foreground text-right">{t('regular_summary.interest')}</TableHead>
-                            <TableHead className="h-9 text-[10px] uppercase font-bold text-muted-foreground text-right">{t('regular_summary.net_value')}</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {yearLots.map((lot, idx) => (
-                            <TableRow key={idx} className="hover:bg-muted/30">
-                              <TableCell className="py-2 text-xs font-medium">
-                                {format(parseISO(lot.purchaseDate), 'MMMM', { locale: dateLocale })}
-                              </TableCell>
-                              <TableCell className="hidden sm:table-cell py-2 text-xs text-muted-foreground">
-                                {format(parseISO(lot.maturityDate), 'MMM yyyy', { locale: dateLocale })}
-                              </TableCell>
-                              <TableCell className="hidden md:table-cell py-2 text-right text-xs">{formatCurrency(lot.investedAmount)}</TableCell>
-                              <TableCell className="py-2 text-right text-xs text-green-600">+{formatCurrency(lot.accumulatedInterest)}</TableCell>
-                              <TableCell className="py-2 text-right text-xs font-bold">{formatCurrency(lot.netValue)}</TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
+                    <div className="text-right">
+                      <p className="text-sm font-semibold text-foreground">
+                        {formatCurrency(lot.netValue)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Net lot value</p>
                     </div>
-                  </AccordionContent>
-                </AccordionItem>
-              );
-            })}
-          </Accordion>
-        </CardContent>
-      </Card>
-      
-      <div className="p-4 bg-primary/5 rounded-lg border border-primary/10 flex gap-3">
-        <Info className="h-5 w-5 text-primary shrink-0" />
-        <p className="text-xs text-muted-foreground leading-relaxed">
-          {t('bonds.regular_calc_info')}
-        </p>
+                  </div>
+                  <div className="mt-4 grid grid-cols-2 gap-3 text-sm md:grid-cols-4">
+                    <div>
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                        {t('regular_summary.invested')}
+                      </p>
+                      <p className="mt-1 font-medium">{formatCurrency(lot.investedAmount)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                        {t('regular_summary.interest')}
+                      </p>
+                      <p className="mt-1 font-medium text-emerald-700">
+                        {formatCurrency(lot.accumulatedInterest)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                        {t('bonds.tax')}
+                      </p>
+                      <p className="mt-1 font-medium text-amber-700">{formatCurrency(lot.tax)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                        {t('bonds.early_withdrawal_fee')}
+                      </p>
+                      <p className="mt-1 font-medium">
+                        {formatCurrency(lot.earlyWithdrawalFee)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="rounded-2xl border bg-muted/20 p-4">
+              <div className="flex items-start gap-3">
+                <Wallet className="mt-0.5 h-5 w-5 text-primary" />
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold text-foreground">How to read this page</p>
+                  <p className="text-sm leading-6 text-muted-foreground">
+                    This calculator assumes a repeating contribution schedule. Treat the output as a
+                    scenario test for one bond type, not a recommendation engine.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

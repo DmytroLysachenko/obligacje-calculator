@@ -1,41 +1,71 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useRegularInvestmentCalculator } from '../hooks/useRegularInvestmentCalculator';
 import { RegularInvestmentInputsForm } from './RegularInvestmentInputsForm';
 import { RegularInvestmentResultsSummary } from './RegularInvestmentResultsSummary';
 import { RegularInvestmentChart } from './RegularInvestmentChart';
 import { useLanguage } from '@/i18n';
-import { Target, PiggyBank } from 'lucide-react';
-import { cn } from "@/lib/utils";
+import { PiggyBank } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
-import { Skeleton } from "@/components/ui/skeleton";
-
+import { Skeleton } from '@/components/ui/skeleton';
 import { RecalculateButton } from '@/shared/components/RecalculateButton';
 import { Button } from '@/components/ui/button';
 
+const EmptyState = ({
+  onCalculate,
+  label,
+}: {
+  onCalculate: () => void;
+  label: string;
+}) => (
+  <div className="rounded-2xl border border-dashed bg-card px-6 py-12 text-center">
+    <h3 className="text-lg font-bold text-foreground">Start with one scenario</h3>
+    <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+      Set contribution amount, horizon, and bond type. Run the simulation only when the inputs are ready.
+      This view now avoids background recalculation while you edit.
+    </p>
+    <Button onClick={onCalculate} className="mt-6 h-11 px-6 font-semibold">
+      {label}
+    </Button>
+  </div>
+);
+
+const LoadingState = () => (
+  <div className="space-y-4">
+    <Skeleton className="h-28 w-full rounded-2xl" />
+    <Skeleton className="h-44 w-full rounded-2xl" />
+    <Skeleton className="h-[420px] w-full rounded-2xl" />
+  </div>
+);
+
 export const RegularInvestmentCalculatorContainer: React.FC = () => {
-  const { inputs, results, warnings, assumptions, isCalculating, calculate, updateInput, setBondType, isDirty, envelope } = useRegularInvestmentCalculator();
+  const {
+    inputs,
+    results,
+    warnings,
+    assumptions,
+    isCalculating,
+    calculate,
+    updateInput,
+    setBondType,
+    isDirty,
+    envelope,
+  } = useRegularInvestmentCalculator();
   const { t } = useLanguage();
 
-  const [hasMounted, setHasMounted] = useState(false);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setHasMounted(true);
-  }, []);
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && (isDirty || !results)) {
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' && (isDirty || !results)) {
       calculate();
     }
   };
 
   return (
     <CalculatorPageShell
-      title={t("nav.regular_investment")}
-      description={t("bonds.regular_calculator")}
+      title={t('nav.regular_investment')}
+      description={t('bonds.regular_calculator')}
       icon={<PiggyBank className="h-8 w-8" />}
       isCalculating={isCalculating}
       isDirty={isDirty}
@@ -44,8 +74,8 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
       currentValue={results?.finalNominalValue}
       onKeyDown={handleKeyDown}
     >
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
-        <aside className="xl:col-span-4 h-fit xl:sticky xl:top-28">
+      <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
+        <aside className="xl:col-span-4 xl:sticky xl:top-28 xl:h-fit">
           <RegularInvestmentInputsForm
             inputs={inputs}
             onUpdate={updateInput as (key: string, value: unknown) => void}
@@ -53,37 +83,40 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
           />
         </aside>
 
-        <div className="xl:col-span-8 space-y-8">
+        <section className="space-y-6 xl:col-span-8">
           {!results && !isCalculating && (
-            <div className="h-[400px] flex flex-col items-center justify-center border-2 border-dashed rounded-3xl opacity-50 space-y-4">
-              <Target className="h-12 w-12 text-muted-foreground" />
-              <p className="font-medium text-muted-foreground">{t('bonds.click_simulate_regular')}</p>
-              <Button
-                onClick={() => calculate()}
-                className="h-11 px-6 font-bold"
-              >
-                {t('common.calculate')}
-              </Button>
-            </div>
+            <EmptyState onCalculate={() => calculate()} label={t('common.calculate')} />
           )}
 
-          {isCalculating && !results && (
-            <div className="space-y-8 animate-in fade-in duration-500">
-              <Skeleton className="h-[140px] w-full rounded-3xl" />
-              <Skeleton className="h-[200px] w-full rounded-3xl" />
-              <Skeleton className="h-[500px] w-full rounded-3xl shadow-xl border border-primary/5" />
-            </div>
-          )}
+          {isCalculating && !results && <LoadingState />}
 
           {results && (
-            <div className={cn("space-y-8 transition-opacity duration-300", isCalculating && "opacity-50 pointer-events-none")}>
+            <div
+              className={cn(
+                'space-y-6 transition-opacity duration-200',
+                isCalculating && 'pointer-events-none opacity-50',
+              )}
+            >
               {isDirty && (
-                <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
-                  Inputs changed. Results below show the last calculated scenario. Use <span className="font-bold">Recalculate</span> to refresh them.
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
+                  Inputs changed. Results below still show the previous run. Use <span className="font-semibold">Recalculate</span> to refresh them.
                 </div>
               )}
 
               <RegularInvestmentResultsSummary results={results} />
+
+              <div className="rounded-2xl border bg-card p-6">
+                <div className="max-w-3xl">
+                  <h3 className="text-lg font-semibold text-foreground">Growth projection</h3>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    The chart shows how total invested capital and projected portfolio value change over time.
+                    Switch between nominal and real value to inspect inflation-adjusted outcomes.
+                  </p>
+                </div>
+                <div className="mt-6">
+                  <RegularInvestmentChart results={results} bondType={inputs.bondType} />
+                </div>
+              </div>
 
               <CalculationMetaPanel
                 warnings={warnings}
@@ -92,24 +125,12 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
                 dataQualityFlags={envelope?.dataQualityFlags}
                 dataFreshness={envelope?.dataFreshness}
               />
-
-              <div className="bg-card border rounded-2xl p-6 shadow-sm overflow-hidden min-h-[500px]">
-                <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-                  <span className="w-1.5 h-6 bg-primary rounded-full" />
-                  {t('bonds.growth_projection')}
-                </h3>
-                {hasMounted && (
-                  <RegularInvestmentChart 
-                    results={results} 
-                    bondType={inputs.bondType} 
-                  />
-                )}
-              </div>
             </div>
           )}
-        </div>
+        </section>
       </div>
-      <RecalculateButton 
+
+      <RecalculateButton
         isDirty={isDirty}
         loading={isCalculating}
         onClick={() => calculate()}
