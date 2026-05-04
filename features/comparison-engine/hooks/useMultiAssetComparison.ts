@@ -1,5 +1,9 @@
-import { useMemo, useState } from 'react';
-import { calculateAssetPerformance, calculateBondsPerformance } from '../../bond-core/utils/asset-calculations';
+import { useCallback, useMemo, useState } from 'react';
+import {
+  calculateAssetPerformance,
+  calculateBondsPerformance,
+  calculateSavingsPerformance,
+} from '../../bond-core/utils/asset-calculations';
 import { AssetMetadata } from '../../bond-core/types/assets';
 import { HISTORICAL_RETURNS, type MonthlyReturn } from '../../bond-core/constants/historical-data';
 import { useQuerySync } from '@/shared/hooks/useQuerySync';
@@ -20,169 +24,246 @@ interface MultiAssetHistoryResponse {
   };
 }
 
+type DraftState = {
+  initialSum: number;
+  monthlyContribution: number;
+  startYear: string;
+  startMonth: string;
+  showRealValue: boolean;
+};
+
 const ASSETS_METADATA: Record<string, AssetMetadata> = {
   sp500: {
     id: 'sp500',
-    name: 'S&P 500 (Stocks)',
-    color: '#3b82f6', // Blue (matches ROR)
+    name: 'S&P 500',
+    color: '#2563eb',
     description: {
-      en: '500 largest US companies. High growth, high volatility.',
-      pl: '500 największych spółek w USA. Wysoki wzrost, wysoka zmienność.',
+      en: 'US equities benchmark with high growth and high volatility.',
+      pl: 'Benchmark akcji z USA o wysokim wzroscie i wysokiej zmiennosci.',
     },
   },
   gold: {
     id: 'gold',
-    name: 'Gold (XAU)',
-    color: '#ec4899', // Pink (distinct)
+    name: 'Gold',
+    color: '#db2777',
     description: {
-      en: 'Safe-haven asset. Protects purchasing power.',
-      pl: 'Aktywo "bezpieczna przystań". Chroni siłę nabywczą.',
+      en: 'Gold priced through historical market data.',
+      pl: 'Zloto liczone na podstawie danych historycznych.',
     },
   },
   bonds: {
     id: 'bonds',
-    name: 'Bonds (EDO)',
-    color: '#f59e0b', // Amber (matches EDO)
+    name: 'EDO bonds',
+    color: '#d97706',
     description: {
-      en: 'Inflation-indexed government bonds. Safe and steady.',
-      pl: 'Obligacje skarbowe indeksowane inflacją. Bezpieczne i stabilne.',
+      en: 'Ten-year inflation-indexed treasury bond scenario.',
+      pl: 'Scenariusz dla dziesiecioletnich obligacji EDO.',
     },
   },
   savings: {
     id: 'savings',
-    name: 'Savings Account',
-    color: '#94a3b8', // Slate
+    name: 'Savings account',
+    color: '#64748b',
     description: {
-      en: 'Low-risk, low-reward cash account.',
-      pl: 'Niskie ryzyko, niski zysk. Konto oszczędnościowe.',
+      en: 'Savings account scenario linked to historical NBP rates.',
+      pl: 'Scenariusz konta oszczednosciowego powiazanego ze stopami NBP.',
     },
   },
 };
 
+function getDefaultDraftState(history: MonthlyReturn[]): DraftState {
+  const firstDate = history[0]?.date ?? '2020-01';
+  const [startYear, startMonth] = firstDate.split('-');
+
+  return {
+    initialSum: 10000,
+    monthlyContribution: 500,
+    startYear,
+    startMonth,
+    showRealValue: false,
+  };
+}
+
 export function useMultiAssetComparison() {
-  const [initialSum, setInitialSum] = useState(10000);
-  const [monthlyContribution, setMonthlyContribution] = useState(500);
-  const [startYear, setStartYear] = useState('');
-  const [startMonth, setStartMonth] = useState('');
-  const [showRealValue, setShowRealValue] = useState(false);
+  const { data: historyResponse, isLoading } =
+    useChartData<MultiAssetHistoryResponse>('/api/charts/multi-asset-history');
+
+  const sourceData = historyResponse?.data?.length ? historyResponse.data : HISTORICAL_RETURNS;
+  const effectiveCoverageStart =
+    historyResponse?.coverageStart ?? HISTORICAL_RETURNS[0]?.date ?? '2020-01';
+  const effectiveCoverageEnd =
+    historyResponse?.coverageEnd ??
+    HISTORICAL_RETURNS[HISTORICAL_RETURNS.length - 1]?.date ??
+    '2024-06';
+
+  const defaultState = useMemo(() => getDefaultDraftState(sourceData), [sourceData]);
+  const [draft, setDraft] = useState<DraftState>(defaultState);
+  const [committed, setCommitted] = useState<DraftState>(defaultState);
   const [isDirty, setIsDirty] = useState(true);
-  const { data: historyResponse, isLoading } = useChartData<MultiAssetHistoryResponse>('/api/charts/multi-asset-history');
 
-  const updateInitialSum = (val: number) => {
-    setInitialSum(val);
+  const setDraftPartial = useCallback((patch: Partial<DraftState>) => {
+    setDraft((current) => ({ ...current, ...patch }));
     setIsDirty(true);
-  };
+  }, []);
 
-  const updateMonthlyContribution = (val: number) => {
-    setMonthlyContribution(val);
-    setIsDirty(true);
-  };
+  const updateInitialSum = useCallback(
+    (value: number) => {
+      setDraftPartial({ initialSum: value });
+    },
+    [setDraftPartial],
+  );
 
-  const updateStartYear = (val: string) => {
-    setStartYear(val);
-    setIsDirty(true);
-  };
+  const updateMonthlyContribution = useCallback(
+    (value: number) => {
+      setDraftPartial({ monthlyContribution: value });
+    },
+    [setDraftPartial],
+  );
 
-  const updateStartMonth = (val: string) => {
-    setStartMonth(val);
-    setIsDirty(true);
-  };
+  const updateStartYear = useCallback(
+    (value: string) => {
+      setDraftPartial({ startYear: value });
+    },
+    [setDraftPartial],
+  );
 
-  const updateShowRealValue = (val: boolean) => {
-    setShowRealValue(val);
-  };
+  const updateStartMonth = useCallback(
+    (value: string) => {
+      setDraftPartial({ startMonth: value });
+    },
+    [setDraftPartial],
+  );
 
-  const recalculate = () => {
+  const updateShowRealValue = useCallback((value: boolean) => {
+    setDraft((current) => ({ ...current, showRealValue: value }));
+  }, []);
+
+  const recalculate = useCallback(() => {
+    setCommitted(draft);
     setIsDirty(false);
-  };
+  }, [draft]);
 
   useQuerySync(
     {
-      sum: initialSum,
-      monthly: monthlyContribution,
-      year: startYear || undefined,
-      month: startMonth || undefined,
-      real: showRealValue,
+      sum: draft.initialSum,
+      monthly: draft.monthlyContribution,
+      year: draft.startYear || undefined,
+      month: draft.startMonth || undefined,
+      real: draft.showRealValue,
     },
     (initial) => {
-      if (initial.sum) setInitialSum(Number(initial.sum));
-      if (initial.monthly) setMonthlyContribution(Number(initial.monthly));
-      if (initial.year) setStartYear(String(initial.year));
-      if (initial.month) setStartMonth(String(initial.month));
-      if (initial.real !== undefined) setShowRealValue(String(initial.real) === 'true');
+      const nextDraft: DraftState = {
+        initialSum:
+          initial.sum !== undefined ? Number(initial.sum) : defaultState.initialSum,
+        monthlyContribution:
+          initial.monthly !== undefined
+            ? Number(initial.monthly)
+            : defaultState.monthlyContribution,
+        startYear: initial.year ? String(initial.year) : defaultState.startYear,
+        startMonth: initial.month ? String(initial.month) : defaultState.startMonth,
+        showRealValue:
+          initial.real !== undefined
+            ? String(initial.real) === 'true'
+            : defaultState.showRealValue,
+      };
+
+      setDraft(nextDraft);
+      setCommitted(nextDraft);
+      setIsDirty(false);
     },
   );
 
-  const sourceData = historyResponse?.data?.length ? historyResponse.data : HISTORICAL_RETURNS;
-  const effectiveCoverageStart = historyResponse?.coverageStart ?? HISTORICAL_RETURNS[0]?.date ?? '2020-01';
-  const effectiveCoverageEnd = historyResponse?.coverageEnd ?? HISTORICAL_RETURNS[HISTORICAL_RETURNS.length - 1]?.date ?? '2024-06';
-  const [coverageYear, coverageMonth] = effectiveCoverageStart.split('-');
-  const effectiveStartYear = startYear || coverageYear;
-  const effectiveStartMonth = startMonth || coverageMonth;
-
   const filteredData = useMemo(() => {
-    const effectiveStartDate = `${effectiveStartYear}-${effectiveStartMonth}`;
+    const effectiveStartDate = `${committed.startYear}-${committed.startMonth}`;
     const data = sourceData.filter((row) => row.date >= effectiveStartDate);
     return data.length > 0 ? data : sourceData;
-  }, [effectiveStartMonth, effectiveStartYear, sourceData]);
+  }, [committed.startMonth, committed.startYear, sourceData]);
 
   const sp500 = useMemo(
-    () => calculateAssetPerformance(initialSum, monthlyContribution, 'sp500', ASSETS_METADATA.sp500, filteredData),
-    [initialSum, monthlyContribution, filteredData],
+    () =>
+      calculateAssetPerformance(
+        committed.initialSum,
+        committed.monthlyContribution,
+        'sp500',
+        ASSETS_METADATA.sp500,
+        filteredData,
+      ),
+    [committed.initialSum, committed.monthlyContribution, filteredData],
   );
 
   const gold = useMemo(
-    () => calculateAssetPerformance(initialSum, monthlyContribution, 'gold', ASSETS_METADATA.gold, filteredData),
-    [initialSum, monthlyContribution, filteredData],
+    () =>
+      calculateAssetPerformance(
+        committed.initialSum,
+        committed.monthlyContribution,
+        'gold',
+        ASSETS_METADATA.gold,
+        filteredData,
+      ),
+    [committed.initialSum, committed.monthlyContribution, filteredData],
   );
 
   const bonds = useMemo(
-    () => calculateBondsPerformance(initialSum, monthlyContribution, ASSETS_METADATA.bonds, filteredData),
-    [initialSum, monthlyContribution, filteredData],
+    () =>
+      calculateBondsPerformance(
+        committed.initialSum,
+        committed.monthlyContribution,
+        ASSETS_METADATA.bonds,
+        filteredData,
+      ),
+    [committed.initialSum, committed.monthlyContribution, filteredData],
   );
 
   const savings = useMemo(
-    () => calculateAssetPerformance(initialSum, monthlyContribution, 'savings', ASSETS_METADATA.savings, filteredData),
-    [initialSum, monthlyContribution, filteredData],
+    () =>
+      calculateSavingsPerformance(
+        committed.initialSum,
+        committed.monthlyContribution,
+        ASSETS_METADATA.savings,
+        filteredData,
+      ),
+    [committed.initialSum, committed.monthlyContribution, filteredData],
   );
 
   const purchasingPowerLoss = useMemo(() => {
     let cumulativeInflation = 1;
-    let totalInvested = initialSum;
+    let totalInvested = committed.initialSum;
 
     for (const row of filteredData) {
-      const monthlyInflation = (row.inflation || 0) / 100;
-      cumulativeInflation *= (1 + monthlyInflation);
-      totalInvested += monthlyContribution;
-      
-      // We calculate what the "real" value of the new contribution is relative to the START of the simulation
-      // But actually, simpler: total nominal invested / cumulative inflation = real value today
-      // The loss is totalNominal - (totalNominal / cumulativeInflation)
+      cumulativeInflation *= 1 + (row.inflation || 0) / 100;
+      totalInvested += committed.monthlyContribution;
     }
-    
-    return totalInvested - (totalInvested / cumulativeInflation);
-  }, [initialSum, monthlyContribution, filteredData]);
+
+    if (cumulativeInflation <= 0) {
+      return 0;
+    }
+
+    return totalInvested - totalInvested / cumulativeInflation;
+  }, [committed.initialSum, committed.monthlyContribution, filteredData]);
 
   const years = useMemo(() => {
     const uniqueYears = Array.from(new Set(sourceData.map((row) => row.date.substring(0, 4))));
-    return uniqueYears.sort((a, b) => b.localeCompare(a));
+    return uniqueYears.sort((left, right) => right.localeCompare(left));
   }, [sourceData]);
 
-  const months = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'));
+  const months = useMemo(
+    () => Array.from({ length: 12 }, (_, index) => (index + 1).toString().padStart(2, '0')),
+    [],
+  );
 
   return {
-    initialSum,
+    initialSum: draft.initialSum,
     updateInitialSum,
-    monthlyContribution,
+    monthlyContribution: draft.monthlyContribution,
     updateMonthlyContribution,
-    startDate: `${effectiveStartYear}-${effectiveStartMonth}`,
-    startYear: effectiveStartYear,
+    startDate: `${committed.startYear}-${committed.startMonth}`,
+    startYear: draft.startYear,
     updateStartYear,
-    startMonth: effectiveStartMonth,
+    startMonth: draft.startMonth,
     updateStartMonth,
     years,
     months,
-    showRealValue,
+    showRealValue: draft.showRealValue,
     updateShowRealValue,
     isDirty,
     isLoading,
@@ -197,6 +278,7 @@ export function useMultiAssetComparison() {
     usedFallbackHistory: historyResponse?.usedFallback ?? true,
     historyLastSyncedAt: historyResponse?.lastSyncedAt,
     historySeriesAvailability: historyResponse?.seriesAvailability,
-    historyData: sourceData,
+    historyData: filteredData,
+    committedScenario: committed,
   };
 }

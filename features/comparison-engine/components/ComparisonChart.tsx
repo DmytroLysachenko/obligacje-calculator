@@ -187,23 +187,23 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
       </TabsList>
 
       <TabsContent value="growth" className="mt-0">
-        <Card className="border shadow-xl overflow-hidden rounded-3xl">
-          <CardHeader className="bg-muted/30 px-8 py-6 border-b">
+        <Card className="rounded-2xl border shadow-none">
+          <CardHeader className="border-b px-6 py-5">
             <div>
-              <CardTitle className="text-xl font-black">
+              <CardTitle className="text-xl font-semibold">
                 {showRealValue ? t('comparison.real_value_projection') : t('comparison.nominal_growth')}
               </CardTitle>
-              <CardDescription className="text-xs font-medium uppercase tracking-widest text-muted-foreground/60 mt-1">
+              <CardDescription className="mt-1 text-sm leading-6">
                 {t('comparison.performance_with_contributions')}
               </CardDescription>
             </div>
           </CardHeader>
-          <CardContent className="p-8">
-            <ChartContainer height={450}>
-              <ResponsiveContainer width="100%" height={450}>
+          <CardContent className="p-6">
+            <ChartContainer height={420}>
+              <ResponsiveContainer width="100%" height={420}>
                 <ComposedChart
                   data={chartData.length > 240 ? chartData.filter((_, i) => i % 2 === 0) : chartData}
-                  margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
+                  margin={{ top: 12, right: 16, left: 0, bottom: 8 }}
                 >
                   <defs>
                     {assets.map((asset) => (
@@ -267,10 +267,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
                     height={40}
                     iconType="circle"
                     wrapperStyle={{
-                      fontSize: "10px",
-                      fontWeight: "black",
-                      textTransform: "uppercase",
-                      letterSpacing: '0.05em'
+                      fontSize: "11px",
                     }}
                   />
                   {chartData.length > 24 ? <Brush dataKey="date" height={22} stroke="#cbd5e1" travellerWidth={8} /> : null}
@@ -321,28 +318,28 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
       </TabsContent>
 
       <TabsContent value="risk" className="mt-0">
-        <Card className="border shadow-xl overflow-hidden rounded-3xl">
-          <CardHeader className="bg-red-50/20 px-8 py-6 border-b">
+        <Card className="rounded-2xl border shadow-none">
+          <CardHeader className="border-b px-6 py-5">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-red-100 rounded-lg">
+              <div className="rounded-lg border bg-muted/30 p-2">
                 <Activity className="h-5 w-5 text-red-600" />
               </div>
               <div>
-                <CardTitle className="text-xl font-black">
+                <CardTitle className="text-xl font-semibold">
                   {t('comparison.historical_drawdown')}
                 </CardTitle>
-                <CardDescription className="text-xs font-medium uppercase tracking-widest text-muted-foreground/60 mt-1">
+                <CardDescription className="mt-1 text-sm leading-6">
                   {t('comparison.historical_drawdown_desc')}
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
-          <CardContent className="p-8">
-            <ChartContainer height={450}>
-              <ResponsiveContainer width="100%" height={450}>
+          <CardContent className="p-6">
+            <ChartContainer height={420}>
+              <ResponsiveContainer width="100%" height={420}>
                 <LineChart
                   data={chartData}
-                  margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
+                  margin={{ top: 12, right: 16, left: 0, bottom: 8 }}
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
@@ -372,9 +369,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
                     height={40}
                     iconType="circle"
                     wrapperStyle={{
-                      fontSize: "10px",
-                      fontWeight: "black",
-                      textTransform: "uppercase",
+                      fontSize: "11px",
                     }}
                   />
                   {chartData.length > 24 ? <Brush dataKey="date" height={22} stroke="#cbd5e1" travellerWidth={8} /> : null}
