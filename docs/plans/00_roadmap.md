@@ -6,6 +6,19 @@ The app is **not production-ready**.
 
 Several calculators exist, but stability, calculation trust, data freshness, UX consistency, and performance are below acceptable release quality. The current priority is not feature expansion. The current priority is **refactor, simplification, and correctness**.
 
+## Current Recovery Snapshot
+
+The recovery work already completed has materially changed the product:
+
+- the main calculators use a calmer explicit calculate/recalculate model more often
+- recommendation-style language was reduced across ranking and comparison surfaces
+- trusted vs experimental page classes are now visible in the UI
+- family-bond and retirement support boundaries are more explicit
+- data/source/freshness context is surfaced more honestly on reference pages
+- flagship calculation paths now have exact-value golden regression tests
+
+This is real progress, but it is **not** the same as production readiness.
+
 ## Current Product Position
 
 - core bond calculation logic exists and can be evolved
@@ -54,6 +67,8 @@ Primary outputs:
 - support matrix of trusted vs experimental pages
 - neutral copy in choose-bond and compare-style flows
 - stronger demotion of misleading ranking or advisory-adjacent surfaces
+- stricter recovery-lab treatment for optimizer, multi-asset, and limited retirement flows
+- golden regression baselines for flagship calculator scenarios
 
 ### Phase 2. Calculation Trust
 
@@ -116,6 +131,11 @@ The likely retained core:
 - regular investment / ladder if calculation rules are verified
 - retirement only if rules and scope are narrowed and explained
 - economic data only if source/freshness are real and visible
+
+The current navigation stance is:
+
+- `primary emphasis`: education, single calculator, comparison, regular investment, ladder, notebook, economic data
+- `recovery lab`: optimizer, multi-asset, retirement
 
 ## Out-of-Scope Until Stabilized
 

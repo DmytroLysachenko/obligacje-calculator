@@ -48,6 +48,21 @@ A surface is `experimental` or `limited` when:
 
 These features must use conservative copy and may need future downgrading or removal from primary navigation.
 
+## Current Enforcement State
+
+This matrix is no longer only documentation.
+
+The app now enforces part of it directly through UI behavior:
+
+- support labels appear on bond selectors
+- family-only bonds are visibly marked instead of presented as generic defaults
+- retirement exposes only the narrower supported bond set
+- optimizer, multi-asset, and retirement are grouped into a recovery-lab style navigation area
+- dashboard emphasis now favors trusted, conditional, and reference surfaces over weaker ones
+- data-reference pages show source/coverage/as-of state with explicit fallback framing
+
+The remaining gap is deeper calculator validation, not only labeling.
+
 ## Current Matrix
 
 ## 1. Trusted Core
@@ -125,6 +140,7 @@ Required before trusted promotion:
 - supported scenario matrix
 - clearer documentation of what is and is not normalized
 - more calculation verification
+- broader exact-output regression coverage beyond the current flagship baselines
 
 ### 2.2 Regular Investment
 
@@ -140,6 +156,7 @@ Why not trusted core yet:
 
 - recurring contribution logic needs more systematic math validation
 - edge cases around horizon/timing deserve stronger tests
+- family-bond scenarios remain conditional even when the base UI is clearer
 
 ### 2.3 Ladder
 
@@ -155,6 +172,7 @@ Why not trusted core yet:
 
 - still relies on the regular-investment engine path
 - ladder-specific interpretation needs stronger validation
+- should only be promoted after the underlying contribution/timing engine is proven broader than current flagship cases
 
 ### 2.4 Notebook
 
@@ -192,6 +210,7 @@ Main limitation:
 - a ranked payout list is highly assumption-sensitive
 - users can mistake sorting for guidance
 - scenario reasons remain heuristics, not suitability logic
+- it now sits in recovery-lab emphasis rather than core navigation emphasis
 
 Rule:
 
@@ -219,6 +238,7 @@ Why still experimental:
 - this feature depends heavily on historical coverage quality
 - it can easily over-promise as a backtesting surface
 - mixed instrument comparison is inherently more interpretation-heavy than core bond calculators
+- the page now discloses source/coverage more honestly, but the dataset still needs stronger breadth before promotion
 
 Rule:
 
@@ -238,6 +258,7 @@ Why still limited:
 
 - modeled scope remains narrower than a user may expect from the term "retirement planner"
 - current model is a simplified steady-rate path
+- supported bond families are now intentionally narrowed in the UI
 
 Rule:
 
@@ -246,7 +267,12 @@ Rule:
 
 ## 4. Navigation Guidance During Recovery
 
-The current navigation may still expose some `conditional` and `experimental` pages. This is acceptable only if:
+The current navigation stance is intentionally uneven:
+
+- `primary navigation emphasis`: trusted, conditional, and reference pages
+- `recovery-lab emphasis`: optimizer, multi-asset, retirement
+
+This is acceptable only if:
 
 - the copy is conservative
 - the pages are visibly scoped
@@ -255,7 +281,7 @@ The current navigation may still expose some `conditional` and `experimental` pa
 If an experimental surface becomes misleading again, it should be:
 
 1. downgraded in wording
-2. moved out of primary emphasis
+2. moved further out of primary emphasis
 3. or hidden until recovery work catches up
 
 ## 5. Copy Rules by Class
@@ -316,3 +342,14 @@ To move more surfaces toward trusted status:
 3. tighten wording on all ranking or sorting views
 4. keep data provenance explicit
 5. downgrade any page whose promise still exceeds its evidence
+
+## 8. Current Strongest Evidence
+
+The strongest current evidence for the recovery direction is:
+
+- core calculators now build and ship with calmer explicit recalculation flows
+- support-boundary UI is shared instead of ad hoc
+- support-matrix regression tests exist
+- flagship calculator golden tests now lock exact outputs for representative scenarios
+
+This means the app is closer to a reliable narrowed calculator product than it was before, but still not done with full recovery.

@@ -13,6 +13,30 @@ It replaces the previous feature-growth direction with a stricter recovery progr
 
 The app currently contains useful code and useful domain work, but it is overbuilt relative to its reliability level. The product needs narrowing, not expansion.
 
+## 0. Current Progress Snapshot
+
+The recovery plan is already partly implemented.
+
+Completed or materially improved already:
+
+- major calculator mount/update loops were reduced
+- single calculator, comparison, regular-investment, ladder, notebook, and multi-asset flows were simplified substantially
+- recommendation-style wording was reduced across ranking and comparison surfaces
+- trusted/conditional/experimental status is visible in UI
+- retirement support scope is narrower and more explicit
+- family-only bond handling is more honest across calculators
+- economic/reference pages now surface source, coverage, and freshness more directly
+- flagship scenario golden tests exist for core calculator outputs
+- support-matrix tests exist for broader scenario classes
+
+Still not complete:
+
+- deeper math validation across every supported scenario family
+- final retention decisions on weaker recovery-lab surfaces
+- further contrast/readability cleanup across all pages
+- stronger proof around historical comparison coverage
+- final release-gate review for production candidacy
+
 ## 1. Real Current State
 
 As of April 30, 2026, the app should be treated as `pre-production` and `partially unstable`.
@@ -521,6 +545,7 @@ Acceptance criteria:
 - no major page shows `unknown` source in normal operation
 - stale sync state is visible and actionable
 - economic data page is either useful or intentionally hidden
+- weaker historical comparison pages are demoted if data breadth still does not justify stronger promotion
 
 ### Workstream F. Contrast, Accessibility, and Readability
 
@@ -592,6 +617,39 @@ Acceptance criteria:
 
 - decide retained feature set
 - complete final polish on retained set only
+
+## 7.1 Current Implemented Recovery Moves
+
+This subsection records the main completed recovery moves so the plan remains truthful.
+
+### Interaction and State
+
+- explicit calculate/recalculate flow is used much more broadly now
+- several calculator surfaces no longer auto-churn on every small input mutation
+- state noise and decorative UI layers were reduced across major calculators
+
+### Product Boundary
+
+- ranking and comparison wording is more neutral
+- optimizer is treated as scenario sorting, not investor guidance
+- retirement is treated as a limited withdrawal model, not retirement advice
+
+### Support Matrix Enforcement
+
+- shared bond support metadata now exists in code
+- family-only bonds are labeled in selectors
+- retirement only exposes the narrower supported bond list
+- weaker pages are grouped into a recovery-lab style navigation area
+
+### Test Coverage
+
+- support-matrix regression tests protect scenario-class expectations
+- flagship golden tests protect exact outputs for representative single-bond, regular-investment, comparison, and retirement cases
+
+### Data Honesty
+
+- reference pages now present source/coverage/as-of metadata more consistently
+- fallback states are described more directly instead of silently reading like mature production feeds
 
 ## 8. Release Gate for "Production Candidate"
 
