@@ -27,6 +27,7 @@ These stay in MVP only if validated during refactor:
 - regular investment calculator
 - ladder strategy
 - retirement planner
+- notebook workspace
 
 ## Deferred Until Stable
 
@@ -34,6 +35,19 @@ These stay in MVP only if validated during refactor:
 - broad multi-asset comparison unless data coverage is strong
 - portfolio/social expansion
 - feature growth that adds state complexity without trust gains
+
+## Current Support Classes
+
+The current support matrix is documented separately in:
+
+- [26_trusted_and_experimental_feature_matrix.md](./26_trusted_and_experimental_feature_matrix.md)
+
+Short summary:
+
+- `trusted core`: education, single calculator
+- `trusted reference`: economic data
+- `conditional`: comparison, regular investment, ladder, notebook
+- `experimental or limited`: optimizer, multi-asset, retirement
 
 ## Delivery Path
 

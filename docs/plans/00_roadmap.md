@@ -53,6 +53,7 @@ Primary outputs:
 - corrected docs and real acceptance criteria
 - support matrix of trusted vs experimental pages
 - neutral copy in choose-bond and compare-style flows
+- stronger demotion of misleading ranking or advisory-adjacent surfaces
 
 ### Phase 2. Calculation Trust
 

@@ -16,6 +16,7 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [Content Strategy & Education](./product/15_content_strategy_and_education.md) - Our approach to financial literacy.
 - [Functional Requirements](./product/17_functional_requirements.md) - Current product requirements after scope reset.
 - [Roadmap & MVP Definition](./product/25_roadmap_and_mvp_definition.md) - Reset MVP and recovery path.
+- [Trusted & Experimental Feature Matrix](./product/26_trusted_and_experimental_feature_matrix.md) - Current support classes for core, conditional, and experimental pages.
 - [UX Improvement Plan](./product/18_ux_improvement_plan.md) - Continuous enhancement of the user experience.
 
 ### 2. Technical Architecture

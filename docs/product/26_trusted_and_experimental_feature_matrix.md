@@ -1,0 +1,318 @@
+# 26. Trusted and Experimental Feature Matrix
+
+This document defines which application surfaces are currently:
+
+- trusted core flows
+- conditionally supported flows
+- experimental or limited-support flows
+
+It exists to prevent two recurring problems:
+
+1. treating all pages as equally mature
+2. documenting feature existence as if it meant feature readiness
+
+The app is still in refactor and recovery. A page being visible in the UI does **not** automatically mean it is production-ready.
+
+## Classification Rules
+
+### Trusted
+
+A surface is `trusted` only when:
+
+- interaction flow is stable
+- no known infinite or near-infinite update loops remain
+- copy stays within calculator boundaries
+- the page is understandable without feature hunting
+- data requirements are sufficiently transparent
+- core scenario coverage is believable for current implementation
+
+### Conditional
+
+A surface is `conditional` when:
+
+- the page has real value
+- recent refactor work improved stability or clarity
+- but the math or scope still needs more validation
+- or some supporting data/edge cases remain uncertain
+
+Conditional features may remain in navigation during recovery, but should not be presented as polished or fully validated.
+
+### Experimental or Limited
+
+A surface is `experimental` or `limited` when:
+
+- the underlying assumptions are not strong enough yet
+- data depth is weaker than the UI promise
+- scope is narrower than a normal user would assume
+- or the page still risks being misleading
+
+These features must use conservative copy and may need future downgrading or removal from primary navigation.
+
+## Current Matrix
+
+## 1. Trusted Core
+
+### 1.1 Education
+
+Status: `trusted`
+
+Why:
+
+- core purpose is simple
+- product boundary is educational
+- recent provider and loading issues were addressed
+
+Remaining expectations:
+
+- content quality can still improve
+- but the page class itself is aligned with app purpose
+
+### 1.2 Single Bond Calculator
+
+Status: `trusted core`
+
+Why:
+
+- it is the main product surface
+- interaction flow was simplified materially
+- explicit recalculation behavior is clearer
+- result output is calmer and less cluttered
+
+Still required:
+
+- ongoing math verification across supported bonds and timing combinations
+- more targeted regression coverage
+
+Interpretation:
+
+- trusted as the flagship calculator flow
+- not yet equivalent to final production certification
+
+### 1.3 Economic Data Reference Page
+
+Status: `trusted reference`
+
+Why:
+
+- page purpose is now narrower and more honest
+- source, coverage, fallback, and as-of state are visible
+- UI no longer pretends the page is richer than the data
+
+Limit:
+
+- trust applies to reference framing, not to every dataset being perfect
+
+## 2. Conditional Calculators
+
+### 2.1 Comparison
+
+Status: `conditional`
+
+Why:
+
+- recent refactor removed a lot of churn and confusing UI
+- explicit comparison flow is much clearer now
+- recommendation-style copy was reduced
+
+Why not trusted core yet:
+
+- still needs deeper scenario validation
+- still has multiple comparison concepts that may confuse users
+- step-by-step value comparison needs continued clarity review
+
+Required before trusted promotion:
+
+- supported scenario matrix
+- clearer documentation of what is and is not normalized
+- more calculation verification
+
+### 2.2 Regular Investment
+
+Status: `conditional`
+
+Why:
+
+- page was simplified heavily
+- explicit calculation behavior is clearer
+- lot summaries are more understandable
+
+Why not trusted core yet:
+
+- recurring contribution logic needs more systematic math validation
+- edge cases around horizon/timing deserve stronger tests
+
+### 2.3 Ladder
+
+Status: `conditional`
+
+Why:
+
+- maturity schedule UX is now much more honest
+- strategy theater was removed
+- page now behaves more like a cashflow timing calculator
+
+Why not trusted core yet:
+
+- still relies on the regular-investment engine path
+- ladder-specific interpretation needs stronger validation
+
+### 2.4 Notebook
+
+Status: `conditional reference workspace`
+
+Why:
+
+- notebook UI is much simpler and more honest now
+- portfolio storage, listing, export, and maturity inspection are useful
+
+Why not trusted core yet:
+
+- portfolio simulation still needs more validation
+- notebook should remain descriptive, not analytical-authoritative
+
+Rule:
+
+- notebook may summarize and export
+- notebook should not behave like an advisory cockpit
+
+## 3. Experimental or Limited Support
+
+### 3.1 Bond Scenario Ranking (`/optimize`)
+
+Status: `experimental`
+
+Why:
+
+- page has been refactored into calmer scenario sorting
+- recommendation language was reduced further
+- but the core concept still invites over-interpretation
+
+Main limitation:
+
+- a ranked payout list is highly assumption-sensitive
+- users can mistake sorting for guidance
+- scenario reasons remain heuristics, not suitability logic
+
+Rule:
+
+- keep language strictly neutral
+- treat it as an auxiliary calculator, not a flagship flow
+
+Promotion requirements:
+
+- stronger scenario validation
+- clearer explanation of rollover/early redemption tradeoffs
+- tighter copy and limitation handling
+
+### 3.2 Market vs Bonds / Multi-Asset Comparison
+
+Status: `experimental`
+
+Why:
+
+- recent refactor fixed a major product bug:
+  the page now actually respects committed recalculation
+- UI and data coverage disclosure are better
+
+Why still experimental:
+
+- this feature depends heavily on historical coverage quality
+- it can easily over-promise as a backtesting surface
+- mixed instrument comparison is inherently more interpretation-heavy than core bond calculators
+
+Rule:
+
+- keep as reference comparison only
+- do not present as full historical investing lab
+
+### 3.3 Retirement Planner
+
+Status: `limited support`
+
+Why:
+
+- recent work made the page more honest
+- it now reads more like a withdrawal calculator than a retirement advice feature
+
+Why still limited:
+
+- modeled scope remains narrower than a user may expect from the term "retirement planner"
+- current model is a simplified steady-rate path
+
+Rule:
+
+- describe it as a limited withdrawal scenario tool
+- do not imply comprehensive retirement planning support
+
+## 4. Navigation Guidance During Recovery
+
+The current navigation may still expose some `conditional` and `experimental` pages. This is acceptable only if:
+
+- the copy is conservative
+- the pages are visibly scoped
+- docs clearly identify maturity level
+
+If an experimental surface becomes misleading again, it should be:
+
+1. downgraded in wording
+2. moved out of primary emphasis
+3. or hidden until recovery work catches up
+
+## 5. Copy Rules by Class
+
+### Trusted Core
+
+Allowed:
+
+- calculator
+- scenario
+- result
+- assumption
+- summary
+
+Avoid:
+
+- best option
+- winner
+- recommendation
+
+### Conditional
+
+Allowed:
+
+- modeled outcome
+- comparison under assumptions
+- scenario output
+
+Required:
+
+- stronger warnings when scope or assumptions matter materially
+
+### Experimental or Limited
+
+Required:
+
+- explicit framing that the feature is reference-only, limited, or assumption-sensitive
+- no personal recommendation language
+- no prestige wording that suggests mature institutional analytics
+
+## 6. Engineering Use
+
+This matrix must be consulted when:
+
+- changing navigation prominence
+- writing page headers and empty states
+- deciding whether a feature stays in MVP
+- evaluating whether a plan item is truly complete
+
+No feature should be marked "done" unless its class and justification are also consistent with current reality.
+
+## 7. Near-Term Promotion Path
+
+To move more surfaces toward trusted status:
+
+1. finish calculator math verification by scenario type
+2. keep reducing hidden state churn and render noise
+3. tighten wording on all ranking or sorting views
+4. keep data provenance explicit
+5. downgrade any page whose promise still exceeds its evidence
