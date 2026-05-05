@@ -136,6 +136,7 @@ The current navigation stance is:
 
 - `primary emphasis`: education, single calculator, comparison, regular investment, ladder, notebook, economic data
 - `recovery lab`: optimizer, multi-asset, retirement
+- `entry point`: `/recovery-lab` instead of treating those pages as equal first-level calculator choices
 
 ## Out-of-Scope Until Stabilized
 

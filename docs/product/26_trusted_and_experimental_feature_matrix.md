@@ -271,6 +271,7 @@ The current navigation stance is intentionally uneven:
 
 - `primary navigation emphasis`: trusted, conditional, and reference pages
 - `recovery-lab emphasis`: optimizer, multi-asset, retirement
+- `recovery-lab entry point`: `/recovery-lab` now acts as the explicit doorway for those weaker surfaces
 
 This is acceptable only if:
 

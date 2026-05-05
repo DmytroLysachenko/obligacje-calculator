@@ -7,7 +7,7 @@ import {
   BarChart2,
   BookOpen,
   Calculator,
-  Globe,
+  FlaskConical,
   Layers,
   Menu,
   Scale,
@@ -91,9 +91,7 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
     {
       label: 'Recovery Lab',
       items: [
-        { href: '/optimize', label: t('nav.optimizer'), icon: TrendingUp, status: 'experimental' },
-        { href: '/multi-asset', label: t('nav.multi_asset'), icon: Globe, status: 'experimental' },
-        { href: '/retirement', label: t('nav.retirement') || 'Retirement', icon: Wallet, status: 'limited' },
+        { href: '/recovery-lab', label: 'Recovery Lab', icon: FlaskConical, status: 'experimental' },
       ],
     },
   ];
@@ -203,8 +201,8 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
             <p className="mt-1 leading-5">
               Main focus stays on single-bond, comparison, ladder, regular-investment, notebook, and data reference pages.
             </p>
-            <Link href="/optimize" className="mt-2 inline-flex font-semibold text-primary hover:underline">
-              Open recovery-lab tools
+            <Link href="/recovery-lab" className="mt-2 inline-flex font-semibold text-primary hover:underline">
+              Open recovery lab
             </Link>
           </div>
 

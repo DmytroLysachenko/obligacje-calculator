@@ -491,82 +491,32 @@ export function LandingDashboardClient() {
       </section>
 
       <section className="space-y-6">
-        <div className="rounded-3xl border border-amber-200 bg-amber-50/70 p-6 md:p-8">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-            <div className="max-w-3xl space-y-3">
-              <div className="flex items-center gap-2 text-amber-900">
-                <ShieldAlert className="h-5 w-5" />
-                <h2 className="text-2xl font-black tracking-tight">Recovery lab surfaces</h2>
+        <Link href="/recovery-lab" className="block">
+          <Card className="rounded-3xl border border-amber-200 bg-amber-50/70 shadow-none transition-colors hover:border-amber-300">
+            <CardContent className="flex flex-col gap-6 p-6 md:flex-row md:items-center md:justify-between md:p-8">
+              <div className="max-w-3xl space-y-3">
+                <div className="flex items-center gap-2 text-amber-900">
+                  <ShieldAlert className="h-5 w-5" />
+                  <h2 className="text-2xl font-black tracking-tight">Recovery lab surfaces</h2>
+                </div>
+                <p className="text-sm leading-6 text-amber-950">
+                  Optimizer, multi-asset history, and retirement withdrawal modeling remain available during recovery,
+                  but they are intentionally separated from the core tool list.
+                </p>
+                <p className="text-sm leading-6 text-amber-900">
+                  Open the recovery lab only when you want to inspect narrower or more assumption-sensitive pages on purpose.
+                </p>
               </div>
-              <p className="text-sm leading-6 text-amber-950">
-                Optimizer, multi-asset history, and retirement withdrawal modeling remain available during recovery,
-                but they are intentionally de-emphasized. They are narrower, more assumption-sensitive, and not part
-                of the core calculator promise.
-              </p>
-              <p className="text-sm leading-6 text-amber-900">
-                Use them only when you already understand their scope and limits.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:w-[420px]">
-              <Link href="/optimize" className="group block">
-                <Card className="rounded-2xl border border-amber-300 bg-white/80 shadow-none transition-colors group-hover:border-amber-400">
-                  <CardContent className="space-y-3 p-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="rounded-2xl bg-amber-100 p-3 text-amber-700">
-                        <FlaskConical className="h-5 w-5" />
-                      </div>
-                      <FeatureStatusPill status="experimental" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-slate-900">{t('nav.optimizer')}</p>
-                      <p className="mt-1 text-xs leading-5 text-slate-600">
-                        Scenario ranking under fixed assumptions.
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-
-              <Link href="/multi-asset" className="group block">
-                <Card className="rounded-2xl border border-amber-300 bg-white/80 shadow-none transition-colors group-hover:border-amber-400">
-                  <CardContent className="space-y-3 p-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="rounded-2xl bg-cyan-100 p-3 text-cyan-700">
-                        <BarChart2 className="h-5 w-5" />
-                      </div>
-                      <FeatureStatusPill status="experimental" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-slate-900">{t('nav.multi_asset')}</p>
-                      <p className="mt-1 text-xs leading-5 text-slate-600">
-                        Reference comparison across historical series.
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-
-              <Link href="/retirement" className="group block">
-                <Card className="rounded-2xl border border-amber-300 bg-white/80 shadow-none transition-colors group-hover:border-amber-400">
-                  <CardContent className="space-y-3 p-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="rounded-2xl bg-rose-100 p-3 text-rose-700">
-                        <Calendar className="h-5 w-5" />
-                      </div>
-                      <FeatureStatusPill status="limited" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-slate-900">{t('nav.retirement')}</p>
-                      <p className="mt-1 text-xs leading-5 text-slate-600">
-                        Simplified withdrawal model with limited support.
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            </div>
-          </div>
-        </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <FeatureStatusPill status="experimental" />
+                <div className="inline-flex items-center gap-2 rounded-2xl border border-amber-300 bg-white/80 px-4 py-3 text-sm font-semibold text-slate-900">
+                  <FlaskConical className="h-4 w-4 text-amber-700" />
+                  Open recovery lab
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
       </section>
     </div>
   );

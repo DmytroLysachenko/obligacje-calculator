@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 import React from 'react';
 import Script from 'next/script';
 import { cookies } from 'next/headers';
@@ -167,3 +167,4 @@ export default async function RootLayout({
     </html>
   );
 }
+
