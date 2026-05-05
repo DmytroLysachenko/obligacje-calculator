@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import en from './translations/en.json';
 import pl from './translations/pl.json';
 import { normalizeTranslations, resolveTranslationValue } from './translation-utils';
@@ -27,21 +27,19 @@ export function LanguageProvider({
   children: ReactNode, 
   initialLanguage?: Language 
 }) {
-  const [language, setLanguage] = useState<Language>(() => {
-    if (typeof window !== 'undefined') {
-      const savedLang = localStorage.getItem('app-language') as Language;
-      if (savedLang && (savedLang === 'en' || savedLang === 'pl')) {
-        return savedLang;
-      }
-    }
-    return initialLanguage;
-  });
+  const [language, setLanguage] = useState<Language>(initialLanguage);
+
+  useEffect(() => {
+    setLanguage(initialLanguage);
+  }, [initialLanguage]);
+
+  useEffect(() => {
+    localStorage.setItem('app-language', language);
+    document.cookie = `app-language=${language}; path=/; max-age=31536000`;
+  }, [language]);
 
   const handleSetLanguage = (lang: Language) => {
     setLanguage(lang);
-    localStorage.setItem('app-language', lang);
-    // Set cookie for SSR
-    document.cookie = `app-language=${lang}; path=/; max-age=31536000`;
   };
 
   const t = (key: string, variables?: Record<string, string | number>): string => {
