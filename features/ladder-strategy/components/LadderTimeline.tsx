@@ -77,20 +77,22 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
   );
   const earliestMonth = chartData[0] ?? null;
   const latestMonth = chartData[chartData.length - 1] ?? null;
+  const peakShare =
+    peakMonth && results.lots.length > 0 ? (peakMonth.count / results.lots.length) * 100 : 0;
 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <Card className="rounded-2xl border shadow-none">
           <CardContent className="space-y-2 p-5">
-            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
               <Coins className="h-4 w-4" />
               Average maturity month
             </p>
-            <p className="text-2xl font-semibold text-foreground">
+            <p className="text-2xl font-semibold text-slate-900">
               {formatCurrency(averageMaturityValue)}
             </p>
-            <p className="text-sm leading-6 text-muted-foreground">
+            <p className="text-sm leading-6 text-slate-600">
               Average net cash that returns in each maturity month.
             </p>
           </CardContent>
@@ -98,14 +100,14 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
 
         <Card className="rounded-2xl border shadow-none">
           <CardContent className="space-y-2 p-5">
-            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
               <TrendingUp className="h-4 w-4" />
               Average month vs contribution
             </p>
-            <p className="text-2xl font-semibold text-foreground">
+            <p className="text-2xl font-semibold text-slate-900">
               {formatCurrency(monthlySpreadGap)}
             </p>
-            <p className="text-sm leading-6 text-muted-foreground">
+            <p className="text-sm leading-6 text-slate-600">
               Positive values mean average maturity cash is above the typical lot contribution.
             </p>
           </CardContent>
@@ -113,14 +115,14 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
 
         <Card className="rounded-2xl border shadow-none">
           <CardContent className="space-y-2 p-5">
-            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
               <Calendar className="h-4 w-4" />
               Ladder coverage
             </p>
-            <p className="text-xl font-semibold text-foreground">
+            <p className="text-xl font-semibold text-slate-900">
               {earliestMonth ? earliestMonth.displayDate : '-'} {latestMonth ? `- ${latestMonth.displayDate}` : ''}
             </p>
-            <p className="text-sm leading-6 text-muted-foreground">
+            <p className="text-sm leading-6 text-slate-600">
               First and last maturity month visible in the current scenario.
             </p>
           </CardContent>
@@ -129,7 +131,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
 
       <Card className="rounded-2xl border shadow-none">
         <CardHeader className="pb-4">
-          <CardTitle className="text-lg">Maturity schedule</CardTitle>
+          <CardTitle className="text-lg text-slate-900">Maturity schedule</CardTitle>
           <CardDescription>
             Use the chart for spacing, then confirm exact month totals in the table below.
           </CardDescription>
@@ -162,21 +164,21 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Month</TableHead>
-                <TableHead className="text-right">Lots maturing</TableHead>
-                <TableHead className="text-right">Net cash</TableHead>
-                <TableHead className="text-right">Share of timeline</TableHead>
+                <TableHead className="text-slate-600">Month</TableHead>
+                <TableHead className="text-right text-slate-600">Lots maturing</TableHead>
+                <TableHead className="text-right text-slate-600">Net cash</TableHead>
+                <TableHead className="text-right text-slate-600">Share of timeline</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {chartData.map((item) => (
                 <TableRow key={item.date}>
-                  <TableCell className="font-medium">{item.displayDate}</TableCell>
-                  <TableCell className="text-right">{item.count}</TableCell>
-                  <TableCell className="text-right font-semibold">
+                  <TableCell className="font-medium text-slate-900">{item.displayDate}</TableCell>
+                  <TableCell className="text-right text-slate-700">{item.count}</TableCell>
+                  <TableCell className="text-right font-semibold text-slate-900">
                     {formatCurrency(item.amount)}
                   </TableCell>
-                  <TableCell className="text-right text-muted-foreground">
+                  <TableCell className="text-right text-slate-600">
                     {chartData.length > 0 ? `${((item.count / results.lots.length) * 100).toFixed(1)}%` : '-'}
                   </TableCell>
                 </TableRow>
@@ -184,17 +186,45 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
             </TableBody>
           </Table>
 
-          <div className="rounded-2xl border bg-muted/20 p-4 text-sm leading-6 text-muted-foreground">
-            <p>
-              Peak maturity month:{' '}
-              <span className="font-semibold text-foreground">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div className="rounded-2xl border bg-slate-50/70 p-4 text-sm leading-6 text-slate-600">
+              <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
+                Peak maturity month
+              </p>
+              <p className="mt-2 font-semibold text-slate-900">
                 {peakMonth ? `${peakMonth.displayDate} (${formatCurrency(peakMonth.amount)})` : '-'}
-              </span>
-            </p>
-            <p className="mt-2">
-              If most maturities cluster in one period, the ladder is less even than it looks from a
-              single top-line return number.
-            </p>
+              </p>
+              <p className="mt-2">
+                If most maturities cluster in one period, the ladder is less even than it looks from a
+                single top-line return number.
+              </p>
+            </div>
+
+            <div
+              className={
+                peakShare >= 25
+                  ? 'rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950'
+                  : 'rounded-2xl border bg-emerald-50/60 p-4 text-sm leading-6 text-emerald-950'
+              }
+            >
+              <p
+                className={
+                  peakShare >= 25
+                    ? 'text-[11px] font-bold uppercase tracking-wide text-amber-800'
+                    : 'text-[11px] font-bold uppercase tracking-wide text-emerald-800'
+                }
+              >
+                Concentration check
+              </p>
+              <p className="mt-2 font-semibold">
+                {peakMonth ? `${peakShare.toFixed(1)}% of lots mature in ${peakMonth.displayDate}.` : 'No maturity concentration available.'}
+              </p>
+              <p className="mt-2">
+                {peakShare >= 25
+                  ? 'This ladder is meaningfully clustered. Liquidity arrives in fewer windows than a smooth ladder would suggest.'
+                  : 'Maturities are reasonably spread across the current timeline.'}
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
