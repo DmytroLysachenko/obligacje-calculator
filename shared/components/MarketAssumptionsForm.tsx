@@ -85,7 +85,21 @@ export const MarketAssumptionsForm = ({
   onUpdate,
   compact = false,
 }: MarketAssumptionsFormProps) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const scenarioDescriptions = {
+    low:
+      language === 'pl'
+        ? 'Symuluje inflację o 1.5 p.p. niższą od założenia bazowego.'
+        : 'Simulates inflation 1.5 percentage points below your base assumption.',
+    base:
+      language === 'pl'
+        ? 'Używa dokładnie wybranej przez Ciebie stopy inflacji.'
+        : 'Uses the exact inflation rate you selected.',
+    high:
+      language === 'pl'
+        ? 'Symuluje inflację o 2.5 p.p. wyższą od założenia bazowego.'
+        : 'Simulates inflation 2.5 percentage points above your base assumption.',
+  } as const;
 
   const isNbpRelevant = bondType === BondType.ROR || bondType === BondType.DOR;
 
@@ -153,20 +167,18 @@ export const MarketAssumptionsForm = ({
                 key={s}
                 variant="outline"
                 size="sm"
-                className={cn(
-                  "h-8 text-[9px] font-bold uppercase",
-                  inflationScenario === s && "bg-primary/10 text-primary border-primary/50"
-                )}
-                onClick={() => onUpdate('inflationScenario', s)}
-              >
-                {t(`bonds.scenario_${s}`)}
+              className={cn(
+                "h-8 min-w-0 text-[9px] font-bold uppercase",
+                inflationScenario === s && "bg-primary/10 text-primary border-primary/50"
+              )}
+              onClick={() => onUpdate('inflationScenario', s)}
+            >
+                <span className="truncate">{t(`bonds.scenario_${s}`)}</span>
               </Button>
             ))}
           </div>
           <p className="text-[9px] text-muted-foreground italic leading-tight">
-            {inflationScenario === 'low' && "Simulates -1.5% below your base expectation."}
-            {inflationScenario === 'base' && "Uses your selected inflation rate exactly."}
-            {inflationScenario === 'high' && "Simulates +2.5% above your base expectation."}
+            {scenarioDescriptions[inflationScenario]}
           </p>
         </div>
 

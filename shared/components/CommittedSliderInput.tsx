@@ -65,6 +65,15 @@ export function CommittedSliderInput({
     commitValue(parsed);
   }, [commitValue, draftText, draftValue]);
 
+  const handleSliderChange = React.useCallback(
+    ([nextValue]: number[]) => {
+      const normalized = toPrecision(clamp(nextValue, min, max), step);
+      setDraftValue(normalized);
+      setDraftText(String(normalized));
+    },
+    [max, min, step],
+  );
+
   return (
     <div className="flex items-center gap-3">
       <Slider
@@ -73,7 +82,7 @@ export function CommittedSliderInput({
         min={min}
         max={max}
         step={step}
-        onValueChange={([nextValue]) => setDraftValue(nextValue)}
+        onValueChange={handleSliderChange}
         onValueCommit={([nextValue]) => commitValue(nextValue)}
         className={cn('flex-1', sliderClassName)}
       />
@@ -93,6 +102,11 @@ export function CommittedSliderInput({
             value={draftText}
             onChange={(event) => setDraftText(event.target.value)}
             onBlur={handleInputBlur}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                event.currentTarget.blur();
+              }
+            }}
           />
           {unit ? (
             <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">

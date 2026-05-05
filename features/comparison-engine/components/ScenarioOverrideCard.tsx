@@ -68,13 +68,13 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
             value={bondType}
             onValueChange={(value) => onBondTypeChange(value as BondType)}
           >
-            <SelectTrigger className="h-11 font-bold">
+            <SelectTrigger className="h-11 w-full min-w-0 font-bold [&>span]:truncate">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {Object.values(BondType).map((type) => (
                 <SelectItem key={type} value={type}>
-                  <div className="flex flex-col gap-0.5">
+                  <div className="flex min-w-0 flex-col gap-0.5">
                     <div className="flex items-center gap-2">
                       <span>{type}</span>
                       <span
@@ -90,7 +90,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
                         {getBondSupportMeta(type).shortLabel}
                       </span>
                     </div>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="truncate text-xs text-muted-foreground">
                       {getBondSupportMeta(type).description}
                     </span>
                   </div>
@@ -137,7 +137,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
               )
             }
           >
-            <SelectTrigger className="h-11">
+            <SelectTrigger className="h-11 w-full min-w-0 [&>span]:truncate">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -178,7 +178,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
               min={12}
               max={360}
               step={1}
-              unit="Months"
+              unit="mo"
               onCommit={(value) => onCustomHorizonMonthsChange(value)}
             />
           </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo, useState, useSyncExternalStore } from 'react';
+import { addMonths, compareAsc } from 'date-fns';
 import { format, parseISO } from 'date-fns';
 import { enGB, pl } from 'date-fns/locale';
 import {
@@ -39,10 +40,12 @@ import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
+import { RecalculateButton } from '@/shared/components/RecalculateButton';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 import { convertTimelineToCSV, downloadFile } from '@/shared/lib/csv-utils';
 import { toDateString } from '@/shared/lib/date-timing';
+import { InterestPayout } from '@/features/bond-core/types';
 import { useComparison } from '../hooks/useComparison';
 import { BondComparisonContainer } from './BondComparisonContainer';
 import { ComparisonTable } from './ComparisonTable';
@@ -164,25 +167,70 @@ export const ComparisonContainer: React.FC = () => {
   const chartData = useMemo(() => {
     if (!resultsA || !resultsB) return [];
 
-    return Array.from({
-      length: Math.max(resultsA.timeline.length, resultsB.timeline.length) + 1,
-    }).map((_, index) => {
-      const pointA =
-        index === 0
-          ? { nominalValueAfterInterest: resultsA.initialInvestment }
-          : resultsA.timeline[index - 1];
-      const pointB =
-        index === 0
-          ? { nominalValueAfterInterest: resultsB.initialInvestment }
-          : resultsB.timeline[index - 1];
+    const buildAnchorDates = () => {
+      const startDate = parseISO(sharedConfig.purchaseDate);
+      const endA = parseISO(inputsA.withdrawalDate);
+      const endB = parseISO(inputsB.withdrawalDate);
+      const maxEndDate = compareAsc(endA, endB) >= 0 ? endA : endB;
+      const dateMap = new Map<number, Date>();
 
-      return {
-        label: index === 0 ? t('comparison.start') : `${t('common.period')} ${index}`,
-        valA: pointA?.nominalValueAfterInterest ?? null,
-        valB: pointB?.nominalValueAfterInterest ?? null,
-      };
-    });
-  }, [resultsA, resultsB, t]);
+      dateMap.set(startDate.getTime(), startDate);
+
+      for (let cursor = startDate; compareAsc(cursor, maxEndDate) < 0; cursor = addMonths(cursor, 1)) {
+        const next = addMonths(cursor, 1);
+        dateMap.set(next.getTime(), next);
+      }
+
+      for (const point of [...resultsA.timeline, ...resultsB.timeline]) {
+        const date = parseISO(point.cycleEndDate);
+        dateMap.set(date.getTime(), date);
+      }
+
+      return Array.from(dateMap.values()).sort(compareAsc);
+    };
+
+    const anchorDates = buildAnchorDates();
+
+    const projectSeries = (
+      timeline: typeof resultsA.timeline,
+      initialInvestment: number,
+      dates: Date[],
+    ) => {
+      let index = 0;
+      let currentValue = initialInvestment;
+
+      return dates.map((date) => {
+        while (
+          index < timeline.length
+          && compareAsc(parseISO(timeline[index].cycleEndDate), date) <= 0
+        ) {
+          currentValue = timeline[index].nominalValueAfterInterest;
+          index += 1;
+        }
+
+        return currentValue;
+      });
+    };
+
+    const seriesA = projectSeries(resultsA.timeline, resultsA.initialInvestment, anchorDates);
+    const seriesB = projectSeries(resultsB.timeline, resultsB.initialInvestment, anchorDates);
+
+    return anchorDates.map((date, index) => ({
+      dateKey: date.toISOString(),
+      label:
+        index === 0
+          ? t('comparison.start')
+          : format(date, 'MMM yyyy', {
+              locale: language === 'pl' ? pl : enGB,
+            }),
+      valA: seriesA[index],
+      valB: seriesB[index],
+    }));
+  }, [inputsA.withdrawalDate, inputsB.withdrawalDate, language, resultsA, resultsB, sharedConfig.purchaseDate, t]);
+
+  const usesMixedTimelineCadence = useMemo(() => {
+    return inputsA.payoutFrequency !== inputsB.payoutFrequency;
+  }, [inputsA.payoutFrequency, inputsB.payoutFrequency]);
 
   const headerActions = (
     <div className="flex flex-wrap items-center gap-3">
@@ -399,7 +447,7 @@ export const ComparisonContainer: React.FC = () => {
                   min={12}
                   max={360}
                   step={1}
-                  unit="Months"
+                  unit="mo"
                   onCommit={(value) =>
                     updateSharedConfig('investmentHorizonMonths', value)
                   }
@@ -426,7 +474,7 @@ export const ComparisonContainer: React.FC = () => {
                     updateSharedConfig('taxStrategy', value as TaxStrategy)
                   }
                 >
-                  <SelectTrigger className="h-11">
+                  <SelectTrigger className="h-11 [&>span]:truncate">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -448,7 +496,7 @@ export const ComparisonContainer: React.FC = () => {
                 onClick={() => calculate()}
                 disabled={isCalculating}
               >
-                {isCalculating ? 'Calculating...' : 'Run Comparison'}
+                {isCalculating ? t('common.calculating') : t('common.calculate')}
               </Button>
             </CardContent>
           </Card>
@@ -561,6 +609,16 @@ export const ComparisonContainer: React.FC = () => {
                       <LineChart className="h-5 w-5 text-primary" />
                       {t('comparison.performance_over_time')}
                     </CardTitle>
+                    <p className="text-sm leading-6 text-muted-foreground">
+                      Chart points are aligned by actual calendar date. Bonds with monthly payouts update more often, while yearly or maturity-paid bonds stay flat between their own crediting dates.
+                    </p>
+                    {usesMixedTimelineCadence ? (
+                      <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+                        This comparison mixes different payout cadences: {inputsA.bondType} updates{' '}
+                        {inputsA.payoutFrequency === InterestPayout.MONTHLY ? 'monthly' : 'on longer cycles'}, while {inputsB.bondType} updates{' '}
+                        {inputsB.payoutFrequency === InterestPayout.MONTHLY ? 'monthly' : 'on longer cycles'}.
+                      </p>
+                    ) : null}
                   </CardHeader>
                   <CardContent className="p-6">
                     <ChartContainer height={420}>
@@ -578,7 +636,7 @@ export const ComparisonContainer: React.FC = () => {
                               </linearGradient>
                             </defs>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
-                            <XAxis dataKey="label" axisLine={false} tickLine={false} fontSize={10} />
+                            <XAxis dataKey="label" axisLine={false} tickLine={false} fontSize={10} minTickGap={24} />
                             <YAxis axisLine={false} tickLine={false} fontSize={10} tickFormatter={(value: number) => `${(value / 1000).toFixed(0)}k`} />
                             <Tooltip content={<CustomTooltip formatCurrency={formatCurrency} />} />
                             <Legend verticalAlign="top" align="right" height={40} iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase' }} />
@@ -647,6 +705,11 @@ export const ComparisonContainer: React.FC = () => {
           </div>
         </div>
       )}
+      <RecalculateButton
+        isDirty={isDirty && !!resultsA && !!resultsB}
+        loading={isCalculating}
+        onClick={() => calculate()}
+      />
     </CalculatorPageShell>
   );
 };
