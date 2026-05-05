@@ -1,4 +1,5 @@
-import { BondInputs, BondType, TaxStrategy } from '@/features/bond-core/types';
+import { BondInputs, TaxStrategy } from '@/features/bond-core/types';
+import { isFamilyBondType } from '@/features/bond-core/support-matrix';
 import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 
 export type GuardrailSeverity = 'info' | 'caution' | 'blocking';
@@ -12,8 +13,6 @@ export interface InputGuardrailIssue {
   autoFixLabel?: string;
   applyAutoFix?: (inputs: BondInputs) => BondInputs;
 }
-
-const FAMILY_BONDS = new Set([BondType.ROS, BondType.ROD]);
 
 function roundToLotSize(amount: number) {
   return Math.max(100, Math.round(amount / 100) * 100);
@@ -147,7 +146,7 @@ export function getInputGuardrails(inputs: BondInputs): InputGuardrailIssue[] {
     });
   }
 
-  if (FAMILY_BONDS.has(inputs.bondType) && inputs.taxStrategy === TaxStrategy.STANDARD) {
+  if (isFamilyBondType(inputs.bondType) && inputs.taxStrategy === TaxStrategy.STANDARD) {
     issues.push({
       id: 'family-bond-standard',
       severity: 'info',

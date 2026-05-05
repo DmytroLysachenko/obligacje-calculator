@@ -17,6 +17,7 @@ import { Switch } from '@/components/ui/switch';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BondOptimizerCalculationEnvelope } from '@/features/bond-core/types/scenarios';
 import { TaxStrategy } from '@/features/bond-core/types';
+import { FAMILY_BOND_TYPES, getBondSupportMeta } from '@/features/bond-core/support-matrix';
 import { formatCurrency, formatPercentage } from '@/lib/utils';
 import { toDateString } from '@/shared/lib/date-timing';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
@@ -155,6 +156,15 @@ export default function BondOptimizerClient() {
                   checked={inputs.includeFamilyBonds}
                   onCheckedChange={(value) => updateInput('includeFamilyBonds', value)}
                 />
+              </div>
+              <div className="rounded-xl border border-amber-200 bg-amber-50/60 px-4 py-3 text-xs leading-6 text-amber-950">
+                <p className="font-semibold uppercase tracking-wide text-amber-800">
+                  Conditional bond set
+                </p>
+                <p className="mt-1">
+                  When enabled, this ranking adds {FAMILY_BOND_TYPES.join(' and ')}.
+                  They are tagged as {getBondSupportMeta(FAMILY_BOND_TYPES[0]).shortLabel.toLowerCase()} because eligibility is not universal.
+                </p>
               </div>
             </div>
 

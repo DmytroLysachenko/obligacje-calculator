@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import { BondType, RegularInvestmentInputs, InvestmentFrequency, TaxStrategy } from '../../bond-core/types';
+import { getBondSupportMeta, isFamilyBondType } from '../../bond-core/support-matrix';
 import { useLanguage } from '@/i18n';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { AlertCircle, CalendarIcon, Info, Target } from 'lucide-react';
@@ -57,6 +58,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
   }
 
   const currentDef = definitions[inputs.bondType];
+  const currentBondSupport = getBondSupportMeta(inputs.bondType);
   const dateLocale = language === 'pl' ? pl : enGB;
   const investmentHorizonMonths = inputs.investmentHorizonMonths ?? getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);
   const investmentHorizonYears = Math.max(1 / 12, investmentHorizonMonths / 12);
@@ -131,8 +133,22 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
             <SelectContent>
               {Object.values(BondType).map((type) => (
                 <SelectItem key={type} value={type}>
-                  <div className="flex flex-col">
-                    <span className="font-bold">{type}</span>
+                  <div className="flex flex-col gap-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold">{type}</span>
+                      <span
+                        className={cn(
+                          "rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wide",
+                          getBondSupportMeta(type).tone === 'caution'
+                            ? 'bg-amber-100 text-amber-800'
+                            : getBondSupportMeta(type).tone === 'limited'
+                              ? 'bg-slate-200 text-slate-700'
+                              : 'bg-emerald-100 text-emerald-700'
+                        )}
+                      >
+                        {getBondSupportMeta(type).shortLabel}
+                      </span>
+                    </div>
                     <span className="text-xs text-muted-foreground">
                       {definitions[type]?.fullName[language] || type}
                     </span>
@@ -150,6 +166,14 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
             <p className="text-muted-foreground leading-relaxed">
               {currentDef.description[language]}
             </p>
+            <p className="text-muted-foreground leading-relaxed">
+              {currentBondSupport.description}
+            </p>
+            {isFamilyBondType(inputs.bondType) ? (
+              <p className="font-semibold text-amber-700">
+                Family-bond scenarios are only meaningful if the household eligibility condition really applies.
+              </p>
+            ) : null}
           </div>
         </div>
 
@@ -412,7 +436,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
               <span className="font-semibold text-foreground">
                 {investmentHorizonYears % 1 === 0 ? investmentHorizonYears.toFixed(0) : investmentHorizonYears.toFixed(2)} {t('common.years')}
               </span>
-              {' '}Â· {t('regular_form.horizon_help')}
+              {' '}· {t('regular_form.horizon_help')}
             </div>
           ) : (
             <CommittedSliderInput
@@ -594,3 +618,4 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
 });
 
 RegularInvestmentInputsForm.displayName = 'RegularInvestmentInputsForm';
+

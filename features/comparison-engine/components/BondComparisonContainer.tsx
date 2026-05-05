@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/card';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import { BOND_DEFINITIONS } from '@/features/bond-core/constants/bond-definitions';
+import { getBondSupportMeta } from '@/features/bond-core/support-matrix';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
@@ -266,7 +267,17 @@ export const BondComparisonContainer = () => {
                   )}
                   onClick={() => toggleBond(type)}
                 >
-                  {type}
+                  <div className="flex flex-col items-start leading-tight">
+                    <span>{type}</span>
+                    <span
+                      className={cn(
+                        'text-[9px] font-semibold normal-case opacity-80',
+                        selectedBonds.includes(type) ? 'text-primary-foreground/80' : 'text-slate-500',
+                      )}
+                    >
+                      {getBondSupportMeta(type).shortLabel}
+                    </span>
+                  </div>
                 </Button>
               ))}
             </CardContent>
@@ -286,6 +297,10 @@ export const BondComparisonContainer = () => {
               <p>
                 Use it to inspect tradeoffs, not as personal advice or a final
                 bond choice.
+              </p>
+              <p>
+                ROS and ROD remain available for comparison, but only as conditional
+                household-eligibility scenarios.
               </p>
             </CardContent>
           </Card>

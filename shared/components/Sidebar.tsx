@@ -194,7 +194,7 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
           )}
 
           <div className="border-t border-slate-200 pt-3 text-center text-[11px] text-slate-500">
-            Â© {new Date().getFullYear()} {t('common.title')}
+            © {new Date().getFullYear()} {t('common.title')}
           </div>
         </div>
       </div>
@@ -239,3 +239,4 @@ export function Sidebar({
     </>
   );
 }
+

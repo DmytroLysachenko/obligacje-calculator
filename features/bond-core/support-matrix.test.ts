@@ -16,6 +16,14 @@ import {
   ScenarioKind,
 } from './types/scenarios';
 import { BOND_DEFINITIONS } from './constants/bond-definitions';
+import {
+  ALL_BOND_TYPES,
+  FAMILY_BOND_TYPES,
+  getBondSupportMeta,
+  isFamilyBondType,
+  RETIREMENT_SUPPORTED_BOND_TYPES,
+  supportsRetirementBondType,
+} from './support-matrix';
 import { getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 
 const today = new Date('2026-05-05T00:00:00.000Z');
@@ -120,7 +128,7 @@ describe('Feature support matrix regression suite', () => {
   });
 
   describe('trusted core: single bond calculator', () => {
-    it.each(Object.values(BondType))(
+    it.each(ALL_BOND_TYPES)(
       'calculates a stable single-bond scenario for %s',
       async (bondType) => {
         const envelope = await calculationService.calculate({
@@ -259,10 +267,10 @@ describe('Feature support matrix regression suite', () => {
       const withoutFamily = withoutFamilyEnvelope.result as BondOptimizerResult;
       const withFamily = withFamilyEnvelope.result as BondOptimizerResult;
 
-      expect(withoutFamily.rankedBonds.some((item) => item.bondType === BondType.ROS)).toBe(false);
-      expect(withoutFamily.rankedBonds.some((item) => item.bondType === BondType.ROD)).toBe(false);
-      expect(withFamily.rankedBonds.some((item) => item.bondType === BondType.ROS)).toBe(true);
-      expect(withFamily.rankedBonds.some((item) => item.bondType === BondType.ROD)).toBe(true);
+      for (const familyType of FAMILY_BOND_TYPES) {
+        expect(withoutFamily.rankedBonds.some((item) => item.bondType === familyType)).toBe(false);
+        expect(withFamily.rankedBonds.some((item) => item.bondType === familyType)).toBe(true);
+      }
     });
 
     it.each([
@@ -312,6 +320,31 @@ describe('Feature support matrix regression suite', () => {
   });
 
   describe('trusted boundary rules', () => {
+    it('keeps retirement support scope explicit in shared configuration', () => {
+      expect(RETIREMENT_SUPPORTED_BOND_TYPES).toEqual([
+        BondType.ROR,
+        BondType.DOR,
+        BondType.TOS,
+        BondType.COI,
+        BondType.EDO,
+      ]);
+      expect(RETIREMENT_SUPPORTED_BOND_TYPES.every((type) => supportsRetirementBondType(type))).toBe(true);
+      expect(supportsRetirementBondType(BondType.OTS)).toBe(false);
+      expect(supportsRetirementBondType(BondType.ROS)).toBe(false);
+      expect(supportsRetirementBondType(BondType.ROD)).toBe(false);
+    });
+
+    it('keeps family bond labeling centralized', () => {
+      for (const familyType of FAMILY_BOND_TYPES) {
+        expect(isFamilyBondType(familyType)).toBe(true);
+        expect(getBondSupportMeta(familyType).shortLabel).toBe('Family-only');
+      }
+
+      expect(isFamilyBondType(BondType.EDO)).toBe(false);
+      expect(getBondSupportMeta(BondType.EDO).shortLabel).toBe('Standard');
+      expect(getBondSupportMeta(BondType.OTS).shortLabel).toBe('Short-term');
+    });
+
     it('keeps tax behavior consistent across wrapper strategies in single-bond service output', async () => {
       const basePayload = buildSingleBondPayload(BondType.EDO);
 

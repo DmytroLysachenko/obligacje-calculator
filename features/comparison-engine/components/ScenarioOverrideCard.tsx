@@ -15,6 +15,7 @@ import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
+import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
 
 interface ScenarioOverrideCardProps {
   title: string;
@@ -49,7 +50,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
   customHorizonMonths,
   onCustomHorizonMonthsChange,
 }) => {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
 
   return (
     <Card className="overflow-hidden border shadow-sm">
@@ -73,11 +74,35 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
             <SelectContent>
               {Object.values(BondType).map((type) => (
                 <SelectItem key={type} value={type}>
-                  {type} - {language === 'pl' ? 'Obligacja' : 'Bond'}
+                  <div className="flex flex-col gap-0.5">
+                    <div className="flex items-center gap-2">
+                      <span>{type}</span>
+                      <span
+                        className={cn(
+                          "rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wide",
+                          getBondSupportMeta(type).tone === 'caution'
+                            ? 'bg-amber-100 text-amber-800'
+                            : getBondSupportMeta(type).tone === 'limited'
+                              ? 'bg-slate-200 text-slate-700'
+                              : 'bg-emerald-100 text-emerald-700'
+                        )}
+                      >
+                        {getBondSupportMeta(type).shortLabel}
+                      </span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">
+                      {getBondSupportMeta(type).description}
+                    </span>
+                  </div>
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
+          {isFamilyBondType(bondType) ? (
+            <p className="text-xs leading-5 text-amber-700">
+              Family-bond overrides stay available, but only make sense if the household eligibility condition really applies.
+            </p>
+          ) : null}
         </div>
 
         <div className="flex items-center justify-between rounded-xl border bg-muted/20 p-3">

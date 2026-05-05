@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { HelpCircle, Info, AlertCircle } from 'lucide-react';
 import { BondType, BondInputs } from '@/features/bond-core/types';
+import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { useLanguage } from '@/i18n';
 import { GLOSSARY } from '@/shared/constants/glossary';
@@ -41,6 +42,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
 }) => {
   const { t, language } = useLanguage();
   const currentDef = definitions[inputs.bondType];
+  const currentBondSupport = getBondSupportMeta(inputs.bondType);
 
   const handleInvestmentChange = (value: number) => {
     onUpdate('initialInvestment', value);
@@ -122,8 +124,22 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
           <SelectContent>
             {Object.values(BondType).map((type) => (
               <SelectItem key={type} value={type}>
-                <div className="flex flex-col">
-                  <span className="font-bold">{type}</span>
+                <div className="flex flex-col gap-0.5">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold">{type}</span>
+                    <span
+                      className={cn(
+                        "rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wide",
+                        getBondSupportMeta(type).tone === 'caution'
+                          ? 'bg-amber-100 text-amber-800'
+                          : getBondSupportMeta(type).tone === 'limited'
+                            ? 'bg-slate-200 text-slate-700'
+                            : 'bg-emerald-100 text-emerald-700'
+                      )}
+                    >
+                      {getBondSupportMeta(type).shortLabel}
+                    </span>
+                  </div>
                   <span className="text-xs text-muted-foreground">
                     {definitions[type]?.fullName[language] || type}
                   </span>
@@ -162,6 +178,14 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
           <p className="text-muted-foreground leading-relaxed italic">
             {currentDef.description[language]}
           </p>
+          <p className="text-muted-foreground leading-relaxed">
+            {currentBondSupport.description}
+          </p>
+          {isFamilyBondType(inputs.bondType) ? (
+            <p className="font-semibold text-amber-700">
+              Family-bond scenarios only make sense if the household eligibility rule actually applies.
+            </p>
+          ) : null}
         </div>
       </div>
 

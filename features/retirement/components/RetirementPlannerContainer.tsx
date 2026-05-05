@@ -30,6 +30,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
+import {
+  getBondSupportMeta,
+  getRetirementSupportNote,
+  RETIREMENT_SUPPORTED_BOND_TYPES,
+  supportsRetirementBondType,
+} from '@/features/bond-core/support-matrix';
 import { RetirementPlannerCalculationEnvelope } from '@/features/bond-core/types/scenarios';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
@@ -55,9 +61,15 @@ export const RetirementPlannerContainer: React.FC = () => {
     useState<RetirementPlannerCalculationEnvelope | null>(null);
 
   const handleCalculate = async () => {
+    const bondType = supportsRetirementBondType(inputs.bondType)
+      ? inputs.bondType
+      : BondType.EDO;
     const response = await post<RetirementPlannerCalculationEnvelope>(
       '/api/calculate/retirement',
-      inputs,
+      {
+        ...inputs,
+        bondType,
+      },
     );
     setResults(response);
   };
@@ -169,13 +181,21 @@ export const RetirementPlannerContainer: React.FC = () => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {Object.values(BondType).map((type) => (
+                      {RETIREMENT_SUPPORTED_BOND_TYPES.map((type) => (
                         <SelectItem key={type} value={type}>
-                          {type}
+                          <div className="flex flex-col">
+                            <span>{type}</span>
+                            <span className="text-[10px] text-muted-foreground">
+                              {getBondSupportMeta(type).shortLabel}
+                            </span>
+                          </div>
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
+                  <p className="text-xs leading-5 text-muted-foreground">
+                    {getRetirementSupportNote(inputs.bondType)}
+                  </p>
                 </div>
 
                 <div className="space-y-2">
@@ -273,9 +293,12 @@ export const RetirementPlannerContainer: React.FC = () => {
                 planner.
               </p>
               <p>
-                It does not model changing withdrawals, reinvestment ladders,
-                taxes outside the selected wrapper, or shifting bond series over
-                time.
+                It only exposes {RETIREMENT_SUPPORTED_BOND_TYPES.join(', ')} here.
+                Very short-term and family-only bond series are intentionally excluded.
+              </p>
+              <p>
+                It does not model changing withdrawals, reinvestment ladders, taxes
+                outside the selected wrapper, or shifting bond series over time.
               </p>
             </CardContent>
           </Card>
