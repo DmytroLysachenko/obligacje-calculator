@@ -11,8 +11,8 @@ export default function BondOptimizerPage() {
     <div className="container py-8 space-y-8">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight">Bond Scenario Ranking</h1>
-        <p className="text-muted-foreground max-w-2xl">
-          Enter one scenario, rank simulated outcomes across available bonds, and inspect the tradeoffs. This page is a calculator view, not a personal recommendation engine.
+        <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
+          Enter one scenario, sort projected payouts across available bonds, and inspect the tradeoffs. This page is a calculator view, not a recommendation engine.
         </p>
       </div>
 

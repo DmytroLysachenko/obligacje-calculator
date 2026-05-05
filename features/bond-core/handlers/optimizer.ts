@@ -60,15 +60,15 @@ export class OptimizerHandler extends BaseHandler implements ScenarioHandler<Bon
 
       let reason = '';
       if (def.duration === horizonYears) {
-        reason = `Duration closely matches your ${horizonYears}-year horizon.`;
+        reason = `Duration closely matches the ${horizonYears}-year horizon.`;
       } else if (def.duration < horizonYears) {
-        reason = `Shorter duration (${def.duration}y) requires rollover to cover your full horizon.`;
+        reason = `Shorter duration (${def.duration}y) requires rollover to cover the full horizon.`;
       } else {
         reason = `Longer duration (${def.duration}y) implies early redemption around year ${horizonYears.toFixed(1)}.`;
       }
 
       if (def.isInflationIndexed) {
-        reason += ' Protection against rising inflation.';
+        reason += ' Includes inflation linkage in later years.';
       }
 
       rankedBonds.push({

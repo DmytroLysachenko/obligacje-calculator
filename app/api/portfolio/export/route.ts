@@ -77,22 +77,6 @@ export const GET = apiHandler(async (req: NextRequest) => {
     summary: simulation?.result.summary ?? null,
   };
 
-  if (formatMode === 'advisor') {
-    const advisorExport = {
-      ...baseExport,
-      advisorSummary: {
-        title: portfolio?.name ?? 'Portfolio summary',
-        totalLots: lots.length,
-        totalInvested: simulation?.result.summary.totalInvested ?? null,
-        totalNetValue: simulation?.result.summary.totalNetValue ?? null,
-        totalProfit: simulation?.result.summary.totalProfit ?? null,
-        note: 'Prepared for external review. Values are simulation-based and not investment advice.',
-      },
-    };
-
-    return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(advisorExport)), owner);
-  }
-
   const exportData = {
     ...baseExport,
     packageType: formatMode === 'package' ? 'portfolio-package' : 'portfolio-export',

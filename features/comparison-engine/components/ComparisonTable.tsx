@@ -57,23 +57,23 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
               {Array.from({ length: maxLen }).map((_, i) => {
                 const valA = resultsA.timeline[i]?.nominalValueAfterInterest;
                 const valB = resultsB.timeline[i]?.nominalValueAfterInterest;
-                const winner = valA && valB ? (valA > valB ? 'A' : 'B') : (valA ? 'A' : 'B');
+                const higherScenario = valA && valB ? (valA > valB ? 'A' : 'B') : (valA ? 'A' : 'B');
                 
                 return (
                   <TableRow key={i} className="hover:bg-muted/10 transition-colors">
                     <TableCell className="font-bold px-8 py-4">Y{i + 1}</TableCell>
-                    <TableCell className={cn("px-4 py-4 font-mono text-sm", winner === 'A' ? "font-bold text-blue-700" : "text-slate-500")}>
+                    <TableCell className={cn("px-4 py-4 font-mono text-sm", higherScenario === 'A' ? "font-bold text-blue-700" : "text-slate-500")}>
                       {valA ? formatCurrency(valA) : "---"}
                     </TableCell>
-                    <TableCell className={cn("px-4 py-4 font-mono text-sm", winner === 'B' ? "font-bold text-emerald-700" : "text-slate-500")}>
+                    <TableCell className={cn("px-4 py-4 font-mono text-sm", higherScenario === 'B' ? "font-bold text-emerald-700" : "text-slate-500")}>
                       {valB ? formatCurrency(valB) : "---"}
                     </TableCell>
                     <TableCell className="text-right px-8 py-4">
                       <Badge variant="outline" className={cn(
                         "font-black text-[9px] uppercase px-3 py-0.5 border-2",
-                        winner === 'A' ? "border-blue-200 bg-blue-50 text-blue-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"
+                        higherScenario === 'A' ? "border-blue-200 bg-blue-50 text-blue-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"
                       )}>
-                        {winner === 'A' ? bondTypeA : bondTypeB} {higherBadgeSuffix}
+                        {higherScenario === 'A' ? bondTypeA : bondTypeB} {higherBadgeSuffix}
                       </Badge>
                     </TableCell>
                   </TableRow>

@@ -1,8 +1,13 @@
 'use client';
 
-import React, { useCallback, useState } from 'react';
-import { Award, Info, Scale, TrendingUp, TriangleAlert } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import React, { useCallback, useMemo, useState } from 'react';
+import {
+  AlertTriangle,
+  ArrowDownUp,
+  Info,
+  LineChart,
+  ListOrdered,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -16,6 +21,7 @@ import { formatCurrency, formatPercentage } from '@/lib/utils';
 import { toDateString } from '@/shared/lib/date-timing';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
+import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
 
 export default function BondOptimizerClient() {
   const [inputs, setInputs] = useState({
@@ -27,8 +33,8 @@ export default function BondOptimizerClient() {
     taxStrategy: TaxStrategy.STANDARD,
     includeFamilyBonds: false,
   });
-  const [envelope, setEnvelope] =
-    useState<BondOptimizerCalculationEnvelope | null>(null);
+  const [envelope, setEnvelope] = useState<BondOptimizerCalculationEnvelope | null>(null);
+  const [isDirty, setIsDirty] = useState(true);
   const { isCalculating, post } = useCalculationRequest();
 
   const handleCalculate = useCallback(async () => {
@@ -38,37 +44,41 @@ export default function BondOptimizerClient() {
         inputs,
       );
       setEnvelope(data);
+      setIsDirty(false);
     } catch (error) {
-      console.error('Optimization error:', error);
+      console.error('Scenario ranking error:', error);
     }
   }, [inputs, post]);
 
   const updateInput = (key: string, value: string | number | boolean) => {
     setInputs((prev) => ({ ...prev, [key]: value }));
+    setIsDirty(true);
   };
 
   const results = envelope?.result;
-  const highestPayoutScenario = results?.highestPayout;
-  const horizonYears = (inputs.investmentHorizonMonths / 12).toFixed(1);
+  const leadingScenario = results?.highestPayout;
+  const horizonYears = useMemo(
+    () => (inputs.investmentHorizonMonths / 12).toFixed(1),
+    [inputs.investmentHorizonMonths],
+  );
 
   return (
-    <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(320px,380px)_1fr]">
-      <div className="space-y-6">
-        <Card className="border-2">
-          <CardHeader>
-            <CardTitle>Scenario Setup</CardTitle>
+    <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
+      <aside className="space-y-6 xl:col-span-4 xl:sticky xl:top-28 xl:h-fit">
+        <Card className="rounded-2xl border shadow-none">
+          <CardHeader className="border-b pb-4">
+            <CardTitle>Scenario inputs</CardTitle>
             <CardDescription>
-              Define the amount, horizon, tax wrapper, and purchase date for a
-              neutral simulation.
+              Set one scenario, run the ranking once, then inspect how modeled payouts differ.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-5">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs font-bold uppercase text-muted-foreground">
-                  Amount to Invest
+          <CardContent className="space-y-6 p-6">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-4">
+                <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Amount to invest
                 </Label>
-                <span className="text-sm font-black text-primary">
+                <span className="text-lg font-semibold text-foreground">
                   {formatCurrency(inputs.initialInvestment)}
                 </span>
               </div>
@@ -82,12 +92,12 @@ export default function BondOptimizerClient() {
               />
             </div>
 
-            <div className="space-y-2 border-t pt-5">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs font-bold uppercase text-muted-foreground">
+            <div className="space-y-3 border-t pt-6">
+              <div className="flex items-center justify-between gap-4">
+                <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                   Horizon
                 </Label>
-                <span className="text-sm font-black text-primary">
+                <span className="text-lg font-semibold text-foreground">
                   {inputs.investmentHorizonMonths}M / {horizonYears}Y
                 </span>
               </div>
@@ -97,29 +107,25 @@ export default function BondOptimizerClient() {
                 max={360}
                 step={1}
                 unit="M"
-                onCommit={(value) =>
-                  updateInput('investmentHorizonMonths', value)
-                }
+                onCommit={(value) => updateInput('investmentHorizonMonths', value)}
               />
             </div>
 
-            <div className="space-y-2 border-t pt-5">
-              <Label htmlFor="purchaseDate" className="text-xs font-bold uppercase text-muted-foreground">
-                Purchase Date
+            <div className="space-y-3 border-t pt-6">
+              <Label htmlFor="purchaseDate" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Purchase date
               </Label>
               <Input
                 id="purchaseDate"
                 type="date"
                 value={inputs.purchaseDate}
-                onChange={(event) =>
-                  updateInput('purchaseDate', event.target.value)
-                }
+                onChange={(event) => updateInput('purchaseDate', event.target.value)}
               />
             </div>
 
-            <div className="space-y-2 border-t pt-5">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">
-                Tax Strategy
+            <div className="space-y-3 border-t pt-6">
+              <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Tax strategy
               </Label>
               <Select
                 value={inputs.taxStrategy}
@@ -129,82 +135,35 @@ export default function BondOptimizerClient() {
                   <SelectValue placeholder="Select strategy" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={TaxStrategy.STANDARD}>
-                    Standard (19% Belka)
-                  </SelectItem>
-                  <SelectItem value={TaxStrategy.IKE}>IKE (0% Tax)</SelectItem>
-                  <SelectItem value={TaxStrategy.IKZE}>
-                    IKZE (Retirement Tax Rules)
-                  </SelectItem>
+                  <SelectItem value={TaxStrategy.STANDARD}>Standard (19% Belka)</SelectItem>
+                  <SelectItem value={TaxStrategy.IKE}>IKE (0% tax)</SelectItem>
+                  <SelectItem value={TaxStrategy.IKZE}>IKZE (retirement tax rules)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <div className="space-y-2 border-t pt-5">
-              <div className="flex items-center justify-between rounded-xl border bg-muted/30 px-4 py-3">
-                <Label
-                  htmlFor="includeFamilyBonds"
-                  className="flex flex-col gap-1"
-                >
-                  <span className="font-semibold">Include Family Bonds</span>
-                  <span className="text-xs font-normal text-muted-foreground">
-                    ROS/ROD require 800+ family program eligibility.
+            <div className="space-y-3 border-t pt-6">
+              <div className="flex items-center justify-between rounded-xl border bg-muted/20 px-4 py-3">
+                <Label htmlFor="includeFamilyBonds" className="flex flex-col gap-1">
+                  <span className="font-medium text-foreground">Include family bonds</span>
+                  <span className="text-sm font-normal text-muted-foreground">
+                    ROS and ROD only make sense when the family-bond condition is actually met.
                   </span>
                 </Label>
                 <Switch
                   id="includeFamilyBonds"
                   checked={inputs.includeFamilyBonds}
-                  onCheckedChange={(value) =>
-                    updateInput('includeFamilyBonds', value)
-                  }
+                  onCheckedChange={(value) => updateInput('includeFamilyBonds', value)}
                 />
               </div>
             </div>
 
-            <Button
-              className="mt-2 h-11 w-full font-black uppercase tracking-wide"
-              onClick={handleCalculate}
-              disabled={isCalculating}
-            >
-              {isCalculating ? 'Simulating...' : 'Run Scenario Ranking'}
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card className="border-amber-200 bg-amber-50/40">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <TriangleAlert className="h-4 w-4 text-amber-700" />
-              Interpretation Guardrail
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm text-amber-900">
-            <p>
-              This page ranks modeled payouts for one fixed scenario. It is not
-              personal advice, suitability analysis, or a recommendation.
-            </p>
-            <p>
-              Small assumption changes can reorder outcomes, especially for
-              short horizons and rollover-heavy bonds.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">Market Assumptions</CardTitle>
-            <CardDescription>
-              Keep inputs within plausible planning ranges to avoid distorted
-              rankings.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-5">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs font-bold uppercase text-muted-foreground">
-                  Expected Inflation
+            <div className="space-y-3 border-t pt-6">
+              <div className="flex items-center justify-between gap-4">
+                <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Expected inflation
                 </Label>
-                <span className="text-sm font-black text-primary">
+                <span className="text-lg font-semibold text-foreground">
                   {inputs.expectedInflation.toFixed(1)}%
                 </span>
               </div>
@@ -218,12 +177,12 @@ export default function BondOptimizerClient() {
               />
             </div>
 
-            <div className="space-y-2 border-t pt-5">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs font-bold uppercase text-muted-foreground">
-                  Expected NBP Rate
+            <div className="space-y-3 border-t pt-6">
+              <div className="flex items-center justify-between gap-4">
+                <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Expected NBP rate
                 </Label>
-                <span className="text-sm font-black text-primary">
+                <span className="text-lg font-semibold text-foreground">
                   {inputs.expectedNbpRate.toFixed(2)}%
                 </span>
               </div>
@@ -236,132 +195,147 @@ export default function BondOptimizerClient() {
                 onCommit={(value) => updateInput('expectedNbpRate', value)}
               />
             </div>
+
+            <Button
+              className="h-11 w-full font-semibold"
+              onClick={handleCalculate}
+              disabled={isCalculating}
+            >
+              {isCalculating ? 'Running scenario ranking...' : 'Run ranking'}
+            </Button>
           </CardContent>
         </Card>
-      </div>
 
-      <div className="space-y-6">
+        <Card className="rounded-2xl border border-amber-200 bg-amber-50 shadow-none">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <AlertTriangle className="h-4 w-4 text-amber-700" />
+              Interpretation guardrail
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm leading-6 text-amber-950">
+            <p>
+              This page sorts projected payouts for one scenario. It does not decide what is best for
+              a real investor and it does not account for suitability, liquidity needs, or broader portfolio context.
+            </p>
+            <p>
+              Small assumption changes can reorder the list quickly, especially when horizons are short
+              or rollover is required.
+            </p>
+          </CardContent>
+        </Card>
+      </aside>
+
+      <section className="space-y-6 xl:col-span-8">
         {isCalculating ? (
           <div className="space-y-6">
-            <Skeleton className="h-[240px] w-full" />
-            <Skeleton className="h-[420px] w-full" />
+            <Skeleton className="h-[220px] w-full rounded-2xl" />
+            <Skeleton className="h-[460px] w-full rounded-2xl" />
           </div>
-        ) : results && highestPayoutScenario ? (
+        ) : results && leadingScenario ? (
           <>
-            <Card className="border-primary/20 bg-primary/5">
-              <CardHeader className="pb-3">
-                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            {isDirty && (
+              <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
+                Inputs changed. The ranking below still shows the previous committed scenario.
+                Run ranking again when you want to refresh it.
+              </div>
+            )}
+
+            <Card className="rounded-2xl border shadow-none">
+              <CardHeader className="border-b pb-4">
+                <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                   <div className="space-y-2">
-                    <Badge className="w-fit bg-primary text-primary-foreground">
-                      <Award className="mr-1 h-3 w-3" />
-                      Highest payout under assumptions
-                    </Badge>
-                    <CardTitle className="text-2xl">
-                      {highestPayoutScenario.name} ({highestPayoutScenario.bondType})
+                    <CardTitle className="flex items-center gap-2 text-xl">
+                      <ListOrdered className="h-5 w-5 text-primary" />
+                      Current leading scenario
                     </CardTitle>
-                    <CardDescription>
-                      Highest ranked outcome for your {inputs.investmentHorizonMonths}
-                      -month setup.
+                    <CardDescription className="text-sm leading-6">
+                      Highest modeled net payout for this {inputs.investmentHorizonMonths}-month scenario.
                     </CardDescription>
                   </div>
-                  <div className="rounded-xl border bg-background/80 px-4 py-3 text-right">
-                    <p className="text-xs font-bold uppercase text-muted-foreground">
-                      Estimated Net Payout
+                  <div className="rounded-xl border bg-muted/20 px-4 py-3 text-right">
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                      Estimated net payout
                     </p>
-                    <p className="text-2xl font-black text-primary">
-                      {formatCurrency(highestPayoutScenario.netPayoutValue)}
+                    <p className="mt-1 text-2xl font-semibold text-foreground">
+                      {formatCurrency(leadingScenario.netPayoutValue)}
                     </p>
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="rounded-xl border bg-background/60 p-4 text-sm">
-                  <p className="flex items-start gap-2">
+              <CardContent className="space-y-4 p-6">
+                <div className="rounded-xl border bg-muted/20 p-4">
+                  <p className="text-sm font-medium text-foreground">
+                    {leadingScenario.name} ({leadingScenario.bondType})
+                  </p>
+                  <p className="mt-2 flex items-start gap-2 text-sm leading-6 text-muted-foreground">
                     <Info className="mt-0.5 h-4 w-4 text-primary" />
-                    <span>{highestPayoutScenario.scenarioReason}</span>
+                    <span>{leadingScenario.scenarioReason}</span>
                   </p>
                 </div>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                  <div className="rounded-xl border bg-background/70 p-4 text-center">
-                    <p className="text-[11px] font-bold uppercase text-muted-foreground">
-                      Net Profit
-                    </p>
-                    <p className="text-lg font-black text-green-600">
-                      +{formatCurrency(highestPayoutScenario.totalProfit)}
+                  <div className="rounded-xl border p-4">
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">Net profit</p>
+                    <p className="mt-2 text-xl font-semibold text-emerald-700">
+                      +{formatCurrency(leadingScenario.totalProfit)}
                     </p>
                   </div>
-                  <div className="rounded-xl border bg-background/70 p-4 text-center">
-                    <p className="text-[11px] font-bold uppercase text-muted-foreground">
-                      Total ROI
-                    </p>
-                    <p className="text-lg font-black">
+                  <div className="rounded-xl border p-4">
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">ROI</p>
+                    <p className="mt-2 text-xl font-semibold text-foreground">
                       {formatPercentage(
-                        (highestPayoutScenario.totalProfit / inputs.initialInvestment) *
-                          100,
+                        (leadingScenario.totalProfit / inputs.initialInvestment) * 100,
                       )}
                     </p>
                   </div>
-                  <div className="rounded-xl border bg-background/70 p-4 text-center">
-                    <p className="text-[11px] font-bold uppercase text-muted-foreground">
-                      Tax Paid
-                    </p>
-                    <p className="text-lg font-black text-orange-600">
-                      {formatCurrency(highestPayoutScenario.result.totalTax)}
+                  <div className="rounded-xl border p-4">
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground">Tax paid</p>
+                    <p className="mt-2 text-xl font-semibold text-orange-700">
+                      {formatCurrency(leadingScenario.result.totalTax)}
                     </p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Scale className="h-5 w-5 text-primary" />
-                  Ranked Simulated Outcomes
+            <Card className="rounded-2xl border shadow-none">
+              <CardHeader className="border-b pb-4">
+                <CardTitle className="flex items-center gap-2 text-xl">
+                  <ArrowDownUp className="h-5 w-5 text-primary" />
+                  Ranked outcomes
                 </CardTitle>
-                <CardDescription>
-                  Ordered by projected net payout after {horizonYears} years.
+                <CardDescription className="text-sm leading-6">
+                  Ordered by projected net payout after {horizonYears} years. This is scenario sorting, not a recommendation.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 p-6">
                 {results.rankedBonds.map((item, index) => {
-                  const gapToLead = highestPayoutScenario.netPayoutValue - item.netPayoutValue;
+                  const gapToLead = leadingScenario.netPayoutValue - item.netPayoutValue;
 
                   return (
-                    <div
-                      key={item.bondType}
-                      className={`rounded-xl border p-4 ${
-                        index === 0
-                          ? 'border-primary/30 bg-primary/5'
-                          : 'bg-card'
-                      }`}
-                    >
+                    <div key={item.bondType} className="rounded-2xl border p-4">
                       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                         <div className="flex items-start gap-4">
-                          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-sm font-black">
+                          <div className="flex h-9 w-9 items-center justify-center rounded-full border bg-muted/20 text-sm font-semibold">
                             {index + 1}
                           </div>
                           <div className="space-y-1">
-                            <p className="font-semibold">{item.name}</p>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="font-semibold text-foreground">
+                              {item.name} ({item.bondType})
+                            </p>
+                            <p className="text-sm leading-6 text-muted-foreground">
                               {item.scenarioReason}
                             </p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="font-black">
+                          <p className="text-lg font-semibold text-foreground">
                             {formatCurrency(item.netPayoutValue)}
                           </p>
-                          <p
-                            className={`text-xs font-semibold ${
-                              index === 0
-                                ? 'text-primary'
-                                : 'text-muted-foreground'
-                            }`}
-                          >
+                          <p className="mt-1 text-sm text-muted-foreground">
                             {index === 0
-                              ? 'Highest payout in this scenario'
-                              : `-${formatCurrency(gapToLead)} vs highest`}
+                              ? 'Leading payout in this scenario'
+                              : `-${formatCurrency(gapToLead)} versus the leading payout`}
                           </p>
                         </div>
                       </div>
@@ -370,17 +344,25 @@ export default function BondOptimizerClient() {
                 })}
               </CardContent>
             </Card>
+
+            <CalculationMetaPanel
+              warnings={envelope?.warnings}
+              assumptions={envelope?.assumptions}
+              calculationNotes={envelope?.calculationNotes}
+              dataQualityFlags={envelope?.dataQualityFlags}
+              dataFreshness={envelope?.dataFreshness}
+            />
           </>
         ) : (
-          <div className="flex h-[420px] flex-col items-center justify-center rounded-2xl border-2 border-dashed bg-muted/20 text-muted-foreground">
-            <TrendingUp className="mb-4 h-12 w-12 opacity-20" />
-            <p className="text-lg font-semibold">Ready to rank scenarios?</p>
-            <p className="text-sm">
-              Set assumptions, run the simulation, then compare payout ordering.
+          <div className="flex min-h-[420px] flex-col items-center justify-center rounded-2xl border border-dashed bg-muted/20 px-6 text-center text-muted-foreground">
+            <LineChart className="mb-4 h-12 w-12 opacity-25" />
+            <p className="text-lg font-semibold text-foreground">Rank one scenario at a time</p>
+            <p className="mt-2 max-w-2xl text-sm leading-6">
+              Set the amount, horizon, and macro assumptions. Then run the ranking to compare projected payouts across bond types.
             </p>
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
 }
