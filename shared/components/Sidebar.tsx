@@ -20,11 +20,24 @@ import { useLanguage } from '@/i18n';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { cn } from '@/lib/utils';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { FeatureStatusPill, FeatureStatus } from './FeatureStatusNotice';
 
 interface SidebarContentProps {
   onItemClick?: () => void;
   dataFreshness?: CalculationDataFreshness;
 }
+
+type NavItem = {
+  href: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  status: FeatureStatus;
+};
+
+type NavSection = {
+  label: string;
+  items: NavItem[];
+};
 
 function getFreshnessLabel(
   freshness: CalculationDataFreshness,
@@ -57,17 +70,32 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
   const pathname = usePathname();
   const { t, language } = useLanguage();
 
-  const navItems = [
-    { href: '/education', label: t('nav.education'), icon: BookOpen },
-    { href: '/single-calculator', label: t('nav.single_calculator'), icon: Calculator },
-    { href: '/compare', label: t('nav.comparison'), icon: Scale },
-    { href: '/optimize', label: t('nav.optimizer'), icon: TrendingUp },
-    { href: '/multi-asset', label: t('nav.multi_asset'), icon: Globe },
-    { href: '/ladder', label: t('nav.ladder'), icon: Layers },
-    { href: '/regular-investment', label: t('nav.regular_investment'), icon: TrendingUp },
-    { href: '/retirement', label: t('nav.retirement') || 'Retirement', icon: Wallet },
-    { href: '/economic-data', label: t('nav.economic_data'), icon: BarChart2 },
-    { href: '/notebook', label: t('nav.notebook'), icon: Wallet },
+  const navSections: NavSection[] = [
+    {
+      label: 'Core',
+      items: [
+        { href: '/education', label: t('nav.education'), icon: BookOpen, status: 'trusted' },
+        { href: '/single-calculator', label: t('nav.single_calculator'), icon: Calculator, status: 'trusted' },
+        { href: '/economic-data', label: t('nav.economic_data'), icon: BarChart2, status: 'reference' },
+      ],
+    },
+    {
+      label: 'Conditional',
+      items: [
+        { href: '/compare', label: t('nav.comparison'), icon: Scale, status: 'conditional' },
+        { href: '/regular-investment', label: t('nav.regular_investment'), icon: TrendingUp, status: 'conditional' },
+        { href: '/ladder', label: t('nav.ladder'), icon: Layers, status: 'conditional' },
+        { href: '/notebook', label: t('nav.notebook'), icon: Wallet, status: 'conditional' },
+      ],
+    },
+    {
+      label: 'Experimental',
+      items: [
+        { href: '/optimize', label: t('nav.optimizer'), icon: TrendingUp, status: 'experimental' },
+        { href: '/multi-asset', label: t('nav.multi_asset'), icon: Globe, status: 'experimental' },
+        { href: '/retirement', label: t('nav.retirement') || 'Retirement', icon: Wallet, status: 'limited' },
+      ],
+    },
   ];
 
   return (
@@ -81,32 +109,46 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
         </h1>
       </div>
 
-      <nav className="custom-scrollbar flex-1 space-y-1 overflow-y-auto p-4">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href;
+      <nav className="custom-scrollbar flex-1 space-y-6 overflow-y-auto p-4">
+        {navSections.map((section) => (
+          <div key={section.label} className="space-y-2">
+            <p className="px-3 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+              {section.label}
+            </p>
+            <div className="space-y-1">
+              {section.items.map((item) => {
+                const isActive = pathname === item.href;
 
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onItemClick}
-              className={cn(
-                'flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition-colors',
-                isActive
-                  ? 'border border-primary/15 bg-primary/10 font-semibold text-primary'
-                  : 'text-slate-600 hover:bg-white hover:text-slate-900',
-              )}
-            >
-              <item.icon
-                className={cn(
-                  'h-5 w-5 shrink-0',
-                  isActive ? 'text-primary' : 'text-slate-400',
-                )}
-              />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={onItemClick}
+                    className={cn(
+                      'flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition-colors',
+                      isActive
+                        ? 'border border-primary/15 bg-primary/10 font-semibold text-primary'
+                        : 'text-slate-600 hover:bg-white hover:text-slate-900',
+                    )}
+                  >
+                    <item.icon
+                      className={cn(
+                        'h-5 w-5 shrink-0',
+                        isActive ? 'text-primary' : 'text-slate-400',
+                      )}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="truncate">{item.label}</span>
+                        <FeatureStatusPill status={item.status} className="shrink-0" />
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
       <div className="space-y-6 border-t bg-slate-100 p-6">

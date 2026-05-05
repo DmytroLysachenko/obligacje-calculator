@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import BondOptimizerClient from './BondOptimizerClient';
+import { FeatureStatusNotice } from '@/shared/components/FeatureStatusNotice';
 
 export const metadata: Metadata = {
   title: 'Bond Scenario Ranking | Polish Treasury Bonds',
@@ -15,6 +16,11 @@ export default function BondOptimizerPage() {
           Enter one scenario, sort projected payouts across available bonds, and inspect the tradeoffs. This page is a calculator view, not a recommendation engine.
         </p>
       </div>
+
+      <FeatureStatusNotice status="experimental" title="Experimental ranking surface">
+        This page is still assumption-sensitive and easy to over-read. Use it as a supporting scenario sorter,
+        not as a primary decision surface.
+      </FeatureStatusNotice>
 
       <BondOptimizerClient />
     </div>

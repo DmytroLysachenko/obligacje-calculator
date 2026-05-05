@@ -15,6 +15,7 @@ import { isAfter, isBefore, addDays, parseISO } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { loadSavedScenarios } from '@/features/single-calculator/lib/scenario-storage';
+import { FeatureStatusPill } from '@/shared/components/FeatureStatusNotice';
 import {
   buildDashboardNotifications,
   DashboardNotification,
@@ -108,6 +109,7 @@ export function LandingDashboardClient() {
       title: t('nav.single_calculator'),
       description: t('landing.cards.single_calculator'),
       icon: Calculator,
+      status: 'trusted' as const,
       color: 'text-blue-500',
       bg: 'bg-blue-500/10'
     },
@@ -116,6 +118,7 @@ export function LandingDashboardClient() {
       title: t('nav.comparison'),
       description: t('landing.cards.comparison'),
       icon: Scale,
+      status: 'conditional' as const,
       color: 'text-purple-500',
       bg: 'bg-purple-500/10'
     },
@@ -124,6 +127,7 @@ export function LandingDashboardClient() {
       title: t('nav.regular_investment'),
       description: t('landing.cards.regular_investment'),
       icon: TrendingUp,
+      status: 'conditional' as const,
       color: 'text-emerald-500',
       bg: 'bg-emerald-500/10'
     },
@@ -132,6 +136,7 @@ export function LandingDashboardClient() {
       title: t('nav.ladder'),
       description: t('landing.cards.ladder'),
       icon: Layers,
+      status: 'conditional' as const,
       color: 'text-orange-500',
       bg: 'bg-orange-500/10'
     },
@@ -140,6 +145,7 @@ export function LandingDashboardClient() {
       title: t('nav.economic_data'),
       description: t('landing.cards.economic_data'),
       icon: BarChart2,
+      status: 'reference' as const,
       color: 'text-pink-500',
       bg: 'bg-pink-500/10'
     },
@@ -148,10 +154,41 @@ export function LandingDashboardClient() {
       title: t('nav.education'),
       description: t('landing.cards.education'),
       icon: BookOpen,
+      status: 'trusted' as const,
       color: 'text-slate-500',
       bg: 'bg-slate-500/10'
+    },
+    {
+      href: '/optimize',
+      title: t('nav.optimizer'),
+      description: 'Scenario ranking under fixed assumptions.',
+      icon: TrendingUp,
+      status: 'experimental' as const,
+      color: 'text-amber-500',
+      bg: 'bg-amber-500/10'
+    },
+    {
+      href: '/multi-asset',
+      title: t('nav.multi_asset'),
+      description: 'Reference comparison across historical series.',
+      icon: BarChart2,
+      status: 'experimental' as const,
+      color: 'text-cyan-500',
+      bg: 'bg-cyan-500/10'
+    },
+    {
+      href: '/retirement',
+      title: t('nav.retirement'),
+      description: 'Simplified withdrawal model with limited support.',
+      icon: Calendar,
+      status: 'limited' as const,
+      color: 'text-rose-500',
+      bg: 'bg-rose-500/10'
     }
   ];
+
+  const primaryFeatures = features.filter((feature) => feature.status === 'trusted' || feature.status === 'conditional' || feature.status === 'reference');
+  const experimentalFeatures = features.filter((feature) => feature.status === 'experimental' || feature.status === 'limited');
 
   const containerState: Variants = {
     hidden: { opacity: 0 },
@@ -453,7 +490,7 @@ export function LandingDashboardClient() {
           animate="show"
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {features.map((feature, idx) => (
+          {primaryFeatures.map((feature, idx) => (
             <motion.div key={idx} variants={itemState}>
               <Link href={feature.href} className="block group h-full">
                 <Card className="h-full border-muted/50 shadow-sm hover:shadow-xl hover:border-primary/30 transition-all duration-300 bg-card overflow-hidden relative">
@@ -463,9 +500,12 @@ export function LandingDashboardClient() {
                       <feature.icon className="h-6 w-6" />
                     </div>
                     <div className="space-y-2">
-                      <h3 className="text-xl font-bold tracking-tight group-hover:text-primary transition-colors">
-                        {feature.title}
-                      </h3>
+                      <div className="flex items-center justify-between gap-3">
+                        <h3 className="text-xl font-bold tracking-tight group-hover:text-primary transition-colors">
+                          {feature.title}
+                        </h3>
+                        <FeatureStatusPill status={feature.status} />
+                      </div>
                       <p className="text-sm text-muted-foreground leading-relaxed">
                         {feature.description}
                       </p>
@@ -476,6 +516,38 @@ export function LandingDashboardClient() {
             </motion.div>
           ))}
         </motion.div>
+      </section>
+
+      <section className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-black tracking-tight">Experimental and limited tools</h2>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              These surfaces remain available during recovery, but they are not on the same trust level as the core calculator flows.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {experimentalFeatures.map((feature) => (
+            <Link key={feature.href} href={feature.href} className="group block h-full">
+              <Card className="h-full rounded-2xl border border-amber-200 bg-amber-50/50 shadow-none transition-colors group-hover:border-amber-300">
+                <CardContent className="space-y-4 p-6">
+                  <div className={`p-3 w-fit rounded-2xl ${feature.bg} ${feature.color}`}>
+                    <feature.icon className="h-6 w-6" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <h3 className="text-lg font-bold tracking-tight text-slate-900">{feature.title}</h3>
+                      <FeatureStatusPill status={feature.status} />
+                    </div>
+                    <p className="text-sm leading-6 text-slate-700">{feature.description}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
       </section>
     </div>
   );
