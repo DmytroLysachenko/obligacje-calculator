@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -194,7 +194,7 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
           )}
 
           <div className="border-t border-slate-200 pt-3 text-center text-[11px] text-slate-500">
-            � {new Date().getFullYear()} {t('common.title')}
+            © {new Date().getFullYear()} {t('common.title')}
           </div>
         </div>
       </div>
@@ -239,4 +239,5 @@ export function Sidebar({
     </>
   );
 }
+
 

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -436,7 +436,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
               <span className="font-semibold text-foreground">
                 {investmentHorizonYears % 1 === 0 ? investmentHorizonYears.toFixed(0) : investmentHorizonYears.toFixed(2)} {t('common.years')}
               </span>
-              {' '}� {t('regular_form.horizon_help')}
+              {' '}· {t('regular_form.horizon_help')}
             </div>
           ) : (
             <CommittedSliderInput
@@ -618,4 +618,5 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
 });
 
 RegularInvestmentInputsForm.displayName = 'RegularInvestmentInputsForm';
+
 
