@@ -62,7 +62,10 @@ export const BondComparisonContainer = () => {
   const [reinvest, setReinvest] = useState(true);
   const [isDirty, setIsDirty] = useState(true);
 
-  const results = useMemo(() => envelope?.result ?? [], [envelope]);
+  const results = useMemo(
+    () => (Array.isArray(envelope?.result) ? envelope.result : []),
+    [envelope],
+  );
   const purchaseDate = new Date().toISOString().split('T')[0];
   const withdrawalDate = addYears(new Date(purchaseDate), duration)
     .toISOString()
@@ -88,7 +91,8 @@ export const BondComparisonContainer = () => {
         }),
       });
       const data = await response.json();
-      setEnvelope(data);
+      const nextEnvelope = data?.data ?? data;
+      setEnvelope(nextEnvelope);
     } catch (error) {
       console.error('Comparison failed:', error);
     } finally {
