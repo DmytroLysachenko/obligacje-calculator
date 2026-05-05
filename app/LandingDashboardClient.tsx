@@ -4,7 +4,7 @@ import React from 'react';
 import { motion, Variants } from 'framer-motion';
 import { useLanguage } from '@/i18n';
 import Link from 'next/link';
-import { Calculator, Scale, Layers, TrendingUp, BookOpen, BarChart2, ArrowRight, Briefcase, PieChart as PieChartIcon, Calendar, CheckCircle2, Bell, Star, Clock3 } from 'lucide-react';
+import { Calculator, Scale, Layers, TrendingUp, BookOpen, BarChart2, ArrowRight, Briefcase, PieChart as PieChartIcon, Calendar, CheckCircle2, Bell, Star, Clock3, FlaskConical, ShieldAlert } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useChartData } from '@/shared/hooks/useChartData';
 import { PortfolioSimulationCalculationEnvelope } from '@/features/bond-core/types/scenarios';
@@ -158,37 +158,9 @@ export function LandingDashboardClient() {
       color: 'text-slate-500',
       bg: 'bg-slate-500/10'
     },
-    {
-      href: '/optimize',
-      title: t('nav.optimizer'),
-      description: 'Scenario ranking under fixed assumptions.',
-      icon: TrendingUp,
-      status: 'experimental' as const,
-      color: 'text-amber-500',
-      bg: 'bg-amber-500/10'
-    },
-    {
-      href: '/multi-asset',
-      title: t('nav.multi_asset'),
-      description: 'Reference comparison across historical series.',
-      icon: BarChart2,
-      status: 'experimental' as const,
-      color: 'text-cyan-500',
-      bg: 'bg-cyan-500/10'
-    },
-    {
-      href: '/retirement',
-      title: t('nav.retirement'),
-      description: 'Simplified withdrawal model with limited support.',
-      icon: Calendar,
-      status: 'limited' as const,
-      color: 'text-rose-500',
-      bg: 'bg-rose-500/10'
-    }
   ];
 
   const primaryFeatures = features.filter((feature) => feature.status === 'trusted' || feature.status === 'conditional' || feature.status === 'reference');
-  const experimentalFeatures = features.filter((feature) => feature.status === 'experimental' || feature.status === 'limited');
 
   const containerState: Variants = {
     hidden: { opacity: 0 },
@@ -519,34 +491,81 @@ export function LandingDashboardClient() {
       </section>
 
       <section className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-black tracking-tight">Experimental and limited tools</h2>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              These surfaces remain available during recovery, but they are not on the same trust level as the core calculator flows.
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {experimentalFeatures.map((feature) => (
-            <Link key={feature.href} href={feature.href} className="group block h-full">
-              <Card className="h-full rounded-2xl border border-amber-200 bg-amber-50/50 shadow-none transition-colors group-hover:border-amber-300">
-                <CardContent className="space-y-4 p-6">
-                  <div className={`p-3 w-fit rounded-2xl ${feature.bg} ${feature.color}`}>
-                    <feature.icon className="h-6 w-6" />
-                  </div>
-                  <div className="space-y-2">
+        <div className="rounded-3xl border border-amber-200 bg-amber-50/70 p-6 md:p-8">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+            <div className="max-w-3xl space-y-3">
+              <div className="flex items-center gap-2 text-amber-900">
+                <ShieldAlert className="h-5 w-5" />
+                <h2 className="text-2xl font-black tracking-tight">Recovery lab surfaces</h2>
+              </div>
+              <p className="text-sm leading-6 text-amber-950">
+                Optimizer, multi-asset history, and retirement withdrawal modeling remain available during recovery,
+                but they are intentionally de-emphasized. They are narrower, more assumption-sensitive, and not part
+                of the core calculator promise.
+              </p>
+              <p className="text-sm leading-6 text-amber-900">
+                Use them only when you already understand their scope and limits.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:w-[420px]">
+              <Link href="/optimize" className="group block">
+                <Card className="rounded-2xl border border-amber-300 bg-white/80 shadow-none transition-colors group-hover:border-amber-400">
+                  <CardContent className="space-y-3 p-4">
                     <div className="flex items-center justify-between gap-3">
-                      <h3 className="text-lg font-bold tracking-tight text-slate-900">{feature.title}</h3>
-                      <FeatureStatusPill status={feature.status} />
+                      <div className="rounded-2xl bg-amber-100 p-3 text-amber-700">
+                        <FlaskConical className="h-5 w-5" />
+                      </div>
+                      <FeatureStatusPill status="experimental" />
                     </div>
-                    <p className="text-sm leading-6 text-slate-700">{feature.description}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
+                    <div>
+                      <p className="font-bold text-slate-900">{t('nav.optimizer')}</p>
+                      <p className="mt-1 text-xs leading-5 text-slate-600">
+                        Scenario ranking under fixed assumptions.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+
+              <Link href="/multi-asset" className="group block">
+                <Card className="rounded-2xl border border-amber-300 bg-white/80 shadow-none transition-colors group-hover:border-amber-400">
+                  <CardContent className="space-y-3 p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="rounded-2xl bg-cyan-100 p-3 text-cyan-700">
+                        <BarChart2 className="h-5 w-5" />
+                      </div>
+                      <FeatureStatusPill status="experimental" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-slate-900">{t('nav.multi_asset')}</p>
+                      <p className="mt-1 text-xs leading-5 text-slate-600">
+                        Reference comparison across historical series.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+
+              <Link href="/retirement" className="group block">
+                <Card className="rounded-2xl border border-amber-300 bg-white/80 shadow-none transition-colors group-hover:border-amber-400">
+                  <CardContent className="space-y-3 p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="rounded-2xl bg-rose-100 p-3 text-rose-700">
+                        <Calendar className="h-5 w-5" />
+                      </div>
+                      <FeatureStatusPill status="limited" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-slate-900">{t('nav.retirement')}</p>
+                      <p className="mt-1 text-xs leading-5 text-slate-600">
+                        Simplified withdrawal model with limited support.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
     </div>

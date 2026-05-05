@@ -8,6 +8,11 @@ import { AssetMetadata } from '../../bond-core/types/assets';
 import { HISTORICAL_RETURNS, type MonthlyReturn } from '../../bond-core/constants/historical-data';
 import { useQuerySync } from '@/shared/hooks/useQuerySync';
 import { useChartData } from '@/shared/hooks/useChartData';
+import {
+  getReferenceAsOfLabel,
+  getReferenceCoverageLabel,
+  getReferenceSourceLabel,
+} from '@/shared/lib/data-reference';
 
 interface MultiAssetHistoryResponse {
   data: MonthlyReturn[];
@@ -273,6 +278,9 @@ export function useMultiAssetComparison() {
     metadata: ASSETS_METADATA,
     availableDates: sourceData.map((row) => row.date),
     historySource: historyResponse?.source ?? 'fallback',
+    historySourceLabel: getReferenceSourceLabel(historyResponse),
+    historyCoverageLabel: getReferenceCoverageLabel(historyResponse),
+    historyAsOfLabel: getReferenceAsOfLabel(historyResponse),
     historyCoverageStart: effectiveCoverageStart,
     historyCoverageEnd: effectiveCoverageEnd,
     usedFallbackHistory: historyResponse?.usedFallback ?? true,

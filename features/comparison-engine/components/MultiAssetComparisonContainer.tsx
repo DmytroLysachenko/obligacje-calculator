@@ -38,11 +38,10 @@ export const MultiAssetComparisonContainer = () => {
     isDirty,
     recalculate,
     historyData,
+    historyAsOfLabel,
+    historyCoverageLabel,
     purchasingPowerLoss,
-    historyCoverageStart,
-    historyCoverageEnd,
-    historySource,
-    historyLastSyncedAt,
+    historySourceLabel,
     usedFallbackHistory,
     historySeriesAvailability,
     committedScenario,
@@ -167,21 +166,26 @@ export const MultiAssetComparisonContainer = () => {
                 <div className="rounded-xl border bg-background/70 p-3">
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">Coverage</p>
                   <p className="mt-1 font-medium text-foreground">
-                    {historyCoverageStart} - {historyCoverageEnd}
+                    {historyCoverageLabel}
                   </p>
                 </div>
                 <div className="rounded-xl border bg-background/70 p-3">
                   <p className="text-xs uppercase tracking-wide text-muted-foreground">Source</p>
-                  <p className="mt-1 font-medium text-foreground">{historySource}</p>
+                  <p className="mt-1 font-medium text-foreground">{historySourceLabel}</p>
                 </div>
                 <div className="rounded-xl border bg-background/70 p-3">
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Last sync</p>
-                  <p className="mt-1 font-medium text-foreground">{historyLastSyncedAt ?? "Not available"}</p>
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">As of</p>
+                  <p className="mt-1 font-medium text-foreground">{historyAsOfLabel}</p>
                 </div>
               </div>
               {availabilitySummary ? (
                 <p className="text-sm text-muted-foreground">
                   Available series in this dataset: <span className="font-medium text-foreground">{availabilitySummary}</span>
+                </p>
+              ) : null}
+              {usedFallbackHistory ? (
+                <p className="text-sm text-amber-900">
+                  Current history source is narrower than a production-grade backtest dataset. Keep this page in reference mode only.
                 </p>
               ) : null}
             </CardContent>

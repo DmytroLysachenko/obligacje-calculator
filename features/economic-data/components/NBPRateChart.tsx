@@ -15,6 +15,11 @@ import {
 import { useLanguage } from '@/i18n';
 import { useChartData } from '@/shared/hooks/useChartData';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
+import {
+  getReferenceAsOfLabel,
+  getReferenceCoverageLabel,
+  getReferenceSourceLabel,
+} from '@/shared/lib/data-reference';
 
 interface NBPRateDataPoint {
   date: string;
@@ -92,9 +97,9 @@ export const NBPRateChart = ({ period = 'ALL' }: { period?: '1Y' | '5Y' | '10Y' 
   return (
     <div className="space-y-3">
       <div className="rounded-xl border bg-muted/30 px-3 py-2 text-[11px] text-muted-foreground">
-        <span className="font-bold">{t('economic.data_source')}:</span> {response?.dataSource ?? response?.source ?? 'unknown'}
-        {response?.asOf ? ` | ${t('economic.as_of')}: ${response.asOf}` : ''}
-        {response?.coverageStart && response?.coverageEnd ? ` | Coverage: ${response.coverageStart} -> ${response.coverageEnd}` : ''}
+        <span className="font-bold">{t('economic.data_source')}:</span> {getReferenceSourceLabel(response)}
+        {response ? ` | ${t('economic.as_of')}: ${getReferenceAsOfLabel(response)}` : ''}
+        {response ? ` | Coverage: ${getReferenceCoverageLabel(response)}` : ''}
         {response?.usedFallback ? ` | ${t('economic.fallback_in_use')}` : ''}
       </div>
       <ChartContainer height={420}>

@@ -89,7 +89,7 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
       ],
     },
     {
-      label: 'Experimental',
+      label: 'Recovery Lab',
       items: [
         { href: '/optimize', label: t('nav.optimizer'), icon: TrendingUp, status: 'experimental' },
         { href: '/multi-asset', label: t('nav.multi_asset'), icon: Globe, status: 'experimental' },
@@ -115,6 +115,11 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
             <p className="px-3 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
               {section.label}
             </p>
+            {section.label === 'Recovery Lab' ? (
+              <div className="mx-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-[11px] leading-5 text-amber-950">
+                These pages stay reachable during recovery, but they are not core calculator surfaces.
+              </div>
+            ) : null}
             <div className="space-y-1">
               {section.items.map((item) => {
                 const isActive = pathname === item.href;
@@ -189,9 +194,19 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
           ) : (
             <div className="rounded-2xl border bg-white p-3 text-[11px] text-slate-500">
               <p className="font-semibold uppercase tracking-wide">{t('common.sync_data')}</p>
-              <p className="mt-1">No sync metadata available.</p>
+              <p className="mt-1">Sync metadata unavailable.</p>
             </div>
           )}
+
+          <div className="rounded-2xl border bg-white p-3 text-[11px] text-slate-600">
+            <p className="font-semibold uppercase tracking-wide text-slate-500">Recovery scope</p>
+            <p className="mt-1 leading-5">
+              Main focus stays on single-bond, comparison, ladder, regular-investment, notebook, and data reference pages.
+            </p>
+            <Link href="/optimize" className="mt-2 inline-flex font-semibold text-primary hover:underline">
+              Open recovery-lab tools
+            </Link>
+          </div>
 
           <div className="border-t border-slate-200 pt-3 text-center text-[11px] text-slate-500">
             © {new Date().getFullYear()} {t('common.title')}

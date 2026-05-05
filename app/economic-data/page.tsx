@@ -17,6 +17,12 @@ import { NBPRateChart } from '@/features/economic-data/components/NBPRateChart';
 import { cn } from '@/lib/utils';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { useChartData } from '@/shared/hooks/useChartData';
+import {
+  getReferenceAsOfLabel,
+  getReferenceCoverageLabel,
+  getReferenceSourceLabel,
+  getReferenceState,
+} from '@/shared/lib/data-reference';
 
 interface EconomicSeriesPoint {
   date: string;
@@ -46,18 +52,18 @@ function StatusCard({
   meta?: ChartSeriesEnvelope<EconomicSeriesPoint>;
   isLoading: boolean;
 }) {
-  const isFallback = meta?.usedFallback ?? true;
+  const state = getReferenceState(meta);
 
   return (
     <Card
       className={cn(
         'rounded-2xl border shadow-none',
-        isFallback ? 'border-amber-200 bg-amber-50' : 'bg-card',
+        state.tone === 'warning' ? 'border-amber-200 bg-amber-50' : 'bg-card',
       )}
     >
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base">
-          {isFallback ? (
+          {state.tone === 'warning' ? (
             <AlertTriangle className="h-4 w-4 text-amber-700" />
           ) : (
             <CheckCircle2 className="h-4 w-4 text-emerald-700" />
@@ -70,21 +76,19 @@ function StatusCard({
           <div className="rounded-xl border bg-background/70 p-3">
             <p className="text-xs uppercase tracking-wide text-muted-foreground">Source</p>
             <p className="mt-1 font-medium text-foreground">
-              {isLoading ? 'Loading...' : meta?.dataSource ?? meta?.source ?? 'Unknown'}
+              {isLoading ? 'Loading...' : getReferenceSourceLabel(meta)}
             </p>
           </div>
           <div className="rounded-xl border bg-background/70 p-3">
             <p className="text-xs uppercase tracking-wide text-muted-foreground">Coverage</p>
             <p className="mt-1 font-medium text-foreground">
-              {isLoading
-                ? 'Loading...'
-                : `${meta?.coverageStart ?? 'Unknown'} - ${meta?.coverageEnd ?? 'Unknown'}`}
+              {isLoading ? 'Loading...' : getReferenceCoverageLabel(meta)}
             </p>
           </div>
           <div className="rounded-xl border bg-background/70 p-3">
             <p className="text-xs uppercase tracking-wide text-muted-foreground">As of</p>
             <p className="mt-1 font-medium text-foreground">
-              {isLoading ? 'Loading...' : meta?.asOf ?? meta?.lastCheck ?? 'Unknown'}
+              {isLoading ? 'Loading...' : getReferenceAsOfLabel(meta)}
             </p>
           </div>
         </div>
@@ -92,19 +96,13 @@ function StatusCard({
         <div
           className={cn(
             'rounded-xl border px-3 py-3 leading-6',
-            isFallback
+            state.tone === 'warning'
               ? 'border-amber-200 bg-amber-100 text-amber-950'
               : 'border-emerald-200 bg-emerald-50 text-emerald-950',
           )}
         >
-          <p className="font-semibold">
-            {isFallback ? 'Fallback or partial data' : 'Database-backed data'}
-          </p>
-          <p className="mt-1 text-sm">
-            {isFallback
-              ? 'Treat this series as reference context until the sync pipeline provides fuller coverage.'
-              : 'This series is backed by the synced data pipeline and can be used as current context.'}
-          </p>
+          <p className="font-semibold">{state.title}</p>
+          <p className="mt-1 text-sm">{state.description}</p>
         </div>
       </CardContent>
     </Card>
@@ -204,8 +202,8 @@ export default function EconomicDataPage() {
                 forecasting module and it is not a market research product.
               </p>
               <p>
-                If a series falls back to partial data, the page should make that obvious instead of
-                pretending full production coverage.
+                Each card below now shows actual source, coverage, and freshness metadata. If the sync
+                pipeline is incomplete, the page should say that directly instead of pretending mature coverage.
               </p>
             </CardContent>
           </Card>

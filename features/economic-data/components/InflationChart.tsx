@@ -18,6 +18,11 @@ import { useLanguage } from '@/i18n';
 import { useChartData } from '@/shared/hooks/useChartData';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { Button } from '@/components/ui/button';
+import {
+  getReferenceAsOfLabel,
+  getReferenceCoverageLabel,
+  getReferenceSourceLabel,
+} from '@/shared/lib/data-reference';
 
 interface InflationDataPoint {
   date: string;
@@ -102,9 +107,9 @@ export const InflationChart = ({ period = 'ALL' }: { period?: '1Y' | '5Y' | '10Y
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-muted/30 px-3 py-2 text-[11px] text-muted-foreground">
         <span>
-          <span className="font-bold">{t('economic.data_source')}:</span> {response?.dataSource ?? response?.source ?? 'unknown'}
-          {response?.asOf ? ` | ${t('economic.as_of')}: ${response.asOf}` : ''}
-          {response?.coverageStart && response?.coverageEnd ? ` | Coverage: ${response.coverageStart} -> ${response.coverageEnd}` : ''}
+          <span className="font-bold">{t('economic.data_source')}:</span> {getReferenceSourceLabel(response)}
+          {response ? ` | ${t('economic.as_of')}: ${getReferenceAsOfLabel(response)}` : ''}
+          {response ? ` | Coverage: ${getReferenceCoverageLabel(response)}` : ''}
           {response?.usedFallback ? ` | ${t('economic.fallback_in_use')}` : ''}
         </span>
         <div className="flex gap-2">
