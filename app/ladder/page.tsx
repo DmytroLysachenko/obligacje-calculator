@@ -1,13 +1,20 @@
 import { LadderContainer } from '@/features/ladder-strategy/components/LadderContainer';
+import { FeatureStatusNotice } from '@/shared/components/FeatureStatusNotice';
 import { PageTransition } from '@/shared/components/PageTransition';
 import { Suspense } from 'react';
 
 export default function LadderPage() {
   return (
     <PageTransition>
-      <Suspense fallback={<div>Loading strategy...</div>}>
-        <LadderContainer />
-      </Suspense>
+      <div className="space-y-8">
+        <FeatureStatusNotice status="conditional" title="Conditional maturity-spacing calculator">
+          This page stays focused on cashflow timing and maturity spread. It is a ladder scenario calculator,
+          not a strategy recommendation surface.
+        </FeatureStatusNotice>
+        <Suspense fallback={<div>Loading strategy...</div>}>
+          <LadderContainer />
+        </Suspense>
+      </div>
     </PageTransition>
   );
 }

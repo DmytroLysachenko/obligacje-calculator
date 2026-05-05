@@ -27,14 +27,13 @@ Completed or materially improved already:
 - family-only bond handling is more honest across calculators
 - economic/reference pages now surface source, coverage, and freshness more directly
 - flagship scenario golden tests exist for core calculator outputs
+- comparison and ladder golden regressions now cover broader retained-core baselines
 - support-matrix tests exist for broader scenario classes
 
 Still not complete:
 
-- deeper math validation across every supported scenario family
-- final retention decisions on weaker recovery-lab surfaces
-- further contrast/readability cleanup across all pages
-- stronger proof around historical comparison coverage
+- post-refactor sanity debugging from real usage
+- broader exploratory edge-case testing after manual review
 - final release-gate review for production candidacy
 
 ## 1. Real Current State

@@ -16,8 +16,10 @@ The recovery work already completed has materially changed the product:
 - family-bond and retirement support boundaries are more explicit
 - data/source/freshness context is surfaced more honestly on reference pages
 - flagship calculation paths now have exact-value golden regression tests
+- retained-core comparison and ladder paths now also have dedicated baseline regression coverage
 
 This is real progress, but it is **not** the same as production readiness.
+The next step after this refactor stage is sanity debugging from real manual usage, not another feature wave.
 
 ## Current Product Position
 
