@@ -218,7 +218,7 @@ export const BondComparisonContainer = () => {
                 <div className="flex items-center justify-between rounded-xl border bg-muted/20 px-4 py-3">
                   <div>
                     <p className="text-sm font-semibold">
-                      {t('bonds.inflation_adjusted')}
+                      {t('bonds.inflation.adjusted')}
                     </p>
                     <p className="text-[10px] text-muted-foreground">
                       Switch chart and cards between nominal and real values.

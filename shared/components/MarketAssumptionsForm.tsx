@@ -110,7 +110,7 @@ export const MarketAssumptionsForm = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Label htmlFor="expectedInflation" className={cn("font-bold text-primary uppercase tracking-wider", compact ? "text-[10px]" : "text-xs")}>
-              {t('bonds.inflation_rate')} (%)
+              {t('bonds.inflation.rate')} (%)
             </Label>
             <Popover>
               <PopoverTrigger asChild>
@@ -159,7 +159,7 @@ export const MarketAssumptionsForm = ({
 
         <div className="space-y-3 pt-4 border-t border-dashed">
           <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-            {t('bonds.inflation_scenarios')}
+            {t('bonds.inflation.scenarios.label')}
           </Label>
           <div className="grid grid-cols-3 gap-2">
             {(['low', 'base', 'high'] as const).map((s) => (
@@ -173,7 +173,7 @@ export const MarketAssumptionsForm = ({
               )}
               onClick={() => onUpdate('inflationScenario', s)}
             >
-                <span className="truncate">{t(`bonds.scenario_${s}`)}</span>
+                <span className="truncate">{t(`bonds.inflation.scenarios.${s}`)}</span>
               </Button>
             ))}
           </div>

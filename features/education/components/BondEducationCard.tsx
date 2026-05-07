@@ -25,7 +25,7 @@ export const BondEducationCard: React.FC<BondEducationCardProps> = ({ bond }) =>
       <CardHeader>
         <div className="flex justify-between items-start mb-2">
           <Badge variant={bond.isInflationIndexed ? "default" : "secondary"}>
-            {bond.isInflationIndexed ? t('bonds.inflation_indexed') : t('bonds.fixed_rate')}
+            {bond.isInflationIndexed ? t('bonds.inflation.indexed') : t('bonds.fixed_rate')}
           </Badge>
           {bond.isFamilyOnly && (
             <Badge variant="outline" className="border-primary text-primary">

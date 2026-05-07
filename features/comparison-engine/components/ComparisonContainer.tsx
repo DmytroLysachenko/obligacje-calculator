@@ -143,7 +143,7 @@ export const ComparisonContainer: React.FC = () => {
       interest: t('bonds.calculation_trace.header_interest'),
       tax: t('bonds.calculation_trace.header_tax'),
       nominalValue: t('bonds.calculation_trace.header_value_after'),
-      realValue: t('bonds.inflation_adjusted'),
+      realValue: t('bonds.inflation.adjusted'),
     };
 
     const csv = convertTimelineToCSV(results.timeline, headers);
@@ -306,7 +306,7 @@ export const ComparisonContainer: React.FC = () => {
             <CardContent className="space-y-6 pt-6">
               <div className="space-y-3">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                  {t('bonds.timing_mode')}
+                  {t('bonds.timing.mode.label')}
                 </Label>
                 <div className="flex gap-2">
                   <Button
@@ -319,7 +319,7 @@ export const ComparisonContainer: React.FC = () => {
                     className="flex-1 h-10 text-xs font-bold"
                     onClick={() => updateSharedConfig('timingMode', 'general')}
                   >
-                    {t('bonds.timing_general')}
+                    {t('bonds.timing.mode.general')}
                   </Button>
                   <Button
                     type="button"
@@ -327,7 +327,7 @@ export const ComparisonContainer: React.FC = () => {
                     className="flex-1 h-10 text-xs font-bold"
                     onClick={() => updateSharedConfig('timingMode', 'exact')}
                   >
-                    {t('bonds.timing_exact')}
+                    {t('bonds.timing.mode.exact')}
                   </Button>
                 </div>
               </div>

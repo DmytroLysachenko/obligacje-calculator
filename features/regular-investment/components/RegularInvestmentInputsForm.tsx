@@ -111,14 +111,14 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
         {/* Bond Type */}
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <Label htmlFor="bondType" className="font-semibold">{t('bonds.bond_type')}</Label>
+            <Label htmlFor="bondType" className="font-semibold">{t('bonds.bond.type')}</Label>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                 </TooltipTrigger>
                 <TooltipContent>
-                    <p className="text-xs">{t('bonds.bond_type_selection')}</p>
+                    <p className="text-xs">{t('bonds.bond.type_selection')}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -271,7 +271,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <Label htmlFor="frequency" className="font-semibold">
-                {t('bonds.frequency')}
+                {t('bonds.frequency.label')}
               </Label>
               <TooltipProvider>
                 <Tooltip>
@@ -294,7 +294,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
               <SelectContent>
                 {Object.values(InvestmentFrequency).map((freq) => (
                   <SelectItem key={freq} value={freq}>
-                    {t(`bonds.freq_${freq.toLowerCase()}`)}
+                    {t(`bonds.frequency.${freq.toLowerCase()}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -303,15 +303,15 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
         </div>
 
         <div className="space-y-3">
-          <Label className="font-semibold">{t('bonds.timing_mode')}</Label>
+          <Label className="font-semibold">{t('bonds.timing.mode.label')}</Label>
           <div className="flex gap-2">
             <Button
               type="button"
-              variant={(!inputs.timingMode || inputs.timingMode === 'general') ? 'default' : 'outline'}
+              variant={inputs.timingMode === 'general' ? 'default' : 'outline'}
               className="flex-1"
               onClick={() => onUpdate('timingMode', 'general')}
             >
-              {t('bonds.timing_general')}
+              {t('bonds.timing.mode.general')}
             </Button>
             <Button
               type="button"
@@ -319,7 +319,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
               className="flex-1"
               onClick={() => onUpdate('timingMode', 'exact')}
             >
-              {t('bonds.timing_exact')}
+              {t('bonds.timing.mode.exact')}
             </Button>
           </div>
         </div>
@@ -556,7 +556,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
         <div className="space-y-4">
           <div className="space-y-3">
             <Label className="text-xs font-bold uppercase text-muted-foreground tracking-widest">
-              {t('bonds.chart_granularity')}
+              {t('bonds.chart.granularity')}
             </Label>
             <div className="flex gap-1 bg-muted/50 p-1 rounded-xl border">
               {(['monthly', 'quarterly', 'yearly'] as const).map((step) => (
@@ -570,7 +570,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                   )}
                   onClick={() => onUpdate('chartStep', step)}
                 >
-                  {t(`bonds.granularity_${step}`)}
+                  {t(`bonds.chart.periods.${step}`)}
                 </Button>
               ))}
             </div>

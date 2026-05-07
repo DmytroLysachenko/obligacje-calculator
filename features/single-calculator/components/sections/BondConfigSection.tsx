@@ -102,7 +102,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
       {/* Bond Type Selection */}
       <div className="space-y-3">
         <div className="flex items-center gap-2">
-          <Label htmlFor="bondType" className="font-semibold">{t('bonds.bond_type')}</Label>
+          <Label htmlFor="bondType" className="font-semibold">{t('bonds.bond.type')}</Label>
           {currentDef.isInflationIndexed && (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -151,7 +151,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
 
         {/* Series Selection */}
         <div className="space-y-2 pt-2">
-          <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">{t('bonds.bond_series')}</Label>
+          <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">{t('bonds.bond.series')}</Label>
           <Select
             value={selectedSeriesId || 'current'}
             onValueChange={(value) => onUpdate('selectedSeriesId', value)}
@@ -160,7 +160,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="current" className="text-xs font-bold">{t('bonds.current_offer')}</SelectItem>
+              <SelectItem value="current" className="text-xs font-bold">{t('bonds.offer.current')}</SelectItem>
               {availableSeries.map((s) => (
                 <SelectItem key={s.id} value={s.id} className="text-xs">
                   {s.seriesCode} ({s.firstYearRate}% + {s.baseMargin}%)

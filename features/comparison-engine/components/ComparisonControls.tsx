@@ -158,7 +158,7 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
           <div className="flex items-center justify-between rounded-2xl border bg-muted/20 p-4">
             <div className="space-y-1">
               <Label className="text-sm font-semibold text-foreground">
-                {t('bonds.inflation_adjusted')}
+                {t('bonds.inflation.adjusted')}
               </Label>
               <p className="text-sm leading-6 text-muted-foreground">
                 {t('bonds.show_purchasing_power')}

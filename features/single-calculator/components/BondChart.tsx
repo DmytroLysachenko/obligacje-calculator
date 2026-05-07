@@ -333,7 +333,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
                 yAxisId="left"
                 type="monotone"
                 dataKey="high"
-                name={t("bonds.scenario_high")}
+                name={t("bonds.inflation.scenarios.high")}
                 stroke="#3b82f6"
                 strokeWidth={1}
                 strokeDasharray="3 3"
@@ -345,7 +345,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
                 yAxisId="left"
                 type="monotone"
                 dataKey="low"
-                name={t("bonds.scenario_low")}
+                name={t("bonds.inflation.scenarios.low")}
                 stroke="#3b82f6"
                 strokeWidth={1}
                 strokeDasharray="3 3"

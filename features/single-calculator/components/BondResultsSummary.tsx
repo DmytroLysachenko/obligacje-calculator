@@ -43,7 +43,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
       interest: t('bonds.calculation_trace.header_interest'),
       tax: t('bonds.calculation_trace.header_tax'),
       nominalValue: t('bonds.calculation_trace.header_value_after'),
-      realValue: t('bonds.inflation_adjusted'),
+      realValue: t('bonds.inflation.adjusted'),
     };
     const csv = convertTimelineToCSV(results.timeline, headers);
     downloadFile(

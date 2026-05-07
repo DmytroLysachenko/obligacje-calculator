@@ -31,7 +31,7 @@ export const BondDisplaySection: React.FC<BondDisplaySectionProps> = React.memo(
     <div className="space-y-4 pb-6">
       <div className="space-y-3">
         <Label className="text-xs font-bold uppercase text-muted-foreground tracking-widest">
-          {t('bonds.chart_granularity')}
+          {t('bonds.chart.granularity')}
         </Label>
         <div className="flex gap-1 bg-muted/50 p-1 rounded-xl border">
           {(['monthly', 'quarterly', 'yearly'] as const).map((step) => (
@@ -45,7 +45,7 @@ export const BondDisplaySection: React.FC<BondDisplaySectionProps> = React.memo(
               )}
               onClick={() => onUpdate('chartStep', step)}
             >
-              {t(`bonds.granularity_${step}`)}
+              {t(`bonds.chart.periods.${step}`)}
             </Button>
           ))}
         </div>
@@ -54,7 +54,7 @@ export const BondDisplaySection: React.FC<BondDisplaySectionProps> = React.memo(
       <div className="flex items-center justify-between p-4 bg-primary/5 rounded-xl border border-primary/10">
         <div className="space-y-0.5">
           <div className="flex items-center gap-2">
-            <Label className="text-sm font-bold text-primary uppercase">{t('bonds.inflation_adjusted')}</Label>
+            <Label className="text-sm font-bold text-primary uppercase">{t('bonds.inflation.adjusted')}</Label>
             <Tooltip>
               <TooltipTrigger asChild>
                 <HelpCircle className="h-3.5 w-3.5 text-primary/60 cursor-help" />

@@ -100,14 +100,30 @@
   },
   "bonds": {
     "single_calculator": "Symulacja Inwestycji",
-    "bond_type": "Rodzaj Obligacji",
-    "bond_type_selection": "Parametry wybranej obligacji",
+    "bond": {
+      "type": "Rodzaj Obligacji",
+      "type_selection": "Parametry wybranej obligacji",
+      "series": "Seria Emisyjna",
+      "plural": "Obligacje",
+      "singular": "Obligacja"
+    },
     "initial_investment": "Kwota Zakupu",
     "units": "sztuk",
     "purchase_date": "Data Zakupu",
     "withdrawal_date": "Planowana Data Wypłaty",
     "maturity_date": "Data Zapadalności (Wykupu)",
-    "inflation_rate": "Przewidywana Inflacja",
+    "inflation": {
+      "rate": "Przewidywana Inflacja",
+      "adjusted": "Skorygowane o inflację",
+      "scenario": "Scenariusz inflacji",
+      "indexed": "Indeksowane inflacją",
+      "scenarios": {
+        "label": "Scenariusze zakresu inflacji",
+        "low": "Niska inflacja",
+        "base": "Scenariusz bazowy",
+        "high": "Wysoka inflacja"
+      }
+    },
     "margin": "Marża",
     "custom_tax_rate": "Własna Stawka Podatku",
     "belka_tax_desc": "Domyślnie 19%",
@@ -137,14 +153,20 @@
     "regular_calculator": "Inwestycje Miesięczne",
     "regular_calc_desc": "Symulacja budowania portfela poprzez regularne zakupy.",
     "monthly_investment": "Kwota Cyklicznej Wpłaty",
-    "frequency": "Częstotliwość",
-    "freq_monthly": "Miesięcznie",
-    "freq_quarterly": "Kwartalnie",
-    "freq_yearly": "Rocznie",
+    "frequency": {
+      "label": "Częstotliwość",
+      "monthly": "Miesięcznie",
+      "quarterly": "Kwartalnie",
+      "yearly": "Rocznie"
+    },
     "start_date": "Data Rozpoczęcia",
-    "timing_mode": "Tryb czasu",
-    "timing_general": "Ogólny (Lata)",
-    "timing_exact": "Dokładne Daty",
+    "timing": {
+      "mode": {
+        "label": "Tryb czasu",
+        "general": "Ogólny (Lata)",
+        "exact": "Dokładne Daty"
+      }
+    },
     "investment_horizon": "Czas Inwestowania",
     "investment_lots": "Twoje Partie Obligacji",
     "lots_desc": "Każdy zakup obligacji jest śledzony jako osobna partia z własną datą wykupu.",
@@ -178,8 +200,6 @@
     "real_value_inflation": "Wartość Realna (skorygowana o inflację)",
     "real_cagr": "Realna Stopa Zwrotu (CAGR)",
     "maturity_schedule": "Harmonogram Wykupu (Drabina)",
-    "bond_plural": "Obligacje",
-    "bond_singular": "Obligacja",
     "maturing": "Wykup",
     "monthly_liquidity": "Miesięczna płynność",
     "net_passive_income": "Pasywny dochód netto",
@@ -212,12 +232,6 @@
     "wrapper_profit": "Zysk z tarczą",
     "standard_profit": "Zysk standardowy",
     "savings_notice": "Tarcza podatkowa zaoszczędziła Ci {{amount}} w porównaniu do zwykłego konta.",
-    "inflation_adjusted": "Skorygowane o inflację",
-    "inflation_scenario": "Scenariusz inflacji",
-    "inflation_scenarios": "Scenariusze zakresu inflacji",
-    "scenario_low": "Niska inflacja",
-    "scenario_base": "Scenariusz bazowy",
-    "scenario_high": "Wysoka inflacja",
     "show_purchasing_power": "Pokaż wartości siły nabywczej",
     "standard_tax_note": "Standardowo 19%",
     "nbp_rate_label": "Przewidywana stopa NBP (%)",
@@ -231,13 +245,16 @@
     "goal_reached": "Cel osiągnięty!",
     "goal_progress": "Postęp celu: {{percent}}%",
     "target": "Cel",
-    "ready_to_simulate": "Gotowy na symulację?",
-    "click_calculate": "Kliknij 'Oblicz wyniki', aby zobaczyć projekcję",
-    "simulating_growth": "Projekcja wzrostu inwestycji",
-    "click_simulate_regular": "Kliknij 'Oblicz', aby zobaczyć projekcję",
-    "simulating_regular": "Symulacja regularnych wpłat",
-    "growth_projection": "Projekcja wzrostu",
-    "regular_how_it_works": "Regularne inwestowanie śledzi każdy miesięczny zakup jako osobną partię. Ta symulacja liczy odsetki, podatki i opłaty dla każdej partii osobno zgodnie z jej własnym harmonogramem zapadalności.",
+    "simulation": {
+      "ready": "Gotowy na symulację?",
+      "click_calculate": "Kliknij 'Oblicz wyniki', aby zobaczyć projekcję",
+      "growth": "Projekcja wzrostu inwestycji",
+      "regular": {
+        "click": "Kliknij 'Oblicz', aby zobaczyć projekcję",
+        "action": "Symulacja regularnych wpłat",
+        "how_it_works": "Regularne inwestowanie śledzi każdy miesięczny zakup jako osobną partię. Ta symulacja liczy odsetki, podatki i opłaty dla każdej partii osobno zgodnie z jej własnym harmonogramem zapadalności."
+      }
+    },
     "cycle": "Cykl",
     "rate_source": "Źródło stopy",
     "early_exit_payout": "Wypłata przy wcześniejszym wyjściu",
@@ -258,8 +275,9 @@
     "historical": "Historyczne",
     "yield_three_months": "Rentowność (3m)",
     "first_month_rate": "Oprocentowanie 1. miesiąc",
-    "bond_series": "Seria Emisyjna",
-    "current_offer": "Aktualna Oferta",
+    "offer": {
+      "current": "Aktualna Oferta"
+    },
     "historical_offer": "Oferta Historyczna",
     "select_series": "Wybierz konkretną serię",
     "how_calculated": "Jak to zostało obliczone",
@@ -280,11 +298,15 @@
     "net_period_gain": "Zysk netto za okres",
     "protection_visualizer": "Ochrona przed inflacją (Wartość realna)",
     "nominal_gap": "Luka między wartością nominalną a realną",
-    "chart_granularity": "Granulacja Wykresu",
-    "granularity_daily": "Dzienny",
-    "granularity_monthly": "Miesięczny",
-    "granularity_quarterly": "Kwartalny",
-    "granularity_yearly": "Roczny",
+    "chart": {
+      "granularity": "Granulacja Wykresu",
+      "periods": {
+        "daily": "Dzienny",
+        "monthly": "Miesięczny",
+        "quarterly": "Kwartalny",
+        "yearly": "Roczny"
+      }
+    },
     "tax_leak": {
       "title": "Analiza Wycieku Podatkowego",
       "ike_ikze_potential": "Potencjał IKE/IKZE",
@@ -484,9 +506,11 @@
     "status_stale": "nieaktualne",
     "status_unknown": "nieznany",
     "fallback_used": "użyto danych zapasowych",
-    "timing_mode": "Tryb czasu",
-    "timing_general": "Ogólny",
-    "timing_exact": "Dokładne daty",
+    "timing": {
+      "mode": "Tryb czasu",
+      "general": "Ogólny",
+      "exact": "Dokładne daty"
+    },
     "use_shared_tax": "Użyj wspólnej strategii podatkowej",
     "custom_horizon": "Własny horyzont",
     "custom_horizon_desc": "Nadpisz wspólne ustawienie czasu tylko dla tego scenariusza.",

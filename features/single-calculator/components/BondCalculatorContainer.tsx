@@ -170,7 +170,7 @@ export const BondCalculatorContainer: React.FC = () => {
             <div className="rounded-3xl border-2 border-dashed p-10 text-center">
               <div className="mx-auto flex max-w-md flex-col items-center space-y-4">
                 <TrendingUp className="h-12 w-12 text-muted-foreground/40" />
-                <h3 className="text-lg font-semibold">{t('bonds.ready_to_simulate')}</h3>
+                <h3 className="text-lg font-semibold">{t('bonds.simulation.ready')}</h3>
                 <p className="text-sm text-muted-foreground">
                   Set inputs, check guardrails, then run one clean calculation.
                 </p>

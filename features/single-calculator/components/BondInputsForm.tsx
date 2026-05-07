@@ -137,7 +137,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
             <Target className="h-5 w-5 text-primary" />
             {t('bonds.single_calculator')}
           </CardTitle>
-          <CardDescription>{t('bonds.bond_type_selection')}</CardDescription>
+          <CardDescription>{t('bonds.bond.type_selection')}</CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-8 p-6">

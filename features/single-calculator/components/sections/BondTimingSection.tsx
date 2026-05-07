@@ -43,7 +43,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
   return (
     <div className="space-y-6 pb-6">
       <div className="space-y-3">
-        <Label className="font-semibold">{t('bonds.timing_mode')}</Label>
+        <Label className="font-semibold">{t('bonds.timing.mode.label')}</Label>
         <div className="flex gap-2">
           <Button
             type="button"
@@ -51,7 +51,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
             className="flex-1"
             onClick={() => onUpdate('timingMode', 'general')}
           >
-            {t('bonds.timing_general')}
+            {t('bonds.timing.mode.general')}
           </Button>
           <Button
             type="button"
@@ -59,7 +59,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
             className="flex-1"
             onClick={() => onUpdate('timingMode', 'exact')}
           >
-            {t('bonds.timing_exact')}
+            {t('bonds.timing.mode.exact')}
           </Button>
         </div>
       </div>

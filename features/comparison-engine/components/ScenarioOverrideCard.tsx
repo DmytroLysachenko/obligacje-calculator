@@ -62,7 +62,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
       <CardContent className="space-y-5 pt-5">
         <div className="space-y-2">
           <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-            {t('bonds.bond_type')}
+            {t('bonds.bond.type')}
           </Label>
           <Select
             value={bondType}
