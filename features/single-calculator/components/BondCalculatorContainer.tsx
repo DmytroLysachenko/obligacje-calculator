@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { FileText, Save, Table, Target, TrendingUp } from 'lucide-react';
+import { CheckCircle2, Table, Target, TrendingUp } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -129,30 +129,8 @@ export const BondCalculatorContainer: React.FC = () => {
       savingsGoal={inputs.savingsGoal}
       currentValue={results?.netPayoutValue}
       onKeyDown={handleKeyDown}
-      extraHeaderActions={
-        <div className="flex flex-wrap gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2 text-xs font-bold"
-            onClick={handleSaveScenario}
-          >
-            <Save className="h-3 w-3" />
-            Save Scenario
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2 text-xs font-bold"
-            onClick={handleExportPDF}
-          >
-            <FileText className="h-3 w-3" />
-            Export PDF
-          </Button>
-        </div>
-      }
     >
-      <div className="grid grid-cols-1 gap-8 xl:grid-cols-[400px_1fr]">
+      <div className="grid grid-cols-1 gap-8 xl:grid-cols-[420px_minmax(0,1fr)]">
         <aside className="space-y-6 xl:sticky xl:top-24 xl:h-fit">
           <BondInputsForm
             inputs={inputs}
@@ -167,24 +145,62 @@ export const BondCalculatorContainer: React.FC = () => {
 
         <div className="space-y-8" id="bond-report-content">
           {!results && !isCalculating ? (
-            <div className="rounded-3xl border-2 border-dashed p-10 text-center">
-              <div className="mx-auto flex max-w-md flex-col items-center space-y-4">
-                <TrendingUp className="h-12 w-12 text-muted-foreground/40" />
-                <h3 className="text-lg font-semibold">{t('bonds.simulation.ready')}</h3>
-                <p className="text-sm text-muted-foreground">
-                  Set inputs, check guardrails, then run one clean calculation.
-                </p>
-                <Button
-                  onClick={() => calculate()}
-                  disabled={blockingGuardrails.length > 0}
-                >
-                  {t('common.calculate')}
-                </Button>
-                {blockingGuardrails.length > 0 ? (
-                  <p className="text-xs font-medium text-destructive">
-                    Fix blocking inputs first, then recalculate.
-                  </p>
-                ) : null}
+            <div className="rounded-3xl border bg-card p-6 shadow-sm md:p-8">
+              <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_240px] lg:items-start">
+                <div className="space-y-5">
+                  <div className="space-y-3">
+                    <div className="inline-flex items-center gap-2 rounded-full border bg-muted px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-700">
+                      <TrendingUp className="h-3.5 w-3.5 text-primary" />
+                      {t('bonds.simulation.ready')}
+                    </div>
+                    <h3 className="text-2xl font-black tracking-tight text-slate-900">
+                      One calculator. One committed run.
+                    </h3>
+                    <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
+                      Complete the left-side inputs first, keep advanced assumptions collapsed unless necessary,
+                      then run one clean calculation and inspect the summary before going deeper.
+                    </p>
+                  </div>
+
+                  <div className="grid gap-3 md:grid-cols-3">
+                    <ReadyStep
+                      title="Primary inputs"
+                      description="Bond type, amount, and target mode."
+                    />
+                    <ReadyStep
+                      title="Timing and tax"
+                      description="Purchase date, horizon, withdrawal, and wrapper."
+                    />
+                    <ReadyStep
+                      title="Optional advanced"
+                      description="Inflation, NBP path, and chart display only if needed."
+                    />
+                  </div>
+
+                  {blockingGuardrails.length > 0 ? (
+                    <div className="rounded-2xl border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+                      Fix blocking inputs first, then calculate.
+                    </div>
+                  ) : null}
+                </div>
+
+                <div className="rounded-2xl border bg-slate-50 p-5">
+                  <div className="space-y-3">
+                    <p className="text-[11px] font-black uppercase tracking-widest text-slate-500">
+                      Action
+                    </p>
+                    <Button
+                      className="w-full"
+                      onClick={() => calculate()}
+                      disabled={blockingGuardrails.length > 0}
+                    >
+                      {t('common.calculate')}
+                    </Button>
+                    <p className="text-xs leading-6 text-muted-foreground">
+                      Results stay stable until you intentionally rerun with new committed inputs.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           ) : null}
@@ -219,6 +235,7 @@ export const BondCalculatorContainer: React.FC = () => {
                 results={results}
                 inputs={inputs}
                 previousResults={previousResults}
+                onSaveScenario={handleSaveScenario}
                 onAddToNotebook={handleAddToNotebook}
                 onExportPDF={handleExportPDF}
               />
@@ -273,6 +290,24 @@ export const BondCalculatorContainer: React.FC = () => {
     </CalculatorPageShell>
   );
 };
+
+const ReadyStep = ({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) => (
+  <div className="rounded-2xl border bg-white p-4">
+    <div className="flex items-start gap-3">
+      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+      <div className="space-y-1">
+        <p className="text-sm font-bold text-slate-900">{title}</p>
+        <p className="text-xs leading-6 text-muted-foreground">{description}</p>
+      </div>
+    </div>
+  </div>
+);
 
 const CardSection = ({
   title,

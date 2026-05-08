@@ -2,11 +2,17 @@
 
 import React, { useCallback, useMemo } from 'react';
 import { parseISO } from 'date-fns';
-import { AlertCircle, Target } from 'lucide-react';
+import { AlertCircle, Settings2, Target } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { BondType, BondInputs } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
@@ -137,7 +143,9 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
             <Target className="h-5 w-5 text-primary" />
             {t('bonds.single_calculator')}
           </CardTitle>
-          <CardDescription>{t('bonds.bond.type_selection')}</CardDescription>
+          <CardDescription>
+            Main input path only. Advanced assumptions stay collapsed until you need them.
+          </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-8 p-6">
@@ -147,7 +155,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                 {t('bonds.step_core')}
               </h3>
               <p className="text-xs text-muted-foreground">
-                Bond type, amount, and target mode.
+                Choose one bond, set amount, then decide whether you are targeting payout or goal.
               </p>
             </div>
             <BondConfigSection
@@ -166,7 +174,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                 {t('bonds.step_timing')}
               </h3>
               <p className="text-xs text-muted-foreground">
-                Purchase date, horizon, withdrawal timing, and tax wrapper.
+                Commit purchase date, horizon, withdrawal timing, and tax wrapper before you calculate.
               </p>
             </div>
             <BondTimingSection
@@ -179,32 +187,47 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
             />
           </section>
 
-          <section className="space-y-6 border-t border-dashed pt-6">
-            <div className="space-y-1">
-              <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-700">
-                {t('common.advanced')}
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                Scenario assumptions and display preferences.
-              </p>
-            </div>
+          <section className="border-t border-dashed pt-6">
+            <Accordion type="single" collapsible defaultValue="">
+              <AccordionItem value="advanced" className="border-none">
+                <AccordionTrigger className="rounded-2xl border bg-slate-50 px-4 py-4 hover:no-underline">
+                  <div className="flex items-start gap-3 text-left">
+                    <div className="rounded-xl bg-primary/10 p-2 text-primary">
+                      <Settings2 className="h-4 w-4" />
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-700">
+                        {t('common.advanced')}
+                      </h3>
+                      <p className="text-xs font-medium text-muted-foreground">
+                        Inflation assumptions, NBP path, chart display, and other secondary controls.
+                      </p>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-6 pt-4">
+                    <MarketAssumptionsForm
+                      expectedInflation={inputs.expectedInflation}
+                      expectedNbpRate={inputs.expectedNbpRate}
+                      bondType={inputs.bondType}
+                      customInflation={inputs.customInflation}
+                      onUpdate={handleUpdate as (key: string, value: unknown) => void}
+                      compact
+                    />
 
-            <MarketAssumptionsForm
-              expectedInflation={inputs.expectedInflation}
-              expectedNbpRate={inputs.expectedNbpRate}
-              bondType={inputs.bondType}
-              customInflation={inputs.customInflation}
-              onUpdate={handleUpdate as (key: string, value: unknown) => void}
-            />
-
-            <div className="border-t border-dashed pt-6">
-              <BondDisplaySection
-                inputs={inputs}
-                onUpdate={handleUpdate}
-                showCustomTax={false}
-                setShowCustomTax={() => undefined}
-              />
-            </div>
+                    <div className="border-t border-dashed pt-6">
+                      <BondDisplaySection
+                        inputs={inputs}
+                        onUpdate={handleUpdate}
+                        showCustomTax={false}
+                        setShowCustomTax={() => undefined}
+                      />
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </section>
         </CardContent>
 

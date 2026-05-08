@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Download, FileSpreadsheet, FileText, Info, Save } from 'lucide-react';
+import { FileSpreadsheet, FileText, Info, Save } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ interface BondResultsSummaryProps {
   results: CalculationResult;
   inputs: BondInputs;
   previousResults?: CalculationResult | null;
+  onSaveScenario?: () => void;
   onAddToNotebook?: () => void;
   onExportPDF?: () => void;
 }
@@ -24,6 +25,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
   results,
   inputs,
   previousResults,
+  onSaveScenario,
   onAddToNotebook,
   onExportPDF,
 }) => {
@@ -93,11 +95,15 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
     { label: 'Withdrawal', value: results.isEarlyWithdrawal ? 'Early redemption' : 'At maturity' },
   ];
 
+  const summaryNarrative = results.isEarlyWithdrawal
+    ? 'This run assumes early redemption before full maturity, so fees or lost compounding may reduce payout.'
+    : 'This run holds until the modeled maturity path, so final payout reflects the full planned cycle.';
+
   return (
     <div className="space-y-6">
       <Card className="rounded-2xl border shadow-none">
-        <CardContent className="flex flex-col gap-4 p-5 lg:flex-row lg:items-start lg:justify-between">
-          <div className="space-y-2">
+        <CardContent className="flex flex-col gap-6 p-5 xl:flex-row xl:items-start xl:justify-between">
+          <div className="max-w-2xl space-y-3">
             <div className="flex flex-wrap items-center gap-2">
               <Badge
                 variant="outline"
@@ -113,6 +119,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
               Final net payout for the currently committed scenario. Use the summary cards below first,
               then inspect the timeline and formula trace only if you need detail.
             </CardDescription>
+            <p className="text-sm leading-6 text-slate-700">{summaryNarrative}</p>
             {deltaNet !== null ? (
               <p className="text-xs text-slate-600">
                 Vs previous run:{' '}
@@ -126,10 +133,18 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
                   {formatCurrency(deltaNet)}
                 </span>
               </p>
-            ) : null}
+              ) : null}
           </div>
 
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 xl:w-[420px]">
+            <Button
+              variant="default"
+              className="gap-2 text-xs font-bold"
+              onClick={onSaveScenario}
+            >
+              <Save className="h-4 w-4" />
+              Save
+            </Button>
             <Button
               variant="outline"
               className="gap-2 border-slate-200 bg-white text-xs font-bold text-slate-700"
@@ -154,33 +169,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
               <FileSpreadsheet className="h-4 w-4" />
               CSV
             </Button>
-            <Button
-              disabled
-              variant="outline"
-              className="gap-2 border-slate-200 bg-white text-xs font-bold text-slate-500"
-            >
-              <Download className="h-4 w-4" />
-              Share
-            </Button>
           </div>
-        </CardContent>
-      </Card>
-
-      <Card className="rounded-2xl border shadow-none">
-        <CardHeader className="border-b bg-slate-50/70 pb-3">
-          <CardTitle className="text-sm font-black uppercase tracking-wide text-slate-700">
-            Scenario facts
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-4 p-5 md:grid-cols-4">
-          {scenarioFacts.map((fact) => (
-            <div key={fact.label}>
-              <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
-                {fact.label}
-              </p>
-              <p className="mt-2 font-semibold text-slate-900">{fact.value}</p>
-            </div>
-          ))}
         </CardContent>
       </Card>
 
@@ -240,12 +229,32 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
           </CardContent>
         </Card>
 
-        {results.timeline.length > 0 ? (
-          <CalculationAuditTrace
-            point={results.timeline[0]}
-            initialInvestment={results.initialInvestment}
-          />
-        ) : null}
+        <div className="space-y-6">
+          <Card className="rounded-2xl border shadow-none">
+            <CardHeader className="border-b bg-slate-50/70 pb-3">
+              <CardTitle className="text-sm font-black uppercase tracking-wide text-slate-700">
+                Scenario facts
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 p-5">
+              {scenarioFacts.map((fact) => (
+                <div key={fact.label}>
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
+                    {fact.label}
+                  </p>
+                  <p className="mt-1 font-semibold text-slate-900">{fact.value}</p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          {results.timeline.length > 0 ? (
+            <CalculationAuditTrace
+              point={results.timeline[0]}
+              initialInvestment={results.initialInvestment}
+            />
+          ) : null}
+        </div>
       </div>
     </div>
   );
