@@ -1,6 +1,7 @@
 import { LadderContainer } from '@/features/ladder-strategy/components/LadderContainer';
 import { FeatureStatusNotice } from '@/shared/components/FeatureStatusNotice';
 import { PageTransition } from '@/shared/components/PageTransition';
+import { PageSuspenseFallback } from '@/shared/components/PageSuspenseFallback';
 import { Suspense } from 'react';
 
 export default function LadderPage() {
@@ -11,7 +12,7 @@ export default function LadderPage() {
           This page stays focused on cashflow timing and maturity spread. It is a ladder scenario calculator,
           not a strategy recommendation surface.
         </FeatureStatusNotice>
-        <Suspense fallback={<div>Loading strategy...</div>}>
+        <Suspense fallback={<PageSuspenseFallback />}>
           <LadderContainer />
         </Suspense>
       </div>

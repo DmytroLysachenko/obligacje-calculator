@@ -82,6 +82,31 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
 
   return (
     <div className="space-y-6">
+      <Card className="rounded-2xl border shadow-none">
+        <CardContent className="flex flex-col gap-4 p-5 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-2xl space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-wide text-slate-700">
+                Ladder summary
+              </span>
+            </div>
+            <CardTitle className="text-2xl font-black text-slate-900">
+              {peakMonth ? peakMonth.displayDate : 'No maturity window'}
+            </CardTitle>
+            <CardDescription className="max-w-2xl text-sm leading-6 text-slate-600">
+              Peak maturity month first. Then read the coverage window and concentration check to see whether
+              cash returns are spread evenly or clustered too tightly.
+            </CardDescription>
+          </div>
+          <div className="rounded-2xl border bg-slate-50 px-4 py-3 text-sm text-slate-700">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+              Maturity buckets
+            </p>
+            <p className="mt-2 text-lg font-black text-slate-900">{chartData.length}</p>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <Card className="rounded-2xl border shadow-none">
           <CardContent className="space-y-2 p-5">
@@ -225,6 +250,15 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
                   : 'Maturities are reasonably spread across the current timeline.'}
               </p>
             </div>
+          </div>
+
+          <div className="rounded-2xl border bg-card p-4 text-sm leading-6 text-slate-600">
+            <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
+              Reading order
+            </p>
+            <p className="mt-2">
+              1. Check coverage. 2. Check peak month. 3. Check concentration. 4. Confirm exact month totals in the table.
+            </p>
           </div>
         </CardContent>
       </Card>

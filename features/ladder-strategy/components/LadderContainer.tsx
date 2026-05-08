@@ -6,7 +6,7 @@ import { RegularInvestmentInputsForm } from '../../regular-investment/components
 import { RegularInvestmentResultsSummary } from '../../regular-investment/components/RegularInvestmentResultsSummary';
 import { LadderTimeline } from './LadderTimeline';
 import { useLanguage } from '@/i18n';
-import { ListTree } from 'lucide-react';
+import { CalendarClock, CheckCircle2, ListTree } from 'lucide-react';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
 import { cn } from '@/lib/utils';
@@ -21,15 +21,53 @@ const LadderEmptyState = ({
   onCalculate: () => void;
   label: string;
 }) => (
-  <div className="rounded-2xl border border-dashed bg-card px-6 py-12 text-center">
-    <h3 className="text-lg font-semibold text-foreground">Build a plain maturity schedule</h3>
-    <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-      This page should answer one question: when capital becomes available and how even that
-      maturity spread looks over time. Set the scenario, then run the calculation explicitly.
-    </p>
-    <Button onClick={onCalculate} className="mt-6 h-11 px-6 font-semibold">
-      {label}
-    </Button>
+  <div className="rounded-3xl border bg-card p-6 shadow-sm md:p-8">
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_240px] lg:items-start">
+      <div className="space-y-5">
+        <div className="space-y-3">
+          <div className="inline-flex items-center gap-2 rounded-full border bg-muted px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-700">
+            <CalendarClock className="h-3.5 w-3.5 text-primary" />
+            Ready to build ladder
+          </div>
+          <h3 className="text-2xl font-black tracking-tight text-slate-900">
+            Build one maturity schedule, then inspect liquidity spacing.
+          </h3>
+          <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
+            This page answers a narrow question: when capital returns and how concentrated those maturity windows are.
+            Set the plan, run one committed calculation, then inspect the ladder timing.
+          </p>
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-3">
+          <ReadyStep
+            title="Contribution plan"
+            description="Bond type, amount, frequency, and horizon."
+          />
+          <ReadyStep
+            title="Committed ladder"
+            description="Run one explicit schedule instead of recalculating while editing."
+          />
+          <ReadyStep
+            title="Timing read"
+            description="Check month clustering and cash-return concentration."
+          />
+        </div>
+      </div>
+
+      <div className="rounded-2xl border bg-slate-50 p-5">
+        <div className="space-y-3">
+          <p className="text-[11px] font-black uppercase tracking-widest text-slate-500">
+            Action
+          </p>
+          <Button onClick={onCalculate} className="h-11 w-full font-semibold">
+            {label}
+          </Button>
+          <p className="text-xs leading-6 text-muted-foreground">
+            Results stay stable until you intentionally rerun with a new ladder setup.
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 );
 
@@ -95,10 +133,10 @@ export const LadderContainer: React.FC = () => {
               )}
 
               <div className="rounded-2xl border bg-card p-6">
-                <h3 className="text-lg font-semibold text-foreground">What this page is for</h3>
+                <h3 className="text-lg font-semibold text-foreground">How to read this ladder</h3>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  A ladder is only useful if you can see when cash returns and how concentrated
-                  those maturities are. This page stays focused on liquidity timing, not advice.
+                  Start with the liquidity summary and concentration check. Only then move into the month-by-month table.
+                  This surface is for schedule clarity, not bond selection advice.
                 </p>
               </div>
 
@@ -126,3 +164,21 @@ export const LadderContainer: React.FC = () => {
     </CalculatorPageShell>
   );
 };
+
+const ReadyStep = ({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) => (
+  <div className="rounded-2xl border bg-white p-4">
+    <div className="flex items-start gap-3">
+      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+      <div className="space-y-1">
+        <p className="text-sm font-bold text-slate-900">{title}</p>
+        <p className="text-xs leading-6 text-muted-foreground">{description}</p>
+      </div>
+    </div>
+  </div>
+);
