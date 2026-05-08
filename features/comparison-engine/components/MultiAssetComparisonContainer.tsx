@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import React, { useMemo, useState } from "react";
-import { useMultiAssetComparison } from "../hooks/useMultiAssetComparison";
-import { useLanguage } from "@/i18n";
-import { AlertTriangle, Database, LineChart } from "lucide-react";
-import { RecalculateButton } from "@/shared/components/RecalculateButton";
-import { ComparisonControls } from "./ComparisonControls";
-import { ComparisonChart } from "./ComparisonChart";
-import { ComparisonAssetBreakdown } from "./ComparisonAssetBreakdown";
-import { CalculatorPageShell } from "@/shared/components/CalculatorPageShell";
-import { MonthlyReturn } from "@/features/bond-core/constants/historical-data";
-import { cn } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
+import React, { useMemo, useState } from 'react';
+import { useMultiAssetComparison } from '../hooks/useMultiAssetComparison';
+import { useLanguage } from '@/i18n';
+import { AlertTriangle, Database, LineChart } from 'lucide-react';
+import { RecalculateButton } from '@/shared/components/RecalculateButton';
+import { ComparisonControls } from './ComparisonControls';
+import { ComparisonChart } from './ComparisonChart';
+import { ComparisonAssetBreakdown } from './ComparisonAssetBreakdown';
+import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
+import { MonthlyReturn } from '@/features/bond-core/constants/historical-data';
+import { cn } from '@/lib/utils';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface ChartDataRow {
   date: string;
@@ -100,18 +100,40 @@ export const MultiAssetComparisonContainer = () => {
   }, [assets, historyData, showRealValue]);
 
   const availabilitySummary = [
-    historySeriesAvailability?.sp500 ? "S&P 500" : null,
-    historySeriesAvailability?.gold ? "Gold" : null,
-    historySeriesAvailability?.inflation ? "Inflation" : null,
-    historySeriesAvailability?.nbpRate ? "NBP" : null,
+    historySeriesAvailability?.sp500 ? 'S&P 500' : null,
+    historySeriesAvailability?.gold ? 'Gold' : null,
+    historySeriesAvailability?.inflation ? 'Inflation' : null,
+    historySeriesAvailability?.nbpRate ? 'NBP' : null,
   ]
     .filter(Boolean)
-    .join(", ");
+    .join(', ');
+
+  const endingSnapshot = useMemo(
+    () =>
+      assets
+        .map((asset) => {
+          const lastPoint = asset.series[asset.series.length - 1];
+          const currentValue = showRealValue
+            ? lastPoint?.realValue ?? lastPoint?.value ?? 0
+            : lastPoint?.value ?? 0;
+
+          return {
+            id: asset.metadata.id,
+            name: asset.metadata.name,
+            value: currentValue,
+          };
+        })
+        .filter((asset) => asset.value > 0)
+        .sort((left, right) => right.value - left.value),
+    [assets, showRealValue],
+  );
+
+  const leadingAsset = endingSnapshot[0];
 
   return (
     <CalculatorPageShell
-      title={t("nav.multi_asset")}
-      description={t("comparison.market_vs_bonds_desc")}
+      title={t('nav.multi_asset')}
+      description={t('comparison.market_vs_bonds_desc')}
       icon={<LineChart className="h-8 w-8" />}
       isCalculating={isCalculating}
       isDirty={isDirty}
@@ -141,8 +163,8 @@ export const MultiAssetComparisonContainer = () => {
         <section className="space-y-6 xl:col-span-8">
           <Card
             className={cn(
-              "rounded-2xl border shadow-none",
-              usedFallbackHistory ? "border-amber-200 bg-amber-50" : "bg-card",
+              'rounded-2xl border shadow-none',
+              usedFallbackHistory ? 'border-amber-200 bg-amber-50' : 'bg-card',
             )}
           >
             <CardContent className="space-y-4 p-5">
@@ -154,7 +176,9 @@ export const MultiAssetComparisonContainer = () => {
                 )}
                 <div className="space-y-2">
                   <p className="font-semibold text-foreground">
-                    {usedFallbackHistory ? "Reference-only history" : "Historical coverage in use"}
+                    {usedFallbackHistory
+                      ? 'Reference-only history'
+                      : 'Historical coverage in use'}
                   </p>
                   <p className="text-sm leading-6 text-muted-foreground">
                     This page compares one committed historical scenario at a time. It is a reference
@@ -191,27 +215,113 @@ export const MultiAssetComparisonContainer = () => {
             </CardContent>
           </Card>
 
-          {isDirty && (
+          {assets.length > 0 && leadingAsset ? (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <Card className="rounded-2xl border shadow-none">
+                <CardContent className="p-5">
+                  <p className="text-[10px] font-black uppercase text-muted-foreground">
+                    Committed start
+                  </p>
+                  <p className="mt-2 text-lg font-black text-slate-950">
+                    {committedScenario.startYear}-{committedScenario.startMonth}
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                    Historical entry point for the current run.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="rounded-2xl border shadow-none">
+                <CardContent className="p-5">
+                  <p className="text-[10px] font-black uppercase text-muted-foreground">
+                    Total invested
+                  </p>
+                  <p className="mt-2 text-lg font-black text-slate-950">
+                    {formatCurrency(totalInvested)}
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                    Initial sum plus committed monthly additions.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="rounded-2xl border shadow-none">
+                <CardContent className="p-5">
+                  <p className="text-[10px] font-black uppercase text-muted-foreground">
+                    Leading ending value
+                  </p>
+                  <p className="mt-2 text-lg font-black text-slate-950">
+                    {leadingAsset.name}
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                    {formatCurrency(leadingAsset.value)} in the current {showRealValue ? 'real-value' : 'nominal'} view.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          ) : null}
+
+          {isDirty ? (
             <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
               Inputs changed. Charts and outcome cards still show the previous committed scenario.
               Recalculate when you want the historical run to refresh.
             </div>
+          ) : null}
+
+          {assets.length > 0 && assets[0]?.series.length > 0 ? (
+            <>
+              <ComparisonChart
+                chartData={chartData}
+                assets={assets}
+                showRealValue={showRealValue}
+                formatCurrency={formatCurrency}
+              />
+
+              <ComparisonAssetBreakdown
+                assets={assets}
+                totalInvested={totalInvested}
+                showRealValue={showRealValue}
+                formatCurrency={formatCurrency}
+                language={language as 'en' | 'pl'}
+              />
+            </>
+          ) : (
+            <Card className="rounded-3xl border-2 border-dashed shadow-none">
+              <CardContent className="flex min-h-[420px] flex-col items-center justify-center space-y-4 px-8 py-12 text-center">
+                <LineChart className="h-12 w-12 text-muted-foreground" />
+                <div className="space-y-2">
+                  <p className="text-lg font-bold text-slate-950">
+                    Ready to inspect one historical run?
+                  </p>
+                  <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
+                    Set a start point, initial sum, and monthly contribution. Then
+                    recalculate one committed historical scenario before comparing
+                    the asset paths.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           )}
 
-          <ComparisonChart
-            chartData={chartData}
-            assets={assets}
-            showRealValue={showRealValue}
-            formatCurrency={formatCurrency}
-          />
-
-          <ComparisonAssetBreakdown
-            assets={assets}
-            totalInvested={totalInvested}
-            showRealValue={showRealValue}
-            formatCurrency={formatCurrency}
-            language={language as "en" | "pl"}
-          />
+          <Card className="rounded-2xl border shadow-none">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">
+                Scope notes
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 gap-4 text-sm leading-6 text-muted-foreground md:grid-cols-3">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                This is one historical reference run, not a broad market research
+                suite or a portfolio recommendation surface.
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                Changing the start month can materially alter the outcome, so keep
+                the committed scenario visible when comparing paths.
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                Inflation-adjusted mode changes the interpretation of ending
+                values, not the underlying historical path itself.
+              </div>
+            </CardContent>
+          </Card>
         </section>
       </div>
 

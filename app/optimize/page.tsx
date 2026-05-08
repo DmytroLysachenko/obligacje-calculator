@@ -12,17 +12,6 @@ export default function BondOptimizerPage() {
   return (
     <PageTransition>
       <div className="container space-y-8 py-8">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight">
-            Bond Scenario Ranking
-          </h1>
-          <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-            Enter one scenario, sort projected payouts across available bonds, and
-            inspect the tradeoffs. This page stays secondary during recovery and
-            should not be read as a recommendation engine.
-          </p>
-        </div>
-
         <FeatureStatusNotice
           status="experimental"
           eyebrow="Recovery lab"
