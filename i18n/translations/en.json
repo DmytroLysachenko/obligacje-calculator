@@ -55,6 +55,18 @@
     "notebook": "My Portfolio / Notebook",
     "retirement": "Retirement Planner"
   },
+  "sidebar": {
+    "sections": {
+      "core": "Core Tools",
+      "conditional": "Investment Strategies",
+      "recovery_lab": "Recovery Lab"
+    },
+    "recovery_lab_notice": "These pages stay reachable during recovery, but they are not core calculator surfaces.",
+    "sync_unavailable": "Sync metadata unavailable.",
+    "recovery_scope_title": "Recovery scope",
+    "recovery_scope_desc": "Main focus stays on single-bond, comparison, ladder, regular-investment, notebook, and data reference pages.",
+    "open_recovery_lab": "Open recovery lab"
+  },
   "education": {
     "subtitle": "Understand the mechanisms of the Polish treasury bond market and make informed investment decisions.",
     "concepts_title": "Fundamental Financial Concepts",
@@ -147,6 +159,8 @@
     "interest_earned": "Interest",
     "tax": "Tax",
     "withdrawal": "WITHDRAWAL",
+    "maturity": "Maturity",
+    "interest_payment": "Interest Payment",
     "error_100_pln": "Must be a multiple of 100 PLN",
     "error_future_date": "Date cannot be in the future",
     "regular_calculator": "Monthly Investment",
@@ -357,6 +371,22 @@
     "hero_description": "A comprehensive toolkit designed for investors matching exact Ministry of Finance logic. Project yields, compare inflation scenarios, and build optimal portfolios.",
     "start_calculating": "Start Calculating",
     "financial_tools": "Financial Tools",
+    "recovery_home": {
+      "eyebrow": "Recovery-first home",
+      "title": "Use the core bond calculator first. Keep the rest secondary.",
+      "description": "This home page now acts as a calm recovery hub. Start with the flagship single-bond calculator, then move into education, reference data, or narrower strategy tools only when needed.",
+      "secondary_cta": "Review Basics",
+      "status_trusted": "Trusted core surfaces",
+      "status_explicit": "Explicit calculation flow",
+      "status_reference": "Reference data clearly labeled",
+      "core_route_title": "Primary route",
+      "core_route_desc": "The main recovery path is simple: understand bond rules, run one calculator cleanly, then review results without extra dashboard noise.",
+      "portfolio_empty_title": "Portfolio snapshot appears only after you add real lots.",
+      "portfolio_empty_desc": "Until then, keep the home page light and use the single calculator for scenario work. Notebook stays available, but it should not compete with the core flow.",
+      "resume_saved": "Open Calculator",
+      "secondary_tools_title": "Secondary tools",
+      "notebook_card": "Track actual bond lots and revisit saved portfolio context after you finish core simulations."
+    },
     "cards": {
       "single_calculator": "Run detailed simulations for individual Polish treasury bonds over their entire lifecycle.",
       "comparison": "Compare multiple bonds side-by-side to find the best yield for your timeline.",
@@ -369,7 +399,31 @@
     "manage_portfolio": "Manage Portfolio",
     "upcoming_events": "Upcoming Liquidity Events",
     "no_events_30d": "No major events in the next 30 days.",
-    "diversification": "Total Diversification"
+    "diversification": "Total Diversification",
+    "notifications": {
+      "title": "Notification Center",
+      "empty": "No new notifications. Portfolio looks quiet.",
+      "mark_all_read": "Mark All Read",
+      "open": "Open"
+    },
+    "since_last_visit": {
+      "title": "Since Last Visit",
+      "first_recorded": "First recorded visit",
+      "suggested_action": "Suggested next action",
+      "suggested_action_events": "Review upcoming maturities and rollover options.",
+      "suggested_action_no_events": "Refresh a saved scenario or add a new portfolio lot.",
+      "recent_scenarios": "Recent saved scenarios",
+      "no_scenarios": "No local saved scenarios yet."
+    },
+    "favorite_bonds": {
+      "title": "Favorite Bonds"
+    },
+    "recovery_lab": {
+      "title": "Recovery lab surfaces",
+      "description": "Optimizer, multi-asset history, and retirement withdrawal modeling remain available during recovery, but they are intentionally separated from the core tool list.",
+      "usage_hint": "Open the recovery lab only when you want to inspect narrower or more assumption-sensitive pages on purpose.",
+      "cta": "Open recovery lab"
+    }
   },
   "notebook": {
     "title": "My Portfolio / Notebook",

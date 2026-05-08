@@ -157,8 +157,27 @@ export default async function RootLayout({
         <Script id="register-sw" strategy="afterInteractive">
           {`
             if ('serviceWorker' in navigator) {
-              window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js');
+              window.addEventListener('load', async function() {
+                const isLocalhost =
+                  window.location.hostname === 'localhost' ||
+                  window.location.hostname === '127.0.0.1';
+
+                if (${process.env.NODE_ENV === 'production'} && !isLocalhost) {
+                  await navigator.serviceWorker.register('/sw.js');
+                  return;
+                }
+
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                await Promise.all(registrations.map((registration) => registration.unregister()));
+
+                if ('caches' in window) {
+                  const keys = await caches.keys();
+                  await Promise.all(
+                    keys
+                      .filter((key) => key.startsWith('bond-calculator-'))
+                      .map((key) => caches.delete(key))
+                  );
+                }
               });
             }
           `}

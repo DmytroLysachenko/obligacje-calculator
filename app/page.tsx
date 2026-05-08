@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 import { LandingDashboardClient } from './LandingDashboardClient';
 
 export const metadata: Metadata = {
-  title: 'Dashboard - Polish Bonds Calculator',
-  description: 'Your central hub for Polish treasury bond analysis and simulation.',
+  title: 'Home - Polish Bonds Calculator',
+  description: 'Recovery-first home for the Polish treasury bond calculator.',
 };
 
 export default function Home() {

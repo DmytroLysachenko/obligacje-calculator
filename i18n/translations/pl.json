@@ -55,6 +55,18 @@
     "notebook": "Mój portfel / Notatnik",
     "retirement": "Planer emerytalny"
   },
+  "sidebar": {
+    "sections": {
+      "core": "Narzędzia Główne",
+      "conditional": "Strategie Inwestycyjne",
+      "recovery_lab": "Recovery Lab"
+    },
+    "recovery_lab_notice": "Te strony pozostają dostępne w trybie odzyskiwania, ale nie są głównymi powierzchniami kalkulatora.",
+    "sync_unavailable": "Metadane synchronizacji niedostępne.",
+    "recovery_scope_title": "Zakres odzyskiwania",
+    "recovery_scope_desc": "Główny nacisk pozostaje na stronach: kalkulator pojedynczy, porównywarka, drabina, inwestycje regularne, notatnik i referencje danych.",
+    "open_recovery_lab": "Otwórz Recovery Lab"
+  },
   "education": {
     "subtitle": "Zrozum mechanizmy polskiego rynku obligacji skarbowych i podejmuj świadome decyzje inwestycyjne.",
     "concepts_title": "Podstawowe Pojęcia Finansowe",
@@ -148,6 +160,8 @@
     "interest_earned": "Odsetki",
     "tax": "Podatek",
     "withdrawal": "WYPŁATA",
+    "maturity": "Zapadalność",
+    "interest_payment": "Wypłata odsetek",
     "error_100_pln": "Musi być wielokrotnością 100 PLN",
     "error_future_date": "Data nie może być z przyszłości",
     "regular_calculator": "Inwestycje Miesięczne",
@@ -359,6 +373,22 @@
     "hero_description": "Kompleksowy zestaw narzędzi zaprojektowany dla inwestorów, dopasowany do logiki Ministerstwa Finansów. Projektuj zyski, porównuj scenariusze inflacyjne i buduj optymalne portfele.",
     "start_calculating": "Zacznij obliczać",
     "financial_tools": "Narzędzia Finansowe",
+    "recovery_home": {
+      "eyebrow": "Strona glowna w trybie odzyskiwania",
+      "title": "Najpierw uzyj glownego kalkulatora obligacji. Reszte traktuj jako drugorzedne.",
+      "description": "Ta strona glowna pelni teraz role spokojnego centrum odzyskiwania. Zacznij od flagowego kalkulatora pojedynczej obligacji, a dopiero potem przechodz do edukacji, danych referencyjnych lub wezszych narzedzi strategicznych, gdy sa potrzebne.",
+      "secondary_cta": "Przejrzyj podstawy",
+      "status_trusted": "Zaufane powierzchnie glowne",
+      "status_explicit": "Jawny przeplyw obliczen",
+      "status_reference": "Dane referencyjne jasno opisane",
+      "core_route_title": "Glowna sciezka",
+      "core_route_desc": "Glowna sciezka odzyskiwania jest prosta: poznaj zasady obligacji, wykonaj jedno czyste obliczenie, a potem przejrzyj wyniki bez dodatkowego szumu dashboardu.",
+      "portfolio_empty_title": "Podglad portfela pojawi sie dopiero po dodaniu rzeczywistych partii.",
+      "portfolio_empty_desc": "Do tego czasu strona glowna powinna pozostac lekka, a praca scenariuszowa powinna odbywac sie w kalkulatorze pojedynczym. Notatnik nadal jest dostepny, ale nie powinien konkurowac z glownym przeplywem.",
+      "resume_saved": "Otworz kalkulator",
+      "secondary_tools_title": "Narzedzia drugorzedne",
+      "notebook_card": "Sledz rzeczywiste partie obligacji i wracaj do kontekstu portfela dopiero po zakonczeniu glownych symulacji."
+    },
     "cards": {
       "single_calculator": "Przeprowadź szczegółową symulację dla poszczególnych polskich obligacji skarbowych w całym ich cyklu życia.",
       "comparison": "Porównaj wiele obligacji obok siebie, aby znaleźć najlepszą rentowność dla Twojego horyzontu czasowego.",
@@ -371,7 +401,31 @@
     "manage_portfolio": "Zarządzaj Portfelem",
     "upcoming_events": "Nadchodzące Zdarzenia",
     "no_events_30d": "Brak istotnych zdarzeń w ciągu najbliższych 30 dni.",
-    "diversification": "Całkowita Dywersyfikacja"
+    "diversification": "Całkowita Dywersyfikacja",
+    "notifications": {
+      "title": "Centrum Powiadomień",
+      "empty": "Brak nowych powiadomień. Portfel wygląda na stabilny.",
+      "mark_all_read": "Oznacz wszystkie jako przeczytane",
+      "open": "Otwórz"
+    },
+    "since_last_visit": {
+      "title": "Od ostatniej wizyty",
+      "first_recorded": "Pierwsza odnotowana wizyta",
+      "suggested_action": "Sugerowane działanie",
+      "suggested_action_events": "Przejrzyj nadchodzące zapadalności i opcje zamiany.",
+      "suggested_action_no_events": "Odśwież zapisany scenariusz lub dodaj nową partię do portfela.",
+      "recent_scenarios": "Ostatnio zapisane scenariusze",
+      "no_scenarios": "Brak lokalnie zapisanych scenariuszy."
+    },
+    "favorite_bonds": {
+      "title": "Ulubione Obligacje"
+    },
+    "recovery_lab": {
+      "title": "Centrum Odzyskiwania (Recovery Lab)",
+      "description": "Optymalizator, historia wielu aktywów oraz modelowanie wypłat emerytalnych pozostają dostępne w trybie odzyskiwania, ale są celowo oddzielone od głównej listy narzędzi.",
+      "usage_hint": "Otwieraj Recovery Lab tylko wtedy, gdy świadomie chcesz sprawdzić bardziej specyficzne lub wrażliwe na założenia strony.",
+      "cta": "Otwórz Recovery Lab"
+    }
   },
   "notebook": {
     "title": "Mój Portfel / Notatnik",

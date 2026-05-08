@@ -72,7 +72,7 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
 
   const navSections: NavSection[] = [
     {
-      label: 'Core',
+      label: t('sidebar.sections.core'),
       items: [
         { href: '/education', label: t('nav.education'), icon: BookOpen, status: 'trusted' },
         { href: '/single-calculator', label: t('nav.single_calculator'), icon: Calculator, status: 'trusted' },
@@ -80,7 +80,7 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
       ],
     },
     {
-      label: 'Conditional',
+      label: t('sidebar.sections.conditional'),
       items: [
         { href: '/compare', label: t('nav.comparison'), icon: Scale, status: 'conditional' },
         { href: '/regular-investment', label: t('nav.regular_investment'), icon: TrendingUp, status: 'conditional' },
@@ -89,9 +89,9 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
       ],
     },
     {
-      label: 'Recovery Lab',
+      label: t('sidebar.sections.recovery_lab'),
       items: [
-        { href: '/recovery-lab', label: 'Recovery Lab', icon: FlaskConical, status: 'experimental' },
+        { href: '/recovery-lab', label: t('sidebar.sections.recovery_lab'), icon: FlaskConical, status: 'experimental' },
       ],
     },
   ];
@@ -113,9 +113,9 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
             <p className="px-3 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
               {section.label}
             </p>
-            {section.label === 'Recovery Lab' ? (
+            {section.label === t('sidebar.sections.recovery_lab') ? (
               <div className="mx-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-[11px] leading-5 text-amber-950">
-                These pages stay reachable during recovery, but they are not core calculator surfaces.
+                {t('sidebar.recovery_lab_notice')}
               </div>
             ) : null}
             <div className="space-y-1">
@@ -192,17 +192,17 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
           ) : (
             <div className="rounded-2xl border bg-white p-3 text-[11px] text-slate-500">
               <p className="font-semibold uppercase tracking-wide">{t('common.sync_data')}</p>
-              <p className="mt-1">Sync metadata unavailable.</p>
+              <p className="mt-1">{t('sidebar.sync_unavailable')}</p>
             </div>
           )}
 
           <div className="rounded-2xl border bg-white p-3 text-[11px] text-slate-600">
-            <p className="font-semibold uppercase tracking-wide text-slate-500">Recovery scope</p>
+            <p className="font-semibold uppercase tracking-wide text-slate-500">{t('sidebar.recovery_scope_title')}</p>
             <p className="mt-1 leading-5">
-              Main focus stays on single-bond, comparison, ladder, regular-investment, notebook, and data reference pages.
+              {t('sidebar.recovery_scope_desc')}
             </p>
             <Link href="/recovery-lab" className="mt-2 inline-flex font-semibold text-primary hover:underline">
-              Open recovery lab
+              {t('sidebar.open_recovery_lab')}
             </Link>
           </div>
 
