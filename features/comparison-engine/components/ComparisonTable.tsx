@@ -1,13 +1,20 @@
 'use client';
 
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Scale } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useLanguage } from "@/i18n";
-import { CalculationResult } from "@/features/bond-core/types";
+import React from 'react';
+import { Scale } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { useLanguage } from '@/i18n';
+import { cn } from '@/lib/utils';
+import { CalculationResult } from '@/features/bond-core/types';
 
 interface ComparisonTableProps {
   resultsA: CalculationResult;
@@ -25,8 +32,10 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
   formatCurrency,
 }) => {
   const { t, language } = useLanguage();
-  const higherColumnLabel = language === 'pl' ? 'Wyzej w tym roku' : 'Higher this year';
-  const higherBadgeSuffix = language === 'pl' ? 'wyzej' : 'higher';
+  const higherColumnLabel =
+    language === 'pl' ? 'Aktualnie wyzej w tym wierszu' : 'Ahead in this row';
+  const higherBadgeSuffix = language === 'pl' ? 'wyzej' : 'ahead';
+  const tieLabel = language === 'pl' ? 'Remis' : 'Tie';
 
   const maxLen = Math.max(resultsA.timeline.length, resultsB.timeline.length);
   const summaryRows = [
@@ -55,7 +64,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
           {t('comparison.table_title')}
         </CardTitle>
         <p className="text-sm leading-6 text-slate-600">
-          Plain year-by-year nominal value check. Use it to see where one path is temporarily ahead,
+          Plain year-by-year value check. Use it to inspect where one path is ahead at a given point,
           not as a recommendation signal.
         </p>
       </CardHeader>
@@ -91,8 +100,11 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                       {higherScenario === 'A' ? bondTypeA : bondTypeB}
                     </Badge>
                   ) : (
-                    <Badge variant="outline" className="border-slate-200 bg-slate-50 text-[10px] font-black uppercase tracking-wide text-slate-700">
-                      Tie
+                    <Badge
+                      variant="outline"
+                      className="border-slate-200 bg-slate-50 text-[10px] font-black uppercase tracking-wide text-slate-700"
+                    >
+                      {tieLabel}
                     </Badge>
                   )}
                 </div>
@@ -135,10 +147,12 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                       : valB !== undefined
                         ? 'B'
                         : null;
-                
+
                 return (
                   <TableRow key={i} className="transition-colors hover:bg-slate-50/80">
-                    <TableCell className="px-6 py-4 font-bold text-slate-900">Y{i + 1}</TableCell>
+                    <TableCell className="px-6 py-4 font-bold text-slate-900">
+                      Y{i + 1}
+                    </TableCell>
                     <TableCell
                       className={cn(
                         'px-4 py-4 font-mono text-sm',
@@ -147,7 +161,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                           : 'text-slate-600',
                       )}
                     >
-                      {valA ? formatCurrency(valA) : "---"}
+                      {valA ? formatCurrency(valA) : '---'}
                     </TableCell>
                     <TableCell
                       className={cn(
@@ -157,7 +171,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                           : 'text-slate-600',
                       )}
                     >
-                      {valB ? formatCurrency(valB) : "---"}
+                      {valB ? formatCurrency(valB) : '---'}
                     </TableCell>
                     <TableCell className="px-6 py-4 text-right">
                       {higherScenario ? (
@@ -173,7 +187,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                           {higherScenario === 'A' ? bondTypeA : bondTypeB} {higherBadgeSuffix}
                         </Badge>
                       ) : (
-                        <span className="text-xs font-semibold text-slate-500">Tie</span>
+                        <span className="text-xs font-semibold text-slate-500">{tieLabel}</span>
                       )}
                     </TableCell>
                   </TableRow>
@@ -184,7 +198,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
         </div>
 
         <div className="border-t bg-slate-50/70 px-6 py-4 text-sm leading-6 text-slate-600">
-          The badge shows which path is ahead in a given row only. Later rows can reverse earlier leads.
+          The badge shows which path is ahead in that specific row only. Later rows can reverse earlier leads.
         </div>
       </CardContent>
     </Card>

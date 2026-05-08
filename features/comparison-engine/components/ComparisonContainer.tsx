@@ -32,7 +32,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { History, LineChart, Scale, TriangleAlert } from 'lucide-react';
+import { CheckCircle2, FileSpreadsheet, History, LineChart, Scale, TriangleAlert } from 'lucide-react';
 import { CalculationResult, TaxStrategy } from '@/features/bond-core/types';
 import { useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
@@ -254,27 +254,6 @@ export const ComparisonContainer: React.FC = () => {
           {t('comparison.mode_normalized')}
         </Button>
       </div>
-
-      {resultsA && resultsB ? (
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-9 px-3 rounded-xl font-bold text-[10px] uppercase"
-            onClick={() => handleExportCSV(resultsA, inputsA.bondType)}
-          >
-            CSV (A)
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-9 px-3 rounded-xl font-bold text-[10px] uppercase"
-            onClick={() => handleExportCSV(resultsB, inputsB.bondType)}
-          >
-            CSV (B)
-          </Button>
-        </div>
-      ) : null}
     </div>
   );
 
@@ -296,12 +275,15 @@ export const ComparisonContainer: React.FC = () => {
       {compareMode === 'normalized' ? (
         <BondComparisonContainer />
       ) : (
-        <div className="grid grid-cols-1 gap-8 xl:grid-cols-[360px_1fr]">
+        <div className="grid grid-cols-1 gap-8 xl:grid-cols-[390px_minmax(0,1fr)]">
           <Card className="overflow-hidden border shadow-sm">
             <CardHeader className="border-b bg-muted/20">
               <CardTitle className="text-sm font-black uppercase tracking-widest">
                 {t('comparison.shared_scenario')}
               </CardTitle>
+              <p className="text-sm leading-6 text-muted-foreground">
+                Keep one shared base scenario, then apply scenario-specific overrides only when they matter.
+              </p>
             </CardHeader>
             <CardContent className="space-y-6 pt-6">
               <div className="space-y-3">
@@ -496,7 +478,7 @@ export const ComparisonContainer: React.FC = () => {
                 onClick={() => calculate()}
                 disabled={isCalculating}
               >
-                {isCalculating ? t('common.calculating') : t('common.calculate')}
+                {isCalculating ? t('common.calculating') : 'Run independent comparison'}
               </Button>
             </CardContent>
           </Card>
@@ -556,19 +538,42 @@ export const ComparisonContainer: React.FC = () => {
             </div>
 
             {!resultsA && !isCalculating ? (
-              <Card className="border-2 border-dashed">
-                <CardContent className="flex h-[360px] flex-col items-center justify-center space-y-4 text-center">
-                  <Scale className="h-12 w-12 text-muted-foreground/40" />
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-semibold">
+              <Card className="border shadow-sm">
+                <CardContent className="space-y-6 p-6 md:p-8">
+                  <div className="space-y-3">
+                    <div className="inline-flex items-center gap-2 rounded-full border bg-muted px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-700">
+                      <Scale className="h-3.5 w-3.5 text-primary" />
                       {t('comparison.ready_to_compare')}
+                    </div>
+                    <h3 className="text-2xl font-black tracking-tight text-slate-900">
+                      Compare two committed scenarios, not two moving targets.
                     </h3>
-                    <p className="max-w-md text-sm text-muted-foreground">
-                      Adjust shared assumptions, override scenario-specific
-                      settings if needed, then run the comparison.
+                    <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
+                      Set the shared base first, change scenario overrides only if needed, then run one clean comparison.
+                      Start with the scenario summary before reading the chart row by row.
                     </p>
                   </div>
-                  <Button onClick={() => calculate()}>{t('common.calculate')}</Button>
+
+                  <div className="grid gap-3 md:grid-cols-3">
+                    <ReadyStep
+                      title="Shared base"
+                      description="Amount, dates, inflation path, and tax wrapper."
+                    />
+                    <ReadyStep
+                      title="Scenario overrides"
+                      description="Bond type and optional per-scenario adjustments."
+                    />
+                    <ReadyStep
+                      title="Committed result"
+                      description="Run comparison, then inspect snapshot, chart, and table."
+                    />
+                  </div>
+
+                  <div className="max-w-xs">
+                    <Button onClick={() => calculate()} className="w-full">
+                      {t('common.calculate')}
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ) : null}
@@ -621,6 +626,45 @@ export const ComparisonContainer: React.FC = () => {
                     ) : null}
                   </CardHeader>
                   <CardContent className="p-6">
+                    <div className="mb-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                      <ActionMetric
+                        label={t('comparison.scenario_a')}
+                        value={formatCurrency(resultsA.netPayoutValue)}
+                        tone="text-blue-700"
+                      />
+                      <ActionMetric
+                        label={t('comparison.scenario_b')}
+                        value={formatCurrency(resultsB.netPayoutValue)}
+                        tone="text-emerald-700"
+                      />
+                      <button
+                        type="button"
+                        className="rounded-2xl border bg-white px-4 py-3 text-left transition-colors hover:border-primary/40"
+                        onClick={() => handleExportCSV(resultsA, inputsA.bondType)}
+                      >
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                          Export
+                        </p>
+                        <div className="mt-2 flex items-center gap-2 text-sm font-bold text-slate-900">
+                          <FileSpreadsheet className="h-4 w-4 text-primary" />
+                          CSV ({inputsA.bondType})
+                        </div>
+                      </button>
+                      <button
+                        type="button"
+                        className="rounded-2xl border bg-white px-4 py-3 text-left transition-colors hover:border-primary/40"
+                        onClick={() => handleExportCSV(resultsB, inputsB.bondType)}
+                      >
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                          Export
+                        </p>
+                        <div className="mt-2 flex items-center gap-2 text-sm font-bold text-slate-900">
+                          <FileSpreadsheet className="h-4 w-4 text-primary" />
+                          CSV ({inputsB.bondType})
+                        </div>
+                      </button>
+                    </div>
+
                     <ChartContainer height={420}>
                       {hasMounted ? (
                         <ResponsiveContainer width="100%" height="100%">
@@ -713,3 +757,38 @@ export const ComparisonContainer: React.FC = () => {
     </CalculatorPageShell>
   );
 };
+
+const ReadyStep = ({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) => (
+  <div className="rounded-2xl border bg-white p-4">
+    <div className="flex items-start gap-3">
+      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+      <div className="space-y-1">
+        <p className="text-sm font-bold text-slate-900">{title}</p>
+        <p className="text-xs leading-6 text-muted-foreground">{description}</p>
+      </div>
+    </div>
+  </div>
+);
+
+const ActionMetric = ({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: string;
+  tone?: string;
+}) => (
+  <div className="rounded-2xl border bg-white px-4 py-3">
+    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+      {label}
+    </p>
+    <p className={cn('mt-2 text-lg font-black', tone)}>{value}</p>
+  </div>
+);
