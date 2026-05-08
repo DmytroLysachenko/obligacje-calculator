@@ -58,8 +58,9 @@ The app now enforces part of it directly through UI behavior:
 - family-only bonds are visibly marked instead of presented as generic defaults
 - retirement exposes only the narrower supported bond set
 - optimizer, multi-asset, and retirement are grouped into a recovery-lab style navigation area
-- dashboard emphasis now favors trusted, conditional, and reference surfaces over weaker ones
+- dashboard/home emphasis now favors trusted, conditional, and reference surfaces over weaker ones
 - data-reference pages show source/coverage/as-of state with explicit fallback framing
+- shared shell, recalculation, fallback, and status framing now reflect the support classes more consistently
 
 The remaining gap is deeper calculator validation, not only labeling.
 
@@ -81,6 +82,7 @@ Remaining expectations:
 
 - content quality can still improve
 - but the page class itself is aligned with app purpose
+- the calmer loading and page-entry behavior now match its support class more closely
 
 ### 1.2 Single Bond Calculator
 
@@ -134,6 +136,7 @@ Why not trusted core yet:
 - still needs deeper scenario validation
 - still has multiple comparison concepts that may confuse users
 - step-by-step value comparison needs continued clarity review
+- final manual regression across all entry paths is still needed
 
 Required before trusted promotion:
 
@@ -187,6 +190,7 @@ Why not trusted core yet:
 
 - portfolio simulation still needs more validation
 - notebook should remain descriptive, not analytical-authoritative
+- current trust applies more to workspace clarity than to every deeper portfolio-simulation assumption
 
 Rule:
 
@@ -211,6 +215,7 @@ Main limitation:
 - users can mistake sorting for guidance
 - scenario reasons remain heuristics, not suitability logic
 - it now sits in recovery-lab emphasis rather than core navigation emphasis
+- even after UI simplification, it should not outrank the flagship calculators in trust
 
 Rule:
 
@@ -219,53 +224,94 @@ Rule:
 
 Promotion requirements:
 
-- stronger scenario validation
-- clearer explanation of rollover/early redemption tradeoffs
-- tighter copy and limitation handling
+- stronger verification of ranking assumptions by bond family
+- evidence that scenario reasons do not overclaim meaning
+- proof that the page remains interpretable without advisory language
 
-### 3.2 Market vs Bonds / Multi-Asset Comparison
+### 3.2 Historical Comparison (`/multi-asset`)
 
 Status: `experimental`
 
 Why:
 
-- recent refactor fixed a major product bug:
-  the page now actually respects committed recalculation
-- UI and data coverage disclosure are better
+- page now uses calmer committed-scenario flow and clearer reference framing
+- source, coverage, and fallback context are much more visible
+- page no longer presents itself like a mature backtesting suite
 
-Why still experimental:
+Main limitation:
 
-- this feature depends heavily on historical coverage quality
-- it can easily over-promise as a backtesting surface
-- mixed instrument comparison is inherently more interpretation-heavy than core bond calculators
-- the page now discloses source/coverage more honestly, but the dataset still needs stronger breadth before promotion
+- data breadth is still narrower than a strong market-history product would imply
+- outcome interpretation remains highly start-date-sensitive
+- the feature still depends on reference-quality historical coverage rather than a fully defended research dataset
 
 Rule:
 
-- keep as reference comparison only
-- do not present as full historical investing lab
+- keep it in recovery-lab emphasis
+- keep copy in historical reference terms
+- do not promote it as a broad market-vs-bonds verdict engine
 
-### 3.3 Retirement Planner
+Promotion requirements:
 
-Status: `limited support`
+- stronger historical coverage evidence
+- clearer validation of derived comparison assumptions
+- confidence that the feature promise matches the actual dataset depth
+
+### 3.3 Withdrawal Model (`/retirement`)
+
+Status: `limited`
 
 Why:
 
-- recent work made the page more honest
-- it now reads more like a withdrawal calculator than a retirement advice feature
+- page was narrowed substantially into one explicit withdrawal-model flow
+- supported bond families are constrained more clearly
+- copy now states that the surface is not full retirement advice
 
-Why still limited:
+Main limitation:
 
-- modeled scope remains narrower than a user may expect from the term "retirement planner"
-- current model is a simplified steady-rate path
-- supported bond families are now intentionally narrowed in the UI
+- modeled scope remains narrower than a user may expect from the route concept
+- one steady-rate path is inherently less expressive than real retirement planning
+- contribution, ladder, and changing-withdrawal behavior are intentionally out of scope
 
 Rule:
 
-- describe it as a limited withdrawal scenario tool
-- do not imply comprehensive retirement planning support
+- keep it in recovery-lab emphasis
+- keep the limitation warning visible
+- do not widen its promise before model validation and scope expansion are real
 
-## 4. Navigation Guidance During Recovery
+Promotion requirements:
+
+- support boundaries validated against actual engine behavior
+- stronger scenario-family testing
+- explicit product decision on whether retirement belongs in retained scope at all
+
+## 4. Cross-Cutting Interpretation Rules
+
+These rules should stay true across all classes:
+
+- trusted does not mean production-certified
+- conditional does not mean unreliable, but it does mean not fully validated yet
+- experimental or limited means the page may still be useful, but the user must see the boundary clearly
+- reference framing is acceptable only when source, coverage, and fallback state are visible enough to justify the narrower promise
+
+## 5. Current Practical Reading Of The Product
+
+If a user opens the app today, the most honest interpretation is:
+
+- start with education or the single calculator
+- use comparison, regular investment, ladder, and notebook as narrower supporting tools
+- use economic data as a reference page, not as proof of macro completeness
+- enter recovery-lab pages only when intentionally exploring weaker or narrower surfaces
+
+## 6. What Would Move The Product Forward Next
+
+The highest-value next moves are not more feature count. They are:
+
+- calculator trust validation by supported scenario family
+- retained-route manual regression and bug hunting
+- stronger sync/data evidence for visible trust labels
+- final retained-core narrowing decisions
+
+## 7. Navigation Guidance During Recovery
 
 The current navigation stance is intentionally uneven:
 
@@ -285,7 +331,7 @@ If an experimental surface becomes misleading again, it should be:
 2. moved further out of primary emphasis
 3. or hidden until recovery work catches up
 
-## 5. Copy Rules by Class
+## 8. Copy Rules By Class
 
 ### Trusted Core
 
@@ -323,7 +369,7 @@ Required:
 - no personal recommendation language
 - no prestige wording that suggests mature institutional analytics
 
-## 6. Engineering Use
+## 9. Engineering Use
 
 This matrix must be consulted when:
 
@@ -334,17 +380,7 @@ This matrix must be consulted when:
 
 No feature should be marked "done" unless its class and justification are also consistent with current reality.
 
-## 7. Near-Term Promotion Path
-
-To move more surfaces toward trusted status:
-
-1. finish calculator math verification by scenario type
-2. keep reducing hidden state churn and render noise
-3. tighten wording on all ranking or sorting views
-4. keep data provenance explicit
-5. downgrade any page whose promise still exceeds its evidence
-
-## 8. Current Strongest Evidence
+## 10. Current Strongest Evidence
 
 The strongest current evidence for the recovery direction is:
 
@@ -352,5 +388,6 @@ The strongest current evidence for the recovery direction is:
 - support-boundary UI is shared instead of ad hoc
 - support-matrix regression tests exist
 - flagship calculator golden tests now lock exact outputs for representative scenarios
+- weaker pages are clearly separated instead of posing as equal-first-class product routes
 
 This means the app is closer to a reliable narrowed calculator product than it was before, but still not done with full recovery.

@@ -53,4 +53,4 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [Archived Plans Index](./archive/plans/index.md) - Historical and completed execution plans preserved for reference.
 
 ---
-*Last Updated: April 30, 2026 - App is in active refactor/recovery and is not yet production-ready.*
+*Last Updated: May 8, 2026 - App remains in active refactor/recovery, with major UI simplification completed but final validation and production-candidate review still open.*

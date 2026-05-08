@@ -621,17 +621,23 @@ Acceptance criteria:
 
 This subsection records the main completed recovery moves so the plan remains truthful.
 
+As of May 8, 2026, the application has moved materially further through this plan than the earlier snapshot reflected.
+
 ### Interaction and State
 
 - explicit calculate/recalculate flow is used much more broadly now
 - several calculator surfaces no longer auto-churn on every small input mutation
+- draft-vs-committed calculation flow is more consistent on heavier pages
 - state noise and decorative UI layers were reduced across major calculators
+- stale shell-cache behavior was patched so old and new UI shells stop fighting each other in normal usage
 
 ### Product Boundary
 
 - ranking and comparison wording is more neutral
 - optimizer is treated as scenario sorting, not investor guidance
+- multi-asset is treated as a historical reference surface, not a mature backtesting product
 - retirement is treated as a limited withdrawal model, not retirement advice
+- recovery-lab pages now look and read more clearly like narrower supporting tools instead of equal flagship routes
 
 ### Support Matrix Enforcement
 
@@ -639,16 +645,38 @@ This subsection records the main completed recovery moves so the plan remains tr
 - family-only bonds are labeled in selectors
 - retirement only exposes the narrower supported bond list
 - weaker pages are grouped into a recovery-lab style navigation area
+- trusted/conditional/experimental framing is now more consistent in shared navigation and page-level notices
 
 ### Test Coverage
 
 - support-matrix regression tests protect scenario-class expectations
 - flagship golden tests protect exact outputs for representative single-bond, regular-investment, comparison, and retirement cases
+- retained-route cleanup work was repeatedly checked with `eslint`, `tsc`, and core engine tests on each major commit batch
 
 ### Data Honesty
 
 - reference pages now present source/coverage/as-of metadata more consistently
 - fallback states are described more directly instead of silently reading like mature production feeds
+- sidebar and shared trust framing now reflect freshness/fallback state more calmly and more explicitly
+
+### UX Simplification
+
+- home page was reduced into a calmer recovery-first hub
+- single calculator now follows a stricter primary inputs -> calculate -> summary/details shape
+- regular investment and ladder were simplified around committed-scenario results rather than strategy theater
+- notebook was reframed as a records workspace, not a pseudo-advisory dashboard
+- optimizer and multi-asset were narrowed into recovery-lab reference/sorting surfaces
+- retirement was narrowed into one limited withdrawal-model flow
+- shared calculation shell, shared audit panels, shared recalculate affordances, and shared suspense fallbacks were simplified
+- residual motion-heavy page transitions and pulse-heavy status cues were reduced
+
+### Remaining Gaps After The Current Refactor Pass
+
+- full bond-type-by-bond-type math validation is still not complete
+- some calculator families remain conditional because support depth is not yet fully proven
+- data reliability still needs stronger evidence, especially for broader historical/reference claims
+- final manual regression across all retained routes is still required
+- production-candidate release review has not yet been earned
 
 ## 8. Release Gate for "Production Candidate"
 
@@ -661,6 +689,14 @@ The app cannot be described as production-ready until all are true:
 - calculator UI simplified and stable on desktop/mobile
 - performance acceptable on common interactions
 - docs reflect real capability and limitations
+
+Additional release-candidate checks that now matter because the UI was narrowed:
+
+- retained-core routes feel coherent as one product instead of separate mini-products
+- recovery-lab routes remain intentionally secondary in navigation, copy, and visual emphasis
+- trusted/reference/conditional labels do not conflict with actual route behavior
+- no visible route still depends on outdated shell cache behavior
+- loading and recalculate states stay calm and predictable during common interactions
 
 ## 9. Decision Rules During Refactor
 
@@ -678,10 +714,10 @@ When choosing between "auto-calc" and "calculate button", prefer:
 
 ## 10. Immediate Next Actions
 
-1. audit and fix all remaining calculator auto-update loops
-2. freeze feature growth outside refactor work
-3. simplify the single calculator and comparison page first
-4. replace recommendation/ranking copy with neutral calculator language
-5. fix sync freshness and economic data transparency
-6. create a support matrix of trusted vs experimental pages
-7. decide which calculators stay in top-level navigation during recovery
+1. run final manual regression across retained-core and recovery-lab routes
+2. finish bond-type and scenario-family trust validation work
+3. audit data freshness/sync evidence so visible trust framing stays defensible
+4. decide whether any current conditional surface should be promoted, demoted, or held as-is
+5. keep feature growth frozen until validation and release-gate evidence improve
+6. reconcile any remaining active docs that still lag the implemented recovery state
+7. complete final production-candidate narrowing review
