@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -15,12 +15,17 @@ import {
   Wallet,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import { useLanguage } from '@/i18n';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { cn } from '@/lib/utils';
 import { LanguageSwitcher } from './LanguageSwitcher';
-import { FeatureStatusPill, FeatureStatus } from './FeatureStatusNotice';
+import { FeatureStatus, FeatureStatusPill } from './FeatureStatusNotice';
 
 interface SidebarContentProps {
   onItemClick?: () => void;
@@ -37,6 +42,7 @@ type NavItem = {
 type NavSection = {
   label: string;
   items: NavItem[];
+  note?: string;
 };
 
 function getFreshnessLabel(
@@ -48,10 +54,35 @@ function getFreshnessLabel(
   }
 
   if (freshness.status === 'fallback' || freshness.usedFallback) {
-    return language === 'pl' ? 'Fallback / dane czesciowe' : 'Fallback / partial data';
+    return language === 'pl'
+      ? 'Fallback / dane czesciowe'
+      : 'Fallback / partial data';
   }
 
-  return language === 'pl' ? 'Dane moga byc nieaktualne' : 'Data may be stale';
+  return language === 'pl'
+    ? 'Dane moga byc nieaktualne'
+    : 'Data may be stale';
+}
+
+function getFreshnessDetail(
+  freshness: CalculationDataFreshness,
+  language: 'pl' | 'en',
+) {
+  if (freshness.status === 'fresh') {
+    return language === 'pl'
+      ? 'Glowne moduly odczytuja aktualne metadane synchronizacji.'
+      : 'Core modules are reading current sync metadata.';
+  }
+
+  if (freshness.status === 'fallback' || freshness.usedFallback) {
+    return language === 'pl'
+      ? 'Czesc danych nadal moze pochodzic z wasszych zestawow zapasowych lub waskiego pokrycia.'
+      : 'Some modules may still be reading fallback datasets or narrower coverage.';
+  }
+
+  return language === 'pl'
+    ? 'Sprawdz strony referencyjne ostrozniej, bo metadane swiezosci nie sa jeszcze pelne.'
+    : 'Read reference pages more cautiously because freshness metadata is not fully restored yet.';
 }
 
 function getFreshnessBadgeClass(freshness: CalculationDataFreshness) {
@@ -66,6 +97,61 @@ function getFreshnessBadgeClass(freshness: CalculationDataFreshness) {
   return 'border-amber-200 bg-amber-50 text-amber-800';
 }
 
+function SidebarInfoCard({
+  title,
+  children,
+  className,
+}: {
+  title: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn('rounded-2xl border bg-white p-3 text-[11px]', className)}>
+      <p className="font-semibold uppercase tracking-wide text-slate-500">
+        {title}
+      </p>
+      <div className="mt-1 space-y-2 text-slate-600">{children}</div>
+    </div>
+  );
+}
+
+function NavLinkItem({
+  item,
+  isActive,
+  onItemClick,
+}: {
+  item: NavItem;
+  isActive: boolean;
+  onItemClick?: () => void;
+}) {
+  return (
+    <Link
+      href={item.href}
+      onClick={onItemClick}
+      className={cn(
+        'flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition-colors',
+        isActive
+          ? 'border border-primary/15 bg-primary/10 font-semibold text-primary'
+          : 'text-slate-600 hover:bg-white hover:text-slate-900',
+      )}
+    >
+      <item.icon
+        className={cn(
+          'h-5 w-5 shrink-0',
+          isActive ? 'text-primary' : 'text-slate-400',
+        )}
+      />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center justify-between gap-2">
+          <span className="truncate">{item.label}</span>
+          <FeatureStatusPill status={item.status} className="shrink-0" />
+        </div>
+      </div>
+    </Link>
+  );
+}
+
 function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
   const pathname = usePathname();
   const { t, language } = useLanguage();
@@ -74,24 +160,65 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
     {
       label: t('sidebar.sections.core'),
       items: [
-        { href: '/education', label: t('nav.education'), icon: BookOpen, status: 'trusted' },
-        { href: '/single-calculator', label: t('nav.single_calculator'), icon: Calculator, status: 'trusted' },
-        { href: '/economic-data', label: t('nav.economic_data'), icon: BarChart2, status: 'reference' },
+        {
+          href: '/education',
+          label: t('nav.education'),
+          icon: BookOpen,
+          status: 'trusted',
+        },
+        {
+          href: '/single-calculator',
+          label: t('nav.single_calculator'),
+          icon: Calculator,
+          status: 'trusted',
+        },
+        {
+          href: '/economic-data',
+          label: t('nav.economic_data'),
+          icon: BarChart2,
+          status: 'reference',
+        },
       ],
     },
     {
       label: t('sidebar.sections.conditional'),
       items: [
-        { href: '/compare', label: t('nav.comparison'), icon: Scale, status: 'conditional' },
-        { href: '/regular-investment', label: t('nav.regular_investment'), icon: TrendingUp, status: 'conditional' },
-        { href: '/ladder', label: t('nav.ladder'), icon: Layers, status: 'conditional' },
-        { href: '/notebook', label: t('nav.notebook'), icon: Wallet, status: 'conditional' },
+        {
+          href: '/compare',
+          label: t('nav.comparison'),
+          icon: Scale,
+          status: 'conditional',
+        },
+        {
+          href: '/regular-investment',
+          label: t('nav.regular_investment'),
+          icon: TrendingUp,
+          status: 'conditional',
+        },
+        {
+          href: '/ladder',
+          label: t('nav.ladder'),
+          icon: Layers,
+          status: 'conditional',
+        },
+        {
+          href: '/notebook',
+          label: t('nav.notebook'),
+          icon: Wallet,
+          status: 'conditional',
+        },
       ],
     },
     {
       label: t('sidebar.sections.recovery_lab'),
+      note: t('sidebar.recovery_lab_notice'),
       items: [
-        { href: '/recovery-lab', label: t('sidebar.sections.recovery_lab'), icon: FlaskConical, status: 'experimental' },
+        {
+          href: '/recovery-lab',
+          label: t('sidebar.sections.recovery_lab'),
+          icon: FlaskConical,
+          status: 'experimental',
+        },
       ],
     },
   ];
@@ -113,48 +240,26 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
             <p className="px-3 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
               {section.label}
             </p>
-            {section.label === t('sidebar.sections.recovery_lab') ? (
+            {section.note ? (
               <div className="mx-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-[11px] leading-5 text-amber-950">
-                {t('sidebar.recovery_lab_notice')}
+                {section.note}
               </div>
             ) : null}
             <div className="space-y-1">
-              {section.items.map((item) => {
-                const isActive = pathname === item.href;
-
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={onItemClick}
-                    className={cn(
-                      'flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition-colors',
-                      isActive
-                        ? 'border border-primary/15 bg-primary/10 font-semibold text-primary'
-                        : 'text-slate-600 hover:bg-white hover:text-slate-900',
-                    )}
-                  >
-                    <item.icon
-                      className={cn(
-                        'h-5 w-5 shrink-0',
-                        isActive ? 'text-primary' : 'text-slate-400',
-                      )}
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="truncate">{item.label}</span>
-                        <FeatureStatusPill status={item.status} className="shrink-0" />
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
+              {section.items.map((item) => (
+                <NavLinkItem
+                  key={item.href}
+                  item={item}
+                  isActive={pathname === item.href}
+                  onItemClick={onItemClick}
+                />
+              ))}
             </div>
           </div>
         ))}
       </nav>
 
-      <div className="space-y-6 border-t bg-slate-100 p-6">
+      <div className="space-y-5 border-t bg-slate-100 p-6">
         <div className="space-y-2">
           <span className="px-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
             {t('common.language')}
@@ -164,51 +269,64 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
           </div>
         </div>
 
-        <div className="space-y-3">
-          <div className="flex items-center justify-between text-[11px] text-slate-500">
-            <span className="font-semibold uppercase tracking-wide">{t('common.version')}</span>
-            <span className="rounded-md border bg-white px-2 py-1 font-medium text-slate-700">
+        <SidebarInfoCard title={t('common.version')}>
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-slate-500">
+              Recovery build
+            </span>
+            <span className="rounded-md border bg-slate-50 px-2 py-1 font-medium text-slate-700">
               v1.0.0-beta
             </span>
           </div>
+        </SidebarInfoCard>
 
-          {dataFreshness?.asOf ? (
-            <div className="space-y-2 rounded-2xl border bg-white p-3">
-              <div className="flex items-center justify-between text-[11px]">
-                <span className="font-semibold uppercase tracking-wide text-slate-500">
-                  {t('common.sync_data')}
-                </span>
-                <span className="font-medium text-slate-900">{dataFreshness.asOf}</span>
-              </div>
-              <span
-                className={cn(
-                  'block rounded-lg border px-3 py-2 text-[11px] font-medium',
-                  getFreshnessBadgeClass(dataFreshness),
-                )}
-              >
-                {getFreshnessLabel(dataFreshness, language)}
+        {dataFreshness ? (
+          <SidebarInfoCard title={t('common.sync_data')}>
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-slate-500">
+                {dataFreshness.asOf
+                  ? language === 'pl'
+                    ? 'Ostatni odczyt'
+                    : 'Latest reading'
+                  : language === 'pl'
+                    ? 'Status'
+                    : 'Status'}
+              </span>
+              <span className="font-medium text-slate-900">
+                {dataFreshness.asOf ??
+                  (language === 'pl' ? 'Brak daty' : 'No date')}
               </span>
             </div>
-          ) : (
-            <div className="rounded-2xl border bg-white p-3 text-[11px] text-slate-500">
-              <p className="font-semibold uppercase tracking-wide">{t('common.sync_data')}</p>
-              <p className="mt-1">{t('sidebar.sync_unavailable')}</p>
-            </div>
-          )}
-
-          <div className="rounded-2xl border bg-white p-3 text-[11px] text-slate-600">
-            <p className="font-semibold uppercase tracking-wide text-slate-500">{t('sidebar.recovery_scope_title')}</p>
-            <p className="mt-1 leading-5">
-              {t('sidebar.recovery_scope_desc')}
+            <span
+              className={cn(
+                'block rounded-lg border px-3 py-2 font-medium',
+                getFreshnessBadgeClass(dataFreshness),
+              )}
+            >
+              {getFreshnessLabel(dataFreshness, language)}
+            </span>
+            <p className="leading-5 text-slate-600">
+              {getFreshnessDetail(dataFreshness, language)}
             </p>
-            <Link href="/recovery-lab" className="mt-2 inline-flex font-semibold text-primary hover:underline">
-              {t('sidebar.open_recovery_lab')}
-            </Link>
-          </div>
+          </SidebarInfoCard>
+        ) : (
+          <SidebarInfoCard title={t('common.sync_data')}>
+            <p>{t('sidebar.sync_unavailable')}</p>
+          </SidebarInfoCard>
+        )}
 
-          <div className="border-t border-slate-200 pt-3 text-center text-[11px] text-slate-500">
-            © {new Date().getFullYear()} {t('common.title')}
-          </div>
+        <SidebarInfoCard title={t('sidebar.recovery_scope_title')}>
+          <p className="leading-5">{t('sidebar.recovery_scope_desc')}</p>
+          <Link
+            href="/recovery-lab"
+            className="inline-flex font-semibold text-primary hover:underline"
+          >
+            {t('sidebar.open_recovery_lab')}
+          </Link>
+        </SidebarInfoCard>
+
+        <div className="border-t border-slate-200 pt-3 text-center text-[11px] text-slate-500">
+          © {new Date().getFullYear()} {t('common.title')}
         </div>
       </div>
     </div>
@@ -252,5 +370,3 @@ export function Sidebar({
     </>
   );
 }
-
-

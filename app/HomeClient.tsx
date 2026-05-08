@@ -2,6 +2,7 @@
 
 import { BondCalculatorContainer } from '@/features/single-calculator/components/BondCalculatorContainer';
 import { useLanguage } from '@/i18n';
+import { PageSuspenseFallback } from '@/shared/components/PageSuspenseFallback';
 import { PageTransition } from '@/shared/components/PageTransition';
 import { Suspense } from 'react';
 
@@ -16,7 +17,7 @@ export default function HomeClient() {
           <p className="text-muted-foreground mt-2 font-medium">{t('common.description')}</p>
         </header>
         
-        <Suspense fallback={<div className="flex items-center justify-center py-20 text-muted-foreground font-bold">Loading calculator...</div>}>
+        <Suspense fallback={<PageSuspenseFallback />}>
           <BondCalculatorContainer />
         </Suspense>
       </div>
