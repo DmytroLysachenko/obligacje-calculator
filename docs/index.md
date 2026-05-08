@@ -48,6 +48,7 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [00. Current Product Roadmap](./plans/00_roadmap.md) - Honest current-state roadmap centered on recovery and simplification.
 - [01. Long-Term Product Foundation Plan](./plans/01_longterm_product_foundation_plan.md) - Long-term direction after scope narrowing.
 - [02. Full App Refactor and Recovery Plan](./plans/02_full_app_refactor_and_recovery_plan.md) - Active refactor plan for stability, calculation trust, UX simplification, and documentation reset.
+- [03. Manual Regression and Release Candidate Checklist](./plans/03_manual_regression_and_release_candidate_checklist.md) - Route-by-route validation checklist for finishing the recovery refactor responsibly.
 
 ### 6. Archived Plans
 - [Archived Plans Index](./archive/plans/index.md) - Historical and completed execution plans preserved for reference.
