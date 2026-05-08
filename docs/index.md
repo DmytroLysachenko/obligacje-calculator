@@ -49,6 +49,7 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [01. Long-Term Product Foundation Plan](./plans/01_longterm_product_foundation_plan.md) - Long-term direction after scope narrowing.
 - [02. Full App Refactor and Recovery Plan](./plans/02_full_app_refactor_and_recovery_plan.md) - Active refactor plan for stability, calculation trust, UX simplification, and documentation reset.
 - [03. Manual Regression and Release Candidate Checklist](./plans/03_manual_regression_and_release_candidate_checklist.md) - Route-by-route validation checklist for finishing the recovery refactor responsibly.
+- [04. Post-Refactor Polish and Hardening Plan](./plans/04_post_refactor_polish_and_hardening_plan.md) - Separate plan for i18n cleanup, UI/UX polish, edge-case handling, accessibility, and finish-quality hardening.
 
 ### 6. Archived Plans
 - [Archived Plans Index](./archive/plans/index.md) - Historical and completed execution plans preserved for reference.
