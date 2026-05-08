@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { RegularInvestmentResult } from '../../bond-core/types';
@@ -132,6 +133,33 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
 
   return (
     <div className="space-y-6">
+      <Card className="rounded-2xl border shadow-none">
+        <CardContent className="flex flex-col gap-4 p-5 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-2xl space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge
+                variant="outline"
+                className="border-slate-200 bg-slate-50 text-[10px] font-black uppercase tracking-wide text-slate-700"
+              >
+                Scenario summary
+              </Badge>
+            </div>
+            <CardTitle className="text-2xl font-black text-slate-900">
+              {formatCurrency(results.finalNominalValue)}
+            </CardTitle>
+            <CardDescription className="max-w-2xl text-sm leading-6 text-slate-600">
+              Final projected value for the committed contribution plan. Review the summary cards first,
+              then inspect yearly buckets and recent lots only if you need more detail.
+            </CardDescription>
+          </div>
+
+          <Button variant="outline" size="sm" className="gap-2" onClick={handleExport}>
+            <FileSpreadsheet className="h-4 w-4" />
+            {t('comparison.export')}
+          </Button>
+        </CardContent>
+      </Card>
+
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {stats.map((stat) => (
           <Card key={stat.label} className="rounded-2xl border shadow-none">
@@ -158,10 +186,6 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                 Review how much capital each purchase year contributed to the final outcome.
               </CardDescription>
             </div>
-            <Button variant="outline" size="sm" className="gap-2" onClick={handleExport}>
-              <FileSpreadsheet className="h-4 w-4" />
-              {t('comparison.export')}
-            </Button>
           </CardHeader>
           <CardContent className="px-0 pb-0">
             <Table>

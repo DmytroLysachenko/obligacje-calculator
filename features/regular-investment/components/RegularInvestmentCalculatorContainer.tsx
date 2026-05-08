@@ -6,7 +6,7 @@ import { RegularInvestmentInputsForm } from './RegularInvestmentInputsForm';
 import { RegularInvestmentResultsSummary } from './RegularInvestmentResultsSummary';
 import { RegularInvestmentChart } from './RegularInvestmentChart';
 import { useLanguage } from '@/i18n';
-import { PiggyBank } from 'lucide-react';
+import { CheckCircle2, PiggyBank, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
@@ -21,15 +21,53 @@ const EmptyState = ({
   onCalculate: () => void;
   label: string;
 }) => (
-  <div className="rounded-2xl border border-dashed bg-card px-6 py-12 text-center">
-    <h3 className="text-lg font-bold text-foreground">Start with one scenario</h3>
-    <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-      Set contribution amount, horizon, and bond type. Run the simulation only when the inputs are ready.
-      This view now avoids background recalculation while you edit.
-    </p>
-    <Button onClick={onCalculate} className="mt-6 h-11 px-6 font-semibold">
-      {label}
-    </Button>
+  <div className="rounded-3xl border bg-card p-6 shadow-sm md:p-8">
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_240px] lg:items-start">
+      <div className="space-y-5">
+        <div className="space-y-3">
+          <div className="inline-flex items-center gap-2 rounded-full border bg-muted px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-700">
+            <TrendingUp className="h-3.5 w-3.5 text-primary" />
+            Ready to simulate
+          </div>
+          <h3 className="text-2xl font-black tracking-tight text-slate-900">
+            Build one recurring plan, then run one committed simulation.
+          </h3>
+          <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
+            Set contribution amount, frequency, horizon, and bond type first. Advanced assumptions stay secondary,
+            and no background recalculation runs while you edit.
+          </p>
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-3">
+          <ReadyStep
+            title="Contribution plan"
+            description="Amount, frequency, and bond type."
+          />
+          <ReadyStep
+            title="Timing path"
+            description="Purchase date, horizon, withdrawal mode, and tax wrapper."
+          />
+          <ReadyStep
+            title="Optional advanced"
+            description="Inflation path, rollover behavior, and chart display only if needed."
+          />
+        </div>
+      </div>
+
+      <div className="rounded-2xl border bg-slate-50 p-5">
+        <div className="space-y-3">
+          <p className="text-[11px] font-black uppercase tracking-widest text-slate-500">
+            Action
+          </p>
+          <Button onClick={onCalculate} className="h-11 w-full font-semibold">
+            {label}
+          </Button>
+          <p className="text-xs leading-6 text-muted-foreground">
+            Results stay stable until you intentionally rerun with new committed inputs.
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 );
 
@@ -138,3 +176,21 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
     </CalculatorPageShell>
   );
 };
+
+const ReadyStep = ({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) => (
+  <div className="rounded-2xl border bg-white p-4">
+    <div className="flex items-start gap-3">
+      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+      <div className="space-y-1">
+        <p className="text-sm font-bold text-slate-900">{title}</p>
+        <p className="text-xs leading-6 text-muted-foreground">{description}</p>
+      </div>
+    </div>
+  </div>
+);
