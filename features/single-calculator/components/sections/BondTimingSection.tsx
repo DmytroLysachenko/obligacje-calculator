@@ -96,7 +96,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
             </PopoverContent>
           </Popover>
           {hasMounted && isFutureDate && (
-            <div className="flex items-center gap-2 text-destructive text-[10px] font-medium animate-in fade-in slide-in-from-top-1">
+            <div className="flex items-center gap-2 text-[10px] font-medium text-destructive">
               <AlertCircle className="h-3 w-3" />
               <span>{t('bonds.error_future_date')}</span>
             </div>
@@ -180,7 +180,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
         </Select>
         
         {(inputs.taxStrategy === TaxStrategy.IKE || inputs.taxStrategy === TaxStrategy.IKZE) && (
-          <div className="flex items-center justify-between p-3 bg-muted/50 rounded-xl border border-dashed animate-in fade-in slide-in-from-top-1 duration-200">
+          <div className="flex items-center justify-between rounded-xl border border-dashed bg-muted/50 p-3">
             <div className="space-y-0.5">
               <Label className="text-xs font-bold uppercase tracking-tight">{t('bonds.use_tax_limit')}</Label>
               <p className="text-[10px] text-muted-foreground leading-tight max-w-[200px]">

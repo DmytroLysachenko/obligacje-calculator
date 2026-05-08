@@ -18,6 +18,7 @@ import { useLanguage } from '@/i18n';
 import { useChartData } from '@/shared/hooks/useChartData';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   getReferenceAsOfLabel,
   getReferenceCoverageLabel,
@@ -96,7 +97,7 @@ export const InflationChart = ({ period = 'ALL' }: { period?: '1Y' | '5Y' | '10Y
       : [Math.min(0, Math.floor(Math.min(...chartData.map((point) => point.rate), 0))), Math.min(maxRate, clippedMax)];
 
   if (isLoading) {
-    return <div className="flex h-[400px] w-full items-center justify-center text-muted-foreground animate-pulse">{t('common.loading')}</div>;
+    return <Skeleton className="h-[400px] w-full rounded-2xl" />;
   }
 
   if (isError) {

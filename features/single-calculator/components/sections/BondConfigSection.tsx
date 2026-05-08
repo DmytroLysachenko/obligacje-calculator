@@ -217,7 +217,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
               </div>
             </div>
             {!isDivisibleBy100 && inputs.initialInvestment > 0 && (
-              <div className="flex items-center gap-2 text-destructive text-[10px] font-medium animate-in fade-in slide-in-from-top-1">
+              <div className="flex items-center gap-2 text-[10px] font-medium text-destructive">
                 <AlertCircle className="h-3 w-3" />
                 <span>{t('bonds.error_100_pln')}</span>
               </div>

@@ -88,7 +88,7 @@ export const BondDisplaySection: React.FC<BondDisplaySectionProps> = React.memo(
       </div>
 
       {showCustomTax && (
-        <div className="px-4 py-2 animate-in fade-in zoom-in-95 duration-200">
+        <div className="px-4 py-2">
           <Input
             type="number"
             className="h-10 font-bold"
