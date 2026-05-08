@@ -40,6 +40,18 @@ export function getReferenceAsOfLabel(meta?: DataReferenceMetaLike) {
   return meta?.asOf ?? meta?.lastCheck ?? 'Unavailable';
 }
 
+export function getReferenceScopeLabel(meta?: DataReferenceMetaLike) {
+  if (!meta) {
+    return 'Unknown scope';
+  }
+
+  if (meta.usedFallback || meta.source === 'fallback') {
+    return 'Reference only';
+  }
+
+  return 'Calculator context';
+}
+
 export function getReferenceState(meta?: DataReferenceMetaLike) {
   if (!meta) {
     return {
