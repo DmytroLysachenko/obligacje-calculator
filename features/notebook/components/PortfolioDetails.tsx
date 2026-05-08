@@ -7,6 +7,7 @@ import {
   ArrowLeft,
   Download,
   ExternalLink,
+  FolderOpen,
   Loader2,
   Share2,
   ShieldCheck,
@@ -217,6 +218,40 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
 
   return (
     <div className="space-y-6 pb-16">
+      <Card className="rounded-2xl border shadow-none">
+        <CardContent className="flex flex-col gap-6 p-5 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-2xl space-y-3">
+            <div className="inline-flex items-center gap-2 rounded-full border bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-700">
+              <FolderOpen className="h-3.5 w-3.5 text-primary" />
+              Portfolio record view
+            </div>
+            <h3 className="text-2xl font-black tracking-tight text-slate-900">
+              Open one portfolio, inspect lots, then export or simulate only when needed.
+            </h3>
+            <p className="text-sm leading-7 text-muted-foreground">
+              Start with stored lots and the upcoming liquidity window. Use the analytics tab as a supporting projection,
+              not as a recommendation layer.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:w-[360px]">
+            <div className="rounded-2xl border bg-white px-4 py-3">
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                Stored lots
+              </p>
+              <p className="mt-2 text-lg font-black text-slate-900">{lots.length}</p>
+            </div>
+            <div className="rounded-2xl border bg-white px-4 py-3">
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                Next maturity
+              </p>
+              <p className="mt-2 text-lg font-black text-slate-900">
+                {nextMaturity ? format(nextMaturity.maturityDate, 'dd.MM.yyyy') : '-'}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="flex items-start gap-3">
           <Button variant="ghost" size="icon" onClick={onBack} className="rounded-full">
@@ -360,7 +395,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                 <CardHeader>
                   <CardTitle>Liquidity window</CardTitle>
                   <CardDescription>
-                    See how much nominal cash returns within a short maturity window.
+                    See how much nominal cash returns inside a short upcoming maturity window.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -413,7 +448,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                 <CardContent className="text-sm leading-6 text-muted-foreground">
                   Use this view to store and inspect lots. If you want to test reinvestment,
                   early withdrawal, or scenario assumptions, jump into a calculator page with the
-                  exported or linked lot details.
+                  linked lot details rather than turning the notebook itself into a planning dashboard.
                 </CardContent>
               </Card>
             </div>
@@ -425,7 +460,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
             <CardHeader>
               <CardTitle>Portfolio projection</CardTitle>
               <CardDescription>
-                Aggregated nominal value simulation across all stored lots.
+                Aggregated nominal value simulation across all stored lots. Read it after the records view, not before.
               </CardDescription>
             </CardHeader>
             <CardContent>

@@ -1,15 +1,18 @@
 import { Metadata } from 'next';
 import { NotebookContainer } from '@/features/notebook/components/NotebookContainer';
+import { PageTransition } from '@/shared/components/PageTransition';
 
 export const metadata: Metadata = {
-  title: 'My Portfolio - Bonds Calculator',
-  description: 'Track your real bond investments and project their future value.',
+  title: 'Notebook - Bonds Calculator',
+  description: 'Recovery-first notebook for stored bond lots, maturities, and exports.',
 };
 
 export default function NotebookPage() {
   return (
-    <div className="container mx-auto">
-      <NotebookContainer />
-    </div>
+    <PageTransition>
+      <div className="container mx-auto">
+        <NotebookContainer />
+      </div>
+    </PageTransition>
   );
 }

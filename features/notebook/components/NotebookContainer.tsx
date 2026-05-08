@@ -2,12 +2,10 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useLanguage } from '@/i18n';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import {
   AlertCircle,
   BookOpen,
-  Calendar,
+  CheckCircle2,
   FileText,
   FolderOpen,
   Plus,
@@ -15,9 +13,11 @@ import {
   Upload,
 } from 'lucide-react';
 import { UserPortfolio } from '@/db/schema';
-import { PortfolioDetails } from './PortfolioDetails';
-import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
+import { PortfolioDetails } from './PortfolioDetails';
 
 const EmptyPortfolioState = ({
   onCreate,
@@ -28,22 +28,55 @@ const EmptyPortfolioState = ({
   onCreateDemo: () => void;
   onImport: () => void;
 }) => (
-  <div className="rounded-2xl border border-dashed bg-card px-6 py-12 text-center">
-    <h3 className="text-lg font-semibold text-foreground">Create a simple notebook first</h3>
-    <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-      Use the notebook to store bond lots and review maturity timing. It is a record-keeping
-      workspace, not a recommendation center.
-    </p>
-    <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
-      <Button onClick={onCreate} className="h-11 px-6 font-semibold">
-        Create portfolio
-      </Button>
-      <Button variant="outline" onClick={onCreateDemo} className="h-11 px-6 font-semibold">
-        Load demo
-      </Button>
-      <Button variant="outline" onClick={onImport} className="h-11 px-6 font-semibold">
-        Import JSON
-      </Button>
+  <div className="rounded-3xl border bg-card p-6 shadow-sm md:p-8">
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_240px] lg:items-start">
+      <div className="space-y-5">
+        <div className="space-y-3">
+          <div className="inline-flex items-center gap-2 rounded-full border bg-muted px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-700">
+            <BookOpen className="h-3.5 w-3.5 text-primary" />
+            Notebook ready
+          </div>
+          <h3 className="text-2xl font-black tracking-tight text-slate-900">
+            Create a simple records notebook first.
+          </h3>
+          <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
+            Use the notebook to store lots, review maturity timing, and export clean records.
+            It is a record-keeping workspace, not a recommendation center.
+          </p>
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-3">
+          <ReadyStep
+            title="Create"
+            description="Start an empty portfolio or load a demo."
+          />
+          <ReadyStep
+            title="Store"
+            description="Keep lots, dates, and nominal values together."
+          />
+          <ReadyStep
+            title="Inspect"
+            description="Open one portfolio and check maturities and exports."
+          />
+        </div>
+      </div>
+
+      <div className="rounded-2xl border bg-slate-50 p-5">
+        <div className="space-y-3">
+          <p className="text-[11px] font-black uppercase tracking-widest text-slate-500">
+            Actions
+          </p>
+          <Button onClick={onCreate} className="h-11 w-full font-semibold">
+            Create portfolio
+          </Button>
+          <Button variant="outline" onClick={onCreateDemo} className="h-11 w-full font-semibold">
+            Load demo
+          </Button>
+          <Button variant="outline" onClick={onImport} className="h-11 w-full font-semibold">
+            Import JSON
+          </Button>
+        </div>
+      </div>
     </div>
   </div>
 );
@@ -55,6 +88,24 @@ const NotebookLoadingState = () => (
       <Skeleton className="h-52 w-full rounded-2xl" />
       <Skeleton className="h-52 w-full rounded-2xl" />
       <Skeleton className="h-52 w-full rounded-2xl" />
+    </div>
+  </div>
+);
+
+const ReadyStep = ({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) => (
+  <div className="rounded-2xl border bg-white p-4">
+    <div className="flex items-start gap-3">
+      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+      <div className="space-y-1">
+        <p className="text-sm font-bold text-slate-900">{title}</p>
+        <p className="text-xs leading-6 text-muted-foreground">{description}</p>
+      </div>
     </div>
   </div>
 );
@@ -213,29 +264,12 @@ export const NotebookContainer: React.FC = () => {
     const portfolio = portfolios.find((item) => item.id === selectedPortfolioId);
 
     return portfolio ? (
-      <PortfolioDetails portfolio={portfolio} onBack={() => setSelectedPortfolioId(null)} />
+      <PortfolioDetails
+        portfolio={portfolio}
+        onBack={() => setSelectedPortfolioId(null)}
+      />
     ) : null;
   }
-
-  const headerActions = (
-    <div className="flex flex-wrap gap-2">
-      <input
-        ref={importRef}
-        type="file"
-        accept="application/json"
-        className="hidden"
-        onChange={handleImportFile}
-      />
-      <Button variant="outline" onClick={handleImportClick} className="h-10 px-4 gap-2">
-        <Upload className="h-4 w-4" />
-        Import JSON
-      </Button>
-      <Button onClick={handleCreateDefault} className="h-10 px-4 gap-2">
-        <Plus className="h-4 w-4" />
-        {t('notebook.new_portfolio')}
-      </Button>
-    </div>
-  );
 
   return (
     <CalculatorPageShell
@@ -244,36 +278,58 @@ export const NotebookContainer: React.FC = () => {
       icon={<BookOpen className="h-8 w-8" />}
       isCalculating={isLoading}
       hasResults={portfolios.length > 0}
-      extraHeaderActions={headerActions}
     >
-      {error && (
+      <input
+        ref={importRef}
+        type="file"
+        accept="application/json"
+        className="hidden"
+        onChange={handleImportFile}
+      />
+
+      {error ? (
         <div className="rounded-2xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
           <div className="flex items-center gap-3 font-semibold">
             <AlertCircle className="h-5 w-5" />
             {error}
           </div>
           <div className="mt-3">
-            <Button variant="outline" size="sm" className="gap-2" onClick={fetchPortfolios}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={fetchPortfolios}
+            >
               <RefreshCcw className="h-4 w-4" />
               {t('common.retry')}
             </Button>
           </div>
         </div>
-      )}
+      ) : null}
 
       <Card className="rounded-2xl border shadow-none">
-        <CardContent className="flex flex-col gap-3 py-4 md:flex-row md:items-center md:justify-between">
-          <div>
+        <CardContent className="flex flex-col gap-4 py-5 md:flex-row md:items-center md:justify-between">
+          <div className="space-y-1">
             <p className="font-semibold text-foreground">{t('notebook.guest_mode')}</p>
-            <p className="text-sm leading-6 text-muted-foreground">{t('notebook.guest_desc')}</p>
+            <p className="text-sm leading-6 text-muted-foreground">
+              {t('notebook.guest_desc')}
+            </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" onClick={handleImportClick} className="gap-2">
+              <Upload className="h-4 w-4" />
+              Import JSON
+            </Button>
             <Button variant="outline" onClick={handleCreateDemo}>
               Load demo
             </Button>
             <Button variant="outline" onClick={fetchPortfolios} className="gap-2">
               <RefreshCcw className="h-4 w-4" />
               Refresh
+            </Button>
+            <Button onClick={handleCreateDefault} className="gap-2">
+              <Plus className="h-4 w-4" />
+              {t('notebook.new_portfolio')}
             </Button>
           </div>
         </CardContent>
@@ -288,59 +344,76 @@ export const NotebookContainer: React.FC = () => {
           onImport={handleImportClick}
         />
       ) : (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {portfolios.map((portfolio) => (
-            <Card key={portfolio.id} className="rounded-2xl border shadow-none">
-              <CardHeader className="space-y-3">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="rounded-xl border bg-muted/30 p-3 text-primary">
-                    <FileText className="h-5 w-5" />
-                  </div>
-                  <span className="rounded-full border px-3 py-1 text-xs font-medium text-muted-foreground">
-                    {portfolio.isPublic ? 'Public link on' : 'Private'}
-                  </span>
-                </div>
-                <div>
-                  <CardTitle className="text-xl">{portfolio.name}</CardTitle>
-                  <CardDescription className="mt-2 leading-6">
-                    {portfolio.description || t('notebook.portfolio_details')}
-                  </CardDescription>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-2">
-                  <div className="rounded-xl border bg-muted/20 p-3">
-                    <p className="text-xs uppercase tracking-wide text-muted-foreground">Created</p>
-                    <p className="mt-1 flex items-center gap-2 font-medium text-foreground">
-                      <Calendar className="h-4 w-4" />
-                      {new Date(portfolio.createdAt!).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div className="rounded-xl border bg-muted/20 p-3">
-                    <p className="text-xs uppercase tracking-wide text-muted-foreground">Use</p>
-                    <p className="mt-1 font-medium text-foreground">Lots, maturities, exports</p>
-                  </div>
-                </div>
-                <Button className="w-full" onClick={() => setSelectedPortfolioId(portfolio.id)}>
-                  Open portfolio
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+        <div className="space-y-6">
+          <Card className="rounded-2xl border shadow-none">
+            <CardHeader className="border-b bg-muted/20">
+              <CardTitle className="text-lg font-black tracking-tight">
+                Stored portfolios
+              </CardTitle>
+              <CardDescription>
+                Open one portfolio at a time. This page should stay focused on records, maturity timing, and exports.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 gap-4 p-5 md:grid-cols-2 xl:grid-cols-3">
+              {portfolios.map((portfolio) => (
+                <Card key={portfolio.id} className="rounded-2xl border shadow-none">
+                  <CardHeader className="space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="rounded-xl border bg-muted/30 p-3 text-primary">
+                        <FileText className="h-5 w-5" />
+                      </div>
+                      <span className="rounded-full border px-3 py-1 text-xs font-medium text-muted-foreground">
+                        {portfolio.isPublic ? 'Public link on' : 'Private'}
+                      </span>
+                    </div>
+                    <div>
+                      <CardTitle className="text-xl">{portfolio.name}</CardTitle>
+                      <CardDescription className="mt-2 leading-6">
+                        {portfolio.description || t('notebook.portfolio_details')}
+                      </CardDescription>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-2">
+                      <div className="rounded-xl border bg-muted/20 p-3">
+                        <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                          Created
+                        </p>
+                        <p className="mt-1 font-medium text-foreground">
+                          {new Date(portfolio.createdAt!).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="rounded-xl border bg-muted/20 p-3">
+                        <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                          Use
+                        </p>
+                        <p className="mt-1 font-medium text-foreground">
+                          Lots, maturities, exports
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      className="w-full"
+                      onClick={() => setSelectedPortfolioId(portfolio.id)}
+                    >
+                      Open portfolio
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </CardContent>
+          </Card>
 
-      {!isLoading && portfolios.length > 0 && (
-        <div className="rounded-2xl border bg-muted/20 p-5">
-          <div className="flex items-start gap-3">
-            <FolderOpen className="mt-0.5 h-5 w-5 text-primary" />
-            <div className="space-y-2">
-              <p className="font-semibold text-foreground">Notebook scope</p>
-              <p className="text-sm leading-6 text-muted-foreground">
-                Keep this area focused on stored positions, maturities, and exportable records.
-                More product value comes from accurate calculations than from extra decorative
-                portfolio widgets.
-              </p>
+          <div className="rounded-2xl border bg-muted/20 p-5">
+            <div className="flex items-start gap-3">
+              <FolderOpen className="mt-0.5 h-5 w-5 text-primary" />
+              <div className="space-y-2">
+                <p className="font-semibold text-foreground">Notebook scope</p>
+                <p className="text-sm leading-6 text-muted-foreground">
+                  Keep this area focused on stored positions, maturities, and exportable records.
+                  More product value comes from accurate calculations than from extra decorative portfolio widgets.
+                </p>
+              </div>
             </div>
           </div>
         </div>
