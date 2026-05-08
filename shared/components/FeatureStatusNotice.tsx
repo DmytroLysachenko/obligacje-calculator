@@ -74,21 +74,28 @@ export function FeatureStatusNotice({
   title,
   children,
   className,
+  eyebrow,
 }: {
   status: FeatureStatus;
   title: string;
   children: React.ReactNode;
   className?: string;
+  eyebrow?: string;
 }) {
   const config = statusConfig[status];
   const Icon = config.icon;
 
   return (
-    <div className={cn('rounded-2xl border p-5', config.className, className)}>
+    <div className={cn('rounded-2xl border p-5 shadow-none', config.className, className)}>
       <div className="flex items-start gap-3">
         <Icon className="mt-0.5 h-5 w-5 shrink-0" />
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
+            {eyebrow ? (
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-current/70">
+                {eyebrow}
+              </span>
+            ) : null}
             <p className="font-semibold">{title}</p>
             <FeatureStatusPill status={status} />
           </div>

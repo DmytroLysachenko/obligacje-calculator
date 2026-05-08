@@ -52,7 +52,11 @@ export default function RecoveryLabPage() {
         </p>
       </div>
 
-      <FeatureStatusNotice status="experimental" title="Why these tools are separated">
+      <FeatureStatusNotice
+        status="experimental"
+        eyebrow="Recovery framing"
+        title="Why these tools are separated"
+      >
         The app now emphasizes core calculator and reference pages first. Recovery-lab pages stay available for
         investigation and iterative validation, but they should not compete with the flagship calculator flows
         until their scope and evidence improve further.

@@ -8,9 +8,13 @@ export default function LadderPage() {
   return (
     <PageTransition>
       <div className="space-y-8">
-        <FeatureStatusNotice status="conditional" title="Conditional maturity-spacing calculator">
-          This page stays focused on cashflow timing and maturity spread. It is a ladder scenario calculator,
-          not a strategy recommendation surface.
+        <FeatureStatusNotice
+          status="conditional"
+          eyebrow="Recovery boundary"
+          title="Conditional maturity-spacing calculator"
+        >
+          This page stays focused on cashflow timing and maturity spacing. Use it
+          as a ladder scenario calculator, not as a strategy recommendation surface.
         </FeatureStatusNotice>
         <Suspense fallback={<PageSuspenseFallback />}>
           <LadderContainer />
