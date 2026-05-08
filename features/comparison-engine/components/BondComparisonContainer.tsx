@@ -1,20 +1,7 @@
 'use client';
 
 import React, { useCallback, useMemo, useState } from 'react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { BondType, TaxStrategy } from '@/features/bond-core/types';
-import { BOND_DEFINITIONS } from '@/features/bond-core/constants/bond-definitions';
-import { getBondSupportMeta } from '@/features/bond-core/support-matrix';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { addYears } from 'date-fns';
 import {
   Brush,
   CartesianGrid,
@@ -27,22 +14,64 @@ import {
   YAxis,
 } from 'recharts';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
-import { addYears } from 'date-fns';
-import { AlertTriangle, Loader2, Scale, TrendingUp } from 'lucide-react';
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Loader2,
+  Scale,
+  TrendingUp,
+} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { BondType, TaxStrategy } from '@/features/bond-core/types';
+import { BOND_DEFINITIONS } from '@/features/bond-core/constants/bond-definitions';
+import { getBondSupportMeta } from '@/features/bond-core/support-matrix';
+import { BondComparisonCalculationEnvelope } from '@/features/bond-core/types/scenarios';
 import { useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
-import { BondComparisonCalculationEnvelope } from '@/features/bond-core/types/scenarios';
+import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { getBondColor } from '@/shared/constants/bond-colors';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
-import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 
 type ComparisonResultItem = BondComparisonCalculationEnvelope['result'][number];
 type ChartDataPoint = {
   date: string;
   year: number;
 } & Partial<Record<BondType, number>>;
+
+function formatPct(value: number) {
+  return `${value.toFixed(1)}%`;
+}
+
+function ResultMetric({
+  label,
+  value,
+  tone = 'text-slate-900',
+}: {
+  label: string;
+  value: string;
+  tone?: string;
+}) {
+  return (
+    <div className="rounded-2xl border bg-white px-4 py-3">
+      <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+        {label}
+      </p>
+      <p className={cn('mt-2 text-lg font-black', tone)}>{value}</p>
+    </div>
+  );
+}
 
 export const BondComparisonContainer = () => {
   const { language, t } = useLanguage();
@@ -149,25 +178,34 @@ export const BondComparisonContainer = () => {
       maximumFractionDigits: 0,
     }).format(value);
 
+  const bestResult = useMemo(() => {
+    if (results.length === 0) {
+      return null;
+    }
+
+    return results.reduce((best, current) =>
+      current.result.netPayoutValue > best.result.netPayoutValue ? current : best,
+    );
+  }, [results]);
+
   return (
     <div className="space-y-8 pb-20">
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[340px_1fr]">
+      <div className="grid grid-cols-1 gap-8 xl:grid-cols-[380px_minmax(0,1fr)]">
         <aside className="space-y-6">
           <Card className="border shadow-sm">
             <CardHeader className="border-b bg-muted/20">
               <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest">
                 <Scale className="h-4 w-4 text-primary" />
-                Shared Scenario
+                Shared scenario
               </CardTitle>
               <CardDescription>
-                Same assumptions for all selected bonds. This mode isolates bond
-                structure differences.
+                One amount, one horizon, one assumption set. This isolates bond structure differences under the same setup.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6 pt-6">
               <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                  Initial Sum
+                  Initial sum
                 </Label>
                 <CommittedSliderInput
                   value={initialInvestment}
@@ -231,7 +269,7 @@ export const BondComparisonContainer = () => {
                   <div>
                     <p className="text-sm font-semibold">{t('bonds.reinvest')}</p>
                     <p className="text-[10px] text-muted-foreground">
-                      Allow shorter bonds to roll over if needed.
+                      Allow shorter bonds to roll forward if the comparison horizon runs longer than one cycle.
                     </p>
                   </div>
                   <Switch
@@ -247,9 +285,9 @@ export const BondComparisonContainer = () => {
               <Button
                 className="h-11 w-full font-black uppercase tracking-wide"
                 onClick={calculateComparison}
-                disabled={loading}
+                disabled={loading || selectedBonds.length === 0}
               >
-                {loading ? 'Calculating...' : 'Run Bond Ranking'}
+                {loading ? 'Calculating...' : 'Run shared comparison'}
               </Button>
             </CardContent>
           </Card>
@@ -257,33 +295,48 @@ export const BondComparisonContainer = () => {
           <Card className="border shadow-sm">
             <CardHeader className="border-b bg-muted/20">
               <CardTitle className="text-sm font-black uppercase tracking-widest">
-                Bonds to Compare
+                Bonds in this run
               </CardTitle>
+              <CardDescription>
+                Pick only the bonds you actually want in the same scenario. Fewer bonds usually produce a clearer read.
+              </CardDescription>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-2 pt-4">
-              {Object.values(BondType).map((type) => (
-                <Button
-                  key={type}
-                  variant={selectedBonds.includes(type) ? 'default' : 'outline'}
-                  className={cn(
-                    'h-10 text-[10px] font-black uppercase tracking-tight',
-                    !selectedBonds.includes(type) && 'text-slate-700',
-                  )}
-                  onClick={() => toggleBond(type)}
-                >
-                  <div className="flex flex-col items-start leading-tight">
-                    <span>{type}</span>
-                    <span
-                      className={cn(
-                        'text-[9px] font-semibold normal-case opacity-80',
-                        selectedBonds.includes(type) ? 'text-primary-foreground/80' : 'text-slate-500',
-                      )}
-                    >
-                      {getBondSupportMeta(type).shortLabel}
-                    </span>
-                  </div>
-                </Button>
-              ))}
+            <CardContent className="space-y-4 pt-4">
+              <div className="flex items-center justify-between rounded-xl border bg-slate-50 px-4 py-3">
+                <p className="text-xs font-black uppercase tracking-widest text-slate-500">
+                  Selected
+                </p>
+                <Badge variant="outline" className="font-black">
+                  {selectedBonds.length}
+                </Badge>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {Object.values(BondType).map((type) => (
+                  <Button
+                    key={type}
+                    variant={selectedBonds.includes(type) ? 'default' : 'outline'}
+                    className={cn(
+                      'h-auto min-h-12 justify-start px-3 py-2 text-[10px] font-black uppercase tracking-tight',
+                      !selectedBonds.includes(type) && 'text-slate-700',
+                    )}
+                    onClick={() => toggleBond(type)}
+                  >
+                    <div className="flex flex-col items-start leading-tight">
+                      <span>{type}</span>
+                      <span
+                        className={cn(
+                          'text-[9px] font-semibold normal-case opacity-80',
+                          selectedBonds.includes(type)
+                            ? 'text-primary-foreground/80'
+                            : 'text-slate-500',
+                        )}
+                      >
+                        {getBondSupportMeta(type).shortLabel}
+                      </span>
+                    </div>
+                  </Button>
+                ))}
+              </div>
             </CardContent>
           </Card>
 
@@ -291,20 +344,18 @@ export const BondComparisonContainer = () => {
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-amber-900">
                 <AlertTriangle className="h-4 w-4" />
-                Interpretation Note
+                Interpretation note
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 text-sm text-amber-900">
+            <CardContent className="space-y-2 text-sm leading-6 text-amber-900">
               <p>
-                This mode ranks modeled outcomes for one shared scenario.
+                This page compares modeled outcomes for one committed scenario at a time.
               </p>
               <p>
-                Use it to inspect tradeoffs, not as personal advice or a final
-                bond choice.
+                Read differences as scenario tradeoffs, not as personal advice or a universal best bond.
               </p>
               <p>
-                ROS and ROD remain available for comparison, but only as conditional
-                household-eligibility scenarios.
+                ROS and ROD can still appear here, but only as conditional household-eligibility cases.
               </p>
             </CardContent>
           </Card>
@@ -312,23 +363,52 @@ export const BondComparisonContainer = () => {
 
         <div className="space-y-8">
           {!results.length && !loading ? (
-            <Card className="border-2 border-dashed">
-              <CardContent className="flex h-[420px] flex-col items-center justify-center space-y-4 text-center">
-                <TrendingUp className="h-12 w-12 text-muted-foreground/40" />
-                <div className="space-y-2">
-                  <p className="text-lg font-semibold">{t('comparison.ready_to_compare')}</p>
-                  <p className="max-w-md text-sm text-muted-foreground">
-                    Select bonds, set the shared scenario, then run the normalized
-                    comparison.
+            <Card className="border">
+              <CardContent className="space-y-6 p-6 md:p-8">
+                <div className="space-y-3">
+                  <div className="inline-flex items-center gap-2 rounded-full border bg-muted px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-700">
+                    <TrendingUp className="h-3.5 w-3.5 text-primary" />
+                    {t('comparison.ready_to_compare')}
+                  </div>
+                  <h3 className="text-2xl font-black tracking-tight text-slate-900">
+                    Keep one shared scenario. Compare only what matters.
+                  </h3>
+                  <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
+                    Select the bonds, commit the shared assumptions, then run one clean comparison.
+                    Start with the outcome cards first. Use the chart only to inspect path differences over time.
                   </p>
                 </div>
-                <Button onClick={calculateComparison}>{t('common.calculate')}</Button>
+
+                <div className="grid gap-3 md:grid-cols-3">
+                  <ResultMetric
+                    label="Step 1"
+                    value="Select bonds"
+                  />
+                  <ResultMetric
+                    label="Step 2"
+                    value="Set shared assumptions"
+                  />
+                  <ResultMetric
+                    label="Step 3"
+                    value="Run comparison"
+                  />
+                </div>
+
+                <div className="max-w-xs">
+                  <Button
+                    className="w-full"
+                    onClick={calculateComparison}
+                    disabled={selectedBonds.length === 0}
+                  >
+                    {t('common.calculate')}
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ) : null}
 
           {loading && !results.length ? (
-            <div className="flex h-[420px] items-center justify-center">
+            <div className="flex h-[420px] items-center justify-center rounded-3xl border bg-card">
               <Loader2 className="h-10 w-10 animate-spin text-primary" />
             </div>
           ) : null}
@@ -336,14 +416,51 @@ export const BondComparisonContainer = () => {
           {results.length ? (
             <>
               {isDirty ? (
-                <div className="flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+                <div className="flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 md:flex-row md:items-center md:justify-between">
                   <p className="text-sm font-medium text-amber-900">
-                    Inputs changed. Rerun the comparison to refresh the chart and cards.
+                    Inputs changed. Results below still reflect the previous committed comparison.
                   </p>
-                  <Button variant="outline" className="border-amber-300 bg-white" onClick={calculateComparison}>
+                  <Button
+                    variant="outline"
+                    className="border-amber-300 bg-white"
+                    onClick={calculateComparison}
+                  >
                     {t('common.recalculate')}
                   </Button>
                 </div>
+              ) : null}
+
+              {bestResult ? (
+                <Card className="border shadow-sm">
+                  <CardContent className="flex flex-col gap-6 p-6 lg:flex-row lg:items-start lg:justify-between">
+                    <div className="max-w-2xl space-y-3">
+                      <div className="inline-flex items-center gap-2 rounded-full border bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-700">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+                        Shared-scenario snapshot
+                      </div>
+                      <h3 className="text-2xl font-black tracking-tight text-slate-900">
+                        {bestResult.type} shows the highest modeled net payout in this setup.
+                      </h3>
+                      <p className="text-sm leading-7 text-muted-foreground">
+                        This only applies to the selected amount, horizon, tax treatment, and assumptions above.
+                        Change the scenario and the relative order can change too.
+                      </p>
+                    </div>
+
+                    <div className="grid gap-3 sm:grid-cols-2 lg:w-[360px]">
+                      <ResultMetric
+                        label="Leading bond"
+                        value={bestResult.type}
+                        tone="text-primary"
+                      />
+                      <ResultMetric
+                        label="Net payout"
+                        value={formatCurrency(bestResult.result.netPayoutValue)}
+                        tone="text-emerald-700"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
               ) : null}
 
               <Card className="border shadow-sm">
@@ -352,22 +469,57 @@ export const BondComparisonContainer = () => {
                     {t('comparison.performance_over_time')}
                   </CardTitle>
                   <CardDescription>
-                    All selected bonds under the same amount, horizon, and assumptions.
+                    Same amount, same horizon, same assumptions. Only bond structure differs.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="p-6">
                   <ChartContainer height={420}>
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={chartData}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
-                        <XAxis dataKey="date" fontSize={10} tickLine={false} axisLine={false} minTickGap={40} />
-                        <YAxis fontSize={10} tickLine={false} axisLine={false} tickFormatter={(value) => `${value / 1000}k`} />
-                        <Tooltip
-                          contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 20px 50px rgba(0,0,0,0.1)' }}
-                          formatter={(value: ValueType | undefined) => formatCurrency(Number(value ?? 0))}
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          vertical={false}
+                          stroke="rgba(0,0,0,0.05)"
                         />
-                        <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px', fontSize: '12px', fontWeight: 'bold' }} />
-                        {chartData.length > 24 ? <Brush dataKey="date" height={22} stroke="#64748b" travellerWidth={8} /> : null}
+                        <XAxis
+                          dataKey="date"
+                          fontSize={10}
+                          tickLine={false}
+                          axisLine={false}
+                          minTickGap={40}
+                        />
+                        <YAxis
+                          fontSize={10}
+                          tickLine={false}
+                          axisLine={false}
+                          tickFormatter={(value) => `${value / 1000}k`}
+                        />
+                        <Tooltip
+                          contentStyle={{
+                            borderRadius: '12px',
+                            border: 'none',
+                            boxShadow: '0 20px 50px rgba(0,0,0,0.1)',
+                          }}
+                          formatter={(value: ValueType | undefined) =>
+                            formatCurrency(Number(value ?? 0))
+                          }
+                        />
+                        <Legend
+                          iconType="circle"
+                          wrapperStyle={{
+                            paddingTop: '20px',
+                            fontSize: '12px',
+                            fontWeight: 'bold',
+                          }}
+                        />
+                        {chartData.length > 24 ? (
+                          <Brush
+                            dataKey="date"
+                            height={22}
+                            stroke="#64748b"
+                            travellerWidth={8}
+                          />
+                        ) : null}
                         {selectedBonds.map((type) => (
                           <Line
                             key={type}
@@ -387,17 +539,20 @@ export const BondComparisonContainer = () => {
                 </CardContent>
               </Card>
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {results.map((result) => {
                   const finalValue = result.result.netPayoutValue;
                   const profit = result.result.totalProfit;
-                  const roi = ((finalValue / initialInvestment - 1) * 100).toFixed(1);
+                  const roi = (finalValue / initialInvestment - 1) * 100;
 
                   return (
                     <Card key={result.type} className="border shadow-sm">
                       <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                          <Badge variant="outline" className="font-black text-[10px] tracking-widest">
+                        <div className="flex items-center justify-between gap-3">
+                          <Badge
+                            variant="outline"
+                            className="font-black text-[10px] tracking-widest"
+                          >
                             {result.type}
                           </Badge>
                           <span className="text-[10px] font-bold uppercase text-muted-foreground">
@@ -411,23 +566,21 @@ export const BondComparisonContainer = () => {
                           {BOND_DEFINITIONS[result.type as BondType].fullName[language]}
                         </CardDescription>
                       </CardHeader>
-                      <CardContent className="space-y-3">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">{t('comparison.net_profit')}</span>
-                          <span className="font-semibold text-green-700">
-                            +{formatCurrency(profit)}
-                          </span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">{t('bonds.total_roi')}</span>
-                          <span className="font-semibold">{roi}%</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Tax</span>
-                          <span className="font-semibold text-orange-700">
-                            {formatCurrency(result.result.totalTax)}
-                          </span>
-                        </div>
+                      <CardContent className="grid gap-3">
+                        <ResultMetric
+                          label={t('comparison.net_profit')}
+                          value={`+${formatCurrency(profit)}`}
+                          tone="text-emerald-700"
+                        />
+                        <ResultMetric
+                          label={t('bonds.total_roi')}
+                          value={formatPct(roi)}
+                        />
+                        <ResultMetric
+                          label="Tax"
+                          value={formatCurrency(result.result.totalTax)}
+                          tone="text-orange-700"
+                        />
                       </CardContent>
                     </Card>
                   );
