@@ -7,20 +7,18 @@ import {
   BarChart2,
   BookOpen,
   Calculator,
+  ChevronRight,
   FlaskConical,
+  Globe2,
   Layers,
   Menu,
   Scale,
+  ShieldAlert,
   TrendingUp,
   Wallet,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Sheet,
-  SheetContent,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useLanguage } from '@/i18n';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { cn } from '@/lib/utils';
@@ -37,6 +35,10 @@ type NavItem = {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   status: FeatureStatus;
+  description: {
+    pl: string;
+    en: string;
+  };
 };
 
 type NavSection = {
@@ -49,18 +51,14 @@ function getFreshnessLabel(
   language: 'pl' | 'en',
 ) {
   if (freshness.status === 'fresh') {
-    return language === 'pl' ? 'Dane aktualne' : 'Fresh data';
+    return language === 'pl' ? 'Aktualne' : 'Fresh';
   }
 
   if (freshness.status === 'fallback' || freshness.usedFallback) {
-    return language === 'pl'
-      ? 'Fallback / dane czesciowe'
-      : 'Fallback / partial data';
+    return language === 'pl' ? 'Czesciowe' : 'Partial';
   }
 
-  return language === 'pl'
-    ? 'Dane moga byc nieaktualne'
-    : 'Data may be stale';
+  return language === 'pl' ? 'Ostroznie' : 'Caution';
 }
 
 function getFreshnessText(
@@ -69,14 +67,14 @@ function getFreshnessText(
 ) {
   if (freshness.status === 'fresh') {
     return language === 'pl'
-      ? 'Glowne strony odczytuja aktualne metadane.'
+      ? 'Glowne strony korzystaja z aktualnych metadanych.'
       : 'Core pages are reading current metadata.';
   }
 
   if (freshness.status === 'fallback' || freshness.usedFallback) {
     return language === 'pl'
-      ? 'Czesc danych nadal moze pochodzic z zestawow zapasowych.'
-      : 'Some data may still be coming from fallback coverage.';
+      ? 'Czesc danych nadal moze byc zastępcza.'
+      : 'Some data may still be fallback coverage.';
   }
 
   return language === 'pl'
@@ -96,19 +94,35 @@ function getFreshnessClass(freshness: CalculationDataFreshness) {
   return 'border-amber-200 bg-amber-50 text-amber-800';
 }
 
-function SidebarCard({
-  title,
+function SidebarUtilityRow({
+  icon,
+  label,
+  value,
   children,
 }: {
-  title: string;
-  children: React.ReactNode;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value?: string;
+  children?: React.ReactNode;
 }) {
+  const Icon = icon;
+
   return (
-    <div className="rounded-2xl border bg-white p-4">
-      <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
-        {title}
-      </p>
-      <div className="mt-3 space-y-3 text-sm text-slate-600">{children}</div>
+    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+      <div className="flex items-center gap-3">
+        <div className="rounded-xl bg-slate-100 p-2 text-slate-700">
+          <Icon className="h-4 w-4" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+            {label}
+          </p>
+          {value ? (
+            <p className="mt-1 text-sm font-medium text-slate-900">{value}</p>
+          ) : null}
+          {children ? <div className="mt-2">{children}</div> : null}
+        </div>
+      </div>
     </div>
   );
 }
@@ -117,32 +131,63 @@ function NavLinkItem({
   item,
   isActive,
   onItemClick,
+  language,
 }: {
   item: NavItem;
   isActive: boolean;
   onItemClick?: () => void;
+  language: 'pl' | 'en';
 }) {
   return (
     <Link
       href={item.href}
       onClick={onItemClick}
       className={cn(
-        'flex items-center gap-3 rounded-xl px-3 py-3 transition-colors',
+        'group block rounded-3xl border px-4 py-4 transition-colors',
         isActive
-          ? 'bg-white text-slate-950 shadow-sm ring-1 ring-slate-200'
-          : 'text-slate-600 hover:bg-white hover:text-slate-900',
+          ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
+          : 'border-slate-200 bg-white text-slate-900 hover:border-slate-300 hover:bg-slate-50',
       )}
     >
-      <item.icon
-        className={cn(
-          'h-4 w-4 shrink-0',
-          isActive ? 'text-slate-900' : 'text-slate-400',
-        )}
-      />
-      <span className="min-w-0 flex-1 truncate text-sm font-medium">
-        {item.label}
-      </span>
-      <FeatureStatusPill status={item.status} />
+      <div className="flex items-start gap-3">
+        <div
+          className={cn(
+            'rounded-2xl p-2.5',
+            isActive ? 'bg-white/12 text-white' : 'bg-slate-100 text-slate-700',
+          )}
+        >
+          <item.icon className="h-4 w-4" />
+        </div>
+
+        <div className="min-w-0 flex-1 space-y-2">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="truncate text-sm font-black tracking-tight">
+                {item.label}
+              </p>
+              <p
+                className={cn(
+                  'mt-1 text-xs leading-6',
+                  isActive ? 'text-white/75' : 'text-slate-600',
+                )}
+              >
+                {language === 'pl' ? item.description.pl : item.description.en}
+              </p>
+            </div>
+            <div className="flex shrink-0 items-center gap-2">
+              <FeatureStatusPill status={item.status} />
+              <ChevronRight
+                className={cn(
+                  'h-4 w-4 transition-transform',
+                  isActive
+                    ? 'text-white/70'
+                    : 'text-slate-400 group-hover:translate-x-0.5',
+                )}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </Link>
   );
 }
@@ -160,18 +205,30 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
           label: t('nav.education'),
           icon: BookOpen,
           status: 'trusted',
+          description: {
+            pl: 'Podstawy indeksacji, podatku i mechaniki obligacji.',
+            en: 'Bond mechanics, taxation, and indexing basics.',
+          },
         },
         {
           href: '/single-calculator',
           label: t('nav.single_calculator'),
           icon: Calculator,
           status: 'trusted',
+          description: {
+            pl: 'Glowny kalkulator jednego scenariusza i jednego wyniku.',
+            en: 'The main one-scenario, one-result calculator.',
+          },
         },
         {
           href: '/economic-data',
           label: t('nav.economic_data'),
           icon: BarChart2,
           status: 'reference',
+          description: {
+            pl: 'Makro kontekst: inflacja, NBP i zakres danych.',
+            en: 'Macro context: inflation, NBP, and data coverage.',
+          },
         },
       ],
     },
@@ -183,24 +240,40 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
           label: t('nav.comparison'),
           icon: Scale,
           status: 'conditional',
+          description: {
+            pl: 'Jedno wspolne porownanie wielu obligacji.',
+            en: 'One shared comparison across multiple bonds.',
+          },
         },
         {
           href: '/regular-investment',
           label: t('nav.regular_investment'),
           icon: TrendingUp,
           status: 'conditional',
+          description: {
+            pl: 'Plan regularnych zakupow i budowy kapitalu.',
+            en: 'Recurring purchases and capital-building plan.',
+          },
         },
         {
           href: '/ladder',
           label: t('nav.ladder'),
           icon: Layers,
           status: 'conditional',
+          description: {
+            pl: 'Plynnosc i rozklad zapadalnosci w drabinie.',
+            en: 'Liquidity and maturity spacing in a ladder.',
+          },
         },
         {
           href: '/notebook',
           label: t('nav.notebook'),
           icon: Wallet,
           status: 'conditional',
+          description: {
+            pl: 'Notatnik partii, zapadalnosci i prostych rekordow.',
+            en: 'Notebook for lots, maturities, and saved records.',
+          },
         },
       ],
     },
@@ -212,6 +285,10 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
           label: t('sidebar.sections.recovery_lab'),
           icon: FlaskConical,
           status: 'experimental',
+          description: {
+            pl: 'Powierzchnie poboczne i slabsze scenariusze.',
+            en: 'Secondary and weaker-support scenario surfaces.',
+          },
         },
       ],
     },
@@ -219,32 +296,36 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
 
   return (
     <div className="flex h-full flex-col border-r bg-slate-50 text-slate-900">
-      <div className="border-b px-6 py-6">
+      <div className="border-b border-slate-200 px-6 py-6">
         <Link href="/" className="flex items-center gap-3">
-          <div className="rounded-xl bg-slate-900 p-2 text-white">
+          <div className="rounded-2xl bg-slate-900 p-2.5 text-white">
             <TrendingUp className="h-5 w-5" />
           </div>
-          <div className="space-y-0.5">
-            <p className="text-2xl font-bold tracking-tight">
-              {t('common.title')}
+          <div className="space-y-1">
+            <p className="text-2xl font-bold tracking-tight">{t('common.title')}</p>
+            <p className="text-xs leading-6 text-slate-500">
+              {language === 'pl'
+                ? 'Najpierw glowny kalkulator, potem reszta.'
+                : 'Use the core calculator first.'}
             </p>
           </div>
         </Link>
       </div>
 
-      <nav className="custom-scrollbar flex-1 space-y-6 overflow-y-auto px-4 py-5">
+      <nav className="custom-scrollbar flex-1 space-y-7 overflow-y-auto px-4 py-5">
         {navSections.map((section) => (
-          <div key={section.label} className="space-y-2">
-            <p className="px-3 text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
+          <div key={section.label} className="space-y-3">
+            <p className="px-2 text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
               {section.label}
             </p>
-            <div className="space-y-1">
+            <div className="space-y-2">
               {section.items.map((item) => (
                 <NavLinkItem
                   key={item.href}
                   item={item}
                   isActive={pathname === item.href}
                   onItemClick={onItemClick}
+                  language={language}
                 />
               ))}
             </div>
@@ -252,53 +333,67 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
         ))}
       </nav>
 
-      <div className="space-y-4 border-t bg-slate-100/80 p-5">
-        <SidebarCard title={t('common.language')}>
-          <div className="rounded-2xl border bg-white p-1.5">
-            <LanguageSwitcher />
-          </div>
-        </SidebarCard>
+      <div className="space-y-3 border-t border-slate-200 bg-slate-100/70 p-4">
+        <SidebarUtilityRow
+          icon={Globe2}
+          label={t('common.language')}
+        >
+          <LanguageSwitcher />
+        </SidebarUtilityRow>
 
-        <SidebarCard title={t('common.sync_data')}>
+        <SidebarUtilityRow
+          icon={TrendingUp}
+          label={t('common.sync_data')}
+          value={
+            dataFreshness
+              ? dataFreshness.asOf ?? (language === 'pl' ? 'Brak daty' : 'No date')
+              : language === 'pl'
+                ? 'Brak metadanych'
+                : 'No metadata'
+          }
+        >
           {dataFreshness ? (
-            <>
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-slate-500">
-                  {language === 'pl' ? 'Ostatni odczyt' : 'Latest reading'}
-                </span>
-                <span className="font-medium text-slate-900">
-                  {dataFreshness.asOf ??
-                    (language === 'pl' ? 'Brak daty' : 'No date')}
-                </span>
-              </div>
+            <div className="flex flex-wrap items-center gap-2">
               <span
                 className={cn(
-                  'inline-flex w-fit rounded-full border px-3 py-1 text-xs font-semibold',
+                  'inline-flex rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em]',
                   getFreshnessClass(dataFreshness),
                 )}
               >
                 {getFreshnessLabel(dataFreshness, language)}
               </span>
-              <p className="leading-6 text-slate-600">
+              <span className="text-xs leading-6 text-slate-600">
                 {getFreshnessText(dataFreshness, language)}
-              </p>
-            </>
+              </span>
+            </div>
           ) : (
-            <p>{t('sidebar.sync_unavailable')}</p>
+            <span className="text-xs leading-6 text-slate-600">
+              {t('sidebar.sync_unavailable')}
+            </span>
           )}
-        </SidebarCard>
+        </SidebarUtilityRow>
 
-        <SidebarCard title={t('sidebar.recovery_scope_title')}>
-          <p className="leading-6">{t('sidebar.recovery_scope_desc')}</p>
-          <Link
-            href="/recovery-lab"
-            className="inline-flex font-semibold text-slate-900 hover:underline"
-          >
-            {t('sidebar.open_recovery_lab')}
-          </Link>
-        </SidebarCard>
+        <SidebarUtilityRow
+          icon={ShieldAlert}
+          label={t('sidebar.recovery_scope_title')}
+          value={language === 'pl' ? 'Core-first' : 'Core-first'}
+        >
+          <div className="space-y-2">
+            <p className="text-xs leading-6 text-slate-600">
+              {language === 'pl'
+                ? 'Poboczne i slabsze powierzchnie nie powinny dominowac nad glowna nawigacja.'
+                : 'Secondary and weaker-support surfaces should not dominate the main navigation.'}
+            </p>
+            <Link
+              href="/recovery-lab"
+              className="inline-flex text-xs font-semibold text-slate-900 hover:underline"
+            >
+              {t('sidebar.open_recovery_lab')}
+            </Link>
+          </div>
+        </SidebarUtilityRow>
 
-        <div className="px-2 text-[11px] text-slate-500">
+        <div className="px-2 pt-1 text-[11px] text-slate-500">
           © {new Date().getFullYear()} {t('common.title')}
         </div>
       </div>
@@ -327,7 +422,7 @@ export function Sidebar({
               <span className="sr-only">Toggle menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-72 border-none p-0">
+          <SheetContent side="left" className="w-80 border-none p-0">
             <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
             <SidebarContent
               onItemClick={() => setIsOpen(false)}
@@ -337,7 +432,7 @@ export function Sidebar({
         </Sheet>
       </div>
 
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r bg-white lg:block">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-80 border-r bg-white lg:block">
         <SidebarContent dataFreshness={dataFreshness} />
       </aside>
     </>
