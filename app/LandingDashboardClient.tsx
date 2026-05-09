@@ -8,9 +8,9 @@ import {
   BookOpen,
   Calculator,
   CheckCircle2,
-  FlaskConical,
   Layers,
   Scale,
+  Sparkles,
   TrendingUp,
   Wallet,
 } from 'lucide-react';
@@ -26,20 +26,24 @@ type ToolItem = {
   description: string;
   icon: React.ComponentType<{ className?: string }>;
   status: FeatureStatus;
+  tone: string;
 };
 
 function HomeToolCard({ item }: { item: ToolItem }) {
   return (
     <Link href={item.href} className="block h-full">
-      <Card className="h-full rounded-3xl border border-slate-200 bg-white shadow-none transition-colors hover:border-slate-300 hover:bg-slate-50/60">
-        <CardContent className="flex h-full flex-col gap-5 p-6">
-          <div className="flex items-start justify-between gap-4">
-            <div className="rounded-2xl bg-slate-100 p-3 text-slate-900">
+      <Card className="group h-full overflow-hidden rounded-[2rem] border border-white/70 bg-white/80 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] backdrop-blur transition-all hover:-translate-y-0.5 hover:border-white hover:shadow-[0_24px_70px_-36px_rgba(15,23,42,0.5)]">
+        <CardContent className="relative flex h-full flex-col gap-5 p-6">
+          <div
+            className={item.tone}
+          />
+          <div className="relative flex items-start justify-between gap-4">
+            <div className="rounded-2xl bg-slate-900 p-3 text-white shadow-sm">
               <item.icon className="h-5 w-5" />
             </div>
             <FeatureStatusPill status={item.status} />
           </div>
-          <div className="space-y-3">
+          <div className="relative space-y-3">
             <h3 className="text-xl font-black tracking-tight text-slate-950">
               {item.title}
             </h3>
@@ -61,9 +65,9 @@ function HomeStep({
   description: string;
 }) {
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-none">
+    <div className="rounded-[1.75rem] border border-white/70 bg-white/72 p-5 shadow-[0_16px_44px_-34px_rgba(15,23,42,0.45)] backdrop-blur">
       <div className="flex items-start gap-3">
-        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-sky-700" />
         <div className="space-y-2">
           <p className="text-sm font-black uppercase tracking-[0.18em] text-slate-500">
             {title}
@@ -73,6 +77,25 @@ function HomeStep({
           </p>
         </div>
       </div>
+    </div>
+  );
+}
+
+function SectionHeading({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="space-y-2">
+      <h2 className="text-2xl font-black tracking-tight text-slate-950">
+        {title}
+      </h2>
+      <p className="max-w-3xl text-sm leading-7 text-slate-600">
+        {description}
+      </p>
     </div>
   );
 }
@@ -103,9 +126,9 @@ export function LandingDashboardClient() {
               'Wprowadz jeden zestaw danych, policz scenariusz i sprawdz wynik bez bocznych paneli ani rozpraszaczy.',
           },
           {
-            title: 'Dopiero potem rozszerz',
+            title: 'Rozszerz dopiero potem',
             description:
-              'Porownanie, regularne inwestowanie, drabina i notatnik maja byc drugie w kolejnosci, nie pierwsze.',
+              'Porownanie, regularne inwestowanie, drabina i notatnik maja byc drugim krokiem, nie pierwszym widokiem.',
           },
         ]
       : [
@@ -133,6 +156,8 @@ export function LandingDashboardClient() {
       description: t('landing.cards.single_calculator'),
       icon: Calculator,
       status: 'trusted',
+      tone:
+        'absolute inset-x-0 top-0 h-24 bg-[radial-gradient(circle_at_top_left,rgba(14,165,233,0.18),transparent_65%)]',
     },
     {
       href: '/education',
@@ -140,6 +165,8 @@ export function LandingDashboardClient() {
       description: t('landing.cards.education'),
       icon: BookOpen,
       status: 'trusted',
+      tone:
+        'absolute inset-x-0 top-0 h-24 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.14),transparent_65%)]',
     },
     {
       href: '/economic-data',
@@ -147,6 +174,8 @@ export function LandingDashboardClient() {
       description: t('landing.cards.economic_data'),
       icon: BarChart2,
       status: 'reference',
+      tone:
+        'absolute inset-x-0 top-0 h-24 bg-[radial-gradient(circle_at_top_left,rgba(100,116,139,0.14),transparent_65%)]',
     },
   ];
 
@@ -157,6 +186,8 @@ export function LandingDashboardClient() {
       description: t('landing.cards.comparison'),
       icon: Scale,
       status: 'conditional',
+      tone:
+        'absolute inset-x-0 top-0 h-24 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.14),transparent_65%)]',
     },
     {
       href: '/regular-investment',
@@ -164,6 +195,8 @@ export function LandingDashboardClient() {
       description: t('landing.cards.regular_investment'),
       icon: TrendingUp,
       status: 'conditional',
+      tone:
+        'absolute inset-x-0 top-0 h-24 bg-[radial-gradient(circle_at_top_left,rgba(20,184,166,0.14),transparent_65%)]',
     },
     {
       href: '/ladder',
@@ -171,6 +204,8 @@ export function LandingDashboardClient() {
       description: t('landing.cards.ladder'),
       icon: Layers,
       status: 'conditional',
+      tone:
+        'absolute inset-x-0 top-0 h-24 bg-[radial-gradient(circle_at_top_left,rgba(245,158,11,0.16),transparent_65%)]',
     },
     {
       href: '/notebook',
@@ -178,6 +213,8 @@ export function LandingDashboardClient() {
       description: t('landing.recovery_home.notebook_card'),
       icon: Wallet,
       status: 'conditional',
+      tone:
+        'absolute inset-x-0 top-0 h-24 bg-[radial-gradient(circle_at_top_left,rgba(168,85,247,0.12),transparent_65%)]',
     },
   ];
 
@@ -191,8 +228,8 @@ export function LandingDashboardClient() {
     language === 'pl' ? 'Prosta sciezka glowna' : 'Simple primary path';
   const startHereDesc =
     language === 'pl'
-      ? 'Ta strona ma kierowac do glownych narzedzi, nie konkurowac z nimi dodatkowymi panelami.'
-      : 'This page should route you into the core tools, not compete with them through extra panels.';
+      ? 'Ta strona ma kierowac do glownych narzedzi, ale moze wygladac bardziej jak produkt niz jak tablica bialych kart.'
+      : 'This page should route you into the core tools, while still looking like a designed product rather than a blank field of cards.';
   const secondaryTitle =
     language === 'pl' ? 'Narzedzia drugiego kroku' : 'Secondary tools';
   const secondaryDesc =
@@ -201,29 +238,40 @@ export function LandingDashboardClient() {
       : 'These pages remain available, but they should be visited only after the primary scenario flow.';
 
   return (
-    <div className="space-y-8 pb-20">
-      <section className="rounded-[2rem] border border-slate-200 bg-white px-6 py-8 shadow-none md:px-8 md:py-10">
-        <div className="max-w-4xl space-y-6">
-          <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500">
+    <div className="space-y-10 pb-20">
+      <section className="relative overflow-hidden rounded-[2.5rem] border border-slate-200/70 bg-[linear-gradient(135deg,#f8fafc_0%,#f0f9ff_34%,#eef2ff_62%,#ffffff_100%)] px-6 py-8 shadow-[0_30px_90px_-55px_rgba(15,23,42,0.45)] md:px-8 md:py-10">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.15),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(99,102,241,0.12),transparent_30%)]" />
+        <div className="absolute -right-12 top-10 h-48 w-48 rounded-full bg-sky-200/30 blur-3xl" />
+        <div className="absolute bottom-0 left-10 h-36 w-36 rounded-full bg-indigo-200/25 blur-3xl" />
+
+        <div className="relative max-w-5xl space-y-6">
+          <p className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/70 px-3 py-1 text-[11px] font-black uppercase tracking-[0.24em] text-slate-600 backdrop-blur">
+            <Sparkles className="h-3.5 w-3.5 text-sky-700" />
             {t('landing.recovery_home.eyebrow')}
           </p>
+
           <div className="space-y-4">
-            <h1 className="max-w-4xl text-4xl font-black tracking-tight text-slate-950 md:text-5xl">
+            <h1 className="max-w-4xl text-4xl font-black tracking-tight text-slate-950 md:text-6xl">
               {t('landing.recovery_home.title')}
             </h1>
-            <p className="max-w-3xl text-base leading-8 text-slate-600">
+            <p className="max-w-3xl text-base leading-8 text-slate-650 text-slate-700">
               {t('landing.recovery_home.description')}
             </p>
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Button asChild size="lg" className="gap-2 text-sm font-black">
+            <Button asChild size="lg" className="gap-2 rounded-2xl text-sm font-black shadow-sm">
               <Link href="/single-calculator">
                 {t('landing.start_calculating')}
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="gap-2 text-sm font-black">
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="gap-2 rounded-2xl border-white/90 bg-white/70 text-sm font-black backdrop-blur hover:bg-white"
+            >
               <Link href="/education">
                 {t('landing.recovery_home.secondary_cta')}
               </Link>
@@ -239,14 +287,7 @@ export function LandingDashboardClient() {
       </section>
 
       <section className="space-y-4">
-        <div className="space-y-2">
-          <h2 className="text-2xl font-black tracking-tight text-slate-950">
-            {startHereTitle}
-          </h2>
-          <p className="max-w-3xl text-sm leading-7 text-slate-600">
-            {startHereDesc}
-          </p>
-        </div>
+        <SectionHeading title={startHereTitle} description={startHereDesc} />
         <div className="grid gap-4 lg:grid-cols-3">
           {stepCopy.map((step) => (
             <HomeStep
@@ -259,14 +300,10 @@ export function LandingDashboardClient() {
       </section>
 
       <section className="space-y-4">
-        <div className="space-y-2">
-          <h2 className="text-2xl font-black tracking-tight text-slate-950">
-            {t('landing.recovery_home.core_route_title')}
-          </h2>
-          <p className="max-w-3xl text-sm leading-7 text-slate-600">
-            {t('landing.recovery_home.core_route_desc')}
-          </p>
-        </div>
+        <SectionHeading
+          title={t('landing.recovery_home.core_route_title')}
+          description={t('landing.recovery_home.core_route_desc')}
+        />
         <div className="grid gap-4 xl:grid-cols-3">
           {primaryTools.map((item) => (
             <HomeToolCard key={item.href} item={item} />
@@ -275,26 +312,22 @@ export function LandingDashboardClient() {
       </section>
 
       <section className="space-y-4">
-        <div className="space-y-2">
-          <h2 className="text-2xl font-black tracking-tight text-slate-950">
-            {savedScenarioTitle}
-          </h2>
-          <p className="max-w-3xl text-sm leading-7 text-slate-600">
-            {t('landing.recovery_home.portfolio_empty_desc')}
-          </p>
-        </div>
-        <Card className="rounded-3xl border border-slate-200 bg-white shadow-none">
+        <SectionHeading
+          title={savedScenarioTitle}
+          description={t('landing.recovery_home.portfolio_empty_desc')}
+        />
+        <Card className="overflow-hidden rounded-[2rem] border border-slate-200/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.88),rgba(248,250,252,0.92))] shadow-[0_22px_60px_-48px_rgba(15,23,42,0.45)] backdrop-blur">
           <CardContent className="space-y-4 p-6">
             {savedScenarioNames.length === 0 ? (
               <p className="max-w-3xl text-sm leading-7 text-slate-600">
                 {savedScenarioEmpty}
               </p>
             ) : (
-              <div className="space-y-3">
+              <div className="grid gap-3 md:grid-cols-3">
                 {savedScenarioNames.map((name) => (
                   <div
                     key={name}
-                    className="rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-900"
+                    className="rounded-2xl border border-white/80 bg-white/75 px-4 py-3 text-sm font-semibold text-slate-900 shadow-[0_14px_30px_-26px_rgba(15,23,42,0.4)] backdrop-blur"
                   >
                     {name}
                   </div>
@@ -302,13 +335,13 @@ export function LandingDashboardClient() {
               </div>
             )}
             <div className="flex flex-wrap gap-3">
-              <Button asChild variant="outline" className="gap-2">
+              <Button asChild variant="outline" className="gap-2 rounded-2xl border-slate-200 bg-white/80">
                 <Link href="/notebook">
                   <Wallet className="h-4 w-4" />
                   {t('nav.notebook')}
                 </Link>
               </Button>
-              <Button asChild variant="outline" className="gap-2">
+              <Button asChild variant="outline" className="gap-2 rounded-2xl border-slate-200 bg-white/80">
                 <Link href="/single-calculator">
                   <Calculator className="h-4 w-4" />
                   {t('landing.recovery_home.resume_saved')}
@@ -320,45 +353,12 @@ export function LandingDashboardClient() {
       </section>
 
       <section className="space-y-4">
-        <div className="space-y-2">
-          <h2 className="text-2xl font-black tracking-tight text-slate-950">
-            {secondaryTitle}
-          </h2>
-          <p className="max-w-3xl text-sm leading-7 text-slate-600">
-            {secondaryDesc}
-          </p>
-        </div>
+        <SectionHeading title={secondaryTitle} description={secondaryDesc} />
         <div className="grid gap-4 xl:grid-cols-2">
           {secondaryTools.map((item) => (
             <HomeToolCard key={item.href} item={item} />
           ))}
         </div>
-      </section>
-
-      <section>
-        <Link href="/recovery-lab" className="block">
-          <Card className="rounded-3xl border border-amber-200 bg-amber-50/70 shadow-none transition-colors hover:border-amber-300">
-            <CardContent className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-amber-950">
-                  <FlaskConical className="h-4 w-4" />
-                  <p className="font-black tracking-tight">
-                    {t('landing.recovery_lab.title')}
-                  </p>
-                </div>
-                <p className="max-w-3xl text-sm leading-7 text-amber-950/90">
-                  {t('landing.recovery_lab.description')}
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <FeatureStatusPill status="experimental" />
-                <span className="text-sm font-semibold text-slate-900">
-                  {t('landing.recovery_lab.cta')}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-        </Link>
       </section>
     </div>
   );

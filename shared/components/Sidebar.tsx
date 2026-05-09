@@ -8,12 +8,10 @@ import {
   BookOpen,
   Calculator,
   ChevronRight,
-  FlaskConical,
   Globe2,
   Layers,
   Menu,
   Scale,
-  ShieldAlert,
   TrendingUp,
   Wallet,
 } from 'lucide-react';
@@ -35,10 +33,6 @@ type NavItem = {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   status: FeatureStatus;
-  description: {
-    pl: string;
-    en: string;
-  };
 };
 
 type NavSection = {
@@ -108,19 +102,19 @@ function SidebarUtilityRow({
   const Icon = icon;
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+    <div className="rounded-2xl border border-slate-200 bg-white/88 px-3 py-2.5 backdrop-blur">
       <div className="flex items-center gap-3">
-        <div className="rounded-xl bg-slate-100 p-2 text-slate-700">
-          <Icon className="h-4 w-4" />
+        <div className="rounded-xl bg-slate-100 p-1.5 text-slate-700">
+          <Icon className="h-3.5 w-3.5" />
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
             {label}
           </p>
           {value ? (
-            <p className="mt-1 text-sm font-medium text-slate-900">{value}</p>
+            <p className="mt-0.5 text-xs font-medium text-slate-900">{value}</p>
           ) : null}
-          {children ? <div className="mt-2">{children}</div> : null}
+          {children ? <div className="mt-1.5">{children}</div> : null}
         </div>
       </div>
     </div>
@@ -131,60 +125,46 @@ function NavLinkItem({
   item,
   isActive,
   onItemClick,
-  language,
 }: {
   item: NavItem;
   isActive: boolean;
   onItemClick?: () => void;
-  language: 'pl' | 'en';
 }) {
   return (
     <Link
       href={item.href}
       onClick={onItemClick}
       className={cn(
-        'group block rounded-3xl border px-4 py-4 transition-colors',
+        'group block rounded-2xl border px-3 py-3 transition-colors',
         isActive
           ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
           : 'border-slate-200 bg-white text-slate-900 hover:border-slate-300 hover:bg-slate-50',
       )}
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-center gap-3">
         <div
           className={cn(
-            'rounded-2xl p-2.5',
+            'rounded-xl p-2',
             isActive ? 'bg-white/12 text-white' : 'bg-slate-100 text-slate-700',
           )}
         >
           <item.icon className="h-4 w-4" />
         </div>
 
-        <div className="min-w-0 flex-1 space-y-2">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="truncate text-sm font-black tracking-tight">
-                {item.label}
-              </p>
-              <p
-                className={cn(
-                  'mt-1 text-xs leading-6',
-                  isActive ? 'text-white/75' : 'text-slate-600',
-                )}
-              >
-                {language === 'pl' ? item.description.pl : item.description.en}
-              </p>
-            </div>
-            <div className="flex shrink-0 items-center gap-2">
-              <FeatureStatusPill status={item.status} />
-              <ChevronRight
-                className={cn(
-                  'h-4 w-4 transition-transform',
-                  isActive
-                    ? 'text-white/70'
-                    : 'text-slate-400 group-hover:translate-x-0.5',
-                )}
-              />
-            </div>
+        <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
+          <p className="truncate text-sm font-black tracking-tight">
+            {item.label}
+          </p>
+          <div className="flex shrink-0 items-center gap-2">
+            <FeatureStatusPill status={item.status} />
+            <ChevronRight
+              className={cn(
+                'h-4 w-4 transition-transform',
+                isActive
+                  ? 'text-white/70'
+                  : 'text-slate-400 group-hover:translate-x-0.5',
+              )}
+            />
           </div>
         </div>
       </div>
@@ -205,30 +185,18 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
           label: t('nav.education'),
           icon: BookOpen,
           status: 'trusted',
-          description: {
-            pl: 'Podstawy indeksacji, podatku i mechaniki obligacji.',
-            en: 'Bond mechanics, taxation, and indexing basics.',
-          },
         },
         {
           href: '/single-calculator',
           label: t('nav.single_calculator'),
           icon: Calculator,
           status: 'trusted',
-          description: {
-            pl: 'Glowny kalkulator jednego scenariusza i jednego wyniku.',
-            en: 'The main one-scenario, one-result calculator.',
-          },
         },
         {
           href: '/economic-data',
           label: t('nav.economic_data'),
           icon: BarChart2,
           status: 'reference',
-          description: {
-            pl: 'Makro kontekst: inflacja, NBP i zakres danych.',
-            en: 'Macro context: inflation, NBP, and data coverage.',
-          },
         },
       ],
     },
@@ -240,55 +208,24 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
           label: t('nav.comparison'),
           icon: Scale,
           status: 'conditional',
-          description: {
-            pl: 'Jedno wspolne porownanie wielu obligacji.',
-            en: 'One shared comparison across multiple bonds.',
-          },
         },
         {
           href: '/regular-investment',
           label: t('nav.regular_investment'),
           icon: TrendingUp,
           status: 'conditional',
-          description: {
-            pl: 'Plan regularnych zakupow i budowy kapitalu.',
-            en: 'Recurring purchases and capital-building plan.',
-          },
         },
         {
           href: '/ladder',
           label: t('nav.ladder'),
           icon: Layers,
           status: 'conditional',
-          description: {
-            pl: 'Plynnosc i rozklad zapadalnosci w drabinie.',
-            en: 'Liquidity and maturity spacing in a ladder.',
-          },
         },
         {
           href: '/notebook',
           label: t('nav.notebook'),
           icon: Wallet,
           status: 'conditional',
-          description: {
-            pl: 'Notatnik partii, zapadalnosci i prostych rekordow.',
-            en: 'Notebook for lots, maturities, and saved records.',
-          },
-        },
-      ],
-    },
-    {
-      label: t('sidebar.sections.recovery_lab'),
-      items: [
-        {
-          href: '/recovery-lab',
-          label: t('sidebar.sections.recovery_lab'),
-          icon: FlaskConical,
-          status: 'experimental',
-          description: {
-            pl: 'Powierzchnie poboczne i slabsze scenariusze.',
-            en: 'Secondary and weaker-support scenario surfaces.',
-          },
         },
       ],
     },
@@ -325,7 +262,6 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
                   item={item}
                   isActive={pathname === item.href}
                   onItemClick={onItemClick}
-                  language={language}
                 />
               ))}
             </div>
@@ -333,7 +269,7 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
         ))}
       </nav>
 
-      <div className="space-y-3 border-t border-slate-200 bg-slate-100/70 p-4">
+      <div className="space-y-2 border-t border-slate-200 bg-slate-100/55 p-3">
         <SidebarUtilityRow
           icon={Globe2}
           label={t('common.language')}
@@ -356,41 +292,21 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
             <div className="flex flex-wrap items-center gap-2">
               <span
                 className={cn(
-                  'inline-flex rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em]',
+                  'inline-flex rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em]',
                   getFreshnessClass(dataFreshness),
                 )}
               >
                 {getFreshnessLabel(dataFreshness, language)}
               </span>
-              <span className="text-xs leading-6 text-slate-600">
+              <span className="text-[11px] leading-5 text-slate-600">
                 {getFreshnessText(dataFreshness, language)}
               </span>
             </div>
           ) : (
-            <span className="text-xs leading-6 text-slate-600">
+            <span className="text-[11px] leading-5 text-slate-600">
               {t('sidebar.sync_unavailable')}
             </span>
           )}
-        </SidebarUtilityRow>
-
-        <SidebarUtilityRow
-          icon={ShieldAlert}
-          label={t('sidebar.recovery_scope_title')}
-          value={language === 'pl' ? 'Core-first' : 'Core-first'}
-        >
-          <div className="space-y-2">
-            <p className="text-xs leading-6 text-slate-600">
-              {language === 'pl'
-                ? 'Poboczne i slabsze powierzchnie nie powinny dominowac nad glowna nawigacja.'
-                : 'Secondary and weaker-support surfaces should not dominate the main navigation.'}
-            </p>
-            <Link
-              href="/recovery-lab"
-              className="inline-flex text-xs font-semibold text-slate-900 hover:underline"
-            >
-              {t('sidebar.open_recovery_lab')}
-            </Link>
-          </div>
         </SidebarUtilityRow>
 
         <div className="px-2 pt-1 text-[11px] text-slate-500">
