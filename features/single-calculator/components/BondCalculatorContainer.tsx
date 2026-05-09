@@ -9,14 +9,11 @@ import { cn } from '@/lib/utils';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { RecalculateButton } from '@/shared/components/RecalculateButton';
+import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
 import { generatePDF } from '@/shared/lib/pdf-utils';
 import { useBondCalculator } from '../hooks/useBondCalculator';
+import { applyGuardrailFix, getInputGuardrails, InputGuardrailIssue } from '../lib/input-guardrails';
 import { createSavedScenario, saveScenarioRecord } from '../lib/scenario-storage';
-import {
-  applyGuardrailFix,
-  getInputGuardrails,
-  InputGuardrailIssue,
-} from '../lib/input-guardrails';
 import { BondChart } from './BondChart';
 import { BondInputsForm } from './BondInputsForm';
 import { BondResultsSummary } from './BondResultsSummary';
@@ -75,9 +72,9 @@ export const BondCalculatorContainer: React.FC = () => {
   const readingGuide =
     language === 'pl'
       ? [
-          'Najpierw przeczytaj podsumowanie wypłaty netto i zysku.',
-          'Wykres ma pomóc w szybkim odczycie przebiegu inwestycji, a harmonogram służy do kontroli szczegółów.',
-          'Jeżeli zmienisz dane wejściowe, stare wyniki pozostają widoczne aż do świadomego przeliczenia.',
+          'Najpierw przeczytaj podsumowanie wyplaty netto i zysku.',
+          'Wykres ma pomoc w szybkim odczycie przebiegu inwestycji, a harmonogram sluzy do kontroli szczegolow.',
+          'Jezeli zmienisz dane wejsciowe, stare wyniki pozostaja widoczne az do swiadomego przeliczenia.',
         ]
       : [
           'Read the net payout and profit summary first.',
@@ -284,29 +281,28 @@ export const BondCalculatorContainer: React.FC = () => {
         {results ? (
           <div
             className={cn(
-              'space-y-10 transition-opacity duration-300',
+              'space-y-8 transition-opacity duration-300',
               isCalculating && 'pointer-events-none opacity-50',
             )}
           >
-            <SectionBlock
+            <SecondaryInsightAccordion
               title={language === 'pl' ? 'Jak czytac ten wynik' : 'How to read this run'}
               description={
                 language === 'pl'
                   ? 'Najpierw przeczytaj glowny wynik, potem spojrz na wykres, a dopiero na koncu wchodz w harmonogram i slady obliczen.'
                   : 'Read the headline result first, then inspect the chart, and only then move into the detailed timeline and calculation trace.'
               }
+              badge={language === 'pl' ? 'Pomocnicze' : 'Secondary'}
             >
-              <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-                <CardContent className="space-y-3 p-6">
-                  {readingGuide.map((item) => (
-                    <div key={item} className="flex items-start gap-3">
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                      <p className="text-sm leading-7 text-slate-600">{item}</p>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            </SectionBlock>
+              <div className="space-y-3">
+                {readingGuide.map((item) => (
+                  <div key={item} className="flex items-start gap-3">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <p className="text-sm leading-7 text-slate-600">{item}</p>
+                  </div>
+                ))}
+              </div>
+            </SecondaryInsightAccordion>
 
             <SectionBlock
               title={t('bonds.evolution')}
@@ -335,13 +331,14 @@ export const BondCalculatorContainer: React.FC = () => {
               <BondTimeline results={results} />
             </SectionBlock>
 
-            <SectionBlock
+            <SecondaryInsightAccordion
               title={t('bonds.simulation.calculation_context')}
               description={
                 language === 'pl'
                   ? 'Meta dane, zalozenia i flagi jakosci powinny byc widoczne, ale nie dominowac nad wynikiem.'
                   : 'Assumptions, notes, and data-quality flags should stay visible without overpowering the result.'
               }
+              badge={language === 'pl' ? 'Meta dane' : 'Meta'}
             >
               <CalculationMetaPanel
                 warnings={envelope?.warnings}
@@ -350,7 +347,7 @@ export const BondCalculatorContainer: React.FC = () => {
                 dataQualityFlags={envelope?.dataQualityFlags}
                 dataFreshness={envelope?.dataFreshness}
               />
-            </SectionBlock>
+            </SecondaryInsightAccordion>
           </div>
         ) : null}
       </div>

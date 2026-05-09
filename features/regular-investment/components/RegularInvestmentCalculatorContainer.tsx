@@ -6,9 +6,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
-import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
+import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { RecalculateButton } from '@/shared/components/RecalculateButton';
+import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
 import { useRegularInvestmentCalculator } from '../hooks/useRegularInvestmentCalculator';
 import { RegularInvestmentChart } from './RegularInvestmentChart';
 import { RegularInvestmentInputsForm } from './RegularInvestmentInputsForm';
@@ -175,56 +176,49 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
         {results ? (
           <div
             className={cn(
-              'space-y-10 transition-opacity duration-200',
+              'space-y-8 transition-opacity duration-200',
               isCalculating && 'pointer-events-none opacity-50',
             )}
           >
-            <SectionBlock
-              title={
-                language === 'pl'
-                  ? 'Jak czytac ten plan'
-                  : 'How to read this plan'
-              }
+            <SecondaryInsightAccordion
+              title={language === 'pl' ? 'Jak czytac ten plan' : 'How to read this plan'}
               description={
                 language === 'pl'
                   ? 'Najpierw sprawdz wynik koncowy i tempo wzrostu, a dopiero potem analizuj meta dane i szczegoly zalozen.'
                   : 'Start with the final outcome and growth pace, then move into the assumptions and meta details only if needed.'
               }
+              badge={language === 'pl' ? 'Pomocnicze' : 'Secondary'}
             >
-              <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-                <CardContent className="space-y-3 p-6">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    <p className="text-sm leading-7 text-slate-600">
-                      {language === 'pl'
-                        ? 'To jest plan regularnych zakupow, wiec wynik zalezy od liczby partii, czasu i typu obligacji.'
-                        : 'This is a recurring purchase plan, so the result depends on lot count, timing, and bond type.'}
-                    </p>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    <p className="text-sm leading-7 text-slate-600">
-                      {language === 'pl'
-                        ? 'Wykres pomaga ocenic rytm budowy kapitalu, a nie tylko wynik koncowy.'
-                        : 'The chart helps you read the pace of capital formation, not just the endpoint.'}
-                    </p>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    <p className="text-sm leading-7 text-slate-600">
-                      {language === 'pl'
-                        ? 'Zalozenia i flagi jakosci danych powinny pozostac drugorzedne wobec glownych wynikow.'
-                        : 'Assumptions and data-quality flags should stay secondary to the main outcome.'}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </SectionBlock>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  <p className="text-sm leading-7 text-slate-600">
+                    {language === 'pl'
+                      ? 'To jest plan regularnych zakupow, wiec wynik zalezy od liczby partii, czasu i typu obligacji.'
+                      : 'This is a recurring purchase plan, so the result depends on lot count, timing, and bond type.'}
+                  </p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  <p className="text-sm leading-7 text-slate-600">
+                    {language === 'pl'
+                      ? 'Wykres pomaga ocenic rytm budowy kapitalu, a nie tylko wynik koncowy.'
+                      : 'The chart helps you read the pace of capital formation, not just the endpoint.'}
+                  </p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  <p className="text-sm leading-7 text-slate-600">
+                    {language === 'pl'
+                      ? 'Zalozenia i flagi jakosci danych powinny pozostac drugorzedne wobec glownych wynikow.'
+                      : 'Assumptions and data-quality flags should stay secondary to the main outcome.'}
+                  </p>
+                </div>
+              </div>
+            </SecondaryInsightAccordion>
 
             <SectionBlock
-              title={
-                language === 'pl' ? 'Projekcja wzrostu' : 'Growth projection'
-              }
+              title={language === 'pl' ? 'Projekcja wzrostu' : 'Growth projection'}
               description={
                 language === 'pl'
                   ? 'Wykres pokazuje zmiany wartosci portfela i sumy wplat w czasie.'
@@ -239,13 +233,14 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
               </div>
             </SectionBlock>
 
-            <SectionBlock
+            <SecondaryInsightAccordion
               title={t('bonds.simulation.calculation_context')}
               description={
                 language === 'pl'
                   ? 'Pokazujemy zalozenia i dane pomocnicze, ale nie powinny one przeslaniac samego planu.'
                   : 'Assumptions and supporting data remain visible, but they should not overshadow the plan itself.'
               }
+              badge={language === 'pl' ? 'Meta dane' : 'Meta'}
             >
               <CalculationMetaPanel
                 warnings={warnings}
@@ -254,7 +249,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
                 dataQualityFlags={envelope?.dataQualityFlags}
                 dataFreshness={envelope?.dataFreshness}
               />
-            </SectionBlock>
+            </SecondaryInsightAccordion>
           </div>
         ) : null}
       </div>
