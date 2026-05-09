@@ -7,10 +7,9 @@ import {
   CalendarRange,
   CheckCircle2,
   Database,
-  Info,
-  LineChart,
+  ShieldAlert,
 } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/i18n';
 import { InflationChart } from '@/features/economic-data/components/InflationChart';
 import { NBPRateChart } from '@/features/economic-data/components/NBPRateChart';
@@ -44,89 +43,7 @@ interface ChartSeriesEnvelope<T> {
 
 type PeriodValue = '1Y' | '5Y' | '10Y' | '30Y' | 'ALL';
 
-function StatusCard({
-  title,
-  meta,
-  isLoading,
-  loadingLabel,
-  sourceLabel,
-  coverageLabel,
-  asOfLabel,
-  useLabel,
-}: {
-  title: string;
-  meta?: ChartSeriesEnvelope<EconomicSeriesPoint>;
-  isLoading: boolean;
-  loadingLabel: string;
-  sourceLabel: string;
-  coverageLabel: string;
-  asOfLabel: string;
-  useLabel: string;
-}) {
-  const state = getReferenceState(meta);
-
-  return (
-    <Card
-      className={cn(
-        'rounded-2xl border shadow-none',
-        state.tone === 'warning' ? 'border-amber-200 bg-amber-50' : 'bg-card',
-      )}
-    >
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base">
-          {state.tone === 'warning' ? (
-            <AlertTriangle className="h-4 w-4 text-amber-700" />
-          ) : (
-            <CheckCircle2 className="h-4 w-4 text-emerald-700" />
-          )}
-          {title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3 text-sm">
-        <div className="grid grid-cols-1 gap-3">
-          <div className="rounded-xl border bg-background/70 p-3">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">{sourceLabel}</p>
-            <p className="mt-1 font-medium text-foreground">
-              {isLoading ? loadingLabel : getReferenceSourceLabel(meta)}
-            </p>
-          </div>
-          <div className="rounded-xl border bg-background/70 p-3">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">{coverageLabel}</p>
-            <p className="mt-1 font-medium text-foreground">
-              {isLoading ? loadingLabel : getReferenceCoverageLabel(meta)}
-            </p>
-          </div>
-          <div className="rounded-xl border bg-background/70 p-3">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">{asOfLabel}</p>
-            <p className="mt-1 font-medium text-foreground">
-              {isLoading ? loadingLabel : getReferenceAsOfLabel(meta)}
-            </p>
-          </div>
-          <div className="rounded-xl border bg-background/70 p-3">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">{useLabel}</p>
-            <p className="mt-1 font-medium text-foreground">
-              {isLoading ? loadingLabel : getReferenceScopeLabel(meta)}
-            </p>
-          </div>
-        </div>
-
-        <div
-          className={cn(
-            'rounded-xl border px-3 py-3 leading-6',
-            state.tone === 'warning'
-              ? 'border-amber-200 bg-amber-100 text-amber-950'
-              : 'border-emerald-200 bg-emerald-50 text-emerald-950',
-          )}
-        >
-          <p className="font-semibold">{state.title}</p>
-          <p className="mt-1 text-sm">{state.description}</p>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-const RangeActions = ({
+function RangeActions({
   period,
   setPeriod,
   language,
@@ -134,7 +51,7 @@ const RangeActions = ({
   period: PeriodValue;
   setPeriod: (value: PeriodValue) => void;
   language: 'pl' | 'en';
-}) => {
+}) {
   const periods: { label: string; value: PeriodValue }[] = [
     { label: '1Y', value: '1Y' },
     { label: '5Y', value: '5Y' },
@@ -144,8 +61,8 @@ const RangeActions = ({
   ];
 
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-xl border bg-muted/20 p-1">
-      <span className="inline-flex items-center gap-1 px-3 text-xs font-medium text-muted-foreground">
+    <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-1.5">
+      <span className="inline-flex items-center gap-1 px-3 text-xs font-medium text-slate-500">
         <CalendarRange className="h-3.5 w-3.5" />
         {language === 'pl' ? 'Zakres danych' : 'Range'}
       </span>
@@ -154,10 +71,10 @@ const RangeActions = ({
           key={item.value}
           onClick={() => setPeriod(item.value)}
           className={cn(
-            'rounded-lg px-4 py-2 text-sm transition-colors',
+            'rounded-xl px-4 py-2 text-sm transition-colors',
             period === item.value
-              ? 'bg-background font-semibold text-foreground shadow-sm'
-              : 'text-muted-foreground hover:bg-background/70 hover:text-foreground',
+              ? 'bg-slate-900 font-semibold text-white'
+              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
           )}
         >
           {item.label}
@@ -165,7 +82,125 @@ const RangeActions = ({
       ))}
     </div>
   );
-};
+}
+
+function ReferenceMetric({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="rounded-3xl border border-slate-200 bg-white px-5 py-4">
+      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+        {label}
+      </p>
+      <p className="mt-2 text-xl font-black text-slate-950">{value}</p>
+    </div>
+  );
+}
+
+function SeriesStatusCard({
+  title,
+  meta,
+  isLoading,
+  language,
+}: {
+  title: string;
+  meta?: ChartSeriesEnvelope<EconomicSeriesPoint>;
+  isLoading: boolean;
+  language: 'pl' | 'en';
+}) {
+  const state = getReferenceState(meta);
+  const rows = [
+    {
+      label: language === 'pl' ? 'Zrodlo' : 'Source',
+      value: isLoading ? '...' : getReferenceSourceLabel(meta),
+    },
+    {
+      label: language === 'pl' ? 'Zakres' : 'Coverage',
+      value: isLoading ? '...' : getReferenceCoverageLabel(meta),
+    },
+    {
+      label: language === 'pl' ? 'Stan na' : 'As of',
+      value: isLoading ? '...' : getReferenceAsOfLabel(meta),
+    },
+    {
+      label: language === 'pl' ? 'Uzycie' : 'Use',
+      value: isLoading ? '...' : getReferenceScopeLabel(meta),
+    },
+  ];
+
+  return (
+    <Card
+      className={cn(
+        'rounded-[2rem] border shadow-none',
+        state.tone === 'warning'
+          ? 'border-amber-200 bg-amber-50/70'
+          : 'border-slate-200 bg-white',
+      )}
+    >
+      <CardContent className="space-y-5 p-6">
+        <div className="flex items-start justify-between gap-3">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              {state.tone === 'warning' ? (
+                <AlertTriangle className="h-4 w-4 text-amber-700" />
+              ) : (
+                <CheckCircle2 className="h-4 w-4 text-emerald-700" />
+              )}
+              <p className="text-xl font-black tracking-tight text-slate-950">
+                {title}
+              </p>
+            </div>
+            <p className="text-sm leading-7 text-slate-600">{state.description}</p>
+          </div>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          {rows.map((row) => (
+            <div
+              key={row.label}
+              className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
+            >
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+                {row.label}
+              </p>
+              <p className="mt-2 text-sm font-medium text-slate-900">{row.value}</p>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function SectionBlock({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="space-y-4">
+      <div className="space-y-2">
+        <h3 className="text-2xl font-black tracking-tight text-slate-950">
+          {title}
+        </h3>
+        {description ? (
+          <p className="max-w-3xl text-sm leading-7 text-slate-600">
+            {description}
+          </p>
+        ) : null}
+      </div>
+      {children}
+    </section>
+  );
+}
 
 export default function EconomicDataPage() {
   const { t, language } = useLanguage();
@@ -175,6 +210,24 @@ export default function EconomicDataPage() {
   const { data: nbpMeta, isLoading: isLoadingNbp } =
     useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/nbp-rate');
 
+  const pageIntro =
+    language === 'pl'
+      ? 'Ta strona ma dostarczac kontekst makro dla kalkulatorow obligacji. Nie ma udawac samodzielnego produktu forecastingowego ani pulpitu danych.'
+      : 'This page exists to provide macro context for the bond calculators. It should not pretend to be a standalone forecasting product or a noisy market dashboard.';
+
+  const usageGuide =
+    language === 'pl'
+      ? [
+          'Inflacja pomaga zrozumiec realna sile nabywcza wyniku i dzialanie obligacji indeksowanych.',
+          'Stopa NBP sluzy glownie jako kontekst dla ROR i DOR oraz dla interpretacji otoczenia rynkowego.',
+          'Krotsze zakresy poprawiaja czytelnosc. Szerszy zakres daje tlo historyczne, ale nie poprawia jakosci brakujacych danych.',
+        ]
+      : [
+          'Inflation helps explain real purchasing power and inflation-linked bond behavior.',
+          'The NBP rate matters mostly as context for ROR and DOR and for reading the broader policy backdrop.',
+          'Shorter ranges improve readability. Wider ranges add context, but they do not improve missing data quality.',
+        ];
+
   return (
     <CalculatorPageShell
       title={t('nav.economic_data')}
@@ -183,134 +236,112 @@ export default function EconomicDataPage() {
       isCalculating={false}
       hasResults
       extraHeaderActions={
-        <RangeActions
-          period={period}
-          setPeriod={setPeriod}
-          language={language}
-        />
+        <RangeActions period={period} setPeriod={setPeriod} language={language} />
       }
     >
       <div className="space-y-8">
-        <Card className="rounded-2xl border shadow-none">
-          <CardContent className="flex flex-col gap-6 p-6 lg:flex-row lg:items-start lg:justify-between">
-            <div className="max-w-3xl space-y-3">
-              <div className="inline-flex items-center gap-2 rounded-full border bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-700">
+        <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
+          <CardContent className="space-y-6 p-6 md:p-8">
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
                 <Database className="h-3.5 w-3.5 text-primary" />
-                Reference panel
+                {language === 'pl' ? 'Panel referencyjny' : 'Reference panel'}
               </div>
-              <h3 className="text-2xl font-black tracking-tight text-slate-900">
-                Use macro series as calculator context, not as a forecasting product.
-              </h3>
-              <p className="text-sm leading-7 text-muted-foreground">
-                This page exists to show inflation and NBP-rate context that feeds bond interpretation.
-                It should stay honest about source quality, coverage, and fallback use.
-              </p>
+              <h2 className="max-w-4xl text-3xl font-black tracking-tight text-slate-950">
+                {language === 'pl'
+                  ? 'Makro dane maja pomagac liczyc obligacje, nie odwracac od nich uwagi.'
+                  : 'Macro data should support bond calculations, not compete with them.'}
+              </h2>
+              <p className="max-w-4xl text-sm leading-8 text-slate-600">{pageIntro}</p>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:w-[360px]">
-              <div className="rounded-2xl border bg-white px-4 py-3">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                  Series
-                </p>
-                <p className="mt-2 text-lg font-black text-slate-900">2</p>
-              </div>
-              <div className="rounded-2xl border bg-white px-4 py-3">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                  Purpose
-                </p>
-                <p className="mt-2 text-lg font-black text-slate-900">Reference</p>
-              </div>
+
+            <div className="grid gap-4 lg:grid-cols-3">
+              <ReferenceMetric
+                label={language === 'pl' ? 'Serie' : 'Series'}
+                value="2"
+              />
+              <ReferenceMetric
+                label={language === 'pl' ? 'Rola' : 'Purpose'}
+                value={language === 'pl' ? 'Kontekst' : 'Context'}
+              />
+              <ReferenceMetric
+                label={language === 'pl' ? 'Tryb' : 'Mode'}
+                value={language === 'pl' ? 'Referencyjny' : 'Reference'}
+              />
             </div>
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
-          <section className="space-y-8 xl:col-span-8">
-            <Card className="rounded-2xl border shadow-none">
-              <CardHeader className="border-b pb-4">
+        <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_380px]">
+          <div className="space-y-8">
+            <SectionBlock
+              title={t('economic.inflation_title')}
+              description={t('economic.inflation_desc')}
+            >
+              <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
+                <CardContent className="p-5 md:p-6">
+                  <InflationChart period={period} />
+                </CardContent>
+              </Card>
+            </SectionBlock>
+
+            <SectionBlock
+              title={t('economic.nbp_rate_title')}
+              description={t('economic.nbp_rate_desc')}
+            >
+              <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
+                <CardContent className="p-5 md:p-6">
+                  <NBPRateChart period={period} />
+                </CardContent>
+              </Card>
+            </SectionBlock>
+          </div>
+
+          <aside className="space-y-6">
+            <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
+              <CardContent className="space-y-4 p-6">
                 <div className="flex items-center gap-2">
-                  <LineChart className="h-5 w-5 text-primary" />
-                  <CardTitle>{t('economic.inflation_title')}</CardTitle>
+                  <ShieldAlert className="h-4 w-4 text-primary" />
+                  <p className="text-xl font-black tracking-tight text-slate-950">
+                    {language === 'pl' ? 'Zakres strony' : 'Page scope'}
+                  </p>
                 </div>
-                <CardDescription className="text-sm leading-6">
-                  {t('economic.inflation_desc')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-6">
-                <InflationChart period={period} />
+                {usageGuide.map((item) => (
+                  <div key={item} className="flex items-start gap-3">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <p className="text-sm leading-7 text-slate-600">{item}</p>
+                  </div>
+                ))}
               </CardContent>
             </Card>
 
-            <Card className="rounded-2xl border shadow-none">
-              <CardHeader className="border-b pb-4">
-                <div className="flex items-center gap-2">
-                  <LineChart className="h-5 w-5 text-primary" />
-                  <CardTitle>{t('economic.nbp_rate_title')}</CardTitle>
-                </div>
-                <CardDescription className="text-sm leading-6">
-                  {t('economic.nbp_rate_desc')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-6">
-                <NBPRateChart period={period} />
-              </CardContent>
-            </Card>
-          </section>
-
-          <aside className="space-y-6 xl:col-span-4">
-            <Card className="rounded-2xl border shadow-none">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Info className="h-4 w-4 text-primary" />
-                  Page scope
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm leading-6 text-muted-foreground">
-                <p>
-                  This page is a reference panel for macro context used by the calculators. It is not a
-                  forecasting module and it is not a market research product.
-                </p>
-                <p>
-                  If the sync pipeline is incomplete, the page should say that directly instead of pretending mature coverage.
-                </p>
-              </CardContent>
-            </Card>
-
-            <StatusCard
+            <SeriesStatusCard
               title={t('economic.inflation_title')}
               meta={inflationMeta}
               isLoading={isLoadingInflation}
-              loadingLabel={t('common.loading')}
-              sourceLabel="Source"
-              coverageLabel="Coverage"
-              asOfLabel={t('economic.as_of')}
-              useLabel="Use"
+              language={language}
             />
 
-            <StatusCard
+            <SeriesStatusCard
               title={t('economic.nbp_rate_title')}
               meta={nbpMeta}
               isLoading={isLoadingNbp}
-              loadingLabel={t('common.loading')}
-              sourceLabel="Source"
-              coverageLabel="Coverage"
-              asOfLabel={t('economic.as_of')}
-              useLabel="Use"
+              language={language}
             />
 
-            <Card className="rounded-2xl border shadow-none">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Database className="h-4 w-4 text-primary" />
-                  How to use these series
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm leading-6 text-muted-foreground">
-                <p>{t('economic.inflation_impact_desc')}</p>
-                <div className="rounded-xl border bg-muted/20 p-4">
-                  {language === 'pl'
-                    ? 'Krotsze zakresy pomagaja ocenic ostatnie zmiany. MAX daje pelniejszy kontekst historyczny, ale nie poprawia jakosci brakujacych danych.'
-                    : 'Shorter ranges help inspect recent changes. MAX gives broader context, but it does not improve missing data quality.'}
+            <Card className="rounded-[2rem] border border-amber-200 bg-amber-50/70 shadow-none">
+              <CardContent className="space-y-3 p-6">
+                <div className="flex items-center gap-2 text-amber-950">
+                  <AlertTriangle className="h-4 w-4" />
+                  <p className="font-black tracking-tight">
+                    {language === 'pl' ? 'Uwaga o jakosci danych' : 'Data-quality note'}
+                  </p>
                 </div>
+                <p className="text-sm leading-7 text-amber-950/90">
+                  {language === 'pl'
+                    ? 'Jesli synchronizacja jest niepelna, strona powinna mowic o tym wprost. Te wykresy maja pomagac interpretowac wynik kalkulatora, nie budowac fałszywego poczucia kompletności.'
+                    : 'If sync coverage is incomplete, the page should say that directly. These charts are here to support calculator interpretation, not to create false confidence in perfect coverage.'}
+                </p>
               </CardContent>
             </Card>
           </aside>
