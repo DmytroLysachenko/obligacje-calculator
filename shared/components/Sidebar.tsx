@@ -8,6 +8,7 @@ import {
   BookOpen,
   Calculator,
   ChevronRight,
+  Languages,
   Layers,
   Menu,
   Scale,
@@ -16,11 +17,10 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { useLanguage } from '@/i18n';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
+import { useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
 import { LanguageSwitcher } from './LanguageSwitcher';
-import { FeatureStatus } from './FeatureStatusNotice';
 
 interface SidebarContentProps {
   onItemClick?: () => void;
@@ -31,7 +31,6 @@ type NavItem = {
   href: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
-  status: FeatureStatus;
 };
 
 type NavSection = {
@@ -66,7 +65,7 @@ function getFreshnessText(
 
   if (freshness.status === 'fallback' || freshness.usedFallback) {
     return language === 'pl'
-      ? 'Czesc danych nadal moze byc zastępcza.'
+      ? 'Czesc danych nadal moze byc zastepcza.'
       : 'Some data may still be fallback coverage.';
   }
 
@@ -91,28 +90,35 @@ function SidebarUtilityRow({
   icon,
   label,
   value,
+  badge,
   children,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   value?: string;
+  badge?: React.ReactNode;
   children?: React.ReactNode;
 }) {
   const Icon = icon;
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white/88 px-3 py-2.5 backdrop-blur">
-      <div className="flex items-center gap-3">
+      <div className="flex items-start gap-3">
         <div className="rounded-xl bg-slate-100 p-1.5 text-slate-700">
           <Icon className="h-3.5 w-3.5" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
-            {label}
-          </p>
-          {value ? (
-            <p className="mt-0.5 text-xs font-medium text-slate-900">{value}</p>
-          ) : null}
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+                {label}
+              </p>
+              {value ? (
+                <p className="mt-0.5 text-xs font-medium text-slate-900">{value}</p>
+              ) : null}
+            </div>
+            {badge ? <div className="shrink-0">{badge}</div> : null}
+          </div>
           {children ? <div className="mt-1.5">{children}</div> : null}
         </div>
       </div>
@@ -180,19 +186,16 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
           href: '/education',
           label: t('nav.education'),
           icon: BookOpen,
-          status: 'trusted',
         },
         {
           href: '/single-calculator',
           label: t('nav.single_calculator'),
           icon: Calculator,
-          status: 'trusted',
         },
         {
           href: '/economic-data',
           label: t('nav.economic_data'),
           icon: BarChart2,
-          status: 'reference',
         },
       ],
     },
@@ -203,25 +206,21 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
           href: '/compare',
           label: t('nav.comparison'),
           icon: Scale,
-          status: 'conditional',
         },
         {
           href: '/regular-investment',
           label: t('nav.regular_investment'),
           icon: TrendingUp,
-          status: 'conditional',
         },
         {
           href: '/ladder',
           label: t('nav.ladder'),
           icon: Layers,
-          status: 'conditional',
         },
         {
           href: '/notebook',
           label: t('nav.notebook'),
           icon: Wallet,
-          status: 'conditional',
         },
       ],
     },
@@ -266,10 +265,7 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
       </nav>
 
       <div className="space-y-2 border-t border-slate-200 bg-slate-100/55 p-3">
-        <SidebarUtilityRow
-          icon={Wallet}
-          label={t('common.language')}
-        >
+        <SidebarUtilityRow icon={Languages} label={t('common.language')}>
           <LanguageSwitcher />
         </SidebarUtilityRow>
 
@@ -283,9 +279,8 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
                 ? 'Brak metadanych'
                 : 'No metadata'
           }
-        >
-          {dataFreshness ? (
-            <div className="flex flex-wrap items-center gap-2">
+          badge={
+            dataFreshness ? (
               <span
                 className={cn(
                   'inline-flex rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em]',
@@ -294,10 +289,13 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
               >
                 {getFreshnessLabel(dataFreshness, language)}
               </span>
-              <span className="text-[11px] leading-5 text-slate-600">
-                {getFreshnessText(dataFreshness, language)}
-              </span>
-            </div>
+            ) : null
+          }
+        >
+          {dataFreshness ? (
+            <span className="text-[11px] leading-5 text-slate-600">
+              {getFreshnessText(dataFreshness, language)}
+            </span>
           ) : (
             <span className="text-[11px] leading-5 text-slate-600">
               {t('sidebar.sync_unavailable')}

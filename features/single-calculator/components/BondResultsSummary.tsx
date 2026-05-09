@@ -197,21 +197,57 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
   return (
     <div className="space-y-10">
       <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-        <CardContent className="flex flex-col gap-6 p-6 md:p-8 xl:flex-row xl:items-start xl:justify-between">
-          <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
-              {language === 'pl' ? 'Podsumowanie scenariusza' : 'Scenario summary'}
+        <CardContent className="space-y-6 p-6 md:p-8">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
+                {language === 'pl' ? 'Podsumowanie scenariusza' : 'Scenario summary'}
+              </div>
+              <div className="space-y-2">
+                <h2 className="text-4xl font-black tracking-tight text-slate-950">
+                  {formatCurrency(results.netPayoutValue)}
+                </h2>
+                <p className="max-w-4xl text-sm leading-8 text-slate-600">
+                  {language === 'pl'
+                    ? 'To jest koncowa wyplata netto dla obecnie zatwierdzonego scenariusza. Zacznij od czterech metryk ponizej, dopiero potem wchodz w slady obliczen.'
+                    : 'This is the final net payout for the currently committed scenario. Start with the four metrics below, then go deeper only if you need detail.'}
+                </p>
+              </div>
             </div>
-            <div className="space-y-2">
-              <h2 className="text-4xl font-black tracking-tight text-slate-950">
-                {formatCurrency(results.netPayoutValue)}
-              </h2>
-              <p className="max-w-3xl text-sm leading-8 text-slate-600">
-                {language === 'pl'
-                  ? 'To jest koncowa wyplata netto dla obecnie zatwierdzonego scenariusza. Zacznij od czterech metryk ponizej, dopiero potem wchodz w slady obliczen.'
-                  : 'This is the final net payout for the currently committed scenario. Start with the four metrics below, then go deeper only if you need detail.'}
-              </p>
+
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:w-[440px] lg:shrink-0">
+              <Button className="gap-2 text-xs font-bold" onClick={onSaveScenario}>
+                <Save className="h-4 w-4" />
+                Save
+              </Button>
+              <Button
+                variant="outline"
+                className="gap-2 border-slate-200 bg-white text-xs font-bold text-slate-700"
+                onClick={onAddToNotebook}
+              >
+                <Save className="h-4 w-4" />
+                Notebook
+              </Button>
+              <Button
+                variant="outline"
+                className="gap-2 border-slate-200 bg-white text-xs font-bold text-slate-700"
+                onClick={onExportPDF}
+              >
+                <FileText className="h-4 w-4" />
+                PDF
+              </Button>
+              <Button
+                variant="outline"
+                className="gap-2 border-slate-200 bg-white text-xs font-bold text-slate-700"
+                onClick={handleExportCSV}
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+                CSV
+              </Button>
             </div>
+          </div>
+
+          <div className="space-y-3">
             <p className="text-sm leading-7 text-slate-700">{summaryNarrative}</p>
             {deltaNet !== null ? (
               <p className="text-sm text-slate-600">
@@ -227,37 +263,6 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
                 </span>
               </p>
             ) : null}
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 xl:w-[440px]">
-            <Button className="gap-2 text-xs font-bold" onClick={onSaveScenario}>
-              <Save className="h-4 w-4" />
-              Save
-            </Button>
-            <Button
-              variant="outline"
-              className="gap-2 border-slate-200 bg-white text-xs font-bold text-slate-700"
-              onClick={onAddToNotebook}
-            >
-              <Save className="h-4 w-4" />
-              Notebook
-            </Button>
-            <Button
-              variant="outline"
-              className="gap-2 border-slate-200 bg-white text-xs font-bold text-slate-700"
-              onClick={onExportPDF}
-            >
-              <FileText className="h-4 w-4" />
-              PDF
-            </Button>
-            <Button
-              variant="outline"
-              className="gap-2 border-slate-200 bg-white text-xs font-bold text-slate-700"
-              onClick={handleExportCSV}
-            >
-              <FileSpreadsheet className="h-4 w-4" />
-              CSV
-            </Button>
           </div>
         </CardContent>
       </Card>

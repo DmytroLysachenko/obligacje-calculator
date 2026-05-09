@@ -9,45 +9,83 @@ import { useLanguage } from '@/i18n';
 interface RecalculateButtonProps {
   isDirty: boolean;
   loading: boolean;
+  hasResults?: boolean;
+  disabled?: boolean;
   onClick: () => void;
 }
 
 export const RecalculateButton = ({
   isDirty,
   loading,
+  hasResults = true,
+  disabled = false,
   onClick,
 }: RecalculateButtonProps) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
-  if (!isDirty && !loading) {
+  const showButton = loading || isDirty || !hasResults;
+
+  if (!showButton) {
     return null;
   }
 
+  const isInitialRun = !hasResults && !loading;
+  const isActionable = !loading && !disabled;
+  const helperText = loading
+    ? language === 'pl'
+      ? 'Liczenie jest w toku.'
+      : 'Calculation is in progress.'
+    : isInitialRun
+      ? language === 'pl'
+        ? 'Uruchom pierwsze czyste przeliczenie po ustawieniu scenariusza.'
+        : 'Run the first clean calculation after setting your scenario.'
+      : language === 'pl'
+        ? 'Masz nowe dane wejsciowe. Przelicz dopiero, gdy scenariusz jest gotowy.'
+        : 'New inputs are staged. Recalculate only when the scenario is ready.';
+
   return (
-    <div className="fixed bottom-4 right-4 z-40 md:static">
-      <Button
-        size="default"
-        className={cn(
-          'h-12 rounded-2xl px-6 text-sm font-black uppercase tracking-widest shadow-lg',
-          isDirty
-            ? 'bg-primary text-primary-foreground shadow-primary/20 hover:bg-primary/90'
-            : 'bg-muted text-muted-foreground shadow-none',
-        )}
-        onClick={onClick}
-        disabled={loading}
-      >
-        {loading ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            {t('common.calculating')}
-          </>
-        ) : (
-          <>
-            <RotateCcw className="mr-2 h-4 w-4" />
-            {t('common.recalculate')}
-          </>
-        )}
-      </Button>
+    <div className="fixed bottom-5 right-5 z-50 w-[min(22rem,calc(100vw-1.5rem))]">
+      <div className="rounded-[1.75rem] border border-slate-950/10 bg-slate-950 px-4 py-4 text-white shadow-2xl shadow-slate-950/20">
+        <div className="flex items-start justify-between gap-3">
+          <div className="space-y-1">
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/65">
+              {isInitialRun
+                ? t('common.calculate')
+                : t('common.recalculate')}
+            </p>
+            <p className="text-sm leading-6 text-white/85">{helperText}</p>
+          </div>
+          {(isDirty || isInitialRun) && !loading ? (
+            <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-400 animate-pulse" />
+          ) : null}
+        </div>
+
+        <div className="mt-4">
+          <Button
+            size="default"
+            className={cn(
+              'h-11 w-full rounded-2xl px-5 text-sm font-black uppercase tracking-[0.18em]',
+              isActionable
+                ? 'bg-white text-slate-950 hover:bg-white/90'
+                : 'bg-white/15 text-white/70 hover:bg-white/15',
+            )}
+            onClick={onClick}
+            disabled={loading || disabled}
+          >
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {t('common.calculating')}
+              </>
+            ) : (
+              <>
+                <RotateCcw className="mr-2 h-4 w-4" />
+                {isInitialRun ? t('common.calculate') : t('common.recalculate')}
+              </>
+            )}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };

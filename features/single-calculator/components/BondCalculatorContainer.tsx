@@ -2,7 +2,6 @@
 
 import React, { useMemo } from 'react';
 import { CheckCircle2, Target, TrendingUp } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/i18n';
@@ -22,30 +21,6 @@ import { BondChart } from './BondChart';
 import { BondInputsForm } from './BondInputsForm';
 import { BondResultsSummary } from './BondResultsSummary';
 import { BondTimeline } from './BondTimeline';
-
-function ReadyStep({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-5">
-      <div className="flex items-start gap-3">
-        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-        <div className="space-y-2">
-          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
-            {title}
-          </p>
-          <p className="text-sm leading-7 text-slate-600">
-            {description}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function SectionBlock({
   title,
@@ -193,182 +168,198 @@ export const BondCalculatorContainer: React.FC = () => {
       currentValue={results?.netPayoutValue}
       onKeyDown={handleKeyDown}
     >
-      <div className="grid grid-cols-1 gap-8 xl:grid-cols-[420px_minmax(0,1fr)]">
-        <aside className="space-y-6 xl:sticky xl:top-24 xl:h-fit">
-          <BondInputsForm
-            inputs={inputs}
-            onUpdate={updateInput}
-            onBondTypeChange={setBondType}
-            availableSeries={availableSeries}
-            selectedSeriesId={selectedSeriesId}
-            guardrails={guardrails}
-            onApplyGuardrailFix={handleApplyGuardrailFix}
-          />
-        </aside>
+      <div className="space-y-10">
+        <div className="grid grid-cols-1 gap-8 xl:grid-cols-[420px_minmax(0,1fr)] xl:items-start">
+          <aside className="space-y-6 xl:sticky xl:top-24 xl:h-fit">
+            <BondInputsForm
+              inputs={inputs}
+              onUpdate={updateInput}
+              onBondTypeChange={setBondType}
+              availableSeries={availableSeries}
+              selectedSeriesId={selectedSeriesId}
+              guardrails={guardrails}
+              onApplyGuardrailFix={handleApplyGuardrailFix}
+            />
+          </aside>
 
-        <div className="space-y-8" id="bond-report-content">
-          {!results && !isCalculating ? (
-            <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-              <CardContent className="space-y-6 p-6 md:p-8">
-                <div className="space-y-3">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
-                    <TrendingUp className="h-3.5 w-3.5 text-primary" />
-                    {t('bonds.simulation.ready')}
-                  </div>
-                  <h3 className="text-3xl font-black tracking-tight text-slate-950">
-                    {t('bonds.simulation.ready_title')}
-                  </h3>
-                  <p className="max-w-3xl text-sm leading-8 text-slate-600">
-                    {t('bonds.simulation.ready_desc')}
-                  </p>
-                </div>
-
-                <div className="grid gap-4 lg:grid-cols-3">
-                  <ReadyStep
-                    title={t('bonds.simulation.ready_steps.primary.title')}
-                    description={t('bonds.simulation.ready_steps.primary.desc')}
-                  />
-                  <ReadyStep
-                    title={t('bonds.simulation.ready_steps.timing.title')}
-                    description={t('bonds.simulation.ready_steps.timing.desc')}
-                  />
-                  <ReadyStep
-                    title={t('bonds.simulation.ready_steps.advanced.title')}
-                    description={t('bonds.simulation.ready_steps.advanced.desc')}
-                  />
-                </div>
-
-                {blockingGuardrails.length > 0 ? (
-                  <div className="rounded-3xl border border-destructive/20 bg-destructive/5 px-5 py-4 text-sm text-destructive">
-                    {t('bonds.simulation.fix_blocking')}
-                  </div>
-                ) : null}
-
-                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+          <div className="space-y-6" id="bond-report-content">
+            {!results && !isCalculating ? (
+              <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
+                <CardContent className="space-y-5 p-6 md:p-8">
                   <div className="space-y-3">
-                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
-                      {t('bonds.simulation.action')}
+                    <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
+                      <TrendingUp className="h-3.5 w-3.5 text-primary" />
+                      {t('bonds.simulation.ready')}
+                    </div>
+                    <h3 className="text-3xl font-black tracking-tight text-slate-950">
+                      {t('bonds.simulation.ready_title')}
+                    </h3>
+                    <p className="max-w-3xl text-sm leading-8 text-slate-600">
+                      {t('bonds.simulation.ready_desc')}
                     </p>
-                    <Button
-                      className="h-11 w-full font-semibold md:w-auto"
-                      onClick={() => calculate()}
-                      disabled={blockingGuardrails.length > 0}
-                    >
-                      {t('common.calculate')}
-                    </Button>
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <Card className="rounded-[1.75rem] border border-slate-200 bg-slate-50 shadow-none">
+                      <CardContent className="space-y-2 p-5">
+                        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
+                          {t('bonds.simulation.ready_steps.primary.title')}
+                        </p>
+                        <p className="text-sm leading-7 text-slate-600">
+                          {t('bonds.simulation.ready_steps.primary.desc')}
+                        </p>
+                      </CardContent>
+                    </Card>
+                    <Card className="rounded-[1.75rem] border border-slate-200 bg-slate-50 shadow-none">
+                      <CardContent className="space-y-2 p-5">
+                        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
+                          {t('bonds.simulation.ready_steps.timing.title')}
+                        </p>
+                        <p className="text-sm leading-7 text-slate-600">
+                          {t('bonds.simulation.ready_steps.timing.desc')}
+                        </p>
+                      </CardContent>
+                    </Card>
+                    <Card className="rounded-[1.75rem] border border-slate-200 bg-slate-50 shadow-none">
+                      <CardContent className="space-y-2 p-5">
+                        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
+                          {t('bonds.simulation.ready_steps.advanced.title')}
+                        </p>
+                        <p className="text-sm leading-7 text-slate-600">
+                          {t('bonds.simulation.ready_steps.advanced.desc')}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {blockingGuardrails.length > 0 ? (
+                    <div className="rounded-3xl border border-destructive/20 bg-destructive/5 px-5 py-4 text-sm text-destructive">
+                      {t('bonds.simulation.fix_blocking')}
+                    </div>
+                  ) : (
                     <p className="text-sm leading-7 text-slate-600">
                       {t('bonds.simulation.results_stable')}
                     </p>
+                  )}
+                </CardContent>
+              </Card>
+            ) : null}
+
+            {isCalculating && !results ? (
+              <div className="space-y-4">
+                <Skeleton className="h-32 w-full rounded-[2rem]" />
+                <Skeleton className="h-60 w-full rounded-[2rem]" />
+                <Skeleton className="h-[420px] w-full rounded-[2rem]" />
+              </div>
+            ) : null}
+
+            {results ? (
+              <div
+                className={cn(
+                  'space-y-6 transition-opacity duration-300',
+                  isCalculating && 'pointer-events-none opacity-50',
+                )}
+              >
+                {isDirty ? (
+                  <div className="rounded-3xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
+                    Inputs changed. Results below still show the previous run. Use{' '}
+                    <span className="font-semibold">Recalculate</span> only when the
+                    new scenario is ready.
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ) : null}
+                ) : null}
 
-          {isCalculating && !results ? (
-            <div className="space-y-4">
-              <Skeleton className="h-32 w-full rounded-[2rem]" />
-              <Skeleton className="h-60 w-full rounded-[2rem]" />
-              <Skeleton className="h-[420px] w-full rounded-[2rem]" />
-              <Skeleton className="h-[420px] w-full rounded-[2rem]" />
-            </div>
-          ) : null}
-
-          {results ? (
-            <div
-              className={cn(
-                'space-y-10 transition-opacity duration-300',
-                isCalculating && 'pointer-events-none opacity-50',
-              )}
-            >
-              {isDirty ? (
-                <div className="rounded-3xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
-                  Inputs changed. Results below still show the previous run. Use{' '}
-                  <span className="font-semibold">Recalculate</span> only when the
-                  new scenario is ready.
-                </div>
-              ) : null}
-
-              <BondResultsSummary
-                results={results}
-                inputs={inputs}
-                previousResults={previousResults}
-                onSaveScenario={handleSaveScenario}
-                onAddToNotebook={handleAddToNotebook}
-                onExportPDF={handleExportPDF}
-              />
-
-              <SectionBlock
-                title={language === 'pl' ? 'Jak czytac ten wynik' : 'How to read this run'}
-                description={
-                  language === 'pl'
-                    ? 'Najpierw przeczytaj glowny wynik, potem spojrz na wykres, a dopiero na koncu wchodz w harmonogram i slady obliczen.'
-                    : 'Read the headline result first, then inspect the chart, and only then move into the detailed timeline and calculation trace.'
-                }
-              >
-                <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-                  <CardContent className="space-y-3 p-6">
-                    {readingGuide.map((item) => (
-                      <div key={item} className="flex items-start gap-3">
-                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                        <p className="text-sm leading-7 text-slate-600">{item}</p>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              </SectionBlock>
-
-              <SectionBlock
-                title={t('bonds.evolution')}
-                description={
-                  language === 'pl'
-                    ? 'Wykres pokazuje ogolny przebieg scenariusza bez koniecznosci wchodzenia od razu w harmonogram.'
-                    : 'The chart gives the overall shape of the scenario before you need to read the full timeline.'
-                }
-              >
-                <div className="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-none">
-                  <BondChart
-                    results={results}
-                    initialInvestment={results.initialInvestment}
-                  />
-                </div>
-              </SectionBlock>
-
-              <SectionBlock
-                title={t('bonds.timeline')}
-                description={
-                  language === 'pl'
-                    ? 'Harmonogram sluzy do kontroli szczegolow roku po roku i momentow wyplat.'
-                    : 'Use the timeline to verify year-by-year detail and payout timing.'
-                }
-              >
-                <BondTimeline results={results} />
-              </SectionBlock>
-
-              <SectionBlock
-                title={t('bonds.simulation.calculation_context')}
-                description={
-                  language === 'pl'
-                    ? 'Meta dane, zalozenia i flagi jakosci powinny byc widoczne, ale nie dominowac nad wynikiem.'
-                    : 'Assumptions, notes, and data-quality flags should stay visible without overpowering the result.'
-                }
-              >
-                <CalculationMetaPanel
-                  warnings={envelope?.warnings}
-                  assumptions={envelope?.assumptions}
-                  calculationNotes={envelope?.calculationNotes}
-                  dataQualityFlags={envelope?.dataQualityFlags}
-                  dataFreshness={envelope?.dataFreshness}
+                <BondResultsSummary
+                  results={results}
+                  inputs={inputs}
+                  previousResults={previousResults}
+                  onSaveScenario={handleSaveScenario}
+                  onAddToNotebook={handleAddToNotebook}
+                  onExportPDF={handleExportPDF}
                 />
-              </SectionBlock>
-            </div>
-          ) : null}
+              </div>
+            ) : null}
+          </div>
         </div>
+
+        {results ? (
+          <div
+            className={cn(
+              'space-y-10 transition-opacity duration-300',
+              isCalculating && 'pointer-events-none opacity-50',
+            )}
+          >
+            <SectionBlock
+              title={language === 'pl' ? 'Jak czytac ten wynik' : 'How to read this run'}
+              description={
+                language === 'pl'
+                  ? 'Najpierw przeczytaj glowny wynik, potem spojrz na wykres, a dopiero na koncu wchodz w harmonogram i slady obliczen.'
+                  : 'Read the headline result first, then inspect the chart, and only then move into the detailed timeline and calculation trace.'
+              }
+            >
+              <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
+                <CardContent className="space-y-3 p-6">
+                  {readingGuide.map((item) => (
+                    <div key={item} className="flex items-start gap-3">
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                      <p className="text-sm leading-7 text-slate-600">{item}</p>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </SectionBlock>
+
+            <SectionBlock
+              title={t('bonds.evolution')}
+              description={
+                language === 'pl'
+                  ? 'Wykres pokazuje ogolny przebieg scenariusza bez koniecznosci wchodzenia od razu w harmonogram.'
+                  : 'The chart gives the overall shape of the scenario before you need to read the full timeline.'
+              }
+            >
+              <div className="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-none">
+                <BondChart
+                  results={results}
+                  initialInvestment={results.initialInvestment}
+                />
+              </div>
+            </SectionBlock>
+
+            <SectionBlock
+              title={t('bonds.timeline')}
+              description={
+                language === 'pl'
+                  ? 'Harmonogram sluzy do kontroli szczegolow roku po roku i momentow wyplat.'
+                  : 'Use the timeline to verify year-by-year detail and payout timing.'
+              }
+            >
+              <BondTimeline results={results} />
+            </SectionBlock>
+
+            <SectionBlock
+              title={t('bonds.simulation.calculation_context')}
+              description={
+                language === 'pl'
+                  ? 'Meta dane, zalozenia i flagi jakosci powinny byc widoczne, ale nie dominowac nad wynikiem.'
+                  : 'Assumptions, notes, and data-quality flags should stay visible without overpowering the result.'
+              }
+            >
+              <CalculationMetaPanel
+                warnings={envelope?.warnings}
+                assumptions={envelope?.assumptions}
+                calculationNotes={envelope?.calculationNotes}
+                dataQualityFlags={envelope?.dataQualityFlags}
+                dataFreshness={envelope?.dataFreshness}
+              />
+            </SectionBlock>
+          </div>
+        ) : null}
       </div>
 
       <RecalculateButton
-        isDirty={isDirty && blockingGuardrails.length === 0}
+        isDirty={isDirty}
+        hasResults={!!results}
         loading={isCalculating}
+        disabled={blockingGuardrails.length > 0}
         onClick={() => calculate()}
       />
     </CalculatorPageShell>
