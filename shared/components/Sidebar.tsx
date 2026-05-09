@@ -8,7 +8,6 @@ import {
   BookOpen,
   Calculator,
   ChevronRight,
-  Globe2,
   Layers,
   Menu,
   Scale,
@@ -21,7 +20,7 @@ import { useLanguage } from '@/i18n';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { cn } from '@/lib/utils';
 import { LanguageSwitcher } from './LanguageSwitcher';
-import { FeatureStatus, FeatureStatusPill } from './FeatureStatusNotice';
+import { FeatureStatus } from './FeatureStatusNotice';
 
 interface SidebarContentProps {
   onItemClick?: () => void;
@@ -152,20 +151,17 @@ function NavLinkItem({
         </div>
 
         <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
-          <p className="truncate text-sm font-black tracking-tight">
+          <p className="pr-2 text-sm font-black leading-5 tracking-tight whitespace-normal">
             {item.label}
           </p>
-          <div className="flex shrink-0 items-center gap-2">
-            <FeatureStatusPill status={item.status} />
-            <ChevronRight
-              className={cn(
-                'h-4 w-4 transition-transform',
-                isActive
-                  ? 'text-white/70'
-                  : 'text-slate-400 group-hover:translate-x-0.5',
-              )}
-            />
-          </div>
+          <ChevronRight
+            className={cn(
+              'h-4 w-4 shrink-0 transition-transform',
+              isActive
+                ? 'text-white/70'
+                : 'text-slate-400 group-hover:translate-x-0.5',
+            )}
+          />
         </div>
       </div>
     </Link>
@@ -271,7 +267,7 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
 
       <div className="space-y-2 border-t border-slate-200 bg-slate-100/55 p-3">
         <SidebarUtilityRow
-          icon={Globe2}
+          icon={Wallet}
           label={t('common.language')}
         >
           <LanguageSwitcher />

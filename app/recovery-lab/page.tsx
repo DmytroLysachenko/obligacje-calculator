@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { BarChart2, Calendar, FlaskConical, ShieldAlert, TrendingUp } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { FeatureStatusNotice, FeatureStatusPill } from '@/shared/components/FeatureStatusNotice';
 import { useLanguage } from '@/i18n';
 
@@ -28,18 +28,29 @@ const recoveryLabPages = [
 ];
 
 export default function RecoveryLabPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+
+  const intro =
+    language === 'pl'
+      ? 'Te strony pozostaja dostepne, ale nie powinny konkurowac wizualnie z glowna czescia produktu. To boczne laboratorium, nie frontowa obietnica aplikacji.'
+      : 'These pages remain reachable, but they should not compete visually with the core product. This is a side lab, not the front-door promise of the app.';
+
   return (
     <div className="space-y-8">
-      <div className="space-y-3">
-        <div className="flex items-center gap-2 text-slate-900">
-          <FlaskConical className="h-6 w-6 text-amber-600" />
-          <h1 className="text-3xl font-black tracking-tight">{t('landing.recovery_lab_page.title')}</h1>
-        </div>
-        <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-          {t('landing.recovery_lab_page.description_long')}
-        </p>
-      </div>
+      <Card className="rounded-[2rem] border border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.88),rgba(248,250,252,0.92))] shadow-[0_20px_52px_-46px_rgba(15,23,42,0.42)] backdrop-blur">
+        <CardContent className="space-y-4 p-6 md:p-8">
+          <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
+            <FlaskConical className="h-3.5 w-3.5 text-amber-700" />
+            {t('landing.recovery_lab_page.eyebrow')}
+          </div>
+          <div className="space-y-3">
+            <h1 className="text-3xl font-black tracking-tight text-slate-950">
+              {t('landing.recovery_lab_page.title')}
+            </h1>
+            <p className="max-w-4xl text-sm leading-8 text-slate-600">{intro}</p>
+          </div>
+        </CardContent>
+      </Card>
 
       <FeatureStatusNotice
         status="experimental"
@@ -49,26 +60,26 @@ export default function RecoveryLabPage() {
         {t('landing.recovery_lab_page.why_separated_desc')}
       </FeatureStatusNotice>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
         {recoveryLabPages.map((page) => (
           <Link key={page.href} href={page.href} className="group block h-full">
-            <Card className="h-full rounded-2xl border border-amber-200 bg-amber-50/50 shadow-none transition-colors group-hover:border-amber-300">
-              <CardHeader className="space-y-4">
+            <Card className="h-full overflow-hidden rounded-[2rem] border border-amber-200 bg-[linear-gradient(180deg,rgba(255,251,235,0.95),rgba(255,255,255,0.92))] shadow-[0_18px_48px_-40px_rgba(120,53,15,0.22)] transition-colors group-hover:border-amber-300">
+              <CardContent className="space-y-5 p-6">
                 <div className="flex items-start justify-between gap-3">
                   <div className="rounded-2xl bg-white p-3 text-amber-700 shadow-sm">
-                    <page.icon className="h-6 w-6" />
+                    <page.icon className="h-5 w-5" />
                   </div>
                   <FeatureStatusPill status={page.status} />
                 </div>
-                <div>
-                  <CardTitle className="text-xl">{t(`landing.recovery_lab_page.pages.${page.i18nKey}.title`)}</CardTitle>
-                  <CardDescription className="mt-2 text-sm leading-6 text-slate-700">
+                <div className="space-y-2">
+                  <p className="text-xl font-black tracking-tight text-slate-950">
+                    {t(`landing.recovery_lab_page.pages.${page.i18nKey}.title`)}
+                  </p>
+                  <p className="text-sm leading-7 text-slate-600">
                     {t(`landing.recovery_lab_page.pages.${page.i18nKey}.description`)}
-                  </CardDescription>
+                  </p>
                 </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="rounded-2xl border border-amber-200 bg-white/70 px-4 py-3 text-sm leading-6 text-slate-700">
+                <div className="rounded-2xl border border-amber-200 bg-white/75 px-4 py-3 text-sm leading-7 text-slate-700">
                   {t('landing.recovery_lab_page.card_notice')}
                 </div>
               </CardContent>
@@ -77,19 +88,21 @@ export default function RecoveryLabPage() {
         ))}
       </div>
 
-      <Card className="rounded-2xl border shadow-none">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
+      <Card className="rounded-[2rem] border border-slate-200 bg-white/86 shadow-[0_16px_42px_-38px_rgba(15,23,42,0.38)] backdrop-blur">
+        <CardContent className="space-y-4 p-6">
+          <div className="flex items-center gap-2 text-slate-950">
             <ShieldAlert className="h-5 w-5 text-primary" />
-            {t('landing.recovery_lab_page.what_stays_core')}
-          </CardTitle>
-          <CardDescription>
+            <p className="text-xl font-black tracking-tight">
+              {t('landing.recovery_lab_page.what_stays_core')}
+            </p>
+          </div>
+          <p className="text-sm leading-7 text-slate-600">
             {t('landing.recovery_lab_page.what_stays_core_desc')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm leading-6 text-muted-foreground">
-          <p>{t('landing.recovery_lab_page.core_emphasis')}</p>
-          <p>{t('landing.recovery_lab_page.core_improve_later')}</p>
+          </p>
+          <div className="space-y-2 text-sm leading-7 text-slate-600">
+            <p>{t('landing.recovery_lab_page.core_emphasis')}</p>
+            <p>{t('landing.recovery_lab_page.core_improve_later')}</p>
+          </div>
         </CardContent>
       </Card>
     </div>

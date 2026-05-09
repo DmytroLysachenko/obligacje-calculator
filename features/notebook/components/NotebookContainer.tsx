@@ -14,10 +14,36 @@ import {
 } from 'lucide-react';
 import { UserPortfolio } from '@/db/schema';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { PortfolioDetails } from './PortfolioDetails';
+
+function SectionBlock({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="space-y-4">
+      <div className="space-y-2">
+        <h3 className="text-2xl font-black tracking-tight text-slate-950">
+          {title}
+        </h3>
+        {description ? (
+          <p className="max-w-3xl text-sm leading-7 text-slate-600">
+            {description}
+          </p>
+        ) : null}
+      </div>
+      {children}
+    </section>
+  );
+}
 
 const EmptyPortfolioState = ({
   onCreate,
@@ -26,7 +52,6 @@ const EmptyPortfolioState = ({
   badgeLabel,
   title,
   description,
-  actionsLabel,
   createLabel,
   demoLabel,
   importLabel,
@@ -38,7 +63,6 @@ const EmptyPortfolioState = ({
   badgeLabel: string;
   title: string;
   description: string;
-  actionsLabel: string;
   createLabel: string;
   demoLabel: string;
   importLabel: string;
@@ -47,84 +71,70 @@ const EmptyPortfolioState = ({
     description: string;
   }>;
 }) => (
-  <div className="rounded-3xl border bg-card p-6 shadow-sm md:p-8">
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_240px] lg:items-start">
-      <div className="space-y-5">
-        <div className="space-y-3">
-          <div className="inline-flex items-center gap-2 rounded-full border bg-muted px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-700">
-            <BookOpen className="h-3.5 w-3.5 text-primary" />
-            {badgeLabel}
+  <Card className="overflow-hidden rounded-[2rem] border border-slate-200/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.88),rgba(248,250,252,0.92))] shadow-[0_22px_60px_-48px_rgba(15,23,42,0.45)] backdrop-blur">
+    <CardContent className="space-y-6 p-6 md:p-8">
+      <div className="space-y-3">
+        <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
+          <BookOpen className="h-3.5 w-3.5 text-primary" />
+          {badgeLabel}
+        </div>
+        <h3 className="text-3xl font-black tracking-tight text-slate-950">
+          {title}
+        </h3>
+        <p className="max-w-3xl text-sm leading-8 text-slate-600">
+          {description}
+        </p>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        {steps.map((step) => (
+          <div
+            key={step.title}
+            className="rounded-[1.75rem] border border-white/80 bg-white/75 p-5 shadow-[0_16px_40px_-34px_rgba(15,23,42,0.45)] backdrop-blur"
+          >
+            <div className="flex items-start gap-3">
+              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+              <div className="space-y-2">
+                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
+                  {step.title}
+                </p>
+                <p className="text-sm leading-7 text-slate-600">{step.description}</p>
+              </div>
+            </div>
           </div>
-          <h3 className="text-2xl font-black tracking-tight text-slate-900">
-            {title}
-          </h3>
-          <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
-            {description}
-          </p>
-        </div>
-
-        <div className="grid gap-3 md:grid-cols-3">
-          {steps.map((step) => (
-            <ReadyStep
-              key={step.title}
-              title={step.title}
-              description={step.description}
-            />
-          ))}
-        </div>
+        ))}
       </div>
 
-      <div className="rounded-2xl border bg-slate-50 p-5">
-        <div className="space-y-3">
-          <p className="text-[11px] font-black uppercase tracking-widest text-slate-500">
-            {actionsLabel}
-          </p>
-          <Button onClick={onCreate} className="h-11 w-full font-semibold">
-            {createLabel}
-          </Button>
-          <Button variant="outline" onClick={onCreateDemo} className="h-11 w-full font-semibold">
-            {demoLabel}
-          </Button>
-          <Button variant="outline" onClick={onImport} className="h-11 w-full font-semibold">
-            {importLabel}
-          </Button>
-        </div>
+      <div className="flex flex-wrap gap-3">
+        <Button onClick={onCreate} className="gap-2 rounded-2xl">
+          <Plus className="h-4 w-4" />
+          {createLabel}
+        </Button>
+        <Button variant="outline" onClick={onCreateDemo} className="gap-2 rounded-2xl border-slate-200 bg-white/80">
+          {demoLabel}
+        </Button>
+        <Button variant="outline" onClick={onImport} className="gap-2 rounded-2xl border-slate-200 bg-white/80">
+          <Upload className="h-4 w-4" />
+          {importLabel}
+        </Button>
       </div>
-    </div>
-  </div>
+    </CardContent>
+  </Card>
 );
 
 const NotebookLoadingState = () => (
   <div className="space-y-4">
-    <Skeleton className="h-24 w-full rounded-2xl" />
+    <Skeleton className="h-28 w-full rounded-[2rem]" />
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-      <Skeleton className="h-52 w-full rounded-2xl" />
-      <Skeleton className="h-52 w-full rounded-2xl" />
-      <Skeleton className="h-52 w-full rounded-2xl" />
-    </div>
-  </div>
-);
-
-const ReadyStep = ({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) => (
-  <div className="rounded-2xl border bg-white p-4">
-    <div className="flex items-start gap-3">
-      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-      <div className="space-y-1">
-        <p className="text-sm font-bold text-slate-900">{title}</p>
-        <p className="text-xs leading-6 text-muted-foreground">{description}</p>
-      </div>
+      <Skeleton className="h-56 w-full rounded-[2rem]" />
+      <Skeleton className="h-56 w-full rounded-[2rem]" />
+      <Skeleton className="h-56 w-full rounded-[2rem]" />
     </div>
   </div>
 );
 
 export const NotebookContainer: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [portfolios, setPortfolios] = useState<UserPortfolio[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -299,6 +309,11 @@ export const NotebookContainer: React.FC = () => {
     ) : null;
   }
 
+  const notebookIntro =
+    language === 'pl'
+      ? 'To ma byc prosty notatnik portfela, nie kolejny dashboard. Najpierw rekordy partii, potem zapadalnosci i eksport.'
+      : 'This should be a simple portfolio notebook, not another dashboard. Record the lots first, then inspect maturities and exports.';
+
   return (
     <CalculatorPageShell
       title={t('notebook.title')}
@@ -316,7 +331,7 @@ export const NotebookContainer: React.FC = () => {
       />
 
       {error ? (
-        <div className="rounded-2xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
+        <div className="rounded-3xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
           <div className="flex items-center gap-3 font-semibold">
             <AlertCircle className="h-5 w-5" />
             {error}
@@ -335,33 +350,38 @@ export const NotebookContainer: React.FC = () => {
         </div>
       ) : null}
 
-      <Card className="rounded-2xl border shadow-none">
-        <CardContent className="flex flex-col gap-4 py-5 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-1">
-            <p className="font-semibold text-foreground">{t('notebook.guest_mode')}</p>
-            <p className="text-sm leading-6 text-muted-foreground">
-              {t('notebook.guest_desc')}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={handleImportClick} className="gap-2">
-              <Upload className="h-4 w-4" />
-              {t('notebook.import_json')}
-            </Button>
-            <Button variant="outline" onClick={handleCreateDemo}>
-              {t('notebook.load_demo')}
-            </Button>
-            <Button variant="outline" onClick={fetchPortfolios} className="gap-2">
-              <RefreshCcw className="h-4 w-4" />
-              {t('common.refresh')}
-            </Button>
-            <Button onClick={handleCreateDefault} className="gap-2">
-              <Plus className="h-4 w-4" />
-              {t('notebook.new_portfolio')}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <SectionBlock
+        title={language === 'pl' ? 'Zakres notatnika' : 'Notebook scope'}
+        description={notebookIntro}
+      >
+        <Card className="rounded-[2rem] border border-slate-200/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.88),rgba(248,250,252,0.92))] shadow-[0_20px_55px_-48px_rgba(15,23,42,0.45)] backdrop-blur">
+          <CardContent className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-1">
+              <p className="font-semibold text-foreground">{t('notebook.guest_mode')}</p>
+              <p className="text-sm leading-7 text-muted-foreground">
+                {t('notebook.guest_desc')}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" onClick={handleImportClick} className="gap-2 rounded-2xl border-slate-200 bg-white/80">
+                <Upload className="h-4 w-4" />
+                {t('notebook.import_json')}
+              </Button>
+              <Button variant="outline" onClick={handleCreateDemo} className="rounded-2xl border-slate-200 bg-white/80">
+                {t('notebook.load_demo')}
+              </Button>
+              <Button variant="outline" onClick={fetchPortfolios} className="gap-2 rounded-2xl border-slate-200 bg-white/80">
+                <RefreshCcw className="h-4 w-4" />
+                {t('common.refresh')}
+              </Button>
+              <Button onClick={handleCreateDefault} className="gap-2 rounded-2xl">
+                <Plus className="h-4 w-4" />
+                {t('notebook.new_portfolio')}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </SectionBlock>
 
       {isLoading ? (
         <NotebookLoadingState />
@@ -373,63 +393,65 @@ export const NotebookContainer: React.FC = () => {
           badgeLabel={t('notebook.empty_badge')}
           title={t('notebook.empty_title')}
           description={t('notebook.empty_desc')}
-          actionsLabel={t('common.actions')}
           createLabel={t('notebook.create_first')}
           demoLabel={t('notebook.load_demo')}
           importLabel={t('notebook.import_json')}
           steps={emptyStateSteps}
         />
       ) : (
-        <div className="space-y-6">
-          <Card className="rounded-2xl border shadow-none">
-            <CardHeader className="border-b bg-muted/20">
-              <CardTitle className="text-lg font-black tracking-tight">
-                {t('notebook.stored_portfolios')}
-              </CardTitle>
-              <CardDescription>
-                {t('notebook.stored_portfolios_desc')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 gap-4 p-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="space-y-8">
+          <SectionBlock
+            title={t('notebook.stored_portfolios')}
+            description={t('notebook.stored_portfolios_desc')}
+          >
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
               {portfolios.map((portfolio) => (
-                <Card key={portfolio.id} className="rounded-2xl border shadow-none">
-                  <CardHeader className="space-y-3">
+                <Card
+                  key={portfolio.id}
+                  className="overflow-hidden rounded-[2rem] border border-white/70 bg-white/82 shadow-[0_18px_46px_-38px_rgba(15,23,42,0.42)] backdrop-blur transition-transform hover:-translate-y-0.5"
+                >
+                  <CardContent className="space-y-5 p-6">
                     <div className="flex items-start justify-between gap-3">
-                      <div className="rounded-xl border bg-muted/30 p-3 text-primary">
+                      <div className="rounded-2xl bg-slate-100 p-3 text-slate-900">
                         <FileText className="h-5 w-5" />
                       </div>
-                      <span className="rounded-full border px-3 py-1 text-xs font-medium text-muted-foreground">
-                        {portfolio.isPublic ? t('notebook.status_public') : t('notebook.status_private')}
+                      <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-slate-600">
+                        {portfolio.isPublic
+                          ? t('notebook.status_public')
+                          : t('notebook.status_private')}
                       </span>
                     </div>
-                    <div>
-                      <CardTitle className="text-xl">{portfolio.name}</CardTitle>
-                      <CardDescription className="mt-2 leading-6">
+
+                    <div className="space-y-2">
+                      <p className="text-xl font-black tracking-tight text-slate-950">
+                        {portfolio.name}
+                      </p>
+                      <p className="text-sm leading-7 text-slate-600">
                         {portfolio.description || t('notebook.portfolio_details')}
-                      </CardDescription>
+                      </p>
                     </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
+
                     <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-2">
-                      <div className="rounded-xl border bg-muted/20 p-3">
-                        <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                      <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
                           {t('common.created')}
                         </p>
-                        <p className="mt-1 font-medium text-foreground">
+                        <p className="mt-2 font-medium text-slate-900">
                           {new Date(portfolio.createdAt!).toLocaleDateString()}
                         </p>
                       </div>
-                      <div className="rounded-xl border bg-muted/20 p-3">
-                        <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                      <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
                           {t('notebook.usage_label')}
                         </p>
-                        <p className="mt-1 font-medium text-foreground">
+                        <p className="mt-2 font-medium text-slate-900">
                           {t('notebook.usage_desc')}
                         </p>
                       </div>
                     </div>
+
                     <Button
-                      className="w-full"
+                      className="w-full rounded-2xl"
                       onClick={() => setSelectedPortfolioId(portfolio.id)}
                     >
                       {t('notebook.open_portfolio')}
@@ -437,20 +459,24 @@ export const NotebookContainer: React.FC = () => {
                   </CardContent>
                 </Card>
               ))}
+            </div>
+          </SectionBlock>
+
+          <Card className="rounded-[2rem] border border-slate-200 bg-white/82 shadow-[0_16px_42px_-38px_rgba(15,23,42,0.4)] backdrop-blur">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-3">
+                <FolderOpen className="mt-0.5 h-5 w-5 text-primary" />
+                <div className="space-y-2">
+                  <p className="text-xl font-black tracking-tight text-slate-950">
+                    {t('notebook.scope_title')}
+                  </p>
+                  <p className="text-sm leading-7 text-slate-600">
+                    {t('notebook.scope_desc')}
+                  </p>
+                </div>
+              </div>
             </CardContent>
           </Card>
-
-          <div className="rounded-2xl border bg-muted/20 p-5">
-            <div className="flex items-start gap-3">
-              <FolderOpen className="mt-0.5 h-5 w-5 text-primary" />
-              <div className="space-y-2">
-                <p className="font-semibold text-foreground">{t('notebook.scope_title')}</p>
-                <p className="text-sm leading-6 text-muted-foreground">
-                  {t('notebook.scope_desc')}
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
       )}
     </CalculatorPageShell>
