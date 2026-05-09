@@ -8,6 +8,10 @@ import { useEffect } from 'react';
  */
 export const OpportunisticSyncTrigger = () => {
   useEffect(() => {
+    if (process.env.NODE_ENV !== 'production') {
+      return;
+    }
+
     // Only trigger in production or if needed for local testing
     // We use a small delay to not compete with main page resources
     const timer = setTimeout(() => {

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">Bonds Calculator</title>
+  <desc id="desc">Minimal upward arrow icon for the Bonds Calculator app.</desc>
+  <rect width="256" height="256" rx="52" fill="#111827" />
+  <path
+    d="M64 166.5 113.5 117l28 28L194 92.5"
+    fill="none"
+    stroke="#ffffff"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="18"
+  />
+  <path
+    d="M158 92.5H194V128.5"
+    fill="none"
+    stroke="#ffffff"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="18"
+  />
+</svg>

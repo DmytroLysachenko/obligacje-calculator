@@ -4,12 +4,14 @@ import { eq, and } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import { PortfolioDetails } from '@/features/notebook/components/PortfolioDetails';
 import { Metadata } from 'next';
+import { ensurePortfolioSchemaCompat } from '@/lib/db-schema-compat';
 
 interface Props {
   params: Promise<{ shareId: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  await ensurePortfolioSchemaCompat();
   const { shareId } = await params;
   const portfolio = await db.query.userPortfolios.findFirst({
     where: and(
@@ -27,6 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function SharedPortfolioPage({ params }: Props) {
+  await ensurePortfolioSchemaCompat();
   const { shareId } = await params;
   const portfolio = await db.query.userPortfolios.findFirst({
     where: and(

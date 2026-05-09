@@ -48,10 +48,20 @@ function StatusCard({
   title,
   meta,
   isLoading,
+  loadingLabel,
+  sourceLabel,
+  coverageLabel,
+  asOfLabel,
+  useLabel,
 }: {
   title: string;
   meta?: ChartSeriesEnvelope<EconomicSeriesPoint>;
   isLoading: boolean;
+  loadingLabel: string;
+  sourceLabel: string;
+  coverageLabel: string;
+  asOfLabel: string;
+  useLabel: string;
 }) {
   const state = getReferenceState(meta);
 
@@ -75,27 +85,27 @@ function StatusCard({
       <CardContent className="space-y-3 text-sm">
         <div className="grid grid-cols-1 gap-3">
           <div className="rounded-xl border bg-background/70 p-3">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Source</p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">{sourceLabel}</p>
             <p className="mt-1 font-medium text-foreground">
-              {isLoading ? 'Loading...' : getReferenceSourceLabel(meta)}
+              {isLoading ? loadingLabel : getReferenceSourceLabel(meta)}
             </p>
           </div>
           <div className="rounded-xl border bg-background/70 p-3">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Coverage</p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">{coverageLabel}</p>
             <p className="mt-1 font-medium text-foreground">
-              {isLoading ? 'Loading...' : getReferenceCoverageLabel(meta)}
+              {isLoading ? loadingLabel : getReferenceCoverageLabel(meta)}
             </p>
           </div>
           <div className="rounded-xl border bg-background/70 p-3">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">As of</p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">{asOfLabel}</p>
             <p className="mt-1 font-medium text-foreground">
-              {isLoading ? 'Loading...' : getReferenceAsOfLabel(meta)}
+              {isLoading ? loadingLabel : getReferenceAsOfLabel(meta)}
             </p>
           </div>
           <div className="rounded-xl border bg-background/70 p-3">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Use</p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">{useLabel}</p>
             <p className="mt-1 font-medium text-foreground">
-              {isLoading ? 'Loading...' : getReferenceScopeLabel(meta)}
+              {isLoading ? loadingLabel : getReferenceScopeLabel(meta)}
             </p>
           </div>
         </div>
@@ -269,12 +279,22 @@ export default function EconomicDataPage() {
               title={t('economic.inflation_title')}
               meta={inflationMeta}
               isLoading={isLoadingInflation}
+              loadingLabel={t('common.loading')}
+              sourceLabel="Source"
+              coverageLabel="Coverage"
+              asOfLabel={t('economic.as_of')}
+              useLabel="Use"
             />
 
             <StatusCard
               title={t('economic.nbp_rate_title')}
               meta={nbpMeta}
               isLoading={isLoadingNbp}
+              loadingLabel={t('common.loading')}
+              sourceLabel="Source"
+              coverageLabel="Coverage"
+              asOfLabel={t('economic.as_of')}
+              useLabel="Use"
             />
 
             <Card className="rounded-2xl border shadow-none">

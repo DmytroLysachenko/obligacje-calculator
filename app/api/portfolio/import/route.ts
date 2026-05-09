@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { db } from '@/db';
 import { userInvestmentLots, userPortfolios } from '@/db/schema';
 import { applyPortfolioOwnerCookie, resolvePortfolioOwner } from '@/lib/portfolio-access';
+import { ensurePortfolioSchemaCompat } from '@/lib/db-schema-compat';
 import { apiHandler } from '@/lib/api-handler';
 import { createErrorResponse, createSuccessResponse } from '@/shared/types/api';
 
@@ -23,6 +24,7 @@ const ImportPayloadSchema = z.object({
 });
 
 export const POST = apiHandler(async (req: NextRequest) => {
+  await ensurePortfolioSchemaCompat();
   const owner = await resolvePortfolioOwner();
   const body = await req.json();
   const parsed = ImportPayloadSchema.safeParse(body);

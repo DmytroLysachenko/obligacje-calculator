@@ -249,10 +249,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
           </Card>
 
           {results.timeline.length > 0 ? (
-            <CalculationAuditTrace
-              point={results.timeline[0]}
-              initialInvestment={results.initialInvestment}
-            />
+            <CalculationAuditTrace point={results.timeline[0]} />
           ) : null}
         </div>
       </div>

@@ -1,65 +1,52 @@
+'use client';
+
 import Link from 'next/link';
-import { Metadata } from 'next';
 import { BarChart2, Calendar, FlaskConical, ShieldAlert, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FeatureStatusNotice, FeatureStatusPill } from '@/shared/components/FeatureStatusNotice';
-
-export const metadata: Metadata = {
-  title: 'Recovery Lab',
-  description:
-    'Limited and experimental calculator surfaces kept reachable during the product recovery refactor.',
-};
+import { useLanguage } from '@/i18n';
 
 const recoveryLabPages = [
   {
     href: '/optimize',
-    title: 'Scenario Ranking',
-    description:
-      'Assumption-sensitive payout sorting. Useful as a supporting scenario view, not as a recommendation surface.',
+    i18nKey: 'optimize',
     status: 'experimental' as const,
     icon: TrendingUp,
   },
   {
     href: '/multi-asset',
-    title: 'Historical Reference Comparison',
-    description:
-      'Mixed-series comparison with narrower trust than the core bond calculators. Keep it in reference mode only.',
+    i18nKey: 'multi_asset',
     status: 'experimental' as const,
     icon: BarChart2,
   },
   {
     href: '/retirement',
-    title: 'Withdrawal Model',
-    description:
-      'Limited steady-rate withdrawal scenario. Narrower than a normal retirement planner and intentionally scoped down.',
+    i18nKey: 'retirement',
     status: 'limited' as const,
     icon: Calendar,
   },
 ];
 
 export default function RecoveryLabPage() {
+  const { t } = useLanguage();
   return (
     <div className="space-y-8">
       <div className="space-y-3">
         <div className="flex items-center gap-2 text-slate-900">
           <FlaskConical className="h-6 w-6 text-amber-600" />
-          <h1 className="text-3xl font-black tracking-tight">Recovery Lab</h1>
+          <h1 className="text-3xl font-black tracking-tight">{t('landing.recovery_lab_page.title')}</h1>
         </div>
         <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-          These surfaces remain reachable during the recovery refactor, but they are not part of the
-          primary calculator promise. Each one is narrower, more assumption-sensitive, or more data-dependent
-          than the core flows.
+          {t('landing.recovery_lab_page.description_long')}
         </p>
       </div>
 
       <FeatureStatusNotice
         status="experimental"
-        eyebrow="Recovery framing"
-        title="Why these tools are separated"
+        eyebrow={t('landing.recovery_lab_page.eyebrow')}
+        title={t('landing.recovery_lab_page.why_separated')}
       >
-        The app now emphasizes core calculator and reference pages first. Recovery-lab pages stay available for
-        investigation and iterative validation, but they should not compete with the flagship calculator flows
-        until their scope and evidence improve further.
+        {t('landing.recovery_lab_page.why_separated_desc')}
       </FeatureStatusNotice>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -74,15 +61,15 @@ export default function RecoveryLabPage() {
                   <FeatureStatusPill status={page.status} />
                 </div>
                 <div>
-                  <CardTitle className="text-xl">{page.title}</CardTitle>
+                  <CardTitle className="text-xl">{t(`landing.recovery_lab_page.pages.${page.i18nKey}.title`)}</CardTitle>
                   <CardDescription className="mt-2 text-sm leading-6 text-slate-700">
-                    {page.description}
+                    {t(`landing.recovery_lab_page.pages.${page.i18nKey}.description`)}
                   </CardDescription>
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
                 <div className="rounded-2xl border border-amber-200 bg-white/70 px-4 py-3 text-sm leading-6 text-slate-700">
-                  Open this page only when you want to inspect a narrower or weaker-support scenario surface on purpose.
+                  {t('landing.recovery_lab_page.card_notice')}
                 </div>
               </CardContent>
             </Card>
@@ -94,15 +81,15 @@ export default function RecoveryLabPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <ShieldAlert className="h-5 w-5 text-primary" />
-            What stays core
+            {t('landing.recovery_lab_page.what_stays_core')}
           </CardTitle>
           <CardDescription>
-            Recovery is moving toward a simpler product with clearer trust boundaries.
+            {t('landing.recovery_lab_page.what_stays_core_desc')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-2 text-sm leading-6 text-muted-foreground">
-          <p>Primary emphasis remains on education, single calculator, comparison, regular investment, ladder, notebook, and data reference pages.</p>
-          <p>Recovery-lab pages can still improve later, but they do not define product readiness right now.</p>
+          <p>{t('landing.recovery_lab_page.core_emphasis')}</p>
+          <p>{t('landing.recovery_lab_page.core_improve_later')}</p>
         </CardContent>
       </Card>
     </div>

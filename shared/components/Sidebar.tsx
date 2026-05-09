@@ -42,7 +42,6 @@ type NavItem = {
 type NavSection = {
   label: string;
   items: NavItem[];
-  note?: string;
 };
 
 function getFreshnessLabel(
@@ -64,28 +63,28 @@ function getFreshnessLabel(
     : 'Data may be stale';
 }
 
-function getFreshnessDetail(
+function getFreshnessText(
   freshness: CalculationDataFreshness,
   language: 'pl' | 'en',
 ) {
   if (freshness.status === 'fresh') {
     return language === 'pl'
-      ? 'Glowne moduly odczytuja aktualne metadane synchronizacji.'
-      : 'Core modules are reading current sync metadata.';
+      ? 'Glowne strony odczytuja aktualne metadane.'
+      : 'Core pages are reading current metadata.';
   }
 
   if (freshness.status === 'fallback' || freshness.usedFallback) {
     return language === 'pl'
-      ? 'Czesc danych nadal moze pochodzic z wasszych zestawow zapasowych lub waskiego pokrycia.'
-      : 'Some modules may still be reading fallback datasets or narrower coverage.';
+      ? 'Czesc danych nadal moze pochodzic z zestawow zapasowych.'
+      : 'Some data may still be coming from fallback coverage.';
   }
 
   return language === 'pl'
-    ? 'Sprawdz strony referencyjne ostrozniej, bo metadane swiezosci nie sa jeszcze pelne.'
-    : 'Read reference pages more cautiously because freshness metadata is not fully restored yet.';
+    ? 'Czytaj strony referencyjne ostrozniej.'
+    : 'Read reference pages more cautiously.';
 }
 
-function getFreshnessBadgeClass(freshness: CalculationDataFreshness) {
+function getFreshnessClass(freshness: CalculationDataFreshness) {
   if (freshness.status === 'fresh') {
     return 'border-emerald-200 bg-emerald-50 text-emerald-800';
   }
@@ -97,21 +96,19 @@ function getFreshnessBadgeClass(freshness: CalculationDataFreshness) {
   return 'border-amber-200 bg-amber-50 text-amber-800';
 }
 
-function SidebarInfoCard({
+function SidebarCard({
   title,
   children,
-  className,
 }: {
   title: string;
   children: React.ReactNode;
-  className?: string;
 }) {
   return (
-    <div className={cn('rounded-2xl border bg-white p-3 text-[11px]', className)}>
-      <p className="font-semibold uppercase tracking-wide text-slate-500">
+    <div className="rounded-2xl border bg-white p-4">
+      <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
         {title}
       </p>
-      <div className="mt-1 space-y-2 text-slate-600">{children}</div>
+      <div className="mt-3 space-y-3 text-sm text-slate-600">{children}</div>
     </div>
   );
 }
@@ -130,24 +127,22 @@ function NavLinkItem({
       href={item.href}
       onClick={onItemClick}
       className={cn(
-        'flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition-colors',
+        'flex items-center gap-3 rounded-xl px-3 py-3 transition-colors',
         isActive
-          ? 'border border-primary/15 bg-primary/10 font-semibold text-primary'
+          ? 'bg-white text-slate-950 shadow-sm ring-1 ring-slate-200'
           : 'text-slate-600 hover:bg-white hover:text-slate-900',
       )}
     >
       <item.icon
         className={cn(
-          'h-5 w-5 shrink-0',
-          isActive ? 'text-primary' : 'text-slate-400',
+          'h-4 w-4 shrink-0',
+          isActive ? 'text-slate-900' : 'text-slate-400',
         )}
       />
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center justify-between gap-2">
-          <span className="truncate">{item.label}</span>
-          <FeatureStatusPill status={item.status} className="shrink-0" />
-        </div>
-      </div>
+      <span className="min-w-0 flex-1 truncate text-sm font-medium">
+        {item.label}
+      </span>
+      <FeatureStatusPill status={item.status} />
     </Link>
   );
 }
@@ -211,7 +206,6 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
     },
     {
       label: t('sidebar.sections.recovery_lab'),
-      note: t('sidebar.recovery_lab_notice'),
       items: [
         {
           href: '/recovery-lab',
@@ -225,26 +219,25 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
 
   return (
     <div className="flex h-full flex-col border-r bg-slate-50 text-slate-900">
-      <div className="border-b px-6 py-7">
-        <h1 className="flex items-center gap-3 text-2xl font-bold tracking-tight">
-          <div className="rounded-xl bg-primary p-2 shadow-sm">
-            <TrendingUp className="h-6 w-6 text-white" />
+      <div className="border-b px-6 py-6">
+        <Link href="/" className="flex items-center gap-3">
+          <div className="rounded-xl bg-slate-900 p-2 text-white">
+            <TrendingUp className="h-5 w-5" />
           </div>
-          <span>{t('common.title')}</span>
-        </h1>
+          <div className="space-y-0.5">
+            <p className="text-2xl font-bold tracking-tight">
+              {t('common.title')}
+            </p>
+          </div>
+        </Link>
       </div>
 
-      <nav className="custom-scrollbar flex-1 space-y-6 overflow-y-auto p-4">
+      <nav className="custom-scrollbar flex-1 space-y-6 overflow-y-auto px-4 py-5">
         {navSections.map((section) => (
           <div key={section.label} className="space-y-2">
-            <p className="px-3 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+            <p className="px-3 text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
               {section.label}
             </p>
-            {section.note ? (
-              <div className="mx-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-[11px] leading-5 text-amber-950">
-                {section.note}
-              </div>
-            ) : null}
             <div className="space-y-1">
               {section.items.map((item) => (
                 <NavLinkItem
@@ -259,73 +252,53 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
         ))}
       </nav>
 
-      <div className="space-y-5 border-t bg-slate-100 p-6">
-        <div className="space-y-2">
-          <span className="px-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
-            {t('common.language')}
-          </span>
-          <div className="rounded-2xl border bg-white p-1.5 shadow-sm">
+      <div className="space-y-4 border-t bg-slate-100/80 p-5">
+        <SidebarCard title={t('common.language')}>
+          <div className="rounded-2xl border bg-white p-1.5">
             <LanguageSwitcher />
           </div>
-        </div>
+        </SidebarCard>
 
-        <SidebarInfoCard title={t('common.version')}>
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-slate-500">
-              Recovery build
-            </span>
-            <span className="rounded-md border bg-slate-50 px-2 py-1 font-medium text-slate-700">
-              v1.0.0-beta
-            </span>
-          </div>
-        </SidebarInfoCard>
-
-        {dataFreshness ? (
-          <SidebarInfoCard title={t('common.sync_data')}>
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-slate-500">
-                {dataFreshness.asOf
-                  ? language === 'pl'
-                    ? 'Ostatni odczyt'
-                    : 'Latest reading'
-                  : language === 'pl'
-                    ? 'Status'
-                    : 'Status'}
+        <SidebarCard title={t('common.sync_data')}>
+          {dataFreshness ? (
+            <>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-slate-500">
+                  {language === 'pl' ? 'Ostatni odczyt' : 'Latest reading'}
+                </span>
+                <span className="font-medium text-slate-900">
+                  {dataFreshness.asOf ??
+                    (language === 'pl' ? 'Brak daty' : 'No date')}
+                </span>
+              </div>
+              <span
+                className={cn(
+                  'inline-flex w-fit rounded-full border px-3 py-1 text-xs font-semibold',
+                  getFreshnessClass(dataFreshness),
+                )}
+              >
+                {getFreshnessLabel(dataFreshness, language)}
               </span>
-              <span className="font-medium text-slate-900">
-                {dataFreshness.asOf ??
-                  (language === 'pl' ? 'Brak daty' : 'No date')}
-              </span>
-            </div>
-            <span
-              className={cn(
-                'block rounded-lg border px-3 py-2 font-medium',
-                getFreshnessBadgeClass(dataFreshness),
-              )}
-            >
-              {getFreshnessLabel(dataFreshness, language)}
-            </span>
-            <p className="leading-5 text-slate-600">
-              {getFreshnessDetail(dataFreshness, language)}
-            </p>
-          </SidebarInfoCard>
-        ) : (
-          <SidebarInfoCard title={t('common.sync_data')}>
+              <p className="leading-6 text-slate-600">
+                {getFreshnessText(dataFreshness, language)}
+              </p>
+            </>
+          ) : (
             <p>{t('sidebar.sync_unavailable')}</p>
-          </SidebarInfoCard>
-        )}
+          )}
+        </SidebarCard>
 
-        <SidebarInfoCard title={t('sidebar.recovery_scope_title')}>
-          <p className="leading-5">{t('sidebar.recovery_scope_desc')}</p>
+        <SidebarCard title={t('sidebar.recovery_scope_title')}>
+          <p className="leading-6">{t('sidebar.recovery_scope_desc')}</p>
           <Link
             href="/recovery-lab"
-            className="inline-flex font-semibold text-primary hover:underline"
+            className="inline-flex font-semibold text-slate-900 hover:underline"
           >
             {t('sidebar.open_recovery_lab')}
           </Link>
-        </SidebarInfoCard>
+        </SidebarCard>
 
-        <div className="border-t border-slate-200 pt-3 text-center text-[11px] text-slate-500">
+        <div className="px-2 text-[11px] text-slate-500">
           © {new Date().getFullYear()} {t('common.title')}
         </div>
       </div>
@@ -348,9 +321,9 @@ export function Sidebar({
             <Button
               variant="outline"
               size="icon"
-              className="border border-primary/20 bg-background/90 shadow-md backdrop-blur"
+              className="border border-slate-200 bg-white shadow-sm"
             >
-              <Menu className="h-6 w-6" />
+              <Menu className="h-5 w-5" />
               <span className="sr-only">Toggle menu</span>
             </Button>
           </SheetTrigger>

@@ -9,8 +9,10 @@ import { calculationService } from '@/features/bond-core/application-service';
 import { PortfolioSimulationCalculationEnvelope, ScenarioKind, PortfolioSimulationPayload } from '@/features/bond-core/types/scenarios';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import { addYears, format } from 'date-fns';
+import { ensurePortfolioSchemaCompat } from '@/lib/db-schema-compat';
 
 export const GET = apiHandler(async (req: NextRequest) => {
+  await ensurePortfolioSchemaCompat();
   const owner = await resolvePortfolioOwner();
   const { searchParams } = new URL(req.url);
   const portfolioId = searchParams.get('portfolioId');

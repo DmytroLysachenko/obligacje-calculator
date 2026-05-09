@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { userInvestmentLots, userPortfolios } from '@/db/schema';
 import { eq, inArray } from 'drizzle-orm';
@@ -6,12 +6,14 @@ import { resolvePortfolioOwner, applyPortfolioOwnerCookie } from '@/lib/portfoli
 import { calculationService } from '@/features/bond-core/application-service';
 import { ScenarioKind, PortfolioSimulationPayload } from '@/features/bond-core/types/scenarios';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
-import { createSuccessResponse, createErrorResponse } from '@/shared/types/api';
+import { createSuccessResponse } from '@/shared/types/api';
 import { addYears, format } from 'date-fns';
 
 import { apiHandler } from '@/lib/api-handler';
+import { ensurePortfolioSchemaCompat } from '@/lib/db-schema-compat';
 
-export const GET = apiHandler(async (req: NextRequest) => {
+export const GET = apiHandler(async () => {
+  await ensurePortfolioSchemaCompat();
   const owner = await resolvePortfolioOwner();
   
   // 1. Fetch all portfolios for this user

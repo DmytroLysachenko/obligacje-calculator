@@ -24,6 +24,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const t = (key: string) => resolveTranslationValue(translations, language, key);
 
   return {
+    metadataBase: new URL(
+      process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+    ),
     title: {
       default: `${t('common.title')} - ${language === 'pl' ? 'Symulator Polskich Obligacji Skarbowych' : 'Polish Treasury Bonds Simulator'}`,
       template: `%s | ${t('common.title')}`,
@@ -35,14 +38,6 @@ export async function generateMetadata(): Promise<Metadata> {
       locale: language === 'pl' ? 'pl_PL' : 'en_US',
       url: 'https://obligacje-calculator.vercel.app',
       siteName: t('common.title'),
-      images: [
-        {
-          url: '/og-image.png',
-          width: 1200,
-          height: 630,
-          alt: t('common.title'),
-        },
-      ],
     },
     twitter: {
       card: 'summary_large_image',
@@ -51,7 +46,6 @@ export async function generateMetadata(): Promise<Metadata> {
         language === 'pl'
           ? 'Symulator Polskich Obligacji Skarbowych'
           : 'Polish Treasury Bonds Simulator',
-      images: ['/og-image.png'],
     },
   };
 }

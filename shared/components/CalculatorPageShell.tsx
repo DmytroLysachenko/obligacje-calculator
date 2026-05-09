@@ -1,14 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  AlertCircle,
-  Check,
-  Loader2,
-  Share2,
-  Target,
-  Trophy,
-} from 'lucide-react';
+import { Check, Loader2, Share2, Target, Trophy } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -31,34 +24,36 @@ interface CalculatorPageShellProps {
   onKeyDown?: (e: React.KeyboardEvent) => void;
 }
 
-const ShellStatusChip = ({
-  label,
-  icon,
-  tone,
+function ShellMetaRow({
+  isCalculating,
+  hasResults,
 }: {
-  label: string;
-  icon: React.ReactNode;
-  tone: 'neutral' | 'success' | 'warning';
-}) => {
-  const toneClass =
-    tone === 'success'
-      ? 'border-emerald-100 bg-emerald-50 text-emerald-700'
-      : tone === 'warning'
-        ? 'border-destructive/10 bg-destructive/5 text-destructive'
-        : 'border-slate-200 bg-muted/50 text-muted-foreground';
+  isCalculating: boolean;
+  hasResults: boolean;
+}) {
+  const { t } = useLanguage();
+
+  if (!isCalculating && !hasResults) {
+    return null;
+  }
 
   return (
-    <span
-      className={cn(
-        'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-bold',
-        toneClass,
-      )}
-    >
-      {icon}
-      {label}
-    </span>
+    <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+      {isCalculating ? (
+        <span className="inline-flex items-center gap-2">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          {t('common.calculating')}
+        </span>
+      ) : null}
+      {!isCalculating && hasResults ? (
+        <span className="inline-flex items-center gap-2 text-emerald-700">
+          <Check className="h-4 w-4" />
+          {t('comparison.up_to_date')}
+        </span>
+      ) : null}
+    </div>
   );
-};
+}
 
 export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
   title,
@@ -66,7 +61,6 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
   icon,
   children,
   isCalculating,
-  isError,
   hasResults,
   onShare,
   savingsGoal,
@@ -94,86 +88,67 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
 
   return (
     <div className="space-y-8 pb-20" onKeyDown={onKeyDown}>
-      <header className="rounded-2xl border bg-card p-6 shadow-sm">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+      <header className="space-y-5 rounded-3xl border bg-card px-6 py-6 shadow-sm md:px-8">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-3xl space-y-4">
             <div className="flex items-center gap-4">
               <div className="rounded-2xl bg-primary/10 p-3 text-primary">
                 {icon}
               </div>
               <div className="space-y-1">
-                <h2 className="text-3xl font-black uppercase tracking-tight text-primary">
+                <h2 className="text-3xl font-black tracking-tight text-slate-950 md:text-4xl">
                   {title}
                 </h2>
-                <p className="text-sm font-medium italic text-muted-foreground">
+                <p className="text-sm leading-6 text-muted-foreground md:text-base">
                   {description}
                 </p>
               </div>
             </div>
+            <ShellMetaRow
+              isCalculating={isCalculating}
+              hasResults={hasResults}
+            />
+          </div>
 
-            <div className="flex flex-wrap items-center gap-3">
-              {isCalculating ? (
-                <ShellStatusChip
-                  label={t('common.calculating')}
-                  icon={<Loader2 className="h-3 w-3 animate-spin" />}
-                  tone="neutral"
-                />
-              ) : null}
-              {!isCalculating && hasResults ? (
-                <ShellStatusChip
-                  label={t('comparison.up_to_date')}
-                  icon={<Check className="h-3 w-3" />}
-                  tone="success"
-                />
-              ) : null}
-              {isError ? (
-                <ShellStatusChip
-                  label={t('common.retry')}
-                  icon={<AlertCircle className="h-3 w-3" />}
-                  tone="warning"
-                />
+          {(extraHeaderActions || hasShareAction) ? (
+            <div className="flex flex-wrap items-center gap-2 lg:justify-end">
+              {extraHeaderActions}
+              {hasShareAction ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={cn(
+                    'gap-2 rounded-xl text-xs font-bold',
+                    copied ? 'border-emerald-600 text-emerald-700' : '',
+                  )}
+                  onClick={handleShare}
+                >
+                  {copied ? (
+                    <Check className="h-3.5 w-3.5" />
+                  ) : (
+                    <Share2 className="h-3.5 w-3.5" />
+                  )}
+                  {copied
+                    ? t('common.copied')
+                    : t('comparison.share_scenario')}
+                </Button>
               ) : null}
             </div>
-          </div>
-
-          <div className="flex flex-col items-start gap-3 lg:items-end">
-            {extraHeaderActions ? (
-              <div className="flex flex-wrap items-center gap-2">
-                {extraHeaderActions}
-              </div>
-            ) : null}
-
-            {hasShareAction ? (
-              <Button
-                variant="outline"
-                size="sm"
-                className={cn(
-                  'gap-2 border-2 text-xs font-bold transition-all',
-                  copied
-                    ? 'border-green-600 bg-green-500 text-white'
-                    : 'hover:border-primary hover:text-primary',
-                )}
-                onClick={handleShare}
-              >
-                {copied ? <Check className="h-3 w-3" /> : <Share2 className="h-3 w-3" />}
-                {copied ? t('common.copied') : t('comparison.share_scenario')}
-              </Button>
-            ) : null}
-          </div>
+          ) : null}
         </div>
       </header>
 
       {savingsGoal && hasResults ? (
-        <Card className="overflow-hidden border-2 border-primary/20 bg-primary/5 shadow-sm">
-          <CardContent className="p-6">
-            <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <Card className="rounded-2xl border bg-slate-50 shadow-none">
+          <CardContent className="space-y-4 p-5">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div className="flex items-center gap-2">
                 {isGoalReached ? (
-                  <Trophy className="h-5 w-5 text-yellow-500" />
+                  <Trophy className="h-5 w-5 text-amber-500" />
                 ) : (
                   <Target className="h-5 w-5 text-primary" />
                 )}
-                <span className="font-bold">
+                <span className="font-semibold text-slate-950">
                   {isGoalReached
                     ? t('bonds.goal_reached')
                     : t('bonds.goal_progress', {
@@ -181,7 +156,7 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
                       })}
                 </span>
               </div>
-              <span className="text-sm font-black text-primary">
+              <span className="text-sm font-bold text-slate-700">
                 {t('bonds.target')}:{' '}
                 {new Intl.NumberFormat(
                   language === 'pl' ? 'pl-PL' : 'en-GB',

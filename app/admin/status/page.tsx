@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Database, RefreshCcw, Activity, AlertCircle, CheckCircle2, Clock, Play, Loader2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { formatDistanceToNow, parseISO, differenceInMonths, isAfter } from 'date-fns';
+import { formatDistanceToNow, parseISO, differenceInMonths } from 'date-fns';
+import { useLanguage } from '@/i18n';
 
 interface SeriesStatus {
   id: string;
@@ -27,13 +28,14 @@ interface StatusData {
 }
 
 export default function AdminStatusPage() {
+  const { t } = useLanguage();
   const [data, setData] = useState<StatusData | null>(null);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [secret, setSecret] = useState('');
 
-  const fetchStatus = async () => {
+  const fetchStatus = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -43,20 +45,20 @@ export default function AdminStatusPage() {
         }
       });
       if (!response.ok) {
-        if (response.status === 401) throw new Error('Unauthorized. Please enter valid SYNC_SECRET.');
-        throw new Error('Failed to fetch system status');
+        if (response.status === 401) throw new Error('Unauthorized');
+        throw new Error('Fetch failed');
       }
       const result = await response.json();
       setData(result.data);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      setError(err instanceof Error && err.message === 'Unauthorized' ? t('admin.access_required') : t('admin.status.error'));
     } finally {
       setLoading(false);
     }
-  };
+  }, [secret, t]);
 
   const handleSync = async (mode: string = 'full-sync') => {
-    if (!confirm(`Are you sure you want to trigger a ${mode}? This may take a few minutes.`)) return;
+    if (!confirm(mode === 'full-sync' ? 'Trigger full sync?' : 'Trigger sync?')) return;
     
     setSyncing(true);
     setError(null);
@@ -71,15 +73,14 @@ export default function AdminStatusPage() {
       });
       
       if (!response.ok) {
-        if (response.status === 401) throw new Error('Unauthorized. Please enter valid SYNC_SECRET.');
+        if (response.status === 401) throw new Error('Unauthorized');
         const errData = await response.json();
         throw new Error(errData.error || 'Sync failed');
       }
       
       await fetchStatus();
-      alert('Sync completed successfully!');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Sync failed');
+      setError(err instanceof Error && err.message === 'Unauthorized' ? t('admin.access_required') : t('admin.status.error'));
     } finally {
       setSyncing(false);
     }
@@ -89,16 +90,14 @@ export default function AdminStatusPage() {
     const savedSecret = localStorage.getItem('SYNC_SECRET');
     if (savedSecret) {
       setSecret(savedSecret);
-      // We'll fetch after state is set in handleSaveSecret or similar
     }
   }, []);
 
-  // Trigger initial fetch when secret is set from localStorage
   useEffect(() => {
     if (secret && !data && loading) {
       fetchStatus();
     }
-  }, [secret]);
+  }, [secret, data, loading, fetchStatus]);
 
   const handleSaveSecret = () => {
     localStorage.setItem('SYNC_SECRET', secret);
@@ -111,21 +110,21 @@ export default function AdminStatusPage() {
       const lastDate = parseISO(lastDateStr);
       const monthsDiff = differenceInMonths(new Date(), lastDate);
       return monthsDiff >= 2;
-    } catch (e) {
+    } catch {
       return true;
     }
   };
 
-  if (!data && !loading && error?.includes('Unauthorized')) {
+  if (!data && !loading && (error || secret === '')) {
     return (
       <div className="container mx-auto py-20 max-w-md">
         <Card className="border-2 shadow-2xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <AlertCircle className="h-5 w-5 text-destructive" />
-              Admin Access Required
+              {t('admin.access_required')}
             </CardTitle>
-            <CardDescription>Enter SYNC_SECRET to view system status</CardDescription>
+            <CardDescription>{t('admin.enter_secret')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <input 
@@ -133,9 +132,9 @@ export default function AdminStatusPage() {
               className="w-full p-2 border rounded-md shadow-sm focus:ring-2 focus:ring-primary" 
               value={secret} 
               onChange={(e) => setSecret(e.target.value)} 
-              placeholder="Enter Secret"
+              placeholder="Secret"
             />
-            <Button className="w-full font-bold" onClick={handleSaveSecret}>Unlock Status</Button>
+            <Button className="w-full font-bold" onClick={handleSaveSecret}>{t('admin.unlock')}</Button>
           </CardContent>
         </Card>
       </div>
@@ -148,9 +147,9 @@ export default function AdminStatusPage() {
         <div className="space-y-1">
           <h1 className="text-3xl font-black tracking-tight flex items-center gap-3">
             <Database className="h-8 w-8 text-blue-400" />
-            Sync Health Dashboard
+            {t('admin.sync_dashboard')}
           </h1>
-          <p className="text-slate-400 font-medium">Real-time data freshness and system synchronization monitor</p>
+          <p className="text-slate-400 font-medium">{t('admin.sync_dashboard_desc')}</p>
         </div>
         <div className="flex flex-wrap gap-3">
             <Button 
@@ -160,7 +159,7 @@ export default function AdminStatusPage() {
               disabled={loading || syncing}
             >
                 <RefreshCcw className={loading ? "animate-spin mr-2 h-4 w-4" : "mr-2 h-4 w-4"} />
-                Refresh Status
+                {t('admin.refresh_status')}
             </Button>
             <Button 
               variant="default" 
@@ -169,7 +168,7 @@ export default function AdminStatusPage() {
               disabled={loading || syncing}
             >
                 {syncing ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <Play className="mr-2 h-4 w-4" />}
-                Trigger Manual Sync
+                {t('admin.manual_sync')}
             </Button>
         </div>
       </header>
@@ -184,7 +183,7 @@ export default function AdminStatusPage() {
       {syncing && (
         <div className="bg-blue-500/10 border-2 border-blue-500/20 text-blue-600 p-4 rounded-xl flex items-center gap-3 font-bold">
           <Loader2 className="h-5 w-5 animate-spin" />
-          Manual synchronization in progress... please do not close this window.
+          {t('admin.syncing_desc')}
         </div>
       )}
 
@@ -193,40 +192,40 @@ export default function AdminStatusPage() {
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-black uppercase text-muted-foreground flex items-center gap-2">
               <Activity className="h-4 w-4 text-blue-500" />
-              Series Tracked
+              {t('admin.series_tracked')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-4xl font-black tracking-tighter">{data?.series?.length || 0}</p>
-            <p className="text-xs text-muted-foreground mt-1">Active data streams in database</p>
+            <p className="text-xs text-muted-foreground mt-1">{t('admin.active_streams')}</p>
           </CardContent>
         </Card>
         <Card className="border-2 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-black uppercase text-muted-foreground flex items-center gap-2">
               <Database className="h-4 w-4 text-emerald-500" />
-              Total Data Points
+              {t('admin.total_points')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-4xl font-black tracking-tighter">
               {data?.series?.reduce((acc: number, s: SeriesStatus) => acc + s.pointCount, 0).toLocaleString() || 0}
             </p>
-            <p className="text-xs text-muted-foreground mt-1">Total historical records stored</p>
+            <p className="text-xs text-muted-foreground mt-1">{t('admin.total_records')}</p>
           </CardContent>
         </Card>
         <Card className="border-2 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="pb-2">
             <CardTitle className="text-xs font-black uppercase text-muted-foreground flex items-center gap-2">
               <Clock className="h-4 w-4 text-amber-500" />
-              Environment
+              {t('admin.environment')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-baseline gap-2">
               <Badge variant="outline" className="text-lg font-black uppercase px-3">{data?.env || 'unknown'}</Badge>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">Server runtime mode</p>
+            <p className="text-xs text-muted-foreground mt-2">{t('admin.server_mode')}</p>
           </CardContent>
         </Card>
       </div>
@@ -237,9 +236,9 @@ export default function AdminStatusPage() {
             <div>
               <CardTitle className="flex items-center gap-2 text-xl font-black">
                 <Activity className="h-5 w-5 text-primary" />
-                Data Health Inventory
+                {t('admin.health_inventory')}
               </CardTitle>
-              <CardDescription className="font-medium">Detailed status and freshness of financial data series</CardDescription>
+              <CardDescription className="font-medium">{t('admin.health_inventory_desc')}</CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -248,12 +247,12 @@ export default function AdminStatusPage() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50 hover:bg-muted/50">
-                  <TableHead className="font-black uppercase text-[10px] w-[250px] px-6 py-4">Series Name & Source</TableHead>
-                  <TableHead className="font-black uppercase text-[10px] px-6 py-4">Frequency</TableHead>
-                  <TableHead className="font-black uppercase text-[10px] px-6 py-4">Last Data Point</TableHead>
-                  <TableHead className="font-black uppercase text-[10px] px-6 py-4 text-right">Records</TableHead>
-                  <TableHead className="font-black uppercase text-[10px] px-6 py-4">Last Sync Attempt</TableHead>
-                  <TableHead className="font-black uppercase text-[10px] px-6 py-4">Health Status</TableHead>
+                  <TableHead className="font-black uppercase text-[10px] w-[250px] px-6 py-4">{t('admin.table.series_name')}</TableHead>
+                  <TableHead className="font-black uppercase text-[10px] px-6 py-4">{t('admin.table.frequency')}</TableHead>
+                  <TableHead className="font-black uppercase text-[10px] px-6 py-4">{t('admin.table.last_point')}</TableHead>
+                  <TableHead className="font-black uppercase text-[10px] px-6 py-4 text-right">{t('admin.table.records')}</TableHead>
+                  <TableHead className="font-black uppercase text-[10px] px-6 py-4">{t('admin.table.last_sync')}</TableHead>
+                  <TableHead className="font-black uppercase text-[10px] px-6 py-4">{t('admin.table.health')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -273,12 +272,12 @@ export default function AdminStatusPage() {
                           <span className="font-mono text-xs font-bold">{s.lastDataPointDate || 'N/A'}</span>
                           {hasGap && s.lastDataPointDate && (
                             <Badge variant="destructive" className="w-fit text-[8px] h-4 font-black uppercase py-0 px-1.5 gap-1">
-                              <AlertTriangle className="h-2 w-2" /> Gap Detected
+                              <AlertTriangle className="h-2 w-2" /> {t('admin.status.gap_detected')}
                             </Badge>
                           )}
                           {!s.lastDataPointDate && (
                             <Badge variant="outline" className="w-fit text-[8px] h-4 font-black uppercase py-0 px-1.5 bg-amber-50 text-amber-600 border-amber-200">
-                              Missing Data
+                              {t('admin.status.missing_data')}
                             </Badge>
                           )}
                         </div>
@@ -289,11 +288,11 @@ export default function AdminStatusPage() {
                       <TableCell className="px-6 py-4">
                         <div className="flex flex-col">
                           <span className="text-xs font-medium">
-                            {s.updatedAt ? formatDistanceToNow(parseISO(s.updatedAt), { addSuffix: true }) : 'Never synced'}
+                            {s.updatedAt ? formatDistanceToNow(parseISO(s.updatedAt), { addSuffix: true }) : t('admin.status.never_synced')}
                           </span>
                           {s.lastSyncError && (
                             <span className="text-[9px] text-destructive font-medium line-clamp-1" title={s.lastSyncError}>
-                              Error: {s.lastSyncError}
+                              {t('common.error')}: {s.lastSyncError}
                             </span>
                           )}
                         </div>
@@ -301,15 +300,15 @@ export default function AdminStatusPage() {
                       <TableCell className="px-6 py-4">
                         {s.lastSyncStatus === 'success' ? (
                           <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 gap-1 hover:bg-emerald-100 font-black text-[10px] uppercase">
-                            <CheckCircle2 className="h-3 w-3" /> Healthy
+                            <CheckCircle2 className="h-3 w-3" /> {t('admin.status.healthy')}
                           </Badge>
                         ) : s.lastSyncStatus === 'failed' ? (
                           <Badge variant="destructive" className="gap-1 font-black text-[10px] uppercase">
-                            <AlertCircle className="h-3 w-3" /> Error
+                            <AlertCircle className="h-3 w-3" /> {t('admin.status.error')}
                           </Badge>
                         ) : (
                           <Badge variant="outline" className="font-black text-[10px] uppercase">
-                            Initial
+                            {t('admin.status.initial')}
                           </Badge>
                         )}
                       </TableCell>
@@ -319,7 +318,7 @@ export default function AdminStatusPage() {
                 {(!data?.series || data.series.length === 0) && !loading && (
                   <TableRow>
                     <TableCell colSpan={6} className="h-32 text-center text-muted-foreground font-medium">
-                      No data series found. Click &quot;Trigger Manual Sync&quot; to initialize the database.
+                      {t('admin.no_data')}
                     </TableCell>
                   </TableRow>
                 )}

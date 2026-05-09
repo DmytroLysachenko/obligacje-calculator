@@ -6,8 +6,10 @@ import { eq } from 'drizzle-orm';
 import { applyPortfolioOwnerCookie, resolvePortfolioOwner } from '@/lib/portfolio-access';
 import { createSuccessResponse } from '@/shared/types/api';
 import { apiHandler } from '@/lib/api-handler';
+import { ensurePortfolioSchemaCompat } from '@/lib/db-schema-compat';
 
 export const GET = apiHandler(async () => {
+  await ensurePortfolioSchemaCompat();
   const owner = await resolvePortfolioOwner();
   const portfolios = await db.query.userPortfolios.findMany({
     where: eq(userPortfolios.userId, owner.ownerId),
@@ -18,6 +20,7 @@ export const GET = apiHandler(async () => {
 });
 
 export const POST = apiHandler(async (req: NextRequest) => {
+  await ensurePortfolioSchemaCompat();
   const owner = await resolvePortfolioOwner();
   const body = await req.json();
   const validated = PortfolioSchema.parse(body);

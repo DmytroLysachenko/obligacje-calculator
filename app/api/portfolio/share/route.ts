@@ -4,9 +4,11 @@ import { userPortfolios } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { auth } from '@/auth';
 import { createSuccessResponse, createErrorResponse } from '@/shared/types/api';
+import { ensurePortfolioSchemaCompat } from '@/lib/db-schema-compat';
 
 export async function POST(req: NextRequest) {
   try {
+    await ensurePortfolioSchemaCompat();
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json(createErrorResponse('Unauthorized', 'UNAUTHORIZED'), { status: 401 });

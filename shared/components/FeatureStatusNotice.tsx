@@ -4,46 +4,51 @@ import React from 'react';
 import { AlertTriangle, CheckCircle2, FlaskConical, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-export type FeatureStatus = 'trusted' | 'conditional' | 'experimental' | 'limited' | 'reference';
+export type FeatureStatus =
+  | 'trusted'
+  | 'conditional'
+  | 'experimental'
+  | 'limited'
+  | 'reference';
 
 const statusConfig: Record<
   FeatureStatus,
   {
     label: string;
     icon: React.ComponentType<{ className?: string }>;
-    className: string;
+    noticeClassName: string;
     pillClassName: string;
   }
 > = {
   trusted: {
-    label: 'Trusted core',
+    label: 'Core',
     icon: CheckCircle2,
-    className: 'border-emerald-200 bg-emerald-50 text-emerald-950',
-    pillClassName: 'border-emerald-200 bg-emerald-100 text-emerald-800',
+    noticeClassName: 'border-emerald-200 bg-emerald-50/70 text-emerald-950',
+    pillClassName: 'border-emerald-200 bg-emerald-50 text-emerald-800',
   },
   conditional: {
     label: 'Conditional',
     icon: Info,
-    className: 'border-blue-200 bg-blue-50 text-blue-950',
-    pillClassName: 'border-blue-200 bg-blue-100 text-blue-800',
+    noticeClassName: 'border-blue-200 bg-blue-50/70 text-blue-950',
+    pillClassName: 'border-blue-200 bg-blue-50 text-blue-800',
   },
   experimental: {
     label: 'Experimental',
     icon: FlaskConical,
-    className: 'border-amber-200 bg-amber-50 text-amber-950',
-    pillClassName: 'border-amber-200 bg-amber-100 text-amber-800',
+    noticeClassName: 'border-amber-200 bg-amber-50/70 text-amber-950',
+    pillClassName: 'border-amber-200 bg-amber-50 text-amber-800',
   },
   limited: {
-    label: 'Limited support',
+    label: 'Limited',
     icon: AlertTriangle,
-    className: 'border-orange-200 bg-orange-50 text-orange-950',
-    pillClassName: 'border-orange-200 bg-orange-100 text-orange-800',
+    noticeClassName: 'border-orange-200 bg-orange-50/70 text-orange-950',
+    pillClassName: 'border-orange-200 bg-orange-50 text-orange-800',
   },
   reference: {
     label: 'Reference',
     icon: Info,
-    className: 'border-slate-200 bg-slate-50 text-slate-950',
-    pillClassName: 'border-slate-200 bg-slate-100 text-slate-700',
+    noticeClassName: 'border-slate-200 bg-slate-50/80 text-slate-900',
+    pillClassName: 'border-slate-200 bg-slate-50 text-slate-700',
   },
 };
 
@@ -59,7 +64,7 @@ export function FeatureStatusPill({
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide',
+        'inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em]',
         config.pillClassName,
         className,
       )}
@@ -86,13 +91,19 @@ export function FeatureStatusNotice({
   const Icon = config.icon;
 
   return (
-    <div className={cn('rounded-2xl border p-5 shadow-none', config.className, className)}>
+    <div
+      className={cn(
+        'rounded-2xl border px-5 py-4 shadow-none',
+        config.noticeClassName,
+        className,
+      )}
+    >
       <div className="flex items-start gap-3">
-        <Icon className="mt-0.5 h-5 w-5 shrink-0" />
-        <div className="space-y-2">
+        <Icon className="mt-0.5 h-4 w-4 shrink-0" />
+        <div className="min-w-0 space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             {eyebrow ? (
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-current/70">
+              <span className="text-[10px] font-black uppercase tracking-[0.18em] text-current/70">
                 {eyebrow}
               </span>
             ) : null}

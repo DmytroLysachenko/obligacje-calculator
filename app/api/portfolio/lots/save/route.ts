@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { userInvestmentLots, userTransactions, userPortfolios } from '@/db/schema';
 import { resolvePortfolioOwner, applyPortfolioOwnerCookie } from '@/lib/portfolio-access';
+import { ensurePortfolioSchemaCompat } from '@/lib/db-schema-compat';
 import { createSuccessResponse, createErrorResponse } from '@/shared/types/api';
 import { and, eq } from 'drizzle-orm';
 
 export async function POST(req: NextRequest) {
   try {
+    await ensurePortfolioSchemaCompat();
     const owner = await resolvePortfolioOwner();
     const body = await req.json();
     

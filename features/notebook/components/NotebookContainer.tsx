@@ -23,10 +23,29 @@ const EmptyPortfolioState = ({
   onCreate,
   onCreateDemo,
   onImport,
+  badgeLabel,
+  title,
+  description,
+  actionsLabel,
+  createLabel,
+  demoLabel,
+  importLabel,
+  steps,
 }: {
   onCreate: () => void;
   onCreateDemo: () => void;
   onImport: () => void;
+  badgeLabel: string;
+  title: string;
+  description: string;
+  actionsLabel: string;
+  createLabel: string;
+  demoLabel: string;
+  importLabel: string;
+  steps: Array<{
+    title: string;
+    description: string;
+  }>;
 }) => (
   <div className="rounded-3xl border bg-card p-6 shadow-sm md:p-8">
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_240px] lg:items-start">
@@ -34,46 +53,40 @@ const EmptyPortfolioState = ({
         <div className="space-y-3">
           <div className="inline-flex items-center gap-2 rounded-full border bg-muted px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-700">
             <BookOpen className="h-3.5 w-3.5 text-primary" />
-            Notebook ready
+            {badgeLabel}
           </div>
           <h3 className="text-2xl font-black tracking-tight text-slate-900">
-            Create a simple records notebook first.
+            {title}
           </h3>
           <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
-            Use the notebook to store lots, review maturity timing, and export clean records.
-            It is a record-keeping workspace, not a recommendation center.
+            {description}
           </p>
         </div>
 
         <div className="grid gap-3 md:grid-cols-3">
-          <ReadyStep
-            title="Create"
-            description="Start an empty portfolio or load a demo."
-          />
-          <ReadyStep
-            title="Store"
-            description="Keep lots, dates, and nominal values together."
-          />
-          <ReadyStep
-            title="Inspect"
-            description="Open one portfolio and check maturities and exports."
-          />
+          {steps.map((step) => (
+            <ReadyStep
+              key={step.title}
+              title={step.title}
+              description={step.description}
+            />
+          ))}
         </div>
       </div>
 
       <div className="rounded-2xl border bg-slate-50 p-5">
         <div className="space-y-3">
           <p className="text-[11px] font-black uppercase tracking-widest text-slate-500">
-            Actions
+            {actionsLabel}
           </p>
           <Button onClick={onCreate} className="h-11 w-full font-semibold">
-            Create portfolio
+            {createLabel}
           </Button>
           <Button variant="outline" onClick={onCreateDemo} className="h-11 w-full font-semibold">
-            Load demo
+            {demoLabel}
           </Button>
           <Button variant="outline" onClick={onImport} className="h-11 w-full font-semibold">
-            Import JSON
+            {importLabel}
           </Button>
         </div>
       </div>
@@ -159,6 +172,21 @@ export const NotebookContainer: React.FC = () => {
   useEffect(() => {
     fetchPortfolios();
   }, [fetchPortfolios]);
+
+  const emptyStateSteps = [
+    {
+      title: t('notebook.ready_steps.create.title'),
+      description: t('notebook.ready_steps.create.desc'),
+    },
+    {
+      title: t('notebook.ready_steps.store.title'),
+      description: t('notebook.ready_steps.store.desc'),
+    },
+    {
+      title: t('notebook.ready_steps.inspect.title'),
+      description: t('notebook.ready_steps.inspect.desc'),
+    },
+  ];
 
   const handleCreateDefault = async () => {
     try {
@@ -318,14 +346,14 @@ export const NotebookContainer: React.FC = () => {
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" onClick={handleImportClick} className="gap-2">
               <Upload className="h-4 w-4" />
-              Import JSON
+              {t('notebook.import_json')}
             </Button>
             <Button variant="outline" onClick={handleCreateDemo}>
-              Load demo
+              {t('notebook.load_demo')}
             </Button>
             <Button variant="outline" onClick={fetchPortfolios} className="gap-2">
               <RefreshCcw className="h-4 w-4" />
-              Refresh
+              {t('common.refresh')}
             </Button>
             <Button onClick={handleCreateDefault} className="gap-2">
               <Plus className="h-4 w-4" />
@@ -342,16 +370,24 @@ export const NotebookContainer: React.FC = () => {
           onCreate={handleCreateDefault}
           onCreateDemo={handleCreateDemo}
           onImport={handleImportClick}
+          badgeLabel={t('notebook.empty_badge')}
+          title={t('notebook.empty_title')}
+          description={t('notebook.empty_desc')}
+          actionsLabel={t('common.actions')}
+          createLabel={t('notebook.create_first')}
+          demoLabel={t('notebook.load_demo')}
+          importLabel={t('notebook.import_json')}
+          steps={emptyStateSteps}
         />
       ) : (
         <div className="space-y-6">
           <Card className="rounded-2xl border shadow-none">
             <CardHeader className="border-b bg-muted/20">
               <CardTitle className="text-lg font-black tracking-tight">
-                Stored portfolios
+                {t('notebook.stored_portfolios')}
               </CardTitle>
               <CardDescription>
-                Open one portfolio at a time. This page should stay focused on records, maturity timing, and exports.
+                {t('notebook.stored_portfolios_desc')}
               </CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-1 gap-4 p-5 md:grid-cols-2 xl:grid-cols-3">
@@ -363,7 +399,7 @@ export const NotebookContainer: React.FC = () => {
                         <FileText className="h-5 w-5" />
                       </div>
                       <span className="rounded-full border px-3 py-1 text-xs font-medium text-muted-foreground">
-                        {portfolio.isPublic ? 'Public link on' : 'Private'}
+                        {portfolio.isPublic ? t('notebook.status_public') : t('notebook.status_private')}
                       </span>
                     </div>
                     <div>
@@ -377,7 +413,7 @@ export const NotebookContainer: React.FC = () => {
                     <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-2">
                       <div className="rounded-xl border bg-muted/20 p-3">
                         <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                          Created
+                          {t('common.created')}
                         </p>
                         <p className="mt-1 font-medium text-foreground">
                           {new Date(portfolio.createdAt!).toLocaleDateString()}
@@ -385,10 +421,10 @@ export const NotebookContainer: React.FC = () => {
                       </div>
                       <div className="rounded-xl border bg-muted/20 p-3">
                         <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                          Use
+                          {t('notebook.usage_label')}
                         </p>
                         <p className="mt-1 font-medium text-foreground">
-                          Lots, maturities, exports
+                          {t('notebook.usage_desc')}
                         </p>
                       </div>
                     </div>
@@ -396,7 +432,7 @@ export const NotebookContainer: React.FC = () => {
                       className="w-full"
                       onClick={() => setSelectedPortfolioId(portfolio.id)}
                     >
-                      Open portfolio
+                      {t('notebook.open_portfolio')}
                     </Button>
                   </CardContent>
                 </Card>
@@ -408,10 +444,9 @@ export const NotebookContainer: React.FC = () => {
             <div className="flex items-start gap-3">
               <FolderOpen className="mt-0.5 h-5 w-5 text-primary" />
               <div className="space-y-2">
-                <p className="font-semibold text-foreground">Notebook scope</p>
+                <p className="font-semibold text-foreground">{t('notebook.scope_title')}</p>
                 <p className="text-sm leading-6 text-muted-foreground">
-                  Keep this area focused on stored positions, maturities, and exportable records.
-                  More product value comes from accurate calculations than from extra decorative portfolio widgets.
+                  {t('notebook.scope_desc')}
                 </p>
               </div>
             </div>

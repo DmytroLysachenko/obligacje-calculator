@@ -4,6 +4,7 @@ import { userInvestmentLots, userPortfolios, users } from '@/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { ensurePortfolioSchemaCompat } from './db-schema-compat';
 
 const GUEST_PORTFOLIO_COOKIE = 'guest_portfolio_owner_id';
 const GUEST_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
@@ -129,12 +130,14 @@ export function applyPortfolioOwnerCookie(response: NextResponse, owner: Portfol
 }
 
 export async function getOwnedPortfolio(ownerId: string, portfolioId: string) {
+  await ensurePortfolioSchemaCompat();
   return db.query.userPortfolios.findFirst({
     where: and(eq(userPortfolios.id, portfolioId), eq(userPortfolios.userId, ownerId)),
   });
 }
 
 export async function getOwnedLot(ownerId: string, lotId: string) {
+  await ensurePortfolioSchemaCompat();
   const [lot] = await db
     .select({
       id: userInvestmentLots.id,
@@ -149,6 +152,7 @@ export async function getOwnedLot(ownerId: string, lotId: string) {
 }
 
 export async function getPortfolioSummary(ownerId: string, portfolioId: string) {
+  await ensurePortfolioSchemaCompat();
   const result = await db.query.userPortfolios.findFirst({
     where: and(eq(userPortfolios.id, portfolioId), eq(userPortfolios.userId, ownerId)),
     with: {

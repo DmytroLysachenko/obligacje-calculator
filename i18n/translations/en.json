@@ -259,13 +259,50 @@
     "goal_progress": "Goal Progress: {{percent}}%",
     "target": "Target",
     "simulation": {
-      "ready": "Ready to simulate?",
+      "ready": "Ready to simulate",
+      "ready_title": "One calculator. One committed run.",
+      "ready_desc": "Complete the left-side inputs first, keep advanced assumptions collapsed unless necessary, then run one clean calculation and inspect the summary before going deeper.",
+      "action": "Action",
+      "results_stable": "Results stay stable until you intentionally rerun with new committed inputs.",
+      "stale_results": "Inputs changed. Results below are stale until you rerun the calculation.",
+      "fix_blocking": "Fix blocking inputs first, then calculate.",
+      "calculation_context": "Calculation Context",
       "click_calculate": "Click 'Calculate Results' to see the projection",
       "growth": "Simulating investment growth...",
+      "ready_steps": {
+        "primary": {
+          "title": "Primary inputs",
+          "desc": "Bond type, amount, and target mode."
+        },
+        "timing": {
+          "title": "Timing and tax",
+          "desc": "Purchase date, horizon, withdrawal, and wrapper."
+        },
+        "advanced": {
+          "title": "Optional advanced",
+          "desc": "Inflation, NBP path, and chart display only if needed."
+        }
+      },
       "regular": {
+        "ready_title": "Build one recurring plan, then run one committed simulation.",
+        "ready_desc": "Set contribution amount, frequency, horizon, and bond type first. Advanced assumptions stay secondary, and no background recalculation runs while you edit.",
         "click": "Click 'Simulate Investment' to see the projection",
         "action": "Simulating regular contributions...",
-        "how_it_works": "Regular investments track each monthly purchase as a separate lot. This simulation calculates the interest, taxes, and fees for each lot individually based on its own maturity timeline."
+        "how_it_works": "Regular investments track each monthly purchase as a separate lot. This simulation calculates the interest, taxes, and fees for each lot individually based on its own maturity timeline.",
+        "ready_steps": {
+          "plan": {
+            "title": "Contribution plan",
+            "desc": "Amount, frequency, and bond type."
+          },
+          "timing": {
+            "title": "Timing path",
+            "desc": "Purchase date, horizon, withdrawal mode, and tax wrapper."
+          },
+          "advanced": {
+            "title": "Optional advanced",
+            "desc": "Inflation path, rollover behavior, and chart display only if needed."
+          }
+        }
       }
     },
     "cycle": "Cycle",
@@ -425,6 +462,74 @@
       "cta": "Open recovery lab"
     }
   },
+    "admin": {
+    "title": "Sync Health Dashboard",
+    "subtitle": "Real-time data freshness and system synchronization monitor",
+    "access_required": "Admin Access Required",
+    "enter_secret": "Enter SYNC_SECRET to view system status",
+    "unlock": "Unlock Status",
+    "refresh": "Refresh Status",
+    "manual_sync": "Trigger Manual Sync",
+    "sync_confirm": "Are you sure you want to trigger a {mode}? This may take a few minutes.",
+    "sync_progress": "Manual synchronization in progress... please do not close this window.",
+    "sync_success": "Sync completed successfully!",
+    "metrics": {
+      "series_tracked": "Series Tracked",
+      "series_desc": "Active data streams in database",
+      "data_points": "Total Data Points",
+      "points_desc": "Total historical records stored",
+      "environment": "Environment",
+      "env_desc": "Server runtime mode"
+    },
+    "inventory": {
+      "title": "Data Health Inventory",
+      "subtitle": "Detailed status and freshness of financial data series",
+      "cols": {
+        "name": "Series Name & Source",
+        "frequency": "Frequency",
+        "last_point": "Last Data Point",
+        "records": "Records",
+        "last_sync": "Last Sync Attempt",
+        "health": "Health Status"
+      },
+      "health": {
+        "healthy": "Healthy",
+        "error": "Error",
+        "initial": "Initial",
+        "gap": "Gap Detected",
+        "missing": "Missing Data"
+      },
+      "never_synced": "Never synced",
+      "empty": "No data series found. Click \"Trigger Manual Sync\" to initialize the database."
+    }
+  },
+    "recovery_lab_page": {
+      "title": "Recovery Lab",
+      "description": "Limited and experimental calculator surfaces kept reachable during the product recovery refactor.",
+      "description_long": "These surfaces remain reachable during the recovery refactor, but they are not part of the primary calculator promise. Each one is narrower, more assumption-sensitive, or more data-dependent than the core flows.",
+      "eyebrow": "Recovery framing",
+      "why_separated": "Why these tools are separated",
+      "why_separated_desc": "The app now emphasizes core calculator and reference pages first. Recovery-lab pages stay available for investigation and iterative validation, but they should not compete with the flagship calculator flows until their scope and evidence improve further.",
+      "card_notice": "Open this page only when you want to inspect a narrower or weaker-support scenario surface on purpose.",
+      "what_stays_core": "What stays core",
+      "what_stays_core_desc": "Recovery is moving toward a simpler product with clearer trust boundaries.",
+      "core_emphasis": "Primary emphasis remains on education, single calculator, comparison, regular investment, ladder, notebook, and data reference pages.",
+      "core_improve_later": "Recovery-lab pages can still improve later, but they do not define product readiness right now.",
+      "pages": {
+        "optimize": {
+          "title": "Scenario Ranking",
+          "description": "Assumption-sensitive payout sorting. Useful as a supporting scenario view, not as a recommendation surface."
+        },
+        "multi_asset": {
+          "title": "Historical Reference Comparison",
+          "description": "Mixed-series comparison with narrower trust than the core bond calculators. Keep it in reference mode only."
+        },
+        "retirement": {
+          "title": "Withdrawal Model",
+          "description": "Limited steady-rate withdrawal scenario. Narrower than a normal retirement planner and intentionally scoped down."
+        }
+      }
+    },
   "notebook": {
     "title": "My Portfolio / Notebook",
     "subtitle": "Track your real-world bond purchases and simulate their future value based on live data.",
