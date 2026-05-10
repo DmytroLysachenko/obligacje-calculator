@@ -2,11 +2,8 @@
 
 import React, { useMemo, useState } from 'react';
 import {
-  AlertTriangle,
   ArrowDownUp,
-  ArrowRight,
   Info,
-  LineChart,
   ListOrdered,
   TrendingUp,
 } from 'lucide-react';
@@ -16,7 +13,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -44,6 +40,9 @@ import { formatCurrency, formatPercentage } from '@/lib/utils';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
+import { RecalculateButton } from '@/shared/components/RecalculateButton';
+import { ScenarioReadyPanel } from '@/shared/components/ScenarioReadyPanel';
+import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { toDateString } from '@/shared/lib/date-timing';
 
@@ -130,8 +129,8 @@ export default function BondOptimizerClient() {
 
   return (
     <CalculatorPageShell
-      title="Bond Scenario Ranking"
-      description="Run one committed payout-sorting scenario, inspect the ordered outcomes, and keep the result in supporting-reference territory."
+      title="Bond Scenario Sorter"
+      description="Run one committed payout scenario, inspect the ordered outcomes, and keep the result in supporting-reference territory."
       icon={<TrendingUp className="h-8 w-8" />}
       isCalculating={isCalculating}
       isDirty={isDirty}
@@ -327,34 +326,10 @@ export default function BondOptimizerClient() {
                 </AccordionItem>
               </Accordion>
 
-              <Button
-                className="h-11 w-full rounded-xl font-semibold"
-                onClick={handleCalculate}
-                disabled={isCalculating}
-              >
-                {isCalculating ? 'Running scenario ranking...' : 'Calculate ranking'}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="rounded-2xl border border-amber-200 bg-amber-50 shadow-none">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <AlertTriangle className="h-4 w-4 text-amber-700" />
-                Interpretation guardrail
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm leading-6 text-amber-950">
-              <p>
-                This page sorts projected payouts for one scenario. It does not
-                decide what is best for a real investor and it does not account
-                for suitability, liquidity needs, or broader portfolio context.
-              </p>
-              <p>
-                Small assumption changes can reorder the list quickly, especially
-                when horizons are short or rollover is required.
-              </p>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-600">
+                Use the floating action in the lower corner when the scenario is
+                ready. Keep inputs staged here until you want one clean ranking.
+              </div>
             </CardContent>
           </Card>
         </aside>
@@ -509,59 +484,68 @@ export default function BondOptimizerClient() {
                 </CardContent>
               </Card>
 
-              <CalculationMetaPanel
-                warnings={envelope?.warnings}
-                assumptions={envelope?.assumptions}
-                calculationNotes={envelope?.calculationNotes}
-                dataQualityFlags={envelope?.dataQualityFlags}
-                dataFreshness={envelope?.dataFreshness}
-              />
+              <SecondaryInsightAccordion
+                title="Interpretation guardrail"
+                description="This page sorts projected payouts for one committed scenario. Treat it as a supporting sorter, not as an automatic bond recommendation."
+                badge="Support"
+              >
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-600">
+                    Small assumption changes can reorder the list quickly,
+                    especially when horizons are short or rollover is required.
+                  </div>
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-600">
+                    A high modeled payout here does not replace suitability,
+                    liquidity planning, or broader portfolio judgment.
+                  </div>
+                </div>
+              </SecondaryInsightAccordion>
+
+              <SecondaryInsightAccordion
+                title="Scenario audit"
+                description="Open this only when you want the assumption and warning trail behind the current ranking."
+                badge="Audit"
+              >
+                <CalculationMetaPanel
+                  warnings={envelope?.warnings}
+                  assumptions={envelope?.assumptions}
+                  calculationNotes={envelope?.calculationNotes}
+                  dataQualityFlags={envelope?.dataQualityFlags}
+                  dataFreshness={envelope?.dataFreshness}
+                />
+              </SecondaryInsightAccordion>
             </>
           ) : (
-            <Card className="rounded-3xl border-2 border-dashed shadow-none">
-              <CardContent className="flex min-h-[420px] flex-col items-center justify-center space-y-4 px-8 py-12 text-center">
-                <LineChart className="h-12 w-12 text-muted-foreground" />
-                <div className="space-y-2">
-                  <p className="text-lg font-bold text-slate-950">
-                    Ready to rank one scenario?
-                  </p>
-                  <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-                    Set the amount, horizon, and purchase date. Then run one
-                    committed ranking to compare modeled payouts across bond
-                    types.
-                  </p>
-                </div>
-                <div className="grid w-full max-w-2xl grid-cols-1 gap-4 md:grid-cols-3">
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left">
-                    <p className="text-[10px] font-black uppercase text-slate-600">
-                      Default amount
-                    </p>
-                    <p className="mt-1 text-sm font-bold text-slate-950">
-                      {formatCurrency(inputs.initialInvestment)}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left">
-                    <p className="text-[10px] font-black uppercase text-slate-600">
-                      Default horizon
-                    </p>
-                    <p className="mt-1 text-sm font-bold text-slate-950">
-                      {inputs.investmentHorizonMonths} months
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left">
-                    <p className="text-[10px] font-black uppercase text-slate-600">
-                      Scope
-                    </p>
-                    <p className="mt-1 text-sm font-bold text-slate-950">
-                      Supporting scenario sorter
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <ScenarioReadyPanel
+              badge="Support surface"
+              title="Ready to sort one scenario?"
+              description="Set the amount, horizon, and purchase date. Then run one committed scenario to compare modeled payouts across bond types."
+              steps={[
+                {
+                  title: 'Set the amount',
+                  description: `Start from ${formatCurrency(inputs.initialInvestment)} or adjust it before the first run.`,
+                },
+                {
+                  title: 'Choose the horizon',
+                  description: `This scenario is staged for ${inputs.investmentHorizonMonths} months.`,
+                },
+                {
+                  title: 'Keep the scope narrow',
+                  description: 'Use the ranking as a payout sorter, not as a full recommendation engine.',
+                },
+              ]}
+              footerText="Advanced assumptions stay available, but they should not distract from one clean ranking run."
+            />
           )}
         </section>
       </div>
+
+      <RecalculateButton
+        isDirty={isDirty}
+        loading={isCalculating}
+        hasResults={!!results}
+        onClick={handleCalculate}
+      />
     </CalculatorPageShell>
   );
 }

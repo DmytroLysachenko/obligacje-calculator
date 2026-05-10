@@ -14,8 +14,8 @@ export default function BondOptimizerPage() {
       <div className="container space-y-8 py-8">
         <FeatureStatusNotice
           status="experimental"
-          eyebrow="Recovery lab"
-          title="Experimental ranking surface"
+          eyebrow="How to use this page"
+          title="Experimental ranking view"
         >
           This page is assumption-sensitive and easy to over-read. Use it as a
           supporting scenario sorter after the core calculators, not as a primary

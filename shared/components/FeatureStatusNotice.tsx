@@ -23,25 +23,25 @@ const statusConfig: Record<
   trusted: {
     label: 'Main tool',
     icon: CheckCircle2,
-    noticeClassName: 'border-emerald-200 bg-emerald-50/70 text-emerald-950',
+    noticeClassName: 'border-emerald-200 bg-emerald-50/55 text-emerald-950',
     pillClassName: 'border-emerald-200 bg-emerald-50 text-emerald-800',
   },
   conditional: {
     label: 'Next step',
     icon: Info,
-    noticeClassName: 'border-blue-200 bg-blue-50/70 text-blue-950',
+    noticeClassName: 'border-blue-200 bg-blue-50/55 text-blue-950',
     pillClassName: 'border-blue-200 bg-blue-50 text-blue-800',
   },
   experimental: {
-    label: 'Experimental',
+    label: 'Experimental lab',
     icon: FlaskConical,
-    noticeClassName: 'border-amber-200 bg-amber-50/70 text-amber-950',
+    noticeClassName: 'border-amber-200 bg-amber-50/55 text-amber-950',
     pillClassName: 'border-amber-200 bg-amber-50 text-amber-800',
   },
   limited: {
     label: 'Limited scope',
     icon: AlertTriangle,
-    noticeClassName: 'border-orange-200 bg-orange-50/70 text-orange-950',
+    noticeClassName: 'border-orange-200 bg-orange-50/55 text-orange-950',
     pillClassName: 'border-orange-200 bg-orange-50 text-orange-800',
   },
   reference: {
@@ -93,13 +93,13 @@ export function FeatureStatusNotice({
   return (
     <div
       className={cn(
-        'rounded-2xl border px-5 py-4 shadow-none',
+        'rounded-[1.8rem] border px-5 py-4 shadow-none',
         config.noticeClassName,
         className,
       )}
     >
       <div className="flex items-start gap-3">
-        <Icon className="mt-0.5 h-4 w-4 shrink-0" />
+        <Icon className="mt-0.5 h-4 w-4 shrink-0 opacity-80" />
         <div className="min-w-0 space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             {eyebrow ? (
@@ -107,7 +107,7 @@ export function FeatureStatusNotice({
                 {eyebrow}
               </span>
             ) : null}
-            <p className="font-semibold">{title}</p>
+            <p className="font-semibold tracking-tight">{title}</p>
             <FeatureStatusPill status={status} />
           </div>
           <div className="text-sm leading-6">{children}</div>

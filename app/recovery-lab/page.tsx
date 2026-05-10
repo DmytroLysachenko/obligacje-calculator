@@ -54,7 +54,7 @@ export default function RecoveryLabPage() {
 
       <FeatureStatusNotice
         status="experimental"
-        eyebrow={t('landing.recovery_lab_page.eyebrow')}
+        eyebrow={language === 'pl' ? 'Jak uzywac tego miejsca' : 'How to use this area'}
         title={t('landing.recovery_lab_page.why_separated')}
       >
         {t('landing.recovery_lab_page.why_separated_desc')}
@@ -63,7 +63,7 @@ export default function RecoveryLabPage() {
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
         {recoveryLabPages.map((page) => (
           <Link key={page.href} href={page.href} className="group block h-full">
-            <Card className="h-full overflow-hidden rounded-[2rem] border border-amber-200 bg-[linear-gradient(180deg,rgba(255,251,235,0.95),rgba(255,255,255,0.92))] shadow-[0_18px_48px_-40px_rgba(120,53,15,0.22)] transition-colors group-hover:border-amber-300">
+            <Card className="h-full overflow-hidden rounded-[2rem] border border-amber-200/80 bg-[linear-gradient(180deg,rgba(255,251,235,0.88),rgba(255,255,255,0.94))] shadow-[0_18px_48px_-40px_rgba(120,53,15,0.18)] transition-colors group-hover:border-amber-300">
               <CardContent className="space-y-5 p-6">
                 <div className="flex items-start justify-between gap-3">
                   <div className="rounded-2xl bg-white p-3 text-amber-700 shadow-sm">
@@ -79,7 +79,12 @@ export default function RecoveryLabPage() {
                     {t(`landing.recovery_lab_page.pages.${page.i18nKey}.description`)}
                   </p>
                 </div>
-                <div className="rounded-2xl border border-amber-200 bg-white/75 px-4 py-3 text-sm leading-7 text-slate-700">
+                <div className="rounded-2xl border border-white/80 bg-white/70 px-4 py-3 text-sm leading-6 text-slate-600">
+                  {language === 'pl'
+                    ? 'Otwieraj tylko wtedy, gdy celowo sprawdzasz bardziej watpliwy lub waski scenariusz.'
+                    : 'Open this only when you intentionally want to inspect a narrower or more assumption-sensitive scenario.'}
+                </div>
+                <div className="rounded-2xl border border-amber-200/80 bg-white/80 px-4 py-3 text-sm leading-7 text-slate-700">
                   {t('landing.recovery_lab_page.card_notice')}
                 </div>
               </CardContent>
@@ -88,7 +93,7 @@ export default function RecoveryLabPage() {
         ))}
       </div>
 
-      <Card className="rounded-[2rem] border border-slate-200 bg-white/86 shadow-[0_16px_42px_-38px_rgba(15,23,42,0.38)] backdrop-blur">
+      <Card className="rounded-[2rem] border border-slate-200 bg-white/88 shadow-[0_16px_42px_-38px_rgba(15,23,42,0.32)] backdrop-blur">
         <CardContent className="space-y-4 p-6">
           <div className="flex items-center gap-2 text-slate-950">
             <ShieldAlert className="h-5 w-5 text-primary" />

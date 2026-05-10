@@ -11,7 +11,9 @@ import { ComparisonAssetBreakdown } from './ComparisonAssetBreakdown';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { MonthlyReturn } from '@/features/bond-core/constants/historical-data';
 import { cn } from '@/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import { ScenarioReadyPanel } from '@/shared/components/ScenarioReadyPanel';
+import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
 
 interface ChartDataRow {
   date: string;
@@ -284,30 +286,34 @@ export const MultiAssetComparisonContainer = () => {
               />
             </>
           ) : (
-            <Card className="rounded-3xl border-2 border-dashed shadow-none">
-              <CardContent className="flex min-h-[420px] flex-col items-center justify-center space-y-4 px-8 py-12 text-center">
-                <LineChart className="h-12 w-12 text-muted-foreground" />
-                <div className="space-y-2">
-                  <p className="text-lg font-bold text-slate-950">
-                    Ready to inspect one historical run?
-                  </p>
-                  <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-                    Set a start point, initial sum, and monthly contribution. Then
-                    recalculate one committed historical scenario before comparing
-                    the asset paths.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <ScenarioReadyPanel
+              badge="Reference run"
+              title="Ready to inspect one historical run?"
+              description="Set a start point, initial sum, and monthly contribution. Then recalculate one committed historical scenario before comparing the asset paths."
+              steps={[
+                {
+                  title: 'Pick one entry point',
+                  description: 'The start month matters. Keep it explicit before reading any winner.',
+                },
+                {
+                  title: 'Commit one cash path',
+                  description: 'Use one initial sum and one monthly contribution for the whole run.',
+                },
+                {
+                  title: 'Read it as context',
+                  description: 'This is a historical reference comparison, not a full backtesting suite.',
+                },
+              ]}
+              footerText="The floating action appears as soon as the scenario is ready for its first run."
+            />
           )}
 
-          <Card className="rounded-2xl border shadow-none">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">
-                Scope notes
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 gap-4 text-sm leading-6 text-muted-foreground md:grid-cols-3">
+          <SecondaryInsightAccordion
+            title="Scope notes"
+            description="Open this when you want the guardrails behind the historical comparison."
+            badge="Context"
+          >
+            <div className="grid grid-cols-1 gap-4 text-sm leading-6 text-muted-foreground md:grid-cols-3">
               <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
                 This is one historical reference run, not a broad market research
                 suite or a portfolio recommendation surface.
@@ -320,8 +326,8 @@ export const MultiAssetComparisonContainer = () => {
                 Inflation-adjusted mode changes the interpretation of ending
                 values, not the underlying historical path itself.
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </SecondaryInsightAccordion>
         </section>
       </div>
 

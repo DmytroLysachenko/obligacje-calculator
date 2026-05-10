@@ -2,10 +2,7 @@
 
 import React, { useMemo, useState } from 'react';
 import {
-  AlertTriangle,
-  ArrowRight,
   Calendar,
-  Info,
   LineChart,
   Wallet,
 } from 'lucide-react';
@@ -24,7 +21,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -44,6 +40,9 @@ import {
 } from '@/features/bond-core/support-matrix';
 import { RetirementPlannerCalculationEnvelope } from '@/features/bond-core/types/scenarios';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
+import { RecalculateButton } from '@/shared/components/RecalculateButton';
+import { ScenarioReadyPanel } from '@/shared/components/ScenarioReadyPanel';
+import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
@@ -153,6 +152,7 @@ const SupportList = ({
 export const RetirementPlannerContainer: React.FC = () => {
   const { isCalculating, post } = useCalculationRequest();
   const [inputs, setInputs] = useState<RetirementInputs>(DEFAULT_INPUTS);
+  const [isDirty, setIsDirty] = useState(true);
   const [results, setResults] =
     useState<RetirementPlannerCalculationEnvelope | null>(null);
 
@@ -168,6 +168,7 @@ export const RetirementPlannerContainer: React.FC = () => {
       },
     );
     setResults(response);
+    setIsDirty(false);
   };
 
   const chartData = useMemo(
@@ -196,12 +197,21 @@ export const RetirementPlannerContainer: React.FC = () => {
     return formatHorizonMonths((finalMonth.year * 12) + finalMonth.month, 'en');
   }, [results]);
 
+  const updateInput = <K extends keyof RetirementInputs>(
+    key: K,
+    value: RetirementInputs[K],
+  ) => {
+    setInputs((prev) => ({ ...prev, [key]: value }));
+    setIsDirty(true);
+  };
+
   return (
     <CalculatorPageShell
       title="Retirement Withdrawal Model"
       description="Run one narrow withdrawal scenario with explicit assumptions and review the balance path before treating it as planning evidence."
       icon={<Wallet className="h-8 w-8" />}
       isCalculating={isCalculating}
+      isDirty={isDirty}
       hasResults={!!results}
     >
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
@@ -225,10 +235,7 @@ export const RetirementPlannerContainer: React.FC = () => {
                   type="number"
                   value={inputs.initialCapital}
                   onChange={(event) =>
-                    setInputs((prev) => ({
-                      ...prev,
-                      initialCapital: Number(event.target.value),
-                    }))
+                    updateInput('initialCapital', Number(event.target.value))
                   }
                   className="rounded-xl font-bold"
                 />
@@ -250,7 +257,7 @@ export const RetirementPlannerContainer: React.FC = () => {
                   step={100}
                   unit="PLN"
                   onCommit={(value) =>
-                    setInputs((prev) => ({ ...prev, monthlyWithdrawal: value }))
+                    updateInput('monthlyWithdrawal', value)
                   }
                 />
               </div>
@@ -271,7 +278,7 @@ export const RetirementPlannerContainer: React.FC = () => {
                   step={1}
                   unit="Y"
                   onCommit={(value) =>
-                    setInputs((prev) => ({ ...prev, horizonYears: value }))
+                    updateInput('horizonYears', value)
                   }
                 />
               </div>
@@ -283,10 +290,7 @@ export const RetirementPlannerContainer: React.FC = () => {
                 <Select
                   value={inputs.bondType}
                   onValueChange={(value) =>
-                    setInputs((prev) => ({
-                      ...prev,
-                      bondType: value as BondType,
-                    }))
+                    updateInput('bondType', value as BondType)
                   }
                 >
                   <SelectTrigger className="rounded-xl font-bold">
@@ -339,10 +343,7 @@ export const RetirementPlannerContainer: React.FC = () => {
                         step={0.1}
                         unit="%"
                         onCommit={(value) =>
-                          setInputs((prev) => ({
-                            ...prev,
-                            expectedInflation: value,
-                          }))
+                          updateInput('expectedInflation', value)
                         }
                       />
                     </div>
@@ -363,10 +364,7 @@ export const RetirementPlannerContainer: React.FC = () => {
                         step={0.05}
                         unit="%"
                         onCommit={(value) =>
-                          setInputs((prev) => ({
-                            ...prev,
-                            expectedNbpRate: value,
-                          }))
+                          updateInput('expectedNbpRate', value)
                         }
                       />
                     </div>
@@ -378,10 +376,7 @@ export const RetirementPlannerContainer: React.FC = () => {
                       <Select
                         value={inputs.taxStrategy}
                         onValueChange={(value) =>
-                          setInputs((prev) => ({
-                            ...prev,
-                            taxStrategy: value as TaxStrategy,
-                          }))
+                          updateInput('taxStrategy', value as TaxStrategy)
                         }
                       >
                         <SelectTrigger className="rounded-xl font-bold">
@@ -404,28 +399,10 @@ export const RetirementPlannerContainer: React.FC = () => {
                 </AccordionItem>
               </Accordion>
 
-              <Button
-                className="h-12 w-full rounded-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20"
-                onClick={handleCalculate}
-                disabled={isCalculating}
-              >
-                {isCalculating ? 'Calculating...' : 'Calculate withdrawal path'}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="border-amber-200 bg-amber-50/40 shadow-none">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-amber-900">
-                <AlertTriangle className="h-4 w-4" />
-                Model Limits
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm leading-6 text-amber-950">
-              {MODEL_LIMITS.map((item) => (
-                <p key={item}>{item}</p>
-              ))}
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-600">
+                Use the floating action in the lower corner when this withdrawal
+                scenario is ready for its first run or for recalculation.
+              </div>
             </CardContent>
           </Card>
         </aside>
@@ -433,6 +410,13 @@ export const RetirementPlannerContainer: React.FC = () => {
         <div className="space-y-8 xl:col-span-8">
           {results ? (
             <>
+              {isDirty ? (
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
+                  Inputs changed. The balance path below still shows the previous
+                  committed run. Recalculate when you want to refresh it.
+                </div>
+              ) : null}
+
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
                 <SummaryMetric
                   label="Scenario Status"
@@ -577,89 +561,68 @@ export const RetirementPlannerContainer: React.FC = () => {
                 </CardContent>
               </Card>
 
-              <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-                <SupportList
-                  title="Scenario Assumptions"
-                  items={results.assumptions}
-                  emptyLabel="No extra assumptions were reported beyond the visible inputs."
-                />
-                <SupportList
-                  title="Warnings and Notes"
-                  items={[
-                    ...results.warnings,
-                    ...results.calculationNotes,
-                    ...results.dataQualityFlags,
-                  ]}
-                  emptyLabel="No extra warnings were returned for this scenario."
-                />
-              </div>
+              <SecondaryInsightAccordion
+                title="Scenario assumptions and warnings"
+                description="Open this when you want the supporting assumption trail behind the current withdrawal run."
+                badge="Audit"
+              >
+                <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+                  <SupportList
+                    title="Scenario Assumptions"
+                    items={results.assumptions}
+                    emptyLabel="No extra assumptions were reported beyond the visible inputs."
+                  />
+                  <SupportList
+                    title="Warnings and Notes"
+                    items={[
+                      ...results.warnings,
+                      ...results.calculationNotes,
+                      ...results.dataQualityFlags,
+                    ]}
+                    emptyLabel="No extra warnings were returned for this scenario."
+                  />
+                </div>
+              </SecondaryInsightAccordion>
             </>
           ) : (
-            <Card className="rounded-3xl border-2 border-dashed shadow-none">
-              <CardContent className="flex min-h-[420px] flex-col items-center justify-center space-y-4 px-8 py-12 text-center">
-                <Wallet className="h-12 w-12 text-muted-foreground" />
-                <div className="space-y-2">
-                  <p className="text-lg font-bold text-slate-950">
-                    Ready to test one withdrawal path?
-                  </p>
-                  <p className="max-w-xl text-sm leading-6 text-muted-foreground">
-                    Set the starting capital, withdrawal amount, horizon, and
-                    supported bond family. Then run one committed calculation
-                    before reading the balance path.
-                  </p>
-                </div>
-                <div className="grid w-full max-w-2xl grid-cols-1 gap-4 md:grid-cols-3">
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left">
-                    <p className="text-[10px] font-black uppercase text-slate-600">
-                      Default capital
-                    </p>
-                    <p className="mt-1 text-sm font-bold text-slate-950">
-                      {formatCurrency(inputs.initialCapital)}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left">
-                    <p className="text-[10px] font-black uppercase text-slate-600">
-                      Default withdrawal
-                    </p>
-                    <p className="mt-1 text-sm font-bold text-slate-950">
-                      {formatCurrency(inputs.monthlyWithdrawal)}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left">
-                    <p className="text-[10px] font-black uppercase text-slate-600">
-                      Model type
-                    </p>
-                    <p className="mt-1 text-sm font-bold text-slate-950">
-                      Steady-rate depletion
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <ScenarioReadyPanel
+              badge="Limited model"
+              title="Ready to test one withdrawal path?"
+              description="Set the starting capital, withdrawal amount, horizon, and supported bond family. Then run one committed calculation before reading the balance path."
+              steps={[
+                {
+                  title: 'Stage one balance path',
+                  description: `Start from ${formatCurrency(inputs.initialCapital)} and one fixed withdrawal amount.`,
+                },
+                {
+                  title: 'Commit one horizon',
+                  description: `The current run is staged for ${formatHorizonMonths(inputs.horizonYears * 12, 'en')}.`,
+                },
+                {
+                  title: 'Read it narrowly',
+                  description: 'This is a steady-rate depletion model, not a complete retirement advice engine.',
+                },
+              ]}
+              footerText="Advanced assumptions stay available, but the first reading should come from one clean committed run."
+            />
           )}
 
-          <Card className="rounded-2xl border shadow-none">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-slate-900">
-                <Info className="h-4 w-4 text-primary" />
-                Supported Scope
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 gap-4 text-sm leading-6 text-muted-foreground md:grid-cols-3">
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                Uses supported bond families only and narrows unsupported choices
-                back to EDO during calculation.
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                Withdrawal amounts stay fixed through the run and do not react to
-                changing inflation or spending needs.
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                Treat this as a supporting scenario model, not a retirement advice
-                engine or a complete spending plan.
-              </div>
-            </CardContent>
-          </Card>
+          <SecondaryInsightAccordion
+            title="Model limits and supported scope"
+            description="Open this when you want the constraints behind this withdrawal surface."
+            badge="Limits"
+          >
+            <div className="grid grid-cols-1 gap-4 text-sm leading-6 text-muted-foreground md:grid-cols-3">
+              {MODEL_LIMITS.map((item) => (
+                <div
+                  key={item}
+                  className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+          </SecondaryInsightAccordion>
 
           {results?.result.exhaustionDate ? (
             <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm leading-6 text-amber-950">
@@ -673,6 +636,13 @@ export const RetirementPlannerContainer: React.FC = () => {
           ) : null}
         </div>
       </div>
+
+      <RecalculateButton
+        isDirty={isDirty}
+        loading={isCalculating}
+        hasResults={!!results}
+        onClick={handleCalculate}
+      />
     </CalculatorPageShell>
   );
 };
