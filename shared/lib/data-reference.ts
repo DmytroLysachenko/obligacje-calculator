@@ -42,14 +42,14 @@ export function getReferenceAsOfLabel(meta?: DataReferenceMetaLike) {
 
 export function getReferenceScopeLabel(meta?: DataReferenceMetaLike) {
   if (!meta) {
-    return 'Unknown scope';
+    return 'Scope unknown';
   }
 
   if (meta.usedFallback || meta.source === 'fallback') {
-    return 'Reference context only';
+    return 'Reference reading only';
   }
 
-  return 'Current calculator context';
+  return 'Supports calculator context';
 }
 
 export function getReferenceState(meta?: DataReferenceMetaLike) {
@@ -64,17 +64,18 @@ export function getReferenceState(meta?: DataReferenceMetaLike) {
 
   if (meta.usedFallback || meta.source === 'fallback') {
     return {
-      title: 'Fallback or partial data',
+      title: 'Fallback or partial coverage',
       description:
-        'Treat this series as reference context until the sync pipeline restores fuller coverage.',
+        'Treat this series as reference support until the sync pipeline restores fuller coverage.',
       tone: 'warning' as const,
     };
   }
 
   return {
-    title: 'Synced reference data',
+    title: 'Synced reference coverage',
     description:
-      'This series is backed by the synced data pipeline and can be used as current calculator context.',
+      'This series is backed by the synced data pipeline and can support calculator interpretation.',
     tone: 'good' as const,
   };
 }
+

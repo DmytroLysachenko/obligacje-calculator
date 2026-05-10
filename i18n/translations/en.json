@@ -59,13 +59,13 @@
     "sections": {
       "core": "Core Tools",
       "conditional": "Investment Strategies",
-      "recovery_lab": "Recovery Lab"
+      "recovery_lab": "Side Lab"
     },
-    "recovery_lab_notice": "These pages stay reachable during recovery, but they are not core calculator surfaces.",
+    "recovery_lab_notice": "These pages remain reachable, but they are not part of the main calculator path.",
     "sync_unavailable": "Sync metadata unavailable.",
-    "recovery_scope_title": "Recovery scope",
-    "recovery_scope_desc": "Main focus stays on single-bond, comparison, ladder, regular-investment, notebook, and data reference pages.",
-    "open_recovery_lab": "Open recovery lab"
+    "recovery_scope_title": "Main scope",
+    "recovery_scope_desc": "The main path stays on single-bond, comparison, ladder, regular-investment, notebook, and data reference pages.",
+    "open_recovery_lab": "Open side lab"
   },
   "education": {
     "subtitle": "Understand the mechanisms of the Polish treasury bond market and make informed investment decisions.",
@@ -409,15 +409,15 @@
     "start_calculating": "Start Calculating",
     "financial_tools": "Financial Tools",
     "recovery_home": {
-      "eyebrow": "Recovery-first home",
+      "eyebrow": "Focused home",
       "title": "Use the core bond calculator first. Keep the rest secondary.",
-      "description": "This home page now acts as a calm recovery hub. Start with the flagship single-bond calculator, then move into education, reference data, or narrower strategy tools only when needed.",
+      "description": "This home page acts as a calm route hub. Start with the flagship single-bond calculator, then move into education, reference data, or narrower strategy tools only when needed.",
       "secondary_cta": "Review Basics",
       "status_trusted": "Trusted core surfaces",
       "status_explicit": "Explicit calculation flow",
       "status_reference": "Reference data clearly labeled",
       "core_route_title": "Primary route",
-      "core_route_desc": "The main recovery path is simple: understand bond rules, run one calculator cleanly, then review results without extra dashboard noise.",
+      "core_route_desc": "The main path is simple: understand bond rules, run one calculator cleanly, then review results without extra dashboard noise.",
       "portfolio_empty_title": "Portfolio snapshot appears only after you add real lots.",
       "portfolio_empty_desc": "Until then, keep the home page light and use the single calculator for scenario work. Notebook stays available, but it should not compete with the core flow.",
       "resume_saved": "Open Calculator",
@@ -456,10 +456,10 @@
       "title": "Favorite Bonds"
     },
     "recovery_lab": {
-      "title": "Recovery lab surfaces",
-      "description": "Optimizer, multi-asset history, and retirement withdrawal modeling remain available during recovery, but they are intentionally separated from the core tool list.",
-      "usage_hint": "Open the recovery lab only when you want to inspect narrower or more assumption-sensitive pages on purpose.",
-      "cta": "Open recovery lab"
+      "title": "Side-lab surfaces",
+      "description": "Optimizer, multi-asset history, and retirement withdrawal modeling remain available, but they stay intentionally separated from the core tool list.",
+      "usage_hint": "Open the side lab only when you want to inspect narrower or more assumption-sensitive pages on purpose.",
+      "cta": "Open side lab"
     }
   },
     "admin": {
@@ -504,17 +504,17 @@
     }
   },
     "recovery_lab_page": {
-      "title": "Recovery Lab",
-      "description": "Limited and experimental calculator surfaces kept reachable during the product recovery refactor.",
-      "description_long": "These surfaces remain reachable during the recovery refactor, but they are not part of the primary calculator promise. Each one is narrower, more assumption-sensitive, or more data-dependent than the core flows.",
-      "eyebrow": "Recovery framing",
+      "title": "Side Lab",
+      "description": "Limited and experimental calculator surfaces kept reachable outside the main product path.",
+      "description_long": "These surfaces remain reachable, but they are not part of the primary calculator promise. Each one is narrower, more assumption-sensitive, or more data-dependent than the core flows.",
+      "eyebrow": "Supporting surfaces",
       "why_separated": "Why these tools are separated",
-      "why_separated_desc": "The app now emphasizes core calculator and reference pages first. Recovery-lab pages stay available for investigation and iterative validation, but they should not compete with the flagship calculator flows until their scope and evidence improve further.",
+      "why_separated_desc": "The app emphasizes core calculator and reference pages first. Side-lab pages stay available for investigation and iterative validation, but they should not compete with the flagship calculator flows until their scope and evidence improve further.",
       "card_notice": "Open this page only when you want to inspect a narrower or weaker-support scenario surface on purpose.",
       "what_stays_core": "What stays core",
-      "what_stays_core_desc": "Recovery is moving toward a simpler product with clearer trust boundaries.",
+      "what_stays_core_desc": "The product stays stronger when the main pages remain simpler and easier to trust.",
       "core_emphasis": "Primary emphasis remains on education, single calculator, comparison, regular investment, ladder, notebook, and data reference pages.",
-      "core_improve_later": "Recovery-lab pages can still improve later, but they do not define product readiness right now.",
+      "core_improve_later": "Side-lab pages can still improve later, but they do not define product readiness right now.",
       "pages": {
         "optimize": {
           "title": "Scenario Ranking",
@@ -682,7 +682,7 @@
     "historical_drawdown_desc": "Maximum drops from peak value during market crashes.",
     "preset_bull_2021": "Bull Run 2021",
     "preset_war_2022": "War Start 2022",
-    "preset_recovery_2023": "Recovery 2023",
+    "preset_recovery_2023": "Rebound 2023",
     "verdict": "Expert Verdict",
     "table_title": "Detailed Side-by-Side Comparison",
     "winning": "WINS",
@@ -728,3 +728,4 @@
     "what_is_desc": "A bond ladder is a strategy where you buy bonds regularly. After the first full cycle, one bond can mature on a recurring schedule, giving you liquidity for spending or reinvestment."
   }
 }
+

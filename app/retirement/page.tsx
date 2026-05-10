@@ -11,7 +11,7 @@ export default function RetirementPage() {
       <div className="mx-auto max-w-7xl space-y-8">
         <FeatureStatusNotice
           status="limited"
-          eyebrow="How to use this page"
+          eyebrow="Narrow withdrawal model"
           title="Withdrawal model"
         >
           This page uses a simplified steady-rate depletion model. It is useful

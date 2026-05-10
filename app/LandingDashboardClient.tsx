@@ -221,13 +221,13 @@ export function LandingDashboardClient() {
     language === 'pl' ? 'Ostatnio zapisane scenariusze' : 'Recent saved scenarios';
   const savedScenarioEmpty =
     language === 'pl'
-      ? 'Brak lokalnie zapisanych scenariuszy. Glowna strona nie powinna udawac centrum sterowania, jesli nic nie zapisales.'
+      ? 'Brak lokalnie zapisanych scenariuszy. Strona startowa nie musi udawac centrum sterowania, gdy nie ma jeszcze zapisanej pracy.'
       : 'No local saved scenarios yet. The home page should not pretend to be a control center when nothing is saved.';
   const startHereTitle =
     language === 'pl' ? 'Prosta sciezka glowna' : 'Simple primary path';
   const startHereDesc =
     language === 'pl'
-      ? 'Ta strona ma kierowac do glownych narzedzi i zachowac prosty, spokojny pierwszy krok.'
+      ? 'Ta strona ma prowadzic do glownych narzedzi i zachowac prosty, spokojny pierwszy krok.'
       : 'This page should route you into the main tools while keeping the first step calm and obvious.';
   const secondaryTitle =
     language === 'pl' ? 'Narzedzia drugiego kroku' : 'Secondary tools';

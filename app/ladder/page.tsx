@@ -10,7 +10,7 @@ export default function LadderPage() {
       <div className="space-y-8">
         <FeatureStatusNotice
           status="conditional"
-          eyebrow="How to use this page"
+          eyebrow="Cashflow timing"
           title="Ladder timing calculator"
         >
           Use this page to test maturity spacing, rollover timing, and cashflow shape.

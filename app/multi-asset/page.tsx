@@ -12,7 +12,7 @@ export default function MultiAssetPage() {
       <div className="mx-auto max-w-7xl space-y-8">
         <FeatureStatusNotice
           status="experimental"
-          eyebrow="How to use this page"
+          eyebrow="Historical context"
           title="Historical reference comparison"
         >
           This surface still has narrower historical coverage and should be treated

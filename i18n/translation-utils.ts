@@ -1,6 +1,8 @@
 type TranslationTree = Record<string, unknown>;
 
-const MOJIBAKE_PATTERN = /[ÃÅÄâ�]/;
+// Covers the most common mojibake fragments produced by UTF-8 text
+// being decoded as latin1/windows-1252 on Windows and in copied JSON.
+const MOJIBAKE_PATTERN = /[ÃÅÄÂâœž™�]/;
 
 function tryDecodeLatin1AsUtf8(value: string): string {
   try {

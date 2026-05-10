@@ -14,7 +14,7 @@ export default function BondOptimizerPage() {
       <div className="container space-y-8 py-8">
         <FeatureStatusNotice
           status="experimental"
-          eyebrow="How to use this page"
+          eyebrow="Supporting sorter"
           title="Experimental ranking view"
         >
           This page is assumption-sensitive and easy to over-read. Use it as a

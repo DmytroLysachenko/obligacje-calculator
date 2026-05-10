@@ -59,11 +59,11 @@
     "sections": {
       "core": "Narzędzia Główne",
       "conditional": "Strategie Inwestycyjne",
-      "recovery_lab": "Recovery Lab"
+      "recovery_lab": "Boczne laboratorium"
     },
     "recovery_lab_notice": "Te strony pozostają dostępne w trybie odzyskiwania, ale nie są głównymi powierzchniami kalkulatora.",
     "sync_unavailable": "Metadane synchronizacji niedostępne.",
-    "recovery_scope_title": "Zakres odzyskiwania",
+    "recovery_scope_title": "Glowny zakres",
     "recovery_scope_desc": "Główny nacisk pozostaje na stronach: kalkulator pojedynczy, porównywarka, drabina, inwestycje regularne, notatnik i referencje danych.",
     "open_recovery_lab": "Otwórz Recovery Lab"
   },
@@ -374,15 +374,15 @@
     "start_calculating": "Zacznij obliczać",
     "financial_tools": "Narzędzia Finansowe",
     "recovery_home": {
-      "eyebrow": "Strona glowna w trybie odzyskiwania",
+      "eyebrow": "Skupiona strona glowna",
       "title": "Najpierw uzyj glownego kalkulatora obligacji. Reszte traktuj jako drugorzedne.",
-      "description": "Ta strona glowna pelni teraz role spokojnego centrum odzyskiwania. Zacznij od flagowego kalkulatora pojedynczej obligacji, a dopiero potem przechodz do edukacji, danych referencyjnych lub wezszych narzedzi strategicznych, gdy sa potrzebne.",
+      "description": "Ta strona glowna pelni role spokojnego punktu startowego. Zacznij od flagowego kalkulatora pojedynczej obligacji, a dopiero potem przechodz do edukacji, danych referencyjnych lub wezszych narzedzi strategicznych, gdy sa potrzebne.",
       "secondary_cta": "Przejrzyj podstawy",
       "status_trusted": "Zaufane powierzchnie glowne",
       "status_explicit": "Jawny przeplyw obliczen",
       "status_reference": "Dane referencyjne jasno opisane",
       "core_route_title": "Glowna sciezka",
-      "core_route_desc": "Glowna sciezka odzyskiwania jest prosta: poznaj zasady obligacji, wykonaj jedno czyste obliczenie, a potem przejrzyj wyniki bez dodatkowego szumu dashboardu.",
+      "core_route_desc": "Glowna sciezka jest prosta: poznaj zasady obligacji, wykonaj jedno czyste obliczenie, a potem przejrzyj wyniki bez dodatkowego szumu dashboardu.",
       "portfolio_empty_title": "Podglad portfela pojawi sie dopiero po dodaniu rzeczywistych partii.",
       "portfolio_empty_desc": "Do tego czasu strona glowna powinna pozostac lekka, a praca scenariuszowa powinna odbywac sie w kalkulatorze pojedynczym. Notatnik nadal jest dostepny, ale nie powinien konkurowac z glownym przeplywem.",
       "resume_saved": "Otworz kalkulator",
@@ -421,7 +421,7 @@
       "title": "Ulubione Obligacje"
     },
     "recovery_lab": {
-      "title": "Centrum Odzyskiwania (Recovery Lab)",
+      "title": "Boczne laboratorium",
       "description": "Optymalizator, historia wielu aktywów oraz modelowanie wypłat emerytalnych pozostają dostępne w trybie odzyskiwania, ale są celowo oddzielone od głównej listy narzędzi.",
       "usage_hint": "Otwieraj Recovery Lab tylko wtedy, gdy świadomie chcesz sprawdzić bardziej specyficzne lub wrażliwe na założenia strony.",
       "cta": "Otwórz Recovery Lab"
@@ -624,3 +624,4 @@
     "what_is_desc": "Drabina obligacji to strategia regularnego kupowania obligacji o powtarzalnym rytmie zapadalności. Po zamknięciu pierwszego pełnego cyklu jedna partia może zapadać cyklicznie, zapewniając środki na wydatki lub reinwestycję."
   }
 }
+

@@ -10,7 +10,7 @@ export default function ComparePage() {
       <div className="mx-auto max-w-7xl space-y-8">
         <FeatureStatusNotice
           status="conditional"
-          eyebrow="How to use this page"
+          eyebrow="Shared scenario"
           title="Scenario comparison"
         >
           Use this page to compare two modeled outcomes under explicit assumptions.

@@ -69,7 +69,7 @@ function getFreshnessText(
   }
 
   return language === 'pl'
-    ? 'Czytaj strony referencyjne ostrozniej.'
+    ? 'Czytaj strony pomocnicze ostrozniej.'
     : 'Read reference pages more cautiously.';
 }
 
@@ -240,7 +240,7 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
             <p className="text-[2rem] font-bold tracking-tight">{t('common.title')}</p>
             <p className="max-w-[14rem] text-[11px] leading-5 text-slate-500">
               {language === 'pl'
-                ? 'Najpierw glowny kalkulator, potem reszta.'
+                ? 'Najpierw glowny kalkulator. Reszta pozniej.'
                 : 'Use the core calculator first.'}
             </p>
           </div>

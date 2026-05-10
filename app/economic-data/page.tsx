@@ -115,7 +115,7 @@ function SeriesStatusCard({
   const state = getReferenceState(meta);
   const rows = [
     {
-      label: language === 'pl' ? 'Zrodlo' : 'Source',
+      label: language === 'pl' ? 'Źródło' : 'Source',
       value: isLoading ? '...' : getReferenceSourceLabel(meta),
     },
     {
@@ -212,15 +212,15 @@ export default function EconomicDataPage() {
 
   const pageIntro =
     language === 'pl'
-      ? 'Ta strona ma dostarczac kontekst makro dla kalkulatorow obligacji. Nie ma udawac samodzielnego produktu forecastingowego ani pulpitu danych.'
-      : 'This page exists to provide macro context for the bond calculators. It should not pretend to be a standalone forecasting product or a noisy market dashboard.';
+      ? 'Ta strona dostarcza spokojny kontekst makro do kalkulatorow obligacji. Nie ma udawac osobnego produktu forecastingowego ani rozbudowanego pulpitu rynkowego.'
+      : 'This page provides calm macro context for the bond calculators. It should not pretend to be a standalone forecasting product or a noisy market dashboard.';
 
   const usageGuide =
     language === 'pl'
       ? [
-          'Inflacja pomaga zrozumiec realna sile nabywcza wyniku i dzialanie obligacji indeksowanych.',
-          'Stopa NBP sluzy glownie jako kontekst dla ROR i DOR oraz dla interpretacji otoczenia rynkowego.',
-          'Krotsze zakresy poprawiaja czytelnosc. Szerszy zakres daje tlo historyczne, ale nie poprawia jakosci brakujacych danych.',
+          'Inflacja pomaga zrozumiec realna sile nabywcza wyniku i zachowanie obligacji indeksowanych.',
+          'Stopa NBP sluzy glownie jako kontekst dla ROR i DOR oraz do interpretacji otoczenia rynkowego.',
+          'Krotsze zakresy poprawiaja czytelnosc. Szerszy zakres daje tlo historyczne, ale nie uzupelnia brakujacej jakosci danych.',
         ]
       : [
           'Inflation helps explain real purchasing power and inflation-linked bond behavior.',
@@ -245,7 +245,7 @@ export default function EconomicDataPage() {
             <div className="space-y-3">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/90 bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
                 <Database className="h-3.5 w-3.5 text-primary" />
-                {language === 'pl' ? 'Panel referencyjny' : 'Reference panel'}
+                {language === 'pl' ? 'Panel kontekstowy' : 'Reference panel'}
               </div>
               <h2 className="max-w-4xl text-3xl font-black tracking-tight text-slate-950">
                 {language === 'pl'
@@ -342,3 +342,5 @@ export default function EconomicDataPage() {
     </CalculatorPageShell>
   );
 }
+
+

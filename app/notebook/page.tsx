@@ -4,7 +4,7 @@ import { PageTransition } from '@/shared/components/PageTransition';
 
 export const metadata: Metadata = {
   title: 'Notebook - Bonds Calculator',
-  description: 'Recovery-first notebook for stored bond lots, maturities, and exports.',
+  description: 'Notebook for stored bond lots, maturities, and exports.',
 };
 
 export default function NotebookPage() {
@@ -16,3 +16,4 @@ export default function NotebookPage() {
     </PageTransition>
   );
 }
+
