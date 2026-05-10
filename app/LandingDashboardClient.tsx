@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/i18n';
 import { loadSavedScenarios } from '@/features/single-calculator/lib/scenario-storage';
-import { FeatureStatus, FeatureStatusPill } from '@/shared/components/FeatureStatusNotice';
+import { FeatureStatus } from '@/shared/components/FeatureStatusNotice';
 
 type ToolItem = {
   href: string;
@@ -37,11 +37,10 @@ function HomeToolCard({ item }: { item: ToolItem }) {
           <div
             className={item.tone}
           />
-          <div className="relative flex items-start justify-between gap-4">
+          <div className="relative flex items-start gap-4">
             <div className="rounded-2xl bg-slate-900 p-3 text-white shadow-sm">
               <item.icon className="h-5 w-5" />
             </div>
-            <FeatureStatusPill status={item.status} />
           </div>
           <div className="relative space-y-3">
             <h3 className="text-xl font-black tracking-tight text-slate-950">
@@ -228,8 +227,8 @@ export function LandingDashboardClient() {
     language === 'pl' ? 'Prosta sciezka glowna' : 'Simple primary path';
   const startHereDesc =
     language === 'pl'
-      ? 'Ta strona ma kierowac do glownych narzedzi, ale moze wygladac bardziej jak produkt niz jak tablica bialych kart.'
-      : 'This page should route you into the core tools, while still looking like a designed product rather than a blank field of cards.';
+      ? 'Ta strona ma kierowac do glownych narzedzi i zachowac prosty, spokojny pierwszy krok.'
+      : 'This page should route you into the main tools while keeping the first step calm and obvious.';
   const secondaryTitle =
     language === 'pl' ? 'Narzedzia drugiego kroku' : 'Secondary tools';
   const secondaryDesc =
@@ -278,11 +277,6 @@ export function LandingDashboardClient() {
             </Button>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            <FeatureStatusPill status="trusted" />
-            <FeatureStatusPill status="reference" />
-            <FeatureStatusPill status="conditional" />
-          </div>
         </div>
       </section>
 

@@ -46,6 +46,7 @@ import { RetirementPlannerCalculationEnvelope } from '@/features/bond-core/types
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
+import { formatHorizonMonths } from '@/shared/lib/format-horizon';
 import { formatCurrency } from '@/lib/utils';
 
 function formatRate(value: number) {
@@ -190,7 +191,7 @@ export const RetirementPlannerContainer: React.FC = () => {
       return null;
     }
 
-    return `${finalMonth.year}y ${finalMonth.month}m`;
+    return formatHorizonMonths((finalMonth.year * 12) + finalMonth.month, 'en');
   }, [results]);
 
   return (
@@ -258,7 +259,7 @@ export const RetirementPlannerContainer: React.FC = () => {
                     Scenario Horizon
                   </Label>
                   <span className="text-xs font-black text-primary">
-                    {inputs.horizonYears} years
+                    {formatHorizonMonths(inputs.horizonYears * 12, 'en')}
                   </span>
                 </div>
                 <CommittedSliderInput
@@ -480,7 +481,7 @@ export const RetirementPlannerContainer: React.FC = () => {
                         Coverage
                       </p>
                       <p className="mt-1 text-sm font-bold text-slate-950">
-                        {scenarioCoverage ?? `${inputs.horizonYears} years`}
+                        {scenarioCoverage ?? formatHorizonMonths(inputs.horizonYears * 12, 'en')}
                       </p>
                     </div>
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">

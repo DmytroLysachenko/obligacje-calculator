@@ -179,30 +179,42 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
             </ResponsiveContainer>
           </ChartContainer>
 
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-slate-600">{language === 'pl' ? 'Miesiac' : 'Month'}</TableHead>
-                <TableHead className="text-right text-slate-600">{language === 'pl' ? 'Zapadajace partie' : 'Lots maturing'}</TableHead>
-                <TableHead className="text-right text-slate-600">{language === 'pl' ? 'Gotowka netto' : 'Net cash'}</TableHead>
-                <TableHead className="text-right text-slate-600">{language === 'pl' ? 'Udzial osi czasu' : 'Share of timeline'}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {chartData.map((item) => (
-                <TableRow key={item.date}>
-                  <TableCell className="font-medium text-slate-900">{item.displayDate}</TableCell>
-                  <TableCell className="text-right text-slate-700">{item.count}</TableCell>
-                  <TableCell className="text-right font-semibold text-slate-900">
-                    {formatCurrency(item.amount)}
-                  </TableCell>
-                  <TableCell className="text-right text-slate-600">
-                    {chartData.length > 0 ? `${((item.count / results.lots.length) * 100).toFixed(1)}%` : '-'}
-                  </TableCell>
+          <div className="rounded-2xl border border-slate-200 bg-white">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-600">
+              <p>
+                {language === 'pl'
+                  ? 'Tabela potwierdza dokladna liczbe partii i kwote gotowki w kazdym miesiacu.'
+                  : 'The table confirms the exact lot count and cash total in each maturity month.'}
+              </p>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                {chartData.length} {language === 'pl' ? 'miesiecy' : 'months'}
+              </p>
+            </div>
+            <Table>
+              <TableHeader>
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="text-slate-600">{language === 'pl' ? 'Miesiac' : 'Month'}</TableHead>
+                  <TableHead className="text-right text-slate-600">{language === 'pl' ? 'Zapadajace partie' : 'Lots maturing'}</TableHead>
+                  <TableHead className="text-right text-slate-600">{language === 'pl' ? 'Gotowka netto' : 'Net cash'}</TableHead>
+                  <TableHead className="text-right text-slate-600">{language === 'pl' ? 'Udzial partii' : 'Share of lots'}</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {chartData.map((item) => (
+                  <TableRow key={item.date} className="odd:bg-slate-50/30 hover:bg-slate-50/80">
+                    <TableCell className="font-medium text-slate-900">{item.displayDate}</TableCell>
+                    <TableCell className="text-right text-slate-700">{item.count}</TableCell>
+                    <TableCell className="text-right font-semibold text-slate-900">
+                      {formatCurrency(item.amount)}
+                    </TableCell>
+                    <TableCell className="text-right text-slate-600">
+                      {chartData.length > 0 ? `${((item.count / results.lots.length) * 100).toFixed(1)}%` : '-'}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <div className="rounded-2xl border bg-slate-50/70 p-4 text-sm leading-6 text-slate-600">

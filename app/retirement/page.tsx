@@ -11,12 +11,12 @@ export default function RetirementPage() {
       <div className="mx-auto max-w-7xl space-y-8">
         <FeatureStatusNotice
           status="limited"
-          eyebrow="Recovery boundary"
-          title="Limited-support withdrawal model"
+          eyebrow="How to use this page"
+          title="Withdrawal model"
         >
           This page uses a simplified steady-rate depletion model. It is useful
-          for narrow withdrawal checks, but it does not represent a full
-          retirement planning engine. Supported bond families here:{' '}
+          for narrow withdrawal checks, but it is not a full retirement planning
+          engine. Supported bond families here:{' '}
           {RETIREMENT_SUPPORTED_BOND_TYPES.join(', ')}.
         </FeatureStatusNotice>
         <Suspense fallback={<PageSuspenseFallback />}>

@@ -10,12 +10,12 @@ export default function ComparePage() {
       <div className="mx-auto max-w-7xl space-y-8">
         <FeatureStatusNotice
           status="conditional"
-          eyebrow="Recovery boundary"
-          title="Conditional comparison surface"
+          eyebrow="How to use this page"
+          title="Scenario comparison"
         >
-          This page stays in the retained core as a neutral scenario comparison.
-          Read it as a way to inspect two modeled outcomes under explicit assumptions,
-          not as a recommendation or definitive ranking engine.
+          Use this page to compare two modeled outcomes under explicit assumptions.
+          It is best treated as a scenario check, not as a universal ranking or
+          recommendation engine.
         </FeatureStatusNotice>
         <Suspense fallback={<PageSuspenseFallback />}>
           <ComparisonContainer />

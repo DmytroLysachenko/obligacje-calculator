@@ -21,6 +21,7 @@ import { addDays, format, isAfter, parseISO } from 'date-fns';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { BondType } from '@/features/bond-core/types';
 import { cn } from '@/lib/utils';
+import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 import {
   Area,
   AreaChart,
@@ -356,36 +357,53 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                     <p className="text-sm text-muted-foreground">{t('notebook.no_lots')}</p>
                   </div>
                 ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Type</TableHead>
-                        <TableHead className="text-right">Amount</TableHead>
-                        <TableHead>Purchase date</TableHead>
-                        <TableHead className="text-right">Nominal value</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {lots.map((lot) => (
-                        <TableRow key={lot.id}>
-                          <TableCell className="font-medium">{lot.bondType}</TableCell>
-                          <TableCell className="text-right">{lot.amount}</TableCell>
-                          <TableCell>{format(new Date(lot.purchaseDate), 'dd.MM.yyyy')}</TableCell>
-                          <TableCell className="text-right">
-                            {formatCurrency(Number(lot.amount) * 100)}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Button variant="outline" size="icon" asChild>
-                              <a href={`/single-calculator?bondType=${lot.bondType}&purchaseDate=${lot.purchaseDate}`}>
-                                <ExternalLink className="h-4 w-4" />
-                              </a>
-                            </Button>
-                          </TableCell>
+                  <div className="rounded-2xl border border-slate-200 bg-white">
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-600">
+                      <p>
+                        Review the stored record first: bond type, purchase date, lot size, and nominal value.
+                      </p>
+                      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                        {lots.length} lots
+                      </p>
+                    </div>
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="hover:bg-transparent">
+                          <TableHead>Type</TableHead>
+                          <TableHead>Duration</TableHead>
+                          <TableHead className="text-right">Amount</TableHead>
+                          <TableHead>Purchase date</TableHead>
+                          <TableHead className="text-right">Nominal value</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {lots.map((lot) => (
+                          <TableRow key={lot.id} className="odd:bg-slate-50/30 hover:bg-slate-50/80">
+                            <TableCell className="font-medium">{lot.bondType}</TableCell>
+                            <TableCell className="text-slate-600">
+                              {formatBondDuration(
+                                definitions[lot.bondType as BondType]?.duration ?? 1,
+                                language,
+                              )}
+                            </TableCell>
+                            <TableCell className="text-right">{lot.amount}</TableCell>
+                            <TableCell>{format(new Date(lot.purchaseDate), 'dd.MM.yyyy')}</TableCell>
+                            <TableCell className="text-right">
+                              {formatCurrency(Number(lot.amount) * 100)}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <Button variant="outline" size="icon" asChild>
+                                <a href={`/single-calculator?bondType=${lot.bondType}&purchaseDate=${lot.purchaseDate}`}>
+                                  <ExternalLink className="h-4 w-4" />
+                                </a>
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 )}
               </CardContent>
             </Card>
@@ -430,6 +448,12 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                               <p className="font-medium text-foreground">{item.bondType}</p>
                               <p className="mt-1 text-sm text-muted-foreground">
                                 {format(item.maturityDate, 'dd.MM.yyyy')}
+                              </p>
+                              <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">
+                                {formatBondDuration(
+                                  definitions[item.bondType as BondType]?.duration ?? 1,
+                                  language,
+                                )}
                               </p>
                             </div>
                             <p className="font-semibold text-foreground">{formatCurrency(item.value)}</p>

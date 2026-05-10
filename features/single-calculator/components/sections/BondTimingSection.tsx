@@ -16,6 +16,7 @@ import { BondDefinition } from '@/features/bond-core/constants/bond-definitions'
 import { useLanguage } from '@/i18n';
 import { GLOSSARY } from '@/shared/constants/glossary';
 import { toDateString } from '@/shared/lib/date-timing';
+import { formatHorizonMonths } from '@/shared/lib/format-horizon';
 import { cn } from '@/lib/utils';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 
@@ -31,7 +32,6 @@ interface BondTimingSectionProps {
 export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
   inputs,
   onUpdate,
-  investmentHorizonYears,
   investmentHorizonMonths,
   currentDef,
   hasMounted,
@@ -140,7 +140,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
         <div className="flex justify-between items-center">
           <Label className="font-semibold">{t('bonds.investment_horizon')}</Label>
           <span className="text-sm font-black text-primary">
-            {investmentHorizonYears % 1 === 0 ? investmentHorizonYears.toFixed(0) : investmentHorizonYears.toFixed(2)} {t('common.years')}
+            {formatHorizonMonths(investmentHorizonMonths, language)}
           </span>
         </div>
         <CommittedSliderInput
@@ -148,7 +148,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
           min={1}
           max={360}
           step={1}
-          unit="M"
+          unit={language === 'pl' ? 'm' : 'm'}
           onCommit={(value) => onUpdate('investmentHorizonMonths', value)}
         />
       </div>

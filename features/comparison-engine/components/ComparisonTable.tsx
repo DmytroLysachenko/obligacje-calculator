@@ -113,88 +113,103 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
           })}
         </div>
 
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader className="bg-white">
-              <TableRow className="border-b hover:bg-transparent">
-                <TableHead className="h-12 w-24 px-6 text-[11px] font-black uppercase tracking-wide text-slate-600">
-                  {t('common.year')}
-                </TableHead>
-                <TableHead className="h-12 px-4 text-[11px] font-black uppercase tracking-wide text-slate-700">
-                  {bondTypeA} (A)
-                </TableHead>
-                <TableHead className="h-12 px-4 text-[11px] font-black uppercase tracking-wide text-slate-700">
-                  {bondTypeB} (B)
-                </TableHead>
-                <TableHead className="h-12 px-6 text-right text-[11px] font-black uppercase tracking-wide text-slate-600">
-                  {higherColumnLabel}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {Array.from({ length: maxLen }).map((_, i) => {
-                const valA = resultsA.timeline[i]?.nominalValueAfterInterest;
-                const valB = resultsB.timeline[i]?.nominalValueAfterInterest;
-                const higherScenario =
-                  valA !== undefined && valB !== undefined
-                    ? valA === valB
-                      ? null
-                      : valA > valB
-                        ? 'A'
-                        : 'B'
-                    : valA !== undefined
-                      ? 'A'
-                      : valB !== undefined
-                        ? 'B'
-                        : null;
+        <div className="px-6">
+          <div className="rounded-2xl border border-slate-200 bg-white">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-600">
+              <p>
+                {language === 'pl'
+                  ? 'Tabela potwierdza, gdzie dany scenariusz prowadzi w konkretnym okresie.'
+                  : 'The table confirms which scenario is ahead in a specific period.'}
+              </p>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                {maxLen} {language === 'pl' ? 'wierszy osi czasu' : 'timeline rows'}
+              </p>
+            </div>
 
-                return (
-                  <TableRow key={i} className="transition-colors hover:bg-slate-50/80">
-                    <TableCell className="px-6 py-4 font-bold text-slate-900">
-                      Y{i + 1}
-                    </TableCell>
-                    <TableCell
-                      className={cn(
-                        'px-4 py-4 font-mono text-sm',
-                        higherScenario === 'A'
-                          ? 'font-bold text-slate-900'
-                          : 'text-slate-600',
-                      )}
-                    >
-                      {valA ? formatCurrency(valA) : '---'}
-                    </TableCell>
-                    <TableCell
-                      className={cn(
-                        'px-4 py-4 font-mono text-sm',
-                        higherScenario === 'B'
-                          ? 'font-bold text-slate-900'
-                          : 'text-slate-600',
-                      )}
-                    >
-                      {valB ? formatCurrency(valB) : '---'}
-                    </TableCell>
-                    <TableCell className="px-6 py-4 text-right">
-                      {higherScenario ? (
-                        <Badge
-                          variant="outline"
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader className="bg-white">
+                  <TableRow className="border-b hover:bg-transparent">
+                    <TableHead className="sticky left-0 z-10 h-12 w-24 bg-white px-6 text-[11px] font-black uppercase tracking-wide text-slate-600">
+                      {t('common.year')}
+                    </TableHead>
+                    <TableHead className="h-12 px-4 text-[11px] font-black uppercase tracking-wide text-slate-700">
+                      {bondTypeA} (A)
+                    </TableHead>
+                    <TableHead className="h-12 px-4 text-[11px] font-black uppercase tracking-wide text-slate-700">
+                      {bondTypeB} (B)
+                    </TableHead>
+                    <TableHead className="h-12 px-6 text-right text-[11px] font-black uppercase tracking-wide text-slate-600">
+                      {higherColumnLabel}
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Array.from({ length: maxLen }).map((_, i) => {
+                    const valA = resultsA.timeline[i]?.nominalValueAfterInterest;
+                    const valB = resultsB.timeline[i]?.nominalValueAfterInterest;
+                    const higherScenario =
+                      valA !== undefined && valB !== undefined
+                        ? valA === valB
+                          ? null
+                          : valA > valB
+                            ? 'A'
+                            : 'B'
+                        : valA !== undefined
+                          ? 'A'
+                          : valB !== undefined
+                            ? 'B'
+                            : null;
+
+                    return (
+                      <TableRow key={i} className="transition-colors odd:bg-slate-50/30 hover:bg-slate-50/80">
+                        <TableCell className="sticky left-0 z-10 bg-inherit px-6 py-4 font-bold text-slate-900">
+                          {language === 'pl' ? `Rok ${i + 1}` : `Year ${i + 1}`}
+                        </TableCell>
+                        <TableCell
                           className={cn(
-                            'border px-3 py-0.5 text-[10px] font-black uppercase tracking-wide',
+                            'px-4 py-4 font-mono text-sm',
                             higherScenario === 'A'
-                              ? 'border-blue-200 bg-blue-50 text-blue-800'
-                              : 'border-emerald-200 bg-emerald-50 text-emerald-800',
+                              ? 'font-bold text-slate-900'
+                              : 'text-slate-600',
                           )}
                         >
-                          {higherScenario === 'A' ? bondTypeA : bondTypeB} {higherBadgeSuffix}
-                        </Badge>
-                      ) : (
-                        <span className="text-xs font-semibold text-slate-500">{tieLabel}</span>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
+                          {valA ? formatCurrency(valA) : '---'}
+                        </TableCell>
+                        <TableCell
+                          className={cn(
+                            'px-4 py-4 font-mono text-sm',
+                            higherScenario === 'B'
+                              ? 'font-bold text-slate-900'
+                              : 'text-slate-600',
+                          )}
+                        >
+                          {valB ? formatCurrency(valB) : '---'}
+                        </TableCell>
+                        <TableCell className="px-6 py-4 text-right">
+                          {higherScenario ? (
+                            <Badge
+                              variant="outline"
+                              className={cn(
+                                'border px-3 py-0.5 text-[10px] font-black uppercase tracking-wide',
+                                higherScenario === 'A'
+                                  ? 'border-blue-200 bg-blue-50 text-blue-800'
+                                  : 'border-emerald-200 bg-emerald-50 text-emerald-800',
+                              )}
+                            >
+                              {higherScenario === 'A' ? bondTypeA : bondTypeB} {higherBadgeSuffix}
+                            </Badge>
+                          ) : (
+                            <span className="text-xs font-semibold text-slate-500">{tieLabel}</span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
         </div>
 
         <div className="border-t bg-slate-50/70 px-6 py-4 text-sm leading-6 text-slate-600">

@@ -21,13 +21,13 @@ const statusConfig: Record<
   }
 > = {
   trusted: {
-    label: 'Core',
+    label: 'Main tool',
     icon: CheckCircle2,
     noticeClassName: 'border-emerald-200 bg-emerald-50/70 text-emerald-950',
     pillClassName: 'border-emerald-200 bg-emerald-50 text-emerald-800',
   },
   conditional: {
-    label: 'Conditional',
+    label: 'Next step',
     icon: Info,
     noticeClassName: 'border-blue-200 bg-blue-50/70 text-blue-950',
     pillClassName: 'border-blue-200 bg-blue-50 text-blue-800',
@@ -39,7 +39,7 @@ const statusConfig: Record<
     pillClassName: 'border-amber-200 bg-amber-50 text-amber-800',
   },
   limited: {
-    label: 'Limited',
+    label: 'Limited scope',
     icon: AlertTriangle,
     noticeClassName: 'border-orange-200 bg-orange-50/70 text-orange-950',
     pillClassName: 'border-orange-200 bg-orange-50 text-orange-800',
