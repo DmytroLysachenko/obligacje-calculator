@@ -114,6 +114,11 @@
     color: var(--color-foreground);
     font-size: 16px;
     line-height: 1.6;
+    background-image:
+      radial-gradient(circle at top left, rgba(226, 232, 240, 0.32), transparent 22%),
+      radial-gradient(circle at top right, rgba(191, 219, 254, 0.18), transparent 18%),
+      linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(248, 250, 252, 0.96) 100%);
+    background-attachment: fixed;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);

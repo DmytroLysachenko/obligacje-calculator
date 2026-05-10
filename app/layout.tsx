@@ -111,14 +111,14 @@ export default async function RootLayout({
                   <div className="flex min-h-screen">
                     <Sidebar dataFreshness={dataFreshness} />
                     <OpportunisticSyncTrigger />
-                    <main className="flex min-h-screen flex-1 flex-col overflow-x-hidden border-l lg:pl-72">
-                      <div className="flex-1 p-4 md:p-8">
-                        <div className="container mx-auto max-w-7xl">
+                    <main className="flex min-h-screen flex-1 flex-col overflow-x-hidden border-l border-slate-200/70 bg-[radial-gradient(circle_at_top_left,rgba(226,232,240,0.35),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(248,250,252,0.98)_100%)] lg:pl-[22rem]">
+                      <div className="flex-1 px-4 py-4 md:px-8 md:py-8">
+                        <div className="container mx-auto max-w-[1320px]">
                           {children}
                         </div>
                       </div>
 
-                      <footer className="mt-auto border-t bg-muted/50 py-8">
+                      <footer className="mt-auto border-t border-slate-200/70 bg-white/70 py-8 backdrop-blur">
                         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
                           <p>
                             © {new Date().getFullYear()} {t('common.title')}.{' '}

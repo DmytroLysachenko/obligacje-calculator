@@ -8,12 +8,11 @@ import {
   BookOpen,
   Calculator,
   ChevronRight,
-  Languages,
-  Layers,
   Menu,
   Scale,
   TrendingUp,
   Wallet,
+  Layers,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -87,40 +86,42 @@ function getFreshnessClass(freshness: CalculationDataFreshness) {
 }
 
 function SidebarUtilityRow({
-  icon,
   label,
   value,
   badge,
+  compact = false,
   children,
 }: {
-  icon: React.ComponentType<{ className?: string }>;
   label: string;
   value?: string;
   badge?: React.ReactNode;
+  compact?: boolean;
   children?: React.ReactNode;
 }) {
-  const Icon = icon;
-
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white/88 px-3 py-2.5 backdrop-blur">
-      <div className="flex items-start gap-3">
-        <div className="rounded-xl bg-slate-100 p-1.5 text-slate-700">
-          <Icon className="h-3.5 w-3.5" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
-                {label}
-              </p>
-              {value ? (
-                <p className="mt-0.5 text-xs font-medium text-slate-900">{value}</p>
-              ) : null}
-            </div>
-            {badge ? <div className="shrink-0">{badge}</div> : null}
+    <div
+      className={cn(
+        'rounded-2xl border border-slate-200 bg-white/92 backdrop-blur',
+        compact ? 'px-3 py-2' : 'px-3 py-2.5',
+      )}
+    >
+      <div className="min-w-0">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+              {label}
+            </p>
+            {value ? (
+              <p className="mt-0.5 text-xs font-semibold text-slate-900">{value}</p>
+            ) : null}
           </div>
-          {children ? <div className="mt-1.5">{children}</div> : null}
+          {badge ? <div className="shrink-0">{badge}</div> : null}
         </div>
+        {children ? (
+          <div className={cn('mt-1.5', compact && 'mt-1')}>
+            {children}
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -135,29 +136,31 @@ function NavLinkItem({
   isActive: boolean;
   onItemClick?: () => void;
 }) {
+  const Icon = item.icon;
+
   return (
     <Link
       href={item.href}
       onClick={onItemClick}
       className={cn(
-        'group block rounded-2xl border px-3 py-3 transition-colors',
+        'group block rounded-[1.35rem] border px-3 py-3 transition-all',
         isActive
-          ? 'border-slate-900 bg-slate-900 text-white shadow-sm'
-          : 'border-slate-200 bg-white text-slate-900 hover:border-slate-300 hover:bg-slate-50',
+          ? 'border-slate-900 bg-slate-900 text-white shadow-sm shadow-slate-900/10'
+          : 'border-slate-200/90 bg-white/92 text-slate-900 hover:border-slate-300 hover:bg-white',
       )}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex min-w-0 items-center gap-3">
         <div
           className={cn(
             'rounded-xl p-2',
             isActive ? 'bg-white/12 text-white' : 'bg-slate-100 text-slate-700',
           )}
         >
-          <item.icon className="h-4 w-4" />
+          <Icon className="h-4 w-4" />
         </div>
 
-        <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
-          <p className="pr-2 text-sm font-black leading-5 tracking-tight whitespace-normal">
+        <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
+          <p className="min-w-0 text-[14px] font-black leading-5 tracking-tight">
             {item.label}
           </p>
           <ChevronRight
@@ -227,15 +230,15 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
   ];
 
   return (
-    <div className="flex h-full flex-col border-r bg-slate-50 text-slate-900">
-      <div className="border-b border-slate-200 px-6 py-6">
+    <div className="flex h-full flex-col border-r border-slate-200 bg-[linear-gradient(180deg,rgba(248,250,252,0.98)_0%,rgba(241,245,249,0.96)_100%)] text-slate-900">
+      <div className="border-b border-slate-200/80 px-6 py-6">
         <Link href="/" className="flex items-center gap-3">
-          <div className="rounded-2xl bg-slate-900 p-2.5 text-white">
+          <div className="rounded-2xl bg-slate-900 p-2.5 text-white shadow-sm shadow-slate-900/10">
             <TrendingUp className="h-5 w-5" />
           </div>
-          <div className="space-y-1">
-            <p className="text-2xl font-bold tracking-tight">{t('common.title')}</p>
-            <p className="text-xs leading-6 text-slate-500">
+          <div className="min-w-0 space-y-1">
+            <p className="text-[2rem] font-bold tracking-tight">{t('common.title')}</p>
+            <p className="max-w-[14rem] text-[11px] leading-5 text-slate-500">
               {language === 'pl'
                 ? 'Najpierw glowny kalkulator, potem reszta.'
                 : 'Use the core calculator first.'}
@@ -244,10 +247,10 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
         </Link>
       </div>
 
-      <nav className="custom-scrollbar flex-1 space-y-7 overflow-y-auto px-4 py-5">
+      <nav className="custom-scrollbar flex-1 space-y-6 overflow-y-auto px-4 py-5">
         {navSections.map((section) => (
-          <div key={section.label} className="space-y-3">
-            <p className="px-2 text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
+          <div key={section.label} className="space-y-2.5">
+            <p className="px-2 text-[10px] font-black uppercase tracking-[0.24em] text-slate-500">
               {section.label}
             </p>
             <div className="space-y-2">
@@ -264,13 +267,18 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
         ))}
       </nav>
 
-      <div className="space-y-2 border-t border-slate-200 bg-slate-100/55 p-3">
-        <SidebarUtilityRow icon={Languages} label={t('common.language')}>
+      <div className="space-y-2 border-t border-slate-200/80 bg-white/55 p-3">
+        <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white/92 px-3 py-2 backdrop-blur">
+          <div className="min-w-0">
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+              {t('common.language')}
+            </p>
+            <p className="mt-0.5 text-[11px] text-slate-500">PL / EN</p>
+          </div>
           <LanguageSwitcher />
-        </SidebarUtilityRow>
+        </div>
 
         <SidebarUtilityRow
-          icon={TrendingUp}
           label={t('common.sync_data')}
           value={
             dataFreshness
@@ -291,6 +299,7 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
               </span>
             ) : null
           }
+          compact
         >
           {dataFreshness ? (
             <span className="text-[11px] leading-5 text-slate-600">
@@ -303,7 +312,7 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
           )}
         </SidebarUtilityRow>
 
-        <div className="px-2 pt-1 text-[11px] text-slate-500">
+        <div className="px-1 pt-1 text-[11px] text-slate-500">
           © {new Date().getFullYear()} {t('common.title')}
         </div>
       </div>
@@ -332,7 +341,7 @@ export function Sidebar({
               <span className="sr-only">Toggle menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-80 border-none p-0">
+          <SheetContent side="left" className="w-[22rem] border-none p-0">
             <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
             <SidebarContent
               onItemClick={() => setIsOpen(false)}
@@ -342,7 +351,7 @@ export function Sidebar({
         </Sheet>
       </div>
 
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-80 border-r bg-white lg:block">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[22rem] border-r bg-white lg:block">
         <SidebarContent dataFreshness={dataFreshness} />
       </aside>
     </>
