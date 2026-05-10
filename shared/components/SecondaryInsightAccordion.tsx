@@ -37,7 +37,7 @@ export function SecondaryInsightAccordion({
     >
       <AccordionItem
         value="content"
-        className="rounded-[2rem] border border-slate-200 bg-white shadow-none"
+        className="surface-panel rounded-[2rem]"
       >
         <AccordionTrigger className="rounded-[2rem] px-5 py-5 hover:no-underline md:px-6">
           <div className="flex min-w-0 flex-1 items-start justify-between gap-4 pr-4 text-left">
@@ -50,7 +50,7 @@ export function SecondaryInsightAccordion({
               </p>
             </div>
             {badge ? (
-              <span className="mt-0.5 inline-flex shrink-0 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+              <span className="surface-chip mt-0.5 shrink-0 px-2.5 py-1 text-slate-500">
                 {badge}
               </span>
             ) : null}

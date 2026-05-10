@@ -139,6 +139,21 @@
   .glass-card {
     @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-xl;
   }
+  .surface-shell {
+    @apply border border-slate-200/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(248,250,252,0.92))] shadow-[0_22px_60px_-48px_rgba(15,23,42,0.38)] backdrop-blur;
+  }
+  .surface-panel {
+    @apply rounded-[2rem] border border-slate-200/80 bg-white/90 shadow-[0_18px_46px_-40px_rgba(15,23,42,0.22)] backdrop-blur;
+  }
+  .surface-soft {
+    @apply rounded-[1.75rem] border border-slate-200/80 bg-slate-50/88 shadow-none;
+  }
+  .surface-inset {
+    @apply rounded-2xl border border-slate-200/80 bg-slate-50/86;
+  }
+  .surface-chip {
+    @apply inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/82 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700;
+  }
   .animate-in-fade {
     @apply animate-in fade-in duration-700;
   }

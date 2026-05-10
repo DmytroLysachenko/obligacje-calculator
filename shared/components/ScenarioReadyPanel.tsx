@@ -22,7 +22,7 @@ interface ScenarioReadyPanelProps {
 
 function ReadyStepCard({ title, description }: ReadyStepItem) {
   return (
-    <Card className="rounded-[1.75rem] border border-slate-200 bg-slate-50 shadow-none">
+    <Card className="surface-soft rounded-[1.75rem]">
       <CardContent className="space-y-2 p-5">
         <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
           {title}
@@ -43,10 +43,10 @@ export function ScenarioReadyPanel({
   footerText,
 }: ScenarioReadyPanelProps) {
   return (
-    <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
+    <Card className="surface-panel rounded-[2rem]">
       <CardContent className="space-y-5 p-5 md:p-8">
         <div className="space-y-3">
-          <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
+          <div className="surface-chip">
             <TrendingUp className="h-3.5 w-3.5 text-primary" />
             {badge}
           </div>

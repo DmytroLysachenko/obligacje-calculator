@@ -101,7 +101,7 @@ function SidebarUtilityRow({
   return (
     <div
       className={cn(
-        'rounded-2xl border border-slate-200 bg-white/92 backdrop-blur',
+        'surface-panel rounded-2xl',
         compact ? 'px-3 py-2' : 'px-3 py-2.5',
       )}
     >
@@ -146,7 +146,7 @@ function NavLinkItem({
         'group block rounded-[1.35rem] border px-3 py-3 transition-all',
         isActive
           ? 'border-slate-900 bg-slate-900 text-white shadow-sm shadow-slate-900/10'
-          : 'border-slate-200/90 bg-white/92 text-slate-900 hover:border-slate-300 hover:bg-white',
+          : 'border-slate-200/80 bg-white/90 text-slate-900 hover:border-slate-300 hover:bg-white',
       )}
     >
       <div className="flex min-w-0 items-center gap-3">
@@ -268,7 +268,7 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
       </nav>
 
       <div className="space-y-2 border-t border-slate-200/80 bg-white/55 p-3">
-        <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white/92 px-3 py-2 backdrop-blur">
+        <div className="surface-panel flex items-center justify-between rounded-2xl px-3 py-2">
           <div className="min-w-0">
             <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
               {t('common.language')}

@@ -88,7 +88,7 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
 
   return (
     <div className="space-y-8 pb-20" onKeyDown={onKeyDown}>
-      <header className="space-y-4 rounded-[1.9rem] border bg-card px-5 py-5 shadow-sm md:space-y-5 md:rounded-3xl md:px-8 md:py-6">
+      <header className="surface-shell space-y-4 rounded-[1.9rem] px-5 py-5 md:space-y-5 md:rounded-3xl md:px-8 md:py-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-3xl space-y-3 md:space-y-4">
             <div className="flex items-start gap-3 md:items-center md:gap-4">
@@ -139,7 +139,7 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
       </header>
 
       {savingsGoal && hasResults ? (
-        <Card className="rounded-[1.6rem] border bg-slate-50 shadow-none md:rounded-2xl">
+        <Card className="surface-soft rounded-[1.6rem] md:rounded-2xl">
           <CardContent className="space-y-4 p-5">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div className="flex items-center gap-2">

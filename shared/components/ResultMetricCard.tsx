@@ -19,7 +19,7 @@ export function ResultMetricCard({
   className,
 }: ResultMetricCardProps) {
   return (
-    <div className={cn('rounded-3xl border border-slate-200 bg-white px-5 py-4', className)}>
+    <div className={cn('surface-panel rounded-3xl px-5 py-4', className)}>
       <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
         {label}
       </p>

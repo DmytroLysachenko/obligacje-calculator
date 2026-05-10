@@ -93,7 +93,7 @@ export function FeatureStatusNotice({
   return (
     <div
       className={cn(
-        'rounded-[1.8rem] border px-5 py-4 shadow-none',
+        'surface-panel rounded-[1.8rem] px-5 py-4',
         config.noticeClassName,
         className,
       )}
@@ -103,7 +103,7 @@ export function FeatureStatusNotice({
         <div className="min-w-0 space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             {eyebrow ? (
-              <span className="text-[10px] font-black uppercase tracking-[0.18em] text-current/70">
+              <span className="text-[10px] font-black uppercase tracking-[0.18em] text-current/65">
                 {eyebrow}
               </span>
             ) : null}

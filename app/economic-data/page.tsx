@@ -92,7 +92,7 @@ function ReferenceMetric({
   value: string;
 }) {
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white px-5 py-4">
+    <div className="surface-panel rounded-3xl px-5 py-4">
       <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
         {label}
       </p>
@@ -135,7 +135,7 @@ function SeriesStatusCard({
   return (
     <Card
       className={cn(
-        'rounded-[2rem] border shadow-none',
+        'surface-panel rounded-[2rem]',
         state.tone === 'warning'
           ? 'border-amber-200 bg-amber-50/70'
           : 'border-slate-200 bg-white',
@@ -290,7 +290,7 @@ export default function EconomicDataPage() {
           </div>
 
           <aside className="space-y-6">
-            <Card className="rounded-[2rem] border border-slate-200 bg-white/92 shadow-none">
+            <Card className="surface-panel rounded-[2rem]">
               <CardContent className="space-y-4 p-6">
                 <div className="flex items-center gap-2">
                   <ShieldAlert className="h-4 w-4 text-primary" />

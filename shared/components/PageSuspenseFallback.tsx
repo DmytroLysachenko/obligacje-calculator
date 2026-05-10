@@ -27,11 +27,11 @@ export function PageSuspenseFallback({
           <Skeleton className="h-4 w-full max-w-2xl rounded-xl" />
           <Skeleton className="h-4 w-full max-w-xl rounded-xl" />
         </div>
-        <Skeleton className="h-[200px] w-full rounded-[1.8rem] md:h-[220px] md:rounded-3xl" />
-        <Skeleton className="h-[320px] w-full rounded-[1.8rem] md:h-[420px] md:rounded-3xl" />
+        <Skeleton className="surface-panel h-[200px] w-full md:h-[220px] md:rounded-3xl" />
+        <Skeleton className="surface-panel h-[320px] w-full md:h-[420px] md:rounded-3xl" />
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <Skeleton className="h-[160px] w-full rounded-[1.6rem] md:h-[180px] md:rounded-2xl" />
-          <Skeleton className="h-[160px] w-full rounded-[1.6rem] md:h-[180px] md:rounded-2xl" />
+          <Skeleton className="surface-soft h-[160px] w-full md:h-[180px] md:rounded-2xl" />
+          <Skeleton className="surface-soft h-[160px] w-full md:h-[180px] md:rounded-2xl" />
         </div>
       </div>
     </div>

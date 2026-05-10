@@ -32,7 +32,7 @@ type ToolItem = {
 function HomeToolCard({ item }: { item: ToolItem }) {
   return (
     <Link href={item.href} className="block h-full">
-      <Card className="group h-full overflow-hidden rounded-[2rem] border border-white/70 bg-white/80 shadow-[0_24px_60px_-40px_rgba(15,23,42,0.45)] backdrop-blur transition-all hover:-translate-y-0.5 hover:border-white hover:shadow-[0_24px_70px_-36px_rgba(15,23,42,0.5)]">
+      <Card className="surface-panel group h-full overflow-hidden rounded-[2rem] transition-all hover:-translate-y-0.5 hover:border-white hover:shadow-[0_24px_70px_-36px_rgba(15,23,42,0.34)]">
         <CardContent className="relative flex h-full flex-col gap-5 p-6">
           <div
             className={item.tone}
@@ -64,7 +64,7 @@ function HomeStep({
   description: string;
 }) {
   return (
-    <div className="rounded-[1.75rem] border border-white/70 bg-white/72 p-5 shadow-[0_16px_44px_-34px_rgba(15,23,42,0.45)] backdrop-blur">
+    <div className="surface-panel rounded-[1.75rem] p-5">
       <div className="flex items-start gap-3">
         <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-sky-700" />
         <div className="space-y-2">
@@ -238,13 +238,13 @@ export function LandingDashboardClient() {
 
   return (
     <div className="space-y-8 pb-20 md:space-y-10">
-      <section className="relative overflow-hidden rounded-[2rem] border border-slate-200/70 bg-[linear-gradient(135deg,#f8fafc_0%,#f0f9ff_34%,#eef2ff_62%,#ffffff_100%)] px-5 py-7 shadow-[0_30px_90px_-55px_rgba(15,23,42,0.45)] md:rounded-[2.5rem] md:px-8 md:py-10">
+      <section className="surface-shell relative overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#f8fafc_0%,#f0f9ff_34%,#eef2ff_62%,#ffffff_100%)] px-5 py-7 md:rounded-[2.5rem] md:px-8 md:py-10">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.15),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(99,102,241,0.12),transparent_30%)]" />
         <div className="absolute -right-12 top-10 h-48 w-48 rounded-full bg-sky-200/30 blur-3xl" />
         <div className="absolute bottom-0 left-10 h-36 w-36 rounded-full bg-indigo-200/25 blur-3xl" />
 
         <div className="relative max-w-5xl space-y-5 md:space-y-6">
-          <p className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/70 px-3 py-1 text-[11px] font-black uppercase tracking-[0.24em] text-slate-600 backdrop-blur">
+          <p className="surface-chip text-[11px] tracking-[0.24em] text-slate-600">
             <Sparkles className="h-3.5 w-3.5 text-sky-700" />
             {t('landing.recovery_home.eyebrow')}
           </p>
@@ -310,7 +310,7 @@ export function LandingDashboardClient() {
           title={savedScenarioTitle}
           description={t('landing.recovery_home.portfolio_empty_desc')}
         />
-        <Card className="overflow-hidden rounded-[2rem] border border-slate-200/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.88),rgba(248,250,252,0.92))] shadow-[0_22px_60px_-48px_rgba(15,23,42,0.45)] backdrop-blur">
+        <Card className="surface-shell overflow-hidden rounded-[2rem]">
           <CardContent className="space-y-4 p-6">
             {savedScenarioNames.length === 0 ? (
               <p className="max-w-3xl text-sm leading-7 text-slate-600">
@@ -321,7 +321,7 @@ export function LandingDashboardClient() {
                 {savedScenarioNames.map((name) => (
                   <div
                     key={name}
-                    className="rounded-2xl border border-white/80 bg-white/75 px-4 py-3 text-sm font-semibold text-slate-900 shadow-[0_14px_30px_-26px_rgba(15,23,42,0.4)] backdrop-blur"
+                    className="surface-panel rounded-2xl px-4 py-3 text-sm font-semibold text-slate-900"
                   >
                     {name}
                   </div>
