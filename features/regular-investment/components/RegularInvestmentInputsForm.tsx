@@ -64,6 +64,7 @@ import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 import { getHorizonMonths, toDateString } from '@/shared/lib/date-timing';
+import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 
 interface RegularInvestmentInputsFormProps {
   inputs: RegularInvestmentInputs;
@@ -738,9 +739,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
               <div className="flex justify-between">
                 <span>{t('bonds.duration')}:</span>
                 <span className="font-bold">
-                  {inputs.duration < 1
-                    ? `${inputs.duration * 12} ${t('comparison.month')}`
-                    : `${inputs.duration} ${t('common.years')}`}
+                  {formatBondDuration(inputs.duration, language)}
                 </span>
               </div>
               <div className="flex justify-between">

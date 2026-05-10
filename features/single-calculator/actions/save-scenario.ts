@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { db } from "@/db";
 import { userPortfolios, userInvestmentLots } from "@/db/schema";
 import { BondInputs } from "@/features/bond-core/types";
+import { formatBondDuration } from "@/shared/lib/format-bond-duration";
 import { eq } from "drizzle-orm";
 
 export async function saveBondScenario(inputs: BondInputs) {
@@ -33,7 +34,7 @@ export async function saveBondScenario(inputs: BondInputs) {
     purchaseDate: new Date(inputs.purchaseDate).toISOString().split('T')[0],
     amount: inputs.initialInvestment.toString(),
     isRebought: inputs.isRebought,
-    notes: `Duration: ${inputs.duration}Y. Target: ${inputs.savingsGoal || 'None'}`,
+    notes: `Duration: ${formatBondDuration(inputs.duration, 'en')}. Target: ${inputs.savingsGoal || 'None'}`,
   }).returning();
 
   return { success: true, lot };

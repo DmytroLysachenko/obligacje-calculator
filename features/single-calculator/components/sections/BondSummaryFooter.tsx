@@ -9,6 +9,7 @@ import { BondInputs } from '@/features/bond-core/types';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { useLanguage } from '@/i18n';
 import { GLOSSARY } from '@/shared/constants/glossary';
+import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 
 interface BondSummaryFooterProps {
   inputs: BondInputs;
@@ -32,7 +33,7 @@ export const BondSummaryFooter: React.FC<BondSummaryFooterProps> = React.memo(({
         <div className="flex justify-between">
           <span>{t('bonds.duration')}:</span>
           <span className="font-bold">
-            {inputs.duration < 1 ? `${inputs.duration * 12} ${t('comparison.month')}` : `${inputs.duration} ${t('common.years')}`}
+            {formatBondDuration(inputs.duration, language)}
           </span>
         </div>
         <div className="flex justify-between">

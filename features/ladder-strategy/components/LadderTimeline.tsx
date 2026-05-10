@@ -1,12 +1,8 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { RegularInvestmentResult } from '../../bond-core/types';
-import { useLanguage } from '@/i18n';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { format, parseISO } from 'date-fns';
-import { pl, enGB } from 'date-fns/locale';
+import { enGB, pl } from 'date-fns/locale';
 import {
   Bar,
   BarChart,
@@ -17,8 +13,13 @@ import {
   YAxis,
 } from 'recharts';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
-import { Calendar, Coins, TrendingUp } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { RegularInvestmentResult } from '../../bond-core/types';
+import { useLanguage } from '@/i18n';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
+import { ResultMetricCard } from '@/shared/components/ResultMetricCard';
+import { ResultSummaryHero } from '@/shared/components/ResultSummaryHero';
 
 interface LadderTimelineProps {
   results: RegularInvestmentResult;
@@ -69,7 +70,8 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
       ? chartData.reduce((accumulator, item) => accumulator + item.amount, 0) / chartData.length
       : 0;
 
-  const monthlyContribution = results.lots.length > 0 ? results.totalInvested / results.lots.length : 0;
+  const monthlyContribution =
+    results.lots.length > 0 ? results.totalInvested / results.lots.length : 0;
   const monthlySpreadGap = averageMaturityValue - monthlyContribution;
   const peakMonth = chartData.reduce<MaturityBucket | null>(
     (currentPeak, item) => (!currentPeak || item.amount > currentPeak.amount ? item : currentPeak),
@@ -82,83 +84,74 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
 
   return (
     <div className="space-y-6">
-      <Card className="rounded-2xl border shadow-none">
-        <CardContent className="flex flex-col gap-4 p-5 lg:flex-row lg:items-start lg:justify-between">
-          <div className="max-w-2xl space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-wide text-slate-700">
-                Ladder summary
-              </span>
-            </div>
-            <CardTitle className="text-2xl font-black text-slate-900">
-              {peakMonth ? peakMonth.displayDate : 'No maturity window'}
-            </CardTitle>
-            <CardDescription className="max-w-2xl text-sm leading-6 text-slate-600">
-              Peak maturity month first. Then read the coverage window and concentration check to see whether
-              cash returns are spread evenly or clustered too tightly.
-            </CardDescription>
-          </div>
+      <ResultSummaryHero
+        eyebrow={language === 'pl' ? 'Podsumowanie drabiny' : 'Ladder summary'}
+        value={
+          peakMonth
+            ? peakMonth.displayDate
+            : language === 'pl'
+              ? 'Brak okna zapadalnosci'
+              : 'No maturity window'
+        }
+        description={
+          language === 'pl'
+            ? 'Najpierw sprawdz miesiac szczytowej zapadalnosci. Potem przeczytaj zakres i kontrole koncentracji, aby ocenic czy zwroty gotowki sa rozlozone rowno.'
+            : 'Peak maturity month first. Then read the coverage window and concentration check to see whether cash returns are spread evenly or clustered too tightly.'
+        }
+        narrative={
+          language === 'pl'
+            ? 'Drabina nie jest tylko o wyniku koncowym. Liczy sie to, kiedy i jak gesto wraca gotowka.'
+            : 'A ladder is not only about the final outcome. It is about when and how densely cash returns.'
+        }
+        aside={
           <div className="rounded-2xl border bg-slate-50 px-4 py-3 text-sm text-slate-700">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-              Maturity buckets
+              {language === 'pl' ? 'Okna zapadalnosci' : 'Maturity buckets'}
             </p>
             <p className="mt-2 text-lg font-black text-slate-900">{chartData.length}</p>
           </div>
-        </CardContent>
-      </Card>
+        }
+      />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <Card className="rounded-2xl border shadow-none">
-          <CardContent className="space-y-2 p-5">
-            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-              <Coins className="h-4 w-4" />
-              Average maturity month
-            </p>
-            <p className="text-2xl font-semibold text-slate-900">
-              {formatCurrency(averageMaturityValue)}
-            </p>
-            <p className="text-sm leading-6 text-slate-600">
-              Average net cash that returns in each maturity month.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-2xl border shadow-none">
-          <CardContent className="space-y-2 p-5">
-            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-              <TrendingUp className="h-4 w-4" />
-              Average month vs contribution
-            </p>
-            <p className="text-2xl font-semibold text-slate-900">
-              {formatCurrency(monthlySpreadGap)}
-            </p>
-            <p className="text-sm leading-6 text-slate-600">
-              Positive values mean average maturity cash is above the typical lot contribution.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-2xl border shadow-none">
-          <CardContent className="space-y-2 p-5">
-            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-              <Calendar className="h-4 w-4" />
-              Ladder coverage
-            </p>
-            <p className="text-xl font-semibold text-slate-900">
-              {earliestMonth ? earliestMonth.displayDate : '-'} {latestMonth ? `- ${latestMonth.displayDate}` : ''}
-            </p>
-            <p className="text-sm leading-6 text-slate-600">
-              First and last maturity month visible in the current scenario.
-            </p>
-          </CardContent>
-        </Card>
+        <ResultMetricCard
+          label={language === 'pl' ? 'Sredni miesiac zapadalnosci' : 'Average maturity month'}
+          value={formatCurrency(averageMaturityValue)}
+          description={
+            language === 'pl'
+              ? 'Srednia kwota netto wracajaca w pojedynczym miesiacu zapadalnosci.'
+              : 'Average net cash that returns in each maturity month.'
+          }
+        />
+        <ResultMetricCard
+          label={language === 'pl' ? 'Sredni miesiac vs wplata' : 'Average month vs contribution'}
+          value={formatCurrency(monthlySpreadGap)}
+          description={
+            language === 'pl'
+              ? 'Dodatni wynik oznacza, ze przecietny miesiac zapadalnosci oddaje wiecej niz typowa partia.'
+              : 'Positive values mean average maturity cash is above the typical lot contribution.'
+          }
+        />
+        <ResultMetricCard
+          label={language === 'pl' ? 'Zakres drabiny' : 'Ladder coverage'}
+          value={`${earliestMonth ? earliestMonth.displayDate : '-'} ${latestMonth ? `- ${latestMonth.displayDate}` : ''}`}
+          description={
+            language === 'pl'
+              ? 'Pierwszy i ostatni miesiac zapadalnosci widoczny w biezacym scenariuszu.'
+              : 'First and last maturity month visible in the current scenario.'
+          }
+        />
       </div>
 
       <Card className="rounded-2xl border shadow-none">
         <CardHeader className="pb-4">
-          <CardTitle className="text-lg text-slate-900">Maturity schedule</CardTitle>
+          <CardTitle className="text-lg text-slate-900">
+            {language === 'pl' ? 'Harmonogram zapadalnosci' : 'Maturity schedule'}
+          </CardTitle>
           <CardDescription>
-            Use the chart for spacing, then confirm exact month totals in the table below.
+            {language === 'pl'
+              ? 'Uzyj wykresu do oceny rozkladu, a potem potwierdz dokladne sumy w tabeli.'
+              : 'Use the chart for spacing, then confirm exact month totals in the table below.'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -177,7 +170,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
                   cursor={{ fill: 'rgba(15, 23, 42, 0.05)' }}
                   formatter={(value: ValueType | undefined) => [
                     formatCurrency(Number(value ?? 0)),
-                    'Net value',
+                    language === 'pl' ? 'Wartosc netto' : 'Net value',
                   ]}
                   labelFormatter={(label) => `${label}`}
                 />
@@ -189,10 +182,10 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-slate-600">Month</TableHead>
-                <TableHead className="text-right text-slate-600">Lots maturing</TableHead>
-                <TableHead className="text-right text-slate-600">Net cash</TableHead>
-                <TableHead className="text-right text-slate-600">Share of timeline</TableHead>
+                <TableHead className="text-slate-600">{language === 'pl' ? 'Miesiac' : 'Month'}</TableHead>
+                <TableHead className="text-right text-slate-600">{language === 'pl' ? 'Zapadajace partie' : 'Lots maturing'}</TableHead>
+                <TableHead className="text-right text-slate-600">{language === 'pl' ? 'Gotowka netto' : 'Net cash'}</TableHead>
+                <TableHead className="text-right text-slate-600">{language === 'pl' ? 'Udzial osi czasu' : 'Share of timeline'}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -214,14 +207,15 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <div className="rounded-2xl border bg-slate-50/70 p-4 text-sm leading-6 text-slate-600">
               <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
-                Peak maturity month
+                {language === 'pl' ? 'Miesiac szczytowy' : 'Peak maturity month'}
               </p>
               <p className="mt-2 font-semibold text-slate-900">
                 {peakMonth ? `${peakMonth.displayDate} (${formatCurrency(peakMonth.amount)})` : '-'}
               </p>
               <p className="mt-2">
-                If most maturities cluster in one period, the ladder is less even than it looks from a
-                single top-line return number.
+                {language === 'pl'
+                  ? 'Jezeli wiekszosc zapadalnosci zbiera sie w jednym okresie, drabina jest mniej rowna niz sugeruje sam wynik koncowy.'
+                  : 'If most maturities cluster in one period, the ladder is less even than it looks from a single top-line return number.'}
               </p>
             </div>
 
@@ -239,25 +233,35 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
                     : 'text-[11px] font-bold uppercase tracking-wide text-emerald-800'
                 }
               >
-                Concentration check
+                {language === 'pl' ? 'Kontrola koncentracji' : 'Concentration check'}
               </p>
               <p className="mt-2 font-semibold">
-                {peakMonth ? `${peakShare.toFixed(1)}% of lots mature in ${peakMonth.displayDate}.` : 'No maturity concentration available.'}
+                {peakMonth
+                  ? `${peakShare.toFixed(1)}% ${language === 'pl' ? 'partii zapada w' : 'of lots mature in'} ${peakMonth.displayDate}.`
+                  : language === 'pl'
+                    ? 'Brak danych koncentracji.'
+                    : 'No maturity concentration available.'}
               </p>
               <p className="mt-2">
                 {peakShare >= 25
-                  ? 'This ladder is meaningfully clustered. Liquidity arrives in fewer windows than a smooth ladder would suggest.'
-                  : 'Maturities are reasonably spread across the current timeline.'}
+                  ? language === 'pl'
+                    ? 'Ta drabina jest wyraznie skupiona. Plynnosc wraca w mniejszej liczbie okien niz sugerowalaby gladka drabina.'
+                    : 'This ladder is meaningfully clustered. Liquidity arrives in fewer windows than a smooth ladder would suggest.'
+                  : language === 'pl'
+                    ? 'Zapadalnosci sa rozsadnie rozlozone w obecnej osi czasu.'
+                    : 'Maturities are reasonably spread across the current timeline.'}
               </p>
             </div>
           </div>
 
           <div className="rounded-2xl border bg-card p-4 text-sm leading-6 text-slate-600">
             <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
-              Reading order
+              {language === 'pl' ? 'Kolejnosc czytania' : 'Reading order'}
             </p>
             <p className="mt-2">
-              1. Check coverage. 2. Check peak month. 3. Check concentration. 4. Confirm exact month totals in the table.
+              {language === 'pl'
+                ? '1. Sprawdz zakres. 2. Sprawdz miesiac szczytowy. 3. Sprawdz koncentracje. 4. Potwierdz sumy miesieczne w tabeli.'
+                : '1. Check coverage. 2. Check peak month. 3. Check concentration. 4. Confirm exact month totals in the table.'}
             </p>
           </div>
         </CardContent>

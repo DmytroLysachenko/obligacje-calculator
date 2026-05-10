@@ -6,11 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { RegularInvestmentResult } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
-import { Calendar, FileSpreadsheet, TrendingUp, Wallet } from 'lucide-react';
+import { Calendar, FileSpreadsheet, Wallet } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
-import { Button } from '@/components/ui/button';
 import { convertLotsToCSV, downloadFile } from '@/shared/lib/csv-utils';
+import { ResultMetricCard } from '@/shared/components/ResultMetricCard';
+import { ResultSummaryHero } from '@/shared/components/ResultSummaryHero';
 
 interface RegularInvestmentResultsSummaryProps {
   results: RegularInvestmentResult;
@@ -50,32 +51,50 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
     {
       label: t('bonds.total_invested'),
       value: formatCurrency(results.totalInvested),
-      helper: 'Cash paid into the plan.',
+      helper:
+        language === 'pl'
+          ? 'Suma gotowki wplaconej do planu.'
+          : 'Cash paid into the plan.',
     },
     {
       label: t('bonds.final_nominal_value'),
       value: formatCurrency(results.finalNominalValue),
-      helper: 'Projected withdrawal value before inflation adjustment.',
+      helper:
+        language === 'pl'
+          ? 'Wartosc wyjscia przed korekta o inflacje.'
+          : 'Projected withdrawal value before inflation adjustment.',
     },
     {
       label: t('bonds.total_net_profit'),
       value: formatCurrency(results.totalProfit),
-      helper: 'Net gain after tax and early withdrawal fees.',
+      helper:
+        language === 'pl'
+          ? 'Zysk netto po podatku i oplatach.'
+          : 'Net gain after tax and early withdrawal fees.',
     },
     {
       label: t('bonds.real_value_inflation'),
       value: formatCurrency(results.finalRealValue),
-      helper: 'Inflation-adjusted purchasing power at the end date.',
+      helper:
+        language === 'pl'
+          ? 'Sila nabywcza na dacie koncowej.'
+          : 'Inflation-adjusted purchasing power at the end date.',
     },
     {
       label: t('bonds.real_cagr'),
       value: `${results.realAnnualizedReturn.toFixed(2)}%`,
-      helper: 'Annualized real return across the full plan.',
+      helper:
+        language === 'pl'
+          ? 'Srednioroczna realna stopa zwrotu.'
+          : 'Annualized real return across the full plan.',
     },
     {
       label: t('bonds.tax'),
       value: formatCurrency(results.totalTax),
-      helper: 'Total tax assumed in the scenario.',
+      helper:
+        language === 'pl'
+          ? 'Laczny podatek w tym scenariuszu.'
+          : 'Total tax assumed in the scenario.',
     },
   ];
 
@@ -128,49 +147,45 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
     };
 
     const csv = convertLotsToCSV(results.lots, headers);
-    downloadFile(csv, `regular_investment_${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
+    downloadFile(
+      csv,
+      `regular_investment_${new Date().toISOString().split('T')[0]}.csv`,
+      'text/csv',
+    );
   };
 
   return (
     <div className="space-y-6">
-      <Card className="rounded-2xl border shadow-none">
-        <CardContent className="flex flex-col gap-4 p-5 lg:flex-row lg:items-start lg:justify-between">
-          <div className="max-w-2xl space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge
-                variant="outline"
-                className="border-slate-200 bg-slate-50 text-[10px] font-black uppercase tracking-wide text-slate-700"
-              >
-                Scenario summary
-              </Badge>
-            </div>
-            <CardTitle className="text-2xl font-black text-slate-900">
-              {formatCurrency(results.finalNominalValue)}
-            </CardTitle>
-            <CardDescription className="max-w-2xl text-sm leading-6 text-slate-600">
-              Final projected value for the committed contribution plan. Review the summary cards first,
-              then inspect yearly buckets and recent lots only if you need more detail.
-            </CardDescription>
-          </div>
-
-          <Button variant="outline" size="sm" className="gap-2" onClick={handleExport}>
-            <FileSpreadsheet className="h-4 w-4" />
-            {t('comparison.export')}
-          </Button>
-        </CardContent>
-      </Card>
+      <ResultSummaryHero
+        eyebrow={language === 'pl' ? 'Podsumowanie planu' : 'Plan summary'}
+        value={formatCurrency(results.finalNominalValue)}
+        description={
+          language === 'pl'
+            ? 'To jest koncowa wartosc dla zatwierdzonego planu regularnych wplat. Najpierw przejrzyj karty podsumowania, a dopiero potem schodz do rocznikow i pojedynczych partii.'
+            : 'This is the final projected value for the committed recurring plan. Review the summary cards first, then inspect yearly buckets and recent lots only if you need more detail.'
+        }
+        narrative={
+          language === 'pl'
+            ? 'To jest scenariusz dla jednego typu obligacji i jednego rytmu wplat. Traktuj wynik jako test planu, a nie automatyczna rekomendacje.'
+            : 'This is a scenario for one bond family and one contribution cadence. Treat it as a plan test, not as an automatic recommendation.'
+        }
+        actions={[
+          {
+            label: t('comparison.export'),
+            icon: <FileSpreadsheet className="h-4 w-4" />,
+            onClick: handleExport,
+          },
+        ]}
+      />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {stats.map((stat) => (
-          <Card key={stat.label} className="rounded-2xl border shadow-none">
-            <CardContent className="space-y-2 p-5">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                {stat.label}
-              </p>
-              <p className="text-2xl font-semibold text-foreground">{stat.value}</p>
-              <p className="text-sm leading-6 text-muted-foreground">{stat.helper}</p>
-            </CardContent>
-          </Card>
+          <ResultMetricCard
+            key={stat.label}
+            label={stat.label}
+            value={stat.value}
+            description={stat.helper}
+          />
         ))}
       </div>
 
@@ -178,21 +193,25 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
         <Card className="rounded-2xl border shadow-none">
           <CardHeader className="flex flex-row items-start justify-between gap-4 pb-4">
             <div>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <TrendingUp className="h-5 w-5" />
-                Year-by-year build-up
+              <CardTitle className="text-lg font-black text-slate-900">
+                {language === 'pl' ? 'Budowa rok po roku' : 'Year-by-year build-up'}
               </CardTitle>
               <CardDescription>
-                Review how much capital each purchase year contributed to the final outcome.
+                {language === 'pl'
+                  ? 'Sprawdz, jak duzy udzial w wyniku koncowym mial kazdy rocznik zakupow.'
+                  : 'Review how much capital each purchase year contributed to the final outcome.'}
               </CardDescription>
             </div>
+            <Badge variant="outline" className="border-slate-200 bg-slate-50 text-[10px] font-black uppercase tracking-wide text-slate-700">
+              {language === 'pl' ? 'Roczniki' : 'Buckets'}
+            </Badge>
           </CardHeader>
           <CardContent className="px-0 pb-0">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Year</TableHead>
-                  <TableHead className="text-right">Lots</TableHead>
+                  <TableHead>{language === 'pl' ? 'Rok' : 'Year'}</TableHead>
+                  <TableHead className="text-right">{language === 'pl' ? 'Partie' : 'Lots'}</TableHead>
                   <TableHead className="text-right">{t('regular_summary.invested')}</TableHead>
                   <TableHead className="text-right">{t('regular_summary.interest')}</TableHead>
                   <TableHead className="text-right">{t('bonds.tax')}</TableHead>
@@ -223,12 +242,14 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
 
         <Card className="rounded-2xl border shadow-none">
           <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2 text-lg">
+            <CardTitle className="flex items-center gap-2 text-lg text-slate-900">
               <Calendar className="h-5 w-5" />
-              Recent lots
+              {language === 'pl' ? 'Ostatnie partie' : 'Recent lots'}
             </CardTitle>
             <CardDescription>
-              The latest purchases help verify timing, maturity dates, and per-lot net value.
+              {language === 'pl'
+                ? 'Ostatnie zakupy pomagaja skontrolowac czas wejscia, daty zapadalnosci i wartosc netto pojedynczych partii.'
+                : 'The latest purchases help verify timing, maturity dates, and per-lot net value.'}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -244,14 +265,17 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                         {format(parseISO(lot.purchaseDate), 'MMMM yyyy', { locale: dateLocale })}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        Matures {format(parseISO(lot.maturityDate), 'MMM yyyy', { locale: dateLocale })}
+                        {language === 'pl' ? 'Zapadalnosc' : 'Matures'}{' '}
+                        {format(parseISO(lot.maturityDate), 'MMM yyyy', { locale: dateLocale })}
                       </p>
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-semibold text-foreground">
                         {formatCurrency(lot.netValue)}
                       </p>
-                      <p className="text-xs text-muted-foreground">Net lot value</p>
+                      <p className="text-xs text-muted-foreground">
+                        {language === 'pl' ? 'Wartosc netto partii' : 'Net lot value'}
+                      </p>
                     </div>
                   </div>
                   <div className="mt-4 grid grid-cols-2 gap-3 text-sm md:grid-cols-4">
@@ -273,7 +297,9 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                       <p className="text-xs uppercase tracking-wide text-muted-foreground">
                         {t('bonds.tax')}
                       </p>
-                      <p className="mt-1 font-medium text-amber-700">{formatCurrency(lot.tax)}</p>
+                      <p className="mt-1 font-medium text-amber-700">
+                        {formatCurrency(lot.tax)}
+                      </p>
                     </div>
                     <div>
                       <p className="text-xs uppercase tracking-wide text-muted-foreground">
@@ -292,10 +318,13 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
               <div className="flex items-start gap-3">
                 <Wallet className="mt-0.5 h-5 w-5 text-primary" />
                 <div className="space-y-2">
-                  <p className="text-sm font-semibold text-foreground">How to read this page</p>
+                  <p className="text-sm font-semibold text-foreground">
+                    {language === 'pl' ? 'Jak czytac te partie' : 'How to read these lots'}
+                  </p>
                   <p className="text-sm leading-6 text-muted-foreground">
-                    This calculator assumes a repeating contribution schedule. Treat the output as a
-                    scenario test for one bond type, not a recommendation engine.
+                    {language === 'pl'
+                      ? 'Najpierw sprawdz karty podsumowania, potem roczniki, a pojedyncze partie traktuj jako kontrole czasu zakupu i zapadalnosci.'
+                      : 'Start with the summary cards, then yearly buckets, and use individual lots only to verify purchase timing and maturity dates.'}
                   </p>
                 </div>
               </div>

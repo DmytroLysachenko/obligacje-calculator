@@ -2,6 +2,7 @@ import { CalculationResult, BondInputs } from '../../bond-core/types';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { generateBrandedReport, ReportData } from '@/shared/lib/pdf-utils';
+import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 
 export function downloadCSV(results: CalculationResult, filename: string) {
   const headers = ['Period', 'Nominal Before Interest', 'Interest Earned', 'Net Interest', 'Tax Deducted', 'Real Value', 'Total Liquidation Value'];
@@ -60,6 +61,8 @@ export async function exportSimulationToPdf(
   t: (key: string) => string,
   formatCurrency: (val: number) => string
 ) {
+  const exportLanguage = t('common.years') === 'Lata' ? 'pl' : 'en';
+
   const data: ReportData = {
     title: `${t('bonds.single_calculator')} - ${inputs.bondType}`,
     subtitle: `${t('bonds.purchase_date')}: ${new Date(inputs.purchaseDate).toLocaleDateString()} - ${t('bonds.withdrawal_date')}: ${new Date(inputs.withdrawalDate).toLocaleDateString()}`,
@@ -82,7 +85,7 @@ export async function exportSimulationToPdf(
       { label: t('bonds.initial_investment'), value: formatCurrency(inputs.initialInvestment) },
       { label: t('bonds.purchase_date'), value: new Date(inputs.purchaseDate).toLocaleDateString() },
       { label: t('bonds.withdrawal_date'), value: new Date(inputs.withdrawalDate).toLocaleDateString() },
-      { label: t('bonds.duration'), value: `${inputs.duration} ${t('common.years')}` },
+      { label: t('bonds.duration'), value: formatBondDuration(inputs.duration, exportLanguage) },
       { label: t('bonds.inflation.scenario'), value: inputs.inflationScenario ? t(`bonds.inflation.scenarios.${inputs.inflationScenario}`) : `${inputs.expectedInflation}%` },
       { label: t('bonds.tax_rate'), value: `${inputs.taxRate}% (${t(`bonds.tax_${inputs.taxStrategy.toLowerCase()}`)})` },
       { label: t('bonds.margin'), value: `${inputs.margin}%` },

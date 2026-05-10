@@ -2,13 +2,13 @@
 
 import React from 'react';
 import { FileSpreadsheet, FileText, Info, Save } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { CalculationResult, BondInputs } from '../../bond-core/types';
+import { BondInputs, CalculationResult } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
-import { cn } from '@/lib/utils';
 import { convertTimelineToCSV, downloadFile } from '@/shared/lib/csv-utils';
 import { MathDeepDive } from '@/shared/components/MathDeepDive';
+import { ResultMetricCard } from '@/shared/components/ResultMetricCard';
+import { ResultSummaryHero } from '@/shared/components/ResultSummaryHero';
 import { CalculationAuditTrace } from './CalculationAuditTrace';
 
 interface BondResultsSummaryProps {
@@ -18,28 +18,6 @@ interface BondResultsSummaryProps {
   onSaveScenario?: () => void;
   onAddToNotebook?: () => void;
   onExportPDF?: () => void;
-}
-
-function ResultMetric({
-  label,
-  value,
-  description,
-  tone = 'text-slate-950',
-}: {
-  label: string;
-  value: string;
-  description: string;
-  tone?: string;
-}) {
-  return (
-    <div className="rounded-3xl border border-slate-200 bg-white px-5 py-4">
-      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
-        {label}
-      </p>
-      <p className={cn('mt-2 text-2xl font-black', tone)}>{value}</p>
-      <p className="mt-2 text-xs leading-6 text-slate-600">{description}</p>
-    </div>
-  );
 }
 
 function SectionBlock({
@@ -102,8 +80,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
     );
   };
 
-  const horizonLabel =
-    inputs.investmentHorizonMonths ?? Math.round(inputs.duration * 12);
+  const horizonLabel = inputs.investmentHorizonMonths ?? Math.round(inputs.duration * 12);
   const deltaNet = previousResults
     ? results.netPayoutValue - previousResults.netPayoutValue
     : null;
@@ -194,82 +171,51 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
           'Only after the headline result and chart should you drop into the per-period audit trace.',
         ];
 
+  const deltaText =
+    deltaNet !== null
+      ? `${language === 'pl' ? 'Wobec poprzedniego przebiegu:' : 'Vs previous run:'} ${deltaNet >= 0 ? '+' : ''}${formatCurrency(deltaNet)}`
+      : undefined;
+
   return (
     <div className="space-y-10">
-      <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-        <CardContent className="space-y-6 p-6 md:p-8">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
-                {language === 'pl' ? 'Podsumowanie scenariusza' : 'Scenario summary'}
-              </div>
-              <div className="space-y-2">
-                <h2 className="text-4xl font-black tracking-tight text-slate-950">
-                  {formatCurrency(results.netPayoutValue)}
-                </h2>
-                <p className="max-w-4xl text-sm leading-8 text-slate-600">
-                  {language === 'pl'
-                    ? 'To jest koncowa wyplata netto dla obecnie zatwierdzonego scenariusza. Zacznij od czterech metryk ponizej, dopiero potem wchodz w slady obliczen.'
-                    : 'This is the final net payout for the currently committed scenario. Start with the four metrics below, then go deeper only if you need detail.'}
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:w-[440px] lg:shrink-0">
-              <Button className="gap-2 text-xs font-bold" onClick={onSaveScenario}>
-                <Save className="h-4 w-4" />
-                Save
-              </Button>
-              <Button
-                variant="outline"
-                className="gap-2 border-slate-200 bg-white text-xs font-bold text-slate-700"
-                onClick={onAddToNotebook}
-              >
-                <Save className="h-4 w-4" />
-                Notebook
-              </Button>
-              <Button
-                variant="outline"
-                className="gap-2 border-slate-200 bg-white text-xs font-bold text-slate-700"
-                onClick={onExportPDF}
-              >
-                <FileText className="h-4 w-4" />
-                PDF
-              </Button>
-              <Button
-                variant="outline"
-                className="gap-2 border-slate-200 bg-white text-xs font-bold text-slate-700"
-                onClick={handleExportCSV}
-              >
-                <FileSpreadsheet className="h-4 w-4" />
-                CSV
-              </Button>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <p className="text-sm leading-7 text-slate-700">{summaryNarrative}</p>
-            {deltaNet !== null ? (
-              <p className="text-sm text-slate-600">
-                {language === 'pl' ? 'Wobec poprzedniego przebiegu:' : 'Vs previous run:'}{' '}
-                <span
-                  className={cn(
-                    'font-bold',
-                    deltaNet >= 0 ? 'text-emerald-700' : 'text-destructive',
-                  )}
-                >
-                  {deltaNet >= 0 ? '+' : ''}
-                  {formatCurrency(deltaNet)}
-                </span>
-              </p>
-            ) : null}
-          </div>
-        </CardContent>
-      </Card>
+      <ResultSummaryHero
+        eyebrow={language === 'pl' ? 'Podsumowanie scenariusza' : 'Scenario summary'}
+        value={formatCurrency(results.netPayoutValue)}
+        description={
+          language === 'pl'
+            ? 'To jest koncowa wyplata netto dla obecnie zatwierdzonego scenariusza. Zacznij od czterech metryk ponizej, dopiero potem wchodz w slady obliczen.'
+            : 'This is the final net payout for the currently committed scenario. Start with the four metrics below, then go deeper only if you need detail.'
+        }
+        narrative={summaryNarrative}
+        deltaText={deltaText}
+        actions={[
+          {
+            label: 'Save',
+            icon: <Save className="h-4 w-4" />,
+            onClick: onSaveScenario,
+            variant: 'default',
+          },
+          {
+            label: 'Notebook',
+            icon: <Save className="h-4 w-4" />,
+            onClick: onAddToNotebook,
+          },
+          {
+            label: 'PDF',
+            icon: <FileText className="h-4 w-4" />,
+            onClick: onExportPDF,
+          },
+          {
+            label: 'CSV',
+            icon: <FileSpreadsheet className="h-4 w-4" />,
+            onClick: handleExportCSV,
+          },
+        ]}
+      />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         {summaryCards.map((card) => (
-          <ResultMetric
+          <ResultMetricCard
             key={card.label}
             label={card.label}
             value={card.value}
@@ -344,9 +290,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
 
               {scenarioFacts.map((fact) => (
                 <div key={fact.label}>
-                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
-                    {fact.label}
-                  </p>
+                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">{fact.label}</p>
                   <p className="mt-1 text-sm font-semibold text-slate-950">{fact.value}</p>
                 </div>
               ))}
