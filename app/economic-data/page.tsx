@@ -240,10 +240,10 @@ export default function EconomicDataPage() {
       }
     >
       <div className="space-y-8">
-        <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
+        <Card className="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(248,250,252,0.92))] shadow-[0_22px_70px_-48px_rgba(15,23,42,0.45)]">
           <CardContent className="space-y-6 p-6 md:p-8">
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/90 bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
                 <Database className="h-3.5 w-3.5 text-primary" />
                 {language === 'pl' ? 'Panel referencyjny' : 'Reference panel'}
               </div>
@@ -273,32 +273,24 @@ export default function EconomicDataPage() {
         </Card>
 
         <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_380px]">
-          <div className="space-y-8">
+          <div className="space-y-10">
             <SectionBlock
               title={t('economic.inflation_title')}
               description={t('economic.inflation_desc')}
             >
-              <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-                <CardContent className="p-5 md:p-6">
-                  <InflationChart period={period} />
-                </CardContent>
-              </Card>
+              <InflationChart period={period} />
             </SectionBlock>
 
             <SectionBlock
               title={t('economic.nbp_rate_title')}
               description={t('economic.nbp_rate_desc')}
             >
-              <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-                <CardContent className="p-5 md:p-6">
-                  <NBPRateChart period={period} />
-                </CardContent>
-              </Card>
+              <NBPRateChart period={period} />
             </SectionBlock>
           </div>
 
           <aside className="space-y-6">
-            <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
+            <Card className="rounded-[2rem] border border-slate-200 bg-white/92 shadow-none">
               <CardContent className="space-y-4 p-6">
                 <div className="flex items-center gap-2">
                   <ShieldAlert className="h-4 w-4 text-primary" />

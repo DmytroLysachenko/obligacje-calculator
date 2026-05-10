@@ -18,11 +18,11 @@ export function getReferenceSourceLabel(meta?: DataReferenceMetaLike) {
   }
 
   if (meta.source === 'database') {
-    return 'database sync';
+    return 'Synced dataset';
   }
 
   if (meta.source === 'fallback') {
-    return 'fallback dataset';
+    return 'Fallback dataset';
   }
 
   return 'Unavailable';
@@ -46,10 +46,10 @@ export function getReferenceScopeLabel(meta?: DataReferenceMetaLike) {
   }
 
   if (meta.usedFallback || meta.source === 'fallback') {
-    return 'Reference only';
+    return 'Reference context only';
   }
 
-  return 'Calculator context';
+  return 'Current calculator context';
 }
 
 export function getReferenceState(meta?: DataReferenceMetaLike) {
@@ -66,13 +66,13 @@ export function getReferenceState(meta?: DataReferenceMetaLike) {
     return {
       title: 'Fallback or partial data',
       description:
-        'Treat this series as reference context only until the sync pipeline restores fuller coverage.',
+        'Treat this series as reference context until the sync pipeline restores fuller coverage.',
       tone: 'warning' as const,
     };
   }
 
   return {
-    title: 'Database-backed data',
+    title: 'Synced reference data',
     description:
       'This series is backed by the synced data pipeline and can be used as current calculator context.',
     tone: 'good' as const,

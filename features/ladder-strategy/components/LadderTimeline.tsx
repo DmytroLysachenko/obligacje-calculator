@@ -18,6 +18,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { RegularInvestmentResult } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
+import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { ResultMetricCard } from '@/shared/components/ResultMetricCard';
 import { ResultSummaryHero } from '@/shared/components/ResultSummaryHero';
 
@@ -155,6 +156,15 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          <ChartSupportNote
+            title={language === 'pl' ? 'Jak czytac wykres' : 'How to read the chart'}
+            description={
+              language === 'pl'
+                ? 'Ten wykres pokazuje rozklad zapadalnosci. Uzyj go do oceny gestosci i skupien, a nie do polowania na jeden najlepszy miesiac.'
+                : 'This chart shows the maturity spread. Use it to inspect density and clustering, not to hunt for one dramatic month.'
+            }
+          />
+
           <ChartContainer height={320}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>

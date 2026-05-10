@@ -22,6 +22,8 @@ import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { BondType } from '@/features/bond-core/types';
 import { cn } from '@/lib/utils';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
+import { ChartContainer } from '@/shared/components/charts/ChartContainer';
+import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import {
   Area,
   AreaChart,
@@ -480,21 +482,25 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
         </TabsContent>
 
         <TabsContent value="analytics">
-          <Card className="rounded-2xl border shadow-none">
-            <CardHeader>
-              <CardTitle>Portfolio projection</CardTitle>
-              <CardDescription>
-                Aggregated nominal value simulation across all stored lots. Read it after the records view, not before.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+            <Card className="rounded-2xl border shadow-none">
+              <CardHeader>
+                <CardTitle>Portfolio projection</CardTitle>
+                <CardDescription>
+                  Aggregated nominal value simulation across all stored lots. Read it after the records view, not before.
+                </CardDescription>
+              </CardHeader>
+            <CardContent className="space-y-4">
+              <ChartSupportNote
+                title="How to read it"
+                description="Treat this as a supporting projection of the stored record, not as a recommendation engine. Check lot records and the maturity window first."
+              />
               {isSimulating ? (
                 <div className="flex min-h-[320px] items-center justify-center gap-3 text-sm text-muted-foreground">
                   <Loader2 className="h-5 w-5 animate-spin" />
                   Running portfolio simulation...
                 </div>
               ) : simulation?.aggregatedTimeline ? (
-                <div className="h-[360px] w-full">
+                <ChartContainer height={360}>
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                       data={
@@ -538,7 +544,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                       />
                     </AreaChart>
                   </ResponsiveContainer>
-                </div>
+                </ChartContainer>
               ) : (
                 <div className="flex min-h-[320px] items-center justify-center text-sm text-muted-foreground">
                   Add lots to see the aggregated projection.

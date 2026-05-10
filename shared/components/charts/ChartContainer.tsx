@@ -27,7 +27,13 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
   };
 
   return (
-    <div className={cn('w-full relative', className)} style={style}>
+    <div
+      className={cn(
+        'relative w-full overflow-hidden rounded-[1.35rem] bg-[linear-gradient(180deg,rgba(248,250,252,0.92),rgba(255,255,255,0.98))]',
+        className,
+      )}
+      style={style}
+    >
       {hasMounted ? children : null}
     </div>
   );

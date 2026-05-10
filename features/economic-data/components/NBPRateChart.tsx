@@ -15,6 +15,7 @@ import {
 import { useLanguage } from '@/i18n';
 import { useChartData } from '@/shared/hooks/useChartData';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
+import { ReferenceChartFrame } from '@/shared/components/charts/ReferenceChartFrame';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   getReferenceAsOfLabel,
@@ -88,7 +89,7 @@ export const NBPRateChart = ({ period = 'ALL' }: { period?: '1Y' | '5Y' | '10Y' 
   }, [period, response?.data]);
 
   if (isLoading) {
-    return <Skeleton className="h-[400px] w-full rounded-2xl" />;
+    return <Skeleton className="h-[470px] w-full rounded-[1.75rem]" />;
   }
 
   if (isError) {
@@ -96,13 +97,9 @@ export const NBPRateChart = ({ period = 'ALL' }: { period?: '1Y' | '5Y' | '10Y' 
   }
 
   return (
-    <div className="space-y-3">
-      <div className="rounded-xl border bg-muted/30 px-3 py-2 text-[11px] text-muted-foreground">
-        <span className="font-bold">{t('economic.data_source')}:</span> {getReferenceSourceLabel(response)}
-        {response ? ` | ${t('economic.as_of')}: ${getReferenceAsOfLabel(response)}` : ''}
-        {response ? ` | Coverage: ${getReferenceCoverageLabel(response)}` : ''}
-        {response?.usedFallback ? ` | ${t('economic.fallback_in_use')}` : ''}
-      </div>
+    <ReferenceChartFrame
+      meta={`${t('economic.data_source')}: ${getReferenceSourceLabel(response)}${response ? ` | ${t('economic.as_of')}: ${getReferenceAsOfLabel(response)}` : ''}${response ? ` | Coverage: ${getReferenceCoverageLabel(response)}` : ''}${response?.usedFallback ? ` | ${t('economic.fallback_in_use')}` : ''}`}
+    >
       <ChartContainer height={420}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={chartData}>
@@ -122,6 +119,6 @@ export const NBPRateChart = ({ period = 'ALL' }: { period?: '1Y' | '5Y' | '10Y' 
           </AreaChart>
         </ResponsiveContainer>
       </ChartContainer>
-    </div>
+    </ReferenceChartFrame>
   );
 };

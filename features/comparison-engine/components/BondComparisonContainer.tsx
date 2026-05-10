@@ -35,6 +35,7 @@ import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
+import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { getBondColor } from '@/shared/constants/bond-colors';
 
 type ComparisonResultItem = BondComparisonCalculationEnvelope['result'][number];
@@ -619,6 +620,15 @@ export const BondComparisonContainer = () => {
               >
                 <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
                   <CardContent className="p-4 md:p-6">
+                    <ChartSupportNote
+                      title={language === 'pl' ? 'Jak czytac wykres' : 'How to read the chart'}
+                      description={
+                        language === 'pl'
+                          ? 'Najpierw sprawdz miesiac szczytowy i poziom koncowy. Dopiero potem porownuj ksztalt sciezek.'
+                          : 'Check the peak month and final level first. Only then compare the path shapes.'
+                      }
+                    />
+
                     <ChartContainer height={420}>
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={chartData}>

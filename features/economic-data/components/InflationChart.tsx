@@ -17,6 +17,7 @@ import { ValueType, NameType } from 'recharts/types/component/DefaultTooltipCont
 import { useLanguage } from '@/i18n';
 import { useChartData } from '@/shared/hooks/useChartData';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
+import { ReferenceChartFrame } from '@/shared/components/charts/ReferenceChartFrame';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -97,7 +98,7 @@ export const InflationChart = ({ period = 'ALL' }: { period?: '1Y' | '5Y' | '10Y
       : [Math.min(0, Math.floor(Math.min(...chartData.map((point) => point.rate), 0))), Math.min(maxRate, clippedMax)];
 
   if (isLoading) {
-    return <Skeleton className="h-[400px] w-full rounded-2xl" />;
+    return <Skeleton className="h-[470px] w-full rounded-[1.75rem]" />;
   }
 
   if (isError) {
@@ -105,30 +106,37 @@ export const InflationChart = ({ period = 'ALL' }: { period?: '1Y' | '5Y' | '10Y
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-muted/30 px-3 py-2 text-[11px] text-muted-foreground">
-        <span>
-          <span className="font-bold">{t('economic.data_source')}:</span> {getReferenceSourceLabel(response)}
-          {response ? ` | ${t('economic.as_of')}: ${getReferenceAsOfLabel(response)}` : ''}
-          {response ? ` | Coverage: ${getReferenceCoverageLabel(response)}` : ''}
-          {response?.usedFallback ? ` | ${t('economic.fallback_in_use')}` : ''}
-        </span>
+    <ReferenceChartFrame
+      meta={`${t('economic.data_source')}: ${getReferenceSourceLabel(response)}${response ? ` | ${t('economic.as_of')}: ${getReferenceAsOfLabel(response)}` : ''}${response ? ` | Coverage: ${getReferenceCoverageLabel(response)}` : ''}${response?.usedFallback ? ` | ${t('economic.fallback_in_use')}` : ''}`}
+      actions={
         <div className="flex gap-2">
-          <Button type="button" size="sm" variant={scaleMode === 'readable' ? 'default' : 'outline'} onClick={() => setScaleMode('readable')}>
+          <Button
+            type="button"
+            size="sm"
+            variant={scaleMode === 'readable' ? 'default' : 'outline'}
+            onClick={() => setScaleMode('readable')}
+            className="rounded-xl"
+          >
             {t('economic.readable_scale')}
           </Button>
-          <Button type="button" size="sm" variant={scaleMode === 'full' ? 'default' : 'outline'} onClick={() => setScaleMode('full')}>
+          <Button
+            type="button"
+            size="sm"
+            variant={scaleMode === 'full' ? 'default' : 'outline'}
+            onClick={() => setScaleMode('full')}
+            className="rounded-xl"
+          >
             {t('economic.full_scale')}
           </Button>
         </div>
-      </div>
-
-      {scaleMode === 'readable' && maxRate > clippedMax ? (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] text-amber-900">
-          {t('economic.inflation_scale_notice', { max: maxRate.toFixed(1) })}
-        </div>
-      ) : null}
-
+      }
+      notice={
+        scaleMode === 'readable' && maxRate > clippedMax
+          ? t('economic.inflation_scale_notice', { max: maxRate.toFixed(1) })
+          : undefined
+      }
+      noticeTone="warning"
+    >
       <ChartContainer height={420}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData}>
@@ -143,6 +151,6 @@ export const InflationChart = ({ period = 'ALL' }: { period?: '1Y' | '5Y' | '10Y
           </LineChart>
         </ResponsiveContainer>
       </ChartContainer>
-    </div>
+    </ReferenceChartFrame>
   );
 };

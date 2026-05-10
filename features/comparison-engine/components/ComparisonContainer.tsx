@@ -44,6 +44,7 @@ import { RecalculateButton } from '@/shared/components/RecalculateButton';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
+import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { convertTimelineToCSV, downloadFile } from '@/shared/lib/csv-utils';
 import { toDateString } from '@/shared/lib/date-timing';
 import { InterestPayout } from '@/features/bond-core/types';
@@ -651,6 +652,15 @@ export const ComparisonContainer: React.FC = () => {
                         </div>
                       </button>
                     </div>
+
+                    <ChartSupportNote
+                      title={language === 'pl' ? 'Jak czytac wykres' : 'How to read the chart'}
+                      description={
+                        language === 'pl'
+                          ? 'Najpierw sprawdz poziom koncowy obu scenariuszy. Potem dopiero patrz na rytm zmian i odcinki plaskie.'
+                          : 'Check the end level of both scenarios first. Only then inspect the rhythm of changes and flat stretches.'
+                      }
+                    />
 
                     <ChartContainer height={420}>
                       {hasMounted ? (

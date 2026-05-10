@@ -44,6 +44,8 @@ import {
 } from '@/features/bond-core/support-matrix';
 import { RetirementPlannerCalculationEnvelope } from '@/features/bond-core/types/scenarios';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
+import { ChartContainer } from '@/shared/components/charts/ChartContainer';
+import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';
@@ -502,7 +504,12 @@ export const RetirementPlannerContainer: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="h-[400px]">
+                  <ChartSupportNote
+                    title="How to read it"
+                    description="Start with scenario status and final balance. Use the chart to see the depletion path over time, not as a full retirement-planning recommendation."
+                  />
+
+                  <ChartContainer height={400}>
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={chartData}>
                         <defs>
@@ -566,7 +573,7 @@ export const RetirementPlannerContainer: React.FC = () => {
                         />
                       </AreaChart>
                     </ResponsiveContainer>
-                  </div>
+                  </ChartContainer>
                 </CardContent>
               </Card>
 
