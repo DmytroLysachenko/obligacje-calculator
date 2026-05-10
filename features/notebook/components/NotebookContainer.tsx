@@ -133,6 +133,28 @@ const NotebookLoadingState = () => (
   </div>
 );
 
+function NotebookMiniStat({
+  label,
+  value,
+  description,
+}: {
+  label: string;
+  value: string;
+  description: string;
+}) {
+  return (
+    <div className="rounded-[1.6rem] border border-white/80 bg-white/78 px-4 py-4 shadow-[0_16px_34px_-30px_rgba(15,23,42,0.35)] backdrop-blur">
+      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+        {label}
+      </p>
+      <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">
+        {value}
+      </p>
+      <p className="mt-1 text-xs leading-6 text-slate-600">{description}</p>
+    </div>
+  );
+}
+
 export const NotebookContainer: React.FC = () => {
   const { t, language } = useLanguage();
   const [portfolios, setPortfolios] = useState<UserPortfolio[]>([]);
@@ -313,6 +335,8 @@ export const NotebookContainer: React.FC = () => {
     language === 'pl'
       ? 'To ma byc prosty notatnik portfela, nie kolejny dashboard. Najpierw rekordy partii, potem zapadalnosci i eksport.'
       : 'This should be a simple portfolio notebook, not another dashboard. Record the lots first, then inspect maturities and exports.';
+  const publicCount = portfolios.filter((portfolio) => portfolio.isPublic).length;
+  const privateCount = portfolios.length - publicCount;
 
   return (
     <CalculatorPageShell
@@ -331,7 +355,7 @@ export const NotebookContainer: React.FC = () => {
       />
 
       {error ? (
-        <div className="rounded-3xl border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
+        <div className="rounded-[2rem] border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
           <div className="flex items-center gap-3 font-semibold">
             <AlertCircle className="h-5 w-5" />
             {error}
@@ -354,30 +378,65 @@ export const NotebookContainer: React.FC = () => {
         title={language === 'pl' ? 'Zakres notatnika' : 'Notebook scope'}
         description={notebookIntro}
       >
-        <Card className="rounded-[2rem] border border-slate-200/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.88),rgba(248,250,252,0.92))] shadow-[0_20px_55px_-48px_rgba(15,23,42,0.45)] backdrop-blur">
-          <CardContent className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
-            <div className="space-y-1">
-              <p className="font-semibold text-foreground">{t('notebook.guest_mode')}</p>
-              <p className="text-sm leading-7 text-muted-foreground">
-                {t('notebook.guest_desc')}
-              </p>
+        <Card className="overflow-hidden rounded-[2.2rem] border border-slate-200/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(248,250,252,0.9))] shadow-[0_24px_70px_-52px_rgba(15,23,42,0.45)] backdrop-blur">
+          <CardContent className="space-y-6 p-6 md:p-8">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div className="max-w-3xl space-y-3">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/90 bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
+                  <BookOpen className="h-3.5 w-3.5 text-primary" />
+                  {t('notebook.guest_mode')}
+                </div>
+                <p className="text-sm leading-7 text-muted-foreground">
+                  {t('notebook.guest_desc')}
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2 lg:max-w-[360px] lg:justify-end">
+                <Button variant="outline" onClick={handleImportClick} className="gap-2 rounded-2xl border-slate-200 bg-white/80">
+                  <Upload className="h-4 w-4" />
+                  {t('notebook.import_json')}
+                </Button>
+                <Button variant="outline" onClick={handleCreateDemo} className="rounded-2xl border-slate-200 bg-white/80">
+                  {t('notebook.load_demo')}
+                </Button>
+                <Button variant="outline" onClick={fetchPortfolios} className="gap-2 rounded-2xl border-slate-200 bg-white/80">
+                  <RefreshCcw className="h-4 w-4" />
+                  {t('common.refresh')}
+                </Button>
+                <Button onClick={handleCreateDefault} className="gap-2 rounded-2xl">
+                  <Plus className="h-4 w-4" />
+                  {t('notebook.new_portfolio')}
+                </Button>
+              </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <Button variant="outline" onClick={handleImportClick} className="gap-2 rounded-2xl border-slate-200 bg-white/80">
-                <Upload className="h-4 w-4" />
-                {t('notebook.import_json')}
-              </Button>
-              <Button variant="outline" onClick={handleCreateDemo} className="rounded-2xl border-slate-200 bg-white/80">
-                {t('notebook.load_demo')}
-              </Button>
-              <Button variant="outline" onClick={fetchPortfolios} className="gap-2 rounded-2xl border-slate-200 bg-white/80">
-                <RefreshCcw className="h-4 w-4" />
-                {t('common.refresh')}
-              </Button>
-              <Button onClick={handleCreateDefault} className="gap-2 rounded-2xl">
-                <Plus className="h-4 w-4" />
-                {t('notebook.new_portfolio')}
-              </Button>
+
+            <div className="grid gap-4 md:grid-cols-3">
+              <NotebookMiniStat
+                label={language === 'pl' ? 'Portfele' : 'Portfolios'}
+                value={String(portfolios.length)}
+                description={
+                  language === 'pl'
+                    ? 'Liczba zapisanych zestawow partii w lokalnym notatniku.'
+                    : 'Saved lot sets currently stored in the local notebook.'
+                }
+              />
+              <NotebookMiniStat
+                label={language === 'pl' ? 'Publiczne linki' : 'Public links'}
+                value={String(publicCount)}
+                description={
+                  language === 'pl'
+                    ? 'Portfele udostepnione przez publiczny link.'
+                    : 'Portfolios currently shared through a public link.'
+                }
+              />
+              <NotebookMiniStat
+                label={language === 'pl' ? 'Prywatne szkice' : 'Private drafts'}
+                value={String(privateCount)}
+                description={
+                  language === 'pl'
+                    ? 'Robocze portfele pozostajace tylko w prywatnym widoku.'
+                    : 'Working portfolios that stay in the private notebook view.'
+                }
+              />
             </div>
           </CardContent>
         </Card>
@@ -404,6 +463,12 @@ export const NotebookContainer: React.FC = () => {
             title={t('notebook.stored_portfolios')}
             description={t('notebook.stored_portfolios_desc')}
           >
+            <div className="rounded-[1.8rem] border border-slate-200 bg-white/84 px-5 py-4 text-sm leading-7 text-slate-600 shadow-[0_18px_44px_-40px_rgba(15,23,42,0.35)] backdrop-blur">
+              {language === 'pl'
+                ? 'Otworz jeden portfel, sprawdz partie i okno zapadalnosci, a dopiero potem przechodz do symulacji zagregowanej.'
+                : 'Open one portfolio, review lots and the maturity window, and only then move into the aggregated projection.'}
+            </div>
+
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
               {portfolios.map((portfolio) => (
                 <Card

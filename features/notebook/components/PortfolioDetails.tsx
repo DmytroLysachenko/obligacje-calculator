@@ -44,6 +44,28 @@ interface PortfolioDetailsProps {
 
 type MaturityWindow = 30 | 90 | 180;
 
+function PortfolioMiniStat({
+  label,
+  value,
+  description,
+}: {
+  label: string;
+  value: string;
+  description: string;
+}) {
+  return (
+    <div className="rounded-[1.5rem] border border-white/80 bg-white/78 px-4 py-4 shadow-[0_16px_32px_-28px_rgba(15,23,42,0.35)] backdrop-blur">
+      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+        {label}
+      </p>
+      <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">
+        {value}
+      </p>
+      <p className="mt-1 text-xs leading-6 text-slate-600">{description}</p>
+    </div>
+  );
+}
+
 export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, onBack }) => {
   const { t, language } = useLanguage();
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
@@ -221,41 +243,71 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
 
   return (
     <div className="space-y-6 pb-16">
-      <Card className="rounded-2xl border shadow-none">
-        <CardContent className="flex flex-col gap-6 p-5 lg:flex-row lg:items-start lg:justify-between">
-          <div className="max-w-2xl space-y-3">
-            <div className="inline-flex items-center gap-2 rounded-full border bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-700">
-              <FolderOpen className="h-3.5 w-3.5 text-primary" />
-              Portfolio record view
+      <Card className="overflow-hidden rounded-[2.2rem] border border-slate-200/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(248,250,252,0.9))] shadow-[0_24px_70px_-52px_rgba(15,23,42,0.45)]">
+        <CardContent className="space-y-6 p-6 lg:p-7">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+            <div className="max-w-2xl space-y-3">
+              <div className="inline-flex items-center gap-2 rounded-full border bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-700">
+                <FolderOpen className="h-3.5 w-3.5 text-primary" />
+                Portfolio record view
+              </div>
+              <h3 className="text-2xl font-black tracking-tight text-slate-900">
+                Open one portfolio, inspect lots, then export or simulate only when needed.
+              </h3>
+              <p className="text-sm leading-7 text-muted-foreground">
+                Start with stored lots and the upcoming liquidity window. Use the analytics tab as a supporting projection,
+                not as a recommendation layer.
+              </p>
             </div>
-            <h3 className="text-2xl font-black tracking-tight text-slate-900">
-              Open one portfolio, inspect lots, then export or simulate only when needed.
-            </h3>
-            <p className="text-sm leading-7 text-muted-foreground">
-              Start with stored lots and the upcoming liquidity window. Use the analytics tab as a supporting projection,
-              not as a recommendation layer.
-            </p>
+            <div className="grid gap-3 sm:grid-cols-2 lg:w-[360px]">
+              <PortfolioMiniStat
+                label="Stored lots"
+                value={String(lots.length)}
+                description="Positions currently tracked in this portfolio record."
+              />
+              <PortfolioMiniStat
+                label="Next maturity"
+                value={nextMaturity ? format(nextMaturity.maturityDate, 'dd.MM.yyyy') : '-'}
+                description="Nearest upcoming maturity date across stored lots."
+              />
+            </div>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2 lg:w-[360px]">
-            <div className="rounded-2xl border bg-white px-4 py-3">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                Stored lots
-              </p>
-              <p className="mt-2 text-lg font-black text-slate-900">{lots.length}</p>
-            </div>
-            <div className="rounded-2xl border bg-white px-4 py-3">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                Next maturity
-              </p>
-              <p className="mt-2 text-lg font-black text-slate-900">
-                {nextMaturity ? format(nextMaturity.maturityDate, 'dd.MM.yyyy') : '-'}
-              </p>
-            </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            <PortfolioMiniStat
+              label={t('notebook.total_invested')}
+              value={formatCurrency(totalValue)}
+              description="Nominal value across all stored lots."
+            />
+            <PortfolioMiniStat
+              label={t('notebook.next_maturity')}
+              value={nextMaturity ? nextMaturity.bondType : '-'}
+              description={
+                nextMaturity
+                  ? `${format(nextMaturity.maturityDate, 'dd.MM.yyyy')} ${language === 'pl' ? 'najblizej' : 'comes next'}`
+                  : language === 'pl'
+                    ? 'Brak najblizszej zapadalnosci.'
+                    : 'No upcoming maturity found.'
+              }
+            />
+            <PortfolioMiniStat
+              label={language === 'pl' ? 'Tryb udostepniania' : 'Sharing mode'}
+              value={isPublic ? t('notebook.public') : t('notebook.private')}
+              description={
+                isPublic
+                  ? language === 'pl'
+                    ? 'Portfel ma aktywny publiczny link.'
+                    : 'This portfolio currently has a public share link.'
+                  : language === 'pl'
+                    ? 'Portfel pozostaje prywatnym szkicem.'
+                    : 'This portfolio is currently kept private.'
+              }
+            />
           </div>
         </CardContent>
       </Card>
 
-      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+      <div className="flex flex-col gap-4 rounded-[1.8rem] border border-slate-200 bg-white/84 p-5 shadow-[0_18px_40px_-36px_rgba(15,23,42,0.35)] backdrop-blur md:flex-row md:items-start md:justify-between">
         <div className="flex items-start gap-3">
           <Button variant="ghost" size="icon" onClick={onBack} className="rounded-full">
             <ArrowLeft className="h-5 w-5" />
@@ -293,44 +345,6 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
             {isPublic ? t('notebook.public') : t('notebook.private')}
           </Button>
         </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <Card className="rounded-2xl border shadow-none">
-          <CardContent className="space-y-2 p-5">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">
-              {t('notebook.total_invested')}
-            </p>
-            <p className="text-2xl font-semibold text-foreground">{formatCurrency(totalValue)}</p>
-            <p className="text-sm leading-6 text-muted-foreground">Nominal value of all stored lots.</p>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-2xl border shadow-none">
-          <CardContent className="space-y-2 p-5">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">
-              {t('notebook.active_lots')}
-            </p>
-            <p className="text-2xl font-semibold text-foreground">{lots.length}</p>
-            <p className="text-sm leading-6 text-muted-foreground">
-              Stored lots currently included in this notebook.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-2xl border shadow-none">
-          <CardContent className="space-y-2 p-5">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">
-              {t('notebook.next_maturity')}
-            </p>
-            <p className="text-2xl font-semibold text-foreground">
-              {nextMaturity ? format(nextMaturity.maturityDate, 'dd.MM.yyyy') : '-'}
-            </p>
-            <p className="text-sm leading-6 text-muted-foreground">
-              {nextMaturity ? `${nextMaturity.bondType} lot matures next.` : 'No upcoming maturity found.'}
-            </p>
-          </CardContent>
-        </Card>
       </div>
 
       <Tabs defaultValue="lots" className="w-full">
