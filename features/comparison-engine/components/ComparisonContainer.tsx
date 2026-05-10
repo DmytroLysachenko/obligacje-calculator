@@ -43,6 +43,7 @@ import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { RecalculateButton } from '@/shared/components/RecalculateButton';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
+import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
 import { convertTimelineToCSV, downloadFile } from '@/shared/lib/csv-utils';
 import { toDateString } from '@/shared/lib/date-timing';
 import { InterestPayout } from '@/features/bond-core/types';
@@ -591,20 +592,13 @@ export const ComparisonContainer: React.FC = () => {
             {resultsA && resultsB ? (
               <div className={cn('space-y-8', isCalculating && 'opacity-60')}>
                 {isDirty ? (
-                  <div className="flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+                  <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3">
+                    <TriangleAlert className="mt-0.5 h-5 w-5 text-amber-700" />
                     <div className="flex items-start gap-3">
-                      <TriangleAlert className="mt-0.5 h-5 w-5 text-amber-700" />
                       <p className="text-sm text-amber-900">
                         Inputs changed. Results below are stale until you rerun the comparison.
                       </p>
                     </div>
-                    <Button
-                      variant="outline"
-                      className="border-amber-300 bg-white"
-                      onClick={() => calculate()}
-                    >
-                      {t('common.recalculate')}
-                    </Button>
                   </div>
                 ) : null}
 
@@ -615,15 +609,8 @@ export const ComparisonContainer: React.FC = () => {
                       {t('comparison.performance_over_time')}
                     </CardTitle>
                     <p className="text-sm leading-6 text-muted-foreground">
-                      Chart points are aligned by actual calendar date. Bonds with monthly payouts update more often, while yearly or maturity-paid bonds stay flat between their own crediting dates.
+                      Chart points are aligned by actual calendar date so both scenarios share one time axis.
                     </p>
-                    {usesMixedTimelineCadence ? (
-                      <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-                        This comparison mixes different payout cadences: {inputsA.bondType} updates{' '}
-                        {inputsA.payoutFrequency === InterestPayout.MONTHLY ? 'monthly' : 'on longer cycles'}, while {inputsB.bondType} updates{' '}
-                        {inputsB.payoutFrequency === InterestPayout.MONTHLY ? 'monthly' : 'on longer cycles'}.
-                      </p>
-                    ) : null}
                   </CardHeader>
                   <CardContent className="p-6">
                     <div className="mb-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
@@ -691,6 +678,64 @@ export const ComparisonContainer: React.FC = () => {
                         </ResponsiveContainer>
                       ) : null}
                     </ChartContainer>
+
+                    <div className="mt-6">
+                      <SecondaryInsightAccordion
+                        title={language === 'pl' ? 'Jak czytac wykres porownawczy' : 'How to read the comparison chart'}
+                        description={
+                          language === 'pl'
+                            ? 'Wykres sluzy do wychwycenia ksztaltu scenariusza. Szczegoly kadencji wyplat i rytmu aktualizacji mozna rozwinac tylko wtedy, gdy sa potrzebne.'
+                            : 'Use the chart to spot the scenario shape. Payout cadence and update rhythm stay available on demand, not as permanent noise.'
+                        }
+                        badge={usesMixedTimelineCadence ? (language === 'pl' ? 'Mieszany rytm' : 'Mixed cadence') : undefined}
+                        className="mt-0"
+                      >
+                        <div className="space-y-4 text-sm leading-7 text-slate-600">
+                          <div className="rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4">
+                            <p>
+                              {language === 'pl'
+                                ? 'Najpierw odczytaj poziom koncowy obu scenariuszy. Dopiero potem patrz na nachylenie linii i odcinki plaskie.'
+                                : 'Read the final level of both scenarios first. Only then inspect slope changes and flat stretches.'}
+                            </p>
+                          </div>
+                          {usesMixedTimelineCadence ? (
+                            <div className="rounded-3xl border border-amber-200 bg-amber-50 px-5 py-4 text-amber-950">
+                              <p className="font-semibold">
+                                {language === 'pl'
+                                  ? `To porownanie miesza rozne kadencje wyplat: ${inputsA.bondType} aktualizuje sie ${
+                                      inputsA.payoutFrequency === InterestPayout.MONTHLY ? 'miesiecznie' : 'rzadziej'
+                                    }, a ${inputsB.bondType} aktualizuje sie ${
+                                      inputsB.payoutFrequency === InterestPayout.MONTHLY ? 'miesiecznie' : 'rzadziej'
+                                    }.`
+                                  : `This comparison mixes payout cadences: ${inputsA.bondType} updates ${
+                                      inputsA.payoutFrequency === InterestPayout.MONTHLY ? 'monthly' : 'on longer cycles'
+                                    }, while ${inputsB.bondType} updates ${
+                                      inputsB.payoutFrequency === InterestPayout.MONTHLY ? 'monthly' : 'on longer cycles'
+                                    }.`}
+                              </p>
+                            </div>
+                          ) : null}
+                          <div className="grid gap-4 md:grid-cols-2">
+                            <ReadyStep
+                              title={language === 'pl' ? 'Poziom koncowy' : 'End level'}
+                              description={
+                                language === 'pl'
+                                  ? 'Pokazuje, ktory scenariusz konczy wyzej przy tych samych zalozeniach.'
+                                  : 'Shows which scenario finishes higher under the same assumptions.'
+                              }
+                            />
+                            <ReadyStep
+                              title={language === 'pl' ? 'Rytm aktualizacji' : 'Update rhythm'}
+                              description={
+                                language === 'pl'
+                                  ? 'Plaskie odcinki nie oznaczaja stagnacji. Czasem oznaczaja tylko rzadsze kapitalizowanie lub wyplate.'
+                                  : 'Flat segments do not automatically mean stagnation. They can simply reflect slower crediting or payout timing.'
+                              }
+                            />
+                          </div>
+                        </div>
+                      </SecondaryInsightAccordion>
+                    </div>
                   </CardContent>
                 </Card>
 
@@ -712,38 +757,48 @@ export const ComparisonContainer: React.FC = () => {
                   formatCurrency={formatCurrency}
                 />
 
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                  {[
-                    {
-                      label: t('comparison.scenario_a'),
-                      envelope: envelopeA,
-                      warnings: warningsA,
-                    },
-                    {
-                      label: t('comparison.scenario_b'),
-                      envelope: envelopeB,
-                      warnings: warningsB,
-                    },
-                  ].map((entry) => (
-                    <Card key={entry.label} className="border shadow-sm">
-                      <CardHeader className="border-b bg-muted/10 pb-3">
-                        <CardTitle className="text-[10px] font-black uppercase tracking-widest">
-                          {entry.label} {t('common.notes')}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="pt-4">
-                        <CalculationMetaPanel
-                          warnings={entry.warnings}
-                          assumptions={entry.envelope?.assumptions}
-                          calculationNotes={entry.envelope?.calculationNotes}
-                          dataQualityFlags={entry.envelope?.dataQualityFlags}
-                          dataFreshness={entry.envelope?.dataFreshness}
-                          compact
-                        />
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                <SecondaryInsightAccordion
+                  title={language === 'pl' ? 'Zalozenia i meta scenariuszy' : 'Scenario assumptions and meta'}
+                  description={
+                    language === 'pl'
+                      ? 'Obie strony porownania zachowuja jawne zalozenia i ostrzezenia, ale nie powinny dominowac nad wynikiem i tabela.'
+                      : 'Both scenarios keep explicit assumptions and warnings, but they should not dominate the outcome and table.'
+                  }
+                  badge={language === 'pl' ? 'Pomocnicze' : 'Secondary'}
+                >
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    {[
+                      {
+                        label: t('comparison.scenario_a'),
+                        envelope: envelopeA,
+                        warnings: warningsA,
+                      },
+                      {
+                        label: t('comparison.scenario_b'),
+                        envelope: envelopeB,
+                        warnings: warningsB,
+                      },
+                    ].map((entry) => (
+                      <Card key={entry.label} className="border shadow-sm">
+                        <CardHeader className="border-b bg-muted/10 pb-3">
+                          <CardTitle className="text-[10px] font-black uppercase tracking-widest">
+                            {entry.label} {t('common.notes')}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-4">
+                          <CalculationMetaPanel
+                            warnings={entry.warnings}
+                            assumptions={entry.envelope?.assumptions}
+                            calculationNotes={entry.envelope?.calculationNotes}
+                            dataQualityFlags={entry.envelope?.dataQualityFlags}
+                            dataFreshness={entry.envelope?.dataFreshness}
+                            compact
+                          />
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </SecondaryInsightAccordion>
               </div>
             ) : null}
           </div>

@@ -34,6 +34,7 @@ import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
+import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
 import { getBondColor } from '@/shared/constants/bond-colors';
 
 type ComparisonResultItem = BondComparisonCalculationEnvelope['result'][number];
@@ -384,24 +385,62 @@ export const BondComparisonContainer = () => {
             </CardContent>
           </Card>
 
-          <Card className="rounded-[2rem] border border-amber-200 bg-amber-50/70 shadow-none">
-            <CardContent className="space-y-3 p-6 text-sm leading-7 text-amber-950">
-              <div className="flex items-center gap-2 font-black tracking-tight">
-                <AlertTriangle className="h-4 w-4" />
-                {language === 'pl' ? 'Uwaga interpretacyjna' : 'Interpretation note'}
+          <SecondaryInsightAccordion
+            title={language === 'pl' ? 'Jak czytac to porownanie' : 'How to read this comparison'}
+            description={
+              language === 'pl'
+                ? 'Ta strona pokazuje kompromisy jednego wspolnego scenariusza. Wskazowki interpretacyjne zostaja jawne, ale nie powinny zaslaniac glownego wyniku.'
+                : 'This page shows the tradeoffs of one shared scenario. Interpretation notes stay explicit, but they should not overshadow the main result.'
+            }
+            badge={language === 'pl' ? 'Pomocnicze' : 'Secondary'}
+          >
+            <div className="space-y-4 text-sm leading-7 text-slate-600">
+              <div className="rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4">
+                <div className="flex items-center gap-2 font-black tracking-tight text-slate-950">
+                  <AlertTriangle className="h-4 w-4 text-amber-600" />
+                  {language === 'pl' ? 'Uwaga interpretacyjna' : 'Interpretation note'}
+                </div>
+                <div className="mt-3 space-y-2">
+                  <p>
+                    {language === 'pl'
+                      ? 'To porownanie pokazuje kompromisy scenariusza, a nie uniwersalnie najlepsza obligacje.'
+                      : 'This comparison shows scenario tradeoffs, not a universally best bond.'}
+                  </p>
+                  <p>
+                    {language === 'pl'
+                      ? 'Czytaj je jako test jednego ustawienia wspolnego, nie jako gotowa rekomendacje dla kazdego inwestora.'
+                      : 'Read it as a test of one committed shared setup, not as finished advice for every investor.'}
+                  </p>
+                </div>
               </div>
-              <p>
-                {language === 'pl'
-                  ? 'To porownanie pokazuje kompromisy scenariusza, a nie uniwersalnie najlepsza obligacje.'
-                  : 'This comparison shows scenario tradeoffs, not a universally best bond.'}
-              </p>
-              <p>
-                {language === 'pl'
-                  ? 'Strone nalezy czytac jako test jednego ustawienia wspolnego, nie jako gotowa rekomendacje.'
-                      : 'Read the page as a test of one committed shared setup, not as finished personal advice.'}
-              </p>
-            </CardContent>
-          </Card>
+              <div className="grid gap-4 md:grid-cols-3">
+                <StepCard
+                  title={language === 'pl' ? '1. Wynik glowny' : '1. Start with outcome'}
+                  description={
+                    language === 'pl'
+                      ? 'Najpierw sprawdz najlepsza wyplate netto albo wartosc realna.'
+                      : 'Check the best net payout or real-value outcome first.'
+                  }
+                />
+                <StepCard
+                  title={language === 'pl' ? '2. Karty obligacji' : '2. Read bond cards'}
+                  description={
+                    language === 'pl'
+                      ? 'Potem porownaj zysk, CAGR realny i podatek dla tego samego horyzontu.'
+                      : 'Then compare profit, real CAGR, and tax for the same horizon.'
+                  }
+                />
+                <StepCard
+                  title={language === 'pl' ? '3. Meta i zalozenia' : '3. Meta and assumptions'}
+                  description={
+                    language === 'pl'
+                      ? 'Na koncu zajrzyj do meta danych tylko wtedy, gdy chcesz sprawdzic zalozenia lub jakosc danych.'
+                      : 'Only then open the meta context if you need to verify assumptions or data quality.'
+                  }
+                />
+              </div>
+            </div>
+          </SecondaryInsightAccordion>
         </aside>
 
         <div className="space-y-8">
@@ -612,13 +651,14 @@ export const BondComparisonContainer = () => {
                 </Card>
               </SectionBlock>
 
-              <SectionBlock
+              <SecondaryInsightAccordion
                 title={t('bonds.simulation.calculation_context')}
                 description={
                   language === 'pl'
-                    ? 'Zalozenia i meta dane powinny zostac jawne, ale drugorzedne wobec glownych wynikow.'
-                    : 'Assumptions and data context remain explicit, but secondary to the main outcomes.'
+                    ? 'Zalozenia, ostrzezenia i meta dane zostaja jawne, ale sa materialem pomocniczym po odczytaniu glownego wyniku.'
+                    : 'Assumptions, warnings, and data context stay explicit, but they are support material after the main result.'
                 }
+                badge={language === 'pl' ? 'Drugorzedne' : 'Secondary'}
               >
                 <CalculationMetaPanel
                   warnings={envelope?.warnings}
@@ -627,7 +667,7 @@ export const BondComparisonContainer = () => {
                   dataQualityFlags={envelope?.dataQualityFlags}
                   dataFreshness={envelope?.dataFreshness}
                 />
-              </SectionBlock>
+              </SecondaryInsightAccordion>
             </div>
           ) : null}
         </div>
