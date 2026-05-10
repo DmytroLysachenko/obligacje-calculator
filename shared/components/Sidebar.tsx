@@ -329,7 +329,7 @@ export function Sidebar({
 
   return (
     <>
-      <div className="fixed left-4 top-4 z-50 lg:hidden">
+      <div className="fixed left-3 top-3 z-50 lg:hidden">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
             <Button
@@ -341,7 +341,7 @@ export function Sidebar({
               <span className="sr-only">Toggle menu</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-[22rem] border-none p-0">
+          <SheetContent side="left" className="w-[min(22rem,100vw)] border-none p-0">
             <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
             <SidebarContent
               onItemClick={() => setIsOpen(false)}

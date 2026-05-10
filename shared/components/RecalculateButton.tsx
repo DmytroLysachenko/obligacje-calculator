@@ -44,8 +44,8 @@ export const RecalculateButton = ({
         : 'New inputs are staged. Recalculate only when the scenario is ready.';
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 w-[min(22rem,calc(100vw-1.5rem))]">
-      <div className="rounded-[1.75rem] border border-slate-950/10 bg-slate-950 px-4 py-4 text-white shadow-2xl shadow-slate-950/20">
+    <div className="fixed inset-x-3 bottom-3 z-50 sm:inset-x-auto sm:bottom-5 sm:right-5 sm:w-[min(22rem,calc(100vw-1.5rem))]">
+      <div className="rounded-[1.55rem] border border-slate-950/10 bg-slate-950 px-4 py-4 text-white shadow-2xl shadow-slate-950/20 sm:rounded-[1.75rem]">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1">
             <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/65">
@@ -53,18 +53,20 @@ export const RecalculateButton = ({
                 ? t('common.calculate')
                 : t('common.recalculate')}
             </p>
-            <p className="text-sm leading-6 text-white/85">{helperText}</p>
+            <p className="text-[13px] leading-5 text-white/85 sm:text-sm sm:leading-6">
+              {helperText}
+            </p>
           </div>
           {(isDirty || isInitialRun) && !loading ? (
             <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-400 animate-pulse" />
           ) : null}
         </div>
 
-        <div className="mt-4">
+        <div className="mt-3 sm:mt-4">
           <Button
             size="default"
             className={cn(
-              'h-11 w-full rounded-2xl px-5 text-sm font-black uppercase tracking-[0.18em]',
+              'h-11 w-full rounded-2xl px-5 text-[13px] font-black uppercase tracking-[0.14em] sm:text-sm sm:tracking-[0.18em]',
               isActionable
                 ? 'bg-white text-slate-950 hover:bg-white/90'
                 : 'bg-white/15 text-white/70 hover:bg-white/15',
@@ -74,7 +76,7 @@ export const RecalculateButton = ({
           >
             {loading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 {t('common.calculating')}
               </>
             ) : (

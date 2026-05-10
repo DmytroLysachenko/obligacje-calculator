@@ -43,10 +43,10 @@ function SectionBlock({
 
 const LoadingState = () => (
   <div className="space-y-4">
-    <Skeleton className="h-32 w-full rounded-[2rem]" />
-    <Skeleton className="h-[320px] w-full rounded-[2rem]" />
-    <Skeleton className="h-[420px] w-full rounded-[2rem]" />
-    <Skeleton className="h-[260px] w-full rounded-[2rem]" />
+    <Skeleton className="h-28 w-full rounded-[1.7rem] md:h-32 md:rounded-[2rem]" />
+    <Skeleton className="h-[280px] w-full rounded-[1.7rem] md:h-[320px] md:rounded-[2rem]" />
+    <Skeleton className="h-[320px] w-full rounded-[1.7rem] md:h-[420px] md:rounded-[2rem]" />
+    <Skeleton className="h-[220px] w-full rounded-[1.7rem] md:h-[260px] md:rounded-[2rem]" />
   </div>
 );
 
@@ -83,8 +83,8 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
       currentValue={results?.finalNominalValue}
       onKeyDown={handleKeyDown}
     >
-      <div className="space-y-10">
-        <div className="grid grid-cols-1 gap-8 xl:grid-cols-[420px_minmax(0,1fr)] xl:items-start">
+      <div className="space-y-8 md:space-y-10">
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[400px_minmax(0,1fr)] xl:items-start xl:gap-8">
           <aside className="space-y-6 xl:sticky xl:top-24 xl:h-fit">
             <RegularInvestmentInputsForm
               inputs={inputs}
@@ -96,7 +96,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
           <section className="space-y-6">
             {!results && !isCalculating ? (
               <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-                <CardContent className="space-y-5 p-6 md:p-8">
+                <CardContent className="space-y-5 p-5 md:p-8">
                   <div className="space-y-3">
                     <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
                       <TrendingUp className="h-3.5 w-3.5 text-primary" />
@@ -225,7 +225,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
                   : 'The chart shows how invested capital and projected portfolio value evolve over time.'
               }
             >
-              <div className="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-none">
+              <div className="rounded-[1.7rem] border border-slate-200 bg-white p-3 shadow-none md:rounded-[2rem] md:p-4">
                 <RegularInvestmentChart
                   results={results}
                   bondType={inputs.bondType}

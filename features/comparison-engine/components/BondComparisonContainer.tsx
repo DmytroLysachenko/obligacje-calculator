@@ -231,8 +231,8 @@ export const BondComparisonContainer = () => {
   }, [results]);
 
   return (
-    <div className="space-y-8 pb-20">
-      <div className="grid grid-cols-1 gap-8 xl:grid-cols-[380px_minmax(0,1fr)]">
+    <div className="space-y-6 pb-20 md:space-y-8">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[360px_minmax(0,1fr)] xl:gap-8">
         <aside className="space-y-6 xl:sticky xl:top-24 xl:h-fit">
           <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
             <CardHeader className="space-y-3 border-b border-slate-200 pb-5">
@@ -246,7 +246,7 @@ export const BondComparisonContainer = () => {
                   : 'One amount, one horizon, and one assumption set. This keeps the comparison focused on bond structure differences.'}
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6 p-6">
+              <CardContent className="space-y-6 p-5 md:p-6">
               <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
                   {language === 'pl' ? 'Kwota poczatkowa' : 'Initial sum'}
@@ -447,7 +447,7 @@ export const BondComparisonContainer = () => {
         <div className="space-y-8">
           {!results.length && !loading ? (
             <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-              <CardContent className="space-y-6 p-6 md:p-8">
+              <CardContent className="space-y-6 p-5 md:p-8">
                 <div className="space-y-3">
                   <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
                     <TrendingUp className="h-3.5 w-3.5 text-primary" />

@@ -88,15 +88,15 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
 
   return (
     <div className="space-y-8 pb-20" onKeyDown={onKeyDown}>
-      <header className="space-y-5 rounded-3xl border bg-card px-6 py-6 shadow-sm md:px-8">
+      <header className="space-y-4 rounded-[1.9rem] border bg-card px-5 py-5 shadow-sm md:space-y-5 md:rounded-3xl md:px-8 md:py-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-          <div className="max-w-3xl space-y-4">
-            <div className="flex items-center gap-4">
-              <div className="rounded-2xl bg-primary/10 p-3 text-primary">
+          <div className="max-w-3xl space-y-3 md:space-y-4">
+            <div className="flex items-start gap-3 md:items-center md:gap-4">
+              <div className="rounded-2xl bg-primary/10 p-2.5 text-primary md:p-3">
                 {icon}
               </div>
               <div className="space-y-1">
-                <h2 className="text-3xl font-black tracking-tight text-slate-950 md:text-4xl">
+                <h2 className="text-[1.8rem] font-black tracking-tight text-slate-950 md:text-4xl">
                   {title}
                 </h2>
                 <p className="text-sm leading-6 text-muted-foreground md:text-base">
@@ -118,7 +118,7 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
                   variant="outline"
                   size="sm"
                   className={cn(
-                    'gap-2 rounded-xl text-xs font-bold',
+                    'h-9 gap-2 rounded-xl px-3 text-[11px] font-bold',
                     copied ? 'border-emerald-600 text-emerald-700' : '',
                   )}
                   onClick={handleShare}
@@ -139,7 +139,7 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
       </header>
 
       {savingsGoal && hasResults ? (
-        <Card className="rounded-2xl border bg-slate-50 shadow-none">
+        <Card className="rounded-[1.6rem] border bg-slate-50 shadow-none md:rounded-2xl">
           <CardContent className="space-y-4 p-5">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div className="flex items-center gap-2">

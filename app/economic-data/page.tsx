@@ -239,7 +239,7 @@ export default function EconomicDataPage() {
         <RangeActions period={period} setPeriod={setPeriod} language={language} />
       }
     >
-      <div className="space-y-8">
+      <div className="space-y-6 md:space-y-8">
         <Card className="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(248,250,252,0.92))] shadow-[0_22px_70px_-48px_rgba(15,23,42,0.45)]">
           <CardContent className="space-y-6 p-6 md:p-8">
             <div className="space-y-3">
@@ -272,8 +272,8 @@ export default function EconomicDataPage() {
           </CardContent>
         </Card>
 
-        <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_380px]">
-          <div className="space-y-10">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px] xl:gap-8">
+          <div className="space-y-8 md:space-y-10">
             <SectionBlock
               title={t('economic.inflation_title')}
               description={t('economic.inflation_desc')}

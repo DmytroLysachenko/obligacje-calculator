@@ -541,7 +541,7 @@ export const ComparisonContainer: React.FC = () => {
 
             {!resultsA && !isCalculating ? (
               <Card className="border shadow-sm">
-                <CardContent className="space-y-6 p-6 md:p-8">
+                <CardContent className="space-y-6 p-5 md:p-8">
                   <div className="space-y-3">
                     <div className="inline-flex items-center gap-2 rounded-full border bg-muted px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-700">
                       <Scale className="h-3.5 w-3.5 text-primary" />
@@ -582,10 +582,10 @@ export const ComparisonContainer: React.FC = () => {
 
             {isCalculating && !resultsA ? (
               <div className="space-y-6">
-                <Skeleton className="h-[360px] w-full rounded-3xl" />
+                <Skeleton className="h-[300px] w-full rounded-[1.8rem] md:h-[360px] md:rounded-3xl" />
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                  <Skeleton className="h-[220px] rounded-3xl" />
-                  <Skeleton className="h-[220px] rounded-3xl" />
+                  <Skeleton className="h-[180px] rounded-[1.6rem] md:h-[220px] md:rounded-3xl" />
+                  <Skeleton className="h-[180px] rounded-[1.6rem] md:h-[220px] md:rounded-3xl" />
                 </div>
               </div>
             ) : null}
