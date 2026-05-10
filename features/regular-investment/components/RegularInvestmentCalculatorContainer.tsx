@@ -1,14 +1,14 @@
 'use client';
 
 import React from 'react';
-import { CheckCircle2, PiggyBank, TrendingUp } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { CheckCircle2, PiggyBank } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { RecalculateButton } from '@/shared/components/RecalculateButton';
+import { ScenarioReadyPanel } from '@/shared/components/ScenarioReadyPanel';
 import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
 import { useRegularInvestmentCalculator } from '../hooks/useRegularInvestmentCalculator';
 import { RegularInvestmentChart } from './RegularInvestmentChart';
@@ -95,59 +95,26 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
 
           <section className="space-y-6">
             {!results && !isCalculating ? (
-              <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-                <CardContent className="space-y-5 p-5 md:p-8">
-                  <div className="space-y-3">
-                    <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
-                      <TrendingUp className="h-3.5 w-3.5 text-primary" />
-                      {t('bonds.simulation.ready')}
-                    </div>
-                    <h3 className="text-3xl font-black tracking-tight text-slate-950">
-                      {t('bonds.regular_simulation.ready_title')}
-                    </h3>
-                    <p className="max-w-3xl text-sm leading-8 text-slate-600">
-                      {t('bonds.regular_simulation.ready_desc')}
-                    </p>
-                  </div>
-
-                  <div className="grid gap-4 md:grid-cols-3">
-                    <Card className="rounded-[1.75rem] border border-slate-200 bg-slate-50 shadow-none">
-                      <CardContent className="space-y-2 p-5">
-                        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
-                          {t('bonds.regular_simulation.ready_steps.plan.title')}
-                        </p>
-                        <p className="text-sm leading-7 text-slate-600">
-                          {t('bonds.regular_simulation.ready_steps.plan.desc')}
-                        </p>
-                      </CardContent>
-                    </Card>
-                    <Card className="rounded-[1.75rem] border border-slate-200 bg-slate-50 shadow-none">
-                      <CardContent className="space-y-2 p-5">
-                        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
-                          {t('bonds.regular_simulation.ready_steps.timing.title')}
-                        </p>
-                        <p className="text-sm leading-7 text-slate-600">
-                          {t('bonds.regular_simulation.ready_steps.timing.desc')}
-                        </p>
-                      </CardContent>
-                    </Card>
-                    <Card className="rounded-[1.75rem] border border-slate-200 bg-slate-50 shadow-none">
-                      <CardContent className="space-y-2 p-5">
-                        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
-                          {t('bonds.regular_simulation.ready_steps.advanced.title')}
-                        </p>
-                        <p className="text-sm leading-7 text-slate-600">
-                          {t('bonds.regular_simulation.ready_steps.advanced.desc')}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </div>
-
-                  <p className="text-sm leading-7 text-slate-600">
-                    {t('bonds.simulation.results_stable')}
-                  </p>
-                </CardContent>
-              </Card>
+              <ScenarioReadyPanel
+                badge={t('bonds.simulation.ready')}
+                title={t('bonds.regular_simulation.ready_title')}
+                description={t('bonds.regular_simulation.ready_desc')}
+                steps={[
+                  {
+                    title: t('bonds.regular_simulation.ready_steps.plan.title'),
+                    description: t('bonds.regular_simulation.ready_steps.plan.desc'),
+                  },
+                  {
+                    title: t('bonds.regular_simulation.ready_steps.timing.title'),
+                    description: t('bonds.regular_simulation.ready_steps.timing.desc'),
+                  },
+                  {
+                    title: t('bonds.regular_simulation.ready_steps.advanced.title'),
+                    description: t('bonds.regular_simulation.ready_steps.advanced.desc'),
+                  },
+                ]}
+                footerText={t('bonds.simulation.results_stable')}
+              />
             ) : null}
 
             {isCalculating && !results ? <LoadingState /> : null}

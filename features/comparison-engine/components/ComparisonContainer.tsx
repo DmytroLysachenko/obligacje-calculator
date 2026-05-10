@@ -32,7 +32,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { CheckCircle2, FileSpreadsheet, History, LineChart, Scale, TriangleAlert } from 'lucide-react';
+import { FileSpreadsheet, History, LineChart, Scale, TriangleAlert } from 'lucide-react';
 import { CalculationResult, TaxStrategy } from '@/features/bond-core/types';
 import { useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
@@ -45,6 +45,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
+import { ScenarioReadyPanel } from '@/shared/components/ScenarioReadyPanel';
 import { convertTimelineToCSV, downloadFile } from '@/shared/lib/csv-utils';
 import { toDateString } from '@/shared/lib/date-timing';
 import { InterestPayout } from '@/features/bond-core/types';
@@ -540,44 +541,27 @@ export const ComparisonContainer: React.FC = () => {
             </div>
 
             {!resultsA && !isCalculating ? (
-              <Card className="border shadow-sm">
-                <CardContent className="space-y-6 p-5 md:p-8">
-                  <div className="space-y-3">
-                    <div className="inline-flex items-center gap-2 rounded-full border bg-muted px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-700">
-                      <Scale className="h-3.5 w-3.5 text-primary" />
-                      {t('comparison.ready_to_compare')}
-                    </div>
-                    <h3 className="text-2xl font-black tracking-tight text-slate-900">
-                      Compare two committed scenarios, not two moving targets.
-                    </h3>
-                    <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
-                      Set the shared base first, change scenario overrides only if needed, then run one clean comparison.
-                      Start with the scenario summary before reading the chart row by row.
-                    </p>
-                  </div>
-
-                  <div className="grid gap-3 md:grid-cols-3">
-                    <ReadyStep
-                      title="Shared base"
-                      description="Amount, dates, inflation path, and tax wrapper."
-                    />
-                    <ReadyStep
-                      title="Scenario overrides"
-                      description="Bond type and optional per-scenario adjustments."
-                    />
-                    <ReadyStep
-                      title="Committed result"
-                      description="Run comparison, then inspect snapshot, chart, and table."
-                    />
-                  </div>
-
-                  <div className="max-w-xs">
-                    <Button onClick={() => calculate()} className="w-full">
-                      {t('common.calculate')}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+              <ScenarioReadyPanel
+                badge={t('comparison.ready_to_compare')}
+                title="Compare two committed scenarios, not two moving targets."
+                description="Set the shared base first, change scenario overrides only if needed, then run one clean comparison. Start with the scenario summary before reading the chart row by row."
+                steps={[
+                  {
+                    title: 'Shared base',
+                    description: 'Amount, dates, inflation path, and tax wrapper.',
+                  },
+                  {
+                    title: 'Scenario overrides',
+                    description: 'Bond type and optional per-scenario adjustments.',
+                  },
+                  {
+                    title: 'Committed result',
+                    description: 'Run comparison, then inspect snapshot, chart, and table.',
+                  },
+                ]}
+                ctaLabel={t('common.calculate')}
+                onClick={() => calculate()}
+              />
             ) : null}
 
             {isCalculating && !resultsA ? (
@@ -726,22 +710,26 @@ export const ComparisonContainer: React.FC = () => {
                             </div>
                           ) : null}
                           <div className="grid gap-4 md:grid-cols-2">
-                            <ReadyStep
-                              title={language === 'pl' ? 'Poziom koncowy' : 'End level'}
-                              description={
-                                language === 'pl'
+                            <div className="rounded-2xl border bg-white p-4">
+                              <p className="text-sm font-bold text-slate-900">
+                                {language === 'pl' ? 'Poziom koncowy' : 'End level'}
+                              </p>
+                              <p className="mt-1 text-xs leading-6 text-muted-foreground">
+                                {language === 'pl'
                                   ? 'Pokazuje, ktory scenariusz konczy wyzej przy tych samych zalozeniach.'
-                                  : 'Shows which scenario finishes higher under the same assumptions.'
-                              }
-                            />
-                            <ReadyStep
-                              title={language === 'pl' ? 'Rytm aktualizacji' : 'Update rhythm'}
-                              description={
-                                language === 'pl'
+                                  : 'Shows which scenario finishes higher under the same assumptions.'}
+                              </p>
+                            </div>
+                            <div className="rounded-2xl border bg-white p-4">
+                              <p className="text-sm font-bold text-slate-900">
+                                {language === 'pl' ? 'Rytm aktualizacji' : 'Update rhythm'}
+                              </p>
+                              <p className="mt-1 text-xs leading-6 text-muted-foreground">
+                                {language === 'pl'
                                   ? 'Plaskie odcinki nie oznaczaja stagnacji. Czasem oznaczaja tylko rzadsze kapitalizowanie lub wyplate.'
-                                  : 'Flat segments do not automatically mean stagnation. They can simply reflect slower crediting or payout timing.'
-                              }
-                            />
+                                  : 'Flat segments do not automatically mean stagnation. They can simply reflect slower crediting or payout timing.'}
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </SecondaryInsightAccordion>
@@ -822,24 +810,6 @@ export const ComparisonContainer: React.FC = () => {
     </CalculatorPageShell>
   );
 };
-
-const ReadyStep = ({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) => (
-  <div className="rounded-2xl border bg-white p-4">
-    <div className="flex items-start gap-3">
-      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-      <div className="space-y-1">
-        <p className="text-sm font-bold text-slate-900">{title}</p>
-        <p className="text-xs leading-6 text-muted-foreground">{description}</p>
-      </div>
-    </div>
-  </div>
-);
 
 const ActionMetric = ({
   label,
