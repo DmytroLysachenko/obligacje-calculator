@@ -591,14 +591,17 @@ export const RetirementPlannerContainer: React.FC = () => {
               description="Set the starting capital, withdrawal amount, horizon, and supported bond family. Then run one committed calculation before reading the balance path."
               steps={[
                 {
+                  id: 'balance-path',
                   title: 'Stage one balance path',
                   description: `Start from ${formatCurrency(inputs.initialCapital)} and one fixed withdrawal amount.`,
                 },
                 {
+                  id: 'horizon',
                   title: 'Commit one horizon',
                   description: `The current run is staged for ${formatHorizonMonths(inputs.horizonYears * 12, 'en')}.`,
                 },
                 {
+                  id: 'narrow-read',
                   title: 'Read it narrowly',
                   description: 'This is a steady-rate depletion model, not a complete retirement advice engine.',
                 },

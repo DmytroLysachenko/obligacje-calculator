@@ -32,7 +32,8 @@
     "context_rates": "Stopy referencyjne",
     "retry": "Spróbuj ponownie",
     "version": "Wersja",
-    "sync_data": "Synchronizacja"
+    "sync_data": "Synchronizacja",
+    "refresh": "Odswiez"
   },
   "strategy_hints": {
     "title": "Inteligentne Wskazówki",
@@ -269,7 +270,25 @@
         "how_it_works": "Regularne inwestowanie śledzi każdy miesięczny zakup jako osobną partię. Ta symulacja liczy odsetki, podatki i opłaty dla każdej partii osobno zgodnie z jej własnym harmonogramem zapadalności."
       }
     },
-    "cycle": "Cykl",
+      "regular_simulation": {
+        "ready_title": "Zbuduj jeden plan regularny, a potem uruchom jedna zatwierdzona symulacje.",
+        "ready_desc": "Najpierw ustaw kwote, czestotliwosc, horyzont i typ obligacji. Zaawansowane zalozenia maja pozostac drugorzedne, dopoki nie sa potrzebne.",
+        "ready_steps": {
+          "plan": {
+            "title": "Plan wplat",
+            "desc": "Kwota, rytm wplat i typ obligacji dla calej sciezki."
+          },
+          "timing": {
+            "title": "Sciezka czasu",
+            "desc": "Data startu, horyzont, tryb wyjscia i opakowanie podatkowe."
+          },
+          "advanced": {
+            "title": "Opcjonalne zaawansowane",
+            "desc": "Inflacja, rollover i ustawienia wykresu tylko wtedy, gdy sa potrzebne."
+          }
+        }
+      },
+      "cycle": "Cykl",
     "rate_source": "Źródło stopy",
     "early_exit_payout": "Wypłata przy wcześniejszym wyjściu",
     "wait_capitalization": "Poczekaj! Okazja do kapitalizacji",
@@ -470,6 +489,32 @@
     "current_yield_placeholder": "5,75%",
     "demo_name": "Portfel Demo",
     "demo_description": "Przykładowy portfel z wieloma rodzajami obligacji",
+    "empty_badge": "Punkt startowy notatnika",
+    "import_json": "Importuj JSON",
+    "stored_portfolios": "Zapisane portfele",
+    "stored_portfolios_desc": "Otwieraj jeden notatnik naraz i traktuj go jako roboczy zapis rzeczywistych partii obligacji.",
+    "status_public": "Link publiczny",
+    "status_private": "Prywatny szkic",
+    "usage_label": "Najlepsze zastosowanie",
+    "usage_desc": "Partie, terminy i notatki",
+    "scope_title": "Do czego sluzy ten notatnik",
+    "scope_desc": "Notatnik ma przechowywac rzeczywiste partie i pozwalac do nich wracac. Ma wspierac kalkulatory, a nie zamieniac sie w kolejny dashboard.",
+    "my_first_portfolio": "Moj pierwszy portfel",
+    "scenario_saved": "Notatnik zapisanych scenariuszy",
+    "ready_steps": {
+      "create": {
+        "title": "Utworz jeden notatnik",
+        "desc": "Zacznij od prostego portfela dla partii obligacji, ktore rzeczywiscie posiadasz."
+      },
+      "store": {
+        "title": "Zapisz realne partie",
+        "desc": "Dodaj daty zakupu, liczbe sztuk i typy obligacji, aby kolejne widoki opieraly sie na realnych pozycjach."
+      },
+      "inspect": {
+        "title": "Sprawdz terminy",
+        "desc": "Wroc do notatnika pozniej, aby przejrzec wyplaty, zapadalnosci i dane do eksportu."
+      }
+    },
     "public": "Publiczny",
     "private": "Prywatny",
     "tax_optimized_congrats": "Twój portfel jest zoptymalizowany pod kątem podatkowym! ✨",

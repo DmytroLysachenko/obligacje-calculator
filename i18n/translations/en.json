@@ -31,6 +31,7 @@
     "how_it_works": "How it works",
     "context_rates": "Context Rates",
     "retry": "Retry",
+    "refresh": "Refresh",
     "version": "Version",
     "sync_data": "Sync Data"
   },
@@ -305,6 +306,24 @@
         }
       }
     },
+    "regular_simulation": {
+      "ready_title": "Build one recurring plan, then run one committed simulation.",
+      "ready_desc": "Set contribution amount, frequency, horizon, and bond type first. Advanced assumptions stay secondary until you actually need them.",
+      "ready_steps": {
+        "plan": {
+          "title": "Contribution plan",
+          "desc": "Amount, cadence, and bond type for the recurring path."
+        },
+        "timing": {
+          "title": "Timing path",
+          "desc": "Start date, horizon, withdrawal mode, and tax wrapper."
+        },
+        "advanced": {
+          "title": "Optional advanced",
+          "desc": "Inflation, rollover, and display assumptions only when needed."
+        }
+      }
+    },
     "cycle": "Cycle",
     "rate_source": "Rate Source",
     "early_exit_payout": "Early Exit Payout",
@@ -569,11 +588,37 @@
     "storage_unavailable": "Portfolio storage is temporarily unavailable.",
     "guest_mode": "Guest notebook mode",
     "guest_desc": "You can create and manage a local guest notebook even when sign-in is not configured.",
+    "empty_badge": "Notebook starting point",
     "default_description": "Primary savings",
     "estimated_yield_placeholder": "~5.2%",
     "current_yield_placeholder": "5.75%",
     "demo_name": "Demo Portfolio",
     "demo_description": "Example portfolio with multiple bond types",
+    "import_json": "Import JSON",
+    "stored_portfolios": "Stored portfolios",
+    "stored_portfolios_desc": "Open one notebook at a time and use it as a working record of real bond lots.",
+    "status_public": "Public link",
+    "status_private": "Private draft",
+    "usage_label": "Best use",
+    "usage_desc": "Track lots, maturities, and notes",
+    "scope_title": "What this notebook is for",
+    "scope_desc": "Use the notebook to store real lots and revisit them later. It should support calculator work, not replace it with another dashboard.",
+    "my_first_portfolio": "My first portfolio",
+    "scenario_saved": "Saved scenario notebook",
+    "ready_steps": {
+      "create": {
+        "title": "Create one notebook",
+        "desc": "Start with a clean portfolio name for the bond lots you actually hold."
+      },
+      "store": {
+        "title": "Store real lots",
+        "desc": "Record purchase dates, quantities, and bond types so later views stay grounded in real positions."
+      },
+      "inspect": {
+        "title": "Inspect maturities",
+        "desc": "Open the notebook later to review payouts, maturities, and exportable context."
+      }
+    },
     "public": "Public",
     "private": "Private",
     "tax_optimized_congrats": "Your portfolio is tax-optimized! ✨",

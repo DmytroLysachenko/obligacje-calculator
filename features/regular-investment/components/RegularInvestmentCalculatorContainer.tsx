@@ -101,14 +101,17 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
                 description={t('bonds.regular_simulation.ready_desc')}
                 steps={[
                   {
+                    id: 'plan',
                     title: t('bonds.regular_simulation.ready_steps.plan.title'),
                     description: t('bonds.regular_simulation.ready_steps.plan.desc'),
                   },
                   {
+                    id: 'timing',
                     title: t('bonds.regular_simulation.ready_steps.timing.title'),
                     description: t('bonds.regular_simulation.ready_steps.timing.desc'),
                   },
                   {
+                    id: 'advanced',
                     title: t('bonds.regular_simulation.ready_steps.advanced.title'),
                     description: t('bonds.regular_simulation.ready_steps.advanced.desc'),
                   },

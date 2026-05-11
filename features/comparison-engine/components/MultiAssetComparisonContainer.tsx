@@ -290,19 +290,22 @@ export const MultiAssetComparisonContainer = () => {
               badge="Reference run"
               title="Ready to inspect one historical run?"
               description="Set a start point, initial sum, and monthly contribution. Then recalculate one committed historical scenario before comparing the asset paths."
-              steps={[
-                {
-                  title: 'Pick one entry point',
-                  description: 'The start month matters. Keep it explicit before reading any winner.',
-                },
-                {
-                  title: 'Commit one cash path',
-                  description: 'Use one initial sum and one monthly contribution for the whole run.',
-                },
-                {
-                  title: 'Read it as context',
-                  description: 'This is a historical reference comparison, not a full backtesting suite.',
-                },
+                steps={[
+                  {
+                    id: 'entry-point',
+                    title: 'Pick one entry point',
+                    description: 'The start month matters. Keep it explicit before reading any winner.',
+                  },
+                  {
+                    id: 'cash-path',
+                    title: 'Commit one cash path',
+                    description: 'Use one initial sum and one monthly contribution for the whole run.',
+                  },
+                  {
+                    id: 'context-only',
+                    title: 'Read it as context',
+                    description: 'This is a historical reference comparison, not a full backtesting suite.',
+                  },
               ]}
               footerText="The floating action appears as soon as the scenario is ready for its first run."
             />

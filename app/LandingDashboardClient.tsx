@@ -29,6 +29,12 @@ type ToolItem = {
   tone: string;
 };
 
+type HomeStepItem = {
+  id: string;
+  title: string;
+  description: string;
+};
+
 function HomeToolCard({ item }: { item: ToolItem }) {
   return (
     <Link href={item.href} className="block h-full">
@@ -111,20 +117,23 @@ export function LandingDashboardClient() {
     );
   }, []);
 
-  const stepCopy =
+  const stepCopy: HomeStepItem[] =
     language === 'pl'
       ? [
           {
+            id: 'learn-rules',
             title: 'Poznaj zasady',
             description:
               'Zacznij od edukacji albo od razu od pojedynczego kalkulatora, jesli znasz typ obligacji i horyzont.',
           },
           {
+            id: 'run-one',
             title: 'Uruchom jedno obliczenie',
             description:
               'Wprowadz jeden zestaw danych, policz scenariusz i sprawdz wynik bez bocznych paneli ani rozpraszaczy.',
           },
           {
+            id: 'expand-later',
             title: 'Rozszerz dopiero potem',
             description:
               'Porownanie, regularne inwestowanie, drabina i notatnik maja byc drugim krokiem, nie pierwszym widokiem.',
@@ -132,16 +141,19 @@ export function LandingDashboardClient() {
         ]
       : [
           {
+            id: 'learn-rules',
             title: 'Learn the rules',
             description:
               'Start with education or go straight to the single calculator if you already know the bond type and horizon.',
           },
           {
+            id: 'run-one',
             title: 'Run one calculation',
             description:
               'Enter one committed scenario, calculate it cleanly, and read the result without dashboard side panels.',
           },
           {
+            id: 'expand-later',
             title: 'Expand only after that',
             description:
               'Comparison, recurring investing, ladder strategy, and notebook should stay secondary, not first.',
@@ -285,7 +297,7 @@ export function LandingDashboardClient() {
         <div className="grid gap-4 lg:grid-cols-3">
           {stepCopy.map((step) => (
             <HomeStep
-              key={step.title}
+              key={step.id}
               title={step.title}
               description={step.description}
             />
@@ -318,9 +330,9 @@ export function LandingDashboardClient() {
               </p>
             ) : (
               <div className="grid gap-3 md:grid-cols-3">
-                {savedScenarioNames.map((name) => (
+                {savedScenarioNames.map((name, index) => (
                   <div
-                    key={name}
+                    key={`${name}-${index}`}
                     className="surface-panel rounded-2xl px-4 py-3 text-sm font-semibold text-slate-900"
                   >
                     {name}

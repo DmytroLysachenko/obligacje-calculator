@@ -547,14 +547,17 @@ export const ComparisonContainer: React.FC = () => {
                 description="Set the shared base first, change scenario overrides only if needed, then run one clean comparison. Start with the scenario summary before reading the chart row by row."
                 steps={[
                   {
+                    id: 'shared-base',
                     title: 'Shared base',
                     description: 'Amount, dates, inflation path, and tax wrapper.',
                   },
                   {
+                    id: 'scenario-overrides',
                     title: 'Scenario overrides',
                     description: 'Bond type and optional per-scenario adjustments.',
                   },
                   {
+                    id: 'committed-result',
                     title: 'Committed result',
                     description: 'Run comparison, then inspect snapshot, chart, and table.',
                   },

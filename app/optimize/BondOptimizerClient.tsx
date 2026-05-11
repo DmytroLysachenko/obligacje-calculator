@@ -520,19 +520,22 @@ export default function BondOptimizerClient() {
               badge="Support surface"
               title="Ready to sort one scenario?"
               description="Set the amount, horizon, and purchase date. Then run one committed scenario to compare modeled payouts across bond types."
-              steps={[
-                {
-                  title: 'Set the amount',
-                  description: `Start from ${formatCurrency(inputs.initialInvestment)} or adjust it before the first run.`,
-                },
-                {
-                  title: 'Choose the horizon',
-                  description: `This scenario is staged for ${inputs.investmentHorizonMonths} months.`,
-                },
-                {
-                  title: 'Keep the scope narrow',
-                  description: 'Use the ranking as a payout sorter, not as a full recommendation engine.',
-                },
+                steps={[
+                  {
+                    id: 'amount',
+                    title: 'Set the amount',
+                    description: `Start from ${formatCurrency(inputs.initialInvestment)} or adjust it before the first run.`,
+                  },
+                  {
+                    id: 'horizon',
+                    title: 'Choose the horizon',
+                    description: `This scenario is staged for ${inputs.investmentHorizonMonths} months.`,
+                  },
+                  {
+                    id: 'narrow-scope',
+                    title: 'Keep the scope narrow',
+                    description: 'Use the ranking as a payout sorter, not as a full recommendation engine.',
+                  },
               ]}
               footerText="Advanced assumptions stay available, but they should not distract from one clean ranking run."
             />

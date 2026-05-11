@@ -187,14 +187,17 @@ export const BondCalculatorContainer: React.FC = () => {
                 description={t('bonds.simulation.ready_desc')}
                 steps={[
                   {
+                    id: 'primary',
                     title: t('bonds.simulation.ready_steps.primary.title'),
                     description: t('bonds.simulation.ready_steps.primary.desc'),
                   },
                   {
+                    id: 'timing',
                     title: t('bonds.simulation.ready_steps.timing.title'),
                     description: t('bonds.simulation.ready_steps.timing.desc'),
                   },
                   {
+                    id: 'advanced',
                     title: t('bonds.simulation.ready_steps.advanced.title'),
                     description: t('bonds.simulation.ready_steps.advanced.desc'),
                   },

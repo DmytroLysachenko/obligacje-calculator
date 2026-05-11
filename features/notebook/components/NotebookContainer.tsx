@@ -19,6 +19,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { PortfolioDetails } from './PortfolioDetails';
 
+type NotebookStepItem = {
+  id: string;
+  title: string;
+  description: string;
+};
+
 function SectionBlock({
   title,
   description,
@@ -66,10 +72,7 @@ const EmptyPortfolioState = ({
   createLabel: string;
   demoLabel: string;
   importLabel: string;
-  steps: Array<{
-    title: string;
-    description: string;
-  }>;
+  steps: NotebookStepItem[];
 }) => (
   <Card className="overflow-hidden rounded-[2rem] border border-slate-200/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.88),rgba(248,250,252,0.92))] shadow-[0_22px_60px_-48px_rgba(15,23,42,0.45)] backdrop-blur">
     <CardContent className="space-y-6 p-6 md:p-8">
@@ -89,7 +92,7 @@ const EmptyPortfolioState = ({
       <div className="grid gap-4 lg:grid-cols-3">
         {steps.map((step) => (
           <div
-            key={step.title}
+            key={step.id}
             className="rounded-[1.75rem] border border-white/80 bg-white/75 p-5 shadow-[0_16px_40px_-34px_rgba(15,23,42,0.45)] backdrop-blur"
           >
             <div className="flex items-start gap-3">
@@ -205,16 +208,19 @@ export const NotebookContainer: React.FC = () => {
     fetchPortfolios();
   }, [fetchPortfolios]);
 
-  const emptyStateSteps = [
+  const emptyStateSteps: NotebookStepItem[] = [
     {
+      id: 'create',
       title: t('notebook.ready_steps.create.title'),
       description: t('notebook.ready_steps.create.desc'),
     },
     {
+      id: 'store',
       title: t('notebook.ready_steps.store.title'),
       description: t('notebook.ready_steps.store.desc'),
     },
     {
+      id: 'inspect',
       title: t('notebook.ready_steps.inspect.title'),
       description: t('notebook.ready_steps.inspect.desc'),
     },
@@ -226,7 +232,7 @@ export const NotebookContainer: React.FC = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: t('notebook.new_portfolio'),
+          name: t('notebook.my_first_portfolio'),
           description: t('notebook.default_description'),
         }),
       });

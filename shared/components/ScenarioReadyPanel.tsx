@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
 interface ReadyStepItem {
+  id: string;
   title: string;
   description: string;
 }
@@ -20,7 +21,10 @@ interface ScenarioReadyPanelProps {
   footerText?: string;
 }
 
-function ReadyStepCard({ title, description }: ReadyStepItem) {
+function ReadyStepCard({
+  title,
+  description,
+}: Pick<ReadyStepItem, 'title' | 'description'>) {
   return (
     <Card className="surface-soft rounded-[1.75rem]">
       <CardContent className="space-y-2 p-5">
@@ -61,7 +65,7 @@ export function ScenarioReadyPanel({
         <div className="grid gap-4 md:grid-cols-3">
           {steps.map((step) => (
             <ReadyStepCard
-              key={step.title}
+              key={step.id}
               title={step.title}
               description={step.description}
             />
