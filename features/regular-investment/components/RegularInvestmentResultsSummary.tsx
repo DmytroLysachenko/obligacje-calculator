@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { RegularInvestmentResult } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
-import { Calendar, FileSpreadsheet, Wallet } from 'lucide-react';
+import { Calendar, FileSpreadsheet } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
 import { convertLotsToCSV, downloadFile } from '@/shared/lib/csv-utils';
@@ -47,7 +47,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
       maximumFractionDigits: 0,
     }).format(value);
 
-  const stats: SummaryStat[] = [
+  const primaryStats: SummaryStat[] = [
     {
       label: t('bonds.total_invested'),
       value: formatCurrency(results.totalInvested),
@@ -80,6 +80,9 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
           ? 'Sila nabywcza na dacie koncowej.'
           : 'Inflation-adjusted purchasing power at the end date.',
     },
+  ];
+
+  const supportingStats: SummaryStat[] = [
     {
       label: t('bonds.real_cagr'),
       value: `${results.realAnnualizedReturn.toFixed(2)}%`,
@@ -179,13 +182,25 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
       />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {stats.map((stat) => (
+        {primaryStats.map((stat) => (
           <ResultMetricCard
             key={stat.label}
             label={stat.label}
             value={stat.value}
             description={stat.helper}
           />
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {supportingStats.map((stat) => (
+          <Card key={stat.label} className="rounded-2xl border shadow-none">
+            <CardContent className="space-y-2 p-5">
+              <p className="text-sm font-semibold text-slate-500">{stat.label}</p>
+              <p className="text-2xl font-black tracking-tight text-slate-950">{stat.value}</p>
+              <p className="text-sm leading-6 text-slate-600">{stat.helper}</p>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
@@ -202,7 +217,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                   : 'Review how much capital each purchase year contributed to the final outcome.'}
               </CardDescription>
             </div>
-            <Badge variant="outline" className="border-slate-200 bg-slate-50 text-[10px] font-black uppercase tracking-wide text-slate-700">
+            <Badge variant="outline" className="border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700">
               {language === 'pl' ? 'Roczniki' : 'Buckets'}
             </Badge>
           </CardHeader>
@@ -251,6 +266,11 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                 ? 'Ostatnie zakupy pomagaja skontrolowac czas wejscia, daty zapadalnosci i wartosc netto pojedynczych partii.'
                 : 'The latest purchases help verify timing, maturity dates, and per-lot net value.'}
             </CardDescription>
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-3 text-sm leading-6 text-slate-600">
+              {language === 'pl'
+                ? 'Najpierw przeczytaj karty podsumowania i roczniki. Pojedyncze partie sa tylko szybka kontrola czasu zakupu i zapadalnosci.'
+                : 'Start with the summary cards and yearly buckets. Individual lots are only a quick check of purchase timing and maturity dates.'}
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 gap-3">
@@ -280,13 +300,13 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                   </div>
                   <div className="mt-4 grid grid-cols-2 gap-3 text-sm md:grid-cols-4">
                     <div>
-                      <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                      <p className="text-xs font-semibold text-muted-foreground">
                         {t('regular_summary.invested')}
                       </p>
                       <p className="mt-1 font-medium">{formatCurrency(lot.investedAmount)}</p>
                     </div>
                     <div>
-                      <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                      <p className="text-xs font-semibold text-muted-foreground">
                         {t('regular_summary.interest')}
                       </p>
                       <p className="mt-1 font-medium text-emerald-700">
@@ -294,7 +314,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                      <p className="text-xs font-semibold text-muted-foreground">
                         {t('bonds.tax')}
                       </p>
                       <p className="mt-1 font-medium text-amber-700">
@@ -302,7 +322,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                      <p className="text-xs font-semibold text-muted-foreground">
                         {t('bonds.early_withdrawal_fee')}
                       </p>
                       <p className="mt-1 font-medium">
@@ -312,22 +332,6 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                   </div>
                 </div>
               ))}
-            </div>
-
-            <div className="rounded-2xl border bg-muted/20 p-4">
-              <div className="flex items-start gap-3">
-                <Wallet className="mt-0.5 h-5 w-5 text-primary" />
-                <div className="space-y-2">
-                  <p className="text-sm font-semibold text-foreground">
-                    {language === 'pl' ? 'Jak czytac te partie' : 'How to read these lots'}
-                  </p>
-                  <p className="text-sm leading-6 text-muted-foreground">
-                    {language === 'pl'
-                      ? 'Najpierw sprawdz karty podsumowania, potem roczniki, a pojedyncze partie traktuj jako kontrole czasu zakupu i zapadalnosci.'
-                      : 'Start with the summary cards, then yearly buckets, and use individual lots only to verify purchase timing and maturity dates.'}
-                  </p>
-                </div>
-              </div>
             </div>
           </CardContent>
         </Card>

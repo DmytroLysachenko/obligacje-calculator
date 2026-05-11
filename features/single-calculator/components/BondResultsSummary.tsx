@@ -20,32 +20,6 @@ interface BondResultsSummaryProps {
   onExportPDF?: () => void;
 }
 
-function SectionBlock({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="space-y-4">
-      <div className="space-y-2">
-        <h3 className="text-2xl font-black tracking-tight text-slate-950">
-          {title}
-        </h3>
-        {description ? (
-          <p className="max-w-3xl text-sm leading-7 text-slate-600">
-            {description}
-          </p>
-        ) : null}
-      </div>
-      {children}
-    </section>
-  );
-}
-
 export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
   results,
   inputs,
@@ -85,7 +59,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
     ? results.netPayoutValue - previousResults.netPayoutValue
     : null;
 
-  const summaryCards = [
+  const primarySummaryCards = [
     {
       label: t('bonds.net_payout'),
       value: formatCurrency(results.netPayoutValue),
@@ -104,6 +78,9 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
           ? 'Roznica pomiedzy kapitalem wplaconym a wyplata netto.'
           : 'Difference between invested capital and the final net payout.',
     },
+  ];
+
+  const secondarySummaryCards = [
     {
       label: t('bonds.real_cagr'),
       value: `${results.realAnnualizedReturn.toFixed(2)}%`,
@@ -161,13 +138,13 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
   const readingGuide =
     language === 'pl'
       ? [
+          'Najpierw przeczytaj wyplate netto i zysk netto, bo to one odpowiadaja na pytanie co zostaje po podatku i kosztach.',
           t('bonds.explanation_inflation'),
-          t('bonds.explanation_tax'),
-          'Dopiero po odczytaniu wyniku i wykresu ma sens schodzic do audytu pojedynczego okresu.',
+          'Dopiero po wyniku i wykresie warto schodzic do sladu pojedynczych okresow.',
         ]
       : [
+          'Start with the net payout and net profit because they answer what is left after tax and costs.',
           t('bonds.explanation_inflation'),
-          t('bonds.explanation_tax'),
           'Only after the headline result and chart should you drop into the per-period audit trace.',
         ];
 
@@ -214,7 +191,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
       />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {summaryCards.map((card) => (
+        {primarySummaryCards.map((card) => (
           <ResultMetricCard
             key={card.label}
             label={card.label}
@@ -222,6 +199,18 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
             description={card.description}
             tone={card.tone}
           />
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {secondarySummaryCards.map((card) => (
+          <Card key={card.label} className="rounded-[1.75rem] border border-slate-200 bg-white shadow-none">
+            <CardContent className="space-y-2 p-5">
+              <p className="text-sm font-semibold text-slate-500">{card.label}</p>
+              <p className={`text-2xl font-black tracking-tight ${card.tone}`}>{card.value}</p>
+              <p className="text-sm leading-6 text-slate-600">{card.description}</p>
+            </CardContent>
+          </Card>
         ))}
       </div>
 
@@ -244,22 +233,32 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
       ) : null}
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-        <SectionBlock
-          title={language === 'pl' ? 'Jak czytac wynik' : 'How to read the result'}
-          description={
-            language === 'pl'
-              ? 'Ta sekcja ma pomoc w interpretacji bez przepychania cie od razu w techniczne szczegoly.'
-              : 'This section should help you interpret the run without forcing you into technical detail immediately.'
-          }
-        >
+        <div className="space-y-6">
           <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-            <CardContent className="space-y-4 p-6">
-              {readingGuide.map((item) => (
-                <div key={item} className="flex items-start gap-3">
-                  <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  <p className="text-sm leading-7 text-slate-600">{item}</p>
-                </div>
-              ))}
+            <CardContent className="space-y-5 p-6">
+              <div className="space-y-2">
+                <h3 className="text-xl font-black tracking-tight text-slate-950">
+                  {language === 'pl' ? 'Jak czytac wynik' : 'How to read the result'}
+                </h3>
+                <p className="text-sm leading-7 text-slate-600">
+                  {language === 'pl'
+                    ? 'Ta sekcja ma uporzadkowac odczyt wyniku bez wypychania cie od razu w techniczne szczegoly.'
+                    : 'This section should keep the interpretation sequence clear without pushing you straight into technical detail.'}
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                {readingGuide.map((item) => (
+                  <div
+                    key={item}
+                    className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-3"
+                  >
+                    <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <p className="text-sm leading-7 text-slate-600">{item}</p>
+                  </div>
+                ))}
+              </div>
+
               {results.isEarlyWithdrawal ? (
                 <div className="rounded-3xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-7 text-amber-950">
                   {language === 'pl'
@@ -269,7 +268,11 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
               ) : null}
             </CardContent>
           </Card>
-        </SectionBlock>
+
+          {results.timeline.length > 0 ? (
+            <CalculationAuditTrace point={results.timeline[0]} />
+          ) : null}
+        </div>
 
         <div className="space-y-6">
           <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
@@ -289,17 +292,13 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
               </div>
 
               {scenarioFacts.map((fact) => (
-                <div key={fact.label}>
-                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">{fact.label}</p>
-                  <p className="mt-1 text-sm font-semibold text-slate-950">{fact.value}</p>
+                <div key={fact.label} className="rounded-2xl border border-slate-200 bg-slate-50/60 px-4 py-3">
+                  <p className="text-sm font-semibold text-slate-500">{fact.label}</p>
+                  <p className="mt-1 text-base font-semibold text-slate-950">{fact.value}</p>
                 </div>
               ))}
             </CardContent>
           </Card>
-
-          {results.timeline.length > 0 ? (
-            <CalculationAuditTrace point={results.timeline[0]} />
-          ) : null}
         </div>
       </div>
     </div>

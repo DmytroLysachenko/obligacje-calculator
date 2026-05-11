@@ -53,9 +53,9 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
   ).toFixed(1);
 
   return (
-    <Card className="overflow-hidden border shadow-sm bg-card">
-      <CardHeader className="border-b bg-muted/20 pb-4">
-        <CardTitle className="flex items-center gap-2 text-lg font-black uppercase tracking-widest text-slate-900">
+    <Card className="overflow-hidden border border-slate-200 bg-white shadow-none">
+      <CardHeader className="border-b bg-slate-50/60 pb-4">
+        <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight text-slate-900">
           <Scale className="h-5 w-5 text-primary" />
           {t('comparison.summary') ?? 'Simulation Summary'}
         </CardTitle>
@@ -76,7 +76,7 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
                 </span>
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground">
+                <p className="text-sm font-semibold text-muted-foreground">
                   {comparisonSnapshotLabel}
                 </p>
                 <p className="text-xl font-black tracking-tight text-slate-900">
@@ -99,7 +99,7 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
               {resultsA.netPayoutValue > resultsB.netPayoutValue ? (
                 <Badge
                   variant="outline"
-                  className="bg-blue-50 text-blue-700 border-blue-200 font-bold uppercase text-[9px] py-1"
+                  className="border-blue-200 bg-blue-50 text-xs font-semibold text-blue-700"
                 >
                   <Scale className="h-3 w-3 mr-1" />
                   {(resultsA.timeline.length / 12) < 4
@@ -109,7 +109,7 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
               ) : (
                 <Badge
                   variant="outline"
-                  className="bg-emerald-50 text-emerald-700 border-emerald-200 font-bold uppercase text-[9px] py-1"
+                  className="border-emerald-200 bg-emerald-50 text-xs font-semibold text-emerald-700"
                 >
                   <Scale className="h-3 w-3 mr-1" />
                   {(resultsB.timeline.length / 12) < 4
@@ -121,7 +121,7 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
               {expectedInflation > 5 ? (
                 <Badge
                   variant="outline"
-                  className="bg-orange-50 text-orange-700 border-orange-200 font-bold uppercase text-[9px] py-1"
+                  className="border-orange-200 bg-orange-50 text-xs font-semibold text-orange-700"
                 >
                   <Zap className="h-3 w-3 mr-1" />
                   {language === 'pl'
@@ -133,7 +133,7 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
               {taxStrategy !== TaxStrategy.STANDARD ? (
                 <Badge
                   variant="outline"
-                  className="bg-purple-50 text-purple-700 border-purple-200 font-bold uppercase text-[9px] py-1"
+                  className="border-purple-200 bg-purple-50 text-xs font-semibold text-purple-700"
                 >
                   <ShieldCheck className="h-3 w-3 mr-1" />
                   {language === 'pl'
@@ -145,9 +145,9 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
           </div>
 
           <div className="w-full md:w-48 flex flex-col gap-2">
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm">
-              <p className="mb-1 text-[9px] font-black uppercase text-muted-foreground">
-                Gap
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-4 text-center">
+              <p className="mb-1 text-sm font-semibold text-muted-foreground">
+                {language === 'pl' ? 'Roznica' : 'Gap'}
               </p>
               <p className="text-2xl font-black text-primary">
                 {Math.abs(
