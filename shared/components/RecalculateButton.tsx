@@ -48,12 +48,12 @@ export const RecalculateButton = ({
       <div className="rounded-[1.55rem] border border-slate-950/10 bg-slate-950 px-4 py-4 text-white shadow-2xl shadow-slate-950/20 sm:rounded-[1.75rem]">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1">
-            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/65">
+            <p className="text-[11px] font-semibold tracking-[0.08em] text-white/65">
               {isInitialRun
                 ? t('common.calculate')
                 : t('common.recalculate')}
             </p>
-            <p className="text-[13px] leading-5 text-white/85 sm:text-sm sm:leading-6">
+            <p className="text-[14px] leading-6 text-white/85 sm:text-[15px] sm:leading-6">
               {helperText}
             </p>
           </div>
@@ -66,7 +66,7 @@ export const RecalculateButton = ({
           <Button
             size="default"
             className={cn(
-              'h-11 w-full rounded-2xl px-5 text-[13px] font-black uppercase tracking-[0.14em] sm:text-sm sm:tracking-[0.18em]',
+              'h-11 w-full rounded-2xl px-5 text-[13px] font-semibold tracking-[0.08em] sm:text-sm',
               isActionable
                 ? 'bg-white text-slate-950 hover:bg-white/90'
                 : 'bg-white/15 text-white/70 hover:bg-white/15',

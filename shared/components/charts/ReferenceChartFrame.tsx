@@ -20,11 +20,11 @@ export function ReferenceChartFrame({
   children,
 }: ReferenceChartFrameProps) {
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-start justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-[11px] text-slate-600">
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-start justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3.5 text-[13px] text-slate-600 md:text-sm">
         <div className="flex min-w-0 items-start gap-2">
           <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-500" />
-          <p className="min-w-0 leading-6">{meta}</p>
+          <p className="min-w-0 leading-7">{meta}</p>
         </div>
         {actions ? <div className="shrink-0">{actions}</div> : null}
       </div>
@@ -32,7 +32,7 @@ export function ReferenceChartFrame({
       {notice ? (
         <div
           className={cn(
-            'rounded-2xl border px-4 py-3 text-[11px] leading-6',
+            'rounded-2xl border px-4 py-3.5 text-[13px] leading-7 md:text-sm',
             noticeTone === 'warning'
               ? 'border-amber-200 bg-amber-50 text-amber-900'
               : 'border-slate-200 bg-white text-slate-600',
@@ -42,7 +42,7 @@ export function ReferenceChartFrame({
         </div>
       ) : null}
 
-      <div className="rounded-[1.75rem] border border-slate-200 bg-white/92 p-3 shadow-[0_18px_40px_-34px_rgba(15,23,42,0.3)]">
+      <div className="rounded-[1.75rem] border border-slate-200 bg-white/92 p-4 shadow-[0_18px_40px_-34px_rgba(15,23,42,0.3)] md:p-5">
         {children}
       </div>
     </div>

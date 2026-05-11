@@ -62,7 +62,7 @@ function RangeActions({
 
   return (
     <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-1.5">
-      <span className="inline-flex items-center gap-1 px-3 text-xs font-medium text-slate-500">
+      <span className="inline-flex items-center gap-1 px-3 text-sm font-medium text-slate-500">
         <CalendarRange className="h-3.5 w-3.5" />
         {language === 'pl' ? 'Zakres danych' : 'Range'}
       </span>
@@ -93,7 +93,7 @@ function ReferenceMetric({
 }) {
   return (
     <div className="surface-panel rounded-3xl px-5 py-4">
-      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+      <p className="text-xs font-semibold tracking-[0.08em] text-slate-500">
         {label}
       </p>
       <p className="mt-2 text-xl font-black text-slate-950">{value}</p>
@@ -164,7 +164,7 @@ function SeriesStatusCard({
               key={row.label}
               className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
             >
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+                <p className="text-xs font-semibold tracking-[0.08em] text-slate-500">
                 {row.label}
               </p>
               <p className="mt-2 text-sm font-medium text-slate-900">{row.value}</p>
@@ -243,7 +243,7 @@ export default function EconomicDataPage() {
         <Card className="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(248,250,252,0.92))] shadow-[0_22px_70px_-48px_rgba(15,23,42,0.45)]">
           <CardContent className="space-y-6 p-6 md:p-8">
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/90 bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/90 bg-white/80 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-slate-700">
                 <Database className="h-3.5 w-3.5 text-primary" />
                 {language === 'pl' ? 'Panel kontekstowy' : 'Reference panel'}
               </div>

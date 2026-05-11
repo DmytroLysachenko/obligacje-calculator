@@ -85,10 +85,10 @@ const SectionHeading = ({
   description: string;
 }) => (
   <div className="space-y-1">
-    <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-700">
+    <h3 className="text-sm font-semibold tracking-[0.08em] text-slate-700">
       {title}
     </h3>
-    <p className="text-xs text-muted-foreground">{description}</p>
+    <p className="text-[15px] leading-7 text-muted-foreground">{description}</p>
   </div>
 );
 
@@ -102,7 +102,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
       return (
         <Card className="w-full border-primary/10 shadow-sm">
           <CardContent className="flex h-[600px] items-center justify-center">
-            <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
+            <p className="text-base font-semibold tracking-[0.08em] text-muted-foreground">
               {t('common.loading')}
             </p>
           </CardContent>
@@ -123,8 +123,8 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
     return (
       <Card className="w-full border-primary/10 shadow-sm">
         <CardHeader className="border-b bg-muted/20 pb-4">
-          <CardTitle className="text-xl">{t('bonds.regular_calculator')}</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-[1.65rem] font-black tracking-tight">{t('bonds.regular_calculator')}</CardTitle>
+          <CardDescription className="text-[15px] leading-7">
             Main contribution plan first. Advanced assumptions stay collapsed until needed.
           </CardDescription>
         </CardHeader>
@@ -137,7 +137,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
 
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <Label className="flex items-center gap-2 font-semibold">
+                  <Label className="flex items-center gap-2 text-[15px] font-semibold">
                   <Target className="h-4 w-4 text-primary" />
                   {t('bonds.savings_goal_opt')}
                 </Label>
@@ -165,7 +165,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                     )
                   }
                 />
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-medium text-muted-foreground">
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">
                   PLN
                 </div>
               </div>
@@ -175,7 +175,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
 
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <Label htmlFor="bondType" className="font-semibold">
+                <Label htmlFor="bondType" className="text-[15px] font-semibold">
                   {t('bonds.bond.type')}
                 </Label>
                 <TooltipProvider>
@@ -204,7 +204,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                           <span className="font-bold">{type}</span>
                           <span
                             className={cn(
-                              'rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wide',
+                              'rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-[0.08em]',
                               getBondSupportMeta(type).tone === 'caution'
                                 ? 'bg-amber-100 text-amber-800'
                                 : getBondSupportMeta(type).tone === 'limited'
@@ -215,7 +215,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                             {getBondSupportMeta(type).shortLabel}
                           </span>
                         </div>
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-sm text-muted-foreground">
                           {definitions[type]?.fullName[language] || type}
                         </span>
                       </div>
@@ -224,7 +224,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                 </SelectContent>
               </Select>
 
-              <div className="rounded-lg border border-primary/5 bg-muted/50 p-3 text-xs space-y-1">
+              <div className="space-y-2 rounded-lg border border-primary/5 bg-muted/50 p-4 text-sm">
                 <div className="flex items-center gap-2 font-semibold text-primary">
                   <Info className="h-3 w-3" />
                   <span>{currentDef.fullName[language]}</span>
@@ -248,7 +248,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Label className="font-semibold">{t('bonds.tax_strategy')}</Label>
+                  <Label className="text-[15px] font-semibold">{t('bonds.tax_strategy')}</Label>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -260,7 +260,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                     </Tooltip>
                   </TooltipProvider>
                 </div>
-                <Badge variant="secondary" className="text-[10px]">
+                <Badge variant="secondary" className="text-[11px] font-medium">
                   {t('comparison.configuration')}
                 </Badge>
               </div>
@@ -293,7 +293,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Label htmlFor="contributionAmount" className="font-semibold">
+                    <Label htmlFor="contributionAmount" className="text-[15px] font-semibold">
                       {t('bonds.monthly_investment')}
                     </Label>
                     <TooltipProvider>
@@ -326,7 +326,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                         onUpdate('contributionAmount', Number(e.target.value))
                       }
                     />
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-medium text-muted-foreground">
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">
                       PLN
                     </div>
                   </div>
@@ -340,7 +340,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                   />
                 </div>
                 {!isDivisibleBy100 && inputs.contributionAmount > 0 ? (
-                  <div className="flex items-center gap-2 text-[10px] font-medium text-destructive">
+                  <div className="flex items-center gap-2 text-xs font-medium text-destructive">
                     <AlertCircle className="h-3 w-3" />
                     <span>{t('bonds.error_100_pln')}</span>
                   </div>
@@ -349,7 +349,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
 
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="frequency" className="font-semibold">
+                  <Label htmlFor="frequency" className="text-[15px] font-semibold">
                     {t('bonds.frequency.label')}
                   </Label>
                   <TooltipProvider>
@@ -391,7 +391,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
             />
 
             <div className="space-y-3">
-              <Label className="font-semibold">{t('bonds.timing.mode.label')}</Label>
+              <Label className="text-[15px] font-semibold">{t('bonds.timing.mode.label')}</Label>
               <div className="flex gap-2">
                 <Button
                   type="button"

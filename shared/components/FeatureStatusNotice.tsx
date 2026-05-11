@@ -64,7 +64,7 @@ export function FeatureStatusPill({
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em]',
+        'inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold tracking-[0.08em]',
         config.pillClassName,
         className,
       )}
@@ -93,7 +93,7 @@ export function FeatureStatusNotice({
   return (
     <div
       className={cn(
-        'surface-panel rounded-[1.8rem] px-5 py-4',
+        'surface-panel rounded-[1.8rem] px-5 py-4 md:px-6 md:py-5',
         config.noticeClassName,
         className,
       )}
@@ -103,14 +103,14 @@ export function FeatureStatusNotice({
         <div className="min-w-0 space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             {eyebrow ? (
-              <span className="text-[10px] font-black uppercase tracking-[0.18em] text-current/65">
+              <span className="text-[11px] font-semibold tracking-[0.08em] text-current/65">
                 {eyebrow}
               </span>
             ) : null}
-            <p className="font-semibold tracking-tight">{title}</p>
+            <p className="text-[15px] font-semibold tracking-tight md:text-base">{title}</p>
             <FeatureStatusPill status={status} />
           </div>
-          <div className="text-sm leading-6">{children}</div>
+          <div className="text-[15px] leading-7">{children}</div>
         </div>
       </div>
     </div>

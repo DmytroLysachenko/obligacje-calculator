@@ -53,17 +53,17 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
   return (
     <div className="space-y-6 pb-6">
       {/* Calculator Mode */}
-      <div className="p-1 mb-4 bg-muted/50 rounded-xl flex gap-1">
+      <div className="mb-4 flex gap-1 rounded-xl bg-muted/50 p-1">
         <Button 
           variant={(!inputs.calculatorMode || inputs.calculatorMode === 'standard') ? 'default' : 'ghost'} 
-          className="flex-1 rounded-lg h-10 text-xs font-bold"
+          className="h-11 flex-1 rounded-lg text-sm font-semibold"
           onClick={() => onUpdate('calculatorMode', 'standard')}
         >
           {t('bonds.standard_payout')}
         </Button>
         <Button 
           variant={inputs.calculatorMode === 'reverse' ? 'default' : 'ghost'} 
-          className="flex-1 rounded-lg h-10 text-xs font-bold"
+          className="h-11 flex-1 rounded-lg text-sm font-semibold"
           onClick={() => onUpdate('calculatorMode', 'reverse')}
         >
           {t('bonds.reverse_target')}
@@ -73,7 +73,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
       {/* Savings Goal */}
       <div className="space-y-3">
         <div className="flex items-center gap-2">
-          <Label className="font-semibold flex items-center gap-2">
+          <Label className="flex items-center gap-2 text-[15px] font-semibold">
             {inputs.calculatorMode === 'reverse' ? t('bonds.target_goal_req') : t('bonds.savings_goal_opt')}
           </Label>
           <Tooltip>
@@ -93,7 +93,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
             value={inputs.savingsGoal || ''}
             onChange={(e) => onUpdate('savingsGoal', e.target.value ? Number(e.target.value) : undefined)}
           />
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium text-xs">
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">
             PLN
           </div>
         </div>
@@ -102,7 +102,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
       {/* Bond Type Selection */}
       <div className="space-y-3">
         <div className="flex items-center gap-2">
-          <Label htmlFor="bondType" className="font-semibold">{t('bonds.bond.type')}</Label>
+          <Label htmlFor="bondType" className="text-[15px] font-semibold">{t('bonds.bond.type')}</Label>
           {currentDef.isInflationIndexed && (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -129,7 +129,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
                     <span className="font-bold">{type}</span>
                     <span
                       className={cn(
-                        "rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wide",
+                        "rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-[0.08em]",
                         getBondSupportMeta(type).tone === 'caution'
                           ? 'bg-amber-100 text-amber-800'
                           : getBondSupportMeta(type).tone === 'limited'
@@ -140,7 +140,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
                       {getBondSupportMeta(type).shortLabel}
                     </span>
                   </div>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-sm text-muted-foreground">
                     {definitions[type]?.fullName[language] || type}
                   </span>
                 </div>
@@ -151,18 +151,18 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
 
         {/* Series Selection */}
         <div className="space-y-2 pt-2">
-          <Label className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">{t('bonds.bond.series')}</Label>
+          <Label className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">{t('bonds.bond.series')}</Label>
           <Select
             value={selectedSeriesId || 'current'}
             onValueChange={(value) => onUpdate('selectedSeriesId', value)}
           >
-            <SelectTrigger className="h-9 text-xs font-bold bg-muted/30">
+            <SelectTrigger className="h-10 bg-muted/30 text-sm font-medium">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="current" className="text-xs font-bold">{t('bonds.offer.current')}</SelectItem>
+              <SelectItem value="current" className="text-sm font-medium">{t('bonds.offer.current')}</SelectItem>
               {availableSeries.map((s) => (
-                <SelectItem key={s.id} value={s.id} className="text-xs">
+                <SelectItem key={s.id} value={s.id} className="text-sm">
                   {s.seriesCode} ({s.firstYearRate}% + {s.baseMargin}%)
                 </SelectItem>
               ))}
@@ -170,7 +170,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
           </Select>
         </div>
         
-        <div className="p-3 bg-primary/5 rounded-lg text-xs space-y-1 border border-primary/10">
+        <div className="space-y-2 rounded-lg border border-primary/10 bg-primary/5 p-4 text-sm">
           <div className="flex items-center gap-2 font-semibold text-primary">
             <Info className="h-3 w-3" />
             <span>{currentDef.fullName[language]}</span>
@@ -196,7 +196,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
             <Label htmlFor="initialInvestment" className="font-semibold">
               {t('bonds.initial_investment')}
             </Label>
-            <span className="text-xs font-medium text-muted-foreground">
+            <span className="text-sm font-medium text-muted-foreground">
               {Math.floor(inputs.initialInvestment / 100)} {t('bonds.units')}
             </span>
           </div>
@@ -217,7 +217,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
               </div>
             </div>
             {!isDivisibleBy100 && inputs.initialInvestment > 0 && (
-              <div className="flex items-center gap-2 text-[10px] font-medium text-destructive">
+              <div className="flex items-center gap-2 text-xs font-medium text-destructive">
                 <AlertCircle className="h-3 w-3" />
                 <span>{t('bonds.error_100_pln')}</span>
               </div>

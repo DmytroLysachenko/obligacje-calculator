@@ -11,10 +11,10 @@ export function ChartSupportNote({
 }) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
-      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+      <p className="text-xs font-semibold tracking-[0.08em] text-slate-500">
         {title}
       </p>
-      <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
+      <p className="mt-2 text-[15px] leading-7 text-slate-600">{description}</p>
     </div>
   );
 }

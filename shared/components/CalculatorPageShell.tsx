@@ -38,7 +38,7 @@ function ShellMetaRow({
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+    <div className="flex flex-wrap items-center gap-3 text-[15px] leading-6 text-muted-foreground">
       {isCalculating ? (
         <span className="inline-flex items-center gap-2">
           <Loader2 className="h-4 w-4 animate-spin" />
@@ -87,19 +87,19 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
   const hasShareAction = hasResults || !!onShare;
 
   return (
-    <div className="space-y-8 pb-20" onKeyDown={onKeyDown}>
-      <header className="surface-shell space-y-4 rounded-[1.9rem] px-5 py-5 md:space-y-5 md:rounded-3xl md:px-8 md:py-6">
+    <div className="space-y-9 pb-20" onKeyDown={onKeyDown}>
+      <header className="surface-shell space-y-4 rounded-[1.9rem] px-5 py-5 md:space-y-5 md:rounded-3xl md:px-8 md:py-7">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-          <div className="max-w-3xl space-y-3 md:space-y-4">
+          <div className="max-w-4xl space-y-3 md:space-y-4">
             <div className="flex items-start gap-3 md:items-center md:gap-4">
               <div className="rounded-2xl bg-primary/10 p-2.5 text-primary md:p-3">
                 {icon}
               </div>
               <div className="space-y-1">
-                <h2 className="text-[1.8rem] font-black tracking-tight text-slate-950 md:text-4xl">
+                <h2 className="text-[2rem] font-black tracking-tight text-slate-950 md:text-[2.85rem]">
                   {title}
                 </h2>
-                <p className="text-sm leading-6 text-muted-foreground md:text-base">
+                <p className="max-w-3xl text-[15px] leading-7 text-muted-foreground md:text-[17px] md:leading-8">
                   {description}
                 </p>
               </div>
@@ -118,7 +118,7 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
                   variant="outline"
                   size="sm"
                   className={cn(
-                    'h-9 gap-2 rounded-xl px-3 text-[11px] font-bold',
+                    'h-10 gap-2 rounded-xl px-4 text-[12px] font-semibold',
                     copied ? 'border-emerald-600 text-emerald-700' : '',
                   )}
                   onClick={handleShare}
@@ -140,7 +140,7 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
 
       {savingsGoal && hasResults ? (
         <Card className="surface-soft rounded-[1.6rem] md:rounded-2xl">
-          <CardContent className="space-y-4 p-5">
+          <CardContent className="space-y-4 p-5 md:p-6">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div className="flex items-center gap-2">
                 {isGoalReached ? (
@@ -148,7 +148,7 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
                 ) : (
                   <Target className="h-5 w-5 text-primary" />
                 )}
-                <span className="font-semibold text-slate-950">
+                <span className="text-[15px] font-semibold text-slate-950 md:text-base">
                   {isGoalReached
                     ? t('bonds.goal_reached')
                     : t('bonds.goal_progress', {
@@ -156,7 +156,7 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
                       })}
                 </span>
               </div>
-              <span className="text-sm font-bold text-slate-700">
+              <span className="text-[15px] font-semibold text-slate-700 md:text-base">
                 {t('bonds.target')}:{' '}
                 {new Intl.NumberFormat(
                   language === 'pl' ? 'pl-PL' : 'en-GB',

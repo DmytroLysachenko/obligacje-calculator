@@ -28,10 +28,10 @@ function ReadyStepCard({
   return (
     <Card className="surface-soft rounded-[1.75rem]">
       <CardContent className="space-y-2 p-5">
-        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
+        <p className="text-xs font-semibold tracking-[0.08em] text-slate-500">
           {title}
         </p>
-        <p className="text-sm leading-7 text-slate-600">{description}</p>
+        <p className="text-[15px] leading-7 text-slate-600">{description}</p>
       </CardContent>
     </Card>
   );
@@ -57,7 +57,7 @@ export function ScenarioReadyPanel({
           <h3 className="text-3xl font-black tracking-tight text-slate-950">
             {title}
           </h3>
-          <p className="max-w-3xl text-sm leading-8 text-slate-600">
+          <p className="max-w-3xl text-[15px] leading-8 text-slate-600 md:text-base">
             {description}
           </p>
         </div>
@@ -81,7 +81,7 @@ export function ScenarioReadyPanel({
         ) : null}
 
         {footerText ? (
-          <p className="text-sm leading-7 text-slate-600">{footerText}</p>
+          <p className="text-[15px] leading-7 text-slate-600">{footerText}</p>
         ) : null}
       </CardContent>
     </Card>

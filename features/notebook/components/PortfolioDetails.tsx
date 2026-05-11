@@ -55,13 +55,13 @@ function PortfolioMiniStat({
 }) {
   return (
     <div className="rounded-[1.5rem] border border-white/80 bg-white/78 px-4 py-4 shadow-[0_16px_32px_-28px_rgba(15,23,42,0.35)] backdrop-blur">
-      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+      <p className="text-xs font-semibold tracking-[0.08em] text-slate-500">
         {label}
       </p>
       <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">
         {value}
       </p>
-      <p className="mt-1 text-xs leading-6 text-slate-600">{description}</p>
+      <p className="mt-1 text-[13px] leading-6 text-slate-600">{description}</p>
     </div>
   );
 }
@@ -247,7 +247,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
         <CardContent className="space-y-6 p-6 lg:p-7">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-2xl space-y-3">
-              <div className="inline-flex items-center gap-2 rounded-full border bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-700">
+              <div className="inline-flex items-center gap-2 rounded-full border bg-white/80 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-slate-700">
                 <FolderOpen className="h-3.5 w-3.5 text-primary" />
                 Portfolio record view
               </div>
@@ -378,7 +378,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                       <p>
                         Review the stored record first: bond type, purchase date, lot size, and nominal value.
                       </p>
-                      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                      <p className="text-xs font-semibold tracking-[0.08em] text-slate-500">
                         {lots.length} lots
                       </p>
                     </div>
@@ -447,7 +447,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                   </div>
 
                   <div className="rounded-2xl border bg-muted/20 p-4">
-                    <p className="text-xs uppercase tracking-wide text-muted-foreground">Cash in window</p>
+                    <p className="text-sm font-semibold tracking-[0.08em] text-muted-foreground">Cash in window</p>
                     <p className="mt-2 text-2xl font-semibold text-foreground">
                       {formatCurrency(upcomingCashflow)}
                     </p>
@@ -465,7 +465,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                               <p className="mt-1 text-sm text-muted-foreground">
                                 {format(item.maturityDate, 'dd.MM.yyyy')}
                               </p>
-                              <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">
+                              <p className="mt-1 text-xs font-medium tracking-[0.08em] text-muted-foreground">
                                 {formatBondDuration(
                                   definitions[item.bondType as BondType]?.duration ?? 1,
                                   language,
