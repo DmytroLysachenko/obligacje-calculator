@@ -55,13 +55,13 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
   return (
     <Card className="overflow-hidden border shadow-sm">
       <CardHeader className={cn('border-b pb-4', colorClass)}>
-        <CardTitle className="text-sm font-black uppercase tracking-widest">
+        <CardTitle className="text-base font-black tracking-tight">
           {title}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-5 pt-5">
         <div className="space-y-2">
-          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+          <Label className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">
             {t('bonds.bond.type')}
           </Label>
           <Select
@@ -79,7 +79,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
                       <span>{type}</span>
                       <span
                         className={cn(
-                          "rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wide",
+                          'rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-[0.08em]',
                           getBondSupportMeta(type).tone === 'caution'
                             ? 'bg-amber-100 text-amber-800'
                             : getBondSupportMeta(type).tone === 'limited'
@@ -90,7 +90,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
                         {getBondSupportMeta(type).shortLabel}
                       </span>
                     </div>
-                    <span className="truncate text-xs text-muted-foreground">
+                    <span className="truncate text-sm text-muted-foreground">
                       {getBondSupportMeta(type).description}
                     </span>
                   </div>
@@ -108,7 +108,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
         <div className="flex items-center justify-between rounded-xl border bg-muted/20 p-3">
           <div>
             <p className="text-sm font-semibold">{t('bonds.reinvest')}</p>
-            <p className="text-[10px] text-muted-foreground">
+            <p className="text-xs leading-5 text-muted-foreground">
               {t('bonds.rollover_desc')}
             </p>
           </div>
@@ -118,7 +118,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
         <div className="flex items-center justify-between rounded-xl border bg-muted/20 p-3">
           <div>
             <p className="text-sm font-semibold">{t('bonds.is_rebought')}</p>
-            <p className="text-[10px] text-muted-foreground">
+            <p className="text-xs leading-5 text-muted-foreground">
               {t('bonds.is_rebought_desc')}
             </p>
           </div>
@@ -126,7 +126,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
         </div>
 
         <div className="space-y-2">
-          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+          <Label className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">
             {t('bonds.tax_strategy')}
           </Label>
           <Select
@@ -170,7 +170,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
 
         {customHorizonEnabled ? (
           <div className="space-y-3">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+            <Label className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">
               {t('comparison.scenario_horizon')}
             </Label>
             <CommittedSliderInput

@@ -75,7 +75,7 @@ export function CommittedSliderInput({
   );
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-4">
       <Slider
         value={[draftValue]}
         disabled={disabled}
@@ -96,7 +96,7 @@ export function CommittedSliderInput({
             max={max}
             disabled={disabled}
             className={cn(
-              'h-9 w-24 pr-8 text-right font-bold',
+              'h-10 w-28 pr-10 text-right text-sm font-semibold',
               inputClassName,
             )}
             value={draftText}
@@ -109,7 +109,7 @@ export function CommittedSliderInput({
             }}
           />
           {unit ? (
-            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">
+            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-muted-foreground">
               {unit}
             </span>
           ) : null}

@@ -422,7 +422,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
             >
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Label className="text-xs font-semibold uppercase text-muted-foreground">
+                  <Label className="text-sm font-semibold text-muted-foreground">
                     {t('bonds.purchase_date')}
                   </Label>
                   <TooltipProvider>
@@ -441,7 +441,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                     <Button
                       variant="outline"
                       className={cn(
-                        'h-10 w-full justify-start px-3 text-left font-normal',
+                        'h-11 w-full justify-start px-3 text-left text-[15px] font-normal',
                         !inputs.purchaseDate && 'text-muted-foreground',
                       )}
                     >
@@ -474,7 +474,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
               {inputs.timingMode === 'exact' ? (
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <Label className="text-xs font-semibold uppercase text-muted-foreground">
+                    <Label className="text-sm font-semibold text-muted-foreground">
                       {t('bonds.withdrawal_date')}
                     </Label>
                     <TooltipProvider>
@@ -495,7 +495,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                       <Button
                         variant="outline"
                         className={cn(
-                          'h-10 w-full justify-start px-3 text-left font-normal',
+                          'h-11 w-full justify-start px-3 text-left text-[15px] font-normal',
                           !inputs.withdrawalDate && 'text-muted-foreground',
                         )}
                       >
@@ -581,10 +581,10 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                       <Settings2 className="h-4 w-4" />
                     </div>
                     <div className="space-y-1">
-                      <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-700">
+                      <h3 className="text-sm font-semibold tracking-[0.08em] text-slate-700">
                         {t('common.advanced')}
                       </h3>
-                      <p className="text-xs font-medium text-muted-foreground">
+                      <p className="text-[15px] leading-7 text-muted-foreground">
                         Inflation assumptions, rollover behavior, rebuy logic, custom tax, and chart display.
                       </p>
                     </div>
@@ -620,7 +620,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                                 </Tooltip>
                               </TooltipProvider>
                             </div>
-                            <p className="text-[10px] text-muted-foreground">
+                            <p className="text-xs text-muted-foreground">
                               {t('bonds.is_rebought_desc')} (-{currentDef.rebuyDiscount.toFixed(2)} PLN/szt)
                             </p>
                           </div>
@@ -640,7 +640,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                           <Label className="text-sm font-bold text-primary">
                             {t('bonds.reinvest')}
                           </Label>
-                          <p className="text-[10px] font-medium italic text-muted-foreground">
+                          <p className="text-xs font-medium italic text-muted-foreground">
                             {t('bonds.rollover_desc')}
                           </p>
                         </div>
@@ -669,7 +669,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                               </Tooltip>
                             </TooltipProvider>
                           </div>
-                          <p className="text-[10px] text-muted-foreground">
+                          <p className="text-xs text-muted-foreground">
                             {t('bonds.belka_tax_desc')}
                           </p>
                         </div>
@@ -683,7 +683,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                         <div className="space-y-2">
                           <Label
                             htmlFor="taxRate"
-                            className="text-xs font-semibold uppercase text-muted-foreground"
+                            className="text-sm font-semibold text-muted-foreground"
                           >
                             {t('bonds.tax_rate')} (%)
                           </Label>
@@ -701,7 +701,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                     </div>
 
                     <div className="space-y-4 border-t border-dashed pt-6">
-                      <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                      <Label className="text-sm font-semibold text-muted-foreground">
                         {t('bonds.chart.granularity')}
                       </Label>
                       <div className="flex gap-1 rounded-xl border bg-muted/50 p-1">
@@ -716,7 +716,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                                 : 'ghost'
                             }
                             className={cn(
-                              'flex-1 h-8 text-[10px] font-black uppercase tracking-tighter transition-all',
+                              'h-9 flex-1 text-[12px] font-semibold tracking-[0.08em] transition-all',
                               (inputs.chartStep === step ||
                                 (!inputs.chartStep && step === 'quarterly')) &&
                                 'shadow-sm',
@@ -735,7 +735,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
           </section>
 
           <div className="pt-2">
-            <div className="space-y-1 rounded-lg border border-dashed bg-muted/30 p-3 text-[10px] text-muted-foreground">
+            <div className="space-y-1.5 rounded-lg border border-dashed bg-muted/30 p-4 text-xs text-muted-foreground">
               <div className="flex justify-between">
                 <span>{t('bonds.duration')}:</span>
                 <span className="font-bold">
