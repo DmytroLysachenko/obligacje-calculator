@@ -82,7 +82,7 @@ export const NBPRateChart = ({
 }: {
   period?: '1Y' | '5Y' | '10Y' | '30Y' | 'ALL';
 }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { data: response, isLoading, isError } =
     useChartData<ChartSeriesEnvelope<NBPRateDataPoint>>('/api/charts/nbp-rate');
 
@@ -108,7 +108,7 @@ export const NBPRateChart = ({
 
   return (
     <ReferenceChartFrame
-      meta={`${t('economic.data_source')}: ${getReferenceSourceLabel(response)}${response ? ` | ${t('economic.as_of')}: ${getReferenceAsOfLabel(response)}` : ''}${response ? ` | ${(t('economic.coverage') || 'Coverage')}: ${getReferenceCoverageLabel(response)}` : ''}${response?.usedFallback ? ` | ${t('economic.fallback_in_use')}` : ''}`}
+      meta={`${t('economic.data_source')}: ${getReferenceSourceLabel(response)}${response ? ` | ${t('economic.as_of')}: ${getReferenceAsOfLabel(response)}` : ''}${response ? ` | ${language === 'pl' ? 'Zakres' : 'Coverage'}: ${getReferenceCoverageLabel(response)}` : ''}${response?.usedFallback ? ` | ${t('economic.fallback_in_use')}` : ''}`}
     >
       <ChartContainer height={420}>
         <ResponsiveContainer width="100%" height="100%">

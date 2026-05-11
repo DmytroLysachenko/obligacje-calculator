@@ -82,7 +82,7 @@ export const InflationChart = ({
 }: {
   period?: '1Y' | '5Y' | '10Y' | '30Y' | 'ALL';
 }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { data: response, isLoading, isError } =
     useChartData<ChartSeriesEnvelope<InflationDataPoint>>('/api/charts/inflation');
   const [scaleMode, setScaleMode] = React.useState<'readable' | 'full'>('readable');
@@ -121,7 +121,7 @@ export const InflationChart = ({
 
   return (
     <ReferenceChartFrame
-      meta={`${t('economic.data_source')}: ${getReferenceSourceLabel(response)}${response ? ` | ${t('economic.as_of')}: ${getReferenceAsOfLabel(response)}` : ''}${response ? ` | ${(t('economic.coverage') || 'Coverage')}: ${getReferenceCoverageLabel(response)}` : ''}${response?.usedFallback ? ` | ${t('economic.fallback_in_use')}` : ''}`}
+      meta={`${t('economic.data_source')}: ${getReferenceSourceLabel(response)}${response ? ` | ${t('economic.as_of')}: ${getReferenceAsOfLabel(response)}` : ''}${response ? ` | ${language === 'pl' ? 'Zakres' : 'Coverage'}: ${getReferenceCoverageLabel(response)}` : ''}${response?.usedFallback ? ` | ${t('economic.fallback_in_use')}` : ''}`}
       actions={
         <div className="flex gap-2">
           <Button

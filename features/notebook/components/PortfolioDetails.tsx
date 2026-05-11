@@ -253,37 +253,25 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
             <div className="max-w-2xl space-y-3">
               <div className="inline-flex items-center gap-2 rounded-full border bg-white/80 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-slate-700">
                 <FolderOpen className="h-3.5 w-3.5 text-primary" />
-                {language === 'pl' ? 'Widok portfela' : 'Portfolio record view'}
+                {t('notebook.record_view')}
               </div>
               <h3 className="text-2xl font-black tracking-tight text-slate-900">
-                {language === 'pl'
-                  ? 'Otworz jeden portfel, sprawdz zapisane partie i dopiero potem przejdz do eksportu lub symulacji.'
-                  : 'Open one portfolio, inspect the stored lots, and only then move into export or simulation.'}
+                {t('notebook.record_intro_title')}
               </h3>
               <p className="text-sm leading-7 text-muted-foreground">
-                {language === 'pl'
-                  ? 'Najpierw przeczytaj zapisane partie oraz najblizsze zapadalnosci. Zakladka analityczna ma byc wsparciem dla rekordu, nie warstwa rekomendacyjna.'
-                  : 'Start with the stored lots and the upcoming liquidity window. The analytics tab should support the record, not turn it into a recommendation layer.'}
+                {t('notebook.record_intro_desc')}
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:w-[360px]">
               <PortfolioMiniStat
-                label={language === 'pl' ? 'Zapisane partie' : 'Stored lots'}
+                label={t('notebook.stored_lots_label')}
                 value={String(lots.length)}
-                description={
-                  language === 'pl'
-                    ? 'Pozycje aktualnie sledzone w tym portfelu.'
-                    : 'Positions currently tracked in this portfolio record.'
-                }
+                description={t('notebook.stored_lots_card_desc')}
               />
               <PortfolioMiniStat
-                label={language === 'pl' ? 'Najblizsza zapadalnosc' : 'Next maturity'}
+                label={t('notebook.next_maturity_label')}
                 value={nextMaturity ? format(nextMaturity.maturityDate, 'dd.MM.yyyy') : '-'}
-                description={
-                  language === 'pl'
-                    ? 'Najblizsza data zapadalnosci wsrod zapisanych partii.'
-                    : 'Nearest upcoming maturity date across stored lots.'
-                }
+                description={t('notebook.next_maturity_card_desc')}
               />
             </div>
           </div>
@@ -338,11 +326,11 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" className="gap-2" onClick={() => handleExport('package')}>
             <Download className="h-4 w-4" />
-            {language === 'pl' ? 'Eksport pakietu' : 'Export package'}
+            {t('notebook.export_package')}
           </Button>
           <Button variant="outline" className="gap-2" onClick={() => handleExport('portfolio')}>
             <Download className="h-4 w-4" />
-            {language === 'pl' ? 'Eksport podsumowania' : 'Export summary'}
+            {t('notebook.export_summary')}
           </Button>
           {isPublic && (
             <Button variant="outline" className="gap-2" onClick={copyToClipboard}>
@@ -364,20 +352,16 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
 
       <Tabs defaultValue="lots" className="w-full">
         <TabsList className="mb-4 grid w-full grid-cols-2 md:w-fit">
-          <TabsTrigger value="lots">{language === 'pl' ? 'Partie' : 'Lots'}</TabsTrigger>
-          <TabsTrigger value="analytics">{language === 'pl' ? 'Analiza' : 'Analytics'}</TabsTrigger>
+          <TabsTrigger value="lots">{t('notebook.lots_tab')}</TabsTrigger>
+          <TabsTrigger value="analytics">{t('notebook.analytics_tab_short')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="lots" className="space-y-6">
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.4fr_0.8fr]">
             <Card className="rounded-2xl border shadow-none">
               <CardHeader>
-                <CardTitle>{language === 'pl' ? 'Zapisane partie' : 'Stored lots'}</CardTitle>
-                <CardDescription>
-                  {language === 'pl'
-                    ? 'Przejrzyj kazda pozycje jako rekord: typ obligacji, liczbe sztuk, date zakupu i wartosc nominalna.'
-                    : 'Review each position as a record entry: bond type, amount, purchase date, and nominal value.'}
-                </CardDescription>
+                <CardTitle>{t('notebook.stored_lots_title')}</CardTitle>
+                <CardDescription>{t('notebook.stored_lots_desc')}</CardDescription>
               </CardHeader>
               <CardContent>
                 {isLoading ? (
@@ -392,13 +376,9 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                 ) : (
                   <div className="rounded-2xl border border-slate-200 bg-white">
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-600">
-                      <p>
-                        {language === 'pl'
-                          ? 'Najpierw przeczytaj rekord: typ obligacji, date zakupu, liczbe sztuk i wartosc nominalna.'
-                          : 'Read the stored record first: bond type, purchase date, lot size, and nominal value.'}
-                      </p>
+                      <p>{t('notebook.stored_lots_hint')}</p>
                       <p className="text-sm font-semibold text-slate-500">
-                        {lots.length} {language === 'pl' ? 'partii' : 'lots'}
+                        {t('notebook.lots_count', { count: String(lots.length) })}
                       </p>
                     </div>
                     <div className="overflow-x-auto">
@@ -448,12 +428,8 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
             <div className="space-y-6">
               <Card className="rounded-2xl border shadow-none">
                 <CardHeader>
-                  <CardTitle>{language === 'pl' ? 'Okno plynnosci' : 'Liquidity window'}</CardTitle>
-                  <CardDescription>
-                    {language === 'pl'
-                      ? 'Zobacz, ile nominalnej gotowki wraca w najblizszym oknie zapadalnosci.'
-                      : 'See how much nominal cash returns inside a short upcoming maturity window.'}
-                  </CardDescription>
+                  <CardTitle>{t('notebook.liquidity_window_title')}</CardTitle>
+                  <CardDescription>{t('notebook.liquidity_window_desc')}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex flex-wrap gap-2">
@@ -470,7 +446,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                   </div>
 
                   <div className="rounded-2xl border bg-muted/20 p-4">
-                    <p className="text-sm font-semibold text-muted-foreground">{language === 'pl' ? 'Gotowka w oknie' : 'Cash in window'}</p>
+                    <p className="text-sm font-semibold text-muted-foreground">{t('notebook.cash_in_window')}</p>
                     <p className="mt-2 text-2xl font-semibold text-foreground">
                       {formatCurrency(upcomingCashflow)}
                     </p>
@@ -478,9 +454,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                   </div>
 
                   {filteredMaturities.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">
-                      {language === 'pl' ? 'Brak zapadalnosci w tym oknie.' : 'No maturities in this window.'}
-                    </p>
+                    <p className="text-sm text-muted-foreground">{t('notebook.no_maturities_in_window')}</p>
                   ) : (
                     <div className="space-y-3">
                       {filteredMaturities.slice(0, 6).map((item) => (
@@ -509,13 +483,9 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
 
               <Card className="rounded-2xl border shadow-none">
                 <CardHeader>
-                  <CardTitle>{language === 'pl' ? 'Jak uzywac notatnika' : 'How to use the notebook'}</CardTitle>
+                  <CardTitle>{t('notebook.usage_note_title')}</CardTitle>
                 </CardHeader>
-                <CardContent className="text-sm leading-6 text-muted-foreground">
-                  {language === 'pl'
-                    ? 'Traktuj ten widok jako miejsce do przechowywania i kontroli partii. Jezeli chcesz testowac reinwestycje, wczesniejszy wykup lub zalozenia scenariusza, przejdz do kalkulatora z danymi tej partii zamiast zamieniac notatnik w pulpit planistyczny.'
-                    : 'Use this view to store and inspect lots. If you want to test reinvestment, early withdrawal, or scenario assumptions, jump into a calculator page with the linked lot details instead of turning the notebook into a planning dashboard.'}
-                </CardContent>
+                <CardContent className="text-sm leading-6 text-muted-foreground">{t('notebook.usage_note_desc')}</CardContent>
               </Card>
             </div>
           </div>
@@ -524,21 +494,13 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
         <TabsContent value="analytics">
             <Card className="rounded-2xl border shadow-none">
               <CardHeader>
-                <CardTitle>{language === 'pl' ? 'Projekcja portfela' : 'Portfolio projection'}</CardTitle>
-                <CardDescription>
-                  {language === 'pl'
-                    ? 'Zagregowana projekcja wartosci nominalnej wszystkich zapisanych partii. Czytaj ja po rekordach, nie przed nimi.'
-                    : 'Aggregated nominal value simulation across all stored lots. Read it after the records view, not before.'}
-                </CardDescription>
+                <CardTitle>{t('notebook.projection_title')}</CardTitle>
+                <CardDescription>{t('notebook.projection_desc')}</CardDescription>
               </CardHeader>
             <CardContent className="space-y-4">
               <ChartSupportNote
-                title={language === 'pl' ? 'Jak to czytac' : 'How to read it'}
-                description={
-                  language === 'pl'
-                    ? 'Traktuj to jako pomocnicza projekcje zapisanego rekordu, a nie silnik rekomendacji. Najpierw sprawdz rekord partii i okno plynnosci.'
-                    : 'Treat this as a supporting projection of the stored record, not as a recommendation engine. Check the lot records and maturity window first.'
-                }
+                title={t('notebook.projection_read_title')}
+                description={t('notebook.projection_read_desc')}
               />
               {isSimulating ? (
                 <div className="flex min-h-[320px] items-center justify-center gap-3 text-sm text-muted-foreground">
@@ -593,7 +555,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                 </ChartContainer>
               ) : (
                 <div className="flex min-h-[320px] items-center justify-center text-sm text-muted-foreground">
-                  {language === 'pl' ? 'Dodaj partie, aby zobaczyc zagregowana projekcje.' : 'Add lots to see the aggregated projection.'}
+                  {t('notebook.projection_empty')}
                 </div>
               )}
             </CardContent>
@@ -605,12 +567,8 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
         <div className="flex items-start gap-3">
           <TrendingUp className="mt-0.5 h-5 w-5 text-primary" />
           <div className="space-y-2">
-            <p className="font-semibold text-foreground">{language === 'pl' ? 'Trzymaj notatnik przy opisie, nie rekomendacji' : 'Keep notebook outputs descriptive'}</p>
-            <p className="text-sm leading-6 text-muted-foreground">
-              {language === 'pl'
-                ? 'Strony portfela powinny pozostac opisowe. Moga podsumowywac zapisane partie i wyniki symulacji, ale nie powinny sugerowac jednego zalecanego ruchu inwestora.'
-                : 'Portfolio pages should stay descriptive. They can summarize stored lots and simulated outcomes, but they should not frame one action as the recommended investor move.'}
-            </p>
+            <p className="font-semibold text-foreground">{t('notebook.descriptive_title')}</p>
+            <p className="text-sm leading-6 text-muted-foreground">{t('notebook.descriptive_desc')}</p>
           </div>
         </div>
       </div>
