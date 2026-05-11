@@ -28,7 +28,7 @@ function ReadyStepCard({
   return (
     <Card className="surface-soft rounded-[1.75rem]">
       <CardContent className="space-y-2 p-5">
-        <p className="text-xs font-semibold tracking-[0.08em] text-slate-500">
+        <p className="text-sm font-semibold text-slate-500">
           {title}
         </p>
         <p className="text-[15px] leading-7 text-slate-600">{description}</p>
@@ -74,7 +74,10 @@ export function ScenarioReadyPanel({
 
         {ctaLabel && onClick ? (
           <div className="max-w-xs">
-            <Button onClick={onClick} className="w-full">
+            <Button
+              onClick={onClick}
+              className="w-full focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
+            >
               {ctaLabel}
             </Button>
           </div>

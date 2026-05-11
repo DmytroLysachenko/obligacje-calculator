@@ -38,7 +38,7 @@ type HomeStepItem = {
 function HomeToolCard({ item }: { item: ToolItem }) {
   return (
     <Link href={item.href} className="block h-full">
-      <Card className="surface-panel group h-full overflow-hidden rounded-[2rem] transition-all hover:-translate-y-0.5 hover:border-white hover:shadow-[0_24px_70px_-36px_rgba(15,23,42,0.34)]">
+      <Card className="surface-panel group h-full overflow-hidden rounded-[2rem] transition-all hover:-translate-y-0.5 hover:border-white hover:shadow-[0_24px_70px_-36px_rgba(15,23,42,0.34)] focus-within:ring-2 focus-within:ring-primary/25 focus-within:ring-offset-2">
         <CardContent className="relative flex h-full flex-col gap-5 p-6">
           <div
             className={item.tone}
@@ -48,14 +48,14 @@ function HomeToolCard({ item }: { item: ToolItem }) {
               <item.icon className="h-5 w-5" />
             </div>
           </div>
-          <div className="relative space-y-3">
-            <h3 className="text-xl font-black tracking-tight text-slate-950">
-              {item.title}
-            </h3>
-            <p className="text-sm leading-7 text-slate-600">
-              {item.description}
-            </p>
-          </div>
+        <div className="relative space-y-3">
+          <h3 className="text-xl font-black tracking-tight text-slate-950">
+            {item.title}
+          </h3>
+          <p className="text-sm leading-7 text-slate-600 md:text-[15px]">
+            {item.description}
+          </p>
+        </div>
         </CardContent>
       </Card>
     </Link>
@@ -74,7 +74,7 @@ function HomeStep({
       <div className="flex items-start gap-3">
         <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-sky-700" />
         <div className="space-y-2">
-          <p className="text-sm font-black uppercase tracking-[0.18em] text-slate-500">
+          <p className="text-sm font-semibold text-slate-500">
             {title}
           </p>
           <p className="text-sm leading-7 text-slate-600">
@@ -103,7 +103,7 @@ function RecentWorkCard({
     <Card className="surface-panel h-full overflow-hidden rounded-[1.9rem] border-white/80 bg-white/78">
       <CardContent className="space-y-5 p-5">
         <div className="space-y-2">
-          <p className="text-xs font-semibold tracking-[0.08em] text-slate-500">
+          <p className="text-sm font-semibold text-slate-500">
             {language === 'pl' ? 'Ostatnia praca' : 'Recent work'}
           </p>
           <h2 className="text-2xl font-black tracking-tight text-slate-950">
@@ -132,13 +132,13 @@ function RecentWorkCard({
         ) : null}
 
         <div className="flex flex-wrap gap-3">
-          <Button asChild variant="outline" className="gap-2 rounded-2xl border-slate-200 bg-white/80">
+          <Button asChild variant="outline" className="gap-2 rounded-2xl border-slate-200 bg-white/80 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2">
             <Link href="/notebook">
               <Wallet className="h-4 w-4" />
               {notebookLabel}
             </Link>
           </Button>
-          <Button asChild variant="outline" className="gap-2 rounded-2xl border-slate-200 bg-white/80">
+          <Button asChild variant="outline" className="gap-2 rounded-2xl border-slate-200 bg-white/80 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2">
             <Link href="/single-calculator">
               <Calculator className="h-4 w-4" />
               {calculatorLabel}
@@ -319,7 +319,7 @@ export function LandingDashboardClient() {
         <div className="absolute bottom-0 left-10 h-36 w-36 rounded-full bg-indigo-200/25 blur-3xl" />
 
         <div className="relative max-w-5xl space-y-5 md:space-y-6">
-          <p className="surface-chip text-[11px] tracking-[0.24em] text-slate-600">
+          <p className="surface-chip text-xs font-semibold text-slate-600">
             <Sparkles className="h-3.5 w-3.5 text-sky-700" />
             {t('landing.recovery_home.eyebrow')}
           </p>
@@ -334,7 +334,7 @@ export function LandingDashboardClient() {
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Button asChild size="lg" className="gap-2 rounded-2xl text-sm font-black shadow-sm">
+            <Button asChild size="lg" className="gap-2 rounded-2xl text-sm font-semibold shadow-sm focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2">
               <Link href="/single-calculator">
                 {t('landing.start_calculating')}
                 <ArrowRight className="h-4 w-4" />
@@ -344,7 +344,7 @@ export function LandingDashboardClient() {
               asChild
               variant="outline"
               size="lg"
-              className="gap-2 rounded-2xl border-white/90 bg-white/70 text-sm font-black backdrop-blur hover:bg-white"
+              className="gap-2 rounded-2xl border-white/90 bg-white/70 text-sm font-semibold backdrop-blur hover:bg-white focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
             >
               <Link href="/education">
                 {t('landing.recovery_home.secondary_cta')}

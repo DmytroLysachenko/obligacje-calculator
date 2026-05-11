@@ -90,7 +90,33 @@ function SidebarUtilityPanel({
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="surface-panel rounded-2xl px-3 py-2.5">{children}</div>;
+  return <div className="surface-panel rounded-2xl px-3 py-3">{children}</div>;
+}
+
+function SidebarBrand() {
+  const { t, language } = useLanguage();
+
+  return (
+    <div className="border-b border-slate-200/80 px-6 py-6">
+      <Link href="/" className="flex items-center gap-3">
+        <div className="rounded-2xl bg-slate-900 p-2.5 text-white shadow-sm shadow-slate-900/10">
+          <TrendingUp className="h-5 w-5" />
+        </div>
+        <div className="min-w-0 space-y-1">
+          <p className="text-[2rem] font-bold tracking-tight">{t('common.title')}</p>
+          <p className="max-w-[15rem] text-[13px] leading-6 text-slate-500">
+            {language === 'pl'
+              ? 'Najpierw glowny kalkulator. Reszta pozniej.'
+              : 'Use the core calculator first.'}
+          </p>
+        </div>
+      </Link>
+    </div>
+  );
+}
+
+function SidebarSectionLabel({ children }: { children: React.ReactNode }) {
+  return <p className="px-2 text-xs font-semibold text-slate-500">{children}</p>;
 }
 
 function NavLinkItem({
@@ -109,7 +135,7 @@ function NavLinkItem({
       href={item.href}
       onClick={onItemClick}
       className={cn(
-        'group block rounded-[1.35rem] border px-3.5 py-3.5 transition-all',
+        'group block rounded-[1.35rem] border px-3.5 py-3.5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2',
         isActive
           ? 'border-slate-900 bg-slate-900 text-white shadow-sm shadow-slate-900/10'
           : 'border-slate-200/80 bg-white/90 text-slate-900 hover:border-slate-300 hover:bg-white',
@@ -126,7 +152,7 @@ function NavLinkItem({
         </div>
 
         <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
-          <p className="min-w-0 text-[15px] font-semibold leading-5 tracking-tight">
+          <p className="min-w-0 text-[15px] font-semibold leading-5 tracking-tight md:text-base">
             {item.label}
           </p>
           <ChevronRight
@@ -143,9 +169,112 @@ function NavLinkItem({
   );
 }
 
+function NavSectionBlock({
+  section,
+  pathname,
+  onItemClick,
+}: {
+  section: NavSection;
+  pathname: string;
+  onItemClick?: () => void;
+}) {
+  return (
+    <div className="space-y-2.5">
+      <SidebarSectionLabel>{section.label}</SidebarSectionLabel>
+      <div className="space-y-2">
+        {section.items.map((item) => (
+          <NavLinkItem
+            key={item.href}
+            item={item}
+            isActive={pathname === item.href}
+            onItemClick={onItemClick}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SidebarLanguageUtility() {
+  const { t } = useLanguage();
+
+  return (
+    <SidebarUtilityPanel>
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-xs font-semibold text-slate-500">{t('common.language')}</p>
+          <p className="mt-0.5 text-xs text-slate-500">PL / EN</p>
+        </div>
+        <LanguageSwitcher />
+      </div>
+    </SidebarUtilityPanel>
+  );
+}
+
+function SidebarSyncUtility({
+  dataFreshness,
+}: {
+  dataFreshness?: CalculationDataFreshness;
+}) {
+  const { t, language } = useLanguage();
+
+  return (
+    <SidebarUtilityPanel>
+      <div className="space-y-1.5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs font-semibold text-slate-500">{t('common.sync_data')}</p>
+            <p className="mt-0.5 text-[13px] font-semibold text-slate-900">
+              {dataFreshness
+                ? dataFreshness.asOf ?? (language === 'pl' ? 'Brak daty' : 'No date')
+                : language === 'pl'
+                  ? 'Brak metadanych'
+                  : 'No metadata'}
+            </p>
+          </div>
+          {dataFreshness ? (
+            <span
+              className={cn(
+                'inline-flex rounded-full border px-2 py-0.5 text-xs font-semibold',
+                getFreshnessClass(dataFreshness),
+              )}
+            >
+              {getFreshnessLabel(dataFreshness, language)}
+            </span>
+          ) : null}
+        </div>
+
+        <p className="text-xs leading-5 text-slate-600">
+          {dataFreshness
+            ? getFreshnessText(dataFreshness, language)
+            : t('sidebar.sync_unavailable')}
+        </p>
+      </div>
+    </SidebarUtilityPanel>
+  );
+}
+
+function SidebarFooter({
+  dataFreshness,
+}: {
+  dataFreshness?: CalculationDataFreshness;
+}) {
+  const { t } = useLanguage();
+
+  return (
+    <div className="space-y-2 border-t border-slate-200/80 bg-white/55 p-3">
+      <SidebarLanguageUtility />
+      <SidebarSyncUtility dataFreshness={dataFreshness} />
+      <div className="px-1 pt-1 text-xs text-slate-500">
+        {'\u00A9'} {new Date().getFullYear()} {t('common.title')}
+      </div>
+    </div>
+  );
+}
+
 function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
   const pathname = usePathname();
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
 
   const navSections: NavSection[] = [
     {
@@ -197,94 +326,20 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
 
   return (
     <div className="flex h-full flex-col border-r border-slate-200 bg-[linear-gradient(180deg,rgba(248,250,252,0.98)_0%,rgba(241,245,249,0.96)_100%)] text-slate-900">
-      <div className="border-b border-slate-200/80 px-6 py-6">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="rounded-2xl bg-slate-900 p-2.5 text-white shadow-sm shadow-slate-900/10">
-            <TrendingUp className="h-5 w-5" />
-          </div>
-          <div className="min-w-0 space-y-1">
-            <p className="text-[2rem] font-bold tracking-tight">{t('common.title')}</p>
-            <p className="max-w-[15rem] text-[13px] leading-6 text-slate-500">
-              {language === 'pl'
-                ? 'Najpierw glowny kalkulator. Reszta pozniej.'
-                : 'Use the core calculator first.'}
-            </p>
-          </div>
-        </Link>
-      </div>
+      <SidebarBrand />
 
       <nav className="custom-scrollbar flex-1 space-y-6 overflow-y-auto px-4 py-5">
         {navSections.map((section) => (
-          <div key={section.label} className="space-y-2.5">
-            <p className="px-2 text-[11px] font-semibold tracking-[0.12em] text-slate-500">
-              {section.label}
-            </p>
-            <div className="space-y-2">
-              {section.items.map((item) => (
-                <NavLinkItem
-                  key={item.href}
-                  item={item}
-                  isActive={pathname === item.href}
-                  onItemClick={onItemClick}
-                />
-              ))}
-            </div>
-          </div>
+          <NavSectionBlock
+            key={section.label}
+            section={section}
+            pathname={pathname}
+            onItemClick={onItemClick}
+          />
         ))}
       </nav>
 
-      <div className="space-y-2 border-t border-slate-200/80 bg-white/55 p-3">
-        <SidebarUtilityPanel>
-          <div className="flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-[11px] font-semibold tracking-[0.08em] text-slate-500">
-                {t('common.language')}
-              </p>
-              <p className="mt-0.5 text-xs text-slate-500">PL / EN</p>
-            </div>
-            <LanguageSwitcher />
-          </div>
-        </SidebarUtilityPanel>
-
-        <SidebarUtilityPanel>
-          <div className="space-y-1.5">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <p className="text-[11px] font-semibold tracking-[0.08em] text-slate-500">
-                  {t('common.sync_data')}
-                </p>
-                <p className="mt-0.5 text-[13px] font-semibold text-slate-900">
-                  {dataFreshness
-                    ? dataFreshness.asOf ?? (language === 'pl' ? 'Brak daty' : 'No date')
-                    : language === 'pl'
-                      ? 'Brak metadanych'
-                      : 'No metadata'}
-                </p>
-              </div>
-              {dataFreshness ? (
-                <span
-                  className={cn(
-                    'inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold tracking-[0.08em]',
-                    getFreshnessClass(dataFreshness),
-                  )}
-                >
-                  {getFreshnessLabel(dataFreshness, language)}
-                </span>
-              ) : null}
-            </div>
-
-            <p className="text-[12px] leading-5 text-slate-600">
-              {dataFreshness
-                ? getFreshnessText(dataFreshness, language)
-                : t('sidebar.sync_unavailable')}
-            </p>
-          </div>
-        </SidebarUtilityPanel>
-
-        <div className="px-1 pt-1 text-xs text-slate-500">
-          {'\u00A9'} {new Date().getFullYear()} {t('common.title')}
-        </div>
-      </div>
+      <SidebarFooter dataFreshness={dataFreshness} />
     </div>
   );
 }

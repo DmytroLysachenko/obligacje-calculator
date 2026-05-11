@@ -12,7 +12,7 @@ export function LanguageSwitcher() {
         variant={language === 'pl' ? 'default' : 'ghost'}
         size="sm"
         onClick={() => setLanguage('pl')}
-        className="h-7 flex-1 rounded-full px-2 text-[11px] font-semibold tracking-[0.08em]"
+        className="h-7 flex-1 rounded-full px-2 text-[11px] font-semibold tracking-[0.08em] focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
       >
         PL
       </Button>
@@ -20,7 +20,7 @@ export function LanguageSwitcher() {
         variant={language === 'en' ? 'default' : 'ghost'}
         size="sm"
         onClick={() => setLanguage('en')}
-        className="h-7 flex-1 rounded-full px-2 text-[11px] font-semibold tracking-[0.08em]"
+        className="h-7 flex-1 rounded-full px-2 text-[11px] font-semibold tracking-[0.08em] focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
       >
         EN
       </Button>

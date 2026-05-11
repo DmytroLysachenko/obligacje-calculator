@@ -21,7 +21,7 @@ export function ReferenceChartFrame({
 }: ReferenceChartFrameProps) {
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-start justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3.5 text-[13px] text-slate-600 md:text-sm">
+      <div className="flex flex-wrap items-start justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3.5 text-sm text-slate-600">
         <div className="flex min-w-0 items-start gap-2">
           <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-500" />
           <p className="min-w-0 leading-7">{meta}</p>
@@ -32,7 +32,7 @@ export function ReferenceChartFrame({
       {notice ? (
         <div
           className={cn(
-            'rounded-2xl border px-4 py-3.5 text-[13px] leading-7 md:text-sm',
+            'rounded-2xl border px-4 py-3.5 text-sm leading-7',
             noticeTone === 'warning'
               ? 'border-amber-200 bg-amber-50 text-amber-900'
               : 'border-slate-200 bg-white text-slate-600',

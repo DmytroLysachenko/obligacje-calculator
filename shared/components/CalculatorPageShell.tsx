@@ -118,7 +118,7 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
                   variant="outline"
                   size="sm"
                   className={cn(
-                    'h-10 gap-2 rounded-xl px-4 text-[12px] font-semibold',
+                    'h-10 gap-2 rounded-xl px-4 text-[12px] font-semibold focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2',
                     copied ? 'border-emerald-600 text-emerald-700' : '',
                   )}
                   onClick={handleShare}
@@ -164,7 +164,7 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
                 PLN
               </span>
             </div>
-            <Progress value={goalProgress} className="h-2" />
+            <Progress value={goalProgress} className="h-2.5" />
           </CardContent>
         </Card>
       ) : null}

@@ -20,11 +20,11 @@ export function ResultMetricCard({
 }: ResultMetricCardProps) {
   return (
     <div className={cn('surface-panel rounded-3xl px-5 py-4', className)}>
-      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+      <p className="text-sm font-semibold text-slate-500">
         {label}
       </p>
-      <p className={cn('mt-2 text-2xl font-black tracking-tight', tone)}>{value}</p>
-      <p className="mt-2 text-xs leading-6 text-slate-600">{description}</p>
+      <p className={cn('mt-2 text-2xl font-black tracking-tight md:text-[2rem]', tone)}>{value}</p>
+      <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
     </div>
   );
 }

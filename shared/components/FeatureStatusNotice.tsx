@@ -103,14 +103,14 @@ export function FeatureStatusNotice({
         <div className="min-w-0 space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             {eyebrow ? (
-              <span className="text-[11px] font-semibold tracking-[0.08em] text-current/65">
+              <span className="text-xs font-semibold text-current/65">
                 {eyebrow}
               </span>
             ) : null}
             <p className="text-[15px] font-semibold tracking-tight md:text-base">{title}</p>
             <FeatureStatusPill status={status} />
           </div>
-          <div className="text-[15px] leading-7">{children}</div>
+          <div className="text-[15px] leading-7 text-current/90">{children}</div>
         </div>
       </div>
     </div>
