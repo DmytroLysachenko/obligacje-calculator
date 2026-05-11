@@ -8,11 +8,11 @@ import {
   BookOpen,
   Calculator,
   ChevronRight,
+  Layers,
   Menu,
   Scale,
   TrendingUp,
   Wallet,
-  Layers,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -85,46 +85,12 @@ function getFreshnessClass(freshness: CalculationDataFreshness) {
   return 'border-amber-200 bg-amber-50 text-amber-800';
 }
 
-function SidebarUtilityRow({
-  label,
-  value,
-  badge,
-  compact = false,
+function SidebarUtilityPanel({
   children,
 }: {
-  label: string;
-  value?: string;
-  badge?: React.ReactNode;
-  compact?: boolean;
-  children?: React.ReactNode;
+  children: React.ReactNode;
 }) {
-  return (
-    <div
-      className={cn(
-        'surface-panel rounded-2xl',
-        compact ? 'px-3 py-2' : 'px-3 py-2.5',
-      )}
-    >
-      <div className="min-w-0">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-              <p className="text-[11px] font-semibold tracking-[0.08em] text-slate-500">
-                {label}
-              </p>
-              {value ? (
-                <p className="mt-0.5 text-[13px] font-semibold text-slate-900">{value}</p>
-              ) : null}
-          </div>
-          {badge ? <div className="shrink-0">{badge}</div> : null}
-        </div>
-        {children ? (
-          <div className={cn('mt-1.5', compact && 'mt-1')}>
-            {children}
-          </div>
-        ) : null}
-      </div>
-    </div>
-  );
+  return <div className="surface-panel rounded-2xl px-3 py-2.5">{children}</div>;
 }
 
 function NavLinkItem({
@@ -268,52 +234,55 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
       </nav>
 
       <div className="space-y-2 border-t border-slate-200/80 bg-white/55 p-3">
-        <div className="surface-panel flex items-center justify-between rounded-2xl px-3 py-2">
-          <div className="min-w-0">
-            <p className="text-[11px] font-semibold tracking-[0.08em] text-slate-500">
-              {t('common.language')}
-            </p>
-            <p className="mt-0.5 text-xs text-slate-500">PL / EN</p>
+        <SidebarUtilityPanel>
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold tracking-[0.08em] text-slate-500">
+                {t('common.language')}
+              </p>
+              <p className="mt-0.5 text-xs text-slate-500">PL / EN</p>
+            </div>
+            <LanguageSwitcher />
           </div>
-          <LanguageSwitcher />
-        </div>
+        </SidebarUtilityPanel>
 
-        <SidebarUtilityRow
-          label={t('common.sync_data')}
-          value={
-            dataFreshness
-              ? dataFreshness.asOf ?? (language === 'pl' ? 'Brak daty' : 'No date')
-              : language === 'pl'
-                ? 'Brak metadanych'
-                : 'No metadata'
-          }
-          badge={
-            dataFreshness ? (
-              <span
-                className={cn(
+        <SidebarUtilityPanel>
+          <div className="space-y-1.5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[11px] font-semibold tracking-[0.08em] text-slate-500">
+                  {t('common.sync_data')}
+                </p>
+                <p className="mt-0.5 text-[13px] font-semibold text-slate-900">
+                  {dataFreshness
+                    ? dataFreshness.asOf ?? (language === 'pl' ? 'Brak daty' : 'No date')
+                    : language === 'pl'
+                      ? 'Brak metadanych'
+                      : 'No metadata'}
+                </p>
+              </div>
+              {dataFreshness ? (
+                <span
+                  className={cn(
                     'inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold tracking-[0.08em]',
                     getFreshnessClass(dataFreshness),
                   )}
-              >
-                {getFreshnessLabel(dataFreshness, language)}
-              </span>
-            ) : null
-          }
-          compact
-        >
-          {dataFreshness ? (
-              <span className="text-[12px] leading-5 text-slate-600">
-                {getFreshnessText(dataFreshness, language)}
-              </span>
-            ) : (
-              <span className="text-[12px] leading-5 text-slate-600">
-                {t('sidebar.sync_unavailable')}
-              </span>
-            )}
-        </SidebarUtilityRow>
+                >
+                  {getFreshnessLabel(dataFreshness, language)}
+                </span>
+              ) : null}
+            </div>
 
-        <div className="px-1 pt-1 text-[11px] text-slate-500">
-          © {new Date().getFullYear()} {t('common.title')}
+            <p className="text-[12px] leading-5 text-slate-600">
+              {dataFreshness
+                ? getFreshnessText(dataFreshness, language)
+                : t('sidebar.sync_unavailable')}
+            </p>
+          </div>
+        </SidebarUtilityPanel>
+
+        <div className="px-1 pt-1 text-xs text-slate-500">
+          {'\u00A9'} {new Date().getFullYear()} {t('common.title')}
         </div>
       </div>
     </div>
