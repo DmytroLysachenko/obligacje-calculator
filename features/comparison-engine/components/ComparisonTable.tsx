@@ -75,7 +75,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
 
             return (
               <div key={row.label} className="rounded-2xl border bg-white px-4 py-3">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
+                <p className="text-sm font-semibold text-slate-500">
                   {row.label}
                 </p>
                 <div className="mt-2 flex items-center justify-between gap-3">
@@ -91,7 +91,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                     <Badge
                       variant="outline"
                       className={cn(
-                        'border px-3 py-1 text-[10px] font-black uppercase tracking-wide',
+                        'border px-3 py-1 text-xs font-semibold',
                         higherScenario === 'A'
                           ? 'border-blue-200 bg-blue-50 text-blue-800'
                           : 'border-emerald-200 bg-emerald-50 text-emerald-800',
@@ -102,7 +102,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                   ) : (
                     <Badge
                       variant="outline"
-                      className="border-slate-200 bg-slate-50 text-[10px] font-black uppercase tracking-wide text-slate-700"
+                      className="border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700"
                     >
                       {tieLabel}
                     </Badge>
@@ -121,7 +121,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                   ? 'Tabela potwierdza, gdzie dany scenariusz prowadzi w konkretnym okresie.'
                   : 'The table confirms which scenario is ahead in a specific period.'}
               </p>
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+              <p className="text-sm font-semibold text-slate-500">
                 {maxLen} {language === 'pl' ? 'wierszy osi czasu' : 'timeline rows'}
               </p>
             </div>
@@ -130,16 +130,16 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
               <Table>
                 <TableHeader className="bg-white">
                   <TableRow className="border-b hover:bg-transparent">
-                    <TableHead className="sticky left-0 z-10 h-12 w-24 bg-white px-6 text-[11px] font-black uppercase tracking-wide text-slate-600">
+                    <TableHead className="sticky left-0 z-10 h-12 w-24 bg-white px-6 text-sm font-semibold text-slate-600">
                       {t('common.year')}
                     </TableHead>
-                    <TableHead className="h-12 px-4 text-[11px] font-black uppercase tracking-wide text-slate-700">
+                    <TableHead className="h-12 px-4 text-sm font-semibold text-slate-700">
                       {bondTypeA} (A)
                     </TableHead>
-                    <TableHead className="h-12 px-4 text-[11px] font-black uppercase tracking-wide text-slate-700">
+                    <TableHead className="h-12 px-4 text-sm font-semibold text-slate-700">
                       {bondTypeB} (B)
                     </TableHead>
-                    <TableHead className="h-12 px-6 text-right text-[11px] font-black uppercase tracking-wide text-slate-600">
+                    <TableHead className="h-12 px-6 text-right text-sm font-semibold text-slate-600">
                       {higherColumnLabel}
                     </TableHead>
                   </TableRow>
@@ -191,7 +191,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                             <Badge
                               variant="outline"
                               className={cn(
-                                'border px-3 py-0.5 text-[10px] font-black uppercase tracking-wide',
+                                'border px-3 py-0.5 text-xs font-semibold',
                                 higherScenario === 'A'
                                   ? 'border-blue-200 bg-blue-50 text-blue-800'
                                   : 'border-emerald-200 bg-emerald-50 text-emerald-800',

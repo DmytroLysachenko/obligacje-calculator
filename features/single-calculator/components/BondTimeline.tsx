@@ -60,10 +60,11 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
   }, [results.timeline, searchQuery, eventTypeFilter]);
 
   const displayedTimeline = isExpanded ? filteredTimeline : filteredTimeline.slice(0, 12);
+  const eventOptions = Object.values(SimulationEventType);
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-muted/20 p-4 rounded-xl border border-dashed">
+      <div className="flex flex-col gap-4 rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4 md:flex-row md:items-center md:justify-between">
         <div className="relative w-full md:w-64">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input 
@@ -82,7 +83,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t('common.all_events') || 'All Events'}</SelectItem>
-              {Object.values(SimulationEventType).map(type => (
+              {eventOptions.map(type => (
                 <SelectItem key={type} value={type}>{type}</SelectItem>
               ))}
             </SelectContent>
@@ -90,30 +91,30 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
         </div>
       </div>
 
-      <div className="w-full overflow-x-auto border rounded-xl bg-card shadow-sm">
+      <div className="w-full overflow-x-auto rounded-[1.75rem] border border-slate-200 bg-white shadow-none">
         <Table>
           <TableHeader>
-            <TableRow className="bg-muted/50">
-              <TableHead className="w-[120px] font-bold">{t('common.period')}</TableHead>
-              <TableHead className="font-bold">{t('bonds.cycle')}</TableHead>
-              <TableHead className="font-bold">{t('common.interest_rate')}</TableHead>
-              <TableHead className="font-bold">{t('bonds.rate_source')}</TableHead>
-              <TableHead className="font-bold">{t('common.nominal_value')}</TableHead>
-              <TableHead className="font-bold">{t('common.net_profit')}</TableHead>
-              <TableHead className="font-bold">{t('common.real_value')}</TableHead>
-              <TableHead className="text-right font-bold">{t('bonds.early_exit_payout')}</TableHead>
+            <TableRow className="bg-slate-50/80 hover:bg-slate-50/80">
+              <TableHead className="h-12 w-[150px] text-sm font-semibold text-slate-600">{t('common.period')}</TableHead>
+              <TableHead className="h-12 text-sm font-semibold text-slate-600">{t('bonds.cycle')}</TableHead>
+              <TableHead className="h-12 text-sm font-semibold text-slate-600">{t('common.interest_rate')}</TableHead>
+              <TableHead className="h-12 text-sm font-semibold text-slate-600">{t('bonds.rate_source')}</TableHead>
+              <TableHead className="h-12 text-sm font-semibold text-slate-600">{t('common.nominal_value')}</TableHead>
+              <TableHead className="h-12 text-sm font-semibold text-slate-600">{t('common.net_profit')}</TableHead>
+              <TableHead className="h-12 text-sm font-semibold text-slate-600">{t('common.real_value')}</TableHead>
+              <TableHead className="h-12 text-right text-sm font-semibold text-slate-600">{t('bonds.early_exit_payout')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {displayedTimeline.map((point) => (
-              <TableRow key={`${point.cycleIndex}-${point.periodLabel}`} className={point.isWithdrawal ? "bg-primary/5 font-semibold" : ""}>
-                <TableCell>
+              <TableRow key={`${point.cycleIndex}-${point.periodLabel}`} className={point.isWithdrawal ? "bg-primary/5 font-semibold" : "odd:bg-slate-50/30"}>
+                <TableCell className="py-4">
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{point.periodLabel}</span>
                       {point.isProjected !== undefined && (
                         <span className={cn(
-                          "text-[7px] px-1 rounded uppercase font-black tracking-tighter",
+                          "rounded-full px-2 py-0.5 text-[11px] font-semibold",
                           point.isProjected ? "bg-orange-100 text-orange-700" : "bg-blue-100 text-blue-700"
                         )}>
                           {point.isProjected ? t('bonds.projected') : t('bonds.historical')}
@@ -122,18 +123,18 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
                     </div>
                     <div className="flex flex-wrap gap-1">
                       {point.events?.map((e, idx) => (
-                        <Badge key={idx} variant="secondary" className="text-[8px] h-3 px-1 leading-none uppercase tracking-tighter">
+                        <Badge key={idx} variant="secondary" className="h-5 px-2 text-[11px] font-semibold">
                           {e.type}
                         </Badge>
                       ))}
                     </div>
                   </div>
                 </TableCell>
-                <TableCell className="text-muted-foreground">{point.cycleIndex}</TableCell>
-                <TableCell className="font-mono">{formatPercent(point.interestRate)}</TableCell>
-                <TableCell>
+                <TableCell className="py-4 text-muted-foreground">{point.cycleIndex}</TableCell>
+                <TableCell className="py-4 font-mono text-sm">{formatPercent(point.interestRate)}</TableCell>
+                <TableCell className="py-4">
                   <div className="flex flex-col">
-                    <span className="text-xs">{point.rateSource}</span>
+                    <span className="text-sm">{point.rateSource}</span>
                     {typeof point.rateReferenceValue === 'number' && (
                       <span className="text-[10px] text-muted-foreground italic">
                         ref {formatPercent(point.rateReferenceValue)}
@@ -141,14 +142,14 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
                     )}
                   </div>
                 </TableCell>
-                <TableCell className="font-mono">{formatCurrency(point.nominalValueAfterInterest)}</TableCell>
-                <TableCell className={point.netProfit >= 0 ? "text-green-600 font-mono" : "text-destructive font-mono"}>
+                <TableCell className="py-4 font-mono text-sm">{formatCurrency(point.nominalValueAfterInterest)}</TableCell>
+                <TableCell className={point.netProfit >= 0 ? "py-4 font-mono text-sm text-green-600" : "py-4 font-mono text-sm text-destructive"}>
                   {formatCurrency(point.netProfit)}
                 </TableCell>
-                <TableCell className="text-blue-600 font-mono">
+                <TableCell className="py-4 font-mono text-sm text-blue-600">
                   {formatCurrency(point.realValue)}
                 </TableCell>
-                <TableCell className="text-right font-bold font-mono">
+                <TableCell className="py-4 text-right font-mono text-sm font-semibold">
                   {formatCurrency(point.earlyWithdrawalValue)}
                 </TableCell>
               </TableRow>
@@ -157,11 +158,11 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
         </Table>
 
         {filteredTimeline.length > 12 && (
-          <div className="p-4 border-t bg-muted/5 flex justify-center">
+          <div className="flex justify-center border-t bg-slate-50/70 p-4">
             <Button 
               variant="ghost" 
               size="sm" 
-              className="text-xs font-bold uppercase tracking-widest gap-2"
+              className="gap-2 text-sm font-semibold"
               onClick={() => setIsExpanded(!isExpanded)}
             >
               {isExpanded ? (
