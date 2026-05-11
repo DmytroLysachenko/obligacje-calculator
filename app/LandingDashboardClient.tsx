@@ -86,6 +86,70 @@ function HomeStep({
   );
 }
 
+function RecentWorkCard({
+  language,
+  savedScenarioNames,
+  emptyCopy,
+  notebookLabel,
+  calculatorLabel,
+}: {
+  language: 'pl' | 'en';
+  savedScenarioNames: string[];
+  emptyCopy: string;
+  notebookLabel: string;
+  calculatorLabel: string;
+}) {
+  return (
+    <Card className="surface-panel h-full overflow-hidden rounded-[1.9rem] border-white/80 bg-white/78">
+      <CardContent className="space-y-5 p-5">
+        <div className="space-y-2">
+          <p className="text-xs font-semibold tracking-[0.08em] text-slate-500">
+            {language === 'pl' ? 'Ostatnia praca' : 'Recent work'}
+          </p>
+          <h2 className="text-2xl font-black tracking-tight text-slate-950">
+            {language === 'pl' ? 'Wroc do jednego scenariusza.' : 'Return to one saved scenario.'}
+          </h2>
+          <p className="text-[15px] leading-7 text-slate-600">
+            {savedScenarioNames.length > 0
+              ? language === 'pl'
+                ? 'Zapisane scenariusze powinny byc szybkim punktem wznowienia, a nie osobnym dashboardem.'
+                : 'Saved scenarios should act as a quick resume point, not a separate dashboard.'
+              : emptyCopy}
+          </p>
+        </div>
+
+        {savedScenarioNames.length > 0 ? (
+          <div className="space-y-2">
+            {savedScenarioNames.map((name, index) => (
+              <div
+                key={`${name}-${index}`}
+                className="rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-sm font-semibold text-slate-900"
+              >
+                {name}
+              </div>
+            ))}
+          </div>
+        ) : null}
+
+        <div className="flex flex-wrap gap-3">
+          <Button asChild variant="outline" className="gap-2 rounded-2xl border-slate-200 bg-white/80">
+            <Link href="/notebook">
+              <Wallet className="h-4 w-4" />
+              {notebookLabel}
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="gap-2 rounded-2xl border-slate-200 bg-white/80">
+            <Link href="/single-calculator">
+              <Calculator className="h-4 w-4" />
+              {calculatorLabel}
+            </Link>
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 function SectionHeading({
   title,
   description,
@@ -229,8 +293,6 @@ export function LandingDashboardClient() {
     },
   ];
 
-  const savedScenarioTitle =
-    language === 'pl' ? 'Ostatnio zapisane scenariusze' : 'Recent saved scenarios';
   const savedScenarioEmpty =
     language === 'pl'
       ? 'Brak lokalnie zapisanych scenariuszy. Strona startowa nie musi udawac centrum sterowania, gdy nie ma jeszcze zapisanej pracy.'
@@ -250,7 +312,8 @@ export function LandingDashboardClient() {
 
   return (
     <div className="space-y-8 pb-20 md:space-y-10">
-      <section className="surface-shell relative overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#f8fafc_0%,#f0f9ff_34%,#eef2ff_62%,#ffffff_100%)] px-5 py-7 md:rounded-[2.5rem] md:px-8 md:py-10">
+      <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
+        <div className="surface-shell relative overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#f8fafc_0%,#f0f9ff_34%,#eef2ff_62%,#ffffff_100%)] px-5 py-7 md:rounded-[2.5rem] md:px-8 md:py-10">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.15),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(99,102,241,0.12),transparent_30%)]" />
         <div className="absolute -right-12 top-10 h-48 w-48 rounded-full bg-sky-200/30 blur-3xl" />
         <div className="absolute bottom-0 left-10 h-36 w-36 rounded-full bg-indigo-200/25 blur-3xl" />
@@ -288,8 +351,16 @@ export function LandingDashboardClient() {
               </Link>
             </Button>
           </div>
-
         </div>
+        </div>
+
+        <RecentWorkCard
+          language={language}
+          savedScenarioNames={savedScenarioNames}
+          emptyCopy={savedScenarioEmpty}
+          notebookLabel={t('nav.notebook')}
+          calculatorLabel={t('landing.recovery_home.resume_saved')}
+        />
       </section>
 
       <section className="space-y-4">
@@ -315,47 +386,6 @@ export function LandingDashboardClient() {
             <HomeToolCard key={item.href} item={item} />
           ))}
         </div>
-      </section>
-
-      <section className="space-y-4">
-        <SectionHeading
-          title={savedScenarioTitle}
-          description={t('landing.recovery_home.portfolio_empty_desc')}
-        />
-        <Card className="surface-shell overflow-hidden rounded-[2rem]">
-          <CardContent className="space-y-4 p-6">
-            {savedScenarioNames.length === 0 ? (
-              <p className="max-w-3xl text-sm leading-7 text-slate-600">
-                {savedScenarioEmpty}
-              </p>
-            ) : (
-              <div className="grid gap-3 md:grid-cols-3">
-                {savedScenarioNames.map((name, index) => (
-                  <div
-                    key={`${name}-${index}`}
-                    className="surface-panel rounded-2xl px-4 py-3 text-sm font-semibold text-slate-900"
-                  >
-                    {name}
-                  </div>
-                ))}
-              </div>
-            )}
-            <div className="flex flex-wrap gap-3">
-              <Button asChild variant="outline" className="gap-2 rounded-2xl border-slate-200 bg-white/80">
-                <Link href="/notebook">
-                  <Wallet className="h-4 w-4" />
-                  {t('nav.notebook')}
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="gap-2 rounded-2xl border-slate-200 bg-white/80">
-                <Link href="/single-calculator">
-                  <Calculator className="h-4 w-4" />
-                  {t('landing.recovery_home.resume_saved')}
-                </Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
       </section>
 
       <section className="space-y-4">
