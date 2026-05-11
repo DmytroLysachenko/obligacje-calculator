@@ -61,10 +61,10 @@ const CustomTooltip = ({
 
   return (
     <div className="min-w-[120px] rounded-none border border-border bg-popover p-3 text-popover-foreground shadow-xl">
-      <p className="mb-2 border-b border-border/50 pb-1 text-xs font-bold">{label}</p>
+      <p className="mb-2 border-b border-border/50 pb-1 text-sm font-semibold">{label}</p>
       <div className="space-y-1.5">
         {payload.map((entry, index) => (
-          <div key={index} className="flex items-center justify-between gap-4 text-xs">
+          <div key={index} className="flex items-center justify-between gap-4 text-sm">
             <span className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
               {t('bonds.nbp_rate_short')}:
@@ -77,14 +77,20 @@ const CustomTooltip = ({
   );
 };
 
-export const NBPRateChart = ({ period = 'ALL' }: { period?: '1Y' | '5Y' | '10Y' | '30Y' | 'ALL' }) => {
+export const NBPRateChart = ({
+  period = 'ALL',
+}: {
+  period?: '1Y' | '5Y' | '10Y' | '30Y' | 'ALL';
+}) => {
   const { t } = useLanguage();
-  const { data: response, isLoading, isError } = useChartData<ChartSeriesEnvelope<NBPRateDataPoint>>('/api/charts/nbp-rate');
+  const { data: response, isLoading, isError } =
+    useChartData<ChartSeriesEnvelope<NBPRateDataPoint>>('/api/charts/nbp-rate');
 
   const chartData = React.useMemo(() => {
     const rawData = response?.data ?? [];
     if (period === 'ALL') return rawData;
-    const count = period === '1Y' ? 12 : period === '5Y' ? 60 : period === '10Y' ? 120 : 360;
+    const count =
+      period === '1Y' ? 12 : period === '5Y' ? 60 : period === '10Y' ? 120 : 360;
     return rawData.slice(-count);
   }, [period, response?.data]);
 
@@ -93,12 +99,16 @@ export const NBPRateChart = ({ period = 'ALL' }: { period?: '1Y' | '5Y' | '10Y' 
   }
 
   if (isError) {
-    return <div className="flex h-[400px] w-full items-center justify-center text-destructive">{t('economic.failed_to_load')}</div>;
+    return (
+      <div className="flex h-[400px] w-full items-center justify-center text-destructive">
+        {t('economic.failed_to_load')}
+      </div>
+    );
   }
 
   return (
     <ReferenceChartFrame
-      meta={`${t('economic.data_source')}: ${getReferenceSourceLabel(response)}${response ? ` | ${t('economic.as_of')}: ${getReferenceAsOfLabel(response)}` : ''}${response ? ` | Coverage: ${getReferenceCoverageLabel(response)}` : ''}${response?.usedFallback ? ` | ${t('economic.fallback_in_use')}` : ''}`}
+      meta={`${t('economic.data_source')}: ${getReferenceSourceLabel(response)}${response ? ` | ${t('economic.as_of')}: ${getReferenceAsOfLabel(response)}` : ''}${response ? ` | ${(t('economic.coverage') || 'Coverage')}: ${getReferenceCoverageLabel(response)}` : ''}${response?.usedFallback ? ` | ${t('economic.fallback_in_use')}` : ''}`}
     >
       <ChartContainer height={420}>
         <ResponsiveContainer width="100%" height="100%">
@@ -109,13 +119,37 @@ export const NBPRateChart = ({ period = 'ALL' }: { period?: '1Y' | '5Y' | '10Y' 
                 <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
-            <XAxis dataKey="date" fontSize={12} tickLine={false} axisLine={false} minTickGap={24} />
-            <YAxis fontSize={12} tickFormatter={(value: number) => `${value}%`} tickLine={false} axisLine={false} />
+            <CartesianGrid
+              strokeDasharray="3 3"
+              vertical={false}
+              stroke="rgba(0,0,0,0.05)"
+            />
+            <XAxis
+              dataKey="date"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              minTickGap={24}
+            />
+            <YAxis
+              fontSize={12}
+              tickFormatter={(value: number) => `${value}%`}
+              tickLine={false}
+              axisLine={false}
+            />
             <Tooltip content={<CustomTooltip t={t} />} />
             <ReferenceLine y={0} stroke="#000" strokeWidth={1} />
-            {chartData.length > 24 ? <Brush dataKey="date" height={22} stroke="#64748b" travellerWidth={8} /> : null}
-            <Area type="stepAfter" dataKey="rate" stroke="#f59e0b" strokeWidth={3} fill="url(#colorRate)" activeDot={{ r: 6, strokeWidth: 0, fill: '#f59e0b' }} />
+            {chartData.length > 24 ? (
+              <Brush dataKey="date" height={22} stroke="#64748b" travellerWidth={8} />
+            ) : null}
+            <Area
+              type="stepAfter"
+              dataKey="rate"
+              stroke="#f59e0b"
+              strokeWidth={3}
+              fill="url(#colorRate)"
+              activeDot={{ r: 6, strokeWidth: 0, fill: '#f59e0b' }}
+            />
           </AreaChart>
         </ResponsiveContainer>
       </ChartContainer>

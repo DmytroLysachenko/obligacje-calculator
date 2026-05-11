@@ -8,6 +8,7 @@ import {
   CheckCircle2,
   Database,
   ShieldAlert,
+  Sparkles,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/i18n';
@@ -93,9 +94,7 @@ function ReferenceMetric({
 }) {
   return (
     <div className="surface-panel rounded-3xl px-5 py-4">
-      <p className="text-xs font-semibold tracking-[0.08em] text-slate-500">
-        {label}
-      </p>
+      <p className="text-sm font-semibold text-slate-500">{label}</p>
       <p className="mt-2 text-xl font-black text-slate-950">{value}</p>
     </div>
   );
@@ -115,7 +114,7 @@ function SeriesStatusCard({
   const state = getReferenceState(meta);
   const rows = [
     {
-      label: language === 'pl' ? 'Źródło' : 'Source',
+      label: language === 'pl' ? 'Zrodlo' : 'Source',
       value: isLoading ? '...' : getReferenceSourceLabel(meta),
     },
     {
@@ -141,21 +140,17 @@ function SeriesStatusCard({
           : 'border-slate-200 bg-white',
       )}
     >
-      <CardContent className="space-y-5 p-6">
-        <div className="flex items-start justify-between gap-3">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              {state.tone === 'warning' ? (
-                <AlertTriangle className="h-4 w-4 text-amber-700" />
-              ) : (
-                <CheckCircle2 className="h-4 w-4 text-emerald-700" />
-              )}
-              <p className="text-xl font-black tracking-tight text-slate-950">
-                {title}
-              </p>
-            </div>
-            <p className="text-sm leading-7 text-slate-600">{state.description}</p>
+      <CardContent className="space-y-4 p-5">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            {state.tone === 'warning' ? (
+              <AlertTriangle className="h-4 w-4 text-amber-700" />
+            ) : (
+              <CheckCircle2 className="h-4 w-4 text-emerald-700" />
+            )}
+            <p className="text-xl font-black tracking-tight text-slate-950">{title}</p>
           </div>
+          <p className="text-sm leading-7 text-slate-600">{state.description}</p>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
@@ -164,9 +159,7 @@ function SeriesStatusCard({
               key={row.label}
               className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
             >
-                <p className="text-xs font-semibold tracking-[0.08em] text-slate-500">
-                {row.label}
-              </p>
+              <p className="text-sm font-semibold text-slate-500">{row.label}</p>
               <p className="mt-2 text-sm font-medium text-slate-900">{row.value}</p>
             </div>
           ))}
@@ -188,13 +181,9 @@ function SectionBlock({
   return (
     <section className="space-y-4">
       <div className="space-y-2">
-        <h3 className="text-2xl font-black tracking-tight text-slate-950">
-          {title}
-        </h3>
+        <h3 className="text-2xl font-black tracking-tight text-slate-950">{title}</h3>
         {description ? (
-          <p className="max-w-3xl text-sm leading-7 text-slate-600">
-            {description}
-          </p>
+          <p className="max-w-3xl text-sm leading-7 text-slate-600">{description}</p>
         ) : null}
       </div>
       {children}
@@ -243,7 +232,7 @@ export default function EconomicDataPage() {
         <Card className="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(248,250,252,0.92))] shadow-[0_22px_70px_-48px_rgba(15,23,42,0.45)]">
           <CardContent className="space-y-6 p-6 md:p-8">
             <div className="space-y-3">
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/90 bg-white/80 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-slate-700">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/90 bg-white/80 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-slate-700">
                 <Database className="h-3.5 w-3.5 text-primary" />
                 {language === 'pl' ? 'Panel kontekstowy' : 'Reference panel'}
               </div>
@@ -255,7 +244,7 @@ export default function EconomicDataPage() {
               <p className="max-w-4xl text-sm leading-8 text-slate-600">{pageIntro}</p>
             </div>
 
-            <div className="grid gap-4 lg:grid-cols-3">
+            <div className="grid gap-4 lg:grid-cols-4">
               <ReferenceMetric
                 label={language === 'pl' ? 'Serie' : 'Series'}
                 value="2"
@@ -268,11 +257,52 @@ export default function EconomicDataPage() {
                 label={language === 'pl' ? 'Tryb' : 'Mode'}
                 value={language === 'pl' ? 'Referencyjny' : 'Reference'}
               />
+              <ReferenceMetric
+                label={language === 'pl' ? 'Cel' : 'Goal'}
+                value={language === 'pl' ? 'Czytelny kontekst' : 'Readable context'}
+              />
             </div>
           </CardContent>
         </Card>
 
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px] xl:gap-8">
+        <Card className="surface-panel rounded-[2rem] border-slate-200 bg-white shadow-none">
+          <CardContent className="grid gap-4 p-6 md:grid-cols-[minmax(0,1fr)_220px]">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-primary" />
+                <p className="text-xl font-black tracking-tight text-slate-950">
+                  {language === 'pl' ? 'Jak korzystac z tej strony' : 'How to use this page'}
+                </p>
+              </div>
+              <div className="grid gap-3 md:grid-cols-3">
+                {usageGuide.map((item) => (
+                  <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-3">
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                      <p className="text-sm leading-7 text-slate-600">{item}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-amber-200 bg-amber-50/70 px-4 py-4">
+              <div className="flex items-center gap-2 text-amber-950">
+                <AlertTriangle className="h-4 w-4" />
+                <p className="font-black tracking-tight">
+                  {language === 'pl' ? 'Jakosc danych' : 'Data quality'}
+                </p>
+              </div>
+              <p className="mt-3 text-sm leading-7 text-amber-950/90">
+                {language === 'pl'
+                  ? 'Jesli synchronizacja jest niepelna, strona powinna mowic o tym wprost. Te wykresy maja pomagac interpretowac wynik kalkulatora, nie budowac falszywego poczucia kompletnosci.'
+                  : 'If sync coverage is incomplete, the page should say that directly. These charts are here to support calculator interpretation, not to create false confidence in perfect coverage.'}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-8">
           <div className="space-y-8 md:space-y-10">
             <SectionBlock
               title={t('economic.inflation_title')}
@@ -290,20 +320,19 @@ export default function EconomicDataPage() {
           </div>
 
           <aside className="space-y-6">
-            <Card className="surface-panel rounded-[2rem]">
-              <CardContent className="space-y-4 p-6">
+            <Card className="surface-panel rounded-[2rem] border-slate-200 bg-white shadow-none">
+              <CardContent className="space-y-3 p-5">
                 <div className="flex items-center gap-2">
                   <ShieldAlert className="h-4 w-4 text-primary" />
                   <p className="text-xl font-black tracking-tight text-slate-950">
                     {language === 'pl' ? 'Zakres strony' : 'Page scope'}
                   </p>
                 </div>
-                {usageGuide.map((item) => (
-                  <div key={item} className="flex items-start gap-3">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    <p className="text-sm leading-7 text-slate-600">{item}</p>
-                  </div>
-                ))}
+                <p className="text-sm leading-7 text-slate-600">
+                  {language === 'pl'
+                    ? 'To nie jest osobny panel forecastingowy. Dane tutaj maja sluzyc jako spokojne tlo do czytania kalkulatorow obligacji.'
+                    : 'This is not a standalone forecasting board. The data here exists to give calm context to the bond calculators.'}
+                </p>
               </CardContent>
             </Card>
 
@@ -320,27 +349,9 @@ export default function EconomicDataPage() {
               isLoading={isLoadingNbp}
               language={language}
             />
-
-            <Card className="rounded-[2rem] border border-amber-200 bg-amber-50/70 shadow-none">
-              <CardContent className="space-y-3 p-6">
-                <div className="flex items-center gap-2 text-amber-950">
-                  <AlertTriangle className="h-4 w-4" />
-                  <p className="font-black tracking-tight">
-                    {language === 'pl' ? 'Uwaga o jakosci danych' : 'Data-quality note'}
-                  </p>
-                </div>
-                <p className="text-sm leading-7 text-amber-950/90">
-                  {language === 'pl'
-                    ? 'Jesli synchronizacja jest niepelna, strona powinna mowic o tym wprost. Te wykresy maja pomagac interpretowac wynik kalkulatora, nie budowac fałszywego poczucia kompletności.'
-                    : 'If sync coverage is incomplete, the page should say that directly. These charts are here to support calculator interpretation, not to create false confidence in perfect coverage.'}
-                </p>
-              </CardContent>
-            </Card>
           </aside>
         </div>
       </div>
     </CalculatorPageShell>
   );
 }
-
-
