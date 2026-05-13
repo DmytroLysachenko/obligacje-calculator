@@ -11,6 +11,15 @@ import { ResultMetricCard } from '@/shared/components/ResultMetricCard';
 import { ResultSummaryHero } from '@/shared/components/ResultSummaryHero';
 import { CalculationAuditTrace } from './CalculationAuditTrace';
 
+function getTaxStrategyDisplayLabel(
+  strategy: BondInputs['taxStrategy'],
+  t: (key: string) => string,
+) {
+  if (strategy === 'IKE') return t('bonds.tax_ike');
+  if (strategy === 'IKZE') return t('bonds.tax_ikze');
+  return t('bonds.tax_standard');
+}
+
 interface BondResultsSummaryProps {
   results: CalculationResult;
   inputs: BondInputs;
@@ -112,7 +121,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
     },
     {
       label: language === 'pl' ? 'Strategia podatkowa' : 'Tax strategy',
-      value: inputs.taxStrategy,
+      value: getTaxStrategyDisplayLabel(inputs.taxStrategy, t),
     },
     {
       label: language === 'pl' ? 'Tryb wyjscia' : 'Withdrawal mode',
@@ -167,13 +176,13 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
         deltaText={deltaText}
         actions={[
           {
-            label: 'Save',
+            label: language === 'pl' ? 'Zapisz' : 'Save',
             icon: <Save className="h-4 w-4" />,
             onClick: onSaveScenario,
             variant: 'default',
           },
           {
-            label: 'Notebook',
+            label: language === 'pl' ? 'Notatnik' : 'Notebook',
             icon: <Save className="h-4 w-4" />,
             onClick: onAddToNotebook,
           },

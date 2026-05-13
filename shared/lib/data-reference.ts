@@ -8,9 +8,76 @@ export interface DataReferenceMetaLike {
   dataSource?: string;
 }
 
-export function getReferenceSourceLabel(meta?: DataReferenceMetaLike) {
+type AppLanguage = 'pl' | 'en';
+
+const REFERENCE_COPY = {
+  unavailable: {
+    pl: 'Niedostepne',
+    en: 'Unavailable',
+  },
+  syncedDataset: {
+    pl: 'Zsynchronizowany zestaw danych',
+    en: 'Synced dataset',
+  },
+  fallbackDataset: {
+    pl: 'Zapasowy zestaw danych',
+    en: 'Fallback dataset',
+  },
+  coverageUnavailable: {
+    pl: 'Zakres niedostepny',
+    en: 'Coverage not available',
+  },
+  scopeUnknown: {
+    pl: 'Zakres nieznany',
+    en: 'Scope unknown',
+  },
+  referenceOnly: {
+    pl: 'Tylko odczyt referencyjny',
+    en: 'Reference reading only',
+  },
+  supportsContext: {
+    pl: 'Wspiera kontekst kalkulatora',
+    en: 'Supports calculator context',
+  },
+  unavailableTitle: {
+    pl: 'Brak metadanych',
+    en: 'Unavailable metadata',
+  },
+  unavailableDescription: {
+    pl: 'Ta strona nie ma jeszcze wystarczajacych metadanych synchronizacji, aby opisac swiezosc lub zakres.',
+    en: 'This page does not have enough sync metadata to describe freshness or coverage yet.',
+  },
+  fallbackTitle: {
+    pl: 'Zastepczy lub czesciowy zakres',
+    en: 'Fallback or partial coverage',
+  },
+  fallbackDescription: {
+    pl: 'Traktuj te serie jako wsparcie referencyjne, dopoki pipeline synchronizacji nie przywroci pelniejszego zakresu.',
+    en: 'Treat this series as reference support until the sync pipeline restores fuller coverage.',
+  },
+  syncedTitle: {
+    pl: 'Zsynchronizowany zakres referencyjny',
+    en: 'Synced reference coverage',
+  },
+  syncedDescription: {
+    pl: 'Ta seria jest wsparta zsynchronizowanym pipeline danych i moze sluzyc do interpretacji kalkulatora.',
+    en: 'This series is backed by the synced data pipeline and can support calculator interpretation.',
+  },
+} as const;
+
+function getReferenceCopy(
+  key: keyof typeof REFERENCE_COPY,
+  language: AppLanguage,
+) {
+  return REFERENCE_COPY[key][language];
+}
+
+export function getReferenceSourceLabel(
+  meta?: DataReferenceMetaLike,
+  language: AppLanguage = 'en',
+) {
   if (!meta) {
-    return 'Unavailable';
+    return getReferenceCopy('unavailable', language);
   }
 
   if (meta.dataSource) {
@@ -18,63 +85,72 @@ export function getReferenceSourceLabel(meta?: DataReferenceMetaLike) {
   }
 
   if (meta.source === 'database') {
-    return 'Synced dataset';
+    return getReferenceCopy('syncedDataset', language);
   }
 
   if (meta.source === 'fallback') {
-    return 'Fallback dataset';
+    return getReferenceCopy('fallbackDataset', language);
   }
 
-  return 'Unavailable';
+  return getReferenceCopy('unavailable', language);
 }
 
-export function getReferenceCoverageLabel(meta?: DataReferenceMetaLike) {
+export function getReferenceCoverageLabel(
+  meta?: DataReferenceMetaLike,
+  language: AppLanguage = 'en',
+) {
   if (!meta?.coverageStart || !meta?.coverageEnd) {
-    return 'Coverage not available';
+    return getReferenceCopy('coverageUnavailable', language);
   }
 
   return `${meta.coverageStart} - ${meta.coverageEnd}`;
 }
 
-export function getReferenceAsOfLabel(meta?: DataReferenceMetaLike) {
-  return meta?.asOf ?? meta?.lastCheck ?? 'Unavailable';
+export function getReferenceAsOfLabel(
+  meta?: DataReferenceMetaLike,
+  language: AppLanguage = 'en',
+) {
+  return meta?.asOf ?? meta?.lastCheck ?? getReferenceCopy('unavailable', language);
 }
 
-export function getReferenceScopeLabel(meta?: DataReferenceMetaLike) {
+export function getReferenceScopeLabel(
+  meta?: DataReferenceMetaLike,
+  language: AppLanguage = 'en',
+) {
   if (!meta) {
-    return 'Scope unknown';
+    return getReferenceCopy('scopeUnknown', language);
   }
 
   if (meta.usedFallback || meta.source === 'fallback') {
-    return 'Reference reading only';
+    return getReferenceCopy('referenceOnly', language);
   }
 
-  return 'Supports calculator context';
+  return getReferenceCopy('supportsContext', language);
 }
 
-export function getReferenceState(meta?: DataReferenceMetaLike) {
+export function getReferenceState(
+  meta?: DataReferenceMetaLike,
+  language: AppLanguage = 'en',
+) {
   if (!meta) {
     return {
-      title: 'Unavailable metadata',
-      description:
-        'This page does not have enough sync metadata to describe freshness or coverage yet.',
+      title: getReferenceCopy('unavailableTitle', language),
+      description: getReferenceCopy('unavailableDescription', language),
       tone: 'warning' as const,
     };
   }
 
   if (meta.usedFallback || meta.source === 'fallback') {
     return {
-      title: 'Fallback or partial coverage',
-      description:
-        'Treat this series as reference support until the sync pipeline restores fuller coverage.',
+      title: getReferenceCopy('fallbackTitle', language),
+      description: getReferenceCopy('fallbackDescription', language),
       tone: 'warning' as const,
     };
   }
 
   return {
-    title: 'Synced reference coverage',
-    description:
-      'This series is backed by the synced data pipeline and can support calculator interpretation.',
+    title: getReferenceCopy('syncedTitle', language),
+    description: getReferenceCopy('syncedDescription', language),
     tone: 'good' as const,
   };
 }

@@ -65,7 +65,7 @@ function RangeActions({
     <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-1.5">
       <span className="inline-flex items-center gap-1 px-3 text-sm font-medium text-slate-500">
         <CalendarRange className="h-3.5 w-3.5" />
-        {language === 'pl' ? 'Zakres danych' : 'Range'}
+        {language === 'pl' ? 'Zakres danych' : 'Data range'}
       </span>
       {periods.map((item) => (
         <button
@@ -111,23 +111,29 @@ function SeriesStatusCard({
   isLoading: boolean;
   language: 'pl' | 'en';
 }) {
-  const state = getReferenceState(meta);
+  const labels = {
+    source: language === 'pl' ? 'Zrodlo' : 'Source',
+    coverage: language === 'pl' ? 'Zakres' : 'Coverage',
+    asOf: language === 'pl' ? 'Stan na' : 'As of',
+    usage: language === 'pl' ? 'Uzycie' : 'Use',
+  } as const;
+  const state = getReferenceState(meta, language);
   const rows = [
     {
-      label: language === 'pl' ? 'Zrodlo' : 'Source',
-      value: isLoading ? '...' : getReferenceSourceLabel(meta),
+      label: labels.source,
+      value: isLoading ? '...' : getReferenceSourceLabel(meta, language),
     },
     {
-      label: language === 'pl' ? 'Zakres' : 'Coverage',
-      value: isLoading ? '...' : getReferenceCoverageLabel(meta),
+      label: labels.coverage,
+      value: isLoading ? '...' : getReferenceCoverageLabel(meta, language),
     },
     {
-      label: language === 'pl' ? 'Stan na' : 'As of',
-      value: isLoading ? '...' : getReferenceAsOfLabel(meta),
+      label: labels.asOf,
+      value: isLoading ? '...' : getReferenceAsOfLabel(meta, language),
     },
     {
-      label: language === 'pl' ? 'Uzycie' : 'Use',
-      value: isLoading ? '...' : getReferenceScopeLabel(meta),
+      label: labels.usage,
+      value: isLoading ? '...' : getReferenceScopeLabel(meta, language),
     },
   ];
 
@@ -198,6 +204,19 @@ export default function EconomicDataPage() {
     useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/inflation');
   const { data: nbpMeta, isLoading: isLoadingNbp } =
     useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/nbp-rate');
+  const labels = {
+    panel: language === 'pl' ? 'Panel kontekstowy' : 'Reference panel',
+    series: language === 'pl' ? 'Serie' : 'Series',
+    purpose: language === 'pl' ? 'Rola' : 'Purpose',
+    mode: language === 'pl' ? 'Tryb' : 'Mode',
+    goal: language === 'pl' ? 'Cel' : 'Goal',
+    context: language === 'pl' ? 'Kontekst' : 'Context',
+    reference: language === 'pl' ? 'Referencyjny' : 'Reference',
+    readableContext: language === 'pl' ? 'Czytelny kontekst' : 'Readable context',
+    howToUse: language === 'pl' ? 'Jak korzystac z tej strony' : 'How to use this page',
+    dataQuality: language === 'pl' ? 'Jakosc danych' : 'Data quality',
+    pageScope: language === 'pl' ? 'Zakres strony' : 'Page scope',
+  } as const;
 
   const pageIntro =
     language === 'pl'
@@ -234,7 +253,7 @@ export default function EconomicDataPage() {
             <div className="space-y-3">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/90 bg-white/80 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-slate-700">
                 <Database className="h-3.5 w-3.5 text-primary" />
-                {language === 'pl' ? 'Panel kontekstowy' : 'Reference panel'}
+                {labels.panel}
               </div>
               <h2 className="max-w-4xl text-3xl font-black tracking-tight text-slate-950">
                 {language === 'pl'
@@ -246,20 +265,20 @@ export default function EconomicDataPage() {
 
             <div className="grid gap-4 lg:grid-cols-4">
               <ReferenceMetric
-                label={language === 'pl' ? 'Serie' : 'Series'}
+                label={labels.series}
                 value="2"
               />
               <ReferenceMetric
-                label={language === 'pl' ? 'Rola' : 'Purpose'}
-                value={language === 'pl' ? 'Kontekst' : 'Context'}
+                label={labels.purpose}
+                value={labels.context}
               />
               <ReferenceMetric
-                label={language === 'pl' ? 'Tryb' : 'Mode'}
-                value={language === 'pl' ? 'Referencyjny' : 'Reference'}
+                label={labels.mode}
+                value={labels.reference}
               />
               <ReferenceMetric
-                label={language === 'pl' ? 'Cel' : 'Goal'}
-                value={language === 'pl' ? 'Czytelny kontekst' : 'Readable context'}
+                label={labels.goal}
+                value={labels.readableContext}
               />
             </div>
           </CardContent>
@@ -271,7 +290,7 @@ export default function EconomicDataPage() {
               <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-primary" />
                 <p className="text-xl font-black tracking-tight text-slate-950">
-                  {language === 'pl' ? 'Jak korzystac z tej strony' : 'How to use this page'}
+                  {labels.howToUse}
                 </p>
               </div>
               <div className="grid gap-3 md:grid-cols-3">
@@ -290,7 +309,7 @@ export default function EconomicDataPage() {
               <div className="flex items-center gap-2 text-amber-950">
                 <AlertTriangle className="h-4 w-4" />
                 <p className="font-black tracking-tight">
-                  {language === 'pl' ? 'Jakosc danych' : 'Data quality'}
+                  {labels.dataQuality}
                 </p>
               </div>
               <p className="mt-3 text-sm leading-7 text-amber-950/90">
@@ -325,7 +344,7 @@ export default function EconomicDataPage() {
                 <div className="flex items-center gap-2">
                   <ShieldAlert className="h-4 w-4 text-primary" />
                   <p className="text-xl font-black tracking-tight text-slate-950">
-                    {language === 'pl' ? 'Zakres strony' : 'Page scope'}
+                    {labels.pageScope}
                   </p>
                 </div>
                 <p className="text-sm leading-7 text-slate-600">
