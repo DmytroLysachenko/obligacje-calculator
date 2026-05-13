@@ -22,8 +22,10 @@ const fetcher = async <T>(url: string): Promise<T> => {
 
 export function useChartData<T>(endpoint: string) {
   const { data, error, isLoading } = useSWR<T>(endpoint, fetcher<T>, {
+    dedupingInterval: 60_000,
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
+    keepPreviousData: true,
   });
 
   return {

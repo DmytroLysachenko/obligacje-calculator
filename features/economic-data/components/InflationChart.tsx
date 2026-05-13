@@ -20,9 +20,8 @@ import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ReferenceChartFrame } from '@/shared/components/charts/ReferenceChartFrame';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  getReferenceMetaItems,
-} from '@/shared/lib/data-reference';
+import { sampleSeriesPoints, sliceSeriesByPeriod } from '@/shared/lib/chart-series';
+import { getReferenceMetaItems } from '@/shared/lib/data-reference';
 
 interface InflationDataPoint {
   date: string;
@@ -87,10 +86,7 @@ export const InflationChart = ({
 
   const chartData = React.useMemo(() => {
     const rawData = response?.data ?? [];
-    if (period === 'ALL') return rawData;
-    const count =
-      period === '1Y' ? 12 : period === '5Y' ? 60 : period === '10Y' ? 120 : 360;
-    return rawData.slice(-count);
+    return sampleSeriesPoints(sliceSeriesByPeriod(rawData, period), 160);
   }, [period, response?.data]);
 
   const maxRate = Math.max(...chartData.map((point) => point.rate), 0);

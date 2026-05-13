@@ -25,6 +25,7 @@ import { useLanguage } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { ChartContainer } from "@/shared/components/charts/ChartContainer";
 import { AppLanguage, buildBondChartDisplayPoints } from "@/shared/lib/bond-display";
+import { computeNumericDomain, computeRateDomain, sampleSeriesPoints } from "@/shared/lib/chart-series";
 
 interface BondChartProps {
   results: CalculationResult;
@@ -173,61 +174,68 @@ const CustomTooltip = ({
 export const BondChart: React.FC<BondChartProps> = ({ results }) => {
   const { t, language } = useLanguage();
 
-  const formatCurrency = (value: number) =>
-    new Intl.NumberFormat(language === "pl" ? "pl-PL" : "en-GB", {
-      style: "currency",
-      currency: "PLN",
-      maximumFractionDigits: 0,
-    }).format(value);
-
-  const baseDisplayData = buildBondChartDisplayPoints(
-    results.initialInvestment,
-    results.timeline,
-    language as AppLanguage,
-    results.comparisonScenarios,
+  const formatCurrency = React.useMemo(
+    () => (value: number) =>
+      new Intl.NumberFormat(language === "pl" ? "pl-PL" : "en-GB", {
+        style: "currency",
+        currency: "PLN",
+        maximumFractionDigits: 0,
+      }).format(value),
+    [language],
   );
 
-  const rawData = baseDisplayData.map((point, index) => ({
-    label: point.xLabel,
-    date: point.xLabel,
-    nominal: point.nominal,
-    real: point.real,
-    isProjected: point.isProjected,
-    isMaturity: point.isMaturity,
-    inflation: point.inflation,
-    nbp: point.nbp,
-    interestRate: index === 0 ? undefined : results.timeline[index - 1]?.interestRate,
-    rateSource: point.rateLabel,
-    low: point.low,
-    high: point.high,
-    eventLabels: point.eventLabels,
-  }));
+  const chartData = React.useMemo(() => {
+    const baseDisplayData = buildBondChartDisplayPoints(
+      results.initialInvestment,
+      results.timeline,
+      language as AppLanguage,
+      results.comparisonScenarios,
+    );
 
-  const isLongSimulation = rawData.length > 240;
-  const chartData = isLongSimulation
-    ? rawData.filter((_, i) => i === 0 || i === rawData.length - 1 || i % 2 === 0)
-    : rawData;
+    const rawData = baseDisplayData.map((point, index) => ({
+      label: point.xLabel,
+      date: point.xLabel,
+      nominal: point.nominal,
+      real: point.real,
+      isProjected: point.isProjected,
+      isMaturity: point.isMaturity,
+      inflation: point.inflation,
+      nbp: point.nbp,
+      interestRate: index === 0 ? undefined : results.timeline[index - 1]?.interestRate,
+      rateSource: point.rateLabel,
+      low: point.low,
+      high: point.high,
+      eventLabels: point.eventLabels,
+    }));
 
-  const valueSeries = chartData.flatMap((point) => [point.nominal, point.real]);
-  const valueMin = Math.min(...valueSeries);
-  const valueMax = Math.max(...valueSeries);
-  const valuePadding = Math.max(250, Math.round((valueMax - valueMin) * 0.08));
-  const leftDomain: [number, number] = [
-    Math.max(0, valueMin - valuePadding),
-    valueMax + valuePadding,
-  ];
+    return sampleSeriesPoints(rawData, 180);
+  }, [language, results.comparisonScenarios, results.initialInvestment, results.timeline]);
 
-  const rateSeries = chartData.flatMap((point) =>
-    [point.inflation, point.nbp].filter((value): value is number => typeof value === 'number'),
+  const leftDomain = React.useMemo(
+    () => computeNumericDomain(chartData.flatMap((point) => [point.nominal, point.real]), {
+      minFloor: 0,
+      minPadding: 250,
+      paddingRatio: 0.08,
+    }),
+    [chartData],
   );
-  const rateMin = rateSeries.length > 0 ? Math.min(...rateSeries, 0) : 0;
-  const rateMax = rateSeries.length > 0 ? Math.max(...rateSeries, 1) : 1;
-  const rightDomain: [number, number] = [
-    Math.min(-1, Math.floor(rateMin - 0.5)),
-    Math.ceil(rateMax + 0.5),
-  ];
 
-  const firstProjectedIndex = chartData.findIndex((point) => point.isProjected);
+  const rightDomain = React.useMemo(
+    () =>
+      computeRateDomain(
+        chartData.flatMap((point) =>
+          [point.inflation, point.nbp].filter(
+            (value): value is number => typeof value === 'number',
+          ),
+        ),
+      ),
+    [chartData],
+  );
+
+  const firstProjectedIndex = React.useMemo(
+    () => chartData.findIndex((point) => point.isProjected),
+    [chartData],
+  );
 
   return (
     <ChartContainer height={400}>

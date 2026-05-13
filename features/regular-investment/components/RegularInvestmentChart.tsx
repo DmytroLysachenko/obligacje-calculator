@@ -24,6 +24,7 @@ import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getBondColor } from '@/shared/constants/bond-colors';
+import { sampleSeriesPoints } from '@/shared/lib/chart-series';
 
 interface RegularInvestmentChartProps {
   results: RegularInvestmentResult;
@@ -72,18 +73,31 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ 
   const dateLocale = language === 'pl' ? pl : enGB;
   const primaryColor = getBondColor(bondType);
 
-  const chartData = results.timeline.map((point) => ({
-    date: format(parseISO(point.date), 'MM.yy', { locale: dateLocale }),
-    invested: Number(point.totalInvested.toFixed(2)),
-    value: view === 'nominal' ? Number(point.nominalValue.toFixed(2)) : Number(point.realValue.toFixed(2)),
-  }));
+  const chartData = React.useMemo(
+    () =>
+      sampleSeriesPoints(
+        results.timeline.map((point) => ({
+          date: format(parseISO(point.date), 'MM.yy', { locale: dateLocale }),
+          invested: Number(point.totalInvested.toFixed(2)),
+          value:
+            view === 'nominal'
+              ? Number(point.nominalValue.toFixed(2))
+              : Number(point.realValue.toFixed(2)),
+        })),
+        180,
+      ),
+    [dateLocale, results.timeline, view],
+  );
 
-  const formatCurrency = (value: number) => 
-    new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', { 
-      style: 'currency', 
-      currency: 'PLN',
-      maximumFractionDigits: 0 
-    }).format(value);
+  const formatCurrency = React.useMemo(
+    () => (value: number) =>
+      new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', {
+        style: 'currency',
+        currency: 'PLN',
+        maximumFractionDigits: 0,
+      }).format(value),
+    [language],
+  );
 
   return (
     <div className="space-y-6">

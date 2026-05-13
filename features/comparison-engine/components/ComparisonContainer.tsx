@@ -47,6 +47,7 @@ import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightA
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { ScenarioReadyPanel } from '@/shared/components/ScenarioReadyPanel';
 import { convertTimelineToCSV, downloadFile } from '@/shared/lib/csv-utils';
+import { sampleSeriesPoints } from '@/shared/lib/chart-series';
 import { toDateString } from '@/shared/lib/date-timing';
 import { InterestPayout } from '@/features/bond-core/types';
 import { useComparison } from '../hooks/useComparison';
@@ -157,15 +158,18 @@ export const ComparisonContainer: React.FC = () => {
     );
   };
 
-  const formatCurrency = (value: number) => {
-    if (!hasMounted) return '---';
+  const formatCurrency = React.useMemo(
+    () => (value: number) => {
+      if (!hasMounted) return '---';
 
-    return new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', {
-      style: 'currency',
-      currency: 'PLN',
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
+      return new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', {
+        style: 'currency',
+        currency: 'PLN',
+        maximumFractionDigits: 0,
+      }).format(value);
+    },
+    [hasMounted, language],
+  );
 
   const chartData = useMemo(() => {
     if (!resultsA || !resultsB) return [];
@@ -218,17 +222,20 @@ export const ComparisonContainer: React.FC = () => {
     const seriesA = projectSeries(resultsA.timeline, resultsA.initialInvestment, anchorDates);
     const seriesB = projectSeries(resultsB.timeline, resultsB.initialInvestment, anchorDates);
 
-    return anchorDates.map((date, index) => ({
-      dateKey: date.toISOString(),
-      label:
-        index === 0
-          ? t('comparison.start')
-          : format(date, 'MMM yyyy', {
-              locale: language === 'pl' ? pl : enGB,
-            }),
-      valA: seriesA[index],
-      valB: seriesB[index],
-    }));
+    return sampleSeriesPoints(
+      anchorDates.map((date, index) => ({
+        dateKey: date.toISOString(),
+        label:
+          index === 0
+            ? t('comparison.start')
+            : format(date, 'MMM yyyy', {
+                locale: language === 'pl' ? pl : enGB,
+              }),
+        valA: seriesA[index],
+        valB: seriesB[index],
+      })),
+      180,
+    );
   }, [inputsA.withdrawalDate, inputsB.withdrawalDate, language, resultsA, resultsB, sharedConfig.purchaseDate, t]);
 
   const usesMixedTimelineCadence = useMemo(() => {

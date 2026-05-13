@@ -17,9 +17,8 @@ import { useChartData } from '@/shared/hooks/useChartData';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ReferenceChartFrame } from '@/shared/components/charts/ReferenceChartFrame';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  getReferenceMetaItems,
-} from '@/shared/lib/data-reference';
+import { sampleSeriesPoints, sliceSeriesByPeriod } from '@/shared/lib/chart-series';
+import { getReferenceMetaItems } from '@/shared/lib/data-reference';
 
 interface NBPRateDataPoint {
   date: string;
@@ -86,10 +85,7 @@ export const NBPRateChart = ({
 
   const chartData = React.useMemo(() => {
     const rawData = response?.data ?? [];
-    if (period === 'ALL') return rawData;
-    const count =
-      period === '1Y' ? 12 : period === '5Y' ? 60 : period === '10Y' ? 120 : 360;
-    return rawData.slice(-count);
+    return sampleSeriesPoints(sliceSeriesByPeriod(rawData, period), 160);
   }, [period, response?.data]);
 
   if (isLoading) {
