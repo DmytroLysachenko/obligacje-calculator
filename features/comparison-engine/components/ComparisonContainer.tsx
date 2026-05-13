@@ -242,6 +242,56 @@ export const ComparisonContainer: React.FC = () => {
     return inputsA.payoutFrequency !== inputsB.payoutFrequency;
   }, [inputsA.payoutFrequency, inputsB.payoutFrequency]);
 
+  const labels = {
+    sharedBaseTitle: language === 'pl' ? 'Wspolna baza scenariusza' : 'Shared scenario base',
+    sharedBaseDesc:
+      language === 'pl'
+        ? 'Utrzymaj jedna baze: kwote, daty i zalozenia. Nadpisania scenariuszy wlaczaj tylko wtedy, gdy rzeczywiscie maja znaczenie.'
+        : 'Keep one shared base scenario, then apply scenario-specific overrides only when they truly matter.',
+    runIndependent:
+      language === 'pl' ? 'Uruchom porownanie niezalezne' : 'Run independent comparison',
+    readyTitle:
+      language === 'pl'
+        ? 'Porownaj dwa zatwierdzone scenariusze, nie dwa ruchome cele.'
+        : 'Compare two committed scenarios, not two moving targets.',
+    readyDesc:
+      language === 'pl'
+        ? 'Najpierw ustaw wspolna baze, potem zmien nadpisania scenariuszy tylko wtedy, gdy sa potrzebne, a na koncu uruchom jedno czyste porownanie.'
+        : 'Set the shared base first, change scenario overrides only if needed, then run one clean comparison.',
+    readySharedBase: language === 'pl' ? 'Wspolna baza' : 'Shared base',
+    readyOverrides: language === 'pl' ? 'Nadpisania scenariuszy' : 'Scenario overrides',
+    readyCommitted: language === 'pl' ? 'Zatwierdzony wynik' : 'Committed result',
+    readySharedBaseDesc:
+      language === 'pl'
+        ? 'Kwota, daty, sciezka inflacji i opakowanie podatkowe.'
+        : 'Amount, dates, inflation path, and tax wrapper.',
+    readyOverridesDesc:
+      language === 'pl'
+        ? 'Typ obligacji i opcjonalne korekty dla kazdego scenariusza.'
+        : 'Bond type and optional per-scenario adjustments.',
+    readyCommittedDesc:
+      language === 'pl'
+        ? 'Uruchom porownanie, potem przejdz do podsumowania, wykresu i tabeli.'
+        : 'Run comparison, then inspect snapshot, chart, and table.',
+    staleResults:
+      language === 'pl'
+        ? 'Dane zostaly zmienione. Wyniki ponizej nadal pokazuja poprzedni przebieg, dopoki nie uruchomisz porownania ponownie.'
+        : 'Inputs changed. Results below are stale until you rerun the comparison.',
+    chartHeaderDesc:
+      language === 'pl'
+        ? 'Punkty wykresu sa ustawione wedlug rzeczywistych dat kalendarzowych, dzieki czemu oba scenariusze korzystaja z jednej osi czasu.'
+        : 'Chart points are aligned by actual calendar date so both scenarios share one time axis.',
+    exportLabel: language === 'pl' ? 'Eksport' : 'Export',
+    assumptionsMeta:
+      language === 'pl' ? 'Zalozenia i meta scenariuszy' : 'Scenario assumptions and meta',
+    assumptionsMetaDesc:
+      language === 'pl'
+        ? 'Obie strony porownania zachowuja jawne zalozenia i ostrzezenia, ale nie powinny dominowac nad wynikiem i tabela.'
+        : 'Both scenarios keep explicit assumptions and warnings, but they should not dominate the outcome and table.',
+    helperSecondary: language === 'pl' ? 'Pomocnicze' : 'Secondary',
+    notesSuffix: language === 'pl' ? 'notatki' : 'notes',
+  } as const;
+
   const headerActions = (
     <div className="flex flex-wrap items-center gap-3">
       <div className="flex rounded-xl border bg-muted/30 p-1">
@@ -289,10 +339,10 @@ export const ComparisonContainer: React.FC = () => {
           <Card className="overflow-hidden border shadow-sm">
             <CardHeader className="border-b bg-muted/20">
               <CardTitle className="text-sm font-black uppercase tracking-widest">
-                {t('comparison.shared_scenario')}
+                {labels.sharedBaseTitle}
               </CardTitle>
               <p className="text-sm leading-6 text-muted-foreground">
-                Keep one shared base scenario, then apply scenario-specific overrides only when they matter.
+                {labels.sharedBaseDesc}
               </p>
             </CardHeader>
             <CardContent className="space-y-6 pt-6">
@@ -488,7 +538,7 @@ export const ComparisonContainer: React.FC = () => {
                 onClick={() => calculate()}
                 disabled={isCalculating}
               >
-                {isCalculating ? t('common.calculating') : 'Run independent comparison'}
+                {isCalculating ? t('common.calculating') : labels.runIndependent}
               </Button>
             </CardContent>
           </Card>
@@ -550,23 +600,23 @@ export const ComparisonContainer: React.FC = () => {
             {!resultsA && !isCalculating ? (
               <ScenarioReadyPanel
                 badge={t('comparison.ready_to_compare')}
-                title="Compare two committed scenarios, not two moving targets."
-                description="Set the shared base first, change scenario overrides only if needed, then run one clean comparison. Start with the scenario summary before reading the chart row by row."
+                title={labels.readyTitle}
+                description={labels.readyDesc}
                 steps={[
                   {
                     id: 'shared-base',
-                    title: 'Shared base',
-                    description: 'Amount, dates, inflation path, and tax wrapper.',
+                    title: labels.readySharedBase,
+                    description: labels.readySharedBaseDesc,
                   },
                   {
                     id: 'scenario-overrides',
-                    title: 'Scenario overrides',
-                    description: 'Bond type and optional per-scenario adjustments.',
+                    title: labels.readyOverrides,
+                    description: labels.readyOverridesDesc,
                   },
                   {
                     id: 'committed-result',
-                    title: 'Committed result',
-                    description: 'Run comparison, then inspect snapshot, chart, and table.',
+                    title: labels.readyCommitted,
+                    description: labels.readyCommittedDesc,
                   },
                 ]}
                 ctaLabel={t('common.calculate')}
@@ -591,7 +641,7 @@ export const ComparisonContainer: React.FC = () => {
                     <TriangleAlert className="mt-0.5 h-5 w-5 text-amber-700" />
                     <div className="flex items-start gap-3">
                       <p className="text-sm text-amber-900">
-                        Inputs changed. Results below are stale until you rerun the comparison.
+                        {labels.staleResults}
                       </p>
                     </div>
                   </div>
@@ -604,7 +654,7 @@ export const ComparisonContainer: React.FC = () => {
                       {t('comparison.performance_over_time')}
                     </CardTitle>
                     <p className="text-sm leading-6 text-muted-foreground">
-                      Chart points are aligned by actual calendar date so both scenarios share one time axis.
+                      {labels.chartHeaderDesc}
                     </p>
                   </CardHeader>
                   <CardContent className="p-6">
@@ -625,7 +675,7 @@ export const ComparisonContainer: React.FC = () => {
                         onClick={() => handleExportCSV(resultsA, inputsA.bondType)}
                       >
                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                          Export
+                          {labels.exportLabel}
                         </p>
                         <div className="mt-2 flex items-center gap-2 text-sm font-bold text-slate-900">
                           <FileSpreadsheet className="h-4 w-4 text-primary" />
@@ -638,7 +688,7 @@ export const ComparisonContainer: React.FC = () => {
                         onClick={() => handleExportCSV(resultsB, inputsB.bondType)}
                       >
                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                          Export
+                          {labels.exportLabel}
                         </p>
                         <div className="mt-2 flex items-center gap-2 text-sm font-bold text-slate-900">
                           <FileSpreadsheet className="h-4 w-4 text-primary" />
@@ -766,13 +816,9 @@ export const ComparisonContainer: React.FC = () => {
                 />
 
                 <SecondaryInsightAccordion
-                  title={language === 'pl' ? 'Zalozenia i meta scenariuszy' : 'Scenario assumptions and meta'}
-                  description={
-                    language === 'pl'
-                      ? 'Obie strony porownania zachowuja jawne zalozenia i ostrzezenia, ale nie powinny dominowac nad wynikiem i tabela.'
-                      : 'Both scenarios keep explicit assumptions and warnings, but they should not dominate the outcome and table.'
-                  }
-                  badge={language === 'pl' ? 'Pomocnicze' : 'Secondary'}
+                  title={labels.assumptionsMeta}
+                  description={labels.assumptionsMetaDesc}
+                  badge={labels.helperSecondary}
                 >
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                     {[
@@ -790,7 +836,7 @@ export const ComparisonContainer: React.FC = () => {
                       <Card key={entry.label} className="border shadow-sm">
                         <CardHeader className="border-b bg-muted/10 pb-3">
                           <CardTitle className="text-[10px] font-black uppercase tracking-widest">
-                            {entry.label} {t('common.notes')}
+                            {entry.label} {labels.notesSuffix}
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="pt-4">

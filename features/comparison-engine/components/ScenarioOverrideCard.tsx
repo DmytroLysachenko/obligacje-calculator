@@ -50,7 +50,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
   customHorizonMonths,
   onCustomHorizonMonthsChange,
 }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   return (
     <Card className="overflow-hidden border shadow-sm">
@@ -100,7 +100,9 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
           </Select>
           {isFamilyBondType(bondType) ? (
             <p className="text-xs leading-5 text-amber-700">
-              Family-bond overrides stay available, but only make sense if the household eligibility condition really applies.
+              {language === 'pl'
+                ? 'Nadpisania dla obligacji rodzinnych pozostaja dostepne, ale maja sens tylko wtedy, gdy warunek uprawnienia gospodarstwa domowego rzeczywiscie ma zastosowanie.'
+                : 'Family-bond overrides stay available, but only make sense if the household eligibility condition really applies.'}
             </p>
           ) : null}
         </div>

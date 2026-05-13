@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { AlertTriangle, CheckCircle2, FlaskConical, Info } from 'lucide-react';
+import { useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
 
 export type FeatureStatus =
@@ -59,7 +60,28 @@ export function FeatureStatusPill({
   status: FeatureStatus;
   className?: string;
 }) {
+  const { language } = useLanguage();
   const config = statusConfig[status];
+  const localizedLabel =
+    status === 'trusted'
+      ? language === 'pl'
+        ? 'Glówne narzedzie'
+        : config.label
+      : status === 'conditional'
+        ? language === 'pl'
+          ? 'Kolejny krok'
+          : config.label
+        : status === 'experimental'
+          ? language === 'pl'
+            ? 'Laboratorium'
+            : config.label
+          : status === 'limited'
+            ? language === 'pl'
+              ? 'Ograniczony zakres'
+              : config.label
+            : language === 'pl'
+              ? 'Referencja'
+              : config.label;
 
   return (
     <span
@@ -69,7 +91,7 @@ export function FeatureStatusPill({
         className,
       )}
     >
-      {config.label}
+      {localizedLabel}
     </span>
   );
 }

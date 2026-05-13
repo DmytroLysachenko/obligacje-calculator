@@ -39,7 +39,7 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
   purchasingPowerLoss,
   formatCurrency,
 }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const presets = [
     { label: t('comparison.preset_bull_2021'), year: '2021', month: '01' },
     { label: t('comparison.preset_war_2022'), year: '2022', month: '02' },
@@ -55,8 +55,9 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
             {t('comparison.configuration')}
           </CardTitle>
           <p className="text-sm leading-6 text-muted-foreground">
-            Set one historical entry point, one initial amount, and one monthly
-            contribution before recalculating the comparison.
+            {language === 'pl'
+              ? 'Ustaw jeden historyczny punkt wejscia, jedna kwote poczatkowa i jedna miesieczna wplate, zanim przeliczysz porownanie.'
+              : 'Set one historical entry point, one initial amount, and one monthly contribution before recalculating the comparison.'}
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -103,10 +104,14 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
               <AccordionTrigger className="rounded-2xl border bg-slate-50 px-4 py-4 hover:no-underline">
                 <div className="space-y-1 text-left">
                   <p className="text-sm font-bold text-slate-950">
-                    Historical entry settings
+                    {language === 'pl'
+                      ? 'Ustawienia historycznego wejscia'
+                      : 'Historical entry settings'}
                   </p>
                   <p className="text-xs leading-5 text-muted-foreground">
-                    Start year, month, presets, and inflation-adjusted display.
+                    {language === 'pl'
+                      ? 'Rok startu, miesiac, presety i widok skorygowany o inflacje.'
+                      : 'Start year, month, presets, and inflation-adjusted display.'}
                   </p>
                 </div>
               </AccordionTrigger>
