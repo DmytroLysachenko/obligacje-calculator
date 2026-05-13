@@ -49,6 +49,7 @@ import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';
 import { formatCurrency } from '@/lib/utils';
+import { useLanguage } from '@/i18n';
 
 function formatRate(value: number) {
   return `${value.toFixed(2)}%`;
@@ -72,18 +73,6 @@ const DEFAULT_INPUTS: RetirementInputs = {
   bondType: BondType.EDO,
   taxStrategy: TaxStrategy.STANDARD,
   horizonYears: 25,
-};
-
-const MODEL_LIMITS = [
-  'Uses one steady modeled annual rate rather than changing market paths over time.',
-  `Supports only ${RETIREMENT_SUPPORTED_BOND_TYPES.join(', ')} in this reduced-scope surface.`,
-  'Does not model changing withdrawals, rolling ladders, or broader retirement advice.',
-];
-
-const TAX_STRATEGY_LABELS: Record<TaxStrategy, string> = {
-  [TaxStrategy.STANDARD]: 'Standard account (19% tax)',
-  [TaxStrategy.IKE]: 'IKE wrapper',
-  [TaxStrategy.IKZE]: 'IKZE wrapper',
 };
 
 const SummaryMetric = ({
@@ -150,6 +139,7 @@ const SupportList = ({
 );
 
 export const RetirementPlannerContainer: React.FC = () => {
+  const { language } = useLanguage();
   const { isCalculating, post } = useCalculationRequest();
   const [inputs, setInputs] = useState<RetirementInputs>(DEFAULT_INPUTS);
   const [isDirty, setIsDirty] = useState(true);
@@ -194,8 +184,150 @@ export const RetirementPlannerContainer: React.FC = () => {
       return null;
     }
 
-    return formatHorizonMonths((finalMonth.year * 12) + finalMonth.month, 'en');
-  }, [results]);
+    return formatHorizonMonths((finalMonth.year * 12) + finalMonth.month, language);
+  }, [language, results]);
+
+  const labels = {
+    pageTitle:
+      language === 'pl' ? 'Model wyplat emerytalnych' : 'Retirement Withdrawal Model',
+    pageDescription:
+      language === 'pl'
+        ? 'Uruchom jeden waski scenariusz wyplat z jawnymi zalozeniami i przeczytaj sciezke salda, zanim potraktujesz go jako material planistyczny.'
+        : 'Run one narrow withdrawal scenario with explicit assumptions and review the balance path before treating it as planning evidence.',
+    primaryInputs: language === 'pl' ? 'Glówne dane' : 'Primary Inputs',
+    primaryInputsDesc:
+      language === 'pl'
+        ? 'Ustaw kapital, wyplate, horyzont i wspierana rodzine obligacji. Zaawansowane zalozenia staja nizej i pozostaja drugorzedne.'
+        : 'Set capital, withdrawal, horizon, and supported bond family. Advanced rate and wrapper assumptions stay collapsed below.',
+    initialCapital: language === 'pl' ? 'Kapital poczatkowy' : 'Initial Capital',
+    monthlyWithdrawal: language === 'pl' ? 'Miesieczna wyplata' : 'Monthly Withdrawal',
+    scenarioHorizon: language === 'pl' ? 'Horyzont scenariusza' : 'Scenario Horizon',
+    bondFamily: language === 'pl' ? 'Rodzina obligacji' : 'Bond Family',
+    advancedAssumptions: language === 'pl' ? 'Zaawansowane zalozenia' : 'Advanced Assumptions',
+    advancedAssumptionsDesc:
+      language === 'pl'
+        ? 'Inflacja, modelowana stopa NBP i opakowanie podatkowe.'
+        : 'Inflation, modeled NBP rate, and tax wrapper.',
+    expectedInflation: language === 'pl' ? 'Prognozowana inflacja' : 'Expected Inflation',
+    expectedNbpRate: language === 'pl' ? 'Prognozowana stopa NBP' : 'Expected NBP Rate',
+    taxWrapper: language === 'pl' ? 'Opakowanie podatkowe' : 'Tax Wrapper',
+    floatingActionNote:
+      language === 'pl'
+        ? 'Uzyj plywajacej akcji w prawym dolnym rogu, gdy scenariusz wyplat bedzie gotowy do pierwszego uruchomienia lub przeliczenia.'
+        : 'Use the floating action in the lower corner when this withdrawal scenario is ready for its first run or for recalculation.',
+    staleResults:
+      language === 'pl'
+        ? 'Dane zostaly zmienione. Sciezka salda ponizej nadal pokazuje poprzedni zatwierdzony przebieg. Przelicz, gdy chcesz go odswiezyc.'
+        : 'Inputs changed. The balance path below still shows the previous committed run. Recalculate when you want to refresh it.',
+    scenarioStatus: language === 'pl' ? 'Status scenariusza' : 'Scenario Status',
+    balancePositive: language === 'pl' ? 'Saldo pozostaje dodatnie' : 'Balance remains positive',
+    balanceDepletes: language === 'pl' ? 'Saldo wyczerpuje sie przed czasem' : 'Balance depletes early',
+    projectedExhaustion:
+      language === 'pl' ? 'Prognozowana data wyczerpania' : 'Projected exhaustion date',
+    noProjectedDepletion:
+      language === 'pl'
+        ? 'Brak prognozowanego wyczerpania w wybranym horyzoncie.'
+        : 'No projected depletion inside the selected horizon.',
+    finalBalance: language === 'pl' ? 'Saldo koncowe' : 'Final Balance',
+    finalBalanceDetail:
+      language === 'pl'
+        ? 'Nominalne saldo na koncu horyzontu dla tej jednej modelowanej sciezki.'
+        : 'Nominal end-of-horizon balance under this one modeled path.',
+    totalWithdrawn: language === 'pl' ? 'Lacznie wyplacono' : 'Total Withdrawn',
+    totalWithdrawnDetail:
+      language === 'pl'
+        ? 'Skumulowane wyplaty w wybranym horyzoncie.'
+        : 'Cumulative withdrawals inside the selected horizon.',
+    modeledAnnualRate: language === 'pl' ? 'Modelowana stopa roczna' : 'Modeled Annual Rate',
+    modeledAnnualRateDetail:
+      language === 'pl'
+        ? 'Stala stopa uzyta dla {{bond}}.'
+        : 'Steady rate used for {{bond}}.',
+    balancePath: language === 'pl' ? 'Sciezka salda' : 'Balance Path',
+    balancePathDesc:
+      language === 'pl'
+        ? 'Ten wykres pokazuje tylko zatwierdzony scenariusz. Probkujemy go rocznie, aby sciezka pozostala czytelna.'
+        : 'This chart shows the committed scenario only. It is sampled yearly to keep the path readable.',
+    coverage: language === 'pl' ? 'Zakres' : 'Coverage',
+    taxPaid: language === 'pl' ? 'Podatek zaplacony' : 'Tax Paid',
+    howToRead: language === 'pl' ? 'Jak to czytac' : 'How to read it',
+    howToReadDesc:
+      language === 'pl'
+        ? 'Zacznij od statusu scenariusza i salda koncowego. Wykres ma pokazywac sciezke zuzycia kapitalu w czasie, a nie pelna rekomendacje emerytalna.'
+        : 'Start with scenario status and final balance. Use the chart to see the depletion path over time, not as a full retirement-planning recommendation.',
+    balance: language === 'pl' ? 'Saldo' : 'Balance',
+    withdrawal: language === 'pl' ? 'Wyplata' : 'Withdrawal',
+    assumptionsAndWarnings:
+      language === 'pl' ? 'Zalozenia i ostrzezenia scenariusza' : 'Scenario assumptions and warnings',
+    assumptionsAndWarningsDesc:
+      language === 'pl'
+        ? 'Otworz to, gdy chcesz zobaczyc pomocniczy slad zalozen dla biezacego przebiegu wyplat.'
+        : 'Open this when you want the supporting assumption trail behind the current withdrawal run.',
+    audit: language === 'pl' ? 'Audyt' : 'Audit',
+    assumptions: language === 'pl' ? 'Zalozenia scenariusza' : 'Scenario Assumptions',
+    warningsAndNotes: language === 'pl' ? 'Ostrzezenia i notatki' : 'Warnings and Notes',
+    noExtraAssumptions:
+      language === 'pl'
+        ? 'Poza widocznymi danymi nie zgloszono dodatkowych zalozen.'
+        : 'No extra assumptions were reported beyond the visible inputs.',
+    noExtraWarnings:
+      language === 'pl'
+        ? 'Dla tego scenariusza nie zwrocono dodatkowych ostrzezen.'
+        : 'No extra warnings were returned for this scenario.',
+    readyBadge: language === 'pl' ? 'Model ograniczony' : 'Limited model',
+    readyTitle:
+      language === 'pl'
+        ? 'Gotowy do przetestowania jednej sciezki wyplat?'
+        : 'Ready to test one withdrawal path?',
+    readyDesc:
+      language === 'pl'
+        ? 'Ustaw kapital poczatkowy, wyplate, horyzont i wspierana rodzine obligacji. Potem uruchom jedno zatwierdzone obliczenie, zanim zaczniesz czytac sciezke salda.'
+        : 'Set the starting capital, withdrawal amount, horizon, and supported bond family. Then run one committed calculation before reading the balance path.',
+    readyStepBalance:
+      language === 'pl' ? 'Zbuduj pierwsza sciezke salda' : 'Stage one balance path',
+    readyStepHorizon:
+      language === 'pl' ? 'Zatwierdz jeden horyzont' : 'Commit one horizon',
+    readyStepRead:
+      language === 'pl' ? 'Czytaj wasko' : 'Read it narrowly',
+    readyStepReadDesc:
+      language === 'pl'
+        ? 'To model zuzycia kapitalu przy stalej stopie, a nie pelny silnik doradztwa emerytalnego.'
+        : 'This is a steady-rate depletion model, not a complete retirement advice engine.',
+    readyFooter:
+      language === 'pl'
+        ? 'Zaawansowane zalozenia pozostaja dostepne, ale pierwszy odczyt powinien pochodzic z jednego czystego zatwierdzonego przebiegu.'
+        : 'Advanced assumptions stay available, but the first reading should come from one clean committed run.',
+    limitsTitle:
+      language === 'pl' ? 'Limity modelu i wspierany zakres' : 'Model limits and supported scope',
+    limitsDesc:
+      language === 'pl'
+        ? 'Otworz to, gdy chcesz zobaczyc ograniczenia stojace za ta powierzchnia wyplat.'
+        : 'Open this when you want the constraints behind this withdrawal surface.',
+    limitsBadge: language === 'pl' ? 'Limity' : 'Limits',
+    depletionWarning:
+      language === 'pl'
+        ? 'Ten przebieg prognozuje wyczerpanie srodkow dnia {{date}}. Uruchom go ponownie z nizsza wyplata, dluzszym sprawdzeniem horyzontu albo inna wspierana rodzina obligacji, zanim wyciagniesz wnioski.'
+        : 'This run projects depletion on {{date}}. Re-run with a lower withdrawal, longer horizon check, or different supported bond family before drawing conclusions.',
+  } as const;
+
+  const taxStrategyLabels: Record<TaxStrategy, string> = {
+    [TaxStrategy.STANDARD]:
+      language === 'pl' ? 'Konto standardowe (19% podatku)' : 'Standard account (19% tax)',
+    [TaxStrategy.IKE]: language === 'pl' ? 'Opakowanie IKE' : 'IKE wrapper',
+    [TaxStrategy.IKZE]: language === 'pl' ? 'Opakowanie IKZE' : 'IKZE wrapper',
+  };
+
+  const modelLimits = [
+    language === 'pl'
+      ? 'Uzywa jednej stalej modelowanej stopy rocznej zamiast zmiennych sciezek rynkowych.'
+      : 'Uses one steady modeled annual rate rather than changing market paths over time.',
+    language === 'pl'
+      ? `Wspiera tylko ${RETIREMENT_SUPPORTED_BOND_TYPES.join(', ')} na tej ograniczonej powierzchni.`
+      : `Supports only ${RETIREMENT_SUPPORTED_BOND_TYPES.join(', ')} in this reduced-scope surface.`,
+    language === 'pl'
+      ? 'Nie modeluje zmiennych wyplat, rolowanych drabin ani szerszego doradztwa emerytalnego.'
+      : 'Does not model changing withdrawals, rolling ladders, or broader retirement advice.',
+  ];
 
   const updateInput = <K extends keyof RetirementInputs>(
     key: K,
@@ -207,8 +339,8 @@ export const RetirementPlannerContainer: React.FC = () => {
 
   return (
     <CalculatorPageShell
-      title="Retirement Withdrawal Model"
-      description="Run one narrow withdrawal scenario with explicit assumptions and review the balance path before treating it as planning evidence."
+      title={labels.pageTitle}
+      description={labels.pageDescription}
       icon={<Wallet className="h-8 w-8" />}
       isCalculating={isCalculating}
       isDirty={isDirty}
@@ -219,17 +351,16 @@ export const RetirementPlannerContainer: React.FC = () => {
           <Card className="rounded-2xl border-2">
             <CardHeader className="space-y-2">
               <CardTitle className="text-lg font-black uppercase tracking-widest">
-                Primary Inputs
+                {labels.primaryInputs}
               </CardTitle>
               <p className="text-sm leading-6 text-muted-foreground">
-                Set capital, withdrawal, horizon, and supported bond family.
-                Advanced rate and wrapper assumptions stay collapsed below.
+                {labels.primaryInputsDesc}
               </p>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
                 <Label className="text-xs font-bold uppercase text-muted-foreground">
-                  Initial Capital
+                    {labels.initialCapital}
                 </Label>
                 <Input
                   type="number"
@@ -244,7 +375,7 @@ export const RetirementPlannerContainer: React.FC = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label className="text-xs font-bold uppercase text-muted-foreground">
-                    Monthly Withdrawal
+                    {labels.monthlyWithdrawal}
                   </Label>
                   <span className="text-xs font-black text-primary">
                     {formatCurrency(inputs.monthlyWithdrawal)}
@@ -265,10 +396,10 @@ export const RetirementPlannerContainer: React.FC = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label className="text-xs font-bold uppercase text-muted-foreground">
-                    Scenario Horizon
+                    {labels.scenarioHorizon}
                   </Label>
                   <span className="text-xs font-black text-primary">
-                    {formatHorizonMonths(inputs.horizonYears * 12, 'en')}
+                    {formatHorizonMonths(inputs.horizonYears * 12, language)}
                   </span>
                 </div>
                 <CommittedSliderInput
@@ -285,7 +416,7 @@ export const RetirementPlannerContainer: React.FC = () => {
 
               <div className="space-y-2">
                 <Label className="text-xs font-bold uppercase text-muted-foreground">
-                  Bond Family
+                    {labels.bondFamily}
                 </Label>
                 <Select
                   value={inputs.bondType}
@@ -319,10 +450,10 @@ export const RetirementPlannerContainer: React.FC = () => {
                   <AccordionTrigger className="rounded-2xl border bg-slate-50 px-4 py-4 hover:no-underline">
                     <div className="space-y-1 text-left">
                       <p className="text-sm font-bold text-slate-950">
-                        Advanced Assumptions
+                        {labels.advancedAssumptions}
                       </p>
                       <p className="text-xs leading-5 text-muted-foreground">
-                        Inflation, modeled NBP rate, and tax wrapper.
+                        {labels.advancedAssumptionsDesc}
                       </p>
                     </div>
                   </AccordionTrigger>
@@ -330,7 +461,7 @@ export const RetirementPlannerContainer: React.FC = () => {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <Label className="text-xs font-bold uppercase text-muted-foreground">
-                          Expected Inflation
+                          {labels.expectedInflation}
                         </Label>
                         <span className="text-xs font-black text-primary">
                           {formatRate(inputs.expectedInflation)}
@@ -351,7 +482,7 @@ export const RetirementPlannerContainer: React.FC = () => {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <Label className="text-xs font-bold uppercase text-muted-foreground">
-                          Expected NBP Rate
+                          {labels.expectedNbpRate}
                         </Label>
                         <span className="text-xs font-black text-primary">
                           {formatRate(inputs.expectedNbpRate)}
@@ -371,7 +502,7 @@ export const RetirementPlannerContainer: React.FC = () => {
 
                     <div className="space-y-2">
                       <Label className="text-xs font-bold uppercase text-muted-foreground">
-                        Tax Wrapper
+                        {labels.taxWrapper}
                       </Label>
                       <Select
                         value={inputs.taxStrategy}
@@ -384,13 +515,13 @@ export const RetirementPlannerContainer: React.FC = () => {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value={TaxStrategy.STANDARD}>
-                            {TAX_STRATEGY_LABELS[TaxStrategy.STANDARD]}
+                            {taxStrategyLabels[TaxStrategy.STANDARD]}
                           </SelectItem>
                           <SelectItem value={TaxStrategy.IKE}>
-                            {TAX_STRATEGY_LABELS[TaxStrategy.IKE]}
+                            {taxStrategyLabels[TaxStrategy.IKE]}
                           </SelectItem>
                           <SelectItem value={TaxStrategy.IKZE}>
-                            {TAX_STRATEGY_LABELS[TaxStrategy.IKZE]}
+                            {taxStrategyLabels[TaxStrategy.IKZE]}
                           </SelectItem>
                         </SelectContent>
                       </Select>
@@ -400,8 +531,7 @@ export const RetirementPlannerContainer: React.FC = () => {
               </Accordion>
 
               <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-600">
-                Use the floating action in the lower corner when this withdrawal
-                scenario is ready for its first run or for recalculation.
+                {labels.floatingActionNote}
               </div>
             </CardContent>
           </Card>
@@ -412,40 +542,42 @@ export const RetirementPlannerContainer: React.FC = () => {
             <>
               {isDirty ? (
                 <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
-                  Inputs changed. The balance path below still shows the previous
-                  committed run. Recalculate when you want to refresh it.
+                  {labels.staleResults}
                 </div>
               ) : null}
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
                 <SummaryMetric
-                  label="Scenario Status"
+                  label={labels.scenarioStatus}
                   value={
                     results.result.isSustainable
-                      ? 'Balance remains positive'
-                      : 'Balance depletes early'
+                      ? labels.balancePositive
+                      : labels.balanceDepletes
                   }
                   detail={
                     results.result.exhaustionDate
-                      ? `Projected exhaustion date: ${results.result.exhaustionDate}`
-                      : 'No projected depletion inside the selected horizon.'
+                      ? `${labels.projectedExhaustion}: ${results.result.exhaustionDate}`
+                      : labels.noProjectedDepletion
                   }
                   tone={results.result.isSustainable ? 'success' : 'warning'}
                 />
                 <SummaryMetric
-                  label="Final Balance"
+                  label={labels.finalBalance}
                   value={formatCurrency(results.result.finalBalance)}
-                  detail="Nominal end-of-horizon balance under this one modeled path."
+                  detail={labels.finalBalanceDetail}
                 />
                 <SummaryMetric
-                  label="Total Withdrawn"
+                  label={labels.totalWithdrawn}
                   value={formatCurrency(results.result.totalWithdrawn)}
-                  detail="Cumulative withdrawals inside the selected horizon."
+                  detail={labels.totalWithdrawnDetail}
                 />
                 <SummaryMetric
-                  label="Modeled Annual Rate"
+                  label={labels.modeledAnnualRate}
                   value={formatRate(results.result.modeledAnnualRate)}
-                  detail={`Steady rate used for ${results.result.modeledBondType}.`}
+                  detail={labels.modeledAnnualRateDetail.replace(
+                    '{{bond}}',
+                    results.result.modeledBondType,
+                  )}
                 />
               </div>
 
@@ -453,34 +585,33 @@ export const RetirementPlannerContainer: React.FC = () => {
                 <CardHeader className="space-y-2">
                   <CardTitle className="flex items-center gap-2 text-lg font-black uppercase tracking-widest">
                     <LineChart className="h-5 w-5 text-primary" />
-                    Balance Path
+                    {labels.balancePath}
                   </CardTitle>
                   <p className="text-sm leading-6 text-muted-foreground">
-                    This chart shows the committed scenario only. It is sampled
-                    yearly to keep the path readable.
+                    {labels.balancePathDesc}
                   </p>
                 </CardHeader>
                 <CardContent className="space-y-6 p-6">
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
                       <p className="text-[10px] font-black uppercase text-slate-600">
-                        Coverage
+                        {labels.coverage}
                       </p>
                       <p className="mt-1 text-sm font-bold text-slate-950">
-                        {scenarioCoverage ?? formatHorizonMonths(inputs.horizonYears * 12, 'en')}
+                        {scenarioCoverage ?? formatHorizonMonths(inputs.horizonYears * 12, language)}
                       </p>
                     </div>
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
                       <p className="text-[10px] font-black uppercase text-slate-600">
-                        Tax Wrapper
+                        {labels.taxWrapper}
                       </p>
                       <p className="mt-1 text-sm font-bold text-slate-950">
-                        {TAX_STRATEGY_LABELS[inputs.taxStrategy]}
+                        {taxStrategyLabels[inputs.taxStrategy]}
                       </p>
                     </div>
                     <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
                       <p className="text-[10px] font-black uppercase text-slate-600">
-                        Tax Paid
+                        {labels.taxPaid}
                       </p>
                       <p className="mt-1 text-sm font-bold text-slate-950">
                         {formatCurrency(results.result.totalTaxPaid)}
@@ -489,8 +620,8 @@ export const RetirementPlannerContainer: React.FC = () => {
                   </div>
 
                   <ChartSupportNote
-                    title="How to read it"
-                    description="Start with scenario status and final balance. Use the chart to see the depletion path over time, not as a full retirement-planning recommendation."
+                    title={labels.howToRead}
+                    description={labels.howToReadDesc}
                   />
 
                   <ChartContainer height={400}>
@@ -544,7 +675,7 @@ export const RetirementPlannerContainer: React.FC = () => {
                           }}
                           formatter={(value, key) => [
                             formatCurrency(Number(value || 0)),
-                            key === 'balance' ? 'Balance' : 'Withdrawal',
+                            key === 'balance' ? labels.balance : labels.withdrawal,
                           ]}
                         />
                         <Area
@@ -562,61 +693,61 @@ export const RetirementPlannerContainer: React.FC = () => {
               </Card>
 
               <SecondaryInsightAccordion
-                title="Scenario assumptions and warnings"
-                description="Open this when you want the supporting assumption trail behind the current withdrawal run."
-                badge="Audit"
+                title={labels.assumptionsAndWarnings}
+                description={labels.assumptionsAndWarningsDesc}
+                badge={labels.audit}
               >
                 <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
                   <SupportList
-                    title="Scenario Assumptions"
+                    title={labels.assumptions}
                     items={results.assumptions}
-                    emptyLabel="No extra assumptions were reported beyond the visible inputs."
+                    emptyLabel={labels.noExtraAssumptions}
                   />
                   <SupportList
-                    title="Warnings and Notes"
+                    title={labels.warningsAndNotes}
                     items={[
                       ...results.warnings,
                       ...results.calculationNotes,
                       ...results.dataQualityFlags,
                     ]}
-                    emptyLabel="No extra warnings were returned for this scenario."
+                    emptyLabel={labels.noExtraWarnings}
                   />
                 </div>
               </SecondaryInsightAccordion>
             </>
           ) : (
             <ScenarioReadyPanel
-              badge="Limited model"
-              title="Ready to test one withdrawal path?"
-              description="Set the starting capital, withdrawal amount, horizon, and supported bond family. Then run one committed calculation before reading the balance path."
+              badge={labels.readyBadge}
+              title={labels.readyTitle}
+              description={labels.readyDesc}
               steps={[
                 {
                   id: 'balance-path',
-                  title: 'Stage one balance path',
+                  title: labels.readyStepBalance,
                   description: `Start from ${formatCurrency(inputs.initialCapital)} and one fixed withdrawal amount.`,
                 },
                 {
                   id: 'horizon',
-                  title: 'Commit one horizon',
-                  description: `The current run is staged for ${formatHorizonMonths(inputs.horizonYears * 12, 'en')}.`,
+                  title: labels.readyStepHorizon,
+                  description: `The current run is staged for ${formatHorizonMonths(inputs.horizonYears * 12, language)}.`,
                 },
                 {
                   id: 'narrow-read',
-                  title: 'Read it narrowly',
-                  description: 'This is a steady-rate depletion model, not a complete retirement advice engine.',
+                  title: labels.readyStepRead,
+                  description: labels.readyStepReadDesc,
                 },
               ]}
-              footerText="Advanced assumptions stay available, but the first reading should come from one clean committed run."
+              footerText={labels.readyFooter}
             />
           )}
 
           <SecondaryInsightAccordion
-            title="Model limits and supported scope"
-            description="Open this when you want the constraints behind this withdrawal surface."
-            badge="Limits"
+            title={labels.limitsTitle}
+            description={labels.limitsDesc}
+            badge={labels.limitsBadge}
           >
             <div className="grid grid-cols-1 gap-4 text-sm leading-6 text-muted-foreground md:grid-cols-3">
-              {MODEL_LIMITS.map((item) => (
+              {modelLimits.map((item) => (
                 <div
                   key={item}
                   className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
@@ -631,9 +762,10 @@ export const RetirementPlannerContainer: React.FC = () => {
             <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm leading-6 text-amber-950">
               <Calendar className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" />
               <p>
-                This run projects depletion on {results.result.exhaustionDate}.
-                Re-run with a lower withdrawal, longer horizon check, or different
-                supported bond family before drawing conclusions.
+                {labels.depletionWarning.replace(
+                  '{{date}}',
+                  results.result.exhaustionDate,
+                )}
               </p>
             </div>
           ) : null}

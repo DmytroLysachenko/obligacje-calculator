@@ -131,9 +131,8 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
               >
                 {isDirty ? (
                   <div className="rounded-3xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
-                    Inputs changed. Results below still show the previous run. Use{' '}
-                    <span className="font-semibold">Recalculate</span> when the new
-                    recurring plan is ready.
+                    {t('bonds.simulation.stale_results')}{' '}
+                    <span className="font-semibold">{t('common.recalculate')}</span>.
                   </div>
                 ) : null}
 

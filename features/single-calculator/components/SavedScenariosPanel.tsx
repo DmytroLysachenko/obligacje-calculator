@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Copy, FolderOpen, Save, Trash2 } from 'lucide-react';
+import { useLanguage } from '@/i18n';
 import { SavedScenarioRecord } from '../lib/scenario-storage';
 
 interface SavedScenariosPanelProps {
@@ -22,6 +23,8 @@ export function SavedScenariosPanel({
   onDuplicate,
   onDelete,
 }: SavedScenariosPanelProps) {
+  const { language } = useLanguage();
+
   return (
     <Card className="border-slate-200 shadow-sm">
       <CardHeader className="border-b bg-muted/20">
@@ -29,22 +32,26 @@ export function SavedScenariosPanel({
           <div className="space-y-1">
             <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest">
               <FolderOpen className="h-4 w-4 text-primary" />
-              Saved Scenarios
+              {language === 'pl' ? 'Zapisane scenariusze' : 'Saved scenarios'}
             </CardTitle>
             <CardDescription>
-              Resume, duplicate, or clean up your last planning runs.
+              {language === 'pl'
+                ? 'Wznow, skopiuj albo uporzadkuj ostatnie przebiegi planowania.'
+                : 'Resume, duplicate, or clean up your last planning runs.'}
             </CardDescription>
           </div>
           <Button size="sm" className="gap-2 text-xs font-bold" onClick={onSaveCurrent}>
             <Save className="h-3.5 w-3.5" />
-            Save Current
+            {language === 'pl' ? 'Zapisz biezacy' : 'Save current'}
           </Button>
         </div>
       </CardHeader>
       <CardContent className="space-y-3 p-4">
         {scenarios.length === 0 ? (
           <div className="rounded-2xl border border-dashed p-4 text-sm text-muted-foreground">
-            No saved scenarios yet. Save current inputs to build reusable planning paths.
+            {language === 'pl'
+              ? 'Brak zapisanych scenariuszy. Zapisz biezace dane, aby budowac powtarzalne sciezki planowania.'
+              : 'No saved scenarios yet. Save current inputs to build reusable planning paths.'}
           </div>
         ) : (
           scenarios.map((scenario) => (
@@ -64,21 +71,22 @@ export function SavedScenariosPanel({
                   </div>
                   <p className="text-sm text-muted-foreground">{scenario.description}</p>
                   <p className="text-[11px] font-medium text-muted-foreground">
-                    Updated {new Date(scenario.updatedAt).toLocaleString()}
+                    {language === 'pl' ? 'Zaktualizowano' : 'Updated'}{' '}
+                    {new Date(scenario.updatedAt).toLocaleString()}
                   </p>
                 </div>
                 <div className="grid grid-cols-3 gap-2 lg:w-[260px]">
                   <Button variant="outline" size="sm" className="gap-2 text-xs font-bold" onClick={() => onLoad(scenario)}>
                     <FolderOpen className="h-3.5 w-3.5" />
-                    Open
+                    {language === 'pl' ? 'Otworz' : 'Open'}
                   </Button>
                   <Button variant="outline" size="sm" className="gap-2 text-xs font-bold" onClick={() => onDuplicate(scenario)}>
                     <Copy className="h-3.5 w-3.5" />
-                    Copy
+                    {language === 'pl' ? 'Kopia' : 'Copy'}
                   </Button>
                   <Button variant="outline" size="sm" className="gap-2 text-xs font-bold text-destructive" onClick={() => onDelete(scenario)}>
                     <Trash2 className="h-3.5 w-3.5" />
-                    Delete
+                    {language === 'pl' ? 'Usun' : 'Delete'}
                   </Button>
                 </div>
               </div>

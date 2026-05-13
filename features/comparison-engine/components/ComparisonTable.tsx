@@ -64,8 +64,9 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
           {t('comparison.table_title')}
         </CardTitle>
         <p className="text-sm leading-6 text-slate-600">
-          Plain year-by-year value check. Use it to inspect where one path is ahead at a given point,
-          not as a recommendation signal.
+          {language === 'pl'
+            ? 'Proste sprawdzenie wartosci rok po roku. Uzywaj tej tabeli do odczytu, kiedy jedna sciezka prowadzi w danym punkcie, a nie jako sygnalu rekomendacyjnego.'
+            : 'Plain year-by-year value check. Use it to inspect where one path is ahead at a given point, not as a recommendation signal.'}
         </p>
       </CardHeader>
       <CardContent className="space-y-6 p-0">
@@ -213,7 +214,9 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
         </div>
 
         <div className="border-t bg-slate-50/70 px-6 py-4 text-sm leading-6 text-slate-600">
-          The badge shows which path is ahead in that specific row only. Later rows can reverse earlier leads.
+          {language === 'pl'
+            ? 'Znacznik pokazuje tylko, ktora sciezka prowadzi w konkretnym wierszu. Pozniejsze okresy moga odwrocic wczesniejsze prowadzenie.'
+            : 'The badge shows which path is ahead in that specific row only. Later rows can reverse earlier leads.'}
         </div>
       </CardContent>
     </Card>

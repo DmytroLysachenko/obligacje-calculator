@@ -265,7 +265,7 @@ export const NotebookContainer: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create portfolio');
+        throw new Error(t('notebook.create_error'));
       }
 
       const portfolio = await response.json();
@@ -313,14 +313,18 @@ export const NotebookContainer: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Import failed');
+        throw new Error(t('notebook.create_error'));
       }
 
       setError(null);
       await fetchPortfolios();
     } catch (caughtError) {
       console.error(caughtError);
-      setError('Import failed. Use the portfolio export JSON package.');
+      setError(
+        language === 'pl'
+          ? 'Import nie powiodl sie. Uzyj pakietu eksportu portfela w formacie JSON.'
+          : 'Import failed. Use the portfolio export JSON package.',
+      );
     } finally {
       event.target.value = '';
     }
