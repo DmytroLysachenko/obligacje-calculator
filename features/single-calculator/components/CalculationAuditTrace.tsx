@@ -5,6 +5,11 @@ import { ArrowRight, Scale } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/i18n';
 import { YearlyTimelinePoint } from '@/features/bond-core/types';
+import {
+  AppLanguage,
+  getRateSourceDisplayLabel,
+  getReferenceDisplayLabel,
+} from '@/shared/lib/bond-display';
 
 interface CalculationAuditTraceProps {
   point: YearlyTimelinePoint;
@@ -39,21 +44,10 @@ export const CalculationAuditTrace: React.FC<CalculationAuditTraceProps> = ({ po
       style: 'currency',
       currency: 'PLN',
     }).format(value);
-
   const formatPercent = (value: number) => `${value.toFixed(2)}%`;
 
-  const rateLabel =
-    point.rateReferenceValue !== undefined || point.rateMarginApplied !== undefined
-      ? `${point.rateSource}${
-          point.rateReferenceValue !== undefined
-            ? ` (${formatPercent(point.rateReferenceValue)} ref)`
-            : ''
-        }${
-          point.rateMarginApplied !== undefined
-            ? ` + ${formatPercent(point.rateMarginApplied)} margin`
-            : ''
-        }`
-      : point.rateSource;
+  const rateLabel = getRateSourceDisplayLabel(point.rateSource, language as AppLanguage);
+  const referenceLabel = getReferenceDisplayLabel(point, language as AppLanguage);
 
   return (
     <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
@@ -87,6 +81,12 @@ export const CalculationAuditTrace: React.FC<CalculationAuditTraceProps> = ({ po
             label={language === 'pl' ? 'Zrodlo stopy' : 'Rate source'}
             value={rateLabel}
           />
+          {referenceLabel ? (
+            <AuditRow
+              label={language === 'pl' ? 'Punkt odniesienia' : 'Reference basis'}
+              value={referenceLabel}
+            />
+          ) : null}
           <AuditRow
             label={t('bonds.plus_interest')}
             value={`+${formatCurrency(point.interestEarned)}`}

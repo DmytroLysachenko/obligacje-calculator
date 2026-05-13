@@ -24,6 +24,7 @@ import { HistoricalAverages } from "../../bond-core/types/scenarios";
 import { useLanguage } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { ChartContainer } from "@/shared/components/charts/ChartContainer";
+import { AppLanguage, buildBondChartDisplayPoints } from "@/shared/lib/bond-display";
 
 interface BondChartProps {
   results: CalculationResult;
@@ -36,8 +37,7 @@ interface PayloadEntry {
   value: number;
   color: string;
   dataKey?: string | number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  payload: Record<string, any>;
+  payload: Record<string, unknown>;
 }
 
 interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
@@ -55,68 +55,58 @@ const CustomTooltip = ({
   formatCurrency,
   t,
 }: CustomTooltipProps) => {
-  if (active && payload && payload.length) {
-    const data = payload[0].payload;
-    const isProjected = data.isProjected;
-    const inflation = data.inflation;
-    const nbp = data.nbp;
-    const interestRate = data.interestRate;
-    const rateSource = data.rateSource;
-    const rateMargin = data.rateMargin;
+  if (!active || !payload || !payload.length) {
+    return null;
+  }
 
-    const getSourceLabel = (source: string) => {
-      switch (source) {
-        case 'fixed_rate': return t('bonds.fixed_rate');
-        case 'first_year_fixed': return t('bonds.first_year_fixed');
-        case 'historical_cpi_lag': return t('bonds.historical_cpi_lag');
-        case 'projected_cpi': return t('bonds.projected_cpi');
-        case 'historical_nbp': return t('bonds.historical_nbp');
-        case 'projected_nbp': return t('bonds.projected_nbp');
-        default: return source;
-      }
-    };
+  const data = payload[0].payload;
+  const isProjected = Boolean(data.isProjected);
+  const inflation = data.inflation as number | undefined;
+  const nbp = data.nbp as number | undefined;
+  const interestRate = data.interestRate as number | undefined;
+  const rateSource = data.rateSource as string | undefined;
+  const eventLabels = (data.eventLabels as string[] | undefined) ?? [];
 
-    return (
-      <div className="bg-popover border-2 border-primary/20 p-4 shadow-2xl rounded-xl text-popover-foreground min-w-[240px] backdrop-blur-sm bg-opacity-95">
-        <div className="flex justify-between items-center mb-3 border-b pb-2 border-border/50">
-          <p className="font-black text-xs uppercase tracking-widest">
-            {label}
-          </p>
-          {isProjected !== undefined && (
-            <span className={cn(
-              "text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-tighter",
-              isProjected ? "bg-orange-100 text-orange-700" : "bg-blue-100 text-blue-700"
-            )}>
-              {isProjected ? t("bonds.projected") : t("bonds.historical")}
-            </span>
+  return (
+    <div className="min-w-[240px] rounded-xl border-2 border-primary/20 bg-popover p-4 text-popover-foreground shadow-2xl backdrop-blur-sm">
+      <div className="mb-3 flex items-center justify-between border-b border-border/50 pb-2">
+        <p className="text-xs font-black uppercase tracking-widest">{label}</p>
+        <span
+          className={cn(
+            "rounded px-1.5 py-0.5 text-[8px] font-black uppercase tracking-tighter",
+            isProjected ? "bg-orange-100 text-orange-700" : "bg-blue-100 text-blue-700",
           )}
-        </div>
-        
-        <div className="space-y-3">
-          {interestRate !== undefined && (
-            <div className="bg-muted/30 p-2 rounded-lg border border-border/50 mb-2">
-              <div className="flex justify-between items-center">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase">{t('bonds.interest_rate')}</span>
-                <span className="text-sm font-black text-primary">{interestRate.toFixed(2)}%</span>
-              </div>
-              {rateSource && (
-                <p className="text-[9px] text-muted-foreground italic mt-1">
-                  {getSourceLabel(rateSource)} 
-                  {rateMargin ? ` + ${rateMargin.toFixed(2)}% ${t('bonds.margin_short')}` : ''}
-                </p>
-              )}
+        >
+          {isProjected ? t("bonds.projected") : t("bonds.historical")}
+        </span>
+      </div>
+
+      <div className="space-y-3">
+        {interestRate !== undefined ? (
+          <div className="mb-2 rounded-lg border border-border/50 bg-muted/30 p-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold uppercase text-muted-foreground">
+                {t('bonds.interest_rate')}
+              </span>
+              <span className="text-sm font-black text-primary">{interestRate.toFixed(2)}%</span>
             </div>
-          )}
+            {rateSource ? (
+              <p className="mt-1 text-[9px] italic text-muted-foreground">{rateSource}</p>
+            ) : null}
+          </div>
+        ) : null}
 
-          <div className="space-y-1.5">
-            {payload.filter(e => ['nominal', 'real'].includes(e.dataKey as string)).map((entry, index) => (
+        <div className="space-y-1.5">
+          {payload
+            .filter((entry) => ['nominal', 'real'].includes(String(entry.dataKey)))
+            .map((entry, index) => (
               <div
                 key={index}
-                className="flex justify-between items-center gap-4 text-xs"
+                className="flex items-center justify-between gap-4 text-xs"
               >
                 <span className="flex items-center gap-1.5 font-medium">
                   <span
-                    className="w-2 h-2 rounded-full"
+                    className="h-2 w-2 rounded-full"
                     style={{ backgroundColor: entry.color }}
                   />
                   {entry.name}:
@@ -126,36 +116,58 @@ const CustomTooltip = ({
                 </span>
               </div>
             ))}
-          </div>
-
-          {(inflation !== undefined || nbp !== undefined) && (
-            <div className="pt-2 mt-2 border-t border-dashed border-border/50 space-y-1.5">
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">{t("common.context_rates")}</p>
-              {inflation !== undefined && (
-                <div className="flex justify-between items-center text-[10px]">
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-orange-500" />
-                    <span className="text-muted-foreground font-medium">{t("bonds.ref_inflation")}:</span>
-                  </span>
-                  <span className="font-black text-orange-600">{inflation.toFixed(2)}%</span>
-                </div>
-              )}
-              {nbp !== undefined && (
-                <div className="flex justify-between items-center text-[10px]">
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-                    <span className="text-muted-foreground font-medium">{t("bonds.nbp_rate_short")}:</span>
-                  </span>
-                  <span className="font-black text-blue-600">{nbp.toFixed(2)}%</span>
-                </div>
-              )}
-            </div>
-          )}
         </div>
+
+        {eventLabels.length > 0 ? (
+          <div className="border-t border-dashed border-border/50 pt-2">
+            <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+              {t("common.events") || "Events"}
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {eventLabels.map((eventLabel) => (
+                <span
+                  key={eventLabel}
+                  className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700"
+                >
+                  {eventLabel}
+                </span>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {inflation !== undefined || nbp !== undefined ? (
+          <div className="mt-2 space-y-1.5 border-t border-dashed border-border/50 pt-2">
+            <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+              {t("common.context_rates")}
+            </p>
+            {inflation !== undefined ? (
+              <div className="flex items-center justify-between text-[10px]">
+                <span className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />
+                  <span className="font-medium text-muted-foreground">
+                    {t("bonds.ref_inflation")}:
+                  </span>
+                </span>
+                <span className="font-black text-orange-600">{inflation.toFixed(2)}%</span>
+              </div>
+            ) : null}
+            {nbp !== undefined ? (
+              <div className="flex items-center justify-between text-[10px]">
+                <span className="flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
+                  <span className="font-medium text-muted-foreground">
+                    {t("bonds.nbp_rate_short")}:
+                  </span>
+                </span>
+                <span className="font-black text-blue-600">{nbp.toFixed(2)}%</span>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </div>
-    );
-  }
-  return null;
+    </div>
+  );
 };
 
 export const BondChart: React.FC<BondChartProps> = ({ results }) => {
@@ -168,101 +180,54 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
       maximumFractionDigits: 0,
     }).format(value);
 
-  const isLongSimulation = results.timeline.length > 240; // > 20 years (monthly)
+  const baseDisplayData = buildBondChartDisplayPoints(
+    results.initialInvestment,
+    results.timeline,
+    language as AppLanguage,
+    results.comparisonScenarios,
+  );
 
-  const rawData = [
-    {
-      label: t("common.start"),
-      date: results.timeline[0]?.periodLabel || t("common.start"),
-      nominal: results.initialInvestment,
-      real: results.initialInvestment,
-      isProjected: false,
-      inflation: results.timeline[0]?.inflationReference,
-      nbp: results.timeline[0]?.nbpReference,
-      low: results.comparisonScenarios ? results.initialInvestment : undefined,
-      high: results.comparisonScenarios ? results.initialInvestment : undefined,
-    },
-    ...results.timeline.map((point, idx) => ({
-      label: point.periodLabel,
-      date: point.periodLabel,
-      nominal: Number(point.nominalValueAfterInterest.toFixed(2)),
-      real: Number(point.realValue.toFixed(2)),
-      isProjected: point.isProjected,
-      inflation: point.inflationReference,
-      nbp: point.nbpReference,
-      interestRate: point.interestRate,
-      rateSource: point.rateSource,
-      rateMargin: point.rateMarginApplied,
-      low: results.comparisonScenarios?.low[idx]?.nominalValueAfterInterest,
-      high: results.comparisonScenarios?.high[idx]?.nominalValueAfterInterest,
-    })),
-  ];
+  const rawData = baseDisplayData.map((point, index) => ({
+    label: point.xLabel,
+    date: point.xLabel,
+    nominal: point.nominal,
+    real: point.real,
+    isProjected: point.isProjected,
+    isMaturity: point.isMaturity,
+    inflation: point.inflation,
+    nbp: point.nbp,
+    interestRate: index === 0 ? undefined : results.timeline[index - 1]?.interestRate,
+    rateSource: point.rateLabel,
+    low: point.low,
+    high: point.high,
+    eventLabels: point.eventLabels,
+  }));
 
-  // Decimate data if it's a long simulation to prevent SVG "DOM bloat"
-  const chartData = isLongSimulation 
+  const isLongSimulation = rawData.length > 240;
+  const chartData = isLongSimulation
     ? rawData.filter((_, i) => i === 0 || i === rawData.length - 1 || i % 2 === 0)
     : rawData;
 
-  const firstProjectedIndex = chartData.findIndex(d => d.isProjected);
+  const firstProjectedIndex = chartData.findIndex((point) => point.isProjected);
 
   return (
     <ChartContainer height={400}>
-      <ResponsiveContainer
-        width="100%"
-        height={400}
-        key={`chart-${chartData.length}`}
-      >
-        <ComposedChart
-          data={chartData}
-          margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
-        >
-          {/* ... defs and axes ... */}
+      <ResponsiveContainer width="100%" height={400} key={`chart-${chartData.length}`}>
+        <ComposedChart data={chartData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
           <defs>
-            <linearGradient
-              id="colorNominal"
-              x1="0"
-              y1="0"
-              x2="0"
-              y2="1"
-            >
-              <stop
-                offset="5%"
-                stopColor="#3b82f6"
-                stopOpacity={0.15}
-              />
-              <stop
-                offset="95%"
-                stopColor="#3b82f6"
-                stopOpacity={0}
-              />
+            <linearGradient id="colorNominal" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.15} />
+              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
             </linearGradient>
-            <linearGradient
-              id="colorReal"
-              x1="0"
-              y1="0"
-              x2="0"
-              y2="1"
-            >
-              <stop
-                offset="5%"
-                stopColor="#10b981"
-                stopOpacity={0.15}
-              />
-              <stop
-                offset="95%"
-                stopColor="#10b981"
-                stopOpacity={0}
-              />
+            <linearGradient id="colorReal" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#10b981" stopOpacity={0.15} />
+              <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid
-            strokeDasharray="3 3"
-            vertical={false}
-            stroke="rgba(0,0,0,0.05)"
-          />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
           <XAxis
             dataKey="date"
-            tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))", fontWeight: 'bold' }}
+            tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))", fontWeight: "bold" }}
             tickLine={false}
             axisLine={false}
             dy={10}
@@ -270,7 +235,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
           />
           <YAxis
             yAxisId="left"
-            tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))", fontWeight: 'bold' }}
+            tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))", fontWeight: "bold" }}
             tickLine={false}
             axisLine={false}
             tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
@@ -284,37 +249,34 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
             tickFormatter={(value) => `${value}%`}
             domain={[0, 'auto']}
           />
-          <Tooltip
-            content={<CustomTooltip formatCurrency={formatCurrency} t={t} />}
-          />
-          {firstProjectedIndex !== -1 && (
+          <Tooltip content={<CustomTooltip formatCurrency={formatCurrency} t={t} />} />
+          {firstProjectedIndex !== -1 ? (
             <ReferenceLine
               x={chartData[firstProjectedIndex].date}
               stroke="#f59e0b"
               strokeDasharray="3 3"
-              label={{ value: t('bonds.projection_start'), position: 'top', fill: '#f59e0b', fontSize: 10, fontWeight: 'bold' }}
+              label={{
+                value: t('bonds.projection_start'),
+                position: 'top',
+                fill: '#f59e0b',
+                fontSize: 10,
+                fontWeight: 'bold',
+              }}
             />
-          )}
-          <ReferenceArea
-            yAxisId="right"
-            y1={1.5}
-            y2={3.5}
-            fill="#10b981"
-            fillOpacity={0.05}
-          />
-          <ReferenceArea
-            yAxisId="right"
-            y1={-5}
-            y2={0}
-            fill="#ef4444"
-            fillOpacity={0.05}
-          />
+          ) : null}
+          <ReferenceArea yAxisId="right" y1={1.5} y2={3.5} fill="#10b981" fillOpacity={0.05} />
+          <ReferenceArea yAxisId="right" y1={-5} y2={0} fill="#ef4444" fillOpacity={0.05} />
           <Legend
             verticalAlign="top"
             align="right"
             height={40}
             iconType="circle"
-            wrapperStyle={{ fontSize: "10px", fontWeight: "black", textTransform: "uppercase", letterSpacing: '0.05em' }}
+            wrapperStyle={{
+              fontSize: "10px",
+              fontWeight: "black",
+              textTransform: "uppercase",
+              letterSpacing: '0.05em',
+            }}
           />
           <Area
             yAxisId="left"
@@ -327,7 +289,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
             fill="url(#colorNominal)"
             isAnimationActive={false}
           />
-          {results.comparisonScenarios && (
+          {results.comparisonScenarios ? (
             <>
               <Line
                 yAxisId="left"
@@ -354,7 +316,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
                 isAnimationActive={false}
               />
             </>
-          )}
+          ) : null}
           <Area
             yAxisId="left"
             type="monotone"
