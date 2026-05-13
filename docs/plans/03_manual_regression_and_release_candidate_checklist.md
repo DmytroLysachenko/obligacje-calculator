@@ -67,7 +67,16 @@ Every retained route should be checked for all of the following:
 - data/source/fallback framing is visible where relevant
 - limited or experimental pages remain visibly secondary
 
-### 2.6 Responsive Behavior
+### 2.6 Data And Locale Sanity
+
+- charts do not show obviously misleading scales or mixed-domain confusion
+- dense tables do not leak raw engine labels or untranslated event codes
+- summary cards reconcile with chart and table direction at first glance
+- Polish locale surfaces do not leak obvious English action labels or helper text
+- fallback/reference labels remain explicit about weaker data coverage
+- bond duration, horizon, and cadence labels are human-readable rather than raw fractional values
+
+### 2.7 Responsive Behavior
 
 - desktop layout is readable at normal widths
 - mobile layout remains operable without horizontal fighting
@@ -128,6 +137,9 @@ Checks:
 - warnings for invalid amount/date states are visible but not noisy
 - share/recalculate affordances do not dominate the route
 - route does not flicker or re-run unexpectedly during light edits
+- chart axis labels remain interpretable without helper text first
+- timeline rows use translated event labels and readable cadence labels
+- final payout direction matches the last chart segment and last timeline row
 
 Expected result:
 
@@ -147,6 +159,8 @@ Checks:
 - inflation and NBP charts load with calm placeholder behavior
 - chart scale controls remain understandable
 - text does not imply stronger data depth than actually exists
+- Polish mode does not leak English source-status descriptions
+- chart metadata reads as structured support context rather than a long opaque sentence
 
 Expected result:
 
@@ -169,6 +183,9 @@ Checks:
 - recalculate flow is explicit and understandable
 - results remain tied to committed assumptions
 - summary/verdict does not overstate certainty
+- comparison tables remain readable on long runs
+- row-level “ahead” signals are clearly scoped to that row only
+- independent mode does not leak English helper text on Polish surfaces
 
 Expected result:
 
@@ -188,6 +205,8 @@ Checks:
 - summary appears before details
 - dirty-state messaging is clear
 - route does not visually overclaim long-term planning authority
+- chart sampling stays readable on long horizons
+- helper copy remains localized on Polish surfaces
 
 Expected result:
 
@@ -224,6 +243,8 @@ Checks:
 - portfolio details read as descriptive, not prescriptive
 - exports/shares do not imply analytical authority the engine has not earned
 - notebook does not visually collapse back into dashboard clutter
+- import/export errors are localized and actionable
+- no empty-state step card uses placeholder titles or duplicated keys
 
 Expected result:
 
@@ -351,6 +372,8 @@ The app should not enter production-candidate review until all are true:
 - stale-shell mismatch is not reproducible in ordinary use
 - visible trust labels still match actual route behavior
 - no route relies on hidden UI drama to explain itself
+- dense chart/table routes were checked for obviously suspicious value presentation
+- PL route pass found no high-traffic English leakage on retained surfaces
 
 ## 9. Suggested Execution Order
 
