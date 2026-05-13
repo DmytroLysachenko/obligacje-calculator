@@ -18,9 +18,7 @@ import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ReferenceChartFrame } from '@/shared/components/charts/ReferenceChartFrame';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
-  getReferenceAsOfLabel,
-  getReferenceCoverageLabel,
-  getReferenceSourceLabel,
+  getReferenceMetaItems,
 } from '@/shared/lib/data-reference';
 
 interface NBPRateDataPoint {
@@ -108,7 +106,17 @@ export const NBPRateChart = ({
 
   return (
     <ReferenceChartFrame
-      meta={`${t('economic.data_source')}: ${getReferenceSourceLabel(response, language)}${response ? ` | ${t('economic.as_of')}: ${getReferenceAsOfLabel(response, language)}` : ''}${response ? ` | ${language === 'pl' ? 'Zakres' : 'Coverage'}: ${getReferenceCoverageLabel(response, language)}` : ''}${response?.usedFallback ? ` | ${t('economic.fallback_in_use')}` : ''}`}
+      metaItems={getReferenceMetaItems(response, language)}
+      fallbackNotice={
+        response?.usedFallback
+          ? language === 'pl'
+            ? 'Zakres tej serii pozostaje zastepczy. Czytaj ja jako kontekst referencyjny, dopoki synchronizacja nie odzyska pelniejszej historii.'
+            : 'This series still relies on fallback coverage. Read it as reference context until sync restores fuller history.'
+          : language === 'pl'
+            ? 'Ta seria jest zsynchronizowana i moze wspierac odczyt wynikow kalkulatora bez dominowania strony.'
+            : 'This series is synced and can support calculator interpretation without taking over the page.'
+      }
+      fallbackTone={response?.usedFallback ? 'warning' : 'good'}
     >
       <ChartContainer height={420}>
         <ResponsiveContainer width="100%" height="100%">

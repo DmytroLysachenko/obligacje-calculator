@@ -9,6 +9,10 @@ export interface DataReferenceMetaLike {
 }
 
 type AppLanguage = 'pl' | 'en';
+export type ReferenceMetaItem = {
+  label: string;
+  value: string;
+};
 
 const REFERENCE_COPY = {
   unavailable: {
@@ -153,5 +157,29 @@ export function getReferenceState(
     description: getReferenceCopy('syncedDescription', language),
     tone: 'good' as const,
   };
+}
+
+export function getReferenceMetaItems(
+  meta: DataReferenceMetaLike | undefined,
+  language: AppLanguage = 'en',
+): ReferenceMetaItem[] {
+  return [
+    {
+      label: language === 'pl' ? 'Zrodlo' : 'Source',
+      value: getReferenceSourceLabel(meta, language),
+    },
+    {
+      label: language === 'pl' ? 'Stan na' : 'As of',
+      value: getReferenceAsOfLabel(meta, language),
+    },
+    {
+      label: language === 'pl' ? 'Zakres' : 'Coverage',
+      value: getReferenceCoverageLabel(meta, language),
+    },
+    {
+      label: language === 'pl' ? 'Uzycie' : 'Use',
+      value: getReferenceScopeLabel(meta, language),
+    },
+  ];
 }
 

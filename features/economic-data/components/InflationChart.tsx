@@ -21,9 +21,7 @@ import { ReferenceChartFrame } from '@/shared/components/charts/ReferenceChartFr
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
-  getReferenceAsOfLabel,
-  getReferenceCoverageLabel,
-  getReferenceSourceLabel,
+  getReferenceMetaItems,
 } from '@/shared/lib/data-reference';
 
 interface InflationDataPoint {
@@ -121,7 +119,7 @@ export const InflationChart = ({
 
   return (
     <ReferenceChartFrame
-      meta={`${t('economic.data_source')}: ${getReferenceSourceLabel(response, language)}${response ? ` | ${t('economic.as_of')}: ${getReferenceAsOfLabel(response, language)}` : ''}${response ? ` | ${language === 'pl' ? 'Zakres' : 'Coverage'}: ${getReferenceCoverageLabel(response, language)}` : ''}${response?.usedFallback ? ` | ${t('economic.fallback_in_use')}` : ''}`}
+      metaItems={getReferenceMetaItems(response, language)}
       actions={
         <div className="flex gap-2">
           <Button
@@ -150,6 +148,16 @@ export const InflationChart = ({
           : undefined
       }
       noticeTone="warning"
+      fallbackNotice={
+        response?.usedFallback
+          ? language === 'pl'
+            ? 'Ten wykres korzysta z danych zapasowych. Traktuj go jako kontekst pomocniczy, nie jako pelne pokrycie historyczne.'
+            : 'This chart is using fallback data. Treat it as supporting context, not as full historical coverage.'
+          : language === 'pl'
+            ? 'Ta seria jest zsynchronizowana i moze sluzyc jako spokojne tlo do interpretacji wynikow kalkulatora.'
+            : 'This series is synced and can act as calm context for reading calculator results.'
+      }
+      fallbackTone={response?.usedFallback ? 'warning' : 'good'}
     >
       <ChartContainer height={420}>
         <ResponsiveContainer width="100%" height="100%">
