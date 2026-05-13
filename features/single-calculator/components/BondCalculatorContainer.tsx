@@ -10,6 +10,7 @@ import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { RecalculateButton } from '@/shared/components/RecalculateButton';
 import { ScenarioReadyPanel } from '@/shared/components/ScenarioReadyPanel';
 import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
+import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { generatePDF } from '@/shared/lib/pdf-utils';
 import { useBondCalculator } from '../hooks/useBondCalculator';
 import { applyGuardrailFix, getInputGuardrails, InputGuardrailIssue } from '../lib/input-guardrails';
@@ -280,6 +281,14 @@ export const BondCalculatorContainer: React.FC = () => {
                   : 'The chart gives the overall shape of the scenario before you need to read the full timeline.'
               }
             >
+              <ChartSupportNote
+                title={language === 'pl' ? 'Jak czytac wykres' : 'How to read the chart'}
+                description={
+                  language === 'pl'
+                    ? 'Najpierw porownaj linie nominalna i realna. Linie inflacji oraz NBP sa tylko kontekstem pomocniczym i nie powinny dominowac nad wartoscia inwestycji.'
+                    : 'Start by comparing the nominal and real value lines. Inflation and NBP lines are only supporting context and should not outweigh the investment value path.'
+                }
+              />
               <div className="rounded-[1.7rem] border border-slate-200 bg-white p-3 shadow-none md:rounded-[2rem] md:p-4">
                 <BondChart
                   results={results}

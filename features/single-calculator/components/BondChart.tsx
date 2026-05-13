@@ -208,6 +208,25 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
     ? rawData.filter((_, i) => i === 0 || i === rawData.length - 1 || i % 2 === 0)
     : rawData;
 
+  const valueSeries = chartData.flatMap((point) => [point.nominal, point.real]);
+  const valueMin = Math.min(...valueSeries);
+  const valueMax = Math.max(...valueSeries);
+  const valuePadding = Math.max(250, Math.round((valueMax - valueMin) * 0.08));
+  const leftDomain: [number, number] = [
+    Math.max(0, valueMin - valuePadding),
+    valueMax + valuePadding,
+  ];
+
+  const rateSeries = chartData.flatMap((point) =>
+    [point.inflation, point.nbp].filter((value): value is number => typeof value === 'number'),
+  );
+  const rateMin = rateSeries.length > 0 ? Math.min(...rateSeries, 0) : 0;
+  const rateMax = rateSeries.length > 0 ? Math.max(...rateSeries, 1) : 1;
+  const rightDomain: [number, number] = [
+    Math.min(-1, Math.floor(rateMin - 0.5)),
+    Math.ceil(rateMax + 0.5),
+  ];
+
   const firstProjectedIndex = chartData.findIndex((point) => point.isProjected);
 
   return (
@@ -232,6 +251,15 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
             axisLine={false}
             dy={10}
             minTickGap={30}
+            tickFormatter={(value: string) => {
+              if (value === (language === 'pl' ? 'Start' : 'Start')) {
+                return value;
+              }
+              if (value.length <= 8) {
+                return value;
+              }
+              return value.slice(0, 8);
+            }}
           />
           <YAxis
             yAxisId="left"
@@ -239,6 +267,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
             tickLine={false}
             axisLine={false}
             tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
+            domain={leftDomain}
           />
           <YAxis
             yAxisId="right"
@@ -247,7 +276,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
             tickLine={false}
             axisLine={false}
             tickFormatter={(value) => `${value}%`}
-            domain={[0, 'auto']}
+            domain={rightDomain}
           />
           <Tooltip content={<CustomTooltip formatCurrency={formatCurrency} t={t} />} />
           {firstProjectedIndex !== -1 ? (
@@ -334,10 +363,10 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
             dataKey="inflation"
             name={t("bonds.ref_inflation")}
             stroke="#f59e0b"
-            strokeWidth={2}
+            strokeWidth={1.75}
             strokeDasharray="5 5"
             dot={false}
-            opacity={0.6}
+            opacity={0.45}
             isAnimationActive={false}
           />
           <Line
@@ -346,10 +375,10 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
             dataKey="nbp"
             name={t("bonds.nbp_rate_short")}
             stroke="#94a3b8"
-            strokeWidth={2}
+            strokeWidth={1.5}
             strokeDasharray="3 3"
             dot={false}
-            opacity={0.4}
+            opacity={0.3}
             isAnimationActive={false}
           />
         </ComposedChart>
