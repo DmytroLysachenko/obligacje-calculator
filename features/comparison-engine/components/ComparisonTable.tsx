@@ -24,6 +24,23 @@ interface ComparisonTableProps {
   formatCurrency: (val: number) => string;
 }
 
+function ComparisonTableStat({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
+        {label}
+      </p>
+      <p className="mt-1 text-sm font-semibold text-slate-900">{value}</p>
+    </div>
+  );
+}
+
 export const ComparisonTable: React.FC<ComparisonTableProps> = ({
   resultsA,
   resultsB,
@@ -36,6 +53,12 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
     language === 'pl' ? 'Aktualnie wyzej w tym wierszu' : 'Ahead in this row';
   const higherBadgeSuffix = language === 'pl' ? 'wyzej' : 'ahead';
   const tieLabel = language === 'pl' ? 'Remis' : 'Tie';
+  const firstLead =
+    resultsA.netPayoutValue === resultsB.netPayoutValue
+      ? tieLabel
+      : resultsA.netPayoutValue > resultsB.netPayoutValue
+        ? bondTypeA
+        : bondTypeB;
 
   const maxLen = Math.max(resultsA.timeline.length, resultsB.timeline.length);
   const summaryRows = [
@@ -70,6 +93,21 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
         </p>
       </CardHeader>
       <CardContent className="space-y-6 p-0">
+        <div className="grid grid-cols-1 gap-3 border-b bg-slate-50/50 px-6 py-5 md:grid-cols-3">
+          <ComparisonTableStat
+            label={language === 'pl' ? 'Wiersze osi czasu' : 'Timeline rows'}
+            value={String(maxLen)}
+          />
+          <ComparisonTableStat
+            label={language === 'pl' ? 'Lepsza wyplata netto' : 'Higher net payout'}
+            value={firstLead}
+          />
+          <ComparisonTableStat
+            label={language === 'pl' ? 'Para porownania' : 'Compared pair'}
+            value={`${bondTypeA} / ${bondTypeB}`}
+          />
+        </div>
+
         <div className="grid grid-cols-1 gap-3 border-b bg-slate-50/70 px-6 py-5 md:grid-cols-3">
           {summaryRows.map((row) => {
             const higherScenario = row.a === row.b ? null : row.a > row.b ? 'A' : 'B';
@@ -131,16 +169,16 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
               <Table>
                 <TableHeader className="bg-white">
                   <TableRow className="border-b hover:bg-transparent">
-                    <TableHead className="sticky left-0 z-10 h-12 w-24 bg-white px-6 text-sm font-semibold text-slate-600">
+                    <TableHead className="sticky left-0 top-0 z-10 h-12 w-24 bg-white px-6 text-sm font-semibold text-slate-600">
                       {t('common.year')}
                     </TableHead>
-                    <TableHead className="h-12 px-4 text-sm font-semibold text-slate-700">
+                    <TableHead className="sticky top-0 z-10 h-12 bg-white px-4 text-sm font-semibold text-slate-700">
                       {bondTypeA} (A)
                     </TableHead>
-                    <TableHead className="h-12 px-4 text-sm font-semibold text-slate-700">
+                    <TableHead className="sticky top-0 z-10 h-12 bg-white px-4 text-sm font-semibold text-slate-700">
                       {bondTypeB} (B)
                     </TableHead>
-                    <TableHead className="h-12 px-6 text-right text-sm font-semibold text-slate-600">
+                    <TableHead className="sticky top-0 z-10 h-12 bg-white px-6 text-right text-sm font-semibold text-slate-600">
                       {higherColumnLabel}
                     </TableHead>
                   </TableRow>

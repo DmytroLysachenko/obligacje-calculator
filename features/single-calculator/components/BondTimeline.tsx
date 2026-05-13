@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useDeferredValue, useMemo, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -16,7 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Filter, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, Filter, ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   AppLanguage,
@@ -28,24 +28,45 @@ interface BondTimelineProps {
   results: CalculationResult;
 }
 
+function TimelineStat({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white/85 px-4 py-3">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
+        {label}
+      </p>
+      <p className="mt-1 text-sm font-semibold text-slate-900">{value}</p>
+    </div>
+  );
+}
+
 export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
   const { t, language } = useLanguage();
   const [hasMounted, setHasMounted] = React.useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [eventTypeFilter, setEventTypeFilter] = useState<string>('all');
   const [isExpanded, setIsExpanded] = useState(false);
+  const deferredSearchQuery = useDeferredValue(searchQuery);
 
   React.useEffect(() => {
     setHasMounted(true);
   }, []);
 
-  const formatCurrency = (value: number) => {
-    if (!hasMounted) return '---';
-    return new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', {
-      style: 'currency',
-      currency: 'PLN',
-    }).format(value);
-  };
+  const formatCurrency = React.useMemo(
+    () => (value: number) => {
+      if (!hasMounted) return '---';
+      return new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', {
+        style: 'currency',
+        currency: 'PLN',
+      }).format(value);
+    },
+    [hasMounted, language],
+  );
 
   const displayRows = useMemo(
     () => buildBondTimelineDisplayRows(results.timeline, language as AppLanguage),
@@ -75,7 +96,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
         .join(' ')
         .toLowerCase();
 
-      const matchesSearch = haystack.includes(searchQuery.toLowerCase());
+      const matchesSearch = haystack.includes(deferredSearchQuery.toLowerCase());
       const matchesEvent =
         eventTypeFilter === 'all' ||
         row.eventLabels.includes(
@@ -87,42 +108,87 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
 
       return matchesSearch && matchesEvent;
     });
-  }, [displayRows, eventTypeFilter, language, searchQuery]);
+  }, [deferredSearchQuery, displayRows, eventTypeFilter, language]);
 
   const displayedTimeline = isExpanded
     ? filteredTimeline
     : filteredTimeline.slice(0, 12);
+  const activeFilterCount =
+    (searchQuery.trim().length > 0 ? 1 : 0) + (eventTypeFilter !== 'all' ? 1 : 0);
+  const visibleRangeLabel =
+    filteredTimeline.length > 12 && !isExpanded
+      ? `${displayedTimeline.length} / ${filteredTimeline.length}`
+      : `${filteredTimeline.length}`;
+  const projectionCount = displayRows.filter((row) => !!row.projectionLabel).length;
+
+  const resetFilters = () => {
+    setSearchQuery('');
+    setEventTypeFilter('all');
+    setIsExpanded(false);
+  };
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-4 rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4 md:flex-row md:items-center md:justify-between">
-        <div className="relative w-full md:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder={t('common.search') || 'Search...'}
-            className="pl-9 bg-background"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+      <div className="space-y-4 rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
+        <div className="grid gap-3 md:grid-cols-3">
+          <TimelineStat
+            label={language === 'pl' ? 'Wiersze po filtrach' : 'Rows after filters'}
+            value={visibleRangeLabel}
+          />
+          <TimelineStat
+            label={language === 'pl' ? 'Punkty prognozy' : 'Projected points'}
+            value={String(projectionCount)}
+          />
+          <TimelineStat
+            label={language === 'pl' ? 'Aktywne filtry' : 'Active filters'}
+            value={String(activeFilterCount)}
           />
         </div>
 
-        <div className="flex w-full items-center gap-2 md:w-auto">
-          <Filter className="h-4 w-4 text-muted-foreground" />
-          <Select value={eventTypeFilter} onValueChange={setEventTypeFilter}>
-            <SelectTrigger className="w-full md:w-56 bg-background">
-              <SelectValue placeholder={t('bonds.filter_events') || 'Filter Events'} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">
-                {t('common.all_events') || 'All Events'}
-              </SelectItem>
-              {eventOptions.map((type) => (
-                <SelectItem key={type.value} value={type.value}>
-                  {type.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="relative w-full md:w-72">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder={t('common.search') || 'Search...'}
+              className="pl-9 bg-background"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+
+          <div className="flex w-full flex-col gap-2 md:w-auto md:flex-row md:items-center">
+            <div className="flex w-full items-center gap-2 md:w-auto">
+              <Filter className="h-4 w-4 text-muted-foreground" />
+              <Select value={eventTypeFilter} onValueChange={setEventTypeFilter}>
+                <SelectTrigger className="w-full md:w-56 bg-background">
+                  <SelectValue placeholder={t('bonds.filter_events') || 'Filter Events'} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">
+                    {t('common.all_events') || 'All Events'}
+                  </SelectItem>
+                  {eventOptions.map((type) => (
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {activeFilterCount > 0 ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="gap-2 rounded-xl"
+                onClick={resetFilters}
+              >
+                <RotateCcw className="h-4 w-4" />
+                {language === 'pl' ? 'Wyczysc filtry' : 'Reset filters'}
+              </Button>
+            ) : null}
+          </div>
         </div>
       </div>
 
@@ -130,31 +196,31 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
         <Table>
           <TableHeader>
             <TableRow className="bg-slate-50/80 hover:bg-slate-50/80">
-              <TableHead className="h-12 w-[190px] text-sm font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 w-[190px] bg-slate-50/95 text-sm font-semibold text-slate-600">
                 {t('common.period')}
               </TableHead>
-              <TableHead className="h-12 text-sm font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-sm font-semibold text-slate-600">
                 {language === 'pl' ? 'Znaczenie' : 'Meaning'}
               </TableHead>
-              <TableHead className="h-12 text-sm font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-sm font-semibold text-slate-600">
                 {t('bonds.cycle')}
               </TableHead>
-              <TableHead className="h-12 text-sm font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-sm font-semibold text-slate-600">
                 {t('common.interest_rate')}
               </TableHead>
-              <TableHead className="h-12 text-sm font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-sm font-semibold text-slate-600">
                 {t('bonds.rate_source')}
               </TableHead>
-              <TableHead className="h-12 text-sm font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-sm font-semibold text-slate-600">
                 {t('common.nominal_value')}
               </TableHead>
-              <TableHead className="h-12 text-sm font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-sm font-semibold text-slate-600">
                 {t('common.net_profit')}
               </TableHead>
-              <TableHead className="h-12 text-sm font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-sm font-semibold text-slate-600">
                 {t('common.real_value')}
               </TableHead>
-              <TableHead className="h-12 text-right text-sm font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-right text-sm font-semibold text-slate-600">
                 {t('bonds.early_exit_payout')}
               </TableHead>
             </TableRow>
@@ -263,8 +329,22 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
         ) : null}
 
         {filteredTimeline.length === 0 ? (
-          <div className="p-12 text-center text-muted-foreground">
+          <div className="space-y-3 p-12 text-center text-muted-foreground">
             <p>{t('common.no_results_found') || 'No results found for current filters.'}</p>
+            {activeFilterCount > 0 ? (
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 rounded-xl"
+                  onClick={resetFilters}
+                >
+                  <RotateCcw className="h-4 w-4" />
+                  {language === 'pl' ? 'Wroc do pelnej osi czasu' : 'Return to full timeline'}
+                </Button>
+              </div>
+            ) : null}
           </div>
         ) : null}
       </div>
