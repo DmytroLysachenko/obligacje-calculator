@@ -35,6 +35,9 @@ interface ChartSeriesEnvelope<T> {
   coverageEnd?: string;
   dataSource?: string;
   seriesName?: string;
+  syncStatus?: 'success' | 'partial' | 'failed' | 'stale';
+  coverageNote?: string;
+  sourceUrl?: string;
 }
 
 function fallbackResponse() {
@@ -46,6 +49,8 @@ function fallbackResponse() {
     seriesName: 'NBP fallback',
     coverageStart: FALLBACK_NBP[0]?.date,
     coverageEnd: FALLBACK_NBP[FALLBACK_NBP.length - 1]?.date,
+    syncStatus: 'failed',
+    coverageNote: 'nbp-fallback-reference',
   }));
 }
 
@@ -86,6 +91,12 @@ export async function GET() {
       seriesName: series.name,
       coverageStart: formatted[0]?.date,
       coverageEnd: formatted[formatted.length - 1]?.date,
+      syncStatus: series.lastSyncStatus === 'failed' ? 'failed' : 'success',
+      coverageNote:
+        series.lastSyncStatus === 'failed'
+          ? 'nbp-fallback-reference'
+          : 'nbp-synced-context',
+      sourceUrl: 'https://api.nbp.pl/',
     }));
   } catch (error) {
     console.error('Failed to fetch NBP data:', error);

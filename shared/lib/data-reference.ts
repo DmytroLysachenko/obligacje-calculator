@@ -6,6 +6,9 @@ export interface DataReferenceMetaLike {
   coverageStart?: string;
   coverageEnd?: string;
   dataSource?: string;
+  syncStatus?: 'success' | 'partial' | 'failed' | 'stale';
+  coverageNote?: string;
+  sourceUrl?: string;
 }
 
 type AppLanguage = 'pl' | 'en';
@@ -26,6 +29,22 @@ const REFERENCE_COPY = {
   fallbackDataset: {
     pl: 'Zapasowy zestaw danych',
     en: 'Fallback dataset',
+  },
+  officialNbp: {
+    pl: 'Oficjalne API NBP',
+    en: 'Official NBP API',
+  },
+  officialBondSite: {
+    pl: 'Oficjalna oferta obligacji',
+    en: 'Official bond offer site',
+  },
+  officialGusPartial: {
+    pl: 'GUS / czesciowy zakres referencyjny',
+    en: 'GUS / partial reference coverage',
+  },
+  staleDataset: {
+    pl: 'Zsynchronizowany, ale przeterminowany zakres',
+    en: 'Synced but stale coverage',
   },
   coverageUnavailable: {
     pl: 'Zakres niedostepny',
@@ -59,6 +78,14 @@ const REFERENCE_COPY = {
     pl: 'Traktuj te serie jako wsparcie referencyjne, dopoki pipeline synchronizacji nie przywroci pelniejszego zakresu.',
     en: 'Treat this series as reference support until the sync pipeline restores fuller coverage.',
   },
+  staleTitle: {
+    pl: 'Zakres wymaga odswiezenia',
+    en: 'Coverage needs refresh',
+  },
+  staleDescription: {
+    pl: 'Dane pochodza z poprawnego zrodla, ale ich okno czasowe nie jest juz wystarczajaco aktualne dla biezacego odczytu.',
+    en: 'The data comes from a valid source, but its coverage window is no longer fresh enough for current reading.',
+  },
   syncedTitle: {
     pl: 'Zsynchronizowany zakres referencyjny',
     en: 'Synced reference coverage',
@@ -88,6 +115,64 @@ function getKnownDataSourceLabel(
 
   if (normalized === 'database') {
     return getReferenceCopy('syncedDataset', language);
+  }
+
+  if (normalized === 'nbp official api') {
+    return getReferenceCopy('officialNbp', language);
+  }
+
+  if (
+    normalized === 'gus / partial seeded coverage'
+    || normalized === 'gus/partial seeded coverage'
+    || normalized === 'gus / partial reference coverage'
+  ) {
+    return getReferenceCopy('officialGusPartial', language);
+  }
+
+  if (
+    normalized === 'official bond offer page'
+    || normalized === 'official bond offer communication'
+  ) {
+    return getReferenceCopy('officialBondSite', language);
+  }
+
+  return value;
+}
+
+function getCoverageNoteLabel(
+  value: string,
+  language: AppLanguage,
+) {
+  const normalized = value.trim().toLowerCase();
+
+  if (normalized === 'cpi-partial-reference') {
+    return language === 'pl'
+      ? 'Miesieczny CPI nadal ma tylko czesciowy zakres referencyjny. Nie czytaj go jako w pelni aktualnych danych rynkowych.'
+      : 'Monthly CPI still has only partial reference coverage. Do not read it as fully current market data.';
+  }
+
+  if (normalized === 'cpi-stale-coverage') {
+    return language === 'pl'
+      ? 'Zrodlo CPI jest poprawne, ale ostatni zaimportowany punkt jest zbyt stary, aby traktowac ten zakres jako biezacy.'
+      : 'The CPI source is valid, but the latest imported point is too old to treat this coverage as current.';
+  }
+
+  if (normalized === 'reference-synced-context') {
+    return language === 'pl'
+      ? 'Zakres jest wystarczajaco aktualny, aby spokojnie wspierac odczyt kalkulatora.'
+      : 'Coverage is current enough to calmly support calculator reading.';
+  }
+
+  if (normalized === 'nbp-fallback-reference') {
+    return language === 'pl'
+      ? 'Historia stopy referencyjnej pozostaje zastepcza. Czytaj ja tylko jako kontekst referencyjny.'
+      : 'Reference-rate history remains fallback-based. Read it only as reference context.';
+  }
+
+  if (normalized === 'nbp-synced-context') {
+    return language === 'pl'
+      ? 'Historia stopy referencyjnej jest zsynchronizowana i moze wspierac odczyt wynikow obligacji.'
+      : 'Reference-rate history is synced and can support reading bond results.';
   }
 
   return value;
@@ -146,6 +231,10 @@ export function getReferenceScopeLabel(
     return getReferenceCopy('referenceOnly', language);
   }
 
+  if (meta.syncStatus === 'partial' || meta.syncStatus === 'stale') {
+    return getReferenceCopy('referenceOnly', language);
+  }
+
   return getReferenceCopy('supportsContext', language);
 }
 
@@ -161,10 +250,22 @@ export function getReferenceState(
     };
   }
 
-  if (meta.usedFallback || meta.source === 'fallback') {
+  if (meta.syncStatus === 'stale') {
+    return {
+      title: getReferenceCopy('staleTitle', language),
+      description: meta.coverageNote
+        ? getCoverageNoteLabel(meta.coverageNote, language)
+        : getReferenceCopy('staleDescription', language),
+      tone: 'warning' as const,
+    };
+  }
+
+  if (meta.usedFallback || meta.source === 'fallback' || meta.syncStatus === 'failed' || meta.syncStatus === 'partial') {
     return {
       title: getReferenceCopy('fallbackTitle', language),
-      description: getReferenceCopy('fallbackDescription', language),
+      description: meta.coverageNote
+        ? getCoverageNoteLabel(meta.coverageNote, language)
+        : getReferenceCopy('fallbackDescription', language),
       tone: 'warning' as const,
     };
   }

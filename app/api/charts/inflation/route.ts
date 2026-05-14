@@ -31,6 +31,9 @@ interface ChartSeriesEnvelope<T> {
   coverageEnd?: string;
   dataSource?: string;
   seriesName?: string;
+  syncStatus?: 'success' | 'partial' | 'failed' | 'stale';
+  coverageNote?: string;
+  sourceUrl?: string;
 }
 
 function fallbackResponse() {
@@ -42,6 +45,8 @@ function fallbackResponse() {
     seriesName: 'Inflation fallback',
     coverageStart: FALLBACK_INFLATION[0]?.date,
     coverageEnd: FALLBACK_INFLATION[FALLBACK_INFLATION.length - 1]?.date,
+    syncStatus: 'failed',
+    coverageNote: 'cpi-partial-reference',
   }));
 }
 
@@ -77,6 +82,20 @@ export async function GET() {
       !!latestPointDate &&
       differenceInDays(new Date(), latestPointDate) > CPI_STALE_THRESHOLD_DAYS;
     const hasSyncFailure = series.lastSyncStatus === 'failed';
+    const syncStatus =
+      hasSyncFailure
+        ? 'failed'
+        : series.lastSyncStatus === 'partial'
+          ? 'partial'
+          : isStaleCoverage
+            ? 'stale'
+            : 'success';
+    const coverageNote =
+      syncStatus === 'success'
+        ? 'reference-synced-context'
+        : syncStatus === 'stale'
+          ? 'cpi-stale-coverage'
+          : 'cpi-partial-reference';
 
     return NextResponse.json(createSuccessResponse<ChartSeriesEnvelope<(typeof formatted)[number]>>({
       data: formatted,
@@ -88,6 +107,9 @@ export async function GET() {
       seriesName: series.name,
       coverageStart: formatted[0]?.date,
       coverageEnd: formatted[formatted.length - 1]?.date,
+      syncStatus,
+      coverageNote,
+      sourceUrl: 'https://api.stat.gov.pl/',
     }));
   } catch (error) {
     console.error('Failed to fetch inflation data:', error);

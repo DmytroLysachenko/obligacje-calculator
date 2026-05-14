@@ -36,9 +36,10 @@ describe('data-reference localization', () => {
       asOf: '2024-06',
       coverageStart: '2010-01',
       coverageEnd: '2024-06',
+      dataSource: 'NBP official API',
     };
 
-    expect(getReferenceSourceLabel(meta, 'en')).toBe('Synced dataset');
+    expect(getReferenceSourceLabel(meta, 'en')).toBe('Official NBP API');
     expect(getReferenceCoverageLabel(meta, 'en')).toBe('2010-01 - 2024-06');
     expect(getReferenceAsOfLabel(meta, 'en')).toBe('2024-06');
     expect(getReferenceScopeLabel(meta, 'en')).toBe('Supports calculator context');
@@ -70,5 +71,25 @@ describe('data-reference localization', () => {
       { label: 'Coverage', value: 'Coverage not available' },
       { label: 'Use', value: 'Scope unknown' },
     ]);
+  });
+
+  it('uses localized partial and stale descriptions when explicit sync state exists', () => {
+    const partialMeta = {
+      source: 'database' as const,
+      usedFallback: true,
+      syncStatus: 'partial' as const,
+      coverageNote: 'cpi-partial-reference',
+    };
+
+    const staleMeta = {
+      source: 'database' as const,
+      usedFallback: true,
+      syncStatus: 'stale' as const,
+      coverageNote: 'cpi-stale-coverage',
+    };
+
+    expect(getReferenceState(partialMeta, 'pl').description).toContain('czesciowy zakres referencyjny');
+    expect(getReferenceState(staleMeta, 'pl').title).toBe('Zakres wymaga odswiezenia');
+    expect(getReferenceState(staleMeta, 'en').description).toContain('too old');
   });
 });

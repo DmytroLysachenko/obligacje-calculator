@@ -40,6 +40,9 @@ interface ChartSeriesEnvelope<T> {
   coverageEnd?: string;
   dataSource?: string;
   seriesName?: string;
+  syncStatus?: 'success' | 'partial' | 'failed' | 'stale';
+  coverageNote?: string;
+  sourceUrl?: string;
 }
 
 type PeriodValue = '1Y' | '5Y' | '10Y' | '30Y' | 'ALL';
@@ -118,6 +121,22 @@ function SeriesStatusCard({
     usage: language === 'pl' ? 'Uzycie' : 'Use',
   } as const;
   const state = getReferenceState(meta, language);
+  const statusLabel =
+    meta?.syncStatus === 'success'
+      ? language === 'pl'
+        ? 'Zsynchronizowane'
+        : 'Synced'
+      : meta?.syncStatus === 'stale'
+        ? language === 'pl'
+          ? 'Wymaga odswiezenia'
+          : 'Needs refresh'
+        : meta?.syncStatus === 'partial'
+          ? language === 'pl'
+            ? 'Czesciowe'
+            : 'Partial'
+          : language === 'pl'
+            ? 'Zapasowe'
+            : 'Fallback';
   const rows = [
     {
       label: labels.source,
@@ -148,13 +167,25 @@ function SeriesStatusCard({
     >
       <CardContent className="space-y-4 p-5">
         <div className="space-y-2">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
             {state.tone === 'warning' ? (
               <AlertTriangle className="h-4 w-4 text-amber-700" />
             ) : (
               <CheckCircle2 className="h-4 w-4 text-emerald-700" />
             )}
             <p className="text-xl font-black tracking-tight text-slate-950">{title}</p>
+            </div>
+            <span
+              className={cn(
+                'rounded-full px-3 py-1 text-[11px] font-semibold',
+                state.tone === 'warning'
+                  ? 'bg-amber-100 text-amber-800'
+                  : 'bg-emerald-100 text-emerald-800',
+              )}
+            >
+              {statusLabel}
+            </span>
           </div>
           <p className="text-sm leading-7 text-slate-600">{state.description}</p>
         </div>

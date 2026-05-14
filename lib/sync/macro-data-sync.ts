@@ -89,7 +89,7 @@ export async function syncMacroData() {
       await db
         .update(dataSeries)
         .set({
-          dataSource: cpiSeries.dataSource ?? 'GUS/WorldBank',
+          dataSource: cpiSeries.dataSource ?? 'GUS / partial seeded coverage',
           lastSyncStatus: 'partial',
           lastSyncError:
             'Monthly CPI sync is not yet sourced from a stable official feed. Existing coverage remains reference-only.',

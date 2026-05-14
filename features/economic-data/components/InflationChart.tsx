@@ -38,6 +38,9 @@ interface ChartSeriesEnvelope<T> {
   coverageEnd?: string;
   dataSource?: string;
   seriesName?: string;
+  syncStatus?: 'success' | 'partial' | 'failed' | 'stale';
+  coverageNote?: string;
+  sourceUrl?: string;
 }
 
 interface PayloadEntry {
