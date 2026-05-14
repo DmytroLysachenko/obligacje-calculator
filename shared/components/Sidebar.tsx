@@ -200,10 +200,10 @@ function SidebarLanguageUtility() {
 
   return (
     <SidebarUtilityPanel>
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center justify-between gap-2">
         <div className="min-w-0">
           <p className="text-xs font-semibold text-slate-500">{t('common.language')}</p>
-          <p className="mt-0.5 text-xs text-slate-500">PL / EN</p>
+          <p className="mt-0.5 text-[11px] text-slate-500">PL / EN</p>
         </div>
         <LanguageSwitcher />
       </div>

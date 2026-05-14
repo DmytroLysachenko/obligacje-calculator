@@ -7,12 +7,12 @@ export function LanguageSwitcher() {
   const { language, setLanguage } = useLanguage();
 
   return (
-    <div className="inline-flex w-full max-w-[94px] gap-1 rounded-full bg-slate-100 p-1">
+    <div className="inline-flex w-full max-w-[84px] items-center gap-1 rounded-full bg-slate-100 p-1">
       <Button
         variant={language === 'pl' ? 'default' : 'ghost'}
         size="sm"
         onClick={() => setLanguage('pl')}
-        className="h-7 flex-1 rounded-full px-2 text-[11px] font-semibold focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
+        className="h-7 flex-1 rounded-full px-1.5 text-[11px] font-semibold focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
       >
         PL
       </Button>
@@ -20,7 +20,7 @@ export function LanguageSwitcher() {
         variant={language === 'en' ? 'default' : 'ghost'}
         size="sm"
         onClick={() => setLanguage('en')}
-        className="h-7 flex-1 rounded-full px-2 text-[11px] font-semibold focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
+        className="h-7 flex-1 rounded-full px-1.5 text-[11px] font-semibold focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
       >
         EN
       </Button>

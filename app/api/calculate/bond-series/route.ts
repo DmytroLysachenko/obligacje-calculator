@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { bondSeries, polishBonds } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { createSuccessResponse } from '@/shared/types/api';
 
 export async function GET(req: NextRequest) {
@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
 
   const series = await db.query.bondSeries.findMany({
     where: eq(bondSeries.bondTypeId, bondType.id),
+    orderBy: [desc(bondSeries.emissionMonth)],
   });
 
   return NextResponse.json(createSuccessResponse(series));

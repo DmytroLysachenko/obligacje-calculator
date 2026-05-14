@@ -43,6 +43,11 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
   const { t, language } = useLanguage();
   const currentDef = definitions[inputs.bondType];
   const currentBondSupport = getBondSupportMeta(inputs.bondType);
+  const formatSeriesMonth = (value: string) =>
+    new Date(value).toLocaleDateString(language === 'pl' ? 'pl-PL' : 'en-GB', {
+      month: 'short',
+      year: 'numeric',
+    });
 
   const handleInvestmentChange = (value: number) => {
     onUpdate('initialInvestment', value);
@@ -118,29 +123,20 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
           value={inputs.bondType}
           onValueChange={(value) => onBondTypeChange(value as BondType)}
         >
-          <SelectTrigger id="bondType" className="h-11">
+          <SelectTrigger id="bondType" className="h-12 rounded-2xl border-slate-200 bg-white/90 text-left">
             <SelectValue placeholder={t('bonds.select_bond_type')} />
           </SelectTrigger>
           <SelectContent>
             {Object.values(BondType).map((type) => (
-              <SelectItem key={type} value={type}>
-                <div className="flex flex-col gap-0.5">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold">{type}</span>
-                    <span
-                      className={cn(
-                        "rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-[0.08em]",
-                        getBondSupportMeta(type).tone === 'caution'
-                          ? 'bg-amber-100 text-amber-800'
-                          : getBondSupportMeta(type).tone === 'limited'
-                            ? 'bg-slate-200 text-slate-700'
-                            : 'bg-emerald-100 text-emerald-700'
-                      )}
-                    >
-                      {getBondSupportMeta(type).shortLabel}
+              <SelectItem key={type} value={type} className="py-2.5">
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="font-black tracking-tight">{type}</span>
+                    <span className="text-xs text-slate-500">
+                      {Math.round((definitions[type]?.duration ?? 1) * 12)}m
                     </span>
                   </div>
-                  <span className="text-sm text-muted-foreground">
+                  <span className="max-w-[280px] text-sm text-muted-foreground">
                     {definitions[type]?.fullName[language] || type}
                   </span>
                 </div>
@@ -156,14 +152,33 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
             value={selectedSeriesId || 'current'}
             onValueChange={(value) => onUpdate('selectedSeriesId', value)}
           >
-            <SelectTrigger className="h-10 bg-muted/30 text-sm font-medium">
+            <SelectTrigger className="h-12 rounded-2xl border-slate-200 bg-slate-50/80 text-sm font-medium text-left">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="current" className="text-sm font-medium">{t('bonds.offer.current')}</SelectItem>
+              <SelectItem value="current" className="py-2.5 text-sm font-medium">
+                <div className="flex flex-col gap-1">
+                  <span className="font-semibold">{t('bonds.offer.current')}</span>
+                  <span className="text-xs text-slate-500">
+                    {language === 'pl'
+                      ? 'Uzyj aktualnej definicji oferty'
+                      : 'Use the currently active offer definition'}
+                  </span>
+                </div>
+              </SelectItem>
               {availableSeries.map((s) => (
-                <SelectItem key={s.id} value={s.id} className="text-sm">
-                  {s.seriesCode} ({s.firstYearRate}% + {s.baseMargin}%)
+                <SelectItem key={s.id} value={s.id} className="py-2.5 text-sm">
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold">{s.seriesCode}</span>
+                      <span className="text-xs text-slate-500">
+                        {formatSeriesMonth(s.emissionMonth)}
+                      </span>
+                    </div>
+                    <span className="text-xs text-slate-500">
+                      {Number(s.firstYearRate).toFixed(2)}% + {Number(s.baseMargin).toFixed(2)}%
+                    </span>
+                  </div>
                 </SelectItem>
               ))}
             </SelectContent>

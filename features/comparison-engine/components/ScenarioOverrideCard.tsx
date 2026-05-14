@@ -51,6 +51,28 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
   onCustomHorizonMonthsChange,
 }) => {
   const { t, language } = useLanguage();
+  const formatBondLabel = (type: BondType) =>
+    language === 'pl'
+      ? {
+          [BondType.OTS]: '3 miesiace',
+          [BondType.ROR]: '1 rok',
+          [BondType.DOR]: '2 lata',
+          [BondType.TOS]: '3 lata',
+          [BondType.COI]: '4 lata',
+          [BondType.ROS]: '6 lat',
+          [BondType.EDO]: '10 lat',
+          [BondType.ROD]: '12 lat',
+        }[type]
+      : {
+          [BondType.OTS]: '3 months',
+          [BondType.ROR]: '1 year',
+          [BondType.DOR]: '2 years',
+          [BondType.TOS]: '3 years',
+          [BondType.COI]: '4 years',
+          [BondType.ROS]: '6 years',
+          [BondType.EDO]: '10 years',
+          [BondType.ROD]: '12 years',
+        }[type];
 
   return (
     <Card className="overflow-hidden border shadow-sm">
@@ -68,30 +90,21 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
             value={bondType}
             onValueChange={(value) => onBondTypeChange(value as BondType)}
           >
-            <SelectTrigger className="h-11 w-full min-w-0 font-bold [&>span]:truncate">
+            <SelectTrigger className="h-12 w-full min-w-0 rounded-2xl border-slate-200 bg-white/90 font-bold [&>span]:truncate">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {Object.values(BondType).map((type) => (
-                <SelectItem key={type} value={type}>
-                  <div className="flex min-w-0 flex-col gap-0.5">
-                    <div className="flex items-center gap-2">
-                      <span>{type}</span>
-                      <span
-                        className={cn(
-                          'rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-[0.08em]',
-                          getBondSupportMeta(type).tone === 'caution'
-                            ? 'bg-amber-100 text-amber-800'
-                            : getBondSupportMeta(type).tone === 'limited'
-                              ? 'bg-slate-200 text-slate-700'
-                              : 'bg-emerald-100 text-emerald-700'
-                        )}
-                      >
-                        {getBondSupportMeta(type).shortLabel}
-                      </span>
+                <SelectItem key={type} value={type} className="py-2.5">
+                  <div className="flex min-w-0 flex-col gap-1">
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="font-black tracking-tight">{type}</span>
+                      <span className="text-xs text-slate-500">{formatBondLabel(type)}</span>
                     </div>
                     <span className="truncate text-sm text-muted-foreground">
-                      {getBondSupportMeta(type).description}
+                      {language === 'pl'
+                        ? getBondSupportMeta(type).description
+                        : getBondSupportMeta(type).description}
                     </span>
                   </div>
                 </SelectItem>
