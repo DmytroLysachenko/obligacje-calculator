@@ -6,56 +6,74 @@ import { AppLanguage, buildBondTimelineDisplayRows } from '@/shared/lib/bond-dis
  * Adds BOM for proper UTF-8 detection in Excel.
  */
 export function downloadFile(content: string, fileName: string, contentType: string) {
-  const a = document.createElement('a');
-  const file = new Blob(['\ufeff' + content], { type: contentType });
-  a.href = URL.createObjectURL(file);
-  a.download = fileName;
-  a.click();
-  URL.revokeObjectURL(a.href);
+  const anchor = document.createElement('a');
+  const file = new Blob([`\ufeff${content}`], { type: contentType });
+  anchor.href = URL.createObjectURL(file);
+  anchor.download = fileName;
+  anchor.click();
+  URL.revokeObjectURL(anchor.href);
 }
 
 const SEPARATOR = ';';
 
+function formatCsvValue(
+  value: unknown,
+  language: AppLanguage,
+) {
+  if (typeof value === 'number') {
+    return value.toLocaleString(language === 'pl' ? 'pl-PL' : 'en-GB', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+      useGrouping: false,
+    });
+  }
+
+  if (Array.isArray(value)) {
+    const joined = value.map((item) => String(item).replace(/"/g, '""')).join(', ');
+    return `"${joined}"`;
+  }
+
+  return `"${String(value ?? '').replace(/"/g, '""')}"`;
+}
+
 /**
  * Converts a timeline to a CSV string.
- * Uses semicolon as separator for better compatibility with European Excel (Poland).
+ * Uses display rows instead of raw engine rows so exports match the UI.
+ * Uses semicolon as separator for better compatibility with Polish Excel.
  */
 export function convertTimelineToCSV(
   timeline: YearlyTimelinePoint[],
   headers: Record<string, string>,
   language: AppLanguage = 'pl',
 ): string {
-  const csvRows = [];
+  const csvRows: string[] = [];
   const displayRows = buildBondTimelineDisplayRows(timeline, language);
   const columns = [
     { key: 'periodLabel', header: headers.period || 'Period' },
     { key: 'cycleLabel', header: language === 'pl' ? 'Cykl' : 'Cycle' },
     { key: 'cadenceLabel', header: language === 'pl' ? 'Znaczenie' : 'Meaning' },
     { key: 'interestRateLabel', header: headers.rate || 'Rate' },
-    { key: 'rateSourceLabel', header: language === 'pl' ? 'Źródło stopy' : 'Rate source' },
+    { key: 'rateSourceLabel', header: language === 'pl' ? 'Zrodlo stopy' : 'Rate source' },
     { key: 'referenceLabel', header: language === 'pl' ? 'Kontekst stopy' : 'Rate context' },
-    { key: 'nominalValue', header: headers.nominalValue || 'Nominal Value' },
+    { key: 'nominalValue', header: headers.nominalValue || 'Nominal value' },
     { key: 'netProfit', header: language === 'pl' ? 'Zysk netto' : 'Net profit' },
-    { key: 'realValue', header: headers.realValue || 'Real Value' },
-    { key: 'earlyExitValue', header: language === 'pl' ? 'Wypłata przy wcześniejszym wyjściu' : 'Early exit payout' },
+    { key: 'realValue', header: headers.realValue || 'Real value' },
+    {
+      key: 'earlyExitValue',
+      header: language === 'pl' ? 'Wyplata przy wczesniejszym wyjsciu' : 'Early exit payout',
+    },
     { key: 'eventLabels', header: language === 'pl' ? 'Zdarzenia' : 'Events' },
   ];
 
-  // Header row
-  csvRows.push(columns.map(c => c.header).join(SEPARATOR));
+  csvRows.push(columns.map((column) => column.header).join(SEPARATOR));
 
-  // Data rows
   for (const point of displayRows) {
-    const row = columns.map(c => {
-      const val = (point as unknown as Record<string, unknown>)[c.key];
-      if (typeof val === 'number') {
-        return val.toFixed(2);
-      }
-      if (Array.isArray(val)) {
-        return `"${val.join(', ')}"`;
-      }
-      return `"${String(val ?? '')}"`;
-    });
+    const row = columns.map((column) =>
+      formatCsvValue(
+        (point as unknown as Record<string, unknown>)[column.key],
+        language,
+      ),
+    );
     csvRows.push(row.join(SEPARATOR));
   }
 
@@ -67,10 +85,10 @@ export function convertTimelineToCSV(
  */
 export function convertLotsToCSV(
   lots: LotBreakdown[],
-  headers: Record<string, string>
+  headers: Record<string, string>,
+  language: AppLanguage = 'pl',
 ): string {
-  const csvRows = [];
-  
+  const csvRows: string[] = [];
   const columns = [
     { key: 'purchaseDate', header: headers.purchaseDate || 'Purchase Date' },
     { key: 'maturityDate', header: headers.maturityDate || 'Maturity Date' },
@@ -81,18 +99,17 @@ export function convertLotsToCSV(
     { key: 'netValue', header: headers.netValue || 'Net Value' },
   ];
 
-  csvRows.push(columns.map(c => c.header).join(SEPARATOR));
+  csvRows.push(columns.map((column) => column.header).join(SEPARATOR));
 
   for (const lot of lots) {
-    const row = columns.map(c => {
-      const val = (lot as unknown as Record<string, unknown>)[c.key];
-      if (typeof val === 'number') {
-        return val.toFixed(2);
+    const row = columns.map((column) => {
+      const value = (lot as unknown as Record<string, unknown>)[column.key];
+
+      if (typeof value === 'string' && value.includes('T')) {
+        return `"${value.split('T')[0]}"`;
       }
-      if (typeof val === 'string' && val.includes('T')) {
-        return val.split('T')[0];
-      }
-      return `"${val}"`;
+
+      return formatCsvValue(value, language);
     });
     csvRows.push(row.join(SEPARATOR));
   }

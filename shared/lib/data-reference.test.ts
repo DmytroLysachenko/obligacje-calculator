@@ -19,7 +19,7 @@ describe('data-reference localization', () => {
       dataSource: 'static fallback dataset',
     };
 
-    expect(getReferenceSourceLabel(meta, 'pl')).toBe('static fallback dataset');
+    expect(getReferenceSourceLabel(meta, 'pl')).toBe('Zapasowy zestaw danych');
     expect(getReferenceCoverageLabel(meta, 'pl')).toBe('2021-01 - 2025-01');
     expect(getReferenceAsOfLabel(meta, 'pl')).toBe('2024-06-01');
     expect(getReferenceScopeLabel(meta, 'pl')).toBe('Tylko odczyt referencyjny');

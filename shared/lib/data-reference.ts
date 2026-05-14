@@ -76,6 +76,23 @@ function getReferenceCopy(
   return REFERENCE_COPY[key][language];
 }
 
+function getKnownDataSourceLabel(
+  value: string,
+  language: AppLanguage,
+) {
+  const normalized = value.trim().toLowerCase();
+
+  if (normalized === 'static fallback dataset') {
+    return getReferenceCopy('fallbackDataset', language);
+  }
+
+  if (normalized === 'database') {
+    return getReferenceCopy('syncedDataset', language);
+  }
+
+  return value;
+}
+
 export function getReferenceSourceLabel(
   meta?: DataReferenceMetaLike,
   language: AppLanguage = 'en',
@@ -85,7 +102,7 @@ export function getReferenceSourceLabel(
   }
 
   if (meta.dataSource) {
-    return meta.dataSource;
+    return getKnownDataSourceLabel(meta.dataSource, language);
   }
 
   if (meta.source === 'database') {

@@ -613,8 +613,11 @@ export const ComparisonContainer: React.FC = () => {
                     description: labels.readyCommittedDesc,
                   },
                 ]}
-                ctaLabel={t('common.calculate')}
-                onClick={() => calculate()}
+                footerText={
+                  language === 'pl'
+                    ? 'Uruchom porownanie przez staly przycisk oblicz w prawym dolnym rogu.'
+                    : 'Run the comparison from the fixed calculate control in the bottom-right corner.'
+                }
               />
             ) : null}
 

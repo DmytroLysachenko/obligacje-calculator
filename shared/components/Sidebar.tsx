@@ -137,7 +137,7 @@ function NavLinkItem({
       className={cn(
         'group block rounded-[1.35rem] border px-3.5 py-3.5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2',
         isActive
-          ? 'border-slate-800/70 bg-slate-800 text-white shadow-sm shadow-slate-900/10'
+          ? 'border-slate-700/50 bg-slate-700 text-white shadow-sm shadow-slate-900/10'
           : 'border-slate-200/80 bg-white/90 text-slate-900 hover:border-slate-300 hover:bg-white',
       )}
     >
