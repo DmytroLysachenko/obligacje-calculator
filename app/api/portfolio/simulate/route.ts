@@ -5,7 +5,7 @@ import { createSuccessResponse, createErrorResponse } from '@/shared/types/api';
 import { db } from '@/db';
 import { userInvestmentLots } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { addYears, format } from 'date-fns';
+import { buildPortfolioSimulationPayload } from '@/lib/portfolio-simulation';
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,24 +28,12 @@ export async function POST(req: NextRequest) {
       }));
     }
 
-    // Determine withdrawal date (e.g., 10 years from the latest purchase or maturity)
-    const withdrawalDate = format(addYears(new Date(), 10), 'yyyy-MM-dd');
-
     const envelope = await calculationService.calculate({
       kind: ScenarioKind.PORTFOLIO_SIMULATION,
-      payload: {
-        investments: lots.map(l => ({
-          bondType: l.bondType as import('@/features/bond-core/types').BondType,
-          amount: Number(l.amount) * 100,
-          purchaseDate: l.purchaseDate,
-          isRebought: l.isRebought ?? false,
-        })),
-        expectedInflation,
-        withdrawalDate,
-      },
+      payload: buildPortfolioSimulationPayload(lots, { expectedInflation }),
     });
-    
-    return NextResponse.json(createSuccessResponse(envelope));
+
+    return NextResponse.json(createSuccessResponse(envelope.result));
   } catch (error) {
     console.error('Portfolio simulation failed:', error);
     return NextResponse.json(

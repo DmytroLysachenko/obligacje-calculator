@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SyncEngine } from '@/lib/sync/sync-engine';
-import { NbpSyncProvider } from '@/lib/sync/providers/nbp';
-import { StooqSyncProvider } from '@/lib/sync/providers/stooq';
-import { WorldBankSyncProvider } from '@/lib/sync/providers/worldbank';
 import { seedSeriesMetadata } from '@/lib/sync/seed-series-runner';
 import { seedMarketHistory } from '@/lib/sync/seed-market-history';
 import { syncMarketHistory } from '@/lib/sync/sync-market-history';
@@ -29,8 +26,7 @@ export async function POST(req: NextRequest) {
     } else if (mode === 'market-history-sync') {
       results = await syncMarketHistory();
     } else {
-      const providers = [new WorldBankSyncProvider(), new NbpSyncProvider(), new StooqSyncProvider()];
-      const engine = new SyncEngine(providers);
+      const engine = new SyncEngine();
       results = await engine.runFullSync();
     }
 

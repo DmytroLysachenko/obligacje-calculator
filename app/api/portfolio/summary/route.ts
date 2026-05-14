@@ -4,13 +4,11 @@ import { userInvestmentLots, userPortfolios } from '@/db/schema';
 import { eq, inArray } from 'drizzle-orm';
 import { resolvePortfolioOwner, applyPortfolioOwnerCookie } from '@/lib/portfolio-access';
 import { calculationService } from '@/features/bond-core/application-service';
-import { ScenarioKind, PortfolioSimulationPayload } from '@/features/bond-core/types/scenarios';
-import { BondType, TaxStrategy } from '@/features/bond-core/types';
+import { ScenarioKind } from '@/features/bond-core/types/scenarios';
 import { createSuccessResponse } from '@/shared/types/api';
-import { addYears, format } from 'date-fns';
-
 import { apiHandler } from '@/lib/api-handler';
 import { ensurePortfolioSchemaCompat } from '@/lib/db-schema-compat';
+import { buildPortfolioSimulationPayload } from '@/lib/portfolio-simulation';
 
 export const GET = apiHandler(async () => {
   await ensurePortfolioSchemaCompat();
@@ -44,28 +42,11 @@ export const GET = apiHandler(async () => {
       })), owner);
   }
 
-  // 3. Construct Payload for Portfolio Simulation
-  const withdrawalDate = format(addYears(new Date(), 10), 'yyyy-MM-dd');
-  
-  const payload: PortfolioSimulationPayload = {
-    investments: lots.map(lot => ({
-      bondType: lot.bondType as BondType,
-      amount: Number(lot.amount),
-      purchaseDate: lot.purchaseDate,
-      isRebought: lot.isRebought ?? false,
-      taxStrategy: TaxStrategy.STANDARD, // Default for now
-      rollover: true, // Default for now
-    })),
-    expectedInflation: 3.5, // Default for now
-    expectedNbpRate: 5.25, // Default for now
-    withdrawalDate,
-  };
-
   // 4. Run Simulation
   const envelope = await calculationService.calculate({
     kind: ScenarioKind.PORTFOLIO_SIMULATION,
-    payload,
+    payload: buildPortfolioSimulationPayload(lots),
   });
 
-  return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(envelope)), owner);
+  return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(envelope.result)), owner);
 });

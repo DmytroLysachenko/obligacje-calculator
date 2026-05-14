@@ -21,6 +21,8 @@ const FALLBACK_NBP = [
   { date: '2023-10', rate: 5.75 },
   { date: '2024-01', rate: 5.75 },
   { date: '2025-01', rate: 5.75 },
+  { date: '2026-03', rate: 3.75 },
+  { date: '2026-05', rate: 3.75 },
 ];
 
 interface ChartSeriesEnvelope<T> {
@@ -77,7 +79,7 @@ export async function GET() {
     return NextResponse.json(createSuccessResponse<ChartSeriesEnvelope<(typeof formatted)[number]>>({
       data: formatted,
       source: 'database',
-      usedFallback: false,
+      usedFallback: series.lastSyncStatus === 'failed',
       asOf: data[0]?.date,
       lastCheck: series.updatedAt?.toISOString(),
       dataSource: series.dataSource ?? 'database',

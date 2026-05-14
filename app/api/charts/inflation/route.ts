@@ -3,6 +3,7 @@ import { db } from '@/db';
 import { dataSeries, dataPoints } from '@/db/schema';
 import { desc, eq, inArray } from 'drizzle-orm';
 import { createSuccessResponse } from '@/shared/types/api';
+import { differenceInDays, parseISO } from 'date-fns';
 
 const FALLBACK_INFLATION = [
   { date: '2015-01', rate: -0.9 },
@@ -17,6 +18,8 @@ const FALLBACK_INFLATION = [
   { date: '2024-01', rate: 3.7 },
   { date: '2025-01', rate: 4.2 },
 ];
+
+const CPI_STALE_THRESHOLD_DAYS = 62;
 
 interface ChartSeriesEnvelope<T> {
   data: T[];
@@ -69,10 +72,16 @@ export async function GET() {
       }))
       .reverse();
 
+    const latestPointDate = data[0]?.date ? parseISO(data[0].date) : null;
+    const isStaleCoverage =
+      !!latestPointDate &&
+      differenceInDays(new Date(), latestPointDate) > CPI_STALE_THRESHOLD_DAYS;
+    const hasSyncFailure = series.lastSyncStatus === 'failed';
+
     return NextResponse.json(createSuccessResponse<ChartSeriesEnvelope<(typeof formatted)[number]>>({
       data: formatted,
       source: 'database',
-      usedFallback: false,
+      usedFallback: isStaleCoverage || hasSyncFailure || series.lastSyncStatus === 'partial',
       asOf: data[0]?.date,
       lastCheck: series.updatedAt?.toISOString(),
       dataSource: series.dataSource ?? 'database',

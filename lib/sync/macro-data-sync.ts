@@ -1,8 +1,7 @@
 import { db } from "@/db";
 import { dataSeries, dataPoints } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { NbpApiClient } from "../api-clients/nbp";
-import { StooqApiClient } from "../api-clients/stooq";
 
 /**
  * Helper to retry a function with exponential backoff.
@@ -18,92 +17,112 @@ async function retry<T>(fn: () => Promise<T>, retries = 3, delay = 1000): Promis
 }
 
 /**
- * Syncs macroeconomic data (Inflation, NBP Rate, WIBOR) from real sources.
+ * Syncs trusted macroeconomic data for retained surfaces.
+ * NBP reference-rate history is synced from official NBP data.
+ * CPI remains explicit about partial coverage until a stable official monthly source is wired in.
  */
 export async function syncMacroData() {
   const nbpClient = new NbpApiClient();
-  const stooqClient = new StooqApiClient();
-  
+
   try {
-    // 1. Fetch NBP Reference Rate
-    const nbpIndicators = await retry(() => nbpClient.fetchLatestData());
-    const nbpRefRate = nbpIndicators.find(i => i.name === 'nbp_reference_rate');
-    
-    // 2. Fetch Inflation (CPI) from Stooq
-    const inflationIndicators = await retry(() => stooqClient.fetchHistoricalData(
-      new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      'cpip.pl' 
-    ));
-    const latestInflation = inflationIndicators.at(-1);
+    const nbpIndicators = await retry(() => nbpClient.fetchReferenceRateHistory());
+    const latestNbpRate = nbpIndicators[0];
 
-    // 3. Fetch WIBOR Rates (3M and 6M)
-    const wibor3mIndicators = await retry(() => stooqClient.fetchHistoricalData(
-      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      'plopln3m.m'
-    ));
-    const latestWibor3m = wibor3mIndicators.at(-1);
+    let nbpSeries = await db.query.dataSeries.findFirst({
+      where: eq(dataSeries.slug, 'nbp-ref-rate'),
+    });
 
-    const wibor6mIndicators = await retry(() => stooqClient.fetchHistoricalData(
-      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      'plopln6m.m'
-    ));
-    const latestWibor6m = wibor6mIndicators.at(-1);
-
-    const macroIndicators = [
-      { slug: 'inflation-pl', name: 'Polish Inflation (CPI)', unit: '%', source: 'Stooq/GUS', data: latestInflation },
-      { slug: 'nbp-rate', name: 'NBP Reference Rate', unit: '%', source: 'NBP', data: nbpRefRate },
-      { slug: 'pl-wibor-3m', name: 'WIBOR 3M', unit: '%', source: 'Stooq', data: latestWibor3m },
-      { slug: 'pl-wibor-6m', name: 'WIBOR 6M', unit: '%', source: 'Stooq', data: latestWibor6m },
-    ];
-
-    const results = {
-      inflation: latestInflation?.value,
-      nbp: nbpRefRate?.value,
-      wibor3m: latestWibor3m?.value,
-      wibor6m: latestWibor6m?.value,
-    };
-
-    for (const indicator of macroIndicators) {
-      if (!indicator.data) continue;
-
-      let series = await db.query.dataSeries.findFirst({
-        where: eq(dataSeries.slug, indicator.slug)
-      });
-      
-      if (!series) {
-        [series] = await db.insert(dataSeries).values({
-          name: indicator.name,
-          slug: indicator.slug,
-          category: 'macro',
-          unit: indicator.unit,
-          dataSource: indicator.source,
-        }).returning();
-      }
-
-      // Update data point
-      await db.insert(dataPoints)
+    if (!nbpSeries) {
+      [nbpSeries] = await db
+        .insert(dataSeries)
         .values({
-          seriesId: series.id,
-          date: indicator.data.date,
-          value: indicator.data.value.toString(),
+          slug: 'nbp-ref-rate',
+          name: 'NBP Reference Rate',
+          category: 'macro',
+          unit: '%',
+          frequency: 'on-event',
+          dataSource: 'NBP official API',
+          freshnessPolicy: 'check-daily',
+          lastSyncStatus: 'success',
         })
+        .returning();
+    }
+
+    if (nbpIndicators.length > 0 && nbpSeries) {
+      await db
+        .insert(dataPoints)
+        .values(
+          nbpIndicators.map((indicator) => ({
+            seriesId: nbpSeries.id,
+            date: indicator.date,
+            value: indicator.value.toString(),
+            qualityFlag: 'verified',
+            sourceMetadata: 'NBP official API',
+          })),
+        )
         .onConflictDoUpdate({
           target: [dataPoints.seriesId, dataPoints.date],
-          set: { value: indicator.data.value.toString() }
+          set: {
+            value: sql`EXCLUDED.value`,
+            qualityFlag: 'verified',
+            sourceMetadata: 'NBP official API',
+          },
         });
 
-      // Update series metadata
-      await db.update(dataSeries)
-        .set({ 
-          lastDataPointDate: indicator.data.date,
-          updatedAt: new Date()
+      await db
+        .update(dataSeries)
+        .set({
+          dataSource: 'NBP official API',
+          lastDataPointDate: latestNbpRate?.date,
+          lastSyncStatus: 'success',
+          lastSyncError: null,
+          updatedAt: new Date(),
         })
-        .where(eq(dataSeries.id, series.id));
+        .where(eq(dataSeries.id, nbpSeries.id));
     }
+
+    const cpiSeries = await db.query.dataSeries.findFirst({
+      where: eq(dataSeries.slug, 'pl-cpi'),
+    });
+
+    if (cpiSeries) {
+      await db
+        .update(dataSeries)
+        .set({
+          dataSource: cpiSeries.dataSource ?? 'GUS/WorldBank',
+          lastSyncStatus: 'partial',
+          lastSyncError:
+            'Monthly CPI sync is not yet sourced from a stable official feed. Existing coverage remains reference-only.',
+          updatedAt: new Date(),
+        })
+        .where(eq(dataSeries.id, cpiSeries.id));
+    }
+
+    const results = {
+      inflation: null,
+      nbp: latestNbpRate?.value ?? null,
+      wibor3m: null,
+      wibor6m: null,
+    };
 
     return results;
   } catch (error) {
     console.error('Macro sync failed:', error);
+    const nbpSeries = await db.query.dataSeries.findFirst({
+      where: eq(dataSeries.slug, 'nbp-ref-rate'),
+    });
+
+    if (nbpSeries) {
+      await db
+        .update(dataSeries)
+        .set({
+          lastSyncStatus: 'failed',
+          lastSyncError: String(error),
+          updatedAt: new Date(),
+        })
+        .where(eq(dataSeries.id, nbpSeries.id));
+    }
+
     return null;
   }
 }

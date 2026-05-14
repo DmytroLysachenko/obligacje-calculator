@@ -6,10 +6,10 @@ import { applyPortfolioOwnerCookie, resolvePortfolioOwner } from '@/lib/portfoli
 import { apiHandler } from '@/lib/api-handler';
 import { createSuccessResponse } from '@/shared/types/api';
 import { calculationService } from '@/features/bond-core/application-service';
-import { PortfolioSimulationCalculationEnvelope, ScenarioKind, PortfolioSimulationPayload } from '@/features/bond-core/types/scenarios';
-import { BondType, TaxStrategy } from '@/features/bond-core/types';
-import { addYears, format } from 'date-fns';
+import { PortfolioSimulationCalculationEnvelope, ScenarioKind } from '@/features/bond-core/types/scenarios';
+import { TaxStrategy } from '@/features/bond-core/types';
 import { ensurePortfolioSchemaCompat } from '@/lib/db-schema-compat';
+import { buildPortfolioSimulationPayload } from '@/lib/portfolio-simulation';
 
 export const GET = apiHandler(async (req: NextRequest) => {
   await ensurePortfolioSchemaCompat();
@@ -34,20 +34,10 @@ export const GET = apiHandler(async (req: NextRequest) => {
     where: eq(userInvestmentLots.portfolioId, portfolioId),
   });
 
-  const withdrawalDate = format(addYears(new Date(), 10), 'yyyy-MM-dd');
-  const payload: PortfolioSimulationPayload = {
-    investments: lots.map((lot) => ({
-      bondType: lot.bondType as BondType,
-      amount: Number(lot.amount),
-      purchaseDate: lot.purchaseDate,
-      isRebought: lot.isRebought ?? false,
-      taxStrategy: TaxStrategy.STANDARD,
-      rollover: true,
-    })),
-    expectedInflation: 3.5,
-    expectedNbpRate: 5.25,
-    withdrawalDate,
-  };
+  const payload = buildPortfolioSimulationPayload(lots, {
+    taxStrategy: TaxStrategy.STANDARD,
+    rollover: true,
+  });
   const simulation = lots.length > 0
     ? await calculationService.calculate({
         kind: ScenarioKind.PORTFOLIO_SIMULATION,
@@ -63,7 +53,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
       expectedInflation: 3.5,
       expectedNbpRate: 5.25,
       taxStrategy: TaxStrategy.STANDARD,
-      withdrawalDate,
+      withdrawalDate: payload.withdrawalDate,
     },
     portfolio: {
       name: portfolio?.name,

@@ -5,15 +5,20 @@ interface NbpGoldPrice {
   cena: number;
 }
 
+interface NbpRateItem {
+  obowiazuje_od: string;
+  oprocentowanie: string;
+}
+
 export class NbpApiClient extends BaseApiClient {
   private baseUrl = "https://api.nbp.pl/api";
 
   async fetchLatestData(): Promise<StandardizedIndicator[]> {
-    const [gold, rate] = await Promise.all([
+    const [gold, rateHistory] = await Promise.all([
       this.fetchGoldPrice(),
-      this.fetchCurrentReferenceRate()
+      this.fetchReferenceRateHistory()
     ]);
-    return [gold, rate];
+    return [gold, rateHistory[0] ?? { name: "nbp_reference_rate", value: 3.75, date: new Date().toISOString().split('T')[0] }];
   }
 
   async fetchHistoricalData(startDate: string): Promise<StandardizedIndicator[]> {
@@ -44,26 +49,23 @@ export class NbpApiClient extends BaseApiClient {
     };
   }
 
-  /**
-   * Fetches the current NBP Reference Rate.
-   * Uses the statistics endpoint which is more reliable for rates than currency tables.
-   */
-  private async fetchCurrentReferenceRate(): Promise<StandardizedIndicator> {
-    // The specific NBP endpoint for interest rates
+  async fetchReferenceRateHistory(): Promise<StandardizedIndicator[]> {
     const response = await fetchWithTimeout("https://api.nbp.pl/api/statystyka/stopy/ref?format=json");
     if (!response.ok) {
-      // Fallback if specific endpoint fails
-      return { name: "nbp_reference_rate", value: 3.75, date: new Date().toISOString().split('T')[0] };
+      return [
+        {
+          name: "nbp_reference_rate",
+          value: 3.75,
+          date: new Date().toISOString().split('T')[0],
+        },
+      ];
     }
-    
-    const data = await response.json();
-    // API returns an array of rate changes
-    const latest = data[0]; 
-    
-    return {
+
+    const data = (await response.json()) as NbpRateItem[];
+    return data.map((item) => ({
       name: "nbp_reference_rate",
-      value: parseFloat(latest.oprocentowanie.replace(',', '.')),
-      date: latest.obowiazuje_od,
-    };
+      value: parseFloat(item.oprocentowanie.replace(',', '.')),
+      date: item.obowiazuje_od,
+    }));
   }
 }

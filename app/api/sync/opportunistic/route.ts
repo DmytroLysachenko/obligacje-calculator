@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server';
 import { SyncEngine } from '@/lib/sync/sync-engine';
-import { NbpSyncProvider } from '@/lib/sync/providers/nbp';
-import { StooqSyncProvider } from '@/lib/sync/providers/stooq';
-import { WorldBankSyncProvider } from '@/lib/sync/providers/worldbank';
 import { isBefore, subHours } from 'date-fns';
 import { cookies } from 'next/headers';
 
@@ -29,8 +26,7 @@ export async function GET() {
   // Background sync (don't await)
   (async () => {
     try {
-      const providers = [new WorldBankSyncProvider(), new NbpSyncProvider(), new StooqSyncProvider()];
-      const engine = new SyncEngine(providers);
+      const engine = new SyncEngine();
       await engine.runFullSync();
     } catch (error) {
       console.error('[OpportunisticSync] Background sync failed:', error);

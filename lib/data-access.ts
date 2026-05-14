@@ -25,6 +25,19 @@ function setCache(key: string, data: unknown) {
   macroCache.set(key, { data, timestamp: Date.now() });
 }
 
+function getSeriesReferenceDate(series: {
+  slug: string;
+  frequency?: string | null;
+  lastDataPointDate?: string | null;
+  updatedAt?: Date | null;
+}) {
+  if (series.frequency === 'on-event' || NBP_RATE_SLUGS.includes(series.slug)) {
+    return series.updatedAt ?? (series.lastDataPointDate ? parseISO(series.lastDataPointDate) : undefined);
+  }
+
+  return series.lastDataPointDate ? parseISO(series.lastDataPointDate) : series.updatedAt ?? undefined;
+}
+
 /**
  * Calculates the global data freshness status based on the oldest macro series.
  */
@@ -50,7 +63,19 @@ export const getGlobalDataFreshness = cache(async (): Promise<CalculationDataFre
     .map((series) => series.updatedAt)
     .filter((value): value is Date => Boolean(value))
     .sort((a, b) => b.getTime() - a.getTime())[0];
-  const seriesWithDates = criticalSeries.filter((series) => series.lastDataPointDate);
+  const seriesWithDates = criticalSeries
+    .map((series) => ({
+      series,
+      referenceDate: getSeriesReferenceDate(series),
+    }))
+    .filter(
+      (
+        item,
+      ): item is {
+        series: (typeof criticalSeries)[number];
+        referenceDate: Date;
+      } => item.referenceDate instanceof Date,
+    );
   const usedFallback = seriesWithDates.length !== criticalSeries.length
     || criticalSeries.some((series) => series.lastSyncStatus === 'failed');
 
@@ -66,7 +91,7 @@ export const getGlobalDataFreshness = cache(async (): Promise<CalculationDataFre
   }
 
   const oldestCriticalPoint = seriesWithDates
-    .map((series) => parseISO(series.lastDataPointDate!))
+    .map((item) => item.referenceDate)
     .sort((a, b) => a.getTime() - b.getTime())[0];
 
   const daysOld = differenceInDays(now, oldestCriticalPoint);
