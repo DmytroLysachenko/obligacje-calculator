@@ -53,7 +53,7 @@ export class NbpApiClient extends BaseApiClient {
     const response = await fetchWithTimeout("https://api.nbp.pl/api/statystyka/stopy/ref?format=json");
     if (!response.ok) {
       // Fallback if specific endpoint fails
-      return { name: "nbp_reference_rate", value: 5.75, date: new Date().toISOString().split('T')[0] };
+      return { name: "nbp_reference_rate", value: 3.75, date: new Date().toISOString().split('T')[0] };
     }
     
     const data = await response.json();

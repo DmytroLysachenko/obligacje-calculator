@@ -150,7 +150,7 @@ export const ComparisonContainer: React.FC = () => {
       realValue: t('bonds.inflation.adjusted'),
     };
 
-    const csv = convertTimelineToCSV(results.timeline, headers);
+    const csv = convertTimelineToCSV(results.timeline, headers, language);
     downloadFile(
       csv,
       `bond_comparison_${bondType}_${new Date().toISOString().split('T')[0]}.csv`,
@@ -500,6 +500,8 @@ export const ComparisonContainer: React.FC = () => {
                 <MarketAssumptionsForm
                   expectedInflation={sharedConfig.expectedInflation}
                   expectedNbpRate={sharedConfig.expectedNbpRate}
+                  customInflation={sharedConfig.customInflation}
+                  inflationScenario={sharedConfig.inflationScenario}
                   bondType={scenarioA.bondType}
                   onUpdate={updateSharedConfig as (key: string, value: unknown) => void}
                   compact
@@ -532,14 +534,6 @@ export const ComparisonContainer: React.FC = () => {
                   </SelectContent>
                 </Select>
               </div>
-
-              <Button
-                className="h-11 w-full font-black uppercase tracking-wide"
-                onClick={() => calculate()}
-                disabled={isCalculating}
-              >
-                {isCalculating ? t('common.calculating') : labels.runIndependent}
-              </Button>
             </CardContent>
           </Card>
 
@@ -859,7 +853,8 @@ export const ComparisonContainer: React.FC = () => {
         </div>
       )}
       <RecalculateButton
-        isDirty={isDirty && !!resultsA && !!resultsB}
+        isDirty={isDirty}
+        hasResults={!!resultsA && !!resultsB}
         loading={isCalculating}
         onClick={() => calculate()}
       />

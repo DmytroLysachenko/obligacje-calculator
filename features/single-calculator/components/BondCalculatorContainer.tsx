@@ -11,7 +11,8 @@ import { RecalculateButton } from '@/shared/components/RecalculateButton';
 import { ScenarioReadyPanel } from '@/shared/components/ScenarioReadyPanel';
 import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
-import { generatePDF } from '@/shared/lib/pdf-utils';
+import { unwrapApiData } from '@/shared/lib/api-response';
+import { generateSingleBondReportPdf } from '@/shared/lib/pdf-utils';
 import { useBondCalculator } from '../hooks/useBondCalculator';
 import { applyGuardrailFix, getInputGuardrails, InputGuardrailIssue } from '../lib/input-guardrails';
 import { createSavedScenario, saveScenarioRecord } from '../lib/scenario-storage';
@@ -95,7 +96,8 @@ export const BondCalculatorContainer: React.FC = () => {
     try {
       const portfolioResponse = await fetch('/api/portfolio');
       const portfolioData = await portfolioResponse.json();
-      let portfolioId = portfolioData.data?.[0]?.id || portfolioData?.[0]?.id;
+      const portfolioList = unwrapApiData<Array<{ id: string }>>(portfolioData) ?? [];
+      let portfolioId: string | undefined = portfolioList[0]?.id;
 
       if (!portfolioId) {
         const createResponse = await fetch('/api/portfolio', {
@@ -107,7 +109,11 @@ export const BondCalculatorContainer: React.FC = () => {
           }),
         });
         const createData = await createResponse.json();
-        portfolioId = createData.data?.id || createData?.id;
+        portfolioId = unwrapApiData<{ id: string }>(createData)?.id;
+      }
+
+      if (!portfolioId) {
+        throw new Error('Could not resolve a portfolio id for notebook save.');
       }
 
       await fetch('/api/portfolio/lots', {
@@ -143,8 +149,14 @@ export const BondCalculatorContainer: React.FC = () => {
   };
 
   const handleExportPDF = async () => {
-    await generatePDF(
-      'bond-report-content',
+    if (!results) {
+      return;
+    }
+
+    await generateSingleBondReportPdf(
+      results,
+      inputs,
+      language,
       `bond_report_${inputs.bondType}_${new Date().toISOString().split('T')[0]}.pdf`,
     );
   };

@@ -109,6 +109,8 @@ export interface NormalizedBondComparisonPayload {
   withdrawalDate: string;
   expectedInflation: number;
   expectedNbpRate?: number;
+  customInflation?: number[];
+  inflationScenario?: 'low' | 'base' | 'high';
   taxStrategy?: TaxStrategy;
   reinvest?: boolean;
 }
@@ -121,6 +123,8 @@ export interface IndependentBondComparisonPayload {
     withdrawalDate: string;
     expectedInflation: number;
     expectedNbpRate?: number;
+    customInflation?: number[];
+    inflationScenario?: 'low' | 'base' | 'high';
     taxStrategy?: TaxStrategy;
     timingMode?: TimingMode;
     investmentHorizonMonths?: number;

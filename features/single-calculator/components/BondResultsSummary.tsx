@@ -55,7 +55,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
       nominalValue: t('bonds.calculation_trace.header_value_after'),
       realValue: t('bonds.inflation.adjusted'),
     };
-    const csv = convertTimelineToCSV(results.timeline, headers);
+    const csv = convertTimelineToCSV(results.timeline, headers, language);
     downloadFile(
       csv,
       `bond_simulation_${inputs.bondType}_${new Date().toISOString().split('T')[0]}.csv`,
@@ -183,7 +183,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
           },
           {
             label: language === 'pl' ? 'Notatnik' : 'Notebook',
-            icon: <Save className="h-4 w-4" />,
+            icon: <Info className="h-4 w-4" />,
             onClick: onAddToNotebook,
           },
           {

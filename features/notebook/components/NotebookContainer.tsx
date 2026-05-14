@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
+import { unwrapApiData } from '@/shared/lib/api-response';
 import { PortfolioDetails } from './PortfolioDetails';
 
 type NotebookStepItem = {
@@ -195,7 +196,8 @@ export const NotebookContainer: React.FC = () => {
         setError(resolvePortfolioError(data));
       }
 
-      setPortfolios(Array.isArray(data) ? data : (data.items ?? []));
+      const portfoliosPayload = unwrapApiData<UserPortfolio[]>(data);
+      setPortfolios(Array.isArray(portfoliosPayload) ? portfoliosPayload : []);
     } catch {
       setError(t('notebook.load_error'));
       setPortfolios([]);
@@ -269,7 +271,7 @@ export const NotebookContainer: React.FC = () => {
       }
 
       const portfolio = await response.json();
-      const portfolioId = portfolio.data?.id || portfolio.id;
+      const portfolioId = unwrapApiData<UserPortfolio>(portfolio)?.id;
       const demoLots = [
         { bondType: 'EDO', amount: 50, purchaseDate: '2023-01-01' },
         { bondType: 'COI', amount: 100, purchaseDate: '2023-06-15' },

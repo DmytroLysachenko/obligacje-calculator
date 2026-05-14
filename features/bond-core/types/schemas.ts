@@ -82,6 +82,8 @@ const NormalizedBondComparisonPayloadSchema = withDateOrderValidation(z.object({
   withdrawalDate: DateStringSchema,
   expectedInflation: z.number().min(-20).max(100),
   expectedNbpRate: z.number().min(-10).max(100).optional(),
+  customInflation: z.array(z.number().min(-20).max(100)).optional(),
+  inflationScenario: z.enum(['low', 'base', 'high']).optional(),
   taxStrategy: z.nativeEnum(TaxStrategy).optional(),
   reinvest: z.boolean().optional(),
 }));
@@ -92,6 +94,8 @@ const ComparisonSharedConfigSchema = withDateOrderValidation(z.object({
   withdrawalDate: DateStringSchema,
   expectedInflation: z.number().min(-20).max(100),
   expectedNbpRate: z.number().min(-10).max(100).optional(),
+  customInflation: z.array(z.number().min(-20).max(100)).optional(),
+  inflationScenario: z.enum(['low', 'base', 'high']).optional(),
   taxStrategy: z.nativeEnum(TaxStrategy).optional(),
   timingMode: z.enum(['general', 'exact']).optional(),
   investmentHorizonMonths: z.number().min(1).max(360).optional(),

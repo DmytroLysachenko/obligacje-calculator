@@ -167,32 +167,44 @@ export const getBondDefinitions = cache(async (): Promise<BondDefinition[]> => {
     return Object.values(BOND_DEFINITIONS);
   }
 
-  const result = bonds.map(b => {
+  const currentMonthFloor = new Date();
+  currentMonthFloor.setUTCDate(1);
+  currentMonthFloor.setUTCHours(0, 0, 0, 0);
 
+  const result = bonds.map(b => {
     const symbol = b.symbol as BondType;
+    const bootstrap = BOND_DEFINITIONS[symbol];
+    const isCurrentSync =
+      !!b.updatedAt && new Date(b.updatedAt).getTime() >= currentMonthFloor.getTime();
     
     return {
       type: symbol,
       name: b.symbol,
       fullName: {
-        pl: b.fullName,
-        en: b.fullNameEn || b.fullName,
+        pl: isCurrentSync ? b.fullName : bootstrap.fullName.pl,
+        en: isCurrentSync ? b.fullNameEn || b.fullName : bootstrap.fullName.en,
       },
       description: {
-        pl: b.description || '',
-        en: b.descriptionEn || '',
+        pl: isCurrentSync ? b.description || bootstrap.description.pl : bootstrap.description.pl,
+        en: isCurrentSync ? b.descriptionEn || bootstrap.description.en : bootstrap.description.en,
       },
-      duration: b.durationDays / 365,
-      nominalValue: parseFloat(b.nominalValue || "100"),
-      isCapitalized: (b.capitalizationFreqDays || 0) > 0,
-      payoutFrequency: (b.payoutFreqDays || 0) === 30 ? InterestPayout.MONTHLY : (b.payoutFreqDays || 0) === 365 ? InterestPayout.YEARLY : InterestPayout.MATURITY,
-      firstYearRate: parseFloat(b.firstYearRate || "0"),
-      margin: parseFloat(b.baseMargin || "0"),
-      earlyWithdrawalFee: parseFloat(b.withdrawalFee || "0"),
-      isInflationIndexed: b.interestType === "inflation_linked",
-      isFloating: b.interestType === "floating_nbp",
-      isFamilyOnly: b.isFamilyOnly || false,
-      rebuyDiscount: parseFloat(b.rolloverDiscount || "0"),
+      duration: isCurrentSync ? b.durationDays / 365 : bootstrap.duration,
+      nominalValue: isCurrentSync ? parseFloat(b.nominalValue || "100") : bootstrap.nominalValue,
+      isCapitalized: isCurrentSync ? (b.capitalizationFreqDays || 0) > 0 : bootstrap.isCapitalized,
+      payoutFrequency: isCurrentSync
+        ? (b.payoutFreqDays || 0) === 30
+          ? InterestPayout.MONTHLY
+          : (b.payoutFreqDays || 0) === 365
+            ? InterestPayout.YEARLY
+            : InterestPayout.MATURITY
+        : bootstrap.payoutFrequency,
+      firstYearRate: isCurrentSync ? parseFloat(b.firstYearRate || "0") : bootstrap.firstYearRate,
+      margin: isCurrentSync ? parseFloat(b.baseMargin || "0") : bootstrap.margin,
+      earlyWithdrawalFee: isCurrentSync ? parseFloat(b.withdrawalFee || "0") : bootstrap.earlyWithdrawalFee,
+      isInflationIndexed: isCurrentSync ? b.interestType === "inflation_linked" : bootstrap.isInflationIndexed,
+      isFloating: isCurrentSync ? b.interestType === "floating_nbp" : bootstrap.isFloating,
+      isFamilyOnly: isCurrentSync ? b.isFamilyOnly || false : bootstrap.isFamilyOnly || false,
+      rebuyDiscount: isCurrentSync ? parseFloat(b.rolloverDiscount || "0") : bootstrap.rebuyDiscount,
     };
   });
 

@@ -34,6 +34,7 @@ import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
+import { RecalculateButton } from '@/shared/components/RecalculateButton';
 import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { getBondColor } from '@/shared/constants/bond-colors';
@@ -120,6 +121,8 @@ export const BondComparisonContainer = () => {
   const [initialInvestment, setInitialInvestment] = useState(10000);
   const [expectedInflation, setExpectedInflation] = useState(3.5);
   const [expectedNbpRate, setExpectedNbpRate] = useState(5.25);
+  const [customInflation, setCustomInflation] = useState<number[] | undefined>(undefined);
+  const [inflationScenario, setInflationScenario] = useState<'low' | 'base' | 'high'>('base');
   const [duration, setDuration] = useState(10);
   const [selectedBonds, setSelectedBonds] = useState<BondType[]>([
     BondType.EDO,
@@ -157,6 +160,8 @@ export const BondComparisonContainer = () => {
           withdrawalDate,
           expectedInflation,
           expectedNbpRate,
+          customInflation,
+          inflationScenario,
           taxStrategy: TaxStrategy.STANDARD,
           reinvest,
         }),
@@ -170,8 +175,10 @@ export const BondComparisonContainer = () => {
       setLoading(false);
     }
   }, [
+    customInflation,
     expectedInflation,
     expectedNbpRate,
+    inflationScenario,
     initialInvestment,
     purchaseDate,
     reinvest,
@@ -183,6 +190,8 @@ export const BondComparisonContainer = () => {
     setIsDirty(true);
     if (key === 'expectedInflation') setExpectedInflation(value as number);
     if (key === 'expectedNbpRate') setExpectedNbpRate(value as number);
+    if (key === 'customInflation') setCustomInflation(value as number[] | undefined);
+    if (key === 'inflationScenario') setInflationScenario(value as 'low' | 'base' | 'high');
   };
 
   const toggleBond = (type: BondType) => {
@@ -285,6 +294,8 @@ export const BondComparisonContainer = () => {
                 <MarketAssumptionsForm
                   expectedInflation={expectedInflation}
                   expectedNbpRate={expectedNbpRate}
+                  customInflation={customInflation}
+                  inflationScenario={inflationScenario}
                   bondType={
                     selectedBonds.includes(BondType.ROR) ||
                     selectedBonds.includes(BondType.DOR)
@@ -332,17 +343,6 @@ export const BondComparisonContainer = () => {
                 </div>
               </div>
 
-              <Button
-                className="h-11 w-full font-semibold"
-                onClick={calculateComparison}
-                disabled={loading || selectedBonds.length === 0}
-              >
-                {loading
-                  ? t('common.calculating')
-                  : language === 'pl'
-                    ? 'Uruchom porownanie'
-                    : 'Run comparison'}
-              </Button>
             </CardContent>
           </Card>
 
@@ -480,15 +480,6 @@ export const BondComparisonContainer = () => {
                   />
                 </div>
 
-                <div className="max-w-xs">
-                  <Button
-                    className="w-full"
-                    onClick={calculateComparison}
-                    disabled={loading || selectedBonds.length === 0}
-                  >
-                    {language === 'pl' ? 'Uruchom porownanie' : 'Run comparison'}
-                  </Button>
-                </div>
               </CardContent>
             </Card>
           ) : null}
@@ -682,6 +673,13 @@ export const BondComparisonContainer = () => {
           ) : null}
         </div>
       </div>
+      <RecalculateButton
+        isDirty={isDirty}
+        hasResults={results.length > 0}
+        loading={loading}
+        disabled={selectedBonds.length === 0}
+        onClick={calculateComparison}
+      />
     </div>
   );
 };

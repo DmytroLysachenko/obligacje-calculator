@@ -11,17 +11,17 @@ export interface BondDefinition {
     en: string;
     pl: string;
   };
-  duration: number; // in years
-  nominalValue: number; // usually 100 PLN
+  duration: number;
+  nominalValue: number;
   isCapitalized: boolean;
   payoutFrequency: InterestPayout;
-  firstYearRate: number; // %
-  margin: number; // %
-  earlyWithdrawalFee: number; // PLN per bond
+  firstYearRate: number;
+  margin: number;
+  earlyWithdrawalFee: number;
   isInflationIndexed: boolean;
   isFloating: boolean;
   isFamilyOnly?: boolean;
-  rebuyDiscount: number; // PLN discount per 100 PLN bond when swapping
+  rebuyDiscount: number;
 }
 
 export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
@@ -33,19 +33,19 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
       pl: 'Oszczędnościowe Trzymiesięczne Stałoprocentowe',
     },
     description: {
-      en: 'Fixed interest rate for the entire 3-month period. Best for short-term savings.',
-      pl: 'Stałe oprocentowanie przez cały okres 3 miesięcy. Idealne na krótkoterminowe oszczędności.',
+      en: 'Fixed interest rate for the full 3-month term. Best for short-term cash parking.',
+      pl: 'Stałe oprocentowanie przez pełne 3 miesiące. Najprostsza opcja dla krótkiego postoju gotówki.',
     },
     duration: 0.25,
     nominalValue: 100,
     isCapitalized: false,
     payoutFrequency: InterestPayout.MATURITY,
-    firstYearRate: 2.50,
+    firstYearRate: 2.0,
     margin: 0,
     earlyWithdrawalFee: 0,
     isInflationIndexed: false,
     isFloating: false,
-    rebuyDiscount: 0.00,
+    rebuyDiscount: 0,
   },
   [BondType.ROR]: {
     type: BondType.ROR,
@@ -55,19 +55,19 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
       pl: 'Roczne Oszczędnościowe Referencyjne',
     },
     description: {
-      en: 'Interest rate tied to the NBP reference rate. Payouts are monthly.',
-      pl: 'Oprocentowanie oparte na stopie referencyjnej NBP. Odsetki wypłacane co miesiąc.',
+      en: 'Monthly payout bond linked to the NBP reference rate after the first monthly period.',
+      pl: 'Obligacja z miesięczną wypłatą odsetek, oparta na stopie referencyjnej NBP po pierwszym okresie.',
     },
     duration: 1,
     nominalValue: 100,
     isCapitalized: false,
     payoutFrequency: InterestPayout.MONTHLY,
-    firstYearRate: 4.25,
+    firstYearRate: 4.0,
     margin: 0,
-    earlyWithdrawalFee: 0.50,
+    earlyWithdrawalFee: 0.5,
     isInflationIndexed: false,
     isFloating: true,
-    rebuyDiscount: 0.10,
+    rebuyDiscount: 0.1,
   },
   [BondType.DOR]: {
     type: BondType.DOR,
@@ -77,19 +77,19 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
       pl: 'Dwuletnie Oszczędnościowe Referencyjne',
     },
     description: {
-      en: 'Interest rate tied to the NBP reference rate plus a small margin. Monthly payouts.',
-      pl: 'Oprocentowanie oparte na stopie referencyjnej NBP plus marża. Wypłata co miesiąc.',
+      en: 'Monthly payout bond linked to the NBP reference rate with a 0.15% margin after the first period.',
+      pl: 'Obligacja z miesięczną wypłatą odsetek, oparta na stopie referencyjnej NBP z marżą 0,15 p.p. po pierwszym okresie.',
     },
     duration: 2,
     nominalValue: 100,
     isCapitalized: false,
     payoutFrequency: InterestPayout.MONTHLY,
-    firstYearRate: 4.40,
+    firstYearRate: 4.15,
     margin: 0.15,
-    earlyWithdrawalFee: 0.70,
+    earlyWithdrawalFee: 0.7,
     isInflationIndexed: false,
     isFloating: true,
-    rebuyDiscount: 0.10,
+    rebuyDiscount: 0.1,
   },
   [BondType.TOS]: {
     type: BondType.TOS,
@@ -99,19 +99,19 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
       pl: 'Trzyletnie Oszczędnościowe Stałoprocentowe',
     },
     description: {
-      en: 'Fixed interest rate for 3 years with annual capitalization.',
-      pl: 'Stałe oprocentowanie przez 3 lata z coroczną kapitalizacją odsetek.',
+      en: 'Fixed 3-year rate with annual capitalization.',
+      pl: 'Stałe oprocentowanie przez 3 lata z roczną kapitalizacją odsetek.',
     },
     duration: 3,
     nominalValue: 100,
     isCapitalized: true,
     payoutFrequency: InterestPayout.MATURITY,
-    firstYearRate: 4.65,
+    firstYearRate: 4.4,
     margin: 0,
-    earlyWithdrawalFee: 1.00,
+    earlyWithdrawalFee: 0.7,
     isInflationIndexed: false,
     isFloating: false,
-    rebuyDiscount: 0.10,
+    rebuyDiscount: 0.1,
   },
   [BondType.COI]: {
     type: BondType.COI,
@@ -121,19 +121,19 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
       pl: 'Czteroletnie Oszczędnościowe Indeksowane',
     },
     description: {
-      en: 'Interest rate tied to inflation after the first year. Annual interest payout.',
-      pl: 'Oprocentowanie oparte na inflacji po pierwszym roku. Roczna wypłata odsetek.',
+      en: 'First year fixed, then yearly inflation plus a 1.50% margin, with annual interest payout.',
+      pl: 'Pierwszy rok stały, potem inflacja roczna plus marża 1,50 p.p., z coroczną wypłatą odsetek.',
     },
     duration: 4,
     nominalValue: 100,
     isCapitalized: false,
     payoutFrequency: InterestPayout.YEARLY,
-    firstYearRate: 5.00,
-    margin: 1.50,
-    earlyWithdrawalFee: 2.00,
+    firstYearRate: 4.75,
+    margin: 1.5,
+    earlyWithdrawalFee: 0.7,
     isInflationIndexed: true,
     isFloating: false,
-    rebuyDiscount: 0.10,
+    rebuyDiscount: 0.1,
   },
   [BondType.ROS]: {
     type: BondType.ROS,
@@ -143,20 +143,20 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
       pl: 'Rodzinne Oszczędnościowe Sześcioletnie',
     },
     description: {
-      en: 'Dedicated to parents receiving 800+. Higher margin above inflation and annual capitalization.',
-      pl: 'Dla beneficjentów programu 800+. Wyższa marża ponad inflację i coroczna kapitalizacja.',
+      en: 'Family bond for 800+ beneficiaries with annual capitalization and inflation plus 2.00% margin after year one.',
+      pl: 'Rodzinna obligacja dla beneficjentów 800+ z roczną kapitalizacją i oprocentowaniem inflacja + 2,00 p.p. po pierwszym roku.',
     },
     duration: 6,
     nominalValue: 100,
     isCapitalized: true,
     payoutFrequency: InterestPayout.MATURITY,
-    firstYearRate: 5.20,
-    margin: 2.00,
-    earlyWithdrawalFee: 2.00,
+    firstYearRate: 5.0,
+    margin: 2.0,
+    earlyWithdrawalFee: 2.0,
     isInflationIndexed: true,
     isFloating: false,
     isFamilyOnly: true,
-    rebuyDiscount: 0.00,
+    rebuyDiscount: 0,
   },
   [BondType.EDO]: {
     type: BondType.EDO,
@@ -166,19 +166,19 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
       pl: 'Emerytalne Dziesięcioletnie Oszczędnościowe',
     },
     description: {
-      en: 'Long-term savings with inflation indexing and annual capitalization. High margin.',
-      pl: 'Długoterminowe oszczędności indeksowane inflacją z coroczną kapitalizacją. Wysoka marża.',
+      en: 'First year fixed, then yearly inflation plus a 2.00% margin with annual capitalization.',
+      pl: 'Pierwszy rok stały, potem inflacja roczna plus marża 2,00 p.p. z coroczną kapitalizacją odsetek.',
     },
     duration: 10,
     nominalValue: 100,
     isCapitalized: true,
     payoutFrequency: InterestPayout.MATURITY,
-    firstYearRate: 5.60,
-    margin: 2.00,
-    earlyWithdrawalFee: 3.00,
+    firstYearRate: 5.35,
+    margin: 2.0,
+    earlyWithdrawalFee: 3.0,
     isInflationIndexed: true,
     isFloating: false,
-    rebuyDiscount: 0.10,
+    rebuyDiscount: 0.1,
   },
   [BondType.ROD]: {
     type: BondType.ROD,
@@ -188,19 +188,19 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
       pl: 'Rodzinne Oszczędnościowe Dwunastoletnie',
     },
     description: {
-      en: 'Longest term family bonds with highest margin and annual capitalization.',
-      pl: 'Najdłuższe obligacje rodzinne z najwyższą marżą i coroczną kapitalizacją.',
+      en: 'Longest family bond, with annual capitalization and inflation plus a 2.50% margin after year one.',
+      pl: 'Najdłuższa obligacja rodzinna z roczną kapitalizacją i oprocentowaniem inflacja + 2,50 p.p. po pierwszym roku.',
     },
     duration: 12,
     nominalValue: 100,
     isCapitalized: true,
     payoutFrequency: InterestPayout.MATURITY,
-    firstYearRate: 5.85,
-    margin: 2.50,
-    earlyWithdrawalFee: 3.00,
+    firstYearRate: 5.6,
+    margin: 2.5,
+    earlyWithdrawalFee: 3.0,
     isInflationIndexed: true,
     isFloating: false,
     isFamilyOnly: true,
-    rebuyDiscount: 0.00,
+    rebuyDiscount: 0,
   },
 };

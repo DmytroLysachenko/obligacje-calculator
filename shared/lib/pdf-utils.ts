@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { BondInputs, CalculationResult } from '@/features/bond-core/types';
 
 /**
  * Generates a PDF from a DOM element.
@@ -32,6 +33,74 @@ export async function generatePDF(elementId: string, filename: string = 'report.
   } catch (error) {
     console.error('Error generating PDF:', error);
   }
+}
+
+export async function generateSingleBondReportPdf(
+  results: CalculationResult,
+  inputs: BondInputs,
+  language: 'pl' | 'en',
+  filename: string = 'bond-report.pdf',
+) {
+  const pdf = new jsPDF('p', 'mm', 'a4');
+  const margin = 18;
+  const lineHeight = 7;
+  let y = 20;
+
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', {
+      style: 'currency',
+      currency: 'PLN',
+    }).format(value);
+
+  const rows = [
+    [language === 'pl' ? 'Typ obligacji' : 'Bond type', inputs.bondType],
+    [language === 'pl' ? 'Data zakupu' : 'Purchase date', inputs.purchaseDate],
+    [language === 'pl' ? 'Data wyjścia' : 'Exit date', inputs.withdrawalDate],
+    [language === 'pl' ? 'Kwota początkowa' : 'Initial investment', formatCurrency(results.initialInvestment)],
+    [language === 'pl' ? 'Wypłata netto' : 'Net payout', formatCurrency(results.netPayoutValue)],
+    [language === 'pl' ? 'Zysk netto' : 'Net profit', formatCurrency(results.totalProfit)],
+    [language === 'pl' ? 'Łączny podatek' : 'Total tax', formatCurrency(results.totalTax)],
+    [language === 'pl' ? 'Wartość realna' : 'Real value', formatCurrency(results.finalRealValue)],
+    [language === 'pl' ? 'Realna stopa roczna' : 'Real annualized return', `${results.realAnnualizedReturn.toFixed(2)}%`],
+  ];
+
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(20);
+  pdf.text(language === 'pl' ? 'Raport symulacji obligacji' : 'Bond simulation report', margin, y);
+  y += 10;
+
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(10);
+  pdf.text(`${language === 'pl' ? 'Wygenerowano' : 'Generated'}: ${new Date().toISOString().slice(0, 10)}`, margin, y);
+  y += 10;
+
+  for (const [label, value] of rows) {
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(`${label}:`, margin, y);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(String(value), margin + 55, y);
+    y += lineHeight;
+  }
+
+  y += 6;
+  pdf.setFont('helvetica', 'bold');
+  pdf.text(language === 'pl' ? 'Uwagi do przebiegu' : 'Run notes', margin, y);
+  y += lineHeight;
+  pdf.setFont('helvetica', 'normal');
+  const notes = results.calculationNotes?.length
+    ? results.calculationNotes
+    : [
+        language === 'pl'
+          ? 'Raport PDF używa ustrukturyzowanego podsumowania zamiast zrzutu ekranu, aby uniknąć błędów renderowania kolorów.'
+          : 'The PDF uses a structured summary instead of a DOM screenshot to avoid color-rendering errors.',
+      ];
+  for (const note of notes) {
+    const lines = pdf.splitTextToSize(`- ${note}`, 170);
+    pdf.text(lines, margin, y);
+    y += lineHeight * lines.length;
+  }
+
+  pdf.save(filename);
 }
 
 export interface ReportSectionItem {

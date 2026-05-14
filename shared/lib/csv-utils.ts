@@ -1,4 +1,5 @@
 import { YearlyTimelinePoint, LotBreakdown } from '@/features/bond-core/types';
+import { AppLanguage, buildBondTimelineDisplayRows } from '@/shared/lib/bond-display';
 
 /**
  * Downloads a string as a file in the browser.
@@ -21,32 +22,39 @@ const SEPARATOR = ';';
  */
 export function convertTimelineToCSV(
   timeline: YearlyTimelinePoint[],
-  headers: Record<string, string>
+  headers: Record<string, string>,
+  language: AppLanguage = 'pl',
 ): string {
   const csvRows = [];
-  
-  // Define columns based on headers keys
+  const displayRows = buildBondTimelineDisplayRows(timeline, language);
   const columns = [
     { key: 'periodLabel', header: headers.period || 'Period' },
-    { key: 'nominalValueBeforeInterest', header: headers.capital || 'Capital Base' },
-    { key: 'interestRate', header: headers.rate || 'Rate' },
-    { key: 'interestEarned', header: headers.interest || 'Interest' },
-    { key: 'taxDeducted', header: headers.tax || 'Tax' },
-    { key: 'nominalValueAfterInterest', header: headers.nominalValue || 'Nominal Value' },
+    { key: 'cycleLabel', header: language === 'pl' ? 'Cykl' : 'Cycle' },
+    { key: 'cadenceLabel', header: language === 'pl' ? 'Znaczenie' : 'Meaning' },
+    { key: 'interestRateLabel', header: headers.rate || 'Rate' },
+    { key: 'rateSourceLabel', header: language === 'pl' ? 'Źródło stopy' : 'Rate source' },
+    { key: 'referenceLabel', header: language === 'pl' ? 'Kontekst stopy' : 'Rate context' },
+    { key: 'nominalValue', header: headers.nominalValue || 'Nominal Value' },
+    { key: 'netProfit', header: language === 'pl' ? 'Zysk netto' : 'Net profit' },
     { key: 'realValue', header: headers.realValue || 'Real Value' },
+    { key: 'earlyExitValue', header: language === 'pl' ? 'Wypłata przy wcześniejszym wyjściu' : 'Early exit payout' },
+    { key: 'eventLabels', header: language === 'pl' ? 'Zdarzenia' : 'Events' },
   ];
 
   // Header row
   csvRows.push(columns.map(c => c.header).join(SEPARATOR));
 
   // Data rows
-  for (const point of timeline) {
+  for (const point of displayRows) {
     const row = columns.map(c => {
       const val = (point as unknown as Record<string, unknown>)[c.key];
       if (typeof val === 'number') {
         return val.toFixed(2);
       }
-      return `"${val}"`;
+      if (Array.isArray(val)) {
+        return `"${val.join(', ')}"`;
+      }
+      return `"${String(val ?? '')}"`;
     });
     csvRows.push(row.join(SEPARATOR));
   }
