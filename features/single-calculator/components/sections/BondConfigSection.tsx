@@ -198,7 +198,9 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
           </p>
           {isFamilyBondType(inputs.bondType) ? (
             <p className="font-semibold text-amber-700">
-              Family-bond scenarios only make sense if the household eligibility rule actually applies.
+              {language === 'pl'
+                ? 'Scenariusze rodzinne maja sens tylko wtedy, gdy warunek uprawnienia gospodarstwa domowego faktycznie obowiazuje.'
+                : 'Family-bond scenarios only make sense if the household eligibility rule actually applies.'}
             </p>
           ) : null}
         </div>

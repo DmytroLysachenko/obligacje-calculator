@@ -54,6 +54,7 @@ export function ResultSummaryHero({
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:w-[440px] lg:shrink-0">
               {actions.map((action) => (
                 <Button
+                  type="button"
                   key={action.label}
                   variant={action.variant ?? 'outline'}
                   className={cn(

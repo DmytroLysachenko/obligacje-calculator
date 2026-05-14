@@ -30,9 +30,9 @@ export class RegularInvestmentHandler extends BaseHandler implements ScenarioHan
     const warnings = this.buildHistoricalDataWarnings(enrichedInputs.historicalData);
     const assumptions = this.generateAssumptions(enrichedInputs);
     if (resolvedOffer.source === 'series' && resolvedOffer.seriesCode) {
-      assumptions.push(`Resolved issued series: ${resolvedOffer.seriesCode}`);
+      assumptions.push(`Issued series resolved: ${resolvedOffer.seriesCode}`);
     } else {
-      assumptions.push('Using current generic bond definition instead of a resolved issued series.');
+      assumptions.push('Using the current generic bond definition because no issued series was resolved.');
     }
 
     const result = calculateRegularInvestment(enrichedInputs as RegularInvestmentInputs);

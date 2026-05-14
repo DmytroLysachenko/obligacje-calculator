@@ -237,7 +237,9 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                 </p>
                 {isFamilyBondType(inputs.bondType) ? (
                   <p className="font-semibold text-amber-700">
-                    Family-bond scenarios are only meaningful if the household eligibility condition really applies.
+                    {language === 'pl'
+                      ? 'Scenariusze rodzinne maja sens tylko wtedy, gdy warunek uprawnienia gospodarstwa domowego faktycznie obowiazuje.'
+                      : 'Family-bond scenarios are only meaningful if the household eligibility condition really applies.'}
                   </p>
                 ) : null}
               </div>

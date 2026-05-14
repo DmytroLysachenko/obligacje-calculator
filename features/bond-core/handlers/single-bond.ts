@@ -53,9 +53,9 @@ export class SingleBondHandler extends BaseHandler implements ScenarioHandler<Bo
     const warnings = this.buildHistoricalDataWarnings(inputsToCalculate.historicalData);
     const assumptions = this.generateAssumptions(inputsToCalculate);
     if (resolvedOffer.source === 'series' && resolvedOffer.seriesCode) {
-      assumptions.push(`Resolved issued series: ${resolvedOffer.seriesCode}`);
+      assumptions.push(`Issued series resolved: ${resolvedOffer.seriesCode}`);
     } else {
-      assumptions.push('Using current generic bond definition instead of a resolved issued series.');
+      assumptions.push('Using the current generic bond definition because no issued series was resolved.');
     }
 
     const result = calculateBondInvestment({

@@ -24,6 +24,7 @@ import { cn } from '@/lib/utils';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
+import { unwrapApiData } from '@/shared/lib/api-response';
 import {
   Area,
   AreaChart,
@@ -99,7 +100,8 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
       const data = await response.json();
 
       if (response.ok) {
-        setLots(Array.isArray(data.data) ? data.data : Array.isArray(data) ? data : []);
+        const nextLots = unwrapApiData<UserInvestmentLot[]>(data);
+        setLots(Array.isArray(nextLots) ? nextLots : []);
       }
     } catch (caughtError) {
       console.error('Failed to fetch lots:', caughtError);
@@ -126,7 +128,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
 
       const data = await response.json();
       if (response.ok) {
-        setSimulation(data.result?.result || data.result);
+        setSimulation(unwrapApiData<PortfolioSimulationResult>(data) ?? null);
       }
     } catch (caughtError) {
       console.error('Simulation failed:', caughtError);
@@ -180,7 +182,8 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
         `/api/portfolio/export?portfolioId=${portfolio.id}&format=${formatName}`,
       );
       const data = await response.json();
-      const blob = new Blob([JSON.stringify(data.data, null, 2)], {
+      const exportPayload = unwrapApiData<Record<string, unknown>>(data);
+      const blob = new Blob([JSON.stringify(exportPayload, null, 2)], {
         type: 'application/json',
       });
       const url = URL.createObjectURL(blob);
@@ -280,7 +283,11 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
             <PortfolioMiniStat
               label={t('notebook.total_invested')}
               value={formatCurrency(totalValue)}
-              description="Nominal value across all stored lots."
+              description={
+                language === 'pl'
+                  ? 'Nominalna wartosc wszystkich zapisanych partii.'
+                  : 'Nominal value across all stored lots.'
+              }
             />
             <PortfolioMiniStat
               label={t('notebook.next_maturity')}
