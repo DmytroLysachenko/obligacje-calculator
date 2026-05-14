@@ -1,12 +1,13 @@
 /**
  * Bond offer ingestion helper.
- * Still HTML-based, but tuned to the official offer page and current May 2026 rates.
+ * Still HTML-based, but tuned to official offer + monthly communication pages.
  */
 
 export interface ScrapedBondRate {
   symbol: string;
   firstYearRate: number;
   margin: number;
+  seriesCode?: string;
 }
 
 const OFFICIAL_FALLBACK_RATES: ScrapedBondRate[] = [
@@ -20,43 +21,101 @@ const OFFICIAL_FALLBACK_RATES: ScrapedBondRate[] = [
   { symbol: 'ROD', firstYearRate: 5.6, margin: 2.5 },
 ];
 
+const POLISH_MONTH_SLUGS = [
+  'stycznia',
+  'lutego',
+  'marca',
+  'kwietnia',
+  'maja',
+  'czerwca',
+  'lipca',
+  'sierpnia',
+  'wrzesnia',
+  'pazdziernika',
+  'listopada',
+  'grudnia',
+];
+
+function buildMonthlyCommunicationUrl(referenceDate = new Date()) {
+  const monthSlug = POLISH_MONTH_SLUGS[referenceDate.getMonth()];
+  const year = referenceDate.getFullYear();
+  return `https://www.obligacjeskarbowe.pl/komunikaty/z-dniem-1-${monthSlug}-${year}-r-rozpoczyna-sie-sprzedaz-obligacji/`;
+}
+
+async function fetchHtml(url: string) {
+  const response = await fetch(url, {
+    headers: {
+      'User-Agent':
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0 Safari/537.36',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ${url}: ${response.status}`);
+  }
+
+  return response.text();
+}
+
+function parseOfferFromCommunication(
+  html: string,
+  fallback: ScrapedBondRate,
+): ScrapedBondRate | null {
+  const blockRegex = new RegExp(
+    `<li><strong>[^<]*\\((${fallback.symbol}\\d{4})\\)<\\/a>\\)<\\/strong>[\\s\\S]*?wynosi\\s*<strong>(\\d+,\\d+)%<\\/strong>[\\s\\S]*?(?:mar(?:zy|\\u017cy)\\s*<strong>(\\d+,\\d+)%<\\/strong>)?`,
+    'i',
+  );
+  const match = html.match(blockRegex);
+
+  if (!match) {
+    return null;
+  }
+
+  return {
+    symbol: fallback.symbol,
+    seriesCode: match[1],
+    firstYearRate: parseFloat(match[2].replace(',', '.')),
+    margin: match[3] ? parseFloat(match[3].replace(',', '.')) : fallback.margin,
+  };
+}
+
+function parseOfferFromGenericOfferPage(
+  html: string,
+  fallback: ScrapedBondRate,
+): ScrapedBondRate | null {
+  const rateRegex = new RegExp(
+    `${fallback.symbol}[\\s\\S]{0,220}?((?:\\d+,\\d+)|(?:\\d+))\\s?%`,
+    'i',
+  );
+  const rateMatch = html.match(rateRegex);
+
+  if (!rateMatch) {
+    return null;
+  }
+
+  return {
+    symbol: fallback.symbol,
+    firstYearRate: parseFloat(rateMatch[1].replace(',', '.')),
+    margin: fallback.margin,
+  };
+}
+
 export async function scrapeCurrentBondRates(): Promise<ScrapedBondRate[]> {
-  const url = 'https://www.obligacjeskarbowe.pl/oferta-obligacji/';
-
   try {
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0 Safari/537.36',
-      },
-    });
-    if (!response.ok) {
-      throw new Error(`Failed to fetch bond site: ${response.status}`);
-    }
+    const [offerPageHtml, communicationHtml] = await Promise.all([
+      fetchHtml('https://www.obligacjeskarbowe.pl/oferta-obligacji/').catch(() => ''),
+      fetchHtml(buildMonthlyCommunicationUrl()).catch(() => ''),
+    ]);
 
-    const html = await response.text();
-    const rates = OFFICIAL_FALLBACK_RATES.flatMap((item) => {
-      const rateRegex = new RegExp(
-        `(\\d+,\\d+)\\s?%[^<\\n\\r]{0,120}\\(symbol:?\\s*${item.symbol}\\)|${item.symbol}[^<\\n\\r]{0,140}(\\d+,\\d+)\\s?%`,
-        'i',
+    const rates = OFFICIAL_FALLBACK_RATES.map((fallback) => {
+      return (
+        parseOfferFromCommunication(communicationHtml, fallback)
+        ?? parseOfferFromGenericOfferPage(offerPageHtml, fallback)
+        ?? fallback
       );
-      const match = html.match(rateRegex);
-      const rawRate = match?.[1] || match?.[2];
-
-      if (!rawRate) {
-        return [];
-      }
-
-      return [
-        {
-          symbol: item.symbol,
-          firstYearRate: parseFloat(rawRate.replace(',', '.')),
-          margin: item.margin,
-        },
-      ];
     });
 
-    return rates.length > 0 ? rates : OFFICIAL_FALLBACK_RATES;
+    return rates;
   } catch (error) {
     console.error('Error scraping bonds:', error);
     return OFFICIAL_FALLBACK_RATES;

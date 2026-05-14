@@ -48,7 +48,7 @@ export class SyncEngine {
       }
 
       const definition = BOND_DEFINITIONS[offer.symbol as BondType];
-      const seriesCode = deriveSeriesCode(offer.symbol as BondType, currentEmissionMonth, definition);
+      const seriesCode = offer.seriesCode ?? deriveSeriesCode(offer.symbol as BondType, currentEmissionMonth, definition);
       const seriesWindow = deriveSeriesWindow(currentEmissionMonth, definition);
 
       await db.insert(bondSeries).values({
