@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
+import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 
 interface ScenarioOverrideCardProps {
   title: string;
@@ -51,6 +52,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
   onCustomHorizonMonthsChange,
 }) => {
   const { t, language } = useLanguage();
+  const { definitions } = useBondDefinitions();
   const formatBondLabel = (type: BondType) =>
     language === 'pl'
       ? {
@@ -73,6 +75,22 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
           [BondType.EDO]: '10 years',
           [BondType.ROD]: '12 years',
         }[type];
+  const formatRateStyle = (type: BondType) => {
+    const definition = definitions?.[type];
+    if (!definition) {
+      return null;
+    }
+
+    if (definition.isInflationIndexed) {
+      return language === 'pl' ? 'Inflacja + marza' : 'Inflation + margin';
+    }
+
+    if (definition.isFloating) {
+      return language === 'pl' ? 'NBP + marza' : 'NBP + margin';
+    }
+
+    return language === 'pl' ? 'Stala stopa' : 'Fixed rate';
+  };
 
   return (
     <Card className="overflow-hidden border shadow-sm">
@@ -99,18 +117,33 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
                   <div className="flex min-w-0 flex-col gap-1">
                     <div className="flex items-center gap-2 text-sm">
                       <span className="font-black tracking-tight">{type}</span>
-                      <span className="text-xs text-slate-500">{formatBondLabel(type)}</span>
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
+                        {formatBondLabel(type)}
+                      </span>
+                      {isFamilyBondType(type) ? (
+                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+                          {language === 'pl' ? 'Rodzinne' : 'Family'}
+                        </span>
+                      ) : null}
                     </div>
-                    <span className="truncate text-sm text-muted-foreground">
-                      {language === 'pl'
-                        ? getBondSupportMeta(type).description
-                        : getBondSupportMeta(type).description}
+                    <span className="truncate text-sm font-medium text-slate-700">
+                      {definitions?.[type]?.fullName[language] ?? type}
                     </span>
                   </div>
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
+          <div className="flex flex-wrap gap-2">
+            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
+              {formatBondLabel(bondType)}
+            </span>
+            {formatRateStyle(bondType) ? (
+              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
+                {formatRateStyle(bondType)}
+              </span>
+            ) : null}
+          </div>
           {isFamilyBondType(bondType) ? (
             <p className="text-xs leading-5 text-amber-700">
               {language === 'pl'
@@ -118,6 +151,9 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
                 : 'Family-bond overrides stay available, but only make sense if the household eligibility condition really applies.'}
             </p>
           ) : null}
+          <p className="text-xs leading-5 text-slate-500">
+            {getBondSupportMeta(bondType).description}
+          </p>
         </div>
 
         <div className="flex items-center justify-between rounded-xl border bg-muted/20 p-3">

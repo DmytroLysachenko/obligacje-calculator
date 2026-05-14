@@ -43,6 +43,10 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
   const { t, language } = useLanguage();
   const currentDef = definitions[inputs.bondType];
   const currentBondSupport = getBondSupportMeta(inputs.bondType);
+  const formatDurationLabel = (type: BondType) =>
+    language === 'pl'
+      ? `${Math.round((definitions[type]?.duration ?? 1) * 12)} mies.`
+      : `${Math.round((definitions[type]?.duration ?? 1) * 12)} mo`;
   const formatSeriesMonth = (value: string) =>
     new Date(value).toLocaleDateString(language === 'pl' ? 'pl-PL' : 'en-GB', {
       month: 'short',
@@ -129,14 +133,19 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
           <SelectContent>
             {Object.values(BondType).map((type) => (
               <SelectItem key={type} value={type} className="py-2.5">
-                <div className="flex flex-col gap-1">
+                <div className="flex min-w-0 flex-col gap-1">
                   <div className="flex items-center gap-2 text-sm">
                     <span className="font-black tracking-tight">{type}</span>
-                    <span className="text-xs text-slate-500">
-                      {Math.round((definitions[type]?.duration ?? 1) * 12)}m
+                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
+                      {formatDurationLabel(type)}
                     </span>
+                    {isFamilyBondType(type) ? (
+                      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+                        {language === 'pl' ? 'Rodzinne' : 'Family'}
+                      </span>
+                    ) : null}
                   </div>
-                  <span className="max-w-[280px] text-sm text-muted-foreground">
+                  <span className="max-w-[280px] text-sm font-medium text-slate-700">
                     {definitions[type]?.fullName[language] || type}
                   </span>
                 </div>
@@ -189,6 +198,29 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
           <div className="flex items-center gap-2 font-semibold text-primary">
             <Info className="h-3 w-3" />
             <span>{currentDef.fullName[language]}</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <span className="rounded-full bg-white/80 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
+              {formatDurationLabel(inputs.bondType)}
+            </span>
+            {isFamilyBondType(inputs.bondType) ? (
+              <span className="rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-semibold text-amber-700">
+                {language === 'pl' ? 'Wariant rodzinny' : 'Family bond'}
+              </span>
+            ) : null}
+            <span className="rounded-full bg-white/80 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
+              {currentDef.isInflationIndexed
+                ? language === 'pl'
+                  ? 'Inflacja + marza'
+                  : 'Inflation + margin'
+                : currentDef.isFloating
+                  ? language === 'pl'
+                    ? 'NBP + marza'
+                    : 'NBP + margin'
+                  : language === 'pl'
+                    ? 'Stala stopa'
+                    : 'Fixed rate'}
+            </span>
           </div>
           <p className="text-muted-foreground leading-relaxed italic">
             {currentDef.description[language]}
