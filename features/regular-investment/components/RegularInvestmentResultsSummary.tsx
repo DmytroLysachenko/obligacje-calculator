@@ -153,7 +153,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
     downloadFile(
       csv,
       `regular_investment_${new Date().toISOString().split('T')[0]}.csv`,
-      'text/csv',
+      'text/csv;charset=utf-8',
     );
   };
 

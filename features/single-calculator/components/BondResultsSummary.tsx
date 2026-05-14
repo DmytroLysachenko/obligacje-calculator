@@ -59,7 +59,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
     downloadFile(
       csv,
       `bond_simulation_${inputs.bondType}_${new Date().toISOString().split('T')[0]}.csv`,
-      'text/csv',
+      'text/csv;charset=utf-8',
     );
   };
 

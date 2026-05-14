@@ -154,7 +154,7 @@ export const ComparisonContainer: React.FC = () => {
     downloadFile(
       csv,
       `bond_comparison_${bondType}_${new Date().toISOString().split('T')[0]}.csv`,
-      'text/csv',
+      'text/csv;charset=utf-8',
     );
   };
 
