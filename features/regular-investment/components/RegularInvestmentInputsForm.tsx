@@ -599,6 +599,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                       expectedNbpRate={inputs.expectedNbpRate}
                       bondType={inputs.bondType}
                       customInflation={inputs.customInflation}
+                      inflationHorizonYears={Math.max(1, Math.ceil(inputs.investmentHorizonMonths / 12))}
                       onUpdate={onUpdate}
                       compact
                     />

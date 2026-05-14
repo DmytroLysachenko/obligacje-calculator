@@ -35,6 +35,7 @@ interface MarketAssumptionsFormProps {
   inflationScenario?: 'low' | 'base' | 'high';
   onUpdate: UpdateHandler;
   compact?: boolean;
+  inflationHorizonYears?: number;
 }
 
 const HistoricalInflationContent = () => {
@@ -84,6 +85,7 @@ export const MarketAssumptionsForm = ({
   inflationScenario = 'base',
   onUpdate,
   compact = false,
+  inflationHorizonYears = 10,
 }: MarketAssumptionsFormProps) => {
   const { t, language } = useLanguage();
   const scenarioDescriptions = {
@@ -188,9 +190,10 @@ export const MarketAssumptionsForm = ({
             checked={!!customInflation} 
             onCheckedChange={(checked) => {
               if (checked) {
-                // Default to 10 years or something if we don't have duration here? 
-                // Actually we should probably pass the duration or handled it in the parent.
-                onUpdate('customInflation', Array(10).fill(expectedInflation));
+                onUpdate(
+                  'customInflation',
+                  Array(Math.max(1, Math.round(inflationHorizonYears))).fill(expectedInflation),
+                );
               } else {
                 onUpdate('customInflation', undefined);
               }

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useMemo, useState } from 'react';
-import { addYears } from 'date-fns';
+import { addYears, compareAsc, format, parseISO } from 'date-fns';
 import {
   CartesianGrid,
   Legend,
@@ -25,7 +25,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
-import { BOND_DEFINITIONS } from '@/features/bond-core/constants/bond-definitions';
 import { getBondSupportMeta } from '@/features/bond-core/support-matrix';
 import { BondComparisonCalculationEnvelope } from '@/features/bond-core/types/scenarios';
 import { useLanguage } from '@/i18n';
@@ -38,8 +37,9 @@ import { RecalculateButton } from '@/shared/components/RecalculateButton';
 import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { getBondColor } from '@/shared/constants/bond-colors';
+import { sampleSeriesPoints } from '@/shared/lib/chart-series';
+import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 
-type ComparisonResultItem = BondComparisonCalculationEnvelope['result'][number];
 type ChartDataPoint = {
   date: string;
   year: number;
@@ -118,6 +118,7 @@ function SectionBlock({
 
 export const BondComparisonContainer = () => {
   const { language, t } = useLanguage();
+  const { definitions } = useBondDefinitions();
   const [initialInvestment, setInitialInvestment] = useState(10000);
   const [expectedInflation, setExpectedInflation] = useState(3.5);
   const [expectedNbpRate, setExpectedNbpRate] = useState(5.25);
@@ -204,22 +205,37 @@ export const BondComparisonContainer = () => {
   const chartData = useMemo(() => {
     if (results.length === 0) return [];
 
-    const dataMap = new Map<string, ChartDataPoint>();
+    const allDates = Array.from(
+      new Set(
+        results.flatMap((result) => result.result.timeline.map((point) => point.cycleEndDate)),
+      ),
+    )
+      .map((date) => parseISO(date))
+      .sort(compareAsc);
 
-    results.forEach((result: ComparisonResultItem) => {
-      result.result.timeline.forEach((point) => {
-        const key = point.periodLabel;
-        if (!dataMap.has(key)) {
-          dataMap.set(key, { date: key, year: point.year });
+    const projected = allDates.map((date) => {
+      const row: ChartDataPoint = {
+        date: format(date, 'MMM yyyy'),
+        year: date.getFullYear(),
+      };
+
+      results.forEach((result) => {
+        let currentValue = result.result.initialInvestment;
+
+        for (const point of result.result.timeline) {
+          if (compareAsc(parseISO(point.cycleEndDate), date) <= 0) {
+            currentValue = showRealValue ? point.realValue : point.totalValue;
+          } else {
+            break;
+          }
         }
-        const entry = dataMap.get(key);
-        if (entry) {
-          entry[result.type] = showRealValue ? point.realValue : point.totalValue;
-        }
+        row[result.type] = currentValue;
       });
+
+      return row;
     });
 
-    return Array.from(dataMap.values()).sort((a, b) => a.year - b.year);
+    return sampleSeriesPoints(projected, 180);
   }, [results, showRealValue]);
 
   const formatCurrency = (value: number) =>
@@ -302,6 +318,7 @@ export const BondComparisonContainer = () => {
                       ? BondType.ROR
                       : BondType.EDO
                   }
+                  inflationHorizonYears={duration}
                   onUpdate={(key, value) => onUpdateAssumption(String(key), value)}
                   compact
                 />
@@ -543,7 +560,7 @@ export const BondComparisonContainer = () => {
               >
                 <div className="grid gap-4 xl:grid-cols-2">
                   {results.map((result) => {
-                    const bondDefinition = BOND_DEFINITIONS[result.type];
+                    const bondDefinition = definitions?.[result.type];
                     return (
                       <Card
                         key={result.type}
@@ -561,11 +578,11 @@ export const BondComparisonContainer = () => {
                               </p>
                             </div>
                             <p className="text-sm leading-7 text-slate-600">
-                              {
-                                language === 'pl'
+                              {bondDefinition
+                                ? language === 'pl'
                                   ? bondDefinition.description.pl
                                   : bondDefinition.description.en
-                              }
+                                : getBondSupportMeta(result.type).description}
                             </p>
                           </div>
 

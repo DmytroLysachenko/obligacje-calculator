@@ -503,6 +503,7 @@ export const ComparisonContainer: React.FC = () => {
                   customInflation={sharedConfig.customInflation}
                   inflationScenario={sharedConfig.inflationScenario}
                   bondType={scenarioA.bondType}
+                  inflationHorizonYears={Math.max(1, Math.ceil((sharedConfig.investmentHorizonMonths ?? 120) / 12))}
                   onUpdate={updateSharedConfig as (key: string, value: unknown) => void}
                   compact
                 />

@@ -10,6 +10,7 @@ import {
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
+import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 
 type SharedComparisonConfig = IndependentBondComparisonPayload['sharedConfig'];
 type ScenarioOverride = IndependentBondComparisonPayload['scenarioA'];
@@ -41,8 +42,12 @@ const DEFAULT_SCENARIO_B: ScenarioOverride = {
   isRebought: false,
 };
 
-function buildScenarioInputs(sharedConfig: SharedComparisonConfig, scenario: ScenarioOverride): BondInputs {
-  const definition = BOND_DEFINITIONS[scenario.bondType];
+function buildScenarioInputs(
+  sharedConfig: SharedComparisonConfig,
+  scenario: ScenarioOverride,
+  definitions: Record<BondType, typeof BOND_DEFINITIONS[BondType]> | null,
+): BondInputs {
+  const definition = definitions?.[scenario.bondType] ?? BOND_DEFINITIONS[scenario.bondType];
   const purchaseDate = scenario.purchaseDate ?? sharedConfig.purchaseDate;
   const timingMode = scenario.timingMode ?? sharedConfig.timingMode ?? 'general';
   const horizonMonths = scenario.investmentHorizonMonths ?? sharedConfig.investmentHorizonMonths ?? DEFAULT_HORIZON_MONTHS;
@@ -78,6 +83,7 @@ function buildScenarioInputs(sharedConfig: SharedComparisonConfig, scenario: Sce
 }
 
 export function useComparison() {
+  const { definitions } = useBondDefinitions();
   const [sharedConfig, setSharedConfig] = useState<SharedComparisonConfig>(DEFAULT_SHARED_CONFIG);
   const [scenarioA, setScenarioA] = useState<ScenarioOverride>(DEFAULT_SCENARIO_A);
   const [scenarioB, setScenarioB] = useState<ScenarioOverride>(DEFAULT_SCENARIO_B);
@@ -85,8 +91,8 @@ export function useComparison() {
   const [isDirty, setIsDirty] = useState(true);
   const { isCalculating, post } = useCalculationRequest();
 
-  const inputsA = useMemo(() => buildScenarioInputs(sharedConfig, scenarioA), [sharedConfig, scenarioA]);
-  const inputsB = useMemo(() => buildScenarioInputs(sharedConfig, scenarioB), [sharedConfig, scenarioB]);
+  const inputsA = useMemo(() => buildScenarioInputs(sharedConfig, scenarioA, definitions), [definitions, sharedConfig, scenarioA]);
+  const inputsB = useMemo(() => buildScenarioInputs(sharedConfig, scenarioB, definitions), [definitions, sharedConfig, scenarioB]);
 
   const scenarioAResult = comparisonEnvelope?.result.find((item) => item.scenarioKey === 'scenarioA');
   const scenarioBResult = comparisonEnvelope?.result.find((item) => item.scenarioKey === 'scenarioB');
@@ -152,11 +158,25 @@ export function useComparison() {
 
       if (key === 'investmentHorizonMonths') {
         next.withdrawalDate = getWithdrawalDateFromMonths(prev.purchaseDate, Number(value));
+        if (prev.customInflation) {
+          const years = Math.max(1, Math.ceil(Number(value) / 12));
+          next.customInflation = Array.from(
+            { length: years },
+            (_, index) => prev.customInflation?.[index] ?? prev.expectedInflation,
+          );
+        }
       }
 
       if (key === 'withdrawalDate') {
         next.investmentHorizonMonths = getHorizonMonths(prev.purchaseDate, String(value));
         next.timingMode = 'exact';
+        if (prev.customInflation) {
+          const years = Math.max(1, Math.ceil(next.investmentHorizonMonths / 12));
+          next.customInflation = Array.from(
+            { length: years },
+            (_, index) => prev.customInflation?.[index] ?? prev.expectedInflation,
+          );
+        }
       }
 
       if (key === 'timingMode' && value === 'general') {
@@ -185,7 +205,10 @@ export function useComparison() {
       ...prev,
       bondType: type,
       isRebought: false,
-      investmentHorizonMonths: Math.max(prev.investmentHorizonMonths ?? 0, Math.round(BOND_DEFINITIONS[type].duration * 12)),
+      investmentHorizonMonths: Math.max(
+        prev.investmentHorizonMonths ?? 0,
+        Math.round((definitions?.[type] ?? BOND_DEFINITIONS[type]).duration * 12),
+      ),
     }));
   };
 
@@ -195,7 +218,10 @@ export function useComparison() {
       ...prev,
       bondType: type,
       isRebought: false,
-      investmentHorizonMonths: Math.max(prev.investmentHorizonMonths ?? 0, Math.round(BOND_DEFINITIONS[type].duration * 12)),
+      investmentHorizonMonths: Math.max(
+        prev.investmentHorizonMonths ?? 0,
+        Math.round((definitions?.[type] ?? BOND_DEFINITIONS[type]).duration * 12),
+      ),
     }));
   };
 
@@ -219,6 +245,6 @@ export function useComparison() {
     updateScenarioB,
     setBondTypeA,
     setBondTypeB,
-    definitions: BOND_DEFINITIONS,
+    definitions: definitions ?? BOND_DEFINITIONS,
   };
 }

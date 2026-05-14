@@ -185,8 +185,10 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                 </TableHeader>
                 <TableBody>
                   {Array.from({ length: maxLen }).map((_, i) => {
-                    const valA = resultsA.timeline[i]?.nominalValueAfterInterest;
-                    const valB = resultsB.timeline[i]?.nominalValueAfterInterest;
+                    const pointA = resultsA.timeline[i];
+                    const pointB = resultsB.timeline[i];
+                    const valA = pointA?.nominalValueAfterInterest;
+                    const valB = pointB?.nominalValueAfterInterest;
                     const higherScenario =
                       valA !== undefined && valB !== undefined
                         ? valA === valB
@@ -203,7 +205,16 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                     return (
                       <TableRow key={i} className="transition-colors odd:bg-slate-50/30 hover:bg-slate-50/80">
                         <TableCell className="sticky left-0 z-10 bg-inherit px-6 py-4 font-bold text-slate-900">
-                          {language === 'pl' ? `Rok ${i + 1}` : `Year ${i + 1}`}
+                          <div className="space-y-1">
+                            <p>
+                              {pointA?.periodLabel
+                                ?? pointB?.periodLabel
+                                ?? (language === 'pl' ? `Wiersz ${i + 1}` : `Row ${i + 1}`)}
+                            </p>
+                            <p className="text-[11px] font-medium text-slate-500">
+                              {(pointA?.cycleEndDate ?? pointB?.cycleEndDate ?? '').slice(0, 10)}
+                            </p>
+                          </div>
                         </TableCell>
                         <TableCell
                           className={cn(
