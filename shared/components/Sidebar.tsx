@@ -137,7 +137,7 @@ function NavLinkItem({
       className={cn(
         'group block rounded-[1.35rem] border px-3.5 py-3.5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2',
         isActive
-          ? 'border-slate-300 bg-slate-800/92 text-white shadow-sm shadow-slate-900/10'
+          ? 'border-slate-300 bg-[linear-gradient(135deg,rgba(30,41,59,0.92),rgba(51,65,85,0.88))] text-white shadow-sm shadow-slate-900/10'
           : 'border-slate-200/80 bg-white/90 text-slate-900 hover:border-slate-300 hover:bg-white',
       )}
     >
@@ -200,12 +200,14 @@ function SidebarLanguageUtility() {
 
   return (
     <SidebarUtilityPanel>
-      <div className="flex items-center justify-between gap-2">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
         <div className="min-w-0">
           <p className="text-xs font-semibold text-slate-500">{t('common.language')}</p>
           <p className="mt-0.5 text-[11px] text-slate-500">PL / EN</p>
         </div>
-        <LanguageSwitcher />
+        <div className="justify-self-end">
+          <LanguageSwitcher />
+        </div>
       </div>
     </SidebarUtilityPanel>
   );

@@ -35,27 +35,48 @@ type HomeStepItem = {
   description: string;
 };
 
-function HomeToolCard({ item }: { item: ToolItem }) {
+function HomeToolCard({
+  item,
+  language,
+}: {
+  item: ToolItem;
+  language: 'pl' | 'en';
+}) {
+  const routeLabel =
+    item.status === 'trusted'
+      ? language === 'pl'
+        ? 'Glowna trasa'
+        : 'Primary route'
+      : item.status === 'reference'
+        ? language === 'pl'
+          ? 'Kontekst referencyjny'
+          : 'Reference context'
+        : language === 'pl'
+          ? 'Kolejny krok'
+          : 'Next step';
+
   return (
     <Link href={item.href} className="block h-full">
-      <Card className="surface-panel group h-full overflow-hidden rounded-[2rem] transition-all hover:-translate-y-0.5 hover:border-white hover:shadow-[0_24px_70px_-36px_rgba(15,23,42,0.34)] focus-within:ring-2 focus-within:ring-primary/25 focus-within:ring-offset-2">
+      <Card className="surface-panel group h-full overflow-hidden rounded-[2rem] border-white/80 bg-white/82 transition-all hover:-translate-y-0.5 hover:border-white hover:shadow-[0_24px_70px_-36px_rgba(15,23,42,0.34)] focus-within:ring-2 focus-within:ring-primary/25 focus-within:ring-offset-2">
         <CardContent className="relative flex h-full flex-col gap-5 p-6">
-          <div
-            className={item.tone}
-          />
+          <div className={item.tone} />
           <div className="relative flex items-start gap-4">
             <div className="rounded-2xl bg-slate-900 p-3 text-white shadow-sm">
               <item.icon className="h-5 w-5" />
             </div>
           </div>
-        <div className="relative space-y-3">
-          <h3 className="text-xl font-black tracking-tight text-slate-950">
-            {item.title}
-          </h3>
-          <p className="text-sm leading-7 text-slate-600 md:text-[15px]">
-            {item.description}
-          </p>
-        </div>
+          <div className="relative space-y-3">
+            <h3 className="text-xl font-black tracking-tight text-slate-950">
+              {item.title}
+            </h3>
+            <p className="text-sm leading-7 text-slate-600 md:text-[15px]">
+              {item.description}
+            </p>
+          </div>
+          <div className="relative mt-auto inline-flex items-center gap-2 text-sm font-semibold text-slate-700">
+            <span>{routeLabel}</span>
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </div>
         </CardContent>
       </Card>
     </Link>
@@ -70,7 +91,7 @@ function HomeStep({
   description: string;
 }) {
   return (
-    <div className="surface-panel rounded-[1.75rem] p-5">
+    <div className="surface-panel rounded-[1.75rem] border-white/85 bg-white/74 p-5">
       <div className="flex items-start gap-3">
         <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-sky-700" />
         <div className="space-y-2">
@@ -82,6 +103,38 @@ function HomeStep({
           </p>
         </div>
       </div>
+    </div>
+  );
+}
+
+function HeroTrustStrip({
+  language,
+}: {
+  language: 'pl' | 'en';
+}) {
+  const items =
+    language === 'pl'
+      ? [
+          'Jedno glowne obliczenie naraz',
+          'Czytelny kontekst inflacji i NBP',
+          'Strategie dopiero po wyniku bazowym',
+        ]
+      : [
+          'One primary calculation at a time',
+          'Readable inflation and NBP context',
+          'Strategies only after the baseline result',
+        ];
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {items.map((item) => (
+        <span
+          key={item}
+          className="rounded-full border border-white/80 bg-white/68 px-3 py-1.5 text-[11px] font-semibold tracking-[0.04em] text-slate-700 backdrop-blur"
+        >
+          {item}
+        </span>
+      ))}
     </div>
   );
 }
@@ -313,45 +366,48 @@ export function LandingDashboardClient() {
   return (
     <div className="space-y-8 pb-20 md:space-y-10">
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
-        <div className="surface-shell relative overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#f8fafc_0%,#f0f9ff_34%,#eef2ff_62%,#ffffff_100%)] px-5 py-7 md:rounded-[2.5rem] md:px-8 md:py-10">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.15),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(99,102,241,0.12),transparent_30%)]" />
-        <div className="absolute -right-12 top-10 h-48 w-48 rounded-full bg-sky-200/30 blur-3xl" />
-        <div className="absolute bottom-0 left-10 h-36 w-36 rounded-full bg-indigo-200/25 blur-3xl" />
+        <div className="surface-shell relative overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#f8fafc_0%,#eff6ff_24%,#eef2ff_58%,#ffffff_100%)] px-5 py-7 md:rounded-[2.5rem] md:px-8 md:py-10">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.18),transparent_25%),radial-gradient(circle_at_bottom_left,rgba(99,102,241,0.16),transparent_32%)]" />
+          <div className="absolute -right-10 top-8 h-56 w-56 rounded-full bg-sky-200/35 blur-3xl" />
+          <div className="absolute bottom-2 left-12 h-40 w-40 rounded-full bg-indigo-200/30 blur-3xl" />
+          <div className="absolute left-1/2 top-0 h-48 w-48 -translate-x-1/2 rounded-full bg-cyan-100/20 blur-3xl" />
 
-        <div className="relative max-w-5xl space-y-5 md:space-y-6">
-          <p className="surface-chip text-xs font-semibold text-slate-600">
-            <Sparkles className="h-3.5 w-3.5 text-sky-700" />
-            {t('landing.recovery_home.eyebrow')}
-          </p>
-
-          <div className="space-y-4">
-            <h1 className="max-w-4xl text-[2.2rem] font-black tracking-tight text-slate-950 md:text-6xl">
-              {t('landing.recovery_home.title')}
-            </h1>
-            <p className="max-w-3xl text-sm leading-7 text-slate-700 md:text-base md:leading-8">
-              {t('landing.recovery_home.description')}
+          <div className="relative max-w-5xl space-y-6 md:space-y-7">
+            <p className="surface-chip text-xs font-semibold text-slate-600">
+              <Sparkles className="h-3.5 w-3.5 text-sky-700" />
+              {t('landing.recovery_home.eyebrow')}
             </p>
-          </div>
 
-          <div className="flex flex-wrap gap-3">
-            <Button asChild size="lg" className="gap-2 rounded-2xl text-sm font-semibold shadow-sm focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2">
-              <Link href="/single-calculator">
-                {t('landing.start_calculating')}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="gap-2 rounded-2xl border-white/90 bg-white/70 text-sm font-semibold backdrop-blur hover:bg-white focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
-            >
-              <Link href="/education">
-                {t('landing.recovery_home.secondary_cta')}
-              </Link>
-            </Button>
+            <div className="space-y-4">
+              <h1 className="max-w-4xl text-[2.2rem] font-black leading-[0.98] tracking-tight text-slate-950 md:text-6xl">
+                {t('landing.recovery_home.title')}
+              </h1>
+              <p className="max-w-3xl text-sm leading-7 text-slate-700 md:text-base md:leading-8">
+                {t('landing.recovery_home.description')}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <Button asChild size="lg" className="gap-2 rounded-2xl text-sm font-semibold shadow-sm focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2">
+                <Link href="/single-calculator">
+                  {t('landing.start_calculating')}
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="gap-2 rounded-2xl border-white/90 bg-white/72 text-sm font-semibold backdrop-blur hover:bg-white focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
+              >
+                <Link href="/education">
+                  {t('landing.recovery_home.secondary_cta')}
+                </Link>
+              </Button>
+            </div>
+
+            <HeroTrustStrip language={language} />
           </div>
-        </div>
         </div>
 
         <RecentWorkCard
@@ -383,7 +439,7 @@ export function LandingDashboardClient() {
         />
         <div className="grid gap-4 xl:grid-cols-3">
           {primaryTools.map((item) => (
-            <HomeToolCard key={item.href} item={item} />
+            <HomeToolCard key={item.href} item={item} language={language} />
           ))}
         </div>
       </section>
@@ -392,7 +448,7 @@ export function LandingDashboardClient() {
         <SectionHeading title={secondaryTitle} description={secondaryDesc} />
         <div className="grid gap-4 xl:grid-cols-2">
           {secondaryTools.map((item) => (
-            <HomeToolCard key={item.href} item={item} />
+            <HomeToolCard key={item.href} item={item} language={language} />
           ))}
         </div>
       </section>

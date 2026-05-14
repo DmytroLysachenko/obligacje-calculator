@@ -315,8 +315,8 @@ export default function EconomicDataPage() {
           </CardContent>
         </Card>
 
-        <Card className="surface-panel rounded-[2rem] border-slate-200 bg-white shadow-none">
-          <CardContent className="grid gap-4 p-6 md:grid-cols-[minmax(0,1fr)_220px]">
+        <Card className="surface-panel rounded-[2rem] border-slate-200 bg-white/88 shadow-none">
+          <CardContent className="grid gap-4 p-6 md:grid-cols-[minmax(0,1fr)_200px]">
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-primary" />
@@ -326,7 +326,7 @@ export default function EconomicDataPage() {
               </div>
               <div className="grid gap-3 md:grid-cols-3">
                 {usageGuide.map((item) => (
-                  <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-3">
+                  <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50/55 px-4 py-3">
                     <div className="flex items-start gap-3">
                       <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                       <p className="text-sm leading-7 text-slate-600">{item}</p>
@@ -370,7 +370,7 @@ export default function EconomicDataPage() {
           </div>
 
           <aside className="space-y-6">
-            <Card className="surface-panel rounded-[2rem] border-slate-200 bg-white shadow-none">
+            <Card className="surface-panel rounded-[2rem] border-slate-200 bg-white/84 shadow-none">
               <CardContent className="space-y-3 p-5">
                 <div className="flex items-center gap-2">
                   <ShieldAlert className="h-4 w-4 text-primary" />
