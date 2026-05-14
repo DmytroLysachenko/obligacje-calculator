@@ -50,6 +50,7 @@ export const BondInputsSchema = withDateOrderValidation(BaseInstrumentInputsSche
   chartStep: z.enum(['monthly', 'quarterly', 'yearly']).optional(),
   useTaxWrapperLimit: z.boolean().optional(),
   inflationScenario: z.enum(['low', 'base', 'high']).optional(),
+  selectedSeriesId: z.string().uuid().nullable().optional(),
 }));
 
 export const RegularInvestmentInputsSchema = withDateOrderValidation(DateRangeInputsSchema.extend({

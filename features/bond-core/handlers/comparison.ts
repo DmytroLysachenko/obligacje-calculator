@@ -10,6 +10,7 @@ import { calculateBondInvestment } from '../utils/calculations';
 import { BondInputs, TaxStrategy } from '../types';
 import { BaseHandler, ScenarioHandler, HandlerContext } from './base';
 import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
+import { resolveBondOfferTerms } from '@/lib/bond-series';
 
 export class ComparisonHandler extends BaseHandler implements ScenarioHandler<NormalizedBondComparisonPayload | IndependentBondComparisonPayload, BondComparisonScenarioItem[]> {
   kind = ScenarioKind.BOND_COMPARISON;
@@ -31,7 +32,7 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
     payload: NormalizedBondComparisonPayload,
     context: HandlerContext
   ): Promise<BondComparisonCalculationEnvelope> {
-    const scenarioInputs = this.buildComparisonScenarioInputs(payload, context);
+    const scenarioInputs = await this.buildComparisonScenarioInputs(payload, context);
     const enrichedScenarios = await Promise.all(
       scenarioInputs.map((scenarioInput) => this.withHistoricalData(scenarioInput))
     );
@@ -51,6 +52,7 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
     const warnings = this.collectHistoricalWarnings(enrichedScenarios.map((scenario) => scenario.historicalData));
     const assumptions = this.generateAssumptions(payload);
     assumptions.push('Comparison scenarios are normalized through the shared comparison service.');
+    assumptions.push('Each bond uses the nearest issued series available for the shared purchase date when present.');
 
     return this.createEnvelope(results, warnings, assumptions, context.dataFreshness);
   }
@@ -60,8 +62,8 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
     context: HandlerContext
   ): Promise<BondComparisonCalculationEnvelope> {
     const [scenarioA, scenarioB] = await Promise.all([
-      this.withHistoricalData(this.buildIndependentScenarioInputs(payload.sharedConfig, payload.scenarioA, context)),
-      this.withHistoricalData(this.buildIndependentScenarioInputs(payload.sharedConfig, payload.scenarioB, context)),
+      this.buildIndependentScenarioInputs(payload.sharedConfig, payload.scenarioA, context).then((inputs) => this.withHistoricalData(inputs)),
+      this.buildIndependentScenarioInputs(payload.sharedConfig, payload.scenarioB, context).then((inputs) => this.withHistoricalData(inputs)),
     ]);
 
     const results: BondComparisonScenarioItem[] = [
@@ -90,26 +92,32 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
       ...this.generateScenarioAssumptions('Scenario A', payload.scenarioA),
       ...this.generateScenarioAssumptions('Scenario B', payload.scenarioB),
     ];
+    assumptions.push('Independent comparison resolves issued-series terms per scenario purchase date when present.');
 
     return this.createEnvelope(results, warnings, assumptions, context.dataFreshness);
   }
 
-  private buildComparisonScenarioInputs(
+  private async buildComparisonScenarioInputs(
     request: NormalizedBondComparisonPayload,
     context: HandlerContext
-  ): BondInputs[] {
-    return request.bondTypes.map((type) => {
+  ): Promise<BondInputs[]> {
+    return Promise.all(request.bondTypes.map(async (type) => {
       const def = context.dbDefinitions[type];
+      const resolvedOffer = await resolveBondOfferTerms(
+        type,
+        request.purchaseDate,
+        context.dbDefinitions,
+      );
 
       return {
         bondType: type,
         initialInvestment: request.initialInvestment,
-        firstYearRate: def.firstYearRate,
+        firstYearRate: resolvedOffer.firstYearRate ?? def.firstYearRate,
         expectedInflation: request.expectedInflation,
         expectedNbpRate: request.expectedNbpRate ?? 5.25,
         customInflation: request.customInflation,
         inflationScenario: request.inflationScenario,
-        margin: def.margin,
+        margin: resolvedOffer.margin ?? def.margin,
         duration: def.duration,
         earlyWithdrawalFee: def.earlyWithdrawalFee,
         taxRate: 19,
@@ -123,16 +131,21 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
         timingMode: 'exact' as import('@/shared/lib/date-timing').TimingMode,
         investmentHorizonMonths: undefined,
       };
-    });
+    }));
   }
 
-  private buildIndependentScenarioInputs(
+  private async buildIndependentScenarioInputs(
     sharedConfig: IndependentBondComparisonPayload['sharedConfig'],
     scenario: IndependentBondComparisonPayload['scenarioA'],
     context: HandlerContext
-  ): BondInputs {
+  ): Promise<BondInputs> {
     const def = context.dbDefinitions[scenario.bondType];
     const purchaseDate = scenario.purchaseDate ?? sharedConfig.purchaseDate;
+    const resolvedOffer = await resolveBondOfferTerms(
+      scenario.bondType,
+      purchaseDate,
+      context.dbDefinitions,
+    );
     const timingMode = scenario.timingMode ?? sharedConfig.timingMode ?? 'general';
     const investmentHorizonMonths = scenario.investmentHorizonMonths ?? sharedConfig.investmentHorizonMonths;
     const withdrawalDate = scenario.withdrawalDate
@@ -143,12 +156,12 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
     return {
       bondType: scenario.bondType,
       initialInvestment: sharedConfig.initialInvestment,
-      firstYearRate: scenario.firstYearRate ?? def.firstYearRate,
+      firstYearRate: scenario.firstYearRate ?? resolvedOffer.firstYearRate ?? def.firstYearRate,
       expectedInflation: sharedConfig.expectedInflation,
       expectedNbpRate: sharedConfig.expectedNbpRate ?? 5.25,
       customInflation: sharedConfig.customInflation,
       inflationScenario: sharedConfig.inflationScenario,
-      margin: scenario.margin ?? def.margin,
+      margin: scenario.margin ?? resolvedOffer.margin ?? def.margin,
       duration: def.duration,
       earlyWithdrawalFee: def.earlyWithdrawalFee,
       taxRate: 19,

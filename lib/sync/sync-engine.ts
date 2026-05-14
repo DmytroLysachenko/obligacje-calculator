@@ -5,6 +5,10 @@ import { SyncProvider } from "./types";
 import { format, addMonths, startOfMonth, parseISO, isBefore } from "date-fns";
 import { scrapeCurrentBondRates } from "./bond-scraper";
 import { syncMacroData } from "./macro-data-sync";
+import { deriveSeriesCode, deriveSeriesWindow } from "@/lib/bond-series";
+import { BOND_DEFINITIONS } from "@/features/bond-core/constants/bond-definitions";
+import { BondType } from "@/features/bond-core/types";
+import { bondSeries } from "@/db/schema";
 
 export class SyncEngine {
   constructor(private providers: SyncProvider[] = []) {}
@@ -23,6 +27,7 @@ export class SyncEngine {
     // 2. Scrape & Sync Current Bond Offers
     const bondOffers = await scrapeCurrentBondRates();
     console.log('[SyncEngine] Bond offer scraping complete:', bondOffers.length, 'rates found');
+    const currentEmissionMonth = format(startOfMonth(new Date()), 'yyyy-MM-dd');
 
     for (const offer of bondOffers) {
       // Update the polishBonds table with current rates
@@ -33,6 +38,38 @@ export class SyncEngine {
           updatedAt: new Date()
         })
         .where(eq(polishBonds.symbol, offer.symbol));
+
+      const bond = await db.query.polishBonds.findFirst({
+        where: eq(polishBonds.symbol, offer.symbol),
+      });
+
+      if (!bond) {
+        continue;
+      }
+
+      const definition = BOND_DEFINITIONS[offer.symbol as BondType];
+      const seriesCode = deriveSeriesCode(offer.symbol as BondType, currentEmissionMonth, definition);
+      const seriesWindow = deriveSeriesWindow(currentEmissionMonth, definition);
+
+      await db.insert(bondSeries).values({
+        bondTypeId: bond.id,
+        seriesCode,
+        emissionMonth: currentEmissionMonth,
+        sellStartDate: seriesWindow.sellStartDate,
+        sellEndDate: seriesWindow.sellEndDate,
+        maturityDate: seriesWindow.maturityDate,
+        firstYearRate: offer.firstYearRate.toString(),
+        baseMargin: offer.margin.toString(),
+      }).onConflictDoUpdate({
+        target: bondSeries.seriesCode,
+        set: {
+          firstYearRate: offer.firstYearRate.toString(),
+          baseMargin: offer.margin.toString(),
+          sellStartDate: seriesWindow.sellStartDate,
+          sellEndDate: seriesWindow.sellEndDate,
+          maturityDate: seriesWindow.maturityDate,
+        },
+      });
     }
 
     // 3. Sync Historical Providers (Stooq, etc.)

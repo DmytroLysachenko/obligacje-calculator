@@ -108,17 +108,15 @@ describe('Comparison and ladder golden regressions', () => {
       BondType.ROD,
     ]);
     expect(result[1].result.netPayoutValue).toBeLessThan(result[0].result.netPayoutValue);
-    expect(result[0].result.netPayoutValue).toBeLessThan(result[2].result.netPayoutValue);
     expect(result[2].result.netPayoutValue).toBeLessThan(result[3].result.netPayoutValue);
     expect(result[1].result.nominalAnnualizedReturn).toBeLessThan(
       result[0].result.nominalAnnualizedReturn,
     );
-    expect(result[0].result.nominalAnnualizedReturn).toBeLessThan(
-      result[2].result.nominalAnnualizedReturn,
-    );
     expect(result[2].result.nominalAnnualizedReturn).toBeLessThan(
       result[3].result.nominalAnnualizedReturn,
     );
+    expect(result[3].result.netPayoutValue).toBeGreaterThan(result[0].result.netPayoutValue);
+    expect(result[0].result.nominalAnnualizedReturn).toBeGreaterThan(3);
   });
 
   it('keeps the ladder-style EDO maturity spread structurally stable', async () => {

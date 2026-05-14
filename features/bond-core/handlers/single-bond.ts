@@ -2,15 +2,13 @@ import {
   ScenarioKind, 
   SingleBondCalculationEnvelope 
 } from '../types/scenarios';
-import { BondInputs, BondType, TaxStrategy, CalculationResult } from '../types';
+import { BondInputs, TaxStrategy, CalculationResult } from '../types';
 import { BondInputsSchema } from '../types/schemas';
 import { calculateBondInvestment } from '../utils/calculations';
 import { getTaxRulesForYear, getHistoricalAverages } from '@/lib/data-access';
 import { BaseHandler, ScenarioHandler, HandlerContext } from './base';
-import { db } from '@/db';
-import { bondSeries, polishBonds } from '@/db/schema';
-import { eq, and, lte, desc } from 'drizzle-orm';
-import { isBefore, parseISO, subMonths, getYear } from 'date-fns';
+import { getYear, parseISO } from 'date-fns';
+import { resolveBondOfferTerms } from '@/lib/bond-series';
 
 export class SingleBondHandler extends BaseHandler implements ScenarioHandler<BondInputs, CalculationResult> {
   kind = ScenarioKind.SINGLE_BOND;
@@ -18,22 +16,17 @@ export class SingleBondHandler extends BaseHandler implements ScenarioHandler<Bo
   async handle(payload: BondInputs, context: HandlerContext): Promise<SingleBondCalculationEnvelope> {
     const validatedInputs = BondInputsSchema.parse(payload);
     const def = context.dbDefinitions[validatedInputs.bondType];
-    
-    let firstYearRate = validatedInputs.firstYearRate;
-    let margin = validatedInputs.margin;
-
-    if ((firstYearRate === undefined || margin === undefined) && isBefore(parseISO(validatedInputs.purchaseDate), subMonths(new Date(), 1))) {
-      const historicalSeries = await this.findSeriesForDate(validatedInputs.bondType, validatedInputs.purchaseDate);
-      if (historicalSeries) {
-        firstYearRate = firstYearRate ?? Number(historicalSeries.firstYearRate);
-        margin = margin ?? Number(historicalSeries.baseMargin);
-      }
-    }
+    const resolvedOffer = await resolveBondOfferTerms(
+      validatedInputs.bondType,
+      validatedInputs.purchaseDate,
+      context.dbDefinitions,
+      validatedInputs.selectedSeriesId,
+    );
 
     const inputsWithDefaults = {
       ...validatedInputs,
-      firstYearRate: firstYearRate ?? def.firstYearRate,
-      margin: margin ?? def.margin,
+      firstYearRate: validatedInputs.firstYearRate ?? resolvedOffer.firstYearRate ?? def.firstYearRate,
+      margin: validatedInputs.margin ?? resolvedOffer.margin ?? def.margin,
     };
 
     const enrichedInputs = await this.withHistoricalData(inputsWithDefaults);
@@ -59,6 +52,11 @@ export class SingleBondHandler extends BaseHandler implements ScenarioHandler<Bo
 
     const warnings = this.buildHistoricalDataWarnings(inputsToCalculate.historicalData);
     const assumptions = this.generateAssumptions(inputsToCalculate);
+    if (resolvedOffer.source === 'series' && resolvedOffer.seriesCode) {
+      assumptions.push(`Resolved issued series: ${resolvedOffer.seriesCode}`);
+    } else {
+      assumptions.push('Using current generic bond definition instead of a resolved issued series.');
+    }
 
     const result = calculateBondInvestment({
       ...inputsToCalculate,
@@ -95,28 +93,6 @@ export class SingleBondHandler extends BaseHandler implements ScenarioHandler<Bo
 
     return this.createEnvelope(result, warnings, assumptions, context.dataFreshness, historicalAverages);
   }
-
-  private async findSeriesForDate(symbol: BondType, date: string) {
-    try {
-      const bond = await db.query.polishBonds.findFirst({
-        where: eq(polishBonds.symbol, symbol),
-      });
-      if (!bond) return null;
-
-      const series = await db.query.bondSeries.findFirst({
-        where: and(
-          eq(bondSeries.bondTypeId, bond.id),
-          lte(bondSeries.emissionMonth, date)
-        ),
-        orderBy: [desc(bondSeries.emissionMonth)],
-      });
-      return series;
-    } catch (e) {
-      console.error('Failed to find series for date:', e);
-      return null;
-    }
-  }
-
   private async calculateSplitTaxWrapper(
     inputs: BondInputs & { historicalData: import('@/features/bond-core/types').HistoricalDataMap },
     limit: number,

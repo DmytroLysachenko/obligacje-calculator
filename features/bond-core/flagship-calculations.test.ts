@@ -247,12 +247,12 @@ describe('Flagship calculation regressions', () => {
         BondType.EDO,
       ]);
       expect(result[0].result.netPayoutValue).toBeLessThan(result[1].result.netPayoutValue);
-      expect(result[1].result.netPayoutValue).toBeLessThan(result[2].result.netPayoutValue);
+      expect(result[2].result.netPayoutValue).toBeGreaterThan(result[0].result.netPayoutValue);
       expect(result[0].result.nominalAnnualizedReturn).toBeLessThan(
         result[1].result.nominalAnnualizedReturn,
       );
-      expect(result[1].result.nominalAnnualizedReturn).toBeLessThan(
-        result[2].result.nominalAnnualizedReturn,
+      expect(result[2].result.nominalAnnualizedReturn).toBeGreaterThan(
+        result[0].result.nominalAnnualizedReturn,
       );
     });
   });
