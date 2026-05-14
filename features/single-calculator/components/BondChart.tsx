@@ -97,6 +97,10 @@ const CustomTooltip = ({
           </div>
         ) : null}
 
+        <div className="rounded-lg border border-border/50 bg-muted/20 px-2 py-1.5 text-[10px] text-muted-foreground">
+          {t('bonds.chart_value_note') || 'Nominal and real lines are the primary reading. Inflation and NBP lines only provide context.'}
+        </div>
+
         <div className="space-y-1.5">
           {payload
             .filter((entry) => ['nominal', 'real'].includes(String(entry.dataKey)))
@@ -260,13 +264,13 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
             dy={10}
             minTickGap={30}
             tickFormatter={(value: string) => {
-              if (value === (language === 'pl' ? 'Start' : 'Start')) {
+              if (value === 'Start') {
                 return value;
               }
-              if (value.length <= 8) {
+              if (value.length <= 9) {
                 return value;
               }
-              return value.slice(0, 8);
+              return value.slice(0, 9);
             }}
           />
           <YAxis
@@ -319,7 +323,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
             yAxisId="left"
             type="monotone"
             dataKey="nominal"
-            name={t("common.nominal_value")}
+            name={language === 'pl' ? 'Wartosc nominalna' : t("common.nominal_value")}
             stroke="#3b82f6"
             strokeWidth={3}
             fillOpacity={1}
@@ -358,7 +362,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
             yAxisId="left"
             type="monotone"
             dataKey="real"
-            name={t("common.real_value")}
+            name={language === 'pl' ? 'Wartosc realna' : t("common.real_value")}
             stroke="#10b981"
             strokeWidth={3}
             fillOpacity={1}
@@ -369,7 +373,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
             yAxisId="right"
             type="monotone"
             dataKey="inflation"
-            name={t("bonds.ref_inflation")}
+            name={language === 'pl' ? 'Inflacja referencyjna' : t("bonds.ref_inflation")}
             stroke="#f59e0b"
             strokeWidth={1.75}
             strokeDasharray="5 5"
@@ -381,7 +385,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
             yAxisId="right"
             type="monotone"
             dataKey="nbp"
-            name={t("bonds.nbp_rate_short")}
+            name={language === 'pl' ? 'Stopa NBP' : t("bonds.nbp_rate_short")}
             stroke="#94a3b8"
             strokeWidth={1.5}
             strokeDasharray="3 3"

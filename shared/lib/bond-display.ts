@@ -10,6 +10,7 @@ export interface BondTimelineDisplayRow {
   periodLabel: string;
   cadenceLabel: string;
   cycleLabel: string;
+  valueMeaningLabel: string;
   interestRateLabel: string;
   rateSourceLabel: string;
   referenceLabel?: string;
@@ -35,6 +36,13 @@ export interface BondChartDisplayPoint {
   isMaturity: boolean;
   rateLabel: string;
   eventLabels: string[];
+}
+
+function formatMonthYear(date: string, language: AppLanguage) {
+  return new Intl.DateTimeFormat(language === 'pl' ? 'pl-PL' : 'en-GB', {
+    month: 'short',
+    year: 'numeric',
+  }).format(new Date(date));
 }
 
 const RATE_SOURCE_LABELS: Record<AppLanguage, Record<RateSource, string>> = {
@@ -112,19 +120,53 @@ export function getProjectionDisplayLabel(
 }
 
 export function getCadenceDisplayLabel(point: YearlyTimelinePoint, language: AppLanguage) {
+  if (
+    point.events?.some((event) => event.type === SimulationEventType.PURCHASE)
+    && point.events.length === 1
+  ) {
+    return language === 'pl' ? 'Punkt wejscia do scenariusza' : 'Scenario entry point';
+  }
+
   if (point.isMaturity) {
-    return language === 'pl' ? 'Punkt zapadalnosci' : 'Maturity point';
+    return language === 'pl' ? 'Punkt zapadalnosci i zamkniecia cyklu' : 'Maturity close-out point';
   }
 
   if (point.isWithdrawal) {
-    return language === 'pl' ? 'Punkt wyjscia' : 'Exit point';
+    return language === 'pl' ? 'Punkt wyjscia z inwestycji' : 'Exit payout point';
   }
 
-  return language === 'pl' ? 'Punkt harmonogramu' : 'Timeline point';
+  if (point.events?.some((event) => event.type === SimulationEventType.PAYOUT)) {
+    return language === 'pl' ? 'Punkt wyplaty lub odnowienia' : 'Payout or rollover point';
+  }
+
+  return language === 'pl' ? 'Kontrolny punkt scenariusza' : 'Scenario checkpoint';
 }
 
 export function getCycleDisplayLabel(point: YearlyTimelinePoint, language: AppLanguage) {
-  return language === 'pl' ? `Cykl ${point.cycleIndex}` : `Cycle ${point.cycleIndex}`;
+  const start = formatMonthYear(point.cycleStartDate, language);
+  const end = formatMonthYear(point.cycleEndDate, language);
+
+  return language === 'pl'
+    ? `Cykl ${point.cycleIndex}: ${start} -> ${end}`
+    : `Cycle ${point.cycleIndex}: ${start} -> ${end}`;
+}
+
+export function getValueMeaningLabel(point: YearlyTimelinePoint, language: AppLanguage) {
+  if (point.isWithdrawal) {
+    return language === 'pl'
+      ? 'To jest wartosc przy wyjsciu po oplacie i podatku dla tego punktu.'
+      : 'This row shows the exit value after modeled fees and tax at this point.';
+  }
+
+  if (point.isMaturity) {
+    return language === 'pl'
+      ? 'To jest punkt domkniecia pelnego cyklu obligacji.'
+      : 'This row closes the full bond cycle.';
+  }
+
+  return language === 'pl'
+    ? 'To jest punkt kontrolny pokazujacy wartosc po naliczeniu dla tego okresu.'
+    : 'This is a checkpoint showing value after accrual for this period.';
 }
 
 export function getReferenceDisplayLabel(
@@ -139,7 +181,11 @@ export function getReferenceDisplayLabel(
   }
 
   const referencePart =
-    point.rateReferenceValue !== undefined ? `Ref ${point.rateReferenceValue.toFixed(2)}%` : undefined;
+    point.rateReferenceValue !== undefined
+      ? language === 'pl'
+        ? `Baza ${point.rateReferenceValue.toFixed(2)}%`
+        : `Base ${point.rateReferenceValue.toFixed(2)}%`
+      : undefined;
   const marginPart =
     point.rateMarginApplied !== undefined
       ? language === 'pl'
@@ -159,6 +205,7 @@ export function buildBondTimelineDisplayRows(
     periodLabel: point.periodLabel,
     cadenceLabel: getCadenceDisplayLabel(point, language),
     cycleLabel: getCycleDisplayLabel(point, language),
+    valueMeaningLabel: getValueMeaningLabel(point, language),
     interestRateLabel: `${point.interestRate.toFixed(2)}%`,
     rateSourceLabel: getRateSourceDisplayLabel(point.rateSource, language),
     referenceLabel: getReferenceDisplayLabel(point, language),
@@ -202,7 +249,7 @@ export function buildBondChartDisplayPoints(
     },
     ...timeline.map((point, index) => ({
       key: `${point.cycleIndex}-${point.periodLabel}-${point.cycleEndDate}`,
-      xLabel: point.periodLabel,
+      xLabel: formatMonthYear(point.cycleEndDate, language),
       nominal: Number(point.nominalValueAfterInterest.toFixed(2)),
       real: Number(point.realValue.toFixed(2)),
       inflation: point.inflationReference,

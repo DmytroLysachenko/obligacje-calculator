@@ -120,6 +120,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
       ? `${displayedTimeline.length} / ${filteredTimeline.length}`
       : `${filteredTimeline.length}`;
   const projectionCount = displayRows.filter((row) => !!row.projectionLabel).length;
+  const exitMarkers = displayRows.filter((row) => row.isWithdrawal).length;
 
   const resetFilters = () => {
     setSearchQuery('');
@@ -140,9 +141,17 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
             value={String(projectionCount)}
           />
           <TimelineStat
-            label={language === 'pl' ? 'Aktywne filtry' : 'Active filters'}
-            value={String(activeFilterCount)}
+            label={language === 'pl' ? 'Punkty wyjscia' : 'Exit markers'}
+            value={String(exitMarkers)}
           />
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 bg-white/85 px-4 py-3">
+          <p className="text-sm leading-7 text-slate-600">
+            {language === 'pl'
+              ? 'Kazdy wiersz jest punktem kontrolnym scenariusza, a nie oddzielnym zakupem. Czytaj go od lewej do prawej: kiedy punkt wypada, co oznacza, na jakiej stopie pracowal i jaka wartosc zostawial na tym etapie.'
+              : 'Each row is a scenario checkpoint, not a separate purchase. Read it left to right: when it happens, what it represents, which rate basis it used, and what value it leaves at that point.'}
+          </p>
         </div>
 
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -200,7 +209,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
                 {t('common.period')}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-sm font-semibold text-slate-600">
-                {language === 'pl' ? 'Znaczenie' : 'Meaning'}
+                {language === 'pl' ? 'Co dzieje sie w tym punkcie' : 'What happens at this point'}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-sm font-semibold text-slate-600">
                 {t('bonds.cycle')}
@@ -215,7 +224,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
                 {t('common.nominal_value')}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-sm font-semibold text-slate-600">
-                {t('common.net_profit')}
+                {language === 'pl' ? 'Zysk do tego punktu' : 'Net gain to this point'}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-sm font-semibold text-slate-600">
                 {t('common.real_value')}
@@ -265,7 +274,12 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
                   </div>
                 </TableCell>
                 <TableCell className="py-4 text-sm text-slate-600">
-                  {row.cadenceLabel}
+                  <div className="space-y-1">
+                    <p>{row.cadenceLabel}</p>
+                    <p className="text-xs leading-5 text-slate-500">
+                      {row.valueMeaningLabel}
+                    </p>
+                  </div>
                 </TableCell>
                 <TableCell className="py-4 text-muted-foreground">
                   {row.cycleLabel}

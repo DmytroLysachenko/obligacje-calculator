@@ -313,8 +313,8 @@ export const BondCalculatorContainer: React.FC = () => {
               title={t('bonds.timeline')}
               description={
                 language === 'pl'
-                  ? 'Harmonogram sluzy do kontroli szczegolow roku po roku i momentow wyplat.'
-                  : 'Use the timeline to verify year-by-year detail and payout timing.'
+                  ? 'Harmonogram pokazuje kolejne punkty kontrolne scenariusza: kiedy zmienia sie stopa, kiedy naliczane sa odsetki i jaka wartosc zostaje na danym etapie.'
+                  : 'The timeline shows scenario checkpoints: when the rate changes, when interest is credited, and what value remains at each stage.'
               }
             >
               <BondTimeline results={results} />

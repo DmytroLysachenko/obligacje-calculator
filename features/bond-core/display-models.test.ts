@@ -79,7 +79,9 @@ describe('bond display models', () => {
     expect(rows[0].rateSourceLabel).toBe('Historical NBP + margin');
     expect(rows[0].eventLabels).toEqual(['Rate reset']);
     expect(rows[0].projectionLabel).toBe('Projected');
-    expect(rows[0].referenceLabel).toContain('Ref 5.25%');
+    expect(rows[0].referenceLabel).toContain('Base 5.25%');
+    expect(rows[0].cycleLabel).toContain('Cycle 1:');
+    expect(rows[0].valueMeaningLabel).toContain('checkpoint');
   });
 
   it('builds chart display points with a start point and scenario bounds', () => {
@@ -97,5 +99,6 @@ describe('bond display models', () => {
     expect(points[1].low).toBe(9900);
     expect(points[1].high).toBe(10100);
     expect(points[1].rateLabel).toContain('Historyczna stopa NBP');
+    expect(points[1].xLabel).toContain('2026');
   });
 });
