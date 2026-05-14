@@ -122,6 +122,7 @@ export const BondCalculatorContainer: React.FC = () => {
         body: JSON.stringify({
           portfolioId,
           bondType: inputs.bondType,
+          selectedSeriesId: selectedSeriesId && selectedSeriesId !== 'current' ? selectedSeriesId : null,
           purchaseDate: inputs.purchaseDate,
           amount: Math.floor(inputs.initialInvestment / 100),
           isRebought: inputs.isRebought,

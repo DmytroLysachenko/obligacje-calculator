@@ -14,6 +14,12 @@ export interface ResolvedBondOfferTerms {
   emissionMonth?: string;
 }
 
+export interface ResolvedStoredBondLotContext {
+  bondTypeId: string | null;
+  bondSeriesId: string | null;
+  seriesCode?: string;
+}
+
 function getBondDurationMonths(definition: BondDefinition) {
   return Math.max(1, Math.round(definition.duration * 12));
 }
@@ -109,5 +115,53 @@ export async function resolveBondOfferTerms(
   } catch (error) {
     console.error('Failed to resolve bond offer terms:', error);
     return fallback;
+  }
+}
+
+export async function resolveStoredBondLotContext(
+  bondType: BondType,
+  purchaseDate: string,
+  selectedSeriesId?: string | null,
+): Promise<ResolvedStoredBondLotContext> {
+  try {
+    const bond = await db.query.polishBonds.findFirst({
+      where: eq(polishBonds.symbol, bondType),
+    });
+
+    if (!bond) {
+      return { bondTypeId: null, bondSeriesId: null };
+    }
+
+    if (selectedSeriesId && selectedSeriesId !== 'current') {
+      const exactSeries = await db.query.bondSeries.findFirst({
+        where: and(
+          eq(bondSeries.id, selectedSeriesId),
+          eq(bondSeries.bondTypeId, bond.id),
+        ),
+      });
+
+      return {
+        bondTypeId: bond.id,
+        bondSeriesId: exactSeries?.id ?? null,
+        seriesCode: exactSeries?.seriesCode,
+      };
+    }
+
+    const activeSeries = await db.query.bondSeries.findFirst({
+      where: and(
+        eq(bondSeries.bondTypeId, bond.id),
+        lte(bondSeries.emissionMonth, purchaseDate),
+      ),
+      orderBy: [desc(bondSeries.emissionMonth)],
+    });
+
+    return {
+      bondTypeId: bond.id,
+      bondSeriesId: activeSeries?.id ?? null,
+      seriesCode: activeSeries?.seriesCode,
+    };
+  } catch (error) {
+    console.error('Failed to resolve stored bond lot context:', error);
+    return { bondTypeId: null, bondSeriesId: null };
   }
 }

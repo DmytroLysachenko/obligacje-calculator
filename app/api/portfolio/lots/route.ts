@@ -9,6 +9,7 @@ import {
   getOwnedPortfolio,
   resolvePortfolioOwner,
 } from '@/lib/portfolio-access';
+import { resolveStoredBondLotContext } from '@/lib/bond-series';
 import { z } from 'zod';
 import { createSuccessResponse, createErrorResponse } from '@/shared/types/api';
 
@@ -62,9 +63,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const resolvedLotContext = await resolveStoredBondLotContext(
+      validated.bondType as import('@/features/bond-core/types').BondType,
+      validated.purchaseDate,
+      validated.selectedSeriesId,
+    );
+
     const [newLot] = await db.insert(userInvestmentLots).values({
       portfolioId: validated.portfolioId,
       bondType: validated.bondType,
+      bondTypeId: resolvedLotContext.bondTypeId,
+      bondSeriesId: resolvedLotContext.bondSeriesId,
       purchaseDate: validated.purchaseDate,
       amount: validated.amount.toString(),
       isRebought: validated.isRebought,

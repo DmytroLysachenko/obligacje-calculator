@@ -10,6 +10,7 @@ export const InvestmentLotSchema = z.object({
   bondType: z.string(),
   purchaseDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   amount: z.number().positive(),
+  selectedSeriesId: z.string().uuid().nullable().optional(),
   isRebought: z.boolean().default(false),
   notes: z.string().max(1000).optional(),
 });

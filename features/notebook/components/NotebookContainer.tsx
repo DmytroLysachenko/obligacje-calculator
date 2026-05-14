@@ -245,8 +245,12 @@ export const NotebookContainer: React.FC = () => {
         return;
       }
 
+      const created = unwrapApiData<UserPortfolio>(await response.json().catch(() => null));
       setError(null);
       await fetchPortfolios();
+      if (created?.id) {
+        setSelectedPortfolioId(created.id);
+      }
     } catch (caughtError) {
       console.error(caughtError);
       setError(t('notebook.create_error'));
@@ -287,6 +291,9 @@ export const NotebookContainer: React.FC = () => {
       }
 
       await fetchPortfolios();
+      if (portfolioId) {
+        setSelectedPortfolioId(portfolioId);
+      }
     } catch (caughtError) {
       console.error(caughtError);
       setError(t('notebook.create_error'));
@@ -320,6 +327,10 @@ export const NotebookContainer: React.FC = () => {
 
       setError(null);
       await fetchPortfolios();
+      const createdPortfolio = unwrapApiData<{ portfolio?: { id?: string } }>(await response.clone().json().catch(() => null));
+      if (createdPortfolio?.portfolio?.id) {
+        setSelectedPortfolioId(createdPortfolio.portfolio.id);
+      }
     } catch (caughtError) {
       console.error(caughtError);
       setError(

@@ -6,6 +6,7 @@ import { applyPortfolioOwnerCookie, resolvePortfolioOwner } from '@/lib/portfoli
 import { ensurePortfolioSchemaCompat } from '@/lib/db-schema-compat';
 import { apiHandler } from '@/lib/api-handler';
 import { createErrorResponse, createSuccessResponse } from '@/shared/types/api';
+import { resolveStoredBondLotContext } from '@/lib/bond-series';
 
 const ImportedLotSchema = z.object({
   bondType: z.string().min(1),
@@ -44,16 +45,27 @@ export const POST = apiHandler(async (req: NextRequest) => {
     description: portfolio.description ?? 'Imported portfolio package',
   }).returning();
 
-  const createdLots = await db.insert(userInvestmentLots).values(
-    portfolio.lots.map((lot) => ({
-      portfolioId: createdPortfolio.id,
-      bondType: lot.bondType,
-      purchaseDate: lot.purchaseDate,
-      amount: String(lot.amount),
-      isRebought: lot.isRebought ?? false,
-      notes: lot.notes,
-    })),
-  ).returning();
+  const importedLots = await Promise.all(
+    portfolio.lots.map(async (lot) => {
+      const resolvedLotContext = await resolveStoredBondLotContext(
+        lot.bondType as import('@/features/bond-core/types').BondType,
+        lot.purchaseDate,
+      );
+
+      return {
+        portfolioId: createdPortfolio.id,
+        bondType: lot.bondType,
+        bondTypeId: resolvedLotContext.bondTypeId,
+        bondSeriesId: resolvedLotContext.bondSeriesId,
+        purchaseDate: lot.purchaseDate,
+        amount: String(lot.amount),
+        isRebought: lot.isRebought ?? false,
+        notes: lot.notes,
+      };
+    }),
+  );
+
+  const createdLots = await db.insert(userInvestmentLots).values(importedLots).returning();
 
   return applyPortfolioOwnerCookie(
     NextResponse.json(createSuccessResponse({
