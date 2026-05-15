@@ -4,6 +4,7 @@ import { dataSeries, dataPoints } from '@/db/schema';
 import { desc, eq, inArray } from 'drizzle-orm';
 import { createSuccessResponse } from '@/shared/types/api';
 import { differenceInDays, parseISO } from 'date-fns';
+import { GusCpiApiClient } from '@/lib/api-clients/gus-cpi';
 
 const FALLBACK_INFLATION = [
   { date: '2015-01', rate: -0.9 },
@@ -109,7 +110,7 @@ export async function GET() {
       coverageEnd: formatted[formatted.length - 1]?.date,
       syncStatus,
       coverageNote,
-      sourceUrl: 'https://api.stat.gov.pl/',
+      sourceUrl: GusCpiApiClient.archivePageUrl,
     }));
   } catch (error) {
     console.error('Failed to fetch inflation data:', error);

@@ -72,7 +72,7 @@ async function seed() {
     { slug: 'gold-usd', name: 'Gold Price (USD)', category: 'commodity' as "macro" | "instrument" | "index" | "currency" | "commodity", unit: 'USD/oz', frequency: 'daily', dataSource: 'Stooq' },
     { slug: 'wibor-3m', name: 'WIBOR 3M', category: 'macro' as "macro" | "instrument" | "index" | "currency" | "commodity", unit: '%', frequency: 'daily', dataSource: 'Stooq' },
     { slug: 'wibor-6m', name: 'WIBOR 6M', category: 'macro' as "macro" | "instrument" | "index" | "currency" | "commodity", unit: '%', frequency: 'daily', dataSource: 'Stooq' },
-    { slug: 'pl-cpi', name: 'Poland Inflation (CPI)', category: 'macro' as "macro" | "instrument" | "index" | "currency" | "commodity", unit: '%', frequency: 'monthly', dataSource: 'GUS/Stooq' },
+    { slug: 'pl-cpi', name: 'Poland Inflation (CPI)', category: 'macro' as "macro" | "instrument" | "index" | "currency" | "commodity", unit: '%', frequency: 'monthly', dataSource: 'GUS official CPI monthly archive CSV' },
     { slug: 'nbp-ref-rate', name: 'NBP Reference Rate', category: 'macro' as "macro" | "instrument" | "index" | "currency" | "commodity", unit: '%', frequency: 'on-event', dataSource: 'NBP' }
   ];
   for (const s of series) {

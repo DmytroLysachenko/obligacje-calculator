@@ -13,7 +13,7 @@ const SERIES = [
     unit: '%',
     frequency: 'monthly',
     displayPrecision: 2,
-    dataSource: 'GUS/WorldBank',
+    dataSource: 'GUS official CPI monthly archive CSV',
   },
   {
     slug: 'nbp-ref-rate',

@@ -4,17 +4,16 @@ export interface FinancialDataResponse {
   timestamp: string;
 }
 
+import { GusCpiApiClient } from "./../api-clients/gus-cpi";
+
 export class FinancialDataGateway {
   /**
    * Fetches official Polish monthly inflation data (CPI) from Statistics Poland (GUS).
    */
   static async fetchInflationFromGUS(): Promise<FinancialDataResponse> {
-    // Variable ID 3643 represents CPI (previous year = 100)
-    const url = 'https://bdl.stat.gov.pl/api/v1/data/by-variable/3643?unit-id=000000000000&format=json';
     try {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`GUS API Error: ${response.statusText}`);
-      const data = await response.json();
+      const client = new GusCpiApiClient();
+      const data = await client.fetchHistoricalData();
       return { source: 'GUS', data, timestamp: new Date().toISOString() };
     } catch (error) {
       console.error('Failed to fetch from GUS:', error);

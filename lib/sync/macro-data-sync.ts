@@ -2,6 +2,7 @@ import { db } from "@/db";
 import { dataSeries, dataPoints } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { NbpApiClient } from "../api-clients/nbp";
+import { GusCpiApiClient } from "../api-clients/gus-cpi";
 
 /**
  * Helper to retry a function with exponential backoff.
@@ -23,10 +24,33 @@ async function retry<T>(fn: () => Promise<T>, retries = 3, delay = 1000): Promis
  */
 export async function syncMacroData() {
   const nbpClient = new NbpApiClient();
+  const gusCpiClient = new GusCpiApiClient();
 
   try {
+    const cpiIndicators = await retry(() => gusCpiClient.fetchHistoricalData());
     const nbpIndicators = await retry(() => nbpClient.fetchReferenceRateHistory());
+    const latestCpiRate = cpiIndicators.at(-1);
     const latestNbpRate = nbpIndicators[0];
+
+    let cpiSeries = await db.query.dataSeries.findFirst({
+      where: eq(dataSeries.slug, "pl-cpi"),
+    });
+
+    if (!cpiSeries) {
+      [cpiSeries] = await db
+        .insert(dataSeries)
+        .values({
+          slug: "pl-cpi",
+          name: "Poland Inflation (CPI)",
+          category: "macro",
+          unit: "%",
+          frequency: "monthly",
+          dataSource: "GUS official CPI monthly archive CSV",
+          freshnessPolicy: "check-daily",
+          lastSyncStatus: "success",
+        })
+        .returning();
+    }
 
     let nbpSeries = await db.query.dataSeries.findFirst({
       where: eq(dataSeries.slug, 'nbp-ref-rate'),
@@ -81,25 +105,41 @@ export async function syncMacroData() {
         .where(eq(dataSeries.id, nbpSeries.id));
     }
 
-    const cpiSeries = await db.query.dataSeries.findFirst({
-      where: eq(dataSeries.slug, 'pl-cpi'),
-    });
+    if (cpiIndicators.length > 0 && cpiSeries) {
+      await db
+        .insert(dataPoints)
+        .values(
+          cpiIndicators.map((indicator) => ({
+            seriesId: cpiSeries.id,
+            date: indicator.date,
+            value: indicator.value.toString(),
+            qualityFlag: "verified",
+            sourceMetadata: GusCpiApiClient.archivePageUrl,
+          })),
+        )
+        .onConflictDoUpdate({
+          target: [dataPoints.seriesId, dataPoints.date],
+          set: {
+            value: sql`EXCLUDED.value`,
+            qualityFlag: "verified",
+            sourceMetadata: GusCpiApiClient.archivePageUrl,
+          },
+        });
 
-    if (cpiSeries) {
       await db
         .update(dataSeries)
         .set({
-          dataSource: cpiSeries.dataSource ?? 'GUS / partial seeded coverage',
-          lastSyncStatus: 'partial',
-          lastSyncError:
-            'Monthly CPI sync is not yet sourced from a stable official feed. Existing coverage remains reference-only.',
+          dataSource: "GUS official CPI monthly archive CSV",
+          lastDataPointDate: latestCpiRate?.date,
+          lastSyncStatus: "success",
+          lastSyncError: null,
           updatedAt: new Date(),
         })
         .where(eq(dataSeries.id, cpiSeries.id));
     }
 
     const results = {
-      inflation: null,
+      inflation: latestCpiRate?.value ?? null,
       nbp: latestNbpRate?.value ?? null,
       wibor3m: null,
       wibor6m: null,
@@ -108,9 +148,23 @@ export async function syncMacroData() {
     return results;
   } catch (error) {
     console.error('Macro sync failed:', error);
+    const cpiSeries = await db.query.dataSeries.findFirst({
+      where: eq(dataSeries.slug, "pl-cpi"),
+    });
     const nbpSeries = await db.query.dataSeries.findFirst({
       where: eq(dataSeries.slug, 'nbp-ref-rate'),
     });
+
+    if (cpiSeries) {
+      await db
+        .update(dataSeries)
+        .set({
+          lastSyncStatus: "failed",
+          lastSyncError: String(error),
+          updatedAt: new Date(),
+        })
+        .where(eq(dataSeries.id, cpiSeries.id));
+    }
 
     if (nbpSeries) {
       await db

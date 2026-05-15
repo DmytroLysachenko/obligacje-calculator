@@ -1,7 +1,8 @@
 import { db } from "@/db";
 import { dataSeries, dataPoints, investmentInstruments } from "@/db/schema";
 import { StooqApiClient } from "@/lib/api-clients/stooq";
-import { eq } from "drizzle-orm";
+import { GusCpiApiClient } from "@/lib/api-clients/gus-cpi";
+import { eq, sql } from "drizzle-orm";
 import "dotenv/config";
 
 interface NbpRateItem {
@@ -11,6 +12,7 @@ interface NbpRateItem {
 
 async function seedMacroAndMarket() {
   const stooq = new StooqApiClient();
+  const gusCpiClient = new GusCpiApiClient();
 
   const seriesMetadata = [
     {
@@ -19,7 +21,7 @@ async function seedMacroAndMarket() {
       category: 'macro' as const,
       unit: '%',
       frequency: 'monthly',
-      dataSource: 'GUS'
+      dataSource: 'GUS official CPI monthly archive CSV'
     },
     {
       slug: 'nbp-ref-rate',
@@ -114,34 +116,29 @@ async function seedMacroAndMarket() {
     console.error("[Seed] Failed to fetch S&P 500 data:", e);
   }
 
-  // 3. Mock Inflation (until we have a better GUS scraper or API)
-  console.log("[Seed] Seeding placeholder historical inflation...");
+  // 3. Seed official CPI history from the GUS monthly archive CSV.
+  console.log("[Seed] Fetching official GUS CPI history...");
   const cpiSeries = await db.query.dataSeries.findFirst({ where: eq(dataSeries.slug, 'pl-cpi') });
   if (cpiSeries) {
-    const inflationPoints = [
-      { date: '2023-01-01', value: '17.2' },
-      { date: '2023-02-01', value: '18.4' },
-      { date: '2023-03-01', value: '16.1' },
-      { date: '2023-04-01', value: '14.7' },
-      { date: '2023-05-01', value: '13.0' },
-      { date: '2023-06-01', value: '11.5' },
-      { date: '2023-07-01', value: '10.8' },
-      { date: '2023-08-01', value: '10.1' },
-      { date: '2023-09-01', value: '8.2' },
-      { date: '2023-10-01', value: '6.6' },
-      { date: '2023-11-01', value: '6.6' },
-      { date: '2023-12-01', value: '6.2' },
-      { date: '2024-01-01', value: '3.7' },
-      { date: '2024-02-01', value: '2.8' },
-      { date: '2024-03-01', value: '2.0' },
-      { date: '2024-04-01', value: '2.4' },
-      { date: '2024-05-01', value: '2.5' },
-    ];
-    
+    const inflationPoints = await gusCpiClient.fetchHistoricalData();
+
     await db.insert(dataPoints).values(
-      inflationPoints.map(p => ({ seriesId: cpiSeries.id, ...p }))
-    ).onConflictDoNothing();
-    console.log("[Seed] Seeded historical inflation points.");
+      inflationPoints.map(p => ({
+        seriesId: cpiSeries.id,
+        date: p.date,
+        value: p.value.toString(),
+        qualityFlag: 'verified',
+        sourceMetadata: GusCpiApiClient.archivePageUrl,
+      }))
+    ).onConflictDoUpdate({
+      target: [dataPoints.seriesId, dataPoints.date],
+      set: {
+        value: sql`EXCLUDED.value`,
+        qualityFlag: 'verified',
+        sourceMetadata: GusCpiApiClient.archivePageUrl,
+      }
+    });
+    console.log(`[Seed] Seeded ${inflationPoints.length} historical CPI points from GUS.`);
   }
 
   console.log("[Seed] Data seeding completed.");

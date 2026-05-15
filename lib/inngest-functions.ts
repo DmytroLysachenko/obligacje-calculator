@@ -3,7 +3,6 @@ import { SyncEngine } from "./sync/sync-engine";
 import { NbpSyncProvider } from "./sync/providers/nbp";
 import { StooqSyncProvider } from "./sync/providers/stooq";
 import { GusSyncProvider } from "./sync/providers/gus";
-import { WorldBankSyncProvider } from "./sync/providers/worldbank";
 import { db } from "@/db";
 import { userInvestmentLots, communityInsights } from "@/db/schema";
 import { sql } from "drizzle-orm";
@@ -56,7 +55,6 @@ export const syncEconomicData = inngest.createFunction(
       new NbpSyncProvider(),
       new StooqSyncProvider(),
       new GusSyncProvider(),
-      new WorldBankSyncProvider()
     ]);
 
     // Perform a full sync from the last known point in the DB

@@ -5,13 +5,11 @@ async function run() {
   const { SyncEngine } = await import("./sync-engine");
   const { NbpSyncProvider } = await import("./providers/nbp");
   const { StooqSyncProvider } = await import("./providers/stooq");
-  const { WorldBankSyncProvider } = await import("./providers/worldbank");
   const { GusSyncProvider } = await import("./providers/gus");
 
   const engine = new SyncEngine([
     new NbpSyncProvider(),
     new StooqSyncProvider(),
-    new WorldBankSyncProvider(),
     new GusSyncProvider()
   ]);
 

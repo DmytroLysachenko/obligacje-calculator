@@ -10,7 +10,7 @@ const SERIES = [
     category: 'macro' as const,
     unit: '%',
     frequency: 'monthly',
-    dataSource: 'GUS/WorldBank',
+    dataSource: 'GUS official CPI monthly archive CSV',
   },
   {
     slug: 'nbp-ref-rate',

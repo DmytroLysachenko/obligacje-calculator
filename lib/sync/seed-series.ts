@@ -16,7 +16,7 @@ async function seed() {
       category: 'macro',
       unit: '%',
       frequency: 'monthly',
-      data_source: 'GUS/WorldBank'
+      data_source: 'GUS official CPI monthly archive CSV'
     },
     {
       slug: 'nbp-ref-rate',
