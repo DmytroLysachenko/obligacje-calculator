@@ -30,11 +30,11 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     name: 'OTS',
     fullName: {
       en: '3-Month Fixed Rate Savings Bonds',
-      pl: 'Oszczędnościowe Trzymiesięczne Stałoprocentowe',
+      pl: 'Oszczednosciowe trzymiesieczne stalooprocentowe',
     },
     description: {
       en: 'Fixed interest rate for the full 3-month term. Best for short-term cash parking.',
-      pl: 'Stałe oprocentowanie przez pełne 3 miesiące. Najprostsza opcja dla krótkiego postoju gotówki.',
+      pl: 'Stale oprocentowanie przez pelne 3 miesiace. Najprostsza opcja dla krotkiego postoju gotowki.',
     },
     duration: 0.25,
     nominalValue: 100,
@@ -52,11 +52,11 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     name: 'ROR',
     fullName: {
       en: '1-Year Variable Rate Savings Bonds',
-      pl: 'Roczne Oszczędnościowe Referencyjne',
+      pl: 'Roczne oszczednosciowe referencyjne',
     },
     description: {
       en: 'Monthly payout bond linked to the NBP reference rate after the first monthly period.',
-      pl: 'Obligacja z miesięczną wypłatą odsetek, oparta na stopie referencyjnej NBP po pierwszym okresie.',
+      pl: 'Obligacja z miesieczna wyplata odsetek, oparta na stopie referencyjnej NBP po pierwszym okresie.',
     },
     duration: 1,
     nominalValue: 100,
@@ -74,11 +74,11 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     name: 'DOR',
     fullName: {
       en: '2-Year Variable Rate Savings Bonds',
-      pl: 'Dwuletnie Oszczędnościowe Referencyjne',
+      pl: 'Dwuletnie oszczednosciowe referencyjne',
     },
     description: {
       en: 'Monthly payout bond linked to the NBP reference rate with a 0.15% margin after the first period.',
-      pl: 'Obligacja z miesięczną wypłatą odsetek, oparta na stopie referencyjnej NBP z marżą 0,15 p.p. po pierwszym okresie.',
+      pl: 'Obligacja z miesieczna wyplata odsetek, oparta na stopie referencyjnej NBP z marza 0,15 p.p. po pierwszym okresie.',
     },
     duration: 2,
     nominalValue: 100,
@@ -96,11 +96,11 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     name: 'TOS',
     fullName: {
       en: '3-Year Fixed Rate Savings Bonds',
-      pl: 'Trzyletnie Oszczędnościowe Stałoprocentowe',
+      pl: 'Trzyletnie oszczednosciowe stalooprocentowe',
     },
     description: {
       en: 'Fixed 3-year rate with annual capitalization.',
-      pl: 'Stałe oprocentowanie przez 3 lata z roczną kapitalizacją odsetek.',
+      pl: 'Stale oprocentowanie przez 3 lata z roczna kapitalizacja odsetek.',
     },
     duration: 3,
     nominalValue: 100,
@@ -118,11 +118,11 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     name: 'COI',
     fullName: {
       en: '4-Year Inflation-Indexed Savings Bonds',
-      pl: 'Czteroletnie Oszczędnościowe Indeksowane',
+      pl: 'Czteroletnie oszczednosciowe indeksowane',
     },
     description: {
       en: 'First year fixed, then yearly inflation plus a 1.50% margin, with annual interest payout.',
-      pl: 'Pierwszy rok stały, potem inflacja roczna plus marża 1,50 p.p., z coroczną wypłatą odsetek.',
+      pl: 'Pierwszy rok staly, potem inflacja roczna plus marza 1,50 p.p., z coroczna wyplata odsetek.',
     },
     duration: 4,
     nominalValue: 100,
@@ -140,11 +140,11 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     name: 'ROS',
     fullName: {
       en: '6-Year Family Inflation-Indexed Savings Bonds',
-      pl: 'Rodzinne Oszczędnościowe Sześcioletnie',
+      pl: 'Rodzinne oszczednosciowe szescioletnie',
     },
     description: {
       en: 'Family bond for 800+ beneficiaries with annual capitalization and inflation plus 2.00% margin after year one.',
-      pl: 'Rodzinna obligacja dla beneficjentów 800+ z roczną kapitalizacją i oprocentowaniem inflacja + 2,00 p.p. po pierwszym roku.',
+      pl: 'Rodzinna obligacja dla beneficjentow 800+ z roczna kapitalizacja i oprocentowaniem inflacja + 2,00 p.p. po pierwszym roku.',
     },
     duration: 6,
     nominalValue: 100,
@@ -163,11 +163,11 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     name: 'EDO',
     fullName: {
       en: '10-Year Inflation-Indexed Savings Bonds',
-      pl: 'Emerytalne Dziesięcioletnie Oszczędnościowe',
+      pl: 'Emerytalne dziesiecioletnie oszczednosciowe',
     },
     description: {
       en: 'First year fixed, then yearly inflation plus a 2.00% margin with annual capitalization.',
-      pl: 'Pierwszy rok stały, potem inflacja roczna plus marża 2,00 p.p. z coroczną kapitalizacją odsetek.',
+      pl: 'Pierwszy rok staly, potem inflacja roczna plus marza 2,00 p.p. z coroczna kapitalizacja odsetek.',
     },
     duration: 10,
     nominalValue: 100,
@@ -185,11 +185,11 @@ export const BOND_DEFINITIONS: Record<BondType, BondDefinition> = {
     name: 'ROD',
     fullName: {
       en: '12-Year Family Inflation-Indexed Savings Bonds',
-      pl: 'Rodzinne Oszczędnościowe Dwunastoletnie',
+      pl: 'Rodzinne oszczednosciowe dwunastoletnie',
     },
     description: {
       en: 'Longest family bond, with annual capitalization and inflation plus a 2.50% margin after year one.',
-      pl: 'Najdłuższa obligacja rodzinna z roczną kapitalizacją i oprocentowaniem inflacja + 2,50 p.p. po pierwszym roku.',
+      pl: 'Najdluzsza obligacja rodzinna z roczna kapitalizacja i oprocentowaniem inflacja + 2,50 p.p. po pierwszym roku.',
     },
     duration: 12,
     nominalValue: 100,

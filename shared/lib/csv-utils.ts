@@ -52,9 +52,17 @@ export function convertTimelineToCSV(
     { key: 'periodLabel', header: headers.period || 'Period' },
     { key: 'cycleLabel', header: language === 'pl' ? 'Cykl' : 'Cycle' },
     { key: 'cadenceLabel', header: language === 'pl' ? 'Znaczenie' : 'Meaning' },
+    {
+      key: 'valueMeaningLabel',
+      header: language === 'pl' ? 'Jak czytac ten wiersz' : 'How to read this row',
+    },
     { key: 'interestRateLabel', header: headers.rate || 'Rate' },
     { key: 'rateSourceLabel', header: language === 'pl' ? 'Zrodlo stopy' : 'Rate source' },
     { key: 'referenceLabel', header: language === 'pl' ? 'Kontekst stopy' : 'Rate context' },
+    {
+      key: 'projectionLabel',
+      header: language === 'pl' ? 'Tryb danych' : 'Data mode',
+    },
     { key: 'nominalValue', header: headers.nominalValue || 'Nominal value' },
     { key: 'netProfit', header: language === 'pl' ? 'Zysk netto' : 'Net profit' },
     { key: 'realValue', header: headers.realValue || 'Real value' },
