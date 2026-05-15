@@ -111,6 +111,10 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
     }
   }, [portfolio.id]);
 
+  useEffect(() => {
+    setIsPublic(portfolio.isPublic || false);
+  }, [portfolio.id, portfolio.isPublic]);
+
   const runSimulation = useCallback(async () => {
     if (lots.length === 0) {
       setSimulation(null);

@@ -167,6 +167,22 @@ export const NotebookContainer: React.FC = () => {
   const [selectedPortfolioId, setSelectedPortfolioId] = useState<string | null>(null);
   const importRef = useRef<HTMLInputElement | null>(null);
 
+  const mergePortfolioIntoState = useCallback((portfolio: UserPortfolio) => {
+    setPortfolios((current) => {
+      const existingIndex = current.findIndex((item) => item.id === portfolio.id);
+      if (existingIndex === -1) {
+        return [portfolio, ...current];
+      }
+
+      const next = [...current];
+      next[existingIndex] = portfolio;
+      return next.sort((left, right) =>
+        new Date(right.updatedAt ?? right.createdAt ?? 0).getTime()
+        - new Date(left.updatedAt ?? left.createdAt ?? 0).getTime(),
+      );
+    });
+  }, []);
+
   const resolvePortfolioError = useCallback(
     (payload?: { error?: string; code?: string } | null) => {
       if (payload?.code === 'portfolio_storage_unavailable') {
@@ -210,6 +226,15 @@ export const NotebookContainer: React.FC = () => {
     fetchPortfolios();
   }, [fetchPortfolios]);
 
+  useEffect(() => {
+    if (selectedPortfolioId && !isLoading && portfolios.length > 0) {
+      const selectedStillExists = portfolios.some((portfolio) => portfolio.id === selectedPortfolioId);
+      if (!selectedStillExists) {
+        setSelectedPortfolioId(null);
+      }
+    }
+  }, [isLoading, portfolios, selectedPortfolioId]);
+
   const emptyStateSteps: NotebookStepItem[] = [
     {
       id: 'create',
@@ -247,9 +272,11 @@ export const NotebookContainer: React.FC = () => {
 
       const created = unwrapApiData<UserPortfolio>(await response.json().catch(() => null));
       setError(null);
-      await fetchPortfolios();
       if (created?.id) {
+        mergePortfolioIntoState(created);
         setSelectedPortfolioId(created.id);
+      } else {
+        await fetchPortfolios();
       }
     } catch (caughtError) {
       console.error(caughtError);
@@ -274,8 +301,9 @@ export const NotebookContainer: React.FC = () => {
         throw new Error(t('notebook.create_error'));
       }
 
-      const portfolio = await response.json();
-      const portfolioId = unwrapApiData<UserPortfolio>(portfolio)?.id;
+      const portfolioResponse = await response.json();
+      const createdPortfolio = unwrapApiData<UserPortfolio>(portfolioResponse);
+      const portfolioId = createdPortfolio?.id;
       const demoLots = [
         { bondType: 'EDO', amount: 50, purchaseDate: '2023-01-01' },
         { bondType: 'COI', amount: 100, purchaseDate: '2023-06-15' },
@@ -290,9 +318,11 @@ export const NotebookContainer: React.FC = () => {
         });
       }
 
-      await fetchPortfolios();
-      if (portfolioId) {
-        setSelectedPortfolioId(portfolioId);
+      if (createdPortfolio?.id) {
+        mergePortfolioIntoState(createdPortfolio);
+        setSelectedPortfolioId(createdPortfolio.id);
+      } else {
+        await fetchPortfolios();
       }
     } catch (caughtError) {
       console.error(caughtError);
@@ -326,10 +356,14 @@ export const NotebookContainer: React.FC = () => {
       }
 
       setError(null);
-      await fetchPortfolios();
-      const createdPortfolio = unwrapApiData<{ portfolio?: { id?: string } }>(await response.clone().json().catch(() => null));
-      if (createdPortfolio?.portfolio?.id) {
-        setSelectedPortfolioId(createdPortfolio.portfolio.id);
+      const importPayload = unwrapApiData<{ portfolio?: UserPortfolio; importedLots?: number }>(
+        await response.clone().json().catch(() => null),
+      );
+      if (importPayload?.portfolio?.id) {
+        mergePortfolioIntoState(importPayload.portfolio);
+        setSelectedPortfolioId(importPayload.portfolio.id);
+      } else {
+        await fetchPortfolios();
       }
     } catch (caughtError) {
       console.error(caughtError);
@@ -349,9 +383,14 @@ export const NotebookContainer: React.FC = () => {
     return portfolio ? (
       <PortfolioDetails
         portfolio={portfolio}
-        onBack={() => setSelectedPortfolioId(null)}
+        onBack={() => {
+          void fetchPortfolios();
+          setSelectedPortfolioId(null);
+        }}
       />
-    ) : null;
+    ) : (
+      <NotebookLoadingState />
+    );
   }
 
   const notebookIntro =
