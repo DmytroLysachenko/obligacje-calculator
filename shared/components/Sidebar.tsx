@@ -135,9 +135,9 @@ function NavLinkItem({
       href={item.href}
       onClick={onItemClick}
       className={cn(
-        'group block rounded-[1.35rem] border px-3.5 py-3.5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2',
+        'group block rounded-[1.35rem] border px-3.5 py-3 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2',
         isActive
-          ? 'border-slate-300 bg-[linear-gradient(135deg,rgba(30,41,59,0.92),rgba(51,65,85,0.88))] text-white shadow-sm shadow-slate-900/10'
+          ? 'border-sky-200/80 bg-[linear-gradient(135deg,rgba(219,234,254,0.92),rgba(239,246,255,0.96))] text-slate-950 shadow-sm shadow-sky-100/50'
           : 'border-slate-200/80 bg-white/90 text-slate-900 hover:border-slate-300 hover:bg-white',
       )}
     >
@@ -145,7 +145,7 @@ function NavLinkItem({
         <div
           className={cn(
             'rounded-xl p-2',
-            isActive ? 'bg-white/12 text-white' : 'bg-slate-100 text-slate-700',
+            isActive ? 'bg-slate-900 text-white shadow-sm shadow-slate-900/10' : 'bg-slate-100 text-slate-700',
           )}
         >
           <Icon className="h-4 w-4" />
@@ -159,7 +159,7 @@ function NavLinkItem({
             className={cn(
               'h-4 w-4 shrink-0 transition-transform',
               isActive
-                ? 'text-white/70'
+                ? 'text-slate-500'
                 : 'text-slate-400 group-hover:translate-x-0.5',
             )}
           />
@@ -200,7 +200,7 @@ function SidebarLanguageUtility() {
 
   return (
     <SidebarUtilityPanel>
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2.5">
         <div className="min-w-0">
           <p className="text-xs font-semibold text-slate-500">{t('common.language')}</p>
           <p className="mt-0.5 text-[11px] text-slate-500">PL / EN</p>

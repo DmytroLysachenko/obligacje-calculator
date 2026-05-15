@@ -366,8 +366,9 @@ export function LandingDashboardClient() {
   return (
     <div className="space-y-8 pb-20 md:space-y-10">
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
-        <div className="surface-shell relative overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#f8fafc_0%,#eff6ff_24%,#eef2ff_58%,#ffffff_100%)] px-5 py-7 md:rounded-[2.5rem] md:px-8 md:py-10">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.18),transparent_25%),radial-gradient(circle_at_bottom_left,rgba(99,102,241,0.16),transparent_32%)]" />
+        <div className="surface-shell relative overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#f8fafc_0%,#eff6ff_22%,#eef2ff_52%,#ffffff_100%)] px-5 py-7 md:rounded-[2.5rem] md:px-8 md:py-10">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.2),transparent_26%),radial-gradient(circle_at_bottom_left,rgba(99,102,241,0.18),transparent_34%)]" />
+          <div className="absolute inset-x-8 top-6 h-px bg-[linear-gradient(90deg,transparent,rgba(14,165,233,0.24),transparent)]" />
           <div className="absolute -right-10 top-8 h-56 w-56 rounded-full bg-sky-200/35 blur-3xl" />
           <div className="absolute bottom-2 left-12 h-40 w-40 rounded-full bg-indigo-200/30 blur-3xl" />
           <div className="absolute left-1/2 top-0 h-48 w-48 -translate-x-1/2 rounded-full bg-cyan-100/20 blur-3xl" />
@@ -406,7 +407,14 @@ export function LandingDashboardClient() {
               </Button>
             </div>
 
-            <HeroTrustStrip language={language} />
+            <div className="space-y-3">
+              <HeroTrustStrip language={language} />
+              <p className="text-[13px] leading-6 text-slate-600">
+                {language === 'pl'
+                  ? 'Najpierw jedno czyste obliczenie, dopiero potem porownania, notatnik i scenariusze poboczne.'
+                  : 'Start with one clean calculation before moving into comparisons, notebook work, or side scenarios.'}
+              </p>
+            </div>
           </div>
         </div>
 
