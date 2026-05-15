@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { addYears, compareAsc, format, parseISO } from 'date-fns';
 import {
   CartesianGrid,
@@ -137,6 +137,21 @@ export const BondComparisonContainer = () => {
   const [reinvest, setReinvest] = useState(true);
   const [isDirty, setIsDirty] = useState(true);
 
+  useEffect(() => {
+    if (!customInflation) {
+      return;
+    }
+
+    const nextLength = Math.max(1, Math.round(duration));
+    if (customInflation.length === nextLength) {
+      return;
+    }
+
+    setCustomInflation(
+      Array.from({ length: nextLength }, (_, index) => customInflation[index] ?? expectedInflation),
+    );
+  }, [customInflation, duration, expectedInflation]);
+
   const results = useMemo(
     () => (Array.isArray(envelope?.result) ? envelope.result : []),
     [envelope],
@@ -147,6 +162,10 @@ export const BondComparisonContainer = () => {
     .split('T')[0];
 
   const calculateComparison = useCallback(async () => {
+    if (selectedBonds.length === 0) {
+      return;
+    }
+
     setLoading(true);
     setIsDirty(false);
     try {
@@ -191,7 +210,17 @@ export const BondComparisonContainer = () => {
     setIsDirty(true);
     if (key === 'expectedInflation') setExpectedInflation(value as number);
     if (key === 'expectedNbpRate') setExpectedNbpRate(value as number);
-    if (key === 'customInflation') setCustomInflation(value as number[] | undefined);
+    if (key === 'customInflation') {
+      const nextPath = value as number[] | undefined;
+      setCustomInflation(
+        nextPath
+          ? Array.from(
+              { length: Math.max(1, Math.round(duration)) },
+              (_, index) => nextPath[index] ?? expectedInflation,
+            )
+          : undefined,
+      );
+    }
     if (key === 'inflationScenario') setInflationScenario(value as 'low' | 'base' | 'high');
   };
 

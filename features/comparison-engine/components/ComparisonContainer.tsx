@@ -248,8 +248,6 @@ export const ComparisonContainer: React.FC = () => {
       language === 'pl'
         ? 'Utrzymaj jedna baze: kwote, daty i zalozenia. Nadpisania scenariuszy wlaczaj tylko wtedy, gdy rzeczywiscie maja znaczenie.'
         : 'Keep one shared base scenario, then apply scenario-specific overrides only when they truly matter.',
-    runIndependent:
-      language === 'pl' ? 'Uruchom porownanie niezalezne' : 'Run independent comparison',
     readyTitle:
       language === 'pl'
         ? 'Porownaj dwa zatwierdzone scenariusze, nie dwa ruchome cele.'
