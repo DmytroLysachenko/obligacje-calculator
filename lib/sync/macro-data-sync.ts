@@ -20,7 +20,7 @@ async function retry<T>(fn: () => Promise<T>, retries = 3, delay = 1000): Promis
 /**
  * Syncs trusted macroeconomic data for retained surfaces.
  * NBP reference-rate history is synced from official NBP data.
- * CPI remains explicit about partial coverage until a stable official monthly source is wired in.
+ * CPI is synced from the official monthly GUS archive CSV.
  */
 export async function syncMacroData() {
   const nbpClient = new NbpApiClient();

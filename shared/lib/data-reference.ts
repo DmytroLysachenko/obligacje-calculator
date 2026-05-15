@@ -42,6 +42,10 @@ const REFERENCE_COPY = {
     pl: 'GUS / czesciowy zakres referencyjny',
     en: 'GUS / partial reference coverage',
   },
+  officialGusArchive: {
+    pl: 'Oficjalne archiwum CPI GUS',
+    en: 'Official GUS CPI archive',
+  },
   staleDataset: {
     pl: 'Zsynchronizowany, ale przeterminowany zakres',
     en: 'Synced but stale coverage',
@@ -129,6 +133,10 @@ function getKnownDataSourceLabel(
     return getReferenceCopy('officialGusPartial', language);
   }
 
+  if (normalized === 'gus official cpi monthly archive csv') {
+    return getReferenceCopy('officialGusArchive', language);
+  }
+
   if (
     normalized === 'official bond offer page'
     || normalized === 'official bond offer communication'
@@ -149,6 +157,12 @@ function getCoverageNoteLabel(
     return language === 'pl'
       ? 'Miesieczny CPI nadal ma tylko czesciowy zakres referencyjny. Nie czytaj go jako w pelni aktualnych danych rynkowych.'
       : 'Monthly CPI still has only partial reference coverage. Do not read it as fully current market data.';
+  }
+
+  if (normalized === 'cpi-fallback-reference') {
+    return language === 'pl'
+      ? 'Ten wykres CPI korzysta z zastepczego zakresu awaryjnego. Czytaj go tylko jako kontekst pomocniczy, dopoki oficjalny import nie zostanie przywrocony.'
+      : 'This CPI chart is using emergency fallback coverage. Treat it only as supporting context until official import is restored.';
   }
 
   if (normalized === 'cpi-stale-coverage') {

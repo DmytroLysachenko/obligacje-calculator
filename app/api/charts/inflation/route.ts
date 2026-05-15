@@ -47,7 +47,7 @@ function fallbackResponse() {
     coverageStart: FALLBACK_INFLATION[0]?.date,
     coverageEnd: FALLBACK_INFLATION[FALLBACK_INFLATION.length - 1]?.date,
     syncStatus: 'failed',
-    coverageNote: 'cpi-partial-reference',
+    coverageNote: 'cpi-fallback-reference',
   }));
 }
 
@@ -96,7 +96,7 @@ export async function GET() {
         ? 'reference-synced-context'
         : syncStatus === 'stale'
           ? 'cpi-stale-coverage'
-          : 'cpi-partial-reference';
+          : 'cpi-fallback-reference';
 
     return NextResponse.json(createSuccessResponse<ChartSeriesEnvelope<(typeof formatted)[number]>>({
       data: formatted,

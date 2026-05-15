@@ -92,4 +92,22 @@ describe('data-reference localization', () => {
     expect(getReferenceState(staleMeta, 'pl').title).toBe('Zakres wymaga odswiezenia');
     expect(getReferenceState(staleMeta, 'en').description).toContain('too old');
   });
+
+  it('localizes the official GUS archive and fallback CPI labels', () => {
+    expect(
+      getReferenceSourceLabel({ dataSource: 'GUS official CPI monthly archive CSV' }, 'pl'),
+    ).toBe('Oficjalne archiwum CPI GUS');
+
+    expect(
+      getReferenceState(
+        {
+          source: 'fallback',
+          usedFallback: true,
+          syncStatus: 'failed',
+          coverageNote: 'cpi-fallback-reference',
+        },
+        'en',
+      ).description,
+    ).toContain('emergency fallback');
+  });
 });
