@@ -47,6 +47,7 @@ import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightA
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { ScenarioReadyPanel } from '@/shared/components/ScenarioReadyPanel';
 import { convertTimelineToCSV, downloadFile } from '@/shared/lib/csv-utils';
+import { buildTimelineExportHeaders } from '@/shared/lib/export-headers';
 import { sampleSeriesPoints } from '@/shared/lib/chart-series';
 import { toDateString } from '@/shared/lib/date-timing';
 import { InterestPayout } from '@/features/bond-core/types';
@@ -140,15 +141,7 @@ export const ComparisonContainer: React.FC = () => {
   const handleExportCSV = (results: CalculationResult | null, bondType: string) => {
     if (!results) return;
 
-    const headers = {
-      period: t('bonds.calculation_trace.header_year'),
-      capital: t('bonds.calculation_trace.header_capital'),
-      rate: t('bonds.calculation_trace.header_rate'),
-      interest: t('bonds.calculation_trace.header_interest'),
-      tax: t('bonds.calculation_trace.header_tax'),
-      nominalValue: t('bonds.calculation_trace.header_value_after'),
-      realValue: t('bonds.inflation.adjusted'),
-    };
+    const headers = buildTimelineExportHeaders(t, language);
 
     const csv = convertTimelineToCSV(results.timeline, headers, language);
     downloadFile(

@@ -10,6 +10,7 @@ import { Calendar, FileSpreadsheet } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
 import { convertLotsToCSV, downloadFile } from '@/shared/lib/csv-utils';
+import { buildLotsExportHeaders } from '@/shared/lib/export-headers';
 import { ResultMetricCard } from '@/shared/components/ResultMetricCard';
 import { ResultSummaryHero } from '@/shared/components/ResultSummaryHero';
 
@@ -139,17 +140,8 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
   );
 
   const handleExport = () => {
-    const headers = {
-      purchaseDate: t('bonds.purchase_date'),
-      maturityDate: t('bonds.maturity_date'),
-      invested: t('regular_summary.invested'),
-      interest: t('regular_summary.interest'),
-      tax: t('bonds.tax'),
-      fee: t('bonds.early_withdrawal_fee'),
-      netValue: t('regular_summary.net_value'),
-    };
-
-    const csv = convertLotsToCSV(results.lots, headers);
+    const headers = buildLotsExportHeaders(t, language);
+    const csv = convertLotsToCSV(results.lots, headers, language);
     downloadFile(
       csv,
       `regular_investment_${new Date().toISOString().split('T')[0]}.csv`,

@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { BondInputs, CalculationResult } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
 import { convertTimelineToCSV, downloadFile } from '@/shared/lib/csv-utils';
+import { buildTimelineExportHeaders } from '@/shared/lib/export-headers';
 import { MathDeepDive } from '@/shared/components/MathDeepDive';
 import { ResultMetricCard } from '@/shared/components/ResultMetricCard';
 import { ResultSummaryHero } from '@/shared/components/ResultSummaryHero';
@@ -46,15 +47,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
     }).format(value);
 
   const handleExportCSV = () => {
-    const headers = {
-      period: t('bonds.calculation_trace.header_year'),
-      capital: t('bonds.calculation_trace.header_capital'),
-      rate: t('bonds.calculation_trace.header_rate'),
-      interest: t('bonds.calculation_trace.header_interest'),
-      tax: t('bonds.calculation_trace.header_tax'),
-      nominalValue: t('bonds.calculation_trace.header_value_after'),
-      realValue: t('bonds.inflation.adjusted'),
-    };
+    const headers = buildTimelineExportHeaders(t, language);
     const csv = convertTimelineToCSV(results.timeline, headers, language);
     downloadFile(
       csv,
