@@ -6,9 +6,13 @@ import { db } from '@/db';
 import { userInvestmentLots } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { buildPortfolioSimulationPayload } from '@/lib/portfolio-simulation';
+import { applyPortfolioOwnerCookie, getOwnedPortfolio, resolvePortfolioOwner } from '@/lib/portfolio-access';
+import { ensurePortfolioSchemaCompat } from '@/lib/db-schema-compat';
 
 export async function POST(req: NextRequest) {
   try {
+    await ensurePortfolioSchemaCompat();
+    const owner = await resolvePortfolioOwner();
     const body = await req.json();
     const { portfolioId, expectedInflation = 3.5 } = body;
 
@@ -16,16 +20,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(createErrorResponse('Portfolio ID is required', 'VALIDATION_ERROR'), { status: 400 });
     }
 
+    const portfolio = await getOwnedPortfolio(owner.ownerId, portfolioId);
+    if (!portfolio) {
+      return applyPortfolioOwnerCookie(
+        NextResponse.json(createErrorResponse('Portfolio not found', 'NOT_FOUND'), { status: 404 }),
+        owner,
+      );
+    }
+
     const lots = await db.query.userInvestmentLots.findMany({
       where: eq(userInvestmentLots.portfolioId, portfolioId),
     });
 
     if (lots.length === 0) {
-      return NextResponse.json(createSuccessResponse({
-        items: [],
-        aggregatedTimeline: [],
-        summary: { totalInvested: 0, totalNetValue: 0, totalProfit: 0 }
-      }));
+      return applyPortfolioOwnerCookie(
+        NextResponse.json(createSuccessResponse({
+          items: [],
+          aggregatedTimeline: [],
+          summary: { totalInvested: 0, totalNetValue: 0, totalProfit: 0 }
+        })),
+        owner,
+      );
     }
 
     const envelope = await calculationService.calculate({
@@ -33,7 +48,7 @@ export async function POST(req: NextRequest) {
       payload: buildPortfolioSimulationPayload(lots, { expectedInflation }),
     });
 
-    return NextResponse.json(createSuccessResponse(envelope.result));
+    return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(envelope.result)), owner);
   } catch (error) {
     console.error('Portfolio simulation failed:', error);
     return NextResponse.json(

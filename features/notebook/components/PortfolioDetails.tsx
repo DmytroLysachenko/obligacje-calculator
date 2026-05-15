@@ -512,7 +512,9 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
               {isSimulating ? (
                 <div className="flex min-h-[320px] items-center justify-center gap-3 text-sm text-muted-foreground">
                   <Loader2 className="h-5 w-5 animate-spin" />
-                  Running portfolio simulation...
+                  {language === 'pl'
+                    ? 'Trwa symulacja portfela...'
+                    : 'Running portfolio simulation...'}
                 </div>
               ) : simulation?.aggregatedTimeline ? (
                 <ChartContainer height={360}>
@@ -546,7 +548,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                         labelFormatter={(value) => format(new Date(value as string), 'MMMM yyyy')}
                         formatter={(value: ValueType | undefined) => [
                           formatCurrency(Number(value ?? 0)),
-                          'Total value',
+                          language === 'pl' ? 'Wartosc laczna' : 'Total value',
                         ]}
                       />
                       <Area

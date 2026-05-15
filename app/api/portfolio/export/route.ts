@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { userPortfolios, userInvestmentLots } from '@/db/schema';
+import { userInvestmentLots } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { applyPortfolioOwnerCookie, resolvePortfolioOwner } from '@/lib/portfolio-access';
+import { applyPortfolioOwnerCookie, getOwnedPortfolio, resolvePortfolioOwner } from '@/lib/portfolio-access';
 import { apiHandler } from '@/lib/api-handler';
 import { createSuccessResponse } from '@/shared/types/api';
 import { calculationService } from '@/features/bond-core/application-service';
@@ -22,14 +22,11 @@ export const GET = apiHandler(async (req: NextRequest) => {
     throw new Error('Portfolio ID is required');
   }
 
-  const portfolio = await db.query.userPortfolios.findFirst({
-    where: eq(userPortfolios.id, portfolioId),
-    with: {
-      // Assuming drizzle-orm is configured with relations
-    }
-  });
+  const portfolio = await getOwnedPortfolio(owner.ownerId, portfolioId);
+  if (!portfolio) {
+    throw new Error('Portfolio not found');
+  }
 
-  // Since we don't have relations explicitly defined in schema.ts yet, we fetch separately
   const lots = await db.query.userInvestmentLots.findMany({
     where: eq(userInvestmentLots.portfolioId, portfolioId),
   });
@@ -56,15 +53,19 @@ export const GET = apiHandler(async (req: NextRequest) => {
       withdrawalDate: payload.withdrawalDate,
     },
     portfolio: {
-      name: portfolio?.name,
-      description: portfolio?.description,
+      id: portfolio.id,
+      name: portfolio.name,
+      description: portfolio.description,
       lots: lots.map(lot => ({
+        id: lot.id,
         bondType: lot.bondType,
+        bondTypeId: lot.bondTypeId,
+        bondSeriesId: lot.bondSeriesId,
         purchaseDate: lot.purchaseDate,
         amount: lot.amount,
         isRebought: lot.isRebought,
         notes: lot.notes
-        }))
+      })),
     },
     summary: simulation?.result.summary ?? null,
   };
