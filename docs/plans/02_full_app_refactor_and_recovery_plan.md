@@ -34,6 +34,8 @@ Completed or materially improved already:
 - retained schedule tables now have a reusable mobile sheet pattern instead of raw wide-table dependency on small screens
 - monthly-payout display semantics were corrected so payout-bond results emphasize total investor wealth instead of only bond principal
 - NBP history support is materially broader than before and is labeled more honestly as synced vs curated reference coverage
+- current retained bond definitions now inherit the latest active issued-series terms where `bond_series` coverage exists
+- shared calculator surface primitives now cover section shells, metric strips, and secondary reading checklists across retained calculators
 
 Still not complete:
 
@@ -687,6 +689,7 @@ As of May 8, 2026, the application has moved materially further through this pla
 - payout-style bonds such as ROR and DOR now present total scenario wealth more coherently in charts and timeline rows
 - timeline export and on-screen display derive from a tighter shared display model
 - early-exit and net-gain columns are no longer silently flattened to zero in retained timeline output
+- retained “current offer” defaults no longer rely only on family-level bond rows when active issued-series terms are available
 
 ### Remaining Gaps After The Current Refactor Pass
 

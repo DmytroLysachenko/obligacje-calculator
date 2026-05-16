@@ -143,8 +143,8 @@ Important columns:
 What belongs here:
 
 - stable family-level rules
-- current generic defaults for the family
-- current public offer defaults when no issued-series override is selected
+- generic family defaults used only when no active issued-series override is available
+- descriptive family metadata that survives across monthly issues
 
 What does **not** belong here:
 
@@ -335,6 +335,12 @@ The runtime resolver should:
 3. use first-period series terms where they exist
 4. use later floating/inflation rules according to family mechanics
 
+Current retained runtime behavior now goes one step further:
+
+- the app-wide "current bond definitions" map also inherits the latest active `bond_series` first-period terms where coverage exists
+- this lets selectors and default retained calculator inputs reflect the current offer more truthfully without pretending the whole family row changes every month
+- `polish_bonds` still owns family mechanics, while `bond_series` owns the active issued offer for first-period terms
+
 ### Rule 4. No separate tables per bond type
 
 This is still a rejected direction.
@@ -446,6 +452,21 @@ Remaining important caveats:
 - NBP historical coverage is stronger than before but still partly supported by curated history rather than one ideal official archive endpoint
 - runtime schema compatibility is still doing some migration-like work
 - some calculators still consume family definitions more broadly than ideal issued-series resolution in edge cases
+- NBP history is broader and more truthful than before, but retained reference coverage still includes curated support data rather than one perfect official historical feed
+
+## 9.1 Current retained display-model rule
+
+For payout-style bonds such as `ROR` and `DOR`:
+
+- the primary retained display path is now based on total investor wealth
+- timeline rows explicitly separate:
+  - bond principal still on the instrument
+  - cash already paid out
+  - total scenario wealth
+  - modeled early-exit value
+
+This is an intentional product-trust rule.
+The UI should not imply that the remaining principal on the bond is the investor's whole position once monthly payouts have already been distributed.
 
 ## 10. Current Design Decisions to Preserve
 
@@ -456,4 +477,3 @@ Keep these decisions unless there is a strong reason to reverse them:
 3. Notebook remains a manual portfolio workspace, not a broker integration.
 4. Shared single-scenario links stay server-backed and committed.
 5. Data freshness/source truth must be attached to the series metadata model, not scattered across page components.
-

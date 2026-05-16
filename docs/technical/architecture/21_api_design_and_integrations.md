@@ -86,6 +86,7 @@ Current design:
 
 - prefers DB-backed bond metadata
 - still has bootstrap-code fallback behavior when DB coverage is missing
+- active current-offer defaults are now resolved from the latest applicable `bond_series` rows when available, instead of reading only family-level `polish_bonds` numeric terms
 
 Important product truth:
 
@@ -225,6 +226,7 @@ Current behavior:
 - loads persisted inputs
 - re-runs the calculation path in the shared page
 - presents the scenario as a saved replay surface
+- deliberately does not piggyback on ad hoc query-param reconstruction
 
 ## 7. External Integrations
 
@@ -268,6 +270,7 @@ Current truth rule:
 - direct NBP API is used where it works
 - curated historical support is used where direct historical coverage is not enough
 - the UI must say so clearly
+- retained economic-data and calculator-context surfaces should describe this as reference coverage, not pretend it is a complete official historical archive
 
 Important product rule:
 
@@ -321,6 +324,7 @@ For retained routes:
 - CPI should have one clear writer
 - NBP history should not silently collapse to a single point
 - current offer terms should not depend on stale hardcoded constants when synced DB terms exist
+- chart/table/export adapters for a calculator should all read from one normalized display model, not parallel route-specific transformations
 
 ## 10. Current Known Limitations
 
@@ -337,4 +341,3 @@ These are still real limitations and should remain explicit:
 3. `ApiResponse<T>` remains the preferred route contract for retained internal APIs.
 4. Every chart/reference route should expose enough metadata for truthful source/freshness display.
 5. External-source ambiguity should never be hidden behind polished UI wording.
-
