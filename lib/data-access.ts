@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { dataSeries, dataPoints, taxRules } from "@/db/schema";
+import { bondSeries, dataSeries, dataPoints, taxRules, type BondSeries, type PolishBond } from "@/db/schema";
 import { eq, and, gte, lte, asc, inArray, desc } from "drizzle-orm";
 import { cache } from "react";
 import { HISTORICAL_RETURNS, type MonthlyReturn } from "@/features/bond-core/constants/historical-data";
@@ -178,6 +178,95 @@ export const getHistoricalDataMap = cache(async (fromDate: string, toDate: strin
 
 import { BOND_DEFINITIONS } from "@/features/bond-core/constants/bond-definitions";
 
+function parseNumeric(value: string | null | undefined, fallback: number) {
+  if (value === null || value === undefined || value === '') {
+    return fallback;
+  }
+
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function buildActiveSeriesMap(series: BondSeries[], asOfDate: string) {
+  return series.reduce<Record<string, BondSeries>>((acc, item) => {
+    if (item.sellStartDate > asOfDate) {
+      return acc;
+    }
+
+    const existing = acc[item.bondTypeId];
+    if (!existing || existing.emissionMonth < item.emissionMonth) {
+      acc[item.bondTypeId] = item;
+    }
+
+    return acc;
+  }, {});
+}
+
+export function mergeBondDefinitionsWithSeries(
+  bonds: PolishBond[],
+  series: BondSeries[],
+  fallbackDefinitions: Record<BondType, BondDefinition>,
+  asOfDate = new Date().toISOString().slice(0, 10),
+): BondDefinition[] {
+  if (bonds.length === 0) {
+    return Object.values(fallbackDefinitions);
+  }
+
+  const activeSeriesByBondTypeId = buildActiveSeriesMap(series, asOfDate);
+
+  return bonds.map((bond) => {
+    const symbol = bond.symbol as BondType;
+    const bootstrap = fallbackDefinitions[symbol];
+    const activeSeries = activeSeriesByBondTypeId[bond.id];
+
+    return {
+      type: symbol,
+      name: bond.symbol,
+      fullName: {
+        pl: bond.fullName || bootstrap.fullName.pl,
+        en: bond.fullNameEn || bond.fullName || bootstrap.fullName.en,
+      },
+      description: {
+        pl: bond.description || bootstrap.description.pl,
+        en: bond.descriptionEn || bootstrap.description.en,
+      },
+      duration: bond.durationDays ? bond.durationDays / 365 : bootstrap.duration,
+      nominalValue: parseNumeric(bond.nominalValue, bootstrap.nominalValue),
+      isCapitalized:
+        bond.capitalizationFreqDays === null || bond.capitalizationFreqDays === undefined
+          ? bootstrap.isCapitalized
+          : bond.capitalizationFreqDays > 0,
+      payoutFrequency:
+        (bond.payoutFreqDays || 0) === 30
+          ? InterestPayout.MONTHLY
+          : (bond.payoutFreqDays || 0) === 365
+            ? InterestPayout.YEARLY
+            : InterestPayout.MATURITY,
+      firstYearRate: activeSeries
+        ? parseNumeric(activeSeries.firstYearRate, bootstrap.firstYearRate)
+        : parseNumeric(bond.firstYearRate, bootstrap.firstYearRate),
+      margin: activeSeries
+        ? parseNumeric(activeSeries.baseMargin, bootstrap.margin)
+        : parseNumeric(bond.baseMargin, bootstrap.margin),
+      earlyWithdrawalFee: parseNumeric(bond.withdrawalFee, bootstrap.earlyWithdrawalFee),
+      isInflationIndexed:
+        bond.interestType === 'inflation_linked'
+          ? true
+          : bond.interestType === 'floating_nbp'
+            ? false
+            : bootstrap.isInflationIndexed,
+      isFloating:
+        bond.interestType === 'floating_nbp'
+          ? true
+          : bond.interestType === 'inflation_linked'
+            ? false
+            : bootstrap.isFloating,
+      isFamilyOnly: bond.isFamilyOnly ?? bootstrap.isFamilyOnly ?? false,
+      rebuyDiscount: parseNumeric(bond.rolloverDiscount, bootstrap.rebuyDiscount),
+    };
+  });
+}
+
 /**
  * Fetches all bond definitions from the database and maps them to BondDefinition interface.
  */
@@ -186,52 +275,21 @@ export const getBondDefinitions = cache(async (): Promise<BondDefinition[]> => {
   const cached = getCached<BondDefinition[]>(cacheKey);
   if (cached) return cached;
 
-  const bonds = await db.query.polishBonds.findMany();
+  const [bonds, series] = await Promise.all([
+    db.query.polishBonds.findMany(),
+    db.query.bondSeries.findMany({
+      orderBy: [desc(bondSeries.emissionMonth)],
+    }),
+  ]);
 
   if (bonds.length === 0) {
     return Object.values(BOND_DEFINITIONS);
   }
-
-  const currentMonthFloor = new Date();
-  currentMonthFloor.setUTCDate(1);
-  currentMonthFloor.setUTCHours(0, 0, 0, 0);
-
-  const result = bonds.map(b => {
-    const symbol = b.symbol as BondType;
-    const bootstrap = BOND_DEFINITIONS[symbol];
-    const isCurrentSync =
-      !!b.updatedAt && new Date(b.updatedAt).getTime() >= currentMonthFloor.getTime();
-    
-    return {
-      type: symbol,
-      name: b.symbol,
-      fullName: {
-        pl: isCurrentSync ? b.fullName : bootstrap.fullName.pl,
-        en: isCurrentSync ? b.fullNameEn || b.fullName : bootstrap.fullName.en,
-      },
-      description: {
-        pl: isCurrentSync ? b.description || bootstrap.description.pl : bootstrap.description.pl,
-        en: isCurrentSync ? b.descriptionEn || bootstrap.description.en : bootstrap.description.en,
-      },
-      duration: isCurrentSync ? b.durationDays / 365 : bootstrap.duration,
-      nominalValue: isCurrentSync ? parseFloat(b.nominalValue || "100") : bootstrap.nominalValue,
-      isCapitalized: isCurrentSync ? (b.capitalizationFreqDays || 0) > 0 : bootstrap.isCapitalized,
-      payoutFrequency: isCurrentSync
-        ? (b.payoutFreqDays || 0) === 30
-          ? InterestPayout.MONTHLY
-          : (b.payoutFreqDays || 0) === 365
-            ? InterestPayout.YEARLY
-            : InterestPayout.MATURITY
-        : bootstrap.payoutFrequency,
-      firstYearRate: isCurrentSync ? parseFloat(b.firstYearRate || "0") : bootstrap.firstYearRate,
-      margin: isCurrentSync ? parseFloat(b.baseMargin || "0") : bootstrap.margin,
-      earlyWithdrawalFee: isCurrentSync ? parseFloat(b.withdrawalFee || "0") : bootstrap.earlyWithdrawalFee,
-      isInflationIndexed: isCurrentSync ? b.interestType === "inflation_linked" : bootstrap.isInflationIndexed,
-      isFloating: isCurrentSync ? b.interestType === "floating_nbp" : bootstrap.isFloating,
-      isFamilyOnly: isCurrentSync ? b.isFamilyOnly || false : bootstrap.isFamilyOnly || false,
-      rebuyDiscount: isCurrentSync ? parseFloat(b.rolloverDiscount || "0") : bootstrap.rebuyDiscount,
-    };
-  });
+  const result = mergeBondDefinitionsWithSeries(
+    bonds,
+    series,
+    BOND_DEFINITIONS,
+  );
 
   setCache(cacheKey, result);
   return result;

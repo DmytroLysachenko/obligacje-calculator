@@ -13,6 +13,7 @@ import { ScenarioKind } from './types/scenarios';
 import { BOND_DEFINITIONS } from './constants/bond-definitions';
 import { calculateBondInvestment } from './utils/calculations';
 import { getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
+import { buildBondTimelineDisplayRows } from '@/shared/lib/bond-display';
 
 const today = new Date('2026-05-05T00:00:00.000Z');
 
@@ -226,6 +227,49 @@ describe('Display-facing single-bond invariants', () => {
       expect(point.interestRate).toBeGreaterThanOrEqual(0);
       expect(point.nominalValueAfterInterest).toBeGreaterThanOrEqual(point.nominalValueBeforeInterest);
       expect(point.totalValue).toBeLessThanOrEqual(result.netPayoutValue);
+    }
+  });
+
+  it('shows monthly payout checkpoints as cumulative investor wealth instead of zero-gain placeholders', async () => {
+    const ror = await getSingleBondResult(BondType.ROR, 12);
+    const dor = await getSingleBondResult(BondType.DOR, 24);
+
+    for (const result of [ror, dor]) {
+      const nonInitialPoints = result.timeline.slice(1);
+      expect(nonInitialPoints.length).toBeGreaterThan(0);
+
+      expect(
+        nonInitialPoints.some((point) => point.accumulatedNetInterest > 0),
+      ).toBe(true);
+      expect(
+        nonInitialPoints.some((point) => point.netProfit !== 0),
+      ).toBe(true);
+      expect(
+        nonInitialPoints.some((point) => point.earlyWithdrawalValue > 0),
+      ).toBe(true);
+
+      const displayRows = buildBondTimelineDisplayRows(result.timeline, 'en');
+      expect(
+        displayRows.some((row) => row.paidOutCash > 0),
+      ).toBe(true);
+      expect(
+        displayRows.some((row) => row.totalWealth >= row.principalValue),
+      ).toBe(true);
+
+      for (let index = 1; index < displayRows.length; index += 1) {
+        expect(displayRows[index].paidOutCash).toBeGreaterThanOrEqual(
+          displayRows[index - 1].paidOutCash,
+        );
+      }
+    }
+  });
+
+  it('keeps early-exit values below or equal to total wealth at each checkpoint', async () => {
+    const ror = await getSingleBondResult(BondType.ROR, 48);
+
+    for (const point of ror.timeline.slice(1)) {
+      expect(point.earlyWithdrawalValue).toBeGreaterThanOrEqual(0);
+      expect(point.earlyWithdrawalValue).toBeLessThanOrEqual(point.totalValue);
     }
   });
 });

@@ -72,6 +72,8 @@ export const polishBonds = pgTable("polish_bonds", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export type PolishBond = typeof polishBonds.$inferSelect;
+
 export const taxRules = pgTable("tax_rules", {
   id: uuid("id").primaryKey().defaultRandom(),
   year: integer("year").notNull(),
