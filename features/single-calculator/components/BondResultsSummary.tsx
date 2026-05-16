@@ -7,6 +7,7 @@ import { BondInputs, CalculationResult } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
 import { convertTimelineToCSV, downloadFile } from '@/shared/lib/csv-utils';
 import { buildTimelineExportHeaders } from '@/shared/lib/export-headers';
+import { MetricStrip } from '@/shared/components/MetricStrip';
 import { MathDeepDive } from '@/shared/components/MathDeepDive';
 import { ResultSummaryHero } from '@/shared/components/ResultSummaryHero';
 import { CalculationAuditTrace } from './CalculationAuditTrace';
@@ -167,17 +168,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
         ]}
       />
 
-      <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-        <CardContent className="grid grid-cols-1 divide-y divide-slate-200 p-0 md:grid-cols-2 md:divide-x md:divide-y-0 xl:grid-cols-4">
-          {[...primarySummaryCards, ...secondarySummaryCards].map((card) => (
-            <div key={card.label} className="space-y-2 px-5 py-5">
-              <p className="text-sm font-semibold text-slate-500">{card.label}</p>
-              <p className={`text-2xl font-black tracking-tight ${card.tone}`}>{card.value}</p>
-              <p className="text-sm leading-6 text-slate-600">{card.description}</p>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+      <MetricStrip items={[...primarySummaryCards, ...secondarySummaryCards]} />
 
       {results.overflowInfo ? (
         <Card className="rounded-[2rem] border border-blue-200 bg-blue-50/50 shadow-none">

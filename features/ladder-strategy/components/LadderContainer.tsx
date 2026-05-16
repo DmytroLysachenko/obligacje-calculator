@@ -1,13 +1,14 @@
 'use client';
 
 import React from 'react';
-import { CheckCircle2, ListTree, TrendingUp } from 'lucide-react';
+import { ListTree, TrendingUp } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
+import { ReadingChecklist } from '@/shared/components/ReadingChecklist';
 import { RecalculateButton } from '@/shared/components/RecalculateButton';
 import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
 import { RegularInvestmentInputsForm } from '../../regular-investment/components/RegularInvestmentInputsForm';
@@ -96,6 +97,14 @@ export const LadderContainer: React.FC = () => {
     envelope,
   } = useLadder();
   const { t, language } = useLanguage();
+  const readingGuide = [
+    language === 'pl'
+      ? 'Ta powierzchnia ma sluzyc czytelnosci harmonogramu, a nie rekomendacji wyboru obligacji.'
+      : 'This surface is for schedule clarity, not bond selection advice.',
+    language === 'pl'
+      ? 'Najwazniejsze jest rozmieszczenie terminow zapadalnosci i skupienie zwrotu gotowki.'
+      : 'Focus first on maturity spacing and cash-return concentration.',
+  ];
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' && (isDirty || !results)) {
@@ -165,24 +174,7 @@ export const LadderContainer: React.FC = () => {
               }
               badge={language === 'pl' ? 'Pomocnicze' : 'Secondary'}
             >
-              <div className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  <p className="text-sm leading-7 text-slate-600">
-                    {language === 'pl'
-                      ? 'Ta powierzchnia ma sluzyc czytelnosci harmonogramu, a nie rekomendacji wyboru obligacji.'
-                      : 'This surface is for schedule clarity, not bond selection advice.'}
-                  </p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  <p className="text-sm leading-7 text-slate-600">
-                    {language === 'pl'
-                      ? 'Najwazniejsze jest rozmieszczenie terminow zapadalnosci i skupienie zwrotu gotowki.'
-                      : 'Focus first on maturity spacing and cash-return concentration.'}
-                  </p>
-                </div>
-              </div>
+              <ReadingChecklist items={readingGuide} />
             </SecondaryInsightAccordion>
 
             <LadderTimeline results={results} />

@@ -1,12 +1,14 @@
 'use client';
 
 import React from 'react';
-import { CheckCircle2, PiggyBank } from 'lucide-react';
+import { PiggyBank } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
+import { CalculatorSection } from '@/shared/components/CalculatorSection';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
+import { ReadingChecklist } from '@/shared/components/ReadingChecklist';
 import { RecalculateButton } from '@/shared/components/RecalculateButton';
 import { ScenarioReadyPanel } from '@/shared/components/ScenarioReadyPanel';
 import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
@@ -14,32 +16,6 @@ import { useRegularInvestmentCalculator } from '../hooks/useRegularInvestmentCal
 import { RegularInvestmentChart } from './RegularInvestmentChart';
 import { RegularInvestmentInputsForm } from './RegularInvestmentInputsForm';
 import { RegularInvestmentResultsSummary } from './RegularInvestmentResultsSummary';
-
-function SectionBlock({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="space-y-4">
-      <div className="space-y-2">
-        <h3 className="text-2xl font-black tracking-tight text-slate-950">
-          {title}
-        </h3>
-        {description ? (
-          <p className="max-w-3xl text-sm leading-7 text-slate-600">
-            {description}
-          </p>
-        ) : null}
-      </div>
-      {children}
-    </section>
-  );
-}
 
 const LoadingState = () => (
   <div className="space-y-4">
@@ -64,6 +40,17 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
     envelope,
   } = useRegularInvestmentCalculator();
   const { t, language } = useLanguage();
+  const readingGuide = [
+    language === 'pl'
+      ? 'To jest plan regularnych zakupow, wiec wynik zalezy od liczby partii, czasu i typu obligacji.'
+      : 'This is a recurring purchase plan, so the result depends on lot count, timing, and bond type.',
+    language === 'pl'
+      ? 'Wykres pomaga ocenic rytm budowy kapitalu, a nie tylko wynik koncowy.'
+      : 'The chart helps you read the pace of capital formation, not just the endpoint.',
+    language === 'pl'
+      ? 'Zalozenia i flagi jakosci danych powinny pozostac drugorzedne wobec glownych wynikow.'
+      : 'Assumptions and data-quality flags should stay secondary to the main outcome.',
+  ];
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' && (isDirty || !results)) {
@@ -158,35 +145,10 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
               }
               badge={language === 'pl' ? 'Pomocnicze' : 'Secondary'}
             >
-              <div className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  <p className="text-sm leading-7 text-slate-600">
-                    {language === 'pl'
-                      ? 'To jest plan regularnych zakupow, wiec wynik zalezy od liczby partii, czasu i typu obligacji.'
-                      : 'This is a recurring purchase plan, so the result depends on lot count, timing, and bond type.'}
-                  </p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  <p className="text-sm leading-7 text-slate-600">
-                    {language === 'pl'
-                      ? 'Wykres pomaga ocenic rytm budowy kapitalu, a nie tylko wynik koncowy.'
-                      : 'The chart helps you read the pace of capital formation, not just the endpoint.'}
-                  </p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  <p className="text-sm leading-7 text-slate-600">
-                    {language === 'pl'
-                      ? 'Zalozenia i flagi jakosci danych powinny pozostac drugorzedne wobec glownych wynikow.'
-                      : 'Assumptions and data-quality flags should stay secondary to the main outcome.'}
-                  </p>
-                </div>
-              </div>
+              <ReadingChecklist items={readingGuide} />
             </SecondaryInsightAccordion>
 
-            <SectionBlock
+            <CalculatorSection
               title={language === 'pl' ? 'Projekcja wzrostu' : 'Growth projection'}
               description={
                 language === 'pl'
@@ -200,7 +162,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
                   bondType={inputs.bondType}
                 />
               </div>
-            </SectionBlock>
+            </CalculatorSection>
 
             <SecondaryInsightAccordion
               title={t('bonds.simulation.calculation_context')}

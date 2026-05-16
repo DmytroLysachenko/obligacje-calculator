@@ -268,25 +268,25 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
               <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-slate-50/95 text-xs font-semibold text-slate-600">
                 {t('common.period')}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 w-[23%] bg-slate-50/95 text-xs font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 w-[18%] bg-slate-50/95 text-xs font-semibold text-slate-600">
                 {language === 'pl' ? 'Znaczenie punktu' : 'Checkpoint meaning'}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 w-[18%] bg-slate-50/95 text-xs font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 w-[17%] bg-slate-50/95 text-xs font-semibold text-slate-600">
                 {language === 'pl' ? 'Stopa i podstawa' : 'Rate and basis'}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-slate-50/95 text-xs font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-slate-50/95 text-xs font-semibold text-slate-600">
                 {language === 'pl' ? 'Majatek laczny' : 'Total wealth'}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-slate-50/95 text-xs font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-slate-50/95 text-xs font-semibold text-slate-600">
                 {language === 'pl' ? 'Wyplacona gotowka' : 'Cash paid out'}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 w-[9%] bg-slate-50/95 text-xs font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-slate-50/95 text-xs font-semibold text-slate-600">
                 {language === 'pl' ? 'Zysk netto' : 'Net gain'}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 w-[9%] bg-slate-50/95 text-xs font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-slate-50/95 text-xs font-semibold text-slate-600">
                 {language === 'pl' ? 'Wartosc realna' : 'Real value'}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-slate-50/95 text-right text-xs font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 w-[12%] bg-slate-50/95 text-right text-xs font-semibold text-slate-600">
                 {t('bonds.early_exit_payout')}
               </TableHead>
             </TableRow>
@@ -331,22 +331,21 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
                   </div>
                 </TableCell>
                 <TableCell className="py-4 align-top text-xs text-slate-600">
-                  <div className="space-y-1">
+                  <div className="space-y-1 pr-2">
                     <p className="font-medium leading-5 text-slate-900">{row.cadenceLabel}</p>
-                    <p className="text-xs leading-5 text-slate-500">
+                    <p className="line-clamp-2 text-xs leading-5 text-slate-500">
                       {row.valueMeaningLabel}
                     </p>
-                    <p className="text-xs leading-5 text-slate-400">{row.cycleLabel}</p>
                   </div>
                 </TableCell>
                 <TableCell className="py-4 align-top">
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col gap-1 pr-2">
                     <span className="font-mono text-xs font-semibold text-slate-900">
                       {row.interestRateLabel}
                     </span>
-                    <span className="text-xs leading-5">{row.rateSourceLabel}</span>
+                    <span className="line-clamp-2 text-xs leading-5">{row.rateSourceLabel}</span>
                     {row.referenceLabel ? (
-                      <span className="text-[10px] italic leading-4 text-muted-foreground">
+                      <span className="line-clamp-2 text-[10px] italic leading-4 text-muted-foreground">
                         {row.referenceLabel}
                       </span>
                     ) : null}

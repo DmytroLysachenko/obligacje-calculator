@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { CheckCircle2, Link2, Target } from 'lucide-react';
+import { Link2, Target } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
+import { CalculatorSection } from '@/shared/components/CalculatorSection';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
+import { ReadingChecklist } from '@/shared/components/ReadingChecklist';
 import { RecalculateButton } from '@/shared/components/RecalculateButton';
 import { ScenarioReadyPanel } from '@/shared/components/ScenarioReadyPanel';
 import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
@@ -21,32 +23,6 @@ import { BondChart } from './BondChart';
 import { BondInputsForm } from './BondInputsForm';
 import { BondResultsSummary } from './BondResultsSummary';
 import { BondTimeline } from './BondTimeline';
-
-function SectionBlock({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="space-y-4">
-      <div className="space-y-2">
-        <h3 className="text-2xl font-black tracking-tight text-slate-950">
-          {title}
-        </h3>
-        {description ? (
-          <p className="max-w-3xl text-sm leading-7 text-slate-600">
-            {description}
-          </p>
-        ) : null}
-      </div>
-      {children}
-    </section>
-  );
-}
 
 interface BondCalculatorContainerProps {
   initialInputs?: import('@/features/bond-core/types').BondInputs;
@@ -329,17 +305,10 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
               }
               badge={language === 'pl' ? 'Pomocnicze' : 'Secondary'}
             >
-              <div className="space-y-3">
-                {readingGuide.map((item) => (
-                  <div key={item} className="flex items-start gap-3">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    <p className="text-sm leading-7 text-slate-600">{item}</p>
-                  </div>
-                ))}
-              </div>
+              <ReadingChecklist items={readingGuide} />
             </SecondaryInsightAccordion>
 
-            <SectionBlock
+            <CalculatorSection
               title={t('bonds.evolution')}
               description={
                 language === 'pl'
@@ -361,9 +330,9 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
                   initialInvestment={results.initialInvestment}
                 />
               </div>
-            </SectionBlock>
+            </CalculatorSection>
 
-            <SectionBlock
+            <CalculatorSection
               title={t('bonds.timeline')}
               description={
                 language === 'pl'
@@ -372,7 +341,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
               }
             >
               <BondTimeline results={results} />
-            </SectionBlock>
+            </CalculatorSection>
 
             <SecondaryInsightAccordion
               title={t('bonds.simulation.calculation_context')}

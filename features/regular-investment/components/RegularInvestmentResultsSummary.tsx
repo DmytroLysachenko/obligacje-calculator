@@ -11,8 +11,8 @@ import { format, parseISO } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
 import { convertLotsToCSV, downloadFile } from '@/shared/lib/csv-utils';
 import { buildLotsExportHeaders } from '@/shared/lib/export-headers';
+import { MetricStrip } from '@/shared/components/MetricStrip';
 import { ResponsiveTableSheet } from '@/shared/components/ResponsiveTableSheet';
-import { ResultMetricCard } from '@/shared/components/ResultMetricCard';
 import { ResultSummaryHero } from '@/shared/components/ResultSummaryHero';
 
 interface RegularInvestmentResultsSummaryProps {
@@ -174,28 +174,9 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
         ]}
       />
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {primaryStats.map((stat) => (
-          <ResultMetricCard
-            key={stat.label}
-            label={stat.label}
-            value={stat.value}
-            description={stat.helper}
-          />
-        ))}
-      </div>
+      <MetricStrip items={primaryStats} columns="grid-cols-1 md:grid-cols-2 xl:grid-cols-4" />
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        {supportingStats.map((stat) => (
-          <Card key={stat.label} className="rounded-2xl border shadow-none">
-            <CardContent className="space-y-2 p-5">
-              <p className="text-sm font-semibold text-slate-500">{stat.label}</p>
-              <p className="text-2xl font-black tracking-tight text-slate-950">{stat.value}</p>
-              <p className="text-sm leading-6 text-slate-600">{stat.helper}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <MetricStrip items={supportingStats} columns="grid-cols-1 lg:grid-cols-2" />
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         <Card className="rounded-2xl border shadow-none">

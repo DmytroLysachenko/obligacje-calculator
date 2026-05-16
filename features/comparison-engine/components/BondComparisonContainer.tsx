@@ -33,6 +33,7 @@ import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
+import { ReadingChecklist } from '@/shared/components/ReadingChecklist';
 import { RecalculateButton } from '@/shared/components/RecalculateButton';
 import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
@@ -283,6 +284,17 @@ export const BondComparisonContainer = () => {
       current.result.netPayoutValue > best.result.netPayoutValue ? current : best,
     );
   }, [results]);
+  const comparisonReadingGuide = [
+    language === 'pl'
+      ? 'To porownanie pokazuje kompromisy scenariusza, a nie uniwersalnie najlepsza obligacje.'
+      : 'This comparison shows scenario tradeoffs, not a universally best bond.',
+    language === 'pl'
+      ? 'Czytaj je jako test jednego ustawienia wspolnego, nie jako gotowa rekomendacje dla kazdego inwestora.'
+      : 'Read it as a test of one committed shared setup, not as finished advice for every investor.',
+    language === 'pl'
+      ? 'Najpierw odczytaj wynik glowny, potem karty obligacji, a meta dane otwieraj tylko gdy chcesz zweryfikowac zalozenia.'
+      : 'Read the main result first, then the bond cards, and open the meta context only when you need to verify assumptions.',
+  ];
 
   return (
     <div className="space-y-6 pb-20 md:space-y-8">
@@ -447,17 +459,8 @@ export const BondComparisonContainer = () => {
                   <AlertTriangle className="h-4 w-4 text-amber-600" />
                   {language === 'pl' ? 'Uwaga interpretacyjna' : 'Interpretation note'}
                 </div>
-                <div className="mt-3 space-y-2">
-                  <p>
-                    {language === 'pl'
-                      ? 'To porownanie pokazuje kompromisy scenariusza, a nie uniwersalnie najlepsza obligacje.'
-                      : 'This comparison shows scenario tradeoffs, not a universally best bond.'}
-                  </p>
-                  <p>
-                    {language === 'pl'
-                      ? 'Czytaj je jako test jednego ustawienia wspolnego, nie jako gotowa rekomendacje dla kazdego inwestora.'
-                      : 'Read it as a test of one committed shared setup, not as finished advice for every investor.'}
-                  </p>
+                <div className="mt-3">
+                  <ReadingChecklist items={comparisonReadingGuide} />
                 </div>
               </div>
               <div className="grid gap-4 md:grid-cols-3">
