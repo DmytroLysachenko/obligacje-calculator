@@ -51,6 +51,25 @@ export async function ensurePortfolioSchemaCompat() {
       CREATE UNIQUE INDEX IF NOT EXISTS user_portfolios_share_id_idx
       ON user_portfolios (share_id)
     `;
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS shared_single_scenarios (
+        id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+        share_id uuid NOT NULL DEFAULT gen_random_uuid(),
+        title text NOT NULL,
+        description text,
+        scenario_kind text NOT NULL DEFAULT 'single-bond',
+        payload_json text NOT NULL,
+        calculation_version text,
+        created_at timestamptz NOT NULL DEFAULT now(),
+        updated_at timestamptz NOT NULL DEFAULT now()
+      )
+    `;
+
+    await sql`
+      CREATE UNIQUE INDEX IF NOT EXISTS shared_single_scenarios_share_id_idx
+      ON shared_single_scenarios (share_id)
+    `;
   })().catch((error) => {
     portfolioSchemaCompatPromise = null;
     throw error;

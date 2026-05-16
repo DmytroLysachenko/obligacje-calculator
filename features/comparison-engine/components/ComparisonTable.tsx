@@ -15,6 +15,7 @@ import {
 import { useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
 import { CalculationResult } from '@/features/bond-core/types';
+import { ResponsiveTableSheet } from '@/shared/components/ResponsiveTableSheet';
 
 interface ComparisonTableProps {
   resultsA: CalculationResult;
@@ -153,7 +154,46 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
         </div>
 
         <div className="px-6">
-          <div className="rounded-2xl border border-slate-200 bg-white">
+          <ResponsiveTableSheet
+            title={language === 'pl' ? 'Porownanie wiersz po wierszu' : 'Row-by-row comparison'}
+            description={
+              language === 'pl'
+                ? 'Na mniejszych ekranach porownuj scenariusze jako liste punktow zamiast szerokiej tabeli.'
+                : 'On smaller screens, compare the scenarios as a list of checkpoints instead of a wide table.'
+            }
+            triggerLabel={language === 'pl' ? 'Otworz tabele porownania' : 'Open comparison table'}
+            triggerCount={`${maxLen} ${language === 'pl' ? 'wierszy osi czasu' : 'timeline rows'}`}
+          >
+            {Array.from({ length: maxLen }).map((_, i) => {
+              const pointA = resultsA.timeline[i];
+              const pointB = resultsB.timeline[i];
+              const valA = pointA?.totalValue;
+              const valB = pointB?.totalValue;
+
+              return (
+                <div key={`mobile-compare-${i}`} className="rounded-3xl border border-slate-200 bg-white p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-950">
+                        {pointA?.periodLabel
+                          ?? pointB?.periodLabel
+                          ?? (language === 'pl' ? `Wiersz ${i + 1}` : `Row ${i + 1}`)}
+                      </p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        {(pointA?.cycleEndDate ?? pointB?.cycleEndDate ?? '').slice(0, 10)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-4 grid grid-cols-2 gap-3">
+                    <MobileComparisonValue label={bondTypeA} value={valA ? formatCurrency(valA) : '---'} />
+                    <MobileComparisonValue label={bondTypeB} value={valB ? formatCurrency(valB) : '---'} />
+                  </div>
+                </div>
+              );
+            })}
+          </ResponsiveTableSheet>
+
+          <div className="hidden rounded-2xl border border-slate-200 bg-white lg:block">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-600">
               <p>
                 {language === 'pl'
@@ -165,20 +205,20 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
               </p>
             </div>
 
-            <div className="overflow-x-auto">
-              <Table>
+            <div>
+              <Table className="table-fixed w-full">
                 <TableHeader className="bg-white">
                   <TableRow className="border-b hover:bg-transparent">
-                    <TableHead className="sticky left-0 top-0 z-10 h-12 w-24 bg-white px-6 text-sm font-semibold text-slate-600">
+                    <TableHead className="sticky left-0 top-0 z-10 h-12 w-[22%] bg-white px-4 text-xs font-semibold text-slate-600">
                       {t('common.year')}
                     </TableHead>
-                    <TableHead className="sticky top-0 z-10 h-12 bg-white px-4 text-sm font-semibold text-slate-700">
+                    <TableHead className="sticky top-0 z-10 h-12 w-[26%] bg-white px-4 text-xs font-semibold text-slate-700">
                       {bondTypeA} (A)
                     </TableHead>
-                    <TableHead className="sticky top-0 z-10 h-12 bg-white px-4 text-sm font-semibold text-slate-700">
+                    <TableHead className="sticky top-0 z-10 h-12 w-[26%] bg-white px-4 text-xs font-semibold text-slate-700">
                       {bondTypeB} (B)
                     </TableHead>
-                    <TableHead className="sticky top-0 z-10 h-12 bg-white px-6 text-right text-sm font-semibold text-slate-600">
+                    <TableHead className="sticky top-0 z-10 h-12 w-[26%] bg-white px-4 text-right text-xs font-semibold text-slate-600">
                       {higherColumnLabel}
                     </TableHead>
                   </TableRow>
@@ -204,7 +244,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
 
                     return (
                       <TableRow key={i} className="transition-colors odd:bg-slate-50/30 hover:bg-slate-50/80">
-                        <TableCell className="sticky left-0 z-10 bg-inherit px-6 py-4 font-bold text-slate-900">
+                        <TableCell className="sticky left-0 z-10 bg-inherit px-4 py-4 font-bold text-slate-900">
                           <div className="space-y-1">
                             <p>
                               {pointA?.periodLabel
@@ -218,7 +258,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                         </TableCell>
                         <TableCell
                           className={cn(
-                            'px-4 py-4 font-mono text-sm',
+                            'px-4 py-4 font-mono text-xs',
                             higherScenario === 'A'
                               ? 'font-bold text-slate-900'
                               : 'text-slate-600',
@@ -228,7 +268,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                         </TableCell>
                         <TableCell
                           className={cn(
-                            'px-4 py-4 font-mono text-sm',
+                            'px-4 py-4 font-mono text-xs',
                             higherScenario === 'B'
                               ? 'font-bold text-slate-900'
                               : 'text-slate-600',
@@ -236,7 +276,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                         >
                           {valB ? formatCurrency(valB) : '---'}
                         </TableCell>
-                        <TableCell className="px-6 py-4 text-right">
+                        <TableCell className="px-4 py-4 text-right">
                           {higherScenario ? (
                             <Badge
                               variant="outline"
@@ -271,3 +311,20 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
     </Card>
   );
 };
+
+function MobileComparisonValue({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-slate-50/70 px-3 py-2">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
+        {label}
+      </p>
+      <p className="mt-1 text-sm font-semibold text-slate-950">{value}</p>
+    </div>
+  );
+}

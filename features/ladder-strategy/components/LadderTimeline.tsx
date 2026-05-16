@@ -19,6 +19,7 @@ import { RegularInvestmentResult } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
+import { ResponsiveTableSheet } from '@/shared/components/ResponsiveTableSheet';
 import { ResultMetricCard } from '@/shared/components/ResultMetricCard';
 import { ResultSummaryHero } from '@/shared/components/ResultSummaryHero';
 
@@ -189,7 +190,42 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
             </ResponsiveContainer>
           </ChartContainer>
 
-          <div className="rounded-2xl border border-slate-200 bg-white">
+          <ResponsiveTableSheet
+            title={language === 'pl' ? 'Tabela zapadalnosci' : 'Maturity table'}
+            description={
+              language === 'pl'
+                ? 'Na mniejszych ekranach odczytuj miesiace zapadalnosci jako liste zamiast szerokiej tabeli.'
+                : 'On smaller screens, read maturity months as a list instead of a wide table.'
+            }
+            triggerLabel={language === 'pl' ? 'Otworz tabele zapadalnosci' : 'Open maturity table'}
+            triggerCount={`${chartData.length} ${language === 'pl' ? 'miesiecy' : 'months'}`}
+          >
+            {chartData.map((item) => (
+              <div key={`mobile-${item.date}`} className="rounded-3xl border border-slate-200 bg-white p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-950">{item.displayDate}</p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {language === 'pl' ? 'Zapadajace partie' : 'Lots maturing'}: {item.count}
+                    </p>
+                  </div>
+                  <p className="text-sm font-black text-slate-950">{formatCurrency(item.amount)}</p>
+                </div>
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  <MobileLadderValue
+                    label={language === 'pl' ? 'Udzial partii' : 'Share of lots'}
+                    value={chartData.length > 0 ? `${((item.count / results.lots.length) * 100).toFixed(1)}%` : '-'}
+                  />
+                  <MobileLadderValue
+                    label={language === 'pl' ? 'Gotowka netto' : 'Net cash'}
+                    value={formatCurrency(item.amount)}
+                  />
+                </div>
+              </div>
+            ))}
+          </ResponsiveTableSheet>
+
+          <div className="hidden rounded-2xl border border-slate-200 bg-white lg:block">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-600">
               <p>
                 {language === 'pl'
@@ -200,13 +236,13 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
                 {chartData.length} {language === 'pl' ? 'miesiecy' : 'months'}
               </p>
             </div>
-            <Table>
+            <Table className="table-fixed w-full">
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
-                  <TableHead className="text-slate-600">{language === 'pl' ? 'Miesiac' : 'Month'}</TableHead>
-                  <TableHead className="text-right text-slate-600">{language === 'pl' ? 'Zapadajace partie' : 'Lots maturing'}</TableHead>
-                  <TableHead className="text-right text-slate-600">{language === 'pl' ? 'Gotowka netto' : 'Net cash'}</TableHead>
-                  <TableHead className="text-right text-slate-600">{language === 'pl' ? 'Udzial partii' : 'Share of lots'}</TableHead>
+                  <TableHead className="w-[34%] text-xs text-slate-600">{language === 'pl' ? 'Miesiac' : 'Month'}</TableHead>
+                  <TableHead className="w-[18%] text-right text-xs text-slate-600">{language === 'pl' ? 'Zapadajace partie' : 'Lots maturing'}</TableHead>
+                  <TableHead className="w-[24%] text-right text-xs text-slate-600">{language === 'pl' ? 'Gotowka netto' : 'Net cash'}</TableHead>
+                  <TableHead className="w-[24%] text-right text-xs text-slate-600">{language === 'pl' ? 'Udzial partii' : 'Share of lots'}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -291,3 +327,20 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
     </div>
   );
 };
+
+function MobileLadderValue({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-slate-50/70 px-3 py-2">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
+        {label}
+      </p>
+      <p className="mt-1 text-sm font-semibold text-slate-950">{value}</p>
+    </div>
+  );
+}

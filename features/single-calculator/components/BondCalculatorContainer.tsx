@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { CheckCircle2, Target } from 'lucide-react';
+import { CheckCircle2, Link2, Target } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
@@ -13,6 +13,7 @@ import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightA
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { unwrapApiData } from '@/shared/lib/api-response';
 import { generateSingleBondReportPdf } from '@/shared/lib/pdf-utils';
+import { buildSharedSingleScenarioPayload } from '@/shared/lib/single-scenario-share';
 import { useBondCalculator } from '../hooks/useBondCalculator';
 import { applyGuardrailFix, getInputGuardrails, InputGuardrailIssue } from '../lib/input-guardrails';
 import { createSavedScenario, saveScenarioRecord } from '../lib/scenario-storage';
@@ -47,7 +48,15 @@ function SectionBlock({
   );
 }
 
-export const BondCalculatorContainer: React.FC = () => {
+interface BondCalculatorContainerProps {
+  initialInputs?: import('@/features/bond-core/types').BondInputs;
+  sharedScenarioTitle?: string;
+}
+
+export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = ({
+  initialInputs,
+  sharedScenarioTitle,
+}) => {
   const {
     inputs,
     results,
@@ -61,7 +70,8 @@ export const BondCalculatorContainer: React.FC = () => {
     isDirty,
     availableSeries,
     selectedSeriesId,
-  } = useBondCalculator();
+    lastCommittedInputs,
+  } = useBondCalculator(initialInputs);
   const { t, language } = useLanguage();
 
   const guardrails = useMemo(() => getInputGuardrails(inputs), [inputs]);
@@ -161,6 +171,34 @@ export const BondCalculatorContainer: React.FC = () => {
     );
   };
 
+  const handleShareScenario = async () => {
+    if (!results || !lastCommittedInputs) {
+      return;
+    }
+
+    const payload = buildSharedSingleScenarioPayload(
+      lastCommittedInputs,
+      `Committed single-bond scenario for ${lastCommittedInputs.bondType}.`,
+    );
+
+    const response = await fetch('/api/scenarios/share', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await response.json();
+    const shareUrl = data?.data?.shareUrl as string | undefined;
+
+    if (!response.ok || !shareUrl) {
+      throw new Error(data?.error?.message || 'Failed to create share link.');
+    }
+
+    return shareUrl;
+  };
+
   const handleApplyGuardrailFix = (issue: InputGuardrailIssue) => {
     replaceInputs(applyGuardrailFix(issue, inputs));
   };
@@ -174,12 +212,29 @@ export const BondCalculatorContainer: React.FC = () => {
       isDirty={isDirty}
       isError={isError}
       hasResults={!!results}
+      onShare={handleShareScenario}
       showImplicitShare={false}
       savingsGoal={inputs.savingsGoal}
       currentValue={results?.netPayoutValue}
       onKeyDown={handleKeyDown}
     >
       <div className="space-y-8 md:space-y-10">
+        {sharedScenarioTitle ? (
+          <div className="rounded-3xl border border-sky-200 bg-sky-50 px-5 py-4 text-sm text-sky-950">
+            <div className="flex flex-wrap items-center gap-2 font-semibold">
+              <Link2 className="h-4 w-4" />
+              {language === 'pl' ? 'Udostepniony scenariusz' : 'Shared scenario'}
+            </div>
+            <p className="mt-2 leading-7">
+              {sharedScenarioTitle}
+              {' • '}
+              {language === 'pl'
+                ? 'To jest zapisany, odtwarzalny snapshot jednego obliczenia.'
+                : 'This is a saved, replayable snapshot of one committed calculation.'}
+            </p>
+          </div>
+        ) : null}
+
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-[400px_minmax(0,1fr)] xl:items-start xl:gap-8">
           <aside className="space-y-6 xl:sticky xl:top-24 xl:h-fit">
             <BondInputsForm

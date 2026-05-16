@@ -11,6 +11,7 @@ import { format, parseISO } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
 import { convertLotsToCSV, downloadFile } from '@/shared/lib/csv-utils';
 import { buildLotsExportHeaders } from '@/shared/lib/export-headers';
+import { ResponsiveTableSheet } from '@/shared/components/ResponsiveTableSheet';
 import { ResultMetricCard } from '@/shared/components/ResultMetricCard';
 import { ResultSummaryHero } from '@/shared/components/ResultSummaryHero';
 
@@ -214,15 +215,47 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
             </Badge>
           </CardHeader>
           <CardContent className="px-0 pb-0">
-            <Table>
+            <ResponsiveTableSheet
+              title={language === 'pl' ? 'Budowa rok po roku' : 'Year-by-year build-up'}
+              description={
+                language === 'pl'
+                  ? 'Na mniejszych ekranach czytaj roczniki jako liste zamiast szerokiej tabeli.'
+                  : 'On smaller screens, read yearly buckets as a list instead of a wide table.'
+              }
+              triggerLabel={language === 'pl' ? 'Otworz roczniki' : 'Open yearly buckets'}
+              triggerCount={`${yearlyBuckets.length} ${language === 'pl' ? 'rocznikow' : 'buckets'}`}
+            >
+              {yearlyBuckets.map((bucket) => (
+                <div key={`mobile-${bucket.year}`} className="rounded-3xl border border-slate-200 bg-white p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-950">{bucket.year}</p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        {language === 'pl' ? 'Partie' : 'Lots'}: {bucket.lots}
+                      </p>
+                    </div>
+                    <p className="text-sm font-black text-slate-950">{formatCurrency(bucket.netValue)}</p>
+                  </div>
+                  <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                    <MobileBucketValue label={t('regular_summary.invested')} value={formatCurrency(bucket.invested)} />
+                    <MobileBucketValue label={t('regular_summary.interest')} value={formatCurrency(bucket.interest)} />
+                    <MobileBucketValue label={t('bonds.tax')} value={formatCurrency(bucket.tax)} />
+                    <MobileBucketValue label={t('regular_summary.net_value')} value={formatCurrency(bucket.netValue)} />
+                  </div>
+                </div>
+              ))}
+            </ResponsiveTableSheet>
+
+            <div className="hidden lg:block">
+              <Table className="table-fixed w-full">
               <TableHeader>
                 <TableRow>
-                  <TableHead>{language === 'pl' ? 'Rok' : 'Year'}</TableHead>
-                  <TableHead className="text-right">{language === 'pl' ? 'Partie' : 'Lots'}</TableHead>
-                  <TableHead className="text-right">{t('regular_summary.invested')}</TableHead>
-                  <TableHead className="text-right">{t('regular_summary.interest')}</TableHead>
-                  <TableHead className="text-right">{t('bonds.tax')}</TableHead>
-                  <TableHead className="text-right">{t('regular_summary.net_value')}</TableHead>
+                  <TableHead className="w-[16%]">{language === 'pl' ? 'Rok' : 'Year'}</TableHead>
+                  <TableHead className="w-[12%] text-right">{language === 'pl' ? 'Partie' : 'Lots'}</TableHead>
+                  <TableHead className="w-[18%] text-right">{t('regular_summary.invested')}</TableHead>
+                  <TableHead className="w-[18%] text-right">{t('regular_summary.interest')}</TableHead>
+                  <TableHead className="w-[18%] text-right">{t('bonds.tax')}</TableHead>
+                  <TableHead className="w-[18%] text-right">{t('regular_summary.net_value')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -243,7 +276,8 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                   </TableRow>
                 ))}
               </TableBody>
-            </Table>
+              </Table>
+            </div>
           </CardContent>
         </Card>
 
@@ -331,3 +365,20 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
     </div>
   );
 };
+
+function MobileBucketValue({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-slate-50/70 px-3 py-2">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
+        {label}
+      </p>
+      <p className="mt-1 text-sm font-semibold text-slate-950">{value}</p>
+    </div>
+  );
+}

@@ -17,7 +17,7 @@ interface CalculatorPageShellProps {
   isDirty?: boolean;
   isError?: boolean;
   hasResults: boolean;
-  onShare?: () => void;
+  onShare?: () => Promise<string | void> | string | void;
   savingsGoal?: number;
   currentValue?: number;
   extraHeaderActions?: React.ReactNode;
@@ -73,20 +73,21 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
   const { t, language } = useLanguage();
   const [copied, setCopied] = useState(false);
 
-  const handleShare = () => {
-    if (onShare) {
-      onShare();
-    } else {
-      navigator.clipboard.writeText(window.location.href);
+  const handleShare = async () => {
+    try {
+      const nextUrl = onShare ? await onShare() : window.location.href;
+      await navigator.clipboard.writeText(nextUrl || window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error('Scenario share failed:', error);
     }
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   const goalProgress =
     savingsGoal && currentValue ? (currentValue / savingsGoal) * 100 : 0;
   const isGoalReached = goalProgress >= 100;
-  const hasShareAction = !!onShare || (showImplicitShare && hasResults);
+  const hasShareAction = onShare ? hasResults : (showImplicitShare && hasResults);
 
   return (
     <div className="space-y-9 pb-20" onKeyDown={onKeyDown}>

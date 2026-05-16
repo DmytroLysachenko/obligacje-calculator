@@ -41,14 +41,16 @@ interface BondSeries {
   emissionMonth: string;
 }
 
-export function useBondCalculator() {
+export function useBondCalculator(initialInputs?: BondInputs) {
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
-  const [inputs, setInputs] = useState<BondInputs>(FALLBACK_INPUTS);
+  const [inputs, setInputs] = useState<BondInputs>(initialInputs ?? FALLBACK_INPUTS);
   const [envelope, setEnvelope] = useState<SingleBondCalculationEnvelope | null>(null);
-  const [isDirty, setIsDirty] = useState(true);
+  const [isDirty, setIsDirty] = useState(!initialInputs);
   const [availableSeries, setAvailableSeries] = useState<BondSeries[]>([]);
-  const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(null);
+  const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(initialInputs?.selectedSeriesId ?? null);
+  const [lastCommittedInputs, setLastCommittedInputs] = useState<BondInputs | null>(initialInputs ?? null);
   const definitionsAppliedFor = useRef<string | null>(null);
+  const hasAutoCalculatedSharedScenario = useRef(false);
   
   const { isCalculating, isError, clearError, post } = useCalculationRequest();
 
@@ -99,6 +101,7 @@ export function useBondCalculator() {
 
       const data = await post<SingleBondCalculationEnvelope>('/api/calculate/single', finalInputs, { preferWorker: true });
       setEnvelope(data);
+      setLastCommittedInputs(finalInputs);
     } catch (error) {
       if (error instanceof Error && (error.name === 'AbortError' || error.message === 'Calculation aborted')) {
         return;
@@ -124,6 +127,19 @@ export function useBondCalculator() {
     }, 0);
     return () => clearTimeout(timer);
   }, [inputs.bondType, fetchSeries]);
+
+  useEffect(() => {
+    if (!initialInputs || hasAutoCalculatedSharedScenario.current || isCalculating) {
+      return;
+    }
+
+    hasAutoCalculatedSharedScenario.current = true;
+    const timer = window.setTimeout(() => {
+      void calculate(initialInputs);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [calculate, initialInputs, isCalculating]);
 
   // Derived results for compatibility
   const results = envelope?.result || null;
@@ -187,8 +203,8 @@ export function useBondCalculator() {
   const replaceInputs = useCallback((nextInputs: BondInputs) => {
     setIsDirty(true);
     setSelectedSeriesId(nextInputs.selectedSeriesId ?? 'current');
-    setInputs(normalizeInputs(inputs, nextInputs));
-  }, [inputs, normalizeInputs]);
+    setInputs(normalizeInputs(nextInputs, nextInputs));
+  }, [normalizeInputs]);
 
   const setBondType = (type: BondType) => {
     if (!definitions) return;
@@ -237,5 +253,6 @@ export function useBondCalculator() {
     setBondType,
     definitions,
     isLoadingDefs,
+    lastCommittedInputs,
   };
 }

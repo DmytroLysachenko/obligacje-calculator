@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Filter, ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ResponsiveTableSheet } from '@/shared/components/ResponsiveTableSheet';
 import {
   AppLanguage,
   buildBondTimelineDisplayRows,
@@ -201,32 +202,91 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
         </div>
       </div>
 
-      <div className="w-full overflow-x-auto rounded-[1.75rem] border border-slate-200 bg-white shadow-none">
-        <Table>
+      <ResponsiveTableSheet
+        title={language === 'pl' ? 'Harmonogram scenariusza' : 'Scenario schedule'}
+        description={
+          language === 'pl'
+            ? 'Na mniejszych ekranach czytaj harmonogram jako liste punktow kontrolnych zamiast szerokiej tabeli.'
+            : 'On smaller screens, read the schedule as a sequence of checkpoints instead of a wide table.'
+        }
+        triggerLabel={language === 'pl' ? 'Otworz harmonogram' : 'Open schedule'}
+        triggerCount={`${filteredTimeline.length} ${language === 'pl' ? 'wierszy' : 'rows'}`}
+      >
+        {displayedTimeline.map((row) => (
+          <div key={`mobile-${row.key}`} className="rounded-3xl border border-slate-200 bg-white p-4 shadow-none">
+            <div className="flex items-start justify-between gap-3">
+              <div className="space-y-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-sm font-semibold text-slate-950">{row.periodLabel}</p>
+                  {row.projectionLabel ? (
+                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-700">
+                      {row.projectionLabel}
+                    </span>
+                  ) : null}
+                </div>
+                <p className="text-xs leading-5 text-slate-500">{row.cadenceLabel}</p>
+              </div>
+              <p className="text-sm font-black text-slate-950">
+                {formatCurrency(row.totalWealth)}
+              </p>
+            </div>
+
+            {row.eventLabels.length > 0 ? (
+              <div className="mt-3 flex flex-wrap gap-1">
+                {row.eventLabels.map((label, index) => (
+                  <Badge
+                    key={`mobile-${row.key}-${index}`}
+                    variant="secondary"
+                    className="h-5 px-2 text-[11px] font-semibold"
+                  >
+                    {label}
+                  </Badge>
+                ))}
+              </div>
+            ) : null}
+
+            <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+              <MobileValue label={language === 'pl' ? 'Stopa' : 'Rate'} value={row.interestRateLabel} />
+              <MobileValue label={language === 'pl' ? 'Wyjscie' : 'Exit'} value={formatCurrency(row.earlyExitValue)} />
+              <MobileValue label={language === 'pl' ? 'Gotowka' : 'Cash paid'} value={formatCurrency(row.paidOutCash)} />
+              <MobileValue label={language === 'pl' ? 'Zysk' : 'Net gain'} value={formatCurrency(row.netProfit)} />
+              <MobileValue label={language === 'pl' ? 'Realnie' : 'Real value'} value={formatCurrency(row.realValue)} />
+              <MobileValue label={language === 'pl' ? 'Podstawa' : 'Basis'} value={row.rateSourceLabel} />
+            </div>
+
+            {row.referenceLabel ? (
+              <p className="mt-3 text-xs leading-5 text-slate-500">{row.referenceLabel}</p>
+            ) : null}
+          </div>
+        ))}
+      </ResponsiveTableSheet>
+
+      <div className="hidden w-full rounded-[1.75rem] border border-slate-200 bg-white shadow-none lg:block">
+        <Table className="table-fixed w-full">
           <TableHeader>
             <TableRow className="bg-slate-50/80 hover:bg-slate-50/80">
-              <TableHead className="sticky top-0 z-10 h-12 w-[150px] bg-slate-50/95 text-sm font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-slate-50/95 text-xs font-semibold text-slate-600">
                 {t('common.period')}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 min-w-[260px] bg-slate-50/95 text-sm font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 w-[23%] bg-slate-50/95 text-xs font-semibold text-slate-600">
                 {language === 'pl' ? 'Znaczenie punktu' : 'Checkpoint meaning'}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 min-w-[220px] bg-slate-50/95 text-sm font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 w-[18%] bg-slate-50/95 text-xs font-semibold text-slate-600">
                 {language === 'pl' ? 'Stopa i podstawa' : 'Rate and basis'}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-sm font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-slate-50/95 text-xs font-semibold text-slate-600">
                 {language === 'pl' ? 'Majatek laczny' : 'Total wealth'}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-sm font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-slate-50/95 text-xs font-semibold text-slate-600">
                 {language === 'pl' ? 'Wyplacona gotowka' : 'Cash paid out'}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-sm font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 w-[9%] bg-slate-50/95 text-xs font-semibold text-slate-600">
                 {language === 'pl' ? 'Zysk netto' : 'Net gain'}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-sm font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 w-[9%] bg-slate-50/95 text-xs font-semibold text-slate-600">
                 {language === 'pl' ? 'Wartosc realna' : 'Real value'}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-right text-sm font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-slate-50/95 text-right text-xs font-semibold text-slate-600">
                 {t('bonds.early_exit_payout')}
               </TableHead>
             </TableRow>
@@ -237,10 +297,10 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
                 key={row.key}
                 className={row.isWithdrawal ? 'bg-primary/5 font-semibold' : 'odd:bg-slate-50/30'}
               >
-                <TableCell className="py-4">
+                <TableCell className="py-4 align-top">
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium">{row.periodLabel}</span>
+                      <span className="text-sm font-medium">{row.periodLabel}</span>
                       {row.projectionLabel ? (
                         <span
                           className={cn(
@@ -270,21 +330,21 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
                     ) : null}
                   </div>
                 </TableCell>
-                <TableCell className="py-4 text-sm text-slate-600">
+                <TableCell className="py-4 align-top text-xs text-slate-600">
                   <div className="space-y-1">
-                    <p className="font-medium text-slate-900">{row.cadenceLabel}</p>
+                    <p className="font-medium leading-5 text-slate-900">{row.cadenceLabel}</p>
                     <p className="text-xs leading-5 text-slate-500">
                       {row.valueMeaningLabel}
                     </p>
                     <p className="text-xs leading-5 text-slate-400">{row.cycleLabel}</p>
                   </div>
                 </TableCell>
-                <TableCell className="py-4">
+                <TableCell className="py-4 align-top">
                   <div className="flex flex-col gap-1">
-                    <span className="font-mono text-sm font-semibold text-slate-900">
+                    <span className="font-mono text-xs font-semibold text-slate-900">
                       {row.interestRateLabel}
                     </span>
-                    <span className="text-sm">{row.rateSourceLabel}</span>
+                    <span className="text-xs leading-5">{row.rateSourceLabel}</span>
                     {row.referenceLabel ? (
                       <span className="text-[10px] italic leading-4 text-muted-foreground">
                         {row.referenceLabel}
@@ -292,24 +352,24 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
                     ) : null}
                   </div>
                 </TableCell>
-                <TableCell className="py-4 font-mono text-sm">
+                <TableCell className="py-4 align-top font-mono text-xs">
                   {formatCurrency(row.totalWealth)}
                 </TableCell>
-                <TableCell className="py-4 font-mono text-sm text-slate-600">
+                <TableCell className="py-4 align-top font-mono text-xs text-slate-600">
                   {formatCurrency(row.paidOutCash)}
                 </TableCell>
                 <TableCell
                   className={cn(
-                    'py-4 font-mono text-sm',
+                    'py-4 align-top font-mono text-xs',
                     row.netProfit >= 0 ? 'text-green-600' : 'text-destructive',
                   )}
                 >
                   {formatCurrency(row.netProfit)}
                 </TableCell>
-                <TableCell className="py-4 font-mono text-sm text-blue-600">
+                <TableCell className="py-4 align-top font-mono text-xs text-blue-600">
                   {formatCurrency(row.realValue)}
                 </TableCell>
-                <TableCell className="py-4 text-right font-mono text-sm font-semibold">
+                <TableCell className="py-4 align-top text-right font-mono text-xs font-semibold">
                   {formatCurrency(row.earlyExitValue)}
                 </TableCell>
               </TableRow>
@@ -363,3 +423,20 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
     </div>
   );
 };
+
+function MobileValue({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-slate-50/70 px-3 py-2">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
+        {label}
+      </p>
+      <p className="mt-1 text-sm font-semibold text-slate-950">{value}</p>
+    </div>
+  );
+}

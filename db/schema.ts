@@ -143,6 +143,18 @@ export const userTransactions = pgTable("user_transactions", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const sharedSingleScenarios = pgTable("shared_single_scenarios", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  shareId: uuid("share_id").defaultRandom().notNull().unique(),
+  title: text("title").notNull(),
+  description: text("description"),
+  scenarioKind: text("scenario_kind").notNull().default("single-bond"),
+  payloadJson: text("payload_json").notNull(),
+  calculationVersion: text("calculation_version"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export const communityInsights = pgTable("community_insights", {
   id: uuid("id").primaryKey().defaultRandom(),
   bondType: text("bond_type").notNull(),
@@ -171,6 +183,9 @@ export type BondSeries = typeof bondSeries.$inferSelect;
 
 export type NewUserTransaction = typeof userTransactions.$inferInsert;
 export type UserTransaction = typeof userTransactions.$inferSelect;
+
+export type NewSharedSingleScenario = typeof sharedSingleScenarios.$inferInsert;
+export type SharedSingleScenario = typeof sharedSingleScenarios.$inferSelect;
 
 export const userSettings = pgTable("user_settings", {
   id: uuid("id").primaryKey().defaultRandom(),
