@@ -58,7 +58,9 @@ export const CalculationAuditTrace: React.FC<CalculationAuditTraceProps> = ({ po
             {language === 'pl' ? 'Szybki audyt okresu' : 'Quick period audit'}
           </div>
           <h3 className="text-xl font-black tracking-tight text-slate-950">
-            {t('bonds.interest_example_title').replace('{{year}}', point.year.toString())}
+            {language === 'pl'
+              ? `Obliczenia dla okresu ${point.periodLabel}`
+              : `Calculation for ${point.periodLabel}`}
           </h3>
           <p className="text-sm leading-7 text-slate-600">
             {language === 'pl'

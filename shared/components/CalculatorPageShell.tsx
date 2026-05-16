@@ -22,6 +22,7 @@ interface CalculatorPageShellProps {
   currentValue?: number;
   extraHeaderActions?: React.ReactNode;
   onKeyDown?: (e: React.KeyboardEvent) => void;
+  showImplicitShare?: boolean;
 }
 
 function ShellMetaRow({
@@ -67,6 +68,7 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
   currentValue,
   extraHeaderActions,
   onKeyDown,
+  showImplicitShare = true,
 }) => {
   const { t, language } = useLanguage();
   const [copied, setCopied] = useState(false);
@@ -84,7 +86,7 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({
   const goalProgress =
     savingsGoal && currentValue ? (currentValue / savingsGoal) * 100 : 0;
   const isGoalReached = goalProgress >= 100;
-  const hasShareAction = hasResults || !!onShare;
+  const hasShareAction = !!onShare || (showImplicitShare && hasResults);
 
   return (
     <div className="space-y-9 pb-20" onKeyDown={onKeyDown}>

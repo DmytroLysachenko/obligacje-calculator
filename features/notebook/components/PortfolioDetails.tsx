@@ -5,6 +5,7 @@ import { UserPortfolio, UserInvestmentLot } from '@/db/schema';
 import { useLanguage } from '@/i18n';
 import {
   ArrowLeft,
+  Trash2,
   Download,
   ExternalLink,
   FolderOpen,
@@ -41,6 +42,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 interface PortfolioDetailsProps {
   portfolio: UserPortfolio;
   onBack: () => void;
+  onDelete?: (portfolio: UserPortfolio) => Promise<void> | void;
 }
 
 type MaturityWindow = 30 | 90 | 180;
@@ -67,7 +69,11 @@ function PortfolioMiniStat({
   );
 }
 
-export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, onBack }) => {
+export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({
+  portfolio,
+  onBack,
+  onDelete,
+}) => {
   const { t, language } = useLanguage();
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
   const [lots, setLots] = useState<UserInvestmentLot[]>([]);
@@ -343,6 +349,26 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
             <Download className="h-4 w-4" />
             {t('notebook.export_summary')}
           </Button>
+          {onDelete ? (
+            <Button
+              variant="outline"
+              className="gap-2 border-destructive/20 bg-background text-destructive hover:bg-destructive/5 hover:text-destructive"
+              onClick={async () => {
+                const confirmed = window.confirm(
+                  language === 'pl'
+                    ? `Usunac portfel "${portfolio.name}"? Tej operacji nie mozna cofnac.`
+                    : `Delete portfolio "${portfolio.name}"? This action cannot be undone.`,
+                );
+                if (!confirmed) {
+                  return;
+                }
+                await onDelete(portfolio);
+              }}
+            >
+              <Trash2 className="h-4 w-4" />
+              {language === 'pl' ? 'Usun portfel' : 'Delete portfolio'}
+            </Button>
+          ) : null}
           {isPublic && (
             <Button variant="outline" className="gap-2" onClick={copyToClipboard}>
               {justCopied ? <Check className="h-4 w-4 text-emerald-600" /> : <Share2 className="h-4 w-4" />}

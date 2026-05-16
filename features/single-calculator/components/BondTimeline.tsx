@@ -205,29 +205,26 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
         <Table>
           <TableHeader>
             <TableRow className="bg-slate-50/80 hover:bg-slate-50/80">
-              <TableHead className="sticky top-0 z-10 h-12 w-[190px] bg-slate-50/95 text-sm font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-12 w-[150px] bg-slate-50/95 text-sm font-semibold text-slate-600">
                 {t('common.period')}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-sm font-semibold text-slate-600">
-                {language === 'pl' ? 'Co dzieje sie w tym punkcie' : 'What happens at this point'}
+              <TableHead className="sticky top-0 z-10 h-12 min-w-[260px] bg-slate-50/95 text-sm font-semibold text-slate-600">
+                {language === 'pl' ? 'Znaczenie punktu' : 'Checkpoint meaning'}
+              </TableHead>
+              <TableHead className="sticky top-0 z-10 h-12 min-w-[220px] bg-slate-50/95 text-sm font-semibold text-slate-600">
+                {language === 'pl' ? 'Stopa i podstawa' : 'Rate and basis'}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-sm font-semibold text-slate-600">
-                {t('bonds.cycle')}
+                {language === 'pl' ? 'Majatek laczny' : 'Total wealth'}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-sm font-semibold text-slate-600">
-                {t('common.interest_rate')}
+                {language === 'pl' ? 'Wyplacona gotowka' : 'Cash paid out'}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-sm font-semibold text-slate-600">
-                {t('bonds.rate_source')}
+                {language === 'pl' ? 'Zysk netto' : 'Net gain'}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-sm font-semibold text-slate-600">
-                {t('common.nominal_value')}
-              </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-sm font-semibold text-slate-600">
-                {language === 'pl' ? 'Zysk do tego punktu' : 'Net gain to this point'}
-              </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-sm font-semibold text-slate-600">
-                {t('common.real_value')}
+                {language === 'pl' ? 'Wartosc realna' : 'Real value'}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 bg-slate-50/95 text-right text-sm font-semibold text-slate-600">
                 {t('bonds.early_exit_payout')}
@@ -275,30 +272,31 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
                 </TableCell>
                 <TableCell className="py-4 text-sm text-slate-600">
                   <div className="space-y-1">
-                    <p>{row.cadenceLabel}</p>
+                    <p className="font-medium text-slate-900">{row.cadenceLabel}</p>
                     <p className="text-xs leading-5 text-slate-500">
                       {row.valueMeaningLabel}
                     </p>
+                    <p className="text-xs leading-5 text-slate-400">{row.cycleLabel}</p>
                   </div>
                 </TableCell>
-                <TableCell className="py-4 text-muted-foreground">
-                  {row.cycleLabel}
-                </TableCell>
-                <TableCell className="py-4 font-mono text-sm">
-                  {row.interestRateLabel}
-                </TableCell>
                 <TableCell className="py-4">
-                  <div className="flex flex-col">
+                  <div className="flex flex-col gap-1">
+                    <span className="font-mono text-sm font-semibold text-slate-900">
+                      {row.interestRateLabel}
+                    </span>
                     <span className="text-sm">{row.rateSourceLabel}</span>
                     {row.referenceLabel ? (
-                      <span className="text-[10px] italic text-muted-foreground">
+                      <span className="text-[10px] italic leading-4 text-muted-foreground">
                         {row.referenceLabel}
                       </span>
                     ) : null}
                   </div>
                 </TableCell>
                 <TableCell className="py-4 font-mono text-sm">
-                  {formatCurrency(row.nominalValue)}
+                  {formatCurrency(row.totalWealth)}
+                </TableCell>
+                <TableCell className="py-4 font-mono text-sm text-slate-600">
+                  {formatCurrency(row.paidOutCash)}
                 </TableCell>
                 <TableCell
                   className={cn(

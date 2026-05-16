@@ -51,7 +51,6 @@ export const BondCalculatorContainer: React.FC = () => {
   const {
     inputs,
     results,
-    previousResults,
     envelope,
     isCalculating,
     isError,
@@ -175,6 +174,7 @@ export const BondCalculatorContainer: React.FC = () => {
       isDirty={isDirty}
       isError={isError}
       hasResults={!!results}
+      showImplicitShare={false}
       savingsGoal={inputs.savingsGoal}
       currentValue={results?.netPayoutValue}
       onKeyDown={handleKeyDown}
@@ -249,7 +249,6 @@ export const BondCalculatorContainer: React.FC = () => {
                 <BondResultsSummary
                   results={results}
                   inputs={inputs}
-                  previousResults={previousResults}
                   onSaveScenario={handleSaveScenario}
                   onAddToNotebook={handleAddToNotebook}
                   onExportPDF={handleExportPDF}

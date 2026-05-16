@@ -8,7 +8,6 @@ import { useLanguage } from '@/i18n';
 import { convertTimelineToCSV, downloadFile } from '@/shared/lib/csv-utils';
 import { buildTimelineExportHeaders } from '@/shared/lib/export-headers';
 import { MathDeepDive } from '@/shared/components/MathDeepDive';
-import { ResultMetricCard } from '@/shared/components/ResultMetricCard';
 import { ResultSummaryHero } from '@/shared/components/ResultSummaryHero';
 import { CalculationAuditTrace } from './CalculationAuditTrace';
 
@@ -24,7 +23,6 @@ function getTaxStrategyDisplayLabel(
 interface BondResultsSummaryProps {
   results: CalculationResult;
   inputs: BondInputs;
-  previousResults?: CalculationResult | null;
   onSaveScenario?: () => void;
   onAddToNotebook?: () => void;
   onExportPDF?: () => void;
@@ -33,7 +31,6 @@ interface BondResultsSummaryProps {
 export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
   results,
   inputs,
-  previousResults,
   onSaveScenario,
   onAddToNotebook,
   onExportPDF,
@@ -57,9 +54,6 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
   };
 
   const horizonLabel = inputs.investmentHorizonMonths ?? Math.round(inputs.duration * 12);
-  const deltaNet = previousResults
-    ? results.netPayoutValue - previousResults.netPayoutValue
-    : null;
 
   const primarySummaryCards = [
     {
@@ -137,24 +131,6 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
       ? 'Ten przebieg utrzymuje obligacje do modelowanej sciezki zapadalnosci, wiec wynik odzwierciedla pelny plan.'
       : 'This run holds the bond to the modeled maturity path, so the final payout reflects the full planned cycle.';
 
-  const readingGuide =
-    language === 'pl'
-      ? [
-          'Najpierw przeczytaj wyplate netto i zysk netto, bo to one odpowiadaja na pytanie co zostaje po podatku i kosztach.',
-          t('bonds.explanation_inflation'),
-          'Dopiero po wyniku i wykresie warto schodzic do sladu pojedynczych okresow.',
-        ]
-      : [
-          'Start with the net payout and net profit because they answer what is left after tax and costs.',
-          t('bonds.explanation_inflation'),
-          'Only after the headline result and chart should you drop into the per-period audit trace.',
-        ];
-
-  const deltaText =
-    deltaNet !== null
-      ? `${language === 'pl' ? 'Wobec poprzedniego przebiegu:' : 'Vs previous run:'} ${deltaNet >= 0 ? '+' : ''}${formatCurrency(deltaNet)}`
-      : undefined;
-
   return (
     <div className="space-y-10">
       <ResultSummaryHero
@@ -166,7 +142,6 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
             : 'This is the final net payout for the currently committed scenario. Start with the four metrics below, then go deeper only if you need detail.'
         }
         narrative={summaryNarrative}
-        deltaText={deltaText}
         actions={[
           {
             label: language === 'pl' ? 'Zapisz' : 'Save',
@@ -192,29 +167,17 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
         ]}
       />
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {primarySummaryCards.map((card) => (
-          <ResultMetricCard
-            key={card.label}
-            label={card.label}
-            value={card.value}
-            description={card.description}
-            tone={card.tone}
-          />
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        {secondarySummaryCards.map((card) => (
-          <Card key={card.label} className="rounded-[1.75rem] border border-slate-200 bg-white shadow-none">
-            <CardContent className="space-y-2 p-5">
+      <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
+        <CardContent className="grid grid-cols-1 divide-y divide-slate-200 p-0 md:grid-cols-2 md:divide-x md:divide-y-0 xl:grid-cols-4">
+          {[...primarySummaryCards, ...secondarySummaryCards].map((card) => (
+            <div key={card.label} className="space-y-2 px-5 py-5">
               <p className="text-sm font-semibold text-slate-500">{card.label}</p>
               <p className={`text-2xl font-black tracking-tight ${card.tone}`}>{card.value}</p>
               <p className="text-sm leading-6 text-slate-600">{card.description}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
 
       {results.overflowInfo ? (
         <Card className="rounded-[2rem] border border-blue-200 bg-blue-50/50 shadow-none">
@@ -235,73 +198,36 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
       ) : null}
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="space-y-6">
-          <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-            <CardContent className="space-y-5 p-6">
-              <div className="space-y-2">
+        {results.timeline.length > 0 ? (
+          <CalculationAuditTrace point={results.timeline[0]} />
+        ) : (
+          <div />
+        )}
+
+        <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
+          <CardContent className="space-y-5 p-6">
+            <div className="flex items-center justify-between gap-3">
+              <div>
                 <h3 className="text-xl font-black tracking-tight text-slate-950">
-                  {language === 'pl' ? 'Jak czytac wynik' : 'How to read the result'}
+                  {language === 'pl' ? 'Fakty scenariusza' : 'Scenario facts'}
                 </h3>
-                <p className="text-sm leading-7 text-slate-600">
+                <p className="mt-1 text-sm leading-7 text-slate-600">
                   {language === 'pl'
-                    ? 'Ta sekcja ma uporzadkowac odczyt wyniku bez wypychania cie od razu w techniczne szczegoly.'
-                    : 'This section should keep the interpretation sequence clear without pushing you straight into technical detail.'}
+                    ? 'Minimalny zestaw parametrow potrzebny do odczytu wyniku.'
+                    : 'The minimum set of facts needed to read this run correctly.'}
                 </p>
               </div>
+              <MathDeepDive results={results} trigger={<HelpButton />} />
+            </div>
 
-              <div className="space-y-3">
-                {readingGuide.map((item) => (
-                  <div
-                    key={item}
-                    className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-3"
-                  >
-                    <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    <p className="text-sm leading-7 text-slate-600">{item}</p>
-                  </div>
-                ))}
+            {scenarioFacts.map((fact) => (
+              <div key={fact.label} className="rounded-2xl border border-slate-200 bg-slate-50/60 px-4 py-3">
+                <p className="text-sm font-semibold text-slate-500">{fact.label}</p>
+                <p className="mt-1 text-base font-semibold text-slate-950">{fact.value}</p>
               </div>
-
-              {results.isEarlyWithdrawal ? (
-                <div className="rounded-3xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-7 text-amber-950">
-                  {language === 'pl'
-                    ? 'Ten scenariusz zawiera wczesniejszy wykup, wiec oplaty lub utracona kapitalizacja moga obnizyc wynik.'
-                    : 'This scenario includes early redemption, so fees or missed maturity compounding may reduce the final payout.'}
-                </div>
-              ) : null}
-            </CardContent>
-          </Card>
-
-          {results.timeline.length > 0 ? (
-            <CalculationAuditTrace point={results.timeline[0]} />
-          ) : null}
-        </div>
-
-        <div className="space-y-6">
-          <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-            <CardContent className="space-y-5 p-6">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h3 className="text-xl font-black tracking-tight text-slate-950">
-                    {language === 'pl' ? 'Fakty scenariusza' : 'Scenario facts'}
-                  </h3>
-                  <p className="mt-1 text-sm leading-7 text-slate-600">
-                    {language === 'pl'
-                      ? 'Minimalny zestaw parametrow potrzebny do odczytu wyniku.'
-                      : 'The minimum set of facts needed to read this run correctly.'}
-                  </p>
-                </div>
-                <MathDeepDive results={results} trigger={<HelpButton />} />
-              </div>
-
-              {scenarioFacts.map((fact) => (
-                <div key={fact.label} className="rounded-2xl border border-slate-200 bg-slate-50/60 px-4 py-3">
-                  <p className="text-sm font-semibold text-slate-500">{fact.label}</p>
-                  <p className="mt-1 text-base font-semibold text-slate-950">{fact.value}</p>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </div>
+            ))}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

@@ -286,6 +286,17 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
         earlyWithdrawalFee
       );
 
+      const hypotheticalEarlyExitFee = period.isMaturity
+        ? new Decimal(0)
+        : calculateEarlyWithdrawalFee(
+            bondType,
+            true,
+            true,
+            totalInterestEarnedSoFar,
+            numberOfBonds,
+            earlyWithdrawalFee,
+          );
+
       if (period.isWithdrawal && isEarlyWithdrawal && currentWithdrawalFee.gt(0)) {
         events.push({
           type: SimulationEventType.EARLY_REDEMPTION_FEE,
@@ -338,8 +349,12 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
       }
 
       const liquidationValue = currentGrossValue.minus(currentWithdrawalFee).minus(currentTaxAtPoint);
+      const hypotheticalEarlyExitValue = currentGrossValue
+        .minus(hypotheticalEarlyExitFee)
+        .minus(currentTaxAtPoint);
       const totalValue = liquidationValue;
       const realValue = calculateRealValue(totalValue, cumulativeInflation);
+      const checkpointNetProfit = totalValue.minus(initialInvestment);
 
       globalTimeline.push({
         year: totalMonthsSoFar / 12,
@@ -360,8 +375,8 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
         accumulatedNetInterest: globalAccumulatedNetInterest.toNumber(),
         totalValue: totalValue.toNumber(),
         realValue: realValue.toNumber(),
-        netProfit: 0,
-        earlyWithdrawalValue: 0,
+        netProfit: checkpointNetProfit.toNumber(),
+        earlyWithdrawalValue: Decimal.max(hypotheticalEarlyExitValue, 0).toNumber(),
         cumulativeInflation: cumulativeInflation.toNumber(),
         isMaturity: period.isMaturity,
         isWithdrawal: period.endDate.getTime() === targetWithdrawalDate.getTime(),

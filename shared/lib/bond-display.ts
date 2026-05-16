@@ -16,7 +16,9 @@ export interface BondTimelineDisplayRow {
   referenceLabel?: string;
   eventLabels: string[];
   projectionLabel?: string;
-  nominalValue: number;
+  principalValue: number;
+  paidOutCash: number;
+  totalWealth: number;
   netProfit: number;
   realValue: number;
   earlyExitValue: number;
@@ -164,6 +166,12 @@ export function getValueMeaningLabel(point: YearlyTimelinePoint, language: AppLa
       : 'This row closes the full bond cycle.';
   }
 
+  if (point.accumulatedNetInterest > 0) {
+    return language === 'pl'
+      ? 'Ten punkt laczy wartosc obligacji z gotowka wyplacona juz po drodze.'
+      : 'This checkpoint combines bond value with cash that has already been paid out along the way.';
+  }
+
   return language === 'pl'
     ? 'To jest punkt kontrolny pokazujacy wartosc po naliczeniu dla tego okresu.'
     : 'This is a checkpoint showing value after accrual for this period.';
@@ -214,7 +222,9 @@ export function buildBondTimelineDisplayRows(
         getSimulationEventDisplayLabel(event.type, language),
       ) ?? [],
     projectionLabel: getProjectionDisplayLabel(point.isProjected, language),
-    nominalValue: point.nominalValueAfterInterest,
+    principalValue: point.nominalValueAfterInterest,
+    paidOutCash: point.accumulatedNetInterest,
+    totalWealth: point.totalValue,
     netProfit: point.netProfit,
     realValue: point.realValue,
     earlyExitValue: point.earlyWithdrawalValue,
@@ -250,7 +260,7 @@ export function buildBondChartDisplayPoints(
     ...timeline.map((point, index) => ({
       key: `${point.cycleIndex}-${point.periodLabel}-${point.cycleEndDate}`,
       xLabel: formatMonthYear(point.cycleEndDate, language),
-      nominal: Number(point.nominalValueAfterInterest.toFixed(2)),
+      nominal: Number(point.totalValue.toFixed(2)),
       real: Number(point.realValue.toFixed(2)),
       inflation: point.inflationReference,
       nbp: point.nbpReference,

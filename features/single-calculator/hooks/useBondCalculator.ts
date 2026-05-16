@@ -45,18 +45,12 @@ export function useBondCalculator() {
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
   const [inputs, setInputs] = useState<BondInputs>(FALLBACK_INPUTS);
   const [envelope, setEnvelope] = useState<SingleBondCalculationEnvelope | null>(null);
-  const [previousEnvelope, setPreviousEnvelope] = useState<SingleBondCalculationEnvelope | null>(null);
   const [isDirty, setIsDirty] = useState(true);
   const [availableSeries, setAvailableSeries] = useState<BondSeries[]>([]);
   const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(null);
   const definitionsAppliedFor = useRef<string | null>(null);
-  const envelopeRef = useRef<SingleBondCalculationEnvelope | null>(null);
   
   const { isCalculating, isError, clearError, post } = useCalculationRequest();
-
-  useEffect(() => {
-    envelopeRef.current = envelope;
-  }, [envelope]);
 
   // Sync inputs with loaded definitions
   useEffect(() => {
@@ -104,7 +98,6 @@ export function useBondCalculator() {
       }
 
       const data = await post<SingleBondCalculationEnvelope>('/api/calculate/single', finalInputs, { preferWorker: true });
-      setPreviousEnvelope((current) => envelopeRef.current ?? current);
       setEnvelope(data);
     } catch (error) {
       if (error instanceof Error && (error.name === 'AbortError' || error.message === 'Calculation aborted')) {
@@ -227,7 +220,6 @@ export function useBondCalculator() {
   return {
     inputs,
     results,
-    previousResults: previousEnvelope?.result || null,
     envelope,
     availableSeries,
     selectedSeriesId,

@@ -377,12 +377,38 @@ export const NotebookContainer: React.FC = () => {
     }
   };
 
+  const handleDeletePortfolio = async (portfolio: UserPortfolio) => {
+    try {
+      const response = await fetch(`/api/portfolio?id=${portfolio.id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null);
+        setError(resolvePortfolioError(payload));
+        return;
+      }
+
+      setPortfolios((current) => current.filter((item) => item.id !== portfolio.id));
+      setSelectedPortfolioId((current) => (current === portfolio.id ? null : current));
+      setError(null);
+    } catch (caughtError) {
+      console.error(caughtError);
+      setError(
+        language === 'pl'
+          ? 'Nie udalo sie usunac portfela.'
+          : 'Could not delete the portfolio.',
+      );
+    }
+  };
+
   if (selectedPortfolioId) {
     const portfolio = portfolios.find((item) => item.id === selectedPortfolioId);
 
     return portfolio ? (
       <PortfolioDetails
         portfolio={portfolio}
+        onDelete={handleDeletePortfolio}
         onBack={() => {
           void fetchPortfolios();
           setSelectedPortfolioId(null);

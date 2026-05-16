@@ -63,7 +63,9 @@ export function convertTimelineToCSV(
       key: 'projectionLabel',
       header: language === 'pl' ? 'Tryb danych' : 'Data mode',
     },
-    { key: 'nominalValue', header: headers.nominalValue || 'Nominal value' },
+    { key: 'principalValue', header: language === 'pl' ? 'Kapital w obligacji' : 'Bond principal value' },
+    { key: 'paidOutCash', header: language === 'pl' ? 'Wyplacona gotowka' : 'Cash paid out' },
+    { key: 'totalWealth', header: language === 'pl' ? 'Majatek laczny' : 'Total wealth' },
     { key: 'netProfit', header: language === 'pl' ? 'Zysk netto' : 'Net profit' },
     { key: 'realValue', header: headers.realValue || 'Real value' },
     {

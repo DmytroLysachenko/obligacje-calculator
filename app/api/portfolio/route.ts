@@ -33,3 +33,38 @@ export const POST = apiHandler(async (req: NextRequest) => {
 
   return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(newPortfolio)), owner);
 });
+
+export const DELETE = apiHandler(async (req: NextRequest) => {
+  await ensurePortfolioSchemaCompat();
+  const owner = await resolvePortfolioOwner();
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get('id');
+
+  if (!id) {
+    return applyPortfolioOwnerCookie(
+      NextResponse.json({ error: 'Missing portfolio id.' }, { status: 400 }),
+      owner,
+    );
+  }
+
+  const existingPortfolio = await db.query.userPortfolios.findFirst({
+    where: eq(userPortfolios.id, id),
+  });
+
+  if (!existingPortfolio || existingPortfolio.userId !== owner.ownerId) {
+    return applyPortfolioOwnerCookie(
+      NextResponse.json({ error: 'Portfolio not found.' }, { status: 404 }),
+      owner,
+    );
+  }
+
+  const [deletedPortfolio] = await db
+    .delete(userPortfolios)
+    .where(eq(userPortfolios.id, id))
+    .returning();
+
+  return applyPortfolioOwnerCookie(
+    NextResponse.json(createSuccessResponse(deletedPortfolio)),
+    owner,
+  );
+});
