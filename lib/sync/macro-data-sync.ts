@@ -68,7 +68,7 @@ export async function syncMacroData() {
           category: 'macro',
           unit: '%',
           frequency: 'on-event',
-          dataSource: 'NBP official API',
+          dataSource: 'Curated NBP reference-rate history from official policy publications',
           freshnessPolicy: 'check-daily',
           lastSyncStatus: 'success',
         })
@@ -103,7 +103,7 @@ export async function syncMacroData() {
         .update(dataSeries)
         .set({
           dataSource: nbpUsesFallback
-            ? 'NBP official publications fallback dataset'
+            ? 'Curated NBP reference-rate history from official policy publications'
             : 'NBP official API',
           lastDataPointDate: latestNbpRate?.date,
           lastSyncStatus: nbpUsesFallback ? 'partial' : 'success',

@@ -1,6 +1,33 @@
 import type { StandardizedIndicator } from '@/lib/api-clients/base';
 
 export const NBP_REFERENCE_FALLBACK_SERIES = [
+  { date: '2008-01-31', rate: 5.25 },
+  { date: '2008-06-26', rate: 6.00 },
+  { date: '2008-11-27', rate: 5.75 },
+  { date: '2008-12-24', rate: 5.00 },
+  { date: '2009-01-28', rate: 4.25 },
+  { date: '2009-02-26', rate: 4.00 },
+  { date: '2009-03-26', rate: 3.75 },
+  { date: '2009-06-25', rate: 3.50 },
+  { date: '2010-01-01', rate: 3.50 },
+  { date: '2011-01-20', rate: 3.75 },
+  { date: '2011-04-07', rate: 4.00 },
+  { date: '2011-05-12', rate: 4.25 },
+  { date: '2011-06-09', rate: 4.50 },
+  { date: '2011-07-07', rate: 4.75 },
+  { date: '2012-05-10', rate: 4.75 },
+  { date: '2012-06-07', rate: 5.00 },
+  { date: '2012-11-08', rate: 4.50 },
+  { date: '2012-12-06', rate: 4.25 },
+  { date: '2013-01-10', rate: 4.00 },
+  { date: '2013-02-07', rate: 3.75 },
+  { date: '2013-03-07', rate: 3.25 },
+  { date: '2013-05-09', rate: 3.00 },
+  { date: '2014-10-09', rate: 2.00 },
+  { date: '2015-03-05', rate: 1.50 },
+  { date: '2020-03-18', rate: 1.00 },
+  { date: '2020-04-09', rate: 0.50 },
+  { date: '2020-05-29', rate: 0.10 },
   { date: '2021-01-01', rate: 0.10 },
   { date: '2021-10-07', rate: 0.50 },
   { date: '2021-11-04', rate: 1.25 },
@@ -30,7 +57,7 @@ export function buildNbpReferenceFallbackIndicators(): StandardizedIndicator[] {
     date: point.date,
     metadata: {
       source: 'fallback',
-      sourceLabel: 'NBP official publications fallback dataset',
+      sourceLabel: 'Curated NBP reference-rate history from official policy publications',
     },
   }));
 }

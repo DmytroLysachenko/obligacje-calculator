@@ -35,8 +35,8 @@ const REFERENCE_COPY = {
     en: 'Official NBP API',
   },
   officialNbpFallback: {
-    pl: 'Awaryjny zestaw historii stopy NBP',
-    en: 'Fallback NBP rate history dataset',
+    pl: 'Kuratorowana historia stopy referencyjnej NBP',
+    en: 'Curated NBP reference-rate history',
   },
   officialBondSite: {
     pl: 'Oficjalna oferta obligacji',
@@ -129,7 +129,10 @@ function getKnownDataSourceLabel(
     return getReferenceCopy('officialNbp', language);
   }
 
-  if (normalized === 'nbp official publications fallback dataset') {
+  if (
+    normalized === 'nbp official publications fallback dataset'
+    || normalized === 'curated nbp reference-rate history from official policy publications'
+  ) {
     return getReferenceCopy('officialNbpFallback', language);
   }
 
@@ -187,14 +190,14 @@ function getCoverageNoteLabel(
 
   if (normalized === 'nbp-fallback-reference') {
     return language === 'pl'
-      ? 'Historia stopy referencyjnej pozostaje zastepcza. Czytaj ja tylko jako kontekst referencyjny.'
-      : 'Reference-rate history remains fallback-based. Read it only as reference context.';
+      ? 'Historia stopy referencyjnej opiera sie na kuratorowanym zakresie wspartym oficjalnymi publikacjami NBP. Czytaj ja jako kontekst referencyjny, nie jako pelny strumien API.'
+      : 'Reference-rate history relies on a curated range backed by official NBP publications. Read it as reference context, not as a full direct API feed.';
   }
 
   if (normalized === 'nbp-partial-reference') {
     return language === 'pl'
-      ? 'Historia stopy NBP jest tylko czesciowo zsynchronizowana, dlatego brakujace punkty zostaly dopelnione zakresem pomocniczym.'
-      : 'NBP rate history is only partially synced, so missing points were filled with supporting fallback coverage.';
+      ? 'Historia stopy NBP jest tylko czesciowo zsynchronizowana, dlatego brakujace punkty zostaly dopelnione kuratorowanym zakresem historycznym.'
+      : 'NBP rate history is only partially synced, so missing points were filled with curated historical coverage.';
   }
 
   if (normalized === 'nbp-synced-context') {

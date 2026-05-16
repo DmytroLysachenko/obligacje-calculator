@@ -259,11 +259,13 @@ export default function EconomicDataPage() {
       ? [
           'Inflacja pomaga zrozumiec realna sile nabywcza wyniku i zachowanie obligacji indeksowanych.',
           'Stopa NBP sluzy glownie jako kontekst dla ROR i DOR oraz do interpretacji otoczenia rynkowego.',
+          'Biezaca stopa oferty obligacji i stopa referencyjna NBP to nie to samo: np. ROR moze zaczynac od stopy sprzedazowej oferty, a dopiero potem przechodzic na NBP + marza.',
           'Krotsze zakresy poprawiaja czytelnosc. Szerszy zakres daje tlo historyczne, ale nie uzupelnia brakujacej jakosci danych.',
         ]
       : [
           'Inflation helps explain real purchasing power and inflation-linked bond behavior.',
           'The NBP rate matters mostly as context for ROR and DOR and for reading the broader policy backdrop.',
+          'The current bond offer rate is not the same thing as the NBP reference rate: for example, ROR can start from the offer rate and only later move to NBP + margin.',
           'Shorter ranges improve readability. Wider ranges add context, but they do not improve missing data quality.',
         ];
 

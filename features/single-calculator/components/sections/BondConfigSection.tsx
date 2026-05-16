@@ -127,12 +127,12 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
           value={inputs.bondType}
           onValueChange={(value) => onBondTypeChange(value as BondType)}
         >
-          <SelectTrigger id="bondType" className="h-12 rounded-2xl border-slate-200 bg-white/90 text-left">
+          <SelectTrigger id="bondType" className="h-14 rounded-[1.35rem] border-slate-200 bg-white px-4 text-left shadow-none">
             <SelectValue placeholder={t('bonds.select_bond_type')} />
           </SelectTrigger>
           <SelectContent>
             {Object.values(BondType).map((type) => (
-              <SelectItem key={type} value={type} className="py-2.5">
+              <SelectItem key={type} value={type} className="py-3">
                 <div className="flex min-w-0 flex-col gap-1">
                   <div className="flex items-center gap-2 text-sm">
                     <span className="font-black tracking-tight">{type}</span>
@@ -161,11 +161,11 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
             value={selectedSeriesId || 'current'}
             onValueChange={(value) => onUpdate('selectedSeriesId', value)}
           >
-            <SelectTrigger className="h-12 rounded-2xl border-slate-200 bg-slate-50/80 text-sm font-medium text-left">
+            <SelectTrigger className="h-14 rounded-[1.35rem] border-slate-200 bg-slate-50/80 px-4 text-left text-sm font-medium shadow-none">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="current" className="py-2.5 text-sm font-medium">
+              <SelectItem value="current" className="py-3 text-sm font-medium">
                 <div className="flex flex-col gap-1">
                   <span className="font-semibold">{t('bonds.offer.current')}</span>
                   <span className="text-xs text-slate-500">
@@ -176,7 +176,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
                 </div>
               </SelectItem>
               {availableSeries.map((s) => (
-                <SelectItem key={s.id} value={s.id} className="py-2.5 text-sm">
+                <SelectItem key={s.id} value={s.id} className="py-3 text-sm">
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold">{s.seriesCode}</span>
@@ -192,6 +192,19 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
               ))}
             </SelectContent>
           </Select>
+          <p className="text-xs leading-6 text-slate-500">
+            {currentDef.isFloating
+              ? language === 'pl'
+                ? 'Dla obligacji ROR i DOR pierwsza stopa pochodzi z aktualnej oferty danej serii. Dopiero kolejne okresy przechodza na stope referencyjna NBP plus marze.'
+                : 'For ROR and DOR, the first period rate comes from the active issued offer. Only later periods move onto NBP reference rate plus margin.'
+              : currentDef.isInflationIndexed
+                ? language === 'pl'
+                  ? 'Dla obligacji indeksowanych pierwszy okres ma stope oferty serii, a dopiero potem dziala mechanika CPI plus marza.'
+                  : 'For indexed bonds, the first period uses the issued offer rate and only later periods move into CPI plus margin mechanics.'
+                : language === 'pl'
+                  ? 'Ta seria korzysta z aktualnych warunkow oferty dla wybranego wariantu obligacji.'
+                  : 'This selector uses the current offer terms for the chosen bond variant.'}
+          </p>
         </div>
         
         <div className="space-y-2 rounded-lg border border-primary/10 bg-primary/5 p-4 text-sm">
