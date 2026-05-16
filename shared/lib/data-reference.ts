@@ -34,6 +34,10 @@ const REFERENCE_COPY = {
     pl: 'Oficjalne API NBP',
     en: 'Official NBP API',
   },
+  officialNbpFallback: {
+    pl: 'Awaryjny zestaw historii stopy NBP',
+    en: 'Fallback NBP rate history dataset',
+  },
   officialBondSite: {
     pl: 'Oficjalna oferta obligacji',
     en: 'Official bond offer site',
@@ -125,6 +129,10 @@ function getKnownDataSourceLabel(
     return getReferenceCopy('officialNbp', language);
   }
 
+  if (normalized === 'nbp official publications fallback dataset') {
+    return getReferenceCopy('officialNbpFallback', language);
+  }
+
   if (
     normalized === 'gus / partial seeded coverage'
     || normalized === 'gus/partial seeded coverage'
@@ -181,6 +189,12 @@ function getCoverageNoteLabel(
     return language === 'pl'
       ? 'Historia stopy referencyjnej pozostaje zastepcza. Czytaj ja tylko jako kontekst referencyjny.'
       : 'Reference-rate history remains fallback-based. Read it only as reference context.';
+  }
+
+  if (normalized === 'nbp-partial-reference') {
+    return language === 'pl'
+      ? 'Historia stopy NBP jest tylko czesciowo zsynchronizowana, dlatego brakujace punkty zostaly dopelnione zakresem pomocniczym.'
+      : 'NBP rate history is only partially synced, so missing points were filled with supporting fallback coverage.';
   }
 
   if (normalized === 'nbp-synced-context') {

@@ -30,7 +30,10 @@ export async function syncMacroData() {
     const cpiIndicators = await retry(() => gusCpiClient.fetchHistoricalData());
     const nbpIndicators = await retry(() => nbpClient.fetchReferenceRateHistory());
     const latestCpiRate = cpiIndicators.at(-1);
-    const latestNbpRate = nbpIndicators[0];
+    const latestNbpRate = nbpIndicators.at(-1);
+    const nbpUsesFallback = nbpIndicators.some(
+      (indicator) => indicator.metadata?.source === 'fallback',
+    );
 
     let cpiSeries = await db.query.dataSeries.findFirst({
       where: eq(dataSeries.slug, "pl-cpi"),
@@ -80,25 +83,30 @@ export async function syncMacroData() {
             seriesId: nbpSeries.id,
             date: indicator.date,
             value: indicator.value.toString(),
-            qualityFlag: 'verified',
-            sourceMetadata: 'NBP official API',
+            qualityFlag: nbpUsesFallback ? 'fallback' : 'verified',
+            sourceMetadata:
+              typeof indicator.metadata?.sourceLabel === 'string'
+                ? indicator.metadata.sourceLabel
+                : 'NBP official API',
           })),
         )
         .onConflictDoUpdate({
           target: [dataPoints.seriesId, dataPoints.date],
           set: {
             value: sql`EXCLUDED.value`,
-            qualityFlag: 'verified',
-            sourceMetadata: 'NBP official API',
+            qualityFlag: sql`EXCLUDED.quality_flag`,
+            sourceMetadata: sql`EXCLUDED.source_metadata`,
           },
         });
 
       await db
         .update(dataSeries)
         .set({
-          dataSource: 'NBP official API',
+          dataSource: nbpUsesFallback
+            ? 'NBP official publications fallback dataset'
+            : 'NBP official API',
           lastDataPointDate: latestNbpRate?.date,
-          lastSyncStatus: 'success',
+          lastSyncStatus: nbpUsesFallback ? 'partial' : 'success',
           lastSyncError: null,
           updatedAt: new Date(),
         })

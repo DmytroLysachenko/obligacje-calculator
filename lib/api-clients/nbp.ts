@@ -1,4 +1,5 @@
 import { BaseApiClient, StandardizedIndicator, fetchWithTimeout } from "./base";
+import { buildNbpReferenceFallbackIndicators } from "@/shared/lib/nbp-reference-fallback";
 
 interface NbpGoldPrice {
   data: string;
@@ -50,22 +51,24 @@ export class NbpApiClient extends BaseApiClient {
   }
 
   async fetchReferenceRateHistory(): Promise<StandardizedIndicator[]> {
-    const response = await fetchWithTimeout("https://api.nbp.pl/api/statystyka/stopy/ref?format=json");
-    if (!response.ok) {
-      return [
-        {
-          name: "nbp_reference_rate",
-          value: 3.75,
-          date: new Date().toISOString().split('T')[0],
-        },
-      ];
-    }
+    try {
+      const response = await fetchWithTimeout("https://api.nbp.pl/api/statystyka/stopy/ref?format=json");
+      if (!response.ok) {
+        return buildNbpReferenceFallbackIndicators();
+      }
 
-    const data = (await response.json()) as NbpRateItem[];
-    return data.map((item) => ({
-      name: "nbp_reference_rate",
-      value: parseFloat(item.oprocentowanie.replace(',', '.')),
-      date: item.obowiazuje_od,
-    }));
+      const data = (await response.json()) as NbpRateItem[];
+      return data.map((item) => ({
+        name: "nbp_reference_rate",
+        value: parseFloat(item.oprocentowanie.replace(',', '.')),
+        date: item.obowiazuje_od,
+        metadata: {
+          source: 'official-api',
+          sourceLabel: 'NBP official API',
+        },
+      }));
+    } catch {
+      return buildNbpReferenceFallbackIndicators();
+    }
   }
 }

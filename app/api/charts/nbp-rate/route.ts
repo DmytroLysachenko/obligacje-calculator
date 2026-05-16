@@ -3,27 +3,12 @@ import { db } from '@/db';
 import { dataSeries, dataPoints } from '@/db/schema';
 import { desc, eq, inArray } from 'drizzle-orm';
 import { createSuccessResponse } from '@/shared/types/api';
+import { NBP_REFERENCE_FALLBACK_SERIES } from '@/shared/lib/nbp-reference-fallback';
 
-const FALLBACK_NBP = [
-  { date: '2021-01', rate: 0.1 },
-  { date: '2021-10', rate: 0.5 },
-  { date: '2021-11', rate: 1.25 },
-  { date: '2021-12', rate: 1.75 },
-  { date: '2022-01', rate: 2.25 },
-  { date: '2022-02', rate: 2.75 },
-  { date: '2022-03', rate: 3.5 },
-  { date: '2022-04', rate: 4.5 },
-  { date: '2022-05', rate: 5.25 },
-  { date: '2022-06', rate: 6.0 },
-  { date: '2022-07', rate: 6.5 },
-  { date: '2022-09', rate: 6.75 },
-  { date: '2023-09', rate: 6.0 },
-  { date: '2023-10', rate: 5.75 },
-  { date: '2024-01', rate: 5.75 },
-  { date: '2025-01', rate: 5.75 },
-  { date: '2026-03', rate: 3.75 },
-  { date: '2026-05', rate: 3.75 },
-];
+const FALLBACK_NBP = NBP_REFERENCE_FALLBACK_SERIES.map((point) => ({
+  date: point.date.substring(0, 7),
+  rate: point.rate,
+}));
 
 interface ChartSeriesEnvelope<T> {
   data: T[];
@@ -81,22 +66,41 @@ export async function GET() {
       }))
       .reverse();
 
+    const sparseCoverage = formatted.length < 8;
+    const mergedFallbackCoverage = sparseCoverage
+      ? Array.from(
+          new Map(
+            [...FALLBACK_NBP, ...formatted].map((point) => [point.date, point]),
+          ).values(),
+        ).sort((left, right) => left.date.localeCompare(right.date))
+      : formatted;
+
+    const sourceIsFallbackOnly = series.lastSyncStatus === 'failed';
+    const sourceUsesPartialCoverage = sparseCoverage || series.lastSyncStatus === 'partial';
+
     return NextResponse.json(createSuccessResponse<ChartSeriesEnvelope<(typeof formatted)[number]>>({
-      data: formatted,
+      data: mergedFallbackCoverage,
       source: 'database',
-      usedFallback: series.lastSyncStatus === 'failed',
+      usedFallback: sourceIsFallbackOnly || sourceUsesPartialCoverage,
       asOf: data[0]?.date,
       lastCheck: series.updatedAt?.toISOString(),
       dataSource: series.dataSource ?? 'database',
       seriesName: series.name,
-      coverageStart: formatted[0]?.date,
-      coverageEnd: formatted[formatted.length - 1]?.date,
-      syncStatus: series.lastSyncStatus === 'failed' ? 'failed' : 'success',
+      coverageStart: mergedFallbackCoverage[0]?.date,
+      coverageEnd: mergedFallbackCoverage[mergedFallbackCoverage.length - 1]?.date,
+      syncStatus:
+        sourceIsFallbackOnly
+          ? 'failed'
+          : sourceUsesPartialCoverage
+            ? 'partial'
+            : 'success',
       coverageNote:
-        series.lastSyncStatus === 'failed'
+        sourceIsFallbackOnly
           ? 'nbp-fallback-reference'
-          : 'nbp-synced-context',
-      sourceUrl: 'https://api.nbp.pl/',
+          : sourceUsesPartialCoverage
+            ? 'nbp-partial-reference'
+            : 'nbp-synced-context',
+      sourceUrl: 'https://nbp.pl/',
     }));
   } catch (error) {
     console.error('Failed to fetch NBP data:', error);
