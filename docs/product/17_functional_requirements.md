@@ -20,6 +20,8 @@ The app is a **calculator and education tool**, not a recommendation engine.
 - **FR2.5:** Unsupported or partially validated scenario branches must not be presented as equivalent to trusted ones.
 - **FR2.6:** Features that rank bond scenarios must be framed as assumption-based sorting, not advisory guidance.
 - **FR2.7:** Retirement-oriented calculations must state exactly which bond types and scenario families are supported.
+- **FR2.8:** Monthly-payout products such as `ROR` and `DOR` must present a primary value path based on total investor wealth, not only bond principal left on the instrument.
+- **FR2.9:** Timeline tables, charts, and exports for the same scenario must derive from one consistent display model so period gain, early-exit value, and total wealth do not disagree.
 
 ## 3. Interaction and Performance Requirements
 
@@ -30,6 +32,7 @@ The app is a **calculator and education tool**, not a recommendation engine.
 - **FR3.5:** Result sections, charts, and tables should update only when their dependent calculation state changes.
 - **FR3.6:** Core flows must distinguish between draft input editing state and committed calculation state where immediate recalculation is too expensive or confusing.
 - **FR3.7:** Comparison pages must not continuously update on open without a bounded and intentional trigger path.
+- **FR3.8:** Single-scenario sharing must use persisted committed snapshots rather than query-param reconstruction of live dirty form state.
 
 ## 4. Input Control Requirements
 
@@ -39,6 +42,7 @@ The app is a **calculator and education tool**, not a recommendation engine.
 - **FR4.4:** Sliders must not be the only practical way to set important values.
 - **FR4.5:** Inflation-oriented assumption controls should support realistic fine-grained edits and should generally not exceed a default visible max of 15% unless a scenario explicitly requires it.
 - **FR4.6:** Slider behavior must be consistent across pages and must not feel jumpy or unpredictable.
+- **FR4.7:** Shared selectors and field shells must use one consistent padding, sizing, and dropdown grammar across retained calculators.
 
 ## 5. UX and Copy Requirements
 
@@ -48,6 +52,8 @@ The app is a **calculator and education tool**, not a recommendation engine.
 - **FR5.4:** Advanced controls should be secondary to the primary calculator flow.
 - **FR5.5:** Visual artifacts, unexplained separators, and unstable layout shifts must be removed from calculator flows.
 - **FR5.6:** Core calculator screens must remain understandable without requiring the user to interpret many side widgets, helper panels, or decorative layers.
+- **FR5.7:** Dense schedule tables must fit normal desktop retained layouts without default horizontal scrolling and must expose a friendlier mobile/tablet reading mode.
+- **FR5.8:** “How to read” guidance and calculation context should remain secondary and should generally sit below the main result path, usually inside secondary accordions.
 
 ## 6. Data and Freshness Requirements
 
@@ -57,6 +63,8 @@ The app is a **calculator and education tool**, not a recommendation engine.
 - **FR6.4:** Historical comparison features must either use sufficient real coverage or be narrowed/reframed.
 - **FR6.5:** The economic data page must either present useful current data with real provenance or be clearly marked unavailable/experimental.
 - **FR6.6:** Data-backed comparisons must not imply broad historical completeness when coverage is narrow.
+- **FR6.7:** The app must clearly distinguish current bond offer terms from NBP reference-rate context. These values must not be presented as interchangeable.
+- **FR6.8:** CPI and NBP retained routes must expose whether history is direct, partial, curated, or fallback-supported.
 
 ## 7. Documentation and Release Requirements
 
@@ -64,3 +72,4 @@ The app is a **calculator and education tool**, not a recommendation engine.
 - **FR7.2:** A feature is not complete until it is stable, testable, understandable, and documented honestly.
 - **FR7.3:** The app must not be described as production-ready until stability, calculation trust, and data transparency gates are met.
 - **FR7.4:** Documentation must distinguish between trusted, experimental, narrowed, and deferred product surfaces.
+- **FR7.5:** High-level architecture docs must track real runtime decisions such as guest-backed notebook persistence, server-backed scenario sharing, and the canonical bond metadata model.

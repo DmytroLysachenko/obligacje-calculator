@@ -29,6 +29,11 @@ Completed or materially improved already:
 - flagship scenario golden tests exist for core calculator outputs
 - comparison and ladder golden regressions now cover broader retained-core baselines
 - support-matrix tests exist for broader scenario classes
+- notebook portfolio deletion now works end to end
+- single-calculator sharing now uses persisted short-link snapshots instead of implicit URL copying
+- retained schedule tables now have a reusable mobile sheet pattern instead of raw wide-table dependency on small screens
+- monthly-payout display semantics were corrected so payout-bond results emphasize total investor wealth instead of only bond principal
+- NBP history support is materially broader than before and is labeled more honestly as synced vs curated reference coverage
 
 Still not complete:
 
@@ -669,6 +674,19 @@ As of May 8, 2026, the application has moved materially further through this pla
 - retirement was narrowed into one limited withdrawal-model flow
 - shared calculation shell, shared audit panels, shared recalculate affordances, and shared suspense fallbacks were simplified
 - residual motion-heavy page transitions and pulse-heavy status cues were reduced
+- heavy retained schedule tables now use a reusable responsive pattern for smaller screens instead of forcing raw horizontal table reading everywhere
+
+### Sharing and Persistence
+
+- single-calculator sharing no longer pretends query params are a stable reconstruction layer
+- committed single-scenario snapshots now have their own persisted share model and replay route
+- notebook portfolio lifecycle now includes delete support in the retained UI and API
+
+### Calculator Display Truth
+
+- payout-style bonds such as ROR and DOR now present total scenario wealth more coherently in charts and timeline rows
+- timeline export and on-screen display derive from a tighter shared display model
+- early-exit and net-gain columns are no longer silently flattened to zero in retained timeline output
 
 ### Remaining Gaps After The Current Refactor Pass
 
