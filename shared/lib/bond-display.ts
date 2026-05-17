@@ -40,6 +40,19 @@ export interface BondChartDisplayPoint {
   eventLabels: string[];
 }
 
+export function getAuditTimelinePoint(timeline: YearlyTimelinePoint[]) {
+  return (
+    timeline.find(
+      (point) =>
+        point.events?.some((event) => event.type !== SimulationEventType.PURCHASE)
+        || point.netInterest !== 0
+        || point.accumulatedNetInterest !== 0
+        || point.isWithdrawal
+        || point.isMaturity,
+    ) ?? timeline[0]
+  );
+}
+
 function formatMonthYear(date: string, language: AppLanguage) {
   return new Intl.DateTimeFormat(language === 'pl' ? 'pl-PL' : 'en-GB', {
     month: 'short',

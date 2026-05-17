@@ -14,6 +14,17 @@ export function downloadFile(content: string, fileName: string, contentType: str
   URL.revokeObjectURL(anchor.href);
 }
 
+export function downloadJsonFile(payload: unknown, fileName: string) {
+  const anchor = document.createElement('a');
+  const file = new Blob([JSON.stringify(payload, null, 2)], {
+    type: 'application/json;charset=utf-8',
+  });
+  anchor.href = URL.createObjectURL(file);
+  anchor.download = fileName;
+  anchor.click();
+  URL.revokeObjectURL(anchor.href);
+}
+
 const SEPARATOR = ';';
 
 function formatCsvValue(

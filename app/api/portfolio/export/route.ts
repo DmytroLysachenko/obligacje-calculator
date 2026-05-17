@@ -74,6 +74,15 @@ export const GET = apiHandler(async (req: NextRequest) => {
     ...baseExport,
     packageType: formatMode === 'package' ? 'portfolio-package' : 'portfolio-export',
   };
+  const fileName = `${portfolio.name.replace(/\s+/g, '_').toLowerCase()}_${formatMode}.json`;
 
-  return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(exportData)), owner);
+  const response = NextResponse.json(createSuccessResponse(exportData), {
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Content-Disposition': `attachment; filename="${fileName}"`,
+      'X-Export-Format': formatMode,
+    },
+  });
+
+  return applyPortfolioOwnerCookie(response, owner);
 });

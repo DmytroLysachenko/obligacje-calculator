@@ -26,6 +26,7 @@ import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { unwrapApiData } from '@/shared/lib/api-response';
+import { downloadJsonFile } from '@/shared/lib/csv-utils';
 import {
   Area,
   AreaChart,
@@ -204,15 +205,12 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({
         throw new Error('Export failed');
       }
       const exportPayload = unwrapApiData<Record<string, unknown>>(data);
-      const blob = new Blob([JSON.stringify(exportPayload, null, 2)], {
-        type: 'application/json',
-      });
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement('a');
-      anchor.href = url;
-      anchor.download = `${portfolio.name.replace(/\s+/g, '_').toLowerCase()}_${formatName}.json`;
-      anchor.click();
-      URL.revokeObjectURL(url);
+      const responseFilename =
+        response.headers
+          .get('content-disposition')
+          ?.match(/filename="([^"]+)"/i)?.[1]
+          ?? `${portfolio.name.replace(/\s+/g, '_').toLowerCase()}_${formatName}.json`;
+      downloadJsonFile(exportPayload, responseFilename);
     } catch (caughtError) {
       console.error('Export failed:', caughtError);
     }

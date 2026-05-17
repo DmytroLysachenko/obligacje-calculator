@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { convertLotsToCSV, convertTimelineToCSV } from './csv-utils';
 import { buildLotsExportHeaders, buildTimelineExportHeaders } from './export-headers';
 import type { YearlyTimelinePoint, LotBreakdown } from '@/features/bond-core/types';
+import { SimulationEventType } from '@/features/bond-core/types/simulation';
 
 describe('csv-utils', () => {
   it('builds a normalized timeline csv with localized helper columns', () => {
@@ -28,6 +29,47 @@ describe('csv-utils', () => {
     expect(csv).toContain('Jak czytac ten wiersz');
     expect(csv).toContain('Tryb danych');
     expect(csv).toContain('Kontrolny punkt scenariusza');
+  });
+
+  it('exports payout-bond timeline rows with total wealth and early exit semantics', () => {
+    const headers = buildTimelineExportHeaders((key) => key, 'en');
+    const timeline = [
+      {
+        periodLabel: 'Jun 2026',
+        cycleIndex: 1,
+        cycleStartDate: '2026-06-01',
+        cycleEndDate: '2026-06-30',
+        interestRate: 5.25,
+        rateSource: 'historical_nbp',
+        nominalValueBeforeInterest: 10000,
+        interestEarned: 43,
+        taxDeducted: 0,
+        netInterest: 43,
+        nominalValueAfterInterest: 10000,
+        accumulatedNetInterest: 43,
+        totalValue: 10043,
+        realValue: 9950,
+        netProfit: 43,
+        earlyWithdrawalValue: 10021,
+        isMaturity: false,
+        isWithdrawal: false,
+        cumulativeInflation: 1.02,
+        events: [
+          {
+            type: SimulationEventType.PAYOUT,
+            date: '2026-06-30',
+            description: 'Monthly payout',
+          },
+        ],
+      },
+    ] as unknown as YearlyTimelinePoint[];
+
+    const csv = convertTimelineToCSV(timeline, headers, 'en');
+
+    expect(csv).toContain('Cash paid out');
+    expect(csv).toContain('Total wealth');
+    expect(csv).toContain('Early exit payout');
+    expect(csv).toContain('Payout or rollover point');
   });
 
   it('builds lot csv using the selected locale formatting', () => {

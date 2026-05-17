@@ -4,6 +4,7 @@ import { SimulationEventType } from './types/simulation';
 import {
   buildBondChartDisplayPoints,
   buildBondTimelineDisplayRows,
+  getAuditTimelinePoint,
   getRateSourceDisplayLabel,
   getSimulationEventDisplayLabel,
 } from '@/shared/lib/bond-display';
@@ -100,5 +101,38 @@ describe('bond display models', () => {
     expect(points[1].high).toBe(10100);
     expect(points[1].rateLabel).toContain('Historyczna stopa NBP');
     expect(points[1].xLabel).toContain('2026');
+  });
+
+  it('picks the first meaningful audit checkpoint instead of a raw purchase row', () => {
+    const purchaseOnly = makePoint({
+      periodLabel: 'May 2026',
+      events: [
+        {
+          type: SimulationEventType.PURCHASE,
+          date: '2026-05-14',
+          description: 'Purchase',
+        },
+      ],
+      netInterest: 0,
+      accumulatedNetInterest: 0,
+      isMaturity: false,
+      isWithdrawal: false,
+    });
+    const payoutPoint = makePoint({
+      periodLabel: 'Jun 2026',
+      events: [
+        {
+          type: SimulationEventType.PAYOUT,
+          date: '2026-06-30',
+          description: 'Payout',
+        },
+      ],
+      netInterest: 43,
+      accumulatedNetInterest: 43,
+    });
+
+    const point = getAuditTimelinePoint([purchaseOnly, payoutPoint]);
+
+    expect(point?.periodLabel).toBe('Jun 2026');
   });
 });

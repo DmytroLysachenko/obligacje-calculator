@@ -11,6 +11,7 @@ import { MetricStrip } from '@/shared/components/MetricStrip';
 import { MathDeepDive } from '@/shared/components/MathDeepDive';
 import { ResultSummaryHero } from '@/shared/components/ResultSummaryHero';
 import { CalculationAuditTrace } from './CalculationAuditTrace';
+import { getAuditTimelinePoint } from '@/shared/lib/bond-display';
 
 function getTaxStrategyDisplayLabel(
   strategy: BondInputs['taxStrategy'],
@@ -131,6 +132,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
     : language === 'pl'
       ? 'Ten przebieg utrzymuje obligacje do modelowanej sciezki zapadalnosci, wiec wynik odzwierciedla pelny plan.'
       : 'This run holds the bond to the modeled maturity path, so the final payout reflects the full planned cycle.';
+  const auditPoint = getAuditTimelinePoint(results.timeline);
 
   return (
     <div className="space-y-10">
@@ -189,8 +191,8 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
       ) : null}
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-        {results.timeline.length > 0 ? (
-          <CalculationAuditTrace point={results.timeline[0]} />
+        {auditPoint ? (
+          <CalculationAuditTrace point={auditPoint} />
         ) : (
           <div />
         )}
