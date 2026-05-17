@@ -10,6 +10,7 @@ import {
   FolderOpen,
   Plus,
   RefreshCcw,
+  Trash2,
   Upload,
 } from 'lucide-react';
 import { UserPortfolio } from '@/db/schema';
@@ -19,6 +20,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { unwrapApiData } from '@/shared/lib/api-response';
 import { PortfolioDetails } from './PortfolioDetails';
+import {
+  removePortfolioFromNotebookState,
+  resolveSelectedPortfolioId,
+  upsertPortfolioInNotebookState,
+} from '../lib/notebook-state';
 
 type NotebookStepItem = {
   id: string;
@@ -165,22 +171,11 @@ export const NotebookContainer: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedPortfolioId, setSelectedPortfolioId] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const importRef = useRef<HTMLInputElement | null>(null);
 
   const mergePortfolioIntoState = useCallback((portfolio: UserPortfolio) => {
-    setPortfolios((current) => {
-      const existingIndex = current.findIndex((item) => item.id === portfolio.id);
-      if (existingIndex === -1) {
-        return [portfolio, ...current];
-      }
-
-      const next = [...current];
-      next[existingIndex] = portfolio;
-      return next.sort((left, right) =>
-        new Date(right.updatedAt ?? right.createdAt ?? 0).getTime()
-        - new Date(left.updatedAt ?? left.createdAt ?? 0).getTime(),
-      );
-    });
+    setPortfolios((current) => upsertPortfolioInNotebookState(current, portfolio));
   }, []);
 
   const resolvePortfolioError = useCallback(
@@ -214,6 +209,7 @@ export const NotebookContainer: React.FC = () => {
 
       const portfoliosPayload = unwrapApiData<UserPortfolio[]>(data);
       setPortfolios(Array.isArray(portfoliosPayload) ? portfoliosPayload : []);
+      setStatusMessage(null);
     } catch {
       setError(t('notebook.load_error'));
       setPortfolios([]);
@@ -227,11 +223,8 @@ export const NotebookContainer: React.FC = () => {
   }, [fetchPortfolios]);
 
   useEffect(() => {
-    if (selectedPortfolioId && !isLoading && portfolios.length > 0) {
-      const selectedStillExists = portfolios.some((portfolio) => portfolio.id === selectedPortfolioId);
-      if (!selectedStillExists) {
-        setSelectedPortfolioId(null);
-      }
+    if (!isLoading) {
+      setSelectedPortfolioId((current) => resolveSelectedPortfolioId(current, portfolios));
     }
   }, [isLoading, portfolios, selectedPortfolioId]);
 
@@ -272,6 +265,11 @@ export const NotebookContainer: React.FC = () => {
 
       const created = unwrapApiData<UserPortfolio>(await response.json().catch(() => null));
       setError(null);
+      setStatusMessage(
+        language === 'pl'
+          ? 'Nowy portfel zostal utworzony.'
+          : 'A new portfolio was created.',
+      );
       if (created?.id) {
         mergePortfolioIntoState(created);
         setSelectedPortfolioId(created.id);
@@ -321,6 +319,11 @@ export const NotebookContainer: React.FC = () => {
       if (createdPortfolio?.id) {
         mergePortfolioIntoState(createdPortfolio);
         setSelectedPortfolioId(createdPortfolio.id);
+        setStatusMessage(
+          language === 'pl'
+            ? 'Portfel demonstracyjny zostal zaladowany.'
+            : 'Demo portfolio loaded.',
+        );
       } else {
         await fetchPortfolios();
       }
@@ -362,6 +365,11 @@ export const NotebookContainer: React.FC = () => {
       if (importPayload?.portfolio?.id) {
         mergePortfolioIntoState(importPayload.portfolio);
         setSelectedPortfolioId(importPayload.portfolio.id);
+        setStatusMessage(
+          language === 'pl'
+            ? `Import zakonczony. Dodano ${importPayload.importedLots ?? 0} partii.`
+            : `Import completed. Added ${importPayload.importedLots ?? 0} lots.`,
+        );
       } else {
         await fetchPortfolios();
       }
@@ -389,9 +397,14 @@ export const NotebookContainer: React.FC = () => {
         return;
       }
 
-      setPortfolios((current) => current.filter((item) => item.id !== portfolio.id));
+      setPortfolios((current) => removePortfolioFromNotebookState(current, portfolio.id));
       setSelectedPortfolioId((current) => (current === portfolio.id ? null : current));
       setError(null);
+      setStatusMessage(
+        language === 'pl'
+          ? 'Portfel zostal usuniety.'
+          : 'The portfolio was deleted.',
+      );
     } catch (caughtError) {
       console.error(caughtError);
       setError(
@@ -409,6 +422,7 @@ export const NotebookContainer: React.FC = () => {
       <PortfolioDetails
         portfolio={portfolio}
         onDelete={handleDeletePortfolio}
+        onPortfolioUpdate={mergePortfolioIntoState}
         onBack={() => {
           void fetchPortfolios();
           setSelectedPortfolioId(null);
@@ -458,6 +472,15 @@ export const NotebookContainer: React.FC = () => {
               <RefreshCcw className="h-4 w-4" />
               {t('common.retry')}
             </Button>
+          </div>
+        </div>
+      ) : null}
+
+      {statusMessage ? (
+        <div className="rounded-[2rem] border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-950">
+          <div className="flex items-center gap-3 font-semibold">
+            <CheckCircle2 className="h-5 w-5" />
+            {statusMessage}
           </div>
         </div>
       ) : null}
@@ -568,11 +591,32 @@ export const NotebookContainer: React.FC = () => {
                       <div className="rounded-2xl bg-slate-100 p-3 text-slate-900">
                         <FileText className="h-5 w-5" />
                       </div>
-                      <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold tracking-[0.08em] text-slate-600">
-                        {portfolio.isPublic
-                          ? t('notebook.status_public')
-                          : t('notebook.status_private')}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold tracking-[0.08em] text-slate-600">
+                          {portfolio.isPublic
+                            ? t('notebook.status_public')
+                            : t('notebook.status_private')}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-9 w-9 rounded-full text-slate-500 hover:text-destructive"
+                          onClick={async (event) => {
+                            event.stopPropagation();
+                            const confirmed = window.confirm(
+                              language === 'pl'
+                                ? `Usunac portfel "${portfolio.name}"?`
+                                : `Delete portfolio "${portfolio.name}"?`,
+                            );
+                            if (!confirmed) {
+                              return;
+                            }
+                            await handleDeletePortfolio(portfolio);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
 
                     <div className="space-y-2">

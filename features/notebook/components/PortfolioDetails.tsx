@@ -43,6 +43,7 @@ interface PortfolioDetailsProps {
   portfolio: UserPortfolio;
   onBack: () => void;
   onDelete?: (portfolio: UserPortfolio) => Promise<void> | void;
+  onPortfolioUpdate?: (portfolio: UserPortfolio) => void;
 }
 
 type MaturityWindow = 30 | 90 | 180;
@@ -73,6 +74,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({
   portfolio,
   onBack,
   onDelete,
+  onPortfolioUpdate,
 }) => {
   const { t, language } = useLanguage();
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
@@ -167,7 +169,13 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({
       });
 
       if (response.ok) {
-        setIsPublic(!isPublic);
+        const nextIsPublic = !isPublic;
+        setIsPublic(nextIsPublic);
+        onPortfolioUpdate?.({
+          ...portfolio,
+          isPublic: nextIsPublic,
+          updatedAt: new Date(),
+        });
       }
     } catch (caughtError) {
       console.error('Failed to update sharing:', caughtError);
@@ -192,6 +200,9 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({
         `/api/portfolio/export?portfolioId=${portfolio.id}&format=${formatName}`,
       );
       const data = await response.json();
+      if (!response.ok) {
+        throw new Error('Export failed');
+      }
       const exportPayload = unwrapApiData<Record<string, unknown>>(data);
       const blob = new Blob([JSON.stringify(exportPayload, null, 2)], {
         type: 'application/json',
@@ -363,6 +374,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({
                   return;
                 }
                 await onDelete(portfolio);
+                onBack();
               }}
             >
               <Trash2 className="h-4 w-4" />
