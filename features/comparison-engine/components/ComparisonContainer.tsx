@@ -237,54 +237,6 @@ export const ComparisonContainer: React.FC = () => {
     return inputsA.payoutFrequency !== inputsB.payoutFrequency;
   }, [inputsA.payoutFrequency, inputsB.payoutFrequency]);
 
-  const labels = {
-    sharedBaseTitle: language === 'pl' ? 'Wspolna baza scenariusza' : 'Shared scenario base',
-    sharedBaseDesc:
-      language === 'pl'
-        ? 'Utrzymaj jedna baze: kwote, daty i zalozenia. Nadpisania scenariuszy wlaczaj tylko wtedy, gdy rzeczywiscie maja znaczenie.'
-        : 'Keep one shared base scenario, then apply scenario-specific overrides only when they truly matter.',
-    readyTitle:
-      language === 'pl'
-        ? 'Porownaj dwa zatwierdzone scenariusze, nie dwa ruchome cele.'
-        : 'Compare two committed scenarios, not two moving targets.',
-    readyDesc:
-      language === 'pl'
-        ? 'Najpierw ustaw wspolna baze, potem zmien nadpisania scenariuszy tylko wtedy, gdy sa potrzebne, a na koncu uruchom jedno czyste porownanie.'
-        : 'Set the shared base first, change scenario overrides only if needed, then run one clean comparison.',
-    readySharedBase: language === 'pl' ? 'Wspolna baza' : 'Shared base',
-    readyOverrides: language === 'pl' ? 'Nadpisania scenariuszy' : 'Scenario overrides',
-    readyCommitted: language === 'pl' ? 'Zatwierdzony wynik' : 'Committed result',
-    readySharedBaseDesc:
-      language === 'pl'
-        ? 'Kwota, daty, sciezka inflacji i opakowanie podatkowe.'
-        : 'Amount, dates, inflation path, and tax wrapper.',
-    readyOverridesDesc:
-      language === 'pl'
-        ? 'Typ obligacji i opcjonalne korekty dla kazdego scenariusza.'
-        : 'Bond type and optional per-scenario adjustments.',
-    readyCommittedDesc:
-      language === 'pl'
-        ? 'Uruchom porownanie, potem przejdz do podsumowania, wykresu i tabeli.'
-        : 'Run comparison, then inspect snapshot, chart, and table.',
-    staleResults:
-      language === 'pl'
-        ? 'Dane zostaly zmienione. Wyniki ponizej nadal pokazuja poprzedni przebieg, dopoki nie uruchomisz porownania ponownie.'
-        : 'Inputs changed. Results below are stale until you rerun the comparison.',
-    chartHeaderDesc:
-      language === 'pl'
-        ? 'Punkty wykresu sa ustawione wedlug rzeczywistych dat kalendarzowych, dzieki czemu oba scenariusze korzystaja z jednej osi czasu.'
-        : 'Chart points are aligned by actual calendar date so both scenarios share one time axis.',
-    exportLabel: language === 'pl' ? 'Eksport' : 'Export',
-    assumptionsMeta:
-      language === 'pl' ? 'Zalozenia i meta scenariuszy' : 'Scenario assumptions and meta',
-    assumptionsMetaDesc:
-      language === 'pl'
-        ? 'Obie strony porownania zachowuja jawne zalozenia i ostrzezenia, ale nie powinny dominowac nad wynikiem i tabela.'
-        : 'Both scenarios keep explicit assumptions and warnings, but they should not dominate the outcome and table.',
-    helperSecondary: language === 'pl' ? 'Pomocnicze' : 'Secondary',
-    notesSuffix: language === 'pl' ? 'notatki' : 'notes',
-  } as const;
-
   const headerActions = (
     <div className="flex flex-wrap items-center gap-3">
       <div className="flex rounded-xl border bg-muted/30 p-1">
@@ -329,15 +281,15 @@ export const ComparisonContainer: React.FC = () => {
         <BondComparisonContainer />
       ) : (
         <div className="grid grid-cols-1 gap-8 xl:grid-cols-[390px_minmax(0,1fr)]">
-          <Card className="overflow-hidden border shadow-sm">
-            <CardHeader className="border-b bg-muted/20">
-              <CardTitle className="text-sm font-black uppercase tracking-widest">
-                {labels.sharedBaseTitle}
-              </CardTitle>
-              <p className="text-sm leading-6 text-muted-foreground">
-                {labels.sharedBaseDesc}
-              </p>
-            </CardHeader>
+            <Card className="overflow-hidden border shadow-sm">
+              <CardHeader className="border-b bg-muted/20">
+                <CardTitle className="text-sm font-black uppercase tracking-widest">
+                  {t('comparison.shared_base_title')}
+                </CardTitle>
+                <p className="text-sm leading-6 text-muted-foreground">
+                  {t('comparison.shared_base_desc')}
+                </p>
+              </CardHeader>
             <CardContent className="space-y-6 pt-6">
               <div className="space-y-3">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
@@ -588,30 +540,26 @@ export const ComparisonContainer: React.FC = () => {
             {!resultsA && !isCalculating ? (
               <ScenarioReadyPanel
                 badge={t('comparison.ready_to_compare')}
-                title={labels.readyTitle}
-                description={labels.readyDesc}
+                title={t('comparison.ready_title')}
+                description={t('comparison.ready_desc')}
                 steps={[
                   {
                     id: 'shared-base',
-                    title: labels.readySharedBase,
-                    description: labels.readySharedBaseDesc,
+                    title: t('comparison.ready_shared_base'),
+                    description: t('comparison.ready_shared_base_desc'),
                   },
                   {
                     id: 'scenario-overrides',
-                    title: labels.readyOverrides,
-                    description: labels.readyOverridesDesc,
+                    title: t('comparison.ready_overrides'),
+                    description: t('comparison.ready_overrides_desc'),
                   },
                   {
                     id: 'committed-result',
-                    title: labels.readyCommitted,
-                    description: labels.readyCommittedDesc,
+                    title: t('comparison.ready_committed'),
+                    description: t('comparison.ready_committed_desc'),
                   },
                 ]}
-                footerText={
-                  language === 'pl'
-                    ? 'Uruchom porownanie przez staly przycisk oblicz w prawym dolnym rogu.'
-                    : 'Run the comparison from the fixed calculate control in the bottom-right corner.'
-                }
+                footerText={t('comparison.ready_footer')}
               />
             ) : null}
 
@@ -632,7 +580,7 @@ export const ComparisonContainer: React.FC = () => {
                     <TriangleAlert className="mt-0.5 h-5 w-5 text-amber-700" />
                     <div className="flex items-start gap-3">
                       <p className="text-sm text-amber-900">
-                        {labels.staleResults}
+                        {t('comparison.stale_results')}
                       </p>
                     </div>
                   </div>
@@ -645,7 +593,7 @@ export const ComparisonContainer: React.FC = () => {
                       {t('comparison.performance_over_time')}
                     </CardTitle>
                     <p className="text-sm leading-6 text-muted-foreground">
-                      {labels.chartHeaderDesc}
+                      {t('comparison.chart_header_desc')}
                     </p>
                   </CardHeader>
                   <CardContent className="p-6">
@@ -666,7 +614,7 @@ export const ComparisonContainer: React.FC = () => {
                         onClick={() => handleExportCSV(resultsA, inputsA.bondType)}
                       >
                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                          {labels.exportLabel}
+                          {t('comparison.export')}
                         </p>
                         <div className="mt-2 flex items-center gap-2 text-sm font-bold text-slate-900">
                           <FileSpreadsheet className="h-4 w-4 text-primary" />
@@ -679,7 +627,7 @@ export const ComparisonContainer: React.FC = () => {
                         onClick={() => handleExportCSV(resultsB, inputsB.bondType)}
                       >
                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                          {labels.exportLabel}
+                          {t('comparison.export')}
                         </p>
                         <div className="mt-2 flex items-center gap-2 text-sm font-bold text-slate-900">
                           <FileSpreadsheet className="h-4 w-4 text-primary" />
@@ -689,12 +637,8 @@ export const ComparisonContainer: React.FC = () => {
                     </div>
 
                     <ChartSupportNote
-                      title={language === 'pl' ? 'Jak czytac wykres' : 'How to read the chart'}
-                      description={
-                        language === 'pl'
-                          ? 'Najpierw sprawdz poziom koncowy obu scenariuszy. Potem dopiero patrz na rytm zmian i odcinki plaskie.'
-                          : 'Check the end level of both scenarios first. Only then inspect the rhythm of changes and flat stretches.'
-                      }
+                      title={t('comparison.chart_help_title')}
+                      description={t('comparison.chart_help_desc')}
                     />
 
                     <ChartContainer height={420}>
@@ -726,59 +670,50 @@ export const ComparisonContainer: React.FC = () => {
 
                     <div className="mt-6">
                       <SecondaryInsightAccordion
-                        title={language === 'pl' ? 'Jak czytac wykres porownawczy' : 'How to read the comparison chart'}
-                        description={
-                          language === 'pl'
-                            ? 'Wykres sluzy do wychwycenia ksztaltu scenariusza. Szczegoly kadencji wyplat i rytmu aktualizacji mozna rozwinac tylko wtedy, gdy sa potrzebne.'
-                            : 'Use the chart to spot the scenario shape. Payout cadence and update rhythm stay available on demand, not as permanent noise.'
-                        }
-                        badge={usesMixedTimelineCadence ? (language === 'pl' ? 'Mieszany rytm' : 'Mixed cadence') : undefined}
+                        title={t('comparison.comparison_chart_help_title')}
+                        description={t('comparison.comparison_chart_help_desc')}
+                        badge={usesMixedTimelineCadence ? t('comparison.mixed_cadence') : undefined}
                         className="mt-0"
                       >
                         <div className="space-y-4 text-sm leading-7 text-slate-600">
                           <div className="rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4">
                             <p>
-                              {language === 'pl'
-                                ? 'Najpierw odczytaj poziom koncowy obu scenariuszy. Dopiero potem patrz na nachylenie linii i odcinki plaskie.'
-                                : 'Read the final level of both scenarios first. Only then inspect slope changes and flat stretches.'}
+                              {t('comparison.comparison_chart_help_note')}
                             </p>
                           </div>
                           {usesMixedTimelineCadence ? (
                             <div className="rounded-3xl border border-amber-200 bg-amber-50 px-5 py-4 text-amber-950">
                               <p className="font-semibold">
-                                {language === 'pl'
-                                  ? `To porownanie miesza rozne kadencje wyplat: ${inputsA.bondType} aktualizuje sie ${
-                                      inputsA.payoutFrequency === InterestPayout.MONTHLY ? 'miesiecznie' : 'rzadziej'
-                                    }, a ${inputsB.bondType} aktualizuje sie ${
-                                      inputsB.payoutFrequency === InterestPayout.MONTHLY ? 'miesiecznie' : 'rzadziej'
-                                    }.`
-                                  : `This comparison mixes payout cadences: ${inputsA.bondType} updates ${
-                                      inputsA.payoutFrequency === InterestPayout.MONTHLY ? 'monthly' : 'on longer cycles'
-                                    }, while ${inputsB.bondType} updates ${
-                                      inputsB.payoutFrequency === InterestPayout.MONTHLY ? 'monthly' : 'on longer cycles'
-                                    }.`}
+                                {t('comparison.mixed_cadence_notice', {
+                                  bondTypeA: inputsA.bondType,
+                                  cadenceA:
+                                    inputsA.payoutFrequency === InterestPayout.MONTHLY
+                                      ? t('comparison.cadence_monthly')
+                                      : t('comparison.cadence_longer'),
+                                  bondTypeB: inputsB.bondType,
+                                  cadenceB:
+                                    inputsB.payoutFrequency === InterestPayout.MONTHLY
+                                      ? t('comparison.cadence_monthly')
+                                      : t('comparison.cadence_longer'),
+                                })}
                               </p>
                             </div>
                           ) : null}
                           <div className="grid gap-4 md:grid-cols-2">
                             <div className="rounded-2xl border bg-white p-4">
                               <p className="text-sm font-bold text-slate-900">
-                                {language === 'pl' ? 'Poziom koncowy' : 'End level'}
+                                {t('comparison.end_level')}
                               </p>
                               <p className="mt-1 text-xs leading-6 text-muted-foreground">
-                                {language === 'pl'
-                                  ? 'Pokazuje, ktory scenariusz konczy wyzej przy tych samych zalozeniach.'
-                                  : 'Shows which scenario finishes higher under the same assumptions.'}
+                                {t('comparison.end_level_desc')}
                               </p>
                             </div>
                             <div className="rounded-2xl border bg-white p-4">
                               <p className="text-sm font-bold text-slate-900">
-                                {language === 'pl' ? 'Rytm aktualizacji' : 'Update rhythm'}
+                                {t('comparison.update_rhythm')}
                               </p>
                               <p className="mt-1 text-xs leading-6 text-muted-foreground">
-                                {language === 'pl'
-                                  ? 'Plaskie odcinki nie oznaczaja stagnacji. Czasem oznaczaja tylko rzadsze kapitalizowanie lub wyplate.'
-                                  : 'Flat segments do not automatically mean stagnation. They can simply reflect slower crediting or payout timing.'}
+                                {t('comparison.update_rhythm_desc')}
                               </p>
                             </div>
                           </div>
@@ -807,9 +742,9 @@ export const ComparisonContainer: React.FC = () => {
                 />
 
                 <SecondaryInsightAccordion
-                  title={labels.assumptionsMeta}
-                  description={labels.assumptionsMetaDesc}
-                  badge={labels.helperSecondary}
+                  title={t('comparison.assumptions_meta')}
+                  description={t('comparison.assumptions_meta_desc')}
+                  badge={t('comparison.helper_secondary')}
                 >
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                     {[
@@ -827,7 +762,7 @@ export const ComparisonContainer: React.FC = () => {
                       <Card key={entry.label} className="border shadow-sm">
                         <CardHeader className="border-b bg-muted/10 pb-3">
                           <CardTitle className="text-[10px] font-black uppercase tracking-widest">
-                            {entry.label} {labels.notesSuffix}
+                            {entry.label} {t('comparison.notes_suffix')}
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="pt-4">

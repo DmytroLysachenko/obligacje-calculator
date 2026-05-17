@@ -39,38 +39,32 @@ type NavSection = {
 
 function getFreshnessLabel(
   freshness: CalculationDataFreshness,
-  language: 'pl' | 'en',
+  t: (key: string, params?: Record<string, string | number>) => string,
 ) {
   if (freshness.status === 'fresh') {
-    return language === 'pl' ? 'Aktualne' : 'Fresh';
+    return t('sidebar.freshness.fresh');
   }
 
   if (freshness.status === 'fallback' || freshness.usedFallback) {
-    return language === 'pl' ? 'Czesciowe' : 'Partial';
+    return t('sidebar.freshness.partial');
   }
 
-  return language === 'pl' ? 'Ostroznie' : 'Caution';
+  return t('sidebar.freshness.caution');
 }
 
 function getFreshnessText(
   freshness: CalculationDataFreshness,
-  language: 'pl' | 'en',
+  t: (key: string, params?: Record<string, string | number>) => string,
 ) {
   if (freshness.status === 'fresh') {
-    return language === 'pl'
-      ? 'Glowne strony korzystaja z aktualnych metadanych.'
-      : 'Core pages are reading current metadata.';
+    return t('sidebar.freshness.text_fresh');
   }
 
   if (freshness.status === 'fallback' || freshness.usedFallback) {
-    return language === 'pl'
-      ? 'Czesc danych nadal moze byc zastepcza.'
-      : 'Some data may still be fallback coverage.';
+    return t('sidebar.freshness.text_partial');
   }
 
-  return language === 'pl'
-    ? 'Czytaj strony pomocnicze ostrozniej.'
-    : 'Read reference pages more cautiously.';
+  return t('sidebar.freshness.text_caution');
 }
 
 function getFreshnessClass(freshness: CalculationDataFreshness) {
@@ -94,7 +88,7 @@ function SidebarUtilityPanel({
 }
 
 function SidebarBrand() {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
 
   return (
     <div className="border-b border-slate-200/80 px-6 py-6">
@@ -105,9 +99,7 @@ function SidebarBrand() {
         <div className="min-w-0 space-y-1">
           <p className="text-[2rem] font-bold tracking-tight">{t('common.title')}</p>
           <p className="max-w-[15rem] text-[13px] leading-6 text-slate-500">
-            {language === 'pl'
-              ? 'Najpierw glowny kalkulator. Reszta pozniej.'
-              : 'Use the core calculator first.'}
+            {t('sidebar.brand_tagline')}
           </p>
         </div>
       </Link>
@@ -218,7 +210,7 @@ function SidebarSyncUtility({
 }: {
   dataFreshness?: CalculationDataFreshness;
 }) {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
 
   return (
     <SidebarUtilityPanel>
@@ -228,10 +220,8 @@ function SidebarSyncUtility({
             <p className="text-xs font-semibold text-slate-500">{t('common.sync_data')}</p>
             <p className="mt-0.5 text-[13px] font-semibold text-slate-900">
               {dataFreshness
-                ? dataFreshness.asOf ?? (language === 'pl' ? 'Brak daty' : 'No date')
-                : language === 'pl'
-                  ? 'Brak metadanych'
-                  : 'No metadata'}
+                ? dataFreshness.asOf ?? t('sidebar.freshness.no_date')
+                : t('sidebar.freshness.no_metadata')}
             </p>
           </div>
           {dataFreshness ? (
@@ -241,14 +231,14 @@ function SidebarSyncUtility({
                 getFreshnessClass(dataFreshness),
               )}
             >
-              {getFreshnessLabel(dataFreshness, language)}
+              {getFreshnessLabel(dataFreshness, t)}
             </span>
           ) : null}
         </div>
 
         <p className="text-xs leading-5 text-slate-600">
           {dataFreshness
-            ? getFreshnessText(dataFreshness, language)
+            ? getFreshnessText(dataFreshness, t)
             : t('sidebar.sync_unavailable')}
         </p>
       </div>

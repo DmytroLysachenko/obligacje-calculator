@@ -53,34 +53,22 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
     {
       label: t('bonds.total_invested'),
       value: formatCurrency(results.totalInvested),
-      helper:
-        language === 'pl'
-          ? 'Suma gotowki wplaconej do planu.'
-          : 'Cash paid into the plan.',
+      helper: t('regular_summary.total_invested_helper'),
     },
     {
       label: t('bonds.final_nominal_value'),
       value: formatCurrency(results.finalNominalValue),
-      helper:
-        language === 'pl'
-          ? 'Wartosc wyjscia przed korekta o inflacje.'
-          : 'Projected withdrawal value before inflation adjustment.',
+      helper: t('regular_summary.final_nominal_helper'),
     },
     {
       label: t('bonds.total_net_profit'),
       value: formatCurrency(results.totalProfit),
-      helper:
-        language === 'pl'
-          ? 'Zysk netto po podatku i oplatach.'
-          : 'Net gain after tax and early withdrawal fees.',
+      helper: t('regular_summary.net_profit_helper'),
     },
     {
       label: t('bonds.real_value_inflation'),
       value: formatCurrency(results.finalRealValue),
-      helper:
-        language === 'pl'
-          ? 'Sila nabywcza na dacie koncowej.'
-          : 'Inflation-adjusted purchasing power at the end date.',
+      helper: t('regular_summary.real_value_helper'),
     },
   ];
 
@@ -88,18 +76,12 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
     {
       label: t('bonds.real_cagr'),
       value: `${results.realAnnualizedReturn.toFixed(2)}%`,
-      helper:
-        language === 'pl'
-          ? 'Srednioroczna realna stopa zwrotu.'
-          : 'Annualized real return across the full plan.',
+      helper: t('regular_summary.real_cagr_helper'),
     },
     {
       label: t('bonds.tax'),
       value: formatCurrency(results.totalTax),
-      helper:
-        language === 'pl'
-          ? 'Laczny podatek w tym scenariuszu.'
-          : 'Total tax assumed in the scenario.',
+      helper: t('regular_summary.tax_helper'),
     },
   ];
 
@@ -152,18 +134,10 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
   return (
     <div className="space-y-6">
       <ResultSummaryHero
-        eyebrow={language === 'pl' ? 'Podsumowanie planu' : 'Plan summary'}
+        eyebrow={t('regular_summary.plan_eyebrow')}
         value={formatCurrency(results.finalNominalValue)}
-        description={
-          language === 'pl'
-            ? 'To jest koncowa wartosc dla zatwierdzonego planu regularnych wplat. Najpierw przejrzyj karty podsumowania, a dopiero potem schodz do rocznikow i pojedynczych partii.'
-            : 'This is the final projected value for the committed recurring plan. Review the summary cards first, then inspect yearly buckets and recent lots only if you need more detail.'
-        }
-        narrative={
-          language === 'pl'
-            ? 'To jest scenariusz dla jednego typu obligacji i jednego rytmu wplat. Traktuj wynik jako test planu, a nie automatyczna rekomendacje.'
-            : 'This is a scenario for one bond family and one contribution cadence. Treat it as a plan test, not as an automatic recommendation.'
-        }
+        description={t('regular_summary.hero_description')}
+        narrative={t('regular_summary.hero_narrative')}
         actions={[
           {
             label: t('comparison.export'),
@@ -182,28 +156,20 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
           <CardHeader className="flex flex-row items-start justify-between gap-4 pb-4">
             <div>
               <CardTitle className="text-lg font-black text-slate-900">
-                {language === 'pl' ? 'Budowa rok po roku' : 'Year-by-year build-up'}
+                {t('regular_summary.yearly_title')}
               </CardTitle>
-              <CardDescription>
-                {language === 'pl'
-                  ? 'Sprawdz, jak duzy udzial w wyniku koncowym mial kazdy rocznik zakupow.'
-                  : 'Review how much capital each purchase year contributed to the final outcome.'}
-              </CardDescription>
+              <CardDescription>{t('regular_summary.yearly_description')}</CardDescription>
             </div>
             <Badge variant="outline" className="border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700">
-              {language === 'pl' ? 'Roczniki' : 'Buckets'}
+              {t('regular_summary.yearly_badge')}
             </Badge>
           </CardHeader>
           <CardContent className="px-0 pb-0">
             <ResponsiveTableSheet
-              title={language === 'pl' ? 'Budowa rok po roku' : 'Year-by-year build-up'}
-              description={
-                language === 'pl'
-                  ? 'Na mniejszych ekranach czytaj roczniki jako liste zamiast szerokiej tabeli.'
-                  : 'On smaller screens, read yearly buckets as a list instead of a wide table.'
-              }
-              triggerLabel={language === 'pl' ? 'Otworz roczniki' : 'Open yearly buckets'}
-              triggerCount={`${yearlyBuckets.length} ${language === 'pl' ? 'rocznikow' : 'buckets'}`}
+              title={t('regular_summary.yearly_title')}
+              description={t('regular_summary.yearly_mobile_description')}
+              triggerLabel={t('regular_summary.open_yearly_buckets')}
+              triggerCount={t('regular_summary.yearly_trigger_count', { count: yearlyBuckets.length })}
             >
               {yearlyBuckets.map((bucket) => (
                 <div key={`mobile-${bucket.year}`} className="rounded-3xl border border-slate-200 bg-white p-4">
@@ -211,7 +177,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                     <div>
                       <p className="text-sm font-semibold text-slate-950">{bucket.year}</p>
                       <p className="mt-1 text-xs text-slate-500">
-                        {language === 'pl' ? 'Partie' : 'Lots'}: {bucket.lots}
+                        {t('regular_summary.lots_label')}: {bucket.lots}
                       </p>
                     </div>
                     <p className="text-sm font-black text-slate-950">{formatCurrency(bucket.netValue)}</p>
@@ -230,8 +196,8 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
               <Table className="table-fixed w-full">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[16%]">{language === 'pl' ? 'Rok' : 'Year'}</TableHead>
-                  <TableHead className="w-[12%] text-right">{language === 'pl' ? 'Partie' : 'Lots'}</TableHead>
+                  <TableHead className="w-[16%]">{t('common.year')}</TableHead>
+                  <TableHead className="w-[12%] text-right">{t('regular_summary.lots_label')}</TableHead>
                   <TableHead className="w-[18%] text-right">{t('regular_summary.invested')}</TableHead>
                   <TableHead className="w-[18%] text-right">{t('regular_summary.interest')}</TableHead>
                   <TableHead className="w-[18%] text-right">{t('bonds.tax')}</TableHead>
@@ -265,17 +231,11 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2 text-lg text-slate-900">
               <Calendar className="h-5 w-5" />
-              {language === 'pl' ? 'Ostatnie partie' : 'Recent lots'}
+              {t('regular_summary.recent_title')}
             </CardTitle>
-            <CardDescription>
-              {language === 'pl'
-                ? 'Ostatnie zakupy pomagaja skontrolowac czas wejscia, daty zapadalnosci i wartosc netto pojedynczych partii.'
-                : 'The latest purchases help verify timing, maturity dates, and per-lot net value.'}
-            </CardDescription>
+            <CardDescription>{t('regular_summary.recent_description')}</CardDescription>
             <div className="rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-3 text-sm leading-6 text-slate-600">
-              {language === 'pl'
-                ? 'Najpierw przeczytaj karty podsumowania i roczniki. Pojedyncze partie sa tylko szybka kontrola czasu zakupu i zapadalnosci.'
-                : 'Start with the summary cards and yearly buckets. Individual lots are only a quick check of purchase timing and maturity dates.'}
+              {t('regular_summary.recent_note')}
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -291,7 +251,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                         {format(parseISO(lot.purchaseDate), 'MMMM yyyy', { locale: dateLocale })}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {language === 'pl' ? 'Zapadalnosc' : 'Matures'}{' '}
+                        {t('regular_summary.matures')}{' '}
                         {format(parseISO(lot.maturityDate), 'MMM yyyy', { locale: dateLocale })}
                       </p>
                     </div>
@@ -300,7 +260,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                         {formatCurrency(lot.netValue)}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {language === 'pl' ? 'Wartosc netto partii' : 'Net lot value'}
+                        {t('regular_summary.net_lot_value')}
                       </p>
                     </div>
                   </div>
