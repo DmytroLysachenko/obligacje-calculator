@@ -361,7 +361,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
         periodLabel: period.periodLabel,
         cycleIndex,
         cycleStartDate: currentPurchaseDate.toISOString(),
-        cycleEndDate: actualCycleEndDate.toISOString(),
+        cycleEndDate: period.endDate.toISOString(),
         interestRate: currentInterestRate.toNumber(),
         rateSource,
         rateReferenceValue,

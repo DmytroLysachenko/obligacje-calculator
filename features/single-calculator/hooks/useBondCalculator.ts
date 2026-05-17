@@ -4,6 +4,7 @@ import { SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
+import { ChartStep } from '@/features/bond-core/types';
 
 const DEFAULT_BOND = BondType.COI;
 const today = new Date();
@@ -41,6 +42,10 @@ interface BondSeries {
   emissionMonth: string;
 }
 
+function getDefaultChartStep(payoutFrequency: InterestPayout): ChartStep {
+  return payoutFrequency === InterestPayout.MONTHLY ? 'monthly' : 'yearly';
+}
+
 export function useBondCalculator(initialInputs?: BondInputs) {
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
   const [inputs, setInputs] = useState<BondInputs>(initialInputs ?? FALLBACK_INPUTS);
@@ -70,6 +75,7 @@ export function useBondCalculator(initialInputs?: BondInputs) {
         rebuyDiscount: def.rebuyDiscount,
         nominalValue: def.nominalValue,
         isInflationIndexed: def.isInflationIndexed,
+        chartStep: prev.chartStep ?? getDefaultChartStep(def.payoutFrequency),
       }));
       definitionsAppliedFor.current = inputs.bondType;
     }
@@ -181,6 +187,7 @@ export function useBondCalculator(initialInputs?: BondInputs) {
           ...prev,
           firstYearRate: def.firstYearRate,
           margin: def.margin,
+          chartStep: prev.chartStep ?? getDefaultChartStep(def.payoutFrequency),
         }));
         return;
       }
@@ -230,6 +237,7 @@ export function useBondCalculator(initialInputs?: BondInputs) {
       investmentHorizonMonths: nextHorizonMonths,
       nominalValue: def.nominalValue,
       isInflationIndexed: def.isInflationIndexed,
+      chartStep: getDefaultChartStep(def.payoutFrequency),
     }));
   };
 

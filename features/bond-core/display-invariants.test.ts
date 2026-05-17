@@ -261,6 +261,12 @@ describe('Display-facing single-bond invariants', () => {
           displayRows[index - 1].paidOutCash,
         );
       }
+
+      for (let index = 2; index < result.timeline.length; index += 1) {
+        const previous = new Date(result.timeline[index - 1].cycleEndDate).getTime();
+        const current = new Date(result.timeline[index].cycleEndDate).getTime();
+        expect(current).toBeGreaterThan(previous);
+      }
     }
   });
 
@@ -271,6 +277,14 @@ describe('Display-facing single-bond invariants', () => {
       expect(point.earlyWithdrawalValue).toBeGreaterThanOrEqual(0);
       expect(point.earlyWithdrawalValue).toBeLessThanOrEqual(point.totalValue);
     }
+  });
+
+  it('keeps DOR ahead of ROR under the same NBP path because of the higher margin', async () => {
+    const ror = await getSingleBondResult(BondType.ROR, 24);
+    const dor = await getSingleBondResult(BondType.DOR, 24);
+
+    expect(dor.netPayoutValue).toBeGreaterThan(ror.netPayoutValue);
+    expect(dor.totalProfit).toBeGreaterThan(ror.totalProfit);
   });
 });
 

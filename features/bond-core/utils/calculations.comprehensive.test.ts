@@ -67,6 +67,84 @@ describe('Comprehensive Bond Calculations', () => {
     expect(results.totalProfit).toBeGreaterThan(0);
   });
 
+  it('uses checkpoint dates rather than whole-cycle end dates for monthly payout timeline rows', () => {
+    const inputs = {
+      ...baseInputs,
+      bondType: BondType.ROR,
+      duration: 1,
+      firstYearRate: 4.25,
+      expectedNbpRate: 5.25,
+      margin: 0,
+      payoutFrequency: InterestPayout.MONTHLY,
+      purchaseDate: '2026-03-01T00:00:00.000Z',
+      withdrawalDate: '2027-03-01T00:00:00.000Z',
+    };
+    const results = calculateBondInvestment(inputs);
+
+    const firstCheckpoint = new Date(results.timeline[1].cycleEndDate).getTime();
+    const secondCheckpoint = new Date(results.timeline[2].cycleEndDate).getTime();
+    const finalCheckpoint = new Date(results.timeline[results.timeline.length - 1].cycleEndDate).getTime();
+
+    expect(secondCheckpoint).toBeGreaterThan(firstCheckpoint);
+    expect(finalCheckpoint).toBeGreaterThan(secondCheckpoint);
+    expect(results.timeline[1].periodLabel).toContain('Apr');
+    expect(results.timeline[2].periodLabel).toContain('May');
+  });
+
+  it('DOR outperforms ROR under the same NBP path because of the extra margin', () => {
+    const commonBase = {
+      ...baseInputs,
+      purchaseDate: '2026-03-01T00:00:00.000Z',
+      withdrawalDate: '2028-03-01T00:00:00.000Z',
+      payoutFrequency: InterestPayout.MONTHLY,
+    };
+
+    const rorResults = calculateBondInvestment({
+      ...commonBase,
+      bondType: BondType.ROR,
+      duration: 1,
+      firstYearRate: 4.0,
+      expectedNbpRate: 3.75,
+      margin: 0,
+    });
+
+    const dorResults = calculateBondInvestment({
+      ...commonBase,
+      bondType: BondType.DOR,
+      duration: 2,
+      firstYearRate: 4.15,
+      expectedNbpRate: 3.75,
+      margin: 0.15,
+    });
+
+    expect(dorResults.netPayoutValue).toBeGreaterThan(rorResults.netPayoutValue);
+    expect(dorResults.totalProfit).toBeGreaterThan(rorResults.totalProfit);
+  });
+
+  it('caps payout-bond early redemption fee at earned interest instead of zeroing the exit path', () => {
+    const inputs = {
+      ...baseInputs,
+      bondType: BondType.ROR,
+      duration: 1,
+      firstYearRate: 4.0,
+      expectedNbpRate: 3.75,
+      margin: 0,
+      payoutFrequency: InterestPayout.MONTHLY,
+      earlyWithdrawalFee: 0.5,
+      purchaseDate: '2026-03-01T00:00:00.000Z',
+      withdrawalDate: '2026-07-01T00:00:00.000Z',
+    };
+    const results = calculateBondInvestment(inputs);
+    const finalPoint = results.timeline[results.timeline.length - 1];
+
+    expect(results.totalEarlyWithdrawalFee).toBeGreaterThan(0);
+    expect(results.totalEarlyWithdrawalFee).toBeLessThanOrEqual(
+      results.grossValue - results.initialInvestment,
+    );
+    expect(finalPoint.earlyWithdrawalValue).toBeGreaterThan(0);
+    expect(finalPoint.earlyWithdrawalValue).toBeLessThanOrEqual(finalPoint.totalValue);
+  });
+
   it('supports multi-cycle rollover for short-duration bonds across a longer horizon', () => {
     const inputs = {
       ...baseInputs,
@@ -133,8 +211,6 @@ describe('Comprehensive Bond Calculations', () => {
 
     const results = calculateBondInvestment(inputs);
     const projectedPoints = results.timeline.filter((point) => point.usedProjectedRate);
-
-    console.log("PROJECTED POINTS: ", projectedPoints.length, projectedPoints);
 
     expect(projectedPoints.length).toBeGreaterThan(0);
     expect(projectedPoints.some((point) => point.rateSource === 'projected_nbp')).toBe(true);
