@@ -143,7 +143,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
   const handleExport = () => {
     exportLotsCsv({
       lots: results.lots,
-      headers: buildLotsExportHeaders(t, language),
+      headers: buildLotsExportHeaders(t),
       language,
       fileName: buildLotsCsvFilename(),
     });

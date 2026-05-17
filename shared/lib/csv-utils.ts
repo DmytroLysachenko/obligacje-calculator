@@ -1,5 +1,6 @@
 import { YearlyTimelinePoint, LotBreakdown } from '@/features/bond-core/types';
 import { AppLanguage, buildBondTimelineDisplayRows } from '@/shared/lib/bond-display';
+import { t } from '@/i18n';
 
 /**
  * Downloads a string as a file in the browser.
@@ -61,29 +62,29 @@ export function convertTimelineToCSV(
   const displayRows = buildBondTimelineDisplayRows(timeline, language);
   const columns = [
     { key: 'periodLabel', header: headers.period || 'Period' },
-    { key: 'cycleLabel', header: language === 'pl' ? 'Cykl' : 'Cycle' },
-    { key: 'cadenceLabel', header: language === 'pl' ? 'Znaczenie' : 'Meaning' },
+    { key: 'cycleLabel', header: headers.cycle || t('bonds.cycle', undefined, language) },
+    { key: 'cadenceLabel', header: headers.cadence || t('common.meaning', undefined, language) },
     {
       key: 'valueMeaningLabel',
-      header: language === 'pl' ? 'Jak czytac ten wiersz' : 'How to read this row',
+      header: headers.meaning || 'Meaning',
     },
     { key: 'interestRateLabel', header: headers.rate || 'Rate' },
-    { key: 'rateSourceLabel', header: language === 'pl' ? 'Zrodlo stopy' : 'Rate source' },
-    { key: 'referenceLabel', header: language === 'pl' ? 'Kontekst stopy' : 'Rate context' },
+    { key: 'rateSourceLabel', header: headers.rateSource || 'Rate source' },
+    { key: 'referenceLabel', header: headers.reference || 'Rate context' },
     {
       key: 'projectionLabel',
-      header: language === 'pl' ? 'Tryb danych' : 'Data mode',
+      header: headers.projection || 'Data mode',
     },
-    { key: 'principalValue', header: language === 'pl' ? 'Kapital w obligacji' : 'Bond principal value' },
-    { key: 'paidOutCash', header: language === 'pl' ? 'Wyplacona gotowka' : 'Cash paid out' },
-    { key: 'totalWealth', header: language === 'pl' ? 'Majatek laczny' : 'Total wealth' },
-    { key: 'netProfit', header: language === 'pl' ? 'Zysk netto' : 'Net profit' },
+    { key: 'principalValue', header: headers.principalValue || 'Bond principal value' },
+    { key: 'paidOutCash', header: headers.paidOutCash || 'Cash paid out' },
+    { key: 'totalWealth', header: headers.totalWealth || 'Total wealth' },
+    { key: 'netProfit', header: headers.netProfit || 'Net profit' },
     { key: 'realValue', header: headers.realValue || 'Real value' },
     {
       key: 'earlyExitValue',
-      header: language === 'pl' ? 'Wyplata przy wczesniejszym wyjsciu' : 'Early exit payout',
+      header: headers.earlyExitValue || 'Early exit payout',
     },
-    { key: 'eventLabels', header: language === 'pl' ? 'Zdarzenia' : 'Events' },
+    { key: 'eventLabels', header: headers.events || t('common.events', undefined, language) },
   ];
 
   csvRows.push(columns.map((column) => column.header).join(SEPARATOR));

@@ -2,6 +2,7 @@
 
 import { RateSource, YearlyTimelinePoint } from '@/features/bond-core/types';
 import { SimulationEventType } from '@/features/bond-core/types/simulation';
+import { t } from '@/i18n';
 
 export type AppLanguage = 'pl' | 'en';
 
@@ -60,61 +61,37 @@ function formatMonthYear(date: string, language: AppLanguage) {
   }).format(new Date(date));
 }
 
-const RATE_SOURCE_LABELS: Record<AppLanguage, Record<RateSource, string>> = {
-  en: {
-    initial_principal: 'Initial principal context',
-    fixed_rate: 'Fixed bond rate',
-    first_year_fixed: 'First-year fixed rate',
-    historical_cpi_lag: 'Historical CPI + margin',
-    projected_cpi: 'Projected CPI + margin',
-    historical_nbp: 'Historical NBP + margin',
-    projected_nbp: 'Projected NBP + margin',
-  },
-  pl: {
-    initial_principal: 'Kontekst kapitalu poczatkowego',
-    fixed_rate: 'Stala stopa obligacji',
-    first_year_fixed: 'Stala stopa pierwszego roku',
-    historical_cpi_lag: 'Historyczny CPI + marza',
-    projected_cpi: 'Prognozowany CPI + marza',
-    historical_nbp: 'Historyczna stopa NBP + marza',
-    projected_nbp: 'Prognozowana stopa NBP + marza',
-  },
+const RATE_SOURCE_KEYS: Record<RateSource, string> = {
+  initial_principal: 'bonds.timeline_display.rate_source.initial_principal',
+  fixed_rate: 'bonds.timeline_display.rate_source.fixed_rate',
+  first_year_fixed: 'bonds.timeline_display.rate_source.first_year_fixed',
+  historical_cpi_lag: 'bonds.timeline_display.rate_source.historical_cpi_lag',
+  projected_cpi: 'bonds.timeline_display.rate_source.projected_cpi',
+  historical_nbp: 'bonds.timeline_display.rate_source.historical_nbp',
+  projected_nbp: 'bonds.timeline_display.rate_source.projected_nbp',
 };
 
-const EVENT_LABELS: Record<AppLanguage, Record<SimulationEventType, string>> = {
-  en: {
-    PURCHASE: 'Purchase',
-    RATE_RESET: 'Rate reset',
-    INTEREST_ACCRUAL: 'Interest accrual',
-    PAYOUT: 'Payout',
-    TAX_SETTLEMENT: 'Tax settlement',
-    EARLY_REDEMPTION_FEE: 'Early fee',
-    ROLLOVER_PURCHASE: 'Rollover purchase',
-    MATURITY: 'Maturity',
-    WITHDRAWAL: 'Withdrawal',
-  },
-  pl: {
-    PURCHASE: 'Zakup',
-    RATE_RESET: 'Reset stopy',
-    INTEREST_ACCRUAL: 'Naliczenie odsetek',
-    PAYOUT: 'Wyplata',
-    TAX_SETTLEMENT: 'Rozliczenie podatku',
-    EARLY_REDEMPTION_FEE: 'Oplata za wykup',
-    ROLLOVER_PURCHASE: 'Zakup z odnowienia',
-    MATURITY: 'Zapadalnosc',
-    WITHDRAWAL: 'Wyjscie',
-  },
+const EVENT_LABEL_KEYS: Record<SimulationEventType, string> = {
+  PURCHASE: 'bonds.timeline_display.event.purchase',
+  RATE_RESET: 'bonds.timeline_display.event.rate_reset',
+  INTEREST_ACCRUAL: 'bonds.timeline_display.event.interest_accrual',
+  PAYOUT: 'bonds.timeline_display.event.payout',
+  TAX_SETTLEMENT: 'bonds.timeline_display.event.tax_settlement',
+  EARLY_REDEMPTION_FEE: 'bonds.timeline_display.event.early_redemption_fee',
+  ROLLOVER_PURCHASE: 'bonds.timeline_display.event.rollover_purchase',
+  MATURITY: 'bonds.timeline_display.event.maturity',
+  WITHDRAWAL: 'bonds.timeline_display.event.withdrawal',
 };
 
 export function getRateSourceDisplayLabel(source: RateSource, language: AppLanguage) {
-  return RATE_SOURCE_LABELS[language][source];
+  return t(RATE_SOURCE_KEYS[source], undefined, language);
 }
 
 export function getSimulationEventDisplayLabel(
   type: SimulationEventType,
   language: AppLanguage,
 ) {
-  return EVENT_LABELS[language][type];
+  return t(EVENT_LABEL_KEYS[type], undefined, language);
 }
 
 export function getProjectionDisplayLabel(
@@ -125,13 +102,13 @@ export function getProjectionDisplayLabel(
     return undefined;
   }
 
-  return isProjected
-    ? language === 'pl'
-      ? 'Prognoza'
-      : 'Projected'
-    : language === 'pl'
-      ? 'Historia'
-      : 'Historical';
+  return t(
+    isProjected
+      ? 'bonds.timeline_display.projection.projected'
+      : 'bonds.timeline_display.projection.historical',
+    undefined,
+    language,
+  );
 }
 
 export function getCadenceDisplayLabel(point: YearlyTimelinePoint, language: AppLanguage) {
@@ -139,55 +116,45 @@ export function getCadenceDisplayLabel(point: YearlyTimelinePoint, language: App
     point.events?.some((event) => event.type === SimulationEventType.PURCHASE)
     && point.events.length === 1
   ) {
-    return language === 'pl' ? 'Punkt wejscia do scenariusza' : 'Scenario entry point';
+    return t('bonds.timeline_display.cadence.scenario_entry', undefined, language);
   }
 
   if (point.isMaturity) {
-    return language === 'pl' ? 'Punkt zapadalnosci i zamkniecia cyklu' : 'Maturity close-out point';
+    return t('bonds.timeline_display.cadence.maturity_closeout', undefined, language);
   }
 
   if (point.isWithdrawal) {
-    return language === 'pl' ? 'Punkt wyjscia z inwestycji' : 'Exit payout point';
+    return t('bonds.timeline_display.cadence.exit_payout', undefined, language);
   }
 
   if (point.events?.some((event) => event.type === SimulationEventType.PAYOUT)) {
-    return language === 'pl' ? 'Punkt wyplaty lub odnowienia' : 'Payout or rollover point';
+    return t('bonds.timeline_display.cadence.payout_rollover', undefined, language);
   }
 
-  return language === 'pl' ? 'Kontrolny punkt scenariusza' : 'Scenario checkpoint';
+  return t('bonds.timeline_display.cadence.checkpoint', undefined, language);
 }
 
 export function getCycleDisplayLabel(point: YearlyTimelinePoint, language: AppLanguage) {
   const start = formatMonthYear(point.cycleStartDate, language);
   const end = formatMonthYear(point.cycleEndDate, language);
 
-  return language === 'pl'
-    ? `Cykl ${point.cycleIndex}: ${start} -> ${end}`
-    : `Cycle ${point.cycleIndex}: ${start} -> ${end}`;
+  return `${t('bonds.cycle', undefined, language)} ${point.cycleIndex}: ${start} -> ${end}`;
 }
 
 export function getValueMeaningLabel(point: YearlyTimelinePoint, language: AppLanguage) {
   if (point.isWithdrawal) {
-    return language === 'pl'
-      ? 'To jest wartosc przy wyjsciu po oplacie i podatku dla tego punktu.'
-      : 'This row shows the exit value after modeled fees and tax at this point.';
+    return t('bonds.timeline_display.value_meaning.withdrawal', undefined, language);
   }
 
   if (point.isMaturity) {
-    return language === 'pl'
-      ? 'To jest punkt domkniecia pelnego cyklu obligacji.'
-      : 'This row closes the full bond cycle.';
+    return t('bonds.timeline_display.value_meaning.maturity', undefined, language);
   }
 
   if (point.accumulatedNetInterest > 0) {
-    return language === 'pl'
-      ? 'Ten punkt laczy wartosc obligacji z gotowka wyplacona juz po drodze.'
-      : 'This checkpoint combines bond value with cash that has already been paid out along the way.';
+    return t('bonds.timeline_display.value_meaning.paid_out_cash', undefined, language);
   }
 
-  return language === 'pl'
-    ? 'To jest punkt kontrolny pokazujacy wartosc po naliczeniu dla tego okresu.'
-    : 'This is a checkpoint showing value after accrual for this period.';
+  return t('bonds.timeline_display.value_meaning.default', undefined, language);
 }
 
 export function getReferenceDisplayLabel(
@@ -203,15 +170,19 @@ export function getReferenceDisplayLabel(
 
   const referencePart =
     point.rateReferenceValue !== undefined
-      ? language === 'pl'
-        ? `Baza ${point.rateReferenceValue.toFixed(2)}%`
-        : `Base ${point.rateReferenceValue.toFixed(2)}%`
+      ? t(
+          'bonds.timeline_display.reference.base',
+          { value: point.rateReferenceValue.toFixed(2) },
+          language,
+        )
       : undefined;
   const marginPart =
     point.rateMarginApplied !== undefined
-      ? language === 'pl'
-        ? `Marza ${point.rateMarginApplied.toFixed(2)}%`
-        : `Margin ${point.rateMarginApplied.toFixed(2)}%`
+      ? t(
+          'bonds.timeline_display.reference.margin',
+          { value: point.rateMarginApplied.toFixed(2) },
+          language,
+        )
       : undefined;
 
   return [referencePart, marginPart].filter(Boolean).join(' | ');
@@ -257,7 +228,7 @@ export function buildBondChartDisplayPoints(
   return [
     {
       key: 'start',
-      xLabel: language === 'pl' ? 'Start' : 'Start',
+      xLabel: t('bonds.timeline_display.chart.start', undefined, language),
       nominal: initialInvestment,
       real: initialInvestment,
       inflation: timeline[0]?.inflationReference,
@@ -266,8 +237,7 @@ export function buildBondChartDisplayPoints(
       high: comparisonScenarios ? initialInvestment : undefined,
       isProjected: false,
       isMaturity: false,
-      rateLabel:
-        language === 'pl' ? 'Kapital poczatkowy' : 'Initial capital',
+      rateLabel: t('bonds.timeline_display.chart.initial_capital', undefined, language),
       eventLabels: [],
     },
     ...timeline.map((point, index) => ({

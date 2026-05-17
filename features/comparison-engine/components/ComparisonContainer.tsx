@@ -147,7 +147,7 @@ export const ComparisonContainer: React.FC = () => {
 
     exportTimelineCsv({
       timeline: results.timeline,
-      headers: buildTimelineExportHeaders(t, language),
+      headers: buildTimelineExportHeaders(t),
       language,
       fileName: buildTimelineCsvFilename('bond_comparison', bondType),
     });

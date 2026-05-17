@@ -1,10 +1,7 @@
-import { AppLanguage } from '@/shared/lib/bond-display';
-
 type TranslateFn = (key: string) => string;
 
 export function buildTimelineExportHeaders(
   t: TranslateFn,
-  language: AppLanguage,
 ) {
   return {
     period: t('bonds.calculation_trace.header_year'),
@@ -14,22 +11,31 @@ export function buildTimelineExportHeaders(
     tax: t('bonds.calculation_trace.header_tax'),
     nominalValue: t('bonds.calculation_trace.header_value_after'),
     realValue: t('bonds.inflation.adjusted'),
-    meaning: language === 'pl' ? 'Jak czytac ten wiersz' : 'How to read this row',
-    projection: language === 'pl' ? 'Tryb danych' : 'Data mode',
+    cycle: t('bonds.cycle'),
+    cadence: t('common.meaning'),
+    meaning: t('bonds.how_calculated'),
+    projection: t('bonds.projected'),
+    rateSource: t('bonds.rate_source'),
+    reference: t('common.context_rates'),
+    principalValue: t('bonds.base_value'),
+    paidOutCash: t('bonds.interest_payment'),
+    totalWealth: t('bonds.final_nominal_value'),
+    netProfit: t('common.net_profit'),
+    earlyExitValue: t('bonds.early_exit_payout'),
+    events: t('common.notes'),
   } as const;
 }
 
 export function buildLotsExportHeaders(
   t: TranslateFn,
-  language: AppLanguage,
 ) {
   return {
     purchaseDate: t('bonds.purchase_date'),
     maturityDate: t('bonds.maturity_date'),
-    invested: language === 'pl' ? 'Kwota zainwestowana' : 'Invested amount',
-    interest: language === 'pl' ? 'Odsetki' : 'Interest',
+    invested: t('bonds.total_invested'),
+    interest: t('bonds.interest'),
     tax: t('bonds.tax'),
     fee: t('bonds.early_withdrawal_fee'),
-    netValue: language === 'pl' ? 'Wartosc netto' : 'Net value',
+    netValue: t('bonds.net_value'),
   } as const;
 }

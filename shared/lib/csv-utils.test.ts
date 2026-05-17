@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { convertLotsToCSV, convertTimelineToCSV } from './csv-utils';
 import { buildLotsExportHeaders, buildTimelineExportHeaders } from './export-headers';
+import { t } from '@/i18n';
 import type { YearlyTimelinePoint, LotBreakdown } from '@/features/bond-core/types';
 import { SimulationEventType } from '@/features/bond-core/types/simulation';
 
 describe('csv-utils', () => {
   it('builds a normalized timeline csv with localized helper columns', () => {
-    const headers = buildTimelineExportHeaders((key) => key, 'pl');
+    const headers = buildTimelineExportHeaders((key) => t(key, undefined, 'pl'));
     const timeline = [
       {
         year: 1,
@@ -26,13 +27,13 @@ describe('csv-utils', () => {
 
     const csv = convertTimelineToCSV(timeline, headers, 'pl');
 
-    expect(csv).toContain('Jak czytac ten wiersz');
-    expect(csv).toContain('Tryb danych');
+    expect(csv).toContain('Jak to zostało obliczone');
+    expect(csv).toContain('Prognozowane');
     expect(csv).toContain('Kontrolny punkt scenariusza');
   });
 
   it('exports payout-bond timeline rows with total wealth and early exit semantics', () => {
-    const headers = buildTimelineExportHeaders((key) => key, 'en');
+    const headers = buildTimelineExportHeaders((key) => t(key, undefined, 'en'));
     const timeline = [
       {
         periodLabel: 'Jun 2026',
@@ -66,14 +67,14 @@ describe('csv-utils', () => {
 
     const csv = convertTimelineToCSV(timeline, headers, 'en');
 
-    expect(csv).toContain('Cash paid out');
-    expect(csv).toContain('Total wealth');
-    expect(csv).toContain('Early exit payout');
+    expect(csv).toContain('Interest Payment');
+    expect(csv).toContain('Final Nominal Value');
+    expect(csv).toContain('Early Exit Payout');
     expect(csv).toContain('Payout or rollover point');
   });
 
   it('builds lot csv using the selected locale formatting', () => {
-    const headers = buildLotsExportHeaders((key) => key, 'pl');
+    const headers = buildLotsExportHeaders((key) => t(key, undefined, 'pl'));
     const lots = [
       {
         purchaseDate: '2026-05-14',

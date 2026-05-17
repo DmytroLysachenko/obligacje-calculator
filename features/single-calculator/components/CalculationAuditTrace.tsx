@@ -55,17 +55,13 @@ export const CalculationAuditTrace: React.FC<CalculationAuditTraceProps> = ({ po
         <div className="space-y-2">
           <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
             <Scale className="h-3.5 w-3.5 text-primary" />
-            {language === 'pl' ? 'Szybki audyt okresu' : 'Quick period audit'}
+            {t('bonds.audit.eyebrow')}
           </div>
           <h3 className="text-xl font-black tracking-tight text-slate-950">
-            {language === 'pl'
-              ? `Obliczenia dla okresu ${point.periodLabel}`
-              : `Calculation for ${point.periodLabel}`}
+            {t('bonds.audit.title', { period: point.periodLabel })}
           </h3>
           <p className="text-sm leading-7 text-slate-600">
-            {language === 'pl'
-              ? 'To jest skondensowany podglad jednego okresu. Ma pomagac rozumiec skad bierze sie wynik, bez zalewania tabela.'
-              : 'This is a condensed view of one period. It should explain where the result comes from without flooding you with table chrome.'}
+            {t('bonds.audit.description')}
           </p>
         </div>
 
@@ -80,12 +76,12 @@ export const CalculationAuditTrace: React.FC<CalculationAuditTraceProps> = ({ po
             tone="text-primary"
           />
           <AuditRow
-            label={language === 'pl' ? 'Zrodlo stopy' : 'Rate source'}
+            label={t('bonds.audit.rate_source')}
             value={rateLabel}
           />
           {referenceLabel ? (
             <AuditRow
-              label={language === 'pl' ? 'Punkt odniesienia' : 'Reference basis'}
+              label={t('bonds.audit.reference_basis')}
               value={referenceLabel}
             />
           ) : null}

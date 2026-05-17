@@ -50,11 +50,11 @@ type PeriodValue = '1Y' | '5Y' | '10Y' | '30Y' | 'ALL';
 function RangeActions({
   period,
   setPeriod,
-  language,
+  rangeLabel,
 }: {
   period: PeriodValue;
   setPeriod: (value: PeriodValue) => void;
-  language: 'pl' | 'en';
+  rangeLabel: string;
 }) {
   const periods: { label: string; value: PeriodValue }[] = [
     { label: '1Y', value: '1Y' },
@@ -68,7 +68,7 @@ function RangeActions({
     <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-1.5">
       <span className="inline-flex items-center gap-1 px-3 text-sm font-medium text-slate-500">
         <CalendarRange className="h-3.5 w-3.5" />
-        {language === 'pl' ? 'Zakres danych' : 'Data range'}
+        {rangeLabel}
       </span>
       {periods.map((item) => (
         <button
@@ -114,29 +114,22 @@ function SeriesStatusCard({
   isLoading: boolean;
   language: 'pl' | 'en';
 }) {
+  const { t } = useLanguage();
   const labels = {
-    source: language === 'pl' ? 'Zrodlo' : 'Source',
-    coverage: language === 'pl' ? 'Zakres' : 'Coverage',
-    asOf: language === 'pl' ? 'Stan na' : 'As of',
-    usage: language === 'pl' ? 'Uzycie' : 'Use',
+    source: t('common.source'),
+    coverage: t('common.coverage'),
+    asOf: t('common.as_of'),
+    usage: t('common.usage'),
   } as const;
   const state = getReferenceState(meta, language);
   const statusLabel =
     meta?.syncStatus === 'success'
-      ? language === 'pl'
-        ? 'Zsynchronizowane'
-        : 'Synced'
+      ? t('economic.reference_state.synced')
       : meta?.syncStatus === 'stale'
-        ? language === 'pl'
-          ? 'Wymaga odswiezenia'
-          : 'Needs refresh'
+        ? t('economic.reference_state.needs_refresh')
         : meta?.syncStatus === 'partial'
-          ? language === 'pl'
-            ? 'Czesciowe'
-            : 'Partial'
-          : language === 'pl'
-            ? 'Zapasowe'
-            : 'Fallback';
+          ? t('economic.reference_state.partial')
+          : t('economic.reference_state.fallback');
   const rows = [
     {
       label: labels.source,
@@ -236,38 +229,27 @@ export default function EconomicDataPage() {
   const { data: nbpMeta, isLoading: isLoadingNbp } =
     useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/nbp-rate');
   const labels = {
-    panel: language === 'pl' ? 'Panel kontekstowy' : 'Reference panel',
-    series: language === 'pl' ? 'Serie' : 'Series',
-    purpose: language === 'pl' ? 'Rola' : 'Purpose',
-    mode: language === 'pl' ? 'Tryb' : 'Mode',
-    goal: language === 'pl' ? 'Cel' : 'Goal',
-    context: language === 'pl' ? 'Kontekst' : 'Context',
-    reference: language === 'pl' ? 'Referencyjny' : 'Reference',
-    readableContext: language === 'pl' ? 'Czytelny kontekst' : 'Readable context',
-    howToUse: language === 'pl' ? 'Jak korzystac z tej strony' : 'How to use this page',
-    dataQuality: language === 'pl' ? 'Jakosc danych' : 'Data quality',
-    pageScope: language === 'pl' ? 'Zakres strony' : 'Page scope',
+    panel: t('economic.reference_panel'),
+    series: t('economic.series'),
+    purpose: t('economic.purpose'),
+    mode: t('economic.mode'),
+    goal: t('economic.goal'),
+    context: t('economic.context'),
+    reference: t('economic.reference'),
+    readableContext: t('economic.readable_context'),
+    howToUse: t('economic.how_to_use_page'),
+    dataQuality: t('economic.data_quality_title'),
+    pageScope: t('economic.page_scope_title'),
   } as const;
 
-  const pageIntro =
-    language === 'pl'
-      ? 'Ta strona dostarcza spokojny kontekst makro do kalkulatorow obligacji. Nie ma udawac osobnego produktu forecastingowego ani rozbudowanego pulpitu rynkowego.'
-      : 'This page provides calm macro context for the bond calculators. It should not pretend to be a standalone forecasting product or a noisy market dashboard.';
+  const pageIntro = t('economic.page_intro');
 
-  const usageGuide =
-    language === 'pl'
-      ? [
-          'Inflacja pomaga zrozumiec realna sile nabywcza wyniku i zachowanie obligacji indeksowanych.',
-          'Stopa NBP sluzy glownie jako kontekst dla ROR i DOR oraz do interpretacji otoczenia rynkowego.',
-          'Biezaca stopa oferty obligacji i stopa referencyjna NBP to nie to samo: np. ROR moze zaczynac od stopy sprzedazowej oferty, a dopiero potem przechodzic na NBP + marza.',
-          'Krotsze zakresy poprawiaja czytelnosc. Szerszy zakres daje tlo historyczne, ale nie uzupelnia brakujacej jakosci danych.',
-        ]
-      : [
-          'Inflation helps explain real purchasing power and inflation-linked bond behavior.',
-          'The NBP rate matters mostly as context for ROR and DOR and for reading the broader policy backdrop.',
-          'The current bond offer rate is not the same thing as the NBP reference rate: for example, ROR can start from the offer rate and only later move to NBP + margin.',
-          'Shorter ranges improve readability. Wider ranges add context, but they do not improve missing data quality.',
-        ];
+  const usageGuide = [
+    t('economic.usage_guide_1'),
+    t('economic.usage_guide_2'),
+    t('economic.usage_guide_3'),
+    t('economic.usage_guide_4'),
+  ];
 
   return (
     <CalculatorPageShell
@@ -277,7 +259,7 @@ export default function EconomicDataPage() {
       isCalculating={false}
       hasResults
       extraHeaderActions={
-        <RangeActions period={period} setPeriod={setPeriod} language={language} />
+        <RangeActions period={period} setPeriod={setPeriod} rangeLabel={t('economic.range_data')} />
       }
     >
       <div className="space-y-6 md:space-y-8">
@@ -289,9 +271,7 @@ export default function EconomicDataPage() {
                 {labels.panel}
               </div>
               <h2 className="max-w-4xl text-3xl font-black tracking-tight text-slate-950">
-                {language === 'pl'
-                  ? 'Makro dane maja pomagac liczyc obligacje, nie odwracac od nich uwagi.'
-                  : 'Macro data should support bond calculations, not compete with them.'}
+                {t('economic.macro_support_title')}
               </h2>
               <p className="max-w-4xl text-sm leading-8 text-slate-600">{pageIntro}</p>
             </div>
@@ -346,9 +326,7 @@ export default function EconomicDataPage() {
                 </p>
               </div>
               <p className="mt-3 text-sm leading-7 text-amber-950/90">
-                {language === 'pl'
-                  ? 'Jesli synchronizacja jest niepelna, strona powinna mowic o tym wprost. Te wykresy maja pomagac interpretowac wynik kalkulatora, nie budowac falszywego poczucia kompletnosci.'
-                  : 'If sync coverage is incomplete, the page should say that directly. These charts are here to support calculator interpretation, not to create false confidence in perfect coverage.'}
+                {t('economic.data_quality_description')}
               </p>
             </div>
           </CardContent>
@@ -381,9 +359,7 @@ export default function EconomicDataPage() {
                   </p>
                 </div>
                 <p className="text-sm leading-7 text-slate-600">
-                  {language === 'pl'
-                    ? 'To nie jest osobny panel forecastingowy. Dane tutaj maja sluzyc jako spokojne tlo do czytania kalkulatorow obligacji.'
-                    : 'This is not a standalone forecasting board. The data here exists to give calm context to the bond calculators.'}
+                  {t('economic.page_scope_description')}
                 </p>
               </CardContent>
             </Card>

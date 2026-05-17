@@ -51,7 +51,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
   const handleExportCSV = () => {
     exportTimelineCsv({
       timeline: results.timeline,
-      headers: buildTimelineExportHeaders(t, language),
+      headers: buildTimelineExportHeaders(t),
       language,
       fileName: buildTimelineCsvFilename('bond_simulation', inputs.bondType),
     });
@@ -64,19 +64,13 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
       label: t('bonds.net_payout'),
       value: formatCurrency(results.netPayoutValue),
       tone: 'text-emerald-700',
-      description:
-        language === 'pl'
-          ? 'Kwota pozostajaca po podatku i oplatach w chwili wyjscia.'
-          : 'Amount remaining after taxes and fees at the modeled exit point.',
+      description: t('bonds.actual_cash_in_hand'),
     },
     {
       label: t('common.net_profit'),
       value: formatCurrency(results.totalProfit),
       tone: results.totalProfit >= 0 ? 'text-primary' : 'text-destructive',
-      description:
-        language === 'pl'
-          ? 'Roznica pomiedzy kapitalem wplaconym a wyplata netto.'
-          : 'Difference between invested capital and the final net payout.',
+      description: t('bonds.net_profit_desc'),
     },
   ];
 
@@ -85,77 +79,59 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
       label: t('bonds.real_cagr'),
       value: `${results.realAnnualizedReturn.toFixed(2)}%`,
       tone: 'text-blue-700',
-      description:
-        language === 'pl'
-          ? 'Roczna stopa zwrotu po korekcie o inflacje.'
-          : 'Annualized return after inflation adjustment.',
+      description: t('bonds.real_cagr_desc'),
     },
     {
       label: t('bonds.tax'),
       value: formatCurrency(results.totalTax),
       tone: 'text-orange-700',
-      description:
-        language === 'pl'
-          ? 'Laczny podatek w tym scenariuszu.'
-          : 'Total tax modeled for this scenario.',
+      description: t('bonds.tax_deducted'),
     },
   ];
 
   const scenarioFacts = [
     {
-      label: language === 'pl' ? 'Typ obligacji' : 'Bond type',
+      label: t('bonds.scenario_fields.bond_type'),
       value: inputs.bondType,
     },
     {
-      label: language === 'pl' ? 'Horyzont' : 'Horizon',
+      label: t('bonds.scenario_fields.horizon'),
       value: `${horizonLabel}M`,
     },
     {
-      label: language === 'pl' ? 'Strategia podatkowa' : 'Tax strategy',
+      label: t('bonds.scenario_fields.tax_strategy'),
       value: getTaxStrategyDisplayLabel(inputs.taxStrategy, t),
     },
     {
-      label: language === 'pl' ? 'Tryb wyjscia' : 'Withdrawal mode',
+      label: t('bonds.scenario_fields.withdrawal_mode'),
       value:
-        language === 'pl'
-          ? results.isEarlyWithdrawal
-            ? 'Wczesniejszy wykup'
-            : 'Do zapadalnosci'
-          : results.isEarlyWithdrawal
-            ? 'Early redemption'
-            : 'At maturity',
+        results.isEarlyWithdrawal
+          ? t('bonds.withdrawal_modes.early_redemption')
+          : t('bonds.withdrawal_modes.at_maturity'),
     },
   ];
 
   const summaryNarrative = results.isEarlyWithdrawal
-    ? language === 'pl'
-      ? 'Ten przebieg zaklada wczesniejszy wykup przed pelna zapadalnoscia, wiec oplaty lub utracona kapitalizacja moga obnizyc wynik.'
-      : 'This run assumes early redemption before full maturity, so fees or lost compounding may reduce the payout.'
-    : language === 'pl'
-      ? 'Ten przebieg utrzymuje obligacje do modelowanej sciezki zapadalnosci, wiec wynik odzwierciedla pelny plan.'
-      : 'This run holds the bond to the modeled maturity path, so the final payout reflects the full planned cycle.';
+    ? t('bonds.results.narrative_early_exit')
+    : t('bonds.results.narrative_maturity');
   const auditPoint = getAuditTimelinePoint(results.timeline);
 
   return (
     <div className="space-y-10">
       <ResultSummaryHero
-        eyebrow={language === 'pl' ? 'Podsumowanie scenariusza' : 'Scenario summary'}
+        eyebrow={t('bonds.results.summary_eyebrow')}
         value={formatCurrency(results.netPayoutValue)}
-        description={
-          language === 'pl'
-            ? 'To jest koncowa wyplata netto dla obecnie zatwierdzonego scenariusza. Zacznij od czterech metryk ponizej, dopiero potem wchodz w slady obliczen.'
-            : 'This is the final net payout for the currently committed scenario. Start with the four metrics below, then go deeper only if you need detail.'
-        }
+        description={t('bonds.results.summary_description')}
         narrative={summaryNarrative}
         actions={[
           {
-            label: language === 'pl' ? 'Zapisz' : 'Save',
+            label: t('common.save'),
             icon: <Save className="h-4 w-4" />,
             onClick: onSaveScenario,
             variant: 'default',
           },
           {
-            label: language === 'pl' ? 'Notatnik' : 'Notebook',
+            label: t('nav.notebook'),
             icon: <Info className="h-4 w-4" />,
             onClick: onAddToNotebook,
           },
@@ -180,12 +156,13 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
             <Info className="mt-0.5 h-5 w-5 shrink-0 text-blue-700" />
             <div className="space-y-1 text-sm leading-7 text-blue-950">
               <p className="font-semibold">
-                {language === 'pl' ? 'Limit opakowania podatkowego zostal osiagniety.' : 'Tax wrapper limit reached.'}
+                {t('bonds.results.wrapper_limit_title')}
               </p>
               <p>
-                {language === 'pl'
-                  ? `${formatCurrency(results.overflowInfo.amountInWrapper)} pozostalo w opakowaniu, a ${formatCurrency(results.overflowInfo.amountInStandard)} przeszlo na konto standardowe.`
-                  : `${formatCurrency(results.overflowInfo.amountInWrapper)} stayed inside the wrapper, while ${formatCurrency(results.overflowInfo.amountInStandard)} spilled into a standard account.`}
+                {t('bonds.results.wrapper_limit_description', {
+                  wrapperAmount: formatCurrency(results.overflowInfo.amountInWrapper),
+                  standardAmount: formatCurrency(results.overflowInfo.amountInStandard),
+                })}
               </p>
             </div>
           </CardContent>
@@ -204,12 +181,10 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
             <div className="flex items-center justify-between gap-3">
               <div>
                 <h3 className="text-xl font-black tracking-tight text-slate-950">
-                  {language === 'pl' ? 'Fakty scenariusza' : 'Scenario facts'}
+                  {t('bonds.results.scenario_facts_title')}
                 </h3>
                 <p className="mt-1 text-sm leading-7 text-slate-600">
-                  {language === 'pl'
-                    ? 'Minimalny zestaw parametrow potrzebny do odczytu wyniku.'
-                    : 'The minimum set of facts needed to read this run correctly.'}
+                  {t('bonds.results.scenario_facts_description')}
                 </p>
               </div>
               <MathDeepDive results={results} trigger={<HelpButton />} />

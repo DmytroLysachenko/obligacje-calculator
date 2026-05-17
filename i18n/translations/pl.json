@@ -3,6 +3,7 @@
     "title": "Obligacje Calculator",
     "description": "Profesjonalny kalkulator polskich obligacji skarbowych.",
     "calculate": "Oblicz",
+    "save": "Zapisz",
     "reset": "Resetuj",
     "year": "Rok",
     "years": "Lata",
@@ -33,7 +34,17 @@
     "retry": "Spróbuj ponownie",
     "version": "Wersja",
     "sync_data": "Synchronizacja",
-    "refresh": "Odswiez"
+    "refresh": "Odswiez",
+    "source": "Zrodlo",
+    "as_of": "Stan na",
+    "coverage": "Zakres",
+    "usage": "Uzycie",
+    "unavailable": "Niedostepne",
+    "search": "Szukaj",
+    "all_events": "Wszystkie zdarzenia",
+    "meaning": "Znaczenie",
+    "events": "Zdarzenia",
+    "basis": "Podstawa"
   },
   "strategy_hints": {
     "title": "Inteligentne Wskazówki",
@@ -383,9 +394,83 @@
       "sentiment": "Sentyment rynku",
       "est_volume": "Szacowany wolumen",
       "anonymized_notice": "Na podstawie zanonimizowanych danych z portfeli innych użytkowników."
-    }
     },
-    "landing": {
+    "results": {
+      "summary_eyebrow": "Podsumowanie scenariusza",
+      "summary_description": "To jest koncowa wyplata netto dla obecnie zatwierdzonego scenariusza. Zacznij od czterech metryk ponizej, dopiero potem wchodz glebiej tylko wtedy, gdy potrzebujesz szczegolow.",
+      "narrative_maturity": "Ten przebieg utrzymuje obligacje do modelowanej sciezki zapadalnosci, wiec wynik odzwierciedla pelny plan.",
+      "narrative_early_exit": "Ten przebieg zaklada wczesniejszy wykup przed pelna zapadalnoscia, wiec oplaty lub utracona kapitalizacja moga obnizyc wynik.",
+      "wrapper_limit_title": "Limit opakowania podatkowego zostal osiagniety.",
+      "wrapper_limit_description": "{{wrapperAmount}} pozostalo w opakowaniu, a {{standardAmount}} przeszlo na konto standardowe.",
+      "scenario_facts_title": "Fakty scenariusza",
+      "scenario_facts_description": "Minimalny zestaw parametrow potrzebny do poprawnego odczytu wyniku."
+    },
+    "scenario_fields": {
+      "bond_type": "Typ obligacji",
+      "horizon": "Horyzont",
+      "tax_strategy": "Strategia podatkowa",
+      "withdrawal_mode": "Tryb wyjscia"
+    },
+    "withdrawal_modes": {
+      "early_redemption": "Wczesniejszy wykup",
+      "at_maturity": "Do zapadalnosci"
+    },
+    "audit": {
+      "eyebrow": "Szybki audyt okresu",
+      "title": "Obliczenia dla okresu {{period}}",
+      "description": "To jest skondensowany podglad jednego okresu. Ma pomagac rozumiec skad bierze sie wynik bez zalewania tabela.",
+      "rate_source": "Zrodlo stopy",
+      "reference_basis": "Punkt odniesienia"
+    },
+    "timeline_display": {
+      "projection": {
+        "projected": "Prognoza",
+        "historical": "Historia"
+      },
+      "cadence": {
+        "scenario_entry": "Punkt wejscia do scenariusza",
+        "maturity_closeout": "Punkt zapadalnosci i zamkniecia cyklu",
+        "exit_payout": "Punkt wyjscia z inwestycji",
+        "payout_rollover": "Punkt wyplaty lub odnowienia",
+        "checkpoint": "Kontrolny punkt scenariusza"
+      },
+      "value_meaning": {
+        "withdrawal": "Ten wiersz pokazuje wartosc przy wyjsciu po oplatach i podatku dla tego punktu.",
+        "maturity": "Ten wiersz domyka pelny cykl obligacji.",
+        "paid_out_cash": "Ten punkt laczy wartosc obligacji z gotowka wyplacona juz po drodze.",
+        "default": "To jest punkt kontrolny pokazujacy wartosc po naliczeniu dla tego okresu."
+      },
+      "reference": {
+        "base": "Baza {{value}}%",
+        "margin": "Marza {{value}}%"
+      },
+      "rate_source": {
+        "initial_principal": "Kontekst kapitalu poczatkowego",
+        "fixed_rate": "Stala stopa obligacji",
+        "first_year_fixed": "Stala stopa pierwszego roku",
+        "historical_cpi_lag": "Historyczny CPI + marza",
+        "projected_cpi": "Prognozowany CPI + marza",
+        "historical_nbp": "Historyczna stopa NBP + marza",
+        "projected_nbp": "Prognozowana stopa NBP + marza"
+      },
+      "event": {
+        "purchase": "Zakup",
+        "rate_reset": "Reset stopy",
+        "interest_accrual": "Naliczenie odsetek",
+        "payout": "Wyplata",
+        "tax_settlement": "Rozliczenie podatku",
+        "early_redemption_fee": "Oplata za wykup",
+        "rollover_purchase": "Zakup z odnowienia",
+        "maturity": "Zapadalnosc",
+        "withdrawal": "Wyjscie"
+      },
+      "chart": {
+        "start": "Start",
+        "initial_capital": "Kapital poczatkowy"
+      }
+    }
+  },
+  "landing": {
 
     "hero_title": "Osiągnij Mistrzostwo w Strategii",
     "hero_title_accent": "Polskich Obligacji",
@@ -550,6 +635,60 @@
     "tax_leak_small": "Wykryto mały wyciek podatkowy w {count} partiach. Rozważ użycie IKE/IKZE dla przyszłych zakupów."
   },
   "economic": {
+    "range_data": "Zakres danych",
+    "reference_panel": "Panel kontekstowy",
+    "series": "Serie",
+    "purpose": "Rola",
+    "mode": "Tryb",
+    "goal": "Cel",
+    "context": "Kontekst",
+    "reference": "Referencyjny",
+    "readable_context": "Czytelny kontekst",
+    "how_to_use_page": "Jak korzystac z tej strony",
+    "data_quality_title": "Jakosc danych",
+    "page_scope_title": "Zakres strony",
+    "page_intro": "Ta strona dostarcza spokojny kontekst makro do kalkulatorow obligacji. Nie ma udawac osobnego produktu forecastingowego ani rozbudowanego pulpitu rynkowego.",
+    "macro_support_title": "Makro dane maja pomagac liczyc obligacje, nie odwracac od nich uwagi.",
+    "usage_guide_1": "Inflacja pomaga zrozumiec realna sile nabywcza wyniku i zachowanie obligacji indeksowanych.",
+    "usage_guide_2": "Stopa NBP sluzy glownie jako kontekst dla ROR i DOR oraz do interpretacji otoczenia rynkowego.",
+    "usage_guide_3": "Biezaca stopa oferty obligacji i stopa referencyjna NBP to nie to samo: na przyklad ROR moze zaczynac od stopy sprzedazowej oferty, a dopiero potem przechodzic na NBP + marza.",
+    "usage_guide_4": "Krotsze zakresy poprawiaja czytelnosc. Szerszy zakres daje tlo historyczne, ale nie uzupelnia brakujacej jakosci danych.",
+    "data_quality_description": "Jesli synchronizacja jest niepelna, strona powinna mowic o tym wprost. Te wykresy maja pomagac interpretowac wynik kalkulatora, nie budowac falszywego poczucia kompletnosci.",
+    "page_scope_description": "To nie jest osobny panel forecastingowy. Dane tutaj maja sluzyc jako spokojne tlo do czytania kalkulatorow obligacji.",
+    "reference_state": {
+      "synced": "Zsynchronizowane",
+      "needs_refresh": "Wymaga odswiezenia",
+      "partial": "Czesciowe",
+      "fallback": "Zapasowe"
+    },
+    "reference_copy": {
+      "synced_dataset": "Zsynchronizowany zestaw danych",
+      "fallback_dataset": "Zapasowy zestaw danych",
+      "official_nbp": "Oficjalne API NBP",
+      "official_nbp_fallback": "Kuratorowana historia stopy referencyjnej NBP",
+      "official_bond_site": "Oficjalna oferta obligacji",
+      "official_gus_partial": "GUS / czesciowy zakres referencyjny",
+      "official_gus_archive": "Oficjalne archiwum CPI GUS",
+      "coverage_unavailable": "Zakres niedostepny",
+      "scope_unknown": "Zakres nieznany",
+      "reference_only": "Tylko odczyt referencyjny",
+      "supports_context": "Wspiera kontekst kalkulatora",
+      "unavailable_title": "Brak metadanych",
+      "unavailable_description": "Ta strona nie ma jeszcze wystarczajacych metadanych synchronizacji, aby opisac swiezosc lub zakres.",
+      "fallback_title": "Zastepczy lub czesciowy zakres",
+      "fallback_description": "Traktuj te serie jako wsparcie referencyjne, dopoki pipeline synchronizacji nie przywroci pelniejszego zakresu.",
+      "stale_title": "Zakres wymaga odswiezenia",
+      "stale_description": "Dane pochodza z poprawnego zrodla, ale ich okno czasowe nie jest juz wystarczajaco aktualne dla biezacego odczytu.",
+      "synced_title": "Zsynchronizowany zakres referencyjny",
+      "synced_description": "Ta seria jest wsparta zsynchronizowanym pipeline danych i moze sluzyc do interpretacji kalkulatora.",
+      "cpi_partial_reference": "Miesieczny CPI nadal ma tylko czesciowy zakres referencyjny. Nie czytaj go jako w pelni aktualnych danych rynkowych.",
+      "cpi_fallback_reference": "Ten wykres CPI korzysta z zastepczego zakresu awaryjnego. Czytaj go tylko jako kontekst pomocniczy, dopoki oficjalny import nie zostanie przywrocony.",
+      "cpi_stale_coverage": "Zrodlo CPI jest poprawne, ale ostatni zaimportowany punkt jest zbyt stary, aby traktowac ten zakres jako biezacy.",
+      "reference_synced_context": "Zakres jest wystarczajaco aktualny, aby spokojnie wspierac odczyt kalkulatora.",
+      "nbp_fallback_reference": "Historia stopy referencyjnej opiera sie na kuratorowanym zakresie wspartym oficjalnymi publikacjami NBP. Czytaj ja jako kontekst referencyjny, nie jako pelny strumien API.",
+      "nbp_partial_reference": "Historia stopy NBP jest tylko czesciowo zsynchronizowana, dlatego brakujace punkty zostaly dopelnione kuratorowanym zakresem historycznym.",
+      "nbp_synced_context": "Historia stopy referencyjnej jest zsynchronizowana i moze wspierac odczyt wynikow obligacji."
+    },
     "subtitle": "Kontekst historyczny polskiej inflacji i stóp procentowych.",
     "inflation_title": "Wskaźnik inflacji (CPI)",
     "inflation_desc": "Zmiana cen towarów i usług konsumpcyjnych rok do roku.",

@@ -3,6 +3,7 @@
     "title": "Bonds Calculator",
     "description": "Professional calculator for Polish treasury bonds.",
     "calculate": "Calculate",
+    "save": "Save",
     "reset": "Reset",
     "year": "Year",
     "years": "Years",
@@ -33,7 +34,17 @@
     "retry": "Retry",
     "refresh": "Refresh",
     "version": "Version",
-    "sync_data": "Sync Data"
+    "sync_data": "Sync Data",
+    "source": "Source",
+    "as_of": "As of",
+    "coverage": "Coverage",
+    "usage": "Use",
+    "unavailable": "Unavailable",
+    "search": "Search",
+    "all_events": "All Events",
+    "meaning": "Meaning",
+    "events": "Events",
+    "basis": "Basis"
   },
   "strategy_hints": {
     "title": "Smart Strategy Hints",
@@ -419,6 +430,80 @@
       "sentiment": "Market Sentiment",
       "est_volume": "Est. Total Volume",
       "anonymized_notice": "Based on anonymized data from other users' notebooks."
+    },
+    "results": {
+      "summary_eyebrow": "Scenario summary",
+      "summary_description": "This is the final net payout for the currently committed scenario. Start with the four metrics below, then go deeper only if you need detail.",
+      "narrative_maturity": "This run holds the bond to the modeled maturity path, so the final payout reflects the full planned cycle.",
+      "narrative_early_exit": "This run assumes early redemption before full maturity, so fees or lost compounding may reduce the payout.",
+      "wrapper_limit_title": "Tax wrapper limit reached.",
+      "wrapper_limit_description": "{{wrapperAmount}} stayed inside the wrapper, while {{standardAmount}} spilled into a standard account.",
+      "scenario_facts_title": "Scenario facts",
+      "scenario_facts_description": "The minimum set of facts needed to read this run correctly."
+    },
+    "scenario_fields": {
+      "bond_type": "Bond type",
+      "horizon": "Horizon",
+      "tax_strategy": "Tax strategy",
+      "withdrawal_mode": "Withdrawal mode"
+    },
+    "withdrawal_modes": {
+      "early_redemption": "Early redemption",
+      "at_maturity": "At maturity"
+    },
+    "audit": {
+      "eyebrow": "Quick period audit",
+      "title": "Calculation for {{period}}",
+      "description": "This is a condensed view of one period. It should explain where the result comes from without flooding you with table chrome.",
+      "rate_source": "Rate source",
+      "reference_basis": "Reference basis"
+    },
+    "timeline_display": {
+      "projection": {
+        "projected": "Projected",
+        "historical": "Historical"
+      },
+      "cadence": {
+        "scenario_entry": "Scenario entry point",
+        "maturity_closeout": "Maturity close-out point",
+        "exit_payout": "Exit payout point",
+        "payout_rollover": "Payout or rollover point",
+        "checkpoint": "Scenario checkpoint"
+      },
+      "value_meaning": {
+        "withdrawal": "This row shows the exit value after modeled fees and tax at this point.",
+        "maturity": "This row closes the full bond cycle.",
+        "paid_out_cash": "This checkpoint combines bond value with cash that has already been paid out along the way.",
+        "default": "This is a checkpoint showing value after accrual for this period."
+      },
+      "reference": {
+        "base": "Base {{value}}%",
+        "margin": "Margin {{value}}%"
+      },
+      "rate_source": {
+        "initial_principal": "Initial principal context",
+        "fixed_rate": "Fixed bond rate",
+        "first_year_fixed": "First-year fixed rate",
+        "historical_cpi_lag": "Historical CPI + margin",
+        "projected_cpi": "Projected CPI + margin",
+        "historical_nbp": "Historical NBP + margin",
+        "projected_nbp": "Projected NBP + margin"
+      },
+      "event": {
+        "purchase": "Purchase",
+        "rate_reset": "Rate reset",
+        "interest_accrual": "Interest accrual",
+        "payout": "Payout",
+        "tax_settlement": "Tax settlement",
+        "early_redemption_fee": "Early fee",
+        "rollover_purchase": "Rollover purchase",
+        "maturity": "Maturity",
+        "withdrawal": "Withdrawal"
+      },
+      "chart": {
+        "start": "Start",
+        "initial_capital": "Initial capital"
+      }
     }
   },
   "landing": {

@@ -1,3 +1,5 @@
+import { t } from '@/i18n';
+
 export interface DataReferenceMetaLike {
   source?: string;
   usedFallback?: boolean;
@@ -17,98 +19,8 @@ export type ReferenceMetaItem = {
   value: string;
 };
 
-const REFERENCE_COPY = {
-  unavailable: {
-    pl: 'Niedostepne',
-    en: 'Unavailable',
-  },
-  syncedDataset: {
-    pl: 'Zsynchronizowany zestaw danych',
-    en: 'Synced dataset',
-  },
-  fallbackDataset: {
-    pl: 'Zapasowy zestaw danych',
-    en: 'Fallback dataset',
-  },
-  officialNbp: {
-    pl: 'Oficjalne API NBP',
-    en: 'Official NBP API',
-  },
-  officialNbpFallback: {
-    pl: 'Kuratorowana historia stopy referencyjnej NBP',
-    en: 'Curated NBP reference-rate history',
-  },
-  officialBondSite: {
-    pl: 'Oficjalna oferta obligacji',
-    en: 'Official bond offer site',
-  },
-  officialGusPartial: {
-    pl: 'GUS / czesciowy zakres referencyjny',
-    en: 'GUS / partial reference coverage',
-  },
-  officialGusArchive: {
-    pl: 'Oficjalne archiwum CPI GUS',
-    en: 'Official GUS CPI archive',
-  },
-  staleDataset: {
-    pl: 'Zsynchronizowany, ale przeterminowany zakres',
-    en: 'Synced but stale coverage',
-  },
-  coverageUnavailable: {
-    pl: 'Zakres niedostepny',
-    en: 'Coverage not available',
-  },
-  scopeUnknown: {
-    pl: 'Zakres nieznany',
-    en: 'Scope unknown',
-  },
-  referenceOnly: {
-    pl: 'Tylko odczyt referencyjny',
-    en: 'Reference reading only',
-  },
-  supportsContext: {
-    pl: 'Wspiera kontekst kalkulatora',
-    en: 'Supports calculator context',
-  },
-  unavailableTitle: {
-    pl: 'Brak metadanych',
-    en: 'Unavailable metadata',
-  },
-  unavailableDescription: {
-    pl: 'Ta strona nie ma jeszcze wystarczajacych metadanych synchronizacji, aby opisac swiezosc lub zakres.',
-    en: 'This page does not have enough sync metadata to describe freshness or coverage yet.',
-  },
-  fallbackTitle: {
-    pl: 'Zastepczy lub czesciowy zakres',
-    en: 'Fallback or partial coverage',
-  },
-  fallbackDescription: {
-    pl: 'Traktuj te serie jako wsparcie referencyjne, dopoki pipeline synchronizacji nie przywroci pelniejszego zakresu.',
-    en: 'Treat this series as reference support until the sync pipeline restores fuller coverage.',
-  },
-  staleTitle: {
-    pl: 'Zakres wymaga odswiezenia',
-    en: 'Coverage needs refresh',
-  },
-  staleDescription: {
-    pl: 'Dane pochodza z poprawnego zrodla, ale ich okno czasowe nie jest juz wystarczajaco aktualne dla biezacego odczytu.',
-    en: 'The data comes from a valid source, but its coverage window is no longer fresh enough for current reading.',
-  },
-  syncedTitle: {
-    pl: 'Zsynchronizowany zakres referencyjny',
-    en: 'Synced reference coverage',
-  },
-  syncedDescription: {
-    pl: 'Ta seria jest wsparta zsynchronizowanym pipeline danych i moze sluzyc do interpretacji kalkulatora.',
-    en: 'This series is backed by the synced data pipeline and can support calculator interpretation.',
-  },
-} as const;
-
-function getReferenceCopy(
-  key: keyof typeof REFERENCE_COPY,
-  language: AppLanguage,
-) {
-  return REFERENCE_COPY[key][language];
+function ref(key: string, language: AppLanguage) {
+  return t(`economic.reference_copy.${key}`, undefined, language);
 }
 
 function getKnownDataSourceLabel(
@@ -118,22 +30,22 @@ function getKnownDataSourceLabel(
   const normalized = value.trim().toLowerCase();
 
   if (normalized === 'static fallback dataset') {
-    return getReferenceCopy('fallbackDataset', language);
+    return ref('fallback_dataset', language);
   }
 
   if (normalized === 'database') {
-    return getReferenceCopy('syncedDataset', language);
+    return ref('synced_dataset', language);
   }
 
   if (normalized === 'nbp official api') {
-    return getReferenceCopy('officialNbp', language);
+    return ref('official_nbp', language);
   }
 
   if (
     normalized === 'nbp official publications fallback dataset'
     || normalized === 'curated nbp reference-rate history from official policy publications'
   ) {
-    return getReferenceCopy('officialNbpFallback', language);
+    return ref('official_nbp_fallback', language);
   }
 
   if (
@@ -141,18 +53,18 @@ function getKnownDataSourceLabel(
     || normalized === 'gus/partial seeded coverage'
     || normalized === 'gus / partial reference coverage'
   ) {
-    return getReferenceCopy('officialGusPartial', language);
+    return ref('official_gus_partial', language);
   }
 
   if (normalized === 'gus official cpi monthly archive csv') {
-    return getReferenceCopy('officialGusArchive', language);
+    return ref('official_gus_archive', language);
   }
 
   if (
     normalized === 'official bond offer page'
     || normalized === 'official bond offer communication'
   ) {
-    return getReferenceCopy('officialBondSite', language);
+    return ref('official_bond_site', language);
   }
 
   return value;
@@ -165,45 +77,31 @@ function getCoverageNoteLabel(
   const normalized = value.trim().toLowerCase();
 
   if (normalized === 'cpi-partial-reference') {
-    return language === 'pl'
-      ? 'Miesieczny CPI nadal ma tylko czesciowy zakres referencyjny. Nie czytaj go jako w pelni aktualnych danych rynkowych.'
-      : 'Monthly CPI still has only partial reference coverage. Do not read it as fully current market data.';
+    return ref('cpi_partial_reference', language);
   }
 
   if (normalized === 'cpi-fallback-reference') {
-    return language === 'pl'
-      ? 'Ten wykres CPI korzysta z zastepczego zakresu awaryjnego. Czytaj go tylko jako kontekst pomocniczy, dopoki oficjalny import nie zostanie przywrocony.'
-      : 'This CPI chart is using emergency fallback coverage. Treat it only as supporting context until official import is restored.';
+    return ref('cpi_fallback_reference', language);
   }
 
   if (normalized === 'cpi-stale-coverage') {
-    return language === 'pl'
-      ? 'Zrodlo CPI jest poprawne, ale ostatni zaimportowany punkt jest zbyt stary, aby traktowac ten zakres jako biezacy.'
-      : 'The CPI source is valid, but the latest imported point is too old to treat this coverage as current.';
+    return ref('cpi_stale_coverage', language);
   }
 
   if (normalized === 'reference-synced-context') {
-    return language === 'pl'
-      ? 'Zakres jest wystarczajaco aktualny, aby spokojnie wspierac odczyt kalkulatora.'
-      : 'Coverage is current enough to calmly support calculator reading.';
+    return ref('reference_synced_context', language);
   }
 
   if (normalized === 'nbp-fallback-reference') {
-    return language === 'pl'
-      ? 'Historia stopy referencyjnej opiera sie na kuratorowanym zakresie wspartym oficjalnymi publikacjami NBP. Czytaj ja jako kontekst referencyjny, nie jako pelny strumien API.'
-      : 'Reference-rate history relies on a curated range backed by official NBP publications. Read it as reference context, not as a full direct API feed.';
+    return ref('nbp_fallback_reference', language);
   }
 
   if (normalized === 'nbp-partial-reference') {
-    return language === 'pl'
-      ? 'Historia stopy NBP jest tylko czesciowo zsynchronizowana, dlatego brakujace punkty zostaly dopelnione kuratorowanym zakresem historycznym.'
-      : 'NBP rate history is only partially synced, so missing points were filled with curated historical coverage.';
+    return ref('nbp_partial_reference', language);
   }
 
   if (normalized === 'nbp-synced-context') {
-    return language === 'pl'
-      ? 'Historia stopy referencyjnej jest zsynchronizowana i moze wspierac odczyt wynikow obligacji.'
-      : 'Reference-rate history is synced and can support reading bond results.';
+    return ref('nbp_synced_context', language);
   }
 
   return value;
@@ -214,7 +112,7 @@ export function getReferenceSourceLabel(
   language: AppLanguage = 'en',
 ) {
   if (!meta) {
-    return getReferenceCopy('unavailable', language);
+    return t('common.unavailable', undefined, language);
   }
 
   if (meta.dataSource) {
@@ -222,14 +120,14 @@ export function getReferenceSourceLabel(
   }
 
   if (meta.source === 'database') {
-    return getReferenceCopy('syncedDataset', language);
+    return ref('synced_dataset', language);
   }
 
   if (meta.source === 'fallback') {
-    return getReferenceCopy('fallbackDataset', language);
+    return ref('fallback_dataset', language);
   }
 
-  return getReferenceCopy('unavailable', language);
+  return t('common.unavailable', undefined, language);
 }
 
 export function getReferenceCoverageLabel(
@@ -237,7 +135,7 @@ export function getReferenceCoverageLabel(
   language: AppLanguage = 'en',
 ) {
   if (!meta?.coverageStart || !meta?.coverageEnd) {
-    return getReferenceCopy('coverageUnavailable', language);
+    return ref('coverage_unavailable', language);
   }
 
   return `${meta.coverageStart} - ${meta.coverageEnd}`;
@@ -247,7 +145,7 @@ export function getReferenceAsOfLabel(
   meta?: DataReferenceMetaLike,
   language: AppLanguage = 'en',
 ) {
-  return meta?.asOf ?? meta?.lastCheck ?? getReferenceCopy('unavailable', language);
+  return meta?.asOf ?? meta?.lastCheck ?? t('common.unavailable', undefined, language);
 }
 
 export function getReferenceScopeLabel(
@@ -255,18 +153,18 @@ export function getReferenceScopeLabel(
   language: AppLanguage = 'en',
 ) {
   if (!meta) {
-    return getReferenceCopy('scopeUnknown', language);
+    return ref('scope_unknown', language);
   }
 
   if (meta.usedFallback || meta.source === 'fallback') {
-    return getReferenceCopy('referenceOnly', language);
+    return ref('reference_only', language);
   }
 
   if (meta.syncStatus === 'partial' || meta.syncStatus === 'stale') {
-    return getReferenceCopy('referenceOnly', language);
+    return ref('reference_only', language);
   }
 
-  return getReferenceCopy('supportsContext', language);
+  return ref('supports_context', language);
 }
 
 export function getReferenceState(
@@ -275,35 +173,35 @@ export function getReferenceState(
 ) {
   if (!meta) {
     return {
-      title: getReferenceCopy('unavailableTitle', language),
-      description: getReferenceCopy('unavailableDescription', language),
+      title: ref('unavailable_title', language),
+      description: ref('unavailable_description', language),
       tone: 'warning' as const,
     };
   }
 
   if (meta.syncStatus === 'stale') {
     return {
-      title: getReferenceCopy('staleTitle', language),
+      title: ref('stale_title', language),
       description: meta.coverageNote
         ? getCoverageNoteLabel(meta.coverageNote, language)
-        : getReferenceCopy('staleDescription', language),
+        : ref('stale_description', language),
       tone: 'warning' as const,
     };
   }
 
   if (meta.usedFallback || meta.source === 'fallback' || meta.syncStatus === 'failed' || meta.syncStatus === 'partial') {
     return {
-      title: getReferenceCopy('fallbackTitle', language),
+      title: ref('fallback_title', language),
       description: meta.coverageNote
         ? getCoverageNoteLabel(meta.coverageNote, language)
-        : getReferenceCopy('fallbackDescription', language),
+        : ref('fallback_description', language),
       tone: 'warning' as const,
     };
   }
 
   return {
-    title: getReferenceCopy('syncedTitle', language),
-    description: getReferenceCopy('syncedDescription', language),
+    title: ref('synced_title', language),
+    description: ref('synced_description', language),
     tone: 'good' as const,
   };
 }
@@ -314,19 +212,19 @@ export function getReferenceMetaItems(
 ): ReferenceMetaItem[] {
   return [
     {
-      label: language === 'pl' ? 'Zrodlo' : 'Source',
+      label: t('common.source', undefined, language),
       value: getReferenceSourceLabel(meta, language),
     },
     {
-      label: language === 'pl' ? 'Stan na' : 'As of',
+      label: t('common.as_of', undefined, language),
       value: getReferenceAsOfLabel(meta, language),
     },
     {
-      label: language === 'pl' ? 'Zakres' : 'Coverage',
+      label: t('common.coverage', undefined, language),
       value: getReferenceCoverageLabel(meta, language),
     },
     {
-      label: language === 'pl' ? 'Uzycie' : 'Use',
+      label: t('common.usage', undefined, language),
       value: getReferenceScopeLabel(meta, language),
     },
   ];
