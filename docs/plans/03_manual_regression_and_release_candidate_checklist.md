@@ -10,6 +10,10 @@ The app is materially more coherent than it was before, but there is still a gap
 
 This document turns that last gap into a concrete verification pass.
 
+Execution companion:
+
+- see [05. Retained Route Regression Execution Log](./05_retained_route_regression_execution_log.md) for the current retained-route evidence snapshot and unresolved trust limits.
+
 ## 1. Purpose
 
 Use this checklist when:

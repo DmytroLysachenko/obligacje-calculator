@@ -76,10 +76,10 @@ Current important fields:
 
 The notebook should help answer questions like:
 
-- “What bonds did I actually buy?”
-- “What happens if I hold these lots to the modeled horizon?”
-- “How concentrated are my ladder maturities?”
-- “How do my saved lots relate to the single-scenario simulations I ran before?”
+- "What bonds did I actually buy?"
+- "What happens if I hold these lots to the modeled horizon?"
+- "How concentrated are my ladder maturities?"
+- "How do my saved lots relate to the single-scenario simulations I ran before?"
 
 The notebook should **not** act like:
 
@@ -130,6 +130,7 @@ Current flow:
 
 - export produces a portable notebook package
 - import recreates portfolio data under the current owner context
+- export currently uses JSON package/summary downloads, not spreadsheet-native notebook exports
 
 ### 5.6 Public share
 
@@ -181,7 +182,7 @@ Notebook UI should remain:
 
 Notebook UI should avoid:
 
-- “wealth cockpit” theater
+- "wealth cockpit" theater
 - too many equally weighted side panels
 - recommendation-like messaging
 - showing empty dashboards when there are no real lots
@@ -213,7 +214,31 @@ The following route families must resolve the same owner context:
 
 Create/import/delete should not require a manual hard refresh to become visible.
 
-## 9. Current Known Limits
+This also applies to:
+
+- public/private share toggles
+- detail-to-list transitions after destructive actions
+- selected portfolio clearing after deletion
+
+## 9. Current Validation Position
+
+Current retained notebook status:
+
+- materially improved
+- records-first in scope
+- still requiring one final full lifecycle manual pass before production-candidate review
+
+That final pass should explicitly cover:
+
+- create
+- import
+- open
+- share toggle
+- export
+- delete
+- reload continuity under guest ownership
+
+## 10. Current Known Limits
 
 The notebook still has intentional limits:
 
@@ -226,7 +251,7 @@ This is good.
 
 The notebook is stronger when it stays narrow and reliable.
 
-## 10. Future-safe Direction
+## 11. Future-safe Direction
 
 If notebook grows later, the preferred direction is:
 
@@ -239,5 +264,4 @@ Not:
 
 - more dashboard noise
 - more pseudo-advisory suggestions
-- more live “smart” nudges without validated value
-
+- more live "smart" nudges without validated value

@@ -53,7 +53,7 @@ The app is a **calculator and education tool**, not a recommendation engine.
 - **FR5.5:** Visual artifacts, unexplained separators, and unstable layout shifts must be removed from calculator flows.
 - **FR5.6:** Core calculator screens must remain understandable without requiring the user to interpret many side widgets, helper panels, or decorative layers.
 - **FR5.7:** Dense schedule tables must fit normal desktop retained layouts without default horizontal scrolling and must expose a friendlier mobile/tablet reading mode.
-- **FR5.8:** “How to read” guidance and calculation context should remain secondary and should generally sit below the main result path, usually inside secondary accordions.
+- **FR5.8:** "How to read" guidance and calculation context should remain secondary and should generally sit below the main result path, usually inside secondary accordions.
 - **FR5.9:** Retained calculators should share one visual grammar for section shells, secondary guidance blocks, metric strips, and responsive schedule reading patterns instead of cloning page-specific variants.
 
 ## 6. Data and Freshness Requirements
@@ -66,6 +66,7 @@ The app is a **calculator and education tool**, not a recommendation engine.
 - **FR6.6:** Data-backed comparisons must not imply broad historical completeness when coverage is narrow.
 - **FR6.7:** The app must clearly distinguish current bond offer terms from NBP reference-rate context. These values must not be presented as interchangeable.
 - **FR6.8:** CPI and NBP retained routes must expose whether history is direct, partial, curated, or fallback-supported.
+- **FR6.9:** Retained data-backed routes must not imply a stronger historical NBP coverage class than the current source path actually supports.
 
 ## 7. Documentation and Release Requirements
 
@@ -74,4 +75,6 @@ The app is a **calculator and education tool**, not a recommendation engine.
 - **FR7.3:** The app must not be described as production-ready until stability, calculation trust, and data transparency gates are met.
 - **FR7.4:** Documentation must distinguish between trusted, experimental, narrowed, and deferred product surfaces.
 - **FR7.5:** High-level architecture docs must track real runtime decisions such as guest-backed notebook persistence, server-backed scenario sharing, and the canonical bond metadata model.
-- **FR7.6:** High-level architecture docs must also track the retained display-model rule for payout bonds and the “current offer comes from active issued series” decision.
+- **FR7.6:** High-level architecture docs must also track the retained display-model rule for payout bonds and the "current offer comes from active issued series" decision.
+- **FR7.7:** Retained-route validation status must be tracked in an execution log, not only in static intent checklists.
+- **FR7.8:** Notebook retained flows must support create, import, open, share toggle, export, and delete behavior without manual reload recovery.
