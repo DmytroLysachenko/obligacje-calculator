@@ -5,13 +5,16 @@ import { FileSpreadsheet, FileText, Info, Save } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { BondInputs, CalculationResult } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
-import { convertTimelineToCSV, downloadFile } from '@/shared/lib/csv-utils';
 import { buildTimelineExportHeaders } from '@/shared/lib/export-headers';
 import { MetricStrip } from '@/shared/components/MetricStrip';
 import { MathDeepDive } from '@/shared/components/MathDeepDive';
 import { ResultSummaryHero } from '@/shared/components/ResultSummaryHero';
 import { CalculationAuditTrace } from './CalculationAuditTrace';
 import { getAuditTimelinePoint } from '@/shared/lib/bond-display';
+import {
+  buildTimelineCsvFilename,
+  exportTimelineCsv,
+} from '@/shared/lib/retained-exports';
 
 function getTaxStrategyDisplayLabel(
   strategy: BondInputs['taxStrategy'],
@@ -46,13 +49,12 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
     }).format(value);
 
   const handleExportCSV = () => {
-    const headers = buildTimelineExportHeaders(t, language);
-    const csv = convertTimelineToCSV(results.timeline, headers, language);
-    downloadFile(
-      csv,
-      `bond_simulation_${inputs.bondType}_${new Date().toISOString().split('T')[0]}.csv`,
-      'text/csv;charset=utf-8',
-    );
+    exportTimelineCsv({
+      timeline: results.timeline,
+      headers: buildTimelineExportHeaders(t, language),
+      language,
+      fileName: buildTimelineCsvFilename('bond_simulation', inputs.bondType),
+    });
   };
 
   const horizonLabel = inputs.investmentHorizonMonths ?? Math.round(inputs.duration * 12);

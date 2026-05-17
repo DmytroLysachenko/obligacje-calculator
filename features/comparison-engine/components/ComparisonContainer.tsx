@@ -46,8 +46,12 @@ import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm
 import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { ScenarioReadyPanel } from '@/shared/components/ScenarioReadyPanel';
-import { convertTimelineToCSV, downloadFile } from '@/shared/lib/csv-utils';
 import { buildTimelineExportHeaders } from '@/shared/lib/export-headers';
+import {
+  buildComparisonExportLabel,
+  buildTimelineCsvFilename,
+  exportTimelineCsv,
+} from '@/shared/lib/retained-exports';
 import { sampleSeriesPoints } from '@/shared/lib/chart-series';
 import { toDateString } from '@/shared/lib/date-timing';
 import { InterestPayout } from '@/features/bond-core/types';
@@ -141,14 +145,12 @@ export const ComparisonContainer: React.FC = () => {
   const handleExportCSV = (results: CalculationResult | null, bondType: string) => {
     if (!results) return;
 
-    const headers = buildTimelineExportHeaders(t, language);
-
-    const csv = convertTimelineToCSV(results.timeline, headers, language);
-    downloadFile(
-      csv,
-      `bond_comparison_${bondType}_${new Date().toISOString().split('T')[0]}.csv`,
-      'text/csv;charset=utf-8',
-    );
+    exportTimelineCsv({
+      timeline: results.timeline,
+      headers: buildTimelineExportHeaders(t, language),
+      language,
+      fileName: buildTimelineCsvFilename('bond_comparison', bondType),
+    });
   };
 
   const formatCurrency = React.useMemo(
@@ -668,7 +670,7 @@ export const ComparisonContainer: React.FC = () => {
                         </p>
                         <div className="mt-2 flex items-center gap-2 text-sm font-bold text-slate-900">
                           <FileSpreadsheet className="h-4 w-4 text-primary" />
-                          CSV ({inputsA.bondType})
+                          {buildComparisonExportLabel(t, language, inputsA.bondType)}
                         </div>
                       </button>
                       <button
@@ -681,7 +683,7 @@ export const ComparisonContainer: React.FC = () => {
                         </p>
                         <div className="mt-2 flex items-center gap-2 text-sm font-bold text-slate-900">
                           <FileSpreadsheet className="h-4 w-4 text-primary" />
-                          CSV ({inputsB.bondType})
+                          {buildComparisonExportLabel(t, language, inputsB.bondType)}
                         </div>
                       </button>
                     </div>

@@ -9,11 +9,11 @@ import { useLanguage } from '@/i18n';
 import { Calendar, FileSpreadsheet } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { pl, enGB } from 'date-fns/locale';
-import { convertLotsToCSV, downloadFile } from '@/shared/lib/csv-utils';
 import { buildLotsExportHeaders } from '@/shared/lib/export-headers';
 import { MetricStrip } from '@/shared/components/MetricStrip';
 import { ResponsiveTableSheet } from '@/shared/components/ResponsiveTableSheet';
 import { ResultSummaryHero } from '@/shared/components/ResultSummaryHero';
+import { buildLotsCsvFilename, exportLotsCsv } from '@/shared/lib/retained-exports';
 
 interface RegularInvestmentResultsSummaryProps {
   results: RegularInvestmentResult;
@@ -141,13 +141,12 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
   );
 
   const handleExport = () => {
-    const headers = buildLotsExportHeaders(t, language);
-    const csv = convertLotsToCSV(results.lots, headers, language);
-    downloadFile(
-      csv,
-      `regular_investment_${new Date().toISOString().split('T')[0]}.csv`,
-      'text/csv;charset=utf-8',
-    );
+    exportLotsCsv({
+      lots: results.lots,
+      headers: buildLotsExportHeaders(t, language),
+      language,
+      fileName: buildLotsCsvFilename(),
+    });
   };
 
   return (
