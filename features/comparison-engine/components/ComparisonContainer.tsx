@@ -33,7 +33,7 @@ import {
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { FileSpreadsheet, History, LineChart, Scale, TriangleAlert } from 'lucide-react';
-import { CalculationResult, TaxStrategy } from '@/features/bond-core/types';
+import { TaxStrategy } from '@/features/bond-core/types';
 import { useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
@@ -46,11 +46,10 @@ import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm
 import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { ScenarioReadyPanel } from '@/shared/components/ScenarioReadyPanel';
-import { buildTimelineExportHeaders } from '@/shared/lib/export-headers';
+import { buildComparisonExportHeaders } from '@/shared/lib/export-headers';
 import {
-  buildComparisonExportLabel,
-  buildTimelineCsvFilename,
-  exportTimelineCsv,
+  buildCombinedComparisonCsvFilename,
+  exportComparisonCsv,
 } from '@/shared/lib/retained-exports';
 import { sampleSeriesPoints } from '@/shared/lib/chart-series';
 import { toDateString } from '@/shared/lib/date-timing';
@@ -142,14 +141,17 @@ export const ComparisonContainer: React.FC = () => {
     }
   };
 
-  const handleExportCSV = (results: CalculationResult | null, bondType: string) => {
-    if (!results) return;
+  const handleExportComparisonCSV = () => {
+    if (!resultsA || !resultsB) {
+      return;
+    }
 
-    exportTimelineCsv({
-      timeline: results.timeline,
-      headers: buildTimelineExportHeaders(t),
+    exportComparisonCsv({
+      timelineA: resultsA.timeline,
+      timelineB: resultsB.timeline,
+      headers: buildComparisonExportHeaders(t),
       language,
-      fileName: buildTimelineCsvFilename('bond_comparison', bondType),
+      fileName: buildCombinedComparisonCsvFilename(inputsA.bondType, inputsB.bondType),
     });
   };
 
@@ -597,7 +599,7 @@ export const ComparisonContainer: React.FC = () => {
                     </p>
                   </CardHeader>
                   <CardContent className="p-6">
-                    <div className="mb-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                    <div className="mb-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                       <ActionMetric
                         label={t('comparison.scenario_a')}
                         value={formatCurrency(resultsA.netPayoutValue)}
@@ -611,27 +613,14 @@ export const ComparisonContainer: React.FC = () => {
                       <button
                         type="button"
                         className="rounded-2xl border bg-white px-4 py-3 text-left transition-colors hover:border-primary/40"
-                        onClick={() => handleExportCSV(resultsA, inputsA.bondType)}
+                        onClick={handleExportComparisonCSV}
                       >
                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
                           {t('comparison.export')}
                         </p>
                         <div className="mt-2 flex items-center gap-2 text-sm font-bold text-slate-900">
                           <FileSpreadsheet className="h-4 w-4 text-primary" />
-                          {buildComparisonExportLabel(t, language, inputsA.bondType)}
-                        </div>
-                      </button>
-                      <button
-                        type="button"
-                        className="rounded-2xl border bg-white px-4 py-3 text-left transition-colors hover:border-primary/40"
-                        onClick={() => handleExportCSV(resultsB, inputsB.bondType)}
-                      >
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                          {t('comparison.export')}
-                        </p>
-                        <div className="mt-2 flex items-center gap-2 text-sm font-bold text-slate-900">
-                          <FileSpreadsheet className="h-4 w-4 text-primary" />
-                          {buildComparisonExportLabel(t, language, inputsB.bondType)}
+                          {t('comparison.export_comparison_csv')}
                         </div>
                       </button>
                     </div>

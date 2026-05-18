@@ -740,6 +740,7 @@
     "market_vs_bonds_desc": "Symulator historyczny: Porównaj wyniki aktywów z miesięcznymi wpłatami skorygowanymi o inflację.",
     "share_scenario": "UDOSTĘPNIJ SCENARIUSZ",
     "export": "EKSPORTUJ",
+    "export_comparison_csv": "Eksport CSV porownania",
     "copied": "SKOPIOWANO!",
     "initial_sum": "Kwota Początkowa",
     "monthly_contribution": "Miesięczna Wpłata",

@@ -39,3 +39,18 @@ export function buildLotsExportHeaders(
     netValue: t('bonds.net_value'),
   } as const;
 }
+
+export function buildComparisonExportHeaders(
+  t: TranslateFn,
+) {
+  return {
+    period: t('common.period'),
+    scenarioA: `${t('comparison.scenario_a')} ${t('bonds.final_nominal_value')}`,
+    scenarioB: `${t('comparison.scenario_b')} ${t('bonds.final_nominal_value')}`,
+    leader: t('comparison.table_title'),
+    netProfitA: `${t('comparison.scenario_a')} ${t('common.net_profit')}`,
+    netProfitB: `${t('comparison.scenario_b')} ${t('common.net_profit')}`,
+    projectionA: `${t('comparison.scenario_a')} ${t('bonds.projected')}`,
+    projectionB: `${t('comparison.scenario_b')} ${t('bonds.projected')}`,
+  } as const;
+}

@@ -1,9 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import * as csvUtils from './csv-utils';
 import {
-  buildComparisonExportLabel,
+  buildCombinedComparisonCsvFilename,
   buildLotsCsvFilename,
   buildTimelineCsvFilename,
+  exportComparisonCsv,
   exportLotsCsv,
   exportTimelineCsv,
 } from './retained-exports';
@@ -54,10 +55,26 @@ describe('retained export helpers', () => {
     downloadSpy.mockRestore();
   });
 
-  it('builds explicit comparison export labels', () => {
-    const t = (key: string) => key;
+  it('builds stable combined comparison filenames', () => {
+    expect(buildCombinedComparisonCsvFilename('ROR', 'DOR')).toMatch(
+      /^bond_comparison_ROR_vs_DOR_\d{4}-\d{2}-\d{2}\.csv$/,
+    );
+  });
 
-    expect(buildComparisonExportLabel(t, 'pl', 'ROR')).toBe('comparison.export CSV (ROR)');
-    expect(buildComparisonExportLabel(t, 'en', 'EDO')).toBe('comparison.export CSV (EDO)');
+  it('routes combined comparison exports through the shared csv downloader', () => {
+    const downloadSpy = vi.spyOn(csvUtils, 'downloadFile').mockImplementation(() => undefined);
+
+    exportComparisonCsv({
+      timelineA: [] as never[],
+      timelineB: [] as never[],
+      headers: { period: 'Period' },
+      language: 'en',
+      fileName: 'bond_comparison_ROR_vs_DOR_2026-05-18.csv',
+    });
+
+    expect(downloadSpy).toHaveBeenCalledOnce();
+    expect(downloadSpy.mock.calls[0]?.[1]).toBe('bond_comparison_ROR_vs_DOR_2026-05-18.csv');
+
+    downloadSpy.mockRestore();
   });
 });

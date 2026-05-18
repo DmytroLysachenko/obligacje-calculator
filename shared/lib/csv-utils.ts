@@ -138,3 +138,58 @@ export function convertLotsToCSV(
 
   return csvRows.join('\r\n');
 }
+
+export function convertComparisonToCSV(
+  timelineA: YearlyTimelinePoint[],
+  timelineB: YearlyTimelinePoint[],
+  headers: Record<string, string>,
+  language: AppLanguage = 'pl',
+) {
+  const rowsA = buildBondTimelineDisplayRows(timelineA, language);
+  const rowsB = buildBondTimelineDisplayRows(timelineB, language);
+  const rowCount = Math.max(rowsA.length, rowsB.length);
+  const csvRows: string[] = [];
+  const columns = [
+    { key: 'periodLabel', header: headers.period || 'Period' },
+    { key: 'scenarioA', header: headers.scenarioA || 'Scenario A total wealth' },
+    { key: 'scenarioB', header: headers.scenarioB || 'Scenario B total wealth' },
+    { key: 'leader', header: headers.leader || 'Ahead in this row' },
+    { key: 'netProfitA', header: headers.netProfitA || 'Scenario A net profit' },
+    { key: 'netProfitB', header: headers.netProfitB || 'Scenario B net profit' },
+    { key: 'projectionA', header: headers.projectionA || 'Scenario A mode' },
+    { key: 'projectionB', header: headers.projectionB || 'Scenario B mode' },
+  ];
+
+  csvRows.push(columns.map((column) => column.header).join(SEPARATOR));
+
+  for (let index = 0; index < rowCount; index += 1) {
+    const rowA = rowsA[index];
+    const rowB = rowsB[index];
+    const leader =
+      rowA && rowB
+        ? rowA.totalWealth === rowB.totalWealth
+          ? t('comparison.tie', undefined, language)
+          : rowA.totalWealth > rowB.totalWealth
+            ? t('comparison.scenario_a', undefined, language)
+            : t('comparison.scenario_b', undefined, language)
+        : rowA
+          ? t('comparison.scenario_a', undefined, language)
+          : rowB
+            ? t('comparison.scenario_b', undefined, language)
+            : '';
+
+    const row = [
+      formatCsvValue(rowA?.periodLabel ?? rowB?.periodLabel ?? '', language),
+      formatCsvValue(rowA?.totalWealth ?? '', language),
+      formatCsvValue(rowB?.totalWealth ?? '', language),
+      formatCsvValue(leader, language),
+      formatCsvValue(rowA?.netProfit ?? '', language),
+      formatCsvValue(rowB?.netProfit ?? '', language),
+      formatCsvValue(rowA?.projectionLabel ?? '', language),
+      formatCsvValue(rowB?.projectionLabel ?? '', language),
+    ];
+    csvRows.push(row.join(SEPARATOR));
+  }
+
+  return csvRows.join('\r\n');
+}

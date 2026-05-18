@@ -169,7 +169,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
         </Card>
       ) : null}
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="space-y-6">
         {auditPoint ? (
           <CalculationAuditTrace point={auditPoint} />
         ) : (
