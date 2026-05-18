@@ -28,6 +28,7 @@ export interface BondTimelineDisplayRow {
 
 export interface BondChartDisplayPoint {
   key: string;
+  dateKey: string;
   xLabel: string;
   nominal: number;
   real: number;
@@ -40,6 +41,8 @@ export interface BondChartDisplayPoint {
   rateLabel: string;
   eventLabels: string[];
 }
+
+type ChartAggregationStep = 'daily' | 'monthly' | 'quarterly' | 'yearly';
 
 export function getAuditTimelinePoint(timeline: YearlyTimelinePoint[]) {
   return (
@@ -224,10 +227,12 @@ export function buildBondChartDisplayPoints(
     low: YearlyTimelinePoint[];
     high: YearlyTimelinePoint[];
   },
+  chartStep: ChartAggregationStep = 'yearly',
 ): BondChartDisplayPoint[] {
-  return [
+  const rawPoints: BondChartDisplayPoint[] = [
     {
       key: 'start',
+      dateKey: '',
       xLabel: t('bonds.timeline_display.chart.start', undefined, language),
       nominal: initialInvestment,
       real: initialInvestment,
@@ -242,6 +247,7 @@ export function buildBondChartDisplayPoints(
     },
     ...timeline.map((point, index) => ({
       key: `${point.cycleIndex}-${point.periodLabel}-${point.cycleEndDate}`,
+      dateKey: point.cycleEndDate,
       xLabel: formatMonthYear(point.cycleEndDate, language),
       nominal: Number(point.totalValue.toFixed(2)),
       real: Number(point.realValue.toFixed(2)),
@@ -258,4 +264,41 @@ export function buildBondChartDisplayPoints(
         ) ?? [],
     })),
   ];
+
+  return aggregateBondChartDisplayPoints(rawPoints, chartStep);
+}
+
+function aggregateBondChartDisplayPoints(
+  points: BondChartDisplayPoint[],
+  chartStep: ChartAggregationStep,
+) {
+  if (chartStep === 'daily' || chartStep === 'monthly') {
+    return points;
+  }
+
+  const startPoint = points[0];
+  const groups = new Map<string, BondChartDisplayPoint[]>();
+
+  for (const point of points.slice(1)) {
+    const date = new Date(point.dateKey);
+    const groupKey =
+      chartStep === 'quarterly'
+        ? `${date.getUTCFullYear()}-Q${Math.floor(date.getUTCMonth() / 3) + 1}`
+        : `${date.getUTCFullYear()}`;
+    const bucket = groups.get(groupKey) ?? [];
+    bucket.push(point);
+    groups.set(groupKey, bucket);
+  }
+
+  const aggregated = Array.from(groups.values()).map((bucket) => {
+    const last = bucket[bucket.length - 1];
+    return {
+      ...last,
+      eventLabels: Array.from(new Set(bucket.flatMap((point) => point.eventLabels))),
+      isProjected: bucket.some((point) => point.isProjected),
+      isMaturity: bucket.some((point) => point.isMaturity),
+    };
+  });
+
+  return [startPoint, ...aggregated];
 }

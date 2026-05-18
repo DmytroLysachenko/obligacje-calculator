@@ -42,7 +42,6 @@ import { withMathGuard } from './engine-guards';
  */
 export const calculateBondInvestment = withMathGuard(function calculateBondInvestment(inputs: BondInputs & { rollover?: boolean }): CalculationResult {
   const rollover = inputs.rollover ?? false;
-  const chartStep = inputs.chartStep;
   const normalizedInputs = normalizeBondInputs(inputs);
   const {
     initialInvestment,
@@ -126,7 +125,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
     let totalInterestEarnedSoFar = new Decimal(0);
     let periodicTaxPaidSoFar = new Decimal(0);
 
-    const periods = generateCyclePeriods(currentPurchaseDate, cycleMaturityDate, actualCycleEndDate, payoutFrequency, bondDuration, chartStep);
+    const periods = generateCyclePeriods(currentPurchaseDate, cycleMaturityDate, actualCycleEndDate, payoutFrequency);
 
     for (let i = 0; i < periods.length; i++) {
       const period = periods[i];

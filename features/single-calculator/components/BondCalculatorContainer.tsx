@@ -49,8 +49,11 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     lastCommittedInputs,
   } = useBondCalculator(initialInputs);
   const { t, language } = useLanguage();
-
-  const guardrails = useMemo(() => getInputGuardrails(inputs), [inputs]);
+  const translate = useMemo(
+    () => (key: string, params?: Record<string, string | number>) => t(key, params),
+    [t],
+  );
+  const guardrails = useMemo(() => getInputGuardrails(inputs, translate), [inputs, translate]);
   const blockingGuardrails = useMemo(
     () => guardrails.filter((issue) => issue.severity === 'blocking'),
     [guardrails],
@@ -199,7 +202,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
           <div className="rounded-3xl border border-sky-200 bg-sky-50 px-5 py-4 text-sm text-sky-950">
             <div className="flex flex-wrap items-center gap-2 font-semibold">
               <Link2 className="h-4 w-4" />
-              {language === 'pl' ? 'Udostepniony scenariusz' : 'Shared scenario'}
+              {t('bonds.shared_scenario_badge')}
             </div>
             <p className="mt-2 leading-7">
               {sharedScenarioTitle}
@@ -328,6 +331,8 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
                 <BondChart
                   results={results}
                   initialInvestment={results.initialInvestment}
+                  chartStep={inputs.chartStep}
+                  showRealValue={inputs.showRealValue}
                 />
               </div>
             </CalculatorSection>

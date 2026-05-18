@@ -1,15 +1,12 @@
 import { 
   addMonths, 
   addYears, 
-  addDays,
-  addQuarters,
   differenceInDays, 
-  isAfter, 
   isBefore,
   min, 
   format 
 } from 'date-fns';
-import { InterestPayout, ChartStep } from '../../types';
+import { InterestPayout } from '../../types';
 
 export interface TimelinePeriod {
   startDate: Date;
@@ -23,27 +20,19 @@ export interface TimelinePeriod {
 
 /**
  * Generates the discrete periods for a bond cycle.
- * If chartStep is provided, it generates more granular points for charting.
+ * The engine always follows the natural product cadence.
+ * Chart granularity is a display-only concern applied later.
  */
 export function generateCyclePeriods(
   currentPurchaseDate: Date,
   cycleMaturityDate: Date,
   actualCycleEndDate: Date,
   payoutFrequency: InterestPayout,
-  bondDuration: number,
-  chartStep?: ChartStep
 ): TimelinePeriod[] {
   const isMonthlyPayout = payoutFrequency === InterestPayout.MONTHLY;
   
   // Determine the natural step for the bond (payout based)
-  const payoutStepFn = isMonthlyPayout ? addMonths : addYears;
-
-  // If chartStep is provided we use it, otherwise fallback to payout frequency
-  let stepFn = payoutStepFn;
-  if (chartStep === 'daily') stepFn = addDays;
-  else if (chartStep === 'monthly') stepFn = addMonths;
-  else if (chartStep === 'quarterly') stepFn = addQuarters;
-  else if (chartStep === 'yearly') stepFn = addYears;
+  const stepFn = isMonthlyPayout ? addMonths : addYears;
 
   const periods: TimelinePeriod[] = [];
   let currentPeriodStart = currentPurchaseDate;
@@ -65,7 +54,7 @@ export function generateCyclePeriods(
       daysHeld: differenceInDays(periodEndDate, currentPeriodStart),
       isMaturity,
       isWithdrawal,
-      periodLabel: format(periodEndDate, chartStep === 'daily' ? 'dd MMM yyyy' : 'MMM yyyy')
+      periodLabel: format(periodEndDate, 'MMM yyyy')
     });
 
     if (isWithdrawal) break;

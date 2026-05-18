@@ -31,7 +31,11 @@ function getBondYearLimit(strategy: TaxStrategy) {
   return null;
 }
 
-export function getInputGuardrails(inputs: BondInputs): InputGuardrailIssue[] {
+export function getInputGuardrails(
+  inputs: BondInputs,
+  _translate?: (key: string, params?: Record<string, string | number>) => string,
+): InputGuardrailIssue[] {
+  void _translate;
   const issues: InputGuardrailIssue[] = [];
   const horizonMonths =
     inputs.investmentHorizonMonths ?? getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);

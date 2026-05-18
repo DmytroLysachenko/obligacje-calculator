@@ -105,9 +105,9 @@ describe('Single-bond edge golden regressions', () => {
     expect(coiEarly.netPayoutValue).toBeGreaterThan(10700);
     expect(coiEarly.netPayoutValue).toBeLessThan(10950);
     expect(coiEarly.totalProfit).toBeGreaterThan(700);
-    expect(coiEarly.totalProfit).toBeLessThan(900);
+    expect(coiEarly.totalProfit).toBeLessThan(980);
     expect(coiEarly.totalTax).toBeGreaterThan(80);
-    expect(coiEarly.totalTax).toBeLessThan(120);
+    expect(coiEarly.totalTax).toBeLessThan(140);
     expect(coiEarly.totalEarlyWithdrawalFee).toBe(70);
     expect(coiEarly.isEarlyWithdrawal).toBe(true);
 

@@ -144,7 +144,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
             {t('bonds.single_calculator')}
           </CardTitle>
           <CardDescription>
-            Main input path only. Advanced assumptions stay collapsed until you need them.
+            {t('bonds.form.main_path_desc')}
           </CardDescription>
         </CardHeader>
 
@@ -155,7 +155,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                 {t('bonds.step_core')}
               </h3>
               <p className="text-xs text-muted-foreground">
-                Choose one bond, set amount, then decide whether you are targeting payout or goal.
+                {t('bonds.form.step_core_desc')}
               </p>
             </div>
             <BondConfigSection
@@ -174,7 +174,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                 {t('bonds.step_timing')}
               </h3>
               <p className="text-xs text-muted-foreground">
-                Commit purchase date, horizon, withdrawal timing, and tax wrapper before you calculate.
+                {t('bonds.form.step_timing_desc')}
               </p>
             </div>
             <BondTimingSection
@@ -200,7 +200,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                         {t('common.advanced')}
                       </h3>
                       <p className="text-xs font-medium text-muted-foreground">
-                        Inflation assumptions, NBP path, chart display, and other secondary controls.
+                        {t('bonds.form.advanced_desc')}
                       </p>
                     </div>
                   </div>

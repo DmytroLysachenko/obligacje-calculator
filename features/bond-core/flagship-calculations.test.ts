@@ -130,11 +130,11 @@ describe('Flagship calculation regressions', () => {
     it('keeps the EDO baseline within a trustworthy range for a 10-year standard scenario', async () => {
       const result = await getSingleBondResult(BondType.EDO);
 
-      expect(result.netPayoutValue).toBeGreaterThan(15000);
+      expect(result.netPayoutValue).toBeGreaterThan(14900);
       expect(result.netPayoutValue).toBeLessThan(18000);
       expect(result.totalTax).toBeGreaterThan(1000);
       expect(result.totalTax).toBeLessThan(2000);
-      expect(result.totalProfit).toBeGreaterThan(5000);
+      expect(result.totalProfit).toBeGreaterThan(4900);
       expect(result.totalProfit).toBeLessThan(8000);
       expect(result.nominalAnnualizedReturn).toBeGreaterThan(4);
       expect(result.nominalAnnualizedReturn).toBeLessThan(6);

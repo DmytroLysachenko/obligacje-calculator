@@ -25,8 +25,8 @@ export class SingleBondHandler extends BaseHandler implements ScenarioHandler<Bo
 
     const inputsWithDefaults = {
       ...validatedInputs,
-      firstYearRate: validatedInputs.firstYearRate ?? resolvedOffer.firstYearRate ?? def.firstYearRate,
-      margin: validatedInputs.margin ?? resolvedOffer.margin ?? def.margin,
+      firstYearRate: resolvedOffer.firstYearRate ?? validatedInputs.firstYearRate ?? def.firstYearRate,
+      margin: resolvedOffer.margin ?? validatedInputs.margin ?? def.margin,
     };
 
     const enrichedInputs = await this.withHistoricalData(inputsWithDefaults);

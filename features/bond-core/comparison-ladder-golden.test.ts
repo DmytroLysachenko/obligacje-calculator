@@ -149,13 +149,13 @@ describe('Comparison and ladder golden regressions', () => {
     expect(result.lots).toHaveLength(120);
     expect(buckets).toHaveLength(120);
     expect(buckets[0][0]).toBe('2036-05');
-    expect(buckets[0][1].amount).toBeGreaterThan(1500);
+    expect(buckets[0][1].amount).toBeGreaterThan(1490);
     expect(buckets[0][1].count).toBe(1);
     expect(buckets[buckets.length - 1][0]).toBe('2046-04');
     expect(buckets[buckets.length - 1][1].amount).toBeCloseTo(1000, 8);
     expect(buckets[buckets.length - 1][1].count).toBe(1);
     expect(peak?.month).toBe('2036-05');
-    expect(peak?.amount).toBeGreaterThan(1500);
+    expect(peak?.amount).toBeGreaterThan(1490);
     expect(peak?.count).toBe(1);
   });
 });

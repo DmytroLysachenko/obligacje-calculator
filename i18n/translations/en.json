@@ -44,7 +44,8 @@
     "all_events": "All Events",
     "meaning": "Meaning",
     "events": "Events",
-    "basis": "Basis"
+    "basis": "Basis",
+    "advanced": "Advanced"
   },
   "strategy_hints": {
     "title": "Smart Strategy Hints",
@@ -258,6 +259,14 @@
     "pick_date": "Pick a date",
     "example_goal": "e.g. 50000",
     "tax_strategy": "Account Type (Tax Strategy)",
+    "shared_scenario_badge": "Shared scenario",
+    "shared_scenario_snapshot": "This is a saved, replayable snapshot of one committed calculation.",
+    "form": {
+      "main_path_desc": "Main input path only. Advanced assumptions stay collapsed until you need them.",
+      "step_core_desc": "Choose one bond, set amount, then decide whether you are targeting payout or goal.",
+      "step_timing_desc": "Commit purchase date, horizon, withdrawal timing, and tax wrapper before you calculate.",
+      "advanced_desc": "Inflation assumptions, NBP path, chart display, and other secondary controls."
+    },
     "tax_standard": "Standard Account (19% Tax)",
     "tax_ike": "IKE Account (0% Tax)",
     "tax_ikze": "IKZE Account (5% Tax at end)",

@@ -44,7 +44,8 @@
     "all_events": "Wszystkie zdarzenia",
     "meaning": "Znaczenie",
     "events": "Zdarzenia",
-    "basis": "Podstawa"
+    "basis": "Podstawa",
+    "advanced": "Zaawansowane"
   },
   "strategy_hints": {
     "title": "Inteligentne Wskazówki",
@@ -259,6 +260,14 @@
     "pick_date": "Wybierz datę",
     "example_goal": "np. 50000",
     "tax_strategy": "Typ konta (Strategia podatkowa)",
+    "shared_scenario_badge": "Udostepniony scenariusz",
+    "shared_scenario_snapshot": "To jest zapisany, odtwarzalny snapshot jednego obliczenia.",
+    "form": {
+      "main_path_desc": "Glowna sciezka wejsc. Zalozenia zaawansowane pozostaja zwiniete, dopoki nie sa potrzebne.",
+      "step_core_desc": "Wybierz jedna obligacje, ustaw kwote, a potem zdecyduj, czy liczysz standardowa wyplate czy cel.",
+      "step_timing_desc": "Ustal date zakupu, horyzont, tryb wyjscia i opakowanie podatkowe przed uruchomieniem obliczen.",
+      "advanced_desc": "Zalozenia inflacyjne, sciezka NBP, ustawienia wykresu i inne drugorzedne kontrolki."
+    },
     "tax_standard": "Konto standardowe (19% podatek)",
     "tax_ike": "Konto IKE (0% podatek)",
     "tax_ikze": "Konto IKZE (5% podatek na koniec)",

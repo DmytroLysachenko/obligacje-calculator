@@ -20,6 +20,7 @@ import {
   NameType,
 } from "recharts/types/component/DefaultTooltipContent";
 import { CalculationResult } from "../../bond-core/types";
+import { ChartStep } from "../../bond-core/types";
 import { HistoricalAverages } from "../../bond-core/types/scenarios";
 import { useLanguage } from "@/i18n";
 import { cn } from "@/lib/utils";
@@ -30,6 +31,8 @@ import { computeNumericDomain, computeRateDomain, sampleSeriesPoints } from "@/s
 interface BondChartProps {
   results: CalculationResult;
   initialInvestment: number;
+  chartStep?: ChartStep;
+  showRealValue?: boolean;
   historicalAverages?: HistoricalAverages;
 }
 
@@ -175,7 +178,11 @@ const CustomTooltip = ({
   );
 };
 
-export const BondChart: React.FC<BondChartProps> = ({ results }) => {
+export const BondChart: React.FC<BondChartProps> = ({
+  results,
+  chartStep = 'yearly',
+  showRealValue = false,
+}) => {
   const { t, language } = useLanguage();
 
   const formatCurrency = React.useMemo(
@@ -194,11 +201,13 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
       results.timeline,
       language as AppLanguage,
       results.comparisonScenarios,
+      chartStep,
     );
 
     const rawData = baseDisplayData.map((point, index) => ({
       label: point.xLabel,
       date: point.xLabel,
+      dateKey: point.dateKey,
       nominal: point.nominal,
       real: point.real,
       isProjected: point.isProjected,
@@ -213,7 +222,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
     }));
 
     return sampleSeriesPoints(rawData, 180);
-  }, [language, results.comparisonScenarios, results.initialInvestment, results.timeline]);
+  }, [chartStep, language, results.comparisonScenarios, results.initialInvestment, results.timeline]);
 
   const leftDomain = React.useMemo(
     () => computeNumericDomain(chartData.flatMap((point) => [point.nominal, point.real]), {
@@ -322,12 +331,23 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
           <Area
             yAxisId="left"
             type="monotone"
-            dataKey="nominal"
-            name={language === 'pl' ? 'Wartosc nominalna' : t("common.nominal_value")}
-            stroke="#3b82f6"
+            dataKey={showRealValue ? 'real' : 'nominal'}
+            name={showRealValue ? t("common.real_value") : t("common.nominal_value")}
+            stroke={showRealValue ? "#10b981" : "#3b82f6"}
             strokeWidth={3}
             fillOpacity={1}
-            fill="url(#colorNominal)"
+            fill={showRealValue ? "url(#colorReal)" : "url(#colorNominal)"}
+            isAnimationActive={false}
+          />
+          <Line
+            yAxisId="left"
+            type="monotone"
+            dataKey={showRealValue ? 'nominal' : 'real'}
+            name={showRealValue ? t("common.nominal_value") : t("common.real_value")}
+            stroke={showRealValue ? "#3b82f6" : "#10b981"}
+            strokeWidth={2}
+            strokeOpacity={0.55}
+            dot={false}
             isAnimationActive={false}
           />
           {results.comparisonScenarios ? (
@@ -358,22 +378,11 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
               />
             </>
           ) : null}
-          <Area
-            yAxisId="left"
-            type="monotone"
-            dataKey="real"
-            name={language === 'pl' ? 'Wartosc realna' : t("common.real_value")}
-            stroke="#10b981"
-            strokeWidth={3}
-            fillOpacity={1}
-            fill="url(#colorReal)"
-            isAnimationActive={false}
-          />
           <Line
             yAxisId="right"
             type="monotone"
             dataKey="inflation"
-            name={language === 'pl' ? 'Inflacja referencyjna' : t("bonds.ref_inflation")}
+            name={t("bonds.ref_inflation")}
             stroke="#f59e0b"
             strokeWidth={1.75}
             strokeDasharray="5 5"
@@ -385,7 +394,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results }) => {
             yAxisId="right"
             type="monotone"
             dataKey="nbp"
-            name={language === 'pl' ? 'Stopa NBP' : t("bonds.nbp_rate_short")}
+            name={t("bonds.nbp_rate_short")}
             stroke="#94a3b8"
             strokeWidth={1.5}
             strokeDasharray="3 3"
