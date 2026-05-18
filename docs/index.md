@@ -51,9 +51,10 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [03. Manual Regression and Release Candidate Checklist](./plans/03_manual_regression_and_release_candidate_checklist.md) - Route-by-route validation checklist for finishing the recovery refactor responsibly.
 - [04. Post-Refactor Polish and Hardening Plan](./plans/04_post_refactor_polish_and_hardening_plan.md) - Separate plan for i18n cleanup, UI/UX polish, edge-case handling, accessibility, and finish-quality hardening.
 - [05. Retained Route Regression Execution Log](./plans/05_retained_route_regression_execution_log.md) - Current retained-route evidence snapshot, trust limits, and release-position log.
+- [06. Future Backend Migration to .NET Plan](./plans/06_future_backend_migration_to_dotnet_plan.md) - Deferred architecture sketch for keeping Next.js as frontend-only and moving backend logic to a dedicated .NET platform later.
 
 ### 6. Archived Plans
 - [Archived Plans Index](./archive/plans/index.md) - Historical and completed execution plans preserved for reference.
 
 ---
-*Last Updated: May 17, 2026 - App remains in active refactor/recovery, with active issued-series defaults, single-scenario snapshot sharing, guest-backed notebook lifecycle persistence, improved payout-bond display semantics, normalized retained exports, and a retained-route execution log now implemented; final route-by-route trust validation and production-candidate review remain open.*
+*Last Updated: May 18, 2026 - App remains in active refactor/recovery, with active issued-series defaults, single-scenario snapshot sharing, guest-backed notebook lifecycle persistence, improved payout-bond display semantics, normalized retained exports, a retained-route execution log, and a deferred future .NET backend migration sketch now documented; final route-by-route trust validation and production-candidate review remain open.*

@@ -135,6 +135,28 @@ Primary outputs:
 - stronger quality bar
 - believable release candidate path
 
+### Phase 5. Backend Platform Migration
+
+Status: `Deferred future`
+
+Goals:
+
+- keep Next.js as frontend-only application shell
+- migrate long-term backend responsibilities into a dedicated `.NET` backend
+- use native `.NET` authentication, authorization, policy handling, RBAC, and background execution where appropriate
+- separate frontend delivery from backend operational concerns
+
+Primary outputs:
+
+- dedicated `.NET` backend architecture
+- explicit API boundary between frontend and backend
+- backend-owned auth/authz, sync jobs, portfolio/share APIs, and calculation orchestration
+- staged retirement of Next.js route handlers once parity is proven
+
+Important rule:
+
+- this phase should not begin until retained-core correctness, trust validation, and production narrowing are much further along
+
 ## In-Scope Product Surfaces
 
 The likely retained core:
