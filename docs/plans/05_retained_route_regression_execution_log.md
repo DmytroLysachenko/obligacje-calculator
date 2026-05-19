@@ -23,6 +23,7 @@ This pass combines:
 - committed implementation work
 - targeted engine and display-model tests
 - retained-route review against previously known trust and UX gaps
+- production-build route smoke on May 19, 2026 against `next build` + `next start -p 3010`
 
 This is **not yet** a final full manual signoff pass across every route and every bond family.
 
@@ -48,6 +49,41 @@ This is **not yet** a final full manual signoff pass across every route and ever
 - notebook, comparison, and export flows still need wider end-to-end regression coverage
 - final manual retained route sweep is still needed for spacing, wide-table desktop fit, and mobile behavior
 - retained visual polish is materially improved, but not yet at a final "ship it without review" finish level
+
+### 2.3 Production-Smoke Evidence on May 19, 2026
+
+Executed locally:
+
+- `pnpm build`
+- `pnpm start -p 3010`
+- HTTP smoke against:
+  - `/single-calculator`
+  - `/compare`
+  - `/economic-data`
+  - `/regular-investment`
+- English-surface smoke with `app-language=en` cookie on the same retained routes
+
+Confirmed:
+
+- all four routes returned `200`
+- production build completed successfully
+- initial HTML/title output was generated for each route without route boot failure
+- no obvious placeholder leakage was detected for:
+  - `Macro Support Title`
+  - `Usage Guide`
+  - raw `comparison.*`, `bonds.*`, `economic.*`, or `nav.*` translation-key leakage in the initial response HTML
+
+What this proves:
+
+- retained routes are deployable through the current production build
+- the touched compare/single/economic/regular surfaces no longer fail basic open behavior at runtime
+- the specific English placeholder leakage called out in the tranche is no longer reproduced in the initial route response
+
+What this does not prove:
+
+- full client-side interactive behavior after hydration
+- final desktop/mobile visual polish
+- full scenario-by-scenario calculation trust across every bond family and override combination
 
 ## 3. Retained Route Snapshot
 
