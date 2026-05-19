@@ -109,7 +109,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
           isRebought: inputs.isRebought,
         }),
       });
-      alert(t('notebook.scenario_saved'));
+      alert(t('notebook.current_lot_added'));
     } catch (error) {
       console.error(error);
     }

@@ -202,6 +202,14 @@ function buildActiveSeriesMap(series: BondSeries[], asOfDate: string) {
   }, {});
 }
 
+function shouldPreferBootstrapFirstPeriodRate(
+  bond: PolishBond,
+  symbol: BondType,
+) {
+  return bond.interestType === 'floating_nbp'
+    && (symbol === BondType.ROR || symbol === BondType.DOR);
+}
+
 export function mergeBondDefinitionsWithSeries(
   bonds: PolishBond[],
   series: BondSeries[],
@@ -244,7 +252,9 @@ export function mergeBondDefinitionsWithSeries(
             : InterestPayout.MATURITY,
       firstYearRate: activeSeries
         ? parseNumeric(activeSeries.firstYearRate, bootstrap.firstYearRate)
-        : parseNumeric(bond.firstYearRate, bootstrap.firstYearRate),
+        : shouldPreferBootstrapFirstPeriodRate(bond, symbol)
+          ? bootstrap.firstYearRate
+          : parseNumeric(bond.firstYearRate, bootstrap.firstYearRate),
       margin: activeSeries
         ? parseNumeric(activeSeries.baseMargin, bootstrap.margin)
         : parseNumeric(bond.baseMargin, bootstrap.margin),

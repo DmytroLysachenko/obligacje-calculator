@@ -5,34 +5,45 @@ import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import { ChartStep } from '@/features/bond-core/types';
+import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/shared/lib/calculator-persistence';
 
-const DEFAULT_BOND = BondType.COI;
-const today = new Date();
-const purchaseDate = toDateString(today);
+const DEFAULT_BOND = BondType.EDO;
+const STORAGE_KEY = 'obligacje.single-calculator.v1';
 
-// Fallback values used only until DB definitions are loaded
-const FALLBACK_INPUTS: BondInputs = {
-  bondType: DEFAULT_BOND,
-  initialInvestment: 10000,
-  firstYearRate: 5.00,
-  expectedInflation: 3.5,
-  expectedNbpRate: 5.25,
-  margin: 1.25,
-  duration: 4,
-  earlyWithdrawalFee: 0.70,
-  taxRate: 19,
-  isCapitalized: true,
-  payoutFrequency: InterestPayout.MATURITY,
-  purchaseDate,
-  withdrawalDate: getWithdrawalDateFromMonths(purchaseDate, 48),
-  isRebought: false,
-  rebuyDiscount: 0,
-  taxStrategy: TaxStrategy.STANDARD,
-  showRealValue: false,
-  rollover: false,
-  timingMode: 'general',
-  investmentHorizonMonths: 48,
-};
+function buildFallbackInputs(): BondInputs {
+  const purchaseDate = toDateString(new Date());
+
+  return {
+    bondType: DEFAULT_BOND,
+    initialInvestment: 10000,
+    firstYearRate: 5.35,
+    expectedInflation: 3.5,
+    expectedNbpRate: 5.25,
+    margin: 2.0,
+    duration: 10,
+    earlyWithdrawalFee: 2.0,
+    taxRate: 19,
+    isCapitalized: true,
+    payoutFrequency: InterestPayout.MATURITY,
+    purchaseDate,
+    withdrawalDate: getWithdrawalDateFromMonths(purchaseDate, 120),
+    isRebought: false,
+    rebuyDiscount: 0,
+    taxStrategy: TaxStrategy.STANDARD,
+    showRealValue: false,
+    rollover: false,
+    timingMode: 'general',
+    investmentHorizonMonths: 120,
+  };
+}
+
+interface PersistedSingleCalculatorState {
+  inputs: BondInputs;
+  envelope: SingleBondCalculationEnvelope | null;
+  selectedSeriesId: string | null;
+  lastCommittedInputs: BondInputs | null;
+  isDirty: boolean;
+}
 
 interface BondSeries {
   id: string;
@@ -47,13 +58,28 @@ function getDefaultChartStep(payoutFrequency: InterestPayout): ChartStep {
 }
 
 export function useBondCalculator(initialInputs?: BondInputs) {
+  const restoredState =
+    !initialInputs
+      ? loadPersistedCalculatorState<PersistedSingleCalculatorState>(STORAGE_KEY)
+      : null;
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
-  const [inputs, setInputs] = useState<BondInputs>(initialInputs ?? FALLBACK_INPUTS);
-  const [envelope, setEnvelope] = useState<SingleBondCalculationEnvelope | null>(null);
-  const [isDirty, setIsDirty] = useState(!initialInputs);
+  const fallbackInputs = buildFallbackInputs();
+  const [inputs, setInputs] = useState<BondInputs>(
+    initialInputs ?? restoredState?.inputs ?? fallbackInputs,
+  );
+  const [envelope, setEnvelope] = useState<SingleBondCalculationEnvelope | null>(
+    initialInputs ? null : restoredState?.envelope ?? null,
+  );
+  const [isDirty, setIsDirty] = useState(
+    initialInputs ? false : restoredState?.isDirty ?? true,
+  );
   const [availableSeries, setAvailableSeries] = useState<BondSeries[]>([]);
-  const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(initialInputs?.selectedSeriesId ?? null);
-  const [lastCommittedInputs, setLastCommittedInputs] = useState<BondInputs | null>(initialInputs ?? null);
+  const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(
+    initialInputs?.selectedSeriesId ?? restoredState?.selectedSeriesId ?? null,
+  );
+  const [lastCommittedInputs, setLastCommittedInputs] = useState<BondInputs | null>(
+    initialInputs ?? restoredState?.lastCommittedInputs ?? null,
+  );
   const definitionsAppliedFor = useRef<string | null>(null);
   const hasAutoCalculatedSharedScenario = useRef(false);
   
@@ -66,8 +92,8 @@ export function useBondCalculator(initialInputs?: BondInputs) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setInputs(prev => ({
         ...prev,
-        firstYearRate: prev.firstYearRate === FALLBACK_INPUTS.firstYearRate ? def.firstYearRate : prev.firstYearRate,
-        margin: prev.margin === FALLBACK_INPUTS.margin ? def.margin : prev.margin,
+        firstYearRate: prev.firstYearRate === fallbackInputs.firstYearRate ? def.firstYearRate : prev.firstYearRate,
+        margin: prev.margin === fallbackInputs.margin ? def.margin : prev.margin,
         duration: def.duration,
         earlyWithdrawalFee: def.earlyWithdrawalFee,
         isCapitalized: def.isCapitalized,
@@ -79,7 +105,7 @@ export function useBondCalculator(initialInputs?: BondInputs) {
       }));
       definitionsAppliedFor.current = inputs.bondType;
     }
-  }, [definitions, inputs.bondType]);
+  }, [definitions, fallbackInputs.firstYearRate, fallbackInputs.margin, inputs.bondType]);
 
   const calculate = useCallback(async (currentInputs: BondInputs) => {
     try {
@@ -146,6 +172,20 @@ export function useBondCalculator(initialInputs?: BondInputs) {
 
     return () => window.clearTimeout(timer);
   }, [calculate, initialInputs, isCalculating]);
+
+  useEffect(() => {
+    if (initialInputs) {
+      return;
+    }
+
+    savePersistedCalculatorState(STORAGE_KEY, {
+      inputs,
+      envelope,
+      selectedSeriesId,
+      lastCommittedInputs,
+      isDirty,
+    });
+  }, [envelope, initialInputs, inputs, isDirty, lastCommittedInputs, selectedSeriesId]);
 
   // Derived results for compatibility
   const results = envelope?.result || null;

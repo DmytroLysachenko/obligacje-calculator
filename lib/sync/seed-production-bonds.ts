@@ -27,7 +27,7 @@ async function seedBonds() {
       capitalizationFreqDays: 0,
       payoutFreqDays: 30, // Monthly payout
       interestType: "floating_nbp" as const,
-      firstYearRate: "5.75", // Same as NBP for now
+      firstYearRate: "4.00",
       baseMargin: "0.00",
       withdrawalFee: "0.70",
       withdrawalFeeCap: true,
@@ -42,7 +42,7 @@ async function seedBonds() {
       capitalizationFreqDays: 0,
       payoutFreqDays: 30, // Monthly payout
       interestType: "floating_nbp" as const,
-      firstYearRate: "5.90",
+      firstYearRate: "4.15",
       baseMargin: "0.15",
       withdrawalFee: "0.70",
       withdrawalFeeCap: true,

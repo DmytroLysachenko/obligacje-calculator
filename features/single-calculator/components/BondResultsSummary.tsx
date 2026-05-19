@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { FileSpreadsheet, FileText, Info, Save } from 'lucide-react';
+import { FileSpreadsheet, FileText, Info, Plus, Save } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { BondInputs, CalculationResult } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
@@ -140,8 +140,8 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
             variant: 'default',
           },
           {
-            label: t('nav.notebook'),
-            icon: <Info className="h-4 w-4" />,
+            label: t('notebook.add_current_lot'),
+            icon: <Plus className="h-4 w-4" />,
             onClick: onAddToNotebook,
           },
           {

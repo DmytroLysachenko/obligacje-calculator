@@ -741,6 +741,8 @@
     "scope_desc": "Use the notebook to store real lots and revisit them later. It should support calculator work, not replace it with another dashboard.",
     "my_first_portfolio": "My first portfolio",
     "scenario_saved": "Saved scenario notebook",
+    "add_current_lot": "Add lot",
+    "current_lot_added": "Current bond lot was added to the notebook.",
     "record_view": "Portfolio record view",
     "record_intro_title": "Open one portfolio, inspect the stored lots, and only then move into export or simulation.",
     "record_intro_desc": "Start with the stored lots and the upcoming liquidity window. The analytics tab should support the record, not turn it into a recommendation layer.",

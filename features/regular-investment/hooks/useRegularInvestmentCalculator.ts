@@ -4,41 +4,55 @@ import { RegularInvestmentCalculationEnvelope } from '../../bond-core/types/scen
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
+import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/shared/lib/calculator-persistence';
 
-const DEFAULT_BOND = BondType.COI;
-const today = new Date();
-const purchaseDate = toDateString(today);
+const DEFAULT_BOND = BondType.EDO;
+const STORAGE_KEY = 'obligacje.regular-calculator.v1';
 const defaultHorizonYears = 10;
 const defaultHorizonMonths = defaultHorizonYears * 12;
-const defaultWithdrawal = getWithdrawalDateFromMonths(purchaseDate, defaultHorizonMonths);
+function buildFallbackInputs(): RegularInvestmentInputs {
+  const purchaseDate = toDateString(new Date());
 
-const FALLBACK_INPUTS: RegularInvestmentInputs = {
-  bondType: DEFAULT_BOND,
-  contributionAmount: 1000,
-  frequency: InvestmentFrequency.MONTHLY,
-  investmentHorizonMonths: defaultHorizonYears * 12,
-  firstYearRate: 5.00,
-  expectedInflation: 3.5,
-  expectedNbpRate: 5.25,
-  margin: 1.25,
-  duration: 4,
-  earlyWithdrawalFee: 0.70,
-  taxRate: 19,
-  isCapitalized: true,
-  payoutFrequency: InterestPayout.MATURITY,
-  purchaseDate,
-  withdrawalDate: defaultWithdrawal,
-  isRebought: false,
-  rebuyDiscount: 0,
-  taxStrategy: TaxStrategy.STANDARD,
-  timingMode: 'general',
-};
+  return {
+    bondType: DEFAULT_BOND,
+    contributionAmount: 1000,
+    frequency: InvestmentFrequency.MONTHLY,
+    investmentHorizonMonths: defaultHorizonMonths,
+    firstYearRate: 5.35,
+    expectedInflation: 3.5,
+    expectedNbpRate: 5.25,
+    margin: 2.0,
+    duration: 10,
+    earlyWithdrawalFee: 2.0,
+    taxRate: 19,
+    isCapitalized: true,
+    payoutFrequency: InterestPayout.MATURITY,
+    purchaseDate,
+    withdrawalDate: getWithdrawalDateFromMonths(purchaseDate, defaultHorizonMonths),
+    isRebought: false,
+    rebuyDiscount: 0,
+    taxStrategy: TaxStrategy.STANDARD,
+    timingMode: 'general',
+  };
+}
+
+interface PersistedRegularCalculatorState {
+  inputs: RegularInvestmentInputs;
+  envelope: RegularInvestmentCalculationEnvelope | null;
+  isDirty: boolean;
+}
 
 export function useRegularInvestmentCalculator() {
+  const restoredState = loadPersistedCalculatorState<PersistedRegularCalculatorState>(STORAGE_KEY);
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
-  const [inputs, setInputs] = useState<RegularInvestmentInputs>(FALLBACK_INPUTS);
-  const [envelope, setEnvelope] = useState<RegularInvestmentCalculationEnvelope | null>(null);
-  const [isDirty, setIsDirty] = useState(true); // Default to true so first calculation happens
+  const fallbackInputs = buildFallbackInputs();
+  const [inputs, setInputs] = useState<RegularInvestmentInputs>(
+    restoredState?.inputs ?? fallbackInputs,
+  );
+  const [envelope, setEnvelope] = useState<RegularInvestmentCalculationEnvelope | null>(
+    restoredState?.envelope ?? null,
+  );
+  const [isDirty, setIsDirty] = useState(restoredState?.isDirty ?? true);
   const { isCalculating, isError, clearError, post } = useCalculationRequest();
   const definitionsAppliedFor = useRef<string | null>(null);
 
@@ -49,8 +63,8 @@ export function useRegularInvestmentCalculator() {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setInputs(prev => ({
         ...prev,
-        firstYearRate: prev.firstYearRate === FALLBACK_INPUTS.firstYearRate ? def.firstYearRate : prev.firstYearRate,
-        margin: prev.margin === FALLBACK_INPUTS.margin ? def.margin : prev.margin,
+        firstYearRate: prev.firstYearRate === fallbackInputs.firstYearRate ? def.firstYearRate : prev.firstYearRate,
+        margin: prev.margin === fallbackInputs.margin ? def.margin : prev.margin,
         duration: def.duration,
         earlyWithdrawalFee: def.earlyWithdrawalFee,
         isCapitalized: def.isCapitalized,
@@ -61,7 +75,7 @@ export function useRegularInvestmentCalculator() {
       }));
       definitionsAppliedFor.current = inputs.bondType;
     }
-  }, [definitions, inputs.bondType]);
+  }, [definitions, fallbackInputs.firstYearRate, fallbackInputs.margin, inputs.bondType]);
 
   // Derived results for compatibility
   const results = envelope?.result || null;
@@ -76,6 +90,14 @@ export function useRegularInvestmentCalculator() {
       console.error('Calculation error:', error);
     }
   }, [clearError, inputs, post]);
+
+  useEffect(() => {
+    savePersistedCalculatorState(STORAGE_KEY, {
+      inputs,
+      envelope,
+      isDirty,
+    });
+  }, [envelope, inputs, isDirty]);
 
   const updateInput = (key: keyof RegularInvestmentInputs, value: string | number | boolean | undefined) => {
     setIsDirty(true);

@@ -125,4 +125,22 @@ describe('mergeBondDefinitionsWithSeries', () => {
     expect(defs[0].isInflationIndexed).toBe(true);
     expect(defs[0].description.pl).toBe(BOND_DEFINITIONS[BondType.COI].description.pl);
   });
+
+  it('prefers bootstrap first-month offer rates for floating bonds when no active issued series exists', () => {
+    const defs = mergeBondDefinitionsWithSeries(
+      [
+        makeBond({
+          firstYearRate: '5.75',
+          baseMargin: '0.00',
+        }),
+      ],
+      [],
+      BOND_DEFINITIONS,
+      '2026-05-16',
+    );
+
+    expect(defs[0].type).toBe(BondType.ROR);
+    expect(defs[0].firstYearRate).toBe(BOND_DEFINITIONS[BondType.ROR].firstYearRate);
+    expect(defs[0].margin).toBe(0);
+  });
 });

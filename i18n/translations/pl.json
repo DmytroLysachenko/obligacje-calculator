@@ -644,6 +644,8 @@
     "scope_desc": "Notatnik ma przechowywac rzeczywiste partie i pozwalac do nich wracac. Ma wspierac kalkulatory, a nie zamieniac sie w kolejny dashboard.",
     "my_first_portfolio": "Moj pierwszy portfel",
     "scenario_saved": "Notatnik zapisanych scenariuszy",
+    "add_current_lot": "Dodaj partie",
+    "current_lot_added": "Biezaca partia obligacji zostala dodana do notatnika.",
     "record_view": "Widok portfela",
     "record_intro_title": "Otworz jeden portfel, sprawdz zapisane partie i dopiero potem przejdz do eksportu lub symulacji.",
     "record_intro_desc": "Najpierw przeczytaj zapisane partie oraz najblizsze zapadalnosci. Zakladka analityczna ma byc wsparciem dla rekordu, nie warstwa rekomendacyjna.",

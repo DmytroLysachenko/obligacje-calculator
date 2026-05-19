@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   BondType,
   InvestmentFrequency,
@@ -15,11 +15,19 @@ import {
   getWithdrawalDateFromMonths,
   toDateString,
 } from '@/shared/lib/date-timing';
+import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/shared/lib/calculator-persistence';
 
 const DEFAULT_BOND = BondType.EDO;
 const DEFAULT_DEFINITION = BOND_DEFINITIONS[DEFAULT_BOND];
 const DEFAULT_HORIZON_YEARS = 10;
 const DEFAULT_HORIZON_MONTHS = DEFAULT_HORIZON_YEARS * 12;
+const STORAGE_KEY = 'obligacje.ladder-calculator.v1';
+
+interface PersistedLadderState {
+  inputs: RegularInvestmentInputs;
+  envelope: RegularInvestmentCalculationEnvelope | null;
+  isDirty: boolean;
+}
 
 function buildDefaultInputs(): RegularInvestmentInputs {
   const today = new Date();
@@ -106,10 +114,13 @@ function withBondDefinition(
 }
 
 export function useLadder() {
-  const [inputs, setInputs] = useState<RegularInvestmentInputs>(buildDefaultInputs);
+  const restoredState = loadPersistedCalculatorState<PersistedLadderState>(STORAGE_KEY);
+  const [inputs, setInputs] = useState<RegularInvestmentInputs>(
+    restoredState?.inputs ?? buildDefaultInputs,
+  );
   const [envelope, setEnvelope] =
-    useState<RegularInvestmentCalculationEnvelope | null>(null);
-  const [isDirty, setIsDirty] = useState(true);
+    useState<RegularInvestmentCalculationEnvelope | null>(restoredState?.envelope ?? null);
+  const [isDirty, setIsDirty] = useState(restoredState?.isDirty ?? true);
   const { isCalculating, post } = useCalculationRequest();
 
   const results = envelope?.result || null;
@@ -145,6 +156,14 @@ export function useLadder() {
     setIsDirty(true);
     setInputs((previous) => withBondDefinition(previous, type));
   }, []);
+
+  useEffect(() => {
+    savePersistedCalculatorState(STORAGE_KEY, {
+      inputs,
+      envelope,
+      isDirty,
+    });
+  }, [envelope, inputs, isDirty]);
 
   return {
     inputs,

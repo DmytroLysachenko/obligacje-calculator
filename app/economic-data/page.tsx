@@ -26,6 +26,7 @@ import {
   getReferenceState,
 } from '@/shared/lib/data-reference';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
+import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 
 interface EconomicSeriesPoint {
   date: string;
@@ -225,6 +226,7 @@ function SectionBlock({
 
 export default function EconomicDataPage() {
   const { t, language } = useLanguage();
+  const { definitions } = useBondDefinitions();
   const [period, setPeriod] = useState<PeriodValue>('10Y');
   const { data: inflationMeta, isLoading: isLoadingInflation } =
     useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/inflation');
@@ -245,7 +247,12 @@ export default function EconomicDataPage() {
   } as const;
 
   const pageIntro = t('economic.page_intro');
-  const floatingRateContext = getBondRateContextCopy(BondType.ROR, 5.75, 0, t);
+  const floatingRateContext = getBondRateContextCopy(
+    BondType.ROR,
+    definitions?.[BondType.ROR]?.firstYearRate ?? 4,
+    0,
+    t,
+  );
 
   const usageGuide = [
     t('economic.usage_guide_1'),

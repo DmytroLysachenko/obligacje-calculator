@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { BondInputs, BondType, TaxStrategy } from '../../bond-core/types';
 import {
   BondComparisonCalculationEnvelope,
@@ -11,12 +11,14 @@ import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
+import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/shared/lib/calculator-persistence';
 
 type SharedComparisonConfig = IndependentBondComparisonPayload['sharedConfig'];
 type ScenarioOverride = IndependentBondComparisonPayload['scenarioA'];
 
 const DEFAULT_HORIZON_MONTHS = 120;
 const today = toDateString(new Date());
+const STORAGE_KEY = 'obligacje.comparison-calculator.v1';
 
 const DEFAULT_SHARED_CONFIG: SharedComparisonConfig = {
   initialInvestment: 10000,
@@ -31,7 +33,7 @@ const DEFAULT_SHARED_CONFIG: SharedComparisonConfig = {
 };
 
 const DEFAULT_SCENARIO_A: ScenarioOverride = {
-  bondType: BondType.COI,
+  bondType: BondType.EDO,
   rollover: false,
   isRebought: false,
 };
@@ -41,6 +43,14 @@ const DEFAULT_SCENARIO_B: ScenarioOverride = {
   rollover: false,
   isRebought: false,
 };
+
+interface PersistedComparisonState {
+  sharedConfig: SharedComparisonConfig;
+  scenarioA: ScenarioOverride;
+  scenarioB: ScenarioOverride;
+  comparisonEnvelope: BondComparisonCalculationEnvelope | null;
+  isDirty: boolean;
+}
 
 function buildScenarioInputs(
   sharedConfig: SharedComparisonConfig,
@@ -83,12 +93,21 @@ function buildScenarioInputs(
 }
 
 export function useComparison() {
+  const restoredState = loadPersistedCalculatorState<PersistedComparisonState>(STORAGE_KEY);
   const { definitions } = useBondDefinitions();
-  const [sharedConfig, setSharedConfig] = useState<SharedComparisonConfig>(DEFAULT_SHARED_CONFIG);
-  const [scenarioA, setScenarioA] = useState<ScenarioOverride>(DEFAULT_SCENARIO_A);
-  const [scenarioB, setScenarioB] = useState<ScenarioOverride>(DEFAULT_SCENARIO_B);
-  const [comparisonEnvelope, setComparisonEnvelope] = useState<BondComparisonCalculationEnvelope | null>(null);
-  const [isDirty, setIsDirty] = useState(true);
+  const [sharedConfig, setSharedConfig] = useState<SharedComparisonConfig>(
+    restoredState?.sharedConfig ?? DEFAULT_SHARED_CONFIG,
+  );
+  const [scenarioA, setScenarioA] = useState<ScenarioOverride>(
+    restoredState?.scenarioA ?? DEFAULT_SCENARIO_A,
+  );
+  const [scenarioB, setScenarioB] = useState<ScenarioOverride>(
+    restoredState?.scenarioB ?? DEFAULT_SCENARIO_B,
+  );
+  const [comparisonEnvelope, setComparisonEnvelope] = useState<BondComparisonCalculationEnvelope | null>(
+    restoredState?.comparisonEnvelope ?? null,
+  );
+  const [isDirty, setIsDirty] = useState(restoredState?.isDirty ?? true);
   const { isCalculating, post } = useCalculationRequest();
 
   const inputsA = useMemo(() => buildScenarioInputs(sharedConfig, scenarioA, definitions), [definitions, sharedConfig, scenarioA]);
@@ -224,6 +243,16 @@ export function useComparison() {
       ),
     }));
   };
+
+  useEffect(() => {
+    savePersistedCalculatorState(STORAGE_KEY, {
+      sharedConfig,
+      scenarioA,
+      scenarioB,
+      comparisonEnvelope,
+      isDirty,
+    });
+  }, [comparisonEnvelope, isDirty, scenarioA, scenarioB, sharedConfig]);
 
   return {
     sharedConfig,
