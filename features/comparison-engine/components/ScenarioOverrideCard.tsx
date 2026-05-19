@@ -25,8 +25,6 @@ interface ScenarioOverrideCardProps {
   colorClass: string;
   bondType: BondType;
   onBondTypeChange: (value: BondType) => void;
-  rollover?: boolean;
-  onRolloverChange: (value: boolean) => void;
   isRebought?: boolean;
   onReboughtChange: (value: boolean) => void;
   taxStrategy?: TaxStrategy;
@@ -42,8 +40,6 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
   colorClass,
   bondType,
   onBondTypeChange,
-  rollover,
-  onRolloverChange,
   isRebought,
   onReboughtChange,
   taxStrategy,
@@ -160,14 +156,15 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center justify-between rounded-xl border bg-muted/20 p-3">
-          <div>
-            <p className="text-sm font-semibold">{t('bonds.reinvest')}</p>
-            <p className="text-xs leading-5 text-muted-foreground">
-              {t('bonds.rollover_desc')}
-            </p>
-          </div>
-          <Switch checked={!!rollover} onCheckedChange={onRolloverChange} />
+        <div className="rounded-xl border bg-muted/20 p-3">
+          <p className="text-sm font-semibold">
+            {language === 'pl' ? 'Rollover scenariusza' : 'Scenario rollover'}
+          </p>
+          <p className="mt-1 text-xs leading-5 text-muted-foreground">
+            {language === 'pl'
+              ? 'Silnik wlacza rollover automatycznie, gdy horyzont scenariusza przekracza natywny termin tej obligacji.'
+              : 'The engine enables rollover automatically when the scenario horizon outlasts this bond’s native term.'}
+          </p>
         </div>
 
         <div className="flex items-center justify-between rounded-xl border bg-muted/20 p-3">

@@ -9,7 +9,7 @@ import { BondComparisonScenarioRequestSchema } from '../types/schemas';
 import { calculateBondInvestment } from '../utils/calculations';
 import { BondInputs, TaxStrategy } from '../types';
 import { BaseHandler, ScenarioHandler, HandlerContext } from './base';
-import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
+import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 import { resolveBondOfferTerms } from '@/lib/bond-series';
 
 export class ComparisonHandler extends BaseHandler implements ScenarioHandler<NormalizedBondComparisonPayload | IndependentBondComparisonPayload, BondComparisonScenarioItem[]> {
@@ -39,12 +39,13 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
 
     const results = enrichedScenarios.map((enrichedInputs): BondComparisonScenarioItem => {
       const def = context.dbDefinitions[enrichedInputs.bondType];
+      const resolvedRollover = shouldAutoRollover(enrichedInputs, def.duration);
       return {
         type: enrichedInputs.bondType,
         name: def.fullName.en,
         result: calculateBondInvestment({
           ...enrichedInputs,
-          rollover: payload.reinvest ?? true,
+          rollover: resolvedRollover,
         } as BondInputs & { rollover: boolean }),
       };
     });
@@ -53,6 +54,7 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
     const assumptions = this.generateAssumptions(payload);
     assumptions.push('Comparison scenarios are normalized through the shared comparison service.');
     assumptions.push('Each bond uses the nearest issued series available for the shared purchase date when present.');
+    assumptions.push('Rollover is inferred automatically when the shared horizon exceeds a bond’s native term.');
 
     return this.createEnvelope(results, warnings, assumptions, context.dataFreshness);
   }
@@ -73,7 +75,7 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
         name: context.dbDefinitions[scenarioA.bondType].fullName.en,
         result: calculateBondInvestment({
           ...scenarioA,
-          rollover: scenarioA.rollover ?? false,
+          rollover: shouldAutoRollover(scenarioA, context.dbDefinitions[scenarioA.bondType].duration),
         } as BondInputs & { rollover: boolean }),
       },
       {
@@ -82,7 +84,7 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
         name: context.dbDefinitions[scenarioB.bondType].fullName.en,
         result: calculateBondInvestment({
           ...scenarioB,
-          rollover: scenarioB.rollover ?? false,
+          rollover: shouldAutoRollover(scenarioB, context.dbDefinitions[scenarioB.bondType].duration),
         } as BondInputs & { rollover: boolean }),
       },
     ];
@@ -93,6 +95,7 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
       ...this.generateScenarioAssumptions('Scenario B', payload.scenarioB),
     ];
     assumptions.push('Independent comparison resolves issued-series terms per scenario purchase date when present.');
+    assumptions.push('Rollover is inferred automatically per scenario horizon instead of relying on a UI toggle.');
 
     return this.createEnvelope(results, warnings, assumptions, context.dataFreshness);
   }
@@ -172,7 +175,6 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
       isRebought: scenario.isRebought ?? false,
       rebuyDiscount: def.rebuyDiscount,
       taxStrategy: scenario.taxStrategy ?? sharedConfig.taxStrategy ?? TaxStrategy.STANDARD,
-      rollover: scenario.rollover ?? false,
       timingMode,
       investmentHorizonMonths,
     };
@@ -188,4 +190,12 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
   ): string[] {
     return this.generateAssumptions(inputs).map((assumption) => `${label}: ${assumption}`);
   }
+}
+
+function shouldAutoRollover(inputs: BondInputs, durationYears: number) {
+  const nativeDurationMonths = Math.max(1, Math.round(durationYears * 12));
+  const horizonMonths = inputs.investmentHorizonMonths
+    ?? getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);
+
+  return horizonMonths > nativeDurationMonths;
 }

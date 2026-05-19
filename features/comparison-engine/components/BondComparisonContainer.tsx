@@ -135,7 +135,6 @@ export const BondComparisonContainer = () => {
     useState<BondComparisonCalculationEnvelope | null>(null);
   const [loading, setLoading] = useState(false);
   const [showRealValue, setShowRealValue] = useState(false);
-  const [reinvest, setReinvest] = useState(true);
   const [isDirty, setIsDirty] = useState(true);
 
   useEffect(() => {
@@ -184,7 +183,6 @@ export const BondComparisonContainer = () => {
           customInflation,
           inflationScenario,
           taxStrategy: TaxStrategy.STANDARD,
-          reinvest,
         }),
       });
       const data = await response.json();
@@ -202,7 +200,6 @@ export const BondComparisonContainer = () => {
     inflationScenario,
     initialInvestment,
     purchaseDate,
-    reinvest,
     selectedBonds,
     withdrawalDate,
   ]);
@@ -379,25 +376,15 @@ export const BondComparisonContainer = () => {
                   </div>
                   <Switch checked={showRealValue} onCheckedChange={setShowRealValue} />
                 </div>
-
-                <div className="flex items-center justify-between rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-950">
-                      {t('bonds.reinvest')}
-                    </p>
-                    <p className="text-xs leading-6 text-slate-600">
-                      {language === 'pl'
-                        ? 'Pozwol krotszym obligacjom rolowac sie w dluzszym horyzoncie.'
-                        : 'Allow shorter bonds to roll forward if the horizon outlasts their first cycle.'}
-                    </p>
-                  </div>
-                  <Switch
-                    checked={reinvest}
-                    onCheckedChange={(value) => {
-                      setReinvest(value);
-                      setIsDirty(true);
-                    }}
-                  />
+                <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3">
+                  <p className="text-sm font-semibold text-slate-950">
+                    {language === 'pl' ? 'Rollover porownania' : 'Comparison rollover'}
+                  </p>
+                  <p className="mt-1 text-xs leading-6 text-slate-600">
+                    {language === 'pl'
+                      ? 'Rollover jest wyliczany automatycznie dla kazdej obligacji, jesli wspolny horyzont wykracza poza jej natywny termin.'
+                      : 'Rollover is inferred automatically for each bond when the shared horizon outlasts its native term.'}
+                  </p>
                 </div>
               </div>
 
