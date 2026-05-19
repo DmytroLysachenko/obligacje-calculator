@@ -9,6 +9,7 @@ import { buildTimelineExportHeaders } from '@/shared/lib/export-headers';
 import { MetricStrip } from '@/shared/components/MetricStrip';
 import { MathDeepDive } from '@/shared/components/MathDeepDive';
 import { ResultSummaryHero } from '@/shared/components/ResultSummaryHero';
+import { ScenarioFactsBlock } from '@/shared/components/ScenarioFactsBlock';
 import { CalculationAuditTrace } from './CalculationAuditTrace';
 import { getAuditTimelinePoint } from '@/shared/lib/bond-display';
 import {
@@ -184,28 +185,12 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
           <div />
         )}
 
-        <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-          <CardContent className="space-y-5 p-6">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <h3 className="text-xl font-black tracking-tight text-slate-950">
-                  {t('bonds.results.scenario_facts_title')}
-                </h3>
-                <p className="mt-1 text-sm leading-7 text-slate-600">
-                  {t('bonds.results.scenario_facts_description')}
-                </p>
-              </div>
-              <MathDeepDive results={results} trigger={<HelpButton />} />
-            </div>
-
-            {scenarioFacts.map((fact) => (
-              <div key={fact.label} className="rounded-2xl border border-slate-200 bg-slate-50/60 px-4 py-3">
-                <p className="text-sm font-semibold text-slate-500">{fact.label}</p>
-                <p className="mt-1 text-base font-semibold text-slate-950">{fact.value}</p>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+        <ScenarioFactsBlock
+          title={t('bonds.results.scenario_facts_title')}
+          description={t('bonds.results.scenario_facts_description')}
+          actions={<MathDeepDive results={results} trigger={<HelpButton />} />}
+          items={scenarioFacts}
+        />
       </div>
     </div>
   );

@@ -15,6 +15,7 @@ import { GLOSSARY } from '@/shared/constants/glossary';
 import { cn } from '@/lib/utils';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
+import { RateContextNote } from '@/shared/components/RateContextNote';
 
 interface BondSeries {
   id: string;
@@ -199,9 +200,13 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
               ))}
             </SelectContent>
           </Select>
-          <p className="text-xs leading-6 text-slate-500">
-            {rateContext.narrative}
-          </p>
+          <RateContextNote
+            narrative={rateContext.narrative}
+            badges={[
+              currentDef.fullName[language],
+              rateContext.styleLabel,
+            ]}
+          />
         </div>
         
         <div className="space-y-2 rounded-lg border border-primary/10 bg-primary/5 p-4 text-sm">
@@ -215,7 +220,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
             </span>
             {isFamilyBondType(inputs.bondType) ? (
               <span className="rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-semibold text-amber-700">
-                {language === 'pl' ? 'Wariant rodzinny' : 'Family bond'}
+                {t('bonds.family_bond')}
               </span>
             ) : null}
             <span className="rounded-full bg-white/80 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
@@ -230,9 +235,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
           </p>
           {isFamilyBondType(inputs.bondType) ? (
             <p className="font-semibold text-amber-700">
-              {language === 'pl'
-                ? 'Scenariusze rodzinne maja sens tylko wtedy, gdy warunek uprawnienia gospodarstwa domowego faktycznie obowiazuje.'
-                : 'Family-bond scenarios only make sense if the household eligibility rule actually applies.'}
+              {t('bonds.family_bond_notice')}
             </p>
           ) : null}
         </div>

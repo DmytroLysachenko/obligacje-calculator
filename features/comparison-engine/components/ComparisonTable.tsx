@@ -52,10 +52,9 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
   formatCurrency,
 }) => {
   const { t, language } = useLanguage();
-  const higherColumnLabel =
-    language === 'pl' ? 'Aktualnie wyzej w tym wierszu' : 'Ahead in this row';
-  const higherBadgeSuffix = language === 'pl' ? 'wyzej' : 'ahead';
-  const tieLabel = language === 'pl' ? 'Remis' : 'Tie';
+  const higherColumnLabel = t('comparison.table_ahead_in_row');
+  const higherBadgeSuffix = t('comparison.table_ahead_badge_suffix');
+  const tieLabel = t('comparison.table_tie');
   const resultAValue = showRealValue ? resultsA.finalRealValue : resultsA.netPayoutValue;
   const resultBValue = showRealValue ? resultsB.finalRealValue : resultsB.netPayoutValue;
   const firstLead =
@@ -70,17 +69,17 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
     {
       label: showRealValue
         ? t('bonds.real_value_inflation')
-        : language === 'pl' ? 'Wyplata netto' : 'Net payout',
+        : t('bonds.net_payout'),
       a: resultAValue,
       b: resultBValue,
     },
     {
-      label: language === 'pl' ? 'Zysk netto' : 'Net profit',
+      label: t('common.net_profit'),
       a: resultsA.totalProfit,
       b: resultsB.totalProfit,
     },
     {
-      label: language === 'pl' ? 'Podatek' : 'Tax paid',
+      label: t('comparison.table_tax_paid'),
       a: resultsA.totalTax,
       b: resultsB.totalTax,
     },
@@ -94,23 +93,21 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
           {t('comparison.table_title')}
         </CardTitle>
         <p className="text-sm leading-6 text-slate-600">
-          {language === 'pl'
-            ? 'Proste sprawdzenie wartosci rok po roku. Uzywaj tej tabeli do odczytu, kiedy jedna sciezka prowadzi w danym punkcie, a nie jako sygnalu rekomendacyjnego.'
-            : 'Plain year-by-year value check. Use it to inspect where one path is ahead at a given point, not as a recommendation signal.'}
+          {t('comparison.table_desc')}
         </p>
       </CardHeader>
       <CardContent className="space-y-6 p-0">
         <div className="grid grid-cols-1 gap-3 border-b bg-slate-50/50 px-6 py-5 md:grid-cols-3">
           <ComparisonTableStat
-            label={language === 'pl' ? 'Wiersze osi czasu' : 'Timeline rows'}
+            label={t('comparison.table_timeline_rows')}
             value={String(maxLen)}
           />
           <ComparisonTableStat
-            label={language === 'pl' ? 'Lepsza wyplata netto' : 'Higher net payout'}
+            label={t('comparison.table_higher_payout')}
             value={firstLead}
           />
           <ComparisonTableStat
-            label={language === 'pl' ? 'Para porownania' : 'Compared pair'}
+            label={t('comparison.table_compared_pair')}
             value={`${bondTypeA} / ${bondTypeB}`}
           />
         </div>
@@ -161,14 +158,10 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
 
         <div className="px-6">
           <ResponsiveTableSheet
-            title={language === 'pl' ? 'Porownanie wiersz po wierszu' : 'Row-by-row comparison'}
-            description={
-              language === 'pl'
-                ? 'Na mniejszych ekranach porownuj scenariusze jako liste punktow zamiast szerokiej tabeli.'
-                : 'On smaller screens, compare the scenarios as a list of checkpoints instead of a wide table.'
-            }
-            triggerLabel={language === 'pl' ? 'Otworz tabele porownania' : 'Open comparison table'}
-            triggerCount={`${maxLen} ${language === 'pl' ? 'wierszy osi czasu' : 'timeline rows'}`}
+            title={t('comparison.table_mobile_title')}
+            description={t('comparison.table_mobile_desc')}
+            triggerLabel={t('comparison.table_mobile_trigger')}
+            triggerCount={t('comparison.table_mobile_count', { count: maxLen })}
           >
             {Array.from({ length: maxLen }).map((_, i) => {
               const pointA = resultsA.timeline[i];
@@ -183,7 +176,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                       <p className="text-sm font-semibold text-slate-950">
                         {pointA?.periodLabel
                           ?? pointB?.periodLabel
-                          ?? (language === 'pl' ? `Wiersz ${i + 1}` : `Row ${i + 1}`)}
+                          ?? t('comparison.table_row_fallback', { row: i + 1 })}
                       </p>
                       <p className="mt-1 text-xs text-slate-500">
                         {(pointA?.cycleEndDate ?? pointB?.cycleEndDate ?? '').slice(0, 10)}
@@ -202,12 +195,10 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
           <div className="hidden rounded-2xl border border-slate-200 bg-white lg:block">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-600">
               <p>
-                {language === 'pl'
-                  ? 'Tabela potwierdza, gdzie dany scenariusz prowadzi w konkretnym okresie.'
-                  : 'The table confirms which scenario is ahead in a specific period.'}
+                {t('comparison.table_desktop_note')}
               </p>
               <p className="text-sm font-semibold text-slate-500">
-                {maxLen} {language === 'pl' ? 'wierszy osi czasu' : 'timeline rows'}
+                {t('comparison.table_mobile_count', { count: maxLen })}
               </p>
             </div>
 
@@ -255,7 +246,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                             <p>
                               {pointA?.periodLabel
                                 ?? pointB?.periodLabel
-                                ?? (language === 'pl' ? `Wiersz ${i + 1}` : `Row ${i + 1}`)}
+                                ?? t('comparison.table_row_fallback', { row: i + 1 })}
                             </p>
                             <p className="text-[11px] font-medium text-slate-500">
                               {(pointA?.cycleEndDate ?? pointB?.cycleEndDate ?? '').slice(0, 10)}
@@ -309,9 +300,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
         </div>
 
         <div className="border-t bg-slate-50/70 px-6 py-4 text-sm leading-6 text-slate-600">
-          {language === 'pl'
-            ? 'Znacznik pokazuje tylko, ktora sciezka prowadzi w konkretnym wierszu. Pozniejsze okresy moga odwrocic wczesniejsze prowadzenie.'
-            : 'The badge shows which path is ahead in that specific row only. Later rows can reverse earlier leads.'}
+          {t('comparison.table_footer_note')}
         </div>
       </CardContent>
     </Card>

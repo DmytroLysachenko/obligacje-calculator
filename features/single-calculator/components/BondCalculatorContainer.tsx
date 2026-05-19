@@ -59,18 +59,11 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     [guardrails],
   );
 
-  const readingGuide =
-    language === 'pl'
-      ? [
-          'Najpierw przeczytaj podsumowanie wyplaty netto i zysku.',
-          'Wykres ma pomoc w szybkim odczycie przebiegu inwestycji, a harmonogram sluzy do kontroli szczegolow.',
-          'Jezeli zmienisz dane wejsciowe, stare wyniki pozostaja widoczne az do swiadomego przeliczenia.',
-        ]
-      : [
-          'Read the net payout and profit summary first.',
-          'Use the chart for the quick shape of the scenario, and use the timeline only for detailed verification.',
-          'If you change inputs, the old results remain visible until you intentionally recalculate.',
-        ];
+  const readingGuide = [
+    t('bonds.simulation.reading_guide.summary_first'),
+    t('bonds.simulation.reading_guide.chart_then_timeline'),
+    t('bonds.simulation.reading_guide.stale_until_recalculated'),
+  ];
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' && (isDirty || !results)) {
@@ -213,9 +206,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
             <p className="mt-2 leading-7">
               {sharedScenarioTitle}
               {' • '}
-              {language === 'pl'
-                ? 'To jest zapisany, odtwarzalny snapshot jednego obliczenia.'
-                : 'This is a saved, replayable snapshot of one committed calculation.'}
+              {t('bonds.shared_scenario_snapshot')}
             </p>
           </div>
         ) : null}
@@ -306,32 +297,20 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
             )}
           >
             <SecondaryInsightAccordion
-              title={language === 'pl' ? 'Jak czytac ten wynik' : 'How to read this run'}
-              description={
-                language === 'pl'
-                  ? 'Najpierw przeczytaj glowny wynik, potem spojrz na wykres, a dopiero na koncu wchodz w harmonogram i slady obliczen.'
-                  : 'Read the headline result first, then inspect the chart, and only then move into the detailed timeline and calculation trace.'
-              }
-              badge={language === 'pl' ? 'Pomocnicze' : 'Secondary'}
+              title={t('bonds.simulation.how_to_read_title')}
+              description={t('bonds.simulation.how_to_read_desc')}
+              badge={t('bonds.simulation.secondary_badge')}
             >
               <ReadingChecklist items={readingGuide} />
             </SecondaryInsightAccordion>
 
             <CalculatorSection
               title={t('bonds.evolution')}
-              description={
-                language === 'pl'
-                  ? 'Wykres pokazuje ogolny przebieg scenariusza bez koniecznosci wchodzenia od razu w harmonogram.'
-                  : 'The chart gives the overall shape of the scenario before you need to read the full timeline.'
-              }
+              description={t('bonds.simulation.chart_section_desc')}
             >
               <ChartSupportNote
-                title={language === 'pl' ? 'Jak czytac wykres' : 'How to read the chart'}
-                description={
-                  language === 'pl'
-                    ? 'Najpierw porownaj linie nominalna i realna. Linie inflacji oraz NBP sa tylko kontekstem pomocniczym i nie powinny dominowac nad wartoscia inwestycji.'
-                    : 'Start by comparing the nominal and real value lines. Inflation and NBP lines are only supporting context and should not outweigh the investment value path.'
-                }
+                title={t('bonds.simulation.chart_help_title')}
+                description={t('bonds.simulation.chart_help_desc')}
               />
               <div className="rounded-[1.7rem] border border-slate-200 bg-white p-3 shadow-none md:rounded-[2rem] md:p-4">
                 <BondChart
@@ -345,23 +324,15 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
 
             <CalculatorSection
               title={t('bonds.timeline')}
-              description={
-                language === 'pl'
-                  ? 'Harmonogram pokazuje kolejne punkty kontrolne scenariusza: kiedy zmienia sie stopa, kiedy naliczane sa odsetki i jaka wartosc zostaje na danym etapie.'
-                  : 'The timeline shows scenario checkpoints: when the rate changes, when interest is credited, and what value remains at each stage.'
-              }
+              description={t('bonds.simulation.timeline_section_desc')}
             >
               <BondTimeline results={results} />
             </CalculatorSection>
 
             <SecondaryInsightAccordion
               title={t('bonds.simulation.calculation_context')}
-              description={
-                language === 'pl'
-                  ? 'Meta dane, zalozenia i flagi jakosci powinny byc widoczne, ale nie dominowac nad wynikiem.'
-                  : 'Assumptions, notes, and data-quality flags should stay visible without overpowering the result.'
-              }
-              badge={language === 'pl' ? 'Meta dane' : 'Meta'}
+              description={t('bonds.simulation.meta_desc')}
+              badge={t('bonds.simulation.meta_badge')}
             >
               <CalculationMetaPanel
                 warnings={envelope?.warnings}

@@ -293,6 +293,9 @@ export const ComparisonContainer: React.FC = () => {
                 <p className="text-sm leading-6 text-muted-foreground">
                   {t('comparison.shared_base_desc')}
                 </p>
+                <p className="text-xs leading-5 text-muted-foreground">
+                  {t('comparison.shared_base_scope')}
+                </p>
               </CardHeader>
             <CardContent className="space-y-6 pt-6">
               <div className="space-y-3">
@@ -443,6 +446,9 @@ export const ComparisonContainer: React.FC = () => {
                     updateSharedConfig('investmentHorizonMonths', value)
                   }
                 />
+                <p className="text-xs leading-5 text-muted-foreground">
+                  {t('comparison.shared_horizon_desc')}
+                </p>
               </div>
 
               <div className="space-y-4 border-t border-dashed pt-4">
@@ -483,6 +489,9 @@ export const ComparisonContainer: React.FC = () => {
                     </SelectItem>
                   </SelectContent>
                 </Select>
+                <p className="text-xs leading-5 text-muted-foreground">
+                  {t('comparison.shared_tax_desc')}
+                </p>
               </div>
               <div className="flex items-center justify-between rounded-xl border bg-muted/20 p-3">
                 <div>

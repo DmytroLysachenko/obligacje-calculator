@@ -8,19 +8,17 @@ import { PageSuspenseFallback } from '@/shared/components/PageSuspenseFallback';
 import { Suspense } from 'react';
 
 export default function ComparePage() {
-  const { language } = useLanguage();
+  const { t } = useLanguage();
 
   return (
     <PageTransition>
       <div className="mx-auto max-w-7xl space-y-8">
         <FeatureStatusNotice
           status="conditional"
-          eyebrow={language === 'pl' ? 'Wspolny scenariusz' : 'Shared scenario'}
-          title={language === 'pl' ? 'Porownanie scenariuszy' : 'Scenario comparison'}
+          eyebrow={t('comparison.page_notice_eyebrow')}
+          title={t('comparison.page_notice_title')}
         >
-          {language === 'pl'
-            ? 'Uzywaj tej strony do porownania dwoch modelowanych wynikow przy jawnych zalozeniach. Najlepiej traktowac ja jako sprawdzenie scenariusza, a nie uniwersalny ranking czy silnik rekomendacji.'
-            : 'Use this page to compare two modeled outcomes under explicit assumptions. It is best treated as a scenario check, not as a universal ranking or recommendation engine.'}
+          {t('comparison.page_notice_desc')}
         </FeatureStatusNotice>
         <Suspense fallback={<PageSuspenseFallback />}>
           <ComparisonContainer />

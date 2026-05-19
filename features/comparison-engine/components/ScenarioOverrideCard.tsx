@@ -18,6 +18,7 @@ import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
+import { RateContextNote } from '@/shared/components/RateContextNote';
 
 interface ScenarioOverrideCardProps {
   title: string;
@@ -141,31 +142,22 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
               ))}
             </SelectContent>
           </Select>
-          <div className="flex flex-wrap gap-2">
-            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
-              {formatBondLabel(bondType)}
-            </span>
-            {formatRateStyle(bondType) ? (
-              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
-                {formatRateStyle(bondType)}
-              </span>
-            ) : null}
-          </div>
+          <RateContextNote
+            title={t('comparison.override_scope_title')}
+            badges={[
+              formatBondLabel(bondType),
+              ...(formatRateStyle(bondType) ? [formatRateStyle(bondType) as string] : []),
+            ]}
+            narrative={activeRateContext?.narrative ?? getBondSupportMeta(bondType).description}
+          />
           {isFamilyBondType(bondType) ? (
             <p className="text-xs leading-5 text-amber-700">
-              {language === 'pl'
-                ? 'Nadpisania dla obligacji rodzinnych pozostaja dostepne, ale maja sens tylko wtedy, gdy warunek uprawnienia gospodarstwa domowego rzeczywiscie ma zastosowanie.'
-                : 'Family-bond overrides stay available, but only make sense if the household eligibility condition really applies.'}
+              {t('comparison.family_override_note')}
             </p>
           ) : null}
           <p className="text-xs leading-5 text-slate-500">
             {getBondSupportMeta(bondType).description}
           </p>
-          {activeRateContext ? (
-            <p className="text-xs leading-5 text-slate-500">
-              {activeRateContext.narrative}
-            </p>
-          ) : null}
         </div>
 
         <div className="flex items-center justify-between rounded-xl border bg-muted/20 p-3">
@@ -216,6 +208,9 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
               </SelectItem>
             </SelectContent>
           </Select>
+          <p className="text-xs leading-5 text-slate-500">
+            {t('comparison.tax_override_desc')}
+          </p>
         </div>
 
         <div className="flex items-center justify-between rounded-xl border bg-muted/20 p-3">
@@ -244,6 +239,9 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
               unit="mo"
               onCommit={(value) => onCustomHorizonMonthsChange(value)}
             />
+            <p className="text-xs leading-5 text-slate-500">
+              {t('comparison.horizon_override_desc')}
+            </p>
           </div>
         ) : null}
       </CardContent>
