@@ -468,6 +468,17 @@ For payout-style bonds such as `ROR` and `DOR`:
 This is an intentional product-trust rule.
 The UI should not imply that the remaining principal on the bond is the investor's whole position once monthly payouts have already been distributed.
 
+## 9.2 Floating-rate and display-pipeline rules
+
+Keep these rules explicit across engine, display adapters, exports, and helper copy:
+
+- `ROR` and `DOR` use the active issued series as the source of truth for the first monthly offer rate
+- later floating periods use the retained NBP reference path plus bond margin
+- `ROR` later periods use `NBP + 0.00%`
+- `DOR` later periods use `NBP + 0.15%`
+- chart granularity is a display-only concern and must never change calculation rhythm, tax timing, fee timing, or nominal/real value paths
+- comparison export should remain comparison-oriented, with one aligned calendar output rather than two unrelated row-index dumps
+
 ## 10. Current Design Decisions to Preserve
 
 Keep these decisions unless there is a strong reason to reverse them:
@@ -477,3 +488,4 @@ Keep these decisions unless there is a strong reason to reverse them:
 3. Notebook remains a manual portfolio workspace, not a broker integration.
 4. Shared single-scenario links stay server-backed and committed.
 5. Data freshness/source truth must be attached to the series metadata model, not scattered across page components.
+6. Retained helper copy should come from locale files, not page-local language branches, wherever the retained core was already touched for trust fixes.

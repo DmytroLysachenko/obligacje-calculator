@@ -36,14 +36,17 @@ This is **not yet** a final full manual signoff pass across every route and ever
 - notebook state is more stable after create, import, share toggle, and delete
 - payout-bond display semantics are materially better for `ROR` and `DOR`
 - single-calculator CSV export now follows the same normalized display model more closely
+- comparison export now ships as one comparison-grade aligned calendar CSV instead of two disconnected scenario dumps
 - CPI retained sync now uses the official GUS monthly archive path
 - retained calculator surfaces share more reusable primitives and calmer layout patterns
+- retained helper copy for compare/single surfaces is more locale-driven and less dependent on page-local language branching
 
 ### 2.2 Remaining Known Limits
 
 - NBP history is broader than before but still partly curated where direct historical coverage is not available through one clean public feed
 - retained calculators still need broader scenario-by-scenario trust validation
 - notebook, comparison, and export flows still need wider end-to-end regression coverage
+- final manual retained route sweep is still needed for spacing, wide-table desktop fit, and mobile behavior
 - retained visual polish is materially improved, but not yet at a final "ship it without review" finish level
 
 ## 3. Retained Route Snapshot
@@ -100,6 +103,7 @@ Confirmed:
 - payout-bond chart/schedule semantics are more coherent
 - quick audit no longer anchors on the raw purchase row
 - exported CSV follows normalized display rows more closely
+- helper reading bands, rate-context notes, and scenario-facts presentation now use narrower shared primitives
 
 Remaining risk:
 

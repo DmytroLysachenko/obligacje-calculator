@@ -57,4 +57,4 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [Archived Plans Index](./archive/plans/index.md) - Historical and completed execution plans preserved for reference.
 
 ---
-*Last Updated: May 18, 2026 - App remains in active refactor/recovery, with active issued-series defaults, single-scenario snapshot sharing, guest-backed notebook lifecycle persistence, improved payout-bond display semantics, normalized retained exports, a retained-route execution log, and a deferred future .NET backend migration sketch now documented; final route-by-route trust validation and production-candidate review remain open.*
+*Last Updated: May 19, 2026 - App remains in active refactor/recovery, with active issued-series defaults, floating-rate first-period truth preserved across retained surfaces, payout-bond wealth-first display semantics, normalized retained exports including comparison-grade CSV output, more locale-driven retained copy and shared UI primitives, a retained-route execution log, and a deferred future .NET backend migration sketch now documented; final route-by-route trust validation and production-candidate review remain open.*
