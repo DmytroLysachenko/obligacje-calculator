@@ -194,7 +194,13 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
       onShare={handleShareScenario}
       showImplicitShare={false}
       savingsGoal={inputs.savingsGoal}
-      currentValue={results?.netPayoutValue}
+      currentValue={
+        results
+          ? inputs.showRealValue
+            ? results.finalRealValue
+            : results.netPayoutValue
+          : undefined
+      }
       onKeyDown={handleKeyDown}
     >
       <div className="space-y-8 md:space-y-10">

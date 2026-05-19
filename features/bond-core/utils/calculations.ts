@@ -148,7 +148,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
         periodYearIndex,
       );
 
-      const { value: lagInflation, isProjected } = getHistoricalValue(period.startDate, 'inflation', 2, historicalData);
+      const { value: lagInflation, isProjected: isInflationProjected } = getHistoricalValue(period.startDate, 'inflation', 2, historicalData);
       const { value: lagNbp, isProjected: isNbpProjected } = getHistoricalValue(period.startDate, 'nbpRate', 0, historicalData);
 
       const yearIntoCycle = Math.floor(monthsIntoCycle / 12);
@@ -164,6 +164,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
         margin,
         isInflationIndexed,
         lagInflation,
+        lagNbp,
         customInfValue,
         customNbpVal
       );
@@ -198,7 +199,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
           rateReferenceValue = firstYearRate;
           rateMarginApplied = 0;
         } else if (monthsIntoCycle % 12 === 0) {
-          usedProjectedRate = isProjected;
+          usedProjectedRate = isInflationProjected;
           rateSource = lagInflation !== undefined ? 'historical_cpi_lag' : 'projected_cpi';
           rateReferenceValue = lagInflation !== undefined ? lagInflation : activeExpectedInflation;
           events.push({
@@ -209,6 +210,11 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
           });
         }
       }
+
+      const pointIsProjected =
+        bondType === BondType.ROR || bondType === BondType.DOR
+          ? isNbpProjected
+          : isInflationProjected;
 
       if (usedProjectedRate) {
         dataQualityFlags.add('projected_rate_segment');
@@ -379,7 +385,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
         cumulativeInflation: cumulativeInflation.toNumber(),
         isMaturity: period.isMaturity,
         isWithdrawal: period.endDate.getTime() === targetWithdrawalDate.getTime(),
-        isProjected,
+        isProjected: pointIsProjected,
         inflationReference: lagInflation !== undefined ? lagInflation : activeExpectedInflation,
         nbpReference: lagNbp !== undefined ? lagNbp : expectedNbpRate,
         events: events.length > 0 ? events : undefined
@@ -588,6 +594,7 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
 
     // 2. Pre-calculate rates for this month to avoid N*H lookups
     const { value: currentLagInflation, isProjected: currentIsProjected } = getHistoricalValue(currentMonthDate, 'inflation', 2, historicalData);
+    const { value: currentLagNbp } = getHistoricalValue(currentMonthDate, 'nbpRate', 0, historicalData);
 
     // 3. Update all active lots
     lots.forEach(lot => {
@@ -608,7 +615,7 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
           const monthIndex = monthsHeld - 1;
           const currentInterestRate = determineInterestRate(
             bondType, monthIndex, firstYearRate, expectedInflation, expectedNbpRate, margin, 
-            bondDef.isInflationIndexed, currentLagInflation
+            bondDef.isInflationIndexed, currentLagInflation, currentLagNbp
           );
           const currentMonthlyRate = currentInterestRate.dividedBy(12).dividedBy(100);
 
@@ -687,26 +694,18 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
       });
     }
 
-    // Determine if we should record this month in timeline
-    const isStep = inputs.chartStep === 'monthly' || 
-                   (inputs.chartStep === 'quarterly' && m % 3 === 0) ||
-                   (inputs.chartStep === 'yearly' && m % 12 === 0) ||
-                   (!inputs.chartStep && m % 3 === 0);
-
-    if (isStep || m === totalMonths || isWithdrawalStep) {
-      timeline.push({
-        month: m,
-        date: currentMonthDate.toISOString(),
-        totalInvested: totalInvested.toNumber(),
-        nominalValue: currentNominalValueTotal.toNumber(),
-        realValue: calculateRealValue(currentNominalValueTotal, cumulativeInflation).toNumber(),
-        profit: currentProfitTotal.toNumber(),
-        tax: currentTaxTotal.toNumber(),
-        earlyWithdrawalFees: currentFeesTotal.toNumber(),
-        isProjected: currentIsProjected,
-        events: events.length > 0 ? events : undefined
-      });
-    }
+    timeline.push({
+      month: m,
+      date: currentMonthDate.toISOString(),
+      totalInvested: totalInvested.toNumber(),
+      nominalValue: currentNominalValueTotal.toNumber(),
+      realValue: calculateRealValue(currentNominalValueTotal, cumulativeInflation).toNumber(),
+      profit: currentProfitTotal.toNumber(),
+      tax: currentTaxTotal.toNumber(),
+      earlyWithdrawalFees: currentFeesTotal.toNumber(),
+      isProjected: currentIsProjected,
+      events: events.length > 0 ? events : undefined
+    });
 
     if (isWithdrawalStep) break;
   }

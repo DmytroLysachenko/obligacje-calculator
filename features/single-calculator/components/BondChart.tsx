@@ -25,7 +25,11 @@ import { HistoricalAverages } from "../../bond-core/types/scenarios";
 import { useLanguage } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { ChartContainer } from "@/shared/components/charts/ChartContainer";
-import { AppLanguage, buildBondChartDisplayPoints } from "@/shared/lib/bond-display";
+import {
+  AppLanguage,
+  buildBondChartDisplayPoints,
+  normalizeBondChartDisplayTimeline,
+} from "@/shared/lib/bond-display";
 import { computeNumericDomain, computeRateDomain, sampleSeriesPoints } from "@/shared/lib/chart-series";
 
 interface BondChartProps {
@@ -203,6 +207,11 @@ export const BondChart: React.FC<BondChartProps> = ({
       results.comparisonScenarios,
       chartStep,
     );
+    const normalizedTimeline = normalizeBondChartDisplayTimeline(
+      results.timeline,
+      language as AppLanguage,
+      results.comparisonScenarios,
+    );
 
     const rawData = baseDisplayData.map((point, index) => ({
       label: point.xLabel,
@@ -214,7 +223,10 @@ export const BondChart: React.FC<BondChartProps> = ({
       isMaturity: point.isMaturity,
       inflation: point.inflation,
       nbp: point.nbp,
-      interestRate: index === 0 ? undefined : results.timeline[index - 1]?.interestRate,
+      interestRate:
+        index === 0
+          ? undefined
+          : normalizedTimeline.find((timelinePoint) => timelinePoint.key === point.key)?.interestRate,
       rateSource: point.rateLabel,
       low: point.low,
       high: point.high,

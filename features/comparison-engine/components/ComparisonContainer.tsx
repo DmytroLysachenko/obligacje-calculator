@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -129,6 +130,7 @@ export const ComparisonContainer: React.FC = () => {
   const [compareMode, setCompareMode] = useState<'independent' | 'normalized'>(
     'independent',
   );
+  const [showRealValue, setShowRealValue] = useState(false);
   const hasMounted = useSyncExternalStore(
     () => () => undefined,
     () => true,
@@ -208,7 +210,7 @@ export const ComparisonContainer: React.FC = () => {
           index < timeline.length
           && compareAsc(parseISO(timeline[index].cycleEndDate), date) <= 0
         ) {
-          currentValue = timeline[index].nominalValueAfterInterest;
+          currentValue = showRealValue ? timeline[index].realValue : timeline[index].totalValue;
           index += 1;
         }
 
@@ -233,7 +235,7 @@ export const ComparisonContainer: React.FC = () => {
       })),
       180,
     );
-  }, [inputsA.withdrawalDate, inputsB.withdrawalDate, language, resultsA, resultsB, sharedConfig.purchaseDate, t]);
+  }, [inputsA.withdrawalDate, inputsB.withdrawalDate, language, resultsA, resultsB, sharedConfig.purchaseDate, showRealValue, t]);
 
   const usesMixedTimelineCadence = useMemo(() => {
     return inputsA.payoutFrequency !== inputsB.payoutFrequency;
@@ -482,6 +484,15 @@ export const ComparisonContainer: React.FC = () => {
                   </SelectContent>
                 </Select>
               </div>
+              <div className="flex items-center justify-between rounded-xl border bg-muted/20 p-3">
+                <div>
+                  <p className="text-sm font-semibold">{t('bonds.inflation.adjusted')}</p>
+                  <p className="text-xs leading-5 text-muted-foreground">
+                    {t('bonds.show_purchasing_power')}
+                  </p>
+                </div>
+                <Switch checked={showRealValue} onCheckedChange={setShowRealValue} />
+              </div>
             </CardContent>
           </Card>
 
@@ -601,13 +612,13 @@ export const ComparisonContainer: React.FC = () => {
                   <CardContent className="p-6">
                     <div className="mb-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                       <ActionMetric
-                        label={t('comparison.scenario_a')}
-                        value={formatCurrency(resultsA.netPayoutValue)}
+                        label={showRealValue ? `${t('comparison.scenario_a')} ${t('common.real_value')}` : t('comparison.scenario_a')}
+                        value={formatCurrency(showRealValue ? resultsA.finalRealValue : resultsA.netPayoutValue)}
                         tone="text-blue-700"
                       />
                       <ActionMetric
-                        label={t('comparison.scenario_b')}
-                        value={formatCurrency(resultsB.netPayoutValue)}
+                        label={showRealValue ? `${t('comparison.scenario_b')} ${t('common.real_value')}` : t('comparison.scenario_b')}
+                        value={formatCurrency(showRealValue ? resultsB.finalRealValue : resultsB.netPayoutValue)}
                         tone="text-emerald-700"
                       />
                       <button
@@ -719,6 +730,7 @@ export const ComparisonContainer: React.FC = () => {
                   inputsB={inputsB}
                   expectedInflation={sharedConfig.expectedInflation}
                   taxStrategy={sharedConfig.taxStrategy}
+                  showRealValue={showRealValue}
                   formatCurrency={formatCurrency}
                 />
 
@@ -727,6 +739,7 @@ export const ComparisonContainer: React.FC = () => {
                   resultsB={resultsB}
                   bondTypeA={inputsA.bondType}
                   bondTypeB={inputsB.bondType}
+                  showRealValue={showRealValue}
                   formatCurrency={formatCurrency}
                 />
 

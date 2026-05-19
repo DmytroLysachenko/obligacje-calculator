@@ -14,6 +14,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/i18n';
 import { InflationChart } from '@/features/economic-data/components/InflationChart';
 import { NBPRateChart } from '@/features/economic-data/components/NBPRateChart';
+import { BondType } from '@/features/bond-core/types';
 import { cn } from '@/lib/utils';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { useChartData } from '@/shared/hooks/useChartData';
@@ -24,6 +25,7 @@ import {
   getReferenceSourceLabel,
   getReferenceState,
 } from '@/shared/lib/data-reference';
+import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
 
 interface EconomicSeriesPoint {
   date: string;
@@ -243,11 +245,12 @@ export default function EconomicDataPage() {
   } as const;
 
   const pageIntro = t('economic.page_intro');
+  const floatingRateContext = getBondRateContextCopy(BondType.ROR, 5.75, 0, t);
 
   const usageGuide = [
     t('economic.usage_guide_1'),
     t('economic.usage_guide_2'),
-    t('economic.usage_guide_3'),
+    floatingRateContext.narrative,
     t('economic.usage_guide_4'),
   ];
 

@@ -7,6 +7,7 @@ import {
   getAuditTimelinePoint,
   getRateSourceDisplayLabel,
   getSimulationEventDisplayLabel,
+  normalizeBondChartDisplayTimeline,
 } from '@/shared/lib/bond-display';
 
 function makePoint(overrides: Partial<YearlyTimelinePoint> = {}): YearlyTimelinePoint {
@@ -86,8 +87,8 @@ describe('bond display models', () => {
   });
 
   it('builds chart display points with a start point and scenario bounds', () => {
-    const lowPoint = makePoint({ nominalValueAfterInterest: 9900 });
-    const highPoint = makePoint({ nominalValueAfterInterest: 10100 });
+    const lowPoint = makePoint({ nominalValueAfterInterest: 9900, totalValue: 9900 });
+    const highPoint = makePoint({ nominalValueAfterInterest: 10100, totalValue: 10100 });
     const points = buildBondChartDisplayPoints(
       10000,
       [makePoint()],
@@ -101,6 +102,23 @@ describe('bond display models', () => {
     expect(points[1].high).toBe(10100);
     expect(points[1].rateLabel).toContain('Historyczna stopa NBP');
     expect(points[1].xLabel).toContain('2026');
+  });
+
+  it('keeps chart aggregation as a display-only transform with the same terminal wealth', () => {
+    const timeline = [
+      makePoint({ cycleEndDate: '2026-01-31', totalValue: 10010, realValue: 10000 }),
+      makePoint({ cycleEndDate: '2026-02-28', totalValue: 10030, realValue: 10015 }),
+      makePoint({ cycleEndDate: '2026-03-31', totalValue: 10055, realValue: 10035 }),
+      makePoint({ cycleEndDate: '2026-04-30', totalValue: 10080, realValue: 10050 }),
+    ];
+
+    const monthly = buildBondChartDisplayPoints(10000, timeline, 'en', undefined, 'monthly');
+    const quarterly = buildBondChartDisplayPoints(10000, timeline, 'en', undefined, 'quarterly');
+    const normalized = normalizeBondChartDisplayTimeline(timeline, 'en');
+
+    expect(monthly.at(-1)?.nominal).toBe(10080);
+    expect(quarterly.at(-1)?.nominal).toBe(10080);
+    expect(normalized.at(-1)?.real).toBe(10050);
   });
 
   it('picks the first meaningful audit checkpoint instead of a raw purchase row', () => {

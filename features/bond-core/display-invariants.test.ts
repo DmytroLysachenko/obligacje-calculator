@@ -3,6 +3,7 @@ import { calculationService } from './application-service';
 import { calculationCache } from './utils/calculation-cache';
 import {
   BondType,
+  BondComparisonScenarioItem,
   CalculationResult,
   InvestmentFrequency,
   RegularInvestmentResult,
@@ -286,6 +287,24 @@ describe('Display-facing single-bond invariants', () => {
     expect(dor.netPayoutValue).toBeGreaterThan(ror.netPayoutValue);
     expect(dor.totalProfit).toBeGreaterThan(ror.totalProfit);
   });
+
+  it('uses the first floating period as the offer rate and later periods as NBP plus margin', async () => {
+    const ror = await getSingleBondResult(BondType.ROR, 24);
+    const dor = await getSingleBondResult(BondType.DOR, 24);
+
+    const [rorMonthOne, rorMonthTwo] = ror.timeline.slice(1, 3);
+    const [dorMonthOne, dorMonthTwo] = dor.timeline.slice(1, 3);
+
+    expect(rorMonthOne?.interestRate).toBeCloseTo(BOND_DEFINITIONS.ROR.firstYearRate, 6);
+    expect(rorMonthOne?.rateSource).toBe('first_year_fixed');
+    expect(rorMonthTwo?.interestRate).toBeCloseTo((rorMonthTwo?.rateReferenceValue ?? 0) + 0, 6);
+    expect(rorMonthTwo?.rateSource).toBe('historical_nbp');
+
+    expect(dorMonthOne?.interestRate).toBeCloseTo(BOND_DEFINITIONS.DOR.firstYearRate, 6);
+    expect(dorMonthOne?.rateSource).toBe('first_year_fixed');
+    expect(dorMonthTwo?.interestRate).toBeCloseTo((dorMonthTwo?.rateReferenceValue ?? 0) + 0.15, 6);
+    expect(dorMonthTwo?.rateSource).toBe('historical_nbp');
+  });
 });
 
 describe('Display-facing regular-investment invariants', () => {
@@ -320,5 +339,56 @@ describe('Display-facing regular-investment invariants', () => {
     expect(result.totalTax).toBeGreaterThanOrEqual(0);
     expect(result.totalEarlyWithdrawalFees).toBeGreaterThanOrEqual(0);
     expect(result.totalProfit).toBeGreaterThan(0);
+    expect(result.timeline.length).toBe(49);
+  });
+});
+
+describe('Comparison override invariants', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    calculationCache.clear();
+  });
+
+  it('keeps shared timing and tax defaults unless a scenario explicitly overrides them', async () => {
+    const purchaseDate = toDateString(today);
+    const sharedHorizonMonths = 24;
+
+    const envelope = await calculationService.calculate({
+      kind: ScenarioKind.BOND_COMPARISON,
+      payload: {
+        mode: 'independent',
+        sharedConfig: {
+          initialInvestment: 10000,
+          purchaseDate,
+          withdrawalDate: getWithdrawalDateFromMonths(purchaseDate, sharedHorizonMonths),
+          expectedInflation: 3.5,
+          expectedNbpRate: 5.25,
+          taxStrategy: TaxStrategy.STANDARD,
+          timingMode: 'general',
+          investmentHorizonMonths: sharedHorizonMonths,
+        },
+        scenarioA: {
+          bondType: BondType.COI,
+        },
+        scenarioB: {
+          bondType: BondType.COI,
+          taxStrategy: TaxStrategy.IKE,
+          investmentHorizonMonths: 12,
+        },
+      },
+    });
+
+    const comparisonResult = envelope.result as BondComparisonScenarioItem[];
+    const scenarioA = comparisonResult.find((item) => item.scenarioKey === 'scenarioA')?.result;
+    const scenarioB = comparisonResult.find((item) => item.scenarioKey === 'scenarioB')?.result;
+
+    expect(scenarioA).toBeDefined();
+    expect(scenarioB).toBeDefined();
+    expect(scenarioA?.totalTax).toBeGreaterThan(0);
+    expect(scenarioB?.totalTax).toBe(0);
+    expect(scenarioA?.timeline.length).toBeGreaterThan(scenarioB?.timeline.length ?? 0);
+    expect(new Date(scenarioA?.timeline.at(-1)?.cycleEndDate ?? '').getTime()).toBeGreaterThan(
+      new Date(scenarioB?.timeline.at(-1)?.cycleEndDate ?? '').getTime(),
+    );
   });
 });

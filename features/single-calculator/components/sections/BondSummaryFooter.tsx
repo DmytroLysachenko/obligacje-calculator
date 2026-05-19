@@ -10,6 +10,7 @@ import { BondDefinition } from '@/features/bond-core/constants/bond-definitions'
 import { useLanguage } from '@/i18n';
 import { GLOSSARY } from '@/shared/constants/glossary';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
+import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
 
 interface BondSummaryFooterProps {
   inputs: BondInputs;
@@ -26,6 +27,12 @@ export const BondSummaryFooter: React.FC<BondSummaryFooterProps> = React.memo(({
 }) => {
   const { t, language } = useLanguage();
   const dateLocale = language === 'pl' ? pl : enGB;
+  const rateContext = getBondRateContextCopy(
+    inputs.bondType,
+    Number(inputs.firstYearRate),
+    Number(inputs.margin),
+    t,
+  );
 
   return (
     <div className="pt-2 px-6 pb-6">
@@ -37,12 +44,8 @@ export const BondSummaryFooter: React.FC<BondSummaryFooterProps> = React.memo(({
           </span>
         </div>
         <div className="flex justify-between">
-          <span>
-            {inputs.bondType === 'OTS' ? t('bonds.yield_three_months') : 
-             inputs.bondType === 'ROR' || inputs.bondType === 'DOR' ? t('bonds.first_month_rate') : 
-             t('bonds.first_year_rate')}:
-          </span>
-          <span className="font-bold">{inputs.firstYearRate}%</span>
+          <span>{rateContext.firstPeriodLabel}:</span>
+          <span className="font-bold">{rateContext.firstPeriodValueLabel}</span>
         </div>
         {currentDef.margin > 0 && (
           <div className="flex justify-between">
@@ -50,6 +53,12 @@ export const BondSummaryFooter: React.FC<BondSummaryFooterProps> = React.memo(({
             <span className="font-bold">{inputs.margin}%</span>
           </div>
         )}
+        {rateContext.laterPeriodsLabel ? (
+          <div className="flex justify-between gap-4">
+            <span>{t('bonds.rate_context.later_periods')}:</span>
+            <span className="text-right font-bold">{rateContext.laterPeriodsLabel}</span>
+          </div>
+        ) : null}
         <div className="flex justify-between">
           <span>{t('bonds.maturity_date')}:</span>
           <span className="font-bold">{hasMounted ? format(maturityDate, 'PPP', { locale: dateLocale }) : '---'}</span>

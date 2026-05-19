@@ -17,6 +17,7 @@ import { useLanguage } from '@/i18n';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
+import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
 
 interface ScenarioOverrideCardProps {
   title: string;
@@ -53,6 +54,15 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
 }) => {
   const { t, language } = useLanguage();
   const { definitions } = useBondDefinitions();
+  const activeDefinition = definitions?.[bondType];
+  const activeRateContext = activeDefinition
+    ? getBondRateContextCopy(
+        bondType,
+        Number(activeDefinition.firstYearRate),
+        Number(activeDefinition.margin),
+        t,
+      )
+    : null;
   const formatBondLabel = (type: BondType) =>
     language === 'pl'
       ? {
@@ -81,15 +91,12 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
       return null;
     }
 
-    if (definition.isInflationIndexed) {
-      return language === 'pl' ? 'Inflacja + marza' : 'Inflation + margin';
-    }
-
-    if (definition.isFloating) {
-      return language === 'pl' ? 'NBP + marza' : 'NBP + margin';
-    }
-
-    return language === 'pl' ? 'Stala stopa' : 'Fixed rate';
+    return getBondRateContextCopy(
+      type,
+      Number(definition.firstYearRate),
+      Number(definition.margin),
+      t,
+    ).styleLabel;
   };
 
   return (
@@ -154,6 +161,11 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
           <p className="text-xs leading-5 text-slate-500">
             {getBondSupportMeta(bondType).description}
           </p>
+          {activeRateContext ? (
+            <p className="text-xs leading-5 text-slate-500">
+              {activeRateContext.narrative}
+            </p>
+          ) : null}
         </div>
 
         <div className="flex items-center justify-between rounded-xl border bg-muted/20 p-3">

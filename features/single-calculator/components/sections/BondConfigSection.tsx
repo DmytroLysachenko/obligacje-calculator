@@ -14,6 +14,7 @@ import { useLanguage } from '@/i18n';
 import { GLOSSARY } from '@/shared/constants/glossary';
 import { cn } from '@/lib/utils';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
+import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
 
 interface BondSeries {
   id: string;
@@ -43,6 +44,12 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
   const { t, language } = useLanguage();
   const currentDef = definitions[inputs.bondType];
   const currentBondSupport = getBondSupportMeta(inputs.bondType);
+  const rateContext = getBondRateContextCopy(
+    inputs.bondType,
+    Number(inputs.firstYearRate),
+    Number(inputs.margin),
+    t,
+  );
   const formatDurationLabel = (type: BondType) =>
     language === 'pl'
       ? `${Math.round((definitions[type]?.duration ?? 1) * 12)} mies.`
@@ -193,17 +200,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
             </SelectContent>
           </Select>
           <p className="text-xs leading-6 text-slate-500">
-            {currentDef.isFloating
-              ? language === 'pl'
-                ? 'Dla obligacji ROR i DOR pierwsza stopa pochodzi z aktualnej oferty danej serii. Dopiero kolejne okresy przechodza na stope referencyjna NBP plus marze.'
-                : 'For ROR and DOR, the first period rate comes from the active issued offer. Only later periods move onto NBP reference rate plus margin.'
-              : currentDef.isInflationIndexed
-                ? language === 'pl'
-                  ? 'Dla obligacji indeksowanych pierwszy okres ma stope oferty serii, a dopiero potem dziala mechanika CPI plus marza.'
-                  : 'For indexed bonds, the first period uses the issued offer rate and only later periods move into CPI plus margin mechanics.'
-                : language === 'pl'
-                  ? 'Ta seria korzysta z aktualnych warunkow oferty dla wybranego wariantu obligacji.'
-                  : 'This selector uses the current offer terms for the chosen bond variant.'}
+            {rateContext.narrative}
           </p>
         </div>
         
@@ -222,17 +219,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
               </span>
             ) : null}
             <span className="rounded-full bg-white/80 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
-              {currentDef.isInflationIndexed
-                ? language === 'pl'
-                  ? 'Inflacja + marza'
-                  : 'Inflation + margin'
-                : currentDef.isFloating
-                  ? language === 'pl'
-                    ? 'NBP + marza'
-                    : 'NBP + margin'
-                  : language === 'pl'
-                    ? 'Stala stopa'
-                    : 'Fixed rate'}
+              {rateContext.styleLabel}
             </span>
           </div>
           <p className="text-muted-foreground leading-relaxed italic">

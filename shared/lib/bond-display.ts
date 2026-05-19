@@ -44,6 +44,10 @@ export interface BondChartDisplayPoint {
 
 type ChartAggregationStep = 'daily' | 'monthly' | 'quarterly' | 'yearly';
 
+interface NormalizedBondDisplayPoint extends BondChartDisplayPoint {
+  interestRate?: number;
+}
+
 export function getAuditTimelinePoint(timeline: YearlyTimelinePoint[]) {
   return (
     timeline.find(
@@ -101,17 +105,11 @@ export function getProjectionDisplayLabel(
   isProjected: boolean | undefined,
   language: AppLanguage,
 ) {
-  if (isProjected === undefined) {
+  if (!isProjected) {
     return undefined;
   }
 
-  return t(
-    isProjected
-      ? 'bonds.timeline_display.projection.projected'
-      : 'bonds.timeline_display.projection.historical',
-    undefined,
-    language,
-  );
+  return t('bonds.timeline_display.projection.projected', undefined, language);
 }
 
 export function getCadenceDisplayLabel(point: YearlyTimelinePoint, language: AppLanguage) {
@@ -229,6 +227,12 @@ export function buildBondChartDisplayPoints(
   },
   chartStep: ChartAggregationStep = 'yearly',
 ): BondChartDisplayPoint[] {
+  const normalizedTimeline = normalizeBondChartDisplayTimeline(
+    timeline,
+    language,
+    comparisonScenarios,
+  );
+
   const rawPoints: BondChartDisplayPoint[] = [
     {
       key: 'start',
@@ -245,27 +249,39 @@ export function buildBondChartDisplayPoints(
       rateLabel: t('bonds.timeline_display.chart.initial_capital', undefined, language),
       eventLabels: [],
     },
-    ...timeline.map((point, index) => ({
-      key: `${point.cycleIndex}-${point.periodLabel}-${point.cycleEndDate}`,
-      dateKey: point.cycleEndDate,
-      xLabel: formatMonthYear(point.cycleEndDate, language),
-      nominal: Number(point.totalValue.toFixed(2)),
-      real: Number(point.realValue.toFixed(2)),
-      inflation: point.inflationReference,
-      nbp: point.nbpReference,
-      low: comparisonScenarios?.low[index]?.nominalValueAfterInterest,
-      high: comparisonScenarios?.high[index]?.nominalValueAfterInterest,
-      isProjected: Boolean(point.isProjected),
-      isMaturity: point.isMaturity,
-      rateLabel: getRateSourceDisplayLabel(point.rateSource, language),
-      eventLabels:
-        point.events?.map((event) =>
-          getSimulationEventDisplayLabel(event.type, language),
-        ) ?? [],
-    })),
+    ...normalizedTimeline,
   ];
 
   return aggregateBondChartDisplayPoints(rawPoints, chartStep);
+}
+
+export function normalizeBondChartDisplayTimeline(
+  timeline: YearlyTimelinePoint[],
+  language: AppLanguage,
+  comparisonScenarios?: {
+    low: YearlyTimelinePoint[];
+    high: YearlyTimelinePoint[];
+  },
+): NormalizedBondDisplayPoint[] {
+  return timeline.map((point, index) => ({
+    key: `${point.cycleIndex}-${point.periodLabel}-${point.cycleEndDate}`,
+    dateKey: point.cycleEndDate,
+    xLabel: formatMonthYear(point.cycleEndDate, language),
+    nominal: Number(point.totalValue.toFixed(2)),
+    real: Number(point.realValue.toFixed(2)),
+    inflation: point.inflationReference,
+    nbp: point.nbpReference,
+    low: comparisonScenarios?.low[index]?.totalValue,
+    high: comparisonScenarios?.high[index]?.totalValue,
+    isProjected: Boolean(point.isProjected),
+    isMaturity: point.isMaturity,
+    rateLabel: getRateSourceDisplayLabel(point.rateSource, language),
+    interestRate: point.interestRate,
+    eventLabels:
+      point.events?.map((event) =>
+        getSimulationEventDisplayLabel(event.type, language),
+      ) ?? [],
+  }));
 }
 
 function aggregateBondChartDisplayPoints(

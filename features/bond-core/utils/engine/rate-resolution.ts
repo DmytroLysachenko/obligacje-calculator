@@ -23,6 +23,7 @@ export function determineInterestRate(
   margin: number,
   isInflationIndexed: boolean,
   inflationLagValue?: number,
+  nbpLagValue?: number,
   customInflationValue?: number,
   customNbpValue?: number
 ): Decimal {
@@ -36,7 +37,11 @@ export function determineInterestRate(
     const isFirstMonth = monthsIntoCycle === 0;
     if (isFirstMonth) return new Decimal(firstYearRate);
 
-    const baseNbp = customNbpValue !== undefined ? customNbpValue : expectedNbpRate;
+    const baseNbp = customNbpValue !== undefined
+      ? customNbpValue
+      : nbpLagValue !== undefined
+        ? nbpLagValue
+        : expectedNbpRate;
     return Decimal.max(0, baseNbp).plus(margin);
   }
 

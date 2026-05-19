@@ -18,6 +18,7 @@ interface ComparisonVerdictProps {
   inputsB: BondInputs;
   expectedInflation: number;
   taxStrategy?: TaxStrategy;
+  showRealValue: boolean;
   formatCurrency: (val: number) => string;
 }
 
@@ -28,6 +29,7 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
   inputsB,
   expectedInflation,
   taxStrategy,
+  showRealValue,
   formatCurrency,
 }) => {
   const { t, language } = useLanguage();
@@ -35,18 +37,24 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
     language === 'pl' ? 'Migawka scenariusza' : 'Scenario snapshot';
   const higherText =
     language === 'pl'
-      ? 'ma obecnie wyzsza modelowana wyplate netto'
-      : 'currently shows the higher modeled net payout';
+      ? showRealValue
+        ? 'ma obecnie wyzsza wartosc realna'
+        : 'ma obecnie wyzsza modelowana wyplate netto'
+      : showRealValue
+        ? 'currently shows the higher real value'
+        : 'currently shows the higher modeled net payout';
   const overText = language === 'pl' ? 'dla horyzontu' : 'for a';
+  const resultAValue = showRealValue ? resultsA.finalRealValue : resultsA.netPayoutValue;
+  const resultBValue = showRealValue ? resultsB.finalRealValue : resultsB.netPayoutValue;
   const betterBondType =
-    resultsA.netPayoutValue > resultsB.netPayoutValue
+    resultAValue > resultBValue
       ? inputsA.bondType
       : inputsB.bondType;
   const betterScenarioLabel =
-    resultsA.netPayoutValue > resultsB.netPayoutValue
+    resultAValue > resultBValue
       ? t('comparison.scenario_a')
       : t('comparison.scenario_b');
-  const gap = Math.abs(resultsA.netPayoutValue - resultsB.netPayoutValue);
+  const gap = Math.abs(resultAValue - resultBValue);
   const horizonYears = Math.max(
     resultsA.timeline.length / 12,
     resultsB.timeline.length / 12,
@@ -67,7 +75,7 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
               <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
                 <span
                   className={
-                    resultsA.netPayoutValue > resultsB.netPayoutValue
+                    resultAValue > resultBValue
                       ? 'text-2xl font-black text-blue-700'
                       : 'text-2xl font-black text-emerald-700'
                   }
@@ -96,7 +104,7 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
             </div>
 
             <div className="flex flex-wrap gap-2 pt-2">
-              {resultsA.netPayoutValue > resultsB.netPayoutValue ? (
+              {resultAValue > resultBValue ? (
                 <Badge
                   variant="outline"
                   className="border-blue-200 bg-blue-50 text-xs font-semibold text-blue-700"
@@ -151,7 +159,7 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
               </p>
               <p className="text-2xl font-black text-primary">
                 {Math.abs(
-                  (resultsA.netPayoutValue / Math.max(1, resultsB.netPayoutValue) -
+                  (resultAValue / Math.max(1, resultBValue) -
                     1) *
                     100,
                 ).toFixed(1)}

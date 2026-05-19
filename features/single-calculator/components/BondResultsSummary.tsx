@@ -58,13 +58,21 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
   };
 
   const horizonLabel = inputs.investmentHorizonMonths ?? Math.round(inputs.duration * 12);
+  const headlineValue = inputs.showRealValue
+    ? results.finalRealValue
+    : results.netPayoutValue;
+  const headlineLabel = inputs.showRealValue
+    ? t('bonds.real_value_inflation')
+    : t('bonds.net_payout');
 
   const primarySummaryCards = [
     {
-      label: t('bonds.net_payout'),
-      value: formatCurrency(results.netPayoutValue),
+      label: headlineLabel,
+      value: formatCurrency(headlineValue),
       tone: 'text-emerald-700',
-      description: t('bonds.actual_cash_in_hand'),
+      description: inputs.showRealValue
+        ? t('bonds.explanation_inflation')
+        : t('bonds.actual_cash_in_hand'),
     },
     {
       label: t('common.net_profit'),
@@ -120,7 +128,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
     <div className="space-y-10">
       <ResultSummaryHero
         eyebrow={t('bonds.results.summary_eyebrow')}
-        value={formatCurrency(results.netPayoutValue)}
+        value={formatCurrency(headlineValue)}
         description={t('bonds.results.summary_description')}
         narrative={summaryNarrative}
         actions={[
