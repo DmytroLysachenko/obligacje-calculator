@@ -123,6 +123,20 @@ export const MarketAssumptionsForm = ({
   return (
     <div className="space-y-6">
       <div className="space-y-4">
+        <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 text-[11px] leading-5 text-slate-600">
+          {isInflationIndexedBond
+            ? language === 'pl'
+              ? 'Dla obligacji indeksowanych CPI zmienia przyszle kupony po okresie otwarcia oraz wartosc realna.'
+              : 'For indexed bonds, CPI changes future coupons after the opening period and also affects real-value readouts.'
+            : isNbpRelevant
+              ? language === 'pl'
+                ? 'Dla ROR i DOR CPI nie zmienia kuponu. Kupon po pierwszym okresie zalezy od NBP, a inflacja sluzy tu glownie do pokazywania sily nabywczej.'
+                : 'For ROR and DOR, CPI does not change the coupon. Later coupons follow NBP, while inflation here is mainly for purchasing-power readouts.'
+              : language === 'pl'
+                ? 'Dla tej obligacji inflacja nie zmienia kuponu. To zalozenie sluzy glownie do pokazywania sily nabywczej i wartosci realnej.'
+                : 'For this bond, inflation does not change the coupon. This assumption mainly drives purchasing-power and real-value display.'}
+        </div>
+
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Label
@@ -250,8 +264,8 @@ export const MarketAssumptionsForm = ({
         ) : (
           <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 text-[11px] leading-5 text-slate-600">
             {language === 'pl'
-              ? 'Dla tej obligacji inflacja nie zmienia kuponu. To pole sluzy tylko do pokazania sily nabywczej i wartosci realnej.'
-              : 'For this bond, inflation does not change the coupon. This input only affects purchasing-power and real-value display.'}
+              ? 'Scenariusze CPI po pierwszym roku sa ukryte, bo ta obligacja nie resetuje kuponu inflacja. Zmienia sie tylko odczyt wartosci realnej.'
+              : 'Post-year-one CPI scenarios stay hidden because this bond does not reset its coupon with inflation. Only the real-value readout changes.'}
           </div>
         )}
       </div>
@@ -277,6 +291,11 @@ export const MarketAssumptionsForm = ({
             unit="%"
             onCommit={(value) => onUpdate('expectedNbpRate', value)}
           />
+          <p className="text-[11px] leading-5 text-muted-foreground">
+            {language === 'pl'
+              ? 'Ta sciezka NBP steruje kolejnymi okresami po wydanym okresie otwarcia. Pierwszy miesiac nadal bierze stawke z aktywnej oferty emisji.'
+              : 'This NBP path drives later periods after the issued opening offer. The first month still uses the active issued offer rate.'}
+          </p>
         </div>
       ) : null}
     </div>
