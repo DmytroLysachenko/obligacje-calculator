@@ -4,6 +4,7 @@ export function buildTimelineExportHeaders(
   t: TranslateFn,
 ) {
   return {
+    date: t('common.as_of'),
     period: t('bonds.calculation_trace.header_year'),
     capital: t('bonds.calculation_trace.header_capital'),
     rate: t('bonds.calculation_trace.header_rate'),
@@ -44,9 +45,18 @@ export function buildComparisonExportHeaders(
   t: TranslateFn,
 ) {
   return {
+    date: t('common.as_of'),
     period: t('common.period'),
+    cycleA: `${t('comparison.scenario_a')} ${t('bonds.cycle')}`,
+    cycleB: `${t('comparison.scenario_b')} ${t('bonds.cycle')}`,
+    cadenceA: `${t('comparison.scenario_a')} ${t('common.meaning')}`,
+    cadenceB: `${t('comparison.scenario_b')} ${t('common.meaning')}`,
     scenarioA: `${t('comparison.scenario_a')} ${t('bonds.final_nominal_value')}`,
     scenarioB: `${t('comparison.scenario_b')} ${t('bonds.final_nominal_value')}`,
+    realValueA: `${t('comparison.scenario_a')} ${t('common.real_value')}`,
+    realValueB: `${t('comparison.scenario_b')} ${t('common.real_value')}`,
+    cashPaidA: `${t('comparison.scenario_a')} ${t('bonds.interest_payment')}`,
+    cashPaidB: `${t('comparison.scenario_b')} ${t('bonds.interest_payment')}`,
     leader: t('comparison.table_title'),
     netProfitA: `${t('comparison.scenario_a')} ${t('common.net_profit')}`,
     netProfitB: `${t('comparison.scenario_b')} ${t('common.net_profit')}`,

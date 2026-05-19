@@ -74,6 +74,7 @@ describe('retained export helpers', () => {
 
     expect(downloadSpy).toHaveBeenCalledOnce();
     expect(downloadSpy.mock.calls[0]?.[1]).toBe('bond_comparison_ROR_vs_DOR_2026-05-18.csv');
+    expect(downloadSpy.mock.calls[0]?.[0]).toContain('Scenario A');
 
     downloadSpy.mockRestore();
   });

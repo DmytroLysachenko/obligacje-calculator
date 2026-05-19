@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { convertLotsToCSV, convertTimelineToCSV } from './csv-utils';
-import { buildLotsExportHeaders, buildTimelineExportHeaders } from './export-headers';
+import { convertComparisonToCSV, convertLotsToCSV, convertTimelineToCSV } from './csv-utils';
+import { buildComparisonExportHeaders, buildLotsExportHeaders, buildTimelineExportHeaders } from './export-headers';
 import { t } from '@/i18n';
 import type { YearlyTimelinePoint, LotBreakdown } from '@/features/bond-core/types';
 import { SimulationEventType } from '@/features/bond-core/types/simulation';
@@ -92,5 +92,96 @@ describe('csv-utils', () => {
     expect(csv).toContain('"2026-05-14"');
     expect(csv).toContain('1200,50');
     expect(csv).toContain('10972,40');
+  });
+
+  it('adds an explicit export date column to single-bond timeline csv output', () => {
+    const headers = buildTimelineExportHeaders((key) => t(key, undefined, 'en'));
+    const timeline = [
+      {
+        periodLabel: 'Jun 2026',
+        cycleIndex: 1,
+        cycleStartDate: '2026-06-01',
+        cycleEndDate: '2026-06-30T00:00:00.000Z',
+        interestRate: 5.25,
+        rateSource: 'historical_nbp',
+        nominalValueBeforeInterest: 10000,
+        interestEarned: 43,
+        taxDeducted: 0,
+        netInterest: 43,
+        nominalValueAfterInterest: 10000,
+        accumulatedNetInterest: 43,
+        totalValue: 10043,
+        realValue: 9950,
+        netProfit: 43,
+        earlyWithdrawalValue: 10021,
+        isMaturity: false,
+        isWithdrawal: false,
+        cumulativeInflation: 1.02,
+      },
+    ] as unknown as YearlyTimelinePoint[];
+
+    const csv = convertTimelineToCSV(timeline, headers, 'en');
+
+    expect(csv).toContain('As of');
+    expect(csv).toContain('"2026-06-30"');
+  });
+
+  it('builds a combined comparison csv aligned by actual calendar date', () => {
+    const headers = buildComparisonExportHeaders((key) => t(key, undefined, 'en'));
+    const timelineA = [
+      {
+        periodLabel: 'Jun 2026',
+        cycleIndex: 1,
+        cycleStartDate: '2026-06-01',
+        cycleEndDate: '2026-06-30',
+        interestRate: 5.25,
+        rateSource: 'historical_nbp',
+        nominalValueBeforeInterest: 10000,
+        interestEarned: 43,
+        taxDeducted: 0,
+        netInterest: 43,
+        nominalValueAfterInterest: 10000,
+        accumulatedNetInterest: 43,
+        totalValue: 10043,
+        realValue: 9950,
+        netProfit: 43,
+        earlyWithdrawalValue: 10021,
+        isMaturity: false,
+        isWithdrawal: false,
+        cumulativeInflation: 1.02,
+        events: [{ type: SimulationEventType.PAYOUT, date: '2026-06-30', description: 'Monthly payout' }],
+      },
+    ] as unknown as YearlyTimelinePoint[];
+    const timelineB = [
+      {
+        periodLabel: 'Jul 2026',
+        cycleIndex: 1,
+        cycleStartDate: '2026-06-01',
+        cycleEndDate: '2026-07-31',
+        interestRate: 6,
+        rateSource: 'fixed_rate',
+        nominalValueBeforeInterest: 10000,
+        interestEarned: 100,
+        taxDeducted: 0,
+        netInterest: 100,
+        nominalValueAfterInterest: 10100,
+        accumulatedNetInterest: 0,
+        totalValue: 10100,
+        realValue: 9990,
+        netProfit: 100,
+        earlyWithdrawalValue: 10070,
+        isMaturity: false,
+        isWithdrawal: false,
+        cumulativeInflation: 1.01,
+        events: [{ type: SimulationEventType.INTEREST_ACCRUAL, date: '2026-07-31', description: 'Accrual' }],
+      },
+    ] as unknown as YearlyTimelinePoint[];
+
+    const csv = convertComparisonToCSV(timelineA, timelineB, headers, 'en');
+
+    expect(csv).toContain('Scenario A Real Value');
+    expect(csv).toContain('Scenario B Interest Payment');
+    expect(csv).toContain('"2026-06-30"');
+    expect(csv).toContain('"2026-07-31"');
   });
 });

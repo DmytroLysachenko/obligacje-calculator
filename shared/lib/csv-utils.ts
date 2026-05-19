@@ -28,6 +28,14 @@ export function downloadJsonFile(payload: unknown, fileName: string) {
 
 const SEPARATOR = ';';
 
+function formatExportDate(value: string | undefined) {
+  if (!value) {
+    return '';
+  }
+
+  return value.includes('T') ? value.split('T')[0] : value;
+}
+
 function formatCsvValue(
   value: unknown,
   language: AppLanguage,
@@ -61,6 +69,7 @@ export function convertTimelineToCSV(
   const csvRows: string[] = [];
   const displayRows = buildBondTimelineDisplayRows(timeline, language);
   const columns = [
+    { key: 'date', header: headers.date || 'Date' },
     { key: 'periodLabel', header: headers.period || 'Period' },
     { key: 'cycleLabel', header: headers.cycle || t('bonds.cycle', undefined, language) },
     { key: 'cadenceLabel', header: headers.cadence || t('common.meaning', undefined, language) },
@@ -89,10 +98,14 @@ export function convertTimelineToCSV(
 
   csvRows.push(columns.map((column) => column.header).join(SEPARATOR));
 
-  for (const point of displayRows) {
+  for (const [index, point] of displayRows.entries()) {
+    const exportRow = {
+      date: formatExportDate(timeline[index]?.cycleEndDate),
+      ...point,
+    };
     const row = columns.map((column) =>
       formatCsvValue(
-        (point as unknown as Record<string, unknown>)[column.key],
+        (exportRow as unknown as Record<string, unknown>)[column.key],
         language,
       ),
     );
@@ -128,7 +141,7 @@ export function convertLotsToCSV(
       const value = (lot as unknown as Record<string, unknown>)[column.key];
 
       if (typeof value === 'string' && value.includes('T')) {
-        return `"${value.split('T')[0]}"`;
+        return `"${formatExportDate(value)}"`;
       }
 
       return formatCsvValue(value, language);
@@ -147,12 +160,20 @@ export function convertComparisonToCSV(
 ) {
   const rowsA = buildBondTimelineDisplayRows(timelineA, language);
   const rowsB = buildBondTimelineDisplayRows(timelineB, language);
-  const rowCount = Math.max(rowsA.length, rowsB.length);
   const csvRows: string[] = [];
   const columns = [
+    { key: 'date', header: headers.date || 'Date' },
     { key: 'periodLabel', header: headers.period || 'Period' },
+    { key: 'cycleA', header: headers.cycleA || 'Scenario A cycle' },
+    { key: 'cycleB', header: headers.cycleB || 'Scenario B cycle' },
+    { key: 'cadenceA', header: headers.cadenceA || 'Scenario A meaning' },
+    { key: 'cadenceB', header: headers.cadenceB || 'Scenario B meaning' },
     { key: 'scenarioA', header: headers.scenarioA || 'Scenario A total wealth' },
     { key: 'scenarioB', header: headers.scenarioB || 'Scenario B total wealth' },
+    { key: 'realValueA', header: headers.realValueA || 'Scenario A real value' },
+    { key: 'realValueB', header: headers.realValueB || 'Scenario B real value' },
+    { key: 'cashPaidA', header: headers.cashPaidA || 'Scenario A cash paid out' },
+    { key: 'cashPaidB', header: headers.cashPaidB || 'Scenario B cash paid out' },
     { key: 'leader', header: headers.leader || 'Ahead in this row' },
     { key: 'netProfitA', header: headers.netProfitA || 'Scenario A net profit' },
     { key: 'netProfitB', header: headers.netProfitB || 'Scenario B net profit' },
@@ -162,9 +183,42 @@ export function convertComparisonToCSV(
 
   csvRows.push(columns.map((column) => column.header).join(SEPARATOR));
 
-  for (let index = 0; index < rowCount; index += 1) {
-    const rowA = rowsA[index];
-    const rowB = rowsB[index];
+  const rowMap = new Map<string, {
+    date: string;
+    periodLabel: string;
+    rowA?: (typeof rowsA)[number];
+    rowB?: (typeof rowsB)[number];
+  }>();
+
+  for (const [index, rowA] of rowsA.entries()) {
+    const date = formatExportDate(timelineA[index]?.cycleEndDate);
+    const existing = rowMap.get(date) ?? {
+      date,
+      periodLabel: rowA.periodLabel,
+    };
+    existing.rowA = rowA;
+    existing.periodLabel = existing.periodLabel || rowA.periodLabel;
+    rowMap.set(date, existing);
+  }
+
+  for (const [index, rowB] of rowsB.entries()) {
+    const date = formatExportDate(timelineB[index]?.cycleEndDate);
+    const existing = rowMap.get(date) ?? {
+      date,
+      periodLabel: rowB.periodLabel,
+    };
+    existing.rowB = rowB;
+    existing.periodLabel = existing.periodLabel || rowB.periodLabel;
+    rowMap.set(date, existing);
+  }
+
+  const sortedRows = Array.from(rowMap.values()).sort((left, right) =>
+    left.date.localeCompare(right.date),
+  );
+
+  for (const entry of sortedRows) {
+    const rowA = entry.rowA;
+    const rowB = entry.rowB;
     const leader =
       rowA && rowB
         ? rowA.totalWealth === rowB.totalWealth
@@ -179,9 +233,18 @@ export function convertComparisonToCSV(
             : '';
 
     const row = [
-      formatCsvValue(rowA?.periodLabel ?? rowB?.periodLabel ?? '', language),
+      formatCsvValue(entry.date, language),
+      formatCsvValue(entry.periodLabel, language),
+      formatCsvValue(rowA?.cycleLabel ?? '', language),
+      formatCsvValue(rowB?.cycleLabel ?? '', language),
+      formatCsvValue(rowA?.cadenceLabel ?? '', language),
+      formatCsvValue(rowB?.cadenceLabel ?? '', language),
       formatCsvValue(rowA?.totalWealth ?? '', language),
       formatCsvValue(rowB?.totalWealth ?? '', language),
+      formatCsvValue(rowA?.realValue ?? '', language),
+      formatCsvValue(rowB?.realValue ?? '', language),
+      formatCsvValue(rowA?.paidOutCash ?? '', language),
+      formatCsvValue(rowB?.paidOutCash ?? '', language),
       formatCsvValue(leader, language),
       formatCsvValue(rowA?.netProfit ?? '', language),
       formatCsvValue(rowB?.netProfit ?? '', language),
