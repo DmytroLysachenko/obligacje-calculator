@@ -399,4 +399,41 @@ describe('Comparison override invariants', () => {
       new Date(scenarioB?.timeline.at(-1)?.cycleEndDate ?? '').getTime(),
     );
   });
+
+  it('automatically rolls short bonds in comparison scenarios when the shared horizon exceeds one native term', async () => {
+    const purchaseDate = toDateString(today);
+    const sharedHorizonMonths = 48;
+
+    const envelope = await calculationService.calculate({
+      kind: ScenarioKind.BOND_COMPARISON,
+      payload: {
+        mode: 'independent',
+        sharedConfig: {
+          initialInvestment: 10000,
+          purchaseDate,
+          withdrawalDate: getWithdrawalDateFromMonths(purchaseDate, sharedHorizonMonths),
+          expectedInflation: 3.5,
+          expectedNbpRate: 5.25,
+          taxStrategy: TaxStrategy.STANDARD,
+          timingMode: 'general',
+          investmentHorizonMonths: sharedHorizonMonths,
+        },
+        scenarioA: {
+          bondType: BondType.ROR,
+        },
+        scenarioB: {
+          bondType: BondType.DOR,
+        },
+      },
+    });
+
+    const comparisonResult = envelope.result as BondComparisonScenarioItem[];
+    const scenarioA = comparisonResult.find((item) => item.scenarioKey === 'scenarioA')?.result;
+    const scenarioB = comparisonResult.find((item) => item.scenarioKey === 'scenarioB')?.result;
+
+    expect(scenarioA?.timeline.some((point) => point.cycleIndex > 1)).toBe(true);
+    expect(scenarioB?.timeline.some((point) => point.cycleIndex > 1)).toBe(true);
+    expect(scenarioA?.isEarlyWithdrawal).toBe(false);
+    expect(scenarioB?.isEarlyWithdrawal).toBe(false);
+  });
 });
