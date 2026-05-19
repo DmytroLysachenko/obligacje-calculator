@@ -15,6 +15,7 @@
     "seed:market-history": "tsx lib/sync/seed-market-history.ts",
     "db:seed:production": "tsx lib/sync/seed-production-bonds.ts && tsx lib/sync/seed-production-data.ts",
     "sync:market-history": "tsx lib/sync/sync-market-history.ts",
+    "sync:bond-offers": "tsx lib/sync/run-full-sync.ts",
     "sync:full": "tsx lib/sync/run-full-sync.ts",
     "prepare": "husky"
   },
