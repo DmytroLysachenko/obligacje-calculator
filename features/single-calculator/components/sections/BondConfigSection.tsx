@@ -15,7 +15,6 @@ import { GLOSSARY } from '@/shared/constants/glossary';
 import { cn } from '@/lib/utils';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
-import { RateContextNote } from '@/shared/components/RateContextNote';
 
 interface BondSeries {
   id: string;
@@ -200,13 +199,6 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
               ))}
             </SelectContent>
           </Select>
-          <RateContextNote
-            narrative={rateContext.narrative}
-            badges={[
-              currentDef.fullName[language],
-              rateContext.styleLabel,
-            ]}
-          />
         </div>
         
         <div className="space-y-2 rounded-lg border border-primary/10 bg-primary/5 p-4 text-sm">
@@ -229,6 +221,9 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
           </div>
           <p className="text-muted-foreground leading-relaxed italic">
             {currentDef.description[language]}
+          </p>
+          <p className="text-muted-foreground leading-relaxed">
+            {rateContext.narrative}
           </p>
           <p className="text-muted-foreground leading-relaxed">
             {currentBondSupport.description}

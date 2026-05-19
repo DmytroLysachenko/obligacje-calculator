@@ -210,6 +210,14 @@ function shouldPreferBootstrapFirstPeriodRate(
     && (symbol === BondType.ROR || symbol === BondType.DOR);
 }
 
+function isBondOfferFresh(updatedAt?: Date | null) {
+  if (!updatedAt) {
+    return false;
+  }
+
+  return differenceInDays(new Date(), updatedAt) <= 45;
+}
+
 export function mergeBondDefinitionsWithSeries(
   bonds: PolishBond[],
   series: BondSeries[],
@@ -226,6 +234,13 @@ export function mergeBondDefinitionsWithSeries(
     const symbol = bond.symbol as BondType;
     const bootstrap = fallbackDefinitions[symbol];
     const activeSeries = activeSeriesByBondTypeId[bond.id];
+    const useDatabaseFallback = isBondOfferFresh(bond.updatedAt);
+    const fallbackFirstYearRate = useDatabaseFallback
+      ? parseNumeric(bond.firstYearRate, bootstrap.firstYearRate)
+      : bootstrap.firstYearRate;
+    const fallbackMargin = useDatabaseFallback
+      ? parseNumeric(bond.baseMargin, bootstrap.margin)
+      : bootstrap.margin;
 
     return {
       type: symbol,
@@ -254,10 +269,10 @@ export function mergeBondDefinitionsWithSeries(
         ? parseNumeric(activeSeries.firstYearRate, bootstrap.firstYearRate)
         : shouldPreferBootstrapFirstPeriodRate(bond, symbol)
           ? bootstrap.firstYearRate
-          : parseNumeric(bond.firstYearRate, bootstrap.firstYearRate),
+          : fallbackFirstYearRate,
       margin: activeSeries
         ? parseNumeric(activeSeries.baseMargin, bootstrap.margin)
-        : parseNumeric(bond.baseMargin, bootstrap.margin),
+        : fallbackMargin,
       earlyWithdrawalFee: parseNumeric(bond.withdrawalFee, bootstrap.earlyWithdrawalFee),
       isInflationIndexed:
         bond.interestType === 'inflation_linked'

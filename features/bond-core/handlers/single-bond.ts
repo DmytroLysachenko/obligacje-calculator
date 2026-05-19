@@ -5,17 +5,27 @@ import {
 import { BondInputs, TaxStrategy, CalculationResult } from '../types';
 import { BondInputsSchema } from '../types/schemas';
 import { calculateBondInvestment } from '../utils/calculations';
+import { BOND_DEFINITIONS } from '../constants/bond-definitions';
 import { getTaxRulesForYear, getHistoricalAverages } from '@/lib/data-access';
 import { BaseHandler, ScenarioHandler, HandlerContext } from './base';
 import { getYear, parseISO } from 'date-fns';
 import { resolveBondOfferTerms } from '@/lib/bond-series';
+import { getHorizonMonths } from '@/shared/lib/date-timing';
+
+function shouldAutoRollover(inputs: BondInputs, durationYears: number) {
+  const nativeDurationMonths = Math.max(1, Math.round(durationYears * 12));
+  const horizonMonths = inputs.investmentHorizonMonths
+    ?? getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);
+
+  return horizonMonths > nativeDurationMonths;
+}
 
 export class SingleBondHandler extends BaseHandler implements ScenarioHandler<BondInputs, CalculationResult> {
   kind = ScenarioKind.SINGLE_BOND;
 
   async handle(payload: BondInputs, context: HandlerContext): Promise<SingleBondCalculationEnvelope> {
     const validatedInputs = BondInputsSchema.parse(payload);
-    const def = context.dbDefinitions[validatedInputs.bondType];
+    const def = context.dbDefinitions[validatedInputs.bondType] ?? BOND_DEFINITIONS[validatedInputs.bondType];
     const resolvedOffer = await resolveBondOfferTerms(
       validatedInputs.bondType,
       validatedInputs.purchaseDate,
@@ -52,27 +62,33 @@ export class SingleBondHandler extends BaseHandler implements ScenarioHandler<Bo
 
     const warnings = this.buildHistoricalDataWarnings(inputsToCalculate.historicalData);
     const assumptions = this.generateAssumptions(inputsToCalculate);
+    const resolvedRollover = shouldAutoRollover(inputsToCalculate, def.duration);
     if (resolvedOffer.source === 'series' && resolvedOffer.seriesCode) {
       assumptions.push(`Issued series resolved: ${resolvedOffer.seriesCode}`);
     } else {
       assumptions.push('Using the current generic bond definition because no issued series was resolved.');
     }
+    assumptions.push(
+      resolvedRollover
+        ? 'Automatic rollover enabled because the selected horizon exceeds one native bond cycle.'
+        : 'Single-cycle path used because the selected horizon stays within the native bond term.',
+    );
 
     const result = calculateBondInvestment({
       ...inputsToCalculate,
-      rollover: inputsToCalculate.rollover ?? false,
+      rollover: resolvedRollover,
     } as BondInputs & { rollover: boolean });
 
     if (inputsToCalculate.inflationScenario) {
       const lowResult = calculateBondInvestment({
         ...inputsToCalculate,
         expectedInflation: (enrichedInputs.expectedInflation || 0) - 1.5,
-        rollover: inputsToCalculate.rollover ?? false,
+        rollover: resolvedRollover,
       } as BondInputs & { rollover: boolean });
       const highResult = calculateBondInvestment({
         ...inputsToCalculate,
         expectedInflation: (enrichedInputs.expectedInflation || 0) + 2.5,
-        rollover: inputsToCalculate.rollover ?? false,
+        rollover: resolvedRollover,
       } as BondInputs & { rollover: boolean });
       result.comparisonScenarios = {
         low: lowResult.timeline,
@@ -84,7 +100,7 @@ export class SingleBondHandler extends BaseHandler implements ScenarioHandler<Bo
       const standardResult = calculateBondInvestment({
         ...inputsToCalculate,
         taxStrategy: TaxStrategy.STANDARD,
-        rollover: inputsToCalculate.rollover ?? false,
+        rollover: resolvedRollover,
       } as BondInputs & { rollover: boolean });
       result.taxSavings = standardResult.totalTax - result.totalTax;
     }
@@ -101,14 +117,14 @@ export class SingleBondHandler extends BaseHandler implements ScenarioHandler<Bo
     const wrapperPart = calculateBondInvestment({
       ...inputs,
       initialInvestment: limit,
-      rollover: inputs.rollover ?? false,
+      rollover: shouldAutoRollover(inputs, inputs.duration),
     } as BondInputs & { rollover: boolean });
 
     const standardPart = calculateBondInvestment({
       ...inputs,
       initialInvestment: inputs.initialInvestment - limit,
       taxStrategy: TaxStrategy.STANDARD,
-      rollover: inputs.rollover ?? false,
+      rollover: shouldAutoRollover(inputs, inputs.duration),
     } as BondInputs & { rollover: boolean });
 
     const aggregatedResult: CalculationResult = {
@@ -156,7 +172,7 @@ export class SingleBondHandler extends BaseHandler implements ScenarioHandler<Bo
     const fullStandardResult = calculateBondInvestment({
       ...inputs,
       taxStrategy: TaxStrategy.STANDARD,
-      rollover: inputs.rollover ?? false,
+      rollover: shouldAutoRollover(inputs, inputs.duration),
     } as BondInputs & { rollover: boolean });
     aggregatedResult.taxSavings = fullStandardResult.totalTax - aggregatedResult.totalTax;
 

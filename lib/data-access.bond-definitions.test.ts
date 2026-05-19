@@ -126,6 +126,37 @@ describe('mergeBondDefinitionsWithSeries', () => {
     expect(defs[0].description.pl).toBe(BOND_DEFINITIONS[BondType.COI].description.pl);
   });
 
+  it('falls back to curated current offer data when database bond terms are stale', () => {
+    const defs = mergeBondDefinitionsWithSeries(
+      [
+        makeBond({
+          id: 'bond-edo',
+          symbol: BondType.EDO,
+          fullName: 'Emerytalne Dziesiecioletnie Oszczednosciowe',
+          fullNameEn: 'Ten-year inflation-linked savings bond',
+          description: null,
+          descriptionEn: null,
+          durationDays: 3650,
+          payoutFreqDays: 0,
+          capitalizationFreqDays: 365,
+          interestType: 'inflation_linked',
+          firstYearRate: '7.25',
+          baseMargin: '1.25',
+          withdrawalFee: '3.00',
+          rolloverDiscount: '0.10',
+          updatedAt: new Date('2026-01-10T00:00:00.000Z'),
+        }),
+      ],
+      [],
+      BOND_DEFINITIONS,
+      '2026-05-16',
+    );
+
+    expect(defs[0].type).toBe(BondType.EDO);
+    expect(defs[0].firstYearRate).toBe(BOND_DEFINITIONS[BondType.EDO].firstYearRate);
+    expect(defs[0].margin).toBe(BOND_DEFINITIONS[BondType.EDO].margin);
+  });
+
   it('prefers bootstrap first-month offer rates for floating bonds when no active issued series exists', () => {
     const defs = mergeBondDefinitionsWithSeries(
       [

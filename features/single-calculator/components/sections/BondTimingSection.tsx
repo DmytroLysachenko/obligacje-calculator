@@ -39,6 +39,8 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
   const { t, language } = useLanguage();
   const dateLocale = language === 'pl' ? pl : enGB;
   const isFutureDate = isAfter(parseISO(inputs.purchaseDate), new Date());
+  const durationMonths = Math.round(currentDef.duration * 12);
+  const autoRollover = investmentHorizonMonths > durationMonths;
 
   return (
     <div className="space-y-6 pb-6">
@@ -210,17 +212,21 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
         </div>
       )}
 
-      <div className="flex items-center justify-between p-4 bg-primary/5 rounded-xl border border-primary/10">
+      <div className="rounded-xl border border-primary/10 bg-primary/5 p-4">
         <div className="space-y-0.5">
-          <Label className="text-sm font-bold text-primary">{t('bonds.reinvest')}</Label>
-          <p className="text-[10px] text-muted-foreground font-medium italic">
-            {t('bonds.rollover_desc')}
+          <Label className="text-sm font-bold text-primary">
+            {language === 'pl' ? 'Rolowanie obslugiwane automatycznie' : 'Rollover handled automatically'}
+          </Label>
+          <p className="text-[10px] font-medium italic text-muted-foreground">
+            {autoRollover
+              ? language === 'pl'
+                ? 'Horyzont przekracza natywny termin tej obligacji, wiec kalkulator automatycznie laczy kolejne cykle zamiast wymagac osobnego przelacznika.'
+                : 'The horizon outlasts this bond, so the calculator automatically chains follow-on cycles instead of asking for a separate toggle.'
+              : language === 'pl'
+                ? 'Horyzont miesci sie w jednym cyklu, wiec wynik pokazuje pojedynczy zakup i ewentualny koszt wczesniejszego wykupu.'
+                : 'The horizon stays within one native cycle, so the result shows a single purchase plus any early-exit fee if needed.'}
           </p>
         </div>
-        <Switch
-          checked={!!inputs.rollover}
-          onCheckedChange={(checked) => onUpdate('rollover', checked)}
-        />
       </div>
     </div>
   );

@@ -63,8 +63,8 @@ export function useRegularInvestmentCalculator() {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setInputs(prev => ({
         ...prev,
-        firstYearRate: prev.firstYearRate === fallbackInputs.firstYearRate ? def.firstYearRate : prev.firstYearRate,
-        margin: prev.margin === fallbackInputs.margin ? def.margin : prev.margin,
+        firstYearRate: def.firstYearRate,
+        margin: def.margin,
         duration: def.duration,
         earlyWithdrawalFee: def.earlyWithdrawalFee,
         isCapitalized: def.isCapitalized,

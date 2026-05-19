@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
 import { BondInputs, BondType } from '@/features/bond-core/types';
-
 import { TrendingUp, History, Target, AlertTriangle } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useChartData } from '@/shared/hooks/useChartData';
@@ -38,12 +37,28 @@ interface MarketAssumptionsFormProps {
   inflationHorizonYears?: number;
 }
 
+const INDEXED_BONDS = new Set<BondType>([
+  BondType.COI,
+  BondType.EDO,
+  BondType.ROS,
+  BondType.ROD,
+]);
+
 const HistoricalInflationContent = () => {
   const { t } = useLanguage();
   const { data, isLoading } = useChartData<InflationApiResponse>('/api/charts/inflation');
-  
-  if (isLoading) return <div className="flex justify-center p-4"><History className="h-4 w-4 animate-spin" /></div>;
-  if (!data?.data) return <div className="p-4 text-sm italic text-muted-foreground">{t('common.no_data')}</div>;
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center p-4">
+        <History className="h-4 w-4 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!data?.data) {
+    return <div className="p-4 text-sm italic text-muted-foreground">{t('common.no_data')}</div>;
+  }
 
   const lastFew = data.data.slice(-5).reverse();
   const latest = data.data[data.data.length - 1];
@@ -55,20 +70,20 @@ const HistoricalInflationContent = () => {
         <span className="text-sm font-semibold tracking-[0.08em]">{t('bonds.historical_context')}</span>
       </div>
       <div className="space-y-2">
-        <div className="flex justify-between items-center bg-primary/5 p-2 rounded-lg border border-primary/10">
+        <div className="flex items-center justify-between rounded-lg border border-primary/10 bg-primary/5 p-2">
           <span className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">{t('bonds.latest_official')}</span>
           <span className="text-sm font-black text-primary">{latest.rate}% ({latest.date})</span>
         </div>
         <div className="grid grid-cols-1 gap-1">
-          {lastFew.map((item: InflationDataPoint, idx: number) => (
+          {lastFew.map((item, idx) => (
             <div key={idx} className="flex justify-between px-1 text-xs">
-              <span className="text-muted-foreground font-medium">{item.date}</span>
+              <span className="font-medium text-muted-foreground">{item.date}</span>
               <span className="font-bold">{item.rate}%</span>
             </div>
           ))}
         </div>
-        <div className="pt-2 border-t border-dashed">
-          <p className="text-[11px] leading-5 text-muted-foreground italic">
+        <div className="border-t border-dashed pt-2">
+          <p className="text-[11px] italic leading-5 text-muted-foreground">
             {t('bonds.nbp_target_hint', { target: '2.5%' })}
           </p>
         </div>
@@ -88,30 +103,32 @@ export const MarketAssumptionsForm = ({
   inflationHorizonYears = 10,
 }: MarketAssumptionsFormProps) => {
   const { t, language } = useLanguage();
+  const isInflationIndexedBond = INDEXED_BONDS.has(bondType);
+  const isNbpRelevant = bondType === BondType.ROR || bondType === BondType.DOR;
   const scenarioDescriptions = {
     low:
       language === 'pl'
-        ? 'Symuluje inflację o 1.5 p.p. niższą od założenia bazowego.'
-        : 'Simulates inflation 1.5 percentage points below your base assumption.',
+        ? 'Symuluje nizsza sciezke CPI po pierwszym roku, wiec przyszle kupony indeksowane rosna wolniej.'
+        : 'Simulates a lower CPI path after year one, so future indexed coupons rise more slowly.',
     base:
       language === 'pl'
-        ? 'Używa dokładnie wybranej przez Ciebie stopy inflacji.'
-        : 'Uses the exact inflation rate you selected.',
+        ? 'Uzywa dokladnie wybranej przez Ciebie sciezki CPI po pierwszym roku.'
+        : 'Uses the exact CPI path you selected after the first year.',
     high:
       language === 'pl'
-        ? 'Symuluje inflację o 2.5 p.p. wyższą od założenia bazowego.'
-        : 'Simulates inflation 2.5 percentage points above your base assumption.',
+        ? 'Symuluje wyzsza sciezke CPI po pierwszym roku, wiec przyszle kupony indeksowane rosna szybciej.'
+        : 'Simulates a higher CPI path after year one, so future indexed coupons rise faster.',
   } as const;
-
-  const isNbpRelevant = bondType === BondType.ROR || bondType === BondType.DOR;
 
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        {/* ... existing inflation slider and inputs ... */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Label htmlFor="expectedInflation" className={cn('font-semibold tracking-[0.08em] text-primary', compact ? 'text-xs' : 'text-sm')}>
+            <Label
+              htmlFor="expectedInflation"
+              className={cn('font-semibold tracking-[0.08em] text-primary', compact ? 'text-xs' : 'text-sm')}
+            >
               {t('bonds.inflation.rate')} (%)
             </Label>
             <Popover>
@@ -125,7 +142,12 @@ export const MarketAssumptionsForm = ({
               </PopoverContent>
             </Popover>
           </div>
-          <div className={cn('flex items-center gap-2 rounded-lg border bg-background px-3 py-1.5 font-black text-primary shadow-sm', compact ? 'text-xl' : 'text-[2rem]')}>
+          <div
+            className={cn(
+              'flex items-center gap-2 rounded-lg border bg-background px-3 py-1.5 font-black text-primary shadow-sm',
+              compact ? 'text-xl' : 'text-[2rem]',
+            )}
+          >
             {expectedInflation}%
             {expectedInflation <= 0 && <AlertTriangle className="h-4 w-4 text-orange-500" />}
             {Math.abs(expectedInflation - 2.5) <= 1 && <Target className="h-4 w-4 text-green-500" />}
@@ -133,18 +155,18 @@ export const MarketAssumptionsForm = ({
         </div>
 
         <div className="grid grid-cols-3 gap-2">
-          {[2.5, 6, -1].map((val) => (
-            <Button 
-              key={val}
-              variant="outline" 
-              size="sm" 
+          {[2.5, 6, -1].map((value) => (
+            <Button
+              key={value}
+              variant="outline"
+              size="sm"
               className={cn(
-                'h-9 text-[11px] font-semibold tracking-[0.08em]', 
-                expectedInflation === val && "bg-primary text-primary-foreground border-primary"
-              )} 
-              onClick={() => onUpdate('expectedInflation', val)}
+                'h-9 text-[11px] font-semibold tracking-[0.08em]',
+                expectedInflation === value && 'border-primary bg-primary text-primary-foreground',
+              )}
+              onClick={() => onUpdate('expectedInflation', value)}
             >
-              {val === 2.5 ? t('bonds.stable') : val === 6 ? t('bonds.high') : t('bonds.deflation')} ({val}%)
+              {value === 2.5 ? t('bonds.stable') : value === 6 ? t('bonds.high') : t('bonds.deflation')} ({value}%)
             </Button>
           ))}
         </div>
@@ -159,77 +181,93 @@ export const MarketAssumptionsForm = ({
           onCommit={(value) => onUpdate('expectedInflation', value)}
         />
 
-        <div className="space-y-3 pt-4 border-t border-dashed">
-          <Label className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">
-            {t('bonds.inflation.scenarios.label')}
-          </Label>
-          <div className="grid grid-cols-3 gap-2">
-            {(['low', 'base', 'high'] as const).map((s) => (
-              <Button
-                key={s}
-                variant="outline"
-                size="sm"
-              className={cn(
-                'h-9 min-w-0 text-[11px] font-semibold tracking-[0.08em]',
-                inflationScenario === s && "bg-primary/10 text-primary border-primary/50"
-              )}
-              onClick={() => onUpdate('inflationScenario', s)}
-            >
-                <span className="truncate">{t(`bonds.inflation.scenarios.${s}`)}</span>
-              </Button>
-            ))}
-          </div>
-          <p className="text-[11px] leading-5 text-muted-foreground italic">
-            {scenarioDescriptions[inflationScenario]}
-          </p>
-        </div>
-
-        <div className="mt-4 flex items-center justify-between rounded-lg border border-primary/10 bg-muted/30 p-3.5">
-          <Label className="text-sm font-semibold">{t('bonds.advanced_inflation')}</Label>
-          <Switch 
-            checked={!!customInflation} 
-            onCheckedChange={(checked) => {
-              if (checked) {
-                onUpdate(
-                  'customInflation',
-                  Array(Math.max(1, Math.round(inflationHorizonYears))).fill(expectedInflation),
-                );
-              } else {
-                onUpdate('customInflation', undefined);
-              }
-            }} 
-          />
-        </div>
-        
-        {customInflation && (
-          <div className="relative z-10 mt-4 grid max-h-64 grid-cols-2 gap-2 overflow-y-auto rounded-xl border bg-muted/20 p-2 custom-scrollbar md:grid-cols-3">
-            {customInflation.map((val, idx) => (
-              <div key={idx} className="flex items-center gap-2 rounded border bg-background p-2">
-                <Label className="w-8 text-[11px] font-semibold tracking-[0.08em] text-muted-foreground">Y{idx + 1}</Label>
-                <Input 
-                  type="number" 
-                  step={0.1}
-                  className="h-8 border-none bg-transparent px-1 text-sm font-semibold shadow-none"
-                  value={val}
-                  onChange={(e) => {
-                    const newArr = [...customInflation!];
-                    newArr[idx] = Number(e.target.value);
-                    onUpdate('customInflation', newArr);
-                  }}
-                />
+        {isInflationIndexedBond ? (
+          <>
+            <div className="space-y-3 border-t border-dashed pt-4">
+              <Label className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">
+                {language === 'pl' ? 'Scenariusz CPI po pierwszym roku' : 'Post-year-one CPI scenario'}
+              </Label>
+              <div className="grid grid-cols-3 gap-2">
+                {(['low', 'base', 'high'] as const).map((scenario) => (
+                  <Button
+                    key={scenario}
+                    variant="outline"
+                    size="sm"
+                    className={cn(
+                      'h-9 min-w-0 text-[11px] font-semibold tracking-[0.08em]',
+                      inflationScenario === scenario && 'border-primary/50 bg-primary/10 text-primary',
+                    )}
+                    onClick={() => onUpdate('inflationScenario', scenario)}
+                  >
+                    <span className="truncate">{t(`bonds.inflation.scenarios.${scenario}`)}</span>
+                  </Button>
+                ))}
               </div>
-            ))}
+              <p className="text-[11px] italic leading-5 text-muted-foreground">
+                {scenarioDescriptions[inflationScenario]}
+              </p>
+            </div>
+
+            <div className="mt-4 flex items-center justify-between rounded-lg border border-primary/10 bg-muted/30 p-3.5">
+              <Label className="text-sm font-semibold">{t('bonds.advanced_inflation')}</Label>
+              <Switch
+                checked={!!customInflation}
+                onCheckedChange={(checked) => {
+                  if (checked) {
+                    onUpdate(
+                      'customInflation',
+                      Array(Math.max(1, Math.round(inflationHorizonYears))).fill(expectedInflation),
+                    );
+                    return;
+                  }
+
+                  onUpdate('customInflation', undefined);
+                }}
+              />
+            </div>
+
+            {customInflation ? (
+              <div className="relative z-10 mt-4 grid max-h-64 grid-cols-2 gap-2 overflow-y-auto rounded-xl border bg-muted/20 p-2 custom-scrollbar md:grid-cols-3">
+                {customInflation.map((value, idx) => (
+                  <div key={idx} className="flex items-center gap-2 rounded border bg-background p-2">
+                    <Label className="w-8 text-[11px] font-semibold tracking-[0.08em] text-muted-foreground">Y{idx + 1}</Label>
+                    <Input
+                      type="number"
+                      step={0.1}
+                      className="h-8 border-none bg-transparent px-1 text-sm font-semibold shadow-none"
+                      value={value}
+                      onChange={(event) => {
+                        const nextValues = [...customInflation];
+                        nextValues[idx] = Number(event.target.value);
+                        onUpdate('customInflation', nextValues);
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </>
+        ) : (
+          <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 text-[11px] leading-5 text-slate-600">
+            {language === 'pl'
+              ? 'Dla tej obligacji inflacja nie zmienia kuponu. To pole sluzy tylko do pokazania sily nabywczej i wartosci realnej.'
+              : 'For this bond, inflation does not change the coupon. This input only affects purchasing-power and real-value display.'}
           </div>
         )}
       </div>
 
-      {isNbpRelevant && (
-        <div className="space-y-4 pt-4 border-t border-dashed">
-          <div className="flex justify-between items-center">
-            <Label htmlFor="expectedNbpRate" className={cn('font-semibold tracking-[0.08em] text-muted-foreground', compact ? 'text-xs' : 'text-sm')}>
+      {isNbpRelevant ? (
+        <div className="space-y-4 border-t border-dashed pt-4">
+          <div className="flex items-center justify-between">
+            <Label
+              htmlFor="expectedNbpRate"
+              className={cn('font-semibold tracking-[0.08em] text-muted-foreground', compact ? 'text-xs' : 'text-sm')}
+            >
               {t('bonds.nbp_rate_label')}
             </Label>
-            <span className={cn('font-black text-primary', compact ? 'text-xl' : 'text-2xl')}>{expectedNbpRate ?? 5.25}%</span>
+            <span className={cn('font-black text-primary', compact ? 'text-xl' : 'text-2xl')}>
+              {expectedNbpRate ?? 5.25}%
+            </span>
           </div>
           <CommittedSliderInput
             value={Number.isFinite(expectedNbpRate ?? 5.25) ? (expectedNbpRate ?? 5.25) : 5.25}
@@ -240,7 +278,7 @@ export const MarketAssumptionsForm = ({
             onCommit={(value) => onUpdate('expectedNbpRate', value)}
           />
         </div>
-      )}
+      ) : null}
     </div>
   );
 };

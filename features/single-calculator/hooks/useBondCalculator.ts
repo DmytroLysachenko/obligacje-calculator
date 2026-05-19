@@ -89,11 +89,12 @@ export function useBondCalculator(initialInputs?: BondInputs) {
   useEffect(() => {
     if (definitions && definitions[inputs.bondType] && definitionsAppliedFor.current !== inputs.bondType) {
       const def = definitions[inputs.bondType];
+      const shouldUseCurrentOffer = !selectedSeriesId || selectedSeriesId === 'current';
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setInputs(prev => ({
         ...prev,
-        firstYearRate: prev.firstYearRate === fallbackInputs.firstYearRate ? def.firstYearRate : prev.firstYearRate,
-        margin: prev.margin === fallbackInputs.margin ? def.margin : prev.margin,
+        firstYearRate: shouldUseCurrentOffer ? def.firstYearRate : prev.firstYearRate,
+        margin: shouldUseCurrentOffer ? def.margin : prev.margin,
         duration: def.duration,
         earlyWithdrawalFee: def.earlyWithdrawalFee,
         isCapitalized: def.isCapitalized,
@@ -105,7 +106,7 @@ export function useBondCalculator(initialInputs?: BondInputs) {
       }));
       definitionsAppliedFor.current = inputs.bondType;
     }
-  }, [definitions, fallbackInputs.firstYearRate, fallbackInputs.margin, inputs.bondType]);
+  }, [definitions, fallbackInputs.firstYearRate, fallbackInputs.margin, inputs.bondType, selectedSeriesId]);
 
   const calculate = useCallback(async (currentInputs: BondInputs) => {
     try {

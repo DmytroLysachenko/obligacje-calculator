@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
 import {
   BondType,
   InvestmentFrequency,
@@ -16,6 +16,7 @@ import {
   toDateString,
 } from '@/shared/lib/date-timing';
 import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/shared/lib/calculator-persistence';
+import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 
 const DEFAULT_BOND = BondType.EDO;
 const DEFAULT_DEFINITION = BOND_DEFINITIONS[DEFAULT_BOND];
@@ -97,8 +98,9 @@ function withDerivedDates(
 function withBondDefinition(
   previous: RegularInvestmentInputs,
   type: BondType,
+  definitions?: Record<BondType, typeof BOND_DEFINITIONS[BondType]> | null,
 ): RegularInvestmentInputs {
-  const definition = BOND_DEFINITIONS[type];
+  const definition = definitions?.[type] ?? BOND_DEFINITIONS[type];
 
   return {
     ...previous,
@@ -115,6 +117,7 @@ function withBondDefinition(
 
 export function useLadder() {
   const restoredState = loadPersistedCalculatorState<PersistedLadderState>(STORAGE_KEY);
+  const { definitions } = useBondDefinitions();
   const [inputs, setInputs] = useState<RegularInvestmentInputs>(
     restoredState?.inputs ?? buildDefaultInputs,
   );
@@ -122,8 +125,35 @@ export function useLadder() {
     useState<RegularInvestmentCalculationEnvelope | null>(restoredState?.envelope ?? null);
   const [isDirty, setIsDirty] = useState(restoredState?.isDirty ?? true);
   const { isCalculating, post } = useCalculationRequest();
+  const definitionsAppliedFor = useRef<string | null>(null);
 
   const results = envelope?.result || null;
+  const applyDefinitionUpdate = useEffectEvent(
+    (definition: typeof BOND_DEFINITIONS[BondType]) => {
+      setInputs((previous) => ({
+        ...previous,
+        firstYearRate: definition.firstYearRate,
+        margin: definition.margin,
+        duration: definition.duration,
+        earlyWithdrawalFee: definition.earlyWithdrawalFee,
+        isCapitalized: definition.isCapitalized,
+        payoutFrequency: definition.payoutFrequency,
+        rebuyDiscount: definition.rebuyDiscount,
+        nominalValue: definition.nominalValue,
+        isInflationIndexed: definition.isInflationIndexed,
+      }));
+      definitionsAppliedFor.current = inputs.bondType;
+    },
+  );
+
+  useEffect(() => {
+    if (!definitions || !definitions[inputs.bondType] || definitionsAppliedFor.current === inputs.bondType) {
+      return;
+    }
+
+    const definition = definitions[inputs.bondType];
+    applyDefinitionUpdate(definition);
+  }, [definitions, inputs.bondType]);
 
   const calculate = useCallback(async () => {
     try {
@@ -154,8 +184,8 @@ export function useLadder() {
 
   const setBondType = useCallback((type: BondType) => {
     setIsDirty(true);
-    setInputs((previous) => withBondDefinition(previous, type));
-  }, []);
+    setInputs((previous) => withBondDefinition(previous, type, definitions));
+  }, [definitions]);
 
   useEffect(() => {
     savePersistedCalculatorState(STORAGE_KEY, {
@@ -177,6 +207,6 @@ export function useLadder() {
     calculate,
     updateInput,
     setBondType,
-    definitions: BOND_DEFINITIONS,
+    definitions: definitions ?? BOND_DEFINITIONS,
   };
 }

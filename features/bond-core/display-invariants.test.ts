@@ -305,6 +305,14 @@ describe('Display-facing single-bond invariants', () => {
     expect(dorMonthTwo?.interestRate).toBeCloseTo((dorMonthTwo?.rateReferenceValue ?? 0) + 0.15, 6);
     expect(dorMonthTwo?.rateSource).toBe('historical_nbp');
   });
+
+  it('automatically rolls short bonds across a longer single-calculator horizon', async () => {
+    const ror = await getSingleBondResult(BondType.ROR, 48);
+
+    expect(ror.timeline.some((point) => point.cycleIndex > 1)).toBe(true);
+    expect((ror.calculationNotes ?? []).some((note) => note.includes('Simulation covered'))).toBe(true);
+    expect(ror.isEarlyWithdrawal).toBe(false);
+  });
 });
 
 describe('Display-facing regular-investment invariants', () => {
