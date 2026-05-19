@@ -38,6 +38,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
     setBondType,
     isDirty,
     envelope,
+    isPersistenceReady,
   } = useRegularInvestmentCalculator();
   const { t, language } = useLanguage();
   const readingGuide = [
@@ -65,7 +66,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
       icon={<PiggyBank className="h-8 w-8" />}
       isCalculating={isCalculating}
       isDirty={isDirty}
-      hasResults={!!results}
+      hasResults={isPersistenceReady && !!results}
       savingsGoal={inputs.savingsGoal}
       currentValue={results?.finalNominalValue}
       onKeyDown={handleKeyDown}

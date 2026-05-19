@@ -47,6 +47,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     availableSeries,
     selectedSeriesId,
     lastCommittedInputs,
+    isPersistenceReady,
   } = useBondCalculator(initialInputs);
   const { t, language } = useLanguage();
   const translate = useMemo(
@@ -183,7 +184,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
       isCalculating={isCalculating}
       isDirty={isDirty}
       isError={isError}
-      hasResults={!!results}
+      hasResults={isPersistenceReady && !!results}
       onShare={handleShareScenario}
       showImplicitShare={false}
       savingsGoal={inputs.savingsGoal}

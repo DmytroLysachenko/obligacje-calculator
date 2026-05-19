@@ -95,6 +95,7 @@ export const LadderContainer: React.FC = () => {
     isCalculating,
     calculate,
     envelope,
+    isPersistenceReady,
   } = useLadder();
   const { t, language } = useLanguage();
   const readingGuide = [
@@ -119,7 +120,7 @@ export const LadderContainer: React.FC = () => {
       icon={<ListTree className="h-8 w-8" />}
       isCalculating={isCalculating}
       isDirty={isDirty}
-      hasResults={!!results}
+      hasResults={isPersistenceReady && !!results}
       savingsGoal={inputs.savingsGoal}
       currentValue={results?.finalNominalValue}
       onKeyDown={handleKeyDown}

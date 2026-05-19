@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { BondInputs, BondType, TaxStrategy, InterestPayout } from '../../bond-core/types';
 import { SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
+import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
@@ -57,56 +58,93 @@ function getDefaultChartStep(payoutFrequency: InterestPayout): ChartStep {
   return payoutFrequency === InterestPayout.MONTHLY ? 'monthly' : 'yearly';
 }
 
+function applyDefinitionToInputs(
+  previous: BondInputs,
+  definition: typeof BOND_DEFINITIONS[BondType],
+  selectedSeriesId: string | null,
+): BondInputs {
+  const shouldUseCurrentOffer = !selectedSeriesId || selectedSeriesId === 'current';
+  const nextChartStep = previous.chartStep ?? getDefaultChartStep(definition.payoutFrequency);
+
+  return {
+    ...previous,
+    firstYearRate: shouldUseCurrentOffer ? definition.firstYearRate : previous.firstYearRate,
+    margin: shouldUseCurrentOffer ? definition.margin : previous.margin,
+    duration: definition.duration,
+    earlyWithdrawalFee: definition.earlyWithdrawalFee,
+    isCapitalized: definition.isCapitalized,
+    payoutFrequency: definition.payoutFrequency,
+    rebuyDiscount: definition.rebuyDiscount,
+    nominalValue: definition.nominalValue,
+    isInflationIndexed: definition.isInflationIndexed,
+    chartStep: nextChartStep,
+  };
+}
+
 export function useBondCalculator(initialInputs?: BondInputs) {
-  const restoredState =
-    !initialInputs
-      ? loadPersistedCalculatorState<PersistedSingleCalculatorState>(STORAGE_KEY)
-      : null;
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
   const fallbackInputs = buildFallbackInputs();
   const [inputs, setInputs] = useState<BondInputs>(
-    initialInputs ?? restoredState?.inputs ?? fallbackInputs,
+    initialInputs ?? fallbackInputs,
   );
   const [envelope, setEnvelope] = useState<SingleBondCalculationEnvelope | null>(
-    initialInputs ? null : restoredState?.envelope ?? null,
+    null,
   );
   const [isDirty, setIsDirty] = useState(
-    initialInputs ? false : restoredState?.isDirty ?? true,
+    initialInputs ? false : true,
   );
   const [availableSeries, setAvailableSeries] = useState<BondSeries[]>([]);
   const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(
-    initialInputs?.selectedSeriesId ?? restoredState?.selectedSeriesId ?? null,
+    initialInputs?.selectedSeriesId ?? null,
   );
   const [lastCommittedInputs, setLastCommittedInputs] = useState<BondInputs | null>(
-    initialInputs ?? restoredState?.lastCommittedInputs ?? null,
+    initialInputs ?? null,
   );
-  const definitionsAppliedFor = useRef<string | null>(null);
+  const [isPersistenceReady, setIsPersistenceReady] = useState(Boolean(initialInputs));
+  const hasRestoredState = useRef(false);
   const hasAutoCalculatedSharedScenario = useRef(false);
   
   const { isCalculating, isError, clearError, post } = useCalculationRequest();
 
-  // Sync inputs with loaded definitions
   useEffect(() => {
-    if (definitions && definitions[inputs.bondType] && definitionsAppliedFor.current !== inputs.bondType) {
-      const def = definitions[inputs.bondType];
-      const shouldUseCurrentOffer = !selectedSeriesId || selectedSeriesId === 'current';
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setInputs(prev => ({
-        ...prev,
-        firstYearRate: shouldUseCurrentOffer ? def.firstYearRate : prev.firstYearRate,
-        margin: shouldUseCurrentOffer ? def.margin : prev.margin,
-        duration: def.duration,
-        earlyWithdrawalFee: def.earlyWithdrawalFee,
-        isCapitalized: def.isCapitalized,
-        payoutFrequency: def.payoutFrequency,
-        rebuyDiscount: def.rebuyDiscount,
-        nominalValue: def.nominalValue,
-        isInflationIndexed: def.isInflationIndexed,
-        chartStep: prev.chartStep ?? getDefaultChartStep(def.payoutFrequency),
-      }));
-      definitionsAppliedFor.current = inputs.bondType;
+    if (!definitions || !definitions[inputs.bondType]) {
+      return;
     }
-  }, [definitions, fallbackInputs.firstYearRate, fallbackInputs.margin, inputs.bondType, selectedSeriesId]);
+
+    const definition = definitions[inputs.bondType];
+    const timer = window.setTimeout(() => {
+      setInputs((previous) => {
+        const next = applyDefinitionToInputs(previous, definition, selectedSeriesId);
+        return JSON.stringify(previous) === JSON.stringify(next) ? previous : next;
+      });
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [definitions, inputs.bondType, selectedSeriesId]);
+
+  useEffect(() => {
+    if (initialInputs || hasRestoredState.current) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      const restoredState =
+        loadPersistedCalculatorState<PersistedSingleCalculatorState>(STORAGE_KEY);
+      hasRestoredState.current = true;
+
+      if (restoredState) {
+        setInputs(restoredState.inputs);
+        setEnvelope(restoredState.envelope ?? null);
+        setSelectedSeriesId(restoredState.selectedSeriesId ?? null);
+        setLastCommittedInputs(restoredState.lastCommittedInputs ?? null);
+        setIsDirty(restoredState.isDirty ?? true);
+      }
+
+      setIsPersistenceReady(true);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [initialInputs]);
 
   const calculate = useCallback(async (currentInputs: BondInputs) => {
     try {
@@ -175,7 +213,7 @@ export function useBondCalculator(initialInputs?: BondInputs) {
   }, [calculate, initialInputs, isCalculating]);
 
   useEffect(() => {
-    if (initialInputs) {
+    if (initialInputs || !isPersistenceReady) {
       return;
     }
 
@@ -186,7 +224,7 @@ export function useBondCalculator(initialInputs?: BondInputs) {
       lastCommittedInputs,
       isDirty,
     });
-  }, [envelope, initialInputs, inputs, isDirty, lastCommittedInputs, selectedSeriesId]);
+  }, [envelope, initialInputs, inputs, isDirty, isPersistenceReady, lastCommittedInputs, selectedSeriesId]);
 
   // Derived results for compatibility
   const results = envelope?.result || null;
@@ -303,5 +341,6 @@ export function useBondCalculator(initialInputs?: BondInputs) {
     definitions,
     isLoadingDefs,
     lastCommittedInputs,
+    isPersistenceReady,
   };
 }

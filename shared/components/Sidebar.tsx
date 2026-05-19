@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { useLanguage } from '@/i18n';
+import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { cn } from '@/lib/utils';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
@@ -252,13 +253,14 @@ function SidebarFooter({
   dataFreshness?: CalculationDataFreshness;
 }) {
   const { t } = useLanguage();
+  const hasMounted = useHasMounted();
 
   return (
     <div className="space-y-2 border-t border-slate-200/80 bg-white/55 p-3">
       <SidebarLanguageUtility />
       <SidebarSyncUtility dataFreshness={dataFreshness} />
       <div className="px-1 pt-1 text-xs text-slate-500">
-        {'\u00A9'} {new Date().getFullYear()} {t('common.title')}
+        {'\u00A9'} {hasMounted ? new Date().getFullYear() : '----'} {t('common.title')}
       </div>
     </div>
   );

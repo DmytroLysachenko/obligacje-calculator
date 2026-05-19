@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState, useSyncExternalStore } from 'react';
+import React, { useMemo, useState } from 'react';
 import { addMonths, compareAsc } from 'date-fns';
 import { format, parseISO } from 'date-fns';
 import { enGB, pl } from 'date-fns/locale';
@@ -35,7 +35,9 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { FileSpreadsheet, History, LineChart, Scale, TriangleAlert } from 'lucide-react';
 import { TaxStrategy } from '@/features/bond-core/types';
+import { BondType } from '@/features/bond-core/types';
 import { useLanguage } from '@/i18n';
+import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { cn } from '@/lib/utils';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
@@ -125,17 +127,14 @@ export const ComparisonContainer: React.FC = () => {
     setBondTypeA,
     setBondTypeB,
     isDirty,
+    isPersistenceReady,
   } = useComparison();
   const { t, language } = useLanguage();
   const [compareMode, setCompareMode] = useState<'independent' | 'normalized'>(
     'independent',
   );
   const [showRealValue, setShowRealValue] = useState(false);
-  const hasMounted = useSyncExternalStore(
-    () => () => undefined,
-    () => true,
-    () => false,
-  );
+  const hasMounted = useHasMounted();
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' && (isDirty || !resultsA)) {
@@ -240,6 +239,26 @@ export const ComparisonContainer: React.FC = () => {
   const usesMixedTimelineCadence = useMemo(() => {
     return inputsA.payoutFrequency !== inputsB.payoutFrequency;
   }, [inputsA.payoutFrequency, inputsB.payoutFrequency]);
+  const assumptionsBondType = useMemo(() => {
+    const comparedTypes = [scenarioA.bondType, scenarioB.bondType];
+    const hasIndexedBond = comparedTypes.some((bondType) =>
+      [BondType.COI, BondType.EDO, BondType.ROS, BondType.ROD].includes(bondType),
+    );
+
+    if (hasIndexedBond) {
+      return BondType.EDO;
+    }
+
+    const hasFloatingBond = comparedTypes.some(
+      (bondType) => bondType === BondType.ROR || bondType === BondType.DOR,
+    );
+
+    if (hasFloatingBond) {
+      return BondType.ROR;
+    }
+
+    return scenarioA.bondType;
+  }, [scenarioA.bondType, scenarioB.bondType]);
 
   const headerActions = (
     <div className="flex flex-wrap items-center gap-3">
@@ -277,7 +296,7 @@ export const ComparisonContainer: React.FC = () => {
       icon={<Scale className="h-8 w-8" />}
       isCalculating={isCalculating}
       isDirty={isDirty}
-      hasResults={!!resultsA}
+      hasResults={isPersistenceReady && !!resultsA}
       extraHeaderActions={headerActions}
       onKeyDown={handleKeyDown}
     >
@@ -457,7 +476,7 @@ export const ComparisonContainer: React.FC = () => {
                   expectedNbpRate={sharedConfig.expectedNbpRate}
                   customInflation={sharedConfig.customInflation}
                   inflationScenario={sharedConfig.inflationScenario}
-                  bondType={scenarioA.bondType}
+                  bondType={assumptionsBondType}
                   inflationHorizonYears={Math.max(1, Math.ceil((sharedConfig.investmentHorizonMonths ?? 120) / 12))}
                   onUpdate={updateSharedConfig as (key: string, value: unknown) => void}
                   compact
@@ -512,8 +531,6 @@ export const ComparisonContainer: React.FC = () => {
                 colorClass="bg-blue-100/20 text-slate-900"
                 bondType={scenarioA.bondType}
                 onBondTypeChange={setBondTypeA}
-                rollover={scenarioA.rollover}
-                onRolloverChange={(value) => updateScenarioA('rollover', value)}
                 isRebought={scenarioA.isRebought}
                 onReboughtChange={(value) => updateScenarioA('isRebought', value)}
                 taxStrategy={scenarioA.taxStrategy}
@@ -537,8 +554,6 @@ export const ComparisonContainer: React.FC = () => {
                 colorClass="bg-emerald-100/20 text-slate-900"
                 bondType={scenarioB.bondType}
                 onBondTypeChange={setBondTypeB}
-                rollover={scenarioB.rollover}
-                onRolloverChange={(value) => updateScenarioB('rollover', value)}
                 isRebought={scenarioB.isRebought}
                 onReboughtChange={(value) => updateScenarioB('isRebought', value)}
                 taxStrategy={scenarioB.taxStrategy}

@@ -17,6 +17,7 @@ import { BondType, BondInputs } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
+import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 import { InputGuardrailIssue } from '../lib/input-guardrails';
 import { BondConfigSection } from './sections/BondConfigSection';
@@ -53,6 +54,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 }) => {
   const { t } = useLanguage();
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
+  const hasMounted = useHasMounted();
 
   const handleUpdate = useCallback(
     (key: keyof BondInputs, value: unknown) => {
@@ -183,7 +185,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               investmentHorizonYears={investmentHorizonYears}
               investmentHorizonMonths={investmentHorizonMonths}
               currentDef={currentDef}
-              hasMounted
+              hasMounted={hasMounted}
             />
           </section>
 
@@ -236,7 +238,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           inputs={inputs}
           currentDef={currentDef}
           maturityDate={maturityDate}
-          hasMounted
+          hasMounted={hasMounted}
         />
       </Card>
     </TooltipProvider>

@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { RegularInvestmentInputs, BondType, InvestmentFrequency, TaxStrategy, InterestPayout } from '../../bond-core/types';
 import { RegularInvestmentCalculationEnvelope } from '../../bond-core/types/scenarios';
+import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
@@ -42,40 +43,75 @@ interface PersistedRegularCalculatorState {
   isDirty: boolean;
 }
 
+function applyDefinitionToInputs(
+  previous: RegularInvestmentInputs,
+  definition: typeof BOND_DEFINITIONS[BondType],
+): RegularInvestmentInputs {
+  return {
+    ...previous,
+    firstYearRate: definition.firstYearRate,
+    margin: definition.margin,
+    duration: definition.duration,
+    earlyWithdrawalFee: definition.earlyWithdrawalFee,
+    isCapitalized: definition.isCapitalized,
+    payoutFrequency: definition.payoutFrequency,
+    rebuyDiscount: definition.rebuyDiscount,
+    nominalValue: definition.nominalValue,
+    isInflationIndexed: definition.isInflationIndexed,
+  };
+}
+
 export function useRegularInvestmentCalculator() {
-  const restoredState = loadPersistedCalculatorState<PersistedRegularCalculatorState>(STORAGE_KEY);
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
   const fallbackInputs = buildFallbackInputs();
   const [inputs, setInputs] = useState<RegularInvestmentInputs>(
-    restoredState?.inputs ?? fallbackInputs,
+    fallbackInputs,
   );
   const [envelope, setEnvelope] = useState<RegularInvestmentCalculationEnvelope | null>(
-    restoredState?.envelope ?? null,
+    null,
   );
-  const [isDirty, setIsDirty] = useState(restoredState?.isDirty ?? true);
+  const [isDirty, setIsDirty] = useState(true);
+  const [isPersistenceReady, setIsPersistenceReady] = useState(false);
   const { isCalculating, isError, clearError, post } = useCalculationRequest();
-  const definitionsAppliedFor = useRef<string | null>(null);
+  const hasRestoredState = useRef(false);
 
-  // Sync inputs with loaded definitions
   useEffect(() => {
-    if (definitions && definitions[inputs.bondType] && definitionsAppliedFor.current !== inputs.bondType) {
-      const def = definitions[inputs.bondType];
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setInputs(prev => ({
-        ...prev,
-        firstYearRate: def.firstYearRate,
-        margin: def.margin,
-        duration: def.duration,
-        earlyWithdrawalFee: def.earlyWithdrawalFee,
-        isCapitalized: def.isCapitalized,
-        payoutFrequency: def.payoutFrequency,
-        rebuyDiscount: def.rebuyDiscount,
-        nominalValue: def.nominalValue,
-        isInflationIndexed: def.isInflationIndexed,
-      }));
-      definitionsAppliedFor.current = inputs.bondType;
+    if (!definitions || !definitions[inputs.bondType]) {
+      return;
     }
-  }, [definitions, fallbackInputs.firstYearRate, fallbackInputs.margin, inputs.bondType]);
+
+    const definition = definitions[inputs.bondType];
+    const timer = window.setTimeout(() => {
+      setInputs((previous) => {
+        const next = applyDefinitionToInputs(previous, definition);
+        return JSON.stringify(previous) === JSON.stringify(next) ? previous : next;
+      });
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [definitions, inputs.bondType]);
+
+  useEffect(() => {
+    if (hasRestoredState.current) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      const restoredState =
+        loadPersistedCalculatorState<PersistedRegularCalculatorState>(STORAGE_KEY);
+      hasRestoredState.current = true;
+
+      if (restoredState) {
+        setInputs(restoredState.inputs);
+        setEnvelope(restoredState.envelope ?? null);
+        setIsDirty(restoredState.isDirty ?? true);
+      }
+
+      setIsPersistenceReady(true);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, []);
 
   // Derived results for compatibility
   const results = envelope?.result || null;
@@ -92,12 +128,16 @@ export function useRegularInvestmentCalculator() {
   }, [clearError, inputs, post]);
 
   useEffect(() => {
+    if (!isPersistenceReady) {
+      return;
+    }
+
     savePersistedCalculatorState(STORAGE_KEY, {
       inputs,
       envelope,
       isDirty,
     });
-  }, [envelope, inputs, isDirty]);
+  }, [envelope, inputs, isDirty, isPersistenceReady]);
 
   const updateInput = (key: keyof RegularInvestmentInputs, value: string | number | boolean | undefined) => {
     setIsDirty(true);
@@ -166,5 +206,6 @@ export function useRegularInvestmentCalculator() {
     setBondType,
     definitions,
     isLoadingDefs,
+    isPersistenceReady,
   };
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BondInputs, BondType, TaxStrategy } from '../../bond-core/types';
 import {
   BondComparisonCalculationEnvelope,
@@ -17,30 +17,31 @@ type SharedComparisonConfig = IndependentBondComparisonPayload['sharedConfig'];
 type ScenarioOverride = IndependentBondComparisonPayload['scenarioA'];
 
 const DEFAULT_HORIZON_MONTHS = 120;
-const today = toDateString(new Date());
 const STORAGE_KEY = 'obligacje.comparison-calculator.v1';
 
-const DEFAULT_SHARED_CONFIG: SharedComparisonConfig = {
-  initialInvestment: 10000,
-  purchaseDate: today,
-  withdrawalDate: getWithdrawalDateFromMonths(today, DEFAULT_HORIZON_MONTHS),
-  expectedInflation: 3.5,
-  expectedNbpRate: 5.25,
-  inflationScenario: 'base',
-  taxStrategy: TaxStrategy.STANDARD,
-  timingMode: 'general',
-  investmentHorizonMonths: DEFAULT_HORIZON_MONTHS,
-};
+function buildDefaultSharedConfig(): SharedComparisonConfig {
+  const today = toDateString(new Date());
+
+  return {
+    initialInvestment: 10000,
+    purchaseDate: today,
+    withdrawalDate: getWithdrawalDateFromMonths(today, DEFAULT_HORIZON_MONTHS),
+    expectedInflation: 3.5,
+    expectedNbpRate: 5.25,
+    inflationScenario: 'base',
+    taxStrategy: TaxStrategy.STANDARD,
+    timingMode: 'general',
+    investmentHorizonMonths: DEFAULT_HORIZON_MONTHS,
+  };
+}
 
 const DEFAULT_SCENARIO_A: ScenarioOverride = {
   bondType: BondType.EDO,
-  rollover: false,
   isRebought: false,
 };
 
 const DEFAULT_SCENARIO_B: ScenarioOverride = {
   bondType: BondType.EDO,
-  rollover: false,
   isRebought: false,
 };
 
@@ -93,21 +94,22 @@ function buildScenarioInputs(
 }
 
 export function useComparison() {
-  const restoredState = loadPersistedCalculatorState<PersistedComparisonState>(STORAGE_KEY);
   const { definitions } = useBondDefinitions();
   const [sharedConfig, setSharedConfig] = useState<SharedComparisonConfig>(
-    restoredState?.sharedConfig ?? DEFAULT_SHARED_CONFIG,
+    buildDefaultSharedConfig,
   );
   const [scenarioA, setScenarioA] = useState<ScenarioOverride>(
-    restoredState?.scenarioA ?? DEFAULT_SCENARIO_A,
+    DEFAULT_SCENARIO_A,
   );
   const [scenarioB, setScenarioB] = useState<ScenarioOverride>(
-    restoredState?.scenarioB ?? DEFAULT_SCENARIO_B,
+    DEFAULT_SCENARIO_B,
   );
   const [comparisonEnvelope, setComparisonEnvelope] = useState<BondComparisonCalculationEnvelope | null>(
-    restoredState?.comparisonEnvelope ?? null,
+    null,
   );
-  const [isDirty, setIsDirty] = useState(restoredState?.isDirty ?? true);
+  const [isDirty, setIsDirty] = useState(true);
+  const [isPersistenceReady, setIsPersistenceReady] = useState(false);
+  const hasRestoredState = useRef(false);
   const { isCalculating, post } = useCalculationRequest();
 
   const inputsA = useMemo(() => buildScenarioInputs(sharedConfig, scenarioA, definitions), [definitions, sharedConfig, scenarioA]);
@@ -245,6 +247,32 @@ export function useComparison() {
   };
 
   useEffect(() => {
+    if (hasRestoredState.current) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      const restoredState = loadPersistedCalculatorState<PersistedComparisonState>(STORAGE_KEY);
+      hasRestoredState.current = true;
+      if (restoredState) {
+        setSharedConfig(restoredState.sharedConfig);
+        setScenarioA(restoredState.scenarioA);
+        setScenarioB(restoredState.scenarioB);
+        setComparisonEnvelope(restoredState.comparisonEnvelope ?? null);
+        setIsDirty(restoredState.isDirty ?? true);
+      }
+
+      setIsPersistenceReady(true);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!isPersistenceReady) {
+      return;
+    }
+
     savePersistedCalculatorState(STORAGE_KEY, {
       sharedConfig,
       scenarioA,
@@ -252,7 +280,7 @@ export function useComparison() {
       comparisonEnvelope,
       isDirty,
     });
-  }, [comparisonEnvelope, isDirty, scenarioA, scenarioB, sharedConfig]);
+  }, [comparisonEnvelope, isDirty, isPersistenceReady, scenarioA, scenarioB, sharedConfig]);
 
   return {
     sharedConfig,
@@ -275,5 +303,6 @@ export function useComparison() {
     setBondTypeA,
     setBondTypeB,
     definitions: definitions ?? BOND_DEFINITIONS,
+    isPersistenceReady,
   };
 }

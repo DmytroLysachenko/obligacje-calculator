@@ -116,16 +116,16 @@ function withBondDefinition(
 }
 
 export function useLadder() {
-  const restoredState = loadPersistedCalculatorState<PersistedLadderState>(STORAGE_KEY);
   const { definitions } = useBondDefinitions();
   const [inputs, setInputs] = useState<RegularInvestmentInputs>(
-    restoredState?.inputs ?? buildDefaultInputs,
+    buildDefaultInputs,
   );
   const [envelope, setEnvelope] =
-    useState<RegularInvestmentCalculationEnvelope | null>(restoredState?.envelope ?? null);
-  const [isDirty, setIsDirty] = useState(restoredState?.isDirty ?? true);
+    useState<RegularInvestmentCalculationEnvelope | null>(null);
+  const [isDirty, setIsDirty] = useState(true);
+  const [isPersistenceReady, setIsPersistenceReady] = useState(false);
   const { isCalculating, post } = useCalculationRequest();
-  const definitionsAppliedFor = useRef<string | null>(null);
+  const hasRestoredState = useRef(false);
 
   const results = envelope?.result || null;
   const applyDefinitionUpdate = useEffectEvent(
@@ -142,18 +142,38 @@ export function useLadder() {
         nominalValue: definition.nominalValue,
         isInflationIndexed: definition.isInflationIndexed,
       }));
-      definitionsAppliedFor.current = inputs.bondType;
     },
   );
 
   useEffect(() => {
-    if (!definitions || !definitions[inputs.bondType] || definitionsAppliedFor.current === inputs.bondType) {
+    if (!definitions || !definitions[inputs.bondType]) {
       return;
     }
 
     const definition = definitions[inputs.bondType];
     applyDefinitionUpdate(definition);
   }, [definitions, inputs.bondType]);
+
+  useEffect(() => {
+    if (hasRestoredState.current) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      const restoredState = loadPersistedCalculatorState<PersistedLadderState>(STORAGE_KEY);
+      hasRestoredState.current = true;
+
+      if (restoredState) {
+        setInputs(restoredState.inputs);
+        setEnvelope(restoredState.envelope ?? null);
+        setIsDirty(restoredState.isDirty ?? true);
+      }
+
+      setIsPersistenceReady(true);
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, []);
 
   const calculate = useCallback(async () => {
     try {
@@ -188,12 +208,16 @@ export function useLadder() {
   }, [definitions]);
 
   useEffect(() => {
+    if (!isPersistenceReady) {
+      return;
+    }
+
     savePersistedCalculatorState(STORAGE_KEY, {
       inputs,
       envelope,
       isDirty,
     });
-  }, [envelope, inputs, isDirty]);
+  }, [envelope, inputs, isDirty, isPersistenceReady]);
 
   return {
     inputs,
@@ -208,5 +232,6 @@ export function useLadder() {
     updateInput,
     setBondType,
     definitions: definitions ?? BOND_DEFINITIONS,
+    isPersistenceReady,
   };
 }
