@@ -485,6 +485,10 @@
         "projected": "Prognoza",
         "historical": "Historia"
       },
+      "cash_flow": {
+        "paid_out": "Wyplacona gotowka",
+        "retained": "Odsetki zatrzymane w obligacji"
+      },
       "cadence": {
         "scenario_entry": "Punkt wejscia do scenariusza",
         "maturity_closeout": "Punkt zapadalnosci i zamkniecia cyklu",
@@ -496,6 +500,7 @@
         "withdrawal": "Ten wiersz pokazuje wartosc przy wyjsciu po oplatach i podatku dla tego punktu.",
         "maturity": "Ten wiersz domyka pelny cykl obligacji.",
         "paid_out_cash": "Ten punkt laczy wartosc obligacji z gotowka wyplacona juz po drodze.",
+        "retained_interest": "Ten punkt pokazuje odsetki zatrzymane wewnatrz obligacji. Zadna gotowka nie zostala jeszcze wyplacona.",
         "default": "To jest punkt kontrolny pokazujacy wartosc po naliczeniu dla tego okresu."
       },
       "reference": {

@@ -67,10 +67,49 @@ describe('csv-utils', () => {
 
     const csv = convertTimelineToCSV(timeline, headers, 'en');
 
-    expect(csv).toContain('Interest Payment');
+    expect(csv).toContain('Cash paid out');
     expect(csv).toContain('Final Nominal Value');
     expect(csv).toContain('Early Exit Payout');
     expect(csv).toContain('Payout or rollover point');
+  });
+
+  it('exports retained-interest headers for capitalizing bond timelines', () => {
+    const headers = buildTimelineExportHeaders((key) => t(key, undefined, 'en'));
+    const timeline = [
+      {
+        periodLabel: 'May 2027',
+        cycleIndex: 1,
+        cycleStartDate: '2026-05-19',
+        cycleEndDate: '2027-05-19',
+        interestRate: 5.35,
+        rateSource: 'first_year_fixed',
+        nominalValueBeforeInterest: 10000,
+        interestEarned: 535,
+        taxDeducted: 0,
+        netInterest: 535,
+        nominalValueAfterInterest: 10535,
+        accumulatedNetInterest: 535,
+        totalValue: 10535,
+        realValue: 10100,
+        netProfit: 535,
+        earlyWithdrawalValue: 10413.35,
+        isMaturity: false,
+        isWithdrawal: false,
+        cumulativeInflation: 1.03,
+        events: [
+          {
+            type: SimulationEventType.INTEREST_ACCRUAL,
+            date: '2027-05-19',
+            description: 'Annual accrual',
+          },
+        ],
+      },
+    ] as unknown as YearlyTimelinePoint[];
+
+    const csv = convertTimelineToCSV(timeline, headers, 'en');
+
+    expect(csv).toContain('Interest retained in bond');
+    expect(csv).not.toContain('Cash paid out');
   });
 
   it('builds lot csv using the selected locale formatting', () => {

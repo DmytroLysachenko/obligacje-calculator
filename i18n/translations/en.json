@@ -514,6 +514,10 @@
         "projected": "Projected",
         "historical": "Historical"
       },
+      "cash_flow": {
+        "paid_out": "Cash paid out",
+        "retained": "Interest retained in bond"
+      },
       "cadence": {
         "scenario_entry": "Scenario entry point",
         "maturity_closeout": "Maturity close-out point",
@@ -525,6 +529,7 @@
         "withdrawal": "This row shows the exit value after modeled fees and tax at this point.",
         "maturity": "This row closes the full bond cycle.",
         "paid_out_cash": "This checkpoint combines bond value with cash that has already been paid out along the way.",
+        "retained_interest": "This checkpoint keeps earned interest inside the bond. No cash has been paid out yet.",
         "default": "This is a checkpoint showing value after accrual for this period."
       },
       "reference": {

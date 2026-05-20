@@ -248,7 +248,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
             <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
               <MobileValue label={language === 'pl' ? 'Stopa' : 'Rate'} value={row.interestRateLabel} />
               <MobileValue label={language === 'pl' ? 'Wyjscie' : 'Exit'} value={formatCurrency(row.earlyExitValue)} />
-              <MobileValue label={language === 'pl' ? 'Gotowka' : 'Cash paid'} value={formatCurrency(row.paidOutCash)} />
+              <MobileValue label={row.cashFlowLabel} value={formatCurrency(row.paidOutCash)} />
               <MobileValue label={language === 'pl' ? 'Zysk' : 'Net gain'} value={formatCurrency(row.netProfit)} />
               <MobileValue label={language === 'pl' ? 'Realnie' : 'Real value'} value={formatCurrency(row.realValue)} />
               <MobileValue label={language === 'pl' ? 'Podstawa' : 'Basis'} value={row.rateSourceLabel} />
@@ -278,7 +278,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
                 {language === 'pl' ? 'Majatek laczny' : 'Total wealth'}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {language === 'pl' ? 'Wyplacona gotowka' : 'Cash paid out'}
+                {displayedTimeline[0]?.cashFlowLabel ?? (language === 'pl' ? 'Przeplyw odsetek' : 'Interest flow')}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-slate-50/95 text-xs font-semibold text-slate-600">
                 {language === 'pl' ? 'Zysk netto' : 'Net gain'}

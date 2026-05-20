@@ -68,6 +68,7 @@ export function convertTimelineToCSV(
 ): string {
   const csvRows: string[] = [];
   const displayRows = buildBondTimelineDisplayRows(timeline, language);
+  const cashFlowHeader = displayRows[0]?.cashFlowLabel ?? headers.paidOutCash ?? 'Cash paid out';
   const columns = [
     { key: 'date', header: headers.date || 'Date' },
     { key: 'periodLabel', header: headers.period || 'Period' },
@@ -85,7 +86,7 @@ export function convertTimelineToCSV(
       header: headers.projection || 'Data mode',
     },
     { key: 'principalValue', header: headers.principalValue || 'Bond principal value' },
-    { key: 'paidOutCash', header: headers.paidOutCash || 'Cash paid out' },
+    { key: 'paidOutCash', header: cashFlowHeader },
     { key: 'totalWealth', header: headers.totalWealth || 'Total wealth' },
     { key: 'netProfit', header: headers.netProfit || 'Net profit' },
     { key: 'realValue', header: headers.realValue || 'Real value' },
@@ -161,6 +162,16 @@ export function convertComparisonToCSV(
   const rowsA = buildBondTimelineDisplayRows(timelineA, language);
   const rowsB = buildBondTimelineDisplayRows(timelineB, language);
   const csvRows: string[] = [];
+  const scenarioALabel = t('comparison.scenario_a', undefined, language);
+  const scenarioBLabel = t('comparison.scenario_b', undefined, language);
+  const cashFlowHeaderA =
+    rowsA[0]?.cashFlowLabel
+      ? `${scenarioALabel} ${rowsA[0].cashFlowLabel}`
+      : headers.cashPaidA ?? 'Scenario A cash paid out';
+  const cashFlowHeaderB =
+    rowsB[0]?.cashFlowLabel
+      ? `${scenarioBLabel} ${rowsB[0].cashFlowLabel}`
+      : headers.cashPaidB ?? 'Scenario B cash paid out';
   const columns = [
     { key: 'date', header: headers.date || 'Date' },
     { key: 'periodLabel', header: headers.period || 'Period' },
@@ -172,8 +183,8 @@ export function convertComparisonToCSV(
     { key: 'scenarioB', header: headers.scenarioB || 'Scenario B total wealth' },
     { key: 'realValueA', header: headers.realValueA || 'Scenario A real value' },
     { key: 'realValueB', header: headers.realValueB || 'Scenario B real value' },
-    { key: 'cashPaidA', header: headers.cashPaidA || 'Scenario A cash paid out' },
-    { key: 'cashPaidB', header: headers.cashPaidB || 'Scenario B cash paid out' },
+    { key: 'cashPaidA', header: headers.cashPaidA || cashFlowHeaderA },
+    { key: 'cashPaidB', header: headers.cashPaidB || cashFlowHeaderB },
     { key: 'leader', header: headers.leader || 'Ahead in this row' },
     { key: 'netProfitA', header: headers.netProfitA || 'Scenario A net profit' },
     { key: 'netProfitB', header: headers.netProfitB || 'Scenario B net profit' },

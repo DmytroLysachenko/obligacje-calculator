@@ -12,6 +12,7 @@ export interface BondTimelineDisplayRow {
   cadenceLabel: string;
   cycleLabel: string;
   valueMeaningLabel: string;
+  cashFlowLabel: string;
   interestRateLabel: string;
   rateSourceLabel: string;
   referenceLabel?: string;
@@ -47,6 +48,8 @@ type ChartAggregationStep = 'daily' | 'monthly' | 'quarterly' | 'yearly';
 interface NormalizedBondDisplayPoint extends BondChartDisplayPoint {
   interestRate?: number;
 }
+
+type CashFlowSemantics = 'payout' | 'retained';
 
 export function getAuditTimelinePoint(timeline: YearlyTimelinePoint[]) {
   return (
@@ -135,6 +138,27 @@ export function getCadenceDisplayLabel(point: YearlyTimelinePoint, language: App
   return t('bonds.timeline_display.cadence.checkpoint', undefined, language);
 }
 
+function inferCashFlowSemantics(timeline: YearlyTimelinePoint[]): CashFlowSemantics {
+  return timeline.some((point) =>
+    point.events?.some((event) => event.type === SimulationEventType.PAYOUT),
+  )
+    ? 'payout'
+    : 'retained';
+}
+
+export function getCashFlowDisplayLabel(
+  semantics: CashFlowSemantics,
+  language: AppLanguage,
+) {
+  return t(
+    semantics === 'payout'
+      ? 'bonds.timeline_display.cash_flow.paid_out'
+      : 'bonds.timeline_display.cash_flow.retained',
+    undefined,
+    language,
+  );
+}
+
 export function getCycleDisplayLabel(point: YearlyTimelinePoint, language: AppLanguage) {
   const start = formatMonthYear(point.cycleStartDate, language);
   const end = formatMonthYear(point.cycleEndDate, language);
@@ -142,7 +166,11 @@ export function getCycleDisplayLabel(point: YearlyTimelinePoint, language: AppLa
   return `${t('bonds.cycle', undefined, language)} ${point.cycleIndex}: ${start} -> ${end}`;
 }
 
-export function getValueMeaningLabel(point: YearlyTimelinePoint, language: AppLanguage) {
+export function getValueMeaningLabel(
+  point: YearlyTimelinePoint,
+  language: AppLanguage,
+  cashFlowSemantics: CashFlowSemantics,
+) {
   if (point.isWithdrawal) {
     return t('bonds.timeline_display.value_meaning.withdrawal', undefined, language);
   }
@@ -152,7 +180,13 @@ export function getValueMeaningLabel(point: YearlyTimelinePoint, language: AppLa
   }
 
   if (point.accumulatedNetInterest > 0) {
-    return t('bonds.timeline_display.value_meaning.paid_out_cash', undefined, language);
+    return t(
+      cashFlowSemantics === 'payout'
+        ? 'bonds.timeline_display.value_meaning.paid_out_cash'
+        : 'bonds.timeline_display.value_meaning.retained_interest',
+      undefined,
+      language,
+    );
   }
 
   return t('bonds.timeline_display.value_meaning.default', undefined, language);
@@ -193,12 +227,16 @@ export function buildBondTimelineDisplayRows(
   timeline: YearlyTimelinePoint[],
   language: AppLanguage,
 ): BondTimelineDisplayRow[] {
+  const cashFlowSemantics = inferCashFlowSemantics(timeline);
+  const cashFlowLabel = getCashFlowDisplayLabel(cashFlowSemantics, language);
+
   return timeline.map((point) => ({
     key: `${point.cycleIndex}-${point.periodLabel}-${point.cycleEndDate}`,
     periodLabel: point.periodLabel,
     cadenceLabel: getCadenceDisplayLabel(point, language),
     cycleLabel: getCycleDisplayLabel(point, language),
-    valueMeaningLabel: getValueMeaningLabel(point, language),
+    valueMeaningLabel: getValueMeaningLabel(point, language, cashFlowSemantics),
+    cashFlowLabel,
     interestRateLabel: `${point.interestRate.toFixed(2)}%`,
     rateSourceLabel: getRateSourceDisplayLabel(point.rateSource, language),
     referenceLabel: getReferenceDisplayLabel(point, language),

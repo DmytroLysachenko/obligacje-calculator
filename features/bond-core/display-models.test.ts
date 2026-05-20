@@ -86,6 +86,32 @@ describe('bond display models', () => {
     expect(rows[0].valueMeaningLabel).toContain('checkpoint');
   });
 
+  it('shows retained-interest semantics for capitalizing bonds instead of cash-payout wording', () => {
+    const rows = buildBondTimelineDisplayRows(
+      [
+        makePoint({
+          rateSource: 'first_year_fixed',
+          nominalValueBeforeInterest: 10000,
+          nominalValueAfterInterest: 10535,
+          accumulatedNetInterest: 535,
+          totalValue: 10535,
+          events: [
+            {
+              type: SimulationEventType.INTEREST_ACCRUAL,
+              date: '2027-05-31',
+              description: 'Accrual',
+            },
+          ],
+        }),
+      ],
+      'en',
+    );
+
+    expect(rows[0].cashFlowLabel).toBe('Interest retained in bond');
+    expect(rows[0].valueMeaningLabel).toContain('inside the bond');
+    expect(rows[0].paidOutCash).toBe(535);
+  });
+
   it('builds chart display points from the first real checkpoint and preserves scenario bounds', () => {
     const lowPoint = makePoint({ nominalValueAfterInterest: 9900, totalValue: 9900 });
     const highPoint = makePoint({ nominalValueAfterInterest: 10100, totalValue: 10100 });
