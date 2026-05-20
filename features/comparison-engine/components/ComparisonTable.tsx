@@ -51,7 +51,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
   showRealValue,
   formatCurrency,
 }) => {
-  const { t, language } = useLanguage();
+    const { t } = useLanguage();
   const higherColumnLabel = t('comparison.table_ahead_in_row');
   const higherBadgeSuffix = t('comparison.table_ahead_badge_suffix');
   const tieLabel = t('comparison.table_tie');

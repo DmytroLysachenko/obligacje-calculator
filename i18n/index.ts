@@ -2,7 +2,7 @@ export * from './context';
 
 import en from './translations/en.json';
 import pl from './translations/pl.json';
-import { normalizeTranslations, resolveTranslationValue } from './translation-utils';
+import { normalizeTranslations, resolveTranslationNode, resolveTranslationValue } from './translation-utils';
 
 export const translations = {
   en: normalizeTranslations(en),
@@ -13,13 +13,13 @@ export type Language = keyof typeof translations;
 
 // Simple server-side t function (defaults to en)
 export function t(key: string, variables?: Record<string, string | number>, lang: Language = 'en'): string {
-  let text = resolveTranslationValue(translations, lang, key);
+  return resolveTranslationValue(translations, lang, key, variables);
+}
 
-  if (variables) {
-    Object.entries(variables).forEach(([name, value]) => {
-      text = text.replace(new RegExp(`{{${name}}}`, 'g'), String(value));
-    });
-  }
-
-  return text;
+export function tx<T = string>(
+  key: string,
+  variables?: Record<string, string | number>,
+  lang: Language = 'en',
+): T {
+  return resolveTranslationNode(translations, lang, key, variables) as T;
 }

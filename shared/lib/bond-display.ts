@@ -1,9 +1,7 @@
 'use client';
 import { RateSource, YearlyTimelinePoint } from '@/features/bond-core/types';
 import { SimulationEventType } from '@/features/bond-core/types/simulation';
-import { t } from '@/i18n';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
+import { t, tx } from '@/i18n';
 export type AppLanguage = 'pl' | 'en';
 export interface BondTimelineDisplayRow {
     key: string;
@@ -53,10 +51,7 @@ export function getAuditTimelinePoint(timeline: YearlyTimelinePoint[]) {
         || point.isMaturity) ?? timeline[0]);
 }
 function formatMonthYear(date: string, language: AppLanguage) {
-    return new Intl.DateTimeFormat(pickLanguageValue(language, {
-        pl: 'pl-PL',
-        en: 'en-GB'
-    }), {
+    return new Intl.DateTimeFormat(tx("generated.shared.lib.bond_display.item_1", undefined, language), {
         month: 'short',
         year: 'numeric',
     }).format(new Date(date));

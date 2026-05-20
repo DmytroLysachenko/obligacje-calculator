@@ -3,11 +3,9 @@ import React from 'react';
 import { AlertTriangle, CheckCircle2, FlaskConical, Info } from 'lucide-react';
 import { useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
-import { pickLanguageValue } from '@/i18n/locale-utils';
 
 export type FeatureStatus = 'trusted' | 'conditional' | 'experimental' | 'limited' | 'reference';
 const statusConfig: Record<FeatureStatus, {
-    label: string;
     icon: React.ComponentType<{
         className?: string;
     }>;
@@ -15,31 +13,26 @@ const statusConfig: Record<FeatureStatus, {
     pillClassName: string;
 }> = {
     trusted: {
-        label: 'Main tool',
         icon: CheckCircle2,
         noticeClassName: 'border-emerald-200 bg-emerald-50/55 text-emerald-950',
         pillClassName: 'border-emerald-200 bg-emerald-50 text-emerald-800',
     },
     conditional: {
-        label: 'Next step',
         icon: Info,
         noticeClassName: 'border-blue-200 bg-blue-50/55 text-blue-950',
         pillClassName: 'border-blue-200 bg-blue-50 text-blue-800',
     },
     experimental: {
-        label: 'Experimental lab',
         icon: FlaskConical,
         noticeClassName: 'border-amber-200 bg-amber-50/55 text-amber-950',
         pillClassName: 'border-amber-200 bg-amber-50 text-amber-800',
     },
     limited: {
-        label: 'Limited scope',
         icon: AlertTriangle,
         noticeClassName: 'border-orange-200 bg-orange-50/55 text-orange-950',
         pillClassName: 'border-orange-200 bg-orange-50 text-orange-800',
     },
     reference: {
-        label: 'Reference',
         icon: Info,
         noticeClassName: 'border-slate-200 bg-slate-50/80 text-slate-900',
         pillClassName: 'border-slate-200 bg-slate-50 text-slate-700',
@@ -49,30 +42,11 @@ export function FeatureStatusPill({ status, className, }: {
     status: FeatureStatus;
     className?: string;
 }) {
-    const { language } = useLanguage();
+    const { tx } = useLanguage();
     const config = statusConfig[status];
-    const localizedLabel = status === 'trusted'
-        ? pickLanguageValue(language, {
-            pl: 'Glówne narzedzie',
-            en: config.label
-        }) : status === 'conditional'
-        ? pickLanguageValue(language, {
-            pl: 'Kolejny krok',
-            en: config.label
-        }) : status === 'experimental'
-        ? pickLanguageValue(language, {
-            pl: 'Laboratorium',
-            en: config.label
-        }) : status === 'limited'
-        ? pickLanguageValue(language, {
-            pl: 'Ograniczony zakres',
-            en: config.label
-        }) : pickLanguageValue(language, {
-        pl: 'Referencja',
-        en: config.label
-    });
+    const labels = tx<Record<FeatureStatus, string>>('shared.feature_status.labels');
     return (<span className={cn('inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold tracking-[0.08em]', config.pillClassName, className)}>
-      {localizedLabel}
+      {labels[status]}
     </span>);
 }
 export function FeatureStatusNotice({ status, title, children, className, eyebrow, }: {

@@ -1,20 +1,18 @@
 'use client';
 import React, { useMemo } from 'react';
 import { format, parseISO } from 'date-fns';
-import { enGB, pl } from 'date-fns/locale';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, } from 'recharts';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { RegularInvestmentResult } from '../../bond-core/types';
-import { useLanguage } from '@/i18n';
+import { tx, useLanguage } from '@/i18n';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { ResponsiveTableSheet } from '@/shared/components/ResponsiveTableSheet';
 import { ResultMetricCard } from '@/shared/components/ResultMetricCard';
 import { ResultSummaryHero } from '@/shared/components/ResultSummaryHero';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
+import { getDateFnsLocale, getIntlLocale } from '@/i18n/locale-utils';
 interface LadderTimelineProps {
     results: RegularInvestmentResult;
 }
@@ -26,14 +24,8 @@ type MaturityBucket = {
 };
 export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
     const { language } = useLanguage();
-    const dateLocale = pickLanguageValue(language, {
-        pl: pl,
-        en: enGB
-    });
-    const formatCurrency = (value: number) => new Intl.NumberFormat(pickLanguageValue(language, {
-        pl: 'pl-PL',
-        en: 'en-GB'
-    }), {
+    const dateLocale = getDateFnsLocale(language);
+    const formatCurrency = (value: number) => new Intl.NumberFormat(getIntlLocale(language), {
         style: 'currency',
         currency: 'PLN',
         maximumFractionDigits: 0,
@@ -66,77 +58,32 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
     const latestMonth = chartData[chartData.length - 1] ?? null;
     const peakShare = peakMonth && results.lots.length > 0 ? (peakMonth.count / results.lots.length) * 100 : 0;
     return (<div className="space-y-6">
-      <ResultSummaryHero eyebrow={pickLanguageValue(language, {
-        pl: 'Podsumowanie drabiny',
-        en: 'Ladder summary'
-    })} value={peakMonth
+      <ResultSummaryHero eyebrow={tx("generated.features.ladder_strategy.components.ladder_timeline.item_2", undefined, language)} value={peakMonth
             ? peakMonth.displayDate
-            : pickLanguageValue(language, {
-                pl: 'Brak okna zapadalnosci',
-                en: 'No maturity window'
-            })} description={pickLanguageValue(language, {
-            pl: 'Najpierw sprawdz miesiac szczytowej zapadalnosci. Potem przeczytaj zakres i kontrole koncentracji, aby ocenic czy zwroty gotowki sa rozlozone rowno.',
-            en: 'Peak maturity month first. Then read the coverage window and concentration check to see whether cash returns are spread evenly or clustered too tightly.'
-        })} narrative={pickLanguageValue(language, {
-            pl: 'Drabina nie jest tylko o wyniku koncowym. Liczy sie to, kiedy i jak gesto wraca gotowka.',
-            en: 'A ladder is not only about the final outcome. It is about when and how densely cash returns.'
-        })} aside={<div className="rounded-2xl border bg-slate-50 px-4 py-3 text-sm text-slate-700">
+            : tx("generated.features.ladder_strategy.components.ladder_timeline.item_3", undefined, language)} description={tx("generated.features.ladder_strategy.components.ladder_timeline.item_4", undefined, language)} narrative={tx("generated.features.ladder_strategy.components.ladder_timeline.item_5", undefined, language)} aside={<div className="rounded-2xl border bg-slate-50 px-4 py-3 text-sm text-slate-700">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-              {pickLanguageValue(language, {
-            pl: 'Okna zapadalnosci',
-            en: 'Maturity buckets'
-        })}
+              {tx("generated.features.ladder_strategy.components.ladder_timeline.item_6", undefined, language)}
             </p>
             <p className="mt-2 text-lg font-black text-slate-900">{chartData.length}</p>
           </div>}/>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <ResultMetricCard label={pickLanguageValue(language, {
-        pl: 'Sredni miesiac zapadalnosci',
-        en: 'Average maturity month'
-    })} value={formatCurrency(averageMaturityValue)} description={pickLanguageValue(language, {
-            pl: 'Srednia kwota netto wracajaca w pojedynczym miesiacu zapadalnosci.',
-            en: 'Average net cash that returns in each maturity month.'
-        })}/>
-        <ResultMetricCard label={pickLanguageValue(language, {
-        pl: 'Sredni miesiac vs wplata',
-        en: 'Average month vs contribution'
-    })} value={formatCurrency(monthlySpreadGap)} description={pickLanguageValue(language, {
-            pl: 'Dodatni wynik oznacza, ze przecietny miesiac zapadalnosci oddaje wiecej niz typowa partia.',
-            en: 'Positive values mean average maturity cash is above the typical lot contribution.'
-        })}/>
-        <ResultMetricCard label={pickLanguageValue(language, {
-        pl: 'Zakres drabiny',
-        en: 'Ladder coverage'
-    })} value={`${earliestMonth ? earliestMonth.displayDate : '-'} ${latestMonth ? `- ${latestMonth.displayDate}` : ''}`} description={pickLanguageValue(language, {
-            pl: 'Pierwszy i ostatni miesiac zapadalnosci widoczny w biezacym scenariuszu.',
-            en: 'First and last maturity month visible in the current scenario.'
-        })}/>
+        <ResultMetricCard label={tx("generated.features.ladder_strategy.components.ladder_timeline.item_7", undefined, language)} value={formatCurrency(averageMaturityValue)} description={tx("generated.features.ladder_strategy.components.ladder_timeline.item_8", undefined, language)}/>
+        <ResultMetricCard label={tx("generated.features.ladder_strategy.components.ladder_timeline.item_9", undefined, language)} value={formatCurrency(monthlySpreadGap)} description={tx("generated.features.ladder_strategy.components.ladder_timeline.item_10", undefined, language)}/>
+        <ResultMetricCard label={tx("generated.features.ladder_strategy.components.ladder_timeline.item_11", undefined, language)} value={`${earliestMonth ? earliestMonth.displayDate : '-'} ${latestMonth ? `- ${latestMonth.displayDate}` : ''}`} description={tx("generated.features.ladder_strategy.components.ladder_timeline.item_12", undefined, language)}/>
       </div>
 
       <Card className="rounded-2xl border shadow-none">
         <CardHeader className="pb-4">
           <CardTitle className="text-lg text-slate-900">
-            {pickLanguageValue(language, {
-        pl: 'Harmonogram zapadalnosci',
-        en: 'Maturity schedule'
-    })}
+            {tx("generated.features.ladder_strategy.components.ladder_timeline.item_13", undefined, language)}
           </CardTitle>
           <CardDescription>
-            {pickLanguageValue(language, {
-            pl: 'Uzyj wykresu do oceny rozkladu, a potem potwierdz dokladne sumy w tabeli.',
-            en: 'Use the chart for spacing, then confirm exact month totals in the table below.'
-        })}
+            {tx("generated.features.ladder_strategy.components.ladder_timeline.item_14", undefined, language)}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <ChartSupportNote title={pickLanguageValue(language, {
-        pl: 'Jak czytac wykres',
-        en: 'How to read the chart'
-    })} description={pickLanguageValue(language, {
-            pl: 'Ten wykres pokazuje rozklad zapadalnosci. Uzyj go do oceny gestosci i skupien, a nie do polowania na jeden najlepszy miesiac.',
-            en: 'This chart shows the maturity spread. Use it to inspect density and clustering, not to hunt for one dramatic month.'
-        })}/>
+          <ChartSupportNote title={tx("generated.features.ladder_strategy.components.ladder_timeline.item_15", undefined, language)} description={tx("generated.features.ladder_strategy.components.ladder_timeline.item_16", undefined, language)}/>
 
           <ChartContainer height={320}>
             <ResponsiveContainer width="100%" height="100%">
@@ -146,51 +93,27 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
                 <YAxis tickLine={false} axisLine={false} fontSize={11} tickFormatter={(value: number) => `${Math.round(value / 1000)}k`}/>
                 <Tooltip cursor={{ fill: 'rgba(15, 23, 42, 0.05)' }} formatter={(value: ValueType | undefined) => [
             formatCurrency(Number(value ?? 0)),
-            pickLanguageValue(language, {
-                pl: 'Wartosc netto',
-                en: 'Net value'
-            }),
+            tx("generated.features.ladder_strategy.components.ladder_timeline.item_17", undefined, language),
         ]} labelFormatter={(label) => `${label}`}/>
                 <Bar dataKey="amount" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]}/>
               </BarChart>
             </ResponsiveContainer>
           </ChartContainer>
 
-          <ResponsiveTableSheet title={pickLanguageValue(language, {
-        pl: 'Tabela zapadalnosci',
-        en: 'Maturity table'
-    })} description={pickLanguageValue(language, {
-            pl: 'Na mniejszych ekranach odczytuj miesiace zapadalnosci jako liste zamiast szerokiej tabeli.',
-            en: 'On smaller screens, read maturity months as a list instead of a wide table.'
-        })} triggerLabel={pickLanguageValue(language, {
-        pl: 'Otworz tabele zapadalnosci',
-        en: 'Open maturity table'
-    })} triggerCount={`${chartData.length} ${pickLanguageValue(language, {
-        pl: 'miesiecy',
-        en: 'months'
-    })}`}>
+          <ResponsiveTableSheet title={tx("generated.features.ladder_strategy.components.ladder_timeline.item_18", undefined, language)} description={tx("generated.features.ladder_strategy.components.ladder_timeline.item_19", undefined, language)} triggerLabel={tx("generated.features.ladder_strategy.components.ladder_timeline.item_20", undefined, language)} triggerCount={`${chartData.length} ${tx("generated.features.ladder_strategy.components.ladder_timeline.item_21", undefined, language)}`}>
             {chartData.map((item) => (<div key={`mobile-${item.date}`} className="rounded-3xl border border-slate-200 bg-white p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-sm font-semibold text-slate-950">{item.displayDate}</p>
                     <p className="mt-1 text-xs text-slate-500">
-                      {pickLanguageValue(language, {
-            pl: 'Zapadajace partie',
-            en: 'Lots maturing'
-        })}: {item.count}
+                      {tx("generated.features.ladder_strategy.components.ladder_timeline.item_22", undefined, language)}: {item.count}
                     </p>
                   </div>
                   <p className="text-sm font-black text-slate-950">{formatCurrency(item.amount)}</p>
                 </div>
                 <div className="mt-4 grid grid-cols-2 gap-3">
-                  <MobileLadderValue label={pickLanguageValue(language, {
-            pl: 'Udzial partii',
-            en: 'Share of lots'
-        })} value={chartData.length > 0 ? `${((item.count / results.lots.length) * 100).toFixed(1)}%` : '-'}/>
-                  <MobileLadderValue label={pickLanguageValue(language, {
-            pl: 'Gotowka netto',
-            en: 'Net cash'
-        })} value={formatCurrency(item.amount)}/>
+                  <MobileLadderValue label={tx("generated.features.ladder_strategy.components.ladder_timeline.item_23", undefined, language)} value={chartData.length > 0 ? `${((item.count / results.lots.length) * 100).toFixed(1)}%` : '-'}/>
+                  <MobileLadderValue label={tx("generated.features.ladder_strategy.components.ladder_timeline.item_24", undefined, language)} value={formatCurrency(item.amount)}/>
                 </div>
               </div>))}
           </ResponsiveTableSheet>
@@ -198,37 +121,19 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
           <div className="hidden rounded-2xl border border-slate-200 bg-white lg:block">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-600">
               <p>
-                {pickLanguageValue(language, {
-            pl: 'Tabela potwierdza dokladna liczbe partii i kwote gotowki w kazdym miesiacu.',
-            en: 'The table confirms the exact lot count and cash total in each maturity month.'
-        })}
+                {tx("generated.features.ladder_strategy.components.ladder_timeline.item_25", undefined, language)}
               </p>
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
-                {chartData.length} {pickLanguageValue(language, {
-        pl: 'miesiecy',
-        en: 'months'
-    })}
+                {chartData.length} {tx("generated.features.ladder_strategy.components.ladder_timeline.item_26", undefined, language)}
               </p>
             </div>
             <Table className="table-fixed w-full">
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
-                  <TableHead className="w-[34%] text-xs text-slate-600">{pickLanguageValue(language, {
-        pl: 'Miesiac',
-        en: 'Month'
-    })}</TableHead>
-                  <TableHead className="w-[18%] text-right text-xs text-slate-600">{pickLanguageValue(language, {
-        pl: 'Zapadajace partie',
-        en: 'Lots maturing'
-    })}</TableHead>
-                  <TableHead className="w-[24%] text-right text-xs text-slate-600">{pickLanguageValue(language, {
-        pl: 'Gotowka netto',
-        en: 'Net cash'
-    })}</TableHead>
-                  <TableHead className="w-[24%] text-right text-xs text-slate-600">{pickLanguageValue(language, {
-        pl: 'Udzial partii',
-        en: 'Share of lots'
-    })}</TableHead>
+                  <TableHead className="w-[34%] text-xs text-slate-600">{tx("generated.features.ladder_strategy.components.ladder_timeline.item_27", undefined, language)}</TableHead>
+                  <TableHead className="w-[18%] text-right text-xs text-slate-600">{tx("generated.features.ladder_strategy.components.ladder_timeline.item_28", undefined, language)}</TableHead>
+                  <TableHead className="w-[24%] text-right text-xs text-slate-600">{tx("generated.features.ladder_strategy.components.ladder_timeline.item_29", undefined, language)}</TableHead>
+                  <TableHead className="w-[24%] text-right text-xs text-slate-600">{tx("generated.features.ladder_strategy.components.ladder_timeline.item_30", undefined, language)}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -249,19 +154,13 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <div className="rounded-2xl border bg-slate-50/70 p-4 text-sm leading-6 text-slate-600">
               <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
-                {pickLanguageValue(language, {
-        pl: 'Miesiac szczytowy',
-        en: 'Peak maturity month'
-    })}
+                {tx("generated.features.ladder_strategy.components.ladder_timeline.item_31", undefined, language)}
               </p>
               <p className="mt-2 font-semibold text-slate-900">
                 {peakMonth ? `${peakMonth.displayDate} (${formatCurrency(peakMonth.amount)})` : '-'}
               </p>
               <p className="mt-2">
-                {pickLanguageValue(language, {
-            pl: 'Jezeli wiekszosc zapadalnosci zbiera sie w jednym okresie, drabina jest mniej rowna niz sugeruje sam wynik koncowy.',
-            en: 'If most maturities cluster in one period, the ladder is less even than it looks from a single top-line return number.'
-        })}
+                {tx("generated.features.ladder_strategy.components.ladder_timeline.item_32", undefined, language)}
               </p>
             </div>
 
@@ -271,47 +170,26 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
               <p className={peakShare >= 25
             ? 'text-[11px] font-bold uppercase tracking-wide text-amber-800'
             : 'text-[11px] font-bold uppercase tracking-wide text-emerald-800'}>
-                {pickLanguageValue(language, {
-        pl: 'Kontrola koncentracji',
-        en: 'Concentration check'
-    })}
+                {tx("generated.features.ladder_strategy.components.ladder_timeline.item_33", undefined, language)}
               </p>
               <p className="mt-2 font-semibold">
                 {peakMonth
-            ? `${peakShare.toFixed(1)}% ${pickLanguageValue(language, {
-                pl: 'partii zapada w',
-                en: 'of lots mature in'
-            })} ${peakMonth.displayDate}.`
-            : pickLanguageValue(language, {
-                pl: 'Brak danych koncentracji.',
-                en: 'No maturity concentration available.'
-            })}
+            ? `${peakShare.toFixed(1)}% ${tx("generated.features.ladder_strategy.components.ladder_timeline.item_34", undefined, language)} ${peakMonth.displayDate}.`
+            : tx("generated.features.ladder_strategy.components.ladder_timeline.item_35", undefined, language)}
               </p>
               <p className="mt-2">
                 {peakShare >= 25
-            ? pickLanguageValue(language, {
-                pl: 'Ta drabina jest wyraznie skupiona. Plynnosc wraca w mniejszej liczbie okien niz sugerowalaby gladka drabina.',
-                en: 'This ladder is meaningfully clustered. Liquidity arrives in fewer windows than a smooth ladder would suggest.'
-            }) : pickLanguageValue(language, {
-            pl: 'Zapadalnosci sa rozsadnie rozlozone w obecnej osi czasu.',
-            en: 'Maturities are reasonably spread across the current timeline.'
-        })}
+            ? tx("generated.features.ladder_strategy.components.ladder_timeline.item_36", undefined, language) : tx("generated.features.ladder_strategy.components.ladder_timeline.item_37", undefined, language)}
               </p>
             </div>
           </div>
 
           <div className="rounded-2xl border bg-card p-4 text-sm leading-6 text-slate-600">
             <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
-              {pickLanguageValue(language, {
-        pl: 'Kolejnosc czytania',
-        en: 'Reading order'
-    })}
+              {tx("generated.features.ladder_strategy.components.ladder_timeline.item_38", undefined, language)}
             </p>
             <p className="mt-2">
-              {pickLanguageValue(language, {
-            pl: '1. Sprawdz zakres. 2. Sprawdz miesiac szczytowy. 3. Sprawdz koncentracje. 4. Potwierdz sumy miesieczne w tabeli.',
-            en: '1. Check coverage. 2. Check peak month. 3. Check concentration. 4. Confirm exact month totals in the table.'
-        })}
+              {tx("generated.features.ladder_strategy.components.ladder_timeline.item_39", undefined, language)}
             </p>
           </div>
         </CardContent>

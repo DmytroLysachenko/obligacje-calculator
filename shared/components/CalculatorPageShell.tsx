@@ -4,10 +4,8 @@ import { Check, Loader2, Share2, Target, Trophy } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { useLanguage } from '@/i18n';
+import { tx, useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
 interface CalculatorPageShellProps {
     title: string;
     description: string;
@@ -107,10 +105,7 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({ title,
               </div>
               <span className="text-[15px] font-semibold text-slate-700 md:text-base">
                 {t('bonds.target')}:{' '}
-                {new Intl.NumberFormat(pickLanguageValue(language, {
-                pl: 'pl-PL',
-                en: 'en-GB'
-            })).format(savingsGoal)}{' '}
+                {new Intl.NumberFormat(tx("generated.shared.components.calculator_page_shell.item_1", undefined, language)).format(savingsGoal)}{' '}
                 PLN
               </span>
             </div>

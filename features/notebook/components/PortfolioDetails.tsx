@@ -1,7 +1,7 @@
 "use client";
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { UserPortfolio, UserInvestmentLot } from '@/db/schema';
-import { useLanguage } from '@/i18n';
+import { tx, useLanguage } from '@/i18n';
 import { ArrowLeft, Trash2, Download, ExternalLink, FolderOpen, Loader2, Share2, ShieldCheck, TrendingUp, Check, } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,8 +19,6 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 import { PortfolioSimulationResult } from '@/features/bond-core/types/scenarios';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
 interface PortfolioDetailsProps {
     portfolio: UserPortfolio;
     onBack: () => void;
@@ -55,10 +53,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
     const [justCopied, setJustCopied] = useState(false);
     const [maturityWindowDays, setMaturityWindowDays] = useState<MaturityWindow>(90);
     const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/p/${portfolio.shareId}` : '';
-    const formatCurrency = useCallback((value: number) => new Intl.NumberFormat(pickLanguageValue(language, {
-        pl: 'pl-PL',
-        en: 'en-GB'
-    }), {
+    const formatCurrency = useCallback((value: number) => new Intl.NumberFormat(tx("generated.features.notebook.components.portfolio_details.item_1", undefined, language), {
         style: 'currency',
         currency: 'PLN',
         maximumFractionDigits: 0,
@@ -195,10 +190,9 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
     }, [maturityWindowDays, upcomingMaturities]);
     const upcomingCashflow = filteredMaturities.reduce((sum, item) => sum + item.value, 0);
     const nextMaturity = upcomingMaturities[0] ?? null;
-    const maturityWindowLabel = pickLanguageValue(language, {
-        pl: `Najblizsze ${maturityWindowDays} dni`,
-        en: `Next ${maturityWindowDays} days`
-    });
+    const maturityWindowLabel = tx('notebook.next_days_window', {
+        days: String(maturityWindowDays),
+    }, language);
     if (isLoadingDefs || !definitions) {
         return (<div className="space-y-4">
         <div className="h-10 w-40 rounded bg-muted"/>
@@ -232,30 +226,12 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
           </div>
 
           <div className="grid gap-4 md:grid-cols-3">
-            <PortfolioMiniStat label={t('notebook.total_invested')} value={formatCurrency(totalValue)} description={pickLanguageValue(language, {
-            pl: 'Nominalna wartosc wszystkich zapisanych partii.',
-            en: 'Nominal value across all stored lots.'
-        })}/>
+            <PortfolioMiniStat label={t('notebook.total_invested')} value={formatCurrency(totalValue)} description={tx("generated.features.notebook.components.portfolio_details.item_2", undefined, language)}/>
             <PortfolioMiniStat label={t('notebook.next_maturity')} value={nextMaturity ? nextMaturity.bondType : '-'} description={nextMaturity
-            ? `${format(nextMaturity.maturityDate, 'dd.MM.yyyy')} ${pickLanguageValue(language, {
-                pl: 'najblizej',
-                en: 'comes next'
-            })}`
-            : pickLanguageValue(language, {
-                pl: 'Brak najblizszej zapadalnosci.',
-                en: 'No upcoming maturity found.'
-            })}/>
-            <PortfolioMiniStat label={pickLanguageValue(language, {
-        pl: 'Tryb udostepniania',
-        en: 'Sharing mode'
-    })} value={isPublic ? t('notebook.public') : t('notebook.private')} description={isPublic
-            ? pickLanguageValue(language, {
-                pl: 'Portfel ma aktywny publiczny link.',
-                en: 'This portfolio currently has a public share link.'
-            }) : pickLanguageValue(language, {
-            pl: 'Portfel pozostaje prywatnym szkicem.',
-            en: 'This portfolio is currently kept private.'
-        })}/>
+            ? `${format(nextMaturity.maturityDate, 'dd.MM.yyyy')} ${tx("generated.features.notebook.components.portfolio_details.item_3", undefined, language)}`
+            : tx("generated.features.notebook.components.portfolio_details.item_4", undefined, language)}/>
+            <PortfolioMiniStat label={tx("generated.features.notebook.components.portfolio_details.item_5", undefined, language)} value={isPublic ? t('notebook.public') : t('notebook.private')} description={isPublic
+            ? tx("generated.features.notebook.components.portfolio_details.item_6", undefined, language) : tx("generated.features.notebook.components.portfolio_details.item_7", undefined, language)}/>
           </div>
         </CardContent>
       </Card>
@@ -283,10 +259,9 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
             {t('notebook.export_summary')}
           </Button>
           {onDelete ? (<Button variant="outline" className="gap-2 border-destructive/20 bg-background text-destructive hover:bg-destructive/5 hover:text-destructive" onClick={async () => {
-                const confirmed = window.confirm(pickLanguageValue(language, {
-                    pl: `Usunac portfel "${portfolio.name}"? Tej operacji nie mozna cofnac.`,
-                    en: `Delete portfolio "${portfolio.name}"? This action cannot be undone.`
-                }));
+                const confirmed = window.confirm(tx('notebook.confirm_delete_portfolio_full', {
+                    name: portfolio.name,
+                }, language));
                 if (!confirmed) {
                     return;
                 }
@@ -294,10 +269,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                 onBack();
             }}>
               <Trash2 className="h-4 w-4"/>
-              {pickLanguageValue(language, {
-            pl: 'Usun portfel',
-            en: 'Delete portfolio'
-        })}
+              {tx("generated.features.notebook.components.portfolio_details.item_8", undefined, language)}
             </Button>) : null}
           {isPublic && (<Button variant="outline" className="gap-2" onClick={copyToClipboard}>
               {justCopied ? <Check className="h-4 w-4 text-emerald-600"/> : <Share2 className="h-4 w-4"/>}
@@ -340,30 +312,12 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                     <Table>
                       <TableHeader>
                         <TableRow className="hover:bg-transparent">
-                          <TableHead className="h-12 text-sm font-semibold text-slate-600">{pickLanguageValue(language, {
-            pl: 'Typ',
-            en: 'Type'
-        })}</TableHead>
-                          <TableHead className="h-12 text-sm font-semibold text-slate-600">{pickLanguageValue(language, {
-            pl: 'Okres',
-            en: 'Duration'
-        })}</TableHead>
-                          <TableHead className="h-12 text-right text-sm font-semibold text-slate-600">{pickLanguageValue(language, {
-            pl: 'Sztuki',
-            en: 'Amount'
-        })}</TableHead>
-                          <TableHead className="h-12 text-sm font-semibold text-slate-600">{pickLanguageValue(language, {
-            pl: 'Data zakupu',
-            en: 'Purchase date'
-        })}</TableHead>
-                          <TableHead className="h-12 text-right text-sm font-semibold text-slate-600">{pickLanguageValue(language, {
-            pl: 'Wartosc nominalna',
-            en: 'Nominal value'
-        })}</TableHead>
-                          <TableHead className="h-12 text-right text-sm font-semibold text-slate-600">{pickLanguageValue(language, {
-            pl: 'Akcja',
-            en: 'Action'
-        })}</TableHead>
+                          <TableHead className="h-12 text-sm font-semibold text-slate-600">{tx("generated.features.notebook.components.portfolio_details.item_9", undefined, language)}</TableHead>
+                          <TableHead className="h-12 text-sm font-semibold text-slate-600">{tx("generated.features.notebook.components.portfolio_details.item_10", undefined, language)}</TableHead>
+                          <TableHead className="h-12 text-right text-sm font-semibold text-slate-600">{tx("generated.features.notebook.components.portfolio_details.item_11", undefined, language)}</TableHead>
+                          <TableHead className="h-12 text-sm font-semibold text-slate-600">{tx("generated.features.notebook.components.portfolio_details.item_12", undefined, language)}</TableHead>
+                          <TableHead className="h-12 text-right text-sm font-semibold text-slate-600">{tx("generated.features.notebook.components.portfolio_details.item_13", undefined, language)}</TableHead>
+                          <TableHead className="h-12 text-right text-sm font-semibold text-slate-600">{tx("generated.features.notebook.components.portfolio_details.item_14", undefined, language)}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -452,10 +406,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
               <ChartSupportNote title={t('notebook.projection_read_title')} description={t('notebook.projection_read_desc')}/>
               {isSimulating ? (<div className="flex min-h-[320px] items-center justify-center gap-3 text-sm text-muted-foreground">
                   <Loader2 className="h-5 w-5 animate-spin"/>
-                  {pickLanguageValue(language, {
-                pl: 'Trwa symulacja portfela...',
-                en: 'Running portfolio simulation...'
-            })}
+                  {tx("generated.features.notebook.components.portfolio_details.item_15", undefined, language)}
                 </div>) : simulation?.aggregatedTimeline ? (<ChartContainer height={360}>
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={simulation.aggregatedTimeline.length > 240
@@ -472,10 +423,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                       <YAxis tick={{ fontSize: 11 }} tickFormatter={(value) => `${Math.round(value / 1000)}k`}/>
                       <Tooltip labelFormatter={(value) => format(new Date(value as string), 'MMMM yyyy')} formatter={(value: ValueType | undefined) => [
                 formatCurrency(Number(value ?? 0)),
-                pickLanguageValue(language, {
-                    pl: 'Wartosc laczna',
-                    en: 'Total value'
-                }),
+                tx("generated.features.notebook.components.portfolio_details.item_16", undefined, language),
             ]}/>
                       <Area type="monotone" dataKey="totalNetValue" stroke="#2563eb" strokeWidth={3} fill="url(#portfolioNet)" isAnimationActive={false}/>
                     </AreaChart>

@@ -1,15 +1,13 @@
 'use client';
 import React from 'react';
 import { Area, AreaChart, Brush, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis, } from 'recharts';
-import { useLanguage } from '@/i18n';
+import { tx, useLanguage } from '@/i18n';
 import { useChartData } from '@/shared/hooks/useChartData';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ReferenceChartFrame } from '@/shared/components/charts/ReferenceChartFrame';
 import { Skeleton } from '@/components/ui/skeleton';
 import { sampleSeriesPoints, sliceSeriesByPeriod } from '@/shared/lib/chart-series';
 import { getReferenceMetaItems } from '@/shared/lib/data-reference';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
 interface NBPRateDataPoint {
     date: string;
     rate: number;
@@ -72,13 +70,7 @@ export const NBPRateChart = ({ period = 'ALL', }: {
       </div>);
     }
     return (<ReferenceChartFrame metaItems={getReferenceMetaItems(response, language)} fallbackNotice={response?.usedFallback
-            ? pickLanguageValue(language, {
-                pl: 'Zakres tej serii pozostaje zastepczy. Czytaj ja jako kontekst referencyjny, dopoki synchronizacja nie odzyska pelniejszej historii.',
-                en: 'This series still relies on fallback coverage. Read it as reference context until sync restores fuller history.'
-            }) : pickLanguageValue(language, {
-            pl: 'Ta seria jest zsynchronizowana i moze wspierac odczyt wynikow kalkulatora bez dominowania strony.',
-            en: 'This series is synced and can support calculator interpretation without taking over the page.'
-        })} fallbackTone={response?.usedFallback ? 'warning' : 'good'}>
+            ? tx("generated.features.economic_data.components.nbprate_chart.item_1", undefined, language) : tx("generated.features.economic_data.components.nbprate_chart.item_2", undefined, language)} fallbackTone={response?.usedFallback ? 'warning' : 'good'}>
       <ChartContainer height={420}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={chartData}>

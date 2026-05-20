@@ -5,13 +5,11 @@ import { ValueType, NameType, } from 'recharts/types/component/DefaultTooltipCon
 import { RegularInvestmentResult } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
 import { format, parseISO } from 'date-fns';
-import { pl, enGB } from 'date-fns/locale';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getBondColor } from '@/shared/constants/bond-colors';
 import { sampleSeriesPoints } from '@/shared/lib/chart-series';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
+import { getDateFnsLocale, getIntlLocale } from '@/i18n/locale-utils';
 interface RegularInvestmentChartProps {
     results: RegularInvestmentResult;
     bondType: string;
@@ -48,10 +46,7 @@ const CustomTooltip = ({ active, payload, label, formatCurrency }: CustomTooltip
 export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ results, bondType }) => {
     const { t, language } = useLanguage();
     const [view, setView] = React.useState<'nominal' | 'real'>('nominal');
-    const dateLocale = pickLanguageValue(language, {
-        pl: pl,
-        en: enGB
-    });
+    const dateLocale = getDateFnsLocale(language);
     const primaryColor = getBondColor(bondType);
     const chartData = React.useMemo(() => sampleSeriesPoints(results.timeline.map((point) => ({
         date: format(parseISO(point.date), 'MM.yy', { locale: dateLocale }),
@@ -60,10 +55,7 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ 
             ? Number(point.nominalValue.toFixed(2))
             : Number(point.realValue.toFixed(2)),
     })), 180), [dateLocale, results.timeline, view]);
-    const formatCurrency = React.useMemo(() => (value: number) => new Intl.NumberFormat(pickLanguageValue(language, {
-        pl: 'pl-PL',
-        en: 'en-GB'
-    }), {
+    const formatCurrency = React.useMemo(() => (value: number) => new Intl.NumberFormat(getIntlLocale(language), {
         style: 'currency',
         currency: 'PLN',
         maximumFractionDigits: 0,

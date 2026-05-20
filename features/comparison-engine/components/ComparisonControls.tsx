@@ -7,11 +7,9 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@/components/ui/select';
 import { History, Settings2, ShoppingCart } from 'lucide-react';
-import { useLanguage } from '@/i18n';
+import { tx, useLanguage } from '@/i18n';
 import { ComparisonControlsProps } from './types';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
 export const ComparisonControls: React.FC<ComparisonControlsProps> = ({ initialSum, updateInitialSum, monthlyContribution, updateMonthlyContribution, startYear, updateStartYear, startMonth, updateStartMonth, years, months, showRealValue, updateShowRealValue, purchasingPowerLoss, formatCurrency, }) => {
     const { t, language } = useLanguage();
     const presets = [
@@ -27,10 +25,7 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({ initialS
             {t('comparison.configuration')}
           </CardTitle>
           <p className="text-sm leading-6 text-muted-foreground">
-            {pickLanguageValue(language, {
-            pl: 'Ustaw jeden historyczny punkt wejscia, jedna kwote poczatkowa i jedna miesieczna wplate, zanim przeliczysz porownanie.',
-            en: 'Set one historical entry point, one initial amount, and one monthly contribution before recalculating the comparison.'
-        })}
+            {tx("generated.features.comparison_engine.components.comparison_controls.item_1", undefined, language)}
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -63,16 +58,10 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({ initialS
               <AccordionTrigger className="rounded-2xl border bg-slate-50 px-4 py-4 hover:no-underline">
                 <div className="space-y-1 text-left">
                   <p className="text-sm font-bold text-slate-950">
-                    {pickLanguageValue(language, {
-            pl: 'Ustawienia historycznego wejscia',
-            en: 'Historical entry settings'
-        })}
+                    {tx("generated.features.comparison_engine.components.comparison_controls.item_2", undefined, language)}
                   </p>
                   <p className="text-xs leading-5 text-muted-foreground">
-                    {pickLanguageValue(language, {
-            pl: 'Rok startu, miesiac, presety i widok skorygowany o inflacje.',
-            en: 'Start year, month, presets, and inflation-adjusted display.'
-        })}
+                    {tx("generated.features.comparison_engine.components.comparison_controls.item_3", undefined, language)}
                   </p>
                 </div>
               </AccordionTrigger>

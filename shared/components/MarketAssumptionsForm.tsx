@@ -4,15 +4,13 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
-import { useLanguage } from '@/i18n';
+import { tx, useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
 import { BondInputs, BondType } from '@/features/bond-core/types';
 import { TrendingUp, History, Target, AlertTriangle } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useChartData } from '@/shared/hooks/useChartData';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
 interface InflationDataPoint {
     date: string;
     rate: number;
@@ -81,34 +79,16 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
     const isInflationIndexedBond = INDEXED_BONDS.has(bondType);
     const isNbpRelevant = bondType === BondType.ROR || bondType === BondType.DOR;
     const scenarioDescriptions = {
-        low: pickLanguageValue(language, {
-            pl: 'Symuluje nizsza sciezke CPI po pierwszym roku, wiec przyszle kupony indeksowane rosna wolniej.',
-            en: 'Simulates a lower CPI path after year one, so future indexed coupons rise more slowly.'
-        }),
-        base: pickLanguageValue(language, {
-            pl: 'Uzywa dokladnie wybranej przez Ciebie sciezki CPI po pierwszym roku.',
-            en: 'Uses the exact CPI path you selected after the first year.'
-        }),
-        high: pickLanguageValue(language, {
-            pl: 'Symuluje wyzsza sciezke CPI po pierwszym roku, wiec przyszle kupony indeksowane rosna szybciej.',
-            en: 'Simulates a higher CPI path after year one, so future indexed coupons rise faster.'
-        }),
+        low: tx("generated.shared.components.market_assumptions_form.item_1", undefined, language),
+        base: tx("generated.shared.components.market_assumptions_form.item_2", undefined, language),
+        high: tx("generated.shared.components.market_assumptions_form.item_3", undefined, language),
     } as const;
     return (<div className="space-y-6">
       <div className="space-y-4">
         <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 text-[11px] leading-5 text-slate-600">
           {isInflationIndexedBond
-            ? pickLanguageValue(language, {
-                pl: 'Dla obligacji indeksowanych CPI zmienia przyszle kupony po okresie otwarcia oraz wartosc realna.',
-                en: 'For indexed bonds, CPI changes future coupons after the opening period and also affects real-value readouts.'
-            }) : isNbpRelevant
-            ? pickLanguageValue(language, {
-                pl: 'Dla ROR i DOR CPI nie zmienia kuponu. Kupon po pierwszym okresie zalezy od NBP, a inflacja sluzy tu glownie do pokazywania sily nabywczej.',
-                en: 'For ROR and DOR, CPI does not change the coupon. Later coupons follow NBP, while inflation here is mainly for purchasing-power readouts.'
-            }) : pickLanguageValue(language, {
-            pl: 'Dla tej obligacji inflacja nie zmienia kuponu. To zalozenie sluzy glownie do pokazywania sily nabywczej i wartosci realnej.',
-            en: 'For this bond, inflation does not change the coupon. This assumption mainly drives purchasing-power and real-value display.'
-        })}
+            ? tx("generated.shared.components.market_assumptions_form.item_4", undefined, language) : isNbpRelevant
+            ? tx("generated.shared.components.market_assumptions_form.item_5", undefined, language) : tx("generated.shared.components.market_assumptions_form.item_6", undefined, language)}
         </div>
 
         <div className="flex items-center justify-between">
@@ -145,10 +125,7 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
         {isInflationIndexedBond ? (<>
             <div className="space-y-3 border-t border-dashed pt-4">
               <Label className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">
-                {pickLanguageValue(language, {
-            pl: 'Scenariusz CPI po pierwszym roku',
-            en: 'Post-year-one CPI scenario'
-        })}
+                {tx("generated.shared.components.market_assumptions_form.item_7", undefined, language)}
               </Label>
               <div className="grid grid-cols-3 gap-2">
                 {(['low', 'base', 'high'] as const).map((scenario) => (<Button key={scenario} variant="outline" size="sm" className={cn('h-9 min-w-0 text-[11px] font-semibold tracking-[0.08em]', inflationScenario === scenario && 'border-primary/50 bg-primary/10 text-primary')} onClick={() => onUpdate('inflationScenario', scenario)}>
@@ -182,10 +159,7 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
                   </div>))}
               </div>) : null}
           </>) : (<div className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 text-[11px] leading-5 text-slate-600">
-            {pickLanguageValue(language, {
-                pl: 'Scenariusze CPI po pierwszym roku sa ukryte, bo ta obligacja nie resetuje kuponu inflacja. Zmienia sie tylko odczyt wartosci realnej.',
-                en: 'Post-year-one CPI scenarios stay hidden because this bond does not reset its coupon with inflation. Only the real-value readout changes.'
-            })}
+            {tx("generated.shared.components.market_assumptions_form.item_8", undefined, language)}
           </div>)}
       </div>
 
@@ -200,10 +174,7 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
           </div>
           <CommittedSliderInput value={Number.isFinite(expectedNbpRate ?? 5.25) ? (expectedNbpRate ?? 5.25) : 5.25} min={0} max={15} step={0.05} unit="%" onCommit={(value) => onUpdate('expectedNbpRate', value)}/>
           <p className="text-[11px] leading-5 text-muted-foreground">
-            {pickLanguageValue(language, {
-                pl: 'Ta sciezka NBP steruje kolejnymi okresami po wydanym okresie otwarcia. Pierwszy miesiac nadal bierze stawke z aktywnej oferty emisji.',
-                en: 'This NBP path drives later periods after the issued opening offer. The first month still uses the active issued offer rate.'
-            })}
+            {tx("generated.shared.components.market_assumptions_form.item_9", undefined, language)}
           </p>
         </div>) : null}
     </div>);

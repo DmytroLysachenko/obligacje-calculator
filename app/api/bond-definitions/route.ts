@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getBondDefinitionsMap } from '@/lib/data-access';
 import { createSuccessResponse, createErrorResponse } from '@/shared/types/api';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const definitions = await getBondDefinitionsMap();
     return NextResponse.json(createSuccessResponse(definitions));

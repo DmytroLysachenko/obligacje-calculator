@@ -67,23 +67,68 @@ function humanizeMissingKey(key: string) {
     .join(' ');
 }
 
-export function resolveTranslationValue(
+function interpolateNode(
+  node: unknown,
+  variables?: Record<string, string | number>,
+): unknown {
+  if (!variables) {
+    return node;
+  }
+
+  if (typeof node === 'string') {
+    let text = node;
+
+    Object.entries(variables).forEach(([name, value]) => {
+      text = text.replace(new RegExp(`{{${name}}}`, 'g'), String(value));
+    });
+
+    return text;
+  }
+
+  if (Array.isArray(node)) {
+    return node.map((entry) => interpolateNode(entry, variables));
+  }
+
+  if (node && typeof node === 'object') {
+    return Object.fromEntries(
+      Object.entries(node as TranslationTree).map(([key, value]) => [
+        key,
+        interpolateNode(value, variables),
+      ]),
+    );
+  }
+
+  return node;
+}
+
+export function resolveTranslationNode(
   translations: Record<string, TranslationTree>,
   language: string,
   key: string,
+  variables?: Record<string, string | number>,
 ) {
   const path = key.split('.');
   const selected = getNestedValue(translations[language] ?? {}, path);
 
-  if (typeof selected === 'string') {
-    return repairMojibakeText(selected);
+  if (selected !== undefined) {
+    return interpolateNode(selected, variables);
   }
 
   const fallback = getNestedValue(translations.en ?? {}, path);
-  if (typeof fallback === 'string') {
-    return repairMojibakeText(fallback);
+  if (fallback !== undefined) {
+    return interpolateNode(fallback, variables);
   }
 
   return humanizeMissingKey(key);
+}
+
+export function resolveTranslationValue(
+  translations: Record<string, TranslationTree>,
+  language: string,
+  key: string,
+  variables?: Record<string, string | number>,
+) {
+  const resolved = resolveTranslationNode(translations, language, key, variables);
+  return typeof resolved === 'string' ? repairMojibakeText(resolved) : humanizeMissingKey(key);
 }
 

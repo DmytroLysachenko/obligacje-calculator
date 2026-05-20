@@ -20,9 +20,7 @@ import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';
 import { formatCurrency } from '@/lib/utils';
-import { useLanguage } from '@/i18n';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
+import { tx, useLanguage } from '@/i18n';
 function formatRate(value: number) {
     return `${value.toFixed(2)}%`;
 }
@@ -117,246 +115,71 @@ export const RetirementPlannerContainer: React.FC = () => {
         return formatHorizonMonths((finalMonth.year * 12) + finalMonth.month, language);
     }, [language, results]);
     const labels = {
-        pageTitle: pickLanguageValue(language, {
-            pl: 'Model wyplat emerytalnych',
-            en: 'Retirement Withdrawal Model'
-        }),
-        pageDescription: pickLanguageValue(language, {
-            pl: 'Uruchom jeden waski scenariusz wyplat z jawnymi zalozeniami i przeczytaj sciezke salda, zanim potraktujesz go jako material planistyczny.',
-            en: 'Run one narrow withdrawal scenario with explicit assumptions and review the balance path before treating it as planning evidence.'
-        }),
-        primaryInputs: pickLanguageValue(language, {
-            pl: 'Glówne dane',
-            en: 'Primary Inputs'
-        }),
-        primaryInputsDesc: pickLanguageValue(language, {
-            pl: 'Ustaw kapital, wyplate, horyzont i wspierana rodzine obligacji. Zaawansowane zalozenia staja nizej i pozostaja drugorzedne.',
-            en: 'Set capital, withdrawal, horizon, and supported bond family. Advanced rate and wrapper assumptions stay collapsed below.'
-        }),
-        initialCapital: pickLanguageValue(language, {
-            pl: 'Kapital poczatkowy',
-            en: 'Initial Capital'
-        }),
-        monthlyWithdrawal: pickLanguageValue(language, {
-            pl: 'Miesieczna wyplata',
-            en: 'Monthly Withdrawal'
-        }),
-        scenarioHorizon: pickLanguageValue(language, {
-            pl: 'Horyzont scenariusza',
-            en: 'Scenario Horizon'
-        }),
-        bondFamily: pickLanguageValue(language, {
-            pl: 'Rodzina obligacji',
-            en: 'Bond Family'
-        }),
-        advancedAssumptions: pickLanguageValue(language, {
-            pl: 'Zaawansowane zalozenia',
-            en: 'Advanced Assumptions'
-        }),
-        advancedAssumptionsDesc: pickLanguageValue(language, {
-            pl: 'Inflacja, modelowana stopa NBP i opakowanie podatkowe.',
-            en: 'Inflation, modeled NBP rate, and tax wrapper.'
-        }),
-        expectedInflation: pickLanguageValue(language, {
-            pl: 'Prognozowana inflacja',
-            en: 'Expected Inflation'
-        }),
-        expectedNbpRate: pickLanguageValue(language, {
-            pl: 'Prognozowana stopa NBP',
-            en: 'Expected NBP Rate'
-        }),
-        taxWrapper: pickLanguageValue(language, {
-            pl: 'Opakowanie podatkowe',
-            en: 'Tax Wrapper'
-        }),
-        floatingActionNote: pickLanguageValue(language, {
-            pl: 'Uzyj plywajacej akcji w prawym dolnym rogu, gdy scenariusz wyplat bedzie gotowy do pierwszego uruchomienia lub przeliczenia.',
-            en: 'Use the floating action in the lower corner when this withdrawal scenario is ready for its first run or for recalculation.'
-        }),
-        staleResults: pickLanguageValue(language, {
-            pl: 'Dane zostaly zmienione. Sciezka salda ponizej nadal pokazuje poprzedni zatwierdzony przebieg. Przelicz, gdy chcesz go odswiezyc.',
-            en: 'Inputs changed. The balance path below still shows the previous committed run. Recalculate when you want to refresh it.'
-        }),
-        scenarioStatus: pickLanguageValue(language, {
-            pl: 'Status scenariusza',
-            en: 'Scenario Status'
-        }),
-        balancePositive: pickLanguageValue(language, {
-            pl: 'Saldo pozostaje dodatnie',
-            en: 'Balance remains positive'
-        }),
-        balanceDepletes: pickLanguageValue(language, {
-            pl: 'Saldo wyczerpuje sie przed czasem',
-            en: 'Balance depletes early'
-        }),
-        projectedExhaustion: pickLanguageValue(language, {
-            pl: 'Prognozowana data wyczerpania',
-            en: 'Projected exhaustion date'
-        }),
-        noProjectedDepletion: pickLanguageValue(language, {
-            pl: 'Brak prognozowanego wyczerpania w wybranym horyzoncie.',
-            en: 'No projected depletion inside the selected horizon.'
-        }),
-        finalBalance: pickLanguageValue(language, {
-            pl: 'Saldo koncowe',
-            en: 'Final Balance'
-        }),
-        finalBalanceDetail: pickLanguageValue(language, {
-            pl: 'Nominalne saldo na koncu horyzontu dla tej jednej modelowanej sciezki.',
-            en: 'Nominal end-of-horizon balance under this one modeled path.'
-        }),
-        totalWithdrawn: pickLanguageValue(language, {
-            pl: 'Lacznie wyplacono',
-            en: 'Total Withdrawn'
-        }),
-        totalWithdrawnDetail: pickLanguageValue(language, {
-            pl: 'Skumulowane wyplaty w wybranym horyzoncie.',
-            en: 'Cumulative withdrawals inside the selected horizon.'
-        }),
-        modeledAnnualRate: pickLanguageValue(language, {
-            pl: 'Modelowana stopa roczna',
-            en: 'Modeled Annual Rate'
-        }),
-        modeledAnnualRateDetail: pickLanguageValue(language, {
-            pl: 'Stala stopa uzyta dla {{bond}}.',
-            en: 'Steady rate used for {{bond}}.'
-        }),
-        balancePath: pickLanguageValue(language, {
-            pl: 'Sciezka salda',
-            en: 'Balance Path'
-        }),
-        balancePathDesc: pickLanguageValue(language, {
-            pl: 'Ten wykres pokazuje tylko zatwierdzony scenariusz. Probkujemy go rocznie, aby sciezka pozostala czytelna.',
-            en: 'This chart shows the committed scenario only. It is sampled yearly to keep the path readable.'
-        }),
-        coverage: pickLanguageValue(language, {
-            pl: 'Zakres',
-            en: 'Coverage'
-        }),
-        taxPaid: pickLanguageValue(language, {
-            pl: 'Podatek zaplacony',
-            en: 'Tax Paid'
-        }),
-        howToRead: pickLanguageValue(language, {
-            pl: 'Jak to czytac',
-            en: 'How to read it'
-        }),
-        howToReadDesc: pickLanguageValue(language, {
-            pl: 'Zacznij od statusu scenariusza i salda koncowego. Wykres ma pokazywac sciezke zuzycia kapitalu w czasie, a nie pelna rekomendacje emerytalna.',
-            en: 'Start with scenario status and final balance. Use the chart to see the depletion path over time, not as a full retirement-planning recommendation.'
-        }),
-        balance: pickLanguageValue(language, {
-            pl: 'Saldo',
-            en: 'Balance'
-        }),
-        withdrawal: pickLanguageValue(language, {
-            pl: 'Wyplata',
-            en: 'Withdrawal'
-        }),
-        assumptionsAndWarnings: pickLanguageValue(language, {
-            pl: 'Zalozenia i ostrzezenia scenariusza',
-            en: 'Scenario assumptions and warnings'
-        }),
-        assumptionsAndWarningsDesc: pickLanguageValue(language, {
-            pl: 'Otworz to, gdy chcesz zobaczyc pomocniczy slad zalozen dla biezacego przebiegu wyplat.',
-            en: 'Open this when you want the supporting assumption trail behind the current withdrawal run.'
-        }),
-        audit: pickLanguageValue(language, {
-            pl: 'Audyt',
-            en: 'Audit'
-        }),
-        assumptions: pickLanguageValue(language, {
-            pl: 'Zalozenia scenariusza',
-            en: 'Scenario Assumptions'
-        }),
-        warningsAndNotes: pickLanguageValue(language, {
-            pl: 'Ostrzezenia i notatki',
-            en: 'Warnings and Notes'
-        }),
-        noExtraAssumptions: pickLanguageValue(language, {
-            pl: 'Poza widocznymi danymi nie zgloszono dodatkowych zalozen.',
-            en: 'No extra assumptions were reported beyond the visible inputs.'
-        }),
-        noExtraWarnings: pickLanguageValue(language, {
-            pl: 'Dla tego scenariusza nie zwrocono dodatkowych ostrzezen.',
-            en: 'No extra warnings were returned for this scenario.'
-        }),
-        readyBadge: pickLanguageValue(language, {
-            pl: 'Model ograniczony',
-            en: 'Limited model'
-        }),
-        readyTitle: pickLanguageValue(language, {
-            pl: 'Gotowy do przetestowania jednej sciezki wyplat?',
-            en: 'Ready to test one withdrawal path?'
-        }),
-        readyDesc: pickLanguageValue(language, {
-            pl: 'Ustaw kapital poczatkowy, wyplate, horyzont i wspierana rodzine obligacji. Potem uruchom jedno zatwierdzone obliczenie, zanim zaczniesz czytac sciezke salda.',
-            en: 'Set the starting capital, withdrawal amount, horizon, and supported bond family. Then run one committed calculation before reading the balance path.'
-        }),
-        readyStepBalance: pickLanguageValue(language, {
-            pl: 'Zbuduj pierwsza sciezke salda',
-            en: 'Stage one balance path'
-        }),
-        readyStepHorizon: pickLanguageValue(language, {
-            pl: 'Zatwierdz jeden horyzont',
-            en: 'Commit one horizon'
-        }),
-        readyStepRead: pickLanguageValue(language, {
-            pl: 'Czytaj wasko',
-            en: 'Read it narrowly'
-        }),
-        readyStepReadDesc: pickLanguageValue(language, {
-            pl: 'To model zuzycia kapitalu przy stalej stopie, a nie pelny silnik doradztwa emerytalnego.',
-            en: 'This is a steady-rate depletion model, not a complete retirement advice engine.'
-        }),
-        readyFooter: pickLanguageValue(language, {
-            pl: 'Zaawansowane zalozenia pozostaja dostepne, ale pierwszy odczyt powinien pochodzic z jednego czystego zatwierdzonego przebiegu.',
-            en: 'Advanced assumptions stay available, but the first reading should come from one clean committed run.'
-        }),
-        limitsTitle: pickLanguageValue(language, {
-            pl: 'Limity modelu i wspierany zakres',
-            en: 'Model limits and supported scope'
-        }),
-        limitsDesc: pickLanguageValue(language, {
-            pl: 'Otworz to, gdy chcesz zobaczyc ograniczenia stojace za ta powierzchnia wyplat.',
-            en: 'Open this when you want the constraints behind this withdrawal surface.'
-        }),
-        limitsBadge: pickLanguageValue(language, {
-            pl: 'Limity',
-            en: 'Limits'
-        }),
-        depletionWarning: pickLanguageValue(language, {
-            pl: 'Ten przebieg prognozuje wyczerpanie srodkow dnia {{date}}. Uruchom go ponownie z nizsza wyplata, dluzszym sprawdzeniem horyzontu albo inna wspierana rodzina obligacji, zanim wyciagniesz wnioski.',
-            en: 'This run projects depletion on {{date}}. Re-run with a lower withdrawal, longer horizon check, or different supported bond family before drawing conclusions.'
-        }),
+        pageTitle: tx("generated.features.retirement.components.retirement_planner_container.item_1", undefined, language),
+        pageDescription: tx("generated.features.retirement.components.retirement_planner_container.item_2", undefined, language),
+        primaryInputs: tx("generated.features.retirement.components.retirement_planner_container.item_3", undefined, language),
+        primaryInputsDesc: tx("generated.features.retirement.components.retirement_planner_container.item_4", undefined, language),
+        initialCapital: tx("generated.features.retirement.components.retirement_planner_container.item_5", undefined, language),
+        monthlyWithdrawal: tx("generated.features.retirement.components.retirement_planner_container.item_6", undefined, language),
+        scenarioHorizon: tx("generated.features.retirement.components.retirement_planner_container.item_7", undefined, language),
+        bondFamily: tx("generated.features.retirement.components.retirement_planner_container.item_8", undefined, language),
+        advancedAssumptions: tx("generated.features.retirement.components.retirement_planner_container.item_9", undefined, language),
+        advancedAssumptionsDesc: tx("generated.features.retirement.components.retirement_planner_container.item_10", undefined, language),
+        expectedInflation: tx("generated.features.retirement.components.retirement_planner_container.item_11", undefined, language),
+        expectedNbpRate: tx("generated.features.retirement.components.retirement_planner_container.item_12", undefined, language),
+        taxWrapper: tx("generated.features.retirement.components.retirement_planner_container.item_13", undefined, language),
+        floatingActionNote: tx("generated.features.retirement.components.retirement_planner_container.item_14", undefined, language),
+        staleResults: tx("generated.features.retirement.components.retirement_planner_container.item_15", undefined, language),
+        scenarioStatus: tx("generated.features.retirement.components.retirement_planner_container.item_16", undefined, language),
+        balancePositive: tx("generated.features.retirement.components.retirement_planner_container.item_17", undefined, language),
+        balanceDepletes: tx("generated.features.retirement.components.retirement_planner_container.item_18", undefined, language),
+        projectedExhaustion: tx("generated.features.retirement.components.retirement_planner_container.item_19", undefined, language),
+        noProjectedDepletion: tx("generated.features.retirement.components.retirement_planner_container.item_20", undefined, language),
+        finalBalance: tx("generated.features.retirement.components.retirement_planner_container.item_21", undefined, language),
+        finalBalanceDetail: tx("generated.features.retirement.components.retirement_planner_container.item_22", undefined, language),
+        totalWithdrawn: tx("generated.features.retirement.components.retirement_planner_container.item_23", undefined, language),
+        totalWithdrawnDetail: tx("generated.features.retirement.components.retirement_planner_container.item_24", undefined, language),
+        modeledAnnualRate: tx("generated.features.retirement.components.retirement_planner_container.item_25", undefined, language),
+        modeledAnnualRateDetail: tx("generated.features.retirement.components.retirement_planner_container.item_26", undefined, language),
+        balancePath: tx("generated.features.retirement.components.retirement_planner_container.item_27", undefined, language),
+        balancePathDesc: tx("generated.features.retirement.components.retirement_planner_container.item_28", undefined, language),
+        coverage: tx("generated.features.retirement.components.retirement_planner_container.item_29", undefined, language),
+        taxPaid: tx("generated.features.retirement.components.retirement_planner_container.item_30", undefined, language),
+        howToRead: tx("generated.features.retirement.components.retirement_planner_container.item_31", undefined, language),
+        howToReadDesc: tx("generated.features.retirement.components.retirement_planner_container.item_32", undefined, language),
+        balance: tx("generated.features.retirement.components.retirement_planner_container.item_33", undefined, language),
+        withdrawal: tx("generated.features.retirement.components.retirement_planner_container.item_34", undefined, language),
+        assumptionsAndWarnings: tx("generated.features.retirement.components.retirement_planner_container.item_35", undefined, language),
+        assumptionsAndWarningsDesc: tx("generated.features.retirement.components.retirement_planner_container.item_36", undefined, language),
+        audit: tx("generated.features.retirement.components.retirement_planner_container.item_37", undefined, language),
+        assumptions: tx("generated.features.retirement.components.retirement_planner_container.item_38", undefined, language),
+        warningsAndNotes: tx("generated.features.retirement.components.retirement_planner_container.item_39", undefined, language),
+        noExtraAssumptions: tx("generated.features.retirement.components.retirement_planner_container.item_40", undefined, language),
+        noExtraWarnings: tx("generated.features.retirement.components.retirement_planner_container.item_41", undefined, language),
+        readyBadge: tx("generated.features.retirement.components.retirement_planner_container.item_42", undefined, language),
+        readyTitle: tx("generated.features.retirement.components.retirement_planner_container.item_43", undefined, language),
+        readyDesc: tx("generated.features.retirement.components.retirement_planner_container.item_44", undefined, language),
+        readyStepBalance: tx("generated.features.retirement.components.retirement_planner_container.item_45", undefined, language),
+        readyStepHorizon: tx("generated.features.retirement.components.retirement_planner_container.item_46", undefined, language),
+        readyStepRead: tx("generated.features.retirement.components.retirement_planner_container.item_47", undefined, language),
+        readyStepReadDesc: tx("generated.features.retirement.components.retirement_planner_container.item_48", undefined, language),
+        readyFooter: tx("generated.features.retirement.components.retirement_planner_container.item_49", undefined, language),
+        limitsTitle: tx("generated.features.retirement.components.retirement_planner_container.item_50", undefined, language),
+        limitsDesc: tx("generated.features.retirement.components.retirement_planner_container.item_51", undefined, language),
+        limitsBadge: tx("generated.features.retirement.components.retirement_planner_container.item_52", undefined, language),
+        depletionWarning: tx("generated.features.retirement.components.retirement_planner_container.item_53", undefined, language),
     } as const;
     const taxStrategyLabels: Record<TaxStrategy, string> = {
-        [TaxStrategy.STANDARD]: pickLanguageValue(language, {
-            pl: 'Konto standardowe (19% podatku)',
-            en: 'Standard account (19% tax)'
-        }),
-        [TaxStrategy.IKE]: pickLanguageValue(language, {
-            pl: 'Opakowanie IKE',
-            en: 'IKE wrapper'
-        }),
-        [TaxStrategy.IKZE]: pickLanguageValue(language, {
-            pl: 'Opakowanie IKZE',
-            en: 'IKZE wrapper'
-        }),
+        [TaxStrategy.STANDARD]: tx("generated.features.retirement.components.retirement_planner_container.item_54", undefined, language),
+        [TaxStrategy.IKE]: tx("generated.features.retirement.components.retirement_planner_container.item_55", undefined, language),
+        [TaxStrategy.IKZE]: tx("generated.features.retirement.components.retirement_planner_container.item_56", undefined, language),
     };
     const modelLimits = [
-        pickLanguageValue(language, {
-            pl: 'Uzywa jednej stalej modelowanej stopy rocznej zamiast zmiennych sciezek rynkowych.',
-            en: 'Uses one steady modeled annual rate rather than changing market paths over time.'
-        }),
-        pickLanguageValue(language, {
-            pl: `Wspiera tylko ${RETIREMENT_SUPPORTED_BOND_TYPES.join(', ')} na tej ograniczonej powierzchni.`,
-            en: `Supports only ${RETIREMENT_SUPPORTED_BOND_TYPES.join(', ')} in this reduced-scope surface.`
-        }),
-        pickLanguageValue(language, {
-            pl: 'Nie modeluje zmiennych wyplat, rolowanych drabin ani szerszego doradztwa emerytalnego.',
-            en: 'Does not model changing withdrawals, rolling ladders, or broader retirement advice.'
-        }),
+        tx("generated.features.retirement.components.retirement_planner_container.item_57", undefined, language),
+        tx('retirement.supported_bonds_limit', {
+            bondTypes: RETIREMENT_SUPPORTED_BOND_TYPES.join(', '),
+        }, language),
+        tx("generated.features.retirement.components.retirement_planner_container.item_58", undefined, language),
     ];
     const updateInput = <K extends keyof RetirementInputs>(key: K, value: RetirementInputs[K]) => {
         setInputs((prev) => ({ ...prev, [key]: value }));
@@ -597,12 +420,16 @@ export const RetirementPlannerContainer: React.FC = () => {
                 {
                     id: 'balance-path',
                     title: labels.readyStepBalance,
-                    description: `Start from ${formatCurrency(inputs.initialCapital)} and one fixed withdrawal amount.`,
+                    description: tx('retirement.ready_step_balance_desc', {
+                        initialCapital: formatCurrency(inputs.initialCapital),
+                    }, language),
                 },
                 {
                     id: 'horizon',
                     title: labels.readyStepHorizon,
-                    description: `The current run is staged for ${formatHorizonMonths(inputs.horizonYears * 12, language)}.`,
+                    description: tx('retirement.ready_step_horizon_desc', {
+                        horizon: formatHorizonMonths(inputs.horizonYears * 12, language),
+                    }, language),
                 },
                 {
                     id: 'narrow-read',

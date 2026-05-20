@@ -4,10 +4,8 @@ import { AlertCircle, Clock, Coins, ShieldCheck, TrendingUp } from 'lucide-react
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BondDefinition } from '../../bond-core/constants/bond-definitions';
-import { useLanguage } from '@/i18n';
+import { tx, useLanguage } from '@/i18n';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
 interface BondEducationCardProps {
     bond: BondDefinition;
 }
@@ -59,14 +57,8 @@ export const BondEducationCard: React.FC<BondEducationCardProps> = ({ bond }) =>
             <ShieldCheck className="h-3.5 w-3.5 text-primary"/>
             <span>
               {(bond.type === 'OTS'
-            ? pickLanguageValue(language, {
-                pl: 'Zysk (3m)',
-                en: 'Yield (3m)'
-            }) : bond.type === 'ROR' || bond.type === 'DOR'
-            ? pickLanguageValue(language, {
-                pl: '1. Miesiac',
-                en: '1st Month'
-            }) : t('bonds.first_year'))}
+            ? tx("generated.features.education.components.bond_education_card.item_1", undefined, language) : bond.type === 'ROR' || bond.type === 'DOR'
+            ? tx("generated.features.education.components.bond_education_card.item_2", undefined, language) : t('bonds.first_year'))}
               : <strong> {bond.firstYearRate}%</strong>
             </span>
           </div>

@@ -5,13 +5,11 @@ import { ValueType, NameType, } from "recharts/types/component/DefaultTooltipCon
 import { CalculationResult } from "../../bond-core/types";
 import { ChartStep } from "../../bond-core/types";
 import { HistoricalAverages } from "../../bond-core/types/scenarios";
-import { useLanguage } from "@/i18n";
+import { tx, useLanguage } from '@/i18n';
 import { cn } from "@/lib/utils";
 import { ChartContainer } from "@/shared/components/charts/ChartContainer";
 import { AppLanguage, buildBondChartDisplayPoints, normalizeBondChartDisplayTimeline, } from "@/shared/lib/bond-display";
 import { computeNumericDomain, computeRateDomain, sampleSeriesPoints } from "@/shared/lib/chart-series";
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
 interface BondChartProps {
     results: CalculationResult;
     initialInvestment: number;
@@ -120,10 +118,7 @@ const CustomTooltip = ({ active, payload, label, formatCurrency, t, }: CustomToo
 };
 export const BondChart: React.FC<BondChartProps> = ({ results, chartStep = 'yearly', showRealValue = false, }) => {
     const { t, language } = useLanguage();
-    const formatCurrency = React.useMemo(() => (value: number) => new Intl.NumberFormat(pickLanguageValue(language, {
-        pl: "pl-PL",
-        en: "en-GB"
-    }), {
+    const formatCurrency = React.useMemo(() => (value: number) => new Intl.NumberFormat(tx("generated.features.single_calculator.components.bond_chart.item_1", undefined, language), {
         style: "currency",
         currency: "PLN",
         maximumFractionDigits: 0,

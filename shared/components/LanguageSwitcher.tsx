@@ -1,15 +1,10 @@
 'use client';
 import { Button } from '@/components/ui/button';
-import { useLanguage } from '@/i18n';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
+import { tx, useLanguage } from '@/i18n';
 export function LanguageSwitcher() {
     const { language, setLanguage } = useLanguage();
     return (<div className="inline-flex w-full max-w-[96px] items-center rounded-full border border-slate-200 bg-white p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]">
-      <Button variant={pickLanguageValue(language, {
-        pl: 'default',
-        en: 'ghost'
-    })} size="sm" onClick={() => setLanguage('pl')} className="h-6 min-w-[40px] flex-1 rounded-full px-2 text-[10px] font-semibold focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2">
+      <Button variant={tx("generated.shared.components.language_switcher.item_1", undefined, language)} size="sm" onClick={() => setLanguage('pl')} className="h-6 min-w-[40px] flex-1 rounded-full px-2 text-[10px] font-semibold focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2">
         PL
       </Button>
       <Button variant={language === 'en' ? 'default' : 'ghost'} size="sm" onClick={() => setLanguage('en')} className="h-6 min-w-[40px] flex-1 rounded-full px-2 text-[10px] font-semibold focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2">

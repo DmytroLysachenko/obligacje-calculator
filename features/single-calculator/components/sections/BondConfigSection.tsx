@@ -9,13 +9,12 @@ import { HelpCircle, Info, AlertCircle } from 'lucide-react';
 import { BondType, BondInputs } from '@/features/bond-core/types';
 import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
-import { useLanguage } from '@/i18n';
+import { tx, useLanguage } from '@/i18n';
 import { GLOSSARY } from '@/shared/constants/glossary';
 import { cn } from '@/lib/utils';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
+import { getIntlLocale } from '@/i18n/locale-utils';
 interface BondSeries {
     id: string;
     seriesCode: string;
@@ -36,14 +35,8 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
     const currentDef = definitions[inputs.bondType];
     const currentBondSupport = getBondSupportMeta(inputs.bondType);
     const rateContext = getBondRateContextCopy(inputs.bondType, Number(inputs.firstYearRate), Number(inputs.margin), t);
-    const formatDurationLabel = (type: BondType) => pickLanguageValue(language, {
-        pl: `${Math.round((definitions[type]?.duration ?? 1) * 12)} mies.`,
-        en: `${Math.round((definitions[type]?.duration ?? 1) * 12)} mo`
-    });
-    const formatSeriesMonth = (value: string) => new Date(value).toLocaleDateString(pickLanguageValue(language, {
-        pl: 'pl-PL',
-        en: 'en-GB'
-    }), {
+    const formatDurationLabel = (type: BondType) => `${Math.round((definitions[type]?.duration ?? 1) * 12)} ${t('common.month_compact')}`;
+    const formatSeriesMonth = (value: string) => new Date(value).toLocaleDateString(getIntlLocale(language), {
         month: 'short',
         year: 'numeric',
     });
@@ -111,10 +104,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
                       {formatDurationLabel(type)}
                     </span>
                     {isFamilyBondType(type) ? (<span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
-                        {pickLanguageValue(language, {
-                pl: 'Rodzinne',
-                en: 'Family'
-            })}
+                        {tx("generated.features.single_calculator.components.sections.bond_config_section.item_2", undefined, language)}
                       </span>) : null}
                   </div>
                   <span className="max-w-[280px] text-sm font-medium text-slate-700">
@@ -137,10 +127,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
                 <div className="flex flex-col gap-1">
                   <span className="font-semibold">{t('bonds.offer.current')}</span>
                   <span className="text-xs text-slate-500">
-                    {pickLanguageValue(language, {
-            pl: 'Uzyj aktualnej definicji oferty',
-            en: 'Use the currently active offer definition'
-        })}
+                    {tx("generated.features.single_calculator.components.sections.bond_config_section.item_3", undefined, language)}
                   </span>
                 </div>
               </SelectItem>

@@ -1,27 +1,16 @@
 'use client';
 import { LadderContainer } from '@/features/ladder-strategy/components/LadderContainer';
-import { useLanguage } from '@/i18n';
+import { tx, useLanguage } from '@/i18n';
 import { FeatureStatusNotice } from '@/shared/components/FeatureStatusNotice';
 import { PageTransition } from '@/shared/components/PageTransition';
 import { PageSuspenseFallback } from '@/shared/components/PageSuspenseFallback';
 import { Suspense } from 'react';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
 export default function LadderPage() {
     const { language } = useLanguage();
     return (<PageTransition>
       <div className="space-y-8">
-        <FeatureStatusNotice status="conditional" eyebrow={pickLanguageValue(language, {
-        pl: 'Rytm przeplywow',
-        en: 'Cashflow timing'
-    })} title={pickLanguageValue(language, {
-        pl: 'Kalkulator rytmu drabiny',
-        en: 'Ladder timing calculator'
-    })}>
-          {pickLanguageValue(language, {
-            pl: 'Uzyj tej strony do przetestowania odstepow zapadalnosci, czasu rolowania i ksztaltu przeplywow. To narzedzie scenariuszowe dla jednego ustawienia drabiny, a nie szeroki werdykt strategiczny.',
-            en: 'Use this page to test maturity spacing, rollover timing, and cashflow shape. It is a scenario tool for one ladder setup, not a broad strategy verdict.'
-        })}
+        <FeatureStatusNotice status="conditional" eyebrow={tx("generated.app.ladder.page.item_1", undefined, language)} title={tx("generated.app.ladder.page.item_2", undefined, language)}>
+          {tx("generated.app.ladder.page.item_3", undefined, language)}
         </FeatureStatusNotice>
         <Suspense fallback={<PageSuspenseFallback />}>
           <LadderContainer />

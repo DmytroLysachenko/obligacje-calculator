@@ -9,17 +9,15 @@ import { Switch } from '@/components/ui/switch';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { CalendarIcon, AlertCircle, HelpCircle } from 'lucide-react';
 import { format, parseISO, isAfter } from 'date-fns';
-import { pl, enGB } from 'date-fns/locale';
 import { BondInputs, TaxStrategy } from '@/features/bond-core/types';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
-import { useLanguage } from '@/i18n';
+import { tx, useLanguage } from '@/i18n';
 import { GLOSSARY } from '@/shared/constants/glossary';
 import { toDateString } from '@/shared/lib/date-timing';
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';
 import { cn } from '@/lib/utils';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
+import { getDateFnsLocale } from '@/i18n/locale-utils';
 interface BondTimingSectionProps {
     inputs: BondInputs;
     onUpdate: (key: keyof BondInputs, value: string | number | boolean) => void;
@@ -30,10 +28,7 @@ interface BondTimingSectionProps {
 }
 export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({ inputs, onUpdate, investmentHorizonMonths, currentDef, hasMounted, }) => {
     const { t, language } = useLanguage();
-    const dateLocale = pickLanguageValue(language, {
-        pl: pl,
-        en: enGB
-    });
+    const dateLocale = getDateFnsLocale(language);
     const isFutureDate = isAfter(parseISO(inputs.purchaseDate), new Date());
     const durationMonths = Math.round(currentDef.duration * 12);
     const autoRollover = investmentHorizonMonths > durationMonths;
@@ -96,10 +91,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
             {formatHorizonMonths(investmentHorizonMonths, language)}
           </span>
         </div>
-        <CommittedSliderInput value={investmentHorizonMonths} min={1} max={360} step={1} unit={pickLanguageValue(language, {
-        pl: 'm',
-        en: 'm'
-    })} onCommit={(value) => onUpdate('investmentHorizonMonths', value)}/>
+        <CommittedSliderInput value={investmentHorizonMonths} min={1} max={360} step={1} unit={tx("generated.features.single_calculator.components.sections.bond_timing_section.item_1", undefined, language)} onCommit={(value) => onUpdate('investmentHorizonMonths', value)}/>
       </div>
 
       <div className="space-y-3">
@@ -149,20 +141,11 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
       <div className="rounded-xl border border-primary/10 bg-primary/5 p-4">
         <div className="space-y-0.5">
           <Label className="text-sm font-bold text-primary">
-            {pickLanguageValue(language, {
-        pl: 'Rolowanie obslugiwane automatycznie',
-        en: 'Rollover handled automatically'
-    })}
+            {tx("generated.features.single_calculator.components.sections.bond_timing_section.item_2", undefined, language)}
           </Label>
           <p className="text-[10px] font-medium italic text-muted-foreground">
             {autoRollover
-            ? pickLanguageValue(language, {
-                pl: 'Horyzont przekracza natywny termin tej obligacji, wiec kalkulator automatycznie laczy kolejne cykle zamiast wymagac osobnego przelacznika.',
-                en: 'The horizon outlasts this bond, so the calculator automatically chains follow-on cycles instead of asking for a separate toggle.'
-            }) : pickLanguageValue(language, {
-            pl: 'Horyzont miesci sie w jednym cyklu, wiec wynik pokazuje pojedynczy zakup i ewentualny koszt wczesniejszego wykupu.',
-            en: 'The horizon stays within one native cycle, so the result shows a single purchase plus any early-exit fee if needed.'
-        })}
+            ? tx("generated.features.single_calculator.components.sections.bond_timing_section.item_3", undefined, language) : tx("generated.features.single_calculator.components.sections.bond_timing_section.item_4", undefined, language)}
           </p>
         </div>
       </div>

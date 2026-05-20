@@ -3,14 +3,13 @@ import React from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { HelpCircle } from 'lucide-react';
 import { format } from 'date-fns';
-import { pl, enGB } from 'date-fns/locale';
 import { BondInputs } from '@/features/bond-core/types';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { useLanguage } from '@/i18n';
 import { GLOSSARY } from '@/shared/constants/glossary';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
-import { pickLanguageValue } from '@/i18n/locale-utils';
+import { getDateFnsLocale } from '@/i18n/locale-utils';
 
 interface BondSummaryFooterProps {
     inputs: BondInputs;
@@ -20,10 +19,7 @@ interface BondSummaryFooterProps {
 }
 export const BondSummaryFooter: React.FC<BondSummaryFooterProps> = React.memo(({ inputs, currentDef, maturityDate, hasMounted, }) => {
     const { t, language } = useLanguage();
-    const dateLocale = pickLanguageValue(language, {
-        pl: pl,
-        en: enGB
-    });
+    const dateLocale = getDateFnsLocale(language);
     const rateContext = getBondRateContextCopy(inputs.bondType, Number(inputs.firstYearRate), Number(inputs.margin), t);
     return (<div className="pt-2 px-6 pb-6">
       <div className="text-[10px] text-muted-foreground space-y-1 bg-muted/30 p-3 rounded-lg border border-dashed">

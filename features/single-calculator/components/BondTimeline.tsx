@@ -3,7 +3,7 @@ import React, { useDeferredValue, useMemo, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from '@/components/ui/table';
 import { CalculationResult } from '../../bond-core/types';
 import { SimulationEventType } from '../../bond-core/types/simulation';
-import { useLanguage } from '@/i18n';
+import { tx, useLanguage } from '@/i18n';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -12,8 +12,6 @@ import { Search, Filter, ChevronDown, ChevronUp, RotateCcw } from 'lucide-react'
 import { Button } from '@/components/ui/button';
 import { ResponsiveTableSheet } from '@/shared/components/ResponsiveTableSheet';
 import { AppLanguage, buildBondTimelineDisplayRows, getSimulationEventDisplayLabel, } from '@/shared/lib/bond-display';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
 interface BondTimelineProps {
     results: CalculationResult;
 }
@@ -41,10 +39,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
     const formatCurrency = React.useMemo(() => (value: number) => {
         if (!hasMounted)
             return '---';
-        return new Intl.NumberFormat(pickLanguageValue(language, {
-            pl: 'pl-PL',
-            en: 'en-GB'
-        }), {
+        return new Intl.NumberFormat(tx("generated.features.single_calculator.components.bond_timeline.item_1", undefined, language), {
             style: 'currency',
             currency: 'PLN',
         }).format(value);
@@ -90,26 +85,14 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
     return (<div className="space-y-4">
       <div className="space-y-4 rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
         <div className="grid gap-3 md:grid-cols-3">
-          <TimelineStat label={pickLanguageValue(language, {
-        pl: 'Wiersze po filtrach',
-        en: 'Rows after filters'
-    })} value={visibleRangeLabel}/>
-          <TimelineStat label={pickLanguageValue(language, {
-        pl: 'Punkty prognozy',
-        en: 'Projected points'
-    })} value={String(projectionCount)}/>
-          <TimelineStat label={pickLanguageValue(language, {
-        pl: 'Punkty wyjscia',
-        en: 'Exit markers'
-    })} value={String(exitMarkers)}/>
+          <TimelineStat label={tx("generated.features.single_calculator.components.bond_timeline.item_2", undefined, language)} value={visibleRangeLabel}/>
+          <TimelineStat label={tx("generated.features.single_calculator.components.bond_timeline.item_3", undefined, language)} value={String(projectionCount)}/>
+          <TimelineStat label={tx("generated.features.single_calculator.components.bond_timeline.item_4", undefined, language)} value={String(exitMarkers)}/>
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-white/85 px-4 py-3">
           <p className="text-sm leading-7 text-slate-600">
-            {pickLanguageValue(language, {
-            pl: 'Kazdy wiersz jest punktem kontrolnym scenariusza, a nie oddzielnym zakupem. Czytaj go od lewej do prawej: kiedy punkt wypada, co oznacza, na jakiej stopie pracowal i jaka wartosc zostawial na tym etapie.',
-            en: 'Each row is a scenario checkpoint, not a separate purchase. Read it left to right: when it happens, what it represents, which rate basis it used, and what value it leaves at that point.'
-        })}
+            {tx("generated.features.single_calculator.components.bond_timeline.item_5", undefined, language)}
           </p>
         </div>
 
@@ -139,28 +122,13 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
 
             {activeFilterCount > 0 ? (<Button type="button" variant="outline" size="sm" className="gap-2 rounded-xl" onClick={resetFilters}>
                 <RotateCcw className="h-4 w-4"/>
-                {pickLanguageValue(language, {
-            pl: 'Wyczysc filtry',
-            en: 'Reset filters'
-        })}
+                {tx("generated.features.single_calculator.components.bond_timeline.item_6", undefined, language)}
               </Button>) : null}
           </div>
         </div>
       </div>
 
-      <ResponsiveTableSheet title={pickLanguageValue(language, {
-        pl: 'Harmonogram scenariusza',
-        en: 'Scenario schedule'
-    })} description={pickLanguageValue(language, {
-            pl: 'Na mniejszych ekranach czytaj harmonogram jako liste punktow kontrolnych zamiast szerokiej tabeli.',
-            en: 'On smaller screens, read the schedule as a sequence of checkpoints instead of a wide table.'
-        })} triggerLabel={pickLanguageValue(language, {
-        pl: 'Otworz harmonogram',
-        en: 'Open schedule'
-    })} triggerCount={`${filteredTimeline.length} ${pickLanguageValue(language, {
-        pl: 'wierszy',
-        en: 'rows'
-    })}`}>
+      <ResponsiveTableSheet title={tx("generated.features.single_calculator.components.bond_timeline.item_7", undefined, language)} description={tx("generated.features.single_calculator.components.bond_timeline.item_8", undefined, language)} triggerLabel={tx("generated.features.single_calculator.components.bond_timeline.item_9", undefined, language)} triggerCount={`${filteredTimeline.length} ${tx("generated.features.single_calculator.components.bond_timeline.item_10", undefined, language)}`}>
         {displayedTimeline.map((row) => (<div key={`mobile-${row.key}`} className="rounded-3xl border border-slate-200 bg-white p-4 shadow-none">
             <div className="flex items-start justify-between gap-3">
               <div className="space-y-1">
@@ -184,27 +152,12 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
               </div>) : null}
 
             <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-              <MobileValue label={pickLanguageValue(language, {
-            pl: 'Stopa',
-            en: 'Rate'
-        })} value={row.interestRateLabel}/>
-              <MobileValue label={pickLanguageValue(language, {
-            pl: 'Wyjscie',
-            en: 'Exit'
-        })} value={formatCurrency(row.earlyExitValue)}/>
+              <MobileValue label={tx("generated.features.single_calculator.components.bond_timeline.item_11", undefined, language)} value={row.interestRateLabel}/>
+              <MobileValue label={tx("generated.features.single_calculator.components.bond_timeline.item_12", undefined, language)} value={formatCurrency(row.earlyExitValue)}/>
               <MobileValue label={row.cashFlowLabel} value={formatCurrency(row.paidOutCash)}/>
-              <MobileValue label={pickLanguageValue(language, {
-            pl: 'Zysk',
-            en: 'Net gain'
-        })} value={formatCurrency(row.netProfit)}/>
-              <MobileValue label={pickLanguageValue(language, {
-            pl: 'Realnie',
-            en: 'Real value'
-        })} value={formatCurrency(row.realValue)}/>
-              <MobileValue label={pickLanguageValue(language, {
-            pl: 'Podstawa',
-            en: 'Basis'
-        })} value={row.rateSourceLabel}/>
+              <MobileValue label={tx("generated.features.single_calculator.components.bond_timeline.item_13", undefined, language)} value={formatCurrency(row.netProfit)}/>
+              <MobileValue label={tx("generated.features.single_calculator.components.bond_timeline.item_14", undefined, language)} value={formatCurrency(row.realValue)}/>
+              <MobileValue label={tx("generated.features.single_calculator.components.bond_timeline.item_15", undefined, language)} value={row.rateSourceLabel}/>
             </div>
 
             {row.referenceLabel ? (<p className="mt-3 text-xs leading-5 text-slate-500">{row.referenceLabel}</p>) : null}
@@ -219,40 +172,22 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
                 {t('common.period')}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[18%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {pickLanguageValue(language, {
-        pl: 'Znaczenie punktu',
-        en: 'Checkpoint meaning'
-    })}
+                {tx("generated.features.single_calculator.components.bond_timeline.item_16", undefined, language)}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[17%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {pickLanguageValue(language, {
-        pl: 'Stopa i podstawa',
-        en: 'Rate and basis'
-    })}
+                {tx("generated.features.single_calculator.components.bond_timeline.item_17", undefined, language)}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {pickLanguageValue(language, {
-        pl: 'Majatek laczny',
-        en: 'Total wealth'
-    })}
+                {tx("generated.features.single_calculator.components.bond_timeline.item_18", undefined, language)}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {displayedTimeline[0]?.cashFlowLabel ?? (pickLanguageValue(language, {
-        pl: 'Przeplyw odsetek',
-        en: 'Interest flow'
-    }))}
+                {displayedTimeline[0]?.cashFlowLabel ?? (tx("generated.features.single_calculator.components.bond_timeline.item_19", undefined, language))}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {pickLanguageValue(language, {
-        pl: 'Zysk netto',
-        en: 'Net gain'
-    })}
+                {tx("generated.features.single_calculator.components.bond_timeline.item_20", undefined, language)}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {pickLanguageValue(language, {
-        pl: 'Wartosc realna',
-        en: 'Real value'
-    })}
+                {tx("generated.features.single_calculator.components.bond_timeline.item_21", undefined, language)}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[12%] bg-slate-50/95 text-right text-xs font-semibold text-slate-600">
                 {t('bonds.early_exit_payout')}
@@ -334,10 +269,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
             {activeFilterCount > 0 ? (<div className="flex justify-center">
                 <Button type="button" variant="outline" size="sm" className="gap-2 rounded-xl" onClick={resetFilters}>
                   <RotateCcw className="h-4 w-4"/>
-                  {pickLanguageValue(language, {
-                pl: 'Wroc do pelnej osi czasu',
-                en: 'Return to full timeline'
-            })}
+                  {tx("generated.features.single_calculator.components.bond_timeline.item_22", undefined, language)}
                 </Button>
               </div>) : null}
           </div>) : null}

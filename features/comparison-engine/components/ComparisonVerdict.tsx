@@ -3,10 +3,8 @@ import React from 'react';
 import { Scale, ShieldCheck, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useLanguage } from '@/i18n';
+import { tx, useLanguage } from '@/i18n';
 import { BondInputs, CalculationResult, TaxStrategy, } from '@/features/bond-core/types';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
 interface ComparisonVerdictProps {
     resultsA: CalculationResult;
     resultsB: CalculationResult;
@@ -19,22 +17,11 @@ interface ComparisonVerdictProps {
 }
 export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, resultsB, inputsA, inputsB, expectedInflation, taxStrategy, showRealValue, formatCurrency, }) => {
     const { t, language } = useLanguage();
-    const comparisonSnapshotLabel = pickLanguageValue(language, {
-        pl: 'Migawka scenariusza',
-        en: 'Scenario snapshot'
-    });
-    const higherText = pickLanguageValue(language, {
-        pl: showRealValue
-            ? 'ma obecnie wyzsza wartosc realna'
-            : 'ma obecnie wyzsza modelowana wyplate netto',
-        en: showRealValue
-            ? 'currently shows the higher real value'
-            : 'currently shows the higher modeled net payout'
-    });
-    const overText = pickLanguageValue(language, {
-        pl: 'dla horyzontu',
-        en: 'for a'
-    });
+    const comparisonSnapshotLabel = tx("generated.features.comparison_engine.components.comparison_verdict.item_1", undefined, language);
+    const higherText = showRealValue
+        ? tx('comparison.verdict.higher_real_value', undefined, language)
+        : tx('comparison.verdict.higher_net_payout', undefined, language);
+    const overText = tx("generated.features.comparison_engine.components.comparison_verdict.item_2", undefined, language);
     const resultAValue = showRealValue ? resultsA.finalRealValue : resultsA.netPayoutValue;
     const resultBValue = showRealValue ? resultsB.finalRealValue : resultsB.netPayoutValue;
     const betterBondType = resultAValue > resultBValue
@@ -78,8 +65,7 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, 
                 {`${betterBondType} ${higherText} by ${formatCurrency(gap)} ${overText} ${horizonYears}-year setup.`}
               </p>
               <p className="text-sm leading-relaxed text-muted-foreground">
-                Treat this as one scenario read, not a universal bond ranking. If
-                assumptions change, the gap can change too.
+                {tx('comparison.verdict.caution_text', undefined, language)}
               </p>
             </div>
 
@@ -98,18 +84,12 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, 
 
               {expectedInflation > 5 ? (<Badge variant="outline" className="border-orange-200 bg-orange-50 text-xs font-semibold text-orange-700">
                   <Zap className="h-3 w-3 mr-1"/>
-                  {pickLanguageValue(language, {
-                pl: 'Wysoka wrazliwosc na inflacje',
-                en: 'High inflation sensitivity'
-            })}
+                  {tx("generated.features.comparison_engine.components.comparison_verdict.item_3", undefined, language)}
                 </Badge>) : null}
 
               {taxStrategy !== TaxStrategy.STANDARD ? (<Badge variant="outline" className="border-purple-200 bg-purple-50 text-xs font-semibold text-purple-700">
                   <ShieldCheck className="h-3 w-3 mr-1"/>
-                  {pickLanguageValue(language, {
-                pl: 'Rozne zasady podatkowe',
-                en: 'Different tax wrapper rules'
-            })}
+                  {tx("generated.features.comparison_engine.components.comparison_verdict.item_4", undefined, language)}
                 </Badge>) : null}
             </div>
           </div>
@@ -117,10 +97,7 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, 
           <div className="w-full md:w-48 flex flex-col gap-2">
             <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-4 text-center">
               <p className="mb-1 text-sm font-semibold text-muted-foreground">
-                {pickLanguageValue(language, {
-        pl: 'Roznica',
-        en: 'Gap'
-    })}
+                {tx("generated.features.comparison_engine.components.comparison_verdict.item_5", undefined, language)}
               </p>
               <p className="text-2xl font-black text-primary">
                 {Math.abs((resultAValue / Math.max(1, resultBValue) -

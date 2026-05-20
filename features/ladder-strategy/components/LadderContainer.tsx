@@ -3,7 +3,7 @@ import React from 'react';
 import { ListTree, TrendingUp } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useLanguage } from '@/i18n';
+import { tx, useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
@@ -14,8 +14,6 @@ import { RegularInvestmentInputsForm } from '../../regular-investment/components
 import { RegularInvestmentResultsSummary } from '../../regular-investment/components/RegularInvestmentResultsSummary';
 import { useLadder } from '../hooks/useLadder';
 import { LadderTimeline } from './LadderTimeline';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
 const LadderEmptyState = () => {
     const { t } = useLanguage();
     return (<Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
@@ -82,14 +80,8 @@ export const LadderContainer: React.FC = () => {
     const { inputs, results, updateInput, setBondType, isDirty, isCalculating, calculate, envelope, isPersistenceReady, } = useLadder();
     const { t, language } = useLanguage();
     const readingGuide = [
-        pickLanguageValue(language, {
-            pl: 'Ta powierzchnia ma sluzyc czytelnosci harmonogramu, a nie rekomendacji wyboru obligacji.',
-            en: 'This surface is for schedule clarity, not bond selection advice.'
-        }),
-        pickLanguageValue(language, {
-            pl: 'Najwazniejsze jest rozmieszczenie terminow zapadalnosci i skupienie zwrotu gotowki.',
-            en: 'Focus first on maturity spacing and cash-return concentration.'
-        }),
+        tx("generated.features.ladder_strategy.components.ladder_container.item_1", undefined, language),
+        tx("generated.features.ladder_strategy.components.ladder_container.item_2", undefined, language),
     ];
     const handleKeyDown = (event: React.KeyboardEvent) => {
         if (event.key === 'Enter' && (isDirty || !results)) {
@@ -119,28 +111,13 @@ export const LadderContainer: React.FC = () => {
         </div>
 
         {results ? (<div className={cn('space-y-8 transition-opacity duration-200', isCalculating && 'pointer-events-none opacity-50')}>
-            <SecondaryInsightAccordion title={pickLanguageValue(language, {
-            pl: 'Jak czytac ta drabine',
-            en: 'How to read this ladder'
-        })} description={pickLanguageValue(language, {
-                pl: 'Najpierw sprawdz podsumowanie plynnosci i koncentracje terminow, a dopiero potem schodz do tabeli miesiac po miesiacu.',
-                en: 'Start with the liquidity summary and concentration check. Only then move into the month-by-month table.'
-            })} badge={pickLanguageValue(language, {
-            pl: 'Pomocnicze',
-            en: 'Secondary'
-        })}>
+            <SecondaryInsightAccordion title={tx("generated.features.ladder_strategy.components.ladder_container.item_3", undefined, language)} description={tx("generated.features.ladder_strategy.components.ladder_container.item_4", undefined, language)} badge={tx("generated.features.ladder_strategy.components.ladder_container.item_5", undefined, language)}>
               <ReadingChecklist items={readingGuide}/>
             </SecondaryInsightAccordion>
 
             <LadderTimeline results={results}/>
 
-            <SecondaryInsightAccordion title={t('bonds.simulation.calculation_context')} description={pickLanguageValue(language, {
-                pl: 'Pokazujemy zalozenia i dane pomocnicze, ale nie powinny one przeslaniac odczytu harmonogramu.',
-                en: 'Assumptions and supporting data stay available, but they should not overshadow the schedule readout.'
-            })} badge={pickLanguageValue(language, {
-            pl: 'Meta dane',
-            en: 'Meta'
-        })}>
+            <SecondaryInsightAccordion title={t('bonds.simulation.calculation_context')} description={tx("generated.features.ladder_strategy.components.ladder_container.item_6", undefined, language)} badge={tx("generated.features.ladder_strategy.components.ladder_container.item_7", undefined, language)}>
               <CalculationMetaPanel warnings={envelope?.warnings} assumptions={envelope?.assumptions} calculationNotes={envelope?.calculationNotes} dataQualityFlags={envelope?.dataQualityFlags} dataFreshness={envelope?.dataFreshness}/>
             </SecondaryInsightAccordion>
           </div>) : null}

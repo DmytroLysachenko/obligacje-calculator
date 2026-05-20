@@ -7,14 +7,12 @@ import { RegularInvestmentResult } from '../../bond-core/types';
 import { useLanguage } from '@/i18n';
 import { Calendar, FileSpreadsheet } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
-import { pl, enGB } from 'date-fns/locale';
 import { buildLotsExportHeaders } from '@/shared/lib/export-headers';
 import { MetricStrip } from '@/shared/components/MetricStrip';
 import { ResponsiveTableSheet } from '@/shared/components/ResponsiveTableSheet';
 import { ResultSummaryHero } from '@/shared/components/ResultSummaryHero';
 import { buildLotsCsvFilename, exportLotsCsv } from '@/shared/lib/retained-exports';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
+import { getDateFnsLocale, getIntlLocale } from '@/i18n/locale-utils';
 interface RegularInvestmentResultsSummaryProps {
     results: RegularInvestmentResult;
 }
@@ -34,14 +32,8 @@ type YearBucket = {
 const MAX_RECENT_LOTS = 12;
 export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsSummaryProps> = ({ results, }) => {
     const { t, language } = useLanguage();
-    const dateLocale = pickLanguageValue(language, {
-        pl: pl,
-        en: enGB
-    });
-    const formatCurrency = (value: number) => new Intl.NumberFormat(pickLanguageValue(language, {
-        pl: 'pl-PL',
-        en: 'en-GB'
-    }), {
+    const dateLocale = getDateFnsLocale(language);
+    const formatCurrency = (value: number) => new Intl.NumberFormat(getIntlLocale(language), {
         style: 'currency',
         currency: 'PLN',
         maximumFractionDigits: 0,

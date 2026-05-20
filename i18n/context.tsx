@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import en from './translations/en.json';
 import pl from './translations/pl.json';
-import { normalizeTranslations, resolveTranslationValue } from './translation-utils';
+import { normalizeTranslations, resolveTranslationNode, resolveTranslationValue } from './translation-utils';
 
 export const translations = {
   en: normalizeTranslations(en),
@@ -16,6 +16,7 @@ interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
   t: (key: string, variables?: Record<string, string | number>) => string;
+  tx: <T = string>(key: string, variables?: Record<string, string | number>) => T;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -43,19 +44,16 @@ export function LanguageProvider({
   };
 
   const t = (key: string, variables?: Record<string, string | number>): string => {
-    let text = resolveTranslationValue(translations, language, key);
-
-    if (variables) {
-      Object.entries(variables).forEach(([name, value]) => {
-        text = text.replace(new RegExp(`{{${name}}}`, 'g'), String(value));
-      });
-    }
-
-    return text;
+    return resolveTranslationValue(translations, language, key, variables);
   };
 
+  const tx = <T = string,>(
+    key: string,
+    variables?: Record<string, string | number>,
+  ): T => resolveTranslationNode(translations, language, key, variables) as T;
+
   return (
-    <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage, t, tx }}>
       {children}
     </LanguageContext.Provider>
   );

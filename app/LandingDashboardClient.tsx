@@ -4,11 +4,9 @@ import Link from 'next/link';
 import { ArrowRight, BarChart2, BookOpen, Calculator, CheckCircle2, Layers, Scale, Sparkles, TrendingUp, Wallet, } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { useLanguage } from '@/i18n';
+import { tx, useLanguage } from '@/i18n';
 import { loadSavedScenarios } from '@/features/single-calculator/lib/scenario-storage';
 import { FeatureStatus } from '@/shared/components/FeatureStatusNotice';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
 type ToolItem = {
     href: string;
     title: string;
@@ -29,17 +27,8 @@ function HomeToolCard({ item, language, }: {
     language: 'pl' | 'en';
 }) {
     const routeLabel = item.status === 'trusted'
-        ? pickLanguageValue(language, {
-            pl: 'Glowna trasa',
-            en: 'Primary route'
-        }) : item.status === 'reference'
-        ? pickLanguageValue(language, {
-            pl: 'Kontekst referencyjny',
-            en: 'Reference context'
-        }) : pickLanguageValue(language, {
-        pl: 'Kolejny krok',
-        en: 'Next step'
-    });
+        ? tx("generated.app.landing_dashboard_client.item_1", undefined, language) : item.status === 'reference'
+        ? tx("generated.app.landing_dashboard_client.item_2", undefined, language) : tx("generated.app.landing_dashboard_client.item_3", undefined, language);
     return (<Link href={item.href} className="block h-full">
       <Card className="surface-panel group h-full overflow-hidden rounded-[2rem] border-white/80 bg-white/82 transition-all hover:-translate-y-0.5 hover:border-white hover:shadow-[0_24px_70px_-36px_rgba(15,23,42,0.34)] focus-within:ring-2 focus-within:ring-primary/25 focus-within:ring-offset-2">
         <CardContent className="relative flex h-full flex-col gap-5 p-6">
@@ -86,18 +75,7 @@ function HomeStep({ title, description, }: {
 function HeroTrustStrip({ language, }: {
     language: 'pl' | 'en';
 }) {
-    const items = pickLanguageValue(language, {
-        pl: [
-            'Jedno glowne obliczenie naraz',
-            'Czytelny kontekst inflacji i NBP',
-            'Strategie dopiero po wyniku bazowym',
-        ],
-        en: [
-            'One primary calculation at a time',
-            'Readable inflation and NBP context',
-            'Strategies only after the baseline result',
-        ]
-    });
+    const items = tx<string[]>("generated.app.landing_dashboard_client.item_4", undefined, language);
     return (<div className="flex flex-wrap gap-2">
       {items.map((item) => (<span key={item} className="rounded-full border border-white/80 bg-white/68 px-3 py-1.5 text-[11px] font-semibold tracking-[0.04em] text-slate-700 backdrop-blur">
           {item}
@@ -115,23 +93,14 @@ function RecentWorkCard({ language, savedScenarioNames, emptyCopy, notebookLabel
       <CardContent className="space-y-5 p-5">
         <div className="space-y-2">
           <p className="text-sm font-semibold text-slate-500">
-            {pickLanguageValue(language, {
-        pl: 'Ostatnia praca',
-        en: 'Recent work'
-    })}
+            {tx("generated.app.landing_dashboard_client.item_5", undefined, language)}
           </p>
           <h2 className="text-2xl font-black tracking-tight text-slate-950">
-            {pickLanguageValue(language, {
-        pl: 'Wroc do jednego scenariusza.',
-        en: 'Return to one saved scenario.'
-    })}
+            {tx("generated.app.landing_dashboard_client.item_6", undefined, language)}
           </h2>
           <p className="text-[15px] leading-7 text-slate-600">
             {savedScenarioNames.length > 0
-            ? pickLanguageValue(language, {
-                pl: 'Zapisane scenariusze powinny byc szybkim punktem wznowienia, a nie osobnym dashboardem.',
-                en: 'Saved scenarios should act as a quick resume point, not a separate dashboard.'
-            }) : emptyCopy}
+            ? tx("generated.app.landing_dashboard_client.item_7", undefined, language) : emptyCopy}
           </p>
         </div>
 
@@ -179,42 +148,7 @@ export function LandingDashboardClient() {
             .slice(0, 3)
             .map((scenario) => scenario.name));
     }, []);
-    const stepCopy: HomeStepItem[] = pickLanguageValue(language, {
-        pl: [
-            {
-                id: 'learn-rules',
-                title: 'Poznaj zasady',
-                description: 'Zacznij od edukacji albo od razu od pojedynczego kalkulatora, jesli znasz typ obligacji i horyzont.',
-            },
-            {
-                id: 'run-one',
-                title: 'Uruchom jedno obliczenie',
-                description: 'Wprowadz jeden zestaw danych, policz scenariusz i sprawdz wynik bez bocznych paneli ani rozpraszaczy.',
-            },
-            {
-                id: 'expand-later',
-                title: 'Rozszerz dopiero potem',
-                description: 'Porownanie, regularne inwestowanie, drabina i notatnik maja byc drugim krokiem, nie pierwszym widokiem.',
-            },
-        ],
-        en: [
-            {
-                id: 'learn-rules',
-                title: 'Learn the rules',
-                description: 'Start with education or go straight to the single calculator if you already know the bond type and horizon.',
-            },
-            {
-                id: 'run-one',
-                title: 'Run one calculation',
-                description: 'Enter one committed scenario, calculate it cleanly, and read the result without dashboard side panels.',
-            },
-            {
-                id: 'expand-later',
-                title: 'Expand only after that',
-                description: 'Comparison, recurring investing, ladder strategy, and notebook should stay secondary, not first.',
-            },
-        ]
-    });
+    const stepCopy = tx<HomeStepItem[]>("generated.app.landing_dashboard_client.item_8", undefined, language);
     const primaryTools: ToolItem[] = [
         {
             href: '/single-calculator',
@@ -275,26 +209,11 @@ export function LandingDashboardClient() {
             tone: 'absolute inset-x-0 top-0 h-24 bg-[radial-gradient(circle_at_top_left,rgba(168,85,247,0.12),transparent_65%)]',
         },
     ];
-    const savedScenarioEmpty = pickLanguageValue(language, {
-        pl: 'Brak lokalnie zapisanych scenariuszy. Strona startowa nie musi udawac centrum sterowania, gdy nie ma jeszcze zapisanej pracy.',
-        en: 'No local saved scenarios yet. The home page should not pretend to be a control center when nothing is saved.'
-    });
-    const startHereTitle = pickLanguageValue(language, {
-        pl: 'Prosta sciezka glowna',
-        en: 'Simple primary path'
-    });
-    const startHereDesc = pickLanguageValue(language, {
-        pl: 'Ta strona ma prowadzic do glownych narzedzi i zachowac prosty, spokojny pierwszy krok.',
-        en: 'This page should route you into the main tools while keeping the first step calm and obvious.'
-    });
-    const secondaryTitle = pickLanguageValue(language, {
-        pl: 'Narzedzia drugiego kroku',
-        en: 'Secondary tools'
-    });
-    const secondaryDesc = pickLanguageValue(language, {
-        pl: 'Te strony sa nadal dostepne, ale powinny byc odwiedzane dopiero po podstawowym scenariuszu.',
-        en: 'These pages remain available, but they should be visited only after the primary scenario flow.'
-    });
+    const savedScenarioEmpty = tx("generated.app.landing_dashboard_client.item_9", undefined, language);
+    const startHereTitle = tx("generated.app.landing_dashboard_client.item_10", undefined, language);
+    const startHereDesc = tx("generated.app.landing_dashboard_client.item_11", undefined, language);
+    const secondaryTitle = tx("generated.app.landing_dashboard_client.item_12", undefined, language);
+    const secondaryDesc = tx("generated.app.landing_dashboard_client.item_13", undefined, language);
     return (<div className="space-y-8 pb-20 md:space-y-10">
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
         <div className="surface-shell relative overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#f8fafc_0%,#eff6ff_22%,#eef2ff_52%,#ffffff_100%)] px-5 py-7 md:rounded-[2.5rem] md:px-8 md:py-10">
@@ -336,10 +255,7 @@ export function LandingDashboardClient() {
             <div className="space-y-3">
               <HeroTrustStrip language={language}/>
               <p className="text-[13px] leading-6 text-slate-600">
-                {pickLanguageValue(language, {
-            pl: 'Najpierw jedno czyste obliczenie, dopiero potem porownania, notatnik i scenariusze poboczne.',
-            en: 'Start with one clean calculation before moving into comparisons, notebook work, or side scenarios.'
-        })}
+                {tx("generated.app.landing_dashboard_client.item_14", undefined, language)}
               </p>
             </div>
           </div>

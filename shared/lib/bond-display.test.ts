@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BondType, InterestPayout, type YearlyTimelinePoint } from '@/features/bond-core/types';
+import { type YearlyTimelinePoint } from '@/features/bond-core/types';
 import { buildBondChartDisplayPoints } from './bond-display';
 
 function makeTimelinePoint(

@@ -1,6 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { db } from '@/db';
-import { communityInsights } from '@/db/schema';
 import { apiHandler } from '@/lib/api-handler';
 import { createSuccessResponse } from '@/shared/types/api';
 

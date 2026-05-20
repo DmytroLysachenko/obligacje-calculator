@@ -2,7 +2,7 @@
 import React from 'react';
 import { Brush, CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, TooltipProps, XAxis, YAxis, } from 'recharts';
 import { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent';
-import { useLanguage } from '@/i18n';
+import { tx, useLanguage } from '@/i18n';
 import { useChartData } from '@/shared/hooks/useChartData';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ReferenceChartFrame } from '@/shared/components/charts/ReferenceChartFrame';
@@ -10,8 +10,6 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { sampleSeriesPoints, sliceSeriesByPeriod } from '@/shared/lib/chart-series';
 import { getReferenceMetaItems } from '@/shared/lib/data-reference';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
 interface InflationDataPoint {
     date: string;
     rate: number;
@@ -97,13 +95,7 @@ export const InflationChart = ({ period = 'ALL', }: {
         </div>} notice={scaleMode === 'readable' && maxRate > clippedMax
             ? t('economic.inflation_scale_notice', { max: maxRate.toFixed(1) })
             : undefined} noticeTone="warning" fallbackNotice={response?.usedFallback
-            ? pickLanguageValue(language, {
-                pl: 'Ten wykres korzysta z danych zapasowych. Traktuj go jako kontekst pomocniczy, nie jako pelne pokrycie historyczne.',
-                en: 'This chart is using fallback data. Treat it as supporting context, not as full historical coverage.'
-            }) : pickLanguageValue(language, {
-            pl: 'Ta seria jest zsynchronizowana i moze sluzyc jako spokojne tlo do interpretacji wynikow kalkulatora.',
-            en: 'This series is synced and can act as calm context for reading calculator results.'
-        })} fallbackTone={response?.usedFallback ? 'warning' : 'good'}>
+            ? tx("generated.features.economic_data.components.inflation_chart.item_1", undefined, language) : tx("generated.features.economic_data.components.inflation_chart.item_2", undefined, language)} fallbackTone={response?.usedFallback ? 'warning' : 'good'}>
       <ChartContainer height={420}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData}>

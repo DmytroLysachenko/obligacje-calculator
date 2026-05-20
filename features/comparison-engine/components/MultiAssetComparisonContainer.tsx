@@ -1,7 +1,7 @@
 'use client';
 import React, { useMemo, useState } from 'react';
 import { useMultiAssetComparison } from '../hooks/useMultiAssetComparison';
-import { useLanguage } from '@/i18n';
+import { tx, useLanguage } from '@/i18n';
 import { AlertTriangle, Database, LineChart } from 'lucide-react';
 import { RecalculateButton } from '@/shared/components/RecalculateButton';
 import { ComparisonControls } from './ComparisonControls';
@@ -13,8 +13,6 @@ import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScenarioReadyPanel } from '@/shared/components/ScenarioReadyPanel';
 import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
 interface ChartDataRow {
     date: string;
     inflation: number;
@@ -35,10 +33,7 @@ export const MultiAssetComparisonContainer = () => {
             handleRecalculate();
         }
     };
-    const formatCurrency = (value: number) => new Intl.NumberFormat(pickLanguageValue(language, {
-        pl: "pl-PL",
-        en: "en-GB"
-    }), {
+    const formatCurrency = (value: number) => new Intl.NumberFormat(tx("generated.features.comparison_engine.components.multi_asset_comparison_container.item_1", undefined, language), {
         style: "currency",
         currency: "PLN",
         maximumFractionDigits: 0,

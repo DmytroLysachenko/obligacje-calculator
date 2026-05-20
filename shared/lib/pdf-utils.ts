@@ -1,54 +1,24 @@
 import jsPDF from 'jspdf';
 import { BondInputs, CalculationResult } from '@/features/bond-core/types';
-import { pickLanguageValue } from '@/i18n/locale-utils';
+import { tx } from '@/i18n';
 
 function formatCurrency(value: number, language: 'pl' | 'en') {
-    return new Intl.NumberFormat(pickLanguageValue(language, {
-        pl: 'pl-PL',
-        en: 'en-GB'
-    }), {
+    return new Intl.NumberFormat(tx("generated.shared.lib.pdf_utils.item_1", undefined, language), {
         style: 'currency',
         currency: 'PLN',
     }).format(value);
 }
 function buildAssumptionRows(results: CalculationResult, inputs: BondInputs, language: 'pl' | 'en') {
     return [
-        [pickLanguageValue(language, {
-                pl: 'Typ obligacji',
-                en: 'Bond type'
-            }), inputs.bondType],
-        [pickLanguageValue(language, {
-                pl: 'Data zakupu',
-                en: 'Purchase date'
-            }), inputs.purchaseDate],
-        [pickLanguageValue(language, {
-                pl: 'Data wyjscia',
-                en: 'Exit date'
-            }), inputs.withdrawalDate],
-        [pickLanguageValue(language, {
-                pl: 'Kwota poczatkowa',
-                en: 'Initial investment'
-            }), formatCurrency(results.initialInvestment, language)],
-        [pickLanguageValue(language, {
-                pl: 'Wyplata netto',
-                en: 'Net payout'
-            }), formatCurrency(results.netPayoutValue, language)],
-        [pickLanguageValue(language, {
-                pl: 'Zysk netto',
-                en: 'Net profit'
-            }), formatCurrency(results.totalProfit, language)],
-        [pickLanguageValue(language, {
-                pl: 'Laczny podatek',
-                en: 'Total tax'
-            }), formatCurrency(results.totalTax, language)],
-        [pickLanguageValue(language, {
-                pl: 'Wartosc realna',
-                en: 'Real value'
-            }), formatCurrency(results.finalRealValue, language)],
-        [pickLanguageValue(language, {
-                pl: 'Realna stopa roczna',
-                en: 'Real annualized return'
-            }), `${results.realAnnualizedReturn.toFixed(2)}%`],
+        [tx("generated.shared.lib.pdf_utils.item_2", undefined, language), inputs.bondType],
+        [tx("generated.shared.lib.pdf_utils.item_3", undefined, language), inputs.purchaseDate],
+        [tx("generated.shared.lib.pdf_utils.item_4", undefined, language), inputs.withdrawalDate],
+        [tx("generated.shared.lib.pdf_utils.item_5", undefined, language), formatCurrency(results.initialInvestment, language)],
+        [tx("generated.shared.lib.pdf_utils.item_6", undefined, language), formatCurrency(results.netPayoutValue, language)],
+        [tx("generated.shared.lib.pdf_utils.item_7", undefined, language), formatCurrency(results.totalProfit, language)],
+        [tx("generated.shared.lib.pdf_utils.item_8", undefined, language), formatCurrency(results.totalTax, language)],
+        [tx("generated.shared.lib.pdf_utils.item_9", undefined, language), formatCurrency(results.finalRealValue, language)],
+        [tx("generated.shared.lib.pdf_utils.item_10", undefined, language), `${results.realAnnualizedReturn.toFixed(2)}%`],
     ] as const;
 }
 export async function generateSingleBondReportPdf(results: CalculationResult, inputs: BondInputs, language: 'pl' | 'en', filename = 'bond-report.pdf') {
@@ -61,10 +31,7 @@ export async function generateSingleBondReportPdf(results: CalculationResult, in
     const notes = results.calculationNotes?.length
         ? results.calculationNotes
         : [
-            pickLanguageValue(language, {
-                pl: 'Raport PDF jest generowany z uporzadkowanego zestawu danych, a nie ze zrzutu ekranu strony.',
-                en: 'This PDF is generated from a structured data summary rather than a page screenshot.'
-            }),
+            tx("generated.shared.lib.pdf_utils.item_11", undefined, language),
         ];
     const writeWrapped = (text: string, { bold = false, indent = 0, }: {
         bold?: boolean;
@@ -77,17 +44,11 @@ export async function generateSingleBondReportPdf(results: CalculationResult, in
     };
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(20);
-    pdf.text(pickLanguageValue(language, {
-        pl: 'Raport symulacji obligacji',
-        en: 'Bond simulation report'
-    }), margin, y);
+    pdf.text(tx("generated.shared.lib.pdf_utils.item_12", undefined, language), margin, y);
     y += 10;
     pdf.setFont('helvetica', 'normal');
     pdf.setFontSize(10);
-    pdf.text(`${pickLanguageValue(language, {
-        pl: 'Wygenerowano',
-        en: 'Generated'
-    })}: ${new Date().toISOString().slice(0, 10)}`, margin, y);
+    pdf.text(`${tx("generated.shared.lib.pdf_utils.item_13", undefined, language)}: ${new Date().toISOString().slice(0, 10)}`, margin, y);
     y += 10;
     pdf.setFontSize(11);
     for (const [label, value] of rows) {
@@ -95,24 +56,15 @@ export async function generateSingleBondReportPdf(results: CalculationResult, in
     }
     y += 4;
     pdf.setFontSize(12);
-    writeWrapped(pickLanguageValue(language, {
-        pl: 'Uwagi do przebiegu',
-        en: 'Run notes'
-    }), { bold: true });
+    writeWrapped(tx("generated.shared.lib.pdf_utils.item_14", undefined, language), { bold: true });
     pdf.setFontSize(10);
     for (const note of notes) {
         writeWrapped(`- ${note}`);
     }
     y += 4;
     pdf.setFontSize(12);
-    writeWrapped(pickLanguageValue(language, {
-        pl: 'Kontekst danych',
-        en: 'Data context'
-    }), { bold: true });
+    writeWrapped(tx("generated.shared.lib.pdf_utils.item_15", undefined, language), { bold: true });
     pdf.setFontSize(10);
-    writeWrapped(pickLanguageValue(language, {
-        pl: 'Eksport PDF korzysta z tej samej uporzadkowanej warstwy wynikow, co podsumowanie scenariusza. Nie opiera sie na przechwytywaniu kolorow ani wykresu z DOM.',
-        en: 'This PDF uses the same normalized result layer as the scenario summary. It does not rely on DOM screenshots, color parsing, or chart capture.'
-    }));
+    writeWrapped(tx("generated.shared.lib.pdf_utils.item_16", undefined, language));
     pdf.save(filename);
 }

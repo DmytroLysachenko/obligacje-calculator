@@ -1,7 +1,6 @@
 'use client';
 import React, { useState } from 'react';
 import { format, parseISO } from 'date-fns';
-import { enGB, pl } from 'date-fns/locale';
 import { AlertCircle, CalendarIcon, Info, Settings2, Target, } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
@@ -17,15 +16,14 @@ import { Switch } from '@/components/ui/switch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, } from '@/components/ui/tooltip';
 import { BondType, InvestmentFrequency, RegularInvestmentInputs, TaxStrategy, } from '../../bond-core/types';
 import { getBondSupportMeta, isFamilyBondType, } from '../../bond-core/support-matrix';
-import { useLanguage } from '@/i18n';
+import { tx, useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 import { getHorizonMonths, toDateString } from '@/shared/lib/date-timing';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
+import { getDateFnsLocale } from '@/i18n/locale-utils';
 interface RegularInvestmentInputsFormProps {
     inputs: RegularInvestmentInputs;
     onUpdate: {
@@ -57,10 +55,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
     }
     const currentDef = definitions[inputs.bondType];
     const currentBondSupport = getBondSupportMeta(inputs.bondType);
-    const dateLocale = pickLanguageValue(language, {
-        pl: pl,
-        en: enGB
-    });
+    const dateLocale = getDateFnsLocale(language);
     const investmentHorizonMonths = inputs.investmentHorizonMonths ??
         getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);
     const investmentHorizonYears = Math.max(1 / 12, investmentHorizonMonths / 12);
@@ -156,10 +151,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                   {currentBondSupport.description}
                 </p>
                 {isFamilyBondType(inputs.bondType) ? (<p className="font-semibold text-amber-700">
-                    {pickLanguageValue(language, {
-                pl: 'Scenariusze rodzinne maja sens tylko wtedy, gdy warunek uprawnienia gospodarstwa domowego faktycznie obowiazuje.',
-                en: 'Family-bond scenarios are only meaningful if the household eligibility condition really applies.'
-            })}
+                    {tx("generated.features.regular_investment.components.regular_investment_inputs_form.item_1", undefined, language)}
                   </p>) : null}
               </div>
             </div>

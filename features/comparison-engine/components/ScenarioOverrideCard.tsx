@@ -6,14 +6,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '
 import { Switch } from '@/components/ui/switch';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { cn } from '@/lib/utils';
-import { useLanguage } from '@/i18n';
+import { tx, useLanguage } from '@/i18n';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
 import { RateContextNote } from '@/shared/components/RateContextNote';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
+import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 interface ScenarioOverrideCardProps {
     title: string;
     colorClass: string;
@@ -35,28 +34,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
     const activeRateContext = activeDefinition
         ? getBondRateContextCopy(bondType, Number(activeDefinition.firstYearRate), Number(activeDefinition.margin), t)
         : null;
-    const formatBondLabel = (type: BondType) => pickLanguageValue(language, {
-        pl: {
-            [BondType.OTS]: '3 miesiace',
-            [BondType.ROR]: '1 rok',
-            [BondType.DOR]: '2 lata',
-            [BondType.TOS]: '3 lata',
-            [BondType.COI]: '4 lata',
-            [BondType.ROS]: '6 lat',
-            [BondType.EDO]: '10 lat',
-            [BondType.ROD]: '12 lat',
-        }[type],
-        en: {
-            [BondType.OTS]: '3 months',
-            [BondType.ROR]: '1 year',
-            [BondType.DOR]: '2 years',
-            [BondType.TOS]: '3 years',
-            [BondType.COI]: '4 years',
-            [BondType.ROS]: '6 years',
-            [BondType.EDO]: '10 years',
-            [BondType.ROD]: '12 years',
-        }[type]
-    });
+    const formatBondLabel = (type: BondType) => formatBondDuration(definitions?.[type]?.duration ?? 1, language);
     const formatRateStyle = (type: BondType) => {
         const definition = definitions?.[type];
         if (!definition) {
@@ -88,10 +66,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
                         {formatBondLabel(type)}
                       </span>
                       {isFamilyBondType(type) ? (<span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
-                          {pickLanguageValue(language, {
-                pl: 'Rodzinne',
-                en: 'Family'
-            })}
+                          {tx("generated.features.comparison_engine.components.scenario_override_card.item_1", undefined, language)}
                         </span>) : null}
                     </div>
                     <span className="truncate text-sm font-medium text-slate-700">
@@ -115,16 +90,10 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
 
         <div className="rounded-xl border bg-muted/20 p-3">
           <p className="text-sm font-semibold">
-            {pickLanguageValue(language, {
-        pl: 'Rollover scenariusza',
-        en: 'Scenario rollover'
-    })}
+            {tx("generated.features.comparison_engine.components.scenario_override_card.item_2", undefined, language)}
           </p>
           <p className="mt-1 text-xs leading-5 text-muted-foreground">
-            {pickLanguageValue(language, {
-            pl: 'Silnik wlacza rollover automatycznie, gdy horyzont scenariusza przekracza natywny termin tej obligacji.',
-            en: 'The engine enables rollover automatically when the scenario horizon outlasts this bond’s native term.'
-        })}
+            {tx("generated.features.comparison_engine.components.scenario_override_card.item_3", undefined, language)}
           </p>
         </div>
 

@@ -2,7 +2,6 @@
 import React, { useMemo, useState } from 'react';
 import { addMonths, compareAsc } from 'date-fns';
 import { format, parseISO } from 'date-fns';
-import { enGB, pl } from 'date-fns/locale';
 import { Area, AreaChart, Brush, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis, } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -38,8 +37,7 @@ import { BondComparisonContainer } from './BondComparisonContainer';
 import { ComparisonTable } from './ComparisonTable';
 import { ComparisonVerdict } from './ComparisonVerdict';
 import { ScenarioOverrideCard } from './ScenarioOverrideCard';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
+import { getDateFnsLocale, getIntlLocale } from '@/i18n/locale-utils';
 interface PayloadEntry {
     name: string;
     value: number;
@@ -97,10 +95,7 @@ export const ComparisonContainer: React.FC = () => {
     const formatCurrency = React.useMemo(() => (value: number) => {
         if (!hasMounted)
             return '---';
-        return new Intl.NumberFormat(pickLanguageValue(language, {
-            pl: 'pl-PL',
-            en: 'en-GB'
-        }), {
+        return new Intl.NumberFormat(getIntlLocale(language), {
             style: 'currency',
             currency: 'PLN',
             maximumFractionDigits: 0,
@@ -146,10 +141,7 @@ export const ComparisonContainer: React.FC = () => {
             label: index === 0
                 ? t('comparison.start')
                 : format(date, 'MMM yyyy', {
-                    locale: pickLanguageValue(language, {
-                        pl: pl,
-                        en: enGB
-                    }),
+                    locale: getDateFnsLocale(language),
                 }),
             valA: seriesA[index],
             valB: seriesB[index],
@@ -232,13 +224,10 @@ export const ComparisonContainer: React.FC = () => {
                   </Label>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button variant="outline" className={cn('h-11 w-full justify-start border text-left font-bold', !sharedConfig.purchaseDate && 'text-muted-foreground')}>
-                        <History className="mr-2 h-4 w-4 text-primary"/>
-                        {sharedConfig.purchaseDate ? (format(parseISO(sharedConfig.purchaseDate), 'PPP', {
-                locale: pickLanguageValue(language, {
-                    pl: pl,
-                    en: enGB
-                }),
+                        <Button variant="outline" className={cn('h-11 w-full justify-start border text-left font-bold', !sharedConfig.purchaseDate && 'text-muted-foreground')}>
+                          <History className="mr-2 h-4 w-4 text-primary"/>
+                          {sharedConfig.purchaseDate ? (format(parseISO(sharedConfig.purchaseDate), 'PPP', {
+                locale: getDateFnsLocale(language),
             })) : (<span>{t('bonds.pick_date')}</span>)}
                       </Button>
                     </PopoverTrigger>
@@ -258,10 +247,7 @@ export const ComparisonContainer: React.FC = () => {
                         <Button variant="outline" className={cn('h-11 w-full justify-start border text-left font-bold', !sharedConfig.withdrawalDate && 'text-muted-foreground')}>
                           <History className="mr-2 h-4 w-4 text-primary"/>
                           {sharedConfig.withdrawalDate ? (format(parseISO(sharedConfig.withdrawalDate), 'PPP', {
-                    locale: pickLanguageValue(language, {
-                        pl: pl,
-                        en: enGB
-                    }),
+                    locale: getDateFnsLocale(language),
                 })) : (<span>{t('bonds.pick_date')}</span>)}
                         </Button>
                       </PopoverTrigger>

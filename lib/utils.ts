@@ -1,15 +1,12 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { pickLanguageValue } from '@/i18n/locale-utils';
+import { getIntlLocale } from '@/i18n/locale-utils';
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 export function formatCurrency(value: number, language: string = 'pl') {
-    return new Intl.NumberFormat(pickLanguageValue(language, {
-        pl: 'pl-PL',
-        en: 'en-GB'
-    }), {
+    return new Intl.NumberFormat(getIntlLocale(language), {
         style: 'currency',
         currency: 'PLN',
     }).format(value);

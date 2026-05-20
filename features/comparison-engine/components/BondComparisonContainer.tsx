@@ -11,7 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import { getBondSupportMeta } from '@/features/bond-core/support-matrix';
 import { BondComparisonCalculationEnvelope } from '@/features/bond-core/types/scenarios';
-import { useLanguage } from '@/i18n';
+import { tx, useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
@@ -24,8 +24,6 @@ import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { getBondColor } from '@/shared/constants/bond-colors';
 import { sampleSeriesPoints } from '@/shared/lib/chart-series';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
 type ChartDataPoint = {
     date: string;
     year: number;
@@ -200,10 +198,7 @@ export const BondComparisonContainer = () => {
         });
         return sampleSeriesPoints(projected, 180);
     }, [results, showRealValue]);
-    const formatCurrency = (value: number) => new Intl.NumberFormat(pickLanguageValue(language, {
-        pl: 'pl-PL',
-        en: 'en-GB'
-    }), {
+    const formatCurrency = (value: number) => new Intl.NumberFormat(tx("generated.features.comparison_engine.components.bond_comparison_container.item_1", undefined, language), {
         style: 'currency',
         currency: 'PLN',
         maximumFractionDigits: 0,
@@ -215,18 +210,9 @@ export const BondComparisonContainer = () => {
         return results.reduce((best, current) => current.result.netPayoutValue > best.result.netPayoutValue ? current : best);
     }, [results]);
     const comparisonReadingGuide = [
-        pickLanguageValue(language, {
-            pl: 'To porownanie pokazuje kompromisy scenariusza, a nie uniwersalnie najlepsza obligacje.',
-            en: 'This comparison shows scenario tradeoffs, not a universally best bond.'
-        }),
-        pickLanguageValue(language, {
-            pl: 'Czytaj je jako test jednego ustawienia wspolnego, nie jako gotowa rekomendacje dla kazdego inwestora.',
-            en: 'Read it as a test of one committed shared setup, not as finished advice for every investor.'
-        }),
-        pickLanguageValue(language, {
-            pl: 'Najpierw odczytaj wynik glowny, potem karty obligacji, a meta dane otwieraj tylko gdy chcesz zweryfikowac zalozenia.',
-            en: 'Read the main result first, then the bond cards, and open the meta context only when you need to verify assumptions.'
-        }),
+        tx("generated.features.comparison_engine.components.bond_comparison_container.item_2", undefined, language),
+        tx("generated.features.comparison_engine.components.bond_comparison_container.item_3", undefined, language),
+        tx("generated.features.comparison_engine.components.bond_comparison_container.item_4", undefined, language),
     ];
     return (<div className="space-y-6 pb-20 md:space-y-8">
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[360px_minmax(0,1fr)] xl:gap-8">
@@ -235,25 +221,16 @@ export const BondComparisonContainer = () => {
             <CardHeader className="space-y-3 border-b border-slate-200 pb-5">
               <CardTitle className="flex items-center gap-2 text-lg font-black tracking-tight text-slate-950">
                 <Scale className="h-5 w-5 text-primary"/>
-                {pickLanguageValue(language, {
-        pl: 'Wspolny scenariusz',
-        en: 'Shared scenario'
-    })}
+                {tx("generated.features.comparison_engine.components.bond_comparison_container.item_5", undefined, language)}
               </CardTitle>
               <CardDescription className="text-sm leading-7 text-slate-600">
-                {pickLanguageValue(language, {
-            pl: 'Jedna kwota, jeden horyzont i jeden zestaw zalozen. To ma izolowac roznice konstrukcyjne pomiedzy obligacjami.',
-            en: 'One amount, one horizon, and one assumption set. This keeps the comparison focused on bond structure differences.'
-        })}
+                {tx("generated.features.comparison_engine.components.bond_comparison_container.item_6", undefined, language)}
               </CardDescription>
             </CardHeader>
               <CardContent className="space-y-6 p-5 md:p-6">
               <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
-                  {pickLanguageValue(language, {
-        pl: 'Kwota poczatkowa',
-        en: 'Initial sum'
-    })}
+                  {tx("generated.features.comparison_engine.components.bond_comparison_container.item_7", undefined, language)}
                 </Label>
                 <CommittedSliderInput value={initialInvestment} min={1000} max={100000} step={100} unit="PLN" onCommit={(value) => {
             setInitialInvestment(value);
@@ -263,10 +240,7 @@ export const BondComparisonContainer = () => {
 
               <div className="space-y-2 border-t border-dashed border-slate-200 pt-5">
                 <Label className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
-                  {pickLanguageValue(language, {
-        pl: 'Horyzont',
-        en: 'Horizon'
-    })}
+                  {tx("generated.features.comparison_engine.components.bond_comparison_container.item_8", undefined, language)}
                 </Label>
                 <CommittedSliderInput value={duration} min={1} max={30} step={1} unit={t('common.years')} onCommit={(value) => {
             setDuration(value);
@@ -288,26 +262,17 @@ export const BondComparisonContainer = () => {
                       {t('bonds.inflation.adjusted')}
                     </p>
                     <p className="text-xs leading-6 text-slate-600">
-                      {pickLanguageValue(language, {
-            pl: 'Przelacz wykres i odczyt na wartosci realne.',
-            en: 'Switch the chart and reading into real-value mode.'
-        })}
+                      {tx("generated.features.comparison_engine.components.bond_comparison_container.item_9", undefined, language)}
                     </p>
                   </div>
                   <Switch checked={showRealValue} onCheckedChange={setShowRealValue}/>
                 </div>
                 <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3">
                   <p className="text-sm font-semibold text-slate-950">
-                    {pickLanguageValue(language, {
-        pl: 'Rollover porownania',
-        en: 'Comparison rollover'
-    })}
+                    {tx("generated.features.comparison_engine.components.bond_comparison_container.item_10", undefined, language)}
                   </p>
                   <p className="mt-1 text-xs leading-6 text-slate-600">
-                    {pickLanguageValue(language, {
-            pl: 'Rollover jest wyliczany automatycznie dla kazdej obligacji, jesli wspolny horyzont wykracza poza jej natywny termin.',
-            en: 'Rollover is inferred automatically for each bond when the shared horizon outlasts its native term.'
-        })}
+                    {tx("generated.features.comparison_engine.components.bond_comparison_container.item_11", undefined, language)}
                   </p>
                 </div>
               </div>
@@ -318,16 +283,10 @@ export const BondComparisonContainer = () => {
           <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
             <CardHeader className="space-y-3 border-b border-slate-200 pb-5">
               <CardTitle className="text-lg font-black tracking-tight text-slate-950">
-                {pickLanguageValue(language, {
-        pl: 'Obligacje w tym przebiegu',
-        en: 'Bonds in this run'
-    })}
+                {tx("generated.features.comparison_engine.components.bond_comparison_container.item_12", undefined, language)}
               </CardTitle>
               <CardDescription className="text-sm leading-7 text-slate-600">
-                {pickLanguageValue(language, {
-            pl: 'Wybierz tylko te obligacje, ktore chcesz rzeczywiscie zestawic w jednym scenariuszu.',
-            en: 'Pick only the bonds you actually want to test inside the same shared scenario.'
-        })}
+                {tx("generated.features.comparison_engine.components.bond_comparison_container.item_13", undefined, language)}
               </CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-2 p-6">
@@ -344,51 +303,21 @@ export const BondComparisonContainer = () => {
             </CardContent>
           </Card>
 
-          <SecondaryInsightAccordion title={pickLanguageValue(language, {
-        pl: 'Jak czytac to porownanie',
-        en: 'How to read this comparison'
-    })} description={pickLanguageValue(language, {
-            pl: 'Ta strona pokazuje kompromisy jednego wspolnego scenariusza. Wskazowki interpretacyjne zostaja jawne, ale nie powinny zaslaniac glownego wyniku.',
-            en: 'This page shows the tradeoffs of one shared scenario. Interpretation notes stay explicit, but they should not overshadow the main result.'
-        })} badge={pickLanguageValue(language, {
-        pl: 'Pomocnicze',
-        en: 'Secondary'
-    })}>
+          <SecondaryInsightAccordion title={tx("generated.features.comparison_engine.components.bond_comparison_container.item_14", undefined, language)} description={tx("generated.features.comparison_engine.components.bond_comparison_container.item_15", undefined, language)} badge={tx("generated.features.comparison_engine.components.bond_comparison_container.item_16", undefined, language)}>
             <div className="space-y-4 text-sm leading-7 text-slate-600">
               <div className="rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4">
                 <div className="flex items-center gap-2 font-black tracking-tight text-slate-950">
                   <AlertTriangle className="h-4 w-4 text-amber-600"/>
-                  {pickLanguageValue(language, {
-        pl: 'Uwaga interpretacyjna',
-        en: 'Interpretation note'
-    })}
+                  {tx("generated.features.comparison_engine.components.bond_comparison_container.item_17", undefined, language)}
                 </div>
                 <div className="mt-3">
                   <ReadingChecklist items={comparisonReadingGuide}/>
                 </div>
               </div>
               <div className="grid gap-4 md:grid-cols-3">
-                <StepCard title={pickLanguageValue(language, {
-        pl: '1. Wynik glowny',
-        en: '1. Start with outcome'
-    })} description={pickLanguageValue(language, {
-            pl: 'Najpierw sprawdz najlepsza wyplate netto albo wartosc realna.',
-            en: 'Check the best net payout or real-value outcome first.'
-        })}/>
-                <StepCard title={pickLanguageValue(language, {
-        pl: '2. Karty obligacji',
-        en: '2. Read bond cards'
-    })} description={pickLanguageValue(language, {
-            pl: 'Potem porownaj zysk, CAGR realny i podatek dla tego samego horyzontu.',
-            en: 'Then compare profit, real CAGR, and tax for the same horizon.'
-        })}/>
-                <StepCard title={pickLanguageValue(language, {
-        pl: '3. Meta i zalozenia',
-        en: '3. Meta and assumptions'
-    })} description={pickLanguageValue(language, {
-            pl: 'Na koncu zajrzyj do meta danych tylko wtedy, gdy chcesz sprawdzic zalozenia lub jakosc danych.',
-            en: 'Only then open the meta context if you need to verify assumptions or data quality.'
-        })}/>
+                <StepCard title={tx("generated.features.comparison_engine.components.bond_comparison_container.item_18", undefined, language)} description={tx("generated.features.comparison_engine.components.bond_comparison_container.item_19", undefined, language)}/>
+                <StepCard title={tx("generated.features.comparison_engine.components.bond_comparison_container.item_20", undefined, language)} description={tx("generated.features.comparison_engine.components.bond_comparison_container.item_21", undefined, language)}/>
+                <StepCard title={tx("generated.features.comparison_engine.components.bond_comparison_container.item_22", undefined, language)} description={tx("generated.features.comparison_engine.components.bond_comparison_container.item_23", undefined, language)}/>
               </div>
             </div>
           </SecondaryInsightAccordion>
@@ -403,41 +332,17 @@ export const BondComparisonContainer = () => {
                     {t('comparison.ready_to_compare')}
                   </div>
                   <h3 className="text-3xl font-black tracking-tight text-slate-950">
-                    {pickLanguageValue(language, {
-                pl: 'Jedno porownanie. Jeden wspolny scenariusz.',
-                en: 'One comparison. One shared scenario.'
-            })}
+                    {tx("generated.features.comparison_engine.components.bond_comparison_container.item_24", undefined, language)}
                   </h3>
                   <p className="max-w-3xl text-sm leading-8 text-slate-600">
-                    {pickLanguageValue(language, {
-                pl: 'Najpierw wybierz obligacje, potem ustaw horyzont i zalozenia, a na koncu uruchom jedno czyste porownanie.',
-                en: 'Pick the bonds first, then commit the shared assumptions, then run one clean comparison.'
-            })}
+                    {tx("generated.features.comparison_engine.components.bond_comparison_container.item_25", undefined, language)}
                   </p>
                 </div>
 
                 <div className="grid gap-4 lg:grid-cols-3">
-                  <StepCard title={pickLanguageValue(language, {
-            pl: 'Krok 1',
-            en: 'Step 1'
-        })} description={pickLanguageValue(language, {
-            pl: 'Wybierz obligacje.',
-            en: 'Select the bonds.'
-        })}/>
-                  <StepCard title={pickLanguageValue(language, {
-            pl: 'Krok 2',
-            en: 'Step 2'
-        })} description={pickLanguageValue(language, {
-            pl: 'Ustaw wspolne zalozenia.',
-            en: 'Set the shared assumptions.'
-        })}/>
-                  <StepCard title={pickLanguageValue(language, {
-            pl: 'Krok 3',
-            en: 'Step 3'
-        })} description={pickLanguageValue(language, {
-            pl: 'Uruchom porownanie.',
-            en: 'Run the comparison.'
-        })}/>
+                  <StepCard title={tx("generated.features.comparison_engine.components.bond_comparison_container.item_26", undefined, language)} description={tx("generated.features.comparison_engine.components.bond_comparison_container.item_27", undefined, language)}/>
+                  <StepCard title={tx("generated.features.comparison_engine.components.bond_comparison_container.item_28", undefined, language)} description={tx("generated.features.comparison_engine.components.bond_comparison_container.item_29", undefined, language)}/>
+                  <StepCard title={tx("generated.features.comparison_engine.components.bond_comparison_container.item_30", undefined, language)} description={tx("generated.features.comparison_engine.components.bond_comparison_container.item_31", undefined, language)}/>
                 </div>
 
               </CardContent>
@@ -449,43 +354,22 @@ export const BondComparisonContainer = () => {
 
           {results.length ? (<div className="space-y-10">
               {isDirty ? (<div className="rounded-3xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
-                  {pickLanguageValue(language, {
-                    pl: 'Dane zostaly zmienione. Poniższe wyniki nadal pokazuja poprzedni przebieg az do recznego przeliczenia.',
-                    en: 'Inputs changed. The results below still show the previous run until you recalculate.'
-                })}
+                  {tx("generated.features.comparison_engine.components.bond_comparison_container.item_32", undefined, language)}
                 </div>) : null}
 
-              <SectionBlock title={pickLanguageValue(language, {
-            pl: 'Szybki odczyt',
-            en: 'Quick read'
-        })} description={pickLanguageValue(language, {
-                pl: 'Najpierw sprawdz zwyciezce tego scenariusza i glowna roznice w wypłacie netto.',
-                en: 'Start with the scenario winner and the main gap in net payout.'
-            })}>
+              <SectionBlock title={tx("generated.features.comparison_engine.components.bond_comparison_container.item_33", undefined, language)} description={tx("generated.features.comparison_engine.components.bond_comparison_container.item_34", undefined, language)}>
                 <div className="grid gap-4 lg:grid-cols-3">
-                  <ResultMetric label={pickLanguageValue(language, {
-            pl: 'Najlepszy wynik',
-            en: 'Best result'
-        })} value={bestResult ? bestResult.type : '-'}/>
+                  <ResultMetric label={tx("generated.features.comparison_engine.components.bond_comparison_container.item_35", undefined, language)} value={bestResult ? bestResult.type : '-'}/>
                   <ResultMetric label={showRealValue ? t('bonds.real_value_inflation') : t('bonds.net_payout')} value={bestResult
                 ? formatCurrency(showRealValue
                     ? bestResult.result.finalRealValue
                     : bestResult.result.netPayoutValue)
                 : '-'} tone="text-emerald-700"/>
-                  <ResultMetric label={pickLanguageValue(language, {
-            pl: 'Liczba obligacji',
-            en: 'Bonds compared'
-        })} value={String(results.length)}/>
+                  <ResultMetric label={tx("generated.features.comparison_engine.components.bond_comparison_container.item_36", undefined, language)} value={String(results.length)}/>
                 </div>
               </SectionBlock>
 
-              <SectionBlock title={pickLanguageValue(language, {
-            pl: 'Wyniki obligacji',
-            en: 'Bond outcomes'
-        })} description={pickLanguageValue(language, {
-                pl: 'Kazda karta pokazuje wynik tej samej kwoty i tego samego horyzontu.',
-                en: 'Each card shows the outcome for the same amount and the same horizon.'
-            })}>
+              <SectionBlock title={tx("generated.features.comparison_engine.components.bond_comparison_container.item_37", undefined, language)} description={tx("generated.features.comparison_engine.components.bond_comparison_container.item_38", undefined, language)}>
                 <div className="grid gap-4 xl:grid-cols-2">
                   {results.map((result) => {
                 const bondDefinition = definitions?.[result.type];
@@ -500,10 +384,8 @@ export const BondComparisonContainer = () => {
                             </div>
                             <p className="text-sm leading-7 text-slate-600">
                               {bondDefinition
-                        ? pickLanguageValue(language, {
-                            pl: bondDefinition.description.pl,
-                            en: bondDefinition.description.en
-                        }) : getBondSupportMeta(result.type).description}
+                        ? bondDefinition.description[language]
+                        : getBondSupportMeta(result.type).description}
                             </p>
                           </div>
 
@@ -521,22 +403,10 @@ export const BondComparisonContainer = () => {
                 </div>
               </SectionBlock>
 
-              <SectionBlock title={pickLanguageValue(language, {
-            pl: 'Przebieg w czasie',
-            en: 'Path over time'
-        })} description={pickLanguageValue(language, {
-                pl: 'Wykres sluzy do sprawdzenia ksztaltu scenariusza, a nie do tworzenia rankingowej dramaturgii.',
-                en: 'Use the chart to inspect the scenario path, not to manufacture winner drama.'
-            })}>
+              <SectionBlock title={tx("generated.features.comparison_engine.components.bond_comparison_container.item_39", undefined, language)} description={tx("generated.features.comparison_engine.components.bond_comparison_container.item_40", undefined, language)}>
                 <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
                   <CardContent className="p-4 md:p-6">
-                    <ChartSupportNote title={pickLanguageValue(language, {
-            pl: 'Jak czytac wykres',
-            en: 'How to read the chart'
-        })} description={pickLanguageValue(language, {
-                pl: 'Najpierw sprawdz miesiac szczytowy i poziom koncowy. Dopiero potem porownuj ksztalt sciezek.',
-                en: 'Check the peak month and final level first. Only then compare the path shapes.'
-            })}/>
+                    <ChartSupportNote title={tx("generated.features.comparison_engine.components.bond_comparison_container.item_41", undefined, language)} description={tx("generated.features.comparison_engine.components.bond_comparison_container.item_42", undefined, language)}/>
 
                     <ChartContainer height={420}>
                       <ResponsiveContainer width="100%" height="100%">
@@ -556,13 +426,7 @@ export const BondComparisonContainer = () => {
                 </Card>
               </SectionBlock>
 
-              <SecondaryInsightAccordion title={t('bonds.simulation.calculation_context')} description={pickLanguageValue(language, {
-                pl: 'Zalozenia, ostrzezenia i meta dane zostaja jawne, ale sa materialem pomocniczym po odczytaniu glownego wyniku.',
-                en: 'Assumptions, warnings, and data context stay explicit, but they are support material after the main result.'
-            })} badge={pickLanguageValue(language, {
-            pl: 'Drugorzedne',
-            en: 'Secondary'
-        })}>
+              <SecondaryInsightAccordion title={t('bonds.simulation.calculation_context')} description={tx("generated.features.comparison_engine.components.bond_comparison_container.item_43", undefined, language)} badge={tx("generated.features.comparison_engine.components.bond_comparison_container.item_44", undefined, language)}>
                 <CalculationMetaPanel warnings={envelope?.warnings} assumptions={envelope?.assumptions} calculationNotes={envelope?.calculationNotes} dataQualityFlags={envelope?.dataQualityFlags} dataFreshness={envelope?.dataFreshness}/>
               </SecondaryInsightAccordion>
             </div>) : null}

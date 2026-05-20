@@ -2,7 +2,7 @@
 import React from 'react';
 import { PiggyBank } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useLanguage } from '@/i18n';
+import { tx, useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
 import { CalculatorSection } from '@/shared/components/CalculatorSection';
@@ -15,8 +15,6 @@ import { useRegularInvestmentCalculator } from '../hooks/useRegularInvestmentCal
 import { RegularInvestmentChart } from './RegularInvestmentChart';
 import { RegularInvestmentInputsForm } from './RegularInvestmentInputsForm';
 import { RegularInvestmentResultsSummary } from './RegularInvestmentResultsSummary';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
 const LoadingState = () => (<div className="space-y-4">
     <Skeleton className="h-28 w-full rounded-[1.7rem] md:h-32 md:rounded-[2rem]"/>
     <Skeleton className="h-[280px] w-full rounded-[1.7rem] md:h-[320px] md:rounded-[2rem]"/>
@@ -27,18 +25,9 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
     const { inputs, results, warnings, assumptions, isCalculating, calculate, updateInput, setBondType, isDirty, envelope, isPersistenceReady, } = useRegularInvestmentCalculator();
     const { t, language } = useLanguage();
     const readingGuide = [
-        pickLanguageValue(language, {
-            pl: 'To jest plan regularnych zakupow, wiec wynik zalezy od liczby partii, czasu i typu obligacji.',
-            en: 'This is a recurring purchase plan, so the result depends on lot count, timing, and bond type.'
-        }),
-        pickLanguageValue(language, {
-            pl: 'Wykres pomaga ocenic rytm budowy kapitalu, a nie tylko wynik koncowy.',
-            en: 'The chart helps you read the pace of capital formation, not just the endpoint.'
-        }),
-        pickLanguageValue(language, {
-            pl: 'Zalozenia i flagi jakosci danych powinny pozostac drugorzedne wobec glownych wynikow.',
-            en: 'Assumptions and data-quality flags should stay secondary to the main outcome.'
-        }),
+        tx("generated.features.regular_investment.components.regular_investment_calculator_container.item_1", undefined, language),
+        tx("generated.features.regular_investment.components.regular_investment_calculator_container.item_2", undefined, language),
+        tx("generated.features.regular_investment.components.regular_investment_calculator_container.item_3", undefined, language),
     ];
     const handleKeyDown = (event: React.KeyboardEvent) => {
         if (event.key === 'Enter' && (isDirty || !results)) {
@@ -85,38 +74,17 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
         </div>
 
         {results ? (<div className={cn('space-y-8 transition-opacity duration-200', isCalculating && 'pointer-events-none opacity-50')}>
-            <SecondaryInsightAccordion title={pickLanguageValue(language, {
-            pl: 'Jak czytac ten plan',
-            en: 'How to read this plan'
-        })} description={pickLanguageValue(language, {
-                pl: 'Najpierw sprawdz wynik koncowy i tempo wzrostu, a dopiero potem analizuj meta dane i szczegoly zalozen.',
-                en: 'Start with the final outcome and growth pace, then move into the assumptions and meta details only if needed.'
-            })} badge={pickLanguageValue(language, {
-            pl: 'Pomocnicze',
-            en: 'Secondary'
-        })}>
+            <SecondaryInsightAccordion title={tx("generated.features.regular_investment.components.regular_investment_calculator_container.item_4", undefined, language)} description={tx("generated.features.regular_investment.components.regular_investment_calculator_container.item_5", undefined, language)} badge={tx("generated.features.regular_investment.components.regular_investment_calculator_container.item_6", undefined, language)}>
               <ReadingChecklist items={readingGuide}/>
             </SecondaryInsightAccordion>
 
-            <CalculatorSection title={pickLanguageValue(language, {
-            pl: 'Projekcja wzrostu',
-            en: 'Growth projection'
-        })} description={pickLanguageValue(language, {
-                pl: 'Wykres pokazuje zmiany wartosci portfela i sumy wplat w czasie.',
-                en: 'The chart shows how invested capital and projected portfolio value evolve over time.'
-            })}>
+            <CalculatorSection title={tx("generated.features.regular_investment.components.regular_investment_calculator_container.item_7", undefined, language)} description={tx("generated.features.regular_investment.components.regular_investment_calculator_container.item_8", undefined, language)}>
               <div className="rounded-[1.7rem] border border-slate-200 bg-white p-3 shadow-none md:rounded-[2rem] md:p-4">
                 <RegularInvestmentChart results={results} bondType={inputs.bondType}/>
               </div>
             </CalculatorSection>
 
-            <SecondaryInsightAccordion title={t('bonds.simulation.calculation_context')} description={pickLanguageValue(language, {
-                pl: 'Pokazujemy zalozenia i dane pomocnicze, ale nie powinny one przeslaniac samego planu.',
-                en: 'Assumptions and supporting data remain visible, but they should not overshadow the plan itself.'
-            })} badge={pickLanguageValue(language, {
-            pl: 'Meta dane',
-            en: 'Meta'
-        })}>
+            <SecondaryInsightAccordion title={t('bonds.simulation.calculation_context')} description={tx("generated.features.regular_investment.components.regular_investment_calculator_container.item_9", undefined, language)} badge={tx("generated.features.regular_investment.components.regular_investment_calculator_container.item_10", undefined, language)}>
               <CalculationMetaPanel warnings={warnings} assumptions={assumptions} calculationNotes={envelope?.calculationNotes} dataQualityFlags={envelope?.dataQualityFlags} dataFreshness={envelope?.dataFreshness}/>
             </SecondaryInsightAccordion>
           </div>) : null}

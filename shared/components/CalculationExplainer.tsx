@@ -1,12 +1,10 @@
 'use client';
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useLanguage } from '@/i18n';
+import { tx, useLanguage } from '@/i18n';
 import { CalculationResult, TaxStrategy } from '@/features/bond-core/types';
 import { Calculator, ShieldCheck, Landmark, ChevronRight, ChevronLeft, ArrowRight, TrendingDown, Percent } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
 interface CalculationExplainerProps {
     results: CalculationResult;
     taxStrategy?: TaxStrategy;
@@ -15,10 +13,7 @@ export const CalculationExplainer: React.FC<CalculationExplainerProps> = ({ resu
     const { t, language } = useLanguage();
     const [exampleYear, setExampleYear] = useState(Math.min(5, results.timeline.length > 1 ? 2 : 1));
     const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat(pickLanguageValue(language, {
-            pl: 'pl-PL',
-            en: 'en-GB'
-        }), {
+        return new Intl.NumberFormat(tx("generated.shared.components.calculation_explainer.item_1", undefined, language), {
             style: 'currency',
             currency: 'PLN',
         }).format(value);

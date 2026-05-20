@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 import { Geist, Geist_Mono, Inter } from 'next/font/google';
 import './globals.css';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { LanguageProvider, translations, Language } from '@/i18n';
+import { Language, LanguageProvider, translations, tx } from '@/i18n';
 import { resolveTranslationValue } from '@/i18n/translation-utils';
 import { getGlobalDataFreshness } from '@/lib/data-access';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
@@ -13,8 +13,6 @@ import { OpportunisticSyncTrigger } from '@/shared/components/OpportunisticSyncT
 import { Sidebar } from '@/shared/components/Sidebar';
 import { BondDefinitionsProvider } from '@/shared/context/BondDefinitionsContext';
 import { ChartSyncProvider } from '@/shared/context/ChartSyncContext';
-import { pickLanguageValue } from '@/i18n/locale-utils';
-
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 const inter = Inter({ variable: '--font-inter', subsets: ['latin'] });
@@ -25,30 +23,21 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
         metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
         title: {
-            default: `${t('common.title')} - ${pickLanguageValue(language, {
-                pl: 'Symulator Polskich Obligacji Skarbowych',
-                en: 'Polish Treasury Bonds Simulator'
-            })}`,
+            default: `${t('common.title')} - ${tx("generated.app.layout.item_1", undefined, language)}`,
             template: `%s | ${t('common.title')}`,
         },
         description: t('common.description'),
         manifest: '/manifest.json',
         openGraph: {
             type: 'website',
-            locale: pickLanguageValue(language, {
-                pl: 'pl_PL',
-                en: 'en_US'
-            }),
+            locale: tx("generated.app.layout.item_2", undefined, language),
             url: 'https://obligacje-calculator.vercel.app',
             siteName: t('common.title'),
         },
         twitter: {
             card: 'summary_large_image',
             title: t('common.title'),
-            description: pickLanguageValue(language, {
-                pl: 'Symulator Polskich Obligacji Skarbowych',
-                en: 'Polish Treasury Bonds Simulator'
-            }),
+            description: tx("generated.app.layout.item_3", undefined, language),
         },
     };
 }
@@ -113,17 +102,11 @@ export default async function RootLayout({ children, }: Readonly<{
                         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
                           <p>
                             © {new Date().getFullYear()} {t('common.title')}.{' '}
-                            {pickLanguageValue(language, {
-            pl: 'Wylacznie do celow edukacyjnych.',
-            en: 'For educational purposes only.'
-        })}
+                            {tx("generated.app.layout.item_4", undefined, language)}
                           </p>
                           <div className="mt-4 flex justify-center gap-4">
                             <a href="https://www.obligacjeskarbowe.pl/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                              {pickLanguageValue(language, {
-            pl: 'Oficjalna strona Obligacji Skarbowych',
-            en: 'Official Polish Bonds Website'
-        })}
+                              {tx("generated.app.layout.item_5", undefined, language)}
                             </a>
                           </div>
                         </div>
