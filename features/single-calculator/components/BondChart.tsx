@@ -285,9 +285,6 @@ export const BondChart: React.FC<BondChartProps> = ({
             dy={10}
             minTickGap={30}
             tickFormatter={(value: string) => {
-              if (value === 'Start') {
-                return value;
-              }
               if (value.length <= 9) {
                 return value;
               }

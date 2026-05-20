@@ -86,7 +86,7 @@ describe('bond display models', () => {
     expect(rows[0].valueMeaningLabel).toContain('checkpoint');
   });
 
-  it('builds chart display points with a start point and scenario bounds', () => {
+  it('builds chart display points from the first real checkpoint and preserves scenario bounds', () => {
     const lowPoint = makePoint({ nominalValueAfterInterest: 9900, totalValue: 9900 });
     const highPoint = makePoint({ nominalValueAfterInterest: 10100, totalValue: 10100 });
     const points = buildBondChartDisplayPoints(
@@ -96,12 +96,11 @@ describe('bond display models', () => {
       { low: [lowPoint], high: [highPoint] },
     );
 
-    expect(points).toHaveLength(2);
-    expect(points[0].xLabel).toBe('Start');
-    expect(points[1].low).toBe(9900);
-    expect(points[1].high).toBe(10100);
-    expect(points[1].rateLabel).toContain('Historyczna stopa NBP');
-    expect(points[1].xLabel).toContain('2026');
+    expect(points).toHaveLength(1);
+    expect(points[0].xLabel).toContain('2026');
+    expect(points[0].low).toBe(10000);
+    expect(points[0].high).toBe(10000);
+    expect(points[0].rateLabel).toContain('Kapital poczatkowy');
   });
 
   it('keeps chart aggregation as a display-only transform with the same terminal wealth', () => {

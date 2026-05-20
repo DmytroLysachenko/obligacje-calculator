@@ -233,26 +233,29 @@ export function buildBondChartDisplayPoints(
     comparisonScenarios,
   );
 
-  const rawPoints: BondChartDisplayPoint[] = [
-    {
-      key: 'start',
-      dateKey: '',
-      xLabel: t('bonds.timeline_display.chart.start', undefined, language),
-      nominal: initialInvestment,
-      real: initialInvestment,
-      inflation: timeline[0]?.inflationReference,
-      nbp: timeline[0]?.nbpReference,
-      low: comparisonScenarios ? initialInvestment : undefined,
-      high: comparisonScenarios ? initialInvestment : undefined,
-      isProjected: false,
-      isMaturity: false,
-      rateLabel: t('bonds.timeline_display.chart.initial_capital', undefined, language),
-      eventLabels: [],
-    },
-    ...normalizedTimeline,
-  ];
+  if (normalizedTimeline.length === 0) {
+    return [];
+  }
 
-  return aggregateBondChartDisplayPoints(rawPoints, chartStep);
+  return aggregateBondChartDisplayPoints(
+    normalizedTimeline.map((point, index) =>
+      index === 0
+        ? {
+            ...point,
+            nominal: initialInvestment,
+            real: initialInvestment,
+            low: comparisonScenarios ? initialInvestment : undefined,
+            high: comparisonScenarios ? initialInvestment : undefined,
+            rateLabel: t(
+              'bonds.timeline_display.chart.initial_capital',
+              undefined,
+              language,
+            ),
+          }
+        : point,
+    ),
+    chartStep,
+  );
 }
 
 export function normalizeBondChartDisplayTimeline(
@@ -292,10 +295,9 @@ function aggregateBondChartDisplayPoints(
     return points;
   }
 
-  const startPoint = points[0];
   const groups = new Map<string, BondChartDisplayPoint[]>();
 
-  for (const point of points.slice(1)) {
+  for (const point of points) {
     const date = new Date(point.dateKey);
     const groupKey =
       chartStep === 'quarterly'
@@ -316,5 +318,5 @@ function aggregateBondChartDisplayPoints(
     };
   });
 
-  return [startPoint, ...aggregated];
+  return aggregated;
 }
