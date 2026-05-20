@@ -1,63 +1,36 @@
 'use client';
-
 import React from 'react';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@/components/ui/select';
 import { History, Settings2, ShoppingCart } from 'lucide-react';
 import { useLanguage } from '@/i18n';
 import { ComparisonControlsProps } from './types';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
+import { pickLanguageValue } from '@/i18n/locale-utils';
 
-export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
-  initialSum,
-  updateInitialSum,
-  monthlyContribution,
-  updateMonthlyContribution,
-  startYear,
-  updateStartYear,
-  startMonth,
-  updateStartMonth,
-  years,
-  months,
-  showRealValue,
-  updateShowRealValue,
-  purchasingPowerLoss,
-  formatCurrency,
-}) => {
-  const { t, language } = useLanguage();
-  const presets = [
-    { label: t('comparison.preset_bull_2021'), year: '2021', month: '01' },
-    { label: t('comparison.preset_war_2022'), year: '2022', month: '02' },
-    { label: t('comparison.preset_recovery_2023'), year: '2023', month: '01' },
-  ];
-
-  return (
-    <div className="space-y-6">
+export const ComparisonControls: React.FC<ComparisonControlsProps> = ({ initialSum, updateInitialSum, monthlyContribution, updateMonthlyContribution, startYear, updateStartYear, startMonth, updateStartMonth, years, months, showRealValue, updateShowRealValue, purchasingPowerLoss, formatCurrency, }) => {
+    const { t, language } = useLanguage();
+    const presets = [
+        { label: t('comparison.preset_bull_2021'), year: '2021', month: '01' },
+        { label: t('comparison.preset_war_2022'), year: '2022', month: '02' },
+        { label: t('comparison.preset_recovery_2023'), year: '2023', month: '01' },
+    ];
+    return (<div className="space-y-6">
       <Card className="rounded-2xl border-2 shadow-none">
         <CardHeader className="space-y-2">
           <CardTitle className="flex items-center gap-2 text-lg font-black text-primary">
-            <Settings2 className="h-5 w-5" />
+            <Settings2 className="h-5 w-5"/>
             {t('comparison.configuration')}
           </CardTitle>
           <p className="text-sm leading-6 text-muted-foreground">
-            {language === 'pl'
-              ? 'Ustaw jeden historyczny punkt wejscia, jedna kwote poczatkowa i jedna miesieczna wplate, zanim przeliczysz porownanie.'
-              : 'Set one historical entry point, one initial amount, and one monthly contribution before recalculating the comparison.'}
+            {pickLanguageValue(language, {
+            pl: 'Ustaw jeden historyczny punkt wejscia, jedna kwote poczatkowa i jedna miesieczna wplate, zanim przeliczysz porownanie.',
+            en: 'Set one historical entry point, one initial amount, and one monthly contribution before recalculating the comparison.'
+        })}
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -70,14 +43,7 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
                 {formatCurrency(initialSum)}
               </span>
             </div>
-            <CommittedSliderInput
-              value={initialSum}
-              min={0}
-              max={500000}
-              step={1000}
-              unit="PLN"
-              onCommit={updateInitialSum}
-            />
+            <CommittedSliderInput value={initialSum} min={0} max={500000} step={1000} unit="PLN" onCommit={updateInitialSum}/>
           </div>
 
           <div className="space-y-4">
@@ -89,14 +55,7 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
                 {formatCurrency(monthlyContribution)}
               </span>
             </div>
-            <CommittedSliderInput
-              value={monthlyContribution}
-              min={0}
-              max={20000}
-              step={100}
-              unit="PLN"
-              onCommit={updateMonthlyContribution}
-            />
+            <CommittedSliderInput value={monthlyContribution} min={0} max={20000} step={100} unit="PLN" onCommit={updateMonthlyContribution}/>
           </div>
 
           <Accordion type="single" collapsible defaultValue="">
@@ -104,21 +63,23 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
               <AccordionTrigger className="rounded-2xl border bg-slate-50 px-4 py-4 hover:no-underline">
                 <div className="space-y-1 text-left">
                   <p className="text-sm font-bold text-slate-950">
-                    {language === 'pl'
-                      ? 'Ustawienia historycznego wejscia'
-                      : 'Historical entry settings'}
+                    {pickLanguageValue(language, {
+            pl: 'Ustawienia historycznego wejscia',
+            en: 'Historical entry settings'
+        })}
                   </p>
                   <p className="text-xs leading-5 text-muted-foreground">
-                    {language === 'pl'
-                      ? 'Rok startu, miesiac, presety i widok skorygowany o inflacje.'
-                      : 'Start year, month, presets, and inflation-adjusted display.'}
+                    {pickLanguageValue(language, {
+            pl: 'Rok startu, miesiac, presety i widok skorygowany o inflacje.',
+            en: 'Start year, month, presets, and inflation-adjusted display.'
+        })}
                   </p>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="space-y-5 px-1 pt-4">
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
-                    <History className="h-4 w-4 text-primary" />
+                    <History className="h-4 w-4 text-primary"/>
                     <p className="text-sm font-semibold text-foreground">
                       {t('comparison.step_timeline')}
                     </p>
@@ -133,11 +94,9 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {years.map((year) => (
-                            <SelectItem key={year} value={year}>
+                          {years.map((year) => (<SelectItem key={year} value={year}>
                               {year}
-                            </SelectItem>
-                          ))}
+                            </SelectItem>))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -150,11 +109,9 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {months.map((month) => (
-                            <SelectItem key={month} value={month}>
+                          {months.map((month) => (<SelectItem key={month} value={month}>
                               {month}
-                            </SelectItem>
-                          ))}
+                            </SelectItem>))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -162,19 +119,12 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
                 </div>
 
                 <div className="space-y-2">
-                  {presets.map((preset) => (
-                    <Button
-                      key={preset.label}
-                      variant="outline"
-                      className="h-10 w-full justify-start"
-                      onClick={() => {
-                        updateStartYear(preset.year);
-                        updateStartMonth(preset.month);
-                      }}
-                    >
+                  {presets.map((preset) => (<Button key={preset.label} variant="outline" className="h-10 w-full justify-start" onClick={() => {
+                updateStartYear(preset.year);
+                updateStartMonth(preset.month);
+            }}>
                       {preset.label}
-                    </Button>
-                  ))}
+                    </Button>))}
                 </div>
 
                 <div className="flex items-center justify-between rounded-2xl border bg-muted/20 p-4">
@@ -186,10 +136,7 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
                       {t('bonds.show_purchasing_power')}
                     </p>
                   </div>
-                  <Switch
-                    checked={showRealValue}
-                    onCheckedChange={updateShowRealValue}
-                  />
+                  <Switch checked={showRealValue} onCheckedChange={updateShowRealValue}/>
                 </div>
               </AccordionContent>
             </AccordionItem>
@@ -200,7 +147,7 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
       <Card className="rounded-2xl border border-orange-200 bg-orange-50 shadow-none">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-sm font-semibold text-orange-900">
-            <ShoppingCart className="h-4 w-4" />
+            <ShoppingCart className="h-4 w-4"/>
             {t('comparison.purchasing_power_loss')}
           </CardTitle>
         </CardHeader>
@@ -210,8 +157,8 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
           </p>
           <p className="text-sm text-orange-900/80">
             {t('comparison.inflation_loss_context', {
-              percent: purchasingPowerLoss.toFixed(1),
-            })}
+            percent: purchasingPowerLoss.toFixed(1),
+        })}
           </p>
         </CardContent>
       </Card>
@@ -226,6 +173,5 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
           <p>{t('comparison.savings_context_desc')}</p>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>);
 };

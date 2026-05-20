@@ -1,4 +1,4 @@
-﻿import type { Metadata } from 'next';
+import type { Metadata } from 'next';
 import React from 'react';
 import Script from 'next/script';
 import { cookies } from 'next/headers';
@@ -13,103 +13,94 @@ import { OpportunisticSyncTrigger } from '@/shared/components/OpportunisticSyncT
 import { Sidebar } from '@/shared/components/Sidebar';
 import { BondDefinitionsProvider } from '@/shared/context/BondDefinitionsContext';
 import { ChartSyncProvider } from '@/shared/context/ChartSyncContext';
+import { pickLanguageValue } from '@/i18n/locale-utils';
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 const inter = Inter({ variable: '--font-inter', subsets: ['latin'] });
-
 export async function generateMetadata(): Promise<Metadata> {
-  const cookieStore = await cookies();
-  const language = (cookieStore.get('app-language')?.value as Language) || 'pl';
-  const t = (key: string) => resolveTranslationValue(translations, language, key);
-
-  return {
-    metadataBase: new URL(
-      process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
-    ),
-    title: {
-      default: `${t('common.title')} - ${language === 'pl' ? 'Symulator Polskich Obligacji Skarbowych' : 'Polish Treasury Bonds Simulator'}`,
-      template: `%s | ${t('common.title')}`,
-    },
-    description: t('common.description'),
-    manifest: '/manifest.json',
-    openGraph: {
-      type: 'website',
-      locale: language === 'pl' ? 'pl_PL' : 'en_US',
-      url: 'https://obligacje-calculator.vercel.app',
-      siteName: t('common.title'),
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: t('common.title'),
-      description:
-        language === 'pl'
-          ? 'Symulator Polskich Obligacji Skarbowych'
-          : 'Polish Treasury Bonds Simulator',
-    },
-  };
+    const cookieStore = await cookies();
+    const language = (cookieStore.get('app-language')?.value as Language) || 'pl';
+    const t = (key: string) => resolveTranslationValue(translations, language, key);
+    return {
+        metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+        title: {
+            default: `${t('common.title')} - ${pickLanguageValue(language, {
+                pl: 'Symulator Polskich Obligacji Skarbowych',
+                en: 'Polish Treasury Bonds Simulator'
+            })}`,
+            template: `%s | ${t('common.title')}`,
+        },
+        description: t('common.description'),
+        manifest: '/manifest.json',
+        openGraph: {
+            type: 'website',
+            locale: pickLanguageValue(language, {
+                pl: 'pl_PL',
+                en: 'en_US'
+            }),
+            url: 'https://obligacje-calculator.vercel.app',
+            siteName: t('common.title'),
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: t('common.title'),
+            description: pickLanguageValue(language, {
+                pl: 'Symulator Polskich Obligacji Skarbowych',
+                en: 'Polish Treasury Bonds Simulator'
+            }),
+        },
+    };
 }
-
-export default async function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
+export default async function RootLayout({ children, }: Readonly<{
+    children: React.ReactNode;
 }>) {
-  const dataFreshness = await getGlobalDataFreshness();
-  const cookieStore = await cookies();
-  const language = (cookieStore.get('app-language')?.value as Language) || 'pl';
-  const t = (key: string) => resolveTranslationValue(translations, language, key);
-
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'WebApplication',
-        name: 'Obligacje Calculator',
-        description: 'Educational calculator for Polish Treasury Bonds.',
-        url: 'https://obligacje-calculator.vercel.app',
-        applicationCategory: 'FinanceApplication',
-        operatingSystem: 'All',
-        offers: {
-          '@type': 'Offer',
-          price: '0',
-          priceCurrency: 'PLN',
-        },
-        potentialAction: {
-          '@type': 'CalculateAction',
-          name: 'Calculate Bond Profit',
-          target:
-            'https://obligacje-calculator.vercel.app/single-calculator',
-        },
-      },
-      {
-        '@type': 'FinancialProduct',
-        name: 'Polish Treasury Bonds',
-        description: 'EDO, COI, ROR, DOR, TOS, OTS bond calculations.',
-        provider: {
-          '@type': 'GovernmentOrganization',
-          name: 'Ministerstwo Finansow',
-        },
-      },
-    ],
-  };
-
-  return (
-    <html lang={language} suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} bg-background text-foreground antialiased`}
-      >
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+    const dataFreshness = await getGlobalDataFreshness();
+    const cookieStore = await cookies();
+    const language = (cookieStore.get('app-language')?.value as Language) || 'pl';
+    const t = (key: string) => resolveTranslationValue(translations, language, key);
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@graph': [
+            {
+                '@type': 'WebApplication',
+                name: 'Obligacje Calculator',
+                description: 'Educational calculator for Polish Treasury Bonds.',
+                url: 'https://obligacje-calculator.vercel.app',
+                applicationCategory: 'FinanceApplication',
+                operatingSystem: 'All',
+                offers: {
+                    '@type': 'Offer',
+                    price: '0',
+                    priceCurrency: 'PLN',
+                },
+                potentialAction: {
+                    '@type': 'CalculateAction',
+                    name: 'Calculate Bond Profit',
+                    target: 'https://obligacje-calculator.vercel.app/single-calculator',
+                },
+            },
+            {
+                '@type': 'FinancialProduct',
+                name: 'Polish Treasury Bonds',
+                description: 'EDO, COI, ROR, DOR, TOS, OTS bond calculations.',
+                provider: {
+                    '@type': 'GovernmentOrganization',
+                    name: 'Ministerstwo Finansow',
+                },
+            },
+        ],
+    };
+    return (<html lang={language} suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} bg-background text-foreground antialiased`}>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}/>
         <LanguageProvider initialLanguage={language}>
           <BondDefinitionsProvider>
             <ChartSyncProvider>
               <TooltipProvider>
                 <ErrorBoundary>
                   <div className="flex min-h-screen">
-                    <Sidebar dataFreshness={dataFreshness} />
+                    <Sidebar dataFreshness={dataFreshness}/>
                     <OpportunisticSyncTrigger />
                     <main className="flex min-h-screen flex-1 flex-col overflow-x-hidden border-l border-slate-200/70 bg-[radial-gradient(circle_at_top_left,rgba(226,232,240,0.35),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(248,250,252,0.98)_100%)] lg:pl-[22rem]">
                       <div className="flex-1 px-4 py-4 md:px-8 md:py-8">
@@ -122,20 +113,17 @@ export default async function RootLayout({
                         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
                           <p>
                             © {new Date().getFullYear()} {t('common.title')}.{' '}
-                            {language === 'pl'
-                              ? 'Wylacznie do celow edukacyjnych.'
-                              : 'For educational purposes only.'}
+                            {pickLanguageValue(language, {
+            pl: 'Wylacznie do celow edukacyjnych.',
+            en: 'For educational purposes only.'
+        })}
                           </p>
                           <div className="mt-4 flex justify-center gap-4">
-                            <a
-                              href="https://www.obligacjeskarbowe.pl/"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-primary hover:underline"
-                            >
-                              {language === 'pl'
-                                ? 'Oficjalna strona Obligacji Skarbowych'
-                                : 'Official Polish Bonds Website'}
+                            <a href="https://www.obligacjeskarbowe.pl/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                              {pickLanguageValue(language, {
+            pl: 'Oficjalna strona Obligacji Skarbowych',
+            en: 'Official Polish Bonds Website'
+        })}
                             </a>
                           </div>
                         </div>
@@ -177,7 +165,5 @@ export default async function RootLayout({
           `}
         </Script>
       </body>
-    </html>
-  );
+    </html>);
 }
-

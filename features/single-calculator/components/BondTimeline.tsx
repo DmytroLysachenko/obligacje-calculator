@@ -1,14 +1,6 @@
 'use client';
-
 import React, { useDeferredValue, useMemo, useState } from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from '@/components/ui/table';
 import { CalculationResult } from '../../bond-core/types';
 import { SimulationEventType } from '../../bond-core/types/simulation';
 import { useLanguage } from '@/i18n';
@@ -19,210 +11,164 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Search, Filter, ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ResponsiveTableSheet } from '@/shared/components/ResponsiveTableSheet';
-import {
-  AppLanguage,
-  buildBondTimelineDisplayRows,
-  getSimulationEventDisplayLabel,
-} from '@/shared/lib/bond-display';
+import { AppLanguage, buildBondTimelineDisplayRows, getSimulationEventDisplayLabel, } from '@/shared/lib/bond-display';
+import { pickLanguageValue } from '@/i18n/locale-utils';
 
 interface BondTimelineProps {
-  results: CalculationResult;
+    results: CalculationResult;
 }
-
-function TimelineStat({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
+function TimelineStat({ label, value, }: {
+    label: string;
+    value: string;
 }) {
-  return (
-    <div className="rounded-2xl border border-slate-200 bg-white/85 px-4 py-3">
+    return (<div className="rounded-2xl border border-slate-200 bg-white/85 px-4 py-3">
       <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
         {label}
       </p>
       <p className="mt-1 text-sm font-semibold text-slate-900">{value}</p>
-    </div>
-  );
+    </div>);
 }
-
 export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
-  const { t, language } = useLanguage();
-  const [hasMounted, setHasMounted] = React.useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [eventTypeFilter, setEventTypeFilter] = useState<string>('all');
-  const [isExpanded, setIsExpanded] = useState(false);
-  const deferredSearchQuery = useDeferredValue(searchQuery);
-
-  React.useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  const formatCurrency = React.useMemo(
-    () => (value: number) => {
-      if (!hasMounted) return '---';
-      return new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', {
-        style: 'currency',
-        currency: 'PLN',
-      }).format(value);
-    },
-    [hasMounted, language],
-  );
-
-  const displayRows = useMemo(
-    () => buildBondTimelineDisplayRows(results.timeline, language as AppLanguage),
-    [language, results.timeline],
-  );
-
-  const eventOptions = useMemo(
-    () =>
-      Object.values(SimulationEventType).map((type) => ({
+    const { t, language } = useLanguage();
+    const [hasMounted, setHasMounted] = React.useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [eventTypeFilter, setEventTypeFilter] = useState<string>('all');
+    const [isExpanded, setIsExpanded] = useState(false);
+    const deferredSearchQuery = useDeferredValue(searchQuery);
+    React.useEffect(() => {
+        setHasMounted(true);
+    }, []);
+    const formatCurrency = React.useMemo(() => (value: number) => {
+        if (!hasMounted)
+            return '---';
+        return new Intl.NumberFormat(pickLanguageValue(language, {
+            pl: 'pl-PL',
+            en: 'en-GB'
+        }), {
+            style: 'currency',
+            currency: 'PLN',
+        }).format(value);
+    }, [hasMounted, language]);
+    const displayRows = useMemo(() => buildBondTimelineDisplayRows(results.timeline, language as AppLanguage), [language, results.timeline]);
+    const eventOptions = useMemo(() => Object.values(SimulationEventType).map((type) => ({
         value: type,
         label: getSimulationEventDisplayLabel(type, language as AppLanguage),
-      })),
-    [language],
-  );
-
-  const filteredTimeline = useMemo(() => {
-    return displayRows.filter((row) => {
-      const haystack = [
-        row.periodLabel,
-        row.cadenceLabel,
-        row.cycleLabel,
-        row.rateSourceLabel,
-        row.referenceLabel,
-        ...row.eventLabels,
-      ]
-        .filter(Boolean)
-        .join(' ')
-        .toLowerCase();
-
-      const matchesSearch = haystack.includes(deferredSearchQuery.toLowerCase());
-      const matchesEvent =
-        eventTypeFilter === 'all' ||
-        row.eventLabels.includes(
-          getSimulationEventDisplayLabel(
-            eventTypeFilter as SimulationEventType,
-            language as AppLanguage,
-          ),
-        );
-
-      return matchesSearch && matchesEvent;
-    });
-  }, [deferredSearchQuery, displayRows, eventTypeFilter, language]);
-
-  const displayedTimeline = isExpanded
-    ? filteredTimeline
-    : filteredTimeline.slice(0, 12);
-  const activeFilterCount =
-    (searchQuery.trim().length > 0 ? 1 : 0) + (eventTypeFilter !== 'all' ? 1 : 0);
-  const visibleRangeLabel =
-    filteredTimeline.length > 12 && !isExpanded
-      ? `${displayedTimeline.length} / ${filteredTimeline.length}`
-      : `${filteredTimeline.length}`;
-  const projectionCount = displayRows.filter((row) => !!row.projectionLabel).length;
-  const exitMarkers = displayRows.filter((row) => row.isWithdrawal).length;
-
-  const resetFilters = () => {
-    setSearchQuery('');
-    setEventTypeFilter('all');
-    setIsExpanded(false);
-  };
-
-  return (
-    <div className="space-y-4">
+    })), [language]);
+    const filteredTimeline = useMemo(() => {
+        return displayRows.filter((row) => {
+            const haystack = [
+                row.periodLabel,
+                row.cadenceLabel,
+                row.cycleLabel,
+                row.rateSourceLabel,
+                row.referenceLabel,
+                ...row.eventLabels,
+            ]
+                .filter(Boolean)
+                .join(' ')
+                .toLowerCase();
+            const matchesSearch = haystack.includes(deferredSearchQuery.toLowerCase());
+            const matchesEvent = eventTypeFilter === 'all' ||
+                row.eventLabels.includes(getSimulationEventDisplayLabel(eventTypeFilter as SimulationEventType, language as AppLanguage));
+            return matchesSearch && matchesEvent;
+        });
+    }, [deferredSearchQuery, displayRows, eventTypeFilter, language]);
+    const displayedTimeline = isExpanded
+        ? filteredTimeline
+        : filteredTimeline.slice(0, 12);
+    const activeFilterCount = (searchQuery.trim().length > 0 ? 1 : 0) + (eventTypeFilter !== 'all' ? 1 : 0);
+    const visibleRangeLabel = filteredTimeline.length > 12 && !isExpanded
+        ? `${displayedTimeline.length} / ${filteredTimeline.length}`
+        : `${filteredTimeline.length}`;
+    const projectionCount = displayRows.filter((row) => !!row.projectionLabel).length;
+    const exitMarkers = displayRows.filter((row) => row.isWithdrawal).length;
+    const resetFilters = () => {
+        setSearchQuery('');
+        setEventTypeFilter('all');
+        setIsExpanded(false);
+    };
+    return (<div className="space-y-4">
       <div className="space-y-4 rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
         <div className="grid gap-3 md:grid-cols-3">
-          <TimelineStat
-            label={language === 'pl' ? 'Wiersze po filtrach' : 'Rows after filters'}
-            value={visibleRangeLabel}
-          />
-          <TimelineStat
-            label={language === 'pl' ? 'Punkty prognozy' : 'Projected points'}
-            value={String(projectionCount)}
-          />
-          <TimelineStat
-            label={language === 'pl' ? 'Punkty wyjscia' : 'Exit markers'}
-            value={String(exitMarkers)}
-          />
+          <TimelineStat label={pickLanguageValue(language, {
+        pl: 'Wiersze po filtrach',
+        en: 'Rows after filters'
+    })} value={visibleRangeLabel}/>
+          <TimelineStat label={pickLanguageValue(language, {
+        pl: 'Punkty prognozy',
+        en: 'Projected points'
+    })} value={String(projectionCount)}/>
+          <TimelineStat label={pickLanguageValue(language, {
+        pl: 'Punkty wyjscia',
+        en: 'Exit markers'
+    })} value={String(exitMarkers)}/>
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-white/85 px-4 py-3">
           <p className="text-sm leading-7 text-slate-600">
-            {language === 'pl'
-              ? 'Kazdy wiersz jest punktem kontrolnym scenariusza, a nie oddzielnym zakupem. Czytaj go od lewej do prawej: kiedy punkt wypada, co oznacza, na jakiej stopie pracowal i jaka wartosc zostawial na tym etapie.'
-              : 'Each row is a scenario checkpoint, not a separate purchase. Read it left to right: when it happens, what it represents, which rate basis it used, and what value it leaves at that point.'}
+            {pickLanguageValue(language, {
+            pl: 'Kazdy wiersz jest punktem kontrolnym scenariusza, a nie oddzielnym zakupem. Czytaj go od lewej do prawej: kiedy punkt wypada, co oznacza, na jakiej stopie pracowal i jaka wartosc zostawial na tym etapie.',
+            en: 'Each row is a scenario checkpoint, not a separate purchase. Read it left to right: when it happens, what it represents, which rate basis it used, and what value it leaves at that point.'
+        })}
           </p>
         </div>
 
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="relative w-full md:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder={t('common.search') || 'Search...'}
-              className="pl-9 bg-background"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"/>
+            <Input placeholder={t('common.search') || 'Search...'} className="pl-9 bg-background" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}/>
           </div>
 
           <div className="flex w-full flex-col gap-2 md:w-auto md:flex-row md:items-center">
             <div className="flex w-full items-center gap-2 md:w-auto">
-              <Filter className="h-4 w-4 text-muted-foreground" />
+              <Filter className="h-4 w-4 text-muted-foreground"/>
               <Select value={eventTypeFilter} onValueChange={setEventTypeFilter}>
                 <SelectTrigger className="w-full md:w-56 bg-background">
-                  <SelectValue placeholder={t('bonds.filter_events') || 'Filter Events'} />
+                  <SelectValue placeholder={t('bonds.filter_events') || 'Filter Events'}/>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">
                     {t('common.all_events') || 'All Events'}
                   </SelectItem>
-                  {eventOptions.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>
+                  {eventOptions.map((type) => (<SelectItem key={type.value} value={type.value}>
                       {type.label}
-                    </SelectItem>
-                  ))}
+                    </SelectItem>))}
                 </SelectContent>
               </Select>
             </div>
 
-            {activeFilterCount > 0 ? (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="gap-2 rounded-xl"
-                onClick={resetFilters}
-              >
-                <RotateCcw className="h-4 w-4" />
-                {language === 'pl' ? 'Wyczysc filtry' : 'Reset filters'}
-              </Button>
-            ) : null}
+            {activeFilterCount > 0 ? (<Button type="button" variant="outline" size="sm" className="gap-2 rounded-xl" onClick={resetFilters}>
+                <RotateCcw className="h-4 w-4"/>
+                {pickLanguageValue(language, {
+            pl: 'Wyczysc filtry',
+            en: 'Reset filters'
+        })}
+              </Button>) : null}
           </div>
         </div>
       </div>
 
-      <ResponsiveTableSheet
-        title={language === 'pl' ? 'Harmonogram scenariusza' : 'Scenario schedule'}
-        description={
-          language === 'pl'
-            ? 'Na mniejszych ekranach czytaj harmonogram jako liste punktow kontrolnych zamiast szerokiej tabeli.'
-            : 'On smaller screens, read the schedule as a sequence of checkpoints instead of a wide table.'
-        }
-        triggerLabel={language === 'pl' ? 'Otworz harmonogram' : 'Open schedule'}
-        triggerCount={`${filteredTimeline.length} ${language === 'pl' ? 'wierszy' : 'rows'}`}
-      >
-        {displayedTimeline.map((row) => (
-          <div key={`mobile-${row.key}`} className="rounded-3xl border border-slate-200 bg-white p-4 shadow-none">
+      <ResponsiveTableSheet title={pickLanguageValue(language, {
+        pl: 'Harmonogram scenariusza',
+        en: 'Scenario schedule'
+    })} description={pickLanguageValue(language, {
+            pl: 'Na mniejszych ekranach czytaj harmonogram jako liste punktow kontrolnych zamiast szerokiej tabeli.',
+            en: 'On smaller screens, read the schedule as a sequence of checkpoints instead of a wide table.'
+        })} triggerLabel={pickLanguageValue(language, {
+        pl: 'Otworz harmonogram',
+        en: 'Open schedule'
+    })} triggerCount={`${filteredTimeline.length} ${pickLanguageValue(language, {
+        pl: 'wierszy',
+        en: 'rows'
+    })}`}>
+        {displayedTimeline.map((row) => (<div key={`mobile-${row.key}`} className="rounded-3xl border border-slate-200 bg-white p-4 shadow-none">
             <div className="flex items-start justify-between gap-3">
               <div className="space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="text-sm font-semibold text-slate-950">{row.periodLabel}</p>
-                  {row.projectionLabel ? (
-                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-700">
+                  {row.projectionLabel ? (<span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-700">
                       {row.projectionLabel}
-                    </span>
-                  ) : null}
+                    </span>) : null}
                 </div>
                 <p className="text-xs leading-5 text-slate-500">{row.cadenceLabel}</p>
               </div>
@@ -231,34 +177,38 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
               </p>
             </div>
 
-            {row.eventLabels.length > 0 ? (
-              <div className="mt-3 flex flex-wrap gap-1">
-                {row.eventLabels.map((label, index) => (
-                  <Badge
-                    key={`mobile-${row.key}-${index}`}
-                    variant="secondary"
-                    className="h-5 px-2 text-[11px] font-semibold"
-                  >
+            {row.eventLabels.length > 0 ? (<div className="mt-3 flex flex-wrap gap-1">
+                {row.eventLabels.map((label, index) => (<Badge key={`mobile-${row.key}-${index}`} variant="secondary" className="h-5 px-2 text-[11px] font-semibold">
                     {label}
-                  </Badge>
-                ))}
-              </div>
-            ) : null}
+                  </Badge>))}
+              </div>) : null}
 
             <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-              <MobileValue label={language === 'pl' ? 'Stopa' : 'Rate'} value={row.interestRateLabel} />
-              <MobileValue label={language === 'pl' ? 'Wyjscie' : 'Exit'} value={formatCurrency(row.earlyExitValue)} />
-              <MobileValue label={row.cashFlowLabel} value={formatCurrency(row.paidOutCash)} />
-              <MobileValue label={language === 'pl' ? 'Zysk' : 'Net gain'} value={formatCurrency(row.netProfit)} />
-              <MobileValue label={language === 'pl' ? 'Realnie' : 'Real value'} value={formatCurrency(row.realValue)} />
-              <MobileValue label={language === 'pl' ? 'Podstawa' : 'Basis'} value={row.rateSourceLabel} />
+              <MobileValue label={pickLanguageValue(language, {
+            pl: 'Stopa',
+            en: 'Rate'
+        })} value={row.interestRateLabel}/>
+              <MobileValue label={pickLanguageValue(language, {
+            pl: 'Wyjscie',
+            en: 'Exit'
+        })} value={formatCurrency(row.earlyExitValue)}/>
+              <MobileValue label={row.cashFlowLabel} value={formatCurrency(row.paidOutCash)}/>
+              <MobileValue label={pickLanguageValue(language, {
+            pl: 'Zysk',
+            en: 'Net gain'
+        })} value={formatCurrency(row.netProfit)}/>
+              <MobileValue label={pickLanguageValue(language, {
+            pl: 'Realnie',
+            en: 'Real value'
+        })} value={formatCurrency(row.realValue)}/>
+              <MobileValue label={pickLanguageValue(language, {
+            pl: 'Podstawa',
+            en: 'Basis'
+        })} value={row.rateSourceLabel}/>
             </div>
 
-            {row.referenceLabel ? (
-              <p className="mt-3 text-xs leading-5 text-slate-500">{row.referenceLabel}</p>
-            ) : null}
-          </div>
-        ))}
+            {row.referenceLabel ? (<p className="mt-3 text-xs leading-5 text-slate-500">{row.referenceLabel}</p>) : null}
+          </div>))}
       </ResponsiveTableSheet>
 
       <div className="hidden w-full rounded-[1.75rem] border border-slate-200 bg-white shadow-none lg:block">
@@ -269,22 +219,40 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
                 {t('common.period')}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[18%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {language === 'pl' ? 'Znaczenie punktu' : 'Checkpoint meaning'}
+                {pickLanguageValue(language, {
+        pl: 'Znaczenie punktu',
+        en: 'Checkpoint meaning'
+    })}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[17%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {language === 'pl' ? 'Stopa i podstawa' : 'Rate and basis'}
+                {pickLanguageValue(language, {
+        pl: 'Stopa i podstawa',
+        en: 'Rate and basis'
+    })}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {language === 'pl' ? 'Majatek laczny' : 'Total wealth'}
+                {pickLanguageValue(language, {
+        pl: 'Majatek laczny',
+        en: 'Total wealth'
+    })}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {displayedTimeline[0]?.cashFlowLabel ?? (language === 'pl' ? 'Przeplyw odsetek' : 'Interest flow')}
+                {displayedTimeline[0]?.cashFlowLabel ?? (pickLanguageValue(language, {
+        pl: 'Przeplyw odsetek',
+        en: 'Interest flow'
+    }))}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {language === 'pl' ? 'Zysk netto' : 'Net gain'}
+                {pickLanguageValue(language, {
+        pl: 'Zysk netto',
+        en: 'Net gain'
+    })}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {language === 'pl' ? 'Wartosc realna' : 'Real value'}
+                {pickLanguageValue(language, {
+        pl: 'Wartosc realna',
+        en: 'Real value'
+    })}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[12%] bg-slate-50/95 text-right text-xs font-semibold text-slate-600">
                 {t('bonds.early_exit_payout')}
@@ -292,42 +260,23 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {displayedTimeline.map((row) => (
-              <TableRow
-                key={row.key}
-                className={row.isWithdrawal ? 'bg-primary/5 font-semibold' : 'odd:bg-slate-50/30'}
-              >
+            {displayedTimeline.map((row) => (<TableRow key={row.key} className={row.isWithdrawal ? 'bg-primary/5 font-semibold' : 'odd:bg-slate-50/30'}>
                 <TableCell className="py-4 align-top">
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium">{row.periodLabel}</span>
-                      {row.projectionLabel ? (
-                        <span
-                          className={cn(
-                            'rounded-full px-2 py-0.5 text-[11px] font-semibold',
-                            row.projectionLabel === 'Prognoza' ||
-                              row.projectionLabel === 'Projected'
-                              ? 'bg-orange-100 text-orange-700'
-                              : 'bg-blue-100 text-blue-700',
-                          )}
-                        >
+                      {row.projectionLabel ? (<span className={cn('rounded-full px-2 py-0.5 text-[11px] font-semibold', row.projectionLabel === 'Prognoza' ||
+                    row.projectionLabel === 'Projected'
+                    ? 'bg-orange-100 text-orange-700'
+                    : 'bg-blue-100 text-blue-700')}>
                           {row.projectionLabel}
-                        </span>
-                      ) : null}
+                        </span>) : null}
                     </div>
-                    {row.eventLabels.length > 0 ? (
-                      <div className="flex flex-wrap gap-1">
-                        {row.eventLabels.map((label, index) => (
-                          <Badge
-                            key={`${row.key}-${index}`}
-                            variant="secondary"
-                            className="h-5 px-2 text-[11px] font-semibold"
-                          >
+                    {row.eventLabels.length > 0 ? (<div className="flex flex-wrap gap-1">
+                        {row.eventLabels.map((label, index) => (<Badge key={`${row.key}-${index}`} variant="secondary" className="h-5 px-2 text-[11px] font-semibold">
                             {label}
-                          </Badge>
-                        ))}
-                      </div>
-                    ) : null}
+                          </Badge>))}
+                      </div>) : null}
                   </div>
                 </TableCell>
                 <TableCell className="py-4 align-top text-xs text-slate-600">
@@ -344,11 +293,9 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
                       {row.interestRateLabel}
                     </span>
                     <span className="line-clamp-2 text-xs leading-5">{row.rateSourceLabel}</span>
-                    {row.referenceLabel ? (
-                      <span className="line-clamp-2 text-[10px] italic leading-4 text-muted-foreground">
+                    {row.referenceLabel ? (<span className="line-clamp-2 text-[10px] italic leading-4 text-muted-foreground">
                         {row.referenceLabel}
-                      </span>
-                    ) : null}
+                      </span>) : null}
                   </div>
                 </TableCell>
                 <TableCell className="py-4 align-top font-mono text-xs">
@@ -357,12 +304,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
                 <TableCell className="py-4 align-top font-mono text-xs text-slate-600">
                   {formatCurrency(row.paidOutCash)}
                 </TableCell>
-                <TableCell
-                  className={cn(
-                    'py-4 align-top font-mono text-xs',
-                    row.netProfit >= 0 ? 'text-green-600' : 'text-destructive',
-                  )}
-                >
+                <TableCell className={cn('py-4 align-top font-mono text-xs', row.netProfit >= 0 ? 'text-green-600' : 'text-destructive')}>
                   {formatCurrency(row.netProfit)}
                 </TableCell>
                 <TableCell className="py-4 align-top font-mono text-xs text-blue-600">
@@ -371,71 +313,45 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
                 <TableCell className="py-4 align-top text-right font-mono text-xs font-semibold">
                   {formatCurrency(row.earlyExitValue)}
                 </TableCell>
-              </TableRow>
-            ))}
+              </TableRow>))}
           </TableBody>
         </Table>
 
-        {filteredTimeline.length > 12 ? (
-          <div className="flex justify-center border-t bg-slate-50/70 p-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="gap-2 text-sm font-semibold"
-              onClick={() => setIsExpanded(!isExpanded)}
-            >
-              {isExpanded ? (
-                <>
-                  <ChevronUp className="h-4 w-4" /> {t('common.show_less') || 'Show Less'}
-                </>
-              ) : (
-                <>
-                  <ChevronDown className="h-4 w-4" />{' '}
+        {filteredTimeline.length > 12 ? (<div className="flex justify-center border-t bg-slate-50/70 p-4">
+            <Button variant="ghost" size="sm" className="gap-2 text-sm font-semibold" onClick={() => setIsExpanded(!isExpanded)}>
+              {isExpanded ? (<>
+                  <ChevronUp className="h-4 w-4"/> {t('common.show_less') || 'Show Less'}
+                </>) : (<>
+                  <ChevronDown className="h-4 w-4"/>{' '}
                   {t('common.show_all', { count: filteredTimeline.length }) ||
                     `Show All (${filteredTimeline.length})`}
-                </>
-              )}
+                </>)}
             </Button>
-          </div>
-        ) : null}
+          </div>) : null}
 
-        {filteredTimeline.length === 0 ? (
-          <div className="space-y-3 p-12 text-center text-muted-foreground">
+        {filteredTimeline.length === 0 ? (<div className="space-y-3 p-12 text-center text-muted-foreground">
             <p>{t('common.no_results_found') || 'No results found for current filters.'}</p>
-            {activeFilterCount > 0 ? (
-              <div className="flex justify-center">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="gap-2 rounded-xl"
-                  onClick={resetFilters}
-                >
-                  <RotateCcw className="h-4 w-4" />
-                  {language === 'pl' ? 'Wroc do pelnej osi czasu' : 'Return to full timeline'}
+            {activeFilterCount > 0 ? (<div className="flex justify-center">
+                <Button type="button" variant="outline" size="sm" className="gap-2 rounded-xl" onClick={resetFilters}>
+                  <RotateCcw className="h-4 w-4"/>
+                  {pickLanguageValue(language, {
+                pl: 'Wroc do pelnej osi czasu',
+                en: 'Return to full timeline'
+            })}
                 </Button>
-              </div>
-            ) : null}
-          </div>
-        ) : null}
+              </div>) : null}
+          </div>) : null}
       </div>
-    </div>
-  );
+    </div>);
 };
-
-function MobileValue({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
+function MobileValue({ label, value, }: {
+    label: string;
+    value: string;
 }) {
-  return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50/70 px-3 py-2">
+    return (<div className="rounded-2xl border border-slate-200 bg-slate-50/70 px-3 py-2">
       <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
         {label}
       </p>
       <p className="mt-1 text-sm font-semibold text-slate-950">{value}</p>
-    </div>
-  );
+    </div>);
 }

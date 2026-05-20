@@ -1,5 +1,4 @@
 'use client';
-
 import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -19,48 +18,33 @@ import { toDateString } from '@/shared/lib/date-timing';
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';
 import { cn } from '@/lib/utils';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
+import { pickLanguageValue } from '@/i18n/locale-utils';
 
 interface BondTimingSectionProps {
-  inputs: BondInputs;
-  onUpdate: (key: keyof BondInputs, value: string | number | boolean) => void;
-  investmentHorizonYears: number;
-  investmentHorizonMonths: number;
-  currentDef: BondDefinition;
-  hasMounted: boolean;
+    inputs: BondInputs;
+    onUpdate: (key: keyof BondInputs, value: string | number | boolean) => void;
+    investmentHorizonYears: number;
+    investmentHorizonMonths: number;
+    currentDef: BondDefinition;
+    hasMounted: boolean;
 }
-
-export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
-  inputs,
-  onUpdate,
-  investmentHorizonMonths,
-  currentDef,
-  hasMounted,
-}) => {
-  const { t, language } = useLanguage();
-  const dateLocale = language === 'pl' ? pl : enGB;
-  const isFutureDate = isAfter(parseISO(inputs.purchaseDate), new Date());
-  const durationMonths = Math.round(currentDef.duration * 12);
-  const autoRollover = investmentHorizonMonths > durationMonths;
-
-  return (
-    <div className="space-y-6 pb-6">
+export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({ inputs, onUpdate, investmentHorizonMonths, currentDef, hasMounted, }) => {
+    const { t, language } = useLanguage();
+    const dateLocale = pickLanguageValue(language, {
+        pl: pl,
+        en: enGB
+    });
+    const isFutureDate = isAfter(parseISO(inputs.purchaseDate), new Date());
+    const durationMonths = Math.round(currentDef.duration * 12);
+    const autoRollover = investmentHorizonMonths > durationMonths;
+    return (<div className="space-y-6 pb-6">
       <div className="space-y-3">
         <Label className="font-semibold">{t('bonds.timing.mode.label')}</Label>
         <div className="flex gap-2">
-          <Button
-            type="button"
-            variant={(!inputs.timingMode || inputs.timingMode === 'general') ? 'default' : 'outline'}
-            className="flex-1"
-            onClick={() => onUpdate('timingMode', 'general')}
-          >
+          <Button type="button" variant={(!inputs.timingMode || inputs.timingMode === 'general') ? 'default' : 'outline'} className="flex-1" onClick={() => onUpdate('timingMode', 'general')}>
             {t('bonds.timing.mode.general')}
           </Button>
-          <Button
-            type="button"
-            variant={inputs.timingMode === 'exact' ? 'default' : 'outline'}
-            className="flex-1"
-            onClick={() => onUpdate('timingMode', 'exact')}
-          >
+          <Button type="button" variant={inputs.timingMode === 'exact' ? 'default' : 'outline'} className="flex-1" onClick={() => onUpdate('timingMode', 'exact')}>
             {t('bonds.timing.mode.exact')}
           </Button>
         </div>
@@ -73,69 +57,36 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
           </Label>
           <Popover>
             <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full justify-start text-left font-normal h-11 px-3",
-                  !inputs.purchaseDate && "text-muted-foreground",
-                  hasMounted && isFutureDate && "border-destructive focus-visible:ring-destructive"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
+              <Button variant="outline" className={cn("w-full justify-start text-left font-normal h-11 px-3", !inputs.purchaseDate && "text-muted-foreground", hasMounted && isFutureDate && "border-destructive focus-visible:ring-destructive")}>
+                <CalendarIcon className="mr-2 h-4 w-4"/>
                 {hasMounted && inputs.purchaseDate ? format(parseISO(inputs.purchaseDate), 'PPP', { locale: dateLocale }) : <span>{t('bonds.pick_date')}</span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                captionLayout="dropdown"
-                fromYear={2010}
-                toYear={2050}
-                selected={parseISO(inputs.purchaseDate)}
-                onSelect={(date) => date && onUpdate('purchaseDate', toDateString(date))}
-                initialFocus
-              />
+              <Calendar mode="single" captionLayout="dropdown" fromYear={2010} toYear={2050} selected={parseISO(inputs.purchaseDate)} onSelect={(date) => date && onUpdate('purchaseDate', toDateString(date))} initialFocus/>
             </PopoverContent>
           </Popover>
-          {hasMounted && isFutureDate && (
-            <div className="flex items-center gap-2 text-[10px] font-medium text-destructive">
-              <AlertCircle className="h-3 w-3" />
+          {hasMounted && isFutureDate && (<div className="flex items-center gap-2 text-[10px] font-medium text-destructive">
+              <AlertCircle className="h-3 w-3"/>
               <span>{t('bonds.error_future_date')}</span>
-            </div>
-          )}
+            </div>)}
         </div>
-        {inputs.timingMode === 'exact' ? (
-          <div className="space-y-2">
+        {inputs.timingMode === 'exact' ? (<div className="space-y-2">
             <Label className="text-xs font-semibold uppercase text-muted-foreground">
               {t('bonds.withdrawal_date')}
             </Label>
             <Popover>
               <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal h-11 px-3",
-                    !inputs.withdrawalDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
+                <Button variant="outline" className={cn("w-full justify-start text-left font-normal h-11 px-3", !inputs.withdrawalDate && "text-muted-foreground")}>
+                  <CalendarIcon className="mr-2 h-4 w-4"/>
                   {hasMounted && inputs.withdrawalDate ? format(parseISO(inputs.withdrawalDate), 'PPP', { locale: dateLocale }) : <span>{t('bonds.pick_date')}</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  captionLayout="dropdown"
-                  fromYear={2010}
-                  toYear={2050}
-                  selected={parseISO(inputs.withdrawalDate)}
-                  onSelect={(date) => date && onUpdate('withdrawalDate', toDateString(date))}
-                  initialFocus
-                />
+                <Calendar mode="single" captionLayout="dropdown" fromYear={2010} toYear={2050} selected={parseISO(inputs.withdrawalDate)} onSelect={(date) => date && onUpdate('withdrawalDate', toDateString(date))} initialFocus/>
               </PopoverContent>
             </Popover>
-          </div>
-        ) : null}
+          </div>) : null}
       </div>
 
       <div className="space-y-4 pt-2">
@@ -145,14 +96,10 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
             {formatHorizonMonths(investmentHorizonMonths, language)}
           </span>
         </div>
-        <CommittedSliderInput
-          value={investmentHorizonMonths}
-          min={1}
-          max={360}
-          step={1}
-          unit={language === 'pl' ? 'm' : 'm'}
-          onCommit={(value) => onUpdate('investmentHorizonMonths', value)}
-        />
+        <CommittedSliderInput value={investmentHorizonMonths} min={1} max={360} step={1} unit={pickLanguageValue(language, {
+        pl: 'm',
+        en: 'm'
+    })} onCommit={(value) => onUpdate('investmentHorizonMonths', value)}/>
       </div>
 
       <div className="space-y-3">
@@ -160,17 +107,14 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
           <Label className="font-semibold">{t('bonds.tax_strategy')}</Label>
           <Tooltip>
             <TooltipTrigger asChild>
-              <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+              <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help"/>
             </TooltipTrigger>
             <TooltipContent>
               {GLOSSARY.TAX_WRAPPER.definition[language]}
             </TooltipContent>
           </Tooltip>
         </div>
-        <Select
-          value={inputs.taxStrategy}
-          onValueChange={(value) => onUpdate('taxStrategy', value as TaxStrategy)}
-        >
+        <Select value={inputs.taxStrategy} onValueChange={(value) => onUpdate('taxStrategy', value as TaxStrategy)}>
           <SelectTrigger className="h-11">
             <SelectValue />
           </SelectTrigger>
@@ -181,55 +125,47 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
           </SelectContent>
         </Select>
         
-        {(inputs.taxStrategy === TaxStrategy.IKE || inputs.taxStrategy === TaxStrategy.IKZE) && (
-          <div className="flex items-center justify-between rounded-xl border border-dashed bg-muted/50 p-3">
+        {(inputs.taxStrategy === TaxStrategy.IKE || inputs.taxStrategy === TaxStrategy.IKZE) && (<div className="flex items-center justify-between rounded-xl border border-dashed bg-muted/50 p-3">
             <div className="space-y-0.5">
               <Label className="text-xs font-bold uppercase tracking-tight">{t('bonds.use_tax_limit')}</Label>
               <p className="text-[10px] text-muted-foreground leading-tight max-w-[200px]">
                 {t('bonds.use_tax_limit_desc')}
               </p>
             </div>
-            <Switch
-              checked={!!inputs.useTaxWrapperLimit}
-              onCheckedChange={(checked) => onUpdate('useTaxWrapperLimit', checked)}
-            />
-          </div>
-        )}
+            <Switch checked={!!inputs.useTaxWrapperLimit} onCheckedChange={(checked) => onUpdate('useTaxWrapperLimit', checked)}/>
+          </div>)}
       </div>
 
-      {currentDef.rebuyDiscount > 0 && (
-        <div className="flex items-center justify-between p-4 bg-green-50/50 rounded-xl border border-green-100">
+      {currentDef.rebuyDiscount > 0 && (<div className="flex items-center justify-between p-4 bg-green-50/50 rounded-xl border border-green-100">
           <div className="space-y-0.5">
             <Label className="text-sm font-bold text-green-800">{t('bonds.is_rebought')}</Label>
             <p className="text-[10px] text-green-600 font-medium italic">
               {t('bonds.discount_per_bond', { amount: currentDef.rebuyDiscount.toFixed(2) })}
             </p>
           </div>
-          <Switch
-            checked={inputs.isRebought}
-            onCheckedChange={(checked) => onUpdate('isRebought', checked)}
-          />
-        </div>
-      )}
+          <Switch checked={inputs.isRebought} onCheckedChange={(checked) => onUpdate('isRebought', checked)}/>
+        </div>)}
 
       <div className="rounded-xl border border-primary/10 bg-primary/5 p-4">
         <div className="space-y-0.5">
           <Label className="text-sm font-bold text-primary">
-            {language === 'pl' ? 'Rolowanie obslugiwane automatycznie' : 'Rollover handled automatically'}
+            {pickLanguageValue(language, {
+        pl: 'Rolowanie obslugiwane automatycznie',
+        en: 'Rollover handled automatically'
+    })}
           </Label>
           <p className="text-[10px] font-medium italic text-muted-foreground">
             {autoRollover
-              ? language === 'pl'
-                ? 'Horyzont przekracza natywny termin tej obligacji, wiec kalkulator automatycznie laczy kolejne cykle zamiast wymagac osobnego przelacznika.'
-                : 'The horizon outlasts this bond, so the calculator automatically chains follow-on cycles instead of asking for a separate toggle.'
-              : language === 'pl'
-                ? 'Horyzont miesci sie w jednym cyklu, wiec wynik pokazuje pojedynczy zakup i ewentualny koszt wczesniejszego wykupu.'
-                : 'The horizon stays within one native cycle, so the result shows a single purchase plus any early-exit fee if needed.'}
+            ? pickLanguageValue(language, {
+                pl: 'Horyzont przekracza natywny termin tej obligacji, wiec kalkulator automatycznie laczy kolejne cykle zamiast wymagac osobnego przelacznika.',
+                en: 'The horizon outlasts this bond, so the calculator automatically chains follow-on cycles instead of asking for a separate toggle.'
+            }) : pickLanguageValue(language, {
+            pl: 'Horyzont miesci sie w jednym cyklu, wiec wynik pokazuje pojedynczy zakup i ewentualny koszt wczesniejszego wykupu.',
+            en: 'The horizon stays within one native cycle, so the result shows a single purchase plus any early-exit fee if needed.'
+        })}
           </p>
         </div>
       </div>
-    </div>
-  );
+    </div>);
 });
-
 BondTimingSection.displayName = 'BondTimingSection';

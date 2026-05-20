@@ -1,5 +1,4 @@
 'use client';
-
 import React from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { HelpCircle } from 'lucide-react';
@@ -11,31 +10,22 @@ import { useLanguage } from '@/i18n';
 import { GLOSSARY } from '@/shared/constants/glossary';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
+import { pickLanguageValue } from '@/i18n/locale-utils';
 
 interface BondSummaryFooterProps {
-  inputs: BondInputs;
-  currentDef: BondDefinition;
-  maturityDate: Date;
-  hasMounted: boolean;
+    inputs: BondInputs;
+    currentDef: BondDefinition;
+    maturityDate: Date;
+    hasMounted: boolean;
 }
-
-export const BondSummaryFooter: React.FC<BondSummaryFooterProps> = React.memo(({
-  inputs,
-  currentDef,
-  maturityDate,
-  hasMounted,
-}) => {
-  const { t, language } = useLanguage();
-  const dateLocale = language === 'pl' ? pl : enGB;
-  const rateContext = getBondRateContextCopy(
-    inputs.bondType,
-    Number(inputs.firstYearRate),
-    Number(inputs.margin),
-    t,
-  );
-
-  return (
-    <div className="pt-2 px-6 pb-6">
+export const BondSummaryFooter: React.FC<BondSummaryFooterProps> = React.memo(({ inputs, currentDef, maturityDate, hasMounted, }) => {
+    const { t, language } = useLanguage();
+    const dateLocale = pickLanguageValue(language, {
+        pl: pl,
+        en: enGB
+    });
+    const rateContext = getBondRateContextCopy(inputs.bondType, Number(inputs.firstYearRate), Number(inputs.margin), t);
+    return (<div className="pt-2 px-6 pb-6">
       <div className="text-[10px] text-muted-foreground space-y-1 bg-muted/30 p-3 rounded-lg border border-dashed">
         <div className="flex justify-between">
           <span>{t('bonds.duration')}:</span>
@@ -47,18 +37,14 @@ export const BondSummaryFooter: React.FC<BondSummaryFooterProps> = React.memo(({
           <span>{rateContext.firstPeriodLabel}:</span>
           <span className="font-bold">{rateContext.firstPeriodValueLabel}</span>
         </div>
-        {currentDef.margin > 0 && (
-          <div className="flex justify-between">
+        {currentDef.margin > 0 && (<div className="flex justify-between">
             <span>{t('bonds.margin')}:</span>
             <span className="font-bold">{inputs.margin}%</span>
-          </div>
-        )}
-        {rateContext.laterPeriodsLabel ? (
-          <div className="flex justify-between gap-4">
+          </div>)}
+        {rateContext.laterPeriodsLabel ? (<div className="flex justify-between gap-4">
             <span>{t('bonds.rate_context.later_periods')}:</span>
             <span className="text-right font-bold">{rateContext.laterPeriodsLabel}</span>
-          </div>
-        ) : null}
+          </div>) : null}
         <div className="flex justify-between">
           <span>{t('bonds.maturity_date')}:</span>
           <span className="font-bold">{hasMounted ? format(maturityDate, 'PPP', { locale: dateLocale }) : '---'}</span>
@@ -68,7 +54,7 @@ export const BondSummaryFooter: React.FC<BondSummaryFooterProps> = React.memo(({
             {t('bonds.payout_type')}:
             <Tooltip>
               <TooltipTrigger asChild>
-                <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
+                <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help"/>
               </TooltipTrigger>
               <TooltipContent>
                 {GLOSSARY.CAPITALIZATION.definition[language]}
@@ -84,7 +70,7 @@ export const BondSummaryFooter: React.FC<BondSummaryFooterProps> = React.memo(({
             {t('bonds.early_withdrawal_fee')}:
             <Tooltip>
               <TooltipTrigger asChild>
-                <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
+                <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help"/>
               </TooltipTrigger>
               <TooltipContent>
                 {GLOSSARY.EARLY_WITHDRAWAL.definition[language]}
@@ -94,8 +80,6 @@ export const BondSummaryFooter: React.FC<BondSummaryFooterProps> = React.memo(({
           <span className="font-bold">{inputs.earlyWithdrawalFee} PLN</span>
         </div>
       </div>
-    </div>
-  );
+    </div>);
 });
-
 BondSummaryFooter.displayName = 'BondSummaryFooter';

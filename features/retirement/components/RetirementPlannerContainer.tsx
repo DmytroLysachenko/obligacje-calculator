@@ -1,43 +1,14 @@
 'use client';
-
 import React, { useMemo, useState } from 'react';
-import {
-  Calendar,
-  LineChart,
-  Wallet,
-} from 'lucide-react';
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
+import { Calendar, LineChart, Wallet, } from 'lucide-react';
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, } from 'recharts';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, } from '@/components/ui/accordion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@/components/ui/select';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
-import {
-  getBondSupportMeta,
-  getRetirementSupportNote,
-  RETIREMENT_SUPPORTED_BOND_TYPES,
-  supportsRetirementBondType,
-} from '@/features/bond-core/support-matrix';
+import { getBondSupportMeta, getRetirementSupportNote, RETIREMENT_SUPPORTED_BOND_TYPES, supportsRetirementBondType, } from '@/features/bond-core/support-matrix';
 import { RetirementPlannerCalculationEnvelope } from '@/features/bond-core/types/scenarios';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
 import { RecalculateButton } from '@/shared/components/RecalculateButton';
@@ -50,51 +21,41 @@ import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';
 import { formatCurrency } from '@/lib/utils';
 import { useLanguage } from '@/i18n';
+import { pickLanguageValue } from '@/i18n/locale-utils';
 
 function formatRate(value: number) {
-  return `${value.toFixed(2)}%`;
+    return `${value.toFixed(2)}%`;
 }
-
 type RetirementInputs = {
-  initialCapital: number;
-  monthlyWithdrawal: number;
-  expectedInflation: number;
-  expectedNbpRate: number;
-  bondType: BondType;
-  taxStrategy: TaxStrategy;
-  horizonYears: number;
+    initialCapital: number;
+    monthlyWithdrawal: number;
+    expectedInflation: number;
+    expectedNbpRate: number;
+    bondType: BondType;
+    taxStrategy: TaxStrategy;
+    horizonYears: number;
 };
-
 const DEFAULT_INPUTS: RetirementInputs = {
-  initialCapital: 500000,
-  monthlyWithdrawal: 3000,
-  expectedInflation: 3.5,
-  expectedNbpRate: 5.25,
-  bondType: BondType.EDO,
-  taxStrategy: TaxStrategy.STANDARD,
-  horizonYears: 25,
+    initialCapital: 500000,
+    monthlyWithdrawal: 3000,
+    expectedInflation: 3.5,
+    expectedNbpRate: 5.25,
+    bondType: BondType.EDO,
+    taxStrategy: TaxStrategy.STANDARD,
+    horizonYears: 25,
 };
-
-const SummaryMetric = ({
-  label,
-  value,
-  detail,
-  tone = 'default',
-}: {
-  label: string;
-  value: string;
-  detail: string;
-  tone?: 'default' | 'success' | 'warning';
+const SummaryMetric = ({ label, value, detail, tone = 'default', }: {
+    label: string;
+    value: string;
+    detail: string;
+    tone?: 'default' | 'success' | 'warning';
 }) => {
-  const toneClass =
-    tone === 'success'
-      ? 'border-emerald-200 bg-emerald-50/70'
-      : tone === 'warning'
-        ? 'border-amber-200 bg-amber-50/80'
-        : 'border-slate-200 bg-white';
-
-  return (
-    <Card className={toneClass}>
+    const toneClass = tone === 'success'
+        ? 'border-emerald-200 bg-emerald-50/70'
+        : tone === 'warning'
+            ? 'border-amber-200 bg-amber-50/80'
+            : 'border-slate-200 bg-white';
+    return (<Card className={toneClass}>
       <CardContent className="p-5">
         <p className="text-[10px] font-black uppercase text-muted-foreground">
           {label}
@@ -102,250 +63,306 @@ const SummaryMetric = ({
         <p className="mt-2 text-lg font-black text-slate-950">{value}</p>
         <p className="mt-1 text-xs leading-5 text-muted-foreground">{detail}</p>
       </CardContent>
-    </Card>
-  );
+    </Card>);
 };
-
-const SupportList = ({
-  title,
-  items,
-  emptyLabel,
-}: {
-  title: string;
-  items: string[];
-  emptyLabel: string;
-}) => (
-  <Card className="rounded-2xl border shadow-none">
+const SupportList = ({ title, items, emptyLabel, }: {
+    title: string;
+    items: string[];
+    emptyLabel: string;
+}) => (<Card className="rounded-2xl border shadow-none">
     <CardHeader className="pb-3">
       <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">
         {title}
       </CardTitle>
     </CardHeader>
     <CardContent className="space-y-3 text-sm leading-6 text-muted-foreground">
-      {items.length === 0 ? (
-        <p>{emptyLabel}</p>
-      ) : (
-        items.map((item) => (
-          <div
-            key={item}
-            className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
-          >
+      {items.length === 0 ? (<p>{emptyLabel}</p>) : (items.map((item) => (<div key={item} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
             {item}
-          </div>
-        ))
-      )}
+          </div>)))}
     </CardContent>
-  </Card>
-);
-
+  </Card>);
 export const RetirementPlannerContainer: React.FC = () => {
-  const { language } = useLanguage();
-  const { isCalculating, post } = useCalculationRequest();
-  const [inputs, setInputs] = useState<RetirementInputs>(DEFAULT_INPUTS);
-  const [isDirty, setIsDirty] = useState(true);
-  const [results, setResults] =
-    useState<RetirementPlannerCalculationEnvelope | null>(null);
-
-  const handleCalculate = async () => {
-    const bondType = supportsRetirementBondType(inputs.bondType)
-      ? inputs.bondType
-      : BondType.EDO;
-    const response = await post<RetirementPlannerCalculationEnvelope>(
-      '/api/calculate/retirement',
-      {
-        ...inputs,
-        bondType,
-      },
-    );
-    setResults(response);
-    setIsDirty(false);
-  };
-
-  const chartData = useMemo(
-    () =>
-      results?.result.timeline
+    const { language } = useLanguage();
+    const { isCalculating, post } = useCalculationRequest();
+    const [inputs, setInputs] = useState<RetirementInputs>(DEFAULT_INPUTS);
+    const [isDirty, setIsDirty] = useState(true);
+    const [results, setResults] = useState<RetirementPlannerCalculationEnvelope | null>(null);
+    const handleCalculate = async () => {
+        const bondType = supportsRetirementBondType(inputs.bondType)
+            ? inputs.bondType
+            : BondType.EDO;
+        const response = await post<RetirementPlannerCalculationEnvelope>('/api/calculate/retirement', {
+            ...inputs,
+            bondType,
+        });
+        setResults(response);
+        setIsDirty(false);
+    };
+    const chartData = useMemo(() => results?.result.timeline
         .filter((_, index) => index % 12 === 0)
         .map((point) => ({
-          year: point.year,
-          date: point.date,
-          balance: point.balance,
-          withdrawal: point.withdrawal,
-        })) ?? [],
-    [results],
-  );
-
-  const scenarioCoverage = useMemo(() => {
-    if (!results) {
-      return null;
-    }
-
-    const finalMonth = results.result.timeline[results.result.timeline.length - 1];
-    if (!finalMonth) {
-      return null;
-    }
-
-    return formatHorizonMonths((finalMonth.year * 12) + finalMonth.month, language);
-  }, [language, results]);
-
-  const labels = {
-    pageTitle:
-      language === 'pl' ? 'Model wyplat emerytalnych' : 'Retirement Withdrawal Model',
-    pageDescription:
-      language === 'pl'
-        ? 'Uruchom jeden waski scenariusz wyplat z jawnymi zalozeniami i przeczytaj sciezke salda, zanim potraktujesz go jako material planistyczny.'
-        : 'Run one narrow withdrawal scenario with explicit assumptions and review the balance path before treating it as planning evidence.',
-    primaryInputs: language === 'pl' ? 'Glówne dane' : 'Primary Inputs',
-    primaryInputsDesc:
-      language === 'pl'
-        ? 'Ustaw kapital, wyplate, horyzont i wspierana rodzine obligacji. Zaawansowane zalozenia staja nizej i pozostaja drugorzedne.'
-        : 'Set capital, withdrawal, horizon, and supported bond family. Advanced rate and wrapper assumptions stay collapsed below.',
-    initialCapital: language === 'pl' ? 'Kapital poczatkowy' : 'Initial Capital',
-    monthlyWithdrawal: language === 'pl' ? 'Miesieczna wyplata' : 'Monthly Withdrawal',
-    scenarioHorizon: language === 'pl' ? 'Horyzont scenariusza' : 'Scenario Horizon',
-    bondFamily: language === 'pl' ? 'Rodzina obligacji' : 'Bond Family',
-    advancedAssumptions: language === 'pl' ? 'Zaawansowane zalozenia' : 'Advanced Assumptions',
-    advancedAssumptionsDesc:
-      language === 'pl'
-        ? 'Inflacja, modelowana stopa NBP i opakowanie podatkowe.'
-        : 'Inflation, modeled NBP rate, and tax wrapper.',
-    expectedInflation: language === 'pl' ? 'Prognozowana inflacja' : 'Expected Inflation',
-    expectedNbpRate: language === 'pl' ? 'Prognozowana stopa NBP' : 'Expected NBP Rate',
-    taxWrapper: language === 'pl' ? 'Opakowanie podatkowe' : 'Tax Wrapper',
-    floatingActionNote:
-      language === 'pl'
-        ? 'Uzyj plywajacej akcji w prawym dolnym rogu, gdy scenariusz wyplat bedzie gotowy do pierwszego uruchomienia lub przeliczenia.'
-        : 'Use the floating action in the lower corner when this withdrawal scenario is ready for its first run or for recalculation.',
-    staleResults:
-      language === 'pl'
-        ? 'Dane zostaly zmienione. Sciezka salda ponizej nadal pokazuje poprzedni zatwierdzony przebieg. Przelicz, gdy chcesz go odswiezyc.'
-        : 'Inputs changed. The balance path below still shows the previous committed run. Recalculate when you want to refresh it.',
-    scenarioStatus: language === 'pl' ? 'Status scenariusza' : 'Scenario Status',
-    balancePositive: language === 'pl' ? 'Saldo pozostaje dodatnie' : 'Balance remains positive',
-    balanceDepletes: language === 'pl' ? 'Saldo wyczerpuje sie przed czasem' : 'Balance depletes early',
-    projectedExhaustion:
-      language === 'pl' ? 'Prognozowana data wyczerpania' : 'Projected exhaustion date',
-    noProjectedDepletion:
-      language === 'pl'
-        ? 'Brak prognozowanego wyczerpania w wybranym horyzoncie.'
-        : 'No projected depletion inside the selected horizon.',
-    finalBalance: language === 'pl' ? 'Saldo koncowe' : 'Final Balance',
-    finalBalanceDetail:
-      language === 'pl'
-        ? 'Nominalne saldo na koncu horyzontu dla tej jednej modelowanej sciezki.'
-        : 'Nominal end-of-horizon balance under this one modeled path.',
-    totalWithdrawn: language === 'pl' ? 'Lacznie wyplacono' : 'Total Withdrawn',
-    totalWithdrawnDetail:
-      language === 'pl'
-        ? 'Skumulowane wyplaty w wybranym horyzoncie.'
-        : 'Cumulative withdrawals inside the selected horizon.',
-    modeledAnnualRate: language === 'pl' ? 'Modelowana stopa roczna' : 'Modeled Annual Rate',
-    modeledAnnualRateDetail:
-      language === 'pl'
-        ? 'Stala stopa uzyta dla {{bond}}.'
-        : 'Steady rate used for {{bond}}.',
-    balancePath: language === 'pl' ? 'Sciezka salda' : 'Balance Path',
-    balancePathDesc:
-      language === 'pl'
-        ? 'Ten wykres pokazuje tylko zatwierdzony scenariusz. Probkujemy go rocznie, aby sciezka pozostala czytelna.'
-        : 'This chart shows the committed scenario only. It is sampled yearly to keep the path readable.',
-    coverage: language === 'pl' ? 'Zakres' : 'Coverage',
-    taxPaid: language === 'pl' ? 'Podatek zaplacony' : 'Tax Paid',
-    howToRead: language === 'pl' ? 'Jak to czytac' : 'How to read it',
-    howToReadDesc:
-      language === 'pl'
-        ? 'Zacznij od statusu scenariusza i salda koncowego. Wykres ma pokazywac sciezke zuzycia kapitalu w czasie, a nie pelna rekomendacje emerytalna.'
-        : 'Start with scenario status and final balance. Use the chart to see the depletion path over time, not as a full retirement-planning recommendation.',
-    balance: language === 'pl' ? 'Saldo' : 'Balance',
-    withdrawal: language === 'pl' ? 'Wyplata' : 'Withdrawal',
-    assumptionsAndWarnings:
-      language === 'pl' ? 'Zalozenia i ostrzezenia scenariusza' : 'Scenario assumptions and warnings',
-    assumptionsAndWarningsDesc:
-      language === 'pl'
-        ? 'Otworz to, gdy chcesz zobaczyc pomocniczy slad zalozen dla biezacego przebiegu wyplat.'
-        : 'Open this when you want the supporting assumption trail behind the current withdrawal run.',
-    audit: language === 'pl' ? 'Audyt' : 'Audit',
-    assumptions: language === 'pl' ? 'Zalozenia scenariusza' : 'Scenario Assumptions',
-    warningsAndNotes: language === 'pl' ? 'Ostrzezenia i notatki' : 'Warnings and Notes',
-    noExtraAssumptions:
-      language === 'pl'
-        ? 'Poza widocznymi danymi nie zgloszono dodatkowych zalozen.'
-        : 'No extra assumptions were reported beyond the visible inputs.',
-    noExtraWarnings:
-      language === 'pl'
-        ? 'Dla tego scenariusza nie zwrocono dodatkowych ostrzezen.'
-        : 'No extra warnings were returned for this scenario.',
-    readyBadge: language === 'pl' ? 'Model ograniczony' : 'Limited model',
-    readyTitle:
-      language === 'pl'
-        ? 'Gotowy do przetestowania jednej sciezki wyplat?'
-        : 'Ready to test one withdrawal path?',
-    readyDesc:
-      language === 'pl'
-        ? 'Ustaw kapital poczatkowy, wyplate, horyzont i wspierana rodzine obligacji. Potem uruchom jedno zatwierdzone obliczenie, zanim zaczniesz czytac sciezke salda.'
-        : 'Set the starting capital, withdrawal amount, horizon, and supported bond family. Then run one committed calculation before reading the balance path.',
-    readyStepBalance:
-      language === 'pl' ? 'Zbuduj pierwsza sciezke salda' : 'Stage one balance path',
-    readyStepHorizon:
-      language === 'pl' ? 'Zatwierdz jeden horyzont' : 'Commit one horizon',
-    readyStepRead:
-      language === 'pl' ? 'Czytaj wasko' : 'Read it narrowly',
-    readyStepReadDesc:
-      language === 'pl'
-        ? 'To model zuzycia kapitalu przy stalej stopie, a nie pelny silnik doradztwa emerytalnego.'
-        : 'This is a steady-rate depletion model, not a complete retirement advice engine.',
-    readyFooter:
-      language === 'pl'
-        ? 'Zaawansowane zalozenia pozostaja dostepne, ale pierwszy odczyt powinien pochodzic z jednego czystego zatwierdzonego przebiegu.'
-        : 'Advanced assumptions stay available, but the first reading should come from one clean committed run.',
-    limitsTitle:
-      language === 'pl' ? 'Limity modelu i wspierany zakres' : 'Model limits and supported scope',
-    limitsDesc:
-      language === 'pl'
-        ? 'Otworz to, gdy chcesz zobaczyc ograniczenia stojace za ta powierzchnia wyplat.'
-        : 'Open this when you want the constraints behind this withdrawal surface.',
-    limitsBadge: language === 'pl' ? 'Limity' : 'Limits',
-    depletionWarning:
-      language === 'pl'
-        ? 'Ten przebieg prognozuje wyczerpanie srodkow dnia {{date}}. Uruchom go ponownie z nizsza wyplata, dluzszym sprawdzeniem horyzontu albo inna wspierana rodzina obligacji, zanim wyciagniesz wnioski.'
-        : 'This run projects depletion on {{date}}. Re-run with a lower withdrawal, longer horizon check, or different supported bond family before drawing conclusions.',
-  } as const;
-
-  const taxStrategyLabels: Record<TaxStrategy, string> = {
-    [TaxStrategy.STANDARD]:
-      language === 'pl' ? 'Konto standardowe (19% podatku)' : 'Standard account (19% tax)',
-    [TaxStrategy.IKE]: language === 'pl' ? 'Opakowanie IKE' : 'IKE wrapper',
-    [TaxStrategy.IKZE]: language === 'pl' ? 'Opakowanie IKZE' : 'IKZE wrapper',
-  };
-
-  const modelLimits = [
-    language === 'pl'
-      ? 'Uzywa jednej stalej modelowanej stopy rocznej zamiast zmiennych sciezek rynkowych.'
-      : 'Uses one steady modeled annual rate rather than changing market paths over time.',
-    language === 'pl'
-      ? `Wspiera tylko ${RETIREMENT_SUPPORTED_BOND_TYPES.join(', ')} na tej ograniczonej powierzchni.`
-      : `Supports only ${RETIREMENT_SUPPORTED_BOND_TYPES.join(', ')} in this reduced-scope surface.`,
-    language === 'pl'
-      ? 'Nie modeluje zmiennych wyplat, rolowanych drabin ani szerszego doradztwa emerytalnego.'
-      : 'Does not model changing withdrawals, rolling ladders, or broader retirement advice.',
-  ];
-
-  const updateInput = <K extends keyof RetirementInputs>(
-    key: K,
-    value: RetirementInputs[K],
-  ) => {
-    setInputs((prev) => ({ ...prev, [key]: value }));
-    setIsDirty(true);
-  };
-
-  return (
-    <CalculatorPageShell
-      title={labels.pageTitle}
-      description={labels.pageDescription}
-      icon={<Wallet className="h-8 w-8" />}
-      isCalculating={isCalculating}
-      isDirty={isDirty}
-      hasResults={!!results}
-    >
+        year: point.year,
+        date: point.date,
+        balance: point.balance,
+        withdrawal: point.withdrawal,
+    })) ?? [], [results]);
+    const scenarioCoverage = useMemo(() => {
+        if (!results) {
+            return null;
+        }
+        const finalMonth = results.result.timeline[results.result.timeline.length - 1];
+        if (!finalMonth) {
+            return null;
+        }
+        return formatHorizonMonths((finalMonth.year * 12) + finalMonth.month, language);
+    }, [language, results]);
+    const labels = {
+        pageTitle: pickLanguageValue(language, {
+            pl: 'Model wyplat emerytalnych',
+            en: 'Retirement Withdrawal Model'
+        }),
+        pageDescription: pickLanguageValue(language, {
+            pl: 'Uruchom jeden waski scenariusz wyplat z jawnymi zalozeniami i przeczytaj sciezke salda, zanim potraktujesz go jako material planistyczny.',
+            en: 'Run one narrow withdrawal scenario with explicit assumptions and review the balance path before treating it as planning evidence.'
+        }),
+        primaryInputs: pickLanguageValue(language, {
+            pl: 'Glówne dane',
+            en: 'Primary Inputs'
+        }),
+        primaryInputsDesc: pickLanguageValue(language, {
+            pl: 'Ustaw kapital, wyplate, horyzont i wspierana rodzine obligacji. Zaawansowane zalozenia staja nizej i pozostaja drugorzedne.',
+            en: 'Set capital, withdrawal, horizon, and supported bond family. Advanced rate and wrapper assumptions stay collapsed below.'
+        }),
+        initialCapital: pickLanguageValue(language, {
+            pl: 'Kapital poczatkowy',
+            en: 'Initial Capital'
+        }),
+        monthlyWithdrawal: pickLanguageValue(language, {
+            pl: 'Miesieczna wyplata',
+            en: 'Monthly Withdrawal'
+        }),
+        scenarioHorizon: pickLanguageValue(language, {
+            pl: 'Horyzont scenariusza',
+            en: 'Scenario Horizon'
+        }),
+        bondFamily: pickLanguageValue(language, {
+            pl: 'Rodzina obligacji',
+            en: 'Bond Family'
+        }),
+        advancedAssumptions: pickLanguageValue(language, {
+            pl: 'Zaawansowane zalozenia',
+            en: 'Advanced Assumptions'
+        }),
+        advancedAssumptionsDesc: pickLanguageValue(language, {
+            pl: 'Inflacja, modelowana stopa NBP i opakowanie podatkowe.',
+            en: 'Inflation, modeled NBP rate, and tax wrapper.'
+        }),
+        expectedInflation: pickLanguageValue(language, {
+            pl: 'Prognozowana inflacja',
+            en: 'Expected Inflation'
+        }),
+        expectedNbpRate: pickLanguageValue(language, {
+            pl: 'Prognozowana stopa NBP',
+            en: 'Expected NBP Rate'
+        }),
+        taxWrapper: pickLanguageValue(language, {
+            pl: 'Opakowanie podatkowe',
+            en: 'Tax Wrapper'
+        }),
+        floatingActionNote: pickLanguageValue(language, {
+            pl: 'Uzyj plywajacej akcji w prawym dolnym rogu, gdy scenariusz wyplat bedzie gotowy do pierwszego uruchomienia lub przeliczenia.',
+            en: 'Use the floating action in the lower corner when this withdrawal scenario is ready for its first run or for recalculation.'
+        }),
+        staleResults: pickLanguageValue(language, {
+            pl: 'Dane zostaly zmienione. Sciezka salda ponizej nadal pokazuje poprzedni zatwierdzony przebieg. Przelicz, gdy chcesz go odswiezyc.',
+            en: 'Inputs changed. The balance path below still shows the previous committed run. Recalculate when you want to refresh it.'
+        }),
+        scenarioStatus: pickLanguageValue(language, {
+            pl: 'Status scenariusza',
+            en: 'Scenario Status'
+        }),
+        balancePositive: pickLanguageValue(language, {
+            pl: 'Saldo pozostaje dodatnie',
+            en: 'Balance remains positive'
+        }),
+        balanceDepletes: pickLanguageValue(language, {
+            pl: 'Saldo wyczerpuje sie przed czasem',
+            en: 'Balance depletes early'
+        }),
+        projectedExhaustion: pickLanguageValue(language, {
+            pl: 'Prognozowana data wyczerpania',
+            en: 'Projected exhaustion date'
+        }),
+        noProjectedDepletion: pickLanguageValue(language, {
+            pl: 'Brak prognozowanego wyczerpania w wybranym horyzoncie.',
+            en: 'No projected depletion inside the selected horizon.'
+        }),
+        finalBalance: pickLanguageValue(language, {
+            pl: 'Saldo koncowe',
+            en: 'Final Balance'
+        }),
+        finalBalanceDetail: pickLanguageValue(language, {
+            pl: 'Nominalne saldo na koncu horyzontu dla tej jednej modelowanej sciezki.',
+            en: 'Nominal end-of-horizon balance under this one modeled path.'
+        }),
+        totalWithdrawn: pickLanguageValue(language, {
+            pl: 'Lacznie wyplacono',
+            en: 'Total Withdrawn'
+        }),
+        totalWithdrawnDetail: pickLanguageValue(language, {
+            pl: 'Skumulowane wyplaty w wybranym horyzoncie.',
+            en: 'Cumulative withdrawals inside the selected horizon.'
+        }),
+        modeledAnnualRate: pickLanguageValue(language, {
+            pl: 'Modelowana stopa roczna',
+            en: 'Modeled Annual Rate'
+        }),
+        modeledAnnualRateDetail: pickLanguageValue(language, {
+            pl: 'Stala stopa uzyta dla {{bond}}.',
+            en: 'Steady rate used for {{bond}}.'
+        }),
+        balancePath: pickLanguageValue(language, {
+            pl: 'Sciezka salda',
+            en: 'Balance Path'
+        }),
+        balancePathDesc: pickLanguageValue(language, {
+            pl: 'Ten wykres pokazuje tylko zatwierdzony scenariusz. Probkujemy go rocznie, aby sciezka pozostala czytelna.',
+            en: 'This chart shows the committed scenario only. It is sampled yearly to keep the path readable.'
+        }),
+        coverage: pickLanguageValue(language, {
+            pl: 'Zakres',
+            en: 'Coverage'
+        }),
+        taxPaid: pickLanguageValue(language, {
+            pl: 'Podatek zaplacony',
+            en: 'Tax Paid'
+        }),
+        howToRead: pickLanguageValue(language, {
+            pl: 'Jak to czytac',
+            en: 'How to read it'
+        }),
+        howToReadDesc: pickLanguageValue(language, {
+            pl: 'Zacznij od statusu scenariusza i salda koncowego. Wykres ma pokazywac sciezke zuzycia kapitalu w czasie, a nie pelna rekomendacje emerytalna.',
+            en: 'Start with scenario status and final balance. Use the chart to see the depletion path over time, not as a full retirement-planning recommendation.'
+        }),
+        balance: pickLanguageValue(language, {
+            pl: 'Saldo',
+            en: 'Balance'
+        }),
+        withdrawal: pickLanguageValue(language, {
+            pl: 'Wyplata',
+            en: 'Withdrawal'
+        }),
+        assumptionsAndWarnings: pickLanguageValue(language, {
+            pl: 'Zalozenia i ostrzezenia scenariusza',
+            en: 'Scenario assumptions and warnings'
+        }),
+        assumptionsAndWarningsDesc: pickLanguageValue(language, {
+            pl: 'Otworz to, gdy chcesz zobaczyc pomocniczy slad zalozen dla biezacego przebiegu wyplat.',
+            en: 'Open this when you want the supporting assumption trail behind the current withdrawal run.'
+        }),
+        audit: pickLanguageValue(language, {
+            pl: 'Audyt',
+            en: 'Audit'
+        }),
+        assumptions: pickLanguageValue(language, {
+            pl: 'Zalozenia scenariusza',
+            en: 'Scenario Assumptions'
+        }),
+        warningsAndNotes: pickLanguageValue(language, {
+            pl: 'Ostrzezenia i notatki',
+            en: 'Warnings and Notes'
+        }),
+        noExtraAssumptions: pickLanguageValue(language, {
+            pl: 'Poza widocznymi danymi nie zgloszono dodatkowych zalozen.',
+            en: 'No extra assumptions were reported beyond the visible inputs.'
+        }),
+        noExtraWarnings: pickLanguageValue(language, {
+            pl: 'Dla tego scenariusza nie zwrocono dodatkowych ostrzezen.',
+            en: 'No extra warnings were returned for this scenario.'
+        }),
+        readyBadge: pickLanguageValue(language, {
+            pl: 'Model ograniczony',
+            en: 'Limited model'
+        }),
+        readyTitle: pickLanguageValue(language, {
+            pl: 'Gotowy do przetestowania jednej sciezki wyplat?',
+            en: 'Ready to test one withdrawal path?'
+        }),
+        readyDesc: pickLanguageValue(language, {
+            pl: 'Ustaw kapital poczatkowy, wyplate, horyzont i wspierana rodzine obligacji. Potem uruchom jedno zatwierdzone obliczenie, zanim zaczniesz czytac sciezke salda.',
+            en: 'Set the starting capital, withdrawal amount, horizon, and supported bond family. Then run one committed calculation before reading the balance path.'
+        }),
+        readyStepBalance: pickLanguageValue(language, {
+            pl: 'Zbuduj pierwsza sciezke salda',
+            en: 'Stage one balance path'
+        }),
+        readyStepHorizon: pickLanguageValue(language, {
+            pl: 'Zatwierdz jeden horyzont',
+            en: 'Commit one horizon'
+        }),
+        readyStepRead: pickLanguageValue(language, {
+            pl: 'Czytaj wasko',
+            en: 'Read it narrowly'
+        }),
+        readyStepReadDesc: pickLanguageValue(language, {
+            pl: 'To model zuzycia kapitalu przy stalej stopie, a nie pelny silnik doradztwa emerytalnego.',
+            en: 'This is a steady-rate depletion model, not a complete retirement advice engine.'
+        }),
+        readyFooter: pickLanguageValue(language, {
+            pl: 'Zaawansowane zalozenia pozostaja dostepne, ale pierwszy odczyt powinien pochodzic z jednego czystego zatwierdzonego przebiegu.',
+            en: 'Advanced assumptions stay available, but the first reading should come from one clean committed run.'
+        }),
+        limitsTitle: pickLanguageValue(language, {
+            pl: 'Limity modelu i wspierany zakres',
+            en: 'Model limits and supported scope'
+        }),
+        limitsDesc: pickLanguageValue(language, {
+            pl: 'Otworz to, gdy chcesz zobaczyc ograniczenia stojace za ta powierzchnia wyplat.',
+            en: 'Open this when you want the constraints behind this withdrawal surface.'
+        }),
+        limitsBadge: pickLanguageValue(language, {
+            pl: 'Limity',
+            en: 'Limits'
+        }),
+        depletionWarning: pickLanguageValue(language, {
+            pl: 'Ten przebieg prognozuje wyczerpanie srodkow dnia {{date}}. Uruchom go ponownie z nizsza wyplata, dluzszym sprawdzeniem horyzontu albo inna wspierana rodzina obligacji, zanim wyciagniesz wnioski.',
+            en: 'This run projects depletion on {{date}}. Re-run with a lower withdrawal, longer horizon check, or different supported bond family before drawing conclusions.'
+        }),
+    } as const;
+    const taxStrategyLabels: Record<TaxStrategy, string> = {
+        [TaxStrategy.STANDARD]: pickLanguageValue(language, {
+            pl: 'Konto standardowe (19% podatku)',
+            en: 'Standard account (19% tax)'
+        }),
+        [TaxStrategy.IKE]: pickLanguageValue(language, {
+            pl: 'Opakowanie IKE',
+            en: 'IKE wrapper'
+        }),
+        [TaxStrategy.IKZE]: pickLanguageValue(language, {
+            pl: 'Opakowanie IKZE',
+            en: 'IKZE wrapper'
+        }),
+    };
+    const modelLimits = [
+        pickLanguageValue(language, {
+            pl: 'Uzywa jednej stalej modelowanej stopy rocznej zamiast zmiennych sciezek rynkowych.',
+            en: 'Uses one steady modeled annual rate rather than changing market paths over time.'
+        }),
+        pickLanguageValue(language, {
+            pl: `Wspiera tylko ${RETIREMENT_SUPPORTED_BOND_TYPES.join(', ')} na tej ograniczonej powierzchni.`,
+            en: `Supports only ${RETIREMENT_SUPPORTED_BOND_TYPES.join(', ')} in this reduced-scope surface.`
+        }),
+        pickLanguageValue(language, {
+            pl: 'Nie modeluje zmiennych wyplat, rolowanych drabin ani szerszego doradztwa emerytalnego.',
+            en: 'Does not model changing withdrawals, rolling ladders, or broader retirement advice.'
+        }),
+    ];
+    const updateInput = <K extends keyof RetirementInputs>(key: K, value: RetirementInputs[K]) => {
+        setInputs((prev) => ({ ...prev, [key]: value }));
+        setIsDirty(true);
+    };
+    return (<CalculatorPageShell title={labels.pageTitle} description={labels.pageDescription} icon={<Wallet className="h-8 w-8"/>} isCalculating={isCalculating} isDirty={isDirty} hasResults={!!results}>
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
         <aside className="space-y-6 xl:col-span-4">
           <Card className="rounded-2xl border-2">
@@ -362,14 +379,7 @@ export const RetirementPlannerContainer: React.FC = () => {
                 <Label className="text-xs font-bold uppercase text-muted-foreground">
                     {labels.initialCapital}
                 </Label>
-                <Input
-                  type="number"
-                  value={inputs.initialCapital}
-                  onChange={(event) =>
-                    updateInput('initialCapital', Number(event.target.value))
-                  }
-                  className="rounded-xl font-bold"
-                />
+                <Input type="number" value={inputs.initialCapital} onChange={(event) => updateInput('initialCapital', Number(event.target.value))} className="rounded-xl font-bold"/>
               </div>
 
               <div className="space-y-2">
@@ -381,16 +391,7 @@ export const RetirementPlannerContainer: React.FC = () => {
                     {formatCurrency(inputs.monthlyWithdrawal)}
                   </span>
                 </div>
-                <CommittedSliderInput
-                  value={inputs.monthlyWithdrawal}
-                  min={500}
-                  max={20000}
-                  step={100}
-                  unit="PLN"
-                  onCommit={(value) =>
-                    updateInput('monthlyWithdrawal', value)
-                  }
-                />
+                <CommittedSliderInput value={inputs.monthlyWithdrawal} min={500} max={20000} step={100} unit="PLN" onCommit={(value) => updateInput('monthlyWithdrawal', value)}/>
               </div>
 
               <div className="space-y-2">
@@ -402,42 +403,26 @@ export const RetirementPlannerContainer: React.FC = () => {
                     {formatHorizonMonths(inputs.horizonYears * 12, language)}
                   </span>
                 </div>
-                <CommittedSliderInput
-                  value={inputs.horizonYears}
-                  min={1}
-                  max={50}
-                  step={1}
-                  unit="Y"
-                  onCommit={(value) =>
-                    updateInput('horizonYears', value)
-                  }
-                />
+                <CommittedSliderInput value={inputs.horizonYears} min={1} max={50} step={1} unit="Y" onCommit={(value) => updateInput('horizonYears', value)}/>
               </div>
 
               <div className="space-y-2">
                 <Label className="text-xs font-bold uppercase text-muted-foreground">
                     {labels.bondFamily}
                 </Label>
-                <Select
-                  value={inputs.bondType}
-                  onValueChange={(value) =>
-                    updateInput('bondType', value as BondType)
-                  }
-                >
+                <Select value={inputs.bondType} onValueChange={(value) => updateInput('bondType', value as BondType)}>
                   <SelectTrigger className="rounded-xl font-bold">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {RETIREMENT_SUPPORTED_BOND_TYPES.map((type) => (
-                      <SelectItem key={type} value={type}>
+                    {RETIREMENT_SUPPORTED_BOND_TYPES.map((type) => (<SelectItem key={type} value={type}>
                         <div className="flex flex-col">
                           <span>{type}</span>
                           <span className="text-[10px] text-muted-foreground">
                             {getBondSupportMeta(type).shortLabel}
                           </span>
                         </div>
-                      </SelectItem>
-                    ))}
+                      </SelectItem>))}
                   </SelectContent>
                 </Select>
                 <p className="text-xs leading-5 text-muted-foreground">
@@ -467,16 +452,7 @@ export const RetirementPlannerContainer: React.FC = () => {
                           {formatRate(inputs.expectedInflation)}
                         </span>
                       </div>
-                      <CommittedSliderInput
-                        value={inputs.expectedInflation}
-                        min={-2}
-                        max={15}
-                        step={0.1}
-                        unit="%"
-                        onCommit={(value) =>
-                          updateInput('expectedInflation', value)
-                        }
-                      />
+                      <CommittedSliderInput value={inputs.expectedInflation} min={-2} max={15} step={0.1} unit="%" onCommit={(value) => updateInput('expectedInflation', value)}/>
                     </div>
 
                     <div className="space-y-2">
@@ -488,28 +464,14 @@ export const RetirementPlannerContainer: React.FC = () => {
                           {formatRate(inputs.expectedNbpRate)}
                         </span>
                       </div>
-                      <CommittedSliderInput
-                        value={inputs.expectedNbpRate}
-                        min={0}
-                        max={15}
-                        step={0.05}
-                        unit="%"
-                        onCommit={(value) =>
-                          updateInput('expectedNbpRate', value)
-                        }
-                      />
+                      <CommittedSliderInput value={inputs.expectedNbpRate} min={0} max={15} step={0.05} unit="%" onCommit={(value) => updateInput('expectedNbpRate', value)}/>
                     </div>
 
                     <div className="space-y-2">
                       <Label className="text-xs font-bold uppercase text-muted-foreground">
                         {labels.taxWrapper}
                       </Label>
-                      <Select
-                        value={inputs.taxStrategy}
-                        onValueChange={(value) =>
-                          updateInput('taxStrategy', value as TaxStrategy)
-                        }
-                      >
+                      <Select value={inputs.taxStrategy} onValueChange={(value) => updateInput('taxStrategy', value as TaxStrategy)}>
                         <SelectTrigger className="rounded-xl font-bold">
                           <SelectValue />
                         </SelectTrigger>
@@ -538,53 +500,26 @@ export const RetirementPlannerContainer: React.FC = () => {
         </aside>
 
         <div className="space-y-8 xl:col-span-8">
-          {results ? (
-            <>
-              {isDirty ? (
-                <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
+          {results ? (<>
+              {isDirty ? (<div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
                   {labels.staleResults}
-                </div>
-              ) : null}
+                </div>) : null}
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-                <SummaryMetric
-                  label={labels.scenarioStatus}
-                  value={
-                    results.result.isSustainable
-                      ? labels.balancePositive
-                      : labels.balanceDepletes
-                  }
-                  detail={
-                    results.result.exhaustionDate
-                      ? `${labels.projectedExhaustion}: ${results.result.exhaustionDate}`
-                      : labels.noProjectedDepletion
-                  }
-                  tone={results.result.isSustainable ? 'success' : 'warning'}
-                />
-                <SummaryMetric
-                  label={labels.finalBalance}
-                  value={formatCurrency(results.result.finalBalance)}
-                  detail={labels.finalBalanceDetail}
-                />
-                <SummaryMetric
-                  label={labels.totalWithdrawn}
-                  value={formatCurrency(results.result.totalWithdrawn)}
-                  detail={labels.totalWithdrawnDetail}
-                />
-                <SummaryMetric
-                  label={labels.modeledAnnualRate}
-                  value={formatRate(results.result.modeledAnnualRate)}
-                  detail={labels.modeledAnnualRateDetail.replace(
-                    '{{bond}}',
-                    results.result.modeledBondType,
-                  )}
-                />
+                <SummaryMetric label={labels.scenarioStatus} value={results.result.isSustainable
+                ? labels.balancePositive
+                : labels.balanceDepletes} detail={results.result.exhaustionDate
+                ? `${labels.projectedExhaustion}: ${results.result.exhaustionDate}`
+                : labels.noProjectedDepletion} tone={results.result.isSustainable ? 'success' : 'warning'}/>
+                <SummaryMetric label={labels.finalBalance} value={formatCurrency(results.result.finalBalance)} detail={labels.finalBalanceDetail}/>
+                <SummaryMetric label={labels.totalWithdrawn} value={formatCurrency(results.result.totalWithdrawn)} detail={labels.totalWithdrawnDetail}/>
+                <SummaryMetric label={labels.modeledAnnualRate} value={formatRate(results.result.modeledAnnualRate)} detail={labels.modeledAnnualRateDetail.replace('{{bond}}', results.result.modeledBondType)}/>
               </div>
 
               <Card className="rounded-2xl border-2 shadow-none">
                 <CardHeader className="space-y-2">
                   <CardTitle className="flex items-center gap-2 text-lg font-black uppercase tracking-widest">
-                    <LineChart className="h-5 w-5 text-primary" />
+                    <LineChart className="h-5 w-5 text-primary"/>
                     {labels.balancePath}
                   </CardTitle>
                   <p className="text-sm leading-6 text-muted-foreground">
@@ -619,165 +554,80 @@ export const RetirementPlannerContainer: React.FC = () => {
                     </div>
                   </div>
 
-                  <ChartSupportNote
-                    title={labels.howToRead}
-                    description={labels.howToReadDesc}
-                  />
+                  <ChartSupportNote title={labels.howToRead} description={labels.howToReadDesc}/>
 
                   <ChartContainer height={400}>
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={chartData}>
                         <defs>
-                          <linearGradient
-                            id="retirement-balance"
-                            x1="0"
-                            y1="0"
-                            x2="0"
-                            y2="1"
-                          >
-                            <stop
-                              offset="5%"
-                              stopColor="hsl(var(--primary))"
-                              stopOpacity={0.25}
-                            />
-                            <stop
-                              offset="95%"
-                              stopColor="hsl(var(--primary))"
-                              stopOpacity={0}
-                            />
+                          <linearGradient id="retirement-balance" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.25}/>
+                            <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
                           </linearGradient>
                         </defs>
-                        <CartesianGrid
-                          strokeDasharray="3 3"
-                          vertical={false}
-                          stroke="hsl(var(--muted-foreground))"
-                          strokeOpacity={0.1}
-                        />
-                        <XAxis
-                          dataKey="year"
-                          axisLine={false}
-                          tickLine={false}
-                          tick={{ fontSize: 10, fontWeight: 'bold' }}
-                        />
-                        <YAxis
-                          axisLine={false}
-                          tickLine={false}
-                          tick={{ fontSize: 10, fontWeight: 'bold' }}
-                          tickFormatter={(value) =>
-                            `${(value / 1000).toFixed(0)}k`
-                          }
-                        />
-                        <Tooltip
-                          contentStyle={{
-                            borderRadius: '16px',
-                            border: 'none',
-                            boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
-                          }}
-                          formatter={(value, key) => [
-                            formatCurrency(Number(value || 0)),
-                            key === 'balance' ? labels.balance : labels.withdrawal,
-                          ]}
-                        />
-                        <Area
-                          type="monotone"
-                          dataKey="balance"
-                          stroke="hsl(var(--primary))"
-                          strokeWidth={3}
-                          fillOpacity={1}
-                          fill="url(#retirement-balance)"
-                        />
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted-foreground))" strokeOpacity={0.1}/>
+                        <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 'bold' }}/>
+                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 'bold' }} tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}/>
+                        <Tooltip contentStyle={{
+                borderRadius: '16px',
+                border: 'none',
+                boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+            }} formatter={(value, key) => [
+                formatCurrency(Number(value || 0)),
+                key === 'balance' ? labels.balance : labels.withdrawal,
+            ]}/>
+                        <Area type="monotone" dataKey="balance" stroke="hsl(var(--primary))" strokeWidth={3} fillOpacity={1} fill="url(#retirement-balance)"/>
                       </AreaChart>
                     </ResponsiveContainer>
                   </ChartContainer>
                 </CardContent>
               </Card>
 
-              <SecondaryInsightAccordion
-                title={labels.assumptionsAndWarnings}
-                description={labels.assumptionsAndWarningsDesc}
-                badge={labels.audit}
-              >
+              <SecondaryInsightAccordion title={labels.assumptionsAndWarnings} description={labels.assumptionsAndWarningsDesc} badge={labels.audit}>
                 <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-                  <SupportList
-                    title={labels.assumptions}
-                    items={results.assumptions}
-                    emptyLabel={labels.noExtraAssumptions}
-                  />
-                  <SupportList
-                    title={labels.warningsAndNotes}
-                    items={[
-                      ...results.warnings,
-                      ...results.calculationNotes,
-                      ...results.dataQualityFlags,
-                    ]}
-                    emptyLabel={labels.noExtraWarnings}
-                  />
+                  <SupportList title={labels.assumptions} items={results.assumptions} emptyLabel={labels.noExtraAssumptions}/>
+                  <SupportList title={labels.warningsAndNotes} items={[
+                ...results.warnings,
+                ...results.calculationNotes,
+                ...results.dataQualityFlags,
+            ]} emptyLabel={labels.noExtraWarnings}/>
                 </div>
               </SecondaryInsightAccordion>
-            </>
-          ) : (
-            <ScenarioReadyPanel
-              badge={labels.readyBadge}
-              title={labels.readyTitle}
-              description={labels.readyDesc}
-              steps={[
+            </>) : (<ScenarioReadyPanel badge={labels.readyBadge} title={labels.readyTitle} description={labels.readyDesc} steps={[
                 {
-                  id: 'balance-path',
-                  title: labels.readyStepBalance,
-                  description: `Start from ${formatCurrency(inputs.initialCapital)} and one fixed withdrawal amount.`,
+                    id: 'balance-path',
+                    title: labels.readyStepBalance,
+                    description: `Start from ${formatCurrency(inputs.initialCapital)} and one fixed withdrawal amount.`,
                 },
                 {
-                  id: 'horizon',
-                  title: labels.readyStepHorizon,
-                  description: `The current run is staged for ${formatHorizonMonths(inputs.horizonYears * 12, language)}.`,
+                    id: 'horizon',
+                    title: labels.readyStepHorizon,
+                    description: `The current run is staged for ${formatHorizonMonths(inputs.horizonYears * 12, language)}.`,
                 },
                 {
-                  id: 'narrow-read',
-                  title: labels.readyStepRead,
-                  description: labels.readyStepReadDesc,
+                    id: 'narrow-read',
+                    title: labels.readyStepRead,
+                    description: labels.readyStepReadDesc,
                 },
-              ]}
-              footerText={labels.readyFooter}
-            />
-          )}
+            ]} footerText={labels.readyFooter}/>)}
 
-          <SecondaryInsightAccordion
-            title={labels.limitsTitle}
-            description={labels.limitsDesc}
-            badge={labels.limitsBadge}
-          >
+          <SecondaryInsightAccordion title={labels.limitsTitle} description={labels.limitsDesc} badge={labels.limitsBadge}>
             <div className="grid grid-cols-1 gap-4 text-sm leading-6 text-muted-foreground md:grid-cols-3">
-              {modelLimits.map((item) => (
-                <div
-                  key={item}
-                  className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
-                >
+              {modelLimits.map((item) => (<div key={item} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
                   {item}
-                </div>
-              ))}
+                </div>))}
             </div>
           </SecondaryInsightAccordion>
 
-          {results?.result.exhaustionDate ? (
-            <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm leading-6 text-amber-950">
-              <Calendar className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" />
+          {results?.result.exhaustionDate ? (<div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm leading-6 text-amber-950">
+              <Calendar className="mt-0.5 h-5 w-5 shrink-0 text-amber-700"/>
               <p>
-                {labels.depletionWarning.replace(
-                  '{{date}}',
-                  results.result.exhaustionDate,
-                )}
+                {labels.depletionWarning.replace('{{date}}', results.result.exhaustionDate)}
               </p>
-            </div>
-          ) : null}
+            </div>) : null}
         </div>
       </div>
 
-      <RecalculateButton
-        isDirty={isDirty}
-        loading={isCalculating}
-        hasResults={!!results}
-        onClick={handleCalculate}
-      />
-    </CalculatorPageShell>
-  );
+      <RecalculateButton isDirty={isDirty} loading={isCalculating} hasResults={!!results} onClick={handleCalculate}/>
+    </CalculatorPageShell>);
 };

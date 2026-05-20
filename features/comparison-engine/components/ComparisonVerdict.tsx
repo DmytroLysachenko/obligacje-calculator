@@ -1,70 +1,54 @@
 'use client';
-
 import React from 'react';
 import { Scale, ShieldCheck, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useLanguage } from '@/i18n';
-import {
-  BondInputs,
-  CalculationResult,
-  TaxStrategy,
-} from '@/features/bond-core/types';
+import { BondInputs, CalculationResult, TaxStrategy, } from '@/features/bond-core/types';
+import { pickLanguageValue } from '@/i18n/locale-utils';
 
 interface ComparisonVerdictProps {
-  resultsA: CalculationResult;
-  resultsB: CalculationResult;
-  inputsA: BondInputs;
-  inputsB: BondInputs;
-  expectedInflation: number;
-  taxStrategy?: TaxStrategy;
-  showRealValue: boolean;
-  formatCurrency: (val: number) => string;
+    resultsA: CalculationResult;
+    resultsB: CalculationResult;
+    inputsA: BondInputs;
+    inputsB: BondInputs;
+    expectedInflation: number;
+    taxStrategy?: TaxStrategy;
+    showRealValue: boolean;
+    formatCurrency: (val: number) => string;
 }
-
-export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
-  resultsA,
-  resultsB,
-  inputsA,
-  inputsB,
-  expectedInflation,
-  taxStrategy,
-  showRealValue,
-  formatCurrency,
-}) => {
-  const { t, language } = useLanguage();
-  const comparisonSnapshotLabel =
-    language === 'pl' ? 'Migawka scenariusza' : 'Scenario snapshot';
-  const higherText =
-    language === 'pl'
-      ? showRealValue
-        ? 'ma obecnie wyzsza wartosc realna'
-        : 'ma obecnie wyzsza modelowana wyplate netto'
-      : showRealValue
-        ? 'currently shows the higher real value'
-        : 'currently shows the higher modeled net payout';
-  const overText = language === 'pl' ? 'dla horyzontu' : 'for a';
-  const resultAValue = showRealValue ? resultsA.finalRealValue : resultsA.netPayoutValue;
-  const resultBValue = showRealValue ? resultsB.finalRealValue : resultsB.netPayoutValue;
-  const betterBondType =
-    resultAValue > resultBValue
-      ? inputsA.bondType
-      : inputsB.bondType;
-  const betterScenarioLabel =
-    resultAValue > resultBValue
-      ? t('comparison.scenario_a')
-      : t('comparison.scenario_b');
-  const gap = Math.abs(resultAValue - resultBValue);
-  const horizonYears = Math.max(
-    resultsA.timeline.length / 12,
-    resultsB.timeline.length / 12,
-  ).toFixed(1);
-
-  return (
-    <Card className="overflow-hidden border border-slate-200 bg-white shadow-none">
+export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, resultsB, inputsA, inputsB, expectedInflation, taxStrategy, showRealValue, formatCurrency, }) => {
+    const { t, language } = useLanguage();
+    const comparisonSnapshotLabel = pickLanguageValue(language, {
+        pl: 'Migawka scenariusza',
+        en: 'Scenario snapshot'
+    });
+    const higherText = pickLanguageValue(language, {
+        pl: showRealValue
+            ? 'ma obecnie wyzsza wartosc realna'
+            : 'ma obecnie wyzsza modelowana wyplate netto',
+        en: showRealValue
+            ? 'currently shows the higher real value'
+            : 'currently shows the higher modeled net payout'
+    });
+    const overText = pickLanguageValue(language, {
+        pl: 'dla horyzontu',
+        en: 'for a'
+    });
+    const resultAValue = showRealValue ? resultsA.finalRealValue : resultsA.netPayoutValue;
+    const resultBValue = showRealValue ? resultsB.finalRealValue : resultsB.netPayoutValue;
+    const betterBondType = resultAValue > resultBValue
+        ? inputsA.bondType
+        : inputsB.bondType;
+    const betterScenarioLabel = resultAValue > resultBValue
+        ? t('comparison.scenario_a')
+        : t('comparison.scenario_b');
+    const gap = Math.abs(resultAValue - resultBValue);
+    const horizonYears = Math.max(resultsA.timeline.length / 12, resultsB.timeline.length / 12).toFixed(1);
+    return (<Card className="overflow-hidden border border-slate-200 bg-white shadow-none">
       <CardHeader className="border-b bg-slate-50/60 pb-4">
         <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight text-slate-900">
-          <Scale className="h-5 w-5 text-primary" />
+          <Scale className="h-5 w-5 text-primary"/>
           {t('comparison.summary') ?? 'Simulation Summary'}
         </CardTitle>
       </CardHeader>
@@ -73,13 +57,9 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
           <div className="flex-1 space-y-4">
             <div className="flex items-center gap-3">
               <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
-                <span
-                  className={
-                    resultAValue > resultBValue
-                      ? 'text-2xl font-black text-blue-700'
-                      : 'text-2xl font-black text-emerald-700'
-                  }
-                >
+                <span className={resultAValue > resultBValue
+            ? 'text-2xl font-black text-blue-700'
+            : 'text-2xl font-black text-emerald-700'}>
                   {betterBondType}
                 </span>
               </div>
@@ -104,71 +84,53 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
             </div>
 
             <div className="flex flex-wrap gap-2 pt-2">
-              {resultAValue > resultBValue ? (
-                <Badge
-                  variant="outline"
-                  className="border-blue-200 bg-blue-50 text-xs font-semibold text-blue-700"
-                >
-                  <Scale className="h-3 w-3 mr-1" />
+              {resultAValue > resultBValue ? (<Badge variant="outline" className="border-blue-200 bg-blue-50 text-xs font-semibold text-blue-700">
+                  <Scale className="h-3 w-3 mr-1"/>
                   {(resultsA.timeline.length / 12) < 4
-                    ? t('comparison.verdict_short_term')
-                    : t('comparison.verdict_long_term')}
-                </Badge>
-              ) : (
-                <Badge
-                  variant="outline"
-                  className="border-emerald-200 bg-emerald-50 text-xs font-semibold text-emerald-700"
-                >
-                  <Scale className="h-3 w-3 mr-1" />
+                ? t('comparison.verdict_short_term')
+                : t('comparison.verdict_long_term')}
+                </Badge>) : (<Badge variant="outline" className="border-emerald-200 bg-emerald-50 text-xs font-semibold text-emerald-700">
+                  <Scale className="h-3 w-3 mr-1"/>
                   {(resultsB.timeline.length / 12) < 4
-                    ? t('comparison.verdict_short_term')
-                    : t('comparison.verdict_long_term')}
-                </Badge>
-              )}
+                ? t('comparison.verdict_short_term')
+                : t('comparison.verdict_long_term')}
+                </Badge>)}
 
-              {expectedInflation > 5 ? (
-                <Badge
-                  variant="outline"
-                  className="border-orange-200 bg-orange-50 text-xs font-semibold text-orange-700"
-                >
-                  <Zap className="h-3 w-3 mr-1" />
-                  {language === 'pl'
-                    ? 'Wysoka wrazliwosc na inflacje'
-                    : 'High inflation sensitivity'}
-                </Badge>
-              ) : null}
+              {expectedInflation > 5 ? (<Badge variant="outline" className="border-orange-200 bg-orange-50 text-xs font-semibold text-orange-700">
+                  <Zap className="h-3 w-3 mr-1"/>
+                  {pickLanguageValue(language, {
+                pl: 'Wysoka wrazliwosc na inflacje',
+                en: 'High inflation sensitivity'
+            })}
+                </Badge>) : null}
 
-              {taxStrategy !== TaxStrategy.STANDARD ? (
-                <Badge
-                  variant="outline"
-                  className="border-purple-200 bg-purple-50 text-xs font-semibold text-purple-700"
-                >
-                  <ShieldCheck className="h-3 w-3 mr-1" />
-                  {language === 'pl'
-                    ? 'Rozne zasady podatkowe'
-                    : 'Different tax wrapper rules'}
-                </Badge>
-              ) : null}
+              {taxStrategy !== TaxStrategy.STANDARD ? (<Badge variant="outline" className="border-purple-200 bg-purple-50 text-xs font-semibold text-purple-700">
+                  <ShieldCheck className="h-3 w-3 mr-1"/>
+                  {pickLanguageValue(language, {
+                pl: 'Rozne zasady podatkowe',
+                en: 'Different tax wrapper rules'
+            })}
+                </Badge>) : null}
             </div>
           </div>
 
           <div className="w-full md:w-48 flex flex-col gap-2">
             <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-4 text-center">
               <p className="mb-1 text-sm font-semibold text-muted-foreground">
-                {language === 'pl' ? 'Roznica' : 'Gap'}
+                {pickLanguageValue(language, {
+        pl: 'Roznica',
+        en: 'Gap'
+    })}
               </p>
               <p className="text-2xl font-black text-primary">
-                {Math.abs(
-                  (resultAValue / Math.max(1, resultBValue) -
-                    1) *
-                    100,
-                ).toFixed(1)}
+                {Math.abs((resultAValue / Math.max(1, resultBValue) -
+            1) *
+            100).toFixed(1)}
                 %
               </p>
             </div>
           </div>
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>);
 };

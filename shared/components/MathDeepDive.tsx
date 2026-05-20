@@ -1,52 +1,41 @@
 'use client';
-
 import React from 'react';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger, } from "@/components/ui/sheet";
 import { useLanguage } from '@/i18n';
 import { CalculationResult } from '@/features/bond-core/types';
 import { Info, ArrowRight, Calculator, Landmark, ShieldCheck, ExternalLink } from "lucide-react";
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
+import { pickLanguageValue } from '@/i18n/locale-utils';
 
 interface MathDeepDiveProps {
-  results: CalculationResult;
-  trigger?: React.ReactNode;
+    results: CalculationResult;
+    trigger?: React.ReactNode;
 }
-
 export const MathDeepDive: React.FC<MathDeepDiveProps> = ({ results, trigger }) => {
-  const { t, language } = useLanguage();
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', {
-      style: 'currency',
-      currency: 'PLN',
-    }).format(value);
-  };
-
-  const totalInterest = results.grossValue - results.initialInvestment;
-
-  return (
-    <Sheet>
+    const { t, language } = useLanguage();
+    const formatCurrency = (value: number) => {
+        return new Intl.NumberFormat(pickLanguageValue(language, {
+            pl: 'pl-PL',
+            en: 'en-GB'
+        }), {
+            style: 'currency',
+            currency: 'PLN',
+        }).format(value);
+    };
+    const totalInterest = results.grossValue - results.initialInvestment;
+    return (<Sheet>
       <SheetTrigger asChild>
-        {trigger || (
-          <Button variant="ghost" size="sm" className="h-8 gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">
-            <Info className="h-4 w-4" />
+        {trigger || (<Button variant="ghost" size="sm" className="h-8 gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">
+            <Info className="h-4 w-4"/>
             {t('bonds.how_calculated')}
-          </Button>
-        )}
+          </Button>)}
       </SheetTrigger>
       <SheetContent className="sm:max-w-md md:max-w-lg overflow-y-auto">
         <SheetHeader className="text-left">
           <SheetTitle className="flex items-center gap-2 text-xl font-black uppercase tracking-tight">
-            <Calculator className="h-5 w-5 text-primary" />
+            <Calculator className="h-5 w-5 text-primary"/>
             {t('bonds.how_calculated')}
           </SheetTitle>
           <SheetDescription>
@@ -70,7 +59,7 @@ export const MathDeepDive: React.FC<MathDeepDiveProps> = ({ results, trigger }) 
                 <span className="text-muted-foreground">{t('bonds.plus_interest')}</span>
                 <span className="font-mono font-bold text-green-600">+{formatCurrency(totalInterest)}</span>
               </div>
-              <Separator className="bg-primary/10" />
+              <Separator className="bg-primary/10"/>
               <div className="flex justify-between items-center pt-1">
                 <span className="text-xs font-black uppercase">{t('bonds.gross_value')}</span>
                 <span className="text-lg font-black">{formatCurrency(results.grossValue)}</span>
@@ -92,14 +81,14 @@ export const MathDeepDive: React.FC<MathDeepDiveProps> = ({ results, trigger }) 
                 <div className="flex justify-between text-sm">
                   <Link href="/education#belka_tax" className="text-muted-foreground hover:text-primary underline decoration-dotted flex items-center gap-1">
                     {t('education.concepts.belka_tax.title')}
-                    <ExternalLink className="h-3 w-3" />
+                    <ExternalLink className="h-3 w-3"/>
                   </Link>
                   <span className="font-mono font-bold text-red-600">-{formatCurrency(results.totalTax)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <Link href="/education#early_redemption" className="text-muted-foreground hover:text-primary underline decoration-dotted flex items-center gap-1">
                     {t('education.concepts.early_redemption.title')}
-                    <ExternalLink className="h-3 w-3" />
+                    <ExternalLink className="h-3 w-3"/>
                   </Link>
                   <span className="font-mono font-bold text-red-600">-{formatCurrency(results.totalEarlyWithdrawalFee)}</span>
                 </div>
@@ -147,7 +136,7 @@ export const MathDeepDive: React.FC<MathDeepDiveProps> = ({ results, trigger }) 
           <div className="grid grid-cols-1 gap-4 pt-4">
             <div className="rounded-2xl border bg-muted/30 p-4 space-y-3">
               <h5 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                <Landmark className="h-3.5 w-3.5" />
+                <Landmark className="h-3.5 w-3.5"/>
                 {t('bonds.rounding_rules')}
               </h5>
               <ul className="text-[11px] space-y-2 text-muted-foreground list-disc pl-4 leading-relaxed">
@@ -158,7 +147,7 @@ export const MathDeepDive: React.FC<MathDeepDiveProps> = ({ results, trigger }) 
 
             <div className="rounded-2xl border bg-muted/30 p-4 space-y-3">
               <h5 className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                <ShieldCheck className="h-3.5 w-3.5" />
+                <ShieldCheck className="h-3.5 w-3.5"/>
                 {t('education.bond_types')}
               </h5>
               <p className="text-[11px] text-muted-foreground leading-relaxed">
@@ -167,13 +156,12 @@ export const MathDeepDive: React.FC<MathDeepDiveProps> = ({ results, trigger }) 
               <Button asChild variant="link" className="p-0 h-auto text-[11px] font-bold">
                 <Link href="/education" className="flex items-center gap-1">
                   {t('nav.education')}
-                  <ArrowRight className="h-3 w-3" />
+                  <ArrowRight className="h-3 w-3"/>
                 </Link>
               </Button>
             </div>
           </div>
         </div>
       </SheetContent>
-    </Sheet>
-  );
+    </Sheet>);
 };

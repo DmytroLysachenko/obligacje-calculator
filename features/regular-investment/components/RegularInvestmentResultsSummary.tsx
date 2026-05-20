@@ -1,5 +1,4 @@
 'use client';
-
 import React, { useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,142 +13,117 @@ import { MetricStrip } from '@/shared/components/MetricStrip';
 import { ResponsiveTableSheet } from '@/shared/components/ResponsiveTableSheet';
 import { ResultSummaryHero } from '@/shared/components/ResultSummaryHero';
 import { buildLotsCsvFilename, exportLotsCsv } from '@/shared/lib/retained-exports';
+import { pickLanguageValue } from '@/i18n/locale-utils';
 
 interface RegularInvestmentResultsSummaryProps {
-  results: RegularInvestmentResult;
+    results: RegularInvestmentResult;
 }
-
 type SummaryStat = {
-  label: string;
-  value: string;
-  helper: string;
+    label: string;
+    value: string;
+    helper: string;
 };
-
 type YearBucket = {
-  year: string;
-  lots: number;
-  invested: number;
-  interest: number;
-  tax: number;
-  netValue: number;
+    year: string;
+    lots: number;
+    invested: number;
+    interest: number;
+    tax: number;
+    netValue: number;
 };
-
 const MAX_RECENT_LOTS = 12;
-
-export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsSummaryProps> = ({
-  results,
-}) => {
-  const { t, language } = useLanguage();
-  const dateLocale = language === 'pl' ? pl : enGB;
-
-  const formatCurrency = (value: number) =>
-    new Intl.NumberFormat(language === 'pl' ? 'pl-PL' : 'en-GB', {
-      style: 'currency',
-      currency: 'PLN',
-      maximumFractionDigits: 0,
+export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsSummaryProps> = ({ results, }) => {
+    const { t, language } = useLanguage();
+    const dateLocale = pickLanguageValue(language, {
+        pl: pl,
+        en: enGB
+    });
+    const formatCurrency = (value: number) => new Intl.NumberFormat(pickLanguageValue(language, {
+        pl: 'pl-PL',
+        en: 'en-GB'
+    }), {
+        style: 'currency',
+        currency: 'PLN',
+        maximumFractionDigits: 0,
     }).format(value);
+    const primaryStats: SummaryStat[] = [
+        {
+            label: t('bonds.total_invested'),
+            value: formatCurrency(results.totalInvested),
+            helper: t('regular_summary.total_invested_helper'),
+        },
+        {
+            label: t('bonds.final_nominal_value'),
+            value: formatCurrency(results.finalNominalValue),
+            helper: t('regular_summary.final_nominal_helper'),
+        },
+        {
+            label: t('bonds.total_net_profit'),
+            value: formatCurrency(results.totalProfit),
+            helper: t('regular_summary.net_profit_helper'),
+        },
+        {
+            label: t('bonds.real_value_inflation'),
+            value: formatCurrency(results.finalRealValue),
+            helper: t('regular_summary.real_value_helper'),
+        },
+    ];
+    const supportingStats: SummaryStat[] = [
+        {
+            label: t('bonds.real_cagr'),
+            value: `${results.realAnnualizedReturn.toFixed(2)}%`,
+            helper: t('regular_summary.real_cagr_helper'),
+        },
+        {
+            label: t('bonds.tax'),
+            value: formatCurrency(results.totalTax),
+            helper: t('regular_summary.tax_helper'),
+        },
+    ];
+    const yearlyBuckets = useMemo<YearBucket[]>(() => {
+        const grouped = new Map<string, YearBucket>();
+        results.lots.forEach((lot) => {
+            const year = format(parseISO(lot.purchaseDate), 'yyyy');
+            const current = grouped.get(year) ?? {
+                year,
+                lots: 0,
+                invested: 0,
+                interest: 0,
+                tax: 0,
+                netValue: 0,
+            };
+            current.lots += 1;
+            current.invested += lot.investedAmount;
+            current.interest += lot.accumulatedInterest;
+            current.tax += lot.tax;
+            current.netValue += lot.netValue;
+            grouped.set(year, current);
+        });
+        return Array.from(grouped.values()).sort((left, right) => left.year.localeCompare(right.year));
+    }, [results.lots]);
+    const recentLots = useMemo(() => [...results.lots]
+        .sort((left, right) => parseISO(right.purchaseDate).getTime() - parseISO(left.purchaseDate).getTime())
+        .slice(0, MAX_RECENT_LOTS), [results.lots]);
+    const handleExport = () => {
+        exportLotsCsv({
+            lots: results.lots,
+            headers: buildLotsExportHeaders(t),
+            language,
+            fileName: buildLotsCsvFilename(),
+        });
+    };
+    return (<div className="space-y-6">
+      <ResultSummaryHero eyebrow={t('regular_summary.plan_eyebrow')} value={formatCurrency(results.finalNominalValue)} description={t('regular_summary.hero_description')} narrative={t('regular_summary.hero_narrative')} actions={[
+            {
+                label: t('comparison.export'),
+                icon: <FileSpreadsheet className="h-4 w-4"/>,
+                onClick: handleExport,
+            },
+        ]}/>
 
-  const primaryStats: SummaryStat[] = [
-    {
-      label: t('bonds.total_invested'),
-      value: formatCurrency(results.totalInvested),
-      helper: t('regular_summary.total_invested_helper'),
-    },
-    {
-      label: t('bonds.final_nominal_value'),
-      value: formatCurrency(results.finalNominalValue),
-      helper: t('regular_summary.final_nominal_helper'),
-    },
-    {
-      label: t('bonds.total_net_profit'),
-      value: formatCurrency(results.totalProfit),
-      helper: t('regular_summary.net_profit_helper'),
-    },
-    {
-      label: t('bonds.real_value_inflation'),
-      value: formatCurrency(results.finalRealValue),
-      helper: t('regular_summary.real_value_helper'),
-    },
-  ];
+      <MetricStrip items={primaryStats} columns="grid-cols-1 md:grid-cols-2 xl:grid-cols-4"/>
 
-  const supportingStats: SummaryStat[] = [
-    {
-      label: t('bonds.real_cagr'),
-      value: `${results.realAnnualizedReturn.toFixed(2)}%`,
-      helper: t('regular_summary.real_cagr_helper'),
-    },
-    {
-      label: t('bonds.tax'),
-      value: formatCurrency(results.totalTax),
-      helper: t('regular_summary.tax_helper'),
-    },
-  ];
-
-  const yearlyBuckets = useMemo<YearBucket[]>(() => {
-    const grouped = new Map<string, YearBucket>();
-
-    results.lots.forEach((lot) => {
-      const year = format(parseISO(lot.purchaseDate), 'yyyy');
-      const current = grouped.get(year) ?? {
-        year,
-        lots: 0,
-        invested: 0,
-        interest: 0,
-        tax: 0,
-        netValue: 0,
-      };
-
-      current.lots += 1;
-      current.invested += lot.investedAmount;
-      current.interest += lot.accumulatedInterest;
-      current.tax += lot.tax;
-      current.netValue += lot.netValue;
-
-      grouped.set(year, current);
-    });
-
-    return Array.from(grouped.values()).sort((left, right) => left.year.localeCompare(right.year));
-  }, [results.lots]);
-
-  const recentLots = useMemo(
-    () =>
-      [...results.lots]
-        .sort(
-          (left, right) =>
-            parseISO(right.purchaseDate).getTime() - parseISO(left.purchaseDate).getTime(),
-        )
-        .slice(0, MAX_RECENT_LOTS),
-    [results.lots],
-  );
-
-  const handleExport = () => {
-    exportLotsCsv({
-      lots: results.lots,
-      headers: buildLotsExportHeaders(t),
-      language,
-      fileName: buildLotsCsvFilename(),
-    });
-  };
-
-  return (
-    <div className="space-y-6">
-      <ResultSummaryHero
-        eyebrow={t('regular_summary.plan_eyebrow')}
-        value={formatCurrency(results.finalNominalValue)}
-        description={t('regular_summary.hero_description')}
-        narrative={t('regular_summary.hero_narrative')}
-        actions={[
-          {
-            label: t('comparison.export'),
-            icon: <FileSpreadsheet className="h-4 w-4" />,
-            onClick: handleExport,
-          },
-        ]}
-      />
-
-      <MetricStrip items={primaryStats} columns="grid-cols-1 md:grid-cols-2 xl:grid-cols-4" />
-
-      <MetricStrip items={supportingStats} columns="grid-cols-1 lg:grid-cols-2" />
+      <MetricStrip items={supportingStats} columns="grid-cols-1 lg:grid-cols-2"/>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         <Card className="rounded-2xl border shadow-none">
@@ -165,14 +139,8 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
             </Badge>
           </CardHeader>
           <CardContent className="px-0 pb-0">
-            <ResponsiveTableSheet
-              title={t('regular_summary.yearly_title')}
-              description={t('regular_summary.yearly_mobile_description')}
-              triggerLabel={t('regular_summary.open_yearly_buckets')}
-              triggerCount={t('regular_summary.yearly_trigger_count', { count: yearlyBuckets.length })}
-            >
-              {yearlyBuckets.map((bucket) => (
-                <div key={`mobile-${bucket.year}`} className="rounded-3xl border border-slate-200 bg-white p-4">
+            <ResponsiveTableSheet title={t('regular_summary.yearly_title')} description={t('regular_summary.yearly_mobile_description')} triggerLabel={t('regular_summary.open_yearly_buckets')} triggerCount={t('regular_summary.yearly_trigger_count', { count: yearlyBuckets.length })}>
+              {yearlyBuckets.map((bucket) => (<div key={`mobile-${bucket.year}`} className="rounded-3xl border border-slate-200 bg-white p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-sm font-semibold text-slate-950">{bucket.year}</p>
@@ -183,13 +151,12 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                     <p className="text-sm font-black text-slate-950">{formatCurrency(bucket.netValue)}</p>
                   </div>
                   <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                    <MobileBucketValue label={t('regular_summary.invested')} value={formatCurrency(bucket.invested)} />
-                    <MobileBucketValue label={t('regular_summary.interest')} value={formatCurrency(bucket.interest)} />
-                    <MobileBucketValue label={t('bonds.tax')} value={formatCurrency(bucket.tax)} />
-                    <MobileBucketValue label={t('regular_summary.net_value')} value={formatCurrency(bucket.netValue)} />
+                    <MobileBucketValue label={t('regular_summary.invested')} value={formatCurrency(bucket.invested)}/>
+                    <MobileBucketValue label={t('regular_summary.interest')} value={formatCurrency(bucket.interest)}/>
+                    <MobileBucketValue label={t('bonds.tax')} value={formatCurrency(bucket.tax)}/>
+                    <MobileBucketValue label={t('regular_summary.net_value')} value={formatCurrency(bucket.netValue)}/>
                   </div>
-                </div>
-              ))}
+                </div>))}
             </ResponsiveTableSheet>
 
             <div className="hidden lg:block">
@@ -205,8 +172,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {yearlyBuckets.map((bucket) => (
-                  <TableRow key={bucket.year}>
+                {yearlyBuckets.map((bucket) => (<TableRow key={bucket.year}>
                     <TableCell className="font-medium">{bucket.year}</TableCell>
                     <TableCell className="text-right">{bucket.lots}</TableCell>
                     <TableCell className="text-right">{formatCurrency(bucket.invested)}</TableCell>
@@ -219,8 +185,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                     <TableCell className="text-right font-semibold">
                       {formatCurrency(bucket.netValue)}
                     </TableCell>
-                  </TableRow>
-                ))}
+                  </TableRow>))}
               </TableBody>
               </Table>
             </div>
@@ -230,7 +195,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
         <Card className="rounded-2xl border shadow-none">
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2 text-lg text-slate-900">
-              <Calendar className="h-5 w-5" />
+              <Calendar className="h-5 w-5"/>
               {t('regular_summary.recent_title')}
             </CardTitle>
             <CardDescription>{t('regular_summary.recent_description')}</CardDescription>
@@ -240,11 +205,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 gap-3">
-              {recentLots.map((lot) => (
-                <div
-                  key={`${lot.purchaseDate}-${lot.maturityDate}-${lot.investedAmount}`}
-                  className="rounded-2xl border p-4"
-                >
+              {recentLots.map((lot) => (<div key={`${lot.purchaseDate}-${lot.maturityDate}-${lot.investedAmount}`} className="rounded-2xl border p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="space-y-1">
                       <p className="text-sm font-semibold text-foreground">
@@ -296,29 +257,21 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                       </p>
                     </div>
                   </div>
-                </div>
-              ))}
+                </div>))}
             </div>
           </CardContent>
         </Card>
       </div>
-    </div>
-  );
+    </div>);
 };
-
-function MobileBucketValue({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
+function MobileBucketValue({ label, value, }: {
+    label: string;
+    value: string;
 }) {
-  return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50/70 px-3 py-2">
+    return (<div className="rounded-2xl border border-slate-200 bg-slate-50/70 px-3 py-2">
       <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
         {label}
       </p>
       <p className="mt-1 text-sm font-semibold text-slate-950">{value}</p>
-    </div>
-  );
+    </div>);
 }
