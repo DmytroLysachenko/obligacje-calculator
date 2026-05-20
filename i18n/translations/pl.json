@@ -52,7 +52,7 @@
     "title": "Inteligentne Wskazówki",
     "edo_better_than_coi": "Przy Twoim horyzoncie (> 4 lata) i prognozowanej inflacji, EDO (10-letnie) mogą być korzystniejsze niż COI (4-letnie) dzięki wyższej marży i kapitalizacji odsetek.",
     "coi_better_than_edo_short": "Dla horyzontu poniżej 4 lat COI oferują lepszą płynność i niższe opłaty za wcześniejszy wykup niż EDO.",
-    "tax_efficiency_ike": "Płacisz znaczący podatek Belki ({{amount}}). Rozważ skorzystanie z konta IKE lub IKZE, aby zatrzymać te środki dla siebie.",
+    "tax_efficiency_ike": "Płacisz znaczący podatek Belki ({amount}). Rozważ skorzystanie z konta IKE lub IKZE, aby zatrzymać te środki dla siebie.",
     "ots_repeated": "Często odnawiasz krótkie obligacje OTS? Przy obecnych stopach NBP, obligacje ROR (1-roczne) lub DOR (2-letnie) mogą oferować wyższą rentowność przy podobnej płynności.",
     "diversification_hint": "Twoja inwestycja jest skoncentrowana w jednym typie obligacji. Rozważ dywersyfikację o obligacje indeksowane inflacją (COI/EDO), aby chronić siłę nabywczą.",
     "ike_limit_warning": "Twoja kwota inwestycji przekracza roczny limit IKE/IKZE. Nadwyżka zostanie opodatkowana standardową stawką 19%."
@@ -279,7 +279,7 @@
     "standard_comparison": "Porównanie z kontem standardowym",
     "wrapper_profit": "Zysk z tarczą",
     "standard_profit": "Zysk standardowy",
-    "savings_notice": "Tarcza podatkowa zaoszczędziła Ci {{amount}} w porównaniu do zwykłego konta.",
+    "savings_notice": "Tarcza podatkowa zaoszczędziła Ci {amount} w porównaniu do zwykłego konta.",
     "show_purchasing_power": "Pokaż wartości siły nabywczej",
     "standard_tax_note": "Standardowo 19%",
     "nbp_rate_label": "Przewidywana stopa NBP (%)",
@@ -288,10 +288,10 @@
     "deflation": "Deflacja",
     "reinvest": "Reinwestuj",
     "rollover_desc": "Odnowienie w terminie wykupu",
-    "discount_per_bond": "Dyskont: -{{amount}} PLN na obligację",
+    "discount_per_bond": "Dyskont: -{amount} PLN na obligację",
     "total_roi": "Całkowity ROI",
     "goal_reached": "Cel osiągnięty!",
-    "goal_progress": "Postęp celu: {{percent}}%",
+    "goal_progress": "Postęp celu: {percent}%",
     "target": "Cel",
     "simulation": {
       "ready": "Gotowy na symulację?",
@@ -346,7 +346,7 @@
     "rate_source": "Źródło stopy",
     "early_exit_payout": "Wypłata przy wcześniejszym wyjściu",
     "wait_capitalization": "Poczekaj! Okazja do kapitalizacji",
-    "wait_capitalization_desc": "Wycofujesz środki tuż przed dużą wypłatą odsetek lub kapitalizacją. Odczekanie kilku dni może zwiększyć Twój zysk netto nawet o {{amount}}.",
+    "wait_capitalization_desc": "Wycofujesz środki tuż przed dużą wypłatą odsetek lub kapitalizacją. Odczekanie kilku dni może zwiększyć Twój zysk netto nawet o {amount}.",
     "rate_context": {
       "floating_style": "NBP + marza",
       "indexed_style": "Inflacja + marza",
@@ -356,16 +356,16 @@
       "fixed_full_term": "Stopa oferty dla calego okresu",
       "fixed_schedule": "Stopa oferty w harmonogramie",
       "later_periods": "Kolejne okresy",
-      "later_nbp_rule": "Stopa referencyjna NBP {{margin}}",
-      "later_cpi_rule": "Inflacja CPI {{margin}}",
-      "floating_narrative": "Pierwszy miesiac korzysta ze stopy aktywnej serii emisyjnej. Dopiero kolejne miesiace przechodza na stope referencyjna NBP {{margin}}.",
-      "indexed_narrative": "Pierwszy rok korzysta ze stopy oferty danej serii. Dopiero kolejne lata przechodza na inflacje CPI {{margin}}.",
+      "later_nbp_rule": "Stopa referencyjna NBP {margin}",
+      "later_cpi_rule": "Inflacja CPI {margin}",
+      "floating_narrative": "Pierwszy miesiac korzysta ze stopy aktywnej serii emisyjnej. Dopiero kolejne miesiace przechodza na stope referencyjna NBP {margin}.",
+      "indexed_narrative": "Pierwszy rok korzysta ze stopy oferty danej serii. Dopiero kolejne lata przechodza na inflacje CPI {margin}.",
       "fixed_narrative": "Ta obligacja zachowuje mechanike stopy z wybranej oferty i nie przechodzi na zewnetrzna stope referencyjna."
     },
     "payout_calculation": "Wyliczenie wypłaty",
     "actual_cash_in_hand": "To rzeczywista kwota gotówki, którą otrzymujesz.",
     "composition": "Struktura wyniku",
-    "tax_fee_breakdown": "Podatek: {{tax}} | Opłata: {{fee}}",
+    "tax_fee_breakdown": "Podatek: {tax} | Opłata: {fee}",
     "how_interest_works": "Jak liczymy odsetki:",
     "interest_indexed_desc": "Indeksowane inflacją: stopa = inflacja + marża. Stosowane do wartości nominalnej.",
     "capitalization_desc": "Capitalization: naliczone odsetki są dodawane do kapitału na kolejny okres.",
@@ -386,14 +386,14 @@
     "rounding_rules": "Zasady zaokrągleń i podatków",
     "rounding_desc": "Wszystkie odsetki są liczone dla pojedynczej obligacji (100 PLN) i zaokrąglane do najbliższego grosza (0,01 PLN).",
     "tax_rounding_desc": "Podatki są pobierane zgodnie z polskim prawem, z zaokrągleniem w momencie wypłaty.",
-    "ike_benefit": "Konto IKE zaoszczędziło około {{amount}} podatku Belki.",
+    "ike_benefit": "Konto IKE zaoszczędziło około {amount} podatku Belki.",
     "key_dates": "Kluczowe daty i kamienie milowe",
     "first_cycle_ends": "Koniec pierwszego cyklu",
     "early_exit_date": "Data wcześniejszego wyjścia",
     "explanation_title": "O tych wynikach",
     "explanation_text": "Te projekcje opierają się na aktualnych warunkach obligacji i wybranych przez Ciebie założeniach makroekonomicznych.",
     "step_by_step": "Obliczenie odsetek krok po kroku",
-    "interest_example_title": "Obliczenia dla roku {{year}}",
+    "interest_example_title": "Obliczenia dla roku {year}",
     "base_value": "Kapitał na początku",
     "plus_interest": "Naliczone odsetki",
     "minus_tax": "Pobrany podatek Belki",
@@ -415,7 +415,7 @@
       "standard_account": "Konto Standardowe",
       "tax_leak_label": "Wyciek Podatkowy",
       "opportunity_cost": "Wyciek Podatkowy (Koszt Alternatywny)",
-      "year": "Rok {{year}}"
+      "year": "Rok {year}"
     },
     "macro_painter": {
       "title": "Malarz Makro",
@@ -436,7 +436,7 @@
       "header_interest": "Odsetki",
       "header_tax": "Podatek",
       "header_value_after": "Wartość Po",
-      "year_label": "Rok {{year}} ({{label}})"
+      "year_label": "Rok {year} ({label})"
     },
     "pdf": {
       "executive_summary": "PODSUMOWANIE",
@@ -459,7 +459,7 @@
       "narrative_maturity": "Ten przebieg utrzymuje obligacje do modelowanej sciezki zapadalnosci, wiec wynik odzwierciedla pelny plan.",
       "narrative_early_exit": "Ten przebieg zaklada wczesniejszy wykup przed pelna zapadalnoscia, wiec oplaty lub utracona kapitalizacja moga obnizyc wynik.",
       "wrapper_limit_title": "Limit opakowania podatkowego zostal osiagniety.",
-      "wrapper_limit_description": "{{wrapperAmount}} pozostalo w opakowaniu, a {{standardAmount}} przeszlo na konto standardowe.",
+      "wrapper_limit_description": "{wrapperAmount} pozostalo w opakowaniu, a {standardAmount} przeszlo na konto standardowe.",
       "scenario_facts_title": "Fakty scenariusza",
       "scenario_facts_description": "Minimalny zestaw parametrow potrzebny do poprawnego odczytu wyniku."
     },
@@ -475,7 +475,7 @@
     },
     "audit": {
       "eyebrow": "Szybki audyt okresu",
-      "title": "Obliczenia dla okresu {{period}}",
+      "title": "Obliczenia dla okresu {period}",
       "description": "To jest skondensowany podglad jednego okresu. Ma pomagac rozumiec skad bierze sie wynik bez zalewania tabela.",
       "rate_source": "Zrodlo stopy",
       "reference_basis": "Punkt odniesienia"
@@ -504,8 +504,8 @@
         "default": "To jest punkt kontrolny pokazujacy wartosc po naliczeniu dla tego okresu."
       },
       "reference": {
-        "base": "Baza {{value}}%",
-        "margin": "Marza {{value}}%"
+        "base": "Baza {value}%",
+        "margin": "Marza {value}%"
       },
       "rate_source": {
         "initial_principal": "Kontekst kapitalu poczatkowego",
@@ -591,6 +591,45 @@
       "description": "Optymalizator, historia wielu aktywów oraz modelowanie wypłat emerytalnych pozostają dostępne w trybie odzyskiwania, ale są celowo oddzielone od głównej listy narzędzi.",
       "usage_hint": "Otwieraj Recovery Lab tylko wtedy, gdy świadomie chcesz sprawdzić bardziej specyficzne lub wrażliwe na założenia strony.",
       "cta": "Otwórz Recovery Lab"
+    },
+    "route_labels": {
+      "primary": "Glowna trasa",
+      "reference": "Kontekst referencyjny",
+      "next": "Kolejny krok"
+    },
+    "recent_work": {
+      "label": "Ostatnia praca",
+      "title": "Wroc do jednego scenariusza.",
+      "description": "Zapisane scenariusze powinny byc szybkim punktem wznowienia, a nie osobnym dashboardem.",
+      "empty": "Brak lokalnie zapisanych scenariuszy. Strona startowa nie musi udawac centrum sterowania, gdy nie ma jeszcze zapisanej pracy."
+    },
+    "start_here": {
+      "title": "Prosta sciezka glowna",
+      "description": "Ta strona ma prowadzic do glownych narzedzi i zachowac prosty, spokojny pierwszy krok."
+    },
+    "secondary_tools": {
+      "title": "Narzedzia drugiego kroku",
+      "description": "Te strony sa nadal dostepne, ale powinny byc odwiedzane dopiero po podstawowym scenariuszu."
+    },
+    "hero_trust_note": "Najpierw jedno czyste obliczenie, dopiero potem porownania, notatnik i scenariusze poboczne.",
+    "hero_trust_strip": {
+      "item_1": "Jedno glowne obliczenie naraz",
+      "item_2": "Czytelny kontekst inflacji i NBP",
+      "item_3": "Strategie dopiero po wyniku bazowym"
+    },
+    "home_steps": {
+      "learn-rules": {
+        "title": "Poznaj zasady",
+        "description": "Zacznij od edukacji albo od razu od pojedynczego kalkulatora, jesli znasz typ obligacji i horyzont."
+      },
+      "run-one": {
+        "title": "Uruchom jedno obliczenie",
+        "description": "Wprowadz jeden zestaw danych, policz scenariusz i sprawdz wynik bez bocznych paneli ani rozpraszaczy."
+      },
+      "expand-later": {
+        "title": "Rozszerz dopiero potem",
+        "description": "Porownanie, regularne inwestowanie, drabina i notatnik maja byc drugim krokiem, nie pierwszym widokiem."
+      }
     }
   },
   "notebook": {
@@ -664,7 +703,7 @@
     "stored_lots_title": "Zapisane partie",
     "stored_lots_desc": "Przejrzyj kazda pozycje jako rekord: typ obligacji, liczbe sztuk, date zakupu i wartosc nominalna.",
     "stored_lots_hint": "Najpierw przeczytaj rekord: typ obligacji, date zakupu, liczbe sztuk i wartosc nominalna.",
-    "lots_count": "{{count}} partii",
+    "lots_count": "{count} partii",
     "liquidity_window_title": "Okno plynnosci",
     "liquidity_window_desc": "Zobacz, ile nominalnej gotowki wraca w najblizszym oknie zapadalnosci.",
     "cash_in_window": "Gotowka w oknie",
@@ -697,10 +736,10 @@
     "tax_optimized_congrats": "Twój portfel jest zoptymalizowany pod kątem podatkowym! ✨",
     "tax_leak_action_required": "Wymagane działanie: Posiadasz {count} dużych partii (np. {type} z {year}) o łącznej wartości {value} poza 'opakowaniem' podatkowym. Rozważ przeniesienie ich do IKE/IKZE, aby uniknąć 19% podatku Belki.",
     "tax_leak_small": "Wykryto mały wyciek podatkowy w {count} partiach. Rozważ użycie IKE/IKZE dla przyszłych zakupów.",
-    "next_days_window": "Najblizsze {{days}} dni",
-    "confirm_delete_portfolio_full": "Usunac portfel \"{{name}}\"? Tej operacji nie mozna cofnac.",
-    "confirm_delete_portfolio_short": "Usunac portfel \"{{name}}\"?",
-    "import_completed_added_lots": "Import zakonczony. Dodano {{count}} partii."
+    "next_days_window": "Najblizsze {days} dni",
+    "confirm_delete_portfolio_full": "Usunac portfel \"{name}\"? Tej operacji nie mozna cofnac.",
+    "confirm_delete_portfolio_short": "Usunac portfel \"{name}\"?",
+    "import_completed_added_lots": "Import zakonczony. Dodano {count} partii."
   },
   "economic": {
     "range_data": "Zakres danych",
@@ -773,7 +812,7 @@
     "loading_chart": "Ładowanie wykresu...",
     "readable_scale": "Czytelna skala",
     "full_scale": "Pełna skala",
-    "inflation_scale_notice": "Tryb czytelny ogranicza wczesny skok, aby reszta serii pozostała czytelna. Szczyt widocznej historii przekracza {{max}}%."
+    "inflation_scale_notice": "Tryb czytelny ogranicza wczesny skok, aby reszta serii pozostała czytelna. Szczyt widocznej historii przekracza {max}%."
   },
   "comparison": {
     "title_bond_vs_bond": "Bond vs Bond",
@@ -812,7 +851,7 @@
     "purchasing_power_loss": "Utrata Siły Nabywczej",
     "start": "Początek",
     "end": "Koniec",
-    "inflation_loss_context": "Z powodu inflacji Twój kapitał stracił prawie {{percent}}% swojej realnej siły nabywczej.",
+    "inflation_loss_context": "Z powodu inflacji Twój kapitał stracił prawie {percent}% swojej realnej siły nabywczej.",
     "savings_context_title": "KONTEKST OSZCZĘDNOŚCI",
     "savings_context_desc": "Oprocentowanie „Konta oszczędnościowego” nie jest jednolite. Zależy ono silnie od banku. Model ten zakłada średnią stopę detaliczną opartą na historycznych marżach NBP (ok. 0,5-2%).",
     "winner": "Zwycięzca",
@@ -886,8 +925,8 @@
     "table_mobile_title": "Porownanie wiersz po wierszu",
     "table_mobile_desc": "Na mniejszych ekranach porownuj scenariusze jako liste punktow zamiast szerokiej tabeli.",
     "table_mobile_trigger": "Otworz tabele porownania",
-    "table_mobile_count": "{{count}} wierszy osi czasu",
-    "table_row_fallback": "Wiersz {{row}}",
+    "table_mobile_count": "{count} wierszy osi czasu",
+    "table_row_fallback": "Wiersz {row}",
     "table_desktop_note": "Tabela potwierdza, gdzie dany scenariusz prowadzi w konkretnym okresie.",
     "table_footer_note": "Znacznik pokazuje tylko, ktora sciezka prowadzi w konkretnym wierszu. Pozniejsze okresy moga odwrocic wczesniejsze prowadzenie.",
     "winning": "WYGRYWA",
@@ -915,7 +954,7 @@
     "comparison_chart_help_desc": "Wykres sluzy do wychwycenia ksztaltu scenariusza. Szczegoly kadencji wyplat i rytmu aktualizacji mozna rozwinac tylko wtedy, gdy sa potrzebne.",
     "comparison_chart_help_note": "Najpierw odczytaj poziom koncowy obu scenariuszy. Dopiero potem patrz na nachylenie linii i odcinki plaskie.",
     "mixed_cadence": "Mieszany rytm",
-    "mixed_cadence_notice": "To porownanie miesza rozne kadencje wyplat: {{bondTypeA}} aktualizuje sie {{cadenceA}}, a {{bondTypeB}} aktualizuje sie {{cadenceB}}.",
+    "mixed_cadence_notice": "To porownanie miesza rozne kadencje wyplat: {bondTypeA} aktualizuje sie {cadenceA}, a {bondTypeB} aktualizuje sie {cadenceB}.",
     "cadence_monthly": "miesiecznie",
     "cadence_longer": "rzadziej",
     "end_level": "Poziom koncowy",
@@ -968,7 +1007,7 @@
     "yearly_badge": "Roczniki",
     "yearly_mobile_description": "Na mniejszych ekranach czytaj roczniki jako liste zamiast szerokiej tabeli.",
     "open_yearly_buckets": "Otworz roczniki",
-    "yearly_trigger_count": "{{count}} rocznikow",
+    "yearly_trigger_count": "{count} rocznikow",
     "lots_label": "Partie",
     "recent_title": "Ostatnie partie",
     "recent_description": "Ostatnie zakupy pomagaja skontrolowac czas wejscia, daty zapadalnosci i wartosc netto pojedynczych partii.",
@@ -1271,7 +1310,7 @@
             "item_23": "Lacznie wyplacono",
             "item_24": "Skumulowane wyplaty w wybranym horyzoncie.",
             "item_25": "Modelowana stopa roczna",
-            "item_26": "Stala stopa uzyta dla {{bond}}.",
+            "item_26": "Stala stopa uzyta dla {bond}.",
             "item_27": "Sciezka salda",
             "item_28": "Ten wykres pokazuje tylko zatwierdzony scenariusz. Probkujemy go rocznie, aby sciezka pozostala czytelna.",
             "item_29": "Zakres",
@@ -1298,7 +1337,7 @@
             "item_50": "Limity modelu i wspierany zakres",
             "item_51": "Otworz to, gdy chcesz zobaczyc ograniczenia stojace za ta powierzchnia wyplat.",
             "item_52": "Limity",
-            "item_53": "Ten przebieg prognozuje wyczerpanie srodkow dnia {{date}}. Uruchom go ponownie z nizsza wyplata, dluzszym sprawdzeniem horyzontu albo inna wspierana rodzina obligacji, zanim wyciagniesz wnioski.",
+            "item_53": "Ten przebieg prognozuje wyczerpanie srodkow dnia {date}. Uruchom go ponownie z nizsza wyplata, dluzszym sprawdzeniem horyzontu albo inna wspierana rodzina obligacji, zanim wyciagniesz wnioski.",
             "item_54": "Konto standardowe (19% podatku)",
             "item_55": "Opakowanie IKE",
             "item_56": "Opakowanie IKZE",
@@ -1477,12 +1516,16 @@
         "one": "rok",
         "few": "lata",
         "many": "lat"
-      }
+      },
+      "horizon_months": "{count, plural, one {# miesiac} few {# miesiace} many {# miesiecy} other {# miesiaca}}",
+      "horizon_years": "{count, plural, one {# rok} few {# lata} many {# lat} other {# roku}}",
+      "duration_months": "{count, plural, one {# miesiac} few {# miesiace} many {# miesiecy} other {# miesiaca}}",
+      "duration_years": "{count, plural, one {# rok} few {# lata} many {# lat} other {# roku}}"
     }
   },
   "retirement": {
-    "supported_bonds_limit": "Wspiera tylko {{bondTypes}} na tej ograniczonej powierzchni.",
-    "ready_step_balance_desc": "Zacznij od {{initialCapital}} i jednej stalej kwoty wyplaty.",
-    "ready_step_horizon_desc": "Biezacy przebieg jest ustawiony na {{horizon}}."
+    "supported_bonds_limit": "Wspiera tylko {bondTypes} na tej ograniczonej powierzchni.",
+    "ready_step_balance_desc": "Zacznij od {initialCapital} i jednej stalej kwoty wyplaty.",
+    "ready_step_horizon_desc": "Biezacy przebieg jest ustawiony na {horizon}."
   }
 }

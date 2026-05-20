@@ -1,25 +1,54 @@
 export * from './context';
+export * from './config';
 
+import {createTranslator} from 'next-intl';
 import en from './translations/en.json';
 import pl from './translations/pl.json';
-import { normalizeTranslations, resolveTranslationNode, resolveTranslationValue } from './translation-utils';
+import {defaultLocale, type Language} from './config';
 
-export const translations = {
-  en: normalizeTranslations(en),
-  pl: normalizeTranslations(pl),
-};
+type TranslationVariables = Record<string, string | number>;
 
-export type Language = keyof typeof translations;
+const messagesByLocale = {
+  en,
+  pl
+} as const;
 
-// Simple server-side t function (defaults to en)
-export function t(key: string, variables?: Record<string, string | number>, lang: Language = 'en'): string {
-  return resolveTranslationValue(translations, lang, key, variables);
+function getTranslator(language: Language = defaultLocale) {
+  return createTranslator({
+    locale: language,
+    messages: messagesByLocale[language]
+  });
+}
+
+function getMessageAtPath(source: unknown, key: string): unknown {
+  return key.split('.').reduce<unknown>((current, segment) => {
+    if (!current || typeof current !== 'object' || Array.isArray(current)) {
+      return undefined;
+    }
+
+    return (current as Record<string, unknown>)[segment];
+  }, source);
+}
+
+export function t(
+  key: string,
+  variables?: TranslationVariables,
+  lang: Language = defaultLocale
+): string {
+  return getTranslator(lang)(key as never, variables as never);
 }
 
 export function tx<T = string>(
   key: string,
-  variables?: Record<string, string | number>,
-  lang: Language = 'en',
+  variables?: TranslationVariables,
+  lang: Language = defaultLocale
 ): T {
-  return resolveTranslationNode(translations, lang, key, variables) as T;
+  const messages = messagesByLocale[lang] ?? messagesByLocale[defaultLocale];
+  const raw = getMessageAtPath(messages, key);
+
+  if (typeof raw === 'string') {
+    return getTranslator(lang)(key as never, variables as never) as T;
+  }
+
+  return raw as T;
 }

@@ -52,7 +52,7 @@
     "title": "Smart Strategy Hints",
     "edo_better_than_coi": "Given your horizon (> 4 years) and projected inflation, EDO (10-year) bonds might be more beneficial than COI (4-year) due to higher margins and annual interest capitalization.",
     "coi_better_than_edo_short": "For a horizon under 4 years, COI bonds offer better liquidity and lower early redemption fees than EDO.",
-    "tax_efficiency_ike": "You are paying significant Belka tax ({{amount}}). Consider using an IKE or IKZE account to keep these funds for yourself.",
+    "tax_efficiency_ike": "You are paying significant Belka tax ({amount}). Consider using an IKE or IKZE account to keep these funds for yourself.",
     "ots_repeated": "Do you often renew short-term OTS bonds? At current NBP rates, ROR (1-year) or DOR (2-year) bonds might offer higher returns with similar liquidity.",
     "diversification_hint": "Your investment is concentrated in one bond type. Consider diversifying with inflation-indexed bonds (COI/EDO) to protect your purchasing power.",
     "ike_limit_warning": "Your investment amount exceeds the annual IKE/IKZE limit. The surplus will be taxed at the standard 19% rate."
@@ -279,7 +279,7 @@
     "standard_comparison": "Standard Account Comparison",
     "wrapper_profit": "Wrapper Profit",
     "standard_profit": "Standard Profit",
-    "savings_notice": "Your tax wrapper saved you {{amount}} compared to a standard account.",
+    "savings_notice": "Your tax wrapper saved you {amount} compared to a standard account.",
     "show_purchasing_power": "Show purchasing power values",
     "standard_tax_note": "Standard is 19%",
     "nbp_rate_label": "Expected NBP Rate (%)",
@@ -288,10 +288,10 @@
     "deflation": "Deflation",
     "reinvest": "Reinvest",
     "rollover_desc": "Rollover at maturity",
-    "discount_per_bond": "Discount: -{{amount}} PLN per bond",
+    "discount_per_bond": "Discount: -{amount} PLN per bond",
     "total_roi": "Total ROI",
     "goal_reached": "Goal Reached!",
-    "goal_progress": "Goal Progress: {{percent}}%",
+    "goal_progress": "Goal Progress: {percent}%",
     "target": "Target",
     "simulation": {
       "ready": "Ready to simulate",
@@ -376,7 +376,7 @@
     "rate_source": "Rate Source",
     "early_exit_payout": "Early Exit Payout",
     "wait_capitalization": "Wait! Capitalization Opportunity",
-    "wait_capitalization_desc": "You are withdrawing just before a major interest payout or capitalization. Waiting a few more days could significantly increase your net profit by up to {{amount}}.",
+    "wait_capitalization_desc": "You are withdrawing just before a major interest payout or capitalization. Waiting a few more days could significantly increase your net profit by up to {amount}.",
     "rate_context": {
       "floating_style": "NBP + margin",
       "indexed_style": "Inflation + margin",
@@ -386,16 +386,16 @@
       "fixed_full_term": "Offer rate for the term",
       "fixed_schedule": "Offer rate in schedule",
       "later_periods": "Later periods",
-      "later_nbp_rule": "NBP reference rate {{margin}}",
-      "later_cpi_rule": "Inflation CPI {{margin}}",
-      "floating_narrative": "The first month uses the active issued offer rate. Later months move onto the NBP reference rate {{margin}}.",
-      "indexed_narrative": "The first year uses the issued offer rate. Later years move onto inflation CPI {{margin}}.",
+      "later_nbp_rule": "NBP reference rate {margin}",
+      "later_cpi_rule": "Inflation CPI {margin}",
+      "floating_narrative": "The first month uses the active issued offer rate. Later months move onto the NBP reference rate {margin}.",
+      "indexed_narrative": "The first year uses the issued offer rate. Later years move onto inflation CPI {margin}.",
       "fixed_narrative": "This bond keeps the issued offer rate mechanics from the selected offer without switching to a floating reference."
     },
     "payout_calculation": "Payout Calculation",
     "actual_cash_in_hand": "The actual cash you get in hand.",
     "composition": "Composition",
-    "tax_fee_breakdown": "Tax: {{tax}} | Fee: {{fee}}",
+    "tax_fee_breakdown": "Tax: {tax} | Fee: {fee}",
     "how_interest_works": "How we calculate interest:",
     "interest_indexed_desc": "Inflation-indexed: Rate = Inflation + Margin. Applied to nominal value.",
     "capitalization_desc": "Capitalization: Earned interest is added to the principal for the next period.",
@@ -416,14 +416,14 @@
     "rounding_rules": "Rounding & Tax Rules",
     "rounding_desc": "All interest is calculated per individual bond (100 PLN) and rounded to the nearest penny (0.01 PLN).",
     "tax_rounding_desc": "Taxes are withheld according to Polish law, with rounding applied at the moment of payout.",
-    "ike_benefit": "IKE wrapper saved approximately {{amount}} in Belka tax.",
+    "ike_benefit": "IKE wrapper saved approximately {amount} in Belka tax.",
     "key_dates": "Key Dates & Milestones",
     "first_cycle_ends": "First Cycle Ends",
     "early_exit_date": "Early Exit Date",
     "explanation_title": "About these results",
     "explanation_text": "These projections are based on current bond terms and your selected macro-economic assumptions.",
     "step_by_step": "Step-by-Step Interest Trace",
-    "interest_example_title": "Year {{year}} Calculation",
+    "interest_example_title": "Year {year} Calculation",
     "base_value": "Principal at Start",
     "plus_interest": "Interest Earned",
     "minus_tax": "Belka Tax Deducted",
@@ -445,7 +445,7 @@
       "standard_account": "Standard Account",
       "tax_leak_label": "Tax Leak",
       "opportunity_cost": "Tax Leak (Opportunity Cost)",
-      "year": "Year {{year}}"
+      "year": "Year {year}"
     },
     "macro_painter": {
       "title": "Macro Painter",
@@ -466,7 +466,7 @@
       "header_interest": "Interest",
       "header_tax": "Tax Withheld",
       "header_value_after": "Value After",
-      "year_label": "Year {{year}} ({{label}})"
+      "year_label": "Year {year} ({label})"
     },
     "pdf": {
       "executive_summary": "EXECUTIVE SUMMARY",
@@ -489,7 +489,7 @@
       "narrative_maturity": "This run holds the bond to the modeled maturity path, so the final payout reflects the full planned cycle.",
       "narrative_early_exit": "This run assumes early redemption before full maturity, so fees or lost compounding may reduce the payout.",
       "wrapper_limit_title": "Tax wrapper limit reached.",
-      "wrapper_limit_description": "{{wrapperAmount}} stayed inside the wrapper, while {{standardAmount}} spilled into a standard account.",
+      "wrapper_limit_description": "{wrapperAmount} stayed inside the wrapper, while {standardAmount} spilled into a standard account.",
       "scenario_facts_title": "Scenario facts",
       "scenario_facts_description": "The minimum set of facts needed to read this run correctly."
     },
@@ -505,7 +505,7 @@
     },
     "audit": {
       "eyebrow": "Quick period audit",
-      "title": "Calculation for {{period}}",
+      "title": "Calculation for {period}",
       "description": "This is a condensed view of one period. It should explain where the result comes from without flooding you with table chrome.",
       "rate_source": "Rate source",
       "reference_basis": "Reference basis"
@@ -534,8 +534,8 @@
         "default": "This is a checkpoint showing value after accrual for this period."
       },
       "reference": {
-        "base": "Base {{value}}%",
-        "margin": "Margin {{value}}%"
+        "base": "Base {value}%",
+        "margin": "Margin {value}%"
       },
       "rate_source": {
         "initial_principal": "Initial principal context",
@@ -621,6 +621,45 @@
       "description": "Optimizer, multi-asset history, and retirement withdrawal modeling remain available, but they stay intentionally separated from the core tool list.",
       "usage_hint": "Open the side lab only when you want to inspect narrower or more assumption-sensitive pages on purpose.",
       "cta": "Open side lab"
+    },
+    "route_labels": {
+      "primary": "Primary route",
+      "reference": "Reference context",
+      "next": "Next step"
+    },
+    "recent_work": {
+      "label": "Recent work",
+      "title": "Return to one saved scenario.",
+      "description": "Saved scenarios should act as a quick resume point, not a separate dashboard.",
+      "empty": "No local saved scenarios yet. The home page should not pretend to be a control center when nothing is saved."
+    },
+    "start_here": {
+      "title": "Simple primary path",
+      "description": "This page should route you into the main tools while keeping the first step calm and obvious."
+    },
+    "secondary_tools": {
+      "title": "Secondary tools",
+      "description": "These pages remain available, but they should be visited only after the primary scenario flow."
+    },
+    "hero_trust_note": "Start with one clean calculation before moving into comparisons, notebook work, or side scenarios.",
+    "hero_trust_strip": {
+      "item_1": "One primary calculation at a time",
+      "item_2": "Readable inflation and NBP context",
+      "item_3": "Strategies only after the baseline result"
+    },
+    "home_steps": {
+      "learn-rules": {
+        "title": "Learn the rules",
+        "description": "Start with education or go straight to the single calculator if you already know the bond type and horizon."
+      },
+      "run-one": {
+        "title": "Run one calculation",
+        "description": "Enter one committed scenario, calculate it cleanly, and read the result without dashboard side panels."
+      },
+      "expand-later": {
+        "title": "Expand only after that",
+        "description": "Comparison, recurring investing, ladder strategy, and notebook should stay secondary, not first."
+      }
     }
   },
   "admin": {
@@ -762,7 +801,7 @@
     "stored_lots_title": "Stored lots",
     "stored_lots_desc": "Review each position as a record entry: bond type, amount, purchase date, and nominal value.",
     "stored_lots_hint": "Read the stored record first: bond type, purchase date, lot size, and nominal value.",
-    "lots_count": "{{count}} lots",
+    "lots_count": "{count} lots",
     "liquidity_window_title": "Liquidity window",
     "liquidity_window_desc": "See how much nominal cash returns inside a short upcoming maturity window.",
     "cash_in_window": "Cash in window",
@@ -795,10 +834,10 @@
     "tax_optimized_congrats": "Your portfolio is tax-optimized! ✨",
     "tax_leak_action_required": "Action Required: You have {count} large lots (e.g., {type} from {year}) totaling {value} outside a tax-free wrapper. Prioritize moving these to IKE/IKZE to avoid 19% Belka tax.",
     "tax_leak_small": "Small tax leak detected in {count} lots. Consider using IKE/IKZE for future purchases.",
-    "next_days_window": "Next {{days}} days",
-    "confirm_delete_portfolio_full": "Delete portfolio \"{{name}}\"? This action cannot be undone.",
-    "confirm_delete_portfolio_short": "Delete portfolio \"{{name}}\"?",
-    "import_completed_added_lots": "Import completed. Added {{count}} lots."
+    "next_days_window": "Next {days} days",
+    "confirm_delete_portfolio_full": "Delete portfolio \"{name}\"? This action cannot be undone.",
+    "confirm_delete_portfolio_short": "Delete portfolio \"{name}\"?",
+    "import_completed_added_lots": "Import completed. Added {count} lots."
   },
   "economic": {
     "subtitle": "Historical context of Polish inflation and interest rates.",
@@ -837,7 +876,7 @@
     "loading_chart": "Loading chart...",
     "readable_scale": "Readable scale",
     "full_scale": "Full scale",
-    "inflation_scale_notice": "Readable mode caps the early spike so the rest of the series stays readable. Peak visible history exceeds {{max}}%.",
+    "inflation_scale_notice": "Readable mode caps the early spike so the rest of the series stays readable. Peak visible history exceeds {max}%.",
     "reference_state": {
       "synced": "Synced",
       "needs_refresh": "Needs refresh",
@@ -882,7 +921,7 @@
     "purchasing_power_loss": "Purchasing Power Loss",
     "start": "Start",
     "end": "End",
-    "inflation_loss_context": "Due to inflation, your capital lost nearly {{percent}}% of its effective buying power.",
+    "inflation_loss_context": "Due to inflation, your capital lost nearly {percent}% of its effective buying power.",
     "savings_context_title": "SAVINGS CONTEXT",
     "savings_context_desc": "\"Savings Account\" interest is not unified. It varies heavily between banks. This model assumes an average retail rate based on historical NBP margins (approx. 0.5-2%).",
     "winner": "Winner",
@@ -956,8 +995,8 @@
     "table_mobile_title": "Row-by-row comparison",
     "table_mobile_desc": "On smaller screens, compare the scenarios as a list of checkpoints instead of a wide table.",
     "table_mobile_trigger": "Open comparison table",
-    "table_mobile_count": "{{count}} timeline rows",
-    "table_row_fallback": "Row {{row}}",
+    "table_mobile_count": "{count} timeline rows",
+    "table_row_fallback": "Row {row}",
     "table_desktop_note": "The table confirms which scenario is ahead in a specific period.",
     "table_footer_note": "The badge shows which path is ahead in that specific row only. Later rows can reverse earlier leads.",
     "winning": "WINS",
@@ -985,7 +1024,7 @@
     "comparison_chart_help_desc": "Use the chart to spot the scenario shape. Payout cadence and update rhythm stay available on demand, not as permanent noise.",
     "comparison_chart_help_note": "Read the final level of both scenarios first. Only then inspect slope changes and flat stretches.",
     "mixed_cadence": "Mixed cadence",
-    "mixed_cadence_notice": "This comparison mixes payout cadences: {{bondTypeA}} updates {{cadenceA}}, while {{bondTypeB}} updates {{cadenceB}}.",
+    "mixed_cadence_notice": "This comparison mixes payout cadences: {bondTypeA} updates {cadenceA}, while {bondTypeB} updates {cadenceB}.",
     "cadence_monthly": "monthly",
     "cadence_longer": "on longer cycles",
     "end_level": "End level",
@@ -1038,7 +1077,7 @@
     "yearly_badge": "Buckets",
     "yearly_mobile_description": "On smaller screens, read yearly buckets as a list instead of a wide table.",
     "open_yearly_buckets": "Open yearly buckets",
-    "yearly_trigger_count": "{{count}} buckets",
+    "yearly_trigger_count": "{count} buckets",
     "lots_label": "Lots",
     "recent_title": "Recent lots",
     "recent_description": "The latest purchases help verify timing, maturity dates, and per-lot net value.",
@@ -1341,7 +1380,7 @@
             "item_23": "Total Withdrawn",
             "item_24": "Cumulative withdrawals inside the selected horizon.",
             "item_25": "Modeled Annual Rate",
-            "item_26": "Steady rate used for {{bond}}.",
+            "item_26": "Steady rate used for {bond}.",
             "item_27": "Balance Path",
             "item_28": "This chart shows the committed scenario only. It is sampled yearly to keep the path readable.",
             "item_29": "Coverage",
@@ -1368,7 +1407,7 @@
             "item_50": "Model limits and supported scope",
             "item_51": "Open this when you want the constraints behind this withdrawal surface.",
             "item_52": "Limits",
-            "item_53": "This run projects depletion on {{date}}. Re-run with a lower withdrawal, longer horizon check, or different supported bond family before drawing conclusions.",
+            "item_53": "This run projects depletion on {date}. Re-run with a lower withdrawal, longer horizon check, or different supported bond family before drawing conclusions.",
             "item_54": "Standard account (19% tax)",
             "item_55": "IKE wrapper",
             "item_56": "IKZE wrapper",
@@ -1543,12 +1582,16 @@
       "duration_year_forms": {
         "one": "year",
         "many": "years"
-      }
+      },
+      "horizon_months": "{count, plural, one {# month} other {# months}}",
+      "horizon_years": "{count, plural, one {# year} other {# years}}",
+      "duration_months": "{count, plural, one {# month} other {# months}}",
+      "duration_years": "{count, plural, one {# year} other {# years}}"
     }
   },
   "retirement": {
-    "supported_bonds_limit": "Supports only {{bondTypes}} in this reduced-scope surface.",
-    "ready_step_balance_desc": "Start from {{initialCapital}} and one fixed withdrawal amount.",
-    "ready_step_horizon_desc": "The current run is staged for {{horizon}}."
+    "supported_bonds_limit": "Supports only {bondTypes} in this reduced-scope surface.",
+    "ready_step_balance_desc": "Start from {initialCapital} and one fixed withdrawal amount.",
+    "ready_step_horizon_desc": "The current run is staged for {horizon}."
   }
 }
