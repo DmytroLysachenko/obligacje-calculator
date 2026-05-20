@@ -3,7 +3,7 @@ import React from 'react';
 import { FileSpreadsheet, FileText, Info, Plus, Save } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { BondInputs, CalculationResult } from '../../bond-core/types';
-import { tx, useLanguage } from '@/i18n';
+import { useLanguage } from '@/i18n';
 import { buildTimelineExportHeaders } from '@/shared/lib/export-headers';
 import { MetricStrip } from '@/shared/components/MetricStrip';
 import { MathDeepDive } from '@/shared/components/MathDeepDive';
@@ -12,6 +12,7 @@ import { ScenarioFactsBlock } from '@/shared/components/ScenarioFactsBlock';
 import { CalculationAuditTrace } from './CalculationAuditTrace';
 import { getAuditTimelinePoint } from '@/shared/lib/bond-display';
 import { buildTimelineCsvFilename, exportTimelineCsv, } from '@/shared/lib/retained-exports';
+import { getIntlLocale } from '@/i18n/locale-utils';
 function getTaxStrategyDisplayLabel(strategy: BondInputs['taxStrategy'], t: (key: string) => string) {
     if (strategy === 'IKE')
         return t('bonds.tax_ike');
@@ -28,7 +29,7 @@ interface BondResultsSummaryProps {
 }
 export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results, inputs, onSaveScenario, onAddToNotebook, onExportPDF, }) => {
     const { t, language } = useLanguage();
-    const formatCurrency = (value: number) => new Intl.NumberFormat(tx("generated.features.single_calculator.components.bond_results_summary.item_1", undefined, language), {
+    const formatCurrency = (value: number) => new Intl.NumberFormat(getIntlLocale(language), {
         style: 'currency',
         currency: 'PLN',
     }).format(value);
@@ -155,3 +156,4 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results,
 const HelpButton = () => (<button className="group" type="button">
     <Info className="h-4 w-4 cursor-help text-muted-foreground transition-colors group-hover:text-primary"/>
   </button>);
+

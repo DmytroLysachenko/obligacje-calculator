@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { Area, AreaChart, Brush, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis, } from 'recharts';
-import { tx, useLanguage } from '@/i18n';
+import { useLanguage } from '@/i18n';
 import { useChartData } from '@/shared/hooks/useChartData';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ReferenceChartFrame } from '@/shared/components/charts/ReferenceChartFrame';
@@ -70,7 +70,7 @@ export const NBPRateChart = ({ period = 'ALL', }: {
       </div>);
     }
     return (<ReferenceChartFrame metaItems={getReferenceMetaItems(response, language)} fallbackNotice={response?.usedFallback
-            ? tx("generated.features.economic_data.components.nbprate_chart.item_1", undefined, language) : tx("generated.features.economic_data.components.nbprate_chart.item_2", undefined, language)} fallbackTone={response?.usedFallback ? 'warning' : 'good'}>
+            ? t("generated.features.economic_data.components.nbprate_chart.item_1", undefined, language) : t("generated.features.economic_data.components.nbprate_chart.item_2", undefined, language)} fallbackTone={response?.usedFallback ? 'warning' : 'good'}>
       <ChartContainer height={420}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={chartData}>
@@ -92,3 +92,4 @@ export const NBPRateChart = ({ period = 'ALL', }: {
       </ChartContainer>
     </ReferenceChartFrame>);
 };
+

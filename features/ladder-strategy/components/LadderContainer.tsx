@@ -3,7 +3,7 @@ import React from 'react';
 import { ListTree, TrendingUp } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { tx, useLanguage } from '@/i18n';
+import { useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
@@ -80,8 +80,8 @@ export const LadderContainer: React.FC = () => {
     const { inputs, results, updateInput, setBondType, isDirty, isCalculating, calculate, envelope, isPersistenceReady, } = useLadder();
     const { t, language } = useLanguage();
     const readingGuide = [
-        tx("generated.features.ladder_strategy.components.ladder_container.item_1", undefined, language),
-        tx("generated.features.ladder_strategy.components.ladder_container.item_2", undefined, language),
+        t("generated.features.ladder_strategy.components.ladder_container.item_1", undefined, language),
+        t("generated.features.ladder_strategy.components.ladder_container.item_2", undefined, language),
     ];
     const handleKeyDown = (event: React.KeyboardEvent) => {
         if (event.key === 'Enter' && (isDirty || !results)) {
@@ -111,13 +111,13 @@ export const LadderContainer: React.FC = () => {
         </div>
 
         {results ? (<div className={cn('space-y-8 transition-opacity duration-200', isCalculating && 'pointer-events-none opacity-50')}>
-            <SecondaryInsightAccordion title={tx("generated.features.ladder_strategy.components.ladder_container.item_3", undefined, language)} description={tx("generated.features.ladder_strategy.components.ladder_container.item_4", undefined, language)} badge={tx("generated.features.ladder_strategy.components.ladder_container.item_5", undefined, language)}>
+            <SecondaryInsightAccordion title={t("generated.features.ladder_strategy.components.ladder_container.item_3", undefined, language)} description={t("generated.features.ladder_strategy.components.ladder_container.item_4", undefined, language)} badge={t("generated.features.ladder_strategy.components.ladder_container.item_5", undefined, language)}>
               <ReadingChecklist items={readingGuide}/>
             </SecondaryInsightAccordion>
 
             <LadderTimeline results={results}/>
 
-            <SecondaryInsightAccordion title={t('bonds.simulation.calculation_context')} description={tx("generated.features.ladder_strategy.components.ladder_container.item_6", undefined, language)} badge={tx("generated.features.ladder_strategy.components.ladder_container.item_7", undefined, language)}>
+            <SecondaryInsightAccordion title={t('bonds.simulation.calculation_context')} description={t("generated.features.ladder_strategy.components.ladder_container.item_6", undefined, language)} badge={t("generated.features.ladder_strategy.components.ladder_container.item_7", undefined, language)}>
               <CalculationMetaPanel warnings={envelope?.warnings} assumptions={envelope?.assumptions} calculationNotes={envelope?.calculationNotes} dataQualityFlags={envelope?.dataQualityFlags} dataFreshness={envelope?.dataFreshness}/>
             </SecondaryInsightAccordion>
           </div>) : null}
@@ -126,3 +126,4 @@ export const LadderContainer: React.FC = () => {
       <RecalculateButton isDirty={isDirty} hasResults={!!results} loading={isCalculating} onClick={() => calculate()}/>
     </CalculatorPageShell>);
 };
+

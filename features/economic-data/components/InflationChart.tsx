@@ -2,7 +2,7 @@
 import React from 'react';
 import { Brush, CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, TooltipProps, XAxis, YAxis, } from 'recharts';
 import { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent';
-import { tx, useLanguage } from '@/i18n';
+import { useLanguage } from '@/i18n';
 import { useChartData } from '@/shared/hooks/useChartData';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ReferenceChartFrame } from '@/shared/components/charts/ReferenceChartFrame';
@@ -95,7 +95,7 @@ export const InflationChart = ({ period = 'ALL', }: {
         </div>} notice={scaleMode === 'readable' && maxRate > clippedMax
             ? t('economic.inflation_scale_notice', { max: maxRate.toFixed(1) })
             : undefined} noticeTone="warning" fallbackNotice={response?.usedFallback
-            ? tx("generated.features.economic_data.components.inflation_chart.item_1", undefined, language) : tx("generated.features.economic_data.components.inflation_chart.item_2", undefined, language)} fallbackTone={response?.usedFallback ? 'warning' : 'good'}>
+            ? t("generated.features.economic_data.components.inflation_chart.item_1", undefined, language) : t("generated.features.economic_data.components.inflation_chart.item_2", undefined, language)} fallbackTone={response?.usedFallback ? 'warning' : 'good'}>
       <ChartContainer height={420}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData}>
@@ -119,3 +119,4 @@ export const InflationChart = ({ period = 'ALL', }: {
       </ChartContainer>
     </ReferenceChartFrame>);
 };
+

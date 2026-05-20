@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '
 import { Switch } from '@/components/ui/switch';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { cn } from '@/lib/utils';
-import { tx, useLanguage } from '@/i18n';
+import { useLanguage } from '@/i18n';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
@@ -66,7 +66,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
                         {formatBondLabel(type)}
                       </span>
                       {isFamilyBondType(type) ? (<span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
-                          {tx("generated.features.comparison_engine.components.scenario_override_card.item_1", undefined, language)}
+                          {t("generated.features.comparison_engine.components.scenario_override_card.item_1", undefined, language)}
                         </span>) : null}
                     </div>
                     <span className="truncate text-sm font-medium text-slate-700">
@@ -90,10 +90,10 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
 
         <div className="rounded-xl border bg-muted/20 p-3">
           <p className="text-sm font-semibold">
-            {tx("generated.features.comparison_engine.components.scenario_override_card.item_2", undefined, language)}
+            {t("generated.features.comparison_engine.components.scenario_override_card.item_2", undefined, language)}
           </p>
           <p className="mt-1 text-xs leading-5 text-muted-foreground">
-            {tx("generated.features.comparison_engine.components.scenario_override_card.item_3", undefined, language)}
+            {t("generated.features.comparison_engine.components.scenario_override_card.item_3", undefined, language)}
           </p>
         </div>
 
@@ -155,3 +155,4 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
       </CardContent>
     </Card>);
 };
+

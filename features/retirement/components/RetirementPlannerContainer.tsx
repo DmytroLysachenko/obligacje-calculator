@@ -20,7 +20,7 @@ import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';
 import { formatCurrency } from '@/lib/utils';
-import { tx, useLanguage } from '@/i18n';
+import { useLanguage } from '@/i18n';
 function formatRate(value: number) {
     return `${value.toFixed(2)}%`;
 }
@@ -80,7 +80,7 @@ const SupportList = ({ title, items, emptyLabel, }: {
     </CardContent>
   </Card>);
 export const RetirementPlannerContainer: React.FC = () => {
-    const { language } = useLanguage();
+    const { t, language } = useLanguage();
     const { isCalculating, post } = useCalculationRequest();
     const [inputs, setInputs] = useState<RetirementInputs>(DEFAULT_INPUTS);
     const [isDirty, setIsDirty] = useState(true);
@@ -115,71 +115,71 @@ export const RetirementPlannerContainer: React.FC = () => {
         return formatHorizonMonths((finalMonth.year * 12) + finalMonth.month, language);
     }, [language, results]);
     const labels = {
-        pageTitle: tx("generated.features.retirement.components.retirement_planner_container.item_1", undefined, language),
-        pageDescription: tx("generated.features.retirement.components.retirement_planner_container.item_2", undefined, language),
-        primaryInputs: tx("generated.features.retirement.components.retirement_planner_container.item_3", undefined, language),
-        primaryInputsDesc: tx("generated.features.retirement.components.retirement_planner_container.item_4", undefined, language),
-        initialCapital: tx("generated.features.retirement.components.retirement_planner_container.item_5", undefined, language),
-        monthlyWithdrawal: tx("generated.features.retirement.components.retirement_planner_container.item_6", undefined, language),
-        scenarioHorizon: tx("generated.features.retirement.components.retirement_planner_container.item_7", undefined, language),
-        bondFamily: tx("generated.features.retirement.components.retirement_planner_container.item_8", undefined, language),
-        advancedAssumptions: tx("generated.features.retirement.components.retirement_planner_container.item_9", undefined, language),
-        advancedAssumptionsDesc: tx("generated.features.retirement.components.retirement_planner_container.item_10", undefined, language),
-        expectedInflation: tx("generated.features.retirement.components.retirement_planner_container.item_11", undefined, language),
-        expectedNbpRate: tx("generated.features.retirement.components.retirement_planner_container.item_12", undefined, language),
-        taxWrapper: tx("generated.features.retirement.components.retirement_planner_container.item_13", undefined, language),
-        floatingActionNote: tx("generated.features.retirement.components.retirement_planner_container.item_14", undefined, language),
-        staleResults: tx("generated.features.retirement.components.retirement_planner_container.item_15", undefined, language),
-        scenarioStatus: tx("generated.features.retirement.components.retirement_planner_container.item_16", undefined, language),
-        balancePositive: tx("generated.features.retirement.components.retirement_planner_container.item_17", undefined, language),
-        balanceDepletes: tx("generated.features.retirement.components.retirement_planner_container.item_18", undefined, language),
-        projectedExhaustion: tx("generated.features.retirement.components.retirement_planner_container.item_19", undefined, language),
-        noProjectedDepletion: tx("generated.features.retirement.components.retirement_planner_container.item_20", undefined, language),
-        finalBalance: tx("generated.features.retirement.components.retirement_planner_container.item_21", undefined, language),
-        finalBalanceDetail: tx("generated.features.retirement.components.retirement_planner_container.item_22", undefined, language),
-        totalWithdrawn: tx("generated.features.retirement.components.retirement_planner_container.item_23", undefined, language),
-        totalWithdrawnDetail: tx("generated.features.retirement.components.retirement_planner_container.item_24", undefined, language),
-        modeledAnnualRate: tx("generated.features.retirement.components.retirement_planner_container.item_25", undefined, language),
-        modeledAnnualRateDetail: tx("generated.features.retirement.components.retirement_planner_container.item_26", undefined, language),
-        balancePath: tx("generated.features.retirement.components.retirement_planner_container.item_27", undefined, language),
-        balancePathDesc: tx("generated.features.retirement.components.retirement_planner_container.item_28", undefined, language),
-        coverage: tx("generated.features.retirement.components.retirement_planner_container.item_29", undefined, language),
-        taxPaid: tx("generated.features.retirement.components.retirement_planner_container.item_30", undefined, language),
-        howToRead: tx("generated.features.retirement.components.retirement_planner_container.item_31", undefined, language),
-        howToReadDesc: tx("generated.features.retirement.components.retirement_planner_container.item_32", undefined, language),
-        balance: tx("generated.features.retirement.components.retirement_planner_container.item_33", undefined, language),
-        withdrawal: tx("generated.features.retirement.components.retirement_planner_container.item_34", undefined, language),
-        assumptionsAndWarnings: tx("generated.features.retirement.components.retirement_planner_container.item_35", undefined, language),
-        assumptionsAndWarningsDesc: tx("generated.features.retirement.components.retirement_planner_container.item_36", undefined, language),
-        audit: tx("generated.features.retirement.components.retirement_planner_container.item_37", undefined, language),
-        assumptions: tx("generated.features.retirement.components.retirement_planner_container.item_38", undefined, language),
-        warningsAndNotes: tx("generated.features.retirement.components.retirement_planner_container.item_39", undefined, language),
-        noExtraAssumptions: tx("generated.features.retirement.components.retirement_planner_container.item_40", undefined, language),
-        noExtraWarnings: tx("generated.features.retirement.components.retirement_planner_container.item_41", undefined, language),
-        readyBadge: tx("generated.features.retirement.components.retirement_planner_container.item_42", undefined, language),
-        readyTitle: tx("generated.features.retirement.components.retirement_planner_container.item_43", undefined, language),
-        readyDesc: tx("generated.features.retirement.components.retirement_planner_container.item_44", undefined, language),
-        readyStepBalance: tx("generated.features.retirement.components.retirement_planner_container.item_45", undefined, language),
-        readyStepHorizon: tx("generated.features.retirement.components.retirement_planner_container.item_46", undefined, language),
-        readyStepRead: tx("generated.features.retirement.components.retirement_planner_container.item_47", undefined, language),
-        readyStepReadDesc: tx("generated.features.retirement.components.retirement_planner_container.item_48", undefined, language),
-        readyFooter: tx("generated.features.retirement.components.retirement_planner_container.item_49", undefined, language),
-        limitsTitle: tx("generated.features.retirement.components.retirement_planner_container.item_50", undefined, language),
-        limitsDesc: tx("generated.features.retirement.components.retirement_planner_container.item_51", undefined, language),
-        limitsBadge: tx("generated.features.retirement.components.retirement_planner_container.item_52", undefined, language),
-        depletionWarning: tx("generated.features.retirement.components.retirement_planner_container.item_53", undefined, language),
+        pageTitle: t("generated.features.retirement.components.retirement_planner_container.item_1", undefined, language),
+        pageDescription: t("generated.features.retirement.components.retirement_planner_container.item_2", undefined, language),
+        primaryInputs: t("generated.features.retirement.components.retirement_planner_container.item_3", undefined, language),
+        primaryInputsDesc: t("generated.features.retirement.components.retirement_planner_container.item_4", undefined, language),
+        initialCapital: t("generated.features.retirement.components.retirement_planner_container.item_5", undefined, language),
+        monthlyWithdrawal: t("generated.features.retirement.components.retirement_planner_container.item_6", undefined, language),
+        scenarioHorizon: t("generated.features.retirement.components.retirement_planner_container.item_7", undefined, language),
+        bondFamily: t("generated.features.retirement.components.retirement_planner_container.item_8", undefined, language),
+        advancedAssumptions: t("generated.features.retirement.components.retirement_planner_container.item_9", undefined, language),
+        advancedAssumptionsDesc: t("generated.features.retirement.components.retirement_planner_container.item_10", undefined, language),
+        expectedInflation: t("generated.features.retirement.components.retirement_planner_container.item_11", undefined, language),
+        expectedNbpRate: t("generated.features.retirement.components.retirement_planner_container.item_12", undefined, language),
+        taxWrapper: t("generated.features.retirement.components.retirement_planner_container.item_13", undefined, language),
+        floatingActionNote: t("generated.features.retirement.components.retirement_planner_container.item_14", undefined, language),
+        staleResults: t("generated.features.retirement.components.retirement_planner_container.item_15", undefined, language),
+        scenarioStatus: t("generated.features.retirement.components.retirement_planner_container.item_16", undefined, language),
+        balancePositive: t("generated.features.retirement.components.retirement_planner_container.item_17", undefined, language),
+        balanceDepletes: t("generated.features.retirement.components.retirement_planner_container.item_18", undefined, language),
+        projectedExhaustion: t("generated.features.retirement.components.retirement_planner_container.item_19", undefined, language),
+        noProjectedDepletion: t("generated.features.retirement.components.retirement_planner_container.item_20", undefined, language),
+        finalBalance: t("generated.features.retirement.components.retirement_planner_container.item_21", undefined, language),
+        finalBalanceDetail: t("generated.features.retirement.components.retirement_planner_container.item_22", undefined, language),
+        totalWithdrawn: t("generated.features.retirement.components.retirement_planner_container.item_23", undefined, language),
+        totalWithdrawnDetail: t("generated.features.retirement.components.retirement_planner_container.item_24", undefined, language),
+        modeledAnnualRate: t("generated.features.retirement.components.retirement_planner_container.item_25", undefined, language),
+        modeledAnnualRateDetail: t("generated.features.retirement.components.retirement_planner_container.item_26", undefined, language),
+        balancePath: t("generated.features.retirement.components.retirement_planner_container.item_27", undefined, language),
+        balancePathDesc: t("generated.features.retirement.components.retirement_planner_container.item_28", undefined, language),
+        coverage: t("generated.features.retirement.components.retirement_planner_container.item_29", undefined, language),
+        taxPaid: t("generated.features.retirement.components.retirement_planner_container.item_30", undefined, language),
+        howToRead: t("generated.features.retirement.components.retirement_planner_container.item_31", undefined, language),
+        howToReadDesc: t("generated.features.retirement.components.retirement_planner_container.item_32", undefined, language),
+        balance: t("generated.features.retirement.components.retirement_planner_container.item_33", undefined, language),
+        withdrawal: t("generated.features.retirement.components.retirement_planner_container.item_34", undefined, language),
+        assumptionsAndWarnings: t("generated.features.retirement.components.retirement_planner_container.item_35", undefined, language),
+        assumptionsAndWarningsDesc: t("generated.features.retirement.components.retirement_planner_container.item_36", undefined, language),
+        audit: t("generated.features.retirement.components.retirement_planner_container.item_37", undefined, language),
+        assumptions: t("generated.features.retirement.components.retirement_planner_container.item_38", undefined, language),
+        warningsAndNotes: t("generated.features.retirement.components.retirement_planner_container.item_39", undefined, language),
+        noExtraAssumptions: t("generated.features.retirement.components.retirement_planner_container.item_40", undefined, language),
+        noExtraWarnings: t("generated.features.retirement.components.retirement_planner_container.item_41", undefined, language),
+        readyBadge: t("generated.features.retirement.components.retirement_planner_container.item_42", undefined, language),
+        readyTitle: t("generated.features.retirement.components.retirement_planner_container.item_43", undefined, language),
+        readyDesc: t("generated.features.retirement.components.retirement_planner_container.item_44", undefined, language),
+        readyStepBalance: t("generated.features.retirement.components.retirement_planner_container.item_45", undefined, language),
+        readyStepHorizon: t("generated.features.retirement.components.retirement_planner_container.item_46", undefined, language),
+        readyStepRead: t("generated.features.retirement.components.retirement_planner_container.item_47", undefined, language),
+        readyStepReadDesc: t("generated.features.retirement.components.retirement_planner_container.item_48", undefined, language),
+        readyFooter: t("generated.features.retirement.components.retirement_planner_container.item_49", undefined, language),
+        limitsTitle: t("generated.features.retirement.components.retirement_planner_container.item_50", undefined, language),
+        limitsDesc: t("generated.features.retirement.components.retirement_planner_container.item_51", undefined, language),
+        limitsBadge: t("generated.features.retirement.components.retirement_planner_container.item_52", undefined, language),
+        depletionWarning: t("generated.features.retirement.components.retirement_planner_container.item_53", undefined, language),
     } as const;
     const taxStrategyLabels: Record<TaxStrategy, string> = {
-        [TaxStrategy.STANDARD]: tx("generated.features.retirement.components.retirement_planner_container.item_54", undefined, language),
-        [TaxStrategy.IKE]: tx("generated.features.retirement.components.retirement_planner_container.item_55", undefined, language),
-        [TaxStrategy.IKZE]: tx("generated.features.retirement.components.retirement_planner_container.item_56", undefined, language),
+        [TaxStrategy.STANDARD]: t("generated.features.retirement.components.retirement_planner_container.item_54", undefined, language),
+        [TaxStrategy.IKE]: t("generated.features.retirement.components.retirement_planner_container.item_55", undefined, language),
+        [TaxStrategy.IKZE]: t("generated.features.retirement.components.retirement_planner_container.item_56", undefined, language),
     };
     const modelLimits = [
-        tx("generated.features.retirement.components.retirement_planner_container.item_57", undefined, language),
-        tx('retirement.supported_bonds_limit', {
+        t("generated.features.retirement.components.retirement_planner_container.item_57", undefined, language),
+        t('retirement.supported_bonds_limit', {
             bondTypes: RETIREMENT_SUPPORTED_BOND_TYPES.join(', '),
         }, language),
-        tx("generated.features.retirement.components.retirement_planner_container.item_58", undefined, language),
+        t("generated.features.retirement.components.retirement_planner_container.item_58", undefined, language),
     ];
     const updateInput = <K extends keyof RetirementInputs>(key: K, value: RetirementInputs[K]) => {
         setInputs((prev) => ({ ...prev, [key]: value }));
@@ -420,14 +420,14 @@ export const RetirementPlannerContainer: React.FC = () => {
                 {
                     id: 'balance-path',
                     title: labels.readyStepBalance,
-                    description: tx('retirement.ready_step_balance_desc', {
+                    description: t('retirement.ready_step_balance_desc', {
                         initialCapital: formatCurrency(inputs.initialCapital),
                     }, language),
                 },
                 {
                     id: 'horizon',
                     title: labels.readyStepHorizon,
-                    description: tx('retirement.ready_step_horizon_desc', {
+                    description: t('retirement.ready_step_horizon_desc', {
                         horizon: formatHorizonMonths(inputs.horizonYears * 12, language),
                     }, language),
                 },
@@ -458,3 +458,4 @@ export const RetirementPlannerContainer: React.FC = () => {
       <RecalculateButton isDirty={isDirty} loading={isCalculating} hasResults={!!results} onClick={handleCalculate}/>
     </CalculatorPageShell>);
 };
+

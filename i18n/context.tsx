@@ -1,9 +1,8 @@
 'use client';
 
 import {createContext, useContext} from 'react';
-import {useLocale, useMessages, useTranslations} from 'next-intl';
+import {useLocale, useTranslations} from 'next-intl';
 import {useRouter} from 'next/navigation';
-import type {AbstractIntlMessages} from 'next-intl';
 import {defaultLocale, type Language, isSupportedLocale} from './config';
 
 type TranslationVariables = Record<string, string | number>;
@@ -11,26 +10,14 @@ type TranslationVariables = Record<string, string | number>;
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string, variables?: TranslationVariables) => string;
-  tx: <T = string>(key: string, variables?: TranslationVariables) => T;
+  t: (key: string, variables?: TranslationVariables, language?: Language) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-function getMessageAtPath(messages: AbstractIntlMessages, key: string): unknown {
-  return key.split('.').reduce<unknown>((current, segment) => {
-    if (!current || typeof current !== 'object' || Array.isArray(current)) {
-      return undefined;
-    }
-
-    return (current as Record<string, unknown>)[segment];
-  }, messages);
-}
-
 export function LanguageProvider({children}: {children: React.ReactNode}) {
   const router = useRouter();
   const locale = useLocale();
-  const messages = useMessages();
   const translator = useTranslations();
   const language = isSupportedLocale(locale) ? locale : defaultLocale;
 
@@ -46,18 +33,8 @@ export function LanguageProvider({children}: {children: React.ReactNode}) {
   const t = (key: string, variables?: TranslationVariables) =>
     translator(key as never, variables as never);
 
-  const tx = <T = string,>(key: string, variables?: TranslationVariables): T => {
-    const raw = getMessageAtPath(messages, key);
-
-    if (typeof raw === 'string') {
-      return translator(key as never, variables as never) as T;
-    }
-
-    return raw as T;
-  };
-
   return (
-    <LanguageContext.Provider value={{language, setLanguage, t, tx}}>
+    <LanguageContext.Provider value={{language, setLanguage, t}}>
       {children}
     </LanguageContext.Provider>
   );

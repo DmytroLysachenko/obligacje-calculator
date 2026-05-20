@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { BarChart2, Calendar, FlaskConical, ShieldAlert, TrendingUp } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { FeatureStatusNotice, FeatureStatusPill } from '@/shared/components/FeatureStatusNotice';
-import { tx, useLanguage } from '@/i18n';
+import { useLanguage } from '@/i18n';
 const recoveryLabPages = [
     {
         href: '/optimize',
@@ -26,7 +26,7 @@ const recoveryLabPages = [
 ];
 export default function RecoveryLabPage() {
     const { t, language } = useLanguage();
-    const intro = tx("generated.app.recovery_lab.page.item_1", undefined, language);
+    const intro = t("generated.app.recovery_lab.page.item_1", undefined, language);
     return (<div className="space-y-8">
       <Card className="rounded-[2rem] border border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.88),rgba(248,250,252,0.92))] shadow-[0_20px_52px_-46px_rgba(15,23,42,0.42)] backdrop-blur">
         <CardContent className="space-y-4 p-6 md:p-8">
@@ -43,7 +43,7 @@ export default function RecoveryLabPage() {
         </CardContent>
       </Card>
 
-      <FeatureStatusNotice status="experimental" eyebrow={tx("generated.app.recovery_lab.page.item_2", undefined, language)} title={t('landing.recovery_lab_page.why_separated')}>
+      <FeatureStatusNotice status="experimental" eyebrow={t("generated.app.recovery_lab.page.item_2", undefined, language)} title={t('landing.recovery_lab_page.why_separated')}>
         {t('landing.recovery_lab_page.why_separated_desc')}
       </FeatureStatusNotice>
 
@@ -66,7 +66,7 @@ export default function RecoveryLabPage() {
                   </p>
                 </div>
                 <div className="rounded-2xl border border-white/80 bg-white/70 px-4 py-3 text-sm leading-6 text-slate-600">
-                  {tx("generated.app.recovery_lab.page.item_3", undefined, language)}
+                  {t("generated.app.recovery_lab.page.item_3", undefined, language)}
                 </div>
                 <div className="rounded-2xl border border-amber-200/80 bg-white/80 px-4 py-3 text-sm leading-7 text-slate-700">
                   {t('landing.recovery_lab_page.card_notice')}
@@ -95,3 +95,4 @@ export default function RecoveryLabPage() {
       </Card>
     </div>);
 }
+

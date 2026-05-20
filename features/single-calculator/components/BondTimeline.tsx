@@ -3,7 +3,7 @@ import React, { useDeferredValue, useMemo, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from '@/components/ui/table';
 import { CalculationResult } from '../../bond-core/types';
 import { SimulationEventType } from '../../bond-core/types/simulation';
-import { tx, useLanguage } from '@/i18n';
+import { useLanguage } from '@/i18n';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,7 @@ import { Search, Filter, ChevronDown, ChevronUp, RotateCcw } from 'lucide-react'
 import { Button } from '@/components/ui/button';
 import { ResponsiveTableSheet } from '@/shared/components/ResponsiveTableSheet';
 import { AppLanguage, buildBondTimelineDisplayRows, getSimulationEventDisplayLabel, } from '@/shared/lib/bond-display';
+import { getIntlLocale } from '@/i18n/locale-utils';
 interface BondTimelineProps {
     results: CalculationResult;
 }
@@ -39,7 +40,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
     const formatCurrency = React.useMemo(() => (value: number) => {
         if (!hasMounted)
             return '---';
-        return new Intl.NumberFormat(tx("generated.features.single_calculator.components.bond_timeline.item_1", undefined, language), {
+        return new Intl.NumberFormat(getIntlLocale(language), {
             style: 'currency',
             currency: 'PLN',
         }).format(value);
@@ -85,14 +86,14 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
     return (<div className="space-y-4">
       <div className="space-y-4 rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
         <div className="grid gap-3 md:grid-cols-3">
-          <TimelineStat label={tx("generated.features.single_calculator.components.bond_timeline.item_2", undefined, language)} value={visibleRangeLabel}/>
-          <TimelineStat label={tx("generated.features.single_calculator.components.bond_timeline.item_3", undefined, language)} value={String(projectionCount)}/>
-          <TimelineStat label={tx("generated.features.single_calculator.components.bond_timeline.item_4", undefined, language)} value={String(exitMarkers)}/>
+          <TimelineStat label={t("generated.features.single_calculator.components.bond_timeline.item_2", undefined, language)} value={visibleRangeLabel}/>
+          <TimelineStat label={t("generated.features.single_calculator.components.bond_timeline.item_3", undefined, language)} value={String(projectionCount)}/>
+          <TimelineStat label={t("generated.features.single_calculator.components.bond_timeline.item_4", undefined, language)} value={String(exitMarkers)}/>
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-white/85 px-4 py-3">
           <p className="text-sm leading-7 text-slate-600">
-            {tx("generated.features.single_calculator.components.bond_timeline.item_5", undefined, language)}
+            {t("generated.features.single_calculator.components.bond_timeline.item_5", undefined, language)}
           </p>
         </div>
 
@@ -122,13 +123,13 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
 
             {activeFilterCount > 0 ? (<Button type="button" variant="outline" size="sm" className="gap-2 rounded-xl" onClick={resetFilters}>
                 <RotateCcw className="h-4 w-4"/>
-                {tx("generated.features.single_calculator.components.bond_timeline.item_6", undefined, language)}
+                {t("generated.features.single_calculator.components.bond_timeline.item_6", undefined, language)}
               </Button>) : null}
           </div>
         </div>
       </div>
 
-      <ResponsiveTableSheet title={tx("generated.features.single_calculator.components.bond_timeline.item_7", undefined, language)} description={tx("generated.features.single_calculator.components.bond_timeline.item_8", undefined, language)} triggerLabel={tx("generated.features.single_calculator.components.bond_timeline.item_9", undefined, language)} triggerCount={`${filteredTimeline.length} ${tx("generated.features.single_calculator.components.bond_timeline.item_10", undefined, language)}`}>
+      <ResponsiveTableSheet title={t("generated.features.single_calculator.components.bond_timeline.item_7", undefined, language)} description={t("generated.features.single_calculator.components.bond_timeline.item_8", undefined, language)} triggerLabel={t("generated.features.single_calculator.components.bond_timeline.item_9", undefined, language)} triggerCount={`${filteredTimeline.length} ${t("generated.features.single_calculator.components.bond_timeline.item_10", undefined, language)}`}>
         {displayedTimeline.map((row) => (<div key={`mobile-${row.key}`} className="rounded-3xl border border-slate-200 bg-white p-4 shadow-none">
             <div className="flex items-start justify-between gap-3">
               <div className="space-y-1">
@@ -152,12 +153,12 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
               </div>) : null}
 
             <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-              <MobileValue label={tx("generated.features.single_calculator.components.bond_timeline.item_11", undefined, language)} value={row.interestRateLabel}/>
-              <MobileValue label={tx("generated.features.single_calculator.components.bond_timeline.item_12", undefined, language)} value={formatCurrency(row.earlyExitValue)}/>
+              <MobileValue label={t("generated.features.single_calculator.components.bond_timeline.item_11", undefined, language)} value={row.interestRateLabel}/>
+              <MobileValue label={t("generated.features.single_calculator.components.bond_timeline.item_12", undefined, language)} value={formatCurrency(row.earlyExitValue)}/>
               <MobileValue label={row.cashFlowLabel} value={formatCurrency(row.paidOutCash)}/>
-              <MobileValue label={tx("generated.features.single_calculator.components.bond_timeline.item_13", undefined, language)} value={formatCurrency(row.netProfit)}/>
-              <MobileValue label={tx("generated.features.single_calculator.components.bond_timeline.item_14", undefined, language)} value={formatCurrency(row.realValue)}/>
-              <MobileValue label={tx("generated.features.single_calculator.components.bond_timeline.item_15", undefined, language)} value={row.rateSourceLabel}/>
+              <MobileValue label={t("generated.features.single_calculator.components.bond_timeline.item_13", undefined, language)} value={formatCurrency(row.netProfit)}/>
+              <MobileValue label={t("generated.features.single_calculator.components.bond_timeline.item_14", undefined, language)} value={formatCurrency(row.realValue)}/>
+              <MobileValue label={t("generated.features.single_calculator.components.bond_timeline.item_15", undefined, language)} value={row.rateSourceLabel}/>
             </div>
 
             {row.referenceLabel ? (<p className="mt-3 text-xs leading-5 text-slate-500">{row.referenceLabel}</p>) : null}
@@ -172,22 +173,22 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
                 {t('common.period')}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[18%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {tx("generated.features.single_calculator.components.bond_timeline.item_16", undefined, language)}
+                {t("generated.features.single_calculator.components.bond_timeline.item_16", undefined, language)}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[17%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {tx("generated.features.single_calculator.components.bond_timeline.item_17", undefined, language)}
+                {t("generated.features.single_calculator.components.bond_timeline.item_17", undefined, language)}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {tx("generated.features.single_calculator.components.bond_timeline.item_18", undefined, language)}
+                {t("generated.features.single_calculator.components.bond_timeline.item_18", undefined, language)}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {displayedTimeline[0]?.cashFlowLabel ?? (tx("generated.features.single_calculator.components.bond_timeline.item_19", undefined, language))}
+                {displayedTimeline[0]?.cashFlowLabel ?? (t("generated.features.single_calculator.components.bond_timeline.item_19", undefined, language))}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {tx("generated.features.single_calculator.components.bond_timeline.item_20", undefined, language)}
+                {t("generated.features.single_calculator.components.bond_timeline.item_20", undefined, language)}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {tx("generated.features.single_calculator.components.bond_timeline.item_21", undefined, language)}
+                {t("generated.features.single_calculator.components.bond_timeline.item_21", undefined, language)}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[12%] bg-slate-50/95 text-right text-xs font-semibold text-slate-600">
                 {t('bonds.early_exit_payout')}
@@ -269,7 +270,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
             {activeFilterCount > 0 ? (<div className="flex justify-center">
                 <Button type="button" variant="outline" size="sm" className="gap-2 rounded-xl" onClick={resetFilters}>
                   <RotateCcw className="h-4 w-4"/>
-                  {tx("generated.features.single_calculator.components.bond_timeline.item_22", undefined, language)}
+                  {t("generated.features.single_calculator.components.bond_timeline.item_22", undefined, language)}
                 </Button>
               </div>) : null}
           </div>) : null}
@@ -287,3 +288,4 @@ function MobileValue({ label, value, }: {
       <p className="mt-1 text-sm font-semibold text-slate-950">{value}</p>
     </div>);
 }
+

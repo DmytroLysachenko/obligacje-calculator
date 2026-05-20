@@ -11,7 +11,7 @@ import { CalendarIcon, AlertCircle, HelpCircle } from 'lucide-react';
 import { format, parseISO, isAfter } from 'date-fns';
 import { BondInputs, TaxStrategy } from '@/features/bond-core/types';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
-import { tx, useLanguage } from '@/i18n';
+import { useLanguage } from '@/i18n';
 import { GLOSSARY } from '@/shared/constants/glossary';
 import { toDateString } from '@/shared/lib/date-timing';
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';
@@ -91,7 +91,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
             {formatHorizonMonths(investmentHorizonMonths, language)}
           </span>
         </div>
-        <CommittedSliderInput value={investmentHorizonMonths} min={1} max={360} step={1} unit={tx("generated.features.single_calculator.components.sections.bond_timing_section.item_1", undefined, language)} onCommit={(value) => onUpdate('investmentHorizonMonths', value)}/>
+        <CommittedSliderInput value={investmentHorizonMonths} min={1} max={360} step={1} unit={t("generated.features.single_calculator.components.sections.bond_timing_section.item_1", undefined, language)} onCommit={(value) => onUpdate('investmentHorizonMonths', value)}/>
       </div>
 
       <div className="space-y-3">
@@ -141,14 +141,15 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
       <div className="rounded-xl border border-primary/10 bg-primary/5 p-4">
         <div className="space-y-0.5">
           <Label className="text-sm font-bold text-primary">
-            {tx("generated.features.single_calculator.components.sections.bond_timing_section.item_2", undefined, language)}
+            {t("generated.features.single_calculator.components.sections.bond_timing_section.item_2", undefined, language)}
           </Label>
           <p className="text-[10px] font-medium italic text-muted-foreground">
             {autoRollover
-            ? tx("generated.features.single_calculator.components.sections.bond_timing_section.item_3", undefined, language) : tx("generated.features.single_calculator.components.sections.bond_timing_section.item_4", undefined, language)}
+            ? t("generated.features.single_calculator.components.sections.bond_timing_section.item_3", undefined, language) : t("generated.features.single_calculator.components.sections.bond_timing_section.item_4", undefined, language)}
           </p>
         </div>
       </div>
     </div>);
 });
 BondTimingSection.displayName = 'BondTimingSection';
+

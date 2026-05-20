@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Loader2, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { tx, useLanguage } from '@/i18n';
+import { useLanguage } from '@/i18n';
 interface RecalculateButtonProps {
     isDirty: boolean;
     loading: boolean;
@@ -20,8 +20,8 @@ export const RecalculateButton = ({ isDirty, loading, hasResults = true, disable
     const isInitialRun = !hasResults && !loading;
     const isActionable = !loading && !disabled;
     const helperText = loading
-        ? tx("generated.shared.components.recalculate_button.item_1", undefined, language) : isInitialRun
-        ? tx("generated.shared.components.recalculate_button.item_2", undefined, language) : tx("generated.shared.components.recalculate_button.item_3", undefined, language);
+        ? t("generated.shared.components.recalculate_button.item_1", undefined, language) : isInitialRun
+        ? t("generated.shared.components.recalculate_button.item_2", undefined, language) : t("generated.shared.components.recalculate_button.item_3", undefined, language);
     return (<div className="fixed inset-x-3 bottom-3 z-50 sm:inset-x-auto sm:bottom-5 sm:right-5 sm:w-[min(22rem,calc(100vw-1.5rem))]">
       <div className="rounded-[1.55rem] border border-slate-950/10 bg-slate-950 px-4 py-4 text-white shadow-2xl shadow-slate-950/20 sm:rounded-[1.75rem]">
         <div className="flex items-start justify-between gap-3">
@@ -54,3 +54,4 @@ export const RecalculateButton = ({ isDirty, loading, hasResults = true, disable
       </div>
     </div>);
 };
+

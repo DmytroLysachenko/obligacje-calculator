@@ -1,12 +1,13 @@
 'use client';
 import React from 'react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger, } from "@/components/ui/sheet";
-import { tx, useLanguage } from '@/i18n';
+import { useLanguage } from '@/i18n';
 import { CalculationResult } from '@/features/bond-core/types';
 import { Info, ArrowRight, Calculator, Landmark, ShieldCheck, ExternalLink } from "lucide-react";
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
+import { getIntlLocale } from '@/i18n/locale-utils';
 interface MathDeepDiveProps {
     results: CalculationResult;
     trigger?: React.ReactNode;
@@ -14,7 +15,7 @@ interface MathDeepDiveProps {
 export const MathDeepDive: React.FC<MathDeepDiveProps> = ({ results, trigger }) => {
     const { t, language } = useLanguage();
     const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat(tx("generated.shared.components.math_deep_dive.item_1", undefined, language), {
+        return new Intl.NumberFormat(getIntlLocale(language), {
             style: 'currency',
             currency: 'PLN',
         }).format(value);
@@ -160,3 +161,4 @@ export const MathDeepDive: React.FC<MathDeepDiveProps> = ({ results, trigger }) 
       </SheetContent>
     </Sheet>);
 };
+

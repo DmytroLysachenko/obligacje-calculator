@@ -1,6 +1,7 @@
 import { YearlyTimelinePoint, LotBreakdown } from '@/features/bond-core/types';
 import { AppLanguage, buildBondTimelineDisplayRows } from '@/shared/lib/bond-display';
-import { t, tx } from '@/i18n';
+import { t } from '@/i18n';
+import { getIntlLocale } from '@/i18n/locale-utils';
 /**
  * Downloads a string as a file in the browser.
  * Adds BOM for proper UTF-8 detection in Excel.
@@ -32,7 +33,7 @@ function formatExportDate(value: string | undefined) {
 }
 function formatCsvValue(value: unknown, language: AppLanguage) {
     if (typeof value === 'number') {
-        return value.toLocaleString(tx("generated.shared.lib.csv_utils.item_1", undefined, language), {
+        return value.toLocaleString(getIntlLocale(language), {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
             useGrouping: false,
@@ -214,3 +215,4 @@ export function convertComparisonToCSV(timelineA: YearlyTimelinePoint[], timelin
     }
     return csvRows.join('\r\n');
 }
+

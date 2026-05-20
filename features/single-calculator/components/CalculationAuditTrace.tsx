@@ -2,7 +2,8 @@
 import React from 'react';
 import { ArrowRight, Scale } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { tx, useLanguage } from '@/i18n';
+import { useLanguage } from '@/i18n';
+import { getIntlLocale } from '@/i18n/locale-utils';
 import { YearlyTimelinePoint } from '@/features/bond-core/types';
 import { AppLanguage, getRateSourceDisplayLabel, getReferenceDisplayLabel, } from '@/shared/lib/bond-display';
 interface CalculationAuditTraceProps {
@@ -23,7 +24,7 @@ function cn(...classes: Array<string | false | null | undefined>) {
 }
 export const CalculationAuditTrace: React.FC<CalculationAuditTraceProps> = ({ point }) => {
     const { t, language } = useLanguage();
-    const formatCurrency = (value: number) => new Intl.NumberFormat(tx("generated.features.single_calculator.components.calculation_audit_trace.item_1", undefined, language), {
+    const formatCurrency = (value: number) => new Intl.NumberFormat(getIntlLocale(language), {
         style: 'currency',
         currency: 'PLN',
     }).format(value);
@@ -68,3 +69,4 @@ export const CalculationAuditTrace: React.FC<CalculationAuditTraceProps> = ({ po
       </CardContent>
     </Card>);
 };
+

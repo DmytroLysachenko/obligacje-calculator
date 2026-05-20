@@ -1,6 +1,6 @@
 'use client';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { tx, useLanguage } from '@/i18n';
+import { useLanguage } from '@/i18n';
 import { AlertCircle, BookOpen, CheckCircle2, FileText, FolderOpen, Plus, RefreshCcw, Trash2, Upload, } from 'lucide-react';
 import { UserPortfolio } from '@/db/schema';
 import { Button } from '@/components/ui/button';
@@ -198,7 +198,7 @@ export const NotebookContainer: React.FC = () => {
             }
             const created = unwrapApiData<UserPortfolio>(await response.json().catch(() => null));
             setError(null);
-            setStatusMessage(tx("generated.features.notebook.components.notebook_container.item_1", undefined, language));
+            setStatusMessage(t("generated.features.notebook.components.notebook_container.item_1", undefined, language));
             if (created?.id) {
                 mergePortfolioIntoState(created);
                 setSelectedPortfolioId(created.id);
@@ -244,7 +244,7 @@ export const NotebookContainer: React.FC = () => {
             if (createdPortfolio?.id) {
                 mergePortfolioIntoState(createdPortfolio);
                 setSelectedPortfolioId(createdPortfolio.id);
-                setStatusMessage(tx("generated.features.notebook.components.notebook_container.item_2", undefined, language));
+                setStatusMessage(t("generated.features.notebook.components.notebook_container.item_2", undefined, language));
             }
             else {
                 await fetchPortfolios();
@@ -285,7 +285,7 @@ export const NotebookContainer: React.FC = () => {
             if (importPayload?.portfolio?.id) {
                 mergePortfolioIntoState(importPayload.portfolio);
                 setSelectedPortfolioId(importPayload.portfolio.id);
-                setStatusMessage(tx('notebook.import_completed_added_lots', {
+                setStatusMessage(t('notebook.import_completed_added_lots', {
                     count: String(importPayload.importedLots ?? 0),
                 }, language));
             }
@@ -295,7 +295,7 @@ export const NotebookContainer: React.FC = () => {
         }
         catch (caughtError) {
             console.error(caughtError);
-            setError(tx("generated.features.notebook.components.notebook_container.item_3", undefined, language));
+            setError(t("generated.features.notebook.components.notebook_container.item_3", undefined, language));
         }
         finally {
             event.target.value = '';
@@ -314,11 +314,11 @@ export const NotebookContainer: React.FC = () => {
             setPortfolios((current) => removePortfolioFromNotebookState(current, portfolio.id));
             setSelectedPortfolioId((current) => (current === portfolio.id ? null : current));
             setError(null);
-            setStatusMessage(tx("generated.features.notebook.components.notebook_container.item_4", undefined, language));
+            setStatusMessage(t("generated.features.notebook.components.notebook_container.item_4", undefined, language));
         }
         catch (caughtError) {
             console.error(caughtError);
-            setError(tx("generated.features.notebook.components.notebook_container.item_5", undefined, language));
+            setError(t("generated.features.notebook.components.notebook_container.item_5", undefined, language));
         }
     };
     if (selectedPortfolioId) {
@@ -328,7 +328,7 @@ export const NotebookContainer: React.FC = () => {
                 setSelectedPortfolioId(null);
             }}/>) : (<NotebookLoadingState />);
     }
-    const notebookIntro = tx("generated.features.notebook.components.notebook_container.item_6", undefined, language);
+    const notebookIntro = t("generated.features.notebook.components.notebook_container.item_6", undefined, language);
     const publicCount = portfolios.filter((portfolio) => portfolio.isPublic).length;
     const privateCount = portfolios.length - publicCount;
     return (<CalculatorPageShell title={t('notebook.title')} description={t('notebook.subtitle')} icon={<BookOpen className="h-8 w-8"/>} isCalculating={isLoading} hasResults={portfolios.length > 0}>
@@ -354,7 +354,7 @@ export const NotebookContainer: React.FC = () => {
           </div>
         </div>) : null}
 
-      <SectionBlock title={tx("generated.features.notebook.components.notebook_container.item_7", undefined, language)} description={notebookIntro}>
+      <SectionBlock title={t("generated.features.notebook.components.notebook_container.item_7", undefined, language)} description={notebookIntro}>
         <Card className="overflow-hidden rounded-[2.2rem] border border-slate-200/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(248,250,252,0.9))] shadow-[0_24px_70px_-52px_rgba(15,23,42,0.45)] backdrop-blur">
           <CardContent className="space-y-6 p-6 md:p-8">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -387,9 +387,9 @@ export const NotebookContainer: React.FC = () => {
             </div>
 
             <div className="grid gap-4 md:grid-cols-3">
-              <NotebookMiniStat label={tx("generated.features.notebook.components.notebook_container.item_8", undefined, language)} value={String(portfolios.length)} description={tx("generated.features.notebook.components.notebook_container.item_9", undefined, language)}/>
-              <NotebookMiniStat label={tx("generated.features.notebook.components.notebook_container.item_10", undefined, language)} value={String(publicCount)} description={tx("generated.features.notebook.components.notebook_container.item_11", undefined, language)}/>
-              <NotebookMiniStat label={tx("generated.features.notebook.components.notebook_container.item_12", undefined, language)} value={String(privateCount)} description={tx("generated.features.notebook.components.notebook_container.item_13", undefined, language)}/>
+              <NotebookMiniStat label={t("generated.features.notebook.components.notebook_container.item_8", undefined, language)} value={String(portfolios.length)} description={t("generated.features.notebook.components.notebook_container.item_9", undefined, language)}/>
+              <NotebookMiniStat label={t("generated.features.notebook.components.notebook_container.item_10", undefined, language)} value={String(publicCount)} description={t("generated.features.notebook.components.notebook_container.item_11", undefined, language)}/>
+              <NotebookMiniStat label={t("generated.features.notebook.components.notebook_container.item_12", undefined, language)} value={String(privateCount)} description={t("generated.features.notebook.components.notebook_container.item_13", undefined, language)}/>
             </div>
           </CardContent>
         </Card>
@@ -398,7 +398,7 @@ export const NotebookContainer: React.FC = () => {
       {isLoading ? (<NotebookLoadingState />) : portfolios.length === 0 ? (<EmptyPortfolioState onCreate={handleCreateDefault} onCreateDemo={handleCreateDemo} onImport={handleImportClick} badgeLabel={t('notebook.empty_badge')} title={t('notebook.empty_title')} description={t('notebook.empty_desc')} createLabel={t('notebook.create_first')} demoLabel={t('notebook.load_demo')} importLabel={t('notebook.import_json')} steps={emptyStateSteps}/>) : (<div className="space-y-8">
           <SectionBlock title={t('notebook.stored_portfolios')} description={t('notebook.stored_portfolios_desc')}>
             <div className="rounded-[1.8rem] border border-slate-200 bg-white/84 px-5 py-4 text-sm leading-7 text-slate-600 shadow-[0_18px_44px_-40px_rgba(15,23,42,0.35)] backdrop-blur">
-              {tx("generated.features.notebook.components.notebook_container.item_14", undefined, language)}
+              {t("generated.features.notebook.components.notebook_container.item_14", undefined, language)}
             </div>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -416,7 +416,7 @@ export const NotebookContainer: React.FC = () => {
                         </span>
                         <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full text-slate-500 hover:text-destructive" onClick={async (event) => {
                     event.stopPropagation();
-                    const confirmed = window.confirm(tx('notebook.confirm_delete_portfolio_short', {
+                    const confirmed = window.confirm(t('notebook.confirm_delete_portfolio_short', {
                         name: portfolio.name,
                     }, language));
                     if (!confirmed) {
@@ -483,3 +483,4 @@ export const NotebookContainer: React.FC = () => {
         </div>)}
     </CalculatorPageShell>);
 };
+

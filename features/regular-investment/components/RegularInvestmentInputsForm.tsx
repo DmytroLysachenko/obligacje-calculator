@@ -16,7 +16,7 @@ import { Switch } from '@/components/ui/switch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, } from '@/components/ui/tooltip';
 import { BondType, InvestmentFrequency, RegularInvestmentInputs, TaxStrategy, } from '../../bond-core/types';
 import { getBondSupportMeta, isFamilyBondType, } from '../../bond-core/support-matrix';
-import { tx, useLanguage } from '@/i18n';
+import { useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
@@ -151,7 +151,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                   {currentBondSupport.description}
                 </p>
                 {isFamilyBondType(inputs.bondType) ? (<p className="font-semibold text-amber-700">
-                    {tx("generated.features.regular_investment.components.regular_investment_inputs_form.item_1", undefined, language)}
+                    {t("generated.features.regular_investment.components.regular_investment_inputs_form.item_1", undefined, language)}
                   </p>) : null}
               </div>
             </div>
@@ -530,3 +530,4 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
       </Card>);
 });
 RegularInvestmentInputsForm.displayName = 'RegularInvestmentInputsForm';
+

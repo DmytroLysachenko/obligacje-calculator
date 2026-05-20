@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
-import { tx, useLanguage } from '@/i18n';
+import { useLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
 import { BondInputs, BondType } from '@/features/bond-core/types';
 import { TrendingUp, History, Target, AlertTriangle } from 'lucide-react';
@@ -79,16 +79,16 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
     const isInflationIndexedBond = INDEXED_BONDS.has(bondType);
     const isNbpRelevant = bondType === BondType.ROR || bondType === BondType.DOR;
     const scenarioDescriptions = {
-        low: tx("generated.shared.components.market_assumptions_form.item_1", undefined, language),
-        base: tx("generated.shared.components.market_assumptions_form.item_2", undefined, language),
-        high: tx("generated.shared.components.market_assumptions_form.item_3", undefined, language),
+        low: t("generated.shared.components.market_assumptions_form.item_1", undefined, language),
+        base: t("generated.shared.components.market_assumptions_form.item_2", undefined, language),
+        high: t("generated.shared.components.market_assumptions_form.item_3", undefined, language),
     } as const;
     return (<div className="space-y-6">
       <div className="space-y-4">
         <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 text-[11px] leading-5 text-slate-600">
           {isInflationIndexedBond
-            ? tx("generated.shared.components.market_assumptions_form.item_4", undefined, language) : isNbpRelevant
-            ? tx("generated.shared.components.market_assumptions_form.item_5", undefined, language) : tx("generated.shared.components.market_assumptions_form.item_6", undefined, language)}
+            ? t("generated.shared.components.market_assumptions_form.item_4", undefined, language) : isNbpRelevant
+            ? t("generated.shared.components.market_assumptions_form.item_5", undefined, language) : t("generated.shared.components.market_assumptions_form.item_6", undefined, language)}
         </div>
 
         <div className="flex items-center justify-between">
@@ -125,7 +125,7 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
         {isInflationIndexedBond ? (<>
             <div className="space-y-3 border-t border-dashed pt-4">
               <Label className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">
-                {tx("generated.shared.components.market_assumptions_form.item_7", undefined, language)}
+                {t("generated.shared.components.market_assumptions_form.item_7", undefined, language)}
               </Label>
               <div className="grid grid-cols-3 gap-2">
                 {(['low', 'base', 'high'] as const).map((scenario) => (<Button key={scenario} variant="outline" size="sm" className={cn('h-9 min-w-0 text-[11px] font-semibold tracking-[0.08em]', inflationScenario === scenario && 'border-primary/50 bg-primary/10 text-primary')} onClick={() => onUpdate('inflationScenario', scenario)}>
@@ -159,7 +159,7 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
                   </div>))}
               </div>) : null}
           </>) : (<div className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 text-[11px] leading-5 text-slate-600">
-            {tx("generated.shared.components.market_assumptions_form.item_8", undefined, language)}
+            {t("generated.shared.components.market_assumptions_form.item_8", undefined, language)}
           </div>)}
       </div>
 
@@ -174,8 +174,9 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
           </div>
           <CommittedSliderInput value={Number.isFinite(expectedNbpRate ?? 5.25) ? (expectedNbpRate ?? 5.25) : 5.25} min={0} max={15} step={0.05} unit="%" onCommit={(value) => onUpdate('expectedNbpRate', value)}/>
           <p className="text-[11px] leading-5 text-muted-foreground">
-            {tx("generated.shared.components.market_assumptions_form.item_9", undefined, language)}
+            {t("generated.shared.components.market_assumptions_form.item_9", undefined, language)}
           </p>
         </div>) : null}
     </div>);
 };
+
