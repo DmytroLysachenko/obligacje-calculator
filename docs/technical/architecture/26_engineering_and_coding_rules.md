@@ -20,7 +20,9 @@ If an implementation is fast but leaves misleading behavior, duplicated branches
 
 ### 2.1 Hard Rule
 
-User-facing copy must come from locale files through the translation layer.
+User-facing translated content must come from locale resources through the translation layer.
+
+There must be no hardcoded translated values in application code.
 
 The following pattern is not acceptable for UI text:
 
@@ -30,14 +32,46 @@ language === 'pl' ? '...' : '...'
 
 This is not a preferred shortcut. It is a repo violation for normal UI copy.
 
+The following pattern is also not acceptable for translated content:
+
+```ts
+pickLanguageValue(language, {
+  pl: '...',
+  en: '...',
+})
+```
+
+Inline bilingual objects, arrays, labels, and content fragments in code are also repo violations when they represent translated product/UI content.
+
 ### 2.2 Required Pattern
 
-Use translation keys only:
+Use locale-backed translation keys and locale-backed structured content only:
 
 ```ts
 t('some.key')
 t('some.key', { value })
 ```
+
+If a feature needs structured internationalized content, keep that structure in locale resources, not in code. This includes:
+
+- arrays
+- nested objects
+- cards/sections metadata
+- ordered content blocks
+- multi-part helper content
+- label/value descriptor groups
+
+Examples of acceptable patterns:
+
+```ts
+t('some.key')
+t('some.key', { value })
+const items = t('landing.cards')
+const steps = t('comparison.steps')
+const hero = t('education.hero')
+```
+
+The exact translation API may resolve strings, objects, or arrays. The architectural rule is that translated content lives in locale files and is consumed from there.
 
 ### 2.3 Exceptions
 
@@ -47,11 +81,16 @@ Allowed only when the branch changes behavior, formatting strategy, or locale-sp
 - `date-fns` locale objects
 - metadata structure that must map locale to standards-compliant machine values
 
-These exceptions do not permit inline translated sentences, labels, headings, helper text, button copy, badges, tooltips, legends, table headers, empty states, or validation text.
+These exceptions do not permit inline translated sentences, labels, headings, helper text, button copy, badges, tooltips, legends, table headers, empty states, validation text, or inline bilingual objects used as translation stores.
 
 ### 2.4 Touched-Code Rule
 
-When editing an existing file, remove inline language text branches in the area you touch. Do not add new ones.
+When editing an existing file:
+
+- remove inline translated value branches in the area you touch
+- remove inline bilingual objects that store translated content in code
+- move that content into locale resources
+- do not add new exceptions unless the value is not product/UI copy and truly belongs to locale-selection infrastructure
 
 ## 3. No Commented-Out Code
 
@@ -160,6 +199,7 @@ When a file is touched, do not limit work to the smallest possible patch if the 
 Expected cleanup within the touched scope:
 
 - remove inline locale text branches
+- remove inline translated value objects and arrays from code
 - remove commented-out code
 - remove dead or duplicate local helpers
 - extract repeated UI into narrow primitives when repetition is obvious
@@ -172,6 +212,8 @@ This does not mean unrelated full-file rewrites. It does mean leaving the touche
 A change is not production-ready if it:
 
 - introduces new inline translated copy branches
+- introduces new hardcoded translated values in code
+- keeps translated content in page-local `pl/en` objects instead of locale resources
 - leaves commented-out code behind
 - adds large mixed-responsibility components without justification
 - duplicates semantics already handled elsewhere
