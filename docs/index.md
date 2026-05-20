@@ -30,6 +30,7 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [Security & Privacy](./technical/architecture/22_security_and_privacy.md) - Protecting user data.
 - [Testing & Quality Assurance](./technical/architecture/23_testing_and_quality_assurance.md) - Correctness.
 - [Deployment & DevOps](./technical/architecture/24_deployment_and_devops.md) - CI/CD strategy.
+- [Engineering and Coding Rules](./technical/architecture/26_engineering_and_coding_rules.md) - Strict repo rules for i18n, component structure, code hygiene, and maintainability.
 
 ### 3. Domain Knowledge
 - [Polish Bonds Domain Guide](./technical/domain/04_polish_bonds_domain_guide.md) - Comprehensive rules and mechanics.

@@ -77,6 +77,19 @@ Before implementing large changes, refer to the `docs/` directory. The project m
 ### 5. Testing
 All core calculation logic MUST have accompanying tests in its respective feature folder (e.g., `features/bond-core/*.test.ts`).
 
+### 6. Coding Rules
+Repository-wide coding rules are strict, not advisory. See:
+
+- `docs/technical/architecture/26_engineering_and_coding_rules.md`
+
+Key requirements:
+
+- no inline `language === 'pl' ? '...' : '...'` branches for UI copy
+- no commented-out code
+- no dead legacy branches left beside replacement code
+- components must stay narrow in responsibility and move toward `SOLID`, `DRY`, and `KISS`
+- touched code should be cleaned up within scope, not only patched minimally
+
 ## Key Symbols & Files
 - `features/bond-core/application-service.ts`: Central orchestration for all calculation scenarios.
 - `features/bond-core/utils/calculations.ts`: The low-level math engine for interest accrual.

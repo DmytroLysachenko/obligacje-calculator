@@ -30,3 +30,6 @@ Quality and performance standards for the platform.
 - **NFR6.1:** Separation of concern: Calculation logic must be in a standalone, framework-agnostic package.
 - **NFR6.2:** API response caching to minimize external provider costs/load.
 - **NFR6.3:** Modular instrument definitions (JSON-based) to allow adding new bonds without code changes.
+- **NFR6.4:** User-facing copy must be locale-driven through the i18n layer. Inline language branches for UI text are not acceptable.
+- **NFR6.5:** Commented-out code, dead legacy branches, and duplicate touched-scope logic must be removed rather than preserved.
+- **NFR6.6:** UI components must stay narrowly scoped, with route-level orchestration separated from calculation truth, display adapters, and export semantics.
