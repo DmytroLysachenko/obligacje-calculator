@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { ArrowRight, BarChart2, BookOpen, Calculator, CheckCircle2, Layers, Scale, Sparkles, TrendingUp, Wallet, } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { tx, useLanguage } from '@/i18n';
+import { useLanguage } from '@/i18n';
 import { loadSavedScenarios } from '@/features/single-calculator/lib/scenario-storage';
 import { FeatureStatus } from '@/shared/components/FeatureStatusNotice';
 type ToolItem = {
@@ -22,13 +22,13 @@ type HomeStepItem = {
     title: string;
     description: string;
 };
-function HomeToolCard({ item, language, }: {
+function HomeToolCard({ item }: {
     item: ToolItem;
-    language: 'pl' | 'en';
 }) {
+    const { t } = useLanguage();
     const routeLabel = item.status === 'trusted'
-        ? tx("generated.app.landing_dashboard_client.item_1", undefined, language) : item.status === 'reference'
-        ? tx("generated.app.landing_dashboard_client.item_2", undefined, language) : tx("generated.app.landing_dashboard_client.item_3", undefined, language);
+        ? t('landing.route_labels.primary') : item.status === 'reference'
+        ? t('landing.route_labels.reference') : t('landing.route_labels.next');
     return (<Link href={item.href} className="block h-full">
       <Card className="surface-panel group h-full overflow-hidden rounded-[2rem] border-white/80 bg-white/82 transition-all hover:-translate-y-0.5 hover:border-white hover:shadow-[0_24px_70px_-36px_rgba(15,23,42,0.34)] focus-within:ring-2 focus-within:ring-primary/25 focus-within:ring-offset-2">
         <CardContent className="relative flex h-full flex-col gap-5 p-6">
@@ -72,35 +72,34 @@ function HomeStep({ title, description, }: {
       </div>
     </div>);
 }
-function HeroTrustStrip({ language, }: {
-    language: 'pl' | 'en';
-}) {
-    const items = tx<string[]>("generated.app.landing_dashboard_client.item_4", undefined, language);
+function HeroTrustStrip() {
+    const { t } = useLanguage();
+    const itemKeys = ['item_1', 'item_2', 'item_3'] as const;
     return (<div className="flex flex-wrap gap-2">
-      {items.map((item) => (<span key={item} className="rounded-full border border-white/80 bg-white/68 px-3 py-1.5 text-[11px] font-semibold tracking-[0.04em] text-slate-700 backdrop-blur">
-          {item}
+      {itemKeys.map((itemKey) => (<span key={itemKey} className="rounded-full border border-white/80 bg-white/68 px-3 py-1.5 text-[11px] font-semibold tracking-[0.04em] text-slate-700 backdrop-blur">
+          {t(`landing.hero_trust_strip.${itemKey}`)}
         </span>))}
     </div>);
 }
-function RecentWorkCard({ language, savedScenarioNames, emptyCopy, notebookLabel, calculatorLabel, }: {
-    language: 'pl' | 'en';
+function RecentWorkCard({ savedScenarioNames, emptyCopy, notebookLabel, calculatorLabel, }: {
     savedScenarioNames: string[];
     emptyCopy: string;
     notebookLabel: string;
     calculatorLabel: string;
 }) {
+    const { t } = useLanguage();
     return (<Card className="surface-panel h-full overflow-hidden rounded-[1.9rem] border-white/80 bg-white/78">
       <CardContent className="space-y-5 p-5">
         <div className="space-y-2">
           <p className="text-sm font-semibold text-slate-500">
-            {tx("generated.app.landing_dashboard_client.item_5", undefined, language)}
+            {t('landing.recent_work.label')}
           </p>
           <h2 className="text-2xl font-black tracking-tight text-slate-950">
-            {tx("generated.app.landing_dashboard_client.item_6", undefined, language)}
+            {t('landing.recent_work.title')}
           </h2>
           <p className="text-[15px] leading-7 text-slate-600">
             {savedScenarioNames.length > 0
-            ? tx("generated.app.landing_dashboard_client.item_7", undefined, language) : emptyCopy}
+            ? t('landing.recent_work.description') : emptyCopy}
           </p>
         </div>
 
@@ -141,14 +140,19 @@ function SectionHeading({ title, description, }: {
     </div>);
 }
 export function LandingDashboardClient() {
-    const { t, language } = useLanguage();
+    const { t } = useLanguage();
     const [savedScenarioNames, setSavedScenarioNames] = React.useState<string[]>([]);
     React.useEffect(() => {
         setSavedScenarioNames(loadSavedScenarios()
             .slice(0, 3)
             .map((scenario) => scenario.name));
     }, []);
-    const stepCopy = tx<HomeStepItem[]>("generated.app.landing_dashboard_client.item_8", undefined, language);
+    const stepIds = ['learn-rules', 'run-one', 'expand-later'] as const;
+    const stepCopy: HomeStepItem[] = stepIds.map((id) => ({
+        id,
+        title: t(`landing.home_steps.${id}.title`),
+        description: t(`landing.home_steps.${id}.description`),
+    }));
     const primaryTools: ToolItem[] = [
         {
             href: '/single-calculator',
@@ -209,11 +213,11 @@ export function LandingDashboardClient() {
             tone: 'absolute inset-x-0 top-0 h-24 bg-[radial-gradient(circle_at_top_left,rgba(168,85,247,0.12),transparent_65%)]',
         },
     ];
-    const savedScenarioEmpty = tx("generated.app.landing_dashboard_client.item_9", undefined, language);
-    const startHereTitle = tx("generated.app.landing_dashboard_client.item_10", undefined, language);
-    const startHereDesc = tx("generated.app.landing_dashboard_client.item_11", undefined, language);
-    const secondaryTitle = tx("generated.app.landing_dashboard_client.item_12", undefined, language);
-    const secondaryDesc = tx("generated.app.landing_dashboard_client.item_13", undefined, language);
+    const savedScenarioEmpty = t('landing.recent_work.empty');
+    const startHereTitle = t('landing.start_here.title');
+    const startHereDesc = t('landing.start_here.description');
+    const secondaryTitle = t('landing.secondary_tools.title');
+    const secondaryDesc = t('landing.secondary_tools.description');
     return (<div className="space-y-8 pb-20 md:space-y-10">
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
         <div className="surface-shell relative overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#f8fafc_0%,#eff6ff_22%,#eef2ff_52%,#ffffff_100%)] px-5 py-7 md:rounded-[2.5rem] md:px-8 md:py-10">
@@ -253,15 +257,15 @@ export function LandingDashboardClient() {
             </div>
 
             <div className="space-y-3">
-              <HeroTrustStrip language={language}/>
+              <HeroTrustStrip />
               <p className="text-[13px] leading-6 text-slate-600">
-                {tx("generated.app.landing_dashboard_client.item_14", undefined, language)}
+                {t('landing.hero_trust_note')}
               </p>
             </div>
           </div>
         </div>
 
-        <RecentWorkCard language={language} savedScenarioNames={savedScenarioNames} emptyCopy={savedScenarioEmpty} notebookLabel={t('nav.notebook')} calculatorLabel={t('landing.recovery_home.resume_saved')}/>
+        <RecentWorkCard savedScenarioNames={savedScenarioNames} emptyCopy={savedScenarioEmpty} notebookLabel={t('nav.notebook')} calculatorLabel={t('landing.recovery_home.resume_saved')}/>
       </section>
 
       <section className="space-y-4">
@@ -274,14 +278,14 @@ export function LandingDashboardClient() {
       <section className="space-y-4">
         <SectionHeading title={t('landing.recovery_home.core_route_title')} description={t('landing.recovery_home.core_route_desc')}/>
         <div className="grid gap-4 xl:grid-cols-3">
-          {primaryTools.map((item) => (<HomeToolCard key={item.href} item={item} language={language}/>))}
+          {primaryTools.map((item) => (<HomeToolCard key={item.href} item={item}/>))}
         </div>
       </section>
 
       <section className="space-y-4">
         <SectionHeading title={secondaryTitle} description={secondaryDesc}/>
         <div className="grid gap-4 xl:grid-cols-2">
-          {secondaryTools.map((item) => (<HomeToolCard key={item.href} item={item} language={language}/>))}
+          {secondaryTools.map((item) => (<HomeToolCard key={item.href} item={item}/>))}
         </div>
       </section>
     </div>);

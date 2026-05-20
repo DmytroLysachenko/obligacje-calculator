@@ -42,11 +42,10 @@ export function FeatureStatusPill({ status, className, }: {
     status: FeatureStatus;
     className?: string;
 }) {
-    const { tx } = useLanguage();
+    const { t } = useLanguage();
     const config = statusConfig[status];
-    const labels = tx<Record<FeatureStatus, string>>('shared.feature_status.labels');
     return (<span className={cn('inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold tracking-[0.08em]', config.pillClassName, className)}>
-      {labels[status]}
+      {t(`shared.feature_status.labels.${status}`)}
     </span>);
 }
 export function FeatureStatusNotice({ status, title, children, className, eyebrow, }: {
