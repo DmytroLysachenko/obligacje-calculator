@@ -87,6 +87,7 @@ Key requirements:
 - no inline `language === 'pl' ? '...' : '...'` branches for UI copy
 - no inline `pickLanguageValue(language, { pl: '...', en: '...' })` for translated content
 - no hardcoded translated values in code; translated strings, arrays, and objects must live in locale resources
+- use `next-intl` as the i18n system of record; do not add custom translation runtimes or locale-node resolution layers
 - no commented-out code
 - no dead legacy branches left beside replacement code
 - components must stay narrow in responsibility and move toward `SOLID`, `DRY`, and `KISS`

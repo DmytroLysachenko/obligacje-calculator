@@ -34,3 +34,4 @@ Quality and performance standards for the platform.
 - **NFR6.5:** Commented-out code, dead legacy branches, and duplicate touched-scope logic must be removed rather than preserved.
 - **NFR6.6:** UI components must stay narrowly scoped, with route-level orchestration separated from calculation truth, display adapters, and export semantics.
 - **NFR6.7:** Internationalized content may be stored as strings, arrays, or nested objects in locale resources, but not as hardcoded translated values in application files.
+- **NFR6.8:** The application standard for internationalization is `next-intl`. Custom translation runtimes and custom translation-node resolution layers are not acceptable as long-term architecture.

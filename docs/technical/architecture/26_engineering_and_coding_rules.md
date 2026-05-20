@@ -18,6 +18,18 @@ If an implementation is fast but leaves misleading behavior, duplicated branches
 
 ## 2. i18n Is Mandatory
 
+### 2.0 Standard Library
+
+The repository standard for internationalization is `next-intl`.
+
+Do not build or reintroduce custom translation runtimes, custom translation-node resolvers, or ad hoc locale-resource walkers when `next-intl` already provides the needed capability.
+
+Required defaults:
+
+- `next-intl` for translated messages
+- `next-intl` formatting helpers or standards-aligned locale helpers for numbers, dates, lists, and display names
+- locale resources as the single source of truth for translated content
+
 ### 2.1 Hard Rule
 
 User-facing translated content must come from locale resources through the translation layer.
@@ -72,6 +84,15 @@ const hero = t('education.hero')
 ```
 
 The exact translation API may resolve strings, objects, or arrays. The architectural rule is that translated content lives in locale files and is consumed from there.
+
+When using `next-intl`, prefer its native patterns first:
+
+- `useTranslations`
+- `getTranslations`
+- `useFormatter`
+- `createTranslator`
+
+If a feature truly needs structured locale-backed content, prefer a locale-resource design that still fits `next-intl` usage before adding custom plumbing.
 
 ### 2.3 Exceptions
 
