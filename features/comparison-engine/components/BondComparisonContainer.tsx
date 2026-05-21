@@ -21,7 +21,7 @@ import { ReadingChecklist } from '@/shared/components/ReadingChecklist';
 import { RecalculateButton } from '@/shared/components/RecalculateButton';
 import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
-import { getBondColor } from '@/shared/constants/bond-colors';
+import { getBondColor } from '@/shared/lib/charts/get-bond-color';
 import { sampleSeriesPoints } from '@/shared/lib/chart-series';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { getIntlLocale } from '@/i18n/locale-utils';

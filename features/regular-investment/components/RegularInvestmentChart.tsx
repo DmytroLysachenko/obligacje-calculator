@@ -7,7 +7,7 @@ import { useAppI18n } from '@/i18n/client';
 import { format, parseISO } from 'date-fns';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { getBondColor } from '@/shared/constants/bond-colors';
+import { getBondColor } from '@/shared/lib/charts/get-bond-color';
 import { sampleSeriesPoints } from '@/shared/lib/chart-series';
 import { getDateFnsLocale, getIntlLocale } from '@/i18n/locale-utils';
 interface RegularInvestmentChartProps {
