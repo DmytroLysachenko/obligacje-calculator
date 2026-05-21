@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
-import { userInvestmentLots } from '@/db/schema';
 import { InvestmentLotSchema } from '@/features/bond-core/types/portfolio-schemas';
-import { eq } from 'drizzle-orm';
 import {
   applyPortfolioOwnerCookie,
-  getOwnedLot,
-  getOwnedPortfolio,
   resolvePortfolioOwner,
 } from '@/lib/portfolio-access';
-import { z } from 'zod';
+import {
+  deleteOwnerLot,
+  PortfolioServiceError,
+  updateOwnerLot,
+} from '@/lib/server/portfolio/service';
+import { createErrorResponse, createSuccessResponse } from '@/shared/types/api';
 
 export async function PATCH(
   req: NextRequest,
@@ -17,46 +17,19 @@ export async function PATCH(
 ) {
   try {
     const owner = await resolvePortfolioOwner();
-    const { id } = await params;
+    const {id} = await params;
     const body = await req.json();
-    
-    // Partial validation for PATCH
     const validated = InvestmentLotSchema.partial().parse(body);
 
-    const existingLot = await getOwnedLot(owner.ownerId, id);
-    if (!existingLot) {
-      return NextResponse.json({ error: 'Lot not found' }, { status: 404 });
-    }
-
-    if (validated.portfolioId) {
-      const targetPortfolio = await getOwnedPortfolio(owner.ownerId, validated.portfolioId);
-      if (!targetPortfolio) {
-        return NextResponse.json({ error: 'Portfolio not found' }, { status: 404 });
-      }
-    }
-
-    const updateData: Record<string, unknown> = { ...validated };
-    if (validated.amount !== undefined) {
-      updateData.amount = validated.amount.toString();
-    }
-
-    const [updatedLot] = await db
-      .update(userInvestmentLots)
-      .set(updateData)
-      .where(eq(userInvestmentLots.id, id))
-      .returning();
-
-    if (!updatedLot) {
-      return NextResponse.json({ error: 'Lot not found' }, { status: 404 });
-    }
-
-    return applyPortfolioOwnerCookie(NextResponse.json(updatedLot), owner);
+    const updatedLot = await updateOwnerLot(owner.ownerId, id, validated);
+    return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(updatedLot)), owner);
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Validation failed', details: error.issues }, { status: 400 });
+    if (error instanceof PortfolioServiceError) {
+      return NextResponse.json(createErrorResponse(error.message, error.code, error.details), {status: error.status});
     }
+
     console.error('Failed to update lot:', error);
-    return NextResponse.json({ error: 'Database error' }, { status: 500 });
+    return NextResponse.json(createErrorResponse('Database error', 'DATABASE_ERROR'), {status: 500});
   }
 }
 
@@ -66,25 +39,16 @@ export async function DELETE(
 ) {
   try {
     const owner = await resolvePortfolioOwner();
-    const { id } = await params;
+    const {id} = await params;
 
-    const existingLot = await getOwnedLot(owner.ownerId, id);
-    if (!existingLot) {
-      return NextResponse.json({ error: 'Lot not found' }, { status: 404 });
-    }
-    
-    const [deletedLot] = await db
-      .delete(userInvestmentLots)
-      .where(eq(userInvestmentLots.id, id))
-      .returning();
-
-    if (!deletedLot) {
-      return NextResponse.json({ error: 'Lot not found' }, { status: 404 });
-    }
-
-    return applyPortfolioOwnerCookie(NextResponse.json({ success: true }), owner);
+    await deleteOwnerLot(owner.ownerId, id);
+    return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse({success: true})), owner);
   } catch (error) {
+    if (error instanceof PortfolioServiceError) {
+      return NextResponse.json(createErrorResponse(error.message, error.code, error.details), {status: error.status});
+    }
+
     console.error('Failed to delete lot:', error);
-    return NextResponse.json({ error: 'Database error' }, { status: 500 });
+    return NextResponse.json(createErrorResponse('Database error', 'DATABASE_ERROR'), {status: 500});
   }
 }

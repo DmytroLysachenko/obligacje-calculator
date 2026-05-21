@@ -1,130 +1,88 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
-import { userInvestmentLots } from '@/db/schema';
 import { InvestmentLotSchema } from '@/features/bond-core/types/portfolio-schemas';
-import { eq } from 'drizzle-orm';
 import {
   applyPortfolioOwnerCookie,
-  getOwnedLot,
-  getOwnedPortfolio,
   resolvePortfolioOwner,
 } from '@/lib/portfolio-access';
-import { resolveStoredBondLotContext } from '@/lib/bond-series';
-import { z } from 'zod';
+import { apiHandler } from '@/lib/api-handler';
 import { createSuccessResponse, createErrorResponse } from '@/shared/types/api';
+import {
+  createPortfolioLot,
+  deleteOwnerLot,
+  listPortfolioLots,
+  PortfolioServiceError,
+} from '@/lib/server/portfolio/service';
 
-export async function GET(req: NextRequest) {
+export const GET = apiHandler(async (req: NextRequest) => {
+  const owner = await resolvePortfolioOwner();
+  const url = new URL(req.url);
+  const portfolioId = url.searchParams.get('portfolioId');
+
+  if (!portfolioId) {
+    return NextResponse.json(
+      createErrorResponse('Portfolio ID is required', 'MISSING_PARAM'),
+      {status: 400},
+    );
+  }
+
   try {
-    const owner = await resolvePortfolioOwner();
-    const url = new URL(req.url);
-    const portfolioId = url.searchParams.get('portfolioId');
-
-    if (!portfolioId) {
-      return NextResponse.json(
-        createErrorResponse('Portfolio ID is required', 'MISSING_PARAM'), 
-        { status: 400 }
-      );
-    }
-
-    const portfolio = await getOwnedPortfolio(owner.ownerId, portfolioId);
-    if (!portfolio) {
-      return NextResponse.json(
-        createErrorResponse('Portfolio not found', 'NOT_FOUND'), 
-        { status: 404 }
-      );
-    }
-
-    const lots = await db.query.userInvestmentLots.findMany({
-      where: eq(userInvestmentLots.portfolioId, portfolioId),
-      orderBy: (p, { desc }) => [desc(p.purchaseDate)],
-    });
-
+    const lots = await listPortfolioLots(owner.ownerId, portfolioId);
     return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(lots)), owner);
   } catch (error) {
-    console.error('Failed to fetch lots:', error);
-    return NextResponse.json(
-      createErrorResponse('Database error', 'DATABASE_ERROR'), 
-      { status: 500 }
-    );
-  }
-}
-
-export async function POST(req: NextRequest) {
-  try {
-    const owner = await resolvePortfolioOwner();
-    const body = await req.json();
-    const validated = InvestmentLotSchema.parse(body);
-
-    const portfolio = await getOwnedPortfolio(owner.ownerId, validated.portfolioId);
-    if (!portfolio) {
+    if (error instanceof PortfolioServiceError) {
       return NextResponse.json(
-        createErrorResponse('Portfolio not found', 'NOT_FOUND'), 
-        { status: 404 }
+        createErrorResponse(error.message, error.code, error.details),
+        {status: error.status},
       );
     }
 
-    const resolvedLotContext = await resolveStoredBondLotContext(
-      validated.bondType as import('@/features/bond-core/types').BondType,
-      validated.purchaseDate,
-      validated.selectedSeriesId,
-    );
+    throw error;
+  }
+});
 
-    const [newLot] = await db.insert(userInvestmentLots).values({
-      portfolioId: validated.portfolioId,
-      bondType: validated.bondType,
-      bondTypeId: resolvedLotContext.bondTypeId,
-      bondSeriesId: resolvedLotContext.bondSeriesId,
-      purchaseDate: validated.purchaseDate,
-      amount: validated.amount.toString(),
-      isRebought: validated.isRebought,
-      notes: validated.notes,
-    }).returning();
+export const POST = apiHandler(async (req: NextRequest) => {
+  const owner = await resolvePortfolioOwner();
+  const body = await req.json();
+  const validated = InvestmentLotSchema.parse(body);
 
+  try {
+    const newLot = await createPortfolioLot(owner.ownerId, validated);
     return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(newLot)), owner);
   } catch (error) {
-    if (error instanceof z.ZodError) {
+    if (error instanceof PortfolioServiceError) {
       return NextResponse.json(
-        createErrorResponse('Validation failed', 'VALIDATION_ERROR', error.issues), 
-        { status: 400 }
+        createErrorResponse(error.message, error.code, error.details),
+        {status: error.status},
       );
     }
-    console.error('Failed to create investment lot:', error);
+
+    throw error;
+  }
+});
+
+export const DELETE = apiHandler(async (req: NextRequest) => {
+  const owner = await resolvePortfolioOwner();
+  const url = new URL(req.url);
+  const id = url.searchParams.get('id');
+
+  if (!id) {
     return NextResponse.json(
-      createErrorResponse('Database error', 'DATABASE_ERROR'), 
-      { status: 500 }
+      createErrorResponse('Lot ID is required', 'MISSING_PARAM'),
+      {status: 400},
     );
   }
-}
 
-export async function DELETE(req: NextRequest) {
   try {
-    const owner = await resolvePortfolioOwner();
-    const url = new URL(req.url);
-    const id = url.searchParams.get('id');
-
-    if (!id) {
-      return NextResponse.json(
-        createErrorResponse('Lot ID is required', 'MISSING_PARAM'), 
-        { status: 400 }
-      );
-    }
-
-    const lot = await getOwnedLot(owner.ownerId, id);
-    if (!lot) {
-      return NextResponse.json(
-        createErrorResponse('Lot not found', 'NOT_FOUND'), 
-        { status: 404 }
-      );
-    }
-
-    await db.delete(userInvestmentLots).where(eq(userInvestmentLots.id, id));
-
-    return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse({ success: true })), owner);
+    await deleteOwnerLot(owner.ownerId, id);
+    return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse({success: true})), owner);
   } catch (error) {
-    console.error('Failed to delete lot:', error);
-    return NextResponse.json(
-      createErrorResponse('Database error', 'DATABASE_ERROR'), 
-      { status: 500 }
-    );
+    if (error instanceof PortfolioServiceError) {
+      return NextResponse.json(
+        createErrorResponse(error.message, error.code, error.details),
+        {status: error.status},
+      );
+    }
+
+    throw error;
   }
-}
+});

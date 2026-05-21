@@ -1,20 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
-import { userPortfolios } from '@/db/schema';
 import { PortfolioSchema } from '@/features/bond-core/types/portfolio-schemas';
-import { eq } from 'drizzle-orm';
 import { applyPortfolioOwnerCookie, resolvePortfolioOwner } from '@/lib/portfolio-access';
-import { createSuccessResponse } from '@/shared/types/api';
+import { createErrorResponse, createSuccessResponse } from '@/shared/types/api';
 import { apiHandler } from '@/lib/api-handler';
 import { ensurePortfolioSchemaCompat } from '@/lib/db-schema-compat';
+import {
+  createOwnerPortfolio,
+  deleteOwnerPortfolio,
+  listOwnerPortfolios,
+  PortfolioServiceError,
+} from '@/lib/server/portfolio/service';
 
 export const GET = apiHandler(async () => {
   await ensurePortfolioSchemaCompat();
   const owner = await resolvePortfolioOwner();
-  const portfolios = await db.query.userPortfolios.findMany({
-    where: eq(userPortfolios.userId, owner.ownerId),
-    orderBy: (p, { desc }) => [desc(p.updatedAt)],
-  });
+  const portfolios = await listOwnerPortfolios(owner.ownerId);
 
   return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(portfolios)), owner);
 });
@@ -24,12 +24,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
   const owner = await resolvePortfolioOwner();
   const body = await req.json();
   const validated = PortfolioSchema.parse(body);
-
-  const [newPortfolio] = await db.insert(userPortfolios).values({
-    userId: owner.ownerId,
-    name: validated.name,
-    description: validated.description,
-  }).returning();
+  const newPortfolio = await createOwnerPortfolio(owner.ownerId, validated);
 
   return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(newPortfolio)), owner);
 });
@@ -42,29 +37,26 @@ export const DELETE = apiHandler(async (req: NextRequest) => {
 
   if (!id) {
     return applyPortfolioOwnerCookie(
-      NextResponse.json({ error: 'Missing portfolio id.' }, { status: 400 }),
+      NextResponse.json(createErrorResponse('Missing portfolio id.', 'VALIDATION_ERROR'), { status: 400 }),
       owner,
     );
   }
 
-  const existingPortfolio = await db.query.userPortfolios.findFirst({
-    where: eq(userPortfolios.id, id),
-  });
+  try {
+    const deletedPortfolio = await deleteOwnerPortfolio(owner.ownerId, id);
 
-  if (!existingPortfolio || existingPortfolio.userId !== owner.ownerId) {
     return applyPortfolioOwnerCookie(
-      NextResponse.json({ error: 'Portfolio not found.' }, { status: 404 }),
+      NextResponse.json(createSuccessResponse(deletedPortfolio)),
       owner,
     );
+  } catch (error) {
+    if (error instanceof PortfolioServiceError) {
+      return applyPortfolioOwnerCookie(
+        NextResponse.json(createErrorResponse(error.message, error.code, error.details), {status: error.status}),
+        owner,
+      );
+    }
+
+    throw error;
   }
-
-  const [deletedPortfolio] = await db
-    .delete(userPortfolios)
-    .where(eq(userPortfolios.id, id))
-    .returning();
-
-  return applyPortfolioOwnerCookie(
-    NextResponse.json(createSuccessResponse(deletedPortfolio)),
-    owner,
-  );
 });
