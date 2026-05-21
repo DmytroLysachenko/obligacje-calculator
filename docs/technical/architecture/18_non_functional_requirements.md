@@ -36,3 +36,6 @@ Quality and performance standards for the platform.
 - **NFR6.7:** Internationalized content may be stored as strings, arrays, or nested objects in locale resources, but not as hardcoded translated values in application files.
 - **NFR6.8:** The application standard for internationalization is `next-intl`. Custom translation runtimes and custom translation-node resolution layers are not acceptable as long-term architecture.
 - **NFR6.9:** Client-side translation access must use the project hook from `@/i18n/client`; SSR/server translation access must use `next-intl/server`; non-React shared utilities must use explicit locale-driven helpers rather than app-level compatibility shims.
+- **NFR6.10:** API route handlers must stay thin and delegate business logic and DB access to `lib/server/**` services or repositories.
+- **NFR6.11:** Shared UI must be grouped by subdomain under `shared/components/**`; compatibility shims are temporary and must be removed after migration.
+- **NFR6.12:** Data reads belong in `lib/data/**`; server-only orchestration belongs in `lib/server/**`; schema and seed concerns must stay separated under `db/schemas/**` and `db/seed/**`.

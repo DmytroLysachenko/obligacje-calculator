@@ -258,3 +258,41 @@ A change is not production-ready if it:
 - hides domain truth inside page-local UI conditionals
 
 The default review posture for this repository is to reject these patterns rather than tolerate them.
+
+## 11. Folder and Layer Boundaries
+
+Directory structure is part of the architecture, not a cosmetic preference.
+
+Required boundaries:
+
+- `app/`: routes, layouts, metadata, and thin HTTP/page orchestration only
+- `app/api/**/route.ts`: request parsing, auth/ownership resolution, validation, and HTTP response shaping only
+- `features/`: domain-specific UI, handlers, adapters, and calculation orchestration by product area
+- `shared/components/`: reusable UI primitives grouped by subdomain such as `page/`, `feedback/`, `results/`, `chrome/`, `insights/`, and `charts/`
+- `shared/hooks/`: isomorphic or UI-facing hooks only
+- `shared/lib/`: reusable display/export/presentation helpers that are not server infrastructure
+- `lib/data/`: shared data retrieval and cached read models
+- `lib/server/`: server-only services, repositories, HTTP helpers, admin/sync orchestration, and ownership/auth support
+- `db/schemas/`: grouped schema entrypoints by connected model domains
+- `db/seed/`: seed modules split by concern with explicit top-level orchestrators
+
+Do not flatten new files into old catch-all directories when a bounded subdomain already exists.
+
+### 11.1 Naming
+
+Use full, meaningful names for:
+
+- pages and route folders
+- services and repositories
+- exported functions
+- shared components
+- schema entrypoints
+- seed modules
+
+Single-letter or cryptic names are not acceptable for durable application structure.
+
+### 11.2 Compatibility Wrappers
+
+Compatibility wrappers may exist only as short-lived migration aids.
+
+Once internal imports have been moved to the canonical boundary, delete the wrapper files. Do not preserve old import facades indefinitely.

@@ -23,9 +23,13 @@ This file provides the necessary architectural and operational context for Gemin
 ## Directory Structure
 - `app/`: Next.js pages, layouts, and API routes.
 - `features/`: Core domain logic organized by feature (e.g., `bond-core`, `portfolio`, `comparison-engine`).
-- `lib/`: Shared server-side utilities, data access layers, and API clients.
-- `shared/`: Isomorphic components, hooks, and constants used across features.
-- `db/`: Drizzle schema definitions and seeding scripts.
+- `lib/data/`: Cached read models and shared data retrieval helpers.
+- `lib/server/`: Server-only services, repositories, HTTP helpers, auth/ownership helpers, and sync orchestration.
+- `lib/api-clients/`: External provider clients and fetch adapters.
+- `shared/components/`: Reusable UI grouped by subdomain such as `page`, `feedback`, `results`, `chrome`, `insights`, and `charts`.
+- `shared/`: Isomorphic components, hooks, and UI-facing helpers used across features.
+- `db/schemas/`: Grouped schema entrypoints by connected data-model domains.
+- `db/seed/`: Seed modules split by concern plus top-level orchestration entrypoints.
 - `docs/`: Extensive project documentation (Product, Domain, Architecture, Plans).
 - `scripts/`: Maintenance and data utility scripts.
 
@@ -69,7 +73,7 @@ const result = new Decimal(principal).times(rate).dividedBy(100);
 Place domain-specific logic, types, and components within `features/[feature-name]`. Only move items to `shared/` or `lib/` if they are truly generic or needed by multiple unrelated features.
 
 ### 3. Data Access
-Use the data access layer in `lib/data-access.ts` for retrieving macro data and bond definitions. These functions are cached and handle fallbacks gracefully.
+Use `lib/data/market-data.ts` for shared cached market-data reads and `lib/server/**` services for server-side orchestration. Do not query the database directly from page components or API routes when an existing service/repository boundary fits.
 
 ### 4. Documentation First
 Before implementing large changes, refer to the `docs/` directory. The project maintains a strict "Next 15/10 Commits" execution plan strategy (see `docs/plans/`).
@@ -100,5 +104,7 @@ Key requirements:
 - `features/bond-core/application-service.ts`: Central orchestration for all calculation scenarios.
 - `features/bond-core/utils/calculations.ts`: The low-level math engine for interest accrual.
 - `db/schema.ts`: Single source of truth for the database model.
-- `lib/data-access.ts`: Optimized data retrieval with caching.
+- `lib/data/market-data.ts`: Optimized data retrieval with caching.
+- `lib/server/http/api-handler.ts`: Standard API handler wrapper for rate limiting and consistent error handling.
+- `lib/server/portfolio/service.ts`: Portfolio service boundary used by portfolio API routes.
 - `docs/index.md`: Master index for all project documentation.
