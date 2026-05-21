@@ -30,6 +30,15 @@ Required defaults:
 - `next-intl` formatting helpers or standards-aligned locale helpers for numbers, dates, lists, and display names
 - locale resources as the single source of truth for translated content
 
+Approved runtime entrypoints:
+
+- client React components: `useAppI18n()` from `@/i18n/client`
+- client locale state/control: `AppLocaleProvider` and `useAppLocale()` from `@/i18n/client`
+- server components, metadata, route handlers, and SSR translation work: native `next-intl/server` APIs such as `getTranslations`, `getLocale`, and `getMessages`
+- non-React shared utilities that need translated strings: `translateMessage(locale, key, vars)` from `@/i18n/translate`
+
+Do not invent parallel translation access patterns when one of the approved entrypoints fits the job.
+
 ### 2.1 Hard Rule
 
 User-facing translated content must come from locale resources through the translation layer.
@@ -91,6 +100,14 @@ When using `next-intl`, prefer its native patterns first:
 - `getTranslations`
 - `useFormatter`
 - `createTranslator`
+
+Repository guidance on top of `next-intl`:
+
+- client app code should use `useAppI18n()` as the project-facing hook
+- server code should use `next-intl/server` directly
+- pure helpers should accept `locale` explicitly and use `translateMessage(...)`
+- do not reintroduce generic compatibility wrappers for translated content access in new code
+- do not route new app code through ambiguous catch-all imports when the client/server/utility boundary is already known
 
 If a feature truly needs structured locale-backed content, prefer a locale-resource design that still fits `next-intl` usage before adding custom plumbing.
 

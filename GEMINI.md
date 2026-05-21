@@ -88,6 +88,9 @@ Key requirements:
 - no inline `pickLanguageValue(language, { pl: '...', en: '...' })` for translated content
 - no hardcoded translated values in code; translated strings, arrays, and objects must live in locale resources
 - use `next-intl` as the i18n system of record; do not add custom translation runtimes or locale-node resolution layers
+- client components should use `useAppI18n()` from `@/i18n/client`
+- server/SSR code should use `next-intl/server` APIs such as `getTranslations`, `getLocale`, and `getMessages`
+- non-React helpers should take `locale` explicitly and use `translateMessage(...)` from `@/i18n/translate`
 - no commented-out code
 - no dead legacy branches left beside replacement code
 - components must stay narrow in responsibility and move toward `SOLID`, `DRY`, and `KISS`
