@@ -10,11 +10,13 @@ import {
   updateOwnerLot,
 } from '@/lib/server/portfolio/service';
 import { createErrorResponse, createSuccessResponse } from '@/shared/types/api';
+import { apiHandler } from '@/lib/server/http/api-handler';
+import { createDomainErrorResponse } from '@/lib/server/http/responses';
 
-export async function PATCH(
+export const PATCH = apiHandler<{ params: Promise<{ id: string }> }>(async (
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+  { params },
+) => {
   try {
     const owner = await resolvePortfolioOwner();
     const {id} = await params;
@@ -25,18 +27,18 @@ export async function PATCH(
     return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(updatedLot)), owner);
   } catch (error) {
     if (error instanceof PortfolioServiceError) {
-      return NextResponse.json(createErrorResponse(error.message, error.code, error.details), {status: error.status});
+      return createDomainErrorResponse(error);
     }
 
     console.error('Failed to update lot:', error);
     return NextResponse.json(createErrorResponse('Database error', 'DATABASE_ERROR'), {status: 500});
   }
-}
+});
 
-export async function DELETE(
+export const DELETE = apiHandler<{ params: Promise<{ id: string }> }>(async (
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+  { params },
+) => {
   try {
     const owner = await resolvePortfolioOwner();
     const {id} = await params;
@@ -45,10 +47,10 @@ export async function DELETE(
     return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse({success: true})), owner);
   } catch (error) {
     if (error instanceof PortfolioServiceError) {
-      return NextResponse.json(createErrorResponse(error.message, error.code, error.details), {status: error.status});
+      return createDomainErrorResponse(error);
     }
 
     console.error('Failed to delete lot:', error);
     return NextResponse.json(createErrorResponse('Database error', 'DATABASE_ERROR'), {status: 500});
   }
-}
+});

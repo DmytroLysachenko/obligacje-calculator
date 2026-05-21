@@ -6,6 +6,7 @@ import {
   createPortfolioLotWithBuyTransaction,
   PortfolioServiceError,
 } from '@/lib/server/portfolio/service';
+import { createDomainErrorResponse, createValidationErrorResponse } from '@/lib/server/http/responses';
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,7 +17,7 @@ export async function POST(req: NextRequest) {
     const { portfolioId, bondType, purchaseDate, amount, isRebought, notes } = body;
 
     if (!portfolioId || !bondType || !purchaseDate || !amount) {
-      return NextResponse.json(createErrorResponse('Missing required fields', 'VALIDATION_ERROR'), { status: 400 });
+      return createValidationErrorResponse('Missing required fields');
     }
 
     const result = await createPortfolioLotWithBuyTransaction(owner.ownerId, {
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
     );
   } catch (error) {
     if (error instanceof PortfolioServiceError) {
-      return NextResponse.json(createErrorResponse(error.message, error.code, error.details), { status: error.status });
+      return createDomainErrorResponse(error);
     }
 
     console.error('Failed to save lot transactionally:', error);

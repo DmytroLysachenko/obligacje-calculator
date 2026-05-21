@@ -4,6 +4,7 @@ import {
   assertAdminSyncAuthorization,
   getAdminStatusSnapshot,
 } from '@/lib/server/admin/service';
+import { createUnauthorizedResponse } from '@/lib/server/http/responses';
 
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
@@ -15,7 +16,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(createSuccessResponse(statusSnapshot));
   } catch (error) {
     if (error instanceof Error && error.message === 'UNAUTHORIZED_SYNC_REQUEST') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return createUnauthorizedResponse();
     }
 
     console.error('[AdminStatus] Failed to fetch status:', error);

@@ -28,7 +28,10 @@ function checkRateLimit(ip: string): { success: boolean; limit: number; remainin
   };
 }
 
-export type ApiHandler = (req: NextRequest, ...args: unknown[]) => Promise<NextResponse> | NextResponse;
+export type ApiHandler<TContext = { params: Promise<Record<string, never>> }> = (
+  req: NextRequest,
+  context: TContext,
+) => Promise<NextResponse> | NextResponse;
 
 /**
  * Standardized API Route Handler wrapper.
@@ -37,8 +40,8 @@ export type ApiHandler = (req: NextRequest, ...args: unknown[]) => Promise<NextR
  * - Zod validation error handling (400)
  * - RFC 7807 Problem Details for 500 errors
  */
-export function apiHandler(handler: ApiHandler) {
-  return async (req: NextRequest, ...args: unknown[]) => {
+export function apiHandler<TContext = { params: Promise<Record<string, never>> }>(handler: ApiHandler<TContext>) {
+  return async (req: NextRequest, context: TContext) => {
     // Basic Rate Limiting
     const headersList = await headers();
     const forwardedFor = headersList.get('x-forwarded-for');
@@ -66,7 +69,7 @@ export function apiHandler(handler: ApiHandler) {
     }
 
     try {
-      return await handler(req, ...args);
+      return await handler(req, context);
     } catch (error) {
       if (error instanceof z.ZodError) {
         return NextResponse.json(

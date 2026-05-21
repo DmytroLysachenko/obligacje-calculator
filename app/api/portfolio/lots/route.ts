@@ -5,13 +5,14 @@ import {
   resolvePortfolioOwner,
 } from '@/lib/server/portfolio/access';
 import { apiHandler } from '@/lib/server/http/api-handler';
-import { createSuccessResponse, createErrorResponse } from '@/shared/types/api';
+import { createSuccessResponse } from '@/shared/types/api';
 import {
   createPortfolioLot,
   deleteOwnerLot,
   listPortfolioLots,
   PortfolioServiceError,
 } from '@/lib/server/portfolio/service';
+import { createDomainErrorResponse, createValidationErrorResponse } from '@/lib/server/http/responses';
 
 export const GET = apiHandler(async (req: NextRequest) => {
   const owner = await resolvePortfolioOwner();
@@ -19,10 +20,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
   const portfolioId = url.searchParams.get('portfolioId');
 
   if (!portfolioId) {
-    return NextResponse.json(
-      createErrorResponse('Portfolio ID is required', 'MISSING_PARAM'),
-      {status: 400},
-    );
+    return createValidationErrorResponse('Portfolio ID is required', 'MISSING_PARAM');
   }
 
   try {
@@ -30,10 +28,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
     return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(lots)), owner);
   } catch (error) {
     if (error instanceof PortfolioServiceError) {
-      return NextResponse.json(
-        createErrorResponse(error.message, error.code, error.details),
-        {status: error.status},
-      );
+      return createDomainErrorResponse(error);
     }
 
     throw error;
@@ -50,10 +45,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
     return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(newLot)), owner);
   } catch (error) {
     if (error instanceof PortfolioServiceError) {
-      return NextResponse.json(
-        createErrorResponse(error.message, error.code, error.details),
-        {status: error.status},
-      );
+      return createDomainErrorResponse(error);
     }
 
     throw error;
@@ -66,10 +58,7 @@ export const DELETE = apiHandler(async (req: NextRequest) => {
   const id = url.searchParams.get('id');
 
   if (!id) {
-    return NextResponse.json(
-      createErrorResponse('Lot ID is required', 'MISSING_PARAM'),
-      {status: 400},
-    );
+    return createValidationErrorResponse('Lot ID is required', 'MISSING_PARAM');
   }
 
   try {
@@ -77,10 +66,7 @@ export const DELETE = apiHandler(async (req: NextRequest) => {
     return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse({success: true})), owner);
   } catch (error) {
     if (error instanceof PortfolioServiceError) {
-      return NextResponse.json(
-        createErrorResponse(error.message, error.code, error.details),
-        {status: error.status},
-      );
+      return createDomainErrorResponse(error);
     }
 
     throw error;

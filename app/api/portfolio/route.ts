@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PortfolioSchema } from '@/features/bond-core/types/portfolio-schemas';
 import { applyPortfolioOwnerCookie, resolvePortfolioOwner } from '@/lib/server/portfolio/access';
-import { createErrorResponse, createSuccessResponse } from '@/shared/types/api';
+import { createSuccessResponse } from '@/shared/types/api';
 import { apiHandler } from '@/lib/server/http/api-handler';
+import { createDomainErrorResponse, createValidationErrorResponse } from '@/lib/server/http/responses';
 import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
 import {
   createOwnerPortfolio,
@@ -37,7 +38,7 @@ export const DELETE = apiHandler(async (req: NextRequest) => {
 
   if (!id) {
     return applyPortfolioOwnerCookie(
-      NextResponse.json(createErrorResponse('Missing portfolio id.', 'VALIDATION_ERROR'), { status: 400 }),
+      createValidationErrorResponse('Missing portfolio id.'),
       owner,
     );
   }
@@ -52,7 +53,7 @@ export const DELETE = apiHandler(async (req: NextRequest) => {
   } catch (error) {
     if (error instanceof PortfolioServiceError) {
       return applyPortfolioOwnerCookie(
-        NextResponse.json(createErrorResponse(error.message, error.code, error.details), {status: error.status}),
+        createDomainErrorResponse(error),
         owner,
       );
     }

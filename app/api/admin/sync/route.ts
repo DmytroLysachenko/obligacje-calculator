@@ -4,6 +4,7 @@ import {
   runAdminSync,
   type SyncMode,
 } from '@/lib/server/admin/service';
+import { createUnauthorizedResponse } from '@/lib/server/http/responses';
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
@@ -22,7 +23,7 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     if (error instanceof Error && error.message === 'UNAUTHORIZED_SYNC_REQUEST') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return createUnauthorizedResponse();
     }
 
     console.error('[AdminSync] Sync failed:', error);

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { applyPortfolioOwnerCookie, resolvePortfolioOwner } from '@/lib/server/portfolio/access';
 import { apiHandler } from '@/lib/server/http/api-handler';
-import { createErrorResponse, createSuccessResponse } from '@/shared/types/api';
+import { createSuccessResponse } from '@/shared/types/api';
 import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
 import { exportOwnerPortfolio, PortfolioServiceError } from '@/lib/server/portfolio/service';
+import { createDomainErrorResponse } from '@/lib/server/http/responses';
 
 export const GET = apiHandler(async (req: NextRequest) => {
   await ensurePortfolioSchemaCompat();
@@ -34,10 +35,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
     return applyPortfolioOwnerCookie(response, owner);
   } catch (error) {
     if (error instanceof PortfolioServiceError) {
-      return NextResponse.json(
-        createErrorResponse(error.message, error.code, error.details),
-        { status: error.status },
-      );
+      return createDomainErrorResponse(error);
     }
 
     throw error;
