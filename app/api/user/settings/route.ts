@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { userSettings } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { applyPortfolioOwnerCookie, resolvePortfolioOwner } from '@/lib/portfolio-access';
+import { applyPortfolioOwnerCookie, resolvePortfolioOwner } from '@/lib/server/portfolio/access';
 import { createSuccessResponse } from '@/shared/types/api';
-import { apiHandler } from '@/lib/api-handler';
+import { apiHandler } from '@/lib/server/http/api-handler';
 import { z } from 'zod';
 
 const UserSettingsUpdateSchema = z.object({
@@ -70,3 +70,4 @@ export const PATCH = apiHandler(async (req: NextRequest) => {
 
   return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(updated)), owner);
 });
+

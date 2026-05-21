@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { sharedSingleScenarios } from '@/db/schema';
-import { ensurePortfolioSchemaCompat } from '@/lib/db-schema-compat';
+import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
 import { createErrorResponse, createSuccessResponse } from '@/shared/types/api';
 import {
   buildSharedSingleScenarioPayload,
@@ -46,3 +46,4 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+

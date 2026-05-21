@@ -28,7 +28,7 @@ import { getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-tim
 
 const today = new Date('2026-05-05T00:00:00.000Z');
 
-vi.mock('@/lib/data-access', async () => {
+vi.mock('@/lib/data/market-data', async () => {
   const { BOND_DEFINITIONS: runtimeDefinitions } = await import('./constants/bond-definitions');
 
   const historicalMap: Record<string, { inflation?: number; nbpRate?: number }> = {};
@@ -374,3 +374,4 @@ describe('Feature support matrix regression suite', () => {
     });
   });
 });
+

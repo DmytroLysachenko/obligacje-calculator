@@ -5,7 +5,7 @@ import { SyncProvider } from "./types";
 import { format, addMonths, startOfMonth, parseISO, isBefore } from "date-fns";
 import { scrapeCurrentBondRates } from "./bond-scraper";
 import { syncMacroData } from "./macro-data-sync";
-import { deriveSeriesCode, deriveSeriesWindow } from "@/lib/bond-series";
+import { deriveSeriesCode, deriveSeriesWindow } from "@/lib/server/bonds/offer-terms";
 import { BOND_DEFINITIONS } from "@/features/bond-core/constants/bond-definitions";
 import { BondType } from "@/features/bond-core/types";
 import { bondSeries } from "@/db/schema";
@@ -209,3 +209,4 @@ export class SyncEngine {
     };
   }
 }
+

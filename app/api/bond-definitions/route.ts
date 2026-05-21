@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getBondDefinitionsMap } from '@/lib/data-access';
+import { getBondDefinitionsMap } from '@/lib/data/market-data';
 import { createSuccessResponse, createErrorResponse } from '@/shared/types/api';
 
 export async function GET() {
@@ -14,3 +14,4 @@ export async function GET() {
     );
   }
 }
+

@@ -10,7 +10,7 @@ import { calculateBondInvestment } from '../utils/calculations';
 import { BondInputs, TaxStrategy } from '../types';
 import { BaseHandler, ScenarioHandler, HandlerContext } from './base';
 import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
-import { resolveBondOfferTerms } from '@/lib/bond-series';
+import { resolveBondOfferTerms } from '@/lib/server/bonds/offer-terms';
 
 export class ComparisonHandler extends BaseHandler implements ScenarioHandler<NormalizedBondComparisonPayload | IndependentBondComparisonPayload, BondComparisonScenarioItem[]> {
   kind = ScenarioKind.BOND_COMPARISON;
@@ -199,3 +199,4 @@ function shouldAutoRollover(inputs: BondInputs, durationYears: number) {
 
   return horizonMonths > nativeDurationMonths;
 }
+

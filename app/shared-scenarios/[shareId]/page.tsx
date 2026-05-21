@@ -5,7 +5,7 @@ import {getTranslations} from 'next-intl/server';
 import {BondCalculatorContainer} from '@/features/single-calculator/components/BondCalculatorContainer';
 import {db} from '@/db';
 import {sharedSingleScenarios} from '@/db/schema';
-import {ensurePortfolioSchemaCompat} from '@/lib/db-schema-compat';
+import {ensurePortfolioSchemaCompat} from '@/lib/server/db/portfolio-schema-compat';
 import {BondDefinitionsProvider} from '@/shared/context/BondDefinitionsContext';
 import {PageTransition} from '@/shared/components/PageTransition';
 import {PageSuspenseFallback} from '@/shared/components/PageSuspenseFallback';

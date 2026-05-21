@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PortfolioSchema } from '@/features/bond-core/types/portfolio-schemas';
-import { applyPortfolioOwnerCookie, resolvePortfolioOwner } from '@/lib/portfolio-access';
+import { applyPortfolioOwnerCookie, resolvePortfolioOwner } from '@/lib/server/portfolio/access';
 import { createErrorResponse, createSuccessResponse } from '@/shared/types/api';
-import { apiHandler } from '@/lib/api-handler';
-import { ensurePortfolioSchemaCompat } from '@/lib/db-schema-compat';
+import { apiHandler } from '@/lib/server/http/api-handler';
+import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
 import {
   createOwnerPortfolio,
   deleteOwnerPortfolio,
@@ -60,3 +60,4 @@ export const DELETE = apiHandler(async (req: NextRequest) => {
     throw error;
   }
 });
+

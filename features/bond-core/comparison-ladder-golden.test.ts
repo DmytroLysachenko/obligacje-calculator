@@ -8,7 +8,7 @@ import { getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-tim
 
 const today = new Date('2026-05-05T00:00:00.000Z');
 
-vi.mock('@/lib/data-access', async () => {
+vi.mock('@/lib/data/market-data', async () => {
   const runtimeDefinitionsModule = await import('./constants/bond-definitions');
   const runtimeDefinitions = runtimeDefinitionsModule.BOND_DEFINITIONS;
 
@@ -159,3 +159,4 @@ describe('Comparison and ladder golden regressions', () => {
     expect(peak?.count).toBe(1);
   });
 });
+

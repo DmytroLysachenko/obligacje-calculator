@@ -4,7 +4,7 @@ import { ScenarioKind } from './types/scenarios';
 import { BondType, InterestPayout, TaxStrategy } from './types';
 
 // Mock data-access to simulate DB interaction without a real DB
-vi.mock('@/lib/data-access', () => ({
+vi.mock('@/lib/data/market-data', () => ({
   getHistoricalDataMap: vi.fn().mockResolvedValue({
     '2023-01': { inflation: 17.2, nbpRate: 6.75 },
     '2023-02': { inflation: 18.4, nbpRate: 6.75 },
@@ -57,3 +57,4 @@ describe('CalculationApplicationService - Integration', () => {
     expect(envelope.calculationNotes).toContain('Early redemption fee logic was applied before the native maturity date.');
   });
 });
+

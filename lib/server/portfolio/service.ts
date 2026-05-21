@@ -1,8 +1,8 @@
 import {calculationService} from '@/features/bond-core/application-service';
 import {ScenarioKind, type PortfolioSimulationResult} from '@/features/bond-core/types/scenarios';
-import {resolveStoredBondLotContext} from '@/lib/bond-series';
-import {buildPortfolioSimulationPayload} from '@/lib/portfolio-simulation';
-import {getOwnedLot, getOwnedPortfolio} from '@/lib/portfolio-access';
+import {resolveStoredBondLotContext} from '@/lib/server/bonds/offer-terms';
+import {buildPortfolioSimulationPayload} from '@/lib/server/portfolio/simulation';
+import {getOwnedLot, getOwnedPortfolio} from '@/lib/server/portfolio/access';
 import {
   createLot,
   createPortfolio,

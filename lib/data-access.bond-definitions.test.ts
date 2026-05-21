@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { type BondSeries, type PolishBond } from '@/db/schema';
 import { BOND_DEFINITIONS } from '@/features/bond-core/constants/bond-definitions';
 import { BondType, InterestPayout } from '@/features/bond-core/types';
-import { mergeBondDefinitionsWithSeries } from '@/lib/data-access';
+import { mergeBondDefinitionsWithSeries } from '@/lib/data/market-data';
 
 function makeBond(overrides: Partial<PolishBond> = {}): PolishBond {
   return {
@@ -175,3 +175,4 @@ describe('mergeBondDefinitionsWithSeries', () => {
     expect(defs[0].margin).toBe(0);
   });
 });
+

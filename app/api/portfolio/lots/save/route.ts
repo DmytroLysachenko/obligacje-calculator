@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { userInvestmentLots, userTransactions, userPortfolios } from '@/db/schema';
-import { resolvePortfolioOwner, applyPortfolioOwnerCookie } from '@/lib/portfolio-access';
-import { ensurePortfolioSchemaCompat } from '@/lib/db-schema-compat';
+import { resolvePortfolioOwner, applyPortfolioOwnerCookie } from '@/lib/server/portfolio/access';
+import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
 import { createSuccessResponse, createErrorResponse } from '@/shared/types/api';
 import { and, eq } from 'drizzle-orm';
 
@@ -58,3 +58,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(createErrorResponse('Internal error', 'INTERNAL_ERROR'), { status: 500 });
   }
 }
+

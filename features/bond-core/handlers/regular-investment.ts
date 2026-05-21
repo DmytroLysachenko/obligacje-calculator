@@ -6,7 +6,7 @@ import { RegularInvestmentInputs, RegularInvestmentResult } from '../types';
 import { RegularInvestmentInputsSchema } from '../types/schemas';
 import { calculateRegularInvestment } from '../utils/calculations';
 import { BaseHandler, ScenarioHandler, HandlerContext } from './base';
-import { resolveBondOfferTerms } from '@/lib/bond-series';
+import { resolveBondOfferTerms } from '@/lib/server/bonds/offer-terms';
 
 export class RegularInvestmentHandler extends BaseHandler implements ScenarioHandler<RegularInvestmentInputs, RegularInvestmentResult> {
   kind = ScenarioKind.REGULAR_INVESTMENT;
@@ -40,3 +40,4 @@ export class RegularInvestmentHandler extends BaseHandler implements ScenarioHan
     return this.createEnvelope(result, warnings, assumptions, context.dataFreshness);
   }
 }
+

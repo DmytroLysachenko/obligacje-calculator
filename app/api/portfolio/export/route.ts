@@ -2,14 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { userInvestmentLots } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { applyPortfolioOwnerCookie, getOwnedPortfolio, resolvePortfolioOwner } from '@/lib/portfolio-access';
-import { apiHandler } from '@/lib/api-handler';
+import { applyPortfolioOwnerCookie, getOwnedPortfolio, resolvePortfolioOwner } from '@/lib/server/portfolio/access';
+import { apiHandler } from '@/lib/server/http/api-handler';
 import { createSuccessResponse } from '@/shared/types/api';
 import { calculationService } from '@/features/bond-core/application-service';
 import { PortfolioSimulationCalculationEnvelope, ScenarioKind } from '@/features/bond-core/types/scenarios';
 import { TaxStrategy } from '@/features/bond-core/types';
-import { ensurePortfolioSchemaCompat } from '@/lib/db-schema-compat';
-import { buildPortfolioSimulationPayload } from '@/lib/portfolio-simulation';
+import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
+import { buildPortfolioSimulationPayload } from '@/lib/server/portfolio/simulation';
 
 export const GET = apiHandler(async (req: NextRequest) => {
   await ensurePortfolioSchemaCompat();
@@ -86,3 +86,4 @@ export const GET = apiHandler(async (req: NextRequest) => {
 
   return applyPortfolioOwnerCookie(response, owner);
 });
+

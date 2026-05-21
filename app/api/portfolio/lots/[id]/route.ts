@@ -3,7 +3,7 @@ import { InvestmentLotSchema } from '@/features/bond-core/types/portfolio-schema
 import {
   applyPortfolioOwnerCookie,
   resolvePortfolioOwner,
-} from '@/lib/portfolio-access';
+} from '@/lib/server/portfolio/access';
 import {
   deleteOwnerLot,
   PortfolioServiceError,

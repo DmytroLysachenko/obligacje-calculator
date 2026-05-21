@@ -9,7 +9,7 @@ import {TooltipProvider} from '@/components/ui/tooltip';
 import {AppLocaleProvider} from '@/i18n/client';
 import {defaultLocale, type Language} from '@/i18n/config';
 import {getMetadataLocale} from '@/i18n/locale-utils';
-import {getGlobalDataFreshness} from '@/lib/data-access';
+import {getGlobalDataFreshness} from '@/lib/data/market-data';
 import {ErrorBoundary} from '@/shared/components/ErrorBoundary';
 import {OpportunisticSyncTrigger} from '@/shared/components/OpportunisticSyncTrigger';
 import {Sidebar} from '@/shared/components/Sidebar';
@@ -168,3 +168,4 @@ export default async function RootLayout({
     </html>
   );
 }
+

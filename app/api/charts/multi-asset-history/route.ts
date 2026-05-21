@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getMultiAssetHistory } from '@/lib/data-access';
+import { getMultiAssetHistory } from '@/lib/data/market-data';
 import { HISTORICAL_RETURNS } from '@/features/bond-core/constants/historical-data';
 import { createSuccessResponse } from '@/shared/types/api';
 
@@ -28,3 +28,4 @@ export async function GET() {
     );
   }
 }
+

@@ -4,7 +4,7 @@ import { ScenarioKind } from './types/scenarios';
 import { BondType, InterestPayout, TaxStrategy, CalculationResult, YearlyTimelinePoint } from './types';
 
 // Mock data-access to simulate DB interaction
-vi.mock('@/lib/data-access', () => ({
+vi.mock('@/lib/data/market-data', () => ({
   getHistoricalDataMap: vi.fn().mockResolvedValue({
     '2023-01': { inflation: 17.2, nbpRate: 6.75 },
     '2023-02': { inflation: 18.4, nbpRate: 6.75 },
@@ -100,3 +100,4 @@ describe('Bond Core Integration Tests', () => {
     expect(result.timeline.filter((p: YearlyTimelinePoint) => p.year > 0).length).toBe(4);
   });
 });
+

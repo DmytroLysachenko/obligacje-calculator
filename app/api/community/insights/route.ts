@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
-import { apiHandler } from '@/lib/api-handler';
+import { apiHandler } from '@/lib/server/http/api-handler';
 import { createSuccessResponse } from '@/shared/types/api';
 
 export const GET = apiHandler(async () => {
@@ -10,3 +10,4 @@ export const GET = apiHandler(async () => {
 
   return NextResponse.json(createSuccessResponse(insights));
 });
+

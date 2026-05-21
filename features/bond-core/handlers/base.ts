@@ -1,7 +1,7 @@
 import { CalculationEnvelope, ScenarioKind, CalculationDataFreshness, HistoricalAverages } from '../types/scenarios';
 import { BondDefinition } from '../constants/bond-definitions';
 import { BondType, BondInputs } from '../types';
-import { getHistoricalDataMap, getHistoricalAverages } from '@/lib/data-access';
+import { getHistoricalDataMap, getHistoricalAverages } from '@/lib/data/market-data';
 import { format, subMonths, parseISO } from 'date-fns';
 
 export const MODEL_VERSION = '2.7.0-db-driven-metadata';
@@ -96,3 +96,4 @@ export abstract class BaseHandler {
     };
   }
 }
+

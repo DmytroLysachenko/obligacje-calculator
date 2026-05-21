@@ -5,7 +5,7 @@ import {
 import { 
   getGlobalDataFreshness, 
   getBondDefinitionsMap, 
-} from '@/lib/data-access';
+} from '@/lib/data/market-data';
 import { calculationCache } from './utils/calculation-cache';
 import { sanitizeInputs } from './utils/engine-guards';
 import { HandlerFactory, MODEL_VERSION } from './handlers';
@@ -51,3 +51,4 @@ export class CalculationApplicationService {
 }
 
 export const calculationService = new CalculationApplicationService();
+

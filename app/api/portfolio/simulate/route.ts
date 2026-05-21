@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSuccessResponse, createErrorResponse } from '@/shared/types/api';
-import { applyPortfolioOwnerCookie, resolvePortfolioOwner } from '@/lib/portfolio-access';
-import { ensurePortfolioSchemaCompat } from '@/lib/db-schema-compat';
-import { apiHandler } from '@/lib/api-handler';
+import { applyPortfolioOwnerCookie, resolvePortfolioOwner } from '@/lib/server/portfolio/access';
+import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
+import { apiHandler } from '@/lib/server/http/api-handler';
 import {
   PortfolioServiceError,
   simulateOwnerPortfolio,
@@ -32,3 +32,4 @@ export const POST = apiHandler(async (req: NextRequest) => {
     throw error;
   }
 });
+

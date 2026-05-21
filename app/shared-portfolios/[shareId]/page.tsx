@@ -5,7 +5,7 @@ import {getTranslations} from 'next-intl/server';
 import {PortfolioDetails} from '@/features/notebook/components/PortfolioDetails';
 import {db} from '@/db';
 import {userPortfolios} from '@/db/schema';
-import {ensurePortfolioSchemaCompat} from '@/lib/db-schema-compat';
+import {ensurePortfolioSchemaCompat} from '@/lib/server/db/portfolio-schema-compat';
 
 interface Props {
   params: Promise<{shareId: string}>;

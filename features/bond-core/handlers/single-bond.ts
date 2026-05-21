@@ -6,10 +6,10 @@ import { BondInputs, TaxStrategy, CalculationResult } from '../types';
 import { BondInputsSchema } from '../types/schemas';
 import { calculateBondInvestment } from '../utils/calculations';
 import { BOND_DEFINITIONS } from '../constants/bond-definitions';
-import { getTaxRulesForYear, getHistoricalAverages } from '@/lib/data-access';
+import { getTaxRulesForYear, getHistoricalAverages } from '@/lib/data/market-data';
 import { BaseHandler, ScenarioHandler, HandlerContext } from './base';
 import { getYear, parseISO } from 'date-fns';
-import { resolveBondOfferTerms } from '@/lib/bond-series';
+import { resolveBondOfferTerms } from '@/lib/server/bonds/offer-terms';
 import { getHorizonMonths } from '@/shared/lib/date-timing';
 
 function shouldAutoRollover(inputs: BondInputs, durationYears: number) {
@@ -184,3 +184,4 @@ export class SingleBondHandler extends BaseHandler implements ScenarioHandler<Bo
     return this.createEnvelope(aggregatedResult, warnings, assumptions, dataFreshness, historicalAverages);
   }
 }
+

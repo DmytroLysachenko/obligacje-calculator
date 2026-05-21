@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { db } from '@/db';
 import { userInvestmentLots, userPortfolios } from '@/db/schema';
-import { applyPortfolioOwnerCookie, resolvePortfolioOwner } from '@/lib/portfolio-access';
-import { ensurePortfolioSchemaCompat } from '@/lib/db-schema-compat';
-import { apiHandler } from '@/lib/api-handler';
+import { applyPortfolioOwnerCookie, resolvePortfolioOwner } from '@/lib/server/portfolio/access';
+import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
+import { apiHandler } from '@/lib/server/http/api-handler';
 import { createErrorResponse, createSuccessResponse } from '@/shared/types/api';
-import { resolveStoredBondLotContext } from '@/lib/bond-series';
+import { resolveStoredBondLotContext } from '@/lib/server/bonds/offer-terms';
 
 const ImportedLotSchema = z.object({
   bondType: z.string().min(1),
@@ -75,3 +75,4 @@ export const POST = apiHandler(async (req: NextRequest) => {
     owner,
   );
 });
+

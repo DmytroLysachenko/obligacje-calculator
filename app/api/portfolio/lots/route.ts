@@ -3,8 +3,8 @@ import { InvestmentLotSchema } from '@/features/bond-core/types/portfolio-schema
 import {
   applyPortfolioOwnerCookie,
   resolvePortfolioOwner,
-} from '@/lib/portfolio-access';
-import { apiHandler } from '@/lib/api-handler';
+} from '@/lib/server/portfolio/access';
+import { apiHandler } from '@/lib/server/http/api-handler';
 import { createSuccessResponse, createErrorResponse } from '@/shared/types/api';
 import {
   createPortfolioLot,
@@ -86,3 +86,4 @@ export const DELETE = apiHandler(async (req: NextRequest) => {
     throw error;
   }
 });
+

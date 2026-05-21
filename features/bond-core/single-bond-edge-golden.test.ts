@@ -6,7 +6,7 @@ import { ScenarioKind } from './types/scenarios';
 import { BOND_DEFINITIONS } from './constants/bond-definitions';
 import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 
-vi.mock('@/lib/data-access', async () => {
+vi.mock('@/lib/data/market-data', async () => {
   const runtimeDefinitionsModule = await import('./constants/bond-definitions');
   const runtimeDefinitions = runtimeDefinitionsModule.BOND_DEFINITIONS;
 
@@ -147,3 +147,4 @@ describe('Single-bond edge golden regressions', () => {
     expect(rodMaturity.totalEarlyWithdrawalFee).toBe(0);
   });
 });
+
