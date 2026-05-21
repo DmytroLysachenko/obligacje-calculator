@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { convertComparisonToCSV, convertLotsToCSV, convertTimelineToCSV } from './csv-utils';
 import { buildComparisonExportHeaders, buildLotsExportHeaders, buildTimelineExportHeaders } from './export-headers';
-import { t } from '@/i18n';
+import { translateMessage } from '@/i18n/translate';
 import type { YearlyTimelinePoint, LotBreakdown } from '@/features/bond-core/types';
 import { SimulationEventType } from '@/features/bond-core/types/simulation';
 
 describe('csv-utils', () => {
   it('builds a normalized timeline csv with localized helper columns', () => {
-    const headers = buildTimelineExportHeaders((key) => t(key, undefined, 'pl'));
+    const headers = buildTimelineExportHeaders((key) => translateMessage('pl', key));
     const timeline = [
       {
         year: 1,
@@ -33,7 +33,7 @@ describe('csv-utils', () => {
   });
 
   it('exports payout-bond timeline rows with total wealth and early exit semantics', () => {
-    const headers = buildTimelineExportHeaders((key) => t(key, undefined, 'en'));
+    const headers = buildTimelineExportHeaders((key) => translateMessage('en', key));
     const timeline = [
       {
         periodLabel: 'Jun 2026',
@@ -74,7 +74,7 @@ describe('csv-utils', () => {
   });
 
   it('exports retained-interest headers for capitalizing bond timelines', () => {
-    const headers = buildTimelineExportHeaders((key) => t(key, undefined, 'en'));
+    const headers = buildTimelineExportHeaders((key) => translateMessage('en', key));
     const timeline = [
       {
         periodLabel: 'May 2027',
@@ -113,7 +113,7 @@ describe('csv-utils', () => {
   });
 
   it('builds lot csv using the selected locale formatting', () => {
-    const headers = buildLotsExportHeaders((key) => t(key, undefined, 'pl'));
+    const headers = buildLotsExportHeaders((key) => translateMessage('pl', key));
     const lots = [
       {
         purchaseDate: '2026-05-14',
@@ -134,7 +134,7 @@ describe('csv-utils', () => {
   });
 
   it('adds an explicit export date column to single-bond timeline csv output', () => {
-    const headers = buildTimelineExportHeaders((key) => t(key, undefined, 'en'));
+    const headers = buildTimelineExportHeaders((key) => translateMessage('en', key));
     const timeline = [
       {
         periodLabel: 'Jun 2026',
@@ -166,7 +166,7 @@ describe('csv-utils', () => {
   });
 
   it('builds a combined comparison csv aligned by actual calendar date', () => {
-    const headers = buildComparisonExportHeaders((key) => t(key, undefined, 'en'));
+    const headers = buildComparisonExportHeaders((key) => translateMessage('en', key));
     const timelineA = [
       {
         periodLabel: 'Jun 2026',

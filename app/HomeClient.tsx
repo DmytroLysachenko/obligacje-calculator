@@ -1,13 +1,13 @@
 'use client';
 
 import { BondCalculatorContainer } from '@/features/single-calculator/components/BondCalculatorContainer';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { PageSuspenseFallback } from '@/shared/components/PageSuspenseFallback';
 import { PageTransition } from '@/shared/components/PageTransition';
 import { Suspense } from 'react';
 
 export default function HomeClient() {
-  const { t } = useLanguage();
+  const { t } = useAppI18n();
 
   return (
     <PageTransition>
@@ -24,3 +24,7 @@ export default function HomeClient() {
     </PageTransition>
   );
 }
+
+
+
+

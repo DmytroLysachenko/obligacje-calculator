@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger, } from "@/components/ui/sheet";
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { CalculationResult } from '@/features/bond-core/types';
 import { Info, ArrowRight, Calculator, Landmark, ShieldCheck, ExternalLink } from "lucide-react";
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,7 @@ interface MathDeepDiveProps {
     trigger?: React.ReactNode;
 }
 export const MathDeepDive: React.FC<MathDeepDiveProps> = ({ results, trigger }) => {
-    const { t, language } = useLanguage();
+    const { t, locale: language } = useAppI18n();
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat(getIntlLocale(language), {
             style: 'currency',
@@ -161,4 +161,8 @@ export const MathDeepDive: React.FC<MathDeepDiveProps> = ({ results, trigger }) 
       </SheetContent>
     </Sheet>);
 };
+
+
+
+
 

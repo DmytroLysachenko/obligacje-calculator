@@ -7,11 +7,11 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@/components/ui/select';
 import { History, Settings2, ShoppingCart } from 'lucide-react';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { ComparisonControlsProps } from './types';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 export const ComparisonControls: React.FC<ComparisonControlsProps> = ({ initialSum, updateInitialSum, monthlyContribution, updateMonthlyContribution, startYear, updateStartYear, startMonth, updateStartMonth, years, months, showRealValue, updateShowRealValue, purchasingPowerLoss, formatCurrency, }) => {
-    const { t, language } = useLanguage();
+    const { t } = useAppI18n();
     const presets = [
         { label: t('comparison.preset_bull_2021'), year: '2021', month: '01' },
         { label: t('comparison.preset_war_2022'), year: '2022', month: '02' },
@@ -25,7 +25,7 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({ initialS
             {t('comparison.configuration')}
           </CardTitle>
           <p className="text-sm leading-6 text-muted-foreground">
-            {t("generated.features.comparison_engine.components.comparison_controls.item_1", undefined, language)}
+            {t("generated.features.comparison_engine.components.comparison_controls.item_1")}
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -58,10 +58,10 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({ initialS
               <AccordionTrigger className="rounded-2xl border bg-slate-50 px-4 py-4 hover:no-underline">
                 <div className="space-y-1 text-left">
                   <p className="text-sm font-bold text-slate-950">
-                    {t("generated.features.comparison_engine.components.comparison_controls.item_2", undefined, language)}
+                    {t("generated.features.comparison_engine.components.comparison_controls.item_2")}
                   </p>
                   <p className="text-xs leading-5 text-muted-foreground">
-                    {t("generated.features.comparison_engine.components.comparison_controls.item_3", undefined, language)}
+                    {t("generated.features.comparison_engine.components.comparison_controls.item_3")}
                   </p>
                 </div>
               </AccordionTrigger>
@@ -164,4 +164,8 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({ initialS
       </Card>
     </div>);
 };
+
+
+
+
 

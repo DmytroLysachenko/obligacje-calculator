@@ -13,7 +13,7 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import { Edit3, Save, RotateCcw, TrendingUp } from 'lucide-react';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 
 interface MacroPoint {
   year: number;
@@ -34,7 +34,7 @@ export const MacroAdjuster: React.FC<MacroAdjusterProps> = ({
   horizonYears,
   onUpdate 
 }) => {
-  const { t } = useLanguage();
+  const { t } = useAppI18n();
   const [data, setData] = useState<MacroPoint[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const lastSyncProps = useRef({ initialInflation, initialNbpRate, horizonYears });
@@ -187,3 +187,7 @@ export const MacroAdjuster: React.FC<MacroAdjusterProps> = ({
     </Card>
   );
 };
+
+
+
+

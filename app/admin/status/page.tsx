@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Database, RefreshCcw, Activity, AlertCircle, CheckCircle2, Clock, Play, Loader2, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatDistanceToNow, parseISO, differenceInMonths } from 'date-fns';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 
 interface SeriesStatus {
   id: string;
@@ -28,7 +28,7 @@ interface StatusData {
 }
 
 export default function AdminStatusPage() {
-  const { t } = useLanguage();
+  const { t } = useAppI18n();
   const [data, setData] = useState<StatusData | null>(null);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
@@ -330,3 +330,7 @@ export default function AdminStatusPage() {
     </div>
   );
 }
+
+
+
+

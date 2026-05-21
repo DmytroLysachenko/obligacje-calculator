@@ -3,7 +3,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Users, BarChart3, TrendingUp, Info } from 'lucide-react';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { useChartData } from '@/shared/hooks/useChartData';
 import { BondType } from '@/features/bond-core/types';
 
@@ -19,7 +19,7 @@ interface CommunityInsightsWidgetProps {
 }
 
 export const CommunityInsightsWidget: React.FC<CommunityInsightsWidgetProps> = ({ bondType }) => {
-  const { t } = useLanguage();
+  const { t } = useAppI18n();
   const { data: response } = useChartData<Insight[]>('/api/community/insights');
   
   const insight = response?.find(i => i.bondType === bondType);
@@ -73,3 +73,7 @@ export const CommunityInsightsWidget: React.FC<CommunityInsightsWidgetProps> = (
     </Card>
   );
 };
+
+
+
+

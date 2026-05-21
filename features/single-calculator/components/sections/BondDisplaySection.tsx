@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { HelpCircle } from 'lucide-react';
 import { BondInputs } from '@/features/bond-core/types';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { GLOSSARY } from '@/shared/constants/glossary';
 import { cn } from '@/lib/utils';
 
@@ -25,7 +25,7 @@ export const BondDisplaySection: React.FC<BondDisplaySectionProps> = React.memo(
   showCustomTax,
   setShowCustomTax,
 }) => {
-  const { t, language } = useLanguage();
+  const { t, locale: language } = useAppI18n();
 
   return (
     <div className="space-y-4 pb-6">
@@ -102,3 +102,7 @@ export const BondDisplaySection: React.FC<BondDisplaySectionProps> = React.memo(
 });
 
 BondDisplaySection.displayName = 'BondDisplaySection';
+
+
+
+

@@ -4,13 +4,13 @@ import { AlertCircle, Clock, Coins, ShieldCheck, TrendingUp } from 'lucide-react
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BondDefinition } from '../../bond-core/constants/bond-definitions';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 interface BondEducationCardProps {
     bond: BondDefinition;
 }
 export const BondEducationCard: React.FC<BondEducationCardProps> = ({ bond }) => {
-    const { t, language } = useLanguage();
+    const { t, locale: language } = useAppI18n();
     return (<Card className="flex h-full flex-col transition-shadow hover:shadow-md">
       <CardHeader>
         <div className="mb-2 flex items-start justify-between">
@@ -57,8 +57,8 @@ export const BondEducationCard: React.FC<BondEducationCardProps> = ({ bond }) =>
             <ShieldCheck className="h-3.5 w-3.5 text-primary"/>
             <span>
               {(bond.type === 'OTS'
-            ? t("generated.features.education.components.bond_education_card.item_1", undefined, language) : bond.type === 'ROR' || bond.type === 'DOR'
-            ? t("generated.features.education.components.bond_education_card.item_2", undefined, language) : t('bonds.first_year'))}
+            ? t("generated.features.education.components.bond_education_card.item_1") : bond.type === 'ROR' || bond.type === 'DOR'
+            ? t("generated.features.education.components.bond_education_card.item_2") : t('bonds.first_year'))}
               : <strong> {bond.firstYearRate}%</strong>
             </span>
           </div>
@@ -76,4 +76,8 @@ export const BondEducationCard: React.FC<BondEducationCardProps> = ({ bond }) =>
       </CardContent>
     </Card>);
 };
+
+
+
+
 

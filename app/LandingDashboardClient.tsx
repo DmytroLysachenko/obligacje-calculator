@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { ArrowRight, BarChart2, BookOpen, Calculator, CheckCircle2, Layers, Scale, Sparkles, TrendingUp, Wallet, } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { loadSavedScenarios } from '@/features/single-calculator/lib/scenario-storage';
 import { FeatureStatus } from '@/shared/components/FeatureStatusNotice';
 type ToolItem = {
@@ -25,7 +25,7 @@ type HomeStepItem = {
 function HomeToolCard({ item }: {
     item: ToolItem;
 }) {
-    const { t } = useLanguage();
+    const { t } = useAppI18n();
     const routeLabel = item.status === 'trusted'
         ? t('landing.route_labels.primary') : item.status === 'reference'
         ? t('landing.route_labels.reference') : t('landing.route_labels.next');
@@ -73,7 +73,7 @@ function HomeStep({ title, description, }: {
     </div>);
 }
 function HeroTrustStrip() {
-    const { t } = useLanguage();
+    const { t } = useAppI18n();
     const itemKeys = ['item_1', 'item_2', 'item_3'] as const;
     return (<div className="flex flex-wrap gap-2">
       {itemKeys.map((itemKey) => (<span key={itemKey} className="rounded-full border border-white/80 bg-white/68 px-3 py-1.5 text-[11px] font-semibold tracking-[0.04em] text-slate-700 backdrop-blur">
@@ -87,7 +87,7 @@ function RecentWorkCard({ savedScenarioNames, emptyCopy, notebookLabel, calculat
     notebookLabel: string;
     calculatorLabel: string;
 }) {
-    const { t } = useLanguage();
+    const { t } = useAppI18n();
     return (<Card className="surface-panel h-full overflow-hidden rounded-[1.9rem] border-white/80 bg-white/78">
       <CardContent className="space-y-5 p-5">
         <div className="space-y-2">
@@ -140,7 +140,7 @@ function SectionHeading({ title, description, }: {
     </div>);
 }
 export function LandingDashboardClient() {
-    const { t } = useLanguage();
+    const { t } = useAppI18n();
     const [savedScenarioNames, setSavedScenarioNames] = React.useState<string[]>([]);
     React.useEffect(() => {
         setSavedScenarioNames(loadSavedScenarios()
@@ -290,3 +290,7 @@ export function LandingDashboardClient() {
       </section>
     </div>);
 }
+
+
+
+

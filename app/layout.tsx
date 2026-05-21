@@ -6,7 +6,7 @@ import {NextIntlClientProvider} from 'next-intl';
 import {getLocale, getMessages, getTranslations} from 'next-intl/server';
 import './globals.css';
 import {TooltipProvider} from '@/components/ui/tooltip';
-import {LanguageProvider} from '@/i18n';
+import {LanguageProvider} from '@/i18n/client';
 import {defaultLocale, type Language} from '@/i18n/config';
 import {getMetadataLocale} from '@/i18n/locale-utils';
 import {getGlobalDataFreshness} from '@/lib/data-access';

@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { AlertTriangle, CheckCircle2, FlaskConical, Info } from 'lucide-react';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 
 export type FeatureStatus = 'trusted' | 'conditional' | 'experimental' | 'limited' | 'reference';
@@ -42,7 +42,7 @@ export function FeatureStatusPill({ status, className, }: {
     status: FeatureStatus;
     className?: string;
 }) {
-    const { t } = useLanguage();
+    const { t } = useAppI18n();
     const config = statusConfig[status];
     return (<span className={cn('inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold tracking-[0.08em]', config.pillClassName, className)}>
       {t(`shared.feature_status.labels.${status}`)}
@@ -73,3 +73,7 @@ export function FeatureStatusNotice({ status, title, children, className, eyebro
       </div>
     </div>);
 }
+
+
+
+

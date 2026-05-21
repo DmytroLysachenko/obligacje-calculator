@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { BondEducationCard } from '@/features/education/components/BondEducationCard';
 import {
@@ -28,7 +28,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { PageTransition } from '@/shared/components/PageTransition';
 
 export default function EducationClient() {
-  const { t } = useLanguage();
+  const { t } = useAppI18n();
   const { definitions, isLoading } = useBondDefinitions();
 
   const concepts = [
@@ -185,3 +185,7 @@ export default function EducationClient() {
     </PageTransition>
   );
 }
+
+
+
+

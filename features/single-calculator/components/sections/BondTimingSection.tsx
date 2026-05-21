@@ -11,7 +11,7 @@ import { CalendarIcon, AlertCircle, HelpCircle } from 'lucide-react';
 import { format, parseISO, isAfter } from 'date-fns';
 import { BondInputs, TaxStrategy } from '@/features/bond-core/types';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { GLOSSARY } from '@/shared/constants/glossary';
 import { toDateString } from '@/shared/lib/date-timing';
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';
@@ -27,7 +27,7 @@ interface BondTimingSectionProps {
     hasMounted: boolean;
 }
 export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({ inputs, onUpdate, investmentHorizonMonths, currentDef, hasMounted, }) => {
-    const { t, language } = useLanguage();
+    const { t, locale: language } = useAppI18n();
     const dateLocale = getDateFnsLocale(language);
     const isFutureDate = isAfter(parseISO(inputs.purchaseDate), new Date());
     const durationMonths = Math.round(currentDef.duration * 12);
@@ -91,7 +91,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
             {formatHorizonMonths(investmentHorizonMonths, language)}
           </span>
         </div>
-        <CommittedSliderInput value={investmentHorizonMonths} min={1} max={360} step={1} unit={t("generated.features.single_calculator.components.sections.bond_timing_section.item_1", undefined, language)} onCommit={(value) => onUpdate('investmentHorizonMonths', value)}/>
+        <CommittedSliderInput value={investmentHorizonMonths} min={1} max={360} step={1} unit={t("generated.features.single_calculator.components.sections.bond_timing_section.item_1")} onCommit={(value) => onUpdate('investmentHorizonMonths', value)}/>
       </div>
 
       <div className="space-y-3">
@@ -141,15 +141,18 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
       <div className="rounded-xl border border-primary/10 bg-primary/5 p-4">
         <div className="space-y-0.5">
           <Label className="text-sm font-bold text-primary">
-            {t("generated.features.single_calculator.components.sections.bond_timing_section.item_2", undefined, language)}
+            {t("generated.features.single_calculator.components.sections.bond_timing_section.item_2")}
           </Label>
           <p className="text-[10px] font-medium italic text-muted-foreground">
             {autoRollover
-            ? t("generated.features.single_calculator.components.sections.bond_timing_section.item_3", undefined, language) : t("generated.features.single_calculator.components.sections.bond_timing_section.item_4", undefined, language)}
+            ? t("generated.features.single_calculator.components.sections.bond_timing_section.item_3") : t("generated.features.single_calculator.components.sections.bond_timing_section.item_4")}
           </p>
         </div>
       </div>
     </div>);
 });
 BondTimingSection.displayName = 'BondTimingSection';
+
+
+
 

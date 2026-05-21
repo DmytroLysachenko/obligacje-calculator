@@ -3,7 +3,7 @@ import React from 'react';
 import { FileSpreadsheet, FileText, Info, Plus, Save } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { BondInputs, CalculationResult } from '../../bond-core/types';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { buildTimelineExportHeaders } from '@/shared/lib/export-headers';
 import { MetricStrip } from '@/shared/components/MetricStrip';
 import { MathDeepDive } from '@/shared/components/MathDeepDive';
@@ -28,7 +28,7 @@ interface BondResultsSummaryProps {
     onExportPDF?: () => void;
 }
 export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results, inputs, onSaveScenario, onAddToNotebook, onExportPDF, }) => {
-    const { t, language } = useLanguage();
+    const { t, locale: language } = useAppI18n();
     const formatCurrency = (value: number) => new Intl.NumberFormat(getIntlLocale(language), {
         style: 'currency',
         currency: 'PLN',
@@ -156,4 +156,8 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results,
 const HelpButton = () => (<button className="group" type="button">
     <Info className="h-4 w-4 cursor-help text-muted-foreground transition-colors group-hover:text-primary"/>
   </button>);
+
+
+
+
 

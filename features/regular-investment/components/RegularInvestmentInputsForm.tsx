@@ -16,7 +16,7 @@ import { Switch } from '@/components/ui/switch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, } from '@/components/ui/tooltip';
 import { BondType, InvestmentFrequency, RegularInvestmentInputs, TaxStrategy, } from '../../bond-core/types';
 import { getBondSupportMeta, isFamilyBondType, } from '../../bond-core/support-matrix';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
@@ -41,7 +41,7 @@ const SectionHeading = ({ title, description, }: {
     <p className="text-[15px] leading-7 text-muted-foreground">{description}</p>
   </div>);
 export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormProps> = React.memo(({ inputs, onUpdate, onBondTypeChange }) => {
-    const { t, language } = useLanguage();
+    const { t, locale: language } = useAppI18n();
     const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
     const [showCustomTax, setShowCustomTax] = useState(false);
     if (isLoadingDefs || !definitions) {
@@ -151,7 +151,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                   {currentBondSupport.description}
                 </p>
                 {isFamilyBondType(inputs.bondType) ? (<p className="font-semibold text-amber-700">
-                    {t("generated.features.regular_investment.components.regular_investment_inputs_form.item_1", undefined, language)}
+                    {t("generated.features.regular_investment.components.regular_investment_inputs_form.item_1")}
                   </p>) : null}
               </div>
             </div>
@@ -530,4 +530,8 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
       </Card>);
 });
 RegularInvestmentInputsForm.displayName = 'RegularInvestmentInputsForm';
+
+
+
+
 

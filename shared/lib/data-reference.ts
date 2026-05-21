@@ -1,4 +1,4 @@
-import { t } from '@/i18n';
+import { translateMessage } from '@/i18n/translate';
 
 export interface DataReferenceMetaLike {
   source?: string;
@@ -20,7 +20,7 @@ export type ReferenceMetaItem = {
 };
 
 function ref(key: string, language: AppLanguage) {
-  return t(`economic.reference_copy.${key}`, undefined, language);
+  return translateMessage(language, `economic.reference_copy.${key}`);
 }
 
 function getKnownDataSourceLabel(
@@ -112,7 +112,7 @@ export function getReferenceSourceLabel(
   language: AppLanguage = 'en',
 ) {
   if (!meta) {
-    return t('common.unavailable', undefined, language);
+    return translateMessage(language, 'common.unavailable');
   }
 
   if (meta.dataSource) {
@@ -127,7 +127,7 @@ export function getReferenceSourceLabel(
     return ref('fallback_dataset', language);
   }
 
-  return t('common.unavailable', undefined, language);
+  return translateMessage(language, 'common.unavailable');
 }
 
 export function getReferenceCoverageLabel(
@@ -145,7 +145,7 @@ export function getReferenceAsOfLabel(
   meta?: DataReferenceMetaLike,
   language: AppLanguage = 'en',
 ) {
-  return meta?.asOf ?? meta?.lastCheck ?? t('common.unavailable', undefined, language);
+  return meta?.asOf ?? meta?.lastCheck ?? translateMessage(language, 'common.unavailable');
 }
 
 export function getReferenceScopeLabel(
@@ -212,19 +212,19 @@ export function getReferenceMetaItems(
 ): ReferenceMetaItem[] {
   return [
     {
-      label: t('common.source', undefined, language),
+      label: translateMessage(language, 'common.source'),
       value: getReferenceSourceLabel(meta, language),
     },
     {
-      label: t('common.as_of', undefined, language),
+      label: translateMessage(language, 'common.as_of'),
       value: getReferenceAsOfLabel(meta, language),
     },
     {
-      label: t('common.coverage', undefined, language),
+      label: translateMessage(language, 'common.coverage'),
       value: getReferenceCoverageLabel(meta, language),
     },
     {
-      label: t('common.usage', undefined, language),
+      label: translateMessage(language, 'common.usage'),
       value: getReferenceScopeLabel(meta, language),
     },
   ];

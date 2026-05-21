@@ -1,7 +1,7 @@
 import { YearlyTimelinePoint, LotBreakdown } from '@/features/bond-core/types';
 import { AppLanguage, buildBondTimelineDisplayRows } from '@/shared/lib/bond-display';
-import { t } from '@/i18n';
 import { getIntlLocale } from '@/i18n/locale-utils';
+import { translateMessage } from '@/i18n/translate';
 /**
  * Downloads a string as a file in the browser.
  * Adds BOM for proper UTF-8 detection in Excel.
@@ -57,8 +57,8 @@ export function convertTimelineToCSV(timeline: YearlyTimelinePoint[], headers: R
     const columns = [
         { key: 'date', header: headers.date || 'Date' },
         { key: 'periodLabel', header: headers.period || 'Period' },
-        { key: 'cycleLabel', header: headers.cycle || t('bonds.cycle', undefined, language) },
-        { key: 'cadenceLabel', header: headers.cadence || t('common.meaning', undefined, language) },
+        { key: 'cycleLabel', header: headers.cycle || translateMessage(language, 'bonds.cycle') },
+        { key: 'cadenceLabel', header: headers.cadence || translateMessage(language, 'common.meaning') },
         {
             key: 'valueMeaningLabel',
             header: headers.meaning || 'Meaning',
@@ -79,7 +79,7 @@ export function convertTimelineToCSV(timeline: YearlyTimelinePoint[], headers: R
             key: 'earlyExitValue',
             header: headers.earlyExitValue || 'Early exit payout',
         },
-        { key: 'eventLabels', header: headers.events || t('common.events', undefined, language) },
+        { key: 'eventLabels', header: headers.events || translateMessage(language, 'common.events') },
     ];
     csvRows.push(columns.map((column) => column.header).join(SEPARATOR));
     for (const [index, point] of displayRows.entries()) {
@@ -123,8 +123,8 @@ export function convertComparisonToCSV(timelineA: YearlyTimelinePoint[], timelin
     const rowsA = buildBondTimelineDisplayRows(timelineA, language);
     const rowsB = buildBondTimelineDisplayRows(timelineB, language);
     const csvRows: string[] = [];
-    const scenarioALabel = t('comparison.scenario_a', undefined, language);
-    const scenarioBLabel = t('comparison.scenario_b', undefined, language);
+    const scenarioALabel = translateMessage(language, 'comparison.scenario_a');
+    const scenarioBLabel = translateMessage(language, 'comparison.scenario_b');
     const cashFlowHeaderA = rowsA[0]?.cashFlowLabel
         ? `${scenarioALabel} ${rowsA[0].cashFlowLabel}`
         : headers.cashPaidA ?? 'Scenario A cash paid out';
@@ -183,14 +183,14 @@ export function convertComparisonToCSV(timelineA: YearlyTimelinePoint[], timelin
         const rowB = entry.rowB;
         const leader = rowA && rowB
             ? rowA.totalWealth === rowB.totalWealth
-                ? t('comparison.tie', undefined, language)
+                ? translateMessage(language, 'comparison.tie')
                 : rowA.totalWealth > rowB.totalWealth
-                    ? t('comparison.scenario_a', undefined, language)
-                    : t('comparison.scenario_b', undefined, language)
+                    ? translateMessage(language, 'comparison.scenario_a')
+                    : translateMessage(language, 'comparison.scenario_b')
             : rowA
-                ? t('comparison.scenario_a', undefined, language)
+                ? translateMessage(language, 'comparison.scenario_a')
                 : rowB
-                    ? t('comparison.scenario_b', undefined, language)
+                    ? translateMessage(language, 'comparison.scenario_b')
                     : '';
         const row = [
             formatCsvValue(entry.date, language),

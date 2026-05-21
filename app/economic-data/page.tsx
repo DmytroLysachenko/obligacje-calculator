@@ -11,7 +11,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { InflationChart } from '@/features/economic-data/components/InflationChart';
 import { NBPRateChart } from '@/features/economic-data/components/NBPRateChart';
 import { BondType } from '@/features/bond-core/types';
@@ -117,7 +117,7 @@ function SeriesStatusCard({
   isLoading: boolean;
   language: 'pl' | 'en';
 }) {
-  const { t } = useLanguage();
+  const { t } = useAppI18n();
   const labels = {
     source: t('common.source'),
     coverage: t('common.coverage'),
@@ -225,7 +225,7 @@ function SectionBlock({
 }
 
 export default function EconomicDataPage() {
-  const { t, language } = useLanguage();
+  const { t, locale: language } = useAppI18n();
   const { definitions } = useBondDefinitions();
   const [period, setPeriod] = useState<PeriodValue>('10Y');
   const { data: inflationMeta, isLoading: isLoadingInflation } =
@@ -393,3 +393,7 @@ export default function EconomicDataPage() {
     </CalculatorPageShell>
   );
 }
+
+
+
+

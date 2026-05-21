@@ -1,7 +1,7 @@
 'use client';
 import React, { useMemo, useState } from 'react';
 import { useMultiAssetComparison } from '../hooks/useMultiAssetComparison';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { AlertTriangle, Database, LineChart } from 'lucide-react';
 import { RecalculateButton } from '@/shared/components/RecalculateButton';
 import { ComparisonControls } from './ComparisonControls';
@@ -22,7 +22,7 @@ interface ChartDataRow {
 }
 export const MultiAssetComparisonContainer = () => {
     const { initialSum, updateInitialSum, monthlyContribution, updateMonthlyContribution, assets, startYear, updateStartYear, startMonth, updateStartMonth, years, months, showRealValue, updateShowRealValue, isDirty, recalculate, historyData, historyAsOfLabel, historyCoverageLabel, purchasingPowerLoss, historySourceLabel, usedFallbackHistory, historySeriesAvailability, committedScenario, } = useMultiAssetComparison();
-    const { language, t } = useLanguage();
+    const { locale: language, t } = useAppI18n();
     const [isCalculating, setIsCalculating] = useState(false);
     const handleRecalculate = () => {
         setIsCalculating(true);
@@ -223,4 +223,8 @@ export const MultiAssetComparisonContainer = () => {
       <RecalculateButton isDirty={isDirty} loading={isCalculating} onClick={handleRecalculate}/>
     </CalculatorPageShell>);
 };
+
+
+
+
 

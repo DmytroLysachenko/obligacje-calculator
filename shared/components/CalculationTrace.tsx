@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 
 interface CalculationTraceProps {
   timeline: YearlyTimelinePoint[];
@@ -19,7 +19,7 @@ interface CalculationTraceProps {
 
 export const CalculationTrace: React.FC<CalculationTraceProps> = ({ timeline }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { t } = useLanguage();
+  const { t } = useAppI18n();
 
   if (!timeline || timeline.length === 0) return null;
 
@@ -79,3 +79,7 @@ export const CalculationTrace: React.FC<CalculationTraceProps> = ({ timeline }) 
     </div>
   );
 };
+
+
+
+

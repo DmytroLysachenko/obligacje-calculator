@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { Link2, Target } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
 import { CalculatorSection } from '@/shared/components/CalculatorSection';
@@ -49,7 +49,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     lastCommittedInputs,
     isPersistenceReady,
   } = useBondCalculator(initialInputs);
-  const { t, language } = useLanguage();
+  const { t, locale: language } = useAppI18n();
   const translate = useMemo(
     () => (key: string, params?: Record<string, string | number>) => t(key, params),
     [t],
@@ -357,3 +357,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     </CalculatorPageShell>
   );
 };
+
+
+
+

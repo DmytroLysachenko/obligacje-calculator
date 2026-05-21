@@ -30,7 +30,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { TrendingUp, Activity } from "lucide-react";
 import { ComparisonChartProps } from "./types";
 import { ChartContainer } from "@/shared/components/charts/ChartContainer";
-import { useLanguage } from "@/i18n";
+import { useAppI18n } from "@/i18n/client";
 
 interface PayloadEntry {
   name: string;
@@ -57,7 +57,7 @@ const CustomTooltip = ({
   label,
   formatCurrency,
 }: CustomTooltipProps) => {
-  const { t } = useLanguage();
+  const { t } = useAppI18n();
   if (!active || !payload || !payload.length) return null;
 
   const data = payload[0].payload;
@@ -165,7 +165,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
   showRealValue,
   formatCurrency,
 }) => {
-  const { t } = useLanguage();
+  const { t } = useAppI18n();
 
   return (
     <Tabs defaultValue="growth" className="w-full flex flex-col gap-6">
@@ -394,3 +394,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
     </Tabs>
   );
 };
+
+
+
+

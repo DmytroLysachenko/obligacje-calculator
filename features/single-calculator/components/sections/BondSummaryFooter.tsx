@@ -5,7 +5,7 @@ import { HelpCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { BondInputs } from '@/features/bond-core/types';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { GLOSSARY } from '@/shared/constants/glossary';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
@@ -18,7 +18,7 @@ interface BondSummaryFooterProps {
     hasMounted: boolean;
 }
 export const BondSummaryFooter: React.FC<BondSummaryFooterProps> = React.memo(({ inputs, currentDef, maturityDate, hasMounted, }) => {
-    const { t, language } = useLanguage();
+    const { t, locale: language } = useAppI18n();
     const dateLocale = getDateFnsLocale(language);
     const rateContext = getBondRateContextCopy(inputs.bondType, Number(inputs.firstYearRate), Number(inputs.margin), t);
     return (<div className="pt-2 px-6 pb-6">
@@ -79,3 +79,7 @@ export const BondSummaryFooter: React.FC<BondSummaryFooterProps> = React.memo(({
     </div>);
 });
 BondSummaryFooter.displayName = 'BondSummaryFooter';
+
+
+
+

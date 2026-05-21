@@ -3,12 +3,12 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Info, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { ComparisonSummaryProps } from './types';
 export const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({ verdict, totalInvested, durationMonths, isCalculating, formatCurrency, }) => {
-    const { t, language } = useLanguage();
-    const leadingLabel = t("generated.features.comparison_engine.components.comparison_summary.item_1", undefined, language);
-    const insightLabel = t("generated.features.comparison_engine.components.comparison_summary.item_2", undefined, language);
+    const { t } = useAppI18n();
+    const leadingLabel = t("generated.features.comparison_engine.components.comparison_summary.item_1");
+    const insightLabel = t("generated.features.comparison_engine.components.comparison_summary.item_2");
     return (<div className="space-y-6">
       <Card className="border-l-4 border-l-primary border-y border-r bg-primary/5 shadow-none">
         <CardContent className="flex items-start gap-5 py-6">
@@ -60,4 +60,8 @@ export const ComparisonSummary: React.FC<ComparisonSummaryProps> = ({ verdict, t
       </div>
     </div>);
 };
+
+
+
+
 

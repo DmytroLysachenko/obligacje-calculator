@@ -1,8 +1,8 @@
 'use client';
 import { RateSource, YearlyTimelinePoint } from '@/features/bond-core/types';
 import { SimulationEventType } from '@/features/bond-core/types/simulation';
-import { t } from '@/i18n';
 import { getIntlLocale } from '@/i18n/locale-utils';
+import { translateMessage } from '@/i18n/translate';
 export type AppLanguage = 'pl' | 'en';
 export interface BondTimelineDisplayRow {
     key: string;
@@ -78,32 +78,32 @@ const EVENT_LABEL_KEYS: Record<SimulationEventType, string> = {
     WITHDRAWAL: 'bonds.timeline_display.event.withdrawal',
 };
 export function getRateSourceDisplayLabel(source: RateSource, language: AppLanguage) {
-    return t(RATE_SOURCE_KEYS[source], undefined, language);
+    return translateMessage(language, RATE_SOURCE_KEYS[source]);
 }
 export function getSimulationEventDisplayLabel(type: SimulationEventType, language: AppLanguage) {
-    return t(EVENT_LABEL_KEYS[type], undefined, language);
+    return translateMessage(language, EVENT_LABEL_KEYS[type]);
 }
 export function getProjectionDisplayLabel(isProjected: boolean | undefined, language: AppLanguage) {
     if (!isProjected) {
         return undefined;
     }
-    return t('bonds.timeline_display.projection.projected', undefined, language);
+    return translateMessage(language, 'bonds.timeline_display.projection.projected');
 }
 export function getCadenceDisplayLabel(point: YearlyTimelinePoint, language: AppLanguage) {
     if (point.events?.some((event) => event.type === SimulationEventType.PURCHASE)
         && point.events.length === 1) {
-        return t('bonds.timeline_display.cadence.scenario_entry', undefined, language);
+        return translateMessage(language, 'bonds.timeline_display.cadence.scenario_entry');
     }
     if (point.isMaturity) {
-        return t('bonds.timeline_display.cadence.maturity_closeout', undefined, language);
+        return translateMessage(language, 'bonds.timeline_display.cadence.maturity_closeout');
     }
     if (point.isWithdrawal) {
-        return t('bonds.timeline_display.cadence.exit_payout', undefined, language);
+        return translateMessage(language, 'bonds.timeline_display.cadence.exit_payout');
     }
     if (point.events?.some((event) => event.type === SimulationEventType.PAYOUT)) {
-        return t('bonds.timeline_display.cadence.payout_rollover', undefined, language);
+        return translateMessage(language, 'bonds.timeline_display.cadence.payout_rollover');
     }
-    return t('bonds.timeline_display.cadence.checkpoint', undefined, language);
+    return translateMessage(language, 'bonds.timeline_display.cadence.checkpoint');
 }
 function inferCashFlowSemantics(timeline: YearlyTimelinePoint[]): CashFlowSemantics {
     return timeline.some((point) => point.events?.some((event) => event.type === SimulationEventType.PAYOUT))
@@ -111,28 +111,28 @@ function inferCashFlowSemantics(timeline: YearlyTimelinePoint[]): CashFlowSemant
         : 'retained';
 }
 export function getCashFlowDisplayLabel(semantics: CashFlowSemantics, language: AppLanguage) {
-    return t(semantics === 'payout'
+    return translateMessage(language, semantics === 'payout'
         ? 'bonds.timeline_display.cash_flow.paid_out'
-        : 'bonds.timeline_display.cash_flow.retained', undefined, language);
+        : 'bonds.timeline_display.cash_flow.retained');
 }
 export function getCycleDisplayLabel(point: YearlyTimelinePoint, language: AppLanguage) {
     const start = formatMonthYear(point.cycleStartDate, language);
     const end = formatMonthYear(point.cycleEndDate, language);
-    return `${t('bonds.cycle', undefined, language)} ${point.cycleIndex}: ${start} -> ${end}`;
+    return `${translateMessage(language, 'bonds.cycle')} ${point.cycleIndex}: ${start} -> ${end}`;
 }
 export function getValueMeaningLabel(point: YearlyTimelinePoint, language: AppLanguage, cashFlowSemantics: CashFlowSemantics) {
     if (point.isWithdrawal) {
-        return t('bonds.timeline_display.value_meaning.withdrawal', undefined, language);
+        return translateMessage(language, 'bonds.timeline_display.value_meaning.withdrawal');
     }
     if (point.isMaturity) {
-        return t('bonds.timeline_display.value_meaning.maturity', undefined, language);
+        return translateMessage(language, 'bonds.timeline_display.value_meaning.maturity');
     }
     if (point.accumulatedNetInterest > 0) {
-        return t(cashFlowSemantics === 'payout'
+        return translateMessage(language, cashFlowSemantics === 'payout'
             ? 'bonds.timeline_display.value_meaning.paid_out_cash'
-            : 'bonds.timeline_display.value_meaning.retained_interest', undefined, language);
+            : 'bonds.timeline_display.value_meaning.retained_interest');
     }
-    return t('bonds.timeline_display.value_meaning.default', undefined, language);
+    return translateMessage(language, 'bonds.timeline_display.value_meaning.default');
 }
 export function getReferenceDisplayLabel(point: YearlyTimelinePoint, language: AppLanguage) {
     if (point.rateReferenceValue === undefined &&
@@ -140,10 +140,10 @@ export function getReferenceDisplayLabel(point: YearlyTimelinePoint, language: A
         return undefined;
     }
     const referencePart = point.rateReferenceValue !== undefined
-        ? t('bonds.timeline_display.reference.base', { value: point.rateReferenceValue.toFixed(2) }, language)
+        ? translateMessage(language, 'bonds.timeline_display.reference.base', { value: point.rateReferenceValue.toFixed(2) })
         : undefined;
     const marginPart = point.rateMarginApplied !== undefined
-        ? t('bonds.timeline_display.reference.margin', { value: point.rateMarginApplied.toFixed(2) }, language)
+        ? translateMessage(language, 'bonds.timeline_display.reference.margin', { value: point.rateMarginApplied.toFixed(2) })
         : undefined;
     return [referencePart, marginPart].filter(Boolean).join(' | ');
 }
@@ -186,7 +186,7 @@ export function buildBondChartDisplayPoints(initialInvestment: number, timeline:
             real: initialInvestment,
             low: comparisonScenarios ? initialInvestment : undefined,
             high: comparisonScenarios ? initialInvestment : undefined,
-            rateLabel: t('bonds.timeline_display.chart.initial_capital', undefined, language),
+            rateLabel: translateMessage(language, 'bonds.timeline_display.chart.initial_capital'),
         }
         : point), chartStep);
 }

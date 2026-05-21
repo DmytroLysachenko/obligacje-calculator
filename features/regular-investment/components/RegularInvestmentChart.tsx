@@ -3,7 +3,7 @@ import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, TooltipProps, } from 'recharts';
 import { ValueType, NameType, } from 'recharts/types/component/DefaultTooltipContent';
 import { RegularInvestmentResult } from '../../bond-core/types';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { format, parseISO } from 'date-fns';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -44,7 +44,7 @@ const CustomTooltip = ({ active, payload, label, formatCurrency }: CustomTooltip
     return null;
 };
 export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ results, bondType }) => {
-    const { t, language } = useLanguage();
+    const { t, locale: language } = useAppI18n();
     const [view, setView] = React.useState<'nominal' | 'real'>('nominal');
     const dateLocale = getDateFnsLocale(language);
     const primaryColor = getBondColor(bondType);
@@ -95,3 +95,7 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ 
       </ChartContainer>
     </div>);
 };
+
+
+
+

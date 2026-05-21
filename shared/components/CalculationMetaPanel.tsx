@@ -8,7 +8,7 @@ import {
   ShieldAlert,
   Target,
 } from 'lucide-react';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 
 interface CalculationMetaPanelProps {
@@ -64,7 +64,7 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
   calculationVersion = 'v1.2.0',
   compact = false,
 }) => {
-  const { t } = useLanguage();
+  const { t } = useAppI18n();
 
   const hasContent =
     warnings.length > 0 ||
@@ -160,3 +160,7 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
     </div>
   );
 };
+
+
+
+

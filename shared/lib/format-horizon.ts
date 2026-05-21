@@ -1,4 +1,4 @@
-import { t } from '@/i18n';
+import { translateMessage } from '@/i18n/translate';
 
 type Language = 'pl' | 'en';
 
@@ -6,13 +6,13 @@ export function formatHorizonMonths(months: number, language: Language): string 
   const roundedMonths = Math.max(1, Math.round(months));
 
   if (roundedMonths < 12) {
-    return t('shared.format.horizon_months', {count: roundedMonths}, language);
+    return translateMessage(language, 'shared.format.horizon_months', {count: roundedMonths});
   }
 
   if (roundedMonths % 12 === 0) {
     const years = roundedMonths / 12;
-    return t('shared.format.horizon_years', {count: years}, language);
+    return translateMessage(language, 'shared.format.horizon_years', {count: years});
   }
 
-  return t('shared.format.horizon_months', {count: roundedMonths}, language);
+  return translateMessage(language, 'shared.format.horizon_months', {count: roundedMonths});
 }

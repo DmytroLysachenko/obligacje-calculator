@@ -4,7 +4,7 @@ import { Check, Loader2, Share2, Target, Trophy } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { getIntlLocale } from '@/i18n/locale-utils';
 interface CalculatorPageShellProps {
@@ -27,7 +27,7 @@ function ShellMetaRow({ isCalculating, hasResults, }: {
     isCalculating: boolean;
     hasResults: boolean;
 }) {
-    const { t } = useLanguage();
+    const { t } = useAppI18n();
     if (!isCalculating && !hasResults) {
         return null;
     }
@@ -43,7 +43,7 @@ function ShellMetaRow({ isCalculating, hasResults, }: {
     </div>);
 }
 export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({ title, description, icon, children, isCalculating, hasResults, onShare, savingsGoal, currentValue, extraHeaderActions, onKeyDown, showImplicitShare = true, }) => {
-    const { t, language } = useLanguage();
+    const { t, locale: language } = useAppI18n();
     const [copied, setCopied] = useState(false);
     const handleShare = async () => {
         try {
@@ -117,4 +117,8 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({ title,
       {children}
     </div>);
 };
+
+
+
+
 

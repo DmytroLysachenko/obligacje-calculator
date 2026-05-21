@@ -14,7 +14,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { FileSpreadsheet, History, LineChart, Scale, TriangleAlert } from 'lucide-react';
 import { TaxStrategy } from '@/features/bond-core/types';
 import { BondType } from '@/features/bond-core/types';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { cn } from '@/lib/utils';
 import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
@@ -71,7 +71,7 @@ const CustomTooltip = ({ active, payload, label, formatCurrency, }: CustomToolti
 };
 export const ComparisonContainer: React.FC = () => {
     const { sharedConfig, scenarioA, scenarioB, inputsA, inputsB, resultsA, resultsB, envelopeA, envelopeB, warningsA, warningsB, isCalculating, calculate, updateSharedConfig, updateScenarioA, updateScenarioB, setBondTypeA, setBondTypeB, isDirty, isPersistenceReady, } = useComparison();
-    const { t, language } = useLanguage();
+    const { t, locale: language } = useAppI18n();
     const [compareMode, setCompareMode] = useState<'independent' | 'normalized'>('independent');
     const [showRealValue, setShowRealValue] = useState(false);
     const hasMounted = useHasMounted();
@@ -494,3 +494,6 @@ const ActionMetric = ({ label, value, tone, }: {
     </p>
     <p className={cn('mt-2 text-lg font-black', tone)}>{value}</p>
   </div>);
+
+
+

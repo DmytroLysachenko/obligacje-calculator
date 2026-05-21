@@ -1,14 +1,14 @@
 'use client';
 
 import { ComparisonContainer } from '@/features/comparison-engine/components/ComparisonContainer';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { FeatureStatusNotice } from '@/shared/components/FeatureStatusNotice';
 import { PageTransition } from '@/shared/components/PageTransition';
 import { PageSuspenseFallback } from '@/shared/components/PageSuspenseFallback';
 import { Suspense } from 'react';
 
 export default function ComparePage() {
-  const { t } = useLanguage();
+  const { t } = useAppI18n();
 
   return (
     <PageTransition>
@@ -27,3 +27,7 @@ export default function ComparePage() {
     </PageTransition>
   );
 }
+
+
+
+

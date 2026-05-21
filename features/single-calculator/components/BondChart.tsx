@@ -5,7 +5,7 @@ import { ValueType, NameType, } from "recharts/types/component/DefaultTooltipCon
 import { CalculationResult } from "../../bond-core/types";
 import { ChartStep } from "../../bond-core/types";
 import { HistoricalAverages } from "../../bond-core/types/scenarios";
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { getIntlLocale } from '@/i18n/locale-utils';
 import { cn } from "@/lib/utils";
 import { ChartContainer } from "@/shared/components/charts/ChartContainer";
@@ -118,7 +118,7 @@ const CustomTooltip = ({ active, payload, label, formatCurrency, t, }: CustomToo
     </div>);
 };
 export const BondChart: React.FC<BondChartProps> = ({ results, chartStep = 'yearly', showRealValue = false, }) => {
-    const { t, language } = useLanguage();
+    const { t, locale: language } = useAppI18n();
     const formatCurrency = React.useMemo(() => (value: number) => new Intl.NumberFormat(getIntlLocale(language), {
         style: "currency",
         currency: "PLN",
@@ -204,4 +204,8 @@ export const BondChart: React.FC<BondChartProps> = ({ results, chartStep = 'year
       </ResponsiveContainer>
     </ChartContainer>);
 };
+
+
+
+
 

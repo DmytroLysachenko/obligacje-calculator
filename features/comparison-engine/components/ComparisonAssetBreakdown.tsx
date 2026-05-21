@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/tooltip";
 import { TrendingUp, Activity, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useLanguage } from "@/i18n";
+import { useAppI18n } from "@/i18n/client";
 import { ComparisonAssetBreakdownProps } from "./types";
 
 export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> = ({
@@ -24,7 +24,7 @@ export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> =
   showRealValue,
   formatCurrency,
 }) => {
-  const { t, language } = useLanguage();
+  const { t, locale: language } = useAppI18n();
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {assets.map((asset) => {
@@ -112,3 +112,7 @@ export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> =
     </div>
   );
 };
+
+
+
+

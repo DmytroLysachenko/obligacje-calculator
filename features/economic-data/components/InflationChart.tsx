@@ -2,7 +2,7 @@
 import React from 'react';
 import { Brush, CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, TooltipProps, XAxis, YAxis, } from 'recharts';
 import { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { useChartData } from '@/shared/hooks/useChartData';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ReferenceChartFrame } from '@/shared/components/charts/ReferenceChartFrame';
@@ -58,7 +58,7 @@ const CustomTooltip = ({ active, payload, label, t }: CustomTooltipProps) => {
 export const InflationChart = ({ period = 'ALL', }: {
     period?: '1Y' | '5Y' | '10Y' | '30Y' | 'ALL';
 }) => {
-    const { t, language } = useLanguage();
+    const { t, locale: language } = useAppI18n();
     const { data: response, isLoading, isError } = useChartData<ChartSeriesEnvelope<InflationDataPoint>>('/api/charts/inflation');
     const [scaleMode, setScaleMode] = React.useState<'readable' | 'full'>('readable');
     const chartData = React.useMemo(() => {
@@ -95,7 +95,7 @@ export const InflationChart = ({ period = 'ALL', }: {
         </div>} notice={scaleMode === 'readable' && maxRate > clippedMax
             ? t('economic.inflation_scale_notice', { max: maxRate.toFixed(1) })
             : undefined} noticeTone="warning" fallbackNotice={response?.usedFallback
-            ? t("generated.features.economic_data.components.inflation_chart.item_1", undefined, language) : t("generated.features.economic_data.components.inflation_chart.item_2", undefined, language)} fallbackTone={response?.usedFallback ? 'warning' : 'good'}>
+            ? t("generated.features.economic_data.components.inflation_chart.item_1") : t("generated.features.economic_data.components.inflation_chart.item_2")} fallbackTone={response?.usedFallback ? 'warning' : 'good'}>
       <ChartContainer height={420}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData}>
@@ -119,4 +119,8 @@ export const InflationChart = ({ period = 'ALL', }: {
       </ChartContainer>
     </ReferenceChartFrame>);
 };
+
+
+
+
 

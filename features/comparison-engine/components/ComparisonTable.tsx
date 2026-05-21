@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { CalculationResult } from '@/features/bond-core/types';
 import { ResponsiveTableSheet } from '@/shared/components/ResponsiveTableSheet';
@@ -51,7 +51,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
   showRealValue,
   formatCurrency,
 }) => {
-    const { t } = useLanguage();
+    const { t } = useAppI18n();
   const higherColumnLabel = t('comparison.table_ahead_in_row');
   const higherBadgeSuffix = t('comparison.table_ahead_badge_suffix');
   const tieLabel = t('comparison.table_tie');
@@ -323,3 +323,7 @@ function MobileComparisonValue({
     </div>
   );
 }
+
+
+
+

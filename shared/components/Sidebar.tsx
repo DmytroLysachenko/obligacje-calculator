@@ -17,7 +17,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { cn } from '@/lib/utils';
 import { LanguageSwitcher } from './LanguageSwitcher';
@@ -89,7 +89,7 @@ function SidebarUtilityPanel({
 }
 
 function SidebarBrand() {
-  const { t } = useLanguage();
+  const { t } = useAppI18n();
 
   return (
     <div className="border-b border-slate-200/80 px-6 py-6">
@@ -189,7 +189,7 @@ function NavSectionBlock({
 }
 
 function SidebarLanguageUtility() {
-  const { t } = useLanguage();
+  const { t } = useAppI18n();
 
   return (
     <SidebarUtilityPanel>
@@ -211,7 +211,7 @@ function SidebarSyncUtility({
 }: {
   dataFreshness?: CalculationDataFreshness;
 }) {
-  const { t } = useLanguage();
+  const { t } = useAppI18n();
 
   return (
     <SidebarUtilityPanel>
@@ -252,7 +252,7 @@ function SidebarFooter({
 }: {
   dataFreshness?: CalculationDataFreshness;
 }) {
-  const { t } = useLanguage();
+  const { t } = useAppI18n();
   const hasMounted = useHasMounted();
 
   return (
@@ -268,7 +268,7 @@ function SidebarFooter({
 
 function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
   const pathname = usePathname();
-  const { t } = useLanguage();
+  const { t } = useAppI18n();
 
   const navSections: NavSection[] = [
     {
@@ -375,3 +375,7 @@ export function Sidebar({
     </>
   );
 }
+
+
+
+

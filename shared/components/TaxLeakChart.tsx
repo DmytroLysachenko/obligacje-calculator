@@ -13,7 +13,7 @@ import {
 } from 'recharts';
 import { ChartContainer } from './charts/ChartContainer';
 import { useChartSync } from '@/shared/context/ChartSyncContext';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 
 export interface TaxLeakDataPoint {
   year: number;
@@ -33,7 +33,7 @@ const AreaChartWithTooltipIndex = AreaChart as any;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const CustomTooltip = ({ active, payload, label }: any) => {
-  const { t } = useLanguage();
+  const { t } = useAppI18n();
 
   if (active && payload && payload.length) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -63,7 +63,7 @@ export const TaxLeakChart: React.FC<TaxLeakChartProps> = ({
   height = 400,
 }) => {
   const { hoverIndex, setHoverIndex } = useChartSync();
-  const { t } = useLanguage();
+  const { t } = useAppI18n();
 
   return (
     <ChartContainer height={height}>
@@ -141,3 +141,7 @@ export const TaxLeakChart: React.FC<TaxLeakChartProps> = ({
     </ChartContainer>
   );
 };
+
+
+
+

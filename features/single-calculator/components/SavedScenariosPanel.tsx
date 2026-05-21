@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Copy, FolderOpen, Save, Trash2 } from 'lucide-react';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { getIntlLocale } from '@/i18n/locale-utils';
 import { SavedScenarioRecord } from '../lib/scenario-storage';
 interface SavedScenariosPanelProps {
@@ -15,28 +15,28 @@ interface SavedScenariosPanelProps {
     onDelete: (scenario: SavedScenarioRecord) => void;
 }
 export function SavedScenariosPanel({ scenarios, onSaveCurrent, onLoad, onDuplicate, onDelete, }: SavedScenariosPanelProps) {
-    const { t, language } = useLanguage();
+    const { t, locale: language } = useAppI18n();
     return (<Card className="border-slate-200 shadow-sm">
       <CardHeader className="border-b bg-muted/20">
         <div className="flex items-center justify-between gap-4">
           <div className="space-y-1">
             <CardTitle className="flex items-center gap-2 text-sm font-black uppercase tracking-widest">
               <FolderOpen className="h-4 w-4 text-primary"/>
-              {t("generated.features.single_calculator.components.saved_scenarios_panel.item_1", undefined, language)}
+              {t("generated.features.single_calculator.components.saved_scenarios_panel.item_1")}
             </CardTitle>
             <CardDescription>
-              {t("generated.features.single_calculator.components.saved_scenarios_panel.item_2", undefined, language)}
+              {t("generated.features.single_calculator.components.saved_scenarios_panel.item_2")}
             </CardDescription>
           </div>
           <Button size="sm" className="gap-2 text-xs font-bold" onClick={onSaveCurrent}>
             <Save className="h-3.5 w-3.5"/>
-            {t("generated.features.single_calculator.components.saved_scenarios_panel.item_3", undefined, language)}
+            {t("generated.features.single_calculator.components.saved_scenarios_panel.item_3")}
           </Button>
         </div>
       </CardHeader>
       <CardContent className="space-y-3 p-4">
         {scenarios.length === 0 ? (<div className="rounded-2xl border border-dashed p-4 text-sm text-muted-foreground">
-            {t("generated.features.single_calculator.components.saved_scenarios_panel.item_4", undefined, language)}
+            {t("generated.features.single_calculator.components.saved_scenarios_panel.item_4")}
           </div>) : (scenarios.map((scenario) => (<div key={scenario.id} className="rounded-2xl border bg-card p-4 shadow-sm transition-colors hover:border-primary/30">
               <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                 <div className="space-y-2">
@@ -48,22 +48,22 @@ export function SavedScenariosPanel({ scenarios, onSaveCurrent, onLoad, onDuplic
                   </div>
                   <p className="text-sm text-muted-foreground">{scenario.description}</p>
                   <p className="text-[11px] font-medium text-muted-foreground">
-                    {t("generated.features.single_calculator.components.saved_scenarios_panel.item_5", undefined, language)}{' '}
+                    {t("generated.features.single_calculator.components.saved_scenarios_panel.item_5")}{' '}
                     {new Date(scenario.updatedAt).toLocaleString(getIntlLocale(language))}
                   </p>
                 </div>
                 <div className="grid grid-cols-3 gap-2 lg:w-[260px]">
                   <Button variant="outline" size="sm" className="gap-2 text-xs font-bold" onClick={() => onLoad(scenario)}>
                     <FolderOpen className="h-3.5 w-3.5"/>
-                    {t("generated.features.single_calculator.components.saved_scenarios_panel.item_6", undefined, language)}
+                    {t("generated.features.single_calculator.components.saved_scenarios_panel.item_6")}
                   </Button>
                   <Button variant="outline" size="sm" className="gap-2 text-xs font-bold" onClick={() => onDuplicate(scenario)}>
                     <Copy className="h-3.5 w-3.5"/>
-                    {t("generated.features.single_calculator.components.saved_scenarios_panel.item_7", undefined, language)}
+                    {t("generated.features.single_calculator.components.saved_scenarios_panel.item_7")}
                   </Button>
                   <Button variant="outline" size="sm" className="gap-2 text-xs font-bold text-destructive" onClick={() => onDelete(scenario)}>
                     <Trash2 className="h-3.5 w-3.5"/>
-                    {t("generated.features.single_calculator.components.saved_scenarios_panel.item_8", undefined, language)}
+                    {t("generated.features.single_calculator.components.saved_scenarios_panel.item_8")}
                   </Button>
                 </div>
               </div>
@@ -71,4 +71,8 @@ export function SavedScenariosPanel({ scenarios, onSaveCurrent, onLoad, onDuplic
       </CardContent>
     </Card>);
 }
+
+
+
+
 

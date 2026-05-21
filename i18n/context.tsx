@@ -7,45 +7,50 @@ import {defaultLocale, type Language, isSupportedLocale} from './config';
 
 type TranslationVariables = Record<string, string | number>;
 
-interface LanguageContextType {
-  language: Language;
-  setLanguage: (lang: Language) => void;
-  t: (key: string, variables?: TranslationVariables, language?: Language) => string;
+interface AppLocaleContextType {
+  locale: Language;
+  setLocale: (locale: Language) => void;
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const AppLocaleContext = createContext<AppLocaleContextType | undefined>(undefined);
 
 export function LanguageProvider({children}: {children: React.ReactNode}) {
   const router = useRouter();
-  const locale = useLocale();
-  const translator = useTranslations();
-  const language = isSupportedLocale(locale) ? locale : defaultLocale;
+  const nextIntlLocale = useLocale();
+  const locale = isSupportedLocale(nextIntlLocale) ? nextIntlLocale : defaultLocale;
 
-  const setLanguage = (nextLanguage: Language) => {
+  const setLocale = (nextLocale: Language) => {
     if (typeof window !== 'undefined') {
-      window.localStorage.setItem('app-language', nextLanguage);
-      document.cookie = `app-language=${nextLanguage}; path=/; max-age=31536000; samesite=lax`;
+      window.localStorage.setItem('app-language', nextLocale);
+      document.cookie = `app-language=${nextLocale}; path=/; max-age=31536000; samesite=lax`;
     }
 
     router.refresh();
   };
 
-  const t = (key: string, variables?: TranslationVariables) =>
-    translator(key as never, variables as never);
-
   return (
-    <LanguageContext.Provider value={{language, setLanguage, t}}>
+    <AppLocaleContext.Provider value={{locale, setLocale}}>
       {children}
-    </LanguageContext.Provider>
+    </AppLocaleContext.Provider>
   );
 }
 
-export function useLanguage() {
-  const context = useContext(LanguageContext);
+export function useAppLocale() {
+  const context = useContext(AppLocaleContext);
 
   if (!context) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
+    throw new Error('useAppLocale must be used within a LanguageProvider');
   }
 
   return context;
+}
+
+export function useAppI18n() {
+  const {locale, setLocale} = useAppLocale();
+  const translator = useTranslations();
+
+  const t = (key: string, variables?: TranslationVariables) =>
+    translator(key as never, variables as never);
+
+  return {locale, setLocale, t};
 }

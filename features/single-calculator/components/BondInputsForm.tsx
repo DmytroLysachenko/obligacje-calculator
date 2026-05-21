@@ -14,7 +14,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { BondType, BondInputs } from '../../bond-core/types';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
@@ -52,7 +52,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
   guardrails = [],
   onApplyGuardrailFix,
 }) => {
-  const { t } = useLanguage();
+  const { t } = useAppI18n();
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
   const hasMounted = useHasMounted();
 
@@ -244,3 +244,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
     </TooltipProvider>
   );
 };
+
+
+
+

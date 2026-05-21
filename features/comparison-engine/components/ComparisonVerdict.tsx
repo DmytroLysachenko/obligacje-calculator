@@ -3,7 +3,7 @@ import React from 'react';
 import { Scale, ShieldCheck, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { BondInputs, CalculationResult, TaxStrategy, } from '@/features/bond-core/types';
 interface ComparisonVerdictProps {
     resultsA: CalculationResult;
@@ -16,12 +16,12 @@ interface ComparisonVerdictProps {
     formatCurrency: (val: number) => string;
 }
 export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, resultsB, inputsA, inputsB, expectedInflation, taxStrategy, showRealValue, formatCurrency, }) => {
-    const { t, language } = useLanguage();
-    const comparisonSnapshotLabel = t("generated.features.comparison_engine.components.comparison_verdict.item_1", undefined, language);
+    const { t } = useAppI18n();
+    const comparisonSnapshotLabel = t("generated.features.comparison_engine.components.comparison_verdict.item_1");
     const higherText = showRealValue
-        ? t('comparison.verdict.higher_real_value', undefined, language)
-        : t('comparison.verdict.higher_net_payout', undefined, language);
-    const overText = t("generated.features.comparison_engine.components.comparison_verdict.item_2", undefined, language);
+        ? t('comparison.verdict.higher_real_value')
+        : t('comparison.verdict.higher_net_payout');
+    const overText = t("generated.features.comparison_engine.components.comparison_verdict.item_2");
     const resultAValue = showRealValue ? resultsA.finalRealValue : resultsA.netPayoutValue;
     const resultBValue = showRealValue ? resultsB.finalRealValue : resultsB.netPayoutValue;
     const betterBondType = resultAValue > resultBValue
@@ -65,7 +65,7 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, 
                 {`${betterBondType} ${higherText} by ${formatCurrency(gap)} ${overText} ${horizonYears}-year setup.`}
               </p>
               <p className="text-sm leading-relaxed text-muted-foreground">
-                {t('comparison.verdict.caution_text', undefined, language)}
+                {t('comparison.verdict.caution_text')}
               </p>
             </div>
 
@@ -84,12 +84,12 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, 
 
               {expectedInflation > 5 ? (<Badge variant="outline" className="border-orange-200 bg-orange-50 text-xs font-semibold text-orange-700">
                   <Zap className="h-3 w-3 mr-1"/>
-                  {t("generated.features.comparison_engine.components.comparison_verdict.item_3", undefined, language)}
+                  {t("generated.features.comparison_engine.components.comparison_verdict.item_3")}
                 </Badge>) : null}
 
               {taxStrategy !== TaxStrategy.STANDARD ? (<Badge variant="outline" className="border-purple-200 bg-purple-50 text-xs font-semibold text-purple-700">
                   <ShieldCheck className="h-3 w-3 mr-1"/>
-                  {t("generated.features.comparison_engine.components.comparison_verdict.item_4", undefined, language)}
+                  {t("generated.features.comparison_engine.components.comparison_verdict.item_4")}
                 </Badge>) : null}
             </div>
           </div>
@@ -97,7 +97,7 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, 
           <div className="w-full md:w-48 flex flex-col gap-2">
             <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-4 text-center">
               <p className="mb-1 text-sm font-semibold text-muted-foreground">
-                {t("generated.features.comparison_engine.components.comparison_verdict.item_5", undefined, language)}
+                {t("generated.features.comparison_engine.components.comparison_verdict.item_5")}
               </p>
               <p className="text-2xl font-black text-primary">
                 {Math.abs((resultAValue / Math.max(1, resultBValue) -
@@ -111,4 +111,8 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, 
       </CardContent>
     </Card>);
 };
+
+
+
+
 

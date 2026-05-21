@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { RegularInvestmentResult } from '../../bond-core/types';
-import { useLanguage } from '@/i18n';
+import { useAppI18n } from '@/i18n/client';
 import { Calendar, FileSpreadsheet } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { buildLotsExportHeaders } from '@/shared/lib/export-headers';
@@ -31,7 +31,7 @@ type YearBucket = {
 };
 const MAX_RECENT_LOTS = 12;
 export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsSummaryProps> = ({ results, }) => {
-    const { t, language } = useLanguage();
+    const { t, locale: language } = useAppI18n();
     const dateLocale = getDateFnsLocale(language);
     const formatCurrency = (value: number) => new Intl.NumberFormat(getIntlLocale(language), {
         style: 'currency',
@@ -267,3 +267,7 @@ function MobileBucketValue({ label, value, }: {
       <p className="mt-1 text-sm font-semibold text-slate-950">{value}</p>
     </div>);
 }
+
+
+
+
