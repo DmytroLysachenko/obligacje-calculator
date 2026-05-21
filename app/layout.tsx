@@ -6,7 +6,7 @@ import {NextIntlClientProvider} from 'next-intl';
 import {getLocale, getMessages, getTranslations} from 'next-intl/server';
 import './globals.css';
 import {TooltipProvider} from '@/components/ui/tooltip';
-import {LanguageProvider} from '@/i18n/client';
+import {AppLocaleProvider} from '@/i18n/client';
 import {defaultLocale, type Language} from '@/i18n/config';
 import {getMetadataLocale} from '@/i18n/locale-utils';
 import {getGlobalDataFreshness} from '@/lib/data-access';
@@ -96,7 +96,7 @@ export default async function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} bg-background text-foreground antialiased`}>
         <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}} />
         <NextIntlClientProvider locale={language} messages={messages}>
-          <LanguageProvider>
+          <AppLocaleProvider>
             <BondDefinitionsProvider>
               <ChartSyncProvider>
                 <TooltipProvider>
@@ -133,7 +133,7 @@ export default async function RootLayout({
                 </TooltipProvider>
               </ChartSyncProvider>
             </BondDefinitionsProvider>
-          </LanguageProvider>
+          </AppLocaleProvider>
         </NextIntlClientProvider>
 
         <Script id="register-sw" strategy="afterInteractive">
