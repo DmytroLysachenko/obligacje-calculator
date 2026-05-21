@@ -10,7 +10,6 @@ import { BondType, BondInputs } from '@/features/bond-core/types';
 import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { useAppI18n } from '@/i18n/client';
-import { GLOSSARY } from '@/shared/constants/glossary';
 import { cn } from '@/lib/utils';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
@@ -45,7 +44,6 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
     };
     const isDivisibleBy100 = inputs.initialInvestment % 100 === 0 && inputs.initialInvestment > 0;
     return (<div className="space-y-6 pb-6">
-      {/* Calculator Mode */}
       <div className="mb-4 flex gap-1 rounded-xl bg-muted/50 p-1">
         <Button variant={(!inputs.calculatorMode || inputs.calculatorMode === 'standard') ? 'default' : 'ghost'} className="h-11 flex-1 rounded-lg text-sm font-semibold" onClick={() => onUpdate('calculatorMode', 'standard')}>
           {t('bonds.standard_payout')}
@@ -55,7 +53,6 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
         </Button>
       </div>
 
-      {/* Savings Goal */}
       <div className="space-y-3">
         <div className="flex items-center gap-2">
           <Label className="flex items-center gap-2 text-[15px] font-semibold">
@@ -66,7 +63,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
               <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help"/>
             </TooltipTrigger>
             <TooltipContent>
-              {GLOSSARY.SAVINGS_GOAL.definition[language]}
+              {t('bonds.glossary.savings_goal')}
             </TooltipContent>
           </Tooltip>
         </div>
@@ -78,7 +75,6 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
         </div>
       </div>
 
-      {/* Bond Type Selection */}
       <div className="space-y-3">
         <div className="flex items-center gap-2">
           <Label htmlFor="bondType" className="text-[15px] font-semibold">{t('bonds.bond.type')}</Label>
@@ -87,7 +83,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
                 <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help"/>
               </TooltipTrigger>
               <TooltipContent>
-                {GLOSSARY.INFLATION_INDEXED.definition[language]}
+                {t('bonds.glossary.inflation_indexed')}
               </TooltipContent>
             </Tooltip>)}
         </div>
@@ -115,7 +111,6 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
           </SelectContent>
         </Select>
 
-        {/* Series Selection */}
         <div className="space-y-2 pt-2">
           <Label className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">{t('bonds.bond.series')}</Label>
           <Select value={selectedSeriesId || 'current'} onValueChange={(value) => onUpdate('selectedSeriesId', value)}>
@@ -179,7 +174,6 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
         </div>
       </div>
 
-      {/* Investment Amount */}
       {(!inputs.calculatorMode || inputs.calculatorMode === 'standard') && (<div className="space-y-4">
           <div className="flex justify-between items-center">
             <Label htmlFor="initialInvestment" className="font-semibold">

@@ -9,7 +9,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { HelpCircle } from 'lucide-react';
 import { BondInputs } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
-import { GLOSSARY } from '@/shared/constants/glossary';
 import { cn } from '@/lib/utils';
 
 interface BondDisplaySectionProps {
@@ -25,7 +24,7 @@ export const BondDisplaySection: React.FC<BondDisplaySectionProps> = React.memo(
   showCustomTax,
   setShowCustomTax,
 }) => {
-  const { t, locale: language } = useAppI18n();
+  const { t } = useAppI18n();
 
   return (
     <div className="space-y-4 pb-6">
@@ -60,7 +59,7 @@ export const BondDisplaySection: React.FC<BondDisplaySectionProps> = React.memo(
                 <HelpCircle className="h-3.5 w-3.5 text-primary/60 cursor-help" />
               </TooltipTrigger>
               <TooltipContent>
-                {GLOSSARY.REAL_VALUE.definition[language]}
+                {t('bonds.glossary.real_value')}
               </TooltipContent>
             </Tooltip>
           </div>

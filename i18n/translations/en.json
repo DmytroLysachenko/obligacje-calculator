@@ -197,6 +197,14 @@
   },
   "bonds": {
     "single_calculator": "Investment Simulation",
+    "glossary": {
+      "savings_goal": "The amount you want to accumulate by the end of your investment. The calculator helps determine how much you need to invest today to reach this goal.",
+      "capitalization": "The process of adding earned interest to the principal, so that in the next period, interest is calculated on a larger amount (compound interest).",
+      "inflation_indexed": "Bonds whose interest rate changes every year based on the inflation rate plus a fixed margin (e.g., COI, EDO).",
+      "real_value": "The value of your capital adjusted for inflation (purchasing power). It shows how many today's goods you will be able to buy with that money in the future.",
+      "early_withdrawal": "A fee for withdrawing funds before the maturity date. It is deducted from the accrued interest, never from the principal capital.",
+      "tax_wrapper": "Special retirement accounts that allow you to avoid Belka tax if certain conditions are met (e.g., reaching age 60 for IKE)."
+    },
     "bond": {
       "type": "Bond Type",
       "type_selection": "Selected bond parameters",

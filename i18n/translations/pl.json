@@ -197,6 +197,14 @@
   },
   "bonds": {
     "single_calculator": "Symulacja Inwestycji",
+    "glossary": {
+      "savings_goal": "Kwota, ktora chcesz zgromadzic na koniec inwestycji. Kalkulator pomoze wyliczyc, ile musisz wplacic dzisiaj, aby osiagnac ten cel.",
+      "capitalization": "Proces dopisywania wypracowanych odsetek do kapitalu, dzieki czemu w kolejnym okresie odsetki naliczane sa od wiekszej kwoty (procent skladany).",
+      "inflation_indexed": "Obligacje, ktorych oprocentowanie zmienia sie co roku w oparciu o wskaznik inflacji powiekszony o stala marze (np. COI, EDO).",
+      "real_value": "Wartosc Twojego kapitalu skorygowana o inflacje (sila nabywcza). Pokazuje, ile dzisiejszych towarow bedziesz mogl kupic za te pieniadze w przyszlosci.",
+      "early_withdrawal": "Oplata za wczesniejsze wycofanie srodkow przed terminem zapadalnosci. Jest odejmowana od naroslych odsetek, nigdy od kapitalu glownego.",
+      "tax_wrapper": "Specjalne konta emerytalne pozwalajace na unikniecie podatku Belki przy zachowaniu okreslonych warunkow (np. wiek 60 lat dla IKE)."
+    },
     "bond": {
       "type": "Rodzaj Obligacji",
       "type_selection": "Parametry wybranej obligacji",

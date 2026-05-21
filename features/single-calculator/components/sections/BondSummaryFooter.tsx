@@ -6,7 +6,6 @@ import { format } from 'date-fns';
 import { BondInputs } from '@/features/bond-core/types';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { useAppI18n } from '@/i18n/client';
-import { GLOSSARY } from '@/shared/constants/glossary';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
@@ -53,7 +52,7 @@ export const BondSummaryFooter: React.FC<BondSummaryFooterProps> = React.memo(({
                 <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help"/>
               </TooltipTrigger>
               <TooltipContent>
-                {GLOSSARY.CAPITALIZATION.definition[language]}
+                {t('bonds.glossary.capitalization')}
               </TooltipContent>
             </Tooltip>
           </span>
@@ -69,7 +68,7 @@ export const BondSummaryFooter: React.FC<BondSummaryFooterProps> = React.memo(({
                 <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help"/>
               </TooltipTrigger>
               <TooltipContent>
-                {GLOSSARY.EARLY_WITHDRAWAL.definition[language]}
+                {t('bonds.glossary.early_withdrawal')}
               </TooltipContent>
             </Tooltip>
           </span>

@@ -12,7 +12,6 @@ import { format, parseISO, isAfter } from 'date-fns';
 import { BondInputs, TaxStrategy } from '@/features/bond-core/types';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { useAppI18n } from '@/i18n/client';
-import { GLOSSARY } from '@/shared/constants/glossary';
 import { toDateString } from '@/shared/lib/date-timing';
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';
 import { cn } from '@/lib/utils';
@@ -102,7 +101,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
               <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help"/>
             </TooltipTrigger>
             <TooltipContent>
-              {GLOSSARY.TAX_WRAPPER.definition[language]}
+              {t('bonds.glossary.tax_wrapper')}
             </TooltipContent>
           </Tooltip>
         </div>
