@@ -1,0 +1,60 @@
+import type {Metadata} from 'next';
+import {and, eq} from 'drizzle-orm';
+import {notFound} from 'next/navigation';
+import {getTranslations} from 'next-intl/server';
+import {PortfolioDetails} from '@/features/notebook/components/PortfolioDetails';
+import {db} from '@/db';
+import {userPortfolios} from '@/db/schema';
+import {ensurePortfolioSchemaCompat} from '@/lib/db-schema-compat';
+
+interface Props {
+  params: Promise<{shareId: string}>;
+}
+
+export async function generateMetadata({params}: Props): Promise<Metadata> {
+  await ensurePortfolioSchemaCompat();
+  const page = await getTranslations('metadata.pages.shared_portfolio');
+  const common = await getTranslations('common');
+  const {shareId} = await params;
+
+  const portfolio = await db.query.userPortfolios.findFirst({
+    where: and(eq(userPortfolios.shareId, shareId), eq(userPortfolios.isPublic, true)),
+  });
+
+  if (!portfolio) {
+    return {
+      title: `${page('title')} | ${common('title')}`,
+      description: page('description'),
+    };
+  }
+
+  return {
+    title: `${portfolio.name} | ${page('title')}`,
+    description: portfolio.description || page('description'),
+  };
+}
+
+export default async function SharedPortfolioPage({params}: Props) {
+  await ensurePortfolioSchemaCompat();
+  const page = await getTranslations('shared_portfolio_page');
+  const {shareId} = await params;
+  const portfolio = await db.query.userPortfolios.findFirst({
+    where: and(eq(userPortfolios.shareId, shareId), eq(userPortfolios.isPublic, true)),
+  });
+
+  if (!portfolio) {
+    notFound();
+  }
+
+  return (
+    <div className="mx-auto max-w-7xl py-8">
+      <div className="mb-8 flex items-center justify-between rounded-2xl border-2 border-primary/10 bg-primary/5 p-4">
+        <p className="text-sm font-bold italic text-primary">{page('public_notice')}</p>
+        <div className="rounded-lg bg-primary px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white">
+          {page('read_only')}
+        </div>
+      </div>
+      <PortfolioDetails portfolio={portfolio} onBack={() => {}} />
+    </div>
+  );
+}

@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       createSuccessResponse({
         shareId: created.shareId,
-        shareUrl: `${req.nextUrl.origin}/s/${created.shareId}`,
+        shareUrl: `${req.nextUrl.origin}/shared-scenarios/${created.shareId}`,
       }),
     );
   } catch (error) {

@@ -4,20 +4,26 @@ import { PageTransition } from '@/shared/components/PageTransition';
 import { FeatureStatusNotice } from '@/shared/components/FeatureStatusNotice';
 import { PageSuspenseFallback } from '@/shared/components/PageSuspenseFallback';
 import { Suspense } from 'react';
+import { getLocalizedPageMetadata } from '@/lib/page-metadata';
+import { getTranslations } from 'next-intl/server';
 
-export default function RetirementPage() {
+export async function generateMetadata() {
+  return getLocalizedPageMetadata('retirement');
+}
+
+export default async function RetirementPlannerPage() {
+  const t = await getTranslations('retirement');
   return (
     <PageTransition>
       <div className="mx-auto max-w-7xl space-y-8">
         <FeatureStatusNotice
           status="limited"
-          eyebrow="Narrow withdrawal model"
-          title="Withdrawal model"
+          eyebrow={t('page_notice_eyebrow')}
+          title={t('page_notice_title')}
         >
-          This page uses a simplified steady-rate depletion model. It is useful
-          for narrow withdrawal checks, but it is not a full retirement planning
-          engine. Supported bond families here:{' '}
-          {RETIREMENT_SUPPORTED_BOND_TYPES.join(', ')}.
+          {t('page_notice_desc', {
+            supportedBondTypes: RETIREMENT_SUPPORTED_BOND_TYPES.join(', '),
+          })}
         </FeatureStatusNotice>
         <Suspense fallback={<PageSuspenseFallback />}>
           <RetirementPlannerContainer />

@@ -92,6 +92,66 @@
       "no_metadata": "No metadata"
     }
   },
+  "metadata": {
+    "pages": {
+      "home": {
+        "title": "Home",
+        "description": "Focused route hub for the Polish treasury bond calculator and supporting tools."
+      },
+      "single_calculator": {
+        "title": "Single Calculator",
+        "description": "Detailed simulation for one Polish treasury bond across its modeled lifecycle."
+      },
+      "comparison": {
+        "title": "Comparison",
+        "description": "Scenario comparison for two modeled Polish treasury bond outcomes under shared assumptions."
+      },
+      "economic_data": {
+        "title": "Economic Data",
+        "description": "Reference page for inflation, NBP rates, and the macro context behind Polish treasury bond calculations."
+      },
+      "education": {
+        "title": "Education",
+        "description": "Learn the rules, mechanics, and tax concepts behind Polish treasury bonds."
+      },
+      "notebook": {
+        "title": "Portfolio Notebook",
+        "description": "Store real bond lots, inspect maturities, and revisit notebook context without turning it into a planning dashboard."
+      },
+      "optimize": {
+        "title": "Smart Bond Finder",
+        "description": "Experimental scenario sorter for modeled treasury bond outcomes under explicit assumptions."
+      },
+      "regular_investment": {
+        "title": "Regular Investment",
+        "description": "Model repeated bond purchases and track how a recurring treasury bond plan evolves over time."
+      },
+      "ladder": {
+        "title": "Ladder Strategy",
+        "description": "Test maturity spacing, rollover timing, and liquidity shape for one ladder setup."
+      },
+      "multi_asset": {
+        "title": "Market vs Bonds",
+        "description": "Reference comparison between treasury bond paths and narrower multi-asset historical context."
+      },
+      "retirement": {
+        "title": "Retirement Planner",
+        "description": "Reduced-scope withdrawal modeling for supported bond families under steady-rate assumptions."
+      },
+      "recovery_lab": {
+        "title": "Recovery Lab",
+        "description": "Side-lab entry for narrower, more assumption-sensitive surfaces kept outside the main product path."
+      },
+      "shared_scenario": {
+        "title": "Shared Scenario",
+        "description": "Replay a shared single-bond scenario snapshot with its stored assumptions."
+      },
+      "shared_portfolio": {
+        "title": "Shared Portfolio",
+        "description": "View a public portfolio snapshot with stored bond lots and descriptive notebook context."
+      }
+    }
+  },
   "education": {
     "subtitle": "Understand the mechanisms of the Polish treasury bond market and make informed investment decisions.",
     "concepts_title": "Fundamental Financial Concepts",
@@ -729,6 +789,16 @@
         "description": "Limited steady-rate withdrawal scenario. Narrower than a normal retirement planner and intentionally scoped down."
       }
     }
+  },
+  "multi_asset_page": {
+    "page_notice_eyebrow": "Historical context",
+    "page_notice_title": "Historical reference comparison",
+    "page_notice_desc": "This surface still has narrower historical coverage and should be treated as reference comparison only, not as a mature backtesting product."
+  },
+  "optimizer_page": {
+    "page_notice_eyebrow": "Supporting sorter",
+    "page_notice_title": "Experimental ranking view",
+    "page_notice_desc": "This page is assumption-sensitive and easy to over-read. Use it as a supporting scenario sorter after the core calculators, not as a primary decision surface."
   },
   "notebook": {
     "title": "My Portfolio / Notebook",
@@ -1590,8 +1660,15 @@
     }
   },
   "retirement": {
+    "page_notice_eyebrow": "Narrow withdrawal model",
+    "page_notice_title": "Withdrawal model",
+    "page_notice_desc": "This page uses a simplified steady-rate depletion model. It is useful for narrow withdrawal checks, but it is not a full retirement planning engine. Supported bond families here: {supportedBondTypes}.",
     "supported_bonds_limit": "Supports only {bondTypes} in this reduced-scope surface.",
     "ready_step_balance_desc": "Start from {initialCapital} and one fixed withdrawal amount.",
     "ready_step_horizon_desc": "The current run is staged for {horizon}."
+  },
+  "shared_portfolio_page": {
+    "public_notice": "You are viewing a shared public portfolio.",
+    "read_only": "Read Only"
   }
 }

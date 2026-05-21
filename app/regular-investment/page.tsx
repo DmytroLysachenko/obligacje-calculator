@@ -2,6 +2,11 @@ import { RegularInvestmentCalculatorContainer } from '@/features/regular-investm
 import { PageSuspenseFallback } from '@/shared/components/PageSuspenseFallback';
 import { PageTransition } from '@/shared/components/PageTransition';
 import { Suspense } from 'react';
+import { getLocalizedPageMetadata } from '@/lib/page-metadata';
+
+export async function generateMetadata() {
+  return getLocalizedPageMetadata('regular_investment');
+}
 
 export default function RegularInvestmentPage() {
   return (

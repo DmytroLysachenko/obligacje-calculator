@@ -1,27 +1,10 @@
-'use client';
+import {MultiAssetPageClient} from './MultiAssetPageClient';
+import {getLocalizedPageMetadata} from '@/lib/page-metadata';
 
-import { MultiAssetComparisonContainer } from '@/features/comparison-engine/components/MultiAssetComparisonContainer';
-import { PageTransition } from '@/shared/components/PageTransition';
-import { PageSuspenseFallback } from '@/shared/components/PageSuspenseFallback';
-import { FeatureStatusNotice } from '@/shared/components/FeatureStatusNotice';
-import { Suspense } from 'react';
+export async function generateMetadata() {
+  return getLocalizedPageMetadata('multi_asset');
+}
 
-export default function MultiAssetPage() {
-  return (
-    <PageTransition>
-      <div className="mx-auto max-w-7xl space-y-8">
-        <FeatureStatusNotice
-          status="experimental"
-          eyebrow="Historical context"
-          title="Historical reference comparison"
-        >
-          This surface still has narrower historical coverage and should be treated
-          as reference comparison only, not as a mature backtesting product.
-        </FeatureStatusNotice>
-        <Suspense fallback={<PageSuspenseFallback />}>
-          <MultiAssetComparisonContainer />
-        </Suspense>
-      </div>
-    </PageTransition>
-  );
+export default function MultiAssetComparisonPage() {
+  return <MultiAssetPageClient />;
 }

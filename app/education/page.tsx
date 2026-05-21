@@ -1,11 +1,10 @@
-import { Metadata } from 'next';
 import EducationClient from './EducationClient';
 import { BondDefinitionsProvider } from '@/shared/context/BondDefinitionsContext';
+import { getLocalizedPageMetadata } from '@/lib/page-metadata';
 
-export const metadata: Metadata = {
-  title: 'Education - Bonds Calculator',
-  description: 'Learn the fundamentals of Polish Treasury Bonds, inflation indexing, and Belka tax.',
-};
+export async function generateMetadata() {
+  return getLocalizedPageMetadata('education');
+}
 
 export default function EducationPage() {
   return (

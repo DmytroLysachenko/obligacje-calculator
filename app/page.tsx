@@ -1,12 +1,10 @@
-import { Metadata } from 'next';
-import { LandingDashboardClient } from './LandingDashboardClient';
+import {LandingDashboardClient} from './LandingDashboardClient';
+import {getLocalizedPageMetadata} from '@/lib/page-metadata';
 
-export const metadata: Metadata = {
-  title: 'Home - Polish Bonds Calculator',
-  description: 'Focused home for the Polish treasury bond calculator.',
-};
-
-export default function Home() {
-  return <LandingDashboardClient />;
+export async function generateMetadata() {
+  return getLocalizedPageMetadata('home');
 }
 
+export default function LandingDashboardPage() {
+  return <LandingDashboardClient />;
+}

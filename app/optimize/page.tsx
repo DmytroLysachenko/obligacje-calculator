@@ -1,25 +1,24 @@
-import { Metadata } from 'next';
 import BondOptimizerClient from './BondOptimizerClient';
 import { FeatureStatusNotice } from '@/shared/components/FeatureStatusNotice';
 import { PageTransition } from '@/shared/components/PageTransition';
+import { getLocalizedPageMetadata } from '@/lib/page-metadata';
+import { getTranslations } from 'next-intl/server';
 
-export const metadata: Metadata = {
-  title: 'Bond Scenario Ranking | Polish Treasury Bonds',
-  description: 'Compare simulated Polish Treasury Bond outcomes for a chosen horizon and assumptions.',
-};
+export async function generateMetadata() {
+  return getLocalizedPageMetadata('optimize');
+}
 
-export default function BondOptimizerPage() {
+export default async function BondOptimizerPage() {
+  const t = await getTranslations('optimizer_page');
   return (
     <PageTransition>
       <div className="container space-y-8 py-8">
         <FeatureStatusNotice
           status="experimental"
-          eyebrow="Supporting sorter"
-          title="Experimental ranking view"
+          eyebrow={t('page_notice_eyebrow')}
+          title={t('page_notice_title')}
         >
-          This page is assumption-sensitive and easy to over-read. Use it as a
-          supporting scenario sorter after the core calculators, not as a primary
-          decision surface.
+          {t('page_notice_desc')}
         </FeatureStatusNotice>
 
         <BondOptimizerClient />

@@ -1,14 +1,13 @@
-import { Metadata } from 'next';
 import { BondCalculatorContainer } from '@/features/single-calculator/components/BondCalculatorContainer';
 import { PageTransition } from '@/shared/components/PageTransition';
 import { PageSuspenseFallback } from '@/shared/components/PageSuspenseFallback';
 import { BondDefinitionsProvider } from '@/shared/context/BondDefinitionsContext';
 import { Suspense } from 'react';
+import { getLocalizedPageMetadata } from '@/lib/page-metadata';
 
-export const metadata: Metadata = {
-  title: 'Single Bond Calculator - Polish Treasury Bonds',
-  description: 'Detailed simulation for individual Polish treasury bonds.',
-};
+export async function generateMetadata() {
+  return getLocalizedPageMetadata('single_calculator');
+}
 
 export default function SingleCalculatorPage() {
   return (

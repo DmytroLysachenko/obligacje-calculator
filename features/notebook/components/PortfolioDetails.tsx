@@ -53,7 +53,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
     const [isSharing, setIsSharing] = useState(false);
     const [justCopied, setJustCopied] = useState(false);
     const [maturityWindowDays, setMaturityWindowDays] = useState<MaturityWindow>(90);
-    const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/p/${portfolio.shareId}` : '';
+    const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/shared-portfolios/${portfolio.shareId}` : '';
     const formatCurrency = useCallback((value: number) => new Intl.NumberFormat(getIntlLocale(language), {
         style: 'currency',
         currency: 'PLN',

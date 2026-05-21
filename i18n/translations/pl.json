@@ -92,6 +92,66 @@
       "no_metadata": "Brak metadanych"
     }
   },
+  "metadata": {
+    "pages": {
+      "home": {
+        "title": "Strona glowna",
+        "description": "Spokojny punkt startowy do kalkulatora obligacji skarbowych i wspierajacych narzedzi."
+      },
+      "single_calculator": {
+        "title": "Kalkulator pojedynczy",
+        "description": "Szczegolowa symulacja jednej obligacji skarbowej przez caly modelowany cykl."
+      },
+      "comparison": {
+        "title": "Porownanie",
+        "description": "Porownanie dwoch modelowanych wynikow obligacji skarbowych przy wspolnych zalozeniach."
+      },
+      "economic_data": {
+        "title": "Dane ekonomiczne",
+        "description": "Strona referencyjna dla inflacji, stop NBP i makroekonomicznego kontekstu obliczen obligacji."
+      },
+      "education": {
+        "title": "Edukacja",
+        "description": "Poznaj zasady, mechanike i podatki zwiazane z polskimi obligacjami skarbowymi."
+      },
+      "notebook": {
+        "title": "Notatnik portfela",
+        "description": "Zapisuj realne partie obligacji, sprawdzaj zapadalnosci i wracaj do kontekstu notatnika bez zmieniania go w dashboard planistyczny."
+      },
+      "optimize": {
+        "title": "Dobierz Obligacje",
+        "description": "Eksperymentalny sorter scenariuszy dla modelowanych wynikow obligacji skarbowych przy jawnych zalozeniach."
+      },
+      "regular_investment": {
+        "title": "Regularne inwestowanie",
+        "description": "Modeluj powtarzalne zakupy obligacji i sprawdzaj, jak rozwija sie regularny plan inwestowania."
+      },
+      "ladder": {
+        "title": "Strategia drabiny",
+        "description": "Testuj rozklad zapadalnosci, czas rolowania i ksztalt plynnosci dla jednego ustawienia drabiny."
+      },
+      "multi_asset": {
+        "title": "Gielda vs Obligacje",
+        "description": "Powierzchnia referencyjna do porownan obligacji z wezszym kontekstem historycznym innych aktywow."
+      },
+      "retirement": {
+        "title": "Planer emerytalny",
+        "description": "Ograniczone modelowanie wyplat dla wspieranych rodzin obligacji przy stalych zalozeniach."
+      },
+      "recovery_lab": {
+        "title": "Recovery Lab",
+        "description": "Boczne wejscie do powierzchni waskich lub bardziej wrazliwych na zalozenia, oddzielonych od glownej sciezki produktu."
+      },
+      "shared_scenario": {
+        "title": "Udostepniony scenariusz",
+        "description": "Odtworz zapisany scenariusz jednej obligacji wraz z zachowanymi zalozeniami."
+      },
+      "shared_portfolio": {
+        "title": "Udostepniony portfel",
+        "description": "Zobacz publiczny podglad portfela z zapisanymi partiami obligacji i opisowym kontekstem notatnika."
+      }
+    }
+  },
   "education": {
     "subtitle": "Zrozum mechanizmy polskiego rynku obligacji skarbowych i podejmuj świadome decyzje inwestycyjne.",
     "concepts_title": "Podstawowe Pojęcia Finansowe",
@@ -631,6 +691,16 @@
         "description": "Porownanie, regularne inwestowanie, drabina i notatnik maja byc drugim krokiem, nie pierwszym widokiem."
       }
     }
+  },
+  "multi_asset_page": {
+    "page_notice_eyebrow": "Kontekst historyczny",
+    "page_notice_title": "Porownanie referencyjne historii",
+    "page_notice_desc": "Ta powierzchnia nadal ma wezsze pokrycie danych historycznych i powinna byc traktowana jedynie jako porownanie referencyjne, a nie dojrzaly produkt do backtestow."
+  },
+  "optimizer_page": {
+    "page_notice_eyebrow": "Pomocniczy sorter",
+    "page_notice_title": "Eksperymentalny widok rankingu",
+    "page_notice_desc": "Ta strona jest bardzo wrazliwa na zalozenia i latwo ja nadinterpretowac. Traktuj ja jako pomocniczy sorter scenariuszy po glownych kalkulatorach, a nie podstawowa powierzchnie decyzji."
   },
   "notebook": {
     "title": "Mój Portfel / Notatnik",
@@ -1524,8 +1594,15 @@
     }
   },
   "retirement": {
+    "page_notice_eyebrow": "Waski model wyplat",
+    "page_notice_title": "Model wyplat",
+    "page_notice_desc": "Ta strona uzywa uproszczonego modelu stalego tempa wyplat. Jest przydatna do waskich testow wyplat, ale nie jest pelnym silnikiem planowania emerytalnego. Wspierane rodziny obligacji: {supportedBondTypes}.",
     "supported_bonds_limit": "Wspiera tylko {bondTypes} na tej ograniczonej powierzchni.",
     "ready_step_balance_desc": "Zacznij od {initialCapital} i jednej stalej kwoty wyplaty.",
     "ready_step_horizon_desc": "Biezacy przebieg jest ustawiony na {horizon}."
+  },
+  "shared_portfolio_page": {
+    "public_notice": "Ogladasz publicznie udostepniony portfel.",
+    "read_only": "Tylko odczyt"
   }
 }

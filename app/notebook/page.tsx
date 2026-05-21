@@ -1,13 +1,12 @@
-import { Metadata } from 'next';
 import { NotebookContainer } from '@/features/notebook/components/NotebookContainer';
 import { PageTransition } from '@/shared/components/PageTransition';
+import { getLocalizedPageMetadata } from '@/lib/page-metadata';
 
-export const metadata: Metadata = {
-  title: 'Notebook - Bonds Calculator',
-  description: 'Notebook for stored bond lots, maturities, and exports.',
-};
+export async function generateMetadata() {
+  return getLocalizedPageMetadata('notebook');
+}
 
-export default function NotebookPage() {
+export default function PortfolioNotebookPage() {
   return (
     <PageTransition>
       <div className="container mx-auto">
@@ -16,4 +15,3 @@ export default function NotebookPage() {
     </PageTransition>
   );
 }
-
