@@ -16,7 +16,7 @@ import {InflationChart} from '@/features/economic-data/components/InflationChart
 import {NBPRateChart} from '@/features/economic-data/components/NBPRateChart';
 import {BondType} from '@/features/bond-core/types';
 import {cn} from '@/lib/utils';
-import {CalculatorPageShell} from '@/shared/components/CalculatorPageShell';
+import {CalculatorPageShell} from '@/shared/components/page/CalculatorPageShell';
 import {useChartData} from '@/shared/hooks/useChartData';
 import {
   getReferenceAsOfLabel,

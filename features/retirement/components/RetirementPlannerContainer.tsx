@@ -10,10 +10,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import { getBondSupportMeta, getRetirementSupportNote, RETIREMENT_SUPPORTED_BOND_TYPES, supportsRetirementBondType, } from '@/features/bond-core/support-matrix';
 import { RetirementPlannerCalculationEnvelope } from '@/features/bond-core/types/scenarios';
-import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
-import { RecalculateButton } from '@/shared/components/RecalculateButton';
-import { ScenarioReadyPanel } from '@/shared/components/ScenarioReadyPanel';
-import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
+import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
+import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
+import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
+import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAppI18n } from '@/i18n/client';
 import { loadSavedScenarios } from '@/features/single-calculator/lib/scenario-storage';
-import { FeatureStatus } from '@/shared/components/FeatureStatusNotice';
+import { FeatureStatus } from '@/shared/components/feedback/FeatureStatusNotice';
 type ToolItem = {
     href: string;
     title: string;

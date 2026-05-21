@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import {BarChart2, Calendar, FlaskConical, ShieldAlert, TrendingUp} from 'lucide-react';
 import {Card, CardContent} from '@/components/ui/card';
-import {FeatureStatusNotice, FeatureStatusPill} from '@/shared/components/FeatureStatusNotice';
+import {FeatureStatusNotice, FeatureStatusPill} from '@/shared/components/feedback/FeatureStatusNotice';
 import {useAppI18n} from '@/i18n/client';
 
 const recoveryLabPages = [

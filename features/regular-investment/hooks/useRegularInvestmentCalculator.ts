@@ -113,7 +113,6 @@ export function useRegularInvestmentCalculator() {
     return () => window.clearTimeout(timer);
   }, []);
 
-  // Derived results for compatibility
   const results = envelope?.result || null;
 
   const calculate = useCallback(async (currentInputs = inputs) => {

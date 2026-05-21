@@ -37,12 +37,12 @@ import {
   getBondSupportMeta,
 } from '@/features/bond-core/support-matrix';
 import { formatCurrency, formatPercentage } from '@/lib/utils';
-import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
-import { CalculationMetaPanel } from '@/shared/components/CalculationMetaPanel';
+import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
+import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
-import { RecalculateButton } from '@/shared/components/RecalculateButton';
-import { ScenarioReadyPanel } from '@/shared/components/ScenarioReadyPanel';
-import { SecondaryInsightAccordion } from '@/shared/components/SecondaryInsightAccordion';
+import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
+import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
+import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { toDateString } from '@/shared/lib/date-timing';
 

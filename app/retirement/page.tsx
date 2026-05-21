@@ -1,8 +1,8 @@
 import { RetirementPlannerContainer } from '@/features/retirement/components/RetirementPlannerContainer';
 import { RETIREMENT_SUPPORTED_BOND_TYPES } from '@/features/bond-core/support-matrix';
-import { PageTransition } from '@/shared/components/PageTransition';
-import { FeatureStatusNotice } from '@/shared/components/FeatureStatusNotice';
-import { PageSuspenseFallback } from '@/shared/components/PageSuspenseFallback';
+import { PageTransition } from '@/shared/components/page/PageTransition';
+import { FeatureStatusNotice } from '@/shared/components/feedback/FeatureStatusNotice';
+import { PageSuspenseFallback } from '@/shared/components/page/PageSuspenseFallback';
 import { Suspense } from 'react';
 import { getLocalizedPageMetadata } from '@/lib/page-metadata';
 import { getTranslations } from 'next-intl/server';

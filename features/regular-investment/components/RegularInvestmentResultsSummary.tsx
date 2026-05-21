@@ -8,9 +8,9 @@ import { useAppI18n } from '@/i18n/client';
 import { Calendar, FileSpreadsheet } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { buildLotsExportHeaders } from '@/shared/lib/export-headers';
-import { MetricStrip } from '@/shared/components/MetricStrip';
-import { ResponsiveTableSheet } from '@/shared/components/ResponsiveTableSheet';
-import { ResultSummaryHero } from '@/shared/components/ResultSummaryHero';
+import { MetricStrip } from '@/shared/components/results/MetricStrip';
+import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
+import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
 import { buildLotsCsvFilename, exportLotsCsv } from '@/shared/lib/retained-exports';
 import { getDateFnsLocale, getIntlLocale } from '@/i18n/locale-utils';
 interface RegularInvestmentResultsSummaryProps {

@@ -2,10 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { headers } from 'next/headers';
 
-// Simple in-memory rate-limiter stub
 const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
-const RATE_LIMIT_MAX = 100; // requests per minute
-const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const RATE_LIMIT_MAX = 100;
+const RATE_LIMIT_WINDOW = 60 * 1000;
 
 function checkRateLimit(ip: string): { success: boolean; limit: number; remaining: number; reset: number } {
   const now = Date.now();
@@ -42,7 +41,6 @@ export type ApiHandler<TContext = { params: Promise<Record<string, never>> }> = 
  */
 export function apiHandler<TContext = { params: Promise<Record<string, never>> }>(handler: ApiHandler<TContext>) {
   return async (req: NextRequest, context: TContext) => {
-    // Basic Rate Limiting
     const headersList = await headers();
     const forwardedFor = headersList.get('x-forwarded-for');
     const ip = forwardedFor ? forwardedFor.split(',')[0] : '127.0.0.1';
@@ -86,7 +84,6 @@ export function apiHandler<TContext = { params: Promise<Record<string, never>> }
 
       console.error(`[API Error] ${req.method} ${req.nextUrl.pathname}:`, error);
 
-      // RFC 7807 Problem Details for all other errors
       return NextResponse.json(
         {
           type: 'https://api.obligacje.pl/errors/internal-server-error',

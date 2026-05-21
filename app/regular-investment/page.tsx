@@ -1,6 +1,6 @@
 import { RegularInvestmentCalculatorContainer } from '@/features/regular-investment/components/RegularInvestmentCalculatorContainer';
-import { PageSuspenseFallback } from '@/shared/components/PageSuspenseFallback';
-import { PageTransition } from '@/shared/components/PageTransition';
+import { PageSuspenseFallback } from '@/shared/components/page/PageSuspenseFallback';
+import { PageTransition } from '@/shared/components/page/PageTransition';
 import { Suspense } from 'react';
 import { getLocalizedPageMetadata } from '@/lib/page-metadata';
 

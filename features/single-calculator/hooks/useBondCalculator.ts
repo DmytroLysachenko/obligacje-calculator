@@ -226,7 +226,6 @@ export function useBondCalculator(initialInputs?: BondInputs) {
     });
   }, [envelope, initialInputs, inputs, isDirty, isPersistenceReady, lastCommittedInputs, selectedSeriesId]);
 
-  // Derived results for compatibility
   const results = envelope?.result || null;
 
   const normalizeInputs = useCallback((base: BondInputs, nextPartial?: Partial<BondInputs>) => {

@@ -7,8 +7,8 @@ import {db} from '@/db';
 import {sharedSingleScenarios} from '@/db/schema';
 import {ensurePortfolioSchemaCompat} from '@/lib/server/db/portfolio-schema-compat';
 import {BondDefinitionsProvider} from '@/shared/context/BondDefinitionsContext';
-import {PageTransition} from '@/shared/components/PageTransition';
-import {PageSuspenseFallback} from '@/shared/components/PageSuspenseFallback';
+import {PageTransition} from '@/shared/components/page/PageTransition';
+import {PageSuspenseFallback} from '@/shared/components/page/PageSuspenseFallback';
 import {parseSharedSingleScenarioPayload} from '@/shared/lib/single-scenario-share';
 import {Suspense} from 'react';
 

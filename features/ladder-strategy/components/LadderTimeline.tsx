@@ -9,9 +9,9 @@ import { RegularInvestmentResult } from '../../bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
-import { ResponsiveTableSheet } from '@/shared/components/ResponsiveTableSheet';
-import { ResultMetricCard } from '@/shared/components/ResultMetricCard';
-import { ResultSummaryHero } from '@/shared/components/ResultSummaryHero';
+import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
+import { ResultMetricCard } from '@/shared/components/results/ResultMetricCard';
+import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
 import { getDateFnsLocale, getIntlLocale } from '@/i18n/locale-utils';
 interface LadderTimelineProps {
     results: RegularInvestmentResult;

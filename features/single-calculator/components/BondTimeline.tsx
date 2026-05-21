@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Filter, ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ResponsiveTableSheet } from '@/shared/components/ResponsiveTableSheet';
+import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
 import { AppLanguage, buildBondTimelineDisplayRows, getSimulationEventDisplayLabel, } from '@/shared/lib/bond-display';
 import { getIntlLocale } from '@/i18n/locale-utils';
 interface BondTimelineProps {

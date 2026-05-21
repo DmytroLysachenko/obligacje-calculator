@@ -6,7 +6,7 @@ import { UserPortfolio } from '@/db/schema';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { CalculatorPageShell } from '@/shared/components/CalculatorPageShell';
+import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { unwrapApiData } from '@/shared/lib/api-response';
 import { PortfolioDetails } from './PortfolioDetails';
 import { removePortfolioFromNotebookState, resolveSelectedPortfolioId, upsertPortfolioInNotebookState, } from '../lib/notebook-state';

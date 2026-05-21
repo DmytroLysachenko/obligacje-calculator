@@ -15,7 +15,7 @@ import {
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { CalculationResult } from '@/features/bond-core/types';
-import { ResponsiveTableSheet } from '@/shared/components/ResponsiveTableSheet';
+import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
 
 interface ComparisonTableProps {
   resultsA: CalculationResult;

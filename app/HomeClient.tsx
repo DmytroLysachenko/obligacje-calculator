@@ -2,8 +2,8 @@
 
 import { BondCalculatorContainer } from '@/features/single-calculator/components/BondCalculatorContainer';
 import { useAppI18n } from '@/i18n/client';
-import { PageSuspenseFallback } from '@/shared/components/PageSuspenseFallback';
-import { PageTransition } from '@/shared/components/PageTransition';
+import { PageSuspenseFallback } from '@/shared/components/page/PageSuspenseFallback';
+import { PageTransition } from '@/shared/components/page/PageTransition';
 import { Suspense } from 'react';
 
 export default function HomeClient() {

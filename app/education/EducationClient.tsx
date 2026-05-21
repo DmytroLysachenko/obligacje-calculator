@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/accordion';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { PageTransition } from '@/shared/components/PageTransition';
+import { PageTransition } from '@/shared/components/page/PageTransition';
 
 export default function EducationClient() {
   const { t } = useAppI18n();

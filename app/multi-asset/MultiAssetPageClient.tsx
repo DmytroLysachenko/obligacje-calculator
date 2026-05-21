@@ -1,9 +1,9 @@
 'use client';
 
 import {MultiAssetComparisonContainer} from '@/features/comparison-engine/components/MultiAssetComparisonContainer';
-import {PageTransition} from '@/shared/components/PageTransition';
-import {PageSuspenseFallback} from '@/shared/components/PageSuspenseFallback';
-import {FeatureStatusNotice} from '@/shared/components/FeatureStatusNotice';
+import {PageTransition} from '@/shared/components/page/PageTransition';
+import {PageSuspenseFallback} from '@/shared/components/page/PageSuspenseFallback';
+import {FeatureStatusNotice} from '@/shared/components/feedback/FeatureStatusNotice';
 import {useAppI18n} from '@/i18n/client';
 import {Suspense} from 'react';
 

@@ -1,6 +1,6 @@
 import BondOptimizerClient from './BondOptimizerClient';
-import { FeatureStatusNotice } from '@/shared/components/FeatureStatusNotice';
-import { PageTransition } from '@/shared/components/PageTransition';
+import { FeatureStatusNotice } from '@/shared/components/feedback/FeatureStatusNotice';
+import { PageTransition } from '@/shared/components/page/PageTransition';
 import { getLocalizedPageMetadata } from '@/lib/page-metadata';
 import { getTranslations } from 'next-intl/server';
 

@@ -11,7 +11,7 @@ import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
-import { RateContextNote } from '@/shared/components/RateContextNote';
+import { RateContextNote } from '@/shared/components/results/RateContextNote';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 interface ScenarioOverrideCardProps {
     title: string;

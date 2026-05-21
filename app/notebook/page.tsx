@@ -1,5 +1,5 @@
 import { NotebookContainer } from '@/features/notebook/components/NotebookContainer';
-import { PageTransition } from '@/shared/components/PageTransition';
+import { PageTransition } from '@/shared/components/page/PageTransition';
 import { getLocalizedPageMetadata } from '@/lib/page-metadata';
 
 export async function generateMetadata() {
