@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { db } from '@/db';
-import { userInvestmentLots, userPortfolios } from '@/db/schema';
 import { applyPortfolioOwnerCookie, resolvePortfolioOwner } from '@/lib/server/portfolio/access';
 import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { createErrorResponse, createSuccessResponse } from '@/shared/types/api';
-import { resolveStoredBondLotContext } from '@/lib/server/bonds/offer-terms';
+import { importOwnerPortfolio } from '@/lib/server/portfolio/service';
 
 const ImportedLotSchema = z.object({
   bondType: z.string().min(1),
@@ -38,39 +36,12 @@ export const POST = apiHandler(async (req: NextRequest) => {
   }
 
   const { portfolio } = parsed.data;
-
-  const [createdPortfolio] = await db.insert(userPortfolios).values({
-    userId: owner.ownerId,
-    name: `${portfolio.name} (Imported)`,
-    description: portfolio.description ?? 'Imported portfolio package',
-  }).returning();
-
-  const importedLots = await Promise.all(
-    portfolio.lots.map(async (lot) => {
-      const resolvedLotContext = await resolveStoredBondLotContext(
-        lot.bondType as import('@/features/bond-core/types').BondType,
-        lot.purchaseDate,
-      );
-
-      return {
-        portfolioId: createdPortfolio.id,
-        bondType: lot.bondType,
-        bondTypeId: resolvedLotContext.bondTypeId,
-        bondSeriesId: resolvedLotContext.bondSeriesId,
-        purchaseDate: lot.purchaseDate,
-        amount: String(lot.amount),
-        isRebought: lot.isRebought ?? false,
-        notes: lot.notes,
-      };
-    }),
-  );
-
-  const createdLots = await db.insert(userInvestmentLots).values(importedLots).returning();
+  const importedPortfolio = await importOwnerPortfolio(owner.ownerId, portfolio);
 
   return applyPortfolioOwnerCookie(
     NextResponse.json(createSuccessResponse({
-      portfolio: createdPortfolio,
-      importedLots: createdLots.length,
+      portfolio: importedPortfolio.portfolio,
+      importedLots: importedPortfolio.importedLots,
     })),
     owner,
   );

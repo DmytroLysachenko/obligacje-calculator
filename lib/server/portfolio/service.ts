@@ -1,10 +1,12 @@
 import {calculationService} from '@/features/bond-core/application-service';
-import {ScenarioKind, type PortfolioSimulationResult} from '@/features/bond-core/types/scenarios';
+import {PortfolioSimulationCalculationEnvelope, ScenarioKind, type PortfolioSimulationResult} from '@/features/bond-core/types/scenarios';
+import {TaxStrategy} from '@/features/bond-core/types';
 import {resolveStoredBondLotContext} from '@/lib/server/bonds/offer-terms';
 import {buildPortfolioSimulationPayload} from '@/lib/server/portfolio/simulation';
 import {getOwnedLot, getOwnedPortfolio} from '@/lib/server/portfolio/access';
 import {
   createLot,
+  createLotWithBuyTransaction,
   createPortfolio,
   deleteLotById,
   deletePortfolioById,
@@ -105,6 +107,33 @@ export async function createPortfolioLot(
   return newLot;
 }
 
+export async function createPortfolioLotWithBuyTransaction(
+  ownerId: string,
+  input: {
+    portfolioId: string;
+    bondType: string;
+    purchaseDate: string;
+    amount: string | number;
+    isRebought?: boolean;
+    notes?: string;
+  },
+) {
+  const portfolio = await getOwnedPortfolio(ownerId, input.portfolioId);
+
+  if (!portfolio) {
+    throw new PortfolioServiceError('Portfolio not found', 404, 'NOT_FOUND');
+  }
+
+  return createLotWithBuyTransaction({
+    portfolioId: input.portfolioId,
+    bondType: input.bondType,
+    purchaseDate: input.purchaseDate,
+    amount: String(input.amount),
+    isRebought: Boolean(input.isRebought),
+    notes: input.notes,
+  });
+}
+
 export async function updateOwnerLot(
   ownerId: string,
   lotId: string,
@@ -201,6 +230,113 @@ export async function simulateOwnerPortfolio(
   });
 
   return envelope.result;
+}
+
+export async function exportOwnerPortfolio(
+  ownerId: string,
+  portfolioId: string,
+  formatMode: 'portfolio' | 'package' = 'portfolio',
+) {
+  const portfolio = await getOwnedPortfolio(ownerId, portfolioId);
+
+  if (!portfolio) {
+    throw new PortfolioServiceError('Portfolio not found', 404, 'NOT_FOUND');
+  }
+
+  const lots = await listLotsByPortfolio(portfolioId);
+  const payload = buildPortfolioSimulationPayload(lots, {
+    taxStrategy: TaxStrategy.STANDARD,
+    rollover: true,
+  });
+
+  const simulation = lots.length > 0
+    ? await calculationService.calculate({
+        kind: ScenarioKind.PORTFOLIO_SIMULATION,
+        payload,
+      }) as PortfolioSimulationCalculationEnvelope
+    : null;
+
+  const exportData = {
+    version: '1.0',
+    exportedAt: new Date().toISOString(),
+    appVersion: '2.7.0-db-driven-metadata',
+    packageType: formatMode === 'package' ? 'portfolio-package' : 'portfolio-export',
+    assumptions: {
+      expectedInflation: 3.5,
+      expectedNbpRate: 5.25,
+      taxStrategy: TaxStrategy.STANDARD,
+      withdrawalDate: payload.withdrawalDate,
+    },
+    portfolio: {
+      id: portfolio.id,
+      name: portfolio.name,
+      description: portfolio.description,
+      lots: lots.map((lot) => ({
+        id: lot.id,
+        bondType: lot.bondType,
+        bondTypeId: lot.bondTypeId,
+        bondSeriesId: lot.bondSeriesId,
+        purchaseDate: lot.purchaseDate,
+        amount: lot.amount,
+        isRebought: lot.isRebought,
+        notes: lot.notes,
+      })),
+    },
+    summary: simulation?.result.summary ?? null,
+  };
+
+  return {
+    exportData,
+    fileName: `${portfolio.name.replace(/\s+/g, '_').toLowerCase()}_${formatMode}.json`,
+  };
+}
+
+export async function importOwnerPortfolio(
+  ownerId: string,
+  input: {
+    name: string;
+    description?: string;
+    lots: Array<{
+      bondType: string;
+      purchaseDate: string;
+      amount: string | number;
+      isRebought?: boolean;
+      notes?: string;
+    }>;
+  },
+) {
+  const [createdPortfolio] = await createPortfolio(
+    ownerId,
+    `${input.name} (Imported)`,
+    input.description ?? 'Imported portfolio package',
+  );
+
+  const importedLots = await Promise.all(
+    input.lots.map(async (lot) => {
+      const resolvedLotContext = await resolveStoredBondLotContext(
+        lot.bondType as import('@/features/bond-core/types').BondType,
+        lot.purchaseDate,
+      );
+
+      return {
+        portfolioId: createdPortfolio.id,
+        bondType: lot.bondType,
+        bondTypeId: resolvedLotContext.bondTypeId,
+        bondSeriesId: resolvedLotContext.bondSeriesId,
+        purchaseDate: lot.purchaseDate,
+        amount: String(lot.amount),
+        isRebought: lot.isRebought ?? false,
+        notes: lot.notes,
+      };
+    }),
+  );
+
+  const createdLots = await Promise.all(importedLots.map((lot) => createLot(lot)));
+
+  return {
+    portfolio: createdPortfolio,
+    importedLots: createdLots.flat().length,
+  };
 }
 
 export async function summarizeOwnerPortfolios(ownerId: string) {

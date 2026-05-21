@@ -1,5 +1,5 @@
 import {db} from '@/db';
-import {userInvestmentLots, userPortfolios} from '@/db/schema';
+import {userInvestmentLots, userPortfolios, userTransactions} from '@/db/schema';
 import {and, eq, inArray} from 'drizzle-orm';
 
 export function listPortfoliosByOwner(ownerId: string) {
@@ -59,6 +59,21 @@ export function listLotsByPortfolioIds(portfolioIds: string[]) {
 
 export function createLot(values: typeof userInvestmentLots.$inferInsert) {
   return db.insert(userInvestmentLots).values(values).returning();
+}
+
+export async function createLotWithBuyTransaction(values: typeof userInvestmentLots.$inferInsert) {
+  return db.transaction(async (tx) => {
+    const [newLot] = await tx.insert(userInvestmentLots).values(values).returning();
+
+    await tx.insert(userTransactions).values({
+      lotId: newLot.id,
+      transactionType: 'buy',
+      date: values.purchaseDate,
+      amount: (Number(values.amount) * 100).toString(),
+    });
+
+    return newLot;
+  });
 }
 
 export function updateLotById(lotId: string, values: Record<string, unknown>) {

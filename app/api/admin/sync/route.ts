@@ -1,34 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { SyncEngine } from '@/lib/sync/sync-engine';
-import { seedSeriesMetadata } from '@/lib/sync/seed-series-runner';
-import { seedMarketHistory } from '@/lib/sync/seed-market-history';
-import { syncMarketHistory } from '@/lib/sync/sync-market-history';
-
-type SyncMode = 'full-sync' | 'market-history-seed' | 'market-history-sync' | 'metadata-seed';
+import {
+  assertAdminSyncAuthorization,
+  runAdminSync,
+  type SyncMode,
+} from '@/lib/server/admin/service';
 
 export async function POST(req: NextRequest) {
-  // Simple auth check (in a real app, use a secret header or Clerk/NextAuth)
   const authHeader = req.headers.get('authorization');
-  if (process.env.NODE_ENV === 'production' && authHeader !== `Bearer ${process.env.SYNC_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
 
   try {
+    assertAdminSyncAuthorization(authHeader);
     const body = (await req.json().catch(() => ({}))) as { mode?: SyncMode };
     const mode = body.mode ?? 'full-sync';
-    let results: unknown;
-
-    if (mode === 'metadata-seed') {
-      await seedSeriesMetadata();
-      results = { mode, status: 'success' };
-    } else if (mode === 'market-history-seed') {
-      results = await seedMarketHistory();
-    } else if (mode === 'market-history-sync') {
-      results = await syncMarketHistory();
-    } else {
-      const engine = new SyncEngine();
-      results = await engine.runFullSync();
-    }
+    const results = await runAdminSync(mode);
 
     return NextResponse.json({
       message: 'Sync completed successfully',
@@ -37,6 +21,10 @@ export async function POST(req: NextRequest) {
       results
     });
   } catch (error) {
+    if (error instanceof Error && error.message === 'UNAUTHORIZED_SYNC_REQUEST') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     console.error('[AdminSync] Sync failed:', error);
     return NextResponse.json({ 
       error: 'Sync failed', 

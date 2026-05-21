@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
-import { userInvestmentLots, userTransactions, userPortfolios } from '@/db/schema';
 import { resolvePortfolioOwner, applyPortfolioOwnerCookie } from '@/lib/server/portfolio/access';
 import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
 import { createSuccessResponse, createErrorResponse } from '@/shared/types/api';
-import { and, eq } from 'drizzle-orm';
+import {
+  createPortfolioLotWithBuyTransaction,
+  PortfolioServiceError,
+} from '@/lib/server/portfolio/service';
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,35 +19,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(createErrorResponse('Missing required fields', 'VALIDATION_ERROR'), { status: 400 });
     }
 
-    // Verify portfolio ownership
-    const portfolio = await db.query.userPortfolios.findFirst({
-      where: and(eq(userPortfolios.id, portfolioId), eq(userPortfolios.userId, owner.ownerId))
-    });
-
-    if (!portfolio) {
-      return NextResponse.json(createErrorResponse('Portfolio not found', 'NOT_FOUND'), { status: 404 });
-    }
-
-    const result = await db.transaction(async (tx) => {
-      // 1. Create the lot
-      const [newLot] = await tx.insert(userInvestmentLots).values({
-        portfolioId,
-        bondType,
-        purchaseDate,
-        amount: amount.toString(),
-        isRebought: !!isRebought,
-        notes,
-      }).returning();
-
-      // 2. Create the initial 'buy' transaction
-      await tx.insert(userTransactions).values({
-        lotId: newLot.id,
-        transactionType: 'buy',
-        date: purchaseDate,
-        amount: (parseFloat(amount) * 100).toString(), // Total PLN
-      });
-
-      return newLot;
+    const result = await createPortfolioLotWithBuyTransaction(owner.ownerId, {
+      portfolioId,
+      bondType,
+      purchaseDate,
+      amount,
+      isRebought,
+      notes,
     });
 
     return applyPortfolioOwnerCookie(
@@ -54,6 +33,10 @@ export async function POST(req: NextRequest) {
       owner
     );
   } catch (error) {
+    if (error instanceof PortfolioServiceError) {
+      return NextResponse.json(createErrorResponse(error.message, error.code, error.details), { status: error.status });
+    }
+
     console.error('Failed to save lot transactionally:', error);
     return NextResponse.json(createErrorResponse('Internal error', 'INTERNAL_ERROR'), { status: 500 });
   }

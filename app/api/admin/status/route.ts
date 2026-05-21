@@ -1,45 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db';
-import { dataPoints } from '@/db/schema';
-import { sql } from 'drizzle-orm';
 import { createSuccessResponse } from '@/shared/types/api';
+import {
+  assertAdminSyncAuthorization,
+  getAdminStatusSnapshot,
+} from '@/lib/server/admin/service';
 
 export async function GET(req: NextRequest) {
-  // Simple auth check
   const authHeader = req.headers.get('authorization');
-  if (process.env.NODE_ENV === 'production' && authHeader !== `Bearer ${process.env.SYNC_SECRET}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
 
   try {
-    const series = await db.query.dataSeries.findMany({
-      orderBy: (dataSeries, { desc }) => [desc(dataSeries.updatedAt)],
-    });
+    assertAdminSyncAuthorization(authHeader);
+    const statusSnapshot = await getAdminStatusSnapshot();
 
-    const stats = await db.select({
-      totalPoints: sql<number>`count(*)`,
-      latestDate: sql<string>`max(date)`,
-      seriesId: dataPoints.seriesId
-    })
-    .from(dataPoints)
-    .groupBy(dataPoints.seriesId);
-
-    const enrichedSeries = series.map(s => {
-      const stat = stats.find(stat => stat.seriesId === s.id);
-      return {
-        ...s,
-        pointCount: stat?.totalPoints || 0,
-        // Fallback to max(date) from data_points if lastDataPointDate is missing
-        lastDataPointDate: s.lastDataPointDate || stat?.latestDate || null
-      };
-    });
-
-    return NextResponse.json(createSuccessResponse({
-      series: enrichedSeries,
-      systemTime: new Date().toISOString(),
-      env: process.env.NODE_ENV
-    }));
+    return NextResponse.json(createSuccessResponse(statusSnapshot));
   } catch (error) {
+    if (error instanceof Error && error.message === 'UNAUTHORIZED_SYNC_REQUEST') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     console.error('[AdminStatus] Failed to fetch status:', error);
     return NextResponse.json({ error: 'Failed to fetch status' }, { status: 500 });
   }
