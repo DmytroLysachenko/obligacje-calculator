@@ -79,7 +79,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
   let totalFeeAcc = new Decimal(0);
   let globalAccumulatedNetInterest = new Decimal(0);
   let currentPurchaseDate = startDate;
-  let isCurrentlyRebought = isRebought;
+  let applySwapDiscountThisCycle = false;
   let cycleIndex = 1;
   const dataQualityFlags = new Set<string>();
 
@@ -110,7 +110,9 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
     const actualCycleEndDate = min([targetWithdrawalDate, cycleMaturityDate]);
     const isEarlyWithdrawal = isBefore(actualCycleEndDate, cycleMaturityDate);
 
-    const dBondPrice = isCurrentlyRebought ? new Decimal(nominalValue).minus(rebuyDiscount) : new Decimal(nominalValue);
+    const dBondPrice = applySwapDiscountThisCycle
+      ? new Decimal(nominalValue).minus(rebuyDiscount)
+      : new Decimal(nominalValue);
     
     // Investment for THIS cycle = cash from previous cycle + any leftovers
     const totalAvailable = currentInitialInvestment.plus(leftoverCash);
@@ -438,7 +440,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
     currentInitialInvestment = netProceeds;
     globalAccumulatedNetInterest = new Decimal(0);
     currentPurchaseDate = actualCycleEndDate;
-    isCurrentlyRebought = rebuyDiscount > 0;
+    applySwapDiscountThisCycle = isRebought;
     cycleIndex += 1;
   }
 

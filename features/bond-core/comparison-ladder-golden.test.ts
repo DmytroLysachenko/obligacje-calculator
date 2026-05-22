@@ -4,7 +4,7 @@ import { calculationCache } from './utils/calculation-cache';
 import { BondType, InvestmentFrequency, RegularInvestmentResult, TaxStrategy } from './types';
 import { BondComparisonScenarioItem, ScenarioKind } from './types/scenarios';
 import { BOND_DEFINITIONS } from './constants/bond-definitions';
-import { getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
+import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 
 const today = new Date('2026-05-05T00:00:00.000Z');
 
@@ -157,6 +157,81 @@ describe('Comparison and ladder golden regressions', () => {
     expect(peak?.month).toBe('2036-05');
     expect(peak?.amount).toBeGreaterThan(1490);
     expect(peak?.count).toBe(1);
+  });
+
+  it('keeps independent comparison scenarios aligned to the full shared horizon', async () => {
+    const purchaseDate = toDateString(today);
+    const withdrawalDate = getWithdrawalDateFromMonths(purchaseDate, 240);
+
+    const envelope = await calculationService.calculate({
+      kind: ScenarioKind.BOND_COMPARISON,
+      payload: {
+        mode: 'independent',
+        sharedConfig: {
+          initialInvestment: 10000,
+          purchaseDate,
+          withdrawalDate,
+          expectedInflation: 2.5,
+          expectedNbpRate: 3.75,
+          taxStrategy: TaxStrategy.STANDARD,
+          timingMode: 'general',
+          investmentHorizonMonths: 240,
+        },
+        scenarioA: {
+          bondType: BondType.EDO,
+          isRebought: false,
+        },
+        scenarioB: {
+          bondType: BondType.ROR,
+          isRebought: false,
+        },
+      },
+    });
+
+    const result = envelope.result as BondComparisonScenarioItem[];
+
+    expect(
+      getHorizonMonths(purchaseDate, result[0].result.timeline.at(-1)?.cycleEndDate ?? purchaseDate),
+    ).toBeGreaterThanOrEqual(239);
+    expect(
+      getHorizonMonths(purchaseDate, result[1].result.timeline.at(-1)?.cycleEndDate ?? purchaseDate),
+    ).toBeGreaterThanOrEqual(239);
+    expect(result[0].result.timeline.length).toBeGreaterThan(10);
+    expect(result[1].result.timeline.length).toBeGreaterThan(20);
+  });
+
+  it('applies rebuy discount differences in long-horizon independent comparison scenarios', async () => {
+    const purchaseDate = toDateString(today);
+    const withdrawalDate = getWithdrawalDateFromMonths(purchaseDate, 240);
+
+    const envelope = await calculationService.calculate({
+      kind: ScenarioKind.BOND_COMPARISON,
+      payload: {
+        mode: 'independent',
+        sharedConfig: {
+          initialInvestment: 10000,
+          purchaseDate,
+          withdrawalDate,
+          expectedInflation: 2.5,
+          expectedNbpRate: 3.75,
+          taxStrategy: TaxStrategy.STANDARD,
+          timingMode: 'general',
+          investmentHorizonMonths: 240,
+        },
+        scenarioA: {
+          bondType: BondType.EDO,
+          isRebought: false,
+        },
+        scenarioB: {
+          bondType: BondType.EDO,
+          isRebought: true,
+        },
+      },
+    });
+
+    const result = envelope.result as BondComparisonScenarioItem[];
+
+    expect(result[1].result.netPayoutValue).toBeGreaterThan(result[0].result.netPayoutValue);
   });
 });
 

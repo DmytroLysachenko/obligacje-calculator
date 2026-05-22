@@ -342,19 +342,15 @@ describe('Comprehensive Bond Calculations', () => {
     expect(results.timeline.every((point) => point.taxDeducted === 0)).toBe(true);
   });
 
-  it('Swap discount: calculates initial investment and units correctly', () => {
+  it('keeps the initial purchase at nominal price even when rollover swap discount is enabled', () => {
     const inputs = {
       ...baseInputs,
       initialInvestment: 1000,
       isRebought: true,
-      rebuyDiscount: 0.1, // Price = 99.90
+      rebuyDiscount: 0.1,
     };
     const results = calculateBondInvestment(inputs);
-    
-    // 1000 / 99.90 = 10.01 -> 10 bonds
-    // Actual investment = 10 * 99.90 = 999.00
-    // However, results.initialInvestment currently returns the INPUT value (1000)
-    // because the 1 PLN leftover is technically still part of the initial capital.
+
     expect(results.initialInvestment).toBe(1000);
     expect(results.timeline[1].nominalValueBeforeInterest).toBe(1000);
   });
