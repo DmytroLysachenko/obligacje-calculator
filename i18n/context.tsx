@@ -49,8 +49,17 @@ export function useAppI18n() {
   const {locale, setLocale} = useAppLocale();
   const translator = useTranslations();
 
-  const t = (key: string, variables?: TranslationVariables) =>
-    translator(key as never, variables as never);
+  const t = (key: string, variables?: TranslationVariables) => {
+    try {
+      return translator(key as never, variables as never);
+    } catch (error) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(`[i18n] Failed to translate client key "${key}" for locale "${locale}".`, error);
+      }
+
+      return key;
+    }
+  };
 
   return {locale, setLocale, t};
 }

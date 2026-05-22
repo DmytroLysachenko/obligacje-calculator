@@ -22,5 +22,13 @@ export function translateMessage(
   key: string,
   variables?: TranslationVariables
 ): string {
-  return getTranslator(locale)(key as never, variables as never);
+  try {
+    return getTranslator(locale)(key as never, variables as never);
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(`[i18n] Failed to translate server key "${key}" for locale "${locale}".`, error);
+    }
+
+    return key;
+  }
 }
