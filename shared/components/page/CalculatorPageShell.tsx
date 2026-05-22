@@ -1,12 +1,9 @@
 'use client';
 import React, { useState } from 'react';
-import { Check, Loader2, Share2, Target, Trophy } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Check, Loader2, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
-import { getIntlLocale } from '@/i18n/locale-utils';
 interface CalculatorPageShellProps {
     title: string;
     description: string;
@@ -17,8 +14,6 @@ interface CalculatorPageShellProps {
     isError?: boolean;
     hasResults: boolean;
     onShare?: () => Promise<string | void> | string | void;
-    savingsGoal?: number;
-    currentValue?: number;
     extraHeaderActions?: React.ReactNode;
     onKeyDown?: (e: React.KeyboardEvent) => void;
     showImplicitShare?: boolean;
@@ -42,8 +37,8 @@ function ShellMetaRow({ isCalculating, hasResults, }: {
         </span>) : null}
     </div>);
 }
-export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({ title, description, icon, children, isCalculating, hasResults, onShare, savingsGoal, currentValue, extraHeaderActions, onKeyDown, showImplicitShare = true, }) => {
-    const { t, locale: language } = useAppI18n();
+export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({ title, description, icon, children, isCalculating, hasResults, onShare, extraHeaderActions, onKeyDown, showImplicitShare = true, }) => {
+    const { t } = useAppI18n();
     const [copied, setCopied] = useState(false);
     const handleShare = async () => {
         try {
@@ -56,8 +51,6 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({ title,
             console.error('Scenario share failed:', error);
         }
     };
-    const goalProgress = savingsGoal && currentValue ? (currentValue / savingsGoal) * 100 : 0;
-    const isGoalReached = goalProgress >= 100;
     const hasShareAction = onShare ? hasResults : (showImplicitShare && hasResults);
     return (<div className="space-y-9 pb-20" onKeyDown={onKeyDown}>
       <header className="surface-shell space-y-4 rounded-[1.9rem] px-5 py-5 md:space-y-5 md:rounded-3xl md:px-8 md:py-7">
@@ -90,29 +83,6 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({ title,
             </div>) : null}
         </div>
       </header>
-
-      {savingsGoal && hasResults ? (<Card className="surface-soft rounded-[1.6rem] md:rounded-2xl">
-          <CardContent className="space-y-4 p-5 md:p-6">
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <div className="flex items-center gap-2">
-                {isGoalReached ? (<Trophy className="h-5 w-5 text-amber-500"/>) : (<Target className="h-5 w-5 text-primary"/>)}
-                <span className="text-[15px] font-semibold text-slate-950 md:text-base">
-                  {isGoalReached
-                ? t('bonds.goal_reached')
-                : t('bonds.goal_progress', {
-                    percent: goalProgress.toFixed(1),
-                })}
-                </span>
-              </div>
-                <span className="text-[15px] font-semibold text-slate-700 md:text-base">
-                {t('bonds.target')}:{' '}
-                {new Intl.NumberFormat(getIntlLocale(language)).format(savingsGoal)}{' '}
-                PLN
-              </span>
-            </div>
-            <Progress value={goalProgress} className="h-2.5"/>
-          </CardContent>
-        </Card>) : null}
 
       {children}
     </div>);

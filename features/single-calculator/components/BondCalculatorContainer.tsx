@@ -187,14 +187,6 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
       hasResults={isPersistenceReady && !!results}
       onShare={handleShareScenario}
       showImplicitShare={false}
-      savingsGoal={inputs.savingsGoal}
-      currentValue={
-        results
-          ? inputs.showRealValue
-            ? results.finalRealValue
-            : results.netPayoutValue
-          : undefined
-      }
       onKeyDown={handleKeyDown}
     >
       <div className="space-y-8 md:space-y-10">
@@ -327,7 +319,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
               title={t('bonds.timeline')}
               description={t('bonds.simulation.timeline_section_desc')}
             >
-              <BondTimeline results={results} />
+              <BondTimeline results={results} chartStep={inputs.chartStep} />
             </CalculatorSection>
 
             <SecondaryInsightAccordion

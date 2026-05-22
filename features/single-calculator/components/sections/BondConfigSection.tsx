@@ -53,27 +53,27 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
         </Button>
       </div>
 
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Label className="flex items-center gap-2 text-[15px] font-semibold">
-            {inputs.calculatorMode === 'reverse' ? t('bonds.target_goal_req') : t('bonds.savings_goal_opt')}
-          </Label>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help"/>
-            </TooltipTrigger>
-            <TooltipContent>
-              {t('bonds.glossary.savings_goal')}
-            </TooltipContent>
-          </Tooltip>
-        </div>
-        <div className="relative">
-          <Input type="number" placeholder={t('bonds.example_goal')} className="h-11 pl-4 pr-12" value={inputs.savingsGoal || ''} onChange={(e) => onUpdate('savingsGoal', e.target.value ? Number(e.target.value) : undefined)}/>
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">
-            PLN
+      {inputs.calculatorMode === 'reverse' ? (<div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Label className="flex items-center gap-2 text-[15px] font-semibold">
+              {t('bonds.target_goal_req')}
+            </Label>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help"/>
+              </TooltipTrigger>
+              <TooltipContent>
+                {t('bonds.glossary.savings_goal')}
+              </TooltipContent>
+            </Tooltip>
           </div>
-        </div>
-      </div>
+          <div className="relative">
+            <Input type="number" placeholder={t('bonds.example_goal')} className="h-11 pl-4 pr-12" value={inputs.savingsGoal || ''} onChange={(e) => onUpdate('savingsGoal', e.target.value ? Number(e.target.value) : undefined)}/>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">
+              PLN
+            </div>
+          </div>
+        </div>) : null}
 
       <div className="space-y-3">
         <div className="flex items-center gap-2">

@@ -34,7 +34,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
             calculate();
         }
     };
-    return (<CalculatorPageShell title={t('nav.regular_investment')} description={t('bonds.regular_calculator')} icon={<PiggyBank className="h-8 w-8"/>} isCalculating={isCalculating} isDirty={isDirty} hasResults={isPersistenceReady && !!results} savingsGoal={inputs.savingsGoal} currentValue={results?.finalNominalValue} onKeyDown={handleKeyDown}>
+    return (<CalculatorPageShell title={t('nav.regular_investment')} description={t('bonds.regular_calculator')} icon={<PiggyBank className="h-8 w-8"/>} isCalculating={isCalculating} isDirty={isDirty} hasResults={isPersistenceReady && !!results} onKeyDown={handleKeyDown}>
       <div className="space-y-8 md:space-y-10">
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-[400px_minmax(0,1fr)] xl:items-start xl:gap-8">
           <aside className="space-y-6 xl:sticky xl:top-24 xl:h-fit">

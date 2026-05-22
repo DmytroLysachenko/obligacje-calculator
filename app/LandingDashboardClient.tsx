@@ -5,7 +5,6 @@ import { ArrowRight, BarChart2, BookOpen, Calculator, CheckCircle2, Layers, Scal
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAppI18n } from '@/i18n/client';
-import { loadSavedScenarios } from '@/features/single-calculator/lib/scenario-storage';
 import { FeatureStatus } from '@/shared/components/feedback/FeatureStatusNotice';
 type ToolItem = {
     href: string;
@@ -81,51 +80,6 @@ function HeroTrustStrip() {
         </span>))}
     </div>);
 }
-function RecentWorkCard({ savedScenarioNames, emptyCopy, notebookLabel, calculatorLabel, }: {
-    savedScenarioNames: string[];
-    emptyCopy: string;
-    notebookLabel: string;
-    calculatorLabel: string;
-}) {
-    const { t } = useAppI18n();
-    return (<Card className="surface-panel h-full overflow-hidden rounded-[1.9rem] border-white/80 bg-white/78">
-      <CardContent className="space-y-5 p-5">
-        <div className="space-y-2">
-          <p className="text-sm font-semibold text-slate-500">
-            {t('landing.recent_work.label')}
-          </p>
-          <h2 className="text-2xl font-black tracking-tight text-slate-950">
-            {t('landing.recent_work.title')}
-          </h2>
-          <p className="text-[15px] leading-7 text-slate-600">
-            {savedScenarioNames.length > 0
-            ? t('landing.recent_work.description') : emptyCopy}
-          </p>
-        </div>
-
-        {savedScenarioNames.length > 0 ? (<div className="space-y-2">
-            {savedScenarioNames.map((name, index) => (<div key={`${name}-${index}`} className="rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-sm font-semibold text-slate-900">
-                {name}
-              </div>))}
-          </div>) : null}
-
-        <div className="flex flex-wrap gap-3">
-          <Button asChild variant="outline" className="gap-2 rounded-2xl border-slate-200 bg-white/80 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2">
-            <Link href="/notebook">
-              <Wallet className="h-4 w-4"/>
-              {notebookLabel}
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="gap-2 rounded-2xl border-slate-200 bg-white/80 focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2">
-            <Link href="/single-calculator">
-              <Calculator className="h-4 w-4"/>
-              {calculatorLabel}
-            </Link>
-          </Button>
-        </div>
-      </CardContent>
-    </Card>);
-}
 function SectionHeading({ title, description, }: {
     title: string;
     description: string;
@@ -141,12 +95,6 @@ function SectionHeading({ title, description, }: {
 }
 export function LandingDashboardClient() {
     const { t } = useAppI18n();
-    const [savedScenarioNames, setSavedScenarioNames] = React.useState<string[]>([]);
-    React.useEffect(() => {
-        setSavedScenarioNames(loadSavedScenarios()
-            .slice(0, 3)
-            .map((scenario) => scenario.name));
-    }, []);
     const stepIds = ['learn-rules', 'run-one', 'expand-later'] as const;
     const stepCopy: HomeStepItem[] = stepIds.map((id) => ({
         id,
@@ -213,14 +161,12 @@ export function LandingDashboardClient() {
             tone: 'absolute inset-x-0 top-0 h-24 bg-[radial-gradient(circle_at_top_left,rgba(168,85,247,0.12),transparent_65%)]',
         },
     ];
-    const savedScenarioEmpty = t('landing.recent_work.empty');
     const startHereTitle = t('landing.start_here.title');
     const startHereDesc = t('landing.start_here.description');
     const secondaryTitle = t('landing.secondary_tools.title');
     const secondaryDesc = t('landing.secondary_tools.description');
     return (<div className="space-y-8 pb-20 md:space-y-10">
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
-        <div className="surface-shell relative overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#f8fafc_0%,#eff6ff_22%,#eef2ff_52%,#ffffff_100%)] px-5 py-7 md:rounded-[2.5rem] md:px-8 md:py-10">
+      <section className="surface-shell relative overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#f8fafc_0%,#eff6ff_22%,#eef2ff_52%,#ffffff_100%)] px-5 py-7 md:rounded-[2.5rem] md:px-8 md:py-10">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.2),transparent_26%),radial-gradient(circle_at_bottom_left,rgba(99,102,241,0.18),transparent_34%)]"/>
           <div className="absolute inset-x-8 top-6 h-px bg-[linear-gradient(90deg,transparent,rgba(14,165,233,0.24),transparent)]"/>
           <div className="absolute -right-10 top-8 h-56 w-56 rounded-full bg-sky-200/35 blur-3xl"/>
@@ -262,10 +208,16 @@ export function LandingDashboardClient() {
                 {t('landing.hero_trust_note')}
               </p>
             </div>
-          </div>
-        </div>
 
-        <RecentWorkCard savedScenarioNames={savedScenarioNames} emptyCopy={savedScenarioEmpty} notebookLabel={t('nav.notebook')} calculatorLabel={t('landing.recovery_home.resume_saved')}/>
+            <div className="flex flex-wrap gap-3">
+              <Button asChild variant="outline" className="gap-2 rounded-2xl border-white/90 bg-white/72 text-sm font-semibold backdrop-blur hover:bg-white focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2">
+                <Link href="/notebook">
+                  <Wallet className="h-4 w-4"/>
+                  {t('nav.notebook')}
+                </Link>
+              </Button>
+            </div>
+          </div>
       </section>
 
       <section className="space-y-4">

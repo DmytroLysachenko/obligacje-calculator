@@ -88,7 +88,7 @@ export const LadderContainer: React.FC = () => {
             calculate();
         }
     };
-    return (<CalculatorPageShell title={t('nav.ladder')} description={t('ladder.what_is_desc')} icon={<ListTree className="h-8 w-8"/>} isCalculating={isCalculating} isDirty={isDirty} hasResults={isPersistenceReady && !!results} savingsGoal={inputs.savingsGoal} currentValue={results?.finalNominalValue} onKeyDown={handleKeyDown}>
+    return (<CalculatorPageShell title={t('nav.ladder')} description={t('ladder.what_is_desc')} icon={<ListTree className="h-8 w-8"/>} isCalculating={isCalculating} isDirty={isDirty} hasResults={isPersistenceReady && !!results} onKeyDown={handleKeyDown}>
       <div className="space-y-10">
         <div className="grid grid-cols-1 gap-8 xl:grid-cols-[420px_minmax(0,1fr)] xl:items-start">
           <aside className="xl:sticky xl:top-28 xl:h-fit">

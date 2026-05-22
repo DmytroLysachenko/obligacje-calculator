@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { format, parseISO } from 'date-fns';
-import { AlertCircle, CalendarIcon, Info, Settings2, Target, } from 'lucide-react';
+import { AlertCircle, CalendarIcon, Info, Settings2, } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -69,32 +69,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
         </CardHeader>
         <CardContent className="space-y-8 p-6">
           <section className="space-y-6">
-            <SectionHeading title="Core plan" description="Set savings goal, bond type, tax wrapper, and repeating contribution amount."/>
-
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                  <Label className="flex items-center gap-2 text-[15px] font-semibold">
-                  <Target className="h-4 w-4 text-primary"/>
-                  {t('bonds.savings_goal_opt')}
-                </Label>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Info className="h-3 w-3 cursor-help text-muted-foreground"/>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs">{t('bonds.savings_goal_opt')}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-              <div className="relative">
-                <Input type="number" placeholder={t('bonds.example_goal')} className="h-11 pl-4 pr-12" value={inputs.savingsGoal || ''} onChange={(e) => onUpdate('savingsGoal', e.target.value ? Number(e.target.value) : undefined)}/>
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">
-                  PLN
-                </div>
-              </div>
-            </div>
+            <SectionHeading title="Core plan" description="Set bond type, tax wrapper, and repeating contribution amount."/>
 
             <Separator />
 
@@ -397,7 +372,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-6 pt-4">
-                    <MarketAssumptionsForm expectedInflation={inputs.expectedInflation} expectedNbpRate={inputs.expectedNbpRate} bondType={inputs.bondType} customInflation={inputs.customInflation} inflationHorizonYears={Math.max(1, Math.ceil(inputs.investmentHorizonMonths / 12))} onUpdate={onUpdate} compact/>
+                    <MarketAssumptionsForm expectedInflation={inputs.expectedInflation} expectedNbpRate={inputs.expectedNbpRate} bondType={inputs.bondType} customInflation={inputs.customInflation} customNbpRate={inputs.customNbpRate} inflationScenario={inputs.inflationScenario} inflationHorizonYears={Math.max(1, Math.ceil(inputs.investmentHorizonMonths / 12))} onUpdate={onUpdate} compact/>
 
                     {currentDef.rebuyDiscount > 0 ? (<div className="space-y-4 border-t border-dashed pt-6">
                         <div className="flex items-center justify-between">
