@@ -1,6 +1,6 @@
 'use client';
 
-import {createContext, useContext} from 'react';
+import {createContext, useCallback, useContext, useMemo} from 'react';
 import {useLocale, useTranslations} from 'next-intl';
 import {useRouter} from 'next/navigation';
 import {defaultLocale, type Language, isSupportedLocale} from './config';
@@ -19,17 +19,19 @@ export function AppLocaleProvider({children}: {children: React.ReactNode}) {
   const nextIntlLocale = useLocale();
   const locale = isSupportedLocale(nextIntlLocale) ? nextIntlLocale : defaultLocale;
 
-  const setLocale = (nextLocale: Language) => {
+  const setLocale = useCallback((nextLocale: Language) => {
     if (typeof window !== 'undefined') {
       window.localStorage.setItem('app-language', nextLocale);
       document.cookie = `app-language=${nextLocale}; path=/; max-age=31536000; samesite=lax`;
     }
 
     router.refresh();
-  };
+  }, [router]);
+
+  const value = useMemo(() => ({locale, setLocale}), [locale, setLocale]);
 
   return (
-    <AppLocaleContext.Provider value={{locale, setLocale}}>
+    <AppLocaleContext.Provider value={value}>
       {children}
     </AppLocaleContext.Provider>
   );
@@ -49,7 +51,7 @@ export function useAppI18n() {
   const {locale, setLocale} = useAppLocale();
   const translator = useTranslations();
 
-  const t = (key: string, variables?: TranslationVariables) => {
+  const t = useCallback((key: string, variables?: TranslationVariables) => {
     try {
       return translator(key as never, variables as never);
     } catch (error) {
@@ -59,7 +61,7 @@ export function useAppI18n() {
 
       return key;
     }
-  };
+  }, [locale, translator]);
 
-  return {locale, setLocale, t};
+  return useMemo(() => ({locale, setLocale, t}), [locale, setLocale, t]);
 }
