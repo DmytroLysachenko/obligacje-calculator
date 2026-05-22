@@ -13,8 +13,10 @@ import { Button } from '@/components/ui/button';
 import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
 import { AppLanguage, buildBondTimelineDisplayRows, getSimulationEventDisplayLabel, } from '@/shared/lib/bond-display';
 import { getIntlLocale } from '@/i18n/locale-utils';
+import { ChartStep } from '@/features/bond-core/types';
 interface BondTimelineProps {
     results: CalculationResult;
+    chartStep?: ChartStep;
 }
 function TimelineStat({ label, value, }: {
     label: string;
@@ -27,7 +29,7 @@ function TimelineStat({ label, value, }: {
       <p className="mt-1 text-sm font-semibold text-slate-900">{value}</p>
     </div>);
 }
-export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
+export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep = 'yearly' }) => {
     const { t, locale: language } = useAppI18n();
     const [hasMounted, setHasMounted] = React.useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -45,7 +47,8 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results }) => {
             currency: 'PLN',
         }).format(value);
     }, [hasMounted, language]);
-    const displayRows = useMemo(() => buildBondTimelineDisplayRows(results.timeline, language as AppLanguage), [language, results.timeline]);
+    const effectiveChartStep = chartStep === 'daily' ? 'monthly' : chartStep;
+    const displayRows = useMemo(() => buildBondTimelineDisplayRows(results.timeline, language as AppLanguage, effectiveChartStep), [effectiveChartStep, language, results.timeline]);
     const eventOptions = useMemo(() => Object.values(SimulationEventType).map((type) => ({
         value: type,
         label: getSimulationEventDisplayLabel(type, language as AppLanguage),

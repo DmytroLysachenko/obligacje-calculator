@@ -4,6 +4,7 @@ import { dataSeries, dataPoints } from '@/db/schema';
 import { desc, eq, inArray } from 'drizzle-orm';
 import { createSuccessResponse } from '@/shared/types/api';
 import { NBP_REFERENCE_FALLBACK_SERIES } from '@/shared/lib/nbp-reference-fallback';
+import { addMonths, format, isBefore, parseISO } from 'date-fns';
 
 const FALLBACK_NBP = NBP_REFERENCE_FALLBACK_SERIES.map((point) => ({
   date: point.date.substring(0, 7),
@@ -24,16 +25,52 @@ interface ChartSeriesEnvelope<T> {
   coverageNote?: string;
   sourceUrl?: string;
 }
+type NBPChartPoint = {
+  date: string;
+  rate: number;
+};
+
+function expandMonthlyStepSeries(points: NBPChartPoint[]) {
+  if (points.length <= 1) {
+    return points;
+  }
+
+  const expanded: NBPChartPoint[] = [];
+
+  for (let index = 0; index < points.length; index += 1) {
+    const current = points[index];
+    const next = points[index + 1];
+    expanded.push(current);
+
+    if (!next) {
+      continue;
+    }
+
+    let cursor = addMonths(parseISO(`${current.date}-01`), 1);
+    const nextDate = parseISO(`${next.date}-01`);
+
+    while (isBefore(cursor, nextDate)) {
+      expanded.push({
+        date: format(cursor, 'yyyy-MM'),
+        rate: current.rate,
+      });
+      cursor = addMonths(cursor, 1);
+    }
+  }
+
+  return expanded;
+}
 
 function fallbackResponse() {
-  return NextResponse.json(createSuccessResponse<ChartSeriesEnvelope<(typeof FALLBACK_NBP)[number]>>({
-    data: FALLBACK_NBP,
+  const expandedFallbackCoverage = expandMonthlyStepSeries(FALLBACK_NBP);
+  return NextResponse.json(createSuccessResponse<ChartSeriesEnvelope<NBPChartPoint>>({
+    data: expandedFallbackCoverage,
     source: 'fallback',
     usedFallback: true,
     dataSource: 'Curated NBP reference-rate history from official policy publications',
     seriesName: 'NBP reference-rate history',
-    coverageStart: FALLBACK_NBP[0]?.date,
-    coverageEnd: FALLBACK_NBP[FALLBACK_NBP.length - 1]?.date,
+    coverageStart: expandedFallbackCoverage[0]?.date,
+    coverageEnd: expandedFallbackCoverage[expandedFallbackCoverage.length - 1]?.date,
     syncStatus: 'failed',
     coverageNote: 'nbp-fallback-reference',
   }));
@@ -74,20 +111,21 @@ export async function GET() {
           ).values(),
         ).sort((left, right) => left.date.localeCompare(right.date))
       : formatted;
+    const expandedCoverage = expandMonthlyStepSeries(mergedFallbackCoverage);
 
     const sourceIsFallbackOnly = series.lastSyncStatus === 'failed';
     const sourceUsesPartialCoverage = sparseCoverage || series.lastSyncStatus === 'partial';
 
-    return NextResponse.json(createSuccessResponse<ChartSeriesEnvelope<(typeof formatted)[number]>>({
-      data: mergedFallbackCoverage,
+    return NextResponse.json(createSuccessResponse<ChartSeriesEnvelope<NBPChartPoint>>({
+      data: expandedCoverage,
       source: 'database',
       usedFallback: sourceIsFallbackOnly || sourceUsesPartialCoverage,
       asOf: data[0]?.date,
       lastCheck: series.updatedAt?.toISOString(),
       dataSource: series.dataSource ?? 'database',
       seriesName: series.name,
-      coverageStart: mergedFallbackCoverage[0]?.date,
-      coverageEnd: mergedFallbackCoverage[mergedFallbackCoverage.length - 1]?.date,
+      coverageStart: expandedCoverage[0]?.date,
+      coverageEnd: expandedCoverage[expandedCoverage.length - 1]?.date,
       syncStatus:
         sourceIsFallbackOnly
           ? 'failed'

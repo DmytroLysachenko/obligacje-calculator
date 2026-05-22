@@ -3,6 +3,7 @@ import { RateSource, YearlyTimelinePoint } from '@/features/bond-core/types';
 import { SimulationEventType } from '@/features/bond-core/types/simulation';
 import { getIntlLocale } from '@/i18n/locale-utils';
 import { translateMessage } from '@/i18n/translate';
+import { addMonths, differenceInMonths } from 'date-fns';
 export type AppLanguage = 'pl' | 'en';
 export interface BondTimelineDisplayRow {
     key: string;
@@ -56,6 +57,66 @@ function formatMonthYear(date: string, language: AppLanguage) {
         month: 'short',
         year: 'numeric',
     }).format(new Date(date));
+}
+function interpolateValue(start: number | undefined, end: number | undefined, progress: number) {
+    if (start === undefined && end === undefined) {
+        return undefined;
+    }
+    if (start === undefined) {
+        return end;
+    }
+    if (end === undefined) {
+        return start;
+    }
+    return Number((start + ((end - start) * progress)).toFixed(2));
+}
+function densifyTimelinePoints(points: YearlyTimelinePoint[], chartStep: ChartAggregationStep): YearlyTimelinePoint[] {
+    if (chartStep === 'daily' || chartStep === 'yearly' || points.length <= 1) {
+        return points;
+    }
+    const stepMonths = chartStep === 'monthly' ? 1 : 3;
+    const densified: YearlyTimelinePoint[] = [points[0]];
+    for (let index = 1; index < points.length; index += 1) {
+        const previous = points[index - 1];
+        const current = points[index];
+        const previousDate = new Date(previous.cycleEndDate);
+        const currentDate = new Date(current.cycleEndDate);
+        const totalMonths = differenceInMonths(currentDate, previousDate);
+        if (totalMonths <= stepMonths) {
+            densified.push(current);
+            continue;
+        }
+        for (let offset = stepMonths; offset < totalMonths; offset += stepMonths) {
+            const checkpointDate = addMonths(previousDate, offset);
+            const progress = offset / totalMonths;
+            densified.push({
+                ...current,
+                cycleEndDate: checkpointDate.toISOString(),
+                periodLabel: current.periodLabel,
+                interestRate: interpolateValue(previous.interestRate, current.interestRate, progress) ?? current.interestRate,
+                nominalValueBeforeInterest: interpolateValue(previous.nominalValueBeforeInterest, current.nominalValueBeforeInterest, progress) ?? current.nominalValueBeforeInterest,
+                interestEarned: interpolateValue(previous.interestEarned, current.interestEarned, progress) ?? current.interestEarned,
+                taxDeducted: interpolateValue(previous.taxDeducted, current.taxDeducted, progress) ?? current.taxDeducted,
+                netInterest: interpolateValue(previous.netInterest, current.netInterest, progress) ?? current.netInterest,
+                nominalValueAfterInterest: interpolateValue(previous.nominalValueAfterInterest, current.nominalValueAfterInterest, progress) ?? current.nominalValueAfterInterest,
+                accumulatedNetInterest: interpolateValue(previous.accumulatedNetInterest, current.accumulatedNetInterest, progress) ?? current.accumulatedNetInterest,
+                totalValue: interpolateValue(previous.totalValue, current.totalValue, progress) ?? current.totalValue,
+                realValue: interpolateValue(previous.realValue, current.realValue, progress) ?? current.realValue,
+                netProfit: interpolateValue(previous.netProfit, current.netProfit, progress) ?? current.netProfit,
+                earlyWithdrawalValue: interpolateValue(previous.earlyWithdrawalValue, current.earlyWithdrawalValue, progress) ?? current.earlyWithdrawalValue,
+                cumulativeInflation: interpolateValue(previous.cumulativeInflation, current.cumulativeInflation, progress) ?? current.cumulativeInflation,
+                inflationReference: interpolateValue(previous.inflationReference, current.inflationReference, progress),
+                nbpReference: interpolateValue(previous.nbpReference, current.nbpReference, progress),
+                events: [],
+                isMaturity: false,
+                isWithdrawal: false,
+                usedProjectedRate: previous.usedProjectedRate || current.usedProjectedRate,
+                isProjected: previous.isProjected || current.isProjected,
+            });
+        }
+        densified.push(current);
+    }
+    return densified;
 }
 const RATE_SOURCE_KEYS: Record<RateSource, string> = {
     initial_principal: 'bonds.timeline_display.rate_source.initial_principal',
@@ -147,13 +208,14 @@ export function getReferenceDisplayLabel(point: YearlyTimelinePoint, language: A
         : undefined;
     return [referencePart, marginPart].filter(Boolean).join(' | ');
 }
-export function buildBondTimelineDisplayRows(timeline: YearlyTimelinePoint[], language: AppLanguage): BondTimelineDisplayRow[] {
+export function buildBondTimelineDisplayRows(timeline: YearlyTimelinePoint[], language: AppLanguage, chartStep: ChartAggregationStep = 'yearly'): BondTimelineDisplayRow[] {
+    const effectiveTimeline = densifyTimelinePoints(timeline, chartStep);
     const cashFlowSemantics = inferCashFlowSemantics(timeline);
     const cashFlowLabel = getCashFlowDisplayLabel(cashFlowSemantics, language);
-    return timeline.map((point) => ({
+    return effectiveTimeline.map((point) => ({
         key: `${point.cycleIndex}-${point.periodLabel}-${point.cycleEndDate}`,
-        periodLabel: point.periodLabel,
-        cadenceLabel: getCadenceDisplayLabel(point, language),
+        periodLabel: formatMonthYear(point.cycleEndDate, language),
+        cadenceLabel: point.events?.length ? getCadenceDisplayLabel(point, language) : translateMessage(language, 'bonds.timeline_display.cadence.checkpoint'),
         cycleLabel: getCycleDisplayLabel(point, language),
         valueMeaningLabel: getValueMeaningLabel(point, language, cashFlowSemantics),
         cashFlowLabel,
@@ -175,7 +237,7 @@ export function buildBondChartDisplayPoints(initialInvestment: number, timeline:
     low: YearlyTimelinePoint[];
     high: YearlyTimelinePoint[];
 }, chartStep: ChartAggregationStep = 'yearly'): BondChartDisplayPoint[] {
-    const normalizedTimeline = normalizeBondChartDisplayTimeline(timeline, language, comparisonScenarios);
+    const normalizedTimeline = normalizeBondChartDisplayTimeline(timeline, language, comparisonScenarios, chartStep);
     if (normalizedTimeline.length === 0) {
         return [];
     }
@@ -193,8 +255,11 @@ export function buildBondChartDisplayPoints(initialInvestment: number, timeline:
 export function normalizeBondChartDisplayTimeline(timeline: YearlyTimelinePoint[], language: AppLanguage, comparisonScenarios?: {
     low: YearlyTimelinePoint[];
     high: YearlyTimelinePoint[];
-}): NormalizedBondDisplayPoint[] {
-    return timeline.map((point, index) => ({
+}, chartStep: ChartAggregationStep = 'yearly'): NormalizedBondDisplayPoint[] {
+    const effectiveTimeline = densifyTimelinePoints(timeline, chartStep);
+    const effectiveLowTimeline = comparisonScenarios?.low ? densifyTimelinePoints(comparisonScenarios.low, chartStep) : undefined;
+    const effectiveHighTimeline = comparisonScenarios?.high ? densifyTimelinePoints(comparisonScenarios.high, chartStep) : undefined;
+    return effectiveTimeline.map((point, index) => ({
         key: `${point.cycleIndex}-${point.periodLabel}-${point.cycleEndDate}`,
         dateKey: point.cycleEndDate,
         xLabel: formatMonthYear(point.cycleEndDate, language),
@@ -202,8 +267,8 @@ export function normalizeBondChartDisplayTimeline(timeline: YearlyTimelinePoint[
         real: Number(point.realValue.toFixed(2)),
         inflation: point.inflationReference,
         nbp: point.nbpReference,
-        low: comparisonScenarios?.low[index]?.totalValue,
-        high: comparisonScenarios?.high[index]?.totalValue,
+        low: effectiveLowTimeline?.[index]?.totalValue,
+        high: effectiveHighTimeline?.[index]?.totalValue,
         isProjected: Boolean(point.isProjected),
         isMaturity: point.isMaturity,
         rateLabel: getRateSourceDisplayLabel(point.rateSource, language),

@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, Line, ComposedChart, TooltipProps, ReferenceArea, ReferenceLine, } from "recharts";
+import { XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, Line, ComposedChart, TooltipProps, ReferenceLine, } from "recharts";
 import { ValueType, NameType, } from "recharts/types/component/DefaultTooltipContent";
 import { CalculationResult } from "../../bond-core/types";
 import { ChartStep } from "../../bond-core/types";
@@ -154,8 +154,8 @@ export const BondChart: React.FC<BondChartProps> = ({ results, chartStep = 'year
     }), [chartData]);
     const rightDomain = React.useMemo(() => computeRateDomain(chartData.flatMap((point) => [point.inflation, point.nbp].filter((value): value is number => typeof value === 'number'))), [chartData]);
     const firstProjectedIndex = React.useMemo(() => chartData.findIndex((point) => point.isProjected), [chartData]);
-    return (<ChartContainer height={400}>
-      <ResponsiveContainer width="100%" height={400} key={`chart-${chartData.length}`}>
+    return (<ChartContainer height={520}>
+      <ResponsiveContainer width="100%" height={520} key={`chart-${chartData.length}`}>
         <ComposedChart data={chartData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
           <defs>
             <linearGradient id="colorNominal" x1="0" y1="0" x2="0" y2="1">
@@ -184,8 +184,6 @@ export const BondChart: React.FC<BondChartProps> = ({ results, chartStep = 'year
                 fontSize: 10,
                 fontWeight: 'bold',
             }}/>) : null}
-          <ReferenceArea yAxisId="right" y1={1.5} y2={3.5} fill="#10b981" fillOpacity={0.05}/>
-          <ReferenceArea yAxisId="right" y1={-5} y2={0} fill="#ef4444" fillOpacity={0.05}/>
           <Legend verticalAlign="top" align="right" height={40} iconType="circle" wrapperStyle={{
             fontSize: "10px",
             fontWeight: "black",

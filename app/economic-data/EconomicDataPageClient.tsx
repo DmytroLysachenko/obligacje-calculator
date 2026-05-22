@@ -11,6 +11,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import {Card, CardContent} from '@/components/ui/card';
+import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@/components/ui/accordion';
 import {useAppI18n} from '@/i18n/client';
 import {InflationChart} from '@/features/economic-data/components/InflationChart';
 import {NBPRateChart} from '@/features/economic-data/components/NBPRateChart';
@@ -296,35 +297,43 @@ export function EconomicDataPageClient() {
         </Card>
 
         <Card className="surface-panel rounded-[2rem] border-slate-200 bg-white/88 shadow-none">
-          <CardContent className="grid gap-4 p-6 md:grid-cols-[minmax(0,1fr)_200px]">
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-primary" />
-                <p className="text-xl font-black tracking-tight text-slate-950">
-                  {labels.howToUse}
-                </p>
-              </div>
-              <div className="grid gap-3 md:grid-cols-3">
-                {usageGuide.map((item) => (
-                  <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50/55 px-4 py-3">
-                    <div className="flex items-start gap-3">
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                      <p className="text-sm leading-7 text-slate-600">{item}</p>
+          <CardContent className="p-4 md:p-6">
+            <Accordion type="single" collapsible defaultValue="how-to-use" className="space-y-4">
+              <AccordionItem value="how-to-use" className="rounded-[1.5rem] border border-slate-200 bg-white px-4">
+                <AccordionTrigger className="py-4 text-left hover:no-underline">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                    <p className="text-xl font-black tracking-tight text-slate-950">
+                      {labels.howToUse}
+                    </p>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 pb-4">
+                  <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_240px]">
+                    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                      {usageGuide.map((item) => (
+                        <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50/55 px-4 py-3">
+                          <div className="flex items-start gap-3">
+                            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                            <p className="text-sm leading-7 text-slate-600">{item}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="rounded-2xl border border-amber-200 bg-amber-50/70 px-4 py-4">
+                      <div className="flex items-center gap-2 text-amber-950">
+                        <AlertTriangle className="h-4 w-4" />
+                        <p className="font-black tracking-tight">{labels.dataQuality}</p>
+                      </div>
+                      <p className="mt-3 text-sm leading-7 text-amber-950/90">
+                        {t('economic.data_quality_description')}
+                      </p>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-amber-200 bg-amber-50/70 px-4 py-4">
-              <div className="flex items-center gap-2 text-amber-950">
-                <AlertTriangle className="h-4 w-4" />
-                <p className="font-black tracking-tight">{labels.dataQuality}</p>
-              </div>
-              <p className="mt-3 text-sm leading-7 text-amber-950/90">
-                {t('economic.data_quality_description')}
-              </p>
-            </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </CardContent>
         </Card>
 

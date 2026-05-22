@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { type YearlyTimelinePoint } from '@/features/bond-core/types';
-import { buildBondChartDisplayPoints } from './bond-display';
+import { buildBondChartDisplayPoints, buildBondTimelineDisplayRows } from './bond-display';
 
 function makeTimelinePoint(
   overrides: Partial<YearlyTimelinePoint>,
@@ -58,5 +58,36 @@ describe('buildBondChartDisplayPoints', () => {
     expect(points[0].xLabel).toBe('May 2026');
     expect(points[0].nominal).toBe(10000);
     expect(points.find((point) => point.xLabel === 'Start')).toBeUndefined();
+  });
+
+  it('densifies yearly checkpoints into monthly display points when monthly granularity is selected', () => {
+    const timeline: YearlyTimelinePoint[] = [
+      makeTimelinePoint({
+        periodLabel: 'Purchase',
+        cycleEndDate: '2026-05-19',
+      }),
+      makeTimelinePoint({
+        year: 2,
+        periodLabel: 'Year 1',
+        cycleEndDate: '2027-05-19',
+        nominalValueBeforeInterest: 10000,
+        interestEarned: 535,
+        netInterest: 535,
+        nominalValueAfterInterest: 10535,
+        totalValue: 10535,
+        realValue: 10192.13,
+        netProfit: 535,
+        isProjected: true,
+      }),
+    ];
+
+    const points = buildBondChartDisplayPoints(10000, timeline, 'en', undefined, 'monthly');
+    const rows = buildBondTimelineDisplayRows(timeline, 'en', 'monthly');
+
+    expect(points.length).toBeGreaterThan(2);
+    expect(rows.length).toBeGreaterThan(2);
+    expect(points[1]?.xLabel).toBe('Jun 2026');
+    expect(rows[1]?.periodLabel).toBe('Jun 2026');
+    expect(points.at(-1)?.xLabel).toBe('May 2027');
   });
 });
