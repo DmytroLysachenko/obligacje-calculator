@@ -40,11 +40,18 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
     const results = enrichedScenarios.map((enrichedInputs): BondComparisonScenarioItem => {
       const def = context.dbDefinitions[enrichedInputs.bondType];
       const resolvedRollover = shouldAutoRollover(enrichedInputs, def.duration);
+      const adjustedInputs = {
+        ...enrichedInputs,
+        expectedInflation: this.applyInflationScenario(
+          enrichedInputs.expectedInflation,
+          enrichedInputs.inflationScenario,
+        ),
+      };
       return {
         type: enrichedInputs.bondType,
         name: def.fullName.en,
         result: calculateBondInvestment({
-          ...enrichedInputs,
+          ...adjustedInputs,
           rollover: resolvedRollover,
         } as BondInputs & { rollover: boolean }),
       };
@@ -74,7 +81,13 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
         type: scenarioA.bondType,
         name: context.dbDefinitions[scenarioA.bondType].fullName.en,
         result: calculateBondInvestment({
-          ...scenarioA,
+          ...{
+            ...scenarioA,
+            expectedInflation: this.applyInflationScenario(
+              scenarioA.expectedInflation,
+              scenarioA.inflationScenario,
+            ),
+          },
           rollover: shouldAutoRollover(scenarioA, context.dbDefinitions[scenarioA.bondType].duration),
         } as BondInputs & { rollover: boolean }),
       },
@@ -83,7 +96,13 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
         type: scenarioB.bondType,
         name: context.dbDefinitions[scenarioB.bondType].fullName.en,
         result: calculateBondInvestment({
-          ...scenarioB,
+          ...{
+            ...scenarioB,
+            expectedInflation: this.applyInflationScenario(
+              scenarioB.expectedInflation,
+              scenarioB.inflationScenario,
+            ),
+          },
           rollover: shouldAutoRollover(scenarioB, context.dbDefinitions[scenarioB.bondType].duration),
         } as BondInputs & { rollover: boolean }),
       },
@@ -119,6 +138,7 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
         expectedInflation: request.expectedInflation,
         expectedNbpRate: request.expectedNbpRate ?? 5.25,
         customInflation: request.customInflation,
+        customNbpRate: request.customNbpRate,
         inflationScenario: request.inflationScenario,
         margin: resolvedOffer.margin ?? def.margin,
         duration: def.duration,
@@ -163,6 +183,7 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
       expectedInflation: sharedConfig.expectedInflation,
       expectedNbpRate: sharedConfig.expectedNbpRate ?? 5.25,
       customInflation: sharedConfig.customInflation,
+      customNbpRate: sharedConfig.customNbpRate,
       inflationScenario: sharedConfig.inflationScenario,
       margin: resolvedOffer.margin ?? scenario.margin ?? def.margin,
       duration: def.duration,

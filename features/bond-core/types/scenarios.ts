@@ -110,6 +110,7 @@ export interface NormalizedBondComparisonPayload {
   expectedInflation: number;
   expectedNbpRate?: number;
   customInflation?: number[];
+  customNbpRate?: number[];
   inflationScenario?: 'low' | 'base' | 'high';
   taxStrategy?: TaxStrategy;
   reinvest?: boolean;
@@ -124,6 +125,7 @@ export interface IndependentBondComparisonPayload {
     expectedInflation: number;
     expectedNbpRate?: number;
     customInflation?: number[];
+    customNbpRate?: number[];
     inflationScenario?: 'low' | 'base' | 'high';
     taxStrategy?: TaxStrategy;
     timingMode?: TimingMode;

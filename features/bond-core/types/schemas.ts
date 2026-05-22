@@ -44,6 +44,7 @@ export const BondInputsSchema = withDateOrderValidation(BaseInstrumentInputsSche
   taxStrategy: z.nativeEnum(TaxStrategy),
   savingsGoal: z.number().optional(),
   historicalData: HistoricalDataMapSchema,
+  customNbpRate: z.array(z.number().min(-10).max(100)).optional(),
   rollover: z.boolean().optional(),
   timingMode: z.enum(['general', 'exact']).optional(),
   investmentHorizonMonths: z.number().min(1).max(360).optional(),
@@ -72,6 +73,8 @@ export const RegularInvestmentInputsSchema = withDateOrderValidation(DateRangeIn
   taxStrategy: z.nativeEnum(TaxStrategy),
   savingsGoal: z.number().optional(),
   historicalData: HistoricalDataMapSchema,
+  inflationScenario: z.enum(['low', 'base', 'high']).optional(),
+  customNbpRate: z.array(z.number().min(-10).max(100)).optional(),
   timingMode: z.enum(['general', 'exact']).optional(),
 }));
 
@@ -84,6 +87,7 @@ const NormalizedBondComparisonPayloadSchema = withDateOrderValidation(z.object({
   expectedInflation: z.number().min(-20).max(100),
   expectedNbpRate: z.number().min(-10).max(100).optional(),
   customInflation: z.array(z.number().min(-20).max(100)).optional(),
+  customNbpRate: z.array(z.number().min(-10).max(100)).optional(),
   inflationScenario: z.enum(['low', 'base', 'high']).optional(),
   taxStrategy: z.nativeEnum(TaxStrategy).optional(),
   reinvest: z.boolean().optional(),
@@ -96,6 +100,7 @@ const ComparisonSharedConfigSchema = withDateOrderValidation(z.object({
   expectedInflation: z.number().min(-20).max(100),
   expectedNbpRate: z.number().min(-10).max(100).optional(),
   customInflation: z.array(z.number().min(-20).max(100)).optional(),
+  customNbpRate: z.array(z.number().min(-10).max(100)).optional(),
   inflationScenario: z.enum(['low', 'base', 'high']).optional(),
   taxStrategy: z.nativeEnum(TaxStrategy).optional(),
   timingMode: z.enum(['general', 'exact']).optional(),

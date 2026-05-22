@@ -214,7 +214,9 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                       expectedNbpRate={inputs.expectedNbpRate}
                       bondType={inputs.bondType}
                       customInflation={inputs.customInflation}
-                      inflationHorizonYears={Math.max(1, Math.round(inputs.duration))}
+                      customNbpRate={inputs.customNbpRate}
+                      inflationScenario={inputs.inflationScenario}
+                      inflationHorizonYears={Math.max(1, Math.ceil(investmentHorizonMonths / 12))}
                       onUpdate={handleUpdate as (key: string, value: unknown) => void}
                       compact
                     />

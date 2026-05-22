@@ -41,13 +41,12 @@ export class SingleBondHandler extends BaseHandler implements ScenarioHandler<Bo
 
     const enrichedInputs = await this.withHistoricalData(inputsWithDefaults);
 
-    let adjustedInflation = enrichedInputs.expectedInflation;
-    if (enrichedInputs.inflationScenario === 'low') adjustedInflation -= 1.5;
-    if (enrichedInputs.inflationScenario === 'high') adjustedInflation += 2.5;
-
     const inputsToCalculate = {
       ...enrichedInputs,
-      expectedInflation: adjustedInflation,
+      expectedInflation: this.applyInflationScenario(
+        enrichedInputs.expectedInflation,
+        enrichedInputs.inflationScenario,
+      ),
     } as unknown as BondInputs & { historicalData: import('@/features/bond-core/types').HistoricalDataMap };
 
     if (inputsToCalculate.useTaxWrapperLimit && (inputsToCalculate.taxStrategy === TaxStrategy.IKE || inputsToCalculate.taxStrategy === TaxStrategy.IKZE)) {

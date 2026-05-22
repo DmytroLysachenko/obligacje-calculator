@@ -325,6 +325,8 @@
     "step_market": "3. Założenia Rynkowe",
     "step_display": "4. Opcje Wyświetlania",
     "advanced_inflation": "Użyj zaawansowanej inflacji rocznej",
+    "advanced_nbp": "Użyj zaawansowanej rocznej ścieżki NBP",
+    "historical_context": "Kontekst historyczny",
     "standard_payout": "Standard (Wypłata)",
     "reverse_target": "Odwrotny (Cel)",
     "target_goal_req": "Cel (Wymagany)",

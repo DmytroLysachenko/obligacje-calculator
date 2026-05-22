@@ -270,7 +270,7 @@ export const ComparisonContainer: React.FC = () => {
               </div>
 
               <div className="space-y-4 border-t border-dashed pt-4">
-                <MarketAssumptionsForm expectedInflation={sharedConfig.expectedInflation} expectedNbpRate={sharedConfig.expectedNbpRate} customInflation={sharedConfig.customInflation} inflationScenario={sharedConfig.inflationScenario} bondType={assumptionsBondType} inflationHorizonYears={Math.max(1, Math.ceil((sharedConfig.investmentHorizonMonths ?? 120) / 12))} onUpdate={updateSharedConfig as (key: string, value: unknown) => void} compact/>
+                <MarketAssumptionsForm expectedInflation={sharedConfig.expectedInflation} expectedNbpRate={sharedConfig.expectedNbpRate} customInflation={sharedConfig.customInflation} customNbpRate={sharedConfig.customNbpRate} inflationScenario={sharedConfig.inflationScenario} bondType={assumptionsBondType} inflationHorizonYears={Math.max(1, Math.ceil((sharedConfig.investmentHorizonMonths ?? 120) / 12))} onUpdate={updateSharedConfig as (key: string, value: unknown) => void} compact/>
               </div>
 
               <div className="space-y-2 border-t border-dashed pt-4">

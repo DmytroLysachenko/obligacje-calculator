@@ -325,6 +325,8 @@
     "step_market": "3. Market Assumptions",
     "step_display": "4. Display Options",
     "advanced_inflation": "Use Advanced Yearly Inflation",
+    "advanced_nbp": "Use Advanced Yearly NBP Path",
+    "historical_context": "Historical Context",
     "standard_payout": "Standard (Payout)",
     "reverse_target": "Reverse (Target)",
     "target_goal_req": "Target Goal (Required)",

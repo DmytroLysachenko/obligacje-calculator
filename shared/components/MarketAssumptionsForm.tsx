@@ -26,6 +26,7 @@ interface MarketAssumptionsFormProps {
     expectedNbpRate?: number;
     bondType: BondType;
     customInflation?: number[];
+    customNbpRate?: number[];
     inflationScenario?: 'low' | 'base' | 'high';
     onUpdate: UpdateHandler;
     compact?: boolean;
@@ -74,7 +75,7 @@ const HistoricalInflationContent = () => {
       </div>
     </div>);
 };
-export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bondType, customInflation, inflationScenario = 'base', onUpdate, compact = false, inflationHorizonYears = 10, }: MarketAssumptionsFormProps) => {
+export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bondType, customInflation, customNbpRate, inflationScenario = 'base', onUpdate, compact = false, inflationHorizonYears = 10, }: MarketAssumptionsFormProps) => {
     const { t } = useAppI18n();
     const isInflationIndexedBond = INDEXED_BONDS.has(bondType);
     const isNbpRelevant = bondType === BondType.ROR || bondType === BondType.DOR;
@@ -176,6 +177,27 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
           <p className="text-[11px] leading-5 text-muted-foreground">
             {t("generated.shared.components.market_assumptions_form.item_9")}
           </p>
+          <div className="mt-4 flex items-center justify-between rounded-lg border border-primary/10 bg-muted/30 p-3.5">
+            <Label className="text-sm font-semibold">{t('bonds.advanced_nbp')}</Label>
+            <Switch checked={!!customNbpRate} onCheckedChange={(checked) => {
+                if (checked) {
+                    onUpdate('customNbpRate', Array(Math.max(1, Math.round(inflationHorizonYears))).fill(expectedNbpRate ?? 5.25));
+                    return;
+                }
+                onUpdate('customNbpRate', undefined);
+            }}/>
+          </div>
+
+          {customNbpRate ? (<div className="relative z-10 mt-4 grid max-h-64 grid-cols-2 gap-2 overflow-y-auto rounded-xl border bg-muted/20 p-2 custom-scrollbar md:grid-cols-3">
+              {customNbpRate.map((value, idx) => (<div key={`nbp-${idx}`} className="flex items-center gap-2 rounded border bg-background p-2">
+                  <Label className="w-8 text-[11px] font-semibold tracking-[0.08em] text-muted-foreground">Y{idx + 1}</Label>
+                  <Input type="number" step={0.05} className="h-8 border-none bg-transparent px-1 text-sm font-semibold shadow-none" value={value} onChange={(event) => {
+                        const nextValues = [...customNbpRate];
+                        nextValues[idx] = Number(event.target.value);
+                        onUpdate('customNbpRate', nextValues);
+                    }}/>
+                </div>))}
+            </div>) : null}
         </div>) : null}
     </div>);
 };

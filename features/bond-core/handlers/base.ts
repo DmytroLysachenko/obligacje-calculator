@@ -17,6 +17,21 @@ export interface ScenarioHandler<TRequest, TResponse> {
 }
 
 export abstract class BaseHandler {
+  protected applyInflationScenario(
+    expectedInflation: number,
+    inflationScenario?: 'low' | 'base' | 'high',
+  ) {
+    if (inflationScenario === 'low') {
+      return expectedInflation - 1.5;
+    }
+
+    if (inflationScenario === 'high') {
+      return expectedInflation + 2.5;
+    }
+
+    return expectedInflation;
+  }
+
   protected async withHistoricalData<T extends { purchaseDate: string; withdrawalDate: string }>(
     inputs: T,
   ): Promise<T & { historicalData: BondInputs['historicalData'] }> {
@@ -60,6 +75,7 @@ export abstract class BaseHandler {
     expectedInflation?: number;
     expectedNbpRate?: number;
     customInflation?: number[];
+    customNbpRate?: number[];
   }): string[] {
     const assumptions: string[] = [];
     if (inputs.expectedInflation !== undefined) {
@@ -70,6 +86,9 @@ export abstract class BaseHandler {
     }
     if (inputs.customInflation && inputs.customInflation.length > 0) {
       assumptions.push('Using custom user-supplied inflation overrides.');
+    }
+    if (inputs.customNbpRate && inputs.customNbpRate.length > 0) {
+      assumptions.push('Using custom user-supplied NBP rate overrides.');
     }
     return assumptions;
   }

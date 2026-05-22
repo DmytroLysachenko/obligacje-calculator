@@ -25,6 +25,7 @@ import { getBondColor } from '@/shared/lib/charts/get-bond-color';
 import { sampleSeriesPoints } from '@/shared/lib/chart-series';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { getIntlLocale } from '@/i18n/locale-utils';
+import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 type ChartDataPoint = {
     date: string;
     year: number;
@@ -80,10 +81,12 @@ function SectionBlock({ title, description, children, }: {
 export const BondComparisonContainer = () => {
     const { locale: language, t } = useAppI18n();
     const { definitions } = useBondDefinitions();
+    const { defaults: macroDefaults } = useMacroAssumptionDefaults();
     const [initialInvestment, setInitialInvestment] = useState(10000);
     const [expectedInflation, setExpectedInflation] = useState(3.5);
     const [expectedNbpRate, setExpectedNbpRate] = useState(5.25);
     const [customInflation, setCustomInflation] = useState<number[] | undefined>(undefined);
+    const [customNbpRate, setCustomNbpRate] = useState<number[] | undefined>(undefined);
     const [inflationScenario, setInflationScenario] = useState<'low' | 'base' | 'high'>('base');
     const [duration, setDuration] = useState(10);
     const [selectedBonds, setSelectedBonds] = useState<BondType[]>([
@@ -95,6 +98,7 @@ export const BondComparisonContainer = () => {
     const [loading, setLoading] = useState(false);
     const [showRealValue, setShowRealValue] = useState(false);
     const [isDirty, setIsDirty] = useState(true);
+    const hasTouchedMacroAssumptions = React.useRef(false);
     useEffect(() => {
         if (!customInflation) {
             return;
@@ -105,6 +109,23 @@ export const BondComparisonContainer = () => {
         }
         setCustomInflation(Array.from({ length: nextLength }, (_, index) => customInflation[index] ?? expectedInflation));
     }, [customInflation, duration, expectedInflation]);
+    useEffect(() => {
+        if (!customNbpRate) {
+            return;
+        }
+        const nextLength = Math.max(1, Math.round(duration));
+        if (customNbpRate.length === nextLength) {
+            return;
+        }
+        setCustomNbpRate(Array.from({ length: nextLength }, (_, index) => customNbpRate[index] ?? expectedNbpRate));
+    }, [customNbpRate, duration, expectedNbpRate]);
+    useEffect(() => {
+        if (!macroDefaults || hasTouchedMacroAssumptions.current) {
+            return;
+        }
+        setExpectedInflation(macroDefaults.expectedInflation);
+        setExpectedNbpRate(macroDefaults.expectedNbpRate);
+    }, [macroDefaults]);
     const results = useMemo(() => (Array.isArray(envelope?.result) ? envelope.result : []), [envelope]);
     const purchaseDate = new Date().toISOString().split('T')[0];
     const withdrawalDate = addYears(new Date(purchaseDate), duration)
@@ -129,6 +150,7 @@ export const BondComparisonContainer = () => {
                     expectedInflation,
                     expectedNbpRate,
                     customInflation,
+                    customNbpRate,
                     inflationScenario,
                     taxStrategy: TaxStrategy.STANDARD,
                 }),
@@ -155,6 +177,7 @@ export const BondComparisonContainer = () => {
     ]);
     const onUpdateAssumption = (key: string, value: unknown) => {
         setIsDirty(true);
+        hasTouchedMacroAssumptions.current = true;
         if (key === 'expectedInflation')
             setExpectedInflation(value as number);
         if (key === 'expectedNbpRate')
@@ -163,6 +186,12 @@ export const BondComparisonContainer = () => {
             const nextPath = value as number[] | undefined;
             setCustomInflation(nextPath
                 ? Array.from({ length: Math.max(1, Math.round(duration)) }, (_, index) => nextPath[index] ?? expectedInflation)
+                : undefined);
+        }
+        if (key === 'customNbpRate') {
+            const nextPath = value as number[] | undefined;
+            setCustomNbpRate(nextPath
+                ? Array.from({ length: Math.max(1, Math.round(duration)) }, (_, index) => nextPath[index] ?? expectedNbpRate)
                 : undefined);
         }
         if (key === 'inflationScenario')
@@ -250,7 +279,7 @@ export const BondComparisonContainer = () => {
               </div>
 
               <div className="space-y-4 border-t border-dashed border-slate-200 pt-5">
-                <MarketAssumptionsForm expectedInflation={expectedInflation} expectedNbpRate={expectedNbpRate} customInflation={customInflation} inflationScenario={inflationScenario} bondType={selectedBonds.includes(BondType.ROR) ||
+                <MarketAssumptionsForm expectedInflation={expectedInflation} expectedNbpRate={expectedNbpRate} customInflation={customInflation} customNbpRate={customNbpRate} inflationScenario={inflationScenario} bondType={selectedBonds.includes(BondType.ROR) ||
             selectedBonds.includes(BondType.DOR)
             ? BondType.ROR
             : BondType.EDO} inflationHorizonYears={duration} onUpdate={(key, value) => onUpdateAssumption(String(key), value)} compact/>

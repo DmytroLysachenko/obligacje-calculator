@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
 import { BondInputs, BondType, TaxStrategy } from '../../bond-core/types';
 import {
   BondComparisonCalculationEnvelope,
@@ -12,6 +12,7 @@ import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/shared/lib/calculator-persistence';
+import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 
 type SharedComparisonConfig = IndependentBondComparisonPayload['sharedConfig'];
 type ScenarioOverride = IndependentBondComparisonPayload['scenarioA'];
@@ -75,6 +76,7 @@ function buildScenarioInputs(
     expectedInflation: sharedConfig.expectedInflation,
     expectedNbpRate: sharedConfig.expectedNbpRate ?? 5.25,
     customInflation: sharedConfig.customInflation,
+    customNbpRate: sharedConfig.customNbpRate,
     inflationScenario: sharedConfig.inflationScenario,
     margin: definition.margin,
     duration: definition.duration,
@@ -95,6 +97,7 @@ function buildScenarioInputs(
 
 export function useComparison() {
   const { definitions } = useBondDefinitions();
+  const { defaults: macroDefaults } = useMacroAssumptionDefaults();
   const [sharedConfig, setSharedConfig] = useState<SharedComparisonConfig>(
     buildDefaultSharedConfig,
   );
@@ -110,7 +113,21 @@ export function useComparison() {
   const [isDirty, setIsDirty] = useState(true);
   const [isPersistenceReady, setIsPersistenceReady] = useState(false);
   const hasRestoredState = useRef(false);
+  const restoredFromPersistence = useRef(false);
+  const hasTouchedMacroAssumptions = useRef(false);
   const { isCalculating, post } = useCalculationRequest();
+
+  const applyMacroDefaults = useEffectEvent((defaults: { expectedInflation: number; expectedNbpRate: number }) => {
+    setSharedConfig((previous) => {
+      const next = {
+        ...previous,
+        expectedInflation: defaults.expectedInflation,
+        expectedNbpRate: defaults.expectedNbpRate,
+      };
+
+      return JSON.stringify(previous) === JSON.stringify(next) ? previous : next;
+    });
+  });
 
   const inputsA = useMemo(() => buildScenarioInputs(sharedConfig, scenarioA, definitions), [definitions, sharedConfig, scenarioA]);
   const inputsB = useMemo(() => buildScenarioInputs(sharedConfig, scenarioB, definitions), [definitions, sharedConfig, scenarioB]);
@@ -169,6 +186,9 @@ export function useComparison() {
 
   const updateSharedConfig = (key: keyof SharedComparisonConfig, value: string | number | boolean | undefined) => {
     setIsDirty(true);
+    if (key === 'expectedInflation' || key === 'expectedNbpRate' || key === 'customInflation' || key === 'customNbpRate' || key === 'inflationScenario') {
+      hasTouchedMacroAssumptions.current = true;
+    }
     setSharedConfig((prev) => {
       const next = { ...prev, [key]: value };
 
@@ -186,6 +206,13 @@ export function useComparison() {
             (_, index) => prev.customInflation?.[index] ?? prev.expectedInflation,
           );
         }
+        if (prev.customNbpRate) {
+          const years = Math.max(1, Math.ceil(Number(value) / 12));
+          next.customNbpRate = Array.from(
+            { length: years },
+            (_, index) => prev.customNbpRate?.[index] ?? (prev.expectedNbpRate ?? 5.25),
+          );
+        }
       }
 
       if (key === 'withdrawalDate') {
@@ -196,6 +223,13 @@ export function useComparison() {
           next.customInflation = Array.from(
             { length: years },
             (_, index) => prev.customInflation?.[index] ?? prev.expectedInflation,
+          );
+        }
+        if (prev.customNbpRate) {
+          const years = Math.max(1, Math.ceil(next.investmentHorizonMonths / 12));
+          next.customNbpRate = Array.from(
+            { length: years },
+            (_, index) => prev.customNbpRate?.[index] ?? (prev.expectedNbpRate ?? 5.25),
           );
         }
       }
@@ -226,10 +260,7 @@ export function useComparison() {
       ...prev,
       bondType: type,
       isRebought: false,
-      investmentHorizonMonths: Math.max(
-        prev.investmentHorizonMonths ?? 0,
-        Math.round((definitions?.[type] ?? BOND_DEFINITIONS[type]).duration * 12),
-      ),
+      investmentHorizonMonths: prev.investmentHorizonMonths,
     }));
   };
 
@@ -239,10 +270,7 @@ export function useComparison() {
       ...prev,
       bondType: type,
       isRebought: false,
-      investmentHorizonMonths: Math.max(
-        prev.investmentHorizonMonths ?? 0,
-        Math.round((definitions?.[type] ?? BOND_DEFINITIONS[type]).duration * 12),
-      ),
+      investmentHorizonMonths: prev.investmentHorizonMonths,
     }));
   };
 
@@ -255,6 +283,7 @@ export function useComparison() {
       const restoredState = loadPersistedCalculatorState<PersistedComparisonState>(STORAGE_KEY);
       hasRestoredState.current = true;
       if (restoredState) {
+        restoredFromPersistence.current = true;
         setSharedConfig(restoredState.sharedConfig);
         setScenarioA(restoredState.scenarioA);
         setScenarioB(restoredState.scenarioB);
@@ -267,6 +296,14 @@ export function useComparison() {
 
     return () => window.clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (!macroDefaults || !isPersistenceReady || restoredFromPersistence.current || hasTouchedMacroAssumptions.current) {
+      return;
+    }
+
+    applyMacroDefaults(macroDefaults);
+  }, [isPersistenceReady, macroDefaults]);
 
   useEffect(() => {
     if (!isPersistenceReady) {
