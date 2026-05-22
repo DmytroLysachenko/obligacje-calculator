@@ -69,7 +69,7 @@ export const BondEducationCard: React.FC<BondEducationCardProps> = ({ bond }) =>
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-orange-500"/>
             <div className="text-[10px] text-muted-foreground">
               <span className="mb-1 block font-bold text-foreground">{t('bonds.early_exit_title')}:</span>
-              {t('bonds.early_exit_desc').replace('{fee}', bond.earlyWithdrawalFee.toString())}
+              {t('bonds.early_exit_desc', { fee: bond.earlyWithdrawalFee })}
             </div>
           </div>
         </div>
