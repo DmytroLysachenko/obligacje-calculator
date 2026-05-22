@@ -387,12 +387,26 @@
         "summary_first": "Najpierw przeczytaj podsumowanie wyplaty netto i zysku.",
         "chart_then_timeline": "Wykres ma pomoc w szybkim odczycie przebiegu inwestycji, a harmonogram sluzy do kontroli szczegolow.",
         "stale_until_recalculated": "Jezeli zmienisz dane wejsciowe, stare wyniki pozostaja widoczne az do swiadomego przeliczenia."
-      },
-      "click_calculate": "Kliknij 'Oblicz wyniki', aby zobaczyć projekcję",
-      "growth": "Projekcja wzrostu inwestycji",
-      "regular": {
-        "click": "Kliknij 'Oblicz', aby zobaczyć projekcję",
-        "action": "Symulacja regularnych wpłat",
+        },
+        "click_calculate": "Kliknij 'Oblicz wyniki', aby zobaczyć projekcję",
+        "growth": "Projekcja wzrostu inwestycji",
+        "ready_steps": {
+          "primary": {
+            "title": "Główne dane",
+            "desc": "Typ obligacji, kwota i tryb celu."
+          },
+          "timing": {
+            "title": "Czas i podatek",
+            "desc": "Data zakupu, horyzont, wypłata i opakowanie podatkowe."
+          },
+          "advanced": {
+            "title": "Opcjonalne zaawansowane",
+            "desc": "Inflacja, ścieżka NBP i ustawienia wykresu tylko wtedy, gdy są potrzebne."
+          }
+        },
+        "regular": {
+          "click": "Kliknij 'Oblicz', aby zobaczyć projekcję",
+          "action": "Symulacja regularnych wpłat",
         "how_it_works": "Regularne inwestowanie śledzi każdy miesięczny zakup jako osobną partię. Ta symulacja liczy odsetki, podatki i opłaty dla każdej partii osobno zgodnie z jej własnym harmonogramem zapadalności."
       }
     },
