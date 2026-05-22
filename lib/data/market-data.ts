@@ -131,6 +131,20 @@ interface MultiAssetHistoryEnvelope {
   };
 }
 
+export interface MacroAssumptionDefaults {
+  expectedInflation: number;
+  expectedNbpRate: number;
+  inflationAsOf?: string;
+  nbpAsOf?: string;
+  usedFallback: boolean;
+}
+
+const FALLBACK_MACRO_ASSUMPTIONS: MacroAssumptionDefaults = {
+  expectedInflation: 2.5,
+  expectedNbpRate: 5.25,
+  usedFallback: true,
+};
+
 /**
  * Fetches historical data for multiple indicators and returns them as a map keyed by YYYY-MM.
  */
@@ -174,6 +188,57 @@ export const getHistoricalDataMap = cache(async (fromDate: string, toDate: strin
 
   setCache(cacheKey, map);
   return map;
+});
+
+async function getLatestSeriesValue(seriesId?: string) {
+  if (!seriesId) {
+    return null;
+  }
+
+  const point = await db.query.dataPoints.findFirst({
+    where: eq(dataPoints.seriesId, seriesId),
+    orderBy: [desc(dataPoints.date)],
+  });
+
+  if (!point) {
+    return null;
+  }
+
+  return {
+    date: point.date.substring(0, 7),
+    value: parseFloat(point.value),
+  };
+}
+
+/**
+ * Returns the latest synced CPI and NBP reference-rate values for calculator defaults.
+ */
+export const getMacroAssumptionDefaults = cache(async (): Promise<MacroAssumptionDefaults> => {
+  const cacheKey = 'macro-assumption-defaults';
+  const cached = getCached<MacroAssumptionDefaults>(cacheKey);
+  if (cached) return cached;
+
+  const series = await db.query.dataSeries.findMany({
+    where: inArray(dataSeries.slug, [...CPI_SLUGS, ...NBP_RATE_SLUGS]),
+  });
+
+  const cpiSeries = series.find((item) => CPI_SLUGS.includes(item.slug));
+  const nbpSeries = series.find((item) => NBP_RATE_SLUGS.includes(item.slug));
+  const [latestInflation, latestNbpRate] = await Promise.all([
+    getLatestSeriesValue(cpiSeries?.id),
+    getLatestSeriesValue(nbpSeries?.id),
+  ]);
+
+  const result: MacroAssumptionDefaults = {
+    expectedInflation: latestInflation?.value ?? FALLBACK_MACRO_ASSUMPTIONS.expectedInflation,
+    expectedNbpRate: latestNbpRate?.value ?? FALLBACK_MACRO_ASSUMPTIONS.expectedNbpRate,
+    inflationAsOf: latestInflation?.date,
+    nbpAsOf: latestNbpRate?.date,
+    usedFallback: !latestInflation || !latestNbpRate,
+  };
+
+  setCache(cacheKey, result);
+  return result;
 });
 
 import { BOND_DEFINITIONS } from "@/features/bond-core/constants/bond-definitions";

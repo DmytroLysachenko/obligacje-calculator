@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useEffectEvent, useRef } from 'react';
 import { BondInputs, BondType, TaxStrategy, InterestPayout } from '../../bond-core/types';
 import { SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
@@ -7,6 +7,7 @@ import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/s
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import { ChartStep } from '@/features/bond-core/types';
 import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/shared/lib/calculator-persistence';
+import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 
 const DEFAULT_BOND = BondType.EDO;
 const STORAGE_KEY = 'obligacje.single-calculator.v1';
@@ -83,6 +84,7 @@ function applyDefinitionToInputs(
 
 export function useBondCalculator(initialInputs?: BondInputs) {
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
+  const { defaults: macroDefaults } = useMacroAssumptionDefaults();
   const fallbackInputs = buildFallbackInputs();
   const [inputs, setInputs] = useState<BondInputs>(
     initialInputs ?? fallbackInputs,
@@ -103,8 +105,22 @@ export function useBondCalculator(initialInputs?: BondInputs) {
   const [isPersistenceReady, setIsPersistenceReady] = useState(Boolean(initialInputs));
   const hasRestoredState = useRef(false);
   const hasAutoCalculatedSharedScenario = useRef(false);
+  const restoredFromPersistence = useRef(false);
+  const hasTouchedMacroAssumptions = useRef(false);
   
   const { isCalculating, isError, clearError, post } = useCalculationRequest();
+
+  const applyMacroDefaults = useEffectEvent((defaults: { expectedInflation: number; expectedNbpRate: number }) => {
+    setInputs((previous) => {
+      const next = {
+        ...previous,
+        expectedInflation: defaults.expectedInflation,
+        expectedNbpRate: defaults.expectedNbpRate,
+      };
+
+      return JSON.stringify(previous) === JSON.stringify(next) ? previous : next;
+    });
+  });
 
   useEffect(() => {
     if (!definitions || !definitions[inputs.bondType]) {
@@ -133,6 +149,7 @@ export function useBondCalculator(initialInputs?: BondInputs) {
       hasRestoredState.current = true;
 
       if (restoredState) {
+        restoredFromPersistence.current = true;
         setInputs(restoredState.inputs);
         setEnvelope(restoredState.envelope ?? null);
         setSelectedSeriesId(restoredState.selectedSeriesId ?? null);
@@ -145,6 +162,14 @@ export function useBondCalculator(initialInputs?: BondInputs) {
 
     return () => window.clearTimeout(timer);
   }, [initialInputs]);
+
+  useEffect(() => {
+    if (!macroDefaults || initialInputs || !isPersistenceReady || restoredFromPersistence.current || hasTouchedMacroAssumptions.current) {
+      return;
+    }
+
+    applyMacroDefaults(macroDefaults);
+  }, [initialInputs, isPersistenceReady, macroDefaults]);
 
   const calculate = useCallback(async (currentInputs: BondInputs) => {
     try {
@@ -238,11 +263,37 @@ export function useBondCalculator(initialInputs?: BondInputs) {
 
     if (nextPartial?.investmentHorizonMonths !== undefined) {
       merged.withdrawalDate = getWithdrawalDateFromMonths(merged.purchaseDate, Number(nextPartial.investmentHorizonMonths));
+      const years = Math.max(1, Math.ceil(Number(nextPartial.investmentHorizonMonths) / 12));
+      if (merged.customInflation) {
+        merged.customInflation = Array.from(
+          { length: years },
+          (_, index) => merged.customInflation?.[index] ?? merged.expectedInflation,
+        );
+      }
+      if (merged.customNbpRate) {
+        merged.customNbpRate = Array.from(
+          { length: years },
+          (_, index) => merged.customNbpRate?.[index] ?? (merged.expectedNbpRate ?? 5.25),
+        );
+      }
     }
 
     if (nextPartial?.withdrawalDate) {
       merged.investmentHorizonMonths = getHorizonMonths(merged.purchaseDate, String(nextPartial.withdrawalDate));
       merged.timingMode = 'exact';
+      const years = Math.max(1, Math.ceil(merged.investmentHorizonMonths / 12));
+      if (merged.customInflation) {
+        merged.customInflation = Array.from(
+          { length: years },
+          (_, index) => merged.customInflation?.[index] ?? merged.expectedInflation,
+        );
+      }
+      if (merged.customNbpRate) {
+        merged.customNbpRate = Array.from(
+          { length: years },
+          (_, index) => merged.customNbpRate?.[index] ?? (merged.expectedNbpRate ?? 5.25),
+        );
+      }
     }
 
     if (nextPartial?.timingMode === 'general') {
@@ -256,6 +307,9 @@ export function useBondCalculator(initialInputs?: BondInputs) {
 
   const updateInput = (key: string, value: unknown) => {
     setIsDirty(true);
+    if (key === 'expectedInflation' || key === 'expectedNbpRate' || key === 'customInflation' || key === 'customNbpRate' || key === 'inflationScenario') {
+      hasTouchedMacroAssumptions.current = true;
+    }
     if (key === 'selectedSeriesId') {
       const seriesId = value as string | null;
       setSelectedSeriesId(seriesId);

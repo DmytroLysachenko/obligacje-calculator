@@ -17,6 +17,7 @@ import {
 } from '@/shared/lib/date-timing';
 import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/shared/lib/calculator-persistence';
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
+import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 
 const DEFAULT_BOND = BondType.EDO;
 const DEFAULT_DEFINITION = BOND_DEFINITIONS[DEFAULT_BOND];
@@ -69,6 +70,19 @@ function withDerivedDates(
     const months = Number(changedValue);
     next.investmentHorizonMonths = months;
     next.withdrawalDate = getWithdrawalDateFromMonths(previous.purchaseDate, months);
+    const years = Math.max(1, Math.ceil(months / 12));
+    if (previous.customInflation) {
+      next.customInflation = Array.from(
+        { length: years },
+        (_, index) => previous.customInflation?.[index] ?? previous.expectedInflation,
+      );
+    }
+    if (previous.customNbpRate) {
+      next.customNbpRate = Array.from(
+        { length: years },
+        (_, index) => previous.customNbpRate?.[index] ?? (previous.expectedNbpRate ?? 5.25),
+      );
+    }
   }
 
   if (changedKey === 'purchaseDate') {
@@ -82,6 +96,19 @@ function withDerivedDates(
     const months = getHorizonMonths(previous.purchaseDate, String(changedValue));
     next.investmentHorizonMonths = months;
     next.timingMode = 'exact';
+    const years = Math.max(1, Math.ceil(months / 12));
+    if (previous.customInflation) {
+      next.customInflation = Array.from(
+        { length: years },
+        (_, index) => previous.customInflation?.[index] ?? previous.expectedInflation,
+      );
+    }
+    if (previous.customNbpRate) {
+      next.customNbpRate = Array.from(
+        { length: years },
+        (_, index) => previous.customNbpRate?.[index] ?? (previous.expectedNbpRate ?? 5.25),
+      );
+    }
   }
 
   if (changedKey === 'timingMode' && changedValue === 'general') {
@@ -117,6 +144,7 @@ function withBondDefinition(
 
 export function useLadder() {
   const { definitions } = useBondDefinitions();
+  const { defaults: macroDefaults } = useMacroAssumptionDefaults();
   const [inputs, setInputs] = useState<RegularInvestmentInputs>(
     buildDefaultInputs,
   );
@@ -126,6 +154,8 @@ export function useLadder() {
   const [isPersistenceReady, setIsPersistenceReady] = useState(false);
   const { isCalculating, post } = useCalculationRequest();
   const hasRestoredState = useRef(false);
+  const restoredFromPersistence = useRef(false);
+  const hasTouchedMacroAssumptions = useRef(false);
 
   const results = envelope?.result || null;
   const applyDefinitionUpdate = useEffectEvent(
@@ -144,6 +174,18 @@ export function useLadder() {
       }));
     },
   );
+
+  const applyMacroDefaults = useEffectEvent((defaults: { expectedInflation: number; expectedNbpRate: number }) => {
+    setInputs((previous) => {
+      const next = {
+        ...previous,
+        expectedInflation: defaults.expectedInflation,
+        expectedNbpRate: defaults.expectedNbpRate,
+      };
+
+      return JSON.stringify(previous) === JSON.stringify(next) ? previous : next;
+    });
+  });
 
   useEffect(() => {
     if (!definitions || !definitions[inputs.bondType]) {
@@ -164,6 +206,7 @@ export function useLadder() {
       hasRestoredState.current = true;
 
       if (restoredState) {
+        restoredFromPersistence.current = true;
         setInputs(restoredState.inputs);
         setEnvelope(restoredState.envelope ?? null);
         setIsDirty(restoredState.isDirty ?? true);
@@ -174,6 +217,14 @@ export function useLadder() {
 
     return () => window.clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (!macroDefaults || !isPersistenceReady || restoredFromPersistence.current || hasTouchedMacroAssumptions.current) {
+      return;
+    }
+
+    applyMacroDefaults(macroDefaults);
+  }, [isPersistenceReady, macroDefaults]);
 
   const calculate = useCallback(async () => {
     try {
@@ -195,6 +246,9 @@ export function useLadder() {
       value: string | number | boolean | undefined,
     ) => {
       setIsDirty(true);
+      if (key === 'expectedInflation' || key === 'expectedNbpRate' || key === 'customInflation' || key === 'customNbpRate' || key === 'inflationScenario') {
+        hasTouchedMacroAssumptions.current = true;
+      }
       setInputs((previous) =>
         withDerivedDates(previous, { ...previous, [key]: value }, key, value),
       );

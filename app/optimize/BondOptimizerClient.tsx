@@ -45,6 +45,7 @@ import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPa
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { toDateString } from '@/shared/lib/date-timing';
+import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 
 type OptimizerInputs = {
   initialInvestment: number;
@@ -93,11 +94,25 @@ const SupportMetric = ({
 );
 
 export default function BondOptimizerClient() {
+  const { defaults: macroDefaults } = useMacroAssumptionDefaults();
   const [inputs, setInputs] = useState<OptimizerInputs>(DEFAULT_INPUTS);
   const [envelope, setEnvelope] =
     useState<BondOptimizerCalculationEnvelope | null>(null);
   const [isDirty, setIsDirty] = useState(true);
   const { isCalculating, post } = useCalculationRequest();
+  const hasTouchedMacroAssumptions = React.useRef(false);
+
+  React.useEffect(() => {
+    if (!macroDefaults || hasTouchedMacroAssumptions.current) {
+      return;
+    }
+
+    setInputs((previous) => ({
+      ...previous,
+      expectedInflation: macroDefaults.expectedInflation,
+      expectedNbpRate: macroDefaults.expectedNbpRate,
+    }));
+  }, [macroDefaults]);
 
   const results = envelope?.result;
   const leadingScenario = results?.highestPayout;
@@ -110,6 +125,9 @@ export default function BondOptimizerClient() {
     key: keyof OptimizerInputs,
     value: string | number | boolean,
   ) => {
+    if (key === 'expectedInflation' || key === 'expectedNbpRate') {
+      hasTouchedMacroAssumptions.current = true;
+    }
     setInputs((prev) => ({ ...prev, [key]: value as never }));
     setIsDirty(true);
   };

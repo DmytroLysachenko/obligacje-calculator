@@ -1,6 +1,7 @@
 import {calculationService} from '@/features/bond-core/application-service';
 import {PortfolioSimulationCalculationEnvelope, ScenarioKind, type PortfolioSimulationResult} from '@/features/bond-core/types/scenarios';
 import {TaxStrategy} from '@/features/bond-core/types';
+import {getMacroAssumptionDefaults} from '@/lib/data/market-data';
 import {resolveStoredBondLotContext} from '@/lib/server/bonds/offer-terms';
 import {buildPortfolioSimulationPayload} from '@/lib/server/portfolio/simulation';
 import {getOwnedLot, getOwnedPortfolio} from '@/lib/server/portfolio/access';
@@ -224,9 +225,10 @@ export async function simulateOwnerPortfolio(
     return emptySimulationResult;
   }
 
+  const macroDefaults = await getMacroAssumptionDefaults();
   const envelope = await calculationService.calculate({
     kind: ScenarioKind.PORTFOLIO_SIMULATION,
-    payload: buildPortfolioSimulationPayload(lots, {expectedInflation: options?.expectedInflation ?? 3.5}),
+    payload: buildPortfolioSimulationPayload(lots, {expectedInflation: options?.expectedInflation ?? macroDefaults.expectedInflation}),
   });
 
   return envelope.result;
@@ -244,9 +246,12 @@ export async function exportOwnerPortfolio(
   }
 
   const lots = await listLotsByPortfolio(portfolioId);
+  const macroDefaults = await getMacroAssumptionDefaults();
   const payload = buildPortfolioSimulationPayload(lots, {
     taxStrategy: TaxStrategy.STANDARD,
     rollover: true,
+    expectedInflation: macroDefaults.expectedInflation,
+    expectedNbpRate: macroDefaults.expectedNbpRate,
   });
 
   const simulation = lots.length > 0
@@ -262,8 +267,8 @@ export async function exportOwnerPortfolio(
     appVersion: '2.7.0-db-driven-metadata',
     packageType: formatMode === 'package' ? 'portfolio-package' : 'portfolio-export',
     assumptions: {
-      expectedInflation: 3.5,
-      expectedNbpRate: 5.25,
+      expectedInflation: macroDefaults.expectedInflation,
+      expectedNbpRate: macroDefaults.expectedNbpRate,
       taxStrategy: TaxStrategy.STANDARD,
       withdrawalDate: payload.withdrawalDate,
     },

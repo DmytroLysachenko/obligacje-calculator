@@ -18,6 +18,7 @@ import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
+import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';
 import { formatCurrency } from '@/lib/utils';
 import { useAppI18n } from '@/i18n/client';
@@ -81,10 +82,22 @@ const SupportList = ({ title, items, emptyLabel, }: {
   </Card>);
 export const RetirementPlannerContainer: React.FC = () => {
     const { t, locale: language } = useAppI18n();
+    const { defaults: macroDefaults } = useMacroAssumptionDefaults();
     const { isCalculating, post } = useCalculationRequest();
     const [inputs, setInputs] = useState<RetirementInputs>(DEFAULT_INPUTS);
     const [isDirty, setIsDirty] = useState(true);
     const [results, setResults] = useState<RetirementPlannerCalculationEnvelope | null>(null);
+    const hasTouchedMacroAssumptions = React.useRef(false);
+    React.useEffect(() => {
+        if (!macroDefaults || hasTouchedMacroAssumptions.current) {
+            return;
+        }
+        setInputs((previous) => ({
+            ...previous,
+            expectedInflation: macroDefaults.expectedInflation,
+            expectedNbpRate: macroDefaults.expectedNbpRate,
+        }));
+    }, [macroDefaults]);
     const handleCalculate = async () => {
         const bondType = supportsRetirementBondType(inputs.bondType)
             ? inputs.bondType
@@ -182,6 +195,9 @@ export const RetirementPlannerContainer: React.FC = () => {
         t("generated.features.retirement.components.retirement_planner_container.item_58"),
     ];
     const updateInput = <K extends keyof RetirementInputs>(key: K, value: RetirementInputs[K]) => {
+        if (key === 'expectedInflation' || key === 'expectedNbpRate') {
+            hasTouchedMacroAssumptions.current = true;
+        }
         setInputs((prev) => ({ ...prev, [key]: value }));
         setIsDirty(true);
     };

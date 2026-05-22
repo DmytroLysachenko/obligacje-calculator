@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useEffectEvent, useRef } from 'react';
 import { RegularInvestmentInputs, BondType, InvestmentFrequency, TaxStrategy, InterestPayout } from '../../bond-core/types';
 import { RegularInvestmentCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
@@ -6,6 +6,7 @@ import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/shared/lib/calculator-persistence';
+import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 
 const DEFAULT_BOND = BondType.EDO;
 const STORAGE_KEY = 'obligacje.regular-calculator.v1';
@@ -63,6 +64,7 @@ function applyDefinitionToInputs(
 
 export function useRegularInvestmentCalculator() {
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
+  const { defaults: macroDefaults } = useMacroAssumptionDefaults();
   const fallbackInputs = buildFallbackInputs();
   const [inputs, setInputs] = useState<RegularInvestmentInputs>(
     fallbackInputs,
@@ -74,6 +76,20 @@ export function useRegularInvestmentCalculator() {
   const [isPersistenceReady, setIsPersistenceReady] = useState(false);
   const { isCalculating, isError, clearError, post } = useCalculationRequest();
   const hasRestoredState = useRef(false);
+  const restoredFromPersistence = useRef(false);
+  const hasTouchedMacroAssumptions = useRef(false);
+
+  const applyMacroDefaults = useEffectEvent((defaults: { expectedInflation: number; expectedNbpRate: number }) => {
+    setInputs((previous) => {
+      const next = {
+        ...previous,
+        expectedInflation: defaults.expectedInflation,
+        expectedNbpRate: defaults.expectedNbpRate,
+      };
+
+      return JSON.stringify(previous) === JSON.stringify(next) ? previous : next;
+    });
+  });
 
   useEffect(() => {
     if (!definitions || !definitions[inputs.bondType]) {
@@ -102,6 +118,7 @@ export function useRegularInvestmentCalculator() {
       hasRestoredState.current = true;
 
       if (restoredState) {
+        restoredFromPersistence.current = true;
         setInputs(restoredState.inputs);
         setEnvelope(restoredState.envelope ?? null);
         setIsDirty(restoredState.isDirty ?? true);
@@ -112,6 +129,14 @@ export function useRegularInvestmentCalculator() {
 
     return () => window.clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (!macroDefaults || !isPersistenceReady || restoredFromPersistence.current || hasTouchedMacroAssumptions.current) {
+      return;
+    }
+
+    applyMacroDefaults(macroDefaults);
+  }, [isPersistenceReady, macroDefaults]);
 
   const results = envelope?.result || null;
 
@@ -140,6 +165,9 @@ export function useRegularInvestmentCalculator() {
 
   const updateInput = (key: keyof RegularInvestmentInputs, value: string | number | boolean | undefined) => {
     setIsDirty(true);
+    if (key === 'expectedInflation' || key === 'expectedNbpRate' || key === 'customInflation' || key === 'customNbpRate' || key === 'inflationScenario') {
+      hasTouchedMacroAssumptions.current = true;
+    }
     setInputs((prev) => {
       const newInputs = { ...prev, [key]: value };
 
@@ -147,6 +175,19 @@ export function useRegularInvestmentCalculator() {
         const months = Number(value);
         newInputs.investmentHorizonMonths = months;
         newInputs.withdrawalDate = getWithdrawalDateFromMonths(prev.purchaseDate, months);
+        const years = Math.max(1, Math.ceil(months / 12));
+        if (prev.customInflation) {
+          newInputs.customInflation = Array.from(
+            { length: years },
+            (_, index) => prev.customInflation?.[index] ?? prev.expectedInflation,
+          );
+        }
+        if (prev.customNbpRate) {
+          newInputs.customNbpRate = Array.from(
+            { length: years },
+            (_, index) => prev.customNbpRate?.[index] ?? (prev.expectedNbpRate ?? 5.25),
+          );
+        }
       }
 
       if (key === 'purchaseDate') {
@@ -158,6 +199,19 @@ export function useRegularInvestmentCalculator() {
         const months = getHorizonMonths(prev.purchaseDate, String(value));
         newInputs.investmentHorizonMonths = months;
         newInputs.timingMode = 'exact';
+        const years = Math.max(1, Math.ceil(months / 12));
+        if (prev.customInflation) {
+          newInputs.customInflation = Array.from(
+            { length: years },
+            (_, index) => prev.customInflation?.[index] ?? prev.expectedInflation,
+          );
+        }
+        if (prev.customNbpRate) {
+          newInputs.customNbpRate = Array.from(
+            { length: years },
+            (_, index) => prev.customNbpRate?.[index] ?? (prev.expectedNbpRate ?? 5.25),
+          );
+        }
       }
 
       if (key === 'timingMode' && value === 'general') {
