@@ -80,7 +80,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
 
             <CalculatorSection title={t("generated.features.regular_investment.components.regular_investment_calculator_container.item_7")} description={t("generated.features.regular_investment.components.regular_investment_calculator_container.item_8")}>
               <div className="rounded-[1.7rem] border border-slate-200 bg-white p-3 shadow-none md:rounded-[2rem] md:p-4">
-                <RegularInvestmentChart results={results} bondType={inputs.bondType}/>
+                <RegularInvestmentChart results={results} bondType={inputs.bondType} chartStep={inputs.chartStep}/>
               </div>
             </CalculatorSection>
 

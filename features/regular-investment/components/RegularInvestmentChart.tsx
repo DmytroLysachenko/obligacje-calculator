@@ -3,16 +3,19 @@ import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, TooltipProps, } from 'recharts';
 import { ValueType, NameType, } from 'recharts/types/component/DefaultTooltipContent';
 import { RegularInvestmentResult } from '../../bond-core/types';
+import { ChartStep } from '../../bond-core/types';
 import { useAppI18n } from '@/i18n/client';
-import { format, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getBondColor } from '@/shared/lib/charts/get-bond-color';
 import { sampleSeriesPoints } from '@/shared/lib/chart-series';
+import { buildRegularInvestmentChartPoints } from '@/shared/lib/regular-investment-display';
 import { getDateFnsLocale, getIntlLocale } from '@/i18n/locale-utils';
 interface RegularInvestmentChartProps {
     results: RegularInvestmentResult;
     bondType: string;
+    chartStep?: ChartStep;
 }
 interface PayloadEntry {
     name: string;
@@ -43,18 +46,12 @@ const CustomTooltip = ({ active, payload, label, formatCurrency }: CustomTooltip
     }
     return null;
 };
-export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ results, bondType }) => {
+export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ results, bondType, chartStep = 'monthly' }) => {
     const { t, locale: language } = useAppI18n();
     const [view, setView] = React.useState<'nominal' | 'real'>('nominal');
     const dateLocale = getDateFnsLocale(language);
     const primaryColor = getBondColor(bondType);
-    const chartData = React.useMemo(() => sampleSeriesPoints(results.timeline.map((point) => ({
-        date: format(parseISO(point.date), 'MM.yy', { locale: dateLocale }),
-        invested: Number(point.totalInvested.toFixed(2)),
-        value: view === 'nominal'
-            ? Number(point.nominalValue.toFixed(2))
-            : Number(point.realValue.toFixed(2)),
-    })), 180), [dateLocale, results.timeline, view]);
+    const chartData = React.useMemo(() => sampleSeriesPoints(buildRegularInvestmentChartPoints(results.timeline, chartStep, (date) => format(date, 'MM.yy', { locale: dateLocale }), view), 180), [chartStep, dateLocale, results.timeline, view]);
     const formatCurrency = React.useMemo(() => (value: number) => new Intl.NumberFormat(getIntlLocale(language), {
         style: 'currency',
         currency: 'PLN',

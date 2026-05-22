@@ -313,6 +313,42 @@ describe('Display-facing single-bond invariants', () => {
     expect((ror.calculationNotes ?? []).some((note) => note.includes('Simulation covered'))).toBe(true);
     expect(ror.isEarlyWithdrawal).toBe(false);
   });
+
+  it('uses projected CPI plus margin after the first year for indexed bonds', () => {
+    const result = calculateBondInvestment({
+      ...buildSingleBondPayload(BondType.EDO, 120),
+      expectedInflation: 2.5,
+      customInflation: Array(10).fill(2.5),
+      firstYearRate: 5.35,
+      margin: 2,
+      historicalData: {},
+    });
+    const secondYearPoint = result.timeline[2];
+
+    expect(secondYearPoint?.interestRate).toBeCloseTo(4.5, 6);
+    expect(secondYearPoint?.rateSource).toBe('projected_cpi');
+    expect(secondYearPoint?.inflationReference).toBeCloseTo(2.5, 6);
+  });
+
+  it('changes projected indexed-bond outcomes when the expected CPI path changes', () => {
+    const lowResult = calculateBondInvestment({
+      ...buildSingleBondPayload(BondType.EDO, 240),
+      expectedInflation: 1,
+      firstYearRate: 5.35,
+      margin: 2,
+      historicalData: {},
+    });
+    const highResult = calculateBondInvestment({
+      ...buildSingleBondPayload(BondType.EDO, 240),
+      expectedInflation: 5,
+      firstYearRate: 5.35,
+      margin: 2,
+      historicalData: {},
+    });
+
+    expect(highResult.timeline[2]?.interestRate).toBeGreaterThan(lowResult.timeline[2]?.interestRate ?? 0);
+    expect(highResult.netPayoutValue).toBeGreaterThan(lowResult.netPayoutValue);
+  });
 });
 
 describe('Display-facing regular-investment invariants', () => {
@@ -348,6 +384,38 @@ describe('Display-facing regular-investment invariants', () => {
     expect(result.totalEarlyWithdrawalFees).toBeGreaterThanOrEqual(0);
     expect(result.totalProfit).toBeGreaterThan(0);
     expect(result.timeline.length).toBe(49);
+  });
+
+  it('changes indexed regular-investment outcomes when custom inflation overrides change', async () => {
+    const purchaseDate = toDateString(today);
+    const [lowEnvelope, highEnvelope] = await Promise.all([
+      calculationService.calculate({
+        kind: ScenarioKind.REGULAR_INVESTMENT,
+        payload: {
+          ...buildRegularInvestmentPayload(BondType.EDO, 120),
+          purchaseDate,
+          withdrawalDate: getWithdrawalDateFromMonths(purchaseDate, 120),
+          expectedInflation: 2.5,
+          customInflation: Array(10).fill(2.5),
+        },
+      }),
+      calculationService.calculate({
+        kind: ScenarioKind.REGULAR_INVESTMENT,
+        payload: {
+          ...buildRegularInvestmentPayload(BondType.EDO, 120),
+          purchaseDate,
+          withdrawalDate: getWithdrawalDateFromMonths(purchaseDate, 120),
+          expectedInflation: 2.5,
+          customInflation: Array(10).fill(5),
+        },
+      }),
+    ]);
+
+    const lowResult = lowEnvelope.result as RegularInvestmentResult;
+    const highResult = highEnvelope.result as RegularInvestmentResult;
+
+    expect(highResult.finalNominalValue).toBeGreaterThan(lowResult.finalNominalValue);
+    expect(highResult.totalProfit).toBeGreaterThan(lowResult.totalProfit);
   });
 });
 

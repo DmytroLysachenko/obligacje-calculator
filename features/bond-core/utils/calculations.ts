@@ -184,9 +184,13 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
           rateReferenceValue = firstYearRate;
           rateMarginApplied = 0;
         } else {
-          usedProjectedRate = isNbpProjected;
-          rateSource = lagNbp !== undefined ? 'historical_nbp' : 'projected_nbp';
-          rateReferenceValue = lagNbp !== undefined ? lagNbp : expectedNbpRate;
+          usedProjectedRate = customNbpVal !== undefined || isNbpProjected;
+          rateSource = customNbpVal !== undefined
+            ? 'projected_nbp'
+            : lagNbp !== undefined
+              ? 'historical_nbp'
+              : 'projected_nbp';
+          rateReferenceValue = customNbpVal ?? (lagNbp !== undefined ? lagNbp : expectedNbpRate);
           events.push({
             type: SimulationEventType.RATE_RESET,
             date: period.startDate.toISOString(),
@@ -201,9 +205,13 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
           rateReferenceValue = firstYearRate;
           rateMarginApplied = 0;
         } else if (monthsIntoCycle % 12 === 0) {
-          usedProjectedRate = isInflationProjected;
-          rateSource = lagInflation !== undefined ? 'historical_cpi_lag' : 'projected_cpi';
-          rateReferenceValue = lagInflation !== undefined ? lagInflation : activeExpectedInflation;
+          usedProjectedRate = customInfValue !== undefined || isInflationProjected;
+          rateSource = customInfValue !== undefined
+            ? 'projected_cpi'
+            : lagInflation !== undefined
+              ? 'historical_cpi_lag'
+              : 'projected_cpi';
+          rateReferenceValue = customInfValue ?? (lagInflation !== undefined ? lagInflation : activeExpectedInflation);
           events.push({
             type: SimulationEventType.RATE_RESET,
             date: period.startDate.toISOString(),
@@ -388,8 +396,8 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
         isMaturity: period.isMaturity,
         isWithdrawal: period.endDate.getTime() === targetWithdrawalDate.getTime(),
         isProjected: pointIsProjected,
-        inflationReference: lagInflation !== undefined ? lagInflation : activeExpectedInflation,
-        nbpReference: lagNbp !== undefined ? lagNbp : expectedNbpRate,
+        inflationReference: customInfValue ?? (lagInflation !== undefined ? lagInflation : activeExpectedInflation),
+        nbpReference: customNbpVal ?? (lagNbp !== undefined ? lagNbp : expectedNbpRate),
         events: events.length > 0 ? events : undefined
       });
 
@@ -615,9 +623,26 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
 
         if (monthsHeld <= bondDurationMonths) {
           const monthIndex = monthsHeld - 1;
+          const yearIndex = Math.floor(monthIndex / 12);
+          const projectedInflation = getExpectedInflationForYearIndex(
+            expectedInflation,
+            inputs.customInflation,
+            yearIndex,
+          );
+          const customInflationValue = inputs.customInflation?.[yearIndex];
+          const customNbpValue = inputs.customNbpRate?.[yearIndex];
           const currentInterestRate = determineInterestRate(
-            bondType, monthIndex, firstYearRate, expectedInflation, expectedNbpRate, margin, 
-            bondDef.isInflationIndexed, currentLagInflation, currentLagNbp
+            bondType,
+            monthIndex,
+            firstYearRate,
+            projectedInflation,
+            expectedNbpRate,
+            margin,
+            bondDef.isInflationIndexed,
+            currentLagInflation,
+            currentLagNbp,
+            customInflationValue,
+            customNbpValue,
           );
           const currentMonthlyRate = currentInterestRate.dividedBy(12).dividedBy(100);
 
