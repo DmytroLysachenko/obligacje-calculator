@@ -34,18 +34,6 @@ export interface ComparisonChartProps {
   formatCurrency: (val: number) => string;
 }
 
-export interface ComparisonSummaryProps {
-  verdict: {
-    title: string;
-    text: string;
-    takeaway: string;
-  };
-  totalInvested: number;
-  durationMonths: number;
-  isCalculating: boolean;
-  formatCurrency: (val: number) => string;
-}
-
 export interface ComparisonAssetBreakdownProps {
   assets: AssetPerformanceSeries[];
   totalInvested: number;
