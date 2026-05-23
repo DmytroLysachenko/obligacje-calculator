@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import {BarChart2, Calendar, FlaskConical, ShieldAlert, TrendingUp} from 'lucide-react';
+import {Button} from '@/components/ui/button';
 import {Card, CardContent} from '@/components/ui/card';
 import {FeatureStatusNotice, FeatureStatusPill} from '@/shared/components/feedback/FeatureStatusNotice';
 import {useAppI18n} from '@/i18n/client';
@@ -29,7 +30,7 @@ const recoveryLabPages = [
 
 export function RecoveryLabPageClient() {
   const {t} = useAppI18n();
-  const intro = t('generated.app.recovery_lab.page.item_1');
+  const intro = t('recovery_lab_page.description_long');
 
   return (
     <div className="space-y-8">
@@ -41,19 +42,27 @@ export function RecoveryLabPageClient() {
           </div>
           <div className="space-y-3">
             <h1 className="text-3xl font-black tracking-tight text-slate-950">
-              {t('landing.recovery_lab_page.title')}
+              {t('recovery_lab_page.title')}
             </h1>
             <p className="max-w-4xl text-sm leading-8 text-slate-600">{intro}</p>
+            <div className="flex flex-wrap gap-3 pt-1">
+              <Button asChild className="rounded-2xl">
+                <Link href="/single-calculator">{t('recovery_lab_page.back_to_core')}</Link>
+              </Button>
+              <Button asChild variant="outline" className="rounded-2xl border-slate-200 bg-white/80">
+                <Link href="/">{t('recovery_lab_page.back_home')}</Link>
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
 
       <FeatureStatusNotice
         status="experimental"
-        eyebrow={t('generated.app.recovery_lab.page.item_2')}
-        title={t('landing.recovery_lab_page.why_separated')}
+        eyebrow={t('recovery_lab_page.eyebrow')}
+        title={t('recovery_lab_page.why_separated')}
       >
-        {t('landing.recovery_lab_page.why_separated_desc')}
+        {t('recovery_lab_page.why_separated_desc')}
       </FeatureStatusNotice>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
@@ -69,17 +78,17 @@ export function RecoveryLabPageClient() {
                 </div>
                 <div className="space-y-2">
                   <p className="text-xl font-black tracking-tight text-slate-950">
-                    {t(`landing.recovery_lab_page.pages.${page.i18nKey}.title`)}
+                    {t(`recovery_lab_page.pages.${page.i18nKey}.title`)}
                   </p>
                   <p className="text-sm leading-7 text-slate-600">
-                    {t(`landing.recovery_lab_page.pages.${page.i18nKey}.description`)}
+                    {t(`recovery_lab_page.pages.${page.i18nKey}.description`)}
                   </p>
                 </div>
                 <div className="rounded-2xl border border-white/80 bg-white/70 px-4 py-3 text-sm leading-6 text-slate-600">
-                  {t('generated.app.recovery_lab.page.item_3')}
+                  {t('recovery_lab_page.card_support_notice')}
                 </div>
                 <div className="rounded-2xl border border-amber-200/80 bg-white/80 px-4 py-3 text-sm leading-7 text-slate-700">
-                  {t('landing.recovery_lab_page.card_notice')}
+                  {t('recovery_lab_page.card_notice')}
                 </div>
               </CardContent>
             </Card>
@@ -92,15 +101,15 @@ export function RecoveryLabPageClient() {
           <div className="flex items-center gap-2 text-slate-950">
             <ShieldAlert className="h-5 w-5 text-primary" />
             <p className="text-xl font-black tracking-tight">
-              {t('landing.recovery_lab_page.what_stays_core')}
+              {t('recovery_lab_page.what_stays_core')}
             </p>
           </div>
           <p className="text-sm leading-7 text-slate-600">
-            {t('landing.recovery_lab_page.what_stays_core_desc')}
+            {t('recovery_lab_page.what_stays_core_desc')}
           </p>
           <div className="space-y-2 text-sm leading-7 text-slate-600">
-            <p>{t('landing.recovery_lab_page.core_emphasis')}</p>
-            <p>{t('landing.recovery_lab_page.core_improve_later')}</p>
+            <p>{t('recovery_lab_page.core_emphasis')}</p>
+            <p>{t('recovery_lab_page.core_improve_later')}</p>
           </div>
         </CardContent>
       </Card>

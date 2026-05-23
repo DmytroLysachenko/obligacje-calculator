@@ -732,6 +732,36 @@
     "page_notice_title": "Porownanie referencyjne historii",
     "page_notice_desc": "Ta powierzchnia nadal ma wezsze pokrycie danych historycznych i powinna byc traktowana jedynie jako porownanie referencyjne, a nie dojrzaly produkt do backtestow."
   },
+  "recovery_lab_page": {
+    "title": "Boczne laboratorium",
+    "description": "Ograniczone i eksperymentalne powierzchnie kalkulatora pozostawione poza glowna sciezka produktu.",
+    "description_long": "Te strony pozostaja dostepne, ale nie naleza do glownej obietnicy kalkulatora. Kazda z nich jest wezsza, bardziej wrazliwa na zalozenia albo mocniej zalezy od kontekstu danych niz glowny przeplyw.",
+    "eyebrow": "Powierzchnie pomocnicze",
+    "back_to_core": "Wroc do kalkulatora pojedynczego",
+    "back_home": "Wroc na start",
+    "why_separated": "Dlaczego te narzedzia sa oddzielone",
+    "why_separated_desc": "Aplikacja ma najpierw akcentowac glowne kalkulatory i strony referencyjne. Boczne laboratorium pozostaje dostepne do sprawdzania i iteracyjnej walidacji, ale nie powinno konkurowac z glownym przeplywem, dopoki jego zakres i dowody zaufania nie beda mocniejsze.",
+    "card_support_notice": "Traktuj to jako analize pomocnicza, nie glowny przeplyw kalkulatora.",
+    "card_notice": "Otwieraj te strony tylko wtedy, gdy swiadomie chcesz sprawdzic bardziej waska albo slabsza powierzchnie scenariuszowa.",
+    "what_stays_core": "Co zostaje glowne",
+    "what_stays_core_desc": "Produkt pozostaje mocniejszy, gdy glowne strony sa prostsze i latwiejsze do zaufania.",
+    "core_emphasis": "Glowny nacisk pozostaje na edukacji, kalkulatorze pojedynczym, porownaniu, inwestowaniu regularnym, drabinie, notatniku i stronach referencyjnych.",
+    "core_improve_later": "Strony boczne nadal mozna poprawiac, ale nie definiuja jeszcze gotowosci produktu.",
+    "pages": {
+      "optimize": {
+        "title": "Ranking scenariuszy",
+        "description": "Sortowanie wyplat wrazliwe na zalozenia. Dobre jako widok pomocniczy, nie jako powierzchnia rekomendacyjna."
+      },
+      "multi_asset": {
+        "title": "Historyczne porownanie referencyjne",
+        "description": "Porownanie mieszanych serii o nizszym poziomie zaufania niz glowne kalkulatory obligacji. Traktuj je tylko jako referencje."
+      },
+      "retirement": {
+        "title": "Model wyplat",
+        "description": "Ograniczony scenariusz stalej wyplaty. Wezszy niz zwykly planer emerytalny i celowo zawezony."
+      }
+    }
+  },
   "optimizer_page": {
     "page_notice_eyebrow": "Pomocniczy sorter",
     "page_notice_title": "Eksperymentalny widok rankingu",
