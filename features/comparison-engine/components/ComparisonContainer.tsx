@@ -33,7 +33,6 @@ import { sampleSeriesPoints } from '@/shared/lib/chart-series';
 import { toDateString } from '@/shared/lib/date-timing';
 import { InterestPayout } from '@/features/bond-core/types';
 import { useComparison } from '../hooks/useComparison';
-import { BondComparisonContainer } from './BondComparisonContainer';
 import { ComparisonTable } from './ComparisonTable';
 import { ComparisonVerdict } from './ComparisonVerdict';
 import { ScenarioOverrideCard } from './ScenarioOverrideCard';
@@ -72,7 +71,6 @@ const CustomTooltip = ({ active, payload, label, formatCurrency, }: CustomToolti
 export const ComparisonContainer: React.FC = () => {
     const { sharedConfig, scenarioA, scenarioB, inputsA, inputsB, resultsA, resultsB, envelopeA, envelopeB, warningsA, warningsB, isCalculating, calculate, updateSharedConfig, updateScenarioA, updateScenarioB, setBondTypeA, setBondTypeB, isDirty, isPersistenceReady, } = useComparison();
     const { t, locale: language } = useAppI18n();
-    const [compareMode, setCompareMode] = useState<'independent' | 'normalized'>('independent');
     const [showRealValue, setShowRealValue] = useState(false);
     const hasMounted = useHasMounted();
     const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -162,20 +160,8 @@ export const ComparisonContainer: React.FC = () => {
         }
         return scenarioA.bondType;
     }, [scenarioA.bondType, scenarioB.bondType]);
-    const headerActions = (<div className="flex flex-wrap items-center gap-3">
-      <div className="flex rounded-xl border bg-muted/30 p-1">
-        <Button type="button" size="sm" variant={compareMode === 'independent' ? 'default' : 'ghost'} className="h-9 px-3 text-[10px] font-black uppercase tracking-widest" onClick={() => setCompareMode('independent')}>
-          {t('comparison.mode_independent')}
-        </Button>
-        <Button type="button" size="sm" variant={compareMode === 'normalized' ? 'default' : 'ghost'} className="h-9 px-3 text-[10px] font-black uppercase tracking-widest" onClick={() => setCompareMode('normalized')}>
-          {t('comparison.mode_normalized')}
-        </Button>
-      </div>
-    </div>);
-    return (<CalculatorPageShell title={t('nav.comparison')} description={compareMode === 'independent'
-            ? t('comparison.desc_independent')
-            : t('comparison.desc_bond_vs_bond')} icon={<Scale className="h-8 w-8"/>} isCalculating={isCalculating} isDirty={isDirty} hasResults={isPersistenceReady && !!resultsA} extraHeaderActions={headerActions} onKeyDown={handleKeyDown}>
-      {compareMode === 'normalized' ? (<BondComparisonContainer />) : (<div className="grid grid-cols-1 gap-8 xl:grid-cols-[390px_minmax(0,1fr)]">
+    return (<CalculatorPageShell title={t('nav.comparison')} description={t('comparison.desc_independent')} icon={<Scale className="h-8 w-8"/>} isCalculating={isCalculating} isDirty={isDirty} hasResults={isPersistenceReady && !!resultsA} onKeyDown={handleKeyDown}>
+      <div className="grid grid-cols-1 gap-8 xl:grid-cols-[390px_minmax(0,1fr)]">
             <Card className="overflow-hidden border shadow-sm">
               <CardHeader className="border-b bg-muted/20">
                 <CardTitle className="text-sm font-black uppercase tracking-widest">
@@ -480,7 +466,7 @@ export const ComparisonContainer: React.FC = () => {
                 </SecondaryInsightAccordion>
               </div>) : null}
           </div>
-        </div>)}
+        </div>
       <RecalculateButton isDirty={isDirty} hasResults={!!resultsA && !!resultsB} loading={isCalculating} onClick={() => calculate()}/>
     </CalculatorPageShell>);
 };

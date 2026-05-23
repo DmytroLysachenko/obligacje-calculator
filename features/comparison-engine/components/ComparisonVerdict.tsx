@@ -17,11 +17,11 @@ interface ComparisonVerdictProps {
 }
 export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, resultsB, inputsA, inputsB, expectedInflation, taxStrategy, showRealValue, formatCurrency, }) => {
     const { t } = useAppI18n();
-    const comparisonSnapshotLabel = t("generated.features.comparison_engine.components.comparison_verdict.item_1");
+    const comparisonSnapshotLabel = t('comparison.verdict_snapshot_label');
     const higherText = showRealValue
         ? t('comparison.verdict.higher_real_value')
         : t('comparison.verdict.higher_net_payout');
-    const overText = t("generated.features.comparison_engine.components.comparison_verdict.item_2");
+    const overText = t('comparison.verdict_over_text');
     const resultAValue = showRealValue ? resultsA.finalRealValue : resultsA.netPayoutValue;
     const resultBValue = showRealValue ? resultsB.finalRealValue : resultsB.netPayoutValue;
     const betterBondType = resultAValue > resultBValue
@@ -84,12 +84,12 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, 
 
               {expectedInflation > 5 ? (<Badge variant="outline" className="border-orange-200 bg-orange-50 text-xs font-semibold text-orange-700">
                   <Zap className="h-3 w-3 mr-1"/>
-                  {t("generated.features.comparison_engine.components.comparison_verdict.item_3")}
+                  {t('comparison.verdict_high_inflation_badge')}
                 </Badge>) : null}
 
               {taxStrategy !== TaxStrategy.STANDARD ? (<Badge variant="outline" className="border-purple-200 bg-purple-50 text-xs font-semibold text-purple-700">
                   <ShieldCheck className="h-3 w-3 mr-1"/>
-                  {t("generated.features.comparison_engine.components.comparison_verdict.item_4")}
+                  {t('comparison.verdict_tax_wrapper_badge')}
                 </Badge>) : null}
             </div>
           </div>
@@ -97,7 +97,7 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, 
           <div className="w-full md:w-48 flex flex-col gap-2">
             <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-4 text-center">
               <p className="mb-1 text-sm font-semibold text-muted-foreground">
-                {t("generated.features.comparison_engine.components.comparison_verdict.item_5")}
+                {t('comparison.verdict_gap_label')}
               </p>
               <p className="text-2xl font-black text-primary">
                 {Math.abs((resultAValue / Math.max(1, resultBValue) -

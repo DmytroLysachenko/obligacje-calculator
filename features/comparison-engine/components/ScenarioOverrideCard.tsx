@@ -12,6 +12,7 @@ import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/suppo
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
 import { RateContextNote } from '@/shared/components/results/RateContextNote';
+import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 interface ScenarioOverrideCardProps {
     title: string;
@@ -66,7 +67,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
                         {formatBondLabel(type)}
                       </span>
                       {isFamilyBondType(type) ? (<span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
-                          {t("generated.features.comparison_engine.components.scenario_override_card.item_1")}
+                          {t('comparison.family_bond_badge')}
                         </span>) : null}
                     </div>
                     <span className="truncate text-sm font-medium text-slate-700">
@@ -90,10 +91,10 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
 
         <div className="rounded-xl border bg-muted/20 p-3">
           <p className="text-sm font-semibold">
-            {t("generated.features.comparison_engine.components.scenario_override_card.item_2")}
+            {t('comparison.base_follows_shared_title')}
           </p>
           <p className="mt-1 text-xs leading-5 text-muted-foreground">
-            {t("generated.features.comparison_engine.components.scenario_override_card.item_3")}
+            {t('comparison.base_follows_shared_desc')}
           </p>
         </div>
 
@@ -107,51 +108,55 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
           <Switch checked={!!isRebought} onCheckedChange={onReboughtChange}/>
         </div>
 
-        <div className="space-y-2">
-          <Label className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">
-            {t('bonds.tax_strategy')}
-          </Label>
-          <Select value={taxStrategy ?? 'shared'} onValueChange={(value) => onTaxStrategyChange(value === 'shared' ? undefined : (value as TaxStrategy))}>
-            <SelectTrigger className="h-11 w-full min-w-0 [&>span]:truncate">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="shared">{t('comparison.use_shared_tax')}</SelectItem>
-              <SelectItem value={TaxStrategy.STANDARD}>
-                {t('bonds.tax_standard')}
-              </SelectItem>
-              <SelectItem value={TaxStrategy.IKE}>
-                {t('bonds.tax_ike')}
-              </SelectItem>
-              <SelectItem value={TaxStrategy.IKZE}>
-                {t('bonds.tax_ikze')}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-          <p className="text-xs leading-5 text-slate-500">
-            {t('comparison.tax_override_desc')}
-          </p>
-        </div>
+        <SecondaryInsightAccordion title={t('comparison.optional_overrides_title')} description={t('comparison.optional_overrides_desc')} badge={t('comparison.helper_secondary')} className="mt-0">
+          <div className="space-y-5">
+            <div className="space-y-2">
+              <Label className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">
+                {t('bonds.tax_strategy')}
+              </Label>
+              <Select value={taxStrategy ?? 'shared'} onValueChange={(value) => onTaxStrategyChange(value === 'shared' ? undefined : (value as TaxStrategy))}>
+                <SelectTrigger className="h-11 w-full min-w-0 [&>span]:truncate">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="shared">{t('comparison.use_shared_tax')}</SelectItem>
+                  <SelectItem value={TaxStrategy.STANDARD}>
+                    {t('bonds.tax_standard')}
+                  </SelectItem>
+                  <SelectItem value={TaxStrategy.IKE}>
+                    {t('bonds.tax_ike')}
+                  </SelectItem>
+                  <SelectItem value={TaxStrategy.IKZE}>
+                    {t('bonds.tax_ikze')}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs leading-5 text-slate-500">
+                {t('comparison.tax_override_desc')}
+              </p>
+            </div>
 
-        <div className="flex items-center justify-between rounded-xl border bg-muted/20 p-3">
-          <div>
-            <p className="text-sm font-semibold">{t('comparison.custom_horizon')}</p>
-            <p className="text-[10px] text-muted-foreground">
-              {t('comparison.custom_horizon_desc')}
-            </p>
+            <div className="flex items-center justify-between rounded-xl border bg-muted/20 p-3">
+              <div>
+                <p className="text-sm font-semibold">{t('comparison.custom_horizon')}</p>
+                <p className="text-[10px] text-muted-foreground">
+                  {t('comparison.custom_horizon_desc')}
+                </p>
+              </div>
+              <Switch checked={customHorizonEnabled} onCheckedChange={onCustomHorizonEnabledChange}/>
+            </div>
+
+            {customHorizonEnabled ? (<div className="space-y-3">
+                <Label className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">
+                  {t('comparison.scenario_horizon')}
+                </Label>
+                <CommittedSliderInput value={customHorizonMonths ?? 12} min={12} max={360} step={1} unit="mo" onCommit={(value) => onCustomHorizonMonthsChange(value)}/>
+                <p className="text-xs leading-5 text-slate-500">
+                  {t('comparison.horizon_override_desc')}
+                </p>
+              </div>) : null}
           </div>
-          <Switch checked={customHorizonEnabled} onCheckedChange={onCustomHorizonEnabledChange}/>
-        </div>
-
-        {customHorizonEnabled ? (<div className="space-y-3">
-            <Label className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">
-              {t('comparison.scenario_horizon')}
-            </Label>
-            <CommittedSliderInput value={customHorizonMonths ?? 12} min={12} max={360} step={1} unit="mo" onCommit={(value) => onCustomHorizonMonthsChange(value)}/>
-            <p className="text-xs leading-5 text-slate-500">
-              {t('comparison.horizon_override_desc')}
-            </p>
-          </div>) : null}
+        </SecondaryInsightAccordion>
       </CardContent>
     </Card>);
 };
