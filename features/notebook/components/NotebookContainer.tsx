@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getIntlLocale } from '@/i18n/locale-utils';
+import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { unwrapApiData } from '@/shared/lib/api-response';
 import { PortfolioDetails } from './PortfolioDetails';
@@ -119,6 +120,7 @@ export const NotebookContainer: React.FC = () => {
     const [selectedPortfolioId, setSelectedPortfolioId] = useState<string | null>(null);
     const [statusMessage, setStatusMessage] = useState<string | null>(null);
     const importRef = useRef<HTMLInputElement | null>(null);
+    const { canManageWorkspace, isGuestWorkspace } = usePortfolioAccess();
     const mergePortfolioIntoState = useCallback((portfolio: UserPortfolio) => {
         setPortfolios((current) => upsertPortfolioInNotebookState(current, portfolio));
     }, []);
@@ -333,7 +335,7 @@ export const NotebookContainer: React.FC = () => {
             setError(t('notebook.delete_failed'));
         }
     };
-    if (selectedPortfolioId) {
+    if (selectedPortfolioId && canManageWorkspace) {
         const portfolio = portfolios.find((item) => item.id === selectedPortfolioId);
         return portfolio ? (<PortfolioDetails portfolio={portfolio} onDelete={handleDeletePortfolio} onPortfolioUpdate={mergePortfolioIntoState} onBack={() => {
                 void fetchPortfolios();
@@ -373,27 +375,27 @@ export const NotebookContainer: React.FC = () => {
               <div className="max-w-3xl space-y-3">
                 <div className="inline-flex items-center gap-2 rounded-full border border-white/90 bg-white/80 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-slate-700">
                   <BookOpen className="h-3.5 w-3.5 text-primary"/>
-                  {t('notebook.guest_mode')}
+                  {isGuestWorkspace ? t('workspace.guest_preview_badge') : t('workspace.active_workspace_badge')}
                 </div>
                 <p className="text-sm leading-7 text-muted-foreground">
-                  {t('notebook.guest_desc')}
+                  {isGuestWorkspace ? t('workspace.guest_preview_description') : t('workspace.active_workspace_description')}
                 </p>
               </div>
               <div className="flex flex-wrap gap-2 lg:max-w-[360px] lg:justify-end">
-                <Button variant="outline" onClick={handleImportClick} className="gap-2 rounded-2xl border-slate-200 bg-white/80">
+                <Button variant="outline" onClick={handleImportClick} className="gap-2 rounded-2xl border-slate-200 bg-white/80" disabled={!canManageWorkspace}>
                   <Upload className="h-4 w-4"/>
                   {t('notebook.import_json')}
                 </Button>
-                <Button variant="outline" onClick={handleCreateDemo} className="rounded-2xl border-slate-200 bg-white/80">
+                <Button variant="outline" onClick={handleCreateDemo} className="rounded-2xl border-slate-200 bg-white/80" disabled={!canManageWorkspace}>
                   {t('notebook.load_demo')}
                 </Button>
                 <Button variant="outline" onClick={fetchPortfolios} className="gap-2 rounded-2xl border-slate-200 bg-white/80">
                   <RefreshCcw className="h-4 w-4"/>
                   {t('common.refresh')}
                 </Button>
-                <Button onClick={handleCreateDefault} className="gap-2 rounded-2xl">
+                <Button onClick={handleCreateDefault} className="gap-2 rounded-2xl" disabled={!canManageWorkspace}>
                   <Plus className="h-4 w-4"/>
-                  {t('notebook.new_portfolio')}
+                  {canManageWorkspace ? t('notebook.new_portfolio') : t('workspace.sign_in_required_short')}
                 </Button>
               </div>
             </div>
@@ -407,7 +409,7 @@ export const NotebookContainer: React.FC = () => {
         </Card>
       </SectionBlock>
 
-      {isLoading ? (<NotebookLoadingState />) : portfolios.length === 0 ? (<EmptyPortfolioState onCreate={handleCreateDefault} onCreateDemo={handleCreateDemo} onImport={handleImportClick} badgeLabel={t('notebook.empty_badge')} title={t('notebook.empty_title')} description={t('notebook.empty_desc')} createLabel={t('notebook.create_first')} demoLabel={t('notebook.load_demo')} importLabel={t('notebook.import_json')} steps={emptyStateSteps}/>) : (<div className="space-y-8">
+      {isLoading ? (<NotebookLoadingState />) : portfolios.length === 0 ? (<EmptyPortfolioState onCreate={canManageWorkspace ? handleCreateDefault : () => {}} onCreateDemo={canManageWorkspace ? handleCreateDemo : () => {}} onImport={canManageWorkspace ? handleImportClick : () => {}} badgeLabel={t('notebook.empty_badge')} title={t('notebook.empty_title')} description={canManageWorkspace ? t('notebook.empty_desc') : t('workspace.empty_guest_description')} createLabel={canManageWorkspace ? t('notebook.create_first') : t('workspace.sign_in_required_short')} demoLabel={t('notebook.load_demo')} importLabel={t('notebook.import_json')} steps={emptyStateSteps}/>) : (<div className="space-y-8">
           <SectionBlock title={t('notebook.stored_portfolios')} description={t('notebook.stored_portfolios_desc')}>
             <div className="rounded-[1.8rem] border border-slate-200 bg-white/84 px-5 py-4 text-sm leading-7 text-slate-600 shadow-[0_18px_44px_-40px_rgba(15,23,42,0.35)] backdrop-blur">
               {t('notebook.stored_portfolios_note')}
@@ -469,11 +471,11 @@ export const NotebookContainer: React.FC = () => {
                       </div>
                     </div>
 
-                    <Button className="w-full rounded-2xl" onClick={() => {
+                    <Button className="w-full rounded-2xl" disabled={!canManageWorkspace} onClick={() => {
                 setSelectedPortfolioId(portfolio.id);
                 persistSelectedPortfolioId(portfolio.id);
             }}>
-                      {t('notebook.open_portfolio')}
+                      {canManageWorkspace ? t('notebook.open_portfolio') : t('workspace.sign_in_required_short')}
                     </Button>
                   </CardContent>
                 </Card>))}

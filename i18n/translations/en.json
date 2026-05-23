@@ -2028,5 +2028,14 @@
       "read_narrowly_description": "This is a steady-rate depletion model, not a complete retirement advice engine."
     },
     "ready_footer": "Advanced assumptions stay available, but the first reading should come from one clean committed run."
+  },
+  "workspace": {
+    "guest_preview_badge": "Guest preview",
+    "active_workspace_badge": "Active workspace",
+    "guest_preview_description": "Workspace storage is reserved for signed-in users. Anonymous visitors can still inspect the page structure, but saving lots and managing portfolios stays locked.",
+    "active_workspace_description": "This workspace is connected to your saved portfolios. Use it to open, compare, and manage stored bond lots.",
+    "sign_in_required_short": "Sign in required",
+    "sign_in_needed_for_portfolio": "Portfolio saving is available only inside a signed-in workspace. You can still use the calculator normally and save scenarios separately.",
+    "empty_guest_description": "Signed-in workspace features are not available in guest mode. Use calculators freely, then sign in later to save lots into portfolios."
   }
 }

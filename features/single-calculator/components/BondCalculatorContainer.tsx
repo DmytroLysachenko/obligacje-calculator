@@ -20,6 +20,7 @@ import { useBondCalculator } from '../hooks/useBondCalculator';
 import { applyGuardrailFix, getInputGuardrails, InputGuardrailIssue } from '../lib/input-guardrails';
 import { createSavedScenario, saveScenarioRecord } from '../lib/scenario-storage';
 import { getStoredCurrentPortfolioId, setStoredCurrentPortfolioId } from '@/features/notebook/lib/current-portfolio';
+import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 import { BondChart } from './BondChart';
 import { BondInputsForm } from './BondInputsForm';
 import { BondResultsSummary } from './BondResultsSummary';
@@ -51,6 +52,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     isPersistenceReady,
   } = useBondCalculator(initialInputs);
   const { t, locale: language } = useAppI18n();
+  const { canManageWorkspace } = usePortfolioAccess();
   const translate = useMemo(
     () => (key: string, params?: Record<string, string | number>) => t(key, params),
     [t],
@@ -75,6 +77,9 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
 
   const handleAddToNotebook = async () => {
     if (!results) return;
+    if (!canManageWorkspace) {
+      return;
+    }
 
     try {
       const portfolioResponse = await fetch('/api/portfolio');
@@ -281,6 +286,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
                   onSaveScenario={handleSaveScenario}
                   onAddToNotebook={handleAddToNotebook}
                   onExportPDF={handleExportPDF}
+                  canManageWorkspace={canManageWorkspace}
                 />
               </div>
             ) : null}

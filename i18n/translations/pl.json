@@ -1975,5 +1975,14 @@
       "read_narrowly_description": "To model zuzycia kapitalu przy stalej stopie, a nie pelny silnik doradztwa emerytalnego."
     },
     "ready_footer": "Zaawansowane zalozenia pozostaja dostepne, ale pierwszy odczyt powinien pochodzic z jednego czystego zatwierdzonego przebiegu."
+  },
+  "workspace": {
+    "guest_preview_badge": "Podglad goscia",
+    "active_workspace_badge": "Aktywny workspace",
+    "guest_preview_description": "Przechowywanie workspace jest zarezerwowane dla zalogowanych uzytkownikow. Uzytkownik anonimowy moze obejrzec strukture strony, ale zapisywanie partii i zarzadzanie portfelami pozostaje zablokowane.",
+    "active_workspace_description": "Ten workspace jest polaczony z zapisanymi portfelami. Uzyj go do otwierania, porownywania i zarzadzania zapisanymi partiami obligacji.",
+    "sign_in_required_short": "Wymagane logowanie",
+    "sign_in_needed_for_portfolio": "Zapisywanie do portfela jest dostepne tylko w zalogowanym workspace. Nadal mozesz normalnie uzywac kalkulatora i zapisywac osobne scenariusze.",
+    "empty_guest_description": "Funkcje workspace dla zalogowanych nie sa dostepne w trybie goscia. Korzystaj swobodnie z kalkulatorow, a partie do portfeli zapiszesz po zalogowaniu."
   }
 }

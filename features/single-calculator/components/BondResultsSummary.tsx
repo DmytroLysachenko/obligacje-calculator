@@ -26,8 +26,9 @@ interface BondResultsSummaryProps {
     onSaveScenario?: () => void;
     onAddToNotebook?: () => void;
     onExportPDF?: () => void;
+    canManageWorkspace?: boolean;
 }
-export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results, inputs, onSaveScenario, onAddToNotebook, onExportPDF, }) => {
+export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results, inputs, onSaveScenario, onAddToNotebook, onExportPDF, canManageWorkspace = false, }) => {
     const { t, locale: language } = useAppI18n();
     const formatCurrency = (value: number) => new Intl.NumberFormat(getIntlLocale(language), {
         style: 'currency',
@@ -114,6 +115,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results,
                 label: t('notebook.add_current_lot'),
                 icon: <Plus className="h-4 w-4"/>,
                 onClick: onAddToNotebook,
+                disabled: !canManageWorkspace,
             },
             {
                 label: 'PDF',
@@ -126,6 +128,12 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results,
                 onClick: handleExportCSV,
             },
         ]}/>
+
+      {!canManageWorkspace ? (<Card className="rounded-[1.8rem] border border-slate-200 bg-slate-50/80 shadow-none">
+          <CardContent className="p-4 text-sm leading-7 text-slate-600">
+            {t('workspace.sign_in_needed_for_portfolio')}
+          </CardContent>
+        </Card>) : null}
 
       <MetricStrip items={[...primarySummaryCards, ...secondarySummaryCards]}/>
 

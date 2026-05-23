@@ -10,6 +10,7 @@ interface HeroAction {
   icon?: React.ReactNode;
   onClick?: () => void;
   variant?: 'default' | 'outline';
+  disabled?: boolean;
 }
 
 interface ResultSummaryHeroProps {
@@ -64,6 +65,7 @@ export function ResultSummaryHero({
                       : '',
                   )}
                   onClick={action.onClick}
+                  disabled={action.disabled}
                 >
                   {action.icon}
                   {action.label}
