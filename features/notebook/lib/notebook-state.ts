@@ -1,4 +1,9 @@
 import { UserPortfolio } from '@/db/schema';
+import {
+  getStoredCurrentPortfolioId,
+  resolveCurrentPortfolioId,
+  setStoredCurrentPortfolioId,
+} from './current-portfolio';
 
 function getPortfolioTimestamp(portfolio: UserPortfolio) {
   return new Date(portfolio.updatedAt ?? portfolio.createdAt ?? 0).getTime();
@@ -36,11 +41,12 @@ export function resolveSelectedPortfolioId(
   currentSelection: string | null,
   portfolios: UserPortfolio[],
 ) {
-  if (!currentSelection) {
-    return null;
-  }
+  return resolveCurrentPortfolioId(
+    currentSelection ?? getStoredCurrentPortfolioId(),
+    portfolios.map((portfolio) => portfolio.id),
+  );
+}
 
-  return portfolios.some((portfolio) => portfolio.id === currentSelection)
-    ? currentSelection
-    : null;
+export function persistSelectedPortfolioId(portfolioId: string | null) {
+  setStoredCurrentPortfolioId(portfolioId);
 }

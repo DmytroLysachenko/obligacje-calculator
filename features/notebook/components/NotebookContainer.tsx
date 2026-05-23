@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { unwrapApiData } from '@/shared/lib/api-response';
 import { PortfolioDetails } from './PortfolioDetails';
-import { removePortfolioFromNotebookState, resolveSelectedPortfolioId, upsertPortfolioInNotebookState, } from '../lib/notebook-state';
+import { persistSelectedPortfolioId, removePortfolioFromNotebookState, resolveSelectedPortfolioId, upsertPortfolioInNotebookState, } from '../lib/notebook-state';
 type NotebookStepItem = {
     id: string;
     title: string;
@@ -161,7 +161,11 @@ export const NotebookContainer: React.FC = () => {
     }, [fetchPortfolios]);
     useEffect(() => {
         if (!isLoading) {
-            setSelectedPortfolioId((current) => resolveSelectedPortfolioId(current, portfolios));
+            setSelectedPortfolioId((current) => {
+                const nextSelection = resolveSelectedPortfolioId(current, portfolios);
+                persistSelectedPortfolioId(nextSelection);
+                return nextSelection;
+            });
         }
     }, [isLoading, portfolios, selectedPortfolioId]);
     const emptyStateSteps: NotebookStepItem[] = [
@@ -202,6 +206,7 @@ export const NotebookContainer: React.FC = () => {
             if (created?.id) {
                 mergePortfolioIntoState(created);
                 setSelectedPortfolioId(created.id);
+                persistSelectedPortfolioId(created.id);
             }
             else {
                 await fetchPortfolios();
@@ -244,6 +249,7 @@ export const NotebookContainer: React.FC = () => {
             if (createdPortfolio?.id) {
                 mergePortfolioIntoState(createdPortfolio);
                 setSelectedPortfolioId(createdPortfolio.id);
+                persistSelectedPortfolioId(createdPortfolio.id);
                 setStatusMessage(t("generated.features.notebook.components.notebook_container.item_2"));
             }
             else {
@@ -285,6 +291,7 @@ export const NotebookContainer: React.FC = () => {
             if (importPayload?.portfolio?.id) {
                 mergePortfolioIntoState(importPayload.portfolio);
                 setSelectedPortfolioId(importPayload.portfolio.id);
+                persistSelectedPortfolioId(importPayload.portfolio.id);
                 setStatusMessage(t('notebook.import_completed_added_lots', {
                     count: String(importPayload.importedLots ?? 0),
                 }));
@@ -312,7 +319,11 @@ export const NotebookContainer: React.FC = () => {
                 return;
             }
             setPortfolios((current) => removePortfolioFromNotebookState(current, portfolio.id));
-            setSelectedPortfolioId((current) => (current === portfolio.id ? null : current));
+            setSelectedPortfolioId((current) => {
+                const nextSelection = current === portfolio.id ? null : current;
+                persistSelectedPortfolioId(nextSelection);
+                return nextSelection;
+            });
             setError(null);
             setStatusMessage(t("generated.features.notebook.components.notebook_container.item_4"));
         }
@@ -457,7 +468,10 @@ export const NotebookContainer: React.FC = () => {
                       </div>
                     </div>
 
-                    <Button className="w-full rounded-2xl" onClick={() => setSelectedPortfolioId(portfolio.id)}>
+                    <Button className="w-full rounded-2xl" onClick={() => {
+                setSelectedPortfolioId(portfolio.id);
+                persistSelectedPortfolioId(portfolio.id);
+            }}>
                       {t('notebook.open_portfolio')}
                     </Button>
                   </CardContent>

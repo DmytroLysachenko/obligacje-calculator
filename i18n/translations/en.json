@@ -72,6 +72,11 @@
     "retirement": "Retirement Planner"
   },
   "sidebar": {
+    "workspace_title": "Workspace",
+    "workspace_desc": "Choose active portfolio before saving new bond lots.",
+    "portfolio_selector_label": "Current portfolio",
+    "portfolio_selector_empty": "No portfolio selected",
+    "workspace_manage": "Manage workspace",
     "sections": {
       "core": "Core Tools",
       "conditional": "Investment Strategies",

@@ -19,6 +19,7 @@ import { buildSharedSingleScenarioPayload } from '@/shared/lib/single-scenario-s
 import { useBondCalculator } from '../hooks/useBondCalculator';
 import { applyGuardrailFix, getInputGuardrails, InputGuardrailIssue } from '../lib/input-guardrails';
 import { createSavedScenario, saveScenarioRecord } from '../lib/scenario-storage';
+import { getStoredCurrentPortfolioId, setStoredCurrentPortfolioId } from '@/features/notebook/lib/current-portfolio';
 import { BondChart } from './BondChart';
 import { BondInputsForm } from './BondInputsForm';
 import { BondResultsSummary } from './BondResultsSummary';
@@ -79,7 +80,10 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
       const portfolioResponse = await fetch('/api/portfolio');
       const portfolioData = await portfolioResponse.json();
       const portfolioList = unwrapApiData<Array<{ id: string }>>(portfolioData) ?? [];
-      let portfolioId: string | undefined = portfolioList[0]?.id;
+      const storedPortfolioId = getStoredCurrentPortfolioId();
+      let portfolioId: string | undefined =
+        portfolioList.find((portfolio) => portfolio.id === storedPortfolioId)?.id
+        ?? portfolioList[0]?.id;
 
       if (!portfolioId) {
         const createResponse = await fetch('/api/portfolio', {
@@ -97,6 +101,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
       if (!portfolioId) {
         throw new Error('Could not resolve a portfolio id for notebook save.');
       }
+      setStoredCurrentPortfolioId(portfolioId);
 
       await fetch('/api/portfolio/lots', {
         method: 'POST',

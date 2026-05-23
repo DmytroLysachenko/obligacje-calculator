@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   BarChart2,
   BookOpen,
   Calculator,
   ChevronRight,
+  FolderKanban,
   Layers,
   Menu,
   Scale,
@@ -15,10 +16,14 @@ import {
   Wallet,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { UserPortfolio } from '@/db/schema';
+import { getStoredCurrentPortfolioId, resolveCurrentPortfolioId, setStoredCurrentPortfolioId } from '@/features/notebook/lib/current-portfolio';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { useAppI18n } from '@/i18n/client';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
+import { unwrapApiData } from '@/shared/lib/api-response';
 import { cn } from '@/lib/utils';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
@@ -92,14 +97,14 @@ function SidebarBrand() {
   const { t } = useAppI18n();
 
   return (
-    <div className="border-b border-slate-200/80 px-6 py-6">
+    <div className="border-b border-slate-200/80 px-5 py-5">
       <Link href="/" className="flex items-center gap-3">
-        <div className="rounded-2xl bg-slate-900 p-2.5 text-white shadow-sm shadow-slate-900/10">
-          <TrendingUp className="h-5 w-5" />
+        <div className="rounded-2xl bg-slate-900 p-2 text-white shadow-sm shadow-slate-900/10">
+          <TrendingUp className="h-4.5 w-4.5" />
         </div>
         <div className="min-w-0 space-y-1">
-          <p className="text-[2rem] font-bold tracking-tight">{t('common.title')}</p>
-          <p className="max-w-[15rem] text-[13px] leading-6 text-slate-500">
+          <p className="text-[1.45rem] font-bold tracking-tight">{t('common.title')}</p>
+          <p className="max-w-[15rem] text-[12px] leading-5 text-slate-500">
             {t('sidebar.brand_tagline')}
           </p>
         </div>
@@ -206,6 +211,95 @@ function SidebarLanguageUtility() {
   );
 }
 
+function SidebarWorkspaceUtility() {
+  const { t } = useAppI18n();
+  const pathname = usePathname();
+  const [portfolios, setPortfolios] = useState<UserPortfolio[]>([]);
+  const [selectedPortfolioId, setSelectedPortfolioIdState] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchPortfolios = async () => {
+      try {
+        const response = await fetch('/api/portfolio');
+        const payload = await response.json().catch(() => null);
+
+        if (!response.ok || !isMounted) {
+          return;
+        }
+
+        const nextPortfolios = unwrapApiData<UserPortfolio[]>(payload) ?? [];
+        const nextSelection = resolveCurrentPortfolioId(
+          getStoredCurrentPortfolioId(),
+          nextPortfolios.map((portfolio) => portfolio.id),
+        );
+
+        setPortfolios(nextPortfolios);
+        setSelectedPortfolioIdState(nextSelection);
+      } catch {
+        if (isMounted) {
+          setPortfolios([]);
+        }
+      }
+    };
+
+    void fetchPortfolios();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [pathname]);
+
+  if (portfolios.length === 0) {
+    return null;
+  }
+
+  return (
+    <SidebarUtilityPanel>
+      <div className="space-y-3">
+        <div className="flex items-start gap-2">
+          <FolderKanban className="mt-0.5 h-4 w-4 text-primary" />
+          <div>
+            <p className="text-xs font-semibold text-slate-500">{t('sidebar.workspace_title')}</p>
+            <p className="mt-0.5 text-[12px] leading-5 text-slate-600">
+              {t('sidebar.workspace_desc')}
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
+            {t('sidebar.portfolio_selector_label')}
+          </p>
+          <Select
+            value={selectedPortfolioId ?? undefined}
+            onValueChange={(value) => {
+              setSelectedPortfolioIdState(value);
+              setStoredCurrentPortfolioId(value);
+            }}
+          >
+            <SelectTrigger className="h-10 rounded-xl border-slate-200 bg-white/90 text-left text-sm font-medium">
+              <SelectValue placeholder={t('sidebar.portfolio_selector_empty')} />
+            </SelectTrigger>
+            <SelectContent>
+              {portfolios.map((portfolio) => (
+                <SelectItem key={portfolio.id} value={portfolio.id}>
+                  {portfolio.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Button asChild variant="outline" className="h-9 w-full rounded-xl border-slate-200 bg-white/80 text-sm">
+          <Link href="/notebook">{t('sidebar.workspace_manage')}</Link>
+        </Button>
+      </div>
+    </SidebarUtilityPanel>
+  );
+}
+
 function SidebarSyncUtility({
   dataFreshness,
 }: {
@@ -257,6 +351,7 @@ function SidebarFooter({
 
   return (
     <div className="space-y-2 border-t border-slate-200/80 bg-white/55 p-3">
+      <SidebarWorkspaceUtility />
       <SidebarLanguageUtility />
       <SidebarSyncUtility dataFreshness={dataFreshness} />
       <div className="px-1 pt-1 text-xs text-slate-500">
