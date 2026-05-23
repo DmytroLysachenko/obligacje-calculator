@@ -301,7 +301,10 @@
         "label": "Tryb czasu",
         "general": "Ogólny (Lata)",
         "exact": "Dokładne Daty"
-      }
+      },
+      "rollover_title": "Rolowanie obslugiwane automatycznie",
+      "rollover_auto": "Horyzont przekracza natywny termin tej obligacji, wiec kalkulator automatycznie laczy kolejne cykle zamiast wymagac osobnego przelacznika.",
+      "single_cycle": "Horyzont miesci sie w jednym cyklu, wiec wynik pokazuje pojedynczy zakup i ewentualny koszt wczesniejszego wykupu."
     },
     "investment_horizon": "Czas Inwestowania",
     "investment_lots": "Twoje Partie Obligacji",
@@ -495,7 +498,8 @@
     "yield_three_months": "Rentowność (3m)",
     "first_month_rate": "Oprocentowanie 1. miesiąc",
     "offer": {
-      "current": "Aktualna Oferta"
+      "current": "Aktualna Oferta",
+      "current_description": "Uzyj aktualnej definicji oferty"
     },
     "historical_offer": "Oferta Historyczna",
     "select_series": "Wybierz konkretną serię",
@@ -675,7 +679,8 @@
       "post_year_one_label": "Scenariusz CPI po pierwszym roku",
       "non_indexed_note": "Ta obligacja nie jest indeksowana CPI. Inflacja sluzy tu tylko do pokazania wartosci realnej, a nie do resetu kuponu.",
       "nbp_note": "Ta prognozowana sciezka NBP steruje kolejnymi okresami obligacji zmiennoprocentowych po zakonczeniu pierwszej stopy z oferty."
-    }
+    },
+    "family_bond_badge": "Rodzinne"
   },
   "landing": {
     "hero_title": "Osiągnij Mistrzostwo w Strategii",
@@ -1984,5 +1989,24 @@
     "sign_in_required_short": "Wymagane logowanie",
     "sign_in_needed_for_portfolio": "Zapisywanie do portfela jest dostepne tylko w zalogowanym workspace. Nadal mozesz normalnie uzywac kalkulatora i zapisywac osobne scenariusze.",
     "empty_guest_description": "Funkcje workspace dla zalogowanych nie sa dostepne w trybie goscia. Korzystaj swobodnie z kalkulatorow, a partie do portfeli zapiszesz po zalogowaniu."
+  },
+  "export": {
+    "single_bond_pdf": {
+      "bond_type": "Typ obligacji",
+      "purchase_date": "Data zakupu",
+      "exit_date": "Data wyjscia",
+      "initial_investment": "Kwota poczatkowa",
+      "net_payout": "Wyplata netto",
+      "net_profit": "Zysk netto",
+      "total_tax": "Laczny podatek",
+      "real_value": "Wartosc realna",
+      "real_annualized_return": "Realna stopa roczna",
+      "structured_summary_note": "Raport PDF jest generowany z uporzadkowanego zestawu danych, a nie ze zrzutu ekranu strony.",
+      "title": "Raport symulacji obligacji",
+      "generated_label": "Wygenerowano",
+      "run_notes": "Uwagi do przebiegu",
+      "data_context": "Kontekst danych",
+      "normalized_layer_note": "Eksport PDF korzysta z tej samej uporzadkowanej warstwy wynikow, co podsumowanie scenariusza. Nie opiera sie na przechwytywaniu kolorow ani wykresu z DOM."
+    }
   }
 }

@@ -100,7 +100,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
                       {formatDurationLabel(type)}
                     </span>
                     {isFamilyBondType(type) ? (<span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
-                        {t("generated.features.single_calculator.components.sections.bond_config_section.item_2")}
+                        {t('bonds.family_bond_badge')}
                       </span>) : null}
                   </div>
                   <span className="max-w-[280px] text-sm font-medium text-slate-700">
@@ -122,7 +122,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
                 <div className="flex flex-col gap-1">
                   <span className="font-semibold">{t('bonds.offer.current')}</span>
                   <span className="text-xs text-slate-500">
-                    {t("generated.features.single_calculator.components.sections.bond_config_section.item_3")}
+                    {t('bonds.offer.current_description')}
                   </span>
                 </div>
               </SelectItem>

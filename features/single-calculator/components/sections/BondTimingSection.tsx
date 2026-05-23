@@ -90,7 +90,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
             {formatHorizonMonths(investmentHorizonMonths, language)}
           </span>
         </div>
-        <CommittedSliderInput value={investmentHorizonMonths} min={1} max={360} step={1} unit={t("generated.features.single_calculator.components.sections.bond_timing_section.item_1")} onCommit={(value) => onUpdate('investmentHorizonMonths', value)}/>
+        <CommittedSliderInput value={investmentHorizonMonths} min={1} max={360} step={1} unit={t('common.month_compact')} onCommit={(value) => onUpdate('investmentHorizonMonths', value)}/>
       </div>
 
       <div className="space-y-3">
@@ -140,11 +140,11 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
       <div className="rounded-xl border border-primary/10 bg-primary/5 p-4">
         <div className="space-y-0.5">
           <Label className="text-sm font-bold text-primary">
-            {t("generated.features.single_calculator.components.sections.bond_timing_section.item_2")}
+            {t('bonds.timing.rollover_title')}
           </Label>
           <p className="text-[10px] font-medium italic text-muted-foreground">
             {autoRollover
-            ? t("generated.features.single_calculator.components.sections.bond_timing_section.item_3") : t("generated.features.single_calculator.components.sections.bond_timing_section.item_4")}
+            ? t('bonds.timing.rollover_auto') : t('bonds.timing.single_cycle')}
           </p>
         </div>
       </div>

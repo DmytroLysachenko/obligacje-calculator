@@ -11,15 +11,15 @@ function formatCurrency(value: number, language: 'pl' | 'en') {
 }
 function buildAssumptionRows(results: CalculationResult, inputs: BondInputs, language: 'pl' | 'en') {
     return [
-        [translateMessage(language, "generated.shared.lib.pdf_utils.item_2"), inputs.bondType],
-        [translateMessage(language, "generated.shared.lib.pdf_utils.item_3"), inputs.purchaseDate],
-        [translateMessage(language, "generated.shared.lib.pdf_utils.item_4"), inputs.withdrawalDate],
-        [translateMessage(language, "generated.shared.lib.pdf_utils.item_5"), formatCurrency(results.initialInvestment, language)],
-        [translateMessage(language, "generated.shared.lib.pdf_utils.item_6"), formatCurrency(results.netPayoutValue, language)],
-        [translateMessage(language, "generated.shared.lib.pdf_utils.item_7"), formatCurrency(results.totalProfit, language)],
-        [translateMessage(language, "generated.shared.lib.pdf_utils.item_8"), formatCurrency(results.totalTax, language)],
-        [translateMessage(language, "generated.shared.lib.pdf_utils.item_9"), formatCurrency(results.finalRealValue, language)],
-        [translateMessage(language, "generated.shared.lib.pdf_utils.item_10"), `${results.realAnnualizedReturn.toFixed(2)}%`],
+        [translateMessage(language, "export.single_bond_pdf.bond_type"), inputs.bondType],
+        [translateMessage(language, "export.single_bond_pdf.purchase_date"), inputs.purchaseDate],
+        [translateMessage(language, "export.single_bond_pdf.exit_date"), inputs.withdrawalDate],
+        [translateMessage(language, "export.single_bond_pdf.initial_investment"), formatCurrency(results.initialInvestment, language)],
+        [translateMessage(language, "export.single_bond_pdf.net_payout"), formatCurrency(results.netPayoutValue, language)],
+        [translateMessage(language, "export.single_bond_pdf.net_profit"), formatCurrency(results.totalProfit, language)],
+        [translateMessage(language, "export.single_bond_pdf.total_tax"), formatCurrency(results.totalTax, language)],
+        [translateMessage(language, "export.single_bond_pdf.real_value"), formatCurrency(results.finalRealValue, language)],
+        [translateMessage(language, "export.single_bond_pdf.real_annualized_return"), `${results.realAnnualizedReturn.toFixed(2)}%`],
     ] as const;
 }
 export async function generateSingleBondReportPdf(results: CalculationResult, inputs: BondInputs, language: 'pl' | 'en', filename = 'bond-report.pdf') {
@@ -32,7 +32,7 @@ export async function generateSingleBondReportPdf(results: CalculationResult, in
     const notes = results.calculationNotes?.length
         ? results.calculationNotes
         : [
-            translateMessage(language, "generated.shared.lib.pdf_utils.item_11"),
+            translateMessage(language, "export.single_bond_pdf.structured_summary_note"),
         ];
     const writeWrapped = (text: string, { bold = false, indent = 0, }: {
         bold?: boolean;
@@ -45,11 +45,11 @@ export async function generateSingleBondReportPdf(results: CalculationResult, in
     };
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(20);
-    pdf.text(translateMessage(language, "generated.shared.lib.pdf_utils.item_12"), margin, y);
+    pdf.text(translateMessage(language, "export.single_bond_pdf.title"), margin, y);
     y += 10;
     pdf.setFont('helvetica', 'normal');
     pdf.setFontSize(10);
-    pdf.text(`${translateMessage(language, "generated.shared.lib.pdf_utils.item_13")}: ${new Date().toISOString().slice(0, 10)}`, margin, y);
+    pdf.text(`${translateMessage(language, "export.single_bond_pdf.generated_label")}: ${new Date().toISOString().slice(0, 10)}`, margin, y);
     y += 10;
     pdf.setFontSize(11);
     for (const [label, value] of rows) {
@@ -57,16 +57,16 @@ export async function generateSingleBondReportPdf(results: CalculationResult, in
     }
     y += 4;
     pdf.setFontSize(12);
-    writeWrapped(translateMessage(language, "generated.shared.lib.pdf_utils.item_14"), { bold: true });
+    writeWrapped(translateMessage(language, "export.single_bond_pdf.run_notes"), { bold: true });
     pdf.setFontSize(10);
     for (const note of notes) {
         writeWrapped(`- ${note}`);
     }
     y += 4;
     pdf.setFontSize(12);
-    writeWrapped(translateMessage(language, "generated.shared.lib.pdf_utils.item_15"), { bold: true });
+    writeWrapped(translateMessage(language, "export.single_bond_pdf.data_context"), { bold: true });
     pdf.setFontSize(10);
-    writeWrapped(translateMessage(language, "generated.shared.lib.pdf_utils.item_16"));
+    writeWrapped(translateMessage(language, "export.single_bond_pdf.normalized_layer_note"));
     pdf.save(filename);
 }
 

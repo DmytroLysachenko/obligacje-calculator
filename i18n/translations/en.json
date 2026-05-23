@@ -301,7 +301,10 @@
         "label": "Timing Mode",
         "general": "General (Years)",
         "exact": "Exact Dates"
-      }
+      },
+      "rollover_title": "Rollover handled automatically",
+      "rollover_auto": "The horizon outlasts this bond, so the calculator automatically chains follow-on cycles instead of asking for a separate toggle.",
+      "single_cycle": "The horizon stays within one native cycle, so the result shows a single purchase plus any early-exit fee if needed."
     },
     "investment_horizon": "Investment Horizon",
     "investment_lots": "Your Bond Lots",
@@ -511,7 +514,8 @@
     "yield_three_months": "Yield (3m)",
     "first_month_rate": "1st Month Rate",
     "offer": {
-      "current": "Current Offer"
+      "current": "Current Offer",
+      "current_description": "Use the currently active offer definition"
     },
     "historical_offer": "Historical Offer",
     "select_series": "Select specific series",
@@ -691,7 +695,8 @@
       "post_year_one_label": "Post-year-one CPI scenario",
       "non_indexed_note": "This bond is not CPI-indexed. Inflation here is used for real-value context, not coupon resets.",
       "nbp_note": "This projected NBP path drives later floating-rate periods after the issued first-period offer ends."
-    }
+    },
+    "family_bond_badge": "Family"
   },
   "landing": {
     "hero_title": "Master Your",
@@ -2037,5 +2042,24 @@
     "sign_in_required_short": "Sign in required",
     "sign_in_needed_for_portfolio": "Portfolio saving is available only inside a signed-in workspace. You can still use the calculator normally and save scenarios separately.",
     "empty_guest_description": "Signed-in workspace features are not available in guest mode. Use calculators freely, then sign in later to save lots into portfolios."
+  },
+  "export": {
+    "single_bond_pdf": {
+      "bond_type": "Bond type",
+      "purchase_date": "Purchase date",
+      "exit_date": "Exit date",
+      "initial_investment": "Initial investment",
+      "net_payout": "Net payout",
+      "net_profit": "Net profit",
+      "total_tax": "Total tax",
+      "real_value": "Real value",
+      "real_annualized_return": "Real annualized return",
+      "structured_summary_note": "This PDF is generated from a structured data summary rather than a page screenshot.",
+      "title": "Bond simulation report",
+      "generated_label": "Generated",
+      "run_notes": "Run notes",
+      "data_context": "Data context",
+      "normalized_layer_note": "This PDF uses the same normalized result layer as the scenario summary. It does not rely on DOM screenshots, color parsing, or chart capture."
+    }
   }
 }
