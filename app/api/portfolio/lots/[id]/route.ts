@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { InvestmentLotSchema } from '@/features/bond-core/types/portfolio-schemas';
 import {
-  applyPortfolioOwnerCookie,
-  resolvePortfolioOwner,
-} from '@/lib/server/portfolio/access';
-import {
   deleteOwnerLot,
   PortfolioServiceError,
   updateOwnerLot,
@@ -12,19 +8,20 @@ import {
 import { createErrorResponse, createSuccessResponse } from '@/shared/types/api';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { createDomainErrorResponse } from '@/lib/server/http/responses';
+import { getPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
 
 export const PATCH = apiHandler<{ params: Promise<{ id: string }> }>(async (
   req: NextRequest,
   { params },
 ) => {
   try {
-    const owner = await resolvePortfolioOwner();
+    const { owner } = await getPortfolioRouteContext();
     const {id} = await params;
     const body = await req.json();
     const validated = InvestmentLotSchema.partial().parse(body);
 
     const updatedLot = await updateOwnerLot(owner.ownerId, id, validated);
-    return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(updatedLot)), owner);
+    return withPortfolioOwnerResponse(NextResponse.json(createSuccessResponse(updatedLot)), owner);
   } catch (error) {
     if (error instanceof PortfolioServiceError) {
       return createDomainErrorResponse(error);
@@ -40,11 +37,11 @@ export const DELETE = apiHandler<{ params: Promise<{ id: string }> }>(async (
   { params },
 ) => {
   try {
-    const owner = await resolvePortfolioOwner();
+    const { owner } = await getPortfolioRouteContext();
     const {id} = await params;
 
     await deleteOwnerLot(owner.ownerId, id);
-    return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse({success: true})), owner);
+    return withPortfolioOwnerResponse(NextResponse.json(createSuccessResponse({success: true})), owner);
   } catch (error) {
     if (error instanceof PortfolioServiceError) {
       return createDomainErrorResponse(error);
