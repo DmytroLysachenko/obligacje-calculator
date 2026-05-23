@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { InvestmentLotSchema } from '@/features/bond-core/types/portfolio-schemas';
-import {
-  applyPortfolioOwnerCookie,
-  resolvePortfolioOwner,
-} from '@/lib/server/portfolio/access';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { createSuccessResponse } from '@/shared/types/api';
 import {
@@ -13,9 +9,10 @@ import {
   PortfolioServiceError,
 } from '@/lib/server/portfolio/service';
 import { createDomainErrorResponse, createValidationErrorResponse } from '@/lib/server/http/responses';
+import { getPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
 
 export const GET = apiHandler(async (req: NextRequest) => {
-  const owner = await resolvePortfolioOwner();
+  const { owner } = await getPortfolioRouteContext();
   const url = new URL(req.url);
   const portfolioId = url.searchParams.get('portfolioId');
 
@@ -25,7 +22,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
 
   try {
     const lots = await listPortfolioLots(owner.ownerId, portfolioId);
-    return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(lots)), owner);
+    return withPortfolioOwnerResponse(NextResponse.json(createSuccessResponse(lots)), owner);
   } catch (error) {
     if (error instanceof PortfolioServiceError) {
       return createDomainErrorResponse(error);
@@ -36,13 +33,13 @@ export const GET = apiHandler(async (req: NextRequest) => {
 });
 
 export const POST = apiHandler(async (req: NextRequest) => {
-  const owner = await resolvePortfolioOwner();
+  const { owner } = await getPortfolioRouteContext();
   const body = await req.json();
   const validated = InvestmentLotSchema.parse(body);
 
   try {
     const newLot = await createPortfolioLot(owner.ownerId, validated);
-    return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(newLot)), owner);
+    return withPortfolioOwnerResponse(NextResponse.json(createSuccessResponse(newLot)), owner);
   } catch (error) {
     if (error instanceof PortfolioServiceError) {
       return createDomainErrorResponse(error);
@@ -53,7 +50,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
 });
 
 export const DELETE = apiHandler(async (req: NextRequest) => {
-  const owner = await resolvePortfolioOwner();
+  const { owner } = await getPortfolioRouteContext();
   const url = new URL(req.url);
   const id = url.searchParams.get('id');
 
@@ -63,7 +60,7 @@ export const DELETE = apiHandler(async (req: NextRequest) => {
 
   try {
     await deleteOwnerLot(owner.ownerId, id);
-    return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse({success: true})), owner);
+    return withPortfolioOwnerResponse(NextResponse.json(createSuccessResponse({success: true})), owner);
   } catch (error) {
     if (error instanceof PortfolioServiceError) {
       return createDomainErrorResponse(error);

@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { applyPortfolioOwnerCookie, resolvePortfolioOwner } from '@/lib/server/portfolio/access';
 import { createSuccessResponse } from '@/shared/types/api';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { z } from 'zod';
 import { getOwnerSettings, updateOwnerSettings } from '@/lib/server/settings/service';
+import { getPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
 
 const UserSettingsUpdateSchema = z.object({
   currency: z.string().optional(),
@@ -13,18 +13,18 @@ const UserSettingsUpdateSchema = z.object({
 });
 
 export const GET = apiHandler(async () => {
-  const owner = await resolvePortfolioOwner();
+  const { owner } = await getPortfolioRouteContext();
   const settings = await getOwnerSettings(owner.ownerId);
 
-  return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(settings)), owner);
+  return withPortfolioOwnerResponse(NextResponse.json(createSuccessResponse(settings)), owner);
 });
 
 export const PATCH = apiHandler(async (req: NextRequest) => {
-  const owner = await resolvePortfolioOwner();
+  const { owner } = await getPortfolioRouteContext();
   const body = await req.json();
   const validated = UserSettingsUpdateSchema.parse(body);
   const updated = await updateOwnerSettings(owner.ownerId, validated);
 
-  return applyPortfolioOwnerCookie(NextResponse.json(createSuccessResponse(updated)), owner);
+  return withPortfolioOwnerResponse(NextResponse.json(createSuccessResponse(updated)), owner);
 });
 

@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { applyPortfolioOwnerCookie, resolvePortfolioOwner } from '@/lib/server/portfolio/access';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { createSuccessResponse } from '@/shared/types/api';
-import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
 import { exportOwnerPortfolio, PortfolioServiceError } from '@/lib/server/portfolio/service';
 import { createDomainErrorResponse } from '@/lib/server/http/responses';
+import { getPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
 
 export const GET = apiHandler(async (req: NextRequest) => {
-  await ensurePortfolioSchemaCompat();
-  const owner = await resolvePortfolioOwner();
+  const { owner } = await getPortfolioRouteContext();
   const { searchParams } = new URL(req.url);
   const portfolioId = searchParams.get('portfolioId');
   const formatMode = searchParams.get('format') ?? 'portfolio';
@@ -32,7 +30,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
       },
     });
 
-    return applyPortfolioOwnerCookie(response, owner);
+    return withPortfolioOwnerResponse(response, owner);
   } catch (error) {
     if (error instanceof PortfolioServiceError) {
       return createDomainErrorResponse(error);

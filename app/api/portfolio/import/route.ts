@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { applyPortfolioOwnerCookie, resolvePortfolioOwner } from '@/lib/server/portfolio/access';
-import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { createErrorResponse, createSuccessResponse } from '@/shared/types/api';
 import { importOwnerPortfolio } from '@/lib/server/portfolio/service';
+import { getPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
 
 const ImportedLotSchema = z.object({
   bondType: z.string().min(1),
@@ -23,8 +22,7 @@ const ImportPayloadSchema = z.object({
 });
 
 export const POST = apiHandler(async (req: NextRequest) => {
-  await ensurePortfolioSchemaCompat();
-  const owner = await resolvePortfolioOwner();
+  const { owner } = await getPortfolioRouteContext();
   const body = await req.json();
   const parsed = ImportPayloadSchema.safeParse(body);
 
@@ -38,7 +36,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
   const { portfolio } = parsed.data;
   const importedPortfolio = await importOwnerPortfolio(owner.ownerId, portfolio);
 
-  return applyPortfolioOwnerCookie(
+  return withPortfolioOwnerResponse(
     NextResponse.json(createSuccessResponse({
       portfolio: importedPortfolio.portfolio,
       importedLots: importedPortfolio.importedLots,
