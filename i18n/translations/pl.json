@@ -50,6 +50,24 @@
     "show_all": "Pokaz wszystko ({count})",
     "month_compact": "m"
   },
+  "site": {
+    "default_title_suffix": "Edukacyjny kalkulator obligacji",
+    "twitter_description": "Skupiony kalkulator i aplikacja referencyjna dla polskich obligacji skarbowych.",
+    "footer_disclaimer": "Tylko do celow edukacyjnych.",
+    "official_bonds_link_label": "Oficjalna strona obligacji skarbowych"
+  },
+  "single_calculator": {
+    "saved_scenarios": {
+      "title": "Zapisane scenariusze",
+      "description": "Wznow, skopiuj albo uporzadkuj ostatnie przebiegi planowania.",
+      "save_current": "Zapisz biezacy",
+      "empty": "Brak zapisanych scenariuszy. Zapisz biezace dane, aby budowac powtarzalne sciezki planowania.",
+      "updated": "Zaktualizowano",
+      "open": "Otworz",
+      "copy": "Kopia",
+      "delete": "Usun"
+    }
+  },
   "strategy_hints": {
     "title": "Inteligentne Wskazówki",
     "edo_better_than_coi": "Przy Twoim horyzoncie (> 4 lata) i prognozowanej inflacji, EDO (10-letnie) mogą być korzystniejsze niż COI (4-letnie) dzięki wyższej marży i kapitalizacji odsetek.",
@@ -761,6 +779,11 @@
         "description": "Ograniczony scenariusz stalej wyplaty. Wezszy niz zwykly planer emerytalny i celowo zawezony."
       }
     }
+  },
+  "ladder_page": {
+    "page_notice_eyebrow": "Strategia warunkowa",
+    "page_notice_title": "Strategia drabiny ma sens tylko wtedy, gdy rozklad terminow wyplat jest naprawde potrzebny.",
+    "page_notice_desc": "Uzywaj tej strony po jednym czystym przebiegu pojedynczej obligacji. Drabina ma wspierac konkretny plan plynnosci, a nie zastapic glowny kalkulator."
   },
   "optimizer_page": {
     "page_notice_eyebrow": "Pomocniczy sorter",

@@ -50,6 +50,24 @@
     "show_all": "Show all ({count})",
     "month_compact": "mo"
   },
+  "site": {
+    "default_title_suffix": "Educational bond calculator",
+    "twitter_description": "Focused calculator and reference app for Polish treasury bonds.",
+    "footer_disclaimer": "For educational purposes only.",
+    "official_bonds_link_label": "Official Polish Bonds Website"
+  },
+  "single_calculator": {
+    "saved_scenarios": {
+      "title": "Saved scenarios",
+      "description": "Resume, duplicate, or clean up your last planning runs.",
+      "save_current": "Save current",
+      "empty": "No saved scenarios yet. Save current inputs to build reusable planning paths.",
+      "updated": "Updated",
+      "open": "Open",
+      "copy": "Copy",
+      "delete": "Delete"
+    }
+  },
   "strategy_hints": {
     "title": "Smart Strategy Hints",
     "edo_better_than_coi": "Given your horizon (> 4 years) and projected inflation, EDO (10-year) bonds might be more beneficial than COI (4-year) due to higher margins and annual interest capitalization.",
@@ -813,6 +831,11 @@
         "description": "Limited steady-rate withdrawal scenario. Narrower than a normal retirement planner and intentionally scoped down."
       }
     }
+  },
+  "ladder_page": {
+    "page_notice_eyebrow": "Conditional strategy",
+    "page_notice_title": "Ladder strategy stays useful only when cash-flow spacing matters.",
+    "page_notice_desc": "Use this page after one clean single-bond run. Ladder logic should support a specific liquidity plan, not replace the main calculator."
   },
   "multi_asset_page": {
     "page_notice_eyebrow": "Historical context",

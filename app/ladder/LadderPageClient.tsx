@@ -15,10 +15,10 @@ export function LadderPageClient() {
       <div className="space-y-8">
         <FeatureStatusNotice
           status="conditional"
-          eyebrow={t('generated.app.ladder.page.item_1')}
-          title={t('generated.app.ladder.page.item_2')}
+          eyebrow={t('ladder_page.page_notice_eyebrow')}
+          title={t('ladder_page.page_notice_title')}
         >
-          {t('generated.app.ladder.page.item_3')}
+          {t('ladder_page.page_notice_desc')}
         </FeatureStatusNotice>
         <Suspense fallback={<PageSuspenseFallback />}>
           <LadderContainer />

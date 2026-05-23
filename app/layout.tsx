@@ -28,7 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
     title: {
-      default: `${t('common.title')} - ${t('generated.app.layout.item_1')}`,
+      default: `${t('common.title')} - ${t('site.default_title_suffix')}`,
       template: `%s | ${t('common.title')}`
     },
     description: t('common.description'),
@@ -42,7 +42,7 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: 'summary_large_image',
       title: t('common.title'),
-      description: t('generated.app.layout.item_3')
+      description: t('site.twitter_description')
     }
   };
 }
@@ -113,7 +113,7 @@ export default async function RootLayout({
                           <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
                             <p>
                               © {new Date().getFullYear()} {t('common.title')}.{' '}
-                              {t('generated.app.layout.item_4')}
+                              {t('site.footer_disclaimer')}
                             </p>
                             <div className="mt-4 flex justify-center gap-4">
                               <a
@@ -122,7 +122,7 @@ export default async function RootLayout({
                                 rel="noopener noreferrer"
                                 className="text-primary hover:underline"
                               >
-                                {t('generated.app.layout.item_5')}
+                                {t('site.official_bonds_link_label')}
                               </a>
                             </div>
                           </div>
