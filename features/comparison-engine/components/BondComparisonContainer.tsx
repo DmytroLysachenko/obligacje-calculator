@@ -240,9 +240,9 @@ export const BondComparisonContainer = () => {
         return results.reduce((best, current) => current.result.netPayoutValue > best.result.netPayoutValue ? current : best);
     }, [results]);
     const comparisonReadingGuide = [
-        t("generated.features.comparison_engine.components.bond_comparison_container.item_2"),
-        t("generated.features.comparison_engine.components.bond_comparison_container.item_3"),
-        t("generated.features.comparison_engine.components.bond_comparison_container.item_4"),
+        t('comparison.page.reading_guide.understand_assumptions'),
+        t('comparison.page.reading_guide.compare_payout'),
+        t('comparison.page.reading_guide.check_real_value'),
     ];
     return (<div className="space-y-6 pb-20 md:space-y-8">
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[360px_minmax(0,1fr)] xl:gap-8">
@@ -251,16 +251,16 @@ export const BondComparisonContainer = () => {
             <CardHeader className="space-y-3 border-b border-slate-200 pb-5">
               <CardTitle className="flex items-center gap-2 text-lg font-black tracking-tight text-slate-950">
                 <Scale className="h-5 w-5 text-primary"/>
-                {t("generated.features.comparison_engine.components.bond_comparison_container.item_5")}
+                {t('comparison.page.configuration_title')}
               </CardTitle>
               <CardDescription className="text-sm leading-7 text-slate-600">
-                {t("generated.features.comparison_engine.components.bond_comparison_container.item_6")}
+                {t('comparison.page.configuration_description')}
               </CardDescription>
             </CardHeader>
               <CardContent className="space-y-6 p-5 md:p-6">
               <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
-                  {t("generated.features.comparison_engine.components.bond_comparison_container.item_7")}
+                  {t('comparison.page.initial_investment')}
                 </Label>
                 <CommittedSliderInput value={initialInvestment} min={1000} max={100000} step={100} unit="PLN" onCommit={(value) => {
             setInitialInvestment(value);
@@ -270,7 +270,7 @@ export const BondComparisonContainer = () => {
 
               <div className="space-y-2 border-t border-dashed border-slate-200 pt-5">
                 <Label className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
-                  {t("generated.features.comparison_engine.components.bond_comparison_container.item_8")}
+                  {t('comparison.page.investment_horizon')}
                 </Label>
                 <CommittedSliderInput value={duration} min={1} max={30} step={1} unit={t('common.years')} onCommit={(value) => {
             setDuration(value);
@@ -292,17 +292,17 @@ export const BondComparisonContainer = () => {
                       {t('bonds.inflation.adjusted')}
                     </p>
                     <p className="text-xs leading-6 text-slate-600">
-                      {t("generated.features.comparison_engine.components.bond_comparison_container.item_9")}
+                      {t('comparison.page.real_value_toggle_description')}
                     </p>
                   </div>
                   <Switch checked={showRealValue} onCheckedChange={setShowRealValue}/>
                 </div>
                 <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3">
                   <p className="text-sm font-semibold text-slate-950">
-                    {t("generated.features.comparison_engine.components.bond_comparison_container.item_10")}
+                    {t('comparison.page.rollover_title')}
                   </p>
                   <p className="mt-1 text-xs leading-6 text-slate-600">
-                    {t("generated.features.comparison_engine.components.bond_comparison_container.item_11")}
+                    {t('comparison.page.rollover_description')}
                   </p>
                 </div>
               </div>
@@ -313,10 +313,10 @@ export const BondComparisonContainer = () => {
           <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
             <CardHeader className="space-y-3 border-b border-slate-200 pb-5">
               <CardTitle className="text-lg font-black tracking-tight text-slate-950">
-                {t("generated.features.comparison_engine.components.bond_comparison_container.item_12")}
+                {t('comparison.page.bond_picker_title')}
               </CardTitle>
               <CardDescription className="text-sm leading-7 text-slate-600">
-                {t("generated.features.comparison_engine.components.bond_comparison_container.item_13")}
+                {t('comparison.page.bond_picker_description')}
               </CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-2 p-6">
@@ -333,21 +333,21 @@ export const BondComparisonContainer = () => {
             </CardContent>
           </Card>
 
-          <SecondaryInsightAccordion title={t("generated.features.comparison_engine.components.bond_comparison_container.item_14")} description={t("generated.features.comparison_engine.components.bond_comparison_container.item_15")} badge={t("generated.features.comparison_engine.components.bond_comparison_container.item_16")}>
+          <SecondaryInsightAccordion title={t('comparison.page.how_to_read_title')} description={t('comparison.page.how_to_read_description')} badge={t('comparison.page.how_to_read_badge')}>
             <div className="space-y-4 text-sm leading-7 text-slate-600">
               <div className="rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4">
                 <div className="flex items-center gap-2 font-black tracking-tight text-slate-950">
                   <AlertTriangle className="h-4 w-4 text-amber-600"/>
-                  {t("generated.features.comparison_engine.components.bond_comparison_container.item_17")}
+                  {t('comparison.page.reading_checklist_title')}
                 </div>
                 <div className="mt-3">
                   <ReadingChecklist items={comparisonReadingGuide}/>
                 </div>
               </div>
               <div className="grid gap-4 md:grid-cols-3">
-                <StepCard title={t("generated.features.comparison_engine.components.bond_comparison_container.item_18")} description={t("generated.features.comparison_engine.components.bond_comparison_container.item_19")}/>
-                <StepCard title={t("generated.features.comparison_engine.components.bond_comparison_container.item_20")} description={t("generated.features.comparison_engine.components.bond_comparison_container.item_21")}/>
-                <StepCard title={t("generated.features.comparison_engine.components.bond_comparison_container.item_22")} description={t("generated.features.comparison_engine.components.bond_comparison_container.item_23")}/>
+                <StepCard title={t('comparison.page.steps.configure_title')} description={t('comparison.page.steps.configure_description')}/>
+                <StepCard title={t('comparison.page.steps.run_title')} description={t('comparison.page.steps.run_description')}/>
+                <StepCard title={t('comparison.page.steps.decide_title')} description={t('comparison.page.steps.decide_description')}/>
               </div>
             </div>
           </SecondaryInsightAccordion>
@@ -362,17 +362,17 @@ export const BondComparisonContainer = () => {
                     {t('comparison.ready_to_compare')}
                   </div>
                   <h3 className="text-3xl font-black tracking-tight text-slate-950">
-                    {t("generated.features.comparison_engine.components.bond_comparison_container.item_24")}
+                    {t('comparison.page.empty_state_title')}
                   </h3>
                   <p className="max-w-3xl text-sm leading-8 text-slate-600">
-                    {t("generated.features.comparison_engine.components.bond_comparison_container.item_25")}
+                    {t('comparison.page.empty_state_description')}
                   </p>
                 </div>
 
                 <div className="grid gap-4 lg:grid-cols-3">
-                  <StepCard title={t("generated.features.comparison_engine.components.bond_comparison_container.item_26")} description={t("generated.features.comparison_engine.components.bond_comparison_container.item_27")}/>
-                  <StepCard title={t("generated.features.comparison_engine.components.bond_comparison_container.item_28")} description={t("generated.features.comparison_engine.components.bond_comparison_container.item_29")}/>
-                  <StepCard title={t("generated.features.comparison_engine.components.bond_comparison_container.item_30")} description={t("generated.features.comparison_engine.components.bond_comparison_container.item_31")}/>
+                  <StepCard title={t('comparison.page.empty_steps.choose_bonds_title')} description={t('comparison.page.empty_steps.choose_bonds_description')}/>
+                  <StepCard title={t('comparison.page.empty_steps.set_assumptions_title')} description={t('comparison.page.empty_steps.set_assumptions_description')}/>
+                  <StepCard title={t('comparison.page.empty_steps.run_title')} description={t('comparison.page.empty_steps.run_description')}/>
                 </div>
 
               </CardContent>
@@ -384,22 +384,22 @@ export const BondComparisonContainer = () => {
 
           {results.length ? (<div className="space-y-10">
               {isDirty ? (<div className="rounded-3xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
-                  {t("generated.features.comparison_engine.components.bond_comparison_container.item_32")}
+                  {t('comparison.page.stale_results')}
                 </div>) : null}
 
-              <SectionBlock title={t("generated.features.comparison_engine.components.bond_comparison_container.item_33")} description={t("generated.features.comparison_engine.components.bond_comparison_container.item_34")}>
+              <SectionBlock title={t('comparison.page.summary_title')} description={t('comparison.page.summary_description')}>
                 <div className="grid gap-4 lg:grid-cols-3">
-                  <ResultMetric label={t("generated.features.comparison_engine.components.bond_comparison_container.item_35")} value={bestResult ? bestResult.type : '-'}/>
+                  <ResultMetric label={t('comparison.page.best_match')} value={bestResult ? bestResult.type : '-'}/>
                   <ResultMetric label={showRealValue ? t('bonds.real_value_inflation') : t('bonds.net_payout')} value={bestResult
                 ? formatCurrency(showRealValue
                     ? bestResult.result.finalRealValue
                     : bestResult.result.netPayoutValue)
                 : '-'} tone="text-emerald-700"/>
-                  <ResultMetric label={t("generated.features.comparison_engine.components.bond_comparison_container.item_36")} value={String(results.length)}/>
+                  <ResultMetric label={t('comparison.page.scenarios_modeled')} value={String(results.length)}/>
                 </div>
               </SectionBlock>
 
-              <SectionBlock title={t("generated.features.comparison_engine.components.bond_comparison_container.item_37")} description={t("generated.features.comparison_engine.components.bond_comparison_container.item_38")}>
+              <SectionBlock title={t('comparison.page.results_title')} description={t('comparison.page.results_description')}>
                 <div className="grid gap-4 xl:grid-cols-2">
                   {results.map((result) => {
                 const bondDefinition = definitions?.[result.type];
@@ -433,10 +433,10 @@ export const BondComparisonContainer = () => {
                 </div>
               </SectionBlock>
 
-              <SectionBlock title={t("generated.features.comparison_engine.components.bond_comparison_container.item_39")} description={t("generated.features.comparison_engine.components.bond_comparison_container.item_40")}>
+              <SectionBlock title={t('comparison.page.chart_title')} description={t('comparison.page.chart_description')}>
                 <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
                   <CardContent className="p-4 md:p-6">
-                    <ChartSupportNote title={t("generated.features.comparison_engine.components.bond_comparison_container.item_41")} description={t("generated.features.comparison_engine.components.bond_comparison_container.item_42")}/>
+                    <ChartSupportNote title={t('comparison.page.chart_note_title')} description={t('comparison.page.chart_note_description')}/>
 
                     <ChartContainer height={420}>
                       <ResponsiveContainer width="100%" height="100%">
@@ -456,7 +456,7 @@ export const BondComparisonContainer = () => {
                 </Card>
               </SectionBlock>
 
-              <SecondaryInsightAccordion title={t('bonds.simulation.calculation_context')} description={t("generated.features.comparison_engine.components.bond_comparison_container.item_43")} badge={t("generated.features.comparison_engine.components.bond_comparison_container.item_44")}>
+              <SecondaryInsightAccordion title={t('bonds.simulation.calculation_context')} description={t('comparison.page.calculation_context_description')} badge={t('comparison.page.calculation_context_badge')}>
                 <CalculationMetaPanel warnings={envelope?.warnings} assumptions={envelope?.assumptions} calculationNotes={envelope?.calculationNotes} dataQualityFlags={envelope?.dataQualityFlags} dataFreshness={envelope?.dataFreshness}/>
               </SecondaryInsightAccordion>
             </div>) : null}

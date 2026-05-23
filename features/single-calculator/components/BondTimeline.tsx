@@ -89,14 +89,14 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
     return (<div className="space-y-4">
       <div className="space-y-4 rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
         <div className="grid gap-3 md:grid-cols-3">
-          <TimelineStat label={t("generated.features.single_calculator.components.bond_timeline.item_2")} value={visibleRangeLabel}/>
-          <TimelineStat label={t("generated.features.single_calculator.components.bond_timeline.item_3")} value={String(projectionCount)}/>
-          <TimelineStat label={t("generated.features.single_calculator.components.bond_timeline.item_4")} value={String(exitMarkers)}/>
+          <TimelineStat label={t('bonds.schedule.rows_after_filters')} value={visibleRangeLabel}/>
+          <TimelineStat label={t('bonds.schedule.projected_points')} value={String(projectionCount)}/>
+          <TimelineStat label={t('bonds.schedule.exit_markers')} value={String(exitMarkers)}/>
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-white/85 px-4 py-3">
           <p className="text-sm leading-7 text-slate-600">
-            {t("generated.features.single_calculator.components.bond_timeline.item_5")}
+            {t('bonds.schedule.summary_note')}
           </p>
         </div>
 
@@ -126,13 +126,13 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
 
             {activeFilterCount > 0 ? (<Button type="button" variant="outline" size="sm" className="gap-2 rounded-xl" onClick={resetFilters}>
                 <RotateCcw className="h-4 w-4"/>
-                {t("generated.features.single_calculator.components.bond_timeline.item_6")}
+                {t('common.reset_filters')}
               </Button>) : null}
           </div>
         </div>
       </div>
 
-      <ResponsiveTableSheet title={t("generated.features.single_calculator.components.bond_timeline.item_7")} description={t("generated.features.single_calculator.components.bond_timeline.item_8")} triggerLabel={t("generated.features.single_calculator.components.bond_timeline.item_9")} triggerCount={`${filteredTimeline.length} ${t("generated.features.single_calculator.components.bond_timeline.item_10")}`}>
+      <ResponsiveTableSheet title={t('bonds.schedule.mobile_sheet_title')} description={t('bonds.schedule.mobile_sheet_description')} triggerLabel={t('bonds.schedule.mobile_sheet_trigger')} triggerCount={`${filteredTimeline.length} ${t('bonds.schedule.mobile_sheet_count_suffix')}`}>
         {displayedTimeline.map((row) => (<div key={`mobile-${row.key}`} className="rounded-3xl border border-slate-200 bg-white p-4 shadow-none">
             <div className="flex items-start justify-between gap-3">
               <div className="space-y-1">
@@ -156,12 +156,12 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
               </div>) : null}
 
             <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-              <MobileValue label={t("generated.features.single_calculator.components.bond_timeline.item_11")} value={row.interestRateLabel}/>
-              <MobileValue label={t("generated.features.single_calculator.components.bond_timeline.item_12")} value={formatCurrency(row.earlyExitValue)}/>
+              <MobileValue label={t('bonds.schedule.rate_and_basis')} value={row.interestRateLabel}/>
+              <MobileValue label={t('bonds.early_exit_payout')} value={formatCurrency(row.earlyExitValue)}/>
               <MobileValue label={row.cashFlowLabel} value={formatCurrency(row.paidOutCash)}/>
-              <MobileValue label={t("generated.features.single_calculator.components.bond_timeline.item_13")} value={formatCurrency(row.netProfit)}/>
-              <MobileValue label={t("generated.features.single_calculator.components.bond_timeline.item_14")} value={formatCurrency(row.realValue)}/>
-              <MobileValue label={t("generated.features.single_calculator.components.bond_timeline.item_15")} value={row.rateSourceLabel}/>
+              <MobileValue label={t('common.net_profit')} value={formatCurrency(row.netProfit)}/>
+              <MobileValue label={t('bonds.real_value')} value={formatCurrency(row.realValue)}/>
+              <MobileValue label={t('bonds.schedule.rate_source')} value={row.rateSourceLabel}/>
             </div>
 
             {row.referenceLabel ? (<p className="mt-3 text-xs leading-5 text-slate-500">{row.referenceLabel}</p>) : null}
@@ -176,22 +176,22 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
                 {t('common.period')}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[18%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {t("generated.features.single_calculator.components.bond_timeline.item_16")}
+                {t('bonds.schedule.checkpoint_meaning')}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[17%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {t("generated.features.single_calculator.components.bond_timeline.item_17")}
+                {t('bonds.schedule.rate_and_basis')}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {t("generated.features.single_calculator.components.bond_timeline.item_18")}
+                {t('bonds.total_wealth')}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {displayedTimeline[0]?.cashFlowLabel ?? (t("generated.features.single_calculator.components.bond_timeline.item_19"))}
+                {displayedTimeline[0]?.cashFlowLabel ?? t('bonds.schedule.cash_flow')}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {t("generated.features.single_calculator.components.bond_timeline.item_20")}
+                {t('common.net_profit')}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-slate-50/95 text-xs font-semibold text-slate-600">
-                {t("generated.features.single_calculator.components.bond_timeline.item_21")}
+                {t('bonds.real_value')}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[12%] bg-slate-50/95 text-right text-xs font-semibold text-slate-600">
                 {t('bonds.early_exit_payout')}
@@ -273,7 +273,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
             {activeFilterCount > 0 ? (<div className="flex justify-center">
                 <Button type="button" variant="outline" size="sm" className="gap-2 rounded-xl" onClick={resetFilters}>
                   <RotateCcw className="h-4 w-4"/>
-                  {t("generated.features.single_calculator.components.bond_timeline.item_22")}
+                  {t('common.reset_filters')}
                 </Button>
               </div>) : null}
           </div>) : null}

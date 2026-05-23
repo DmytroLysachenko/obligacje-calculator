@@ -48,7 +48,11 @@
     "basis": "Podstawa",
     "advanced": "Zaawansowane",
     "show_all": "Pokaz wszystko ({count})",
-    "month_compact": "m"
+    "month_compact": "m",
+    "reset_filters": "Wyczysc filtry",
+    "calculation_in_progress": "Trwa obliczanie. Przeliczenie konczy sie dopiero po zamodelowaniu calego scenariusza.",
+    "initial_calculation_hint": "Uruchom scenariusz, aby zobaczyc pelny wynik.",
+    "recalculation_hint": "Dane sie zmienily. Przelicz dopiero, gdy scenariusz jest gotowy."
   },
   "site": {
     "default_title_suffix": "Edukacyjny kalkulator obligacji",
@@ -322,12 +326,12 @@
     "first_year": "1. rok",
     "early_exit_title": "Wcześniejszy Wykup",
     "early_exit_desc": "Opłata {fee} PLN za sztukę przy wypłacie przed terminem.",
-      "evolution": "Ewolucja Wartości",
-      "projection_start": "Początek projekcji",
-      "timeline": "Szczegółowy Harmonogram",
-      "filter_events": "Filtruj zdarzenia",
-      "chart_value_note": "Linie nominalna i realna są głównym odczytem. Linie inflacji i NBP dostarczają jedynie kontekstu.",
-      "explanation_inflation": "Obliczenia wykorzystują przewidywaną stopę inflacji do indeksacji. Wartość realna jest korygowana o skumulowaną inflację, pokazując dzisiejszą siłę nabywczą.",
+    "evolution": "Ewolucja Wartości",
+    "projection_start": "Początek projekcji",
+    "timeline": "Szczegółowy Harmonogram",
+    "filter_events": "Filtruj zdarzenia",
+    "chart_value_note": "Linie nominalna i realna są głównym odczytem. Linie inflacji i NBP dostarczają jedynie kontekstu.",
+    "explanation_inflation": "Obliczenia wykorzystują przewidywaną stopę inflacji do indeksacji. Wartość realna jest korygowana o skumulowaną inflację, pokazując dzisiejszą siłę nabywczą.",
     "explanation_tax": "Podatek Belki 19% jest naliczany od wypracowanych odsetek. W przypadku obligacji kapitalizowanych, jest pobierany na koniec lub przy wypłacie.",
     "total_invested": "Całkowita inwestycja",
     "final_nominal_value": "Końcowa wartość nominalna",
@@ -414,26 +418,26 @@
         "summary_first": "Najpierw przeczytaj podsumowanie wyplaty netto i zysku.",
         "chart_then_timeline": "Wykres ma pomoc w szybkim odczycie przebiegu inwestycji, a harmonogram sluzy do kontroli szczegolow.",
         "stale_until_recalculated": "Jezeli zmienisz dane wejsciowe, stare wyniki pozostaja widoczne az do swiadomego przeliczenia."
+      },
+      "click_calculate": "Kliknij 'Oblicz wyniki', aby zobaczyć projekcję",
+      "growth": "Projekcja wzrostu inwestycji",
+      "ready_steps": {
+        "primary": {
+          "title": "Główne dane",
+          "desc": "Typ obligacji, kwota i tryb celu."
         },
-        "click_calculate": "Kliknij 'Oblicz wyniki', aby zobaczyć projekcję",
-        "growth": "Projekcja wzrostu inwestycji",
-        "ready_steps": {
-          "primary": {
-            "title": "Główne dane",
-            "desc": "Typ obligacji, kwota i tryb celu."
-          },
-          "timing": {
-            "title": "Czas i podatek",
-            "desc": "Data zakupu, horyzont, wypłata i opakowanie podatkowe."
-          },
-          "advanced": {
-            "title": "Opcjonalne zaawansowane",
-            "desc": "Inflacja, ścieżka NBP i ustawienia wykresu tylko wtedy, gdy są potrzebne."
-          }
+        "timing": {
+          "title": "Czas i podatek",
+          "desc": "Data zakupu, horyzont, wypłata i opakowanie podatkowe."
         },
-        "regular": {
-          "click": "Kliknij 'Oblicz', aby zobaczyć projekcję",
-          "action": "Symulacja regularnych wpłat",
+        "advanced": {
+          "title": "Opcjonalne zaawansowane",
+          "desc": "Inflacja, ścieżka NBP i ustawienia wykresu tylko wtedy, gdy są potrzebne."
+        }
+      },
+      "regular": {
+        "click": "Kliknij 'Oblicz', aby zobaczyć projekcję",
+        "action": "Symulacja regularnych wpłat",
         "how_it_works": "Regularne inwestowanie śledzi każdy miesięczny zakup jako osobną partię. Ta symulacja liczy odsetki, podatki i opłaty dla każdej partii osobno zgodnie z jej własnym harmonogramem zapadalności."
       }
     },
@@ -644,6 +648,33 @@
         "start": "Start",
         "initial_capital": "Kapital poczatkowy"
       }
+    },
+    "schedule": {
+      "rows_after_filters": "Wiersze po filtrach",
+      "projected_points": "Punkty projekcji",
+      "exit_markers": "Znaczniki wyjscia",
+      "summary_note": "Kazdy wiersz to punkt kontrolny scenariusza, a nie osobny zakup. Czytaj od lewej do prawej, aby zobaczyc co sie dzieje, jaka baza zostala uzyta i jaka wartosc opuszcza obligacje w tym momencie.",
+      "mobile_sheet_title": "Szczegolowy harmonogram",
+      "mobile_sheet_description": "Otworz harmonogram punkt po punkcie w widoku przyjaznym dla telefonu.",
+      "mobile_sheet_trigger": "Otworz harmonogram",
+      "mobile_sheet_count_suffix": "wierszy",
+      "rate_and_basis": "Stopa i baza",
+      "rate_source": "Zrodlo stopy",
+      "checkpoint_meaning": "Znaczenie punktu",
+      "cash_flow": "Przeplyw gotowki"
+    },
+    "market_assumptions": {
+      "scenario_descriptions": {
+        "low": "Nizsze zalozenia CPI lagodza przyszle kupony indeksowane i poprawiaja kontekst wartosci realnej.",
+        "base": "Bazowe CPI utrzymuje standardowa projekcje kuponow indeksowanych po okresie otwarcia.",
+        "high": "Wy?sze zalozenia CPI podnosza przyszle kupony indeksowane, ale tez zwiekszaja presje inflacyjna na wartosc realna."
+      },
+      "indexed_context": "Dla obligacji indeksowanych CPI zmienia prognozowane kupony po pierwszym okresie i jednoczesnie zmienia odczyty wartosci realnej.",
+      "floating_context": "Dla obligacji zmiennoprocentowych pierwszy okres pozostaje na warunkach emisji. Kolejne okresy podazaja za sciezka NBP powiekszona o marze obligacji.",
+      "real_value_context": "Dla obligacji o stalej stopie inflacja zmienia odczyty sily nabywczej, ale nie zmienia sciezki kuponu.",
+      "post_year_one_label": "Scenariusz CPI po pierwszym roku",
+      "non_indexed_note": "Ta obligacja nie jest indeksowana CPI. Inflacja sluzy tu tylko do pokazania wartosci realnej, a nie do resetu kuponu.",
+      "nbp_note": "Ta prognozowana sciezka NBP steruje kolejnymi okresami obligacji zmiennoprocentowych po zakonczeniu pierwszej stopy z oferty."
     }
   },
   "landing": {
@@ -1015,9 +1046,9 @@
     "share_scenario": "UDOSTĘPNIJ SCENARIUSZ",
     "export": "EKSPORTUJ",
     "export_comparison_csv": "Eksport CSV porownania",
-      "copied": "SKOPIOWANO!",
-      "summary": "Podsumowanie symulacji",
-      "initial_sum": "Kwota Początkowa",
+    "copied": "SKOPIOWANO!",
+    "summary": "Podsumowanie symulacji",
+    "initial_sum": "Kwota Początkowa",
     "monthly_contribution": "Miesięczna Wpłata",
     "start_date": "Data Rozpoczęcia",
     "verdict_title": "Werdykt Porównania",
@@ -1165,7 +1196,62 @@
     "notes_suffix": "notatki",
     "page_notice_eyebrow": "Wspolny scenariusz",
     "page_notice_title": "Porownanie scenariuszy",
-    "page_notice_desc": "Uzywaj tej strony do porownania dwoch modelowanych wynikow przy jawnych zalozeniach. Najlepiej traktowac ja jako sprawdzenie scenariusza, a nie uniwersalny ranking czy silnik rekomendacji."
+    "page_notice_desc": "Uzywaj tej strony do porownania dwoch modelowanych wynikow przy jawnych zalozeniach. Najlepiej traktowac ja jako sprawdzenie scenariusza, a nie uniwersalny ranking czy silnik rekomendacji.",
+    "page": {
+      "reading_guide": {
+        "understand_assumptions": "To porownanie pokazuje kompromisy scenariusza, a nie uniwersalnie najlepsza obligacje.",
+        "compare_payout": "Najpierw porownaj wyplate koncowa, a dopiero potem podatki, kadencje i wartosc realna.",
+        "check_real_value": "Wlacz tryb wartosci realnej, gdy wazniejsza jest ochrona przed inflacja niz nominalna gotowka."
+      },
+      "configuration_title": "Wspolna konfiguracja porownania",
+      "configuration_description": "Jedna kwota, jeden horyzont i jeden zestaw zalozen. Dzieki temu porownanie skupia sie na roznicach konstrukcji obligacji.",
+      "initial_investment": "Kapital poczatkowy",
+      "investment_horizon": "Horyzont scenariusza",
+      "real_value_toggle_description": "Pokaz wynik skorygowany o sile nabywcza zamiast nominalnego majatku.",
+      "rollover_title": "Rollover liczony automatycznie",
+      "rollover_description": "Jesli horyzont jest dluzszy niz termin obligacji, silnik automatycznie laczy kolejny cykl zakupu.",
+      "bond_picker_title": "Obligacje w tym przebiegu",
+      "bond_picker_description": "Wybierz tylko te obligacje, ktore chcesz sprawdzic w tym samym wspolnym scenariuszu.",
+      "how_to_read_title": "Jak czytac to porownanie",
+      "how_to_read_description": "Zacznij od zwyciezcy, potem sprawdz kadencje, podatki i wartosc po inflacji.",
+      "how_to_read_badge": "Przewodnik",
+      "reading_checklist_title": "Czytaj w tej kolejnosci",
+      "steps": {
+        "configure_title": "Ustaw wspolna baze",
+        "configure_description": "Zachowaj ten sam kapital, horyzont i zalozenia, aby zmieniala sie tylko konstrukcja obligacji.",
+        "run_title": "Uruchom jedno czyste porownanie",
+        "run_description": "Przelicz po zmianach, aby wszystkie scenariusze korzystaly z tych samych biezacych zalozen.",
+        "decide_title": "Podejmij decyzje po wyniku",
+        "decide_description": "Najpierw sprawdz wyplate koncowa, potem podatki, kadencje i wartosc realna."
+      },
+      "empty_state_title": "Jedno porownanie. Jeden wspolny scenariusz.",
+      "empty_state_description": "Najpierw wybierz obligacje, potem zatwierdz wspolne zalozenia i uruchom jedno czytelne porownanie.",
+      "empty_steps": {
+        "choose_bonds_title": "Wybierz obligacje",
+        "choose_bonds_description": "Zaznacz produkty, ktore chcesz zobaczyc obok siebie.",
+        "set_assumptions_title": "Ustaw wspolne zalozenia",
+        "set_assumptions_description": "Uzyj jednej bazy kapitalu, jednego horyzontu i jednego widoku CPI/NBP przed porownaniem wynikow.",
+        "run_title": "Uruchom porownanie",
+        "run_description": "Uzyj przypietego przycisku przeliczania, gdy wspolna konfiguracja jest gotowa."
+      },
+      "summary_title": "Migawka scenariusza",
+      "summary_description": "Szybki widok zwyciezcy zanim przejdziesz do kart obligacji i pelnego wykresu.",
+      "best_match": "Najlepszy biezacy wynik",
+      "scenarios_modeled": "Przeliczone scenariusze",
+      "results_title": "Wyniki dla kazdej obligacji",
+      "results_description": "Kazda karta korzysta z tej samej bazy scenariusza, wiec roznice wynikaja z konstrukcji obligacji.",
+      "chart_title": "Wykres porownania",
+      "chart_description": "Uzyj wykresu, aby porownac ksztalt sciezki, a nie tylko wyplate koncowa.",
+      "chart_note_title": "Jak czytac wykres porownania",
+      "chart_note_description": "Najpierw sprawdz koncowy poziom kazdej sciezki. Dopiero potem analizuj zmiany nachylenia i plaskie odcinki.",
+      "calculation_context_description": "Ostrzezenia, zalozenia i swiezosc danych dla wspolnego silnika porownania.",
+      "calculation_context_badge": "Meta"
+    },
+    "controls": {
+      "description": "Ustaw jeden historyczny punkt startu, jedna kwote poczatkowa i jedna miesieczna skladke przed ponownym przeliczeniem porownania.",
+      "advanced_title": "Zaawansowany kontekst porownania",
+      "advanced_description": "Pokaz wspolny punkt wejscia w czasie i przelacznik sily nabywczej tylko wtedy, gdy sa potrzebne."
+    }
   },
   "regular_form": {
     "contribution_help": "Kwota, którą planujesz inwestować cyklicznie.",

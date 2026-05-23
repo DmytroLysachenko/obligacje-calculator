@@ -25,7 +25,7 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({ initialS
             {t('comparison.configuration')}
           </CardTitle>
           <p className="text-sm leading-6 text-muted-foreground">
-            {t("generated.features.comparison_engine.components.comparison_controls.item_1")}
+            {t('comparison.controls.description')}
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -58,10 +58,10 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({ initialS
               <AccordionTrigger className="rounded-2xl border bg-slate-50 px-4 py-4 hover:no-underline">
                 <div className="space-y-1 text-left">
                   <p className="text-sm font-bold text-slate-950">
-                    {t("generated.features.comparison_engine.components.comparison_controls.item_2")}
+                    {t('comparison.controls.advanced_title')}
                   </p>
                   <p className="text-xs leading-5 text-muted-foreground">
-                    {t("generated.features.comparison_engine.components.comparison_controls.item_3")}
+                    {t('comparison.controls.advanced_description')}
                   </p>
                 </div>
               </AccordionTrigger>

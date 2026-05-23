@@ -48,7 +48,11 @@
     "basis": "Basis",
     "advanced": "Advanced",
     "show_all": "Show all ({count})",
-    "month_compact": "mo"
+    "month_compact": "mo",
+    "reset_filters": "Reset filters",
+    "calculation_in_progress": "Calculation in progress. Recalculation only ends once the scenario is fully modeled.",
+    "initial_calculation_hint": "Run the scenario once to see the full result.",
+    "recalculation_hint": "Inputs changed. Recalculate only when the scenario is ready."
   },
   "site": {
     "default_title_suffix": "Educational bond calculator",
@@ -322,12 +326,12 @@
     "first_year": "1st Year",
     "early_exit_title": "Early Redemption",
     "early_exit_desc": "Fee of {fee} PLN per bond applies if cashed before maturity.",
-      "evolution": "Value Evolution",
-      "projection_start": "Projection Start",
-      "timeline": "Detailed Schedule",
-      "filter_events": "Filter Events",
-      "chart_value_note": "Nominal and real lines are the primary reading. Inflation and NBP lines only provide context.",
-      "explanation_inflation": "Calculations use the expected inflation rate for indexing. Real value is adjusted for cumulative inflation to show today's purchasing power.",
+    "evolution": "Value Evolution",
+    "projection_start": "Projection Start",
+    "timeline": "Detailed Schedule",
+    "filter_events": "Filter Events",
+    "chart_value_note": "Nominal and real lines are the primary reading. Inflation and NBP lines only provide context.",
+    "explanation_inflation": "Calculations use the expected inflation rate for indexing. Real value is adjusted for cumulative inflation to show today's purchasing power.",
     "explanation_tax": "The 19% Belka tax is calculated on earned interest. For capitalized bonds, it's deducted at the end or upon withdrawal.",
     "total_invested": "Total Invested",
     "final_nominal_value": "Final Nominal Value",
@@ -660,6 +664,33 @@
         "start": "Start",
         "initial_capital": "Initial capital"
       }
+    },
+    "schedule": {
+      "rows_after_filters": "Rows after filters",
+      "projected_points": "Projected points",
+      "exit_markers": "Exit markers",
+      "summary_note": "Each row is a scenario checkpoint, not a separate purchase. Read left to right to see what happens, what basis was used, and what value leaves the bond at that point.",
+      "mobile_sheet_title": "Detailed schedule",
+      "mobile_sheet_description": "Open the checkpoint-by-checkpoint schedule in a mobile-friendly view.",
+      "mobile_sheet_trigger": "Open schedule sheet",
+      "mobile_sheet_count_suffix": "rows",
+      "rate_and_basis": "Rate and basis",
+      "rate_source": "Rate source",
+      "checkpoint_meaning": "Checkpoint meaning",
+      "cash_flow": "Cash flow"
+    },
+    "market_assumptions": {
+      "scenario_descriptions": {
+        "low": "Lower CPI assumptions soften future indexed coupons and improve real-value context.",
+        "base": "Base CPI keeps the standard projected path for indexed coupons after the opening period.",
+        "high": "Higher CPI assumptions increase future indexed coupons but also increase purchasing-power drag."
+      },
+      "indexed_context": "For indexed bonds, CPI changes projected coupons after the first period and also changes real-value readouts.",
+      "floating_context": "For floating bonds, the first period stays on the issued offer. Later periods follow the projected NBP path plus the bond margin.",
+      "real_value_context": "For fixed-rate bonds, inflation changes real purchasing-power readouts but does not change the coupon path.",
+      "post_year_one_label": "Post-year-one CPI scenario",
+      "non_indexed_note": "This bond is not CPI-indexed. Inflation here is used for real-value context, not coupon resets.",
+      "nbp_note": "This projected NBP path drives later floating-rate periods after the issued first-period offer ends."
     }
   },
   "landing": {
@@ -1072,9 +1103,9 @@
     "share_scenario": "SHARE SCENARIO",
     "export": "EXPORT",
     "export_comparison_csv": "Export comparison CSV",
-      "copied": "COPIED!",
-      "summary": "Simulation Summary",
-      "initial_sum": "Initial Amount",
+    "copied": "COPIED!",
+    "summary": "Simulation Summary",
+    "initial_sum": "Initial Amount",
     "monthly_contribution": "Monthly Contribution",
     "start_date": "Start Date",
     "verdict_title": "Comparison Verdict",
@@ -1222,7 +1253,62 @@
     "notes_suffix": "notes",
     "page_notice_eyebrow": "Shared scenario",
     "page_notice_title": "Scenario comparison",
-    "page_notice_desc": "Use this page to compare two modeled outcomes under explicit assumptions. It is best treated as a scenario check, not as a universal ranking or recommendation engine."
+    "page_notice_desc": "Use this page to compare two modeled outcomes under explicit assumptions. It is best treated as a scenario check, not as a universal ranking or recommendation engine.",
+    "page": {
+      "reading_guide": {
+        "understand_assumptions": "This comparison shows scenario tradeoffs, not a universally best bond.",
+        "compare_payout": "Compare the final payout first, then inspect taxes, cadence, and real value.",
+        "check_real_value": "Turn on real-value mode when inflation protection matters more than nominal cash."
+      },
+      "configuration_title": "Shared comparison setup",
+      "configuration_description": "One amount, one horizon, and one assumption set. This keeps the comparison focused on bond-structure differences.",
+      "initial_investment": "Starting capital",
+      "investment_horizon": "Scenario horizon",
+      "real_value_toggle_description": "Show the purchasing-power-adjusted result instead of nominal wealth.",
+      "rollover_title": "Rollover handled automatically",
+      "rollover_description": "If the horizon outlasts a bond term, the engine chains the next purchase cycle automatically.",
+      "bond_picker_title": "Bonds in this run",
+      "bond_picker_description": "Pick only the bonds you actually want to test inside the same shared scenario.",
+      "how_to_read_title": "How to read this comparison",
+      "how_to_read_description": "Start from the winner, then check cadence, taxes, and inflation-adjusted value.",
+      "how_to_read_badge": "Reading guide",
+      "reading_checklist_title": "Read in this order",
+      "steps": {
+        "configure_title": "Configure one shared base",
+        "configure_description": "Keep the same capital, horizon, and assumptions so only bond structure changes.",
+        "run_title": "Run one clean comparison",
+        "run_description": "Recalculate after edits so all scenarios use the same current assumptions.",
+        "decide_title": "Decide from result quality",
+        "decide_description": "Check final payout first, then inspect taxes, cadence, and real value."
+      },
+      "empty_state_title": "One comparison. One shared scenario.",
+      "empty_state_description": "Pick the bonds first, then commit the shared assumptions, then run one clean comparison.",
+      "empty_steps": {
+        "choose_bonds_title": "Choose bonds",
+        "choose_bonds_description": "Select the products you want to test side by side.",
+        "set_assumptions_title": "Set shared assumptions",
+        "set_assumptions_description": "Use one capital base, one horizon, and one CPI/NBP view before comparing outputs.",
+        "run_title": "Run the comparison",
+        "run_description": "Use the fixed recalculate control after the shared setup is ready."
+      },
+      "summary_title": "Scenario snapshot",
+      "summary_description": "A quick winner view before you inspect each bond card and the full chart.",
+      "best_match": "Best current outcome",
+      "scenarios_modeled": "Scenarios modeled",
+      "results_title": "Bond-by-bond results",
+      "results_description": "Each card keeps the same scenario base so the differences come from the bond design.",
+      "chart_title": "Comparison chart",
+      "chart_description": "Use the chart to compare path shape, not only the final payout.",
+      "chart_note_title": "How to read the comparison chart",
+      "chart_note_description": "Read the final level of each path first. Then inspect slope changes and flat stretches.",
+      "calculation_context_description": "Warnings, assumptions, and data freshness for the shared comparison engine.",
+      "calculation_context_badge": "Meta"
+    },
+    "controls": {
+      "description": "Set one historical entry point, one initial amount, and one monthly contribution before recalculating the comparison.",
+      "advanced_title": "Advanced comparison context",
+      "advanced_description": "Reveal the shared timeline entry and purchasing-power switch only when you need them."
+    }
   },
   "regular_form": {
     "contribution_help": "The amount you plan to invest periodically.",

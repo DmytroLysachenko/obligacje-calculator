@@ -80,16 +80,16 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
     const isInflationIndexedBond = INDEXED_BONDS.has(bondType);
     const isNbpRelevant = bondType === BondType.ROR || bondType === BondType.DOR;
     const scenarioDescriptions = {
-        low: t("generated.shared.components.market_assumptions_form.item_1"),
-        base: t("generated.shared.components.market_assumptions_form.item_2"),
-        high: t("generated.shared.components.market_assumptions_form.item_3"),
+        low: t('bonds.market_assumptions.scenario_descriptions.low'),
+        base: t('bonds.market_assumptions.scenario_descriptions.base'),
+        high: t('bonds.market_assumptions.scenario_descriptions.high'),
     } as const;
     return (<div className="space-y-6">
       <div className="space-y-4">
         <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 text-[11px] leading-5 text-slate-600">
           {isInflationIndexedBond
-            ? t("generated.shared.components.market_assumptions_form.item_4") : isNbpRelevant
-            ? t("generated.shared.components.market_assumptions_form.item_5") : t("generated.shared.components.market_assumptions_form.item_6")}
+            ? t('bonds.market_assumptions.indexed_context') : isNbpRelevant
+            ? t('bonds.market_assumptions.floating_context') : t('bonds.market_assumptions.real_value_context')}
         </div>
 
         <div className="flex items-center justify-between">
@@ -126,7 +126,7 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
         {isInflationIndexedBond ? (<>
             <div className="space-y-3 border-t border-dashed pt-4">
               <Label className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">
-                {t("generated.shared.components.market_assumptions_form.item_7")}
+                {t('bonds.market_assumptions.post_year_one_label')}
               </Label>
               <div className="grid grid-cols-3 gap-2">
                 {(['low', 'base', 'high'] as const).map((scenario) => (<Button key={scenario} variant="outline" size="sm" className={cn('h-9 min-w-0 text-[11px] font-semibold tracking-[0.08em]', inflationScenario === scenario && 'border-primary/50 bg-primary/10 text-primary')} onClick={() => onUpdate('inflationScenario', scenario)}>
@@ -160,7 +160,7 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
                   </div>))}
               </div>) : null}
           </>) : (<div className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 text-[11px] leading-5 text-slate-600">
-            {t("generated.shared.components.market_assumptions_form.item_8")}
+            {t('bonds.market_assumptions.non_indexed_note')}
           </div>)}
       </div>
 
@@ -175,7 +175,7 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
           </div>
           <CommittedSliderInput value={Number.isFinite(expectedNbpRate ?? 5.25) ? (expectedNbpRate ?? 5.25) : 5.25} min={0} max={15} step={0.05} unit="%" onCommit={(value) => onUpdate('expectedNbpRate', value)}/>
           <p className="text-[11px] leading-5 text-muted-foreground">
-            {t("generated.shared.components.market_assumptions_form.item_9")}
+            {t('bonds.market_assumptions.nbp_note')}
           </p>
           <div className="mt-4 flex items-center justify-between rounded-lg border border-primary/10 bg-muted/30 p-3.5">
             <Label className="text-sm font-semibold">{t('bonds.advanced_nbp')}</Label>

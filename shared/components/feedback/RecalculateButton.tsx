@@ -20,8 +20,8 @@ export const RecalculateButton = ({ isDirty, loading, hasResults = true, disable
     const isInitialRun = !hasResults && !loading;
     const isActionable = !loading && !disabled;
     const helperText = loading
-        ? t("generated.shared.components.recalculate_button.item_1") : isInitialRun
-        ? t("generated.shared.components.recalculate_button.item_2") : t("generated.shared.components.recalculate_button.item_3");
+        ? t('common.calculation_in_progress') : isInitialRun
+        ? t('common.initial_calculation_hint') : t('common.recalculation_hint');
     return (<div className="fixed inset-x-3 bottom-3 z-50 sm:inset-x-auto sm:bottom-5 sm:right-5 sm:w-[min(22rem,calc(100vw-1.5rem))]">
       <div className="rounded-[1.55rem] border border-slate-950/10 bg-slate-950 px-4 py-4 text-white shadow-2xl shadow-slate-950/20 sm:rounded-[1.75rem]">
         <div className="flex items-start justify-between gap-3">
