@@ -227,12 +227,12 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
           </div>
 
           <div className="grid gap-4 md:grid-cols-3">
-            <PortfolioMiniStat label={t('notebook.total_invested')} value={formatCurrency(totalValue)} description={t("generated.features.notebook.components.portfolio_details.item_2")}/>
+            <PortfolioMiniStat label={t('notebook.total_invested')} value={formatCurrency(totalValue)} description={t('notebook.total_invested_desc')}/>
             <PortfolioMiniStat label={t('notebook.next_maturity')} value={nextMaturity ? nextMaturity.bondType : '-'} description={nextMaturity
-            ? `${format(nextMaturity.maturityDate, 'dd.MM.yyyy')} ${t("generated.features.notebook.components.portfolio_details.item_3")}`
-            : t("generated.features.notebook.components.portfolio_details.item_4")}/>
-            <PortfolioMiniStat label={t("generated.features.notebook.components.portfolio_details.item_5")} value={isPublic ? t('notebook.public') : t('notebook.private')} description={isPublic
-            ? t("generated.features.notebook.components.portfolio_details.item_6") : t("generated.features.notebook.components.portfolio_details.item_7")}/>
+            ? `${format(nextMaturity.maturityDate, 'dd.MM.yyyy')} ${t('notebook.next_maturity_suffix')}`
+            : t('notebook.no_upcoming_maturity')}/>
+            <PortfolioMiniStat label={t('notebook.sharing_mode')} value={isPublic ? t('notebook.public') : t('notebook.private')} description={isPublic
+            ? t('notebook.public_share_desc') : t('notebook.private_share_desc')}/>
           </div>
         </CardContent>
       </Card>
@@ -270,7 +270,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                 onBack();
             }}>
               <Trash2 className="h-4 w-4"/>
-              {t("generated.features.notebook.components.portfolio_details.item_8")}
+              {t('notebook.delete_portfolio')}
             </Button>) : null}
           {isPublic && (<Button variant="outline" className="gap-2" onClick={copyToClipboard}>
               {justCopied ? <Check className="h-4 w-4 text-emerald-600"/> : <Share2 className="h-4 w-4"/>}
@@ -313,12 +313,12 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                     <Table>
                       <TableHeader>
                         <TableRow className="hover:bg-transparent">
-                          <TableHead className="h-12 text-sm font-semibold text-slate-600">{t("generated.features.notebook.components.portfolio_details.item_9")}</TableHead>
-                          <TableHead className="h-12 text-sm font-semibold text-slate-600">{t("generated.features.notebook.components.portfolio_details.item_10")}</TableHead>
-                          <TableHead className="h-12 text-right text-sm font-semibold text-slate-600">{t("generated.features.notebook.components.portfolio_details.item_11")}</TableHead>
-                          <TableHead className="h-12 text-sm font-semibold text-slate-600">{t("generated.features.notebook.components.portfolio_details.item_12")}</TableHead>
-                          <TableHead className="h-12 text-right text-sm font-semibold text-slate-600">{t("generated.features.notebook.components.portfolio_details.item_13")}</TableHead>
-                          <TableHead className="h-12 text-right text-sm font-semibold text-slate-600">{t("generated.features.notebook.components.portfolio_details.item_14")}</TableHead>
+                          <TableHead className="h-12 text-sm font-semibold text-slate-600">{t('notebook.column_type')}</TableHead>
+                          <TableHead className="h-12 text-sm font-semibold text-slate-600">{t('notebook.column_duration')}</TableHead>
+                          <TableHead className="h-12 text-right text-sm font-semibold text-slate-600">{t('notebook.column_amount')}</TableHead>
+                          <TableHead className="h-12 text-sm font-semibold text-slate-600">{t('notebook.column_purchase_date')}</TableHead>
+                          <TableHead className="h-12 text-right text-sm font-semibold text-slate-600">{t('notebook.column_nominal_value')}</TableHead>
+                          <TableHead className="h-12 text-right text-sm font-semibold text-slate-600">{t('notebook.column_action')}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -407,7 +407,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
               <ChartSupportNote title={t('notebook.projection_read_title')} description={t('notebook.projection_read_desc')}/>
               {isSimulating ? (<div className="flex min-h-[320px] items-center justify-center gap-3 text-sm text-muted-foreground">
                   <Loader2 className="h-5 w-5 animate-spin"/>
-                  {t("generated.features.notebook.components.portfolio_details.item_15")}
+                  {t('notebook.simulating_projection')}
                 </div>) : simulation?.aggregatedTimeline ? (<ChartContainer height={360}>
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={simulation.aggregatedTimeline.length > 240
@@ -424,7 +424,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
                       <YAxis tick={{ fontSize: 11 }} tickFormatter={(value) => `${Math.round(value / 1000)}k`}/>
                       <Tooltip labelFormatter={(value) => format(new Date(value as string), 'MMMM yyyy')} formatter={(value: ValueType | undefined) => [
                 formatCurrency(Number(value ?? 0)),
-                t("generated.features.notebook.components.portfolio_details.item_16"),
+                t('notebook.total_value_label'),
             ]}/>
                       <Area type="monotone" dataKey="totalNetValue" stroke="#2563eb" strokeWidth={3} fill="url(#portfolioNet)" isAnimationActive={false}/>
                     </AreaChart>
