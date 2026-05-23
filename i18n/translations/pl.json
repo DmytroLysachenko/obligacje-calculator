@@ -47,6 +47,7 @@
     "events": "Zdarzenia",
     "basis": "Podstawa",
     "advanced": "Zaawansowane",
+    "show_all": "Pokaz wszystko ({count})",
     "month_compact": "m"
   },
   "strategy_hints": {

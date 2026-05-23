@@ -47,6 +47,7 @@
     "events": "Events",
     "basis": "Basis",
     "advanced": "Advanced",
+    "show_all": "Show all ({count})",
     "month_compact": "mo"
   },
   "strategy_hints": {
