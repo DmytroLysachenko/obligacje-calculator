@@ -866,7 +866,68 @@
   "ladder_page": {
     "page_notice_eyebrow": "Conditional strategy",
     "page_notice_title": "Ladder strategy stays useful only when cash-flow spacing matters.",
-    "page_notice_desc": "Use this page after one clean single-bond run. Ladder logic should support a specific liquidity plan, not replace the main calculator."
+    "page_notice_desc": "Use this page after one clean single-bond run. Ladder logic should support a specific liquidity plan, not replace the main calculator.",
+    "empty_state_title": "Build one maturity schedule, then inspect liquidity spacing.",
+    "empty_state_description": "This page answers a narrow question: when capital returns and how concentrated those maturity windows are. Set the plan, run one committed calculation, then inspect the ladder timing.",
+    "empty_cards": {
+      "plan_title": "Contribution plan",
+      "plan_description": "Bond type, amount, frequency, and horizon.",
+      "committed_title": "Committed ladder",
+      "committed_description": "Run one explicit schedule instead of recalculating while editing.",
+      "timing_title": "Timing read",
+      "timing_description": "Check month clustering and cash-return concentration."
+    },
+    "empty_state_footer": "Results stay stable until you intentionally rerun with a new ladder setup.",
+    "reading_guide": {
+      "check_peak_month": "Find the peak maturity month first so you know where liquidity clusters.",
+      "check_clustering": "Use the share metrics to decide whether the ladder is too concentrated in one window."
+    },
+    "stale_results": "Inputs changed. The maturity ladder below still shows the previous calculation. Recalculate when you want a fresh schedule.",
+    "how_to_read_title": "How to read this ladder",
+    "how_to_read_description": "Check peak month, clustering, and maturity spacing before making liquidity decisions.",
+    "how_to_read_badge": "Timing guide",
+    "calculation_context_description": "Warnings, assumptions, and freshness context for the ladder engine.",
+    "calculation_context_badge": "Meta",
+    "timeline": {
+      "eyebrow": "Peak maturity month",
+      "no_peak_month": "No maturity month",
+      "description": "This view shows when your ladder returns capital and how tightly those months cluster.",
+      "narrative": "Use the schedule to decide whether your ladder spreads liquidity evenly or bunches too much capital into one window.",
+      "month_count": "Maturity months",
+      "average_maturity_value": "Average month value",
+      "average_maturity_value_description": "Typical maturity value across active ladder months.",
+      "spread_gap": "Average vs contribution gap",
+      "spread_gap_description": "How much a typical maturity month differs from one recurring contribution.",
+      "active_window": "Active maturity window",
+      "active_window_description": "Range from the earliest to the latest maturity month in this ladder.",
+      "chart_title": "Maturity concentration",
+      "chart_description": "Each bar shows how much net value returns in a given maturity month.",
+      "chart_note_title": "How to read the ladder chart",
+      "chart_note_description": "Start with the tallest bar, then check whether surrounding months leave enough liquidity spacing.",
+      "tooltip_amount_label": "Maturity amount",
+      "mobile_sheet_title": "Ladder maturity rows",
+      "mobile_sheet_description": "Open the month-by-month ladder schedule in a mobile-friendly sheet.",
+      "mobile_sheet_trigger": "Open ladder table",
+      "mobile_sheet_count_suffix": "months",
+      "lots_count": "Lots",
+      "mobile_share_of_lots": "Share of lots",
+      "mobile_amount": "Amount",
+      "table_summary": "Each row shows one maturity month, how many lots finish there, and how much net value returns.",
+      "table_count_suffix": "months",
+      "table_month": "Month",
+      "table_lots": "Lots",
+      "table_amount": "Net value",
+      "table_share": "Share",
+      "peak_month_title": "Peak month",
+      "peak_month_description": "Use the peak month to see where the ladder bunches the most returning capital.",
+      "cluster_title": "Cluster risk",
+      "cluster_value": "{percent}% of lots mature in {month}.",
+      "cluster_none": "No maturity cluster detected yet.",
+      "cluster_warning": "This ladder is fairly concentrated in one maturity window.",
+      "cluster_ok": "This ladder is still reasonably spread across maturity windows.",
+      "interpretation_title": "Interpretation note",
+      "interpretation_description": "A ladder is useful when it improves liquidity timing, not only when it grows faster. Check spacing before chasing higher totals."
+    }
   },
   "multi_asset_page": {
     "page_notice_eyebrow": "Historical context",
@@ -1087,6 +1148,12 @@
       "needs_refresh": "Needs refresh",
       "partial": "Partial",
       "fallback": "Fallback"
+    },
+    "fallback_notices": {
+      "nbp_warning": "Using fallback NBP reference data. Read the reference page more cautiously.",
+      "nbp_live": "NBP reference data comes from the synced reference dataset.",
+      "inflation_warning": "Using fallback CPI reference data. Read the reference page more cautiously.",
+      "inflation_live": "CPI reference data comes from the synced reference dataset."
     }
   },
   "comparison": {
@@ -1871,5 +1938,29 @@
   "shared_portfolio_page": {
     "public_notice": "You are viewing a shared public portfolio.",
     "read_only": "Read Only"
+  },
+  "regular_investment_page": {
+    "reading_guide": {
+      "follow_contribution": "Check how each contribution gets less time to grow when it enters later in the plan.",
+      "compare_lot_age": "Compare early and late lots before focusing on the final total.",
+      "check_real_value": "Use real-value mode when inflation context matters more than nominal totals."
+    },
+    "how_to_read_title": "How to read this plan",
+    "how_to_read_description": "Read contribution timing first, then chart shape, then the calculation context.",
+    "how_to_read_badge": "Reading guide",
+    "chart_title": "Contribution path",
+    "chart_description": "The chart shows how the plan builds over time under one repeated contribution rule.",
+    "calculation_context_description": "Warnings, assumptions, and freshness context for the recurring-purchase engine.",
+    "calculation_context_badge": "Meta",
+    "form_description": "Main contribution plan first. Advanced assumptions stay collapsed until needed.",
+    "core_plan_title": "Core plan",
+    "core_plan_description": "Set bond type, tax wrapper, and repeating contribution amount.",
+    "family_bond_note": "Family bonds have eligibility rules. Use them here only when the purchase context really qualifies."
+  },
+  "education_page": {
+    "rate_labels": {
+      "fixed_term": "Fixed term",
+      "first_month": "First month"
+    }
   }
 }

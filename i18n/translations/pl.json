@@ -814,7 +814,68 @@
   "ladder_page": {
     "page_notice_eyebrow": "Strategia warunkowa",
     "page_notice_title": "Strategia drabiny ma sens tylko wtedy, gdy rozklad terminow wyplat jest naprawde potrzebny.",
-    "page_notice_desc": "Uzywaj tej strony po jednym czystym przebiegu pojedynczej obligacji. Drabina ma wspierac konkretny plan plynnosci, a nie zastapic glowny kalkulator."
+    "page_notice_desc": "Uzywaj tej strony po jednym czystym przebiegu pojedynczej obligacji. Drabina ma wspierac konkretny plan plynnosci, a nie zastapic glowny kalkulator.",
+    "empty_state_title": "Zbuduj jeden harmonogram zapadalnosci, a potem sprawdz rozklad plynnosci.",
+    "empty_state_description": "Ta strona odpowiada na waskie pytanie: kiedy wraca kapital i jak mocno te okna zapadalnosci sie skupiaja. Ustaw plan, uruchom jedno celowe obliczenie i dopiero potem ocen rozklad drabinki.",
+    "empty_cards": {
+      "plan_title": "Plan wplat",
+      "plan_description": "Typ obligacji, kwota, czestotliwosc i horyzont.",
+      "committed_title": "Jawna drabinka",
+      "committed_description": "Uruchom jeden konkretny harmonogram zamiast przeliczac podczas edycji.",
+      "timing_title": "Odczyt czasu",
+      "timing_description": "Sprawdz skupienie miesiecy i koncentracje zwracanego kapitalu."
+    },
+    "empty_state_footer": "Wyniki pozostaja stabilne, dopoki celowo nie uruchomisz nowej konfiguracji drabinki.",
+    "reading_guide": {
+      "check_peak_month": "Najpierw znajdz miesiac szczytowy, aby wiedziec, gdzie skupia sie plynnosc.",
+      "check_clustering": "Uzyj metryk udzialu, aby ocenic, czy drabinka nie jest zbyt skupiona w jednym oknie."
+    },
+    "stale_results": "Dane sie zmienily. Drabinka zapadalnosci ponizej nadal pokazuje poprzednie obliczenie. Przelicz, gdy chcesz swiezy harmonogram.",
+    "how_to_read_title": "Jak czytac te drabinke",
+    "how_to_read_description": "Sprawdz miesiac szczytowy, skupienie i odstepy zapadalnosci przed podjeciem decyzji o plynnosci.",
+    "how_to_read_badge": "Przewodnik czasu",
+    "calculation_context_description": "Ostrzezenia, zalozenia i swiezosc danych dla silnika drabinki.",
+    "calculation_context_badge": "Meta",
+    "timeline": {
+      "eyebrow": "Szczytowy miesiac zapadalnosci",
+      "no_peak_month": "Brak miesiaca zapadalnosci",
+      "description": "Ten widok pokazuje, kiedy drabinka oddaje kapital i jak mocno te miesiace sie skupiaja.",
+      "narrative": "Uzyj harmonogramu, aby ocenic, czy drabinka rozklada plynnosc rownomiernie, czy zbyt mocno skupia kapital w jednym oknie.",
+      "month_count": "Miesiace zapadalnosci",
+      "average_maturity_value": "Srednia wartosc miesiaca",
+      "average_maturity_value_description": "Typowa wartosc zapadalnosci wsrod aktywnych miesiecy drabinki.",
+      "spread_gap": "R??nica wzgledem skladki",
+      "spread_gap_description": "O ile typowy miesiac zapadalnosci rozni sie od jednej powtarzalnej skladki.",
+      "active_window": "Aktywne okno zapadalnosci",
+      "active_window_description": "Zakres od najwczesniejszego do najpozniejszego miesiaca zapadalnosci w tej drabince.",
+      "chart_title": "Koncentracja zapadalnosci",
+      "chart_description": "Kazdy slupek pokazuje, jaka wartosc netto wraca w danym miesiacu zapadalnosci.",
+      "chart_note_title": "Jak czytac wykres drabinki",
+      "chart_note_description": "Zacznij od najwyzszego slupka, a potem sprawdz, czy sasiednie miesiace zostawiaja wystarczajacy odstep plynnosci.",
+      "tooltip_amount_label": "Kwota zapadalnosci",
+      "mobile_sheet_title": "Wiersze zapadalnosci drabinki",
+      "mobile_sheet_description": "Otworz miesiac po miesiacu harmonogram drabinki w widoku przyjaznym dla telefonu.",
+      "mobile_sheet_trigger": "Otworz tabele drabinki",
+      "mobile_sheet_count_suffix": "miesiecy",
+      "lots_count": "Liczba partii",
+      "mobile_share_of_lots": "Udzial partii",
+      "mobile_amount": "Kwota",
+      "table_summary": "Kazdy wiersz pokazuje jeden miesiac zapadalnosci, liczbe konczacych sie tam partii i zwracana wartosc netto.",
+      "table_count_suffix": "miesiecy",
+      "table_month": "Miesiac",
+      "table_lots": "Partie",
+      "table_amount": "Wartosc netto",
+      "table_share": "Udzial",
+      "peak_month_title": "Miesiac szczytowy",
+      "peak_month_description": "Uzyj miesiaca szczytowego, aby zobaczyc, gdzie drabinka skupia najwiecej wracajacego kapitalu.",
+      "cluster_title": "Ryzyko skupienia",
+      "cluster_value": "{percent}% partii zapada w {month}.",
+      "cluster_none": "Nie wykryto jeszcze skupienia zapadalnosci.",
+      "cluster_warning": "Ta drabinka jest dosc mocno skupiona w jednym oknie zapadalnosci.",
+      "cluster_ok": "Ta drabinka jest jeszcze sensownie rozlozona miedzy oknami zapadalnosci.",
+      "interpretation_title": "Notatka interpretacyjna",
+      "interpretation_description": "Drabinka jest przydatna wtedy, gdy poprawia czas plynnosci, a nie tylko wtedy, gdy rosnie szybciej. Sprawdz rozklad zanim zaczniesz gonitwe za wyzsza suma."
+    }
   },
   "optimizer_page": {
     "page_notice_eyebrow": "Pomocniczy sorter",
@@ -1030,7 +1091,13 @@
     "loading_chart": "Ładowanie wykresu...",
     "readable_scale": "Czytelna skala",
     "full_scale": "Pełna skala",
-    "inflation_scale_notice": "Tryb czytelny ogranicza wczesny skok, aby reszta serii pozostała czytelna. Szczyt widocznej historii przekracza {max}%."
+    "inflation_scale_notice": "Tryb czytelny ogranicza wczesny skok, aby reszta serii pozostała czytelna. Szczyt widocznej historii przekracza {max}%.",
+    "fallback_notices": {
+      "nbp_warning": "Uzywane sa zapasowe dane referencyjne NBP. Czytaj strone referencyjna ostrozniej.",
+      "nbp_live": "Dane referencyjne NBP pochodza z zsynchronizowanego zbioru referencyjnego.",
+      "inflation_warning": "Uzywane sa zapasowe dane referencyjne CPI. Czytaj strone referencyjna ostrozniej.",
+      "inflation_live": "Dane referencyjne CPI pochodza z zsynchronizowanego zbioru referencyjnego."
+    }
   },
   "comparison": {
     "title_bond_vs_bond": "Bond vs Bond",
@@ -1818,5 +1885,29 @@
   "shared_portfolio_page": {
     "public_notice": "Ogladasz publicznie udostepniony portfel.",
     "read_only": "Tylko odczyt"
+  },
+  "regular_investment_page": {
+    "reading_guide": {
+      "follow_contribution": "Sprawdz, jak kazda kolejna wplata ma mniej czasu na wzrost, gdy wchodzi pozniej do planu.",
+      "compare_lot_age": "Porownaj wczesne i pozne partie obligacji, zanim skupisz sie na wyniku koncowym.",
+      "check_real_value": "Uzyj trybu wartosci realnej, gdy wazniejszy jest kontekst inflacji niz nominalna suma."
+    },
+    "how_to_read_title": "Jak czytac ten plan",
+    "how_to_read_description": "Najpierw czytaj rytm wplat, potem ksztalt wykresu, a na koncu kontekst obliczen.",
+    "how_to_read_badge": "Przewodnik",
+    "chart_title": "Sciezka wplat",
+    "chart_description": "Wykres pokazuje, jak plan buduje sie w czasie przy jednej powtarzalnej zasadzie wplat.",
+    "calculation_context_description": "Ostrzezenia, zalozenia i swiezosc danych dla silnika regularnych zakupow.",
+    "calculation_context_badge": "Meta",
+    "form_description": "Najpierw glowny plan wplat. Zaawansowane zalozenia pozostaja zwiniete do czasu, gdy sa potrzebne.",
+    "core_plan_title": "Plan bazowy",
+    "core_plan_description": "Ustaw typ obligacji, otoczke podatkowa i powtarzalna kwote wplaty.",
+    "family_bond_note": "Obligacje rodzinne maja ograniczenia uprawnien. Uzywaj ich tutaj tylko wtedy, gdy kontekst zakupu rzeczywiscie na to pozwala."
+  },
+  "education_page": {
+    "rate_labels": {
+      "fixed_term": "Staly okres",
+      "first_month": "Pierwszy miesiac"
+    }
   }
 }

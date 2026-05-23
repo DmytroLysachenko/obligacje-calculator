@@ -64,12 +64,12 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
         <CardHeader className="border-b bg-muted/20 pb-4">
           <CardTitle className="text-[1.65rem] font-black tracking-tight">{t('bonds.regular_calculator')}</CardTitle>
           <CardDescription className="text-[15px] leading-7">
-            Main contribution plan first. Advanced assumptions stay collapsed until needed.
+            {t('regular_investment_page.form_description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-8 p-6">
           <section className="space-y-6">
-            <SectionHeading title="Core plan" description="Set bond type, tax wrapper, and repeating contribution amount."/>
+            <SectionHeading title={t('regular_investment_page.core_plan_title')} description={t('regular_investment_page.core_plan_description')}/>
 
             <Separator />
 
@@ -126,7 +126,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                   {currentBondSupport.description}
                 </p>
                 {isFamilyBondType(inputs.bondType) ? (<p className="font-semibold text-amber-700">
-                    {t("generated.features.regular_investment.components.regular_investment_inputs_form.item_1")}
+                    {t('regular_investment_page.family_bond_note')}
                   </p>) : null}
               </div>
             </div>

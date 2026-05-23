@@ -57,8 +57,8 @@ export const BondEducationCard: React.FC<BondEducationCardProps> = ({ bond }) =>
             <ShieldCheck className="h-3.5 w-3.5 text-primary"/>
             <span>
               {(bond.type === 'OTS'
-            ? t("generated.features.education.components.bond_education_card.item_1") : bond.type === 'ROR' || bond.type === 'DOR'
-            ? t("generated.features.education.components.bond_education_card.item_2") : t('bonds.first_year'))}
+            ? t('education_page.rate_labels.fixed_term') : bond.type === 'ROR' || bond.type === 'DOR'
+            ? t('education_page.rate_labels.first_month') : t('bonds.first_year'))}
               : <strong> {bond.firstYearRate}%</strong>
             </span>
           </div>

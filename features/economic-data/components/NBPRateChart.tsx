@@ -70,7 +70,7 @@ export const NBPRateChart = ({ period = 'ALL', }: {
       </div>);
     }
     return (<ReferenceChartFrame metaItems={getReferenceMetaItems(response, language)} fallbackNotice={response?.usedFallback
-            ? t("generated.features.economic_data.components.nbprate_chart.item_1") : t("generated.features.economic_data.components.nbprate_chart.item_2")} fallbackTone={response?.usedFallback ? 'warning' : 'good'}>
+            ? t('economic.fallback_notices.nbp_warning') : t('economic.fallback_notices.nbp_live')} fallbackTone={response?.usedFallback ? 'warning' : 'good'}>
       <ChartContainer height={420}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={chartData}>

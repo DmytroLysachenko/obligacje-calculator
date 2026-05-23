@@ -24,11 +24,10 @@ const LadderEmptyState = () => {
             {t('bonds.simulation.ready')}
           </div>
           <h3 className="text-3xl font-black tracking-tight text-slate-950">
-            Build one maturity schedule, then inspect liquidity spacing.
+            {t('ladder_page.empty_state_title')}
           </h3>
           <p className="max-w-3xl text-sm leading-8 text-slate-600">
-            This page answers a narrow question: when capital returns and how concentrated those maturity windows are.
-            Set the plan, run one committed calculation, then inspect the ladder timing.
+            {t('ladder_page.empty_state_description')}
           </p>
         </div>
 
@@ -36,37 +35,37 @@ const LadderEmptyState = () => {
           <Card className="rounded-[1.75rem] border border-slate-200 bg-slate-50 shadow-none">
             <CardContent className="space-y-2 p-5">
               <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
-                Contribution plan
+                {t('ladder_page.empty_cards.plan_title')}
               </p>
               <p className="text-sm leading-7 text-slate-600">
-                Bond type, amount, frequency, and horizon.
+                {t('ladder_page.empty_cards.plan_description')}
               </p>
             </CardContent>
           </Card>
           <Card className="rounded-[1.75rem] border border-slate-200 bg-slate-50 shadow-none">
             <CardContent className="space-y-2 p-5">
               <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
-                Committed ladder
+                {t('ladder_page.empty_cards.committed_title')}
               </p>
               <p className="text-sm leading-7 text-slate-600">
-                Run one explicit schedule instead of recalculating while editing.
+                {t('ladder_page.empty_cards.committed_description')}
               </p>
             </CardContent>
           </Card>
           <Card className="rounded-[1.75rem] border border-slate-200 bg-slate-50 shadow-none">
             <CardContent className="space-y-2 p-5">
               <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
-                Timing read
+                {t('ladder_page.empty_cards.timing_title')}
               </p>
               <p className="text-sm leading-7 text-slate-600">
-                Check month clustering and cash-return concentration.
+                {t('ladder_page.empty_cards.timing_description')}
               </p>
             </CardContent>
           </Card>
         </div>
 
         <p className="text-sm leading-7 text-slate-600">
-          Results stay stable until you intentionally rerun with a new ladder setup.
+          {t('ladder_page.empty_state_footer')}
         </p>
       </CardContent>
     </Card>);
@@ -80,8 +79,8 @@ export const LadderContainer: React.FC = () => {
     const { inputs, results, updateInput, setBondType, isDirty, isCalculating, calculate, envelope, isPersistenceReady, } = useLadder();
     const { t } = useAppI18n();
     const readingGuide = [
-        t("generated.features.ladder_strategy.components.ladder_container.item_1"),
-        t("generated.features.ladder_strategy.components.ladder_container.item_2"),
+        t('ladder_page.reading_guide.check_peak_month'),
+        t('ladder_page.reading_guide.check_clustering'),
     ];
     const handleKeyDown = (event: React.KeyboardEvent) => {
         if (event.key === 'Enter' && (isDirty || !results)) {
@@ -101,8 +100,7 @@ export const LadderContainer: React.FC = () => {
 
             {results ? (<div className={cn('space-y-6 transition-opacity duration-200', isCalculating && 'pointer-events-none opacity-50')}>
                 {isDirty ? (<div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
-                    Inputs changed. The maturity ladder below still shows the previous calculation.
-                    Recalculate when you want a fresh schedule.
+                    {t('ladder_page.stale_results')}
                   </div>) : null}
 
                 <RegularInvestmentResultsSummary results={results}/>
@@ -111,13 +109,13 @@ export const LadderContainer: React.FC = () => {
         </div>
 
         {results ? (<div className={cn('space-y-8 transition-opacity duration-200', isCalculating && 'pointer-events-none opacity-50')}>
-            <SecondaryInsightAccordion title={t("generated.features.ladder_strategy.components.ladder_container.item_3")} description={t("generated.features.ladder_strategy.components.ladder_container.item_4")} badge={t("generated.features.ladder_strategy.components.ladder_container.item_5")}>
+            <SecondaryInsightAccordion title={t('ladder_page.how_to_read_title')} description={t('ladder_page.how_to_read_description')} badge={t('ladder_page.how_to_read_badge')}>
               <ReadingChecklist items={readingGuide}/>
             </SecondaryInsightAccordion>
 
             <LadderTimeline results={results}/>
 
-            <SecondaryInsightAccordion title={t('bonds.simulation.calculation_context')} description={t("generated.features.ladder_strategy.components.ladder_container.item_6")} badge={t("generated.features.ladder_strategy.components.ladder_container.item_7")}>
+            <SecondaryInsightAccordion title={t('bonds.simulation.calculation_context')} description={t('ladder_page.calculation_context_description')} badge={t('ladder_page.calculation_context_badge')}>
               <CalculationMetaPanel warnings={envelope?.warnings} assumptions={envelope?.assumptions} calculationNotes={envelope?.calculationNotes} dataQualityFlags={envelope?.dataQualityFlags} dataFreshness={envelope?.dataFreshness}/>
             </SecondaryInsightAccordion>
           </div>) : null}

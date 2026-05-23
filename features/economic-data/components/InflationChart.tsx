@@ -95,7 +95,7 @@ export const InflationChart = ({ period = 'ALL', }: {
         </div>} notice={scaleMode === 'readable' && maxRate > clippedMax
             ? t('economic.inflation_scale_notice', { max: maxRate.toFixed(1) })
             : undefined} noticeTone="warning" fallbackNotice={response?.usedFallback
-            ? t("generated.features.economic_data.components.inflation_chart.item_1") : t("generated.features.economic_data.components.inflation_chart.item_2")} fallbackTone={response?.usedFallback ? 'warning' : 'good'}>
+            ? t('economic.fallback_notices.inflation_warning') : t('economic.fallback_notices.inflation_live')} fallbackTone={response?.usedFallback ? 'warning' : 'good'}>
       <ChartContainer height={420}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData}>

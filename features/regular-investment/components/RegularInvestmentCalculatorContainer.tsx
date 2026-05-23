@@ -25,9 +25,9 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
     const { inputs, results, warnings, assumptions, isCalculating, calculate, updateInput, setBondType, isDirty, envelope, isPersistenceReady, } = useRegularInvestmentCalculator();
     const { t } = useAppI18n();
     const readingGuide = [
-        t("generated.features.regular_investment.components.regular_investment_calculator_container.item_1"),
-        t("generated.features.regular_investment.components.regular_investment_calculator_container.item_2"),
-        t("generated.features.regular_investment.components.regular_investment_calculator_container.item_3"),
+        t('regular_investment_page.reading_guide.follow_contribution'),
+        t('regular_investment_page.reading_guide.compare_lot_age'),
+        t('regular_investment_page.reading_guide.check_real_value'),
     ];
     const handleKeyDown = (event: React.KeyboardEvent) => {
         if (event.key === 'Enter' && (isDirty || !results)) {
@@ -74,17 +74,17 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
         </div>
 
         {results ? (<div className={cn('space-y-8 transition-opacity duration-200', isCalculating && 'pointer-events-none opacity-50')}>
-            <SecondaryInsightAccordion title={t("generated.features.regular_investment.components.regular_investment_calculator_container.item_4")} description={t("generated.features.regular_investment.components.regular_investment_calculator_container.item_5")} badge={t("generated.features.regular_investment.components.regular_investment_calculator_container.item_6")}>
+            <SecondaryInsightAccordion title={t('regular_investment_page.how_to_read_title')} description={t('regular_investment_page.how_to_read_description')} badge={t('regular_investment_page.how_to_read_badge')}>
               <ReadingChecklist items={readingGuide}/>
             </SecondaryInsightAccordion>
 
-            <CalculatorSection title={t("generated.features.regular_investment.components.regular_investment_calculator_container.item_7")} description={t("generated.features.regular_investment.components.regular_investment_calculator_container.item_8")}>
+            <CalculatorSection title={t('regular_investment_page.chart_title')} description={t('regular_investment_page.chart_description')}>
               <div className="rounded-[1.7rem] border border-slate-200 bg-white p-3 shadow-none md:rounded-[2rem] md:p-4">
                 <RegularInvestmentChart results={results} bondType={inputs.bondType} chartStep={inputs.chartStep}/>
               </div>
             </CalculatorSection>
 
-            <SecondaryInsightAccordion title={t('bonds.simulation.calculation_context')} description={t("generated.features.regular_investment.components.regular_investment_calculator_container.item_9")} badge={t("generated.features.regular_investment.components.regular_investment_calculator_container.item_10")}>
+            <SecondaryInsightAccordion title={t('bonds.simulation.calculation_context')} description={t('regular_investment_page.calculation_context_description')} badge={t('regular_investment_page.calculation_context_badge')}>
               <CalculationMetaPanel warnings={warnings} assumptions={assumptions} calculationNotes={envelope?.calculationNotes} dataQualityFlags={envelope?.dataQualityFlags} dataFreshness={envelope?.dataFreshness}/>
             </SecondaryInsightAccordion>
           </div>) : null}
