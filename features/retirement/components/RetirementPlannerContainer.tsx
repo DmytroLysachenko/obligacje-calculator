@@ -1,39 +1,26 @@
 'use client';
 import React, { useMemo, useState } from 'react';
-import { Calendar, LineChart, Wallet, } from 'lucide-react';
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, } from 'recharts';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, } from '@/components/ui/accordion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@/components/ui/select';
+import { Calendar, Wallet, } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
-import { getBondSupportMeta, getRetirementSupportNote, RETIREMENT_SUPPORTED_BOND_TYPES, supportsRetirementBondType, } from '@/features/bond-core/support-matrix';
+import { RETIREMENT_SUPPORTED_BOND_TYPES, supportsRetirementBondType, } from '@/features/bond-core/support-matrix';
 import { RetirementPlannerCalculationEnvelope } from '@/features/bond-core/types/scenarios';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
-import { ChartContainer } from '@/shared/components/charts/ChartContainer';
-import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
-import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
+import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';
-import { formatCurrency } from '@/lib/utils';
 import { useAppI18n } from '@/i18n/client';
+import { RetirementInputs, RetirementInputsPanel } from './RetirementInputsPanel';
+import { RetirementResultsOverview } from './RetirementResultsOverview';
+import { RetirementSupportList } from './RetirementSupportList';
+
 function formatRate(value: number) {
     return `${value.toFixed(2)}%`;
 }
-type RetirementInputs = {
-    initialCapital: number;
-    monthlyWithdrawal: number;
-    expectedInflation: number;
-    expectedNbpRate: number;
-    bondType: BondType;
-    taxStrategy: TaxStrategy;
-    horizonYears: number;
-};
 const DEFAULT_INPUTS: RetirementInputs = {
     initialCapital: 500000,
     monthlyWithdrawal: 3000,
@@ -64,30 +51,20 @@ const SummaryMetric = ({ label, value, detail, tone = 'default', }: {
       </CardContent>
     </Card>);
 };
-const SupportList = ({ title, items, emptyLabel, }: {
-    title: string;
-    items: string[];
-    emptyLabel: string;
-}) => (<Card className="rounded-2xl border shadow-none">
-    <CardHeader className="pb-3">
-      <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-900">
-        {title}
-      </CardTitle>
-    </CardHeader>
-    <CardContent className="space-y-3 text-sm leading-6 text-muted-foreground">
-      {items.length === 0 ? (<p>{emptyLabel}</p>) : (items.map((item) => (<div key={item} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-            {item}
-          </div>)))}
-    </CardContent>
-  </Card>);
 export const RetirementPlannerContainer: React.FC = () => {
     const { t, locale: language } = useAppI18n();
     const { defaults: macroDefaults } = useMacroAssumptionDefaults();
     const { isCalculating, post } = useCalculationRequest();
+    const currencyFormatter = useCurrencyFormatter(language, {
+        style: 'currency',
+        currency: 'PLN',
+        maximumFractionDigits: 0,
+    });
     const [inputs, setInputs] = useState<RetirementInputs>(DEFAULT_INPUTS);
     const [isDirty, setIsDirty] = useState(true);
     const [results, setResults] = useState<RetirementPlannerCalculationEnvelope | null>(null);
     const hasTouchedMacroAssumptions = React.useRef(false);
+    const formatCurrency = React.useCallback((value: number) => currencyFormatter.format(value), [currencyFormatter]);
     React.useEffect(() => {
         if (!macroDefaults || hasTouchedMacroAssumptions.current) {
             return;
@@ -204,138 +181,7 @@ export const RetirementPlannerContainer: React.FC = () => {
     return (<CalculatorPageShell title={labels.pageTitle} description={labels.pageDescription} icon={<Wallet className="h-8 w-8"/>} isCalculating={isCalculating} isDirty={isDirty} hasResults={!!results}>
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
         <aside className="space-y-6 xl:col-span-4">
-          <Card className="rounded-2xl border-2">
-            <CardHeader className="space-y-2">
-              <CardTitle className="text-lg font-black uppercase tracking-widest">
-                {labels.primaryInputs}
-              </CardTitle>
-              <p className="text-sm leading-6 text-muted-foreground">
-                {labels.primaryInputsDesc}
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase text-muted-foreground">
-                    {labels.initialCapital}
-                </Label>
-                <Input type="number" value={inputs.initialCapital} onChange={(event) => updateInput('initialCapital', Number(event.target.value))} className="rounded-xl font-bold"/>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-xs font-bold uppercase text-muted-foreground">
-                    {labels.monthlyWithdrawal}
-                  </Label>
-                  <span className="text-xs font-black text-primary">
-                    {formatCurrency(inputs.monthlyWithdrawal)}
-                  </span>
-                </div>
-                <CommittedSliderInput value={inputs.monthlyWithdrawal} min={500} max={20000} step={100} unit="PLN" onCommit={(value) => updateInput('monthlyWithdrawal', value)}/>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-xs font-bold uppercase text-muted-foreground">
-                    {labels.scenarioHorizon}
-                  </Label>
-                  <span className="text-xs font-black text-primary">
-                    {formatHorizonMonths(inputs.horizonYears * 12, language)}
-                  </span>
-                </div>
-                <CommittedSliderInput value={inputs.horizonYears} min={1} max={50} step={1} unit="Y" onCommit={(value) => updateInput('horizonYears', value)}/>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase text-muted-foreground">
-                    {labels.bondFamily}
-                </Label>
-                <Select value={inputs.bondType} onValueChange={(value) => updateInput('bondType', value as BondType)}>
-                  <SelectTrigger className="rounded-xl font-bold">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {RETIREMENT_SUPPORTED_BOND_TYPES.map((type) => (<SelectItem key={type} value={type}>
-                        <div className="flex flex-col">
-                          <span>{type}</span>
-                          <span className="text-[10px] text-muted-foreground">
-                            {getBondSupportMeta(type).shortLabel}
-                          </span>
-                        </div>
-                      </SelectItem>))}
-                  </SelectContent>
-                </Select>
-                <p className="text-xs leading-5 text-muted-foreground">
-                  {getRetirementSupportNote(inputs.bondType)}
-                </p>
-              </div>
-
-              <Accordion type="single" collapsible defaultValue="">
-                <AccordionItem value="advanced" className="border-none">
-                  <AccordionTrigger className="rounded-2xl border bg-slate-50 px-4 py-4 hover:no-underline">
-                    <div className="space-y-1 text-left">
-                      <p className="text-sm font-bold text-slate-950">
-                        {labels.advancedAssumptions}
-                      </p>
-                      <p className="text-xs leading-5 text-muted-foreground">
-                        {labels.advancedAssumptionsDesc}
-                      </p>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="space-y-5 px-1 pt-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-xs font-bold uppercase text-muted-foreground">
-                          {labels.expectedInflation}
-                        </Label>
-                        <span className="text-xs font-black text-primary">
-                          {formatRate(inputs.expectedInflation)}
-                        </span>
-                      </div>
-                      <CommittedSliderInput value={inputs.expectedInflation} min={-2} max={15} step={0.1} unit="%" onCommit={(value) => updateInput('expectedInflation', value)}/>
-                    </div>
-
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-xs font-bold uppercase text-muted-foreground">
-                          {labels.expectedNbpRate}
-                        </Label>
-                        <span className="text-xs font-black text-primary">
-                          {formatRate(inputs.expectedNbpRate)}
-                        </span>
-                      </div>
-                      <CommittedSliderInput value={inputs.expectedNbpRate} min={0} max={15} step={0.05} unit="%" onCommit={(value) => updateInput('expectedNbpRate', value)}/>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label className="text-xs font-bold uppercase text-muted-foreground">
-                        {labels.taxWrapper}
-                      </Label>
-                      <Select value={inputs.taxStrategy} onValueChange={(value) => updateInput('taxStrategy', value as TaxStrategy)}>
-                        <SelectTrigger className="rounded-xl font-bold">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value={TaxStrategy.STANDARD}>
-                            {taxStrategyLabels[TaxStrategy.STANDARD]}
-                          </SelectItem>
-                          <SelectItem value={TaxStrategy.IKE}>
-                            {taxStrategyLabels[TaxStrategy.IKE]}
-                          </SelectItem>
-                          <SelectItem value={TaxStrategy.IKZE}>
-                            {taxStrategyLabels[TaxStrategy.IKZE]}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-600">
-                {labels.floatingActionNote}
-              </div>
-            </CardContent>
-          </Card>
+          <RetirementInputsPanel inputs={inputs} language={language} labels={labels} taxStrategyLabels={taxStrategyLabels} formatCurrency={formatCurrency} formatRate={formatRate} onUpdateInput={updateInput}/>
         </aside>
 
         <div className="space-y-8 xl:col-span-8">
@@ -355,77 +201,12 @@ export const RetirementPlannerContainer: React.FC = () => {
                 <SummaryMetric label={labels.modeledAnnualRate} value={formatRate(results.result.modeledAnnualRate)} detail={labels.modeledAnnualRateDetail.replace('{{bond}}', results.result.modeledBondType)}/>
               </div>
 
-              <Card className="rounded-2xl border-2 shadow-none">
-                <CardHeader className="space-y-2">
-                  <CardTitle className="flex items-center gap-2 text-lg font-black uppercase tracking-widest">
-                    <LineChart className="h-5 w-5 text-primary"/>
-                    {labels.balancePath}
-                  </CardTitle>
-                  <p className="text-sm leading-6 text-muted-foreground">
-                    {labels.balancePathDesc}
-                  </p>
-                </CardHeader>
-                <CardContent className="space-y-6 p-6">
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                    <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                      <p className="text-[10px] font-black uppercase text-slate-600">
-                        {labels.coverage}
-                      </p>
-                      <p className="mt-1 text-sm font-bold text-slate-950">
-                        {scenarioCoverage ?? formatHorizonMonths(inputs.horizonYears * 12, language)}
-                      </p>
-                    </div>
-                    <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                      <p className="text-[10px] font-black uppercase text-slate-600">
-                        {labels.taxWrapper}
-                      </p>
-                      <p className="mt-1 text-sm font-bold text-slate-950">
-                        {taxStrategyLabels[inputs.taxStrategy]}
-                      </p>
-                    </div>
-                    <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                      <p className="text-[10px] font-black uppercase text-slate-600">
-                        {labels.taxPaid}
-                      </p>
-                      <p className="mt-1 text-sm font-bold text-slate-950">
-                        {formatCurrency(results.result.totalTaxPaid)}
-                      </p>
-                    </div>
-                  </div>
-
-                  <ChartSupportNote title={labels.howToRead} description={labels.howToReadDesc}/>
-
-                  <ChartContainer responsiveHeightClassName="h-[340px] md:h-[400px] xl:h-[440px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={chartData}>
-                        <defs>
-                          <linearGradient id="retirement-balance" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.25}/>
-                            <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted-foreground))" strokeOpacity={0.1}/>
-                        <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 'bold' }}/>
-                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 'bold' }} tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}/>
-                        <Tooltip contentStyle={{
-                borderRadius: '16px',
-                border: 'none',
-                boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
-            }} formatter={(value, key) => [
-                formatCurrency(Number(value || 0)),
-                key === 'balance' ? labels.balance : labels.withdrawal,
-            ]}/>
-                        <Area type="monotone" dataKey="balance" stroke="hsl(var(--primary))" strokeWidth={3} fillOpacity={1} fill="url(#retirement-balance)"/>
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  </ChartContainer>
-                </CardContent>
-              </Card>
+              <RetirementResultsOverview chartData={chartData} scenarioCoverage={scenarioCoverage} labels={labels} language={language} inputsHorizonYears={inputs.horizonYears} taxStrategyLabel={taxStrategyLabels[inputs.taxStrategy]} totalTaxPaid={results.result.totalTaxPaid} formatCurrency={formatCurrency}/>
 
               <SecondaryInsightAccordion title={labels.assumptionsAndWarnings} description={labels.assumptionsAndWarningsDesc} badge={labels.audit}>
                 <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-                  <SupportList title={labels.assumptions} items={results.assumptions} emptyLabel={labels.noExtraAssumptions}/>
-                  <SupportList title={labels.warningsAndNotes} items={[
+                  <RetirementSupportList title={labels.assumptions} items={results.assumptions} emptyLabel={labels.noExtraAssumptions}/>
+                  <RetirementSupportList title={labels.warningsAndNotes} items={[
                 ...results.warnings,
                 ...results.calculationNotes,
                 ...results.dataQualityFlags,
