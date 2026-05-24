@@ -4,6 +4,7 @@
     "description": "Professional calculator for Polish treasury bonds.",
     "calculate": "Calculate",
     "save": "Save",
+    "cancel": "Cancel",
     "reset": "Reset",
     "year": "Year",
     "years": "Years",

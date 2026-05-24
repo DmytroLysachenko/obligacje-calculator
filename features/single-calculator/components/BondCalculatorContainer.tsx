@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link2, Target } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppI18n } from '@/i18n/client';
@@ -9,6 +9,7 @@ import { CalculationMetaPanel } from '@/shared/components/results/CalculationMet
 import { CalculatorSection } from '@/shared/components/page/CalculatorSection';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { ReadingChecklist } from '@/shared/components/insights/ReadingChecklist';
+import { AppToast } from '@/shared/components/feedback/AppToast';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
@@ -56,6 +57,8 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
   } = useBondCalculator(initialInputs);
   const { t, locale: language } = useAppI18n();
   const { canManageWorkspace } = usePortfolioAccess();
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [statusTone, setStatusTone] = useState<'success' | 'error'>('success');
   const translate = useMemo(
     () => (key: string, params?: Record<string, string | number>) => t(key, params),
     [t],
@@ -123,9 +126,12 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
           isRebought: inputs.isRebought,
         }),
       });
-      alert(t('notebook.current_lot_added'));
+      setStatusTone('success');
+      setStatusMessage(t('notebook.current_lot_added'));
     } catch (error) {
       console.error(error);
+      setStatusTone('error');
+      setStatusMessage(t('notebook.create_error'));
     }
   };
 
@@ -359,6 +365,12 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
         loading={isCalculating}
         disabled={blockingGuardrails.length > 0}
         onClick={() => calculate()}
+      />
+
+      <AppToast
+        message={statusMessage}
+        tone={statusTone}
+        onDismiss={() => setStatusMessage(null)}
       />
     </CalculatorPageShell>
   );

@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
+import { ConfirmActionDialog } from '@/shared/components/feedback/ConfirmActionDialog';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { unwrapApiData } from '@/shared/lib/api-response';
 import { downloadJsonFile } from '@/shared/lib/csv-utils';
@@ -52,6 +53,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
     const [isPublic, setIsPublic] = useState(portfolio.isPublic || false);
     const [isSharing, setIsSharing] = useState(false);
     const [justCopied, setJustCopied] = useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [maturityWindowDays, setMaturityWindowDays] = useState<MaturityWindow>(90);
     const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/shared-portfolios/${portfolio.shareId}` : '';
     const currencyFormatter = useCurrencyFormatter(language, {
@@ -260,16 +262,7 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
             <Download className="h-4 w-4"/>
             {t('notebook.export_summary')}
           </Button>
-          {onDelete ? (<Button variant="outline" className="gap-2 border-destructive/20 bg-background text-destructive hover:bg-destructive/5 hover:text-destructive" onClick={async () => {
-                const confirmed = window.confirm(t('notebook.confirm_delete_portfolio_full', {
-                    name: portfolio.name,
-                }));
-                if (!confirmed) {
-                    return;
-                }
-                await onDelete(portfolio);
-                onBack();
-            }}>
+          {onDelete ? (<Button variant="outline" className="gap-2 border-destructive/20 bg-background text-destructive hover:bg-destructive/5 hover:text-destructive" onClick={() => setIsDeleteDialogOpen(true)}>
               <Trash2 className="h-4 w-4"/>
               {t('notebook.delete_portfolio')}
             </Button>) : null}
@@ -447,6 +440,24 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
           </div>
         </div>
       </div>
+
+      <ConfirmActionDialog
+        open={isDeleteDialogOpen}
+        title={t('notebook.delete_portfolio')}
+        description={t('notebook.confirm_delete_portfolio_full', {
+          name: portfolio.name,
+        })}
+        confirmLabel={t('common.delete')}
+        cancelLabel={t('common.cancel')}
+        onCancel={() => setIsDeleteDialogOpen(false)}
+        onConfirm={async () => {
+          setIsDeleteDialogOpen(false);
+          if (onDelete) {
+            await onDelete(portfolio);
+            onBack();
+          }
+        }}
+      />
     </div>);
 };
 

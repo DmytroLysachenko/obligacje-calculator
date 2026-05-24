@@ -4,6 +4,7 @@
     "description": "Profesjonalny kalkulator polskich obligacji skarbowych.",
     "calculate": "Oblicz",
     "save": "Zapisz",
+    "cancel": "Anuluj",
     "reset": "Resetuj",
     "year": "Rok",
     "years": "Lata",

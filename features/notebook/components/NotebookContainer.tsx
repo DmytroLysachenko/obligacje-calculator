@@ -9,6 +9,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 import { useDateFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
+import { AppToast } from '@/shared/components/feedback/AppToast';
+import { ConfirmActionDialog } from '@/shared/components/feedback/ConfirmActionDialog';
 import { unwrapApiData } from '@/shared/lib/api-response';
 import {
   persistSelectedPortfolioId,
@@ -124,6 +126,7 @@ export const NotebookContainer: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [selectedPortfolioId, setSelectedPortfolioId] = useState<string | null>(null);
     const [statusMessage, setStatusMessage] = useState<string | null>(null);
+    const [portfolioPendingDelete, setPortfolioPendingDelete] = useState<UserPortfolio | null>(null);
     const importRef = useRef<HTMLInputElement | null>(null);
     const { canManageWorkspace, isGuestWorkspace } = usePortfolioAccess();
     const dateFormatter = useDateFormatter(language);
@@ -367,13 +370,6 @@ export const NotebookContainer: React.FC = () => {
           </div>
         </div>) : null}
 
-      {statusMessage ? (<div className="rounded-[2rem] border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-950">
-          <div className="flex items-center gap-3 font-semibold">
-            <CheckCircle2 className="h-5 w-5"/>
-            {statusMessage}
-          </div>
-        </div>) : null}
-
       <SectionBlock title={t('notebook.workspace_scope_title')} description={notebookIntro}>
         <Card className="overflow-hidden rounded-[2.2rem] border border-slate-200/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(248,250,252,0.9))] shadow-[0_24px_70px_-52px_rgba(15,23,42,0.45)] backdrop-blur">
           <CardContent className="space-y-6 p-6 md:p-8">
@@ -434,15 +430,9 @@ export const NotebookContainer: React.FC = () => {
                     ? t('notebook.status_public')
                     : t('notebook.status_private')}
                         </span>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full text-slate-500 hover:text-destructive" onClick={async (event) => {
+                        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full text-slate-500 hover:text-destructive" onClick={(event) => {
                     event.stopPropagation();
-                    const confirmed = window.confirm(t('notebook.confirm_delete_portfolio_short', {
-                        name: portfolio.name,
-                    }));
-                    if (!confirmed) {
-                        return;
-                    }
-                    await handleDeletePortfolio(portfolio);
+                    setPortfolioPendingDelete(portfolio);
                 }}>
                           <Trash2 className="h-4 w-4"/>
                         </Button>
@@ -504,6 +494,28 @@ export const NotebookContainer: React.FC = () => {
             </CardContent>
           </Card>
         </div>)}
+
+      <ConfirmActionDialog
+        open={!!portfolioPendingDelete}
+        title={t('notebook.delete_portfolio')}
+        description={portfolioPendingDelete
+          ? t('notebook.confirm_delete_portfolio_short', {
+              name: portfolioPendingDelete.name,
+            })
+          : ''}
+        confirmLabel={t('common.delete')}
+        cancelLabel={t('common.cancel')}
+        onCancel={() => setPortfolioPendingDelete(null)}
+        onConfirm={async () => {
+          const portfolio = portfolioPendingDelete;
+          setPortfolioPendingDelete(null);
+          if (portfolio) {
+            await handleDeletePortfolio(portfolio);
+          }
+        }}
+      />
+
+      <AppToast message={statusMessage} onDismiss={() => setStatusMessage(null)} />
     </CalculatorPageShell>);
 };
 
