@@ -12,6 +12,7 @@ import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import { getBondSupportMeta } from '@/features/bond-core/support-matrix';
 import { BondComparisonCalculationEnvelope } from '@/features/bond-core/types/scenarios';
 import { useAppI18n } from '@/i18n/client';
+import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { cn } from '@/lib/utils';
 import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
@@ -24,7 +25,6 @@ import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { getBondColor } from '@/shared/lib/charts/get-bond-color';
 import { sampleSeriesPoints } from '@/shared/lib/chart-series';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
-import { getIntlLocale } from '@/i18n/locale-utils';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 type ChartDataPoint = {
     date: string;
@@ -80,6 +80,11 @@ function SectionBlock({ title, description, children, }: {
 }
 export const BondComparisonContainer = () => {
     const { locale: language, t } = useAppI18n();
+    const currencyFormatter = useCurrencyFormatter(language, {
+        style: 'currency',
+        currency: 'PLN',
+        maximumFractionDigits: 0,
+    });
     const { definitions } = useBondDefinitions();
     const { defaults: macroDefaults } = useMacroAssumptionDefaults();
     const [initialInvestment, setInitialInvestment] = useState(10000);
@@ -228,11 +233,7 @@ export const BondComparisonContainer = () => {
         });
         return sampleSeriesPoints(projected, 180);
     }, [results, showRealValue]);
-    const formatCurrency = (value: number) => new Intl.NumberFormat(getIntlLocale(language), {
-        style: 'currency',
-        currency: 'PLN',
-        maximumFractionDigits: 0,
-    }).format(value);
+    const formatCurrency = (value: number) => currencyFormatter.format(value);
     const bestResult = useMemo(() => {
         if (results.length === 0) {
             return null;

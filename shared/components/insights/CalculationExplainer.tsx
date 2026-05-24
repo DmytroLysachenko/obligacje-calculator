@@ -5,7 +5,7 @@ import { useAppI18n } from '@/i18n/client';
 import { CalculationResult, TaxStrategy } from '@/features/bond-core/types';
 import { Calculator, ShieldCheck, Landmark, ChevronRight, ChevronLeft, ArrowRight, TrendingDown, Percent } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { getIntlLocale } from '@/i18n/locale-utils';
+import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 interface CalculationExplainerProps {
     results: CalculationResult;
     taxStrategy?: TaxStrategy;
@@ -13,11 +13,9 @@ interface CalculationExplainerProps {
 export const CalculationExplainer: React.FC<CalculationExplainerProps> = ({ results, taxStrategy }) => {
     const { t, locale: language } = useAppI18n();
     const [exampleYear, setExampleYear] = useState(Math.min(5, results.timeline.length > 1 ? 2 : 1));
+    const currencyFormatter = useCurrencyFormatter(language);
     const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat(getIntlLocale(language), {
-            style: 'currency',
-            currency: 'PLN',
-        }).format(value);
+        return currencyFormatter.format(value);
     };
     const point = results.timeline[exampleYear - 1];
     if (!point)

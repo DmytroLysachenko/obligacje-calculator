@@ -9,10 +9,11 @@ import { RegularInvestmentResult } from '../../bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
+import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
 import { ResultMetricCard } from '@/shared/components/results/ResultMetricCard';
 import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
-import { getDateFnsLocale, getIntlLocale } from '@/i18n/locale-utils';
+import { getDateFnsLocale } from '@/i18n/locale-utils';
 interface LadderTimelineProps {
     results: RegularInvestmentResult;
 }
@@ -25,11 +26,12 @@ type MaturityBucket = {
 export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
     const { t, locale: language } = useAppI18n();
     const dateLocale = getDateFnsLocale(language);
-    const formatCurrency = (value: number) => new Intl.NumberFormat(getIntlLocale(language), {
+    const currencyFormatter = useCurrencyFormatter(language, {
         style: 'currency',
         currency: 'PLN',
         maximumFractionDigits: 0,
-    }).format(value);
+    });
+    const formatCurrency = (value: number) => currencyFormatter.format(value);
     const chartData = useMemo<MaturityBucket[]>(() => {
         const grouped = results.lots.reduce((accumulator, lot) => {
             const maturityDate = parseISO(lot.maturityDate);

@@ -8,10 +8,11 @@ import { useAppI18n } from '@/i18n/client';
 import { format } from 'date-fns';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { getBondColor } from '@/shared/lib/charts/get-bond-color';
 import { sampleSeriesPoints } from '@/shared/lib/chart-series';
 import { buildRegularInvestmentChartPoints } from '@/shared/lib/regular-investment-display';
-import { getDateFnsLocale, getIntlLocale } from '@/i18n/locale-utils';
+import { getDateFnsLocale } from '@/i18n/locale-utils';
 interface RegularInvestmentChartProps {
     results: RegularInvestmentResult;
     bondType: string;
@@ -51,12 +52,13 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ 
     const [view, setView] = React.useState<'nominal' | 'real'>('nominal');
     const dateLocale = getDateFnsLocale(language);
     const primaryColor = getBondColor(bondType);
-    const chartData = React.useMemo(() => sampleSeriesPoints(buildRegularInvestmentChartPoints(results.timeline, chartStep, (date) => format(date, 'MM.yy', { locale: dateLocale }), view), 180), [chartStep, dateLocale, results.timeline, view]);
-    const formatCurrency = React.useMemo(() => (value: number) => new Intl.NumberFormat(getIntlLocale(language), {
+    const currencyFormatter = useCurrencyFormatter(language, {
         style: 'currency',
         currency: 'PLN',
         maximumFractionDigits: 0,
-    }).format(value), [language]);
+    });
+    const chartData = React.useMemo(() => sampleSeriesPoints(buildRegularInvestmentChartPoints(results.timeline, chartStep, (date) => format(date, 'MM.yy', { locale: dateLocale }), view), 180), [chartStep, dateLocale, results.timeline, view]);
+    const formatCurrency = React.useMemo(() => (value: number) => currencyFormatter.format(value), [currencyFormatter]);
     return (<div className="space-y-6">
       <div className="flex justify-center">
         <Tabs value={view} onValueChange={(v) => setView(v as 'nominal' | 'real')} className="w-fit p-1 bg-muted/50 rounded-xl">

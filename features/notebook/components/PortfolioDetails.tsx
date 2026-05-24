@@ -13,13 +13,13 @@ import { cn } from '@/lib/utils';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
+import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { unwrapApiData } from '@/shared/lib/api-response';
 import { downloadJsonFile } from '@/shared/lib/csv-utils';
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, } from 'recharts';
 import { PortfolioSimulationResult } from '@/features/bond-core/types/scenarios';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { getIntlLocale } from '@/i18n/locale-utils';
 interface PortfolioDetailsProps {
     portfolio: UserPortfolio;
     onBack: () => void;
@@ -54,11 +54,12 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
     const [justCopied, setJustCopied] = useState(false);
     const [maturityWindowDays, setMaturityWindowDays] = useState<MaturityWindow>(90);
     const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/shared-portfolios/${portfolio.shareId}` : '';
-    const formatCurrency = useCallback((value: number) => new Intl.NumberFormat(getIntlLocale(language), {
+    const currencyFormatter = useCurrencyFormatter(language, {
         style: 'currency',
         currency: 'PLN',
         maximumFractionDigits: 0,
-    }).format(value), [language]);
+    });
+    const formatCurrency = useCallback((value: number) => currencyFormatter.format(value), [currencyFormatter]);
     const fetchLots = useCallback(async () => {
         setIsLoading(true);
         try {

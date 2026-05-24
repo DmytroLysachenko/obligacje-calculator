@@ -7,18 +7,16 @@ import { Info, ArrowRight, Calculator, Landmark, ShieldCheck, ExternalLink } fro
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
-import { getIntlLocale } from '@/i18n/locale-utils';
+import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 interface MathDeepDiveProps {
     results: CalculationResult;
     trigger?: React.ReactNode;
 }
 export const MathDeepDive: React.FC<MathDeepDiveProps> = ({ results, trigger }) => {
     const { t, locale: language } = useAppI18n();
+    const currencyFormatter = useCurrencyFormatter(language);
     const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat(getIntlLocale(language), {
-            style: 'currency',
-            currency: 'PLN',
-        }).format(value);
+        return currencyFormatter.format(value);
     };
     const totalInterest = results.grossValue - results.initialInvestment;
     return (<Sheet>

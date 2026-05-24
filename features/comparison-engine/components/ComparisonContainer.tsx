@@ -4,6 +4,7 @@ import { Scale, TriangleAlert } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAppI18n } from '@/i18n/client';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
+import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { cn } from '@/lib/utils';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
@@ -17,7 +18,6 @@ import { ComparisonVerdict } from './ComparisonVerdict';
 import { ComparisonResultsPanel } from './ComparisonResultsPanel';
 import { ComparisonSharedBaseCard } from './ComparisonSharedBaseCard';
 import { ScenarioOverrideCard } from './ScenarioOverrideCard';
-import { getIntlLocale } from '@/i18n/locale-utils';
 import {
   buildComparisonChartData,
   getComparisonAssumptionsBondType,
@@ -28,6 +28,11 @@ export const ComparisonContainer: React.FC = () => {
     const { t, locale: language } = useAppI18n();
     const [showRealValue, setShowRealValue] = useState(false);
     const hasMounted = useHasMounted();
+    const currencyFormatter = useCurrencyFormatter(language, {
+        style: 'currency',
+        currency: 'PLN',
+        maximumFractionDigits: 0,
+    });
     const handleKeyDown = (event: React.KeyboardEvent) => {
         if (event.key === 'Enter' && (isDirty || !resultsA)) {
             calculate();
@@ -36,12 +41,8 @@ export const ComparisonContainer: React.FC = () => {
     const formatCurrency = React.useMemo(() => (value: number) => {
         if (!hasMounted)
             return '---';
-        return new Intl.NumberFormat(getIntlLocale(language), {
-            style: 'currency',
-            currency: 'PLN',
-            maximumFractionDigits: 0,
-        }).format(value);
-    }, [hasMounted, language]);
+        return currencyFormatter.format(value);
+    }, [currencyFormatter, hasMounted]);
     const chartData = useMemo(
       () =>
         resultsA && resultsB

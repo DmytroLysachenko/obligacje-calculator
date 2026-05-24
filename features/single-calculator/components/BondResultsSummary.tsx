@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { BondInputs, CalculationResult } from '../../bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { buildTimelineExportHeaders } from '@/shared/lib/export-headers';
+import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { MetricStrip } from '@/shared/components/results/MetricStrip';
 import { MathDeepDive } from '@/shared/components/insights/MathDeepDive';
 import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
@@ -12,7 +13,6 @@ import { ScenarioFactsBlock } from '@/shared/components/results/ScenarioFactsBlo
 import { CalculationAuditTrace } from './CalculationAuditTrace';
 import { getAuditTimelinePoint } from '@/shared/lib/bond-display';
 import { buildTimelineCsvFilename, exportTimelineCsv, } from '@/shared/lib/retained-exports';
-import { getIntlLocale } from '@/i18n/locale-utils';
 function getTaxStrategyDisplayLabel(strategy: BondInputs['taxStrategy'], t: (key: string) => string) {
     if (strategy === 'IKE')
         return t('bonds.tax_ike');
@@ -30,10 +30,8 @@ interface BondResultsSummaryProps {
 }
 export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results, inputs, onSaveScenario, onAddToNotebook, onExportPDF, canManageWorkspace = false, }) => {
     const { t, locale: language } = useAppI18n();
-    const formatCurrency = (value: number) => new Intl.NumberFormat(getIntlLocale(language), {
-        style: 'currency',
-        currency: 'PLN',
-    }).format(value);
+    const currencyFormatter = useCurrencyFormatter(language);
+    const formatCurrency = (value: number) => currencyFormatter.format(value);
     const handleExportCSV = () => {
         exportTimelineCsv({
             timeline: results.timeline,

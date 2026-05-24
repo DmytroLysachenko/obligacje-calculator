@@ -3,8 +3,8 @@ import React from 'react';
 import { ArrowRight, Scale } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAppI18n } from '@/i18n/client';
-import { getIntlLocale } from '@/i18n/locale-utils';
 import { YearlyTimelinePoint } from '@/features/bond-core/types';
+import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { AppLanguage, getRateSourceDisplayLabel, getReferenceDisplayLabel, } from '@/shared/lib/bond-display';
 interface CalculationAuditTraceProps {
     point: YearlyTimelinePoint;
@@ -24,10 +24,8 @@ function cn(...classes: Array<string | false | null | undefined>) {
 }
 export const CalculationAuditTrace: React.FC<CalculationAuditTraceProps> = ({ point }) => {
     const { t, locale: language } = useAppI18n();
-    const formatCurrency = (value: number) => new Intl.NumberFormat(getIntlLocale(language), {
-        style: 'currency',
-        currency: 'PLN',
-    }).format(value);
+    const currencyFormatter = useCurrencyFormatter(language);
+    const formatCurrency = (value: number) => currencyFormatter.format(value);
     const formatPercent = (value: number) => `${value.toFixed(2)}%`;
     const rateLabel = getRateSourceDisplayLabel(point.rateSource, language as AppLanguage);
     const referenceLabel = getReferenceDisplayLabel(point, language as AppLanguage);

@@ -6,8 +6,8 @@ import { UserPortfolio } from '@/db/schema';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getIntlLocale } from '@/i18n/locale-utils';
 import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
+import { useDateFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { unwrapApiData } from '@/shared/lib/api-response';
 import {
@@ -126,6 +126,7 @@ export const NotebookContainer: React.FC = () => {
     const [statusMessage, setStatusMessage] = useState<string | null>(null);
     const importRef = useRef<HTMLInputElement | null>(null);
     const { canManageWorkspace, isGuestWorkspace } = usePortfolioAccess();
+    const dateFormatter = useDateFormatter(language);
     const mergePortfolioIntoState = useCallback((portfolio: UserPortfolio) => {
         setPortfolios((current) => upsertPortfolioInNotebookState(current, portfolio));
     }, []);
@@ -463,7 +464,7 @@ export const NotebookContainer: React.FC = () => {
                           {t('common.created')}
                         </p>
                         <p className="mt-2 font-medium text-slate-900">
-                          {new Intl.DateTimeFormat(getIntlLocale(language)).format(new Date(portfolio.createdAt!))}
+                          {dateFormatter.format(new Date(portfolio.createdAt!))}
                         </p>
                       </div>
                       <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
