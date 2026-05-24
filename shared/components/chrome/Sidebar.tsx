@@ -19,11 +19,15 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { UserPortfolio } from '@/db/schema';
-import { getStoredCurrentPortfolioId, resolveCurrentPortfolioId, setStoredCurrentPortfolioId } from '@/features/notebook/lib/current-portfolio';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { useAppI18n } from '@/i18n/client';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { unwrapApiData } from '@/shared/lib/api-response';
+import {
+  getStoredCurrentPortfolioId,
+  resolveCurrentPortfolioId,
+  setStoredCurrentPortfolioId,
+} from '@/shared/lib/workspace/current-portfolio';
 import { cn } from '@/lib/utils';
 import { LanguageSwitcher } from './LanguageSwitcher';
 

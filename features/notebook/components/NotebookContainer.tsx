@@ -10,8 +10,13 @@ import { getIntlLocale } from '@/i18n/locale-utils';
 import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { unwrapApiData } from '@/shared/lib/api-response';
+import {
+  persistSelectedPortfolioId,
+  removePortfolioFromNotebookState,
+  resolveSelectedPortfolioId,
+  upsertPortfolioInNotebookState,
+} from '@/shared/lib/workspace/notebook-state';
 import { PortfolioDetails } from './PortfolioDetails';
-import { persistSelectedPortfolioId, removePortfolioFromNotebookState, resolveSelectedPortfolioId, upsertPortfolioInNotebookState, } from '../lib/notebook-state';
 type NotebookStepItem = {
     id: string;
     title: string;

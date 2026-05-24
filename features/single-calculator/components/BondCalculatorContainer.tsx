@@ -16,10 +16,13 @@ import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { unwrapApiData } from '@/shared/lib/api-response';
 import { generateSingleBondReportPdf } from '@/shared/lib/pdf-utils';
 import { buildSharedSingleScenarioPayload } from '@/shared/lib/single-scenario-share';
+import {
+  getStoredCurrentPortfolioId,
+  setStoredCurrentPortfolioId,
+} from '@/shared/lib/workspace/current-portfolio';
 import { useBondCalculator } from '../hooks/useBondCalculator';
 import { applyGuardrailFix, getInputGuardrails, InputGuardrailIssue } from '../lib/input-guardrails';
 import { createSavedScenario, saveScenarioRecord } from '../lib/scenario-storage';
-import { getStoredCurrentPortfolioId, setStoredCurrentPortfolioId } from '@/features/notebook/lib/current-portfolio';
 import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 import { BondChart } from './BondChart';
 import { BondInputsForm } from './BondInputsForm';

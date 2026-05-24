@@ -75,11 +75,11 @@ describe('notebook state helpers', () => {
     expect(next.map((item) => item.id)).toEqual(['b']);
   });
 
-  it('clears selected portfolio when it no longer exists', () => {
+  it('falls back to the first valid portfolio when selection is missing', () => {
     const current = [portfolio('a', '2026-05-09T00:00:00.000Z')];
 
     expect(resolveSelectedPortfolioId('a', current)).toBe('a');
-    expect(resolveSelectedPortfolioId('missing', current)).toBeNull();
-    expect(resolveSelectedPortfolioId(null, current)).toBeNull();
+    expect(resolveSelectedPortfolioId('missing', current)).toBe('a');
+    expect(resolveSelectedPortfolioId(null, current)).toBe('a');
   });
 });
