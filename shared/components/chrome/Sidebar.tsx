@@ -18,16 +18,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { UserPortfolio } from '@/db/schema';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { useAppI18n } from '@/i18n/client';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
-import { unwrapApiData } from '@/shared/lib/api-response';
-import {
-  getStoredCurrentPortfolioId,
-  resolveCurrentPortfolioId,
-  setStoredCurrentPortfolioId,
-} from '@/shared/lib/workspace/current-portfolio';
+import { useWorkspacePortfolios } from '@/shared/hooks/useWorkspacePortfolios';
 import { cn } from '@/lib/utils';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
@@ -101,14 +95,14 @@ function SidebarBrand() {
   const { t } = useAppI18n();
 
   return (
-    <div className="border-b border-slate-200/80 px-5 py-5">
-      <Link href="/" className="flex items-center gap-3">
-        <div className="rounded-2xl bg-slate-900 p-2 text-white shadow-sm shadow-slate-900/10">
-          <TrendingUp className="h-4.5 w-4.5" />
+    <div className="border-b border-slate-200/80 px-4 py-4">
+      <Link href="/" className="flex items-center gap-2.5">
+        <div className="rounded-xl bg-slate-900 p-2 text-white shadow-sm shadow-slate-900/10">
+          <TrendingUp className="h-4 w-4" />
         </div>
         <div className="min-w-0 space-y-1">
-          <p className="text-[1.45rem] font-bold tracking-tight">{t('common.title')}</p>
-          <p className="max-w-[15rem] text-[12px] leading-5 text-slate-500">
+          <p className="text-[1.25rem] font-bold tracking-tight">{t('common.title')}</p>
+          <p className="max-w-[14rem] text-[11px] leading-5 text-slate-500">
             {t('sidebar.brand_tagline')}
           </p>
         </div>
@@ -218,42 +212,11 @@ function SidebarLanguageUtility() {
 function SidebarWorkspaceUtility() {
   const { t } = useAppI18n();
   const pathname = usePathname();
-  const [portfolios, setPortfolios] = useState<UserPortfolio[]>([]);
-  const [selectedPortfolioId, setSelectedPortfolioIdState] = useState<string | null>(null);
+  const { portfolios, selectedPortfolioId, setSelectedPortfolioId, refetch } = useWorkspacePortfolios();
 
   useEffect(() => {
-    let isMounted = true;
-
-    const fetchPortfolios = async () => {
-      try {
-        const response = await fetch('/api/portfolio');
-        const payload = await response.json().catch(() => null);
-
-        if (!response.ok || !isMounted) {
-          return;
-        }
-
-        const nextPortfolios = unwrapApiData<UserPortfolio[]>(payload) ?? [];
-        const nextSelection = resolveCurrentPortfolioId(
-          getStoredCurrentPortfolioId(),
-          nextPortfolios.map((portfolio) => portfolio.id),
-        );
-
-        setPortfolios(nextPortfolios);
-        setSelectedPortfolioIdState(nextSelection);
-      } catch {
-        if (isMounted) {
-          setPortfolios([]);
-        }
-      }
-    };
-
-    void fetchPortfolios();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [pathname]);
+    void refetch();
+  }, [pathname, refetch]);
 
   if (portfolios.length === 0) {
     return null;
@@ -266,7 +229,7 @@ function SidebarWorkspaceUtility() {
           <FolderKanban className="mt-0.5 h-4 w-4 text-primary" />
           <div>
             <p className="text-xs font-semibold text-slate-500">{t('sidebar.workspace_title')}</p>
-            <p className="mt-0.5 text-[12px] leading-5 text-slate-600">
+            <p className="mt-0.5 text-[11px] leading-5 text-slate-600">
               {t('sidebar.workspace_desc')}
             </p>
           </div>
@@ -279,8 +242,7 @@ function SidebarWorkspaceUtility() {
           <Select
             value={selectedPortfolioId ?? undefined}
             onValueChange={(value) => {
-              setSelectedPortfolioIdState(value);
-              setStoredCurrentPortfolioId(value);
+              setSelectedPortfolioId(value);
             }}
           >
             <SelectTrigger className="h-10 rounded-xl border-slate-200 bg-white/90 text-left text-sm font-medium">
