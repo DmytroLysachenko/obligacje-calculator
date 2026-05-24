@@ -668,6 +668,8 @@
       "cash_flow": "Przeplyw gotowki"
     },
     "market_assumptions": {
+      "simple_title": "Proste zalozenia rynkowe",
+      "advanced_desc": "Najpierw ustaw jedno CPI i jedno NBP. Roczne sciezki zaawansowane otwieraj tylko wtedy, gdy potrzebujesz wlasnej projekcji.",
       "scenario_descriptions": {
         "low": "Nizsze zalozenia CPI lagodza przyszle kupony indeksowane i poprawiaja kontekst wartosci realnej.",
         "base": "Bazowe CPI utrzymuje standardowa projekcje kuponow indeksowanych po okresie otwarcia.",
@@ -679,6 +681,10 @@
       "post_year_one_label": "Scenariusz CPI po pierwszym roku",
       "non_indexed_note": "Ta obligacja nie jest indeksowana CPI. Inflacja sluzy tu tylko do pokazania wartosci realnej, a nie do resetu kuponu.",
       "nbp_note": "Ta prognozowana sciezka NBP steruje kolejnymi okresami obligacji zmiennoprocentowych po zakonczeniu pierwszej stopy z oferty.",
+      "inflation_path_title": "Zaawansowana roczna sciezka CPI",
+      "inflation_path_desc": "Uzyj jej tylko wtedy, gdy jedna srednia inflacja jest zbyt uproszczona dla calego horyzontu.",
+      "nbp_path_title": "Zaawansowana roczna sciezka NBP",
+      "nbp_path_desc": "Uzyj jej tylko wtedy, gdy plaska projekcja NBP nie wystarcza dla scenariusza zmiennoprocentowego.",
       "nbp_history_title": "Ostatni kontekst NBP",
       "latest_nbp_label": "Najnowsza oficjalna stopa NBP",
       "nbp_flat_default_note": "Domyslnie kalkulator utrzymuje najnowsza zsynchronizowana stope NBP bez zmian w przyszlym horyzoncie, dopoki jej nie nadpiszesz."

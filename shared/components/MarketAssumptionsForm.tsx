@@ -1,30 +1,16 @@
 'use client';
 import React from 'react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { Input } from '@/components/ui/input';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { BondInputs, BondType } from '@/features/bond-core/types';
-import { TrendingUp, History, Target, AlertTriangle } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { useChartData } from '@/shared/hooks/useChartData';
+import { Target, AlertTriangle } from 'lucide-react';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
-interface InflationDataPoint {
-    date: string;
-    rate: number;
-}
-interface InflationApiResponse {
-    data: InflationDataPoint[];
-}
-interface NbpDataPoint {
-    date: string;
-    rate: number;
-}
-interface NbpApiResponse {
-    data: NbpDataPoint[];
-}
+import { AssumptionHistoryPopover } from '@/shared/components/market-assumptions/AssumptionHistoryPopover';
+import { ProjectedRatePathEditor } from '@/shared/components/market-assumptions/ProjectedRatePathEditor';
 type UpdateHandler = {
     bivarianceHack: (key: keyof BondInputs | string, value: unknown) => void;
 }['bivarianceHack'];
@@ -45,80 +31,6 @@ const INDEXED_BONDS = new Set<BondType>([
     BondType.ROS,
     BondType.ROD,
 ]);
-const HistoricalInflationContent = () => {
-    const { t } = useAppI18n();
-    const { data, isLoading } = useChartData<InflationApiResponse>('/api/charts/inflation');
-    if (isLoading) {
-        return (<div className="flex justify-center p-4">
-        <History className="h-4 w-4 animate-spin"/>
-      </div>);
-    }
-    if (!data?.data) {
-        return <div className="p-4 text-sm italic text-muted-foreground">{t('common.no_data')}</div>;
-    }
-    const lastFew = data.data.slice(-5).reverse();
-    const latest = data.data[data.data.length - 1];
-    return (<div className="space-y-3 p-1">
-      <div className="flex items-center gap-2 border-b pb-2">
-        <TrendingUp className="h-4 w-4 text-primary"/>
-        <span className="text-sm font-semibold tracking-[0.08em]">{t('bonds.historical_context')}</span>
-      </div>
-      <div className="space-y-2">
-        <div className="flex items-center justify-between rounded-lg border border-primary/10 bg-primary/5 p-2">
-          <span className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">{t('bonds.latest_official')}</span>
-          <span className="text-sm font-black text-primary">{latest.rate}% ({latest.date})</span>
-        </div>
-        <div className="grid grid-cols-1 gap-1">
-          {lastFew.map((item, idx) => (<div key={idx} className="flex justify-between px-1 text-xs">
-              <span className="font-medium text-muted-foreground">{item.date}</span>
-              <span className="font-bold">{item.rate}%</span>
-            </div>))}
-        </div>
-        <div className="border-t border-dashed pt-2">
-          <p className="text-[11px] italic leading-5 text-muted-foreground">
-            {t('bonds.nbp_target_hint', { target: '2.5%' })}
-          </p>
-        </div>
-      </div>
-    </div>);
-};
-const HistoricalNbpContent = () => {
-    const { t } = useAppI18n();
-    const { data, isLoading } = useChartData<NbpApiResponse>('/api/charts/nbp-rate');
-    if (isLoading) {
-        return (<div className="flex justify-center p-4">
-        <History className="h-4 w-4 animate-spin"/>
-      </div>);
-    }
-    if (!data?.data) {
-        return <div className="p-4 text-sm italic text-muted-foreground">{t('common.no_data')}</div>;
-    }
-    const lastFew = data.data.slice(-5).reverse();
-    const latest = data.data[data.data.length - 1];
-    return (<div className="space-y-3 p-1">
-      <div className="flex items-center gap-2 border-b pb-2">
-        <TrendingUp className="h-4 w-4 text-primary"/>
-        <span className="text-sm font-semibold tracking-[0.08em]">{t('bonds.market_assumptions.nbp_history_title')}</span>
-      </div>
-      <div className="space-y-2">
-        <div className="flex items-center justify-between rounded-lg border border-primary/10 bg-primary/5 p-2">
-          <span className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">{t('bonds.market_assumptions.latest_nbp_label')}</span>
-          <span className="text-sm font-black text-primary">{latest.rate}% ({latest.date})</span>
-        </div>
-        <div className="grid grid-cols-1 gap-1">
-          {lastFew.map((item, idx) => (<div key={idx} className="flex justify-between px-1 text-xs">
-              <span className="font-medium text-muted-foreground">{item.date}</span>
-              <span className="font-bold">{item.rate}%</span>
-            </div>))}
-        </div>
-        <div className="border-t border-dashed pt-2">
-          <p className="text-[11px] italic leading-5 text-muted-foreground">
-            {t('bonds.market_assumptions.nbp_flat_default_note')}
-          </p>
-        </div>
-      </div>
-    </div>);
-};
 export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bondType, customInflation, customNbpRate, inflationScenario = 'base', onUpdate, compact = false, inflationHorizonYears = 10, }: MarketAssumptionsFormProps) => {
     const { t } = useAppI18n();
     const isInflationIndexedBond = INDEXED_BONDS.has(bondType);
@@ -129,6 +41,15 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
         high: t('bonds.market_assumptions.scenario_descriptions.high'),
     } as const;
     return (<div className="space-y-6">
+      <div className="space-y-2">
+        <p className={cn('font-semibold tracking-[0.08em] text-slate-900', compact ? 'text-xs uppercase' : 'text-sm')}>
+          {t('bonds.market_assumptions.simple_title')}
+        </p>
+        <p className="text-[11px] leading-5 text-muted-foreground">
+          {t('bonds.market_assumptions.advanced_desc')}
+        </p>
+      </div>
+
       <div className="space-y-4">
         <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 text-[11px] leading-5 text-slate-600">
           {isInflationIndexedBond
@@ -141,16 +62,12 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
             <Label htmlFor="expectedInflation" className={cn('font-semibold tracking-[0.08em] text-primary', compact ? 'text-xs' : 'text-sm')}>
               {t('bonds.inflation.rate')} (%)
             </Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full hover:bg-primary/10">
-                  <History className="h-3.5 w-3.5 text-primary/60"/>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-64 p-3" align="start">
-                <HistoricalInflationContent />
-              </PopoverContent>
-            </Popover>
+            <AssumptionHistoryPopover
+              endpoint="/api/charts/inflation"
+              title={t('bonds.historical_context')}
+              latestLabel={t('bonds.latest_official')}
+              footerNote={t('bonds.nbp_target_hint', { target: '2.5%' })}
+            />
           </div>
           <div className={cn('flex items-center gap-2 rounded-lg border bg-background px-3 py-1.5 font-black text-primary shadow-sm', compact ? 'text-xl' : 'text-[2rem]')}>
             {expectedInflation}%
@@ -181,28 +98,6 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
                 {scenarioDescriptions[inflationScenario]}
               </p>
             </div>
-
-            <div className="mt-4 flex items-center justify-between rounded-lg border border-primary/10 bg-muted/30 p-3.5">
-              <Label className="text-sm font-semibold">{t('bonds.advanced_inflation')}</Label>
-              <Switch checked={!!customInflation} onCheckedChange={(checked) => {
-                if (checked) {
-                    onUpdate('customInflation', Array(Math.max(1, Math.round(inflationHorizonYears))).fill(expectedInflation));
-                    return;
-                }
-                onUpdate('customInflation', undefined);
-            }}/>
-            </div>
-
-            {customInflation ? (<div className="relative z-10 mt-4 grid max-h-64 grid-cols-2 gap-2 overflow-y-auto rounded-xl border bg-muted/20 p-2 custom-scrollbar md:grid-cols-3">
-                {customInflation.map((value, idx) => (<div key={idx} className="flex items-center gap-2 rounded border bg-background p-2">
-                    <Label className="w-8 text-[11px] font-semibold tracking-[0.08em] text-muted-foreground">Y{idx + 1}</Label>
-                    <Input type="number" step={0.1} className="h-8 border-none bg-transparent px-1 text-sm font-semibold shadow-none" value={value} onChange={(event) => {
-                        const nextValues = [...customInflation];
-                        nextValues[idx] = Number(event.target.value);
-                        onUpdate('customInflation', nextValues);
-                    }}/>
-                  </div>))}
-              </div>) : null}
           </>) : (<div className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 text-[11px] leading-5 text-slate-600">
             {t('bonds.market_assumptions.non_indexed_note')}
           </div>)}
@@ -214,16 +109,12 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
               <Label htmlFor="expectedNbpRate" className={cn('font-semibold tracking-[0.08em] text-muted-foreground', compact ? 'text-xs' : 'text-sm')}>
                 {t('bonds.nbp_rate_label')}
               </Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full hover:bg-primary/10">
-                    <History className="h-3.5 w-3.5 text-primary/60"/>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-64 p-3" align="start">
-                  <HistoricalNbpContent />
-                </PopoverContent>
-              </Popover>
+              <AssumptionHistoryPopover
+                endpoint="/api/charts/nbp-rate"
+                title={t('bonds.market_assumptions.nbp_history_title')}
+                latestLabel={t('bonds.market_assumptions.latest_nbp_label')}
+                footerNote={t('bonds.market_assumptions.nbp_flat_default_note')}
+              />
             </div>
             <span className={cn('font-black text-primary', compact ? 'text-xl' : 'text-2xl')}>
               {expectedNbpRate ?? 5.25}%
@@ -236,28 +127,91 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
           <p className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 text-[11px] leading-5 text-slate-600">
             {t('bonds.market_assumptions.nbp_flat_default_note')}
           </p>
-          <div className="mt-4 flex items-center justify-between rounded-lg border border-primary/10 bg-muted/30 p-3.5">
-            <Label className="text-sm font-semibold">{t('bonds.advanced_nbp')}</Label>
-            <Switch checked={!!customNbpRate} onCheckedChange={(checked) => {
-                if (checked) {
-                    onUpdate('customNbpRate', Array(Math.max(1, Math.round(inflationHorizonYears))).fill(expectedNbpRate ?? 5.25));
-                    return;
-                }
-                onUpdate('customNbpRate', undefined);
-            }}/>
-          </div>
-
-          {customNbpRate ? (<div className="relative z-10 mt-4 grid max-h-64 grid-cols-2 gap-2 overflow-y-auto rounded-xl border bg-muted/20 p-2 custom-scrollbar md:grid-cols-3">
-              {customNbpRate.map((value, idx) => (<div key={`nbp-${idx}`} className="flex items-center gap-2 rounded border bg-background p-2">
-                  <Label className="w-8 text-[11px] font-semibold tracking-[0.08em] text-muted-foreground">Y{idx + 1}</Label>
-                  <Input type="number" step={0.05} className="h-8 border-none bg-transparent px-1 text-sm font-semibold shadow-none" value={value} onChange={(event) => {
-                        const nextValues = [...customNbpRate];
-                        nextValues[idx] = Number(event.target.value);
-                        onUpdate('customNbpRate', nextValues);
-                    }}/>
-                </div>))}
-            </div>) : null}
         </div>) : null}
+
+      <Accordion type="multiple" className="space-y-3">
+        {isInflationIndexedBond ? (
+          <AccordionItem value="inflation-path" className="rounded-xl border px-4">
+            <AccordionTrigger className="py-4 text-left">
+              <div className="space-y-1">
+                <p className="text-sm font-semibold">
+                  {t('bonds.market_assumptions.inflation_path_title')}
+                </p>
+                <p className="text-xs leading-5 text-muted-foreground">
+                  {t('bonds.market_assumptions.inflation_path_desc')}
+                </p>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="space-y-4 pb-4">
+              <div className="flex items-center justify-between rounded-lg border border-primary/10 bg-muted/30 p-3.5">
+                <Label className="text-sm font-semibold">{t('bonds.advanced_inflation')}</Label>
+                <Switch
+                  checked={!!customInflation}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      onUpdate(
+                        'customInflation',
+                        Array(Math.max(1, Math.round(inflationHorizonYears))).fill(expectedInflation),
+                      );
+                      return;
+                    }
+                    onUpdate('customInflation', undefined);
+                  }}
+                />
+              </div>
+              {customInflation ? (
+                <ProjectedRatePathEditor
+                  values={customInflation}
+                  prefix="Y"
+                  step={0.1}
+                  onChange={(values) => onUpdate('customInflation', values)}
+                />
+              ) : null}
+            </AccordionContent>
+          </AccordionItem>
+        ) : null}
+
+        {isNbpRelevant ? (
+          <AccordionItem value="nbp-path" className="rounded-xl border px-4">
+            <AccordionTrigger className="py-4 text-left">
+              <div className="space-y-1">
+                <p className="text-sm font-semibold">
+                  {t('bonds.market_assumptions.nbp_path_title')}
+                </p>
+                <p className="text-xs leading-5 text-muted-foreground">
+                  {t('bonds.market_assumptions.nbp_path_desc')}
+                </p>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="space-y-4 pb-4">
+              <div className="flex items-center justify-between rounded-lg border border-primary/10 bg-muted/30 p-3.5">
+                <Label className="text-sm font-semibold">{t('bonds.advanced_nbp')}</Label>
+                <Switch
+                  checked={!!customNbpRate}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      onUpdate(
+                        'customNbpRate',
+                        Array(Math.max(1, Math.round(inflationHorizonYears))).fill(expectedNbpRate ?? 5.25),
+                      );
+                      return;
+                    }
+                    onUpdate('customNbpRate', undefined);
+                  }}
+                />
+              </div>
+              {customNbpRate ? (
+                <ProjectedRatePathEditor
+                  values={customNbpRate}
+                  prefix="Y"
+                  step={0.05}
+                  onChange={(values) => onUpdate('customNbpRate', values)}
+                />
+              ) : null}
+            </AccordionContent>
+          </AccordionItem>
+        ) : null}
+      </Accordion>
     </div>);
 };
 
