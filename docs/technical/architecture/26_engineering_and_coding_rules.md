@@ -206,6 +206,56 @@ Do not duplicate:
 
 Shared code must stay narrow and behavior-focused. Do not replace duplication with giant configurable abstractions that hide intent.
 
+Formatting rules belong here too:
+
+- repeated number/date/currency/percent formatting must use shared formatter helpers
+- do not create page-local `Intl.*Format` instances repeatedly inside large route components when the same behavior already exists in shared formatters/hooks
+- if formatting semantics are user-visible across multiple surfaces, centralize them
+
+## 6.1 Calculator Shell Hierarchy
+
+Flagship calculator pages should follow one readable order:
+
+- primary inputs
+- primary result / verdict
+- chart
+- table or detailed timeline
+- assumptions, warnings, and secondary meta
+
+Do not improvise a new page hierarchy for each calculator unless the product model truly differs.
+
+## 6.2 Simple vs Advanced Assumptions
+
+Projected market assumptions must keep a stable interaction contract:
+
+- simple assumptions first
+- advanced yearly/custom paths behind explicit expansion
+- simple mode must describe the actual modeled behavior
+- display copy must not imply that CPI or NBP affects bond families in ways the engine does not support
+
+## 6.3 Workspace Feedback
+
+Browser-native product prompts are not acceptable in normal UI flows.
+
+Do not use:
+
+- `alert(...)`
+- `window.confirm(...)`
+- ad hoc browser-native prompt flows for notebook/workspace interactions
+
+Use app-native feedback, confirmation, and status components instead.
+
+## 6.4 Reference Dashboard Direction
+
+Reference-heavy pages such as economic-data should read like structured dashboards, not nested generic cards.
+
+Preferred approach:
+
+- clear hero/summary context
+- charts as the primary surface
+- supporting scope/status guidance in secondary rails or accordions
+- less repeated "box inside box" chrome when the content is already dense
+
 ## 7. UI and Domain Responsibilities Must Stay Separate
 
 Route and component code must not reimplement domain rules that belong in handlers, adapters, or engine utilities.

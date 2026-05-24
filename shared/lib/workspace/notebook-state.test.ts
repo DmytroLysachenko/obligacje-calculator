@@ -82,4 +82,8 @@ describe('notebook state helpers', () => {
     expect(resolveSelectedPortfolioId('missing', current)).toBe('a');
     expect(resolveSelectedPortfolioId(null, current)).toBe('a');
   });
+
+  it('returns null when no portfolios remain after a delete flow', () => {
+    expect(resolveSelectedPortfolioId('missing', [])).toBeNull();
+  });
 });

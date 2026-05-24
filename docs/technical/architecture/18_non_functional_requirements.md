@@ -43,3 +43,8 @@ Quality and performance standards for the platform.
 - **NFR6.14:** Shared workspace selection state belongs in `shared/lib/workspace/**`; feature-local storage helpers must not become cross-feature dependencies.
 - **NFR6.15:** Display options such as chart granularity must never alter calculation truth. Chart, table, and export layers must derive from one normalized display contract.
 - **NFR6.16:** Simple-mode projected NBP defaults must be sourced from synced data and represented as a flat path until the user overrides them.
+- **NFR6.17:** Shared number/date/currency/percent formatting must use centralized formatter helpers instead of repeated page-local formatter construction.
+- **NFR6.18:** Calculator pages should follow a stable shell hierarchy: inputs, primary result, chart, detailed table/timeline, then secondary meta.
+- **NFR6.19:** Simple vs advanced market-assumption controls must remain explicit and behaviorally truthful; advanced yearly paths must stay behind deliberate expansion.
+- **NFR6.20:** Product UI flows must use app-native confirmation and feedback components rather than browser-native prompts.
+- **NFR6.21:** Reference dashboards should minimize redundant nested card chrome and keep charts primary, with scope/status guidance in secondary rails or accordions.
