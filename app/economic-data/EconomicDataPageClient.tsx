@@ -18,6 +18,9 @@ import {NBPRateChart} from '@/features/economic-data/components/NBPRateChart';
 import {BondType} from '@/features/bond-core/types';
 import {cn} from '@/lib/utils';
 import {CalculatorPageShell} from '@/shared/components/page/CalculatorPageShell';
+import {ReferenceDashboardHero} from '@/shared/components/reference/ReferenceDashboardHero';
+import {ReferenceGuideRail} from '@/shared/components/reference/ReferenceGuideRail';
+import {ReferenceNoteCard} from '@/shared/components/reference/ReferenceNoteCard';
 import {useChartData} from '@/shared/hooks/useChartData';
 import {
   getReferenceAsOfLabel,
@@ -88,21 +91,6 @@ function RangeActions({
           {item.label}
         </button>
       ))}
-    </div>
-  );
-}
-
-function ReferenceMetric({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="surface-panel rounded-3xl px-5 py-4">
-      <p className="text-sm font-semibold text-slate-500">{label}</p>
-      <p className="mt-2 text-xl font-black text-slate-950">{value}</p>
     </div>
   );
 }
@@ -263,6 +251,12 @@ export function EconomicDataPageClient() {
     floatingRateContext.narrative,
     t('economic.usage_guide_4'),
   ];
+  const heroMetrics = [
+    {label: labels.series, value: '2'},
+    {label: labels.purpose, value: labels.context},
+    {label: labels.mode, value: labels.reference},
+    {label: labels.goal, value: labels.readableContext},
+  ];
 
   return (
     <CalculatorPageShell
@@ -274,29 +268,19 @@ export function EconomicDataPageClient() {
       extraHeaderActions={
         <RangeActions period={period} setPeriod={setPeriod} rangeLabel={t('economic.range_data')} />
       }
-    >
+      >
       <div className="space-y-6 md:space-y-8">
-        <Card className="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.96),rgba(248,250,252,0.92))] shadow-[0_22px_70px_-48px_rgba(15,23,42,0.45)]">
-          <CardContent className="space-y-6 p-6 md:p-8">
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/90 bg-white/80 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-slate-700">
-                <Database className="h-3.5 w-3.5 text-primary" />
-                {labels.panel}
-              </div>
-              <h2 className="max-w-4xl text-3xl font-black tracking-tight text-slate-950">
-                {t('economic.macro_support_title')}
-              </h2>
-              <p className="max-w-4xl text-sm leading-8 text-slate-600">{pageIntro}</p>
+        <ReferenceDashboardHero
+          badge={
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/90 bg-white/80 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-slate-700">
+              <Database className="h-3.5 w-3.5 text-primary" />
+              {labels.panel}
             </div>
-
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              <ReferenceMetric label={labels.series} value="2" />
-              <ReferenceMetric label={labels.purpose} value={labels.context} />
-              <ReferenceMetric label={labels.mode} value={labels.reference} />
-              <ReferenceMetric label={labels.goal} value={labels.readableContext} />
-            </div>
-          </CardContent>
-        </Card>
+          }
+          title={t('economic.macro_support_title')}
+          description={pageIntro}
+          metrics={heroMetrics}
+        />
 
         <Card className="surface-panel rounded-[2rem] border-slate-200 bg-white/88 shadow-none">
           <CardContent className="p-4 md:p-6">
@@ -311,10 +295,10 @@ export function EconomicDataPageClient() {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-4 pb-4">
-                  <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_240px]">
-                    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-2">
+                  <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+                    <div className="grid gap-3 md:grid-cols-2">
                       {usageGuide.map((item) => (
-                        <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50/55 px-4 py-3">
+                        <div key={item} className="rounded-[1.5rem] border border-slate-200 bg-slate-50/55 px-4 py-3.5">
                           <div className="flex items-start gap-3">
                             <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                             <p className="text-sm leading-7 text-slate-600">{item}</p>
@@ -323,15 +307,12 @@ export function EconomicDataPageClient() {
                       ))}
                     </div>
 
-                    <div className="rounded-2xl border border-amber-200 bg-amber-50/70 px-4 py-4">
-                      <div className="flex items-center gap-2 text-amber-950">
-                        <AlertTriangle className="h-4 w-4" />
-                        <p className="font-black tracking-tight">{labels.dataQuality}</p>
-                      </div>
-                      <p className="mt-3 text-sm leading-7 text-amber-950/90">
-                        {t('economic.data_quality_description')}
-                      </p>
-                    </div>
+                    <ReferenceNoteCard
+                      icon={<AlertTriangle className="h-4 w-4 text-amber-700" />}
+                      title={labels.dataQuality}
+                      description={t('economic.data_quality_description')}
+                      tone="warning"
+                    />
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -358,42 +339,24 @@ export function EconomicDataPageClient() {
 
           <aside className="space-y-6 xl:sticky xl:top-24 xl:h-fit">
             <Accordion type="multiple" defaultValue={['scope', 'status']} className="space-y-4">
-              <AccordionItem value="scope" className="rounded-[1.8rem] border border-slate-200 bg-white/84 px-5 shadow-none">
-                <AccordionTrigger className="py-4 text-left hover:no-underline">
-                  <div className="flex items-center gap-2">
-                    <ShieldAlert className="h-4 w-4 text-primary" />
-                    <p className="text-xl font-black tracking-tight text-slate-950">
-                      {labels.referenceRail}
-                    </p>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="space-y-3 pb-5">
-                  <Card className="surface-panel rounded-[1.6rem] border-slate-200 bg-white shadow-none">
-                    <CardContent className="space-y-3 p-4">
-                      <div className="flex items-center gap-2">
-                        <ShieldAlert className="h-4 w-4 text-primary" />
-                        <p className="text-lg font-black tracking-tight text-slate-950">
-                          {labels.pageScope}
-                        </p>
-                      </div>
-                      <p className="text-sm leading-7 text-slate-600">
-                        {t('economic.page_scope_description')}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </AccordionContent>
-              </AccordionItem>
+              <ReferenceGuideRail
+                value="scope"
+                icon={<ShieldAlert className="h-4 w-4 text-primary" />}
+                title={labels.referenceRail}
+              >
+                <ReferenceNoteCard
+                  icon={<ShieldAlert className="h-4 w-4 text-primary" />}
+                  title={labels.pageScope}
+                  description={t('economic.page_scope_description')}
+                />
+              </ReferenceGuideRail>
 
-              <AccordionItem value="status" className="rounded-[1.8rem] border border-slate-200 bg-white/84 px-5 shadow-none">
-                <AccordionTrigger className="py-4 text-left hover:no-underline">
-                  <div className="flex items-center gap-2">
-                    <Database className="h-4 w-4 text-primary" />
-                    <p className="text-xl font-black tracking-tight text-slate-950">
-                      {labels.statusRail}
-                    </p>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="space-y-4 pb-5">
+              <ReferenceGuideRail
+                value="status"
+                icon={<Database className="h-4 w-4 text-primary" />}
+                title={labels.statusRail}
+              >
+                <div className="space-y-4">
                   <SeriesStatusCard
                     title={t('economic.inflation_title')}
                     meta={inflationMeta}
@@ -407,8 +370,8 @@ export function EconomicDataPageClient() {
                     isLoading={isLoadingNbp}
                     language={language}
                   />
-                </AccordionContent>
-              </AccordionItem>
+                </div>
+              </ReferenceGuideRail>
             </Accordion>
           </aside>
         </div>
