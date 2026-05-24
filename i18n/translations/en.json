@@ -694,7 +694,10 @@
       "real_value_context": "For fixed-rate bonds, inflation changes real purchasing-power readouts but does not change the coupon path.",
       "post_year_one_label": "Post-year-one CPI scenario",
       "non_indexed_note": "This bond is not CPI-indexed. Inflation here is used for real-value context, not coupon resets.",
-      "nbp_note": "This projected NBP path drives later floating-rate periods after the issued first-period offer ends."
+      "nbp_note": "This projected NBP path drives later floating-rate periods after the issued first-period offer ends.",
+      "nbp_history_title": "Recent NBP context",
+      "latest_nbp_label": "Latest official NBP rate",
+      "nbp_flat_default_note": "By default, the calculator holds the latest synced NBP rate flat across the future horizon until you override it."
     },
     "family_bond_badge": "Family"
   },

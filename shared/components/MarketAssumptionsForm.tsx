@@ -18,6 +18,13 @@ interface InflationDataPoint {
 interface InflationApiResponse {
     data: InflationDataPoint[];
 }
+interface NbpDataPoint {
+    date: string;
+    rate: number;
+}
+interface NbpApiResponse {
+    data: NbpDataPoint[];
+}
 type UpdateHandler = {
     bivarianceHack: (key: keyof BondInputs | string, value: unknown) => void;
 }['bivarianceHack'];
@@ -70,6 +77,43 @@ const HistoricalInflationContent = () => {
         <div className="border-t border-dashed pt-2">
           <p className="text-[11px] italic leading-5 text-muted-foreground">
             {t('bonds.nbp_target_hint', { target: '2.5%' })}
+          </p>
+        </div>
+      </div>
+    </div>);
+};
+const HistoricalNbpContent = () => {
+    const { t } = useAppI18n();
+    const { data, isLoading } = useChartData<NbpApiResponse>('/api/charts/nbp-rate');
+    if (isLoading) {
+        return (<div className="flex justify-center p-4">
+        <History className="h-4 w-4 animate-spin"/>
+      </div>);
+    }
+    if (!data?.data) {
+        return <div className="p-4 text-sm italic text-muted-foreground">{t('common.no_data')}</div>;
+    }
+    const lastFew = data.data.slice(-5).reverse();
+    const latest = data.data[data.data.length - 1];
+    return (<div className="space-y-3 p-1">
+      <div className="flex items-center gap-2 border-b pb-2">
+        <TrendingUp className="h-4 w-4 text-primary"/>
+        <span className="text-sm font-semibold tracking-[0.08em]">{t('bonds.market_assumptions.nbp_history_title')}</span>
+      </div>
+      <div className="space-y-2">
+        <div className="flex items-center justify-between rounded-lg border border-primary/10 bg-primary/5 p-2">
+          <span className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">{t('bonds.market_assumptions.latest_nbp_label')}</span>
+          <span className="text-sm font-black text-primary">{latest.rate}% ({latest.date})</span>
+        </div>
+        <div className="grid grid-cols-1 gap-1">
+          {lastFew.map((item, idx) => (<div key={idx} className="flex justify-between px-1 text-xs">
+              <span className="font-medium text-muted-foreground">{item.date}</span>
+              <span className="font-bold">{item.rate}%</span>
+            </div>))}
+        </div>
+        <div className="border-t border-dashed pt-2">
+          <p className="text-[11px] italic leading-5 text-muted-foreground">
+            {t('bonds.market_assumptions.nbp_flat_default_note')}
           </p>
         </div>
       </div>
@@ -166,9 +210,21 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
 
       {isNbpRelevant ? (<div className="space-y-4 border-t border-dashed pt-4">
           <div className="flex items-center justify-between">
-            <Label htmlFor="expectedNbpRate" className={cn('font-semibold tracking-[0.08em] text-muted-foreground', compact ? 'text-xs' : 'text-sm')}>
-              {t('bonds.nbp_rate_label')}
-            </Label>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="expectedNbpRate" className={cn('font-semibold tracking-[0.08em] text-muted-foreground', compact ? 'text-xs' : 'text-sm')}>
+                {t('bonds.nbp_rate_label')}
+              </Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full hover:bg-primary/10">
+                    <History className="h-3.5 w-3.5 text-primary/60"/>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64 p-3" align="start">
+                  <HistoricalNbpContent />
+                </PopoverContent>
+              </Popover>
+            </div>
             <span className={cn('font-black text-primary', compact ? 'text-xl' : 'text-2xl')}>
               {expectedNbpRate ?? 5.25}%
             </span>
@@ -176,6 +232,9 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
           <CommittedSliderInput value={Number.isFinite(expectedNbpRate ?? 5.25) ? (expectedNbpRate ?? 5.25) : 5.25} min={0} max={15} step={0.05} unit="%" onCommit={(value) => onUpdate('expectedNbpRate', value)}/>
           <p className="text-[11px] leading-5 text-muted-foreground">
             {t('bonds.market_assumptions.nbp_note')}
+          </p>
+          <p className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 text-[11px] leading-5 text-slate-600">
+            {t('bonds.market_assumptions.nbp_flat_default_note')}
           </p>
           <div className="mt-4 flex items-center justify-between rounded-lg border border-primary/10 bg-muted/30 p-3.5">
             <Label className="text-sm font-semibold">{t('bonds.advanced_nbp')}</Label>

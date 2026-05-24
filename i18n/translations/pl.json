@@ -678,7 +678,10 @@
       "real_value_context": "Dla obligacji o stalej stopie inflacja zmienia odczyty sily nabywczej, ale nie zmienia sciezki kuponu.",
       "post_year_one_label": "Scenariusz CPI po pierwszym roku",
       "non_indexed_note": "Ta obligacja nie jest indeksowana CPI. Inflacja sluzy tu tylko do pokazania wartosci realnej, a nie do resetu kuponu.",
-      "nbp_note": "Ta prognozowana sciezka NBP steruje kolejnymi okresami obligacji zmiennoprocentowych po zakonczeniu pierwszej stopy z oferty."
+      "nbp_note": "Ta prognozowana sciezka NBP steruje kolejnymi okresami obligacji zmiennoprocentowych po zakonczeniu pierwszej stopy z oferty.",
+      "nbp_history_title": "Ostatni kontekst NBP",
+      "latest_nbp_label": "Najnowsza oficjalna stopa NBP",
+      "nbp_flat_default_note": "Domyslnie kalkulator utrzymuje najnowsza zsynchronizowana stope NBP bez zmian w przyszlym horyzoncie, dopoki jej nie nadpiszesz."
     },
     "family_bond_badge": "Rodzinne"
   },
