@@ -395,7 +395,7 @@ export const RetirementPlannerContainer: React.FC = () => {
 
                   <ChartSupportNote title={labels.howToRead} description={labels.howToReadDesc}/>
 
-                  <ChartContainer height={400}>
+                  <ChartContainer responsiveHeightClassName="h-[340px] md:h-[400px] xl:h-[440px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={chartData}>
                         <defs>

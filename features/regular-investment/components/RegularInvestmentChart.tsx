@@ -69,8 +69,8 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ 
         </Tabs>
       </div>
 
-      <ChartContainer height={450}>
-        <ResponsiveContainer width="100%" height={450} key={`chart-${chartData.length}-${view}`}>
+      <ChartContainer responsiveHeightClassName="h-[360px] md:h-[450px] xl:h-[500px]">
+        <ResponsiveContainer width="100%" height="100%" key={`chart-${chartData.length}-${view}`}>
           <AreaChart data={chartData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
             <defs>
               <linearGradient id="colorInvested" x1="0" y1="0" x2="0" y2="1">

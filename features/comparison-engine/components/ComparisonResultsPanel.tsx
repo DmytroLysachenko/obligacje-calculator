@@ -164,7 +164,7 @@ export function ComparisonResultsPanel({
           description={t('comparison.chart_help_desc')}
         />
 
-        <ChartContainer height={420}>
+        <ChartContainer responsiveHeightClassName="h-[360px] md:h-[420px] xl:h-[460px]">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData}>
               <defs>

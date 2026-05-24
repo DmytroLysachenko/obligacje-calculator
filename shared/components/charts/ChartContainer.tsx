@@ -4,13 +4,15 @@ import React, { CSSProperties, useSyncExternalStore } from 'react';
 import { cn } from '@/lib/utils';
 
 interface ChartContainerProps {
-  height: number;
+  height?: number;
+  responsiveHeightClassName?: string;
   className?: string;
   children: React.ReactNode;
 }
 
 export const ChartContainer: React.FC<ChartContainerProps> = ({
   height,
+  responsiveHeightClassName,
   className,
   children,
 }) => {
@@ -22,14 +24,19 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
 
   const style: CSSProperties = {
     minWidth: 0,
-    height,
-    minHeight: height,
+    ...(height
+      ? {
+          height,
+          minHeight: height,
+        }
+      : null),
   };
 
   return (
     <div
       className={cn(
         'surface-soft relative w-full overflow-hidden rounded-[1.35rem]',
+        responsiveHeightClassName,
         className,
       )}
       style={style}

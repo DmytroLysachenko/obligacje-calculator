@@ -154,8 +154,8 @@ export const BondChart: React.FC<BondChartProps> = ({ results, chartStep = 'year
     }), [chartData]);
     const rightDomain = React.useMemo(() => computeRateDomain(chartData.flatMap((point) => [point.inflation, point.nbp].filter((value): value is number => typeof value === 'number'))), [chartData]);
     const firstProjectedIndex = React.useMemo(() => chartData.findIndex((point) => point.isProjected), [chartData]);
-    return (<ChartContainer height={520}>
-      <ResponsiveContainer width="100%" height={520} key={`chart-${chartData.length}`}>
+    return (<ChartContainer responsiveHeightClassName="h-[360px] md:h-[460px] xl:h-[520px]">
+        <ResponsiveContainer width="100%" height="100%" key={`chart-${chartData.length}`}>
         <ComposedChart data={chartData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
           <defs>
             <linearGradient id="colorNominal" x1="0" y1="0" x2="0" y2="1">

@@ -87,7 +87,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
         <CardContent className="space-y-6">
           <ChartSupportNote title={t('ladder_page.timeline.chart_note_title')} description={t('ladder_page.timeline.chart_note_description')}/>
 
-          <ChartContainer height={320}>
+          <ChartContainer responsiveHeightClassName="h-[320px] md:h-[360px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)"/>
