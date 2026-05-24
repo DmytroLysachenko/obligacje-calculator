@@ -952,7 +952,78 @@
   "optimizer_page": {
     "page_notice_eyebrow": "Supporting sorter",
     "page_notice_title": "Experimental ranking view",
-    "page_notice_desc": "This page is assumption-sensitive and easy to over-read. Use it as a supporting scenario sorter after the core calculators, not as a primary decision surface."
+    "page_notice_desc": "This page is assumption-sensitive and easy to over-read. Use it as a supporting scenario sorter after the core calculators, not as a primary decision surface.",
+    "page_title": "Bond Scenario Sorter",
+    "page_description": "Run one committed payout scenario, inspect the ordered outcomes, and keep the result in supporting-reference territory.",
+    "input_title": "Primary Inputs",
+    "input_description": "Set one amount, one horizon, and one purchase date. Advanced macro and eligibility assumptions stay secondary.",
+    "amount_label": "Amount to invest",
+    "horizon_label": "Horizon",
+    "horizon_value": "{months}M / {years}Y",
+    "purchase_date_label": "Purchase date",
+    "advanced_title": "Advanced assumptions",
+    "advanced_description": "Tax wrapper, family-bond eligibility, and macro settings.",
+    "tax_strategy_label": "Tax strategy",
+    "select_strategy": "Select strategy",
+    "family_bonds_title": "Include family bonds",
+    "family_bonds_description": "ROS and ROD only make sense when the family-bond condition is actually met.",
+    "family_bonds_note": "When enabled, this ranking adds {bonds}. They stay marked as {support} because eligibility is not universal.",
+    "expected_inflation_label": "Expected inflation",
+    "expected_nbp_label": "Expected NBP rate",
+    "input_footer": "Use the floating action in the lower corner when the scenario is ready. Keep inputs staged here until you want one clean ranking.",
+    "stale_results": "Inputs changed. The ranking below still shows the previous committed scenario. Run the ranking again when you want to refresh it.",
+    "leading_card_title": "Current leading scenario",
+    "leading_card_description": "Highest modeled net payout for this committed scenario.",
+    "tax_wrapper_label": "Tax wrapper",
+    "tax_paid_label": "Tax paid",
+    "inflation_input_label": "Inflation input",
+    "nbp_input_label": "NBP input",
+    "ranked_outcomes_title": "Ranked outcomes",
+    "ranked_outcomes_description": "Ordered by projected net payout after {years} years. This is scenario sorting, not a recommendation.",
+    "leading_gap_primary": "Leading payout in this scenario",
+    "leading_gap_secondary": "-{gap} versus the leading payout",
+    "guardrail_title": "Interpretation guardrail",
+    "guardrail_description": "This page sorts projected payouts for one committed scenario. Treat it as a supporting sorter, not as an automatic bond recommendation.",
+    "guardrail_badge": "Support",
+    "audit_title": "Scenario audit",
+    "audit_description": "Open this only when you want the assumption and warning trail behind the current ranking.",
+    "audit_badge": "Audit",
+    "ready_badge": "Support surface",
+    "ready_title": "Ready to sort one scenario?",
+    "ready_description": "Set the amount, horizon, and purchase date. Then run one committed scenario to compare modeled payouts across bond types.",
+    "ready_footer": "Advanced assumptions stay available, but they should not distract from one clean ranking run.",
+    "tax_strategies": {
+      "standard": "Standard account (19% tax)",
+      "ike": "IKE wrapper",
+      "ikze": "IKZE wrapper"
+    },
+    "metrics": {
+      "leading_payout_label": "Leading payout",
+      "leading_payout_detail": "Highest modeled net payout after {years} years.",
+      "leading_bond_label": "Leading bond",
+      "net_profit_label": "Net profit",
+      "net_profit_detail": "Projected profit for the top-ranked scenario.",
+      "roi_label": "ROI",
+      "roi_detail": "Relative return for the top-ranked scenario."
+    },
+    "guardrail_points": {
+      "assumption_shift": "Small assumption changes can reorder the list quickly, especially when horizons are short or rollover is required.",
+      "suitability": "A high modeled payout here does not replace suitability, liquidity planning, or broader portfolio judgment."
+    },
+    "ready_steps": {
+      "amount": {
+        "title": "Set the amount",
+        "description": "Start from {amount} or adjust it before the first run."
+      },
+      "horizon": {
+        "title": "Choose the horizon",
+        "description": "This scenario is staged for {months} months."
+      },
+      "scope": {
+        "title": "Keep the scope narrow",
+        "description": "Use the ranking as a payout sorter, not as a full recommendation engine."
+      }
+    }
   },
   "notebook": {
     "title": "My Portfolio / Notebook",

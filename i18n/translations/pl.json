@@ -895,7 +895,78 @@
   "optimizer_page": {
     "page_notice_eyebrow": "Pomocniczy sorter",
     "page_notice_title": "Eksperymentalny widok rankingu",
-    "page_notice_desc": "Ta strona jest bardzo wrazliwa na zalozenia i latwo ja nadinterpretowac. Traktuj ja jako pomocniczy sorter scenariuszy po glownych kalkulatorach, a nie podstawowa powierzchnie decyzji."
+    "page_notice_desc": "Ta strona jest bardzo wrazliwa na zalozenia i latwo ja nadinterpretowac. Traktuj ja jako pomocniczy sorter scenariuszy po glownych kalkulatorach, a nie podstawowa powierzchnie decyzji.",
+    "page_title": "Sorter scenariuszy obligacji",
+    "page_description": "Uruchom jeden zatwierdzony scenariusz wyplaty, sprawdz uporzadkowane wyniki i trzymaj ten widok w roli pomocniczego kontekstu.",
+    "input_title": "Glowne dane",
+    "input_description": "Ustaw jedna kwote, jeden horyzont i jedna date zakupu. Zaawansowane zalozenia makro i kwalifikacji maja pozostac drugorzedne.",
+    "amount_label": "Kwota inwestycji",
+    "horizon_label": "Horyzont",
+    "horizon_value": "{months}M / {years}L",
+    "purchase_date_label": "Data zakupu",
+    "advanced_title": "Zalozenia zaawansowane",
+    "advanced_description": "Opakowanie podatkowe, kwalifikacja obligacji rodzinnych i ustawienia makro.",
+    "tax_strategy_label": "Strategia podatkowa",
+    "select_strategy": "Wybierz strategie",
+    "family_bonds_title": "Uwzglednij obligacje rodzinne",
+    "family_bonds_description": "ROS i ROD maja sens tylko wtedy, gdy warunek obligacji rodzinnych jest naprawde spelniony.",
+    "family_bonds_note": "Po wlaczeniu ranking dodaje {bonds}. Nadal pozostaja oznaczone jako {support}, bo kwalifikacja nie jest uniwersalna.",
+    "expected_inflation_label": "Oczekiwana inflacja",
+    "expected_nbp_label": "Oczekiwana stopa NBP",
+    "input_footer": "Uzyj plywajacej akcji w dolnym rogu, gdy scenariusz jest gotowy. Trzymaj dane w stanie roboczym, dopoki nie chcesz jednego czystego rankingu.",
+    "stale_results": "Dane sie zmienily. Ranking ponizej nadal pokazuje poprzedni zatwierdzony scenariusz. Uruchom ranking ponownie, gdy chcesz go odswiezyc.",
+    "leading_card_title": "Biezacy lider scenariusza",
+    "leading_card_description": "Najwyzsza zamodelowana wyplata netto dla tego zatwierdzonego scenariusza.",
+    "tax_wrapper_label": "Opakowanie podatkowe",
+    "tax_paid_label": "Zaplacony podatek",
+    "inflation_input_label": "Wejscie inflacji",
+    "nbp_input_label": "Wejscie NBP",
+    "ranked_outcomes_title": "Uporzadkowane wyniki",
+    "ranked_outcomes_description": "Kolejnosc wedlug prognozowanej wyplaty netto po {years} latach. To sorter scenariuszy, a nie rekomendacja.",
+    "leading_gap_primary": "Najwyzsza wyplata w tym scenariuszu",
+    "leading_gap_secondary": "-{gap} wobec wyplaty lidera",
+    "guardrail_title": "Bariera interpretacji",
+    "guardrail_description": "Ta strona sortuje prognozowane wyplaty dla jednego zatwierdzonego scenariusza. Traktuj ja jako pomocniczy sorter, a nie automatyczna rekomendacje obligacji.",
+    "guardrail_badge": "Wsparcie",
+    "audit_title": "Audyt scenariusza",
+    "audit_description": "Otwieraj to tylko wtedy, gdy chcesz sprawdzic sciezke zalozen i ostrzezen za biezacym rankingiem.",
+    "audit_badge": "Audyt",
+    "ready_badge": "Powierzchnia pomocnicza",
+    "ready_title": "Gotowe do sortowania jednego scenariusza?",
+    "ready_description": "Ustaw kwote, horyzont i date zakupu. Potem uruchom jeden zatwierdzony scenariusz, aby porownac prognozowane wyplaty miedzy typami obligacji.",
+    "ready_footer": "Zalozenia zaawansowane nadal sa dostepne, ale nie powinny odciagac uwagi od jednego czystego przebiegu rankingu.",
+    "tax_strategies": {
+      "standard": "Rachunek standardowy (19% podatku)",
+      "ike": "Opakowanie IKE",
+      "ikze": "Opakowanie IKZE"
+    },
+    "metrics": {
+      "leading_payout_label": "Wyplata lidera",
+      "leading_payout_detail": "Najwyzsza zamodelowana wyplata netto po {years} latach.",
+      "leading_bond_label": "Obligacja lidera",
+      "net_profit_label": "Zysk netto",
+      "net_profit_detail": "Prognozowany zysk dla najwyzej ocenionego scenariusza.",
+      "roi_label": "ROI",
+      "roi_detail": "Wzgledna stopa zwrotu dla najwyzej ocenionego scenariusza."
+    },
+    "guardrail_points": {
+      "assumption_shift": "Male zmiany zalozen moga szybko przestawic kolejnosc, zwlaszcza przy krotkich horyzontach albo koniecznosci rolowania.",
+      "suitability": "Wysoka zamodelowana wyplata nie zastapi dopasowania produktu, planu plynnosci ani szerszej oceny portfela."
+    },
+    "ready_steps": {
+      "amount": {
+        "title": "Ustaw kwote",
+        "description": "Zacznij od {amount} albo zmien ja przed pierwszym uruchomieniem."
+      },
+      "horizon": {
+        "title": "Wybierz horyzont",
+        "description": "Ten scenariusz jest ustawiony na {months} miesiecy."
+      },
+      "scope": {
+        "title": "Utrzymaj waski zakres",
+        "description": "Uzywaj rankingu jako sortera wyplat, a nie pelnego silnika rekomendacji."
+      }
+    }
   },
   "notebook": {
     "title": "Mój Portfel / Notatnik",

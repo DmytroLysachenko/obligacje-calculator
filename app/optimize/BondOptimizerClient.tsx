@@ -32,11 +32,11 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { BondOptimizerCalculationEnvelope } from '@/features/bond-core/types/scenarios';
 import { TaxStrategy } from '@/features/bond-core/types';
+import { useAppI18n } from '@/i18n/client';
 import {
   FAMILY_BOND_TYPES,
   getBondSupportMeta,
 } from '@/features/bond-core/support-matrix';
-import { formatCurrency, formatPercentage } from '@/lib/utils';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
@@ -44,6 +44,10 @@ import { RecalculateButton } from '@/shared/components/feedback/RecalculateButto
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
+import {
+  useCurrencyFormatter,
+  usePercentFormatter,
+} from '@/shared/hooks/useLocalizedFormatters';
 import { toDateString } from '@/shared/lib/date-timing';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 
@@ -67,12 +71,6 @@ const DEFAULT_INPUTS: OptimizerInputs = {
   includeFamilyBonds: false,
 };
 
-const TAX_STRATEGY_LABELS: Record<TaxStrategy, string> = {
-  [TaxStrategy.STANDARD]: 'Standard account (19% tax)',
-  [TaxStrategy.IKE]: 'IKE wrapper',
-  [TaxStrategy.IKZE]: 'IKZE wrapper',
-};
-
 const SupportMetric = ({
   label,
   value,
@@ -94,6 +92,7 @@ const SupportMetric = ({
 );
 
 export default function BondOptimizerClient() {
+  const { t, locale: language } = useAppI18n();
   const { defaults: macroDefaults } = useMacroAssumptionDefaults();
   const [inputs, setInputs] = useState<OptimizerInputs>(DEFAULT_INPUTS);
   const [envelope, setEnvelope] =
@@ -101,6 +100,15 @@ export default function BondOptimizerClient() {
   const [isDirty, setIsDirty] = useState(true);
   const { isCalculating, post } = useCalculationRequest();
   const hasTouchedMacroAssumptions = React.useRef(false);
+  const currencyFormatter = useCurrencyFormatter(language, {
+    style: 'currency',
+    currency: 'PLN',
+    maximumFractionDigits: 0,
+  });
+  const percentFormatter = usePercentFormatter(language, {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
 
   React.useEffect(() => {
     if (!macroDefaults || hasTouchedMacroAssumptions.current) {
@@ -119,6 +127,22 @@ export default function BondOptimizerClient() {
   const horizonYears = useMemo(
     () => (inputs.investmentHorizonMonths / 12).toFixed(1),
     [inputs.investmentHorizonMonths],
+  );
+  const formatCurrency = React.useCallback(
+    (value: number) => currencyFormatter.format(value),
+    [currencyFormatter],
+  );
+  const formatPercentValue = React.useCallback(
+    (value: number) => percentFormatter.format(value / 100),
+    [percentFormatter],
+  );
+  const taxStrategyLabels: Record<TaxStrategy, string> = useMemo(
+    () => ({
+      [TaxStrategy.STANDARD]: t('optimizer_page.tax_strategies.standard'),
+      [TaxStrategy.IKE]: t('optimizer_page.tax_strategies.ike'),
+      [TaxStrategy.IKZE]: t('optimizer_page.tax_strategies.ikze'),
+    }),
+    [t],
   );
 
   const updateInput = (
@@ -147,8 +171,8 @@ export default function BondOptimizerClient() {
 
   return (
     <CalculatorPageShell
-      title="Bond Scenario Sorter"
-      description="Run one committed payout scenario, inspect the ordered outcomes, and keep the result in supporting-reference territory."
+      title={t('optimizer_page.page_title')}
+      description={t('optimizer_page.page_description')}
       icon={<TrendingUp className="h-8 w-8" />}
       isCalculating={isCalculating}
       isDirty={isDirty}
@@ -156,21 +180,20 @@ export default function BondOptimizerClient() {
     >
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
         <aside className="space-y-6 xl:col-span-4">
-          <Card className="rounded-2xl border-2 shadow-none">
+            <Card className="rounded-2xl border-2 shadow-none">
             <CardHeader className="space-y-2">
               <CardTitle className="text-lg font-black uppercase tracking-widest">
-                Primary Inputs
+                {t('optimizer_page.input_title')}
               </CardTitle>
               <CardDescription className="text-sm leading-6">
-                Set one amount, one horizon, and one purchase date. Advanced
-                macro and eligibility assumptions stay secondary.
+                {t('optimizer_page.input_description')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-4">
                   <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Amount to invest
+                    {t('optimizer_page.amount_label')}
                   </Label>
                   <span className="text-lg font-semibold text-foreground">
                     {formatCurrency(inputs.initialInvestment)}
@@ -191,10 +214,13 @@ export default function BondOptimizerClient() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-4">
                   <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Horizon
+                    {t('optimizer_page.horizon_label')}
                   </Label>
                   <span className="text-lg font-semibold text-foreground">
-                    {inputs.investmentHorizonMonths}M / {horizonYears}Y
+                    {t('optimizer_page.horizon_value', {
+                      months: String(inputs.investmentHorizonMonths),
+                      years: horizonYears,
+                    })}
                   </span>
                 </div>
                 <CommittedSliderInput
@@ -214,7 +240,7 @@ export default function BondOptimizerClient() {
                   htmlFor="purchaseDate"
                   className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
                 >
-                  Purchase date
+                  {t('optimizer_page.purchase_date_label')}
                 </Label>
                 <Input
                   id="purchaseDate"
@@ -232,17 +258,17 @@ export default function BondOptimizerClient() {
                   <AccordionTrigger className="rounded-2xl border bg-slate-50 px-4 py-4 hover:no-underline">
                     <div className="space-y-1 text-left">
                       <p className="text-sm font-bold text-slate-950">
-                        Advanced Assumptions
+                        {t('optimizer_page.advanced_title')}
                       </p>
                       <p className="text-xs leading-5 text-muted-foreground">
-                        Tax wrapper, family-bond eligibility, and macro settings.
+                        {t('optimizer_page.advanced_description')}
                       </p>
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="space-y-5 px-1 pt-4">
                     <div className="space-y-3">
                       <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        Tax strategy
+                        {t('optimizer_page.tax_strategy_label')}
                       </Label>
                       <Select
                         value={inputs.taxStrategy}
@@ -251,17 +277,17 @@ export default function BondOptimizerClient() {
                         }
                       >
                         <SelectTrigger className="rounded-xl">
-                          <SelectValue placeholder="Select strategy" />
+                          <SelectValue placeholder={t('optimizer_page.select_strategy')} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value={TaxStrategy.STANDARD}>
-                            {TAX_STRATEGY_LABELS[TaxStrategy.STANDARD]}
+                            {taxStrategyLabels[TaxStrategy.STANDARD]}
                           </SelectItem>
                           <SelectItem value={TaxStrategy.IKE}>
-                            {TAX_STRATEGY_LABELS[TaxStrategy.IKE]}
+                            {taxStrategyLabels[TaxStrategy.IKE]}
                           </SelectItem>
                           <SelectItem value={TaxStrategy.IKZE}>
-                            {TAX_STRATEGY_LABELS[TaxStrategy.IKZE]}
+                            {taxStrategyLabels[TaxStrategy.IKZE]}
                           </SelectItem>
                         </SelectContent>
                       </Select>
@@ -274,11 +300,10 @@ export default function BondOptimizerClient() {
                           className="flex flex-col gap-1"
                         >
                           <span className="font-medium text-foreground">
-                            Include family bonds
+                            {t('optimizer_page.family_bonds_title')}
                           </span>
                           <span className="text-sm font-normal leading-6 text-muted-foreground">
-                            ROS and ROD only make sense when the family-bond
-                            condition is actually met.
+                            {t('optimizer_page.family_bonds_description')}
                           </span>
                         </Label>
                         <Switch
@@ -290,19 +315,17 @@ export default function BondOptimizerClient() {
                         />
                       </div>
                       <p className="text-xs leading-6 text-amber-950">
-                        When enabled, this ranking adds{' '}
-                        {FAMILY_BOND_TYPES.join(' and ')}. They stay marked as{' '}
-                        {getBondSupportMeta(
-                          FAMILY_BOND_TYPES[0],
-                        ).shortLabel.toLowerCase()}{' '}
-                        because eligibility is not universal.
+                        {t('optimizer_page.family_bonds_note', {
+                          bonds: FAMILY_BOND_TYPES.join(' / '),
+                          support: getBondSupportMeta(FAMILY_BOND_TYPES[0]).shortLabel.toLowerCase(),
+                        })}
                       </p>
                     </div>
 
                     <div className="space-y-3">
                       <div className="flex items-center justify-between gap-4">
                         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                          Expected inflation
+                          {t('optimizer_page.expected_inflation_label')}
                         </Label>
                         <span className="text-lg font-semibold text-foreground">
                           {inputs.expectedInflation.toFixed(1)}%
@@ -323,7 +346,7 @@ export default function BondOptimizerClient() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between gap-4">
                         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                          Expected NBP rate
+                          {t('optimizer_page.expected_nbp_label')}
                         </Label>
                         <span className="text-lg font-semibold text-foreground">
                           {inputs.expectedNbpRate.toFixed(2)}%
@@ -345,8 +368,7 @@ export default function BondOptimizerClient() {
               </Accordion>
 
               <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-600">
-                Use the floating action in the lower corner when the scenario is
-                ready. Keep inputs staged here until you want one clean ranking.
+                {t('optimizer_page.input_footer')}
               </div>
             </CardContent>
           </Card>
@@ -357,35 +379,35 @@ export default function BondOptimizerClient() {
             <>
               {isDirty ? (
                 <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
-                  Inputs changed. The ranking below still shows the previous
-                  committed scenario. Run the ranking again when you want to
-                  refresh it.
+                  {t('optimizer_page.stale_results')}
                 </div>
               ) : null}
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <SupportMetric
-                  label="Leading payout"
+                  label={t('optimizer_page.metrics.leading_payout_label')}
                   value={formatCurrency(leadingScenario.netPayoutValue)}
-                  detail={`Highest modeled net payout after ${horizonYears} years.`}
+                  detail={t('optimizer_page.metrics.leading_payout_detail', {
+                    years: horizonYears,
+                  })}
                 />
                 <SupportMetric
-                  label="Leading bond"
+                  label={t('optimizer_page.metrics.leading_bond_label')}
                   value={`${leadingScenario.bondType}`}
                   detail={leadingScenario.name}
                 />
                 <SupportMetric
-                  label="Net profit"
+                  label={t('optimizer_page.metrics.net_profit_label')}
                   value={`+${formatCurrency(leadingScenario.totalProfit)}`}
-                  detail="Projected profit for the top-ranked scenario."
+                  detail={t('optimizer_page.metrics.net_profit_detail')}
                 />
                 <SupportMetric
-                  label="ROI"
-                  value={formatPercentage(
+                  label={t('optimizer_page.metrics.roi_label')}
+                  value={formatPercentValue(
                     (leadingScenario.totalProfit / inputs.initialInvestment) *
                       100,
                   )}
-                  detail="Relative return for the top-ranked scenario."
+                  detail={t('optimizer_page.metrics.roi_detail')}
                 />
               </div>
 
@@ -395,18 +417,18 @@ export default function BondOptimizerClient() {
                     <div className="space-y-2">
                       <CardTitle className="flex items-center gap-2 text-xl">
                         <ListOrdered className="h-5 w-5 text-primary" />
-                        Current leading scenario
+                        {t('optimizer_page.leading_card_title')}
                       </CardTitle>
                       <CardDescription className="text-sm leading-6">
-                        Highest modeled net payout for this committed scenario.
+                        {t('optimizer_page.leading_card_description')}
                       </CardDescription>
                     </div>
                     <div className="rounded-xl border bg-muted/20 px-4 py-3 text-right">
                       <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                        Tax wrapper
+                        {t('optimizer_page.tax_wrapper_label')}
                       </p>
                       <p className="mt-1 text-sm font-semibold text-foreground">
-                        {TAX_STRATEGY_LABELS[inputs.taxStrategy]}
+                        {taxStrategyLabels[inputs.taxStrategy]}
                       </p>
                     </div>
                   </div>
@@ -424,7 +446,7 @@ export default function BondOptimizerClient() {
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                     <div className="rounded-xl border p-4">
                       <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                        Tax paid
+                        {t('optimizer_page.tax_paid_label')}
                       </p>
                       <p className="mt-2 text-xl font-semibold text-orange-700">
                         {formatCurrency(leadingScenario.result.totalTax)}
@@ -432,7 +454,7 @@ export default function BondOptimizerClient() {
                     </div>
                     <div className="rounded-xl border p-4">
                       <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                        Inflation input
+                        {t('optimizer_page.inflation_input_label')}
                       </p>
                       <p className="mt-2 text-xl font-semibold text-foreground">
                         {inputs.expectedInflation.toFixed(1)}%
@@ -440,7 +462,7 @@ export default function BondOptimizerClient() {
                     </div>
                     <div className="rounded-xl border p-4">
                       <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                        NBP input
+                        {t('optimizer_page.nbp_input_label')}
                       </p>
                       <p className="mt-2 text-xl font-semibold text-foreground">
                         {inputs.expectedNbpRate.toFixed(2)}%
@@ -454,11 +476,12 @@ export default function BondOptimizerClient() {
                 <CardHeader className="border-b pb-4">
                   <CardTitle className="flex items-center gap-2 text-xl">
                     <ArrowDownUp className="h-5 w-5 text-primary" />
-                    Ranked outcomes
+                    {t('optimizer_page.ranked_outcomes_title')}
                   </CardTitle>
                   <CardDescription className="text-sm leading-6">
-                    Ordered by projected net payout after {horizonYears} years.
-                    This is scenario sorting, not a recommendation.
+                    {t('optimizer_page.ranked_outcomes_description', {
+                      years: horizonYears,
+                    })}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 p-6">
@@ -491,8 +514,10 @@ export default function BondOptimizerClient() {
                             </p>
                             <p className="mt-1 text-sm text-muted-foreground">
                               {index === 0
-                                ? 'Leading payout in this scenario'
-                                : `-${formatCurrency(gapToLead)} versus the leading payout`}
+                                ? t('optimizer_page.leading_gap_primary')
+                                : t('optimizer_page.leading_gap_secondary', {
+                                    gap: formatCurrency(gapToLead),
+                                  })}
                             </p>
                           </div>
                         </div>
@@ -503,26 +528,24 @@ export default function BondOptimizerClient() {
               </Card>
 
               <SecondaryInsightAccordion
-                title="Interpretation guardrail"
-                description="This page sorts projected payouts for one committed scenario. Treat it as a supporting sorter, not as an automatic bond recommendation."
-                badge="Support"
+                title={t('optimizer_page.guardrail_title')}
+                description={t('optimizer_page.guardrail_description')}
+                badge={t('optimizer_page.guardrail_badge')}
               >
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-600">
-                    Small assumption changes can reorder the list quickly,
-                    especially when horizons are short or rollover is required.
+                    {t('optimizer_page.guardrail_points.assumption_shift')}
                   </div>
                   <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-600">
-                    A high modeled payout here does not replace suitability,
-                    liquidity planning, or broader portfolio judgment.
+                    {t('optimizer_page.guardrail_points.suitability')}
                   </div>
                 </div>
               </SecondaryInsightAccordion>
 
               <SecondaryInsightAccordion
-                title="Scenario audit"
-                description="Open this only when you want the assumption and warning trail behind the current ranking."
-                badge="Audit"
+                title={t('optimizer_page.audit_title')}
+                description={t('optimizer_page.audit_description')}
+                badge={t('optimizer_page.audit_badge')}
               >
                 <CalculationMetaPanel
                   warnings={envelope?.warnings}
@@ -535,27 +558,31 @@ export default function BondOptimizerClient() {
             </>
           ) : (
             <ScenarioReadyPanel
-              badge="Support surface"
-              title="Ready to sort one scenario?"
-              description="Set the amount, horizon, and purchase date. Then run one committed scenario to compare modeled payouts across bond types."
+              badge={t('optimizer_page.ready_badge')}
+              title={t('optimizer_page.ready_title')}
+              description={t('optimizer_page.ready_description')}
                 steps={[
                   {
                     id: 'amount',
-                    title: 'Set the amount',
-                    description: `Start from ${formatCurrency(inputs.initialInvestment)} or adjust it before the first run.`,
+                    title: t('optimizer_page.ready_steps.amount.title'),
+                    description: t('optimizer_page.ready_steps.amount.description', {
+                      amount: formatCurrency(inputs.initialInvestment),
+                    }),
                   },
                   {
                     id: 'horizon',
-                    title: 'Choose the horizon',
-                    description: `This scenario is staged for ${inputs.investmentHorizonMonths} months.`,
+                    title: t('optimizer_page.ready_steps.horizon.title'),
+                    description: t('optimizer_page.ready_steps.horizon.description', {
+                      months: String(inputs.investmentHorizonMonths),
+                    }),
                   },
                   {
                     id: 'narrow-scope',
-                    title: 'Keep the scope narrow',
-                    description: 'Use the ranking as a payout sorter, not as a full recommendation engine.',
+                    title: t('optimizer_page.ready_steps.scope.title'),
+                    description: t('optimizer_page.ready_steps.scope.description'),
                   },
               ]}
-              footerText="Advanced assumptions stay available, but they should not distract from one clean ranking run."
+              footerText={t('optimizer_page.ready_footer')}
             />
           )}
         </section>
