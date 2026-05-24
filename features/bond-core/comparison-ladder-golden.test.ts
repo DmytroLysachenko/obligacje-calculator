@@ -233,5 +233,47 @@ describe('Comparison and ladder golden regressions', () => {
 
     expect(result[1].result.netPayoutValue).toBeGreaterThan(result[0].result.netPayoutValue);
   });
+
+  it('keeps exact-date comparison scenarios aligned to a shared 20-year withdrawal boundary', async () => {
+    const purchaseDate = toDateString(today);
+    const withdrawalDate = getWithdrawalDateFromMonths(purchaseDate, 240);
+
+    const envelope = await calculationService.calculate({
+      kind: ScenarioKind.BOND_COMPARISON,
+      payload: {
+        mode: 'independent',
+        sharedConfig: {
+          initialInvestment: 10000,
+          purchaseDate,
+          withdrawalDate,
+          expectedInflation: 2.5,
+          expectedNbpRate: 3.75,
+          taxStrategy: TaxStrategy.STANDARD,
+          timingMode: 'exact',
+        },
+        scenarioA: {
+          bondType: BondType.EDO,
+        },
+        scenarioB: {
+          bondType: BondType.ROR,
+        },
+      },
+    });
+
+    const result = envelope.result as BondComparisonScenarioItem[];
+    const scenarioA = result.find((item) => item.scenarioKey === 'scenarioA')?.result;
+    const scenarioB = result.find((item) => item.scenarioKey === 'scenarioB')?.result;
+
+    expect(scenarioA?.timeline.at(-1)?.cycleEndDate.slice(0, 7)).toBe(withdrawalDate.slice(0, 7));
+    expect(scenarioB?.timeline.at(-1)?.cycleEndDate.slice(0, 7)).toBe(withdrawalDate.slice(0, 7));
+    expect(
+      getHorizonMonths(purchaseDate, scenarioA?.timeline.at(-1)?.cycleEndDate ?? purchaseDate),
+    ).toBeGreaterThanOrEqual(239);
+    expect(
+      getHorizonMonths(purchaseDate, scenarioB?.timeline.at(-1)?.cycleEndDate ?? purchaseDate),
+    ).toBeGreaterThanOrEqual(239);
+    expect(scenarioA?.timeline.some((point) => point.cycleIndex > 1)).toBe(true);
+    expect(scenarioB?.timeline.some((point) => point.cycleIndex > 1)).toBe(true);
+  });
 });
 

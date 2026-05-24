@@ -11,6 +11,7 @@ import { BondInputs, TaxStrategy } from '../types';
 import { BaseHandler, ScenarioHandler, HandlerContext } from './base';
 import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 import { resolveBondOfferTerms } from '@/lib/server/bonds/offer-terms';
+import { shouldAutoRollover } from './rollover';
 
 export class ComparisonHandler extends BaseHandler implements ScenarioHandler<NormalizedBondComparisonPayload | IndependentBondComparisonPayload, BondComparisonScenarioItem[]> {
   kind = ScenarioKind.BOND_COMPARISON;
@@ -211,13 +212,5 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
   ): string[] {
     return this.generateAssumptions(inputs).map((assumption) => `${label}: ${assumption}`);
   }
-}
-
-function shouldAutoRollover(inputs: BondInputs, durationYears: number) {
-  const nativeDurationMonths = Math.max(1, Math.round(durationYears * 12));
-  const horizonMonths = inputs.investmentHorizonMonths
-    ?? getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);
-
-  return horizonMonths > nativeDurationMonths;
 }
 

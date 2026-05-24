@@ -10,15 +10,7 @@ import { getTaxRulesForYear, getHistoricalAverages } from '@/lib/data/market-dat
 import { BaseHandler, ScenarioHandler, HandlerContext } from './base';
 import { getYear, parseISO } from 'date-fns';
 import { resolveBondOfferTerms } from '@/lib/server/bonds/offer-terms';
-import { getHorizonMonths } from '@/shared/lib/date-timing';
-
-function shouldAutoRollover(inputs: BondInputs, durationYears: number) {
-  const nativeDurationMonths = Math.max(1, Math.round(durationYears * 12));
-  const horizonMonths = inputs.investmentHorizonMonths
-    ?? getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);
-
-  return horizonMonths > nativeDurationMonths;
-}
+import { shouldAutoRollover } from './rollover';
 
 export class SingleBondHandler extends BaseHandler implements ScenarioHandler<BondInputs, CalculationResult> {
   kind = ScenarioKind.SINGLE_BOND;
