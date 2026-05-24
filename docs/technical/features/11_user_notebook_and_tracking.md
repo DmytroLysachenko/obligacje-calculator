@@ -23,25 +23,26 @@ That means:
 
 ## 2. Current Ownership Model
 
-The current notebook path is guest-first.
+The current notebook surface is a **guest-preview, signed-in-workspace** model.
 
 ### 2.1 Guest mode
 
 By default:
 
-- the app creates or reuses a guest owner id
-- that owner id is stored in a cookie
-- portfolios and lots are scoped to that owner id
+- the app still resolves guest ownership context for continuity and compatibility
+- notebook/workspace screens may render preview data and read-only context
+- create/import/save/open workspace actions should be visibly gated
 
-This means the notebook is usable without mandatory sign-in.
+This means the notebook can be explored without mandatory sign-in, but it should not behave like a full guest-owned permanent workspace.
 
 ### 2.2 Authenticated mode
 
-If auth is available and stable:
+Target retained direction:
 
-- ownership can resolve to the signed-in user id instead
-
-But the retained UX should not depend on auth being present to make notebook basics work.
+- signed-in ownership resolves to the authenticated user id
+- signed-in users should have at least one portfolio
+- the active portfolio should be selectable from shared workspace chrome
+- notebook becomes the real persistent workspace only in signed-in mode
 
 ## 3. Current Core Entities
 
@@ -94,15 +95,15 @@ The notebook should **not** act like:
 
 Current flow:
 
-1. create a portfolio
-2. it appears immediately in notebook state
+1. signed-in user creates a portfolio
+2. it appears immediately in workspace state
 3. selection updates without needing a full page reload
 
 ### 5.2 Add lot
 
 Current flow:
 
-1. choose portfolio
+1. signed-in user chooses the active portfolio
 2. save lot metadata
 3. revisit later in portfolio detail
 
@@ -120,7 +121,7 @@ Current flow:
 
 1. destructive action is confirmed
 2. owned portfolio is deleted
-3. notebook view clears stale selection immediately
+3. notebook view resolves the next valid active portfolio immediately
 
 This was missing earlier and is now an explicit supported path.
 
@@ -137,7 +138,7 @@ Current flow:
 Current flow:
 
 - portfolio sharing uses a stable `share_id`
-- public link opens a read-only portfolio page
+- public link opens a read-only portfolio page under `/shared-portfolios/[shareId]`
 
 This is intentionally separate from single-calculator scenario sharing.
 
@@ -156,7 +157,7 @@ Technical model:
 
 - `user_portfolios.share_id`
 - `is_public`
-- read-only page under `/p/[shareId]`
+- read-only page under `/shared-portfolios/[shareId]`
 
 ### B. Single-scenario share
 
@@ -167,7 +168,7 @@ Use when:
 Technical model:
 
 - persisted snapshot in `shared_single_scenarios`
-- read-only replay page under `/s/[shareId]`
+- read-only replay page under `/shared-scenarios/[shareId]`
 
 These should not be merged conceptually.
 
@@ -210,6 +211,8 @@ The following route families must resolve the same owner context:
 - share
 - delete
 
+Workspace selection helpers that multiple features use must live in `shared/lib/workspace/**`, not inside feature-local notebook folders.
+
 ### Rule 3. UI state should update immediately after notebook mutations
 
 Create/import/delete should not require a manual hard refresh to become visible.
@@ -237,6 +240,7 @@ That final pass should explicitly cover:
 - export
 - delete
 - reload continuity under guest ownership
+- signed-in gating for create/import/open/save actions
 
 ## 10. Current Known Limits
 
@@ -246,6 +250,7 @@ The notebook still has intentional limits:
 - no automatic lot discovery
 - no authoritative tax statement generation
 - no live valuation feed pretending to be a brokerage account
+- no full guest-owned permanent portfolio workspace as the long-term product model
 
 This is good.
 

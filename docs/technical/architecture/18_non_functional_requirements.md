@@ -39,3 +39,7 @@ Quality and performance standards for the platform.
 - **NFR6.10:** API route handlers must stay thin and delegate business logic and DB access to `lib/server/**` services or repositories.
 - **NFR6.11:** Shared UI must be grouped by subdomain under `shared/components/**`; compatibility shims are temporary and must be removed after migration.
 - **NFR6.12:** Data reads belong in `lib/data/**`; server-only orchestration belongs in `lib/server/**`; schema and seed concerns must stay separated under `db/schemas/**` and `db/seed/**`.
+- **NFR6.13:** Guest users may calculate and preview, but notebook/portfolio workspace mutations must be explicitly gated behind signed-in access.
+- **NFR6.14:** Shared workspace selection state belongs in `shared/lib/workspace/**`; feature-local storage helpers must not become cross-feature dependencies.
+- **NFR6.15:** Display options such as chart granularity must never alter calculation truth. Chart, table, and export layers must derive from one normalized display contract.
+- **NFR6.16:** Simple-mode projected NBP defaults must be sourced from synced data and represented as a flat path until the user overrides them.

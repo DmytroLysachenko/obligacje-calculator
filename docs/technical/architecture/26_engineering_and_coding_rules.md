@@ -270,7 +270,7 @@ Required boundaries:
 - `features/`: domain-specific UI, handlers, adapters, and calculation orchestration by product area
 - `shared/components/`: reusable UI primitives grouped by subdomain such as `page/`, `feedback/`, `results/`, `chrome/`, `insights/`, and `charts/`
 - `shared/hooks/`: isomorphic or UI-facing hooks only
-- `shared/lib/`: reusable display/export/presentation helpers that are not server infrastructure
+- `shared/lib/`: reusable display/export/presentation helpers and shared client-workspace state that are not server infrastructure
 - `lib/data/`: shared data retrieval and cached read models
 - `lib/server/`: server-only services, repositories, HTTP helpers, admin/sync orchestration, and ownership/auth support
 - `db/schemas/`: grouped schema entrypoints by connected model domains
@@ -278,7 +278,15 @@ Required boundaries:
 
 Do not flatten new files into old catch-all directories when a bounded subdomain already exists.
 
-### 11.1 Naming
+### 11.1 Workspace Boundaries
+
+Notebook and portfolio workspace state must follow these rules:
+
+- guest users may browse calculators and preview workspace surfaces, but workspace mutations must be explicitly gated behind signed-in access
+- shared workspace selection state, such as the active portfolio id, belongs in `shared/lib/workspace/**`, not in one feature-local folder that other features import ad hoc
+- portfolio and notebook API routes must stay thin and delegate ownership and mutation rules to `lib/server/portfolio/**`
+- notebook pages should read as a records workspace, not a pseudo-advisory dashboard
+### 11.2 Naming
 
 Use full, meaningful names for:
 
@@ -291,7 +299,17 @@ Use full, meaningful names for:
 
 Single-letter or cryptic names are not acceptable for durable application structure.
 
-### 11.2 Compatibility Wrappers
+### 11.3 Calculator Display and Assumption Contracts
+
+Retained calculator surfaces must preserve these contracts:
+
+- display settings such as chart granularity may change aggregation only; they must never change engine truth
+- chart, table, quick-audit, CSV, and PDF output for one calculator flow must derive from the same normalized display model
+- single and comparison flows must reuse the same rollover inference rules where the product behavior is the same
+- current bond offer terms and NBP reference-rate assumptions must remain separate concepts in code, UI wording, and exported artifacts
+- simple-mode projected NBP defaults should be presented as a flat path from the latest synced rate until the user overrides it
+
+### 11.4 Compatibility Wrappers
 
 Compatibility wrappers may exist only as short-lived migration aids.
 

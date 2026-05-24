@@ -141,7 +141,12 @@ Other chart endpoints still exist for retained or secondary surfaces, but the sa
 
 Purpose:
 
-- list owned portfolios for the current guest or authenticated owner
+- list portfolio records available to the current resolved owner context
+
+Current retained expectation:
+
+- guest flows may still read preview-compatible portfolio state
+- mutating notebook/workspace actions should be gated behind signed-in portfolio access
 
 ### 5.2 `POST /api/portfolio`
 
@@ -191,7 +196,7 @@ Purpose:
 
 - toggle public sharing on a notebook portfolio
 
-### 5.10 `GET /p/[shareId]`
+### 5.10 `GET /shared-portfolios/[shareId]`
 
 Purpose:
 
@@ -215,7 +220,7 @@ Why:
 - dirty input state and committed result state must stay separate
 - a shared link should replay one known scenario, not leak whatever happened to be in the form
 
-### 6.2 `GET /s/[shareId]`
+### 6.2 `GET /shared-scenarios/[shareId]`
 
 Purpose:
 
@@ -341,3 +346,4 @@ These are still real limitations and should remain explicit:
 3. `ApiResponse<T>` remains the preferred route contract for retained internal APIs.
 4. Every chart/reference route should expose enough metadata for truthful source/freshness display.
 5. External-source ambiguity should never be hidden behind polished UI wording.
+6. Guest notebook/workspace visibility does not imply guest mutation access; mutating actions should remain explicitly gated.

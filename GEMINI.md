@@ -99,6 +99,10 @@ Key requirements:
 - no dead legacy branches left beside replacement code
 - components must stay narrow in responsibility and move toward `SOLID`, `DRY`, and `KISS`
 - touched code should be cleaned up within scope, not only patched minimally
+- guest users may calculate and preview workspace surfaces, but notebook/portfolio mutations should be gated behind signed-in access
+- shared workspace state helpers belong in `shared/lib/workspace/**`
+- display settings such as chart granularity must not change engine truth
+- simple-mode projected NBP defaults should be explained and modeled as a flat path from the latest synced rate until overridden
 
 ## Key Symbols & Files
 - `features/bond-core/application-service.ts`: Central orchestration for all calculation scenarios.
