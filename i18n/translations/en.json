@@ -1162,7 +1162,9 @@
       "nbp_live": "NBP reference data comes from the synced reference dataset.",
       "inflation_warning": "Using fallback CPI reference data. Read the reference page more cautiously.",
       "inflation_live": "CPI reference data comes from the synced reference dataset."
-    }
+    },
+    "reference_rail_title": "Reference rail",
+    "status_rail_title": "Series status"
   },
   "comparison": {
     "title_bond_vs_bond": "Bond vs Bond",

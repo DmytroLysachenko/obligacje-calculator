@@ -245,6 +245,8 @@ export function EconomicDataPageClient() {
     howToUse: t('economic.how_to_use_page'),
     dataQuality: t('economic.data_quality_title'),
     pageScope: t('economic.page_scope_title'),
+    referenceRail: t('economic.reference_rail_title'),
+    statusRail: t('economic.status_rail_title'),
   } as const;
 
   const pageIntro = t('economic.page_intro');
@@ -287,7 +289,7 @@ export function EconomicDataPageClient() {
               <p className="max-w-4xl text-sm leading-8 text-slate-600">{pageIntro}</p>
             </div>
 
-            <div className="grid gap-4 lg:grid-cols-4">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <ReferenceMetric label={labels.series} value="2" />
               <ReferenceMetric label={labels.purpose} value={labels.context} />
               <ReferenceMetric label={labels.mode} value={labels.reference} />
@@ -310,7 +312,7 @@ export function EconomicDataPageClient() {
                 </AccordionTrigger>
                 <AccordionContent className="space-y-4 pb-4">
                   <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_240px]">
-                    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-2">
                       {usageGuide.map((item) => (
                         <div key={item} className="rounded-2xl border border-slate-200 bg-slate-50/55 px-4 py-3">
                           <div className="flex items-start gap-3">
@@ -354,34 +356,60 @@ export function EconomicDataPageClient() {
             </SectionBlock>
           </div>
 
-          <aside className="space-y-6">
-            <Card className="surface-panel rounded-[2rem] border-slate-200 bg-white/84 shadow-none">
-              <CardContent className="space-y-3 p-5">
-                <div className="flex items-center gap-2">
-                  <ShieldAlert className="h-4 w-4 text-primary" />
-                  <p className="text-xl font-black tracking-tight text-slate-950">
-                    {labels.pageScope}
-                  </p>
-                </div>
-                <p className="text-sm leading-7 text-slate-600">
-                  {t('economic.page_scope_description')}
-                </p>
-              </CardContent>
-            </Card>
+          <aside className="space-y-6 xl:sticky xl:top-24 xl:h-fit">
+            <Accordion type="multiple" defaultValue={['scope', 'status']} className="space-y-4">
+              <AccordionItem value="scope" className="rounded-[1.8rem] border border-slate-200 bg-white/84 px-5 shadow-none">
+                <AccordionTrigger className="py-4 text-left hover:no-underline">
+                  <div className="flex items-center gap-2">
+                    <ShieldAlert className="h-4 w-4 text-primary" />
+                    <p className="text-xl font-black tracking-tight text-slate-950">
+                      {labels.referenceRail}
+                    </p>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-3 pb-5">
+                  <Card className="surface-panel rounded-[1.6rem] border-slate-200 bg-white shadow-none">
+                    <CardContent className="space-y-3 p-4">
+                      <div className="flex items-center gap-2">
+                        <ShieldAlert className="h-4 w-4 text-primary" />
+                        <p className="text-lg font-black tracking-tight text-slate-950">
+                          {labels.pageScope}
+                        </p>
+                      </div>
+                      <p className="text-sm leading-7 text-slate-600">
+                        {t('economic.page_scope_description')}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </AccordionContent>
+              </AccordionItem>
 
-            <SeriesStatusCard
-              title={t('economic.inflation_title')}
-              meta={inflationMeta}
-              isLoading={isLoadingInflation}
-              language={language}
-            />
+              <AccordionItem value="status" className="rounded-[1.8rem] border border-slate-200 bg-white/84 px-5 shadow-none">
+                <AccordionTrigger className="py-4 text-left hover:no-underline">
+                  <div className="flex items-center gap-2">
+                    <Database className="h-4 w-4 text-primary" />
+                    <p className="text-xl font-black tracking-tight text-slate-950">
+                      {labels.statusRail}
+                    </p>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 pb-5">
+                  <SeriesStatusCard
+                    title={t('economic.inflation_title')}
+                    meta={inflationMeta}
+                    isLoading={isLoadingInflation}
+                    language={language}
+                  />
 
-            <SeriesStatusCard
-              title={t('economic.nbp_rate_title')}
-              meta={nbpMeta}
-              isLoading={isLoadingNbp}
-              language={language}
-            />
+                  <SeriesStatusCard
+                    title={t('economic.nbp_rate_title')}
+                    meta={nbpMeta}
+                    isLoading={isLoadingNbp}
+                    language={language}
+                  />
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </aside>
         </div>
       </div>

@@ -1105,7 +1105,9 @@
       "nbp_live": "Dane referencyjne NBP pochodza z zsynchronizowanego zbioru referencyjnego.",
       "inflation_warning": "Uzywane sa zapasowe dane referencyjne CPI. Czytaj strone referencyjna ostrozniej.",
       "inflation_live": "Dane referencyjne CPI pochodza z zsynchronizowanego zbioru referencyjnego."
-    }
+    },
+    "reference_rail_title": "Panel referencyjny",
+    "status_rail_title": "Status serii"
   },
   "comparison": {
     "title_bond_vs_bond": "Bond vs Bond",
