@@ -9,9 +9,9 @@ import { BondComparisonScenarioRequestSchema } from '../types/schemas';
 import { calculateBondInvestment } from '../utils/calculations';
 import { BondInputs, TaxStrategy } from '../types';
 import { BaseHandler, ScenarioHandler, HandlerContext } from './base';
-import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
-import { resolveBondOfferTerms } from '@/lib/server/bonds/offer-terms';
+import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 import { shouldAutoRollover } from './rollover';
+import { resolveScenarioInputs } from './resolved-inputs';
 
 export class ComparisonHandler extends BaseHandler implements ScenarioHandler<NormalizedBondComparisonPayload | IndependentBondComparisonPayload, BondComparisonScenarioItem[]> {
   kind = ScenarioKind.BOND_COMPARISON;
@@ -125,32 +125,25 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
     context: HandlerContext
   ): Promise<BondInputs[]> {
     return Promise.all(request.bondTypes.map(async (type) => {
-      const def = context.dbDefinitions[type];
-      const resolvedOffer = await resolveBondOfferTerms(
-        type,
-        request.purchaseDate,
-        context.dbDefinitions,
-      );
+      const { inputs: resolvedInputs } = await resolveScenarioInputs({
+        inputs: {
+          bondType: type,
+          purchaseDate: request.purchaseDate,
+        },
+        context,
+      });
 
       return {
-        bondType: type,
+        ...resolvedInputs,
         initialInvestment: request.initialInvestment,
-        firstYearRate: resolvedOffer.firstYearRate ?? def.firstYearRate,
         expectedInflation: request.expectedInflation,
         expectedNbpRate: request.expectedNbpRate ?? 5.25,
         customInflation: request.customInflation,
         customNbpRate: request.customNbpRate,
         inflationScenario: request.inflationScenario,
-        margin: resolvedOffer.margin ?? def.margin,
-        duration: def.duration,
-        earlyWithdrawalFee: def.earlyWithdrawalFee,
         taxRate: 19,
-        isCapitalized: def.isCapitalized,
-        payoutFrequency: def.payoutFrequency,
-        purchaseDate: request.purchaseDate,
         withdrawalDate: request.withdrawalDate,
         isRebought: false,
-        rebuyDiscount: def.rebuyDiscount,
         taxStrategy: request.taxStrategy ?? TaxStrategy.STANDARD,
         timingMode: 'exact' as import('@/shared/lib/date-timing').TimingMode,
         investmentHorizonMonths: undefined,
@@ -163,13 +156,16 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
     scenario: IndependentBondComparisonPayload['scenarioA'],
     context: HandlerContext
   ): Promise<BondInputs> {
-    const def = context.dbDefinitions[scenario.bondType];
     const purchaseDate = scenario.purchaseDate ?? sharedConfig.purchaseDate;
-    const resolvedOffer = await resolveBondOfferTerms(
-      scenario.bondType,
-      purchaseDate,
-      context.dbDefinitions,
-    );
+    const { inputs: resolvedInputs } = await resolveScenarioInputs({
+      inputs: {
+        bondType: scenario.bondType,
+        purchaseDate,
+        firstYearRate: scenario.firstYearRate,
+        margin: scenario.margin,
+      },
+      context,
+    });
     const timingMode = scenario.timingMode ?? sharedConfig.timingMode ?? 'general';
     const investmentHorizonMonths = scenario.investmentHorizonMonths ?? sharedConfig.investmentHorizonMonths;
     const withdrawalDate = scenario.withdrawalDate
@@ -178,24 +174,16 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
         : sharedConfig.withdrawalDate);
 
     return {
-      bondType: scenario.bondType,
+      ...resolvedInputs,
       initialInvestment: sharedConfig.initialInvestment,
-      firstYearRate: resolvedOffer.firstYearRate ?? scenario.firstYearRate ?? def.firstYearRate,
       expectedInflation: sharedConfig.expectedInflation,
       expectedNbpRate: sharedConfig.expectedNbpRate ?? 5.25,
       customInflation: sharedConfig.customInflation,
       customNbpRate: sharedConfig.customNbpRate,
       inflationScenario: sharedConfig.inflationScenario,
-      margin: resolvedOffer.margin ?? scenario.margin ?? def.margin,
-      duration: def.duration,
-      earlyWithdrawalFee: def.earlyWithdrawalFee,
       taxRate: 19,
-      isCapitalized: def.isCapitalized,
-      payoutFrequency: def.payoutFrequency,
-      purchaseDate,
       withdrawalDate,
       isRebought: scenario.isRebought ?? false,
-      rebuyDiscount: def.rebuyDiscount,
       taxStrategy: scenario.taxStrategy ?? sharedConfig.taxStrategy ?? TaxStrategy.STANDARD,
       timingMode,
       investmentHorizonMonths,

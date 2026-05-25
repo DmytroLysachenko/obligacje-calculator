@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { calculationService } from './application-service';
 import { calculationCache } from './utils/calculation-cache';
-import { BondType, InvestmentFrequency, RegularInvestmentResult, TaxStrategy } from './types';
+import { BondType, CalculationResult, InvestmentFrequency, RegularInvestmentResult, TaxStrategy } from './types';
 import { BondComparisonScenarioItem, ScenarioKind } from './types/scenarios';
 import { BOND_DEFINITIONS } from './constants/bond-definitions';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
@@ -71,6 +71,32 @@ function buildRegularPayload(bondType: BondType, investmentHorizonMonths: number
     rebuyDiscount: definition.rebuyDiscount,
     taxStrategy: TaxStrategy.STANDARD,
     timingMode: 'general' as const,
+  };
+}
+
+function buildSinglePayload(bondType: BondType, investmentHorizonMonths: number) {
+  const definition = BOND_DEFINITIONS[bondType];
+  const purchaseDate = toDateString(today);
+
+  return {
+    bondType,
+    initialInvestment: 10000,
+    firstYearRate: definition.firstYearRate,
+    expectedInflation: 2.5,
+    expectedNbpRate: 3.75,
+    margin: definition.margin,
+    duration: definition.duration,
+    earlyWithdrawalFee: definition.earlyWithdrawalFee,
+    taxRate: 19,
+    isCapitalized: definition.isCapitalized,
+    payoutFrequency: definition.payoutFrequency,
+    purchaseDate,
+    withdrawalDate: getWithdrawalDateFromMonths(purchaseDate, investmentHorizonMonths),
+    isRebought: false,
+    rebuyDiscount: definition.rebuyDiscount,
+    taxStrategy: TaxStrategy.STANDARD,
+    timingMode: 'exact' as const,
+    investmentHorizonMonths,
   };
 }
 
@@ -274,6 +300,52 @@ describe('Comparison and ladder golden regressions', () => {
     ).toBeGreaterThanOrEqual(239);
     expect(scenarioA?.timeline.some((point) => point.cycleIndex > 1)).toBe(true);
     expect(scenarioB?.timeline.some((point) => point.cycleIndex > 1)).toBe(true);
+  });
+
+  it.each([
+    BondType.EDO,
+    BondType.ROR,
+  ])('matches single-bond outputs for the same independent comparison scenario on %s', async (bondType) => {
+    const investmentHorizonMonths = bondType === BondType.EDO ? 240 : 120;
+    const singleEnvelope = await calculationService.calculate({
+      kind: ScenarioKind.SINGLE_BOND,
+      payload: buildSinglePayload(bondType, investmentHorizonMonths),
+    });
+
+    const purchaseDate = toDateString(today);
+    const withdrawalDate = getWithdrawalDateFromMonths(purchaseDate, investmentHorizonMonths);
+    const comparisonEnvelope = await calculationService.calculate({
+      kind: ScenarioKind.BOND_COMPARISON,
+      payload: {
+        mode: 'independent',
+        sharedConfig: {
+          initialInvestment: 10000,
+          purchaseDate,
+          withdrawalDate,
+          expectedInflation: 2.5,
+          expectedNbpRate: 3.75,
+          taxStrategy: TaxStrategy.STANDARD,
+          timingMode: 'exact',
+          investmentHorizonMonths,
+        },
+        scenarioA: {
+          bondType,
+        },
+        scenarioB: {
+          bondType: bondType === BondType.EDO ? BondType.ROR : BondType.EDO,
+        },
+      },
+    });
+
+    const comparisonResult = (comparisonEnvelope.result as BondComparisonScenarioItem[])
+      .find((item) => item.scenarioKey === 'scenarioA')
+      ?.result;
+    const singleResult = singleEnvelope.result as CalculationResult;
+
+    expect(comparisonResult?.netPayoutValue).toBeCloseTo(singleResult.netPayoutValue, 8);
+    expect(comparisonResult?.finalRealValue).toBeCloseTo(singleResult.finalRealValue, 8);
+    expect(comparisonResult?.totalTax).toBeCloseTo(singleResult.totalTax, 8);
+    expect(comparisonResult?.timeline.at(-1)?.cycleEndDate).toBe(singleResult.timeline.at(-1)?.cycleEndDate);
   });
 });
 

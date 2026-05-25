@@ -5,31 +5,22 @@ import {
 import { BondInputs, TaxStrategy, CalculationResult } from '../types';
 import { BondInputsSchema } from '../types/schemas';
 import { calculateBondInvestment } from '../utils/calculations';
-import { BOND_DEFINITIONS } from '../constants/bond-definitions';
 import { getTaxRulesForYear, getHistoricalAverages } from '@/lib/data/market-data';
 import { BaseHandler, ScenarioHandler, HandlerContext } from './base';
 import { getYear, parseISO } from 'date-fns';
-import { resolveBondOfferTerms } from '@/lib/server/bonds/offer-terms';
 import { shouldAutoRollover } from './rollover';
+import { resolveScenarioInputs } from './resolved-inputs';
 
 export class SingleBondHandler extends BaseHandler implements ScenarioHandler<BondInputs, CalculationResult> {
   kind = ScenarioKind.SINGLE_BOND;
 
   async handle(payload: BondInputs, context: HandlerContext): Promise<SingleBondCalculationEnvelope> {
     const validatedInputs = BondInputsSchema.parse(payload);
-    const def = context.dbDefinitions[validatedInputs.bondType] ?? BOND_DEFINITIONS[validatedInputs.bondType];
-    const resolvedOffer = await resolveBondOfferTerms(
-      validatedInputs.bondType,
-      validatedInputs.purchaseDate,
-      context.dbDefinitions,
-      validatedInputs.selectedSeriesId,
-    );
-
-    const inputsWithDefaults = {
-      ...validatedInputs,
-      firstYearRate: resolvedOffer.firstYearRate ?? validatedInputs.firstYearRate ?? def.firstYearRate,
-      margin: resolvedOffer.margin ?? validatedInputs.margin ?? def.margin,
-    };
+    const { definition: def, resolvedOffer, inputs: inputsWithDefaults } = await resolveScenarioInputs({
+      inputs: validatedInputs,
+      context,
+      selectedSeriesId: validatedInputs.selectedSeriesId,
+    });
 
     const enrichedInputs = await this.withHistoricalData(inputsWithDefaults);
 
