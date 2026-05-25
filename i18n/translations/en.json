@@ -99,6 +99,7 @@
     "workspace_desc": "Choose active portfolio before saving new bond lots.",
     "portfolio_selector_label": "Current portfolio",
     "portfolio_selector_empty": "No portfolio selected",
+    "portfolio_selector_active": "Active: {name}",
     "workspace_manage": "Manage workspace",
     "sections": {
       "core": "Core Tools",
@@ -2137,6 +2138,14 @@
     "active_workspace_badge": "Active workspace",
     "guest_preview_description": "Workspace storage is reserved for signed-in users. Anonymous visitors can still inspect the page structure, but saving lots and managing portfolios stays locked.",
     "active_workspace_description": "This workspace is connected to your saved portfolios. Use it to open, compare, and manage stored bond lots.",
+    "active_selection_title": "Active portfolio",
+    "no_active_portfolio": "No active portfolio yet",
+    "active_selection_desc": "Use the active portfolio as the current destination for lot reviews, updates, and future save actions.",
+    "create_first_portfolio_desc": "Create the first portfolio, then keep it as the active workspace container until you intentionally switch.",
+    "preview_only_desc": "Guest mode keeps this surface descriptive. Saving and managing portfolios will stay locked until sign-in is available.",
+    "action_strip_title": "Workspace actions",
+    "action_strip_desc": "Create or import a portfolio, then keep one active container selected for future lot and notebook work.",
+    "action_strip_guest_desc": "These actions preview the future signed-in workflow. Refresh stays available, but saving and importing are intentionally locked.",
     "sign_in_required_short": "Sign in required",
     "sign_in_needed_for_portfolio": "Portfolio saving is available only inside a signed-in workspace. You can still use the calculator normally and save scenarios separately.",
     "empty_guest_description": "Signed-in workspace features are not available in guest mode. Use calculators freely, then sign in later to save lots into portfolios."

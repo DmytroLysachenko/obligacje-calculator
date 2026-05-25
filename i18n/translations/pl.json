@@ -99,6 +99,7 @@
     "workspace_desc": "Wybierz aktywny portfel przed zapisaniem nowych partii obligacji.",
     "portfolio_selector_label": "Biezacy portfel",
     "portfolio_selector_empty": "Brak wybranego portfela",
+    "portfolio_selector_active": "Aktywny: {name}",
     "workspace_manage": "Zarzadzaj przestrzenia",
     "sections": {
       "core": "Narzędzia Główne",
@@ -2084,6 +2085,14 @@
     "active_workspace_badge": "Aktywny workspace",
     "guest_preview_description": "Przechowywanie workspace jest zarezerwowane dla zalogowanych uzytkownikow. Uzytkownik anonimowy moze obejrzec strukture strony, ale zapisywanie partii i zarzadzanie portfelami pozostaje zablokowane.",
     "active_workspace_description": "Ten workspace jest polaczony z zapisanymi portfelami. Uzyj go do otwierania, porownywania i zarzadzania zapisanymi partiami obligacji.",
+    "active_selection_title": "Aktywny portfel",
+    "no_active_portfolio": "Brak aktywnego portfela",
+    "active_selection_desc": "Uzyj aktywnego portfela jako biezacego miejsca dla przegladu partii, aktualizacji i przyszlych zapisow.",
+    "create_first_portfolio_desc": "Utworz pierwszy portfel, a potem trzymaj go jako aktywny kontener workspace, dopoki swiadomie go nie zmienisz.",
+    "preview_only_desc": "Tryb goscia utrzymuje te powierzchnie jako opisowe. Zapisywanie i zarzadzanie portfelami pozostana zablokowane do czasu udostepnienia logowania.",
+    "action_strip_title": "Akcje workspace",
+    "action_strip_desc": "Utworz lub zaimportuj portfel, a potem utrzymuj jeden aktywny kontener dla przyszlej pracy na partiach i notatniku.",
+    "action_strip_guest_desc": "Te akcje pokazuja przyszly przebieg dla zalogowanego uzytkownika. Odswiezanie pozostaje dostepne, ale zapisy i import sa celowo zablokowane.",
     "sign_in_required_short": "Wymagane logowanie",
     "sign_in_needed_for_portfolio": "Zapisywanie do portfela jest dostepne tylko w zalogowanym workspace. Nadal mozesz normalnie uzywac kalkulatora i zapisywac osobne scenariusze.",
     "empty_guest_description": "Funkcje workspace dla zalogowanych nie sa dostepne w trybie goscia. Korzystaj swobodnie z kalkulatorow, a partie do portfeli zapiszesz po zalogowaniu."

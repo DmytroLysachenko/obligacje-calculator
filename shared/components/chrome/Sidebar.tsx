@@ -21,6 +21,7 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/s
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { useAppI18n } from '@/i18n/client';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
+import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 import { useWorkspacePortfolios } from '@/shared/hooks/useWorkspacePortfolios';
 import { cn } from '@/lib/utils';
 import { LanguageSwitcher } from './LanguageSwitcher';
@@ -95,13 +96,13 @@ function SidebarBrand() {
   const { t } = useAppI18n();
 
   return (
-    <div className="border-b border-slate-200/80 px-4 py-4">
+    <div className="border-b border-slate-200/80 px-4 py-3.5">
       <Link href="/" className="flex items-center gap-2.5">
         <div className="rounded-xl bg-slate-900 p-2 text-white shadow-sm shadow-slate-900/10">
           <TrendingUp className="h-4 w-4" />
         </div>
         <div className="min-w-0 space-y-1">
-          <p className="text-[1.25rem] font-bold tracking-tight">{t('common.title')}</p>
+          <p className="text-[1.1rem] font-bold tracking-tight">{t('common.title')}</p>
           <p className="max-w-[14rem] text-[11px] leading-5 text-slate-500">
             {t('sidebar.brand_tagline')}
           </p>
@@ -212,13 +213,16 @@ function SidebarLanguageUtility() {
 function SidebarWorkspaceUtility() {
   const { t } = useAppI18n();
   const pathname = usePathname();
-  const { portfolios, selectedPortfolioId, setSelectedPortfolioId, refetch } = useWorkspacePortfolios();
+  const { canManageWorkspace } = usePortfolioAccess();
+  const { portfolios, selectedPortfolioId, selectedPortfolio, setSelectedPortfolioId, refetch } = useWorkspacePortfolios({
+    enabled: canManageWorkspace,
+  });
 
   useEffect(() => {
     void refetch();
   }, [pathname, refetch]);
 
-  if (portfolios.length === 0) {
+  if (!canManageWorkspace || portfolios.length === 0) {
     return null;
   }
 
@@ -239,6 +243,11 @@ function SidebarWorkspaceUtility() {
           <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
             {t('sidebar.portfolio_selector_label')}
           </p>
+          <div className="rounded-xl border border-slate-200 bg-white/80 px-3 py-2 text-[11px] leading-5 text-slate-600">
+            {selectedPortfolio
+              ? t('sidebar.portfolio_selector_active', { name: selectedPortfolio.name })
+              : t('sidebar.portfolio_selector_empty')}
+          </div>
           <Select
             value={selectedPortfolioId ?? undefined}
             onValueChange={(value) => {

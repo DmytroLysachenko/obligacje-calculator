@@ -1,7 +1,7 @@
 'use client';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useAppI18n } from '@/i18n/client';
-import { AlertCircle, BookOpen, CheckCircle2, FileText, FolderOpen, Plus, RefreshCcw, Trash2, Upload, } from 'lucide-react';
+import { AlertCircle, BookOpen, CheckCircle2, FolderOpen, Plus, RefreshCcw, Upload, } from 'lucide-react';
 import { UserPortfolio } from '@/db/schema';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,6 +15,9 @@ import { ConfirmActionDialog } from '@/shared/components/feedback/ConfirmActionD
 import { unwrapApiData } from '@/shared/lib/api-response';
 import { persistSelectedPortfolioId } from '@/shared/lib/workspace/notebook-state';
 import { PortfolioDetails } from './PortfolioDetails';
+import { PortfolioWorkspaceCard } from './PortfolioWorkspaceCard';
+import { WorkspaceActionStrip } from './WorkspaceActionStrip';
+import { WorkspaceStatusCard } from './WorkspaceStatusCard';
 type NotebookStepItem = {
     id: string;
     title: string;
@@ -127,6 +130,7 @@ export const NotebookContainer: React.FC = () => {
     const {
         portfolios,
         selectedPortfolioId,
+        selectedPortfolio,
         isLoading,
         requestError,
         refetch: fetchPortfolios,
@@ -320,7 +324,7 @@ export const NotebookContainer: React.FC = () => {
         }
     };
     if (selectedPortfolioId && canManageWorkspace) {
-        const portfolio = portfolios.find((item) => item.id === selectedPortfolioId);
+        const portfolio = selectedPortfolio;
         return portfolio ? (<PortfolioDetails portfolio={portfolio} onDelete={handleDeletePortfolio} onPortfolioUpdate={mergePortfolioIntoState} onBack={() => {
                 void fetchPortfolios();
                 setSelectedPortfolioId(null);
@@ -346,44 +350,27 @@ export const NotebookContainer: React.FC = () => {
         </div>) : null}
 
       <SectionBlock title={t('notebook.workspace_scope_title')} description={notebookIntro}>
-        <Card className="overflow-hidden rounded-[2.2rem] border border-slate-200/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(248,250,252,0.9))] shadow-[0_24px_70px_-52px_rgba(15,23,42,0.45)] backdrop-blur">
-          <CardContent className="space-y-6 p-6 md:p-8">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-              <div className="max-w-3xl space-y-3">
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/90 bg-white/80 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-slate-700">
-                  <BookOpen className="h-3.5 w-3.5 text-primary"/>
-                  {isGuestWorkspace ? t('workspace.guest_preview_badge') : t('workspace.active_workspace_badge')}
-                </div>
-                <p className="text-sm leading-7 text-muted-foreground">
-                  {isGuestWorkspace ? t('workspace.guest_preview_description') : t('workspace.active_workspace_description')}
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2 lg:max-w-[360px] lg:justify-end">
-                <Button variant="outline" onClick={handleImportClick} className="gap-2 rounded-2xl border-slate-200 bg-white/80" disabled={!canManageWorkspace}>
-                  <Upload className="h-4 w-4"/>
-                  {t('notebook.import_json')}
-                </Button>
-                <Button variant="outline" onClick={handleCreateDemo} className="rounded-2xl border-slate-200 bg-white/80" disabled={!canManageWorkspace}>
-                  {t('notebook.load_demo')}
-                </Button>
-                <Button variant="outline" onClick={fetchPortfolios} className="gap-2 rounded-2xl border-slate-200 bg-white/80">
-                  <RefreshCcw className="h-4 w-4"/>
-                  {t('common.refresh')}
-                </Button>
-                <Button onClick={handleCreateDefault} className="gap-2 rounded-2xl" disabled={!canManageWorkspace}>
-                  <Plus className="h-4 w-4"/>
-                  {canManageWorkspace ? t('notebook.new_portfolio') : t('workspace.sign_in_required_short')}
-                </Button>
-              </div>
-            </div>
+        <div className="space-y-4">
+          <WorkspaceStatusCard
+            isGuestWorkspace={isGuestWorkspace}
+            canManageWorkspace={canManageWorkspace}
+            selectedPortfolio={selectedPortfolio}
+          />
 
-            <div className="grid gap-4 md:grid-cols-3">
-              <NotebookMiniStat label={t('notebook.portfolios_label')} value={String(portfolios.length)} description={t('notebook.portfolios_label_desc')}/>
-              <NotebookMiniStat label={t('notebook.public_links_label')} value={String(publicCount)} description={t('notebook.public_links_label_desc')}/>
-              <NotebookMiniStat label={t('notebook.private_drafts_label')} value={String(privateCount)} description={t('notebook.private_drafts_label_desc')}/>
-            </div>
-          </CardContent>
-        </Card>
+          <WorkspaceActionStrip
+            canManageWorkspace={canManageWorkspace}
+            onImport={handleImportClick}
+            onCreateDemo={handleCreateDemo}
+            onRefresh={fetchPortfolios}
+            onCreatePortfolio={handleCreateDefault}
+          />
+
+          <div className="grid gap-4 md:grid-cols-3">
+            <NotebookMiniStat label={t('notebook.portfolios_label')} value={String(portfolios.length)} description={t('notebook.portfolios_label_desc')}/>
+            <NotebookMiniStat label={t('notebook.public_links_label')} value={String(publicCount)} description={t('notebook.public_links_label_desc')}/>
+            <NotebookMiniStat label={t('notebook.private_drafts_label')} value={String(privateCount)} description={t('notebook.private_drafts_label_desc')}/>
+          </div>
+        </div>
       </SectionBlock>
 
       {isLoading ? (<NotebookLoadingState />) : portfolios.length === 0 ? (<EmptyPortfolioState onCreate={canManageWorkspace ? handleCreateDefault : () => {}} onCreateDemo={canManageWorkspace ? handleCreateDemo : () => {}} onImport={canManageWorkspace ? handleImportClick : () => {}} badgeLabel={t('notebook.empty_badge')} title={t('notebook.empty_title')} description={canManageWorkspace ? t('notebook.empty_desc') : t('workspace.empty_guest_description')} createLabel={canManageWorkspace ? t('notebook.create_first') : t('workspace.sign_in_required_short')} demoLabel={t('notebook.load_demo')} importLabel={t('notebook.import_json')} steps={emptyStateSteps}/>) : (<div className="space-y-8">
@@ -393,63 +380,32 @@ export const NotebookContainer: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {portfolios.map((portfolio) => (<Card key={portfolio.id} className="overflow-hidden rounded-[2rem] border border-white/70 bg-white/82 shadow-[0_18px_46px_-38px_rgba(15,23,42,0.42)] backdrop-blur transition-transform hover:-translate-y-0.5">
-                  <CardContent className="space-y-5 p-6">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="rounded-2xl bg-slate-100 p-3 text-slate-900">
-                        <FileText className="h-5 w-5"/>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold tracking-[0.08em] text-slate-600">
-                          {portfolio.isPublic
+              {portfolios.map((portfolio) => (<PortfolioWorkspaceCard
+                  key={portfolio.id}
+                  portfolio={{
+                    id: portfolio.id,
+                    name: portfolio.name,
+                    description: portfolio.description,
+                    isPublic: portfolio.isPublic,
+                    createdAtLabelValue: dateFormatter.format(new Date(portfolio.createdAt!)),
+                  }}
+                  createdAtLabel={t('common.created')}
+                  usageLabel={t('notebook.usage_label')}
+                  usageDescription={t('notebook.usage_desc')}
+                  statusLabel={portfolio.isPublic
                     ? t('notebook.status_public')
                     : t('notebook.status_private')}
-                        </span>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full text-slate-500 hover:text-destructive" onClick={(event) => {
-                    event.stopPropagation();
+                  fallbackDescription={t('notebook.portfolio_details')}
+                  actionLabel={canManageWorkspace ? t('notebook.open_portfolio') : t('workspace.sign_in_required_short')}
+                  canManageWorkspace={canManageWorkspace}
+                  onOpen={() => {
+                    setSelectedPortfolioId(portfolio.id);
+                    persistSelectedPortfolioId(portfolio.id);
+                  }}
+                  onRequestDelete={() => {
                     setPortfolioPendingDelete(portfolio);
-                }}>
-                          <Trash2 className="h-4 w-4"/>
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <p className="text-xl font-black tracking-tight text-slate-950">
-                        {portfolio.name}
-                      </p>
-                      <p className="text-sm leading-7 text-slate-600">
-                        {portfolio.description || t('notebook.portfolio_details')}
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-2">
-                      <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                        <p className="text-xs font-semibold tracking-[0.08em] text-slate-500">
-                          {t('common.created')}
-                        </p>
-                        <p className="mt-2 font-medium text-slate-900">
-                          {dateFormatter.format(new Date(portfolio.createdAt!))}
-                        </p>
-                      </div>
-                      <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                        <p className="text-xs font-semibold tracking-[0.08em] text-slate-500">
-                          {t('notebook.usage_label')}
-                        </p>
-                        <p className="mt-2 font-medium text-slate-900">
-                          {t('notebook.usage_desc')}
-                        </p>
-                      </div>
-                    </div>
-
-                    <Button className="w-full rounded-2xl" disabled={!canManageWorkspace} onClick={() => {
-                setSelectedPortfolioId(portfolio.id);
-                persistSelectedPortfolioId(portfolio.id);
-            }}>
-                      {canManageWorkspace ? t('notebook.open_portfolio') : t('workspace.sign_in_required_short')}
-                    </Button>
-                  </CardContent>
-                </Card>))}
+                  }}
+                />))}
             </div>
           </SectionBlock>
 
