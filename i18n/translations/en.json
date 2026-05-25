@@ -959,7 +959,62 @@
   "multi_asset_page": {
     "page_notice_eyebrow": "Historical context",
     "page_notice_title": "Historical reference comparison",
-    "page_notice_desc": "This surface still has narrower historical coverage and should be treated as reference comparison only, not as a mature backtesting product."
+    "page_notice_desc": "This surface still has narrower historical coverage and should be treated as reference comparison only, not as a mature backtesting product.",
+    "series": {
+      "gold": "Gold",
+      "inflation": "Inflation"
+    },
+    "history_state": {
+      "reference_only_title": "Reference-only history",
+      "live_title": "Historical coverage in use",
+      "description": "This page compares one committed historical scenario at a time. It is a reference calculator, not a backtesting platform and not a recommendation engine.",
+      "coverage_label": "Coverage",
+      "source_label": "Source",
+      "as_of_label": "As of",
+      "available_series_label": "Available series in this dataset:",
+      "fallback_warning": "Current history source is narrower than a production-grade backtest dataset. Keep this page in reference mode only."
+    },
+    "metrics": {
+      "committed_start_label": "Committed start",
+      "committed_start_detail": "Historical entry point for the current run.",
+      "total_invested_label": "Total invested",
+      "total_invested_detail": "Initial sum plus committed monthly additions.",
+      "leading_ending_value_label": "Leading ending value",
+      "leading_ending_value_detail": "{value} in the current {mode} view."
+    },
+    "real_value_mode": "real-value",
+    "nominal_mode": "nominal",
+    "stale_results": "Inputs changed. Charts and outcome cards still show the previous committed scenario. Recalculate when you want the historical run to refresh.",
+    "ready": {
+      "badge": "Reference run",
+      "title": "Ready to inspect one historical run?",
+      "description": "Set a start point, initial sum, and monthly contribution. Then recalculate one committed historical scenario before comparing the asset paths.",
+      "footer": "The floating action appears as soon as the scenario is ready for its first run.",
+      "steps": {
+        "entry_point": {
+          "title": "Pick one entry point",
+          "description": "The start month matters. Keep it explicit before reading any winner."
+        },
+        "cash_path": {
+          "title": "Commit one cash path",
+          "description": "Use one initial sum and one monthly contribution for the whole run."
+        },
+        "context_only": {
+          "title": "Read it as context",
+          "description": "This is a historical reference comparison, not a full backtesting suite."
+        }
+      }
+    },
+    "scope_notes": {
+      "title": "Scope notes",
+      "description": "Open this when you want the guardrails behind the historical comparison.",
+      "badge": "Context",
+      "cards": {
+        "reference_run": "This is one historical reference run, not a broad market research suite or a portfolio recommendation surface.",
+        "start_month": "Changing the start month can materially alter the outcome, so keep the committed scenario visible when comparing paths.",
+        "real_value": "Inflation-adjusted mode changes the interpretation of ending values, not the underlying historical path itself."
+      }
+    }
   },
   "optimizer_page": {
     "page_notice_eyebrow": "Supporting sorter",

@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
-import { getIntlLocale } from '@/i18n/locale-utils';
+import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 interface ChartDataRow {
     date: string;
     inflation: number;
@@ -24,6 +24,11 @@ export const MultiAssetComparisonContainer = () => {
     const { initialSum, updateInitialSum, monthlyContribution, updateMonthlyContribution, assets, startYear, updateStartYear, startMonth, updateStartMonth, years, months, showRealValue, updateShowRealValue, isDirty, recalculate, historyData, historyAsOfLabel, historyCoverageLabel, purchasingPowerLoss, historySourceLabel, usedFallbackHistory, historySeriesAvailability, committedScenario, } = useMultiAssetComparison();
     const { locale: language, t } = useAppI18n();
     const [isCalculating, setIsCalculating] = useState(false);
+    const currencyFormatter = useCurrencyFormatter(language, {
+        style: 'currency',
+        currency: 'PLN',
+        maximumFractionDigits: 0,
+    });
     const handleRecalculate = () => {
         setIsCalculating(true);
         recalculate();
@@ -34,11 +39,7 @@ export const MultiAssetComparisonContainer = () => {
             handleRecalculate();
         }
     };
-    const formatCurrency = (value: number) => new Intl.NumberFormat(getIntlLocale(language), {
-        style: "currency",
-        currency: "PLN",
-        maximumFractionDigits: 0,
-    }).format(value);
+    const formatCurrency = (value: number) => currencyFormatter.format(value);
     const totalInvested = useMemo(() => committedScenario.initialSum + committedScenario.monthlyContribution * Math.max(assets[0]?.series.length - 1, 0), [assets, committedScenario.initialSum, committedScenario.monthlyContribution]);
     const chartData: ChartDataRow[] = useMemo(() => {
         if (!assets.length || !assets[0]?.series) {
@@ -63,8 +64,8 @@ export const MultiAssetComparisonContainer = () => {
     }, [assets, historyData, showRealValue]);
     const availabilitySummary = [
         historySeriesAvailability?.sp500 ? 'S&P 500' : null,
-        historySeriesAvailability?.gold ? 'Gold' : null,
-        historySeriesAvailability?.inflation ? 'Inflation' : null,
+        historySeriesAvailability?.gold ? t('multi_asset_page.series.gold') : null,
+        historySeriesAvailability?.inflation ? t('multi_asset_page.series.inflation') : null,
         historySeriesAvailability?.nbpRate ? 'NBP' : null,
     ]
         .filter(Boolean)
@@ -98,36 +99,36 @@ export const MultiAssetComparisonContainer = () => {
                 <div className="space-y-2">
                   <p className="font-semibold text-foreground">
                     {usedFallbackHistory
-            ? 'Reference-only history'
-            : 'Historical coverage in use'}
+            ? t('multi_asset_page.history_state.reference_only_title')
+            : t('multi_asset_page.history_state.live_title')}
                   </p>
                   <p className="text-sm leading-6 text-muted-foreground">
-                    This page compares one committed historical scenario at a time. It is a reference
-                    calculator, not a backtesting platform and not a recommendation engine.
+                    {t('multi_asset_page.history_state.description')}
                   </p>
                 </div>
               </div>
               <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-3">
                 <div className="rounded-xl border bg-background/70 p-3">
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Coverage</p>
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">{t('multi_asset_page.history_state.coverage_label')}</p>
                   <p className="mt-1 font-medium text-foreground">
                     {historyCoverageLabel}
                   </p>
                 </div>
                 <div className="rounded-xl border bg-background/70 p-3">
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Source</p>
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">{t('multi_asset_page.history_state.source_label')}</p>
                   <p className="mt-1 font-medium text-foreground">{historySourceLabel}</p>
                 </div>
                 <div className="rounded-xl border bg-background/70 p-3">
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">As of</p>
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">{t('multi_asset_page.history_state.as_of_label')}</p>
                   <p className="mt-1 font-medium text-foreground">{historyAsOfLabel}</p>
                 </div>
               </div>
               {availabilitySummary ? (<p className="text-sm text-muted-foreground">
-                  Available series in this dataset: <span className="font-medium text-foreground">{availabilitySummary}</span>
+                  {t('multi_asset_page.history_state.available_series_label')}{' '}
+                  <span className="font-medium text-foreground">{availabilitySummary}</span>
                 </p>) : null}
               {usedFallbackHistory ? (<p className="text-sm text-amber-900">
-                  Current history source is narrower than a production-grade backtest dataset. Keep this page in reference mode only.
+                  {t('multi_asset_page.history_state.fallback_warning')}
                 </p>) : null}
             </CardContent>
           </Card>
@@ -136,84 +137,85 @@ export const MultiAssetComparisonContainer = () => {
               <Card className="rounded-2xl border shadow-none">
                 <CardContent className="p-5">
                   <p className="text-[10px] font-black uppercase text-muted-foreground">
-                    Committed start
+                    {t('multi_asset_page.metrics.committed_start_label')}
                   </p>
                   <p className="mt-2 text-lg font-black text-slate-950">
                     {committedScenario.startYear}-{committedScenario.startMonth}
                   </p>
                   <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                    Historical entry point for the current run.
+                    {t('multi_asset_page.metrics.committed_start_detail')}
                   </p>
                 </CardContent>
               </Card>
               <Card className="rounded-2xl border shadow-none">
                 <CardContent className="p-5">
                   <p className="text-[10px] font-black uppercase text-muted-foreground">
-                    Total invested
+                    {t('multi_asset_page.metrics.total_invested_label')}
                   </p>
                   <p className="mt-2 text-lg font-black text-slate-950">
                     {formatCurrency(totalInvested)}
                   </p>
                   <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                    Initial sum plus committed monthly additions.
+                    {t('multi_asset_page.metrics.total_invested_detail')}
                   </p>
                 </CardContent>
               </Card>
               <Card className="rounded-2xl border shadow-none">
                 <CardContent className="p-5">
                   <p className="text-[10px] font-black uppercase text-muted-foreground">
-                    Leading ending value
+                    {t('multi_asset_page.metrics.leading_ending_value_label')}
                   </p>
                   <p className="mt-2 text-lg font-black text-slate-950">
                     {leadingAsset.name}
                   </p>
                   <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                    {formatCurrency(leadingAsset.value)} in the current {showRealValue ? 'real-value' : 'nominal'} view.
+                    {t('multi_asset_page.metrics.leading_ending_value_detail', {
+                        value: formatCurrency(leadingAsset.value),
+                        mode: showRealValue
+                            ? t('multi_asset_page.real_value_mode')
+                            : t('multi_asset_page.nominal_mode'),
+                    })}
                   </p>
                 </CardContent>
               </Card>
             </div>) : null}
 
           {isDirty ? (<div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
-              Inputs changed. Charts and outcome cards still show the previous committed scenario.
-              Recalculate when you want the historical run to refresh.
+              {t('multi_asset_page.stale_results')}
             </div>) : null}
 
           {assets.length > 0 && assets[0]?.series.length > 0 ? (<>
               <ComparisonChart chartData={chartData} assets={assets} showRealValue={showRealValue} formatCurrency={formatCurrency}/>
 
               <ComparisonAssetBreakdown assets={assets} totalInvested={totalInvested} showRealValue={showRealValue} formatCurrency={formatCurrency} language={language as 'en' | 'pl'}/>
-            </>) : (<ScenarioReadyPanel badge="Reference run" title="Ready to inspect one historical run?" description="Set a start point, initial sum, and monthly contribution. Then recalculate one committed historical scenario before comparing the asset paths." steps={[
+            </>) : (<ScenarioReadyPanel badge={t('multi_asset_page.ready.badge')} title={t('multi_asset_page.ready.title')} description={t('multi_asset_page.ready.description')} steps={[
                 {
                     id: 'entry-point',
-                    title: 'Pick one entry point',
-                    description: 'The start month matters. Keep it explicit before reading any winner.',
+                    title: t('multi_asset_page.ready.steps.entry_point.title'),
+                    description: t('multi_asset_page.ready.steps.entry_point.description'),
                 },
                 {
                     id: 'cash-path',
-                    title: 'Commit one cash path',
-                    description: 'Use one initial sum and one monthly contribution for the whole run.',
+                    title: t('multi_asset_page.ready.steps.cash_path.title'),
+                    description: t('multi_asset_page.ready.steps.cash_path.description'),
                 },
                 {
                     id: 'context-only',
-                    title: 'Read it as context',
-                    description: 'This is a historical reference comparison, not a full backtesting suite.',
+                    title: t('multi_asset_page.ready.steps.context_only.title'),
+                    description: t('multi_asset_page.ready.steps.context_only.description'),
                 },
-            ]} footerText="The floating action appears as soon as the scenario is ready for its first run."/>)}
+            ]} footerText={t('multi_asset_page.ready.footer')}/>)}
 
-          <SecondaryInsightAccordion title="Scope notes" description="Open this when you want the guardrails behind the historical comparison." badge="Context">
+          <SecondaryInsightAccordion title={t('multi_asset_page.scope_notes.title')} description={t('multi_asset_page.scope_notes.description')} badge={t('multi_asset_page.scope_notes.badge')}>
             <div className="grid grid-cols-1 gap-4 text-sm leading-6 text-muted-foreground md:grid-cols-3">
               <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                This is one historical reference run, not a broad market research
-                suite or a portfolio recommendation surface.
+                {t('multi_asset_page.scope_notes.cards.reference_run')}
               </div>
               <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                Changing the start month can materially alter the outcome, so keep
-                the committed scenario visible when comparing paths.
+                {t('multi_asset_page.scope_notes.cards.start_month')}
               </div>
               <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                Inflation-adjusted mode changes the interpretation of ending
-                values, not the underlying historical path itself.
+                {t('multi_asset_page.scope_notes.cards.real_value')}
               </div>
             </div>
           </SecondaryInsightAccordion>

@@ -806,7 +806,62 @@
   "multi_asset_page": {
     "page_notice_eyebrow": "Kontekst historyczny",
     "page_notice_title": "Porownanie referencyjne historii",
-    "page_notice_desc": "Ta powierzchnia nadal ma wezsze pokrycie danych historycznych i powinna byc traktowana jedynie jako porownanie referencyjne, a nie dojrzaly produkt do backtestow."
+    "page_notice_desc": "Ta powierzchnia nadal ma wezsze pokrycie danych historycznych i powinna byc traktowana jedynie jako porownanie referencyjne, a nie dojrzaly produkt do backtestow.",
+    "series": {
+      "gold": "Zloto",
+      "inflation": "Inflacja"
+    },
+    "history_state": {
+      "reference_only_title": "Historia tylko referencyjna",
+      "live_title": "Aktywne pokrycie historyczne",
+      "description": "Ta strona porownuje jeden zatwierdzony scenariusz historyczny naraz. To kalkulator referencyjny, a nie platforma do backtestow i nie silnik rekomendacji.",
+      "coverage_label": "Pokrycie",
+      "source_label": "Zrodlo",
+      "as_of_label": "Stan na",
+      "available_series_label": "Dostepne serie w tym zestawie:",
+      "fallback_warning": "Biezace zrodlo historii jest wezsze niz produkcyjny zestaw do backtestow. Trzymaj te strone w trybie referencyjnym."
+    },
+    "metrics": {
+      "committed_start_label": "Zatwierdzony start",
+      "committed_start_detail": "Historyczny punkt wejscia dla biezacego przebiegu.",
+      "total_invested_label": "Lacznie zainwestowano",
+      "total_invested_detail": "Kwota poczatkowa plus zatwierdzone miesieczne doplaty.",
+      "leading_ending_value_label": "Najwyzsza wartosc koncowa",
+      "leading_ending_value_detail": "{value} w biezacym widoku {mode}."
+    },
+    "real_value_mode": "wartosci realnej",
+    "nominal_mode": "nominalnym",
+    "stale_results": "Dane sie zmienily. Wykresy i karty wynikow nadal pokazuja poprzedni zatwierdzony scenariusz. Przelicz, gdy chcesz odswiezyc przebieg historyczny.",
+    "ready": {
+      "badge": "Przebieg referencyjny",
+      "title": "Gotowe do obejrzenia jednego przebiegu historycznego?",
+      "description": "Ustaw punkt startowy, kwote poczatkowa i miesieczna doplate. Potem przelicz jeden zatwierdzony scenariusz historyczny, zanim zaczniesz porownywac sciezki aktywow.",
+      "footer": "Plywajaca akcja pojawi sie, gdy scenariusz bedzie gotowy do pierwszego uruchomienia.",
+      "steps": {
+        "entry_point": {
+          "title": "Wybierz jeden punkt wejscia",
+          "description": "Miesiac startu ma znaczenie. Trzymaj go jawnie zanim zaczniesz czytac zwyciezce."
+        },
+        "cash_path": {
+          "title": "Zatwierdz jedna sciezke gotowki",
+          "description": "Uzyj jednej kwoty poczatkowej i jednej miesiecznej doplaty dla calego przebiegu."
+        },
+        "context_only": {
+          "title": "Czytaj to jako kontekst",
+          "description": "To historyczne porownanie referencyjne, a nie pelny zestaw do backtestow."
+        }
+      }
+    },
+    "scope_notes": {
+      "title": "Notatki zakresu",
+      "description": "Otworz to, gdy chcesz zobaczyc guardraile stojace za historycznym porownaniem.",
+      "badge": "Kontekst",
+      "cards": {
+        "reference_run": "To jeden historyczny przebieg referencyjny, a nie szeroka powierzchnia badan rynkowych ani rekomendacji portfelowej.",
+        "start_month": "Zmiana miesiaca startu moze istotnie zmienic wynik, dlatego trzymaj zatwierdzony scenariusz widoczny podczas porownywania sciezek.",
+        "real_value": "Tryb wartosci realnej zmienia interpretacje wartosci koncowych, ale nie zmienia samej historycznej sciezki."
+      }
+    }
   },
   "recovery_lab_page": {
     "title": "Boczne laboratorium",
