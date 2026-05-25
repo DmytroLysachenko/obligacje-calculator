@@ -147,6 +147,17 @@ export const RetirementPlannerPayloadSchema = z.object({
   horizonYears: z.number().min(1).max(50),
 });
 
+export const BondOptimizerPayloadSchema = z.object({
+  initialInvestment: z.number().min(100),
+  purchaseDate: DateStringSchema,
+  withdrawalDate: DateStringSchema.optional(),
+  investmentHorizonMonths: z.number().min(1).max(360).optional(),
+  expectedInflation: z.number().min(-20).max(100),
+  expectedNbpRate: z.number().min(-10).max(100).optional(),
+  taxStrategy: z.nativeEnum(TaxStrategy).optional(),
+  includeFamilyBonds: z.boolean().optional(),
+});
+
 export const RetirementPlannerScenarioRequestSchema = z.object({
   kind: z.literal(ScenarioKind.RETIREMENT_PLANNER),
   payload: RetirementPlannerPayloadSchema,
