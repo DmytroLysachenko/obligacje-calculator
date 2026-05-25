@@ -958,6 +958,10 @@
   },
   "multi_asset_page": {
     "page_notice_eyebrow": "Historical context",
+    "hero_title": "Historical context after the core calculators",
+    "hero_description": "Use this surface only when you want one narrow market-vs-bonds reference run. It should support the main calculator flow, not replace it with broad backtesting theater.",
+    "primary_cta": "Open Single Calculator",
+    "secondary_cta": "Open Comparison",
     "page_notice_title": "Historical reference comparison",
     "page_notice_desc": "This surface still has narrower historical coverage and should be treated as reference comparison only, not as a mature backtesting product.",
     "series": {
@@ -1014,6 +1018,11 @@
         "start_month": "Changing the start month can materially alter the outcome, so keep the committed scenario visible when comparing paths.",
         "real_value": "Inflation-adjusted mode changes the interpretation of ending values, not the underlying historical path itself."
       }
+    },
+    "guide_cards": {
+      "context_only": "Read this page as a supporting historical context check, not as proof that one path will repeat.",
+      "start_month": "The start month can dominate the outcome. Keep entry timing explicit before judging any winner.",
+      "after_core": "Use this after the core bond calculators when you want broader context, not as your first decision surface."
     }
   },
   "optimizer_page": {

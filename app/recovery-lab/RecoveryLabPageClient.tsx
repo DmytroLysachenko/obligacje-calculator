@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import {BarChart2, Calendar, FlaskConical, ShieldAlert, TrendingUp} from 'lucide-react';
-import {Button} from '@/components/ui/button';
+import {BarChart2, Calendar, ShieldAlert, TrendingUp} from 'lucide-react';
 import {Card, CardContent} from '@/components/ui/card';
 import {FeatureStatusNotice, FeatureStatusPill} from '@/shared/components/feedback/FeatureStatusNotice';
+import {SecondarySurfaceIntro} from '@/shared/components/page/SecondarySurfaceIntro';
 import {useAppI18n} from '@/i18n/client';
 
 const recoveryLabPages = [
@@ -34,28 +34,23 @@ export function RecoveryLabPageClient() {
 
   return (
     <div className="space-y-8">
-      <Card className="rounded-[2rem] border border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.88),rgba(248,250,252,0.92))] shadow-[0_20px_52px_-46px_rgba(15,23,42,0.42)] backdrop-blur">
-        <CardContent className="space-y-4 p-6 md:p-8">
-          <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
-            <FlaskConical className="h-3.5 w-3.5 text-amber-700" />
-            {t('landing.recovery_lab_page.eyebrow')}
-          </div>
-          <div className="space-y-3">
-            <h1 className="text-3xl font-black tracking-tight text-slate-950">
-              {t('recovery_lab_page.title')}
-            </h1>
-            <p className="max-w-4xl text-sm leading-8 text-slate-600">{intro}</p>
-            <div className="flex flex-wrap gap-3 pt-1">
-              <Button asChild className="rounded-2xl">
-                <Link href="/single-calculator">{t('recovery_lab_page.back_to_core')}</Link>
-              </Button>
-              <Button asChild variant="outline" className="rounded-2xl border-slate-200 bg-white/80">
-                <Link href="/">{t('recovery_lab_page.back_home')}</Link>
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <SecondarySurfaceIntro
+        eyebrow={t('landing.recovery_lab_page.eyebrow')}
+        title={t('recovery_lab_page.title')}
+        description={intro}
+        actions={[
+          {
+            href: '/single-calculator',
+            label: t('recovery_lab_page.back_to_core'),
+          },
+          {
+            href: '/',
+            label: t('recovery_lab_page.back_home'),
+            variant: 'outline',
+          },
+        ]}
+        tone="amber"
+      />
 
       <FeatureStatusNotice
         status="experimental"

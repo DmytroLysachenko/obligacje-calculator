@@ -805,6 +805,10 @@
   },
   "multi_asset_page": {
     "page_notice_eyebrow": "Kontekst historyczny",
+    "hero_title": "Kontekst historyczny po glownych kalkulatorach",
+    "hero_description": "Uzywaj tej powierzchni tylko wtedy, gdy potrzebujesz jednego waskiego przebiegu referencyjnego rynek-kontra-obligacje. Ma wspierac glowny przeplyw kalkulatorow, a nie zastepowac go teatralnym backtestingiem.",
+    "primary_cta": "Otworz kalkulator pojedynczy",
+    "secondary_cta": "Otworz porownanie",
     "page_notice_title": "Porownanie referencyjne historii",
     "page_notice_desc": "Ta powierzchnia nadal ma wezsze pokrycie danych historycznych i powinna byc traktowana jedynie jako porownanie referencyjne, a nie dojrzaly produkt do backtestow.",
     "series": {
@@ -861,6 +865,11 @@
         "start_month": "Zmiana miesiaca startu moze istotnie zmienic wynik, dlatego trzymaj zatwierdzony scenariusz widoczny podczas porownywania sciezek.",
         "real_value": "Tryb wartosci realnej zmienia interpretacje wartosci koncowych, ale nie zmienia samej historycznej sciezki."
       }
+    },
+    "guide_cards": {
+      "context_only": "Czytaj te strone jako pomocniczy test kontekstu historycznego, a nie jako dowod, ze jedna sciezka sie powtorzy.",
+      "start_month": "Miesiac startu moze zdominowac wynik. Trzymaj moment wejscia jawnie, zanim ocenisz zwyciezce.",
+      "after_core": "Uzywaj tej strony po glownych kalkulatorach obligacji, gdy potrzebujesz szerszego kontekstu, a nie jako pierwszej powierzchni decyzyjnej."
     }
   },
   "recovery_lab_page": {

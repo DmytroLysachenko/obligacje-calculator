@@ -4,8 +4,10 @@ import {MultiAssetComparisonContainer} from '@/features/comparison-engine/compon
 import {PageTransition} from '@/shared/components/page/PageTransition';
 import {PageSuspenseFallback} from '@/shared/components/page/PageSuspenseFallback';
 import {FeatureStatusNotice} from '@/shared/components/feedback/FeatureStatusNotice';
+import {SecondarySurfaceIntro} from '@/shared/components/page/SecondarySurfaceIntro';
 import {useAppI18n} from '@/i18n/client';
 import {Suspense} from 'react';
+import {Card, CardContent} from '@/components/ui/card';
 
 export function MultiAssetPageClient() {
   const {t} = useAppI18n();
@@ -13,6 +15,23 @@ export function MultiAssetPageClient() {
   return (
     <PageTransition>
       <div className="mx-auto max-w-7xl space-y-8">
+        <SecondarySurfaceIntro
+          eyebrow={t('multi_asset_page.page_notice_eyebrow')}
+          title={t('multi_asset_page.hero_title')}
+          description={t('multi_asset_page.hero_description')}
+          actions={[
+            {
+              href: '/single-calculator',
+              label: t('multi_asset_page.primary_cta'),
+            },
+            {
+              href: '/compare',
+              label: t('multi_asset_page.secondary_cta'),
+              variant: 'outline',
+            },
+          ]}
+        />
+
         <FeatureStatusNotice
           status="experimental"
           eyebrow={t('multi_asset_page.page_notice_eyebrow')}
@@ -20,6 +39,21 @@ export function MultiAssetPageClient() {
         >
           {t('multi_asset_page.page_notice_desc')}
         </FeatureStatusNotice>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          {([
+            'context_only',
+            'start_month',
+            'after_core',
+          ] as const).map((itemKey) => (
+            <Card key={itemKey} className="rounded-[1.75rem] border border-slate-200 bg-white/86 shadow-[0_16px_38px_-34px_rgba(15,23,42,0.3)] backdrop-blur">
+              <CardContent className="p-5 text-sm leading-7 text-slate-600">
+                {t(`multi_asset_page.guide_cards.${itemKey}`)}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
         <Suspense fallback={<PageSuspenseFallback />}>
           <MultiAssetComparisonContainer />
         </Suspense>
