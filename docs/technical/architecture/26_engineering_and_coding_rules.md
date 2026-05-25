@@ -211,6 +211,7 @@ Formatting rules belong here too:
 - repeated number/date/currency/percent formatting must use shared formatter helpers
 - do not create page-local `Intl.*Format` instances repeatedly inside large route components when the same behavior already exists in shared formatters/hooks
 - if formatting semantics are user-visible across multiple surfaces, centralize them
+- comparison, single, regular, ladder, and other retained calculators should prefer one normalized display adapter over page-local chart/table/export transformations
 
 ## 6.1 Calculator Shell Hierarchy
 
@@ -255,6 +256,17 @@ Preferred approach:
 - charts as the primary surface
 - supporting scope/status guidance in secondary rails or accordions
 - less repeated "box inside box" chrome when the content is already dense
+
+## 6.5 Secondary Tool Direction
+
+Secondary tools such as multi-asset and recovery-lab must be framed as supporting or reference surfaces.
+
+Required approach:
+
+- use a clearly secondary intro/surface treatment
+- point users back toward flagship flows such as single-calculator and comparison where appropriate
+- avoid feature chrome that makes these pages compete visually with the flagship calculators
+- keep copy locale-driven and explicit about narrower scope
 
 ## 7. UI and Domain Responsibilities Must Stay Separate
 
@@ -327,6 +339,14 @@ Required boundaries:
 - `db/seed/`: seed modules split by concern with explicit top-level orchestrators
 
 Do not flatten new files into old catch-all directories when a bounded subdomain already exists.
+
+### 11.0 HTTP Route Helpers
+
+Route helpers must be reused when a route family already has a shared contract.
+
+- calculation endpoints should use the shared calculation-route helper instead of hand-rolling request parsing and response envelopes per calculator
+- structured JSON endpoints should use shared validated-body helpers instead of ad hoc `await req.json()` parsing repeated in each route
+- route-level validation belongs at the edge; business rules stay in `features/**` or `lib/server/**`
 
 ### 11.1 Workspace Boundaries
 

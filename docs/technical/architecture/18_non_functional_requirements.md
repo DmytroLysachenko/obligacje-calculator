@@ -48,3 +48,6 @@ Quality and performance standards for the platform.
 - **NFR6.19:** Simple vs advanced market-assumption controls must remain explicit and behaviorally truthful; advanced yearly paths must stay behind deliberate expansion.
 - **NFR6.20:** Product UI flows must use app-native confirmation and feedback components rather than browser-native prompts.
 - **NFR6.21:** Reference dashboards should minimize redundant nested card chrome and keep charts primary, with scope/status guidance in secondary rails or accordions.
+- **NFR6.22:** Calculator API endpoints that share the same contract should use shared thin-route helpers instead of duplicating parse/execute/respond wiring per route.
+- **NFR6.23:** Structured JSON API routes must use shared validated-body parsing instead of repeated ad hoc `req.json()` handling.
+- **NFR6.24:** Secondary tools such as multi-asset and recovery-lab should stay explicitly demoted and framed as supporting/reference surfaces, not peer flagship calculators.

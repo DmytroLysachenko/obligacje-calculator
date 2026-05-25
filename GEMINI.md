@@ -8,6 +8,7 @@ This file provides the necessary architectural and operational context for Gemin
 - **Primary Domain:** Polish Treasury Bonds, Inflation-linked assets, NBP rates, and Belka tax logic.
 - **Architecture:** Feature-based modular architecture (`features/`) combined with Next.js App Router.
 - **Data Strategy:** DB-backed metadata for bond definitions and time-series data (Inflation, NBP rates, Market indices) with automated sync jobs.
+- **Product Direction:** Flagship surfaces are single-calculator, comparison, regular investment, ladder, notebook/workspace, and economic-data. Secondary tools such as multi-asset and recovery-lab should stay explicitly demoted.
 
 ## Technical Stack
 - **Framework:** Next.js 16 (App Router) + React 19
@@ -107,8 +108,10 @@ Key requirements:
 ## Key Symbols & Files
 - `features/bond-core/application-service.ts`: Central orchestration for all calculation scenarios.
 - `features/bond-core/utils/calculations.ts`: The low-level math engine for interest accrual.
-- `db/schema.ts`: Single source of truth for the database model.
+- `db/schemas/**`: Grouped schema entrypoints for the database model.
 - `lib/data/market-data.ts`: Optimized data retrieval with caching.
 - `lib/server/http/api-handler.ts`: Standard API handler wrapper for rate limiting and consistent error handling.
+- `lib/server/http/calculation-route.ts`: Shared thin-route helper for calculation endpoints.
+- `lib/server/http/read-json-body.ts`: Shared validated JSON-body parsing helper for structured API routes.
 - `lib/server/portfolio/service.ts`: Portfolio service boundary used by portfolio API routes.
 - `docs/index.md`: Master index for all project documentation.
