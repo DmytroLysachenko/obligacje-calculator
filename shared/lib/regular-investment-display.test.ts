@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { buildRegularInvestmentChartPoints } from './regular-investment-display';
+import {
+  buildRecentRegularInvestmentLots,
+  buildRegularInvestmentChartPoints,
+  buildRegularInvestmentYearBuckets,
+} from './regular-investment-display';
 import { RegularInvestmentResult } from '@/features/bond-core/types';
 
 const timeline: RegularInvestmentResult['timeline'] = [
@@ -79,5 +83,59 @@ describe('regular investment display helpers', () => {
     expect(points).toHaveLength(2);
     expect(points[0]).toMatchObject({ date: '2026-03', invested: 3000, value: 3030 });
     expect(points[1]).toMatchObject({ date: '2026-05', invested: 5000, value: 5100 });
+  });
+
+  it('builds yearly buckets from lots for summary tables', () => {
+    const buckets = buildRegularInvestmentYearBuckets([
+      {
+        purchaseDate: '2026-01-01T00:00:00.000Z',
+        investedAmount: 1000,
+        accumulatedInterest: 50,
+        tax: 5,
+        netValue: 1045,
+      },
+      {
+        purchaseDate: '2026-06-01T00:00:00.000Z',
+        investedAmount: 1000,
+        accumulatedInterest: 30,
+        tax: 3,
+        netValue: 1027,
+      },
+      {
+        purchaseDate: '2027-01-01T00:00:00.000Z',
+        investedAmount: 1000,
+        accumulatedInterest: 40,
+        tax: 4,
+        netValue: 1036,
+      },
+    ] as never);
+
+    expect(buckets).toHaveLength(2);
+    expect(buckets[0]).toMatchObject({
+      year: '2026',
+      count: 2,
+      invested: 2000,
+      interest: 80,
+      tax: 8,
+      netValue: 2072,
+    });
+  });
+
+  it('returns recent lots ordered by newest purchase date first', () => {
+    const recent = buildRecentRegularInvestmentLots([
+      {
+        purchaseDate: '2026-01-01T00:00:00.000Z',
+        maturityDate: '2027-01-01T00:00:00.000Z',
+        investedAmount: 1000,
+      },
+      {
+        purchaseDate: '2026-03-01T00:00:00.000Z',
+        maturityDate: '2027-03-01T00:00:00.000Z',
+        investedAmount: 1000,
+      },
+    ] as never, 1);
+
+    expect(recent).toHaveLength(1);
+    expect(recent[0]?.value.purchaseDate).toBe('2026-03-01T00:00:00.000Z');
   });
 });

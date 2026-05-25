@@ -13,6 +13,11 @@ import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTabl
 import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
 import { buildLotsCsvFilename, exportLotsCsv } from '@/shared/lib/retained-exports';
 import { getDateFnsLocale, getIntlLocale } from '@/i18n/locale-utils';
+import {
+  buildRecentRegularInvestmentLots,
+  buildRegularInvestmentYearBuckets,
+  RegularInvestmentYearBucket,
+} from '@/shared/lib/regular-investment-display';
 interface RegularInvestmentResultsSummaryProps {
     results: RegularInvestmentResult;
 }
@@ -20,14 +25,6 @@ type SummaryStat = {
     label: string;
     value: string;
     helper: string;
-};
-type YearBucket = {
-    year: string;
-    lots: number;
-    invested: number;
-    interest: number;
-    tax: number;
-    netValue: number;
 };
 const MAX_RECENT_LOTS = 12;
 export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsSummaryProps> = ({ results, }) => {
@@ -72,30 +69,8 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
             helper: t('regular_summary.tax_helper'),
         },
     ];
-    const yearlyBuckets = useMemo<YearBucket[]>(() => {
-        const grouped = new Map<string, YearBucket>();
-        results.lots.forEach((lot) => {
-            const year = format(parseISO(lot.purchaseDate), 'yyyy');
-            const current = grouped.get(year) ?? {
-                year,
-                lots: 0,
-                invested: 0,
-                interest: 0,
-                tax: 0,
-                netValue: 0,
-            };
-            current.lots += 1;
-            current.invested += lot.investedAmount;
-            current.interest += lot.accumulatedInterest;
-            current.tax += lot.tax;
-            current.netValue += lot.netValue;
-            grouped.set(year, current);
-        });
-        return Array.from(grouped.values()).sort((left, right) => left.year.localeCompare(right.year));
-    }, [results.lots]);
-    const recentLots = useMemo(() => [...results.lots]
-        .sort((left, right) => parseISO(right.purchaseDate).getTime() - parseISO(left.purchaseDate).getTime())
-        .slice(0, MAX_RECENT_LOTS), [results.lots]);
+    const yearlyBuckets = useMemo<RegularInvestmentYearBucket[]>(() => buildRegularInvestmentYearBuckets(results.lots), [results.lots]);
+    const recentLots = useMemo(() => buildRecentRegularInvestmentLots(results.lots, MAX_RECENT_LOTS), [results.lots]);
     const handleExport = () => {
         exportLotsCsv({
             lots: results.lots,
@@ -137,7 +112,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                     <div>
                       <p className="text-sm font-semibold text-slate-950">{bucket.year}</p>
                       <p className="mt-1 text-xs text-slate-500">
-                        {t('regular_summary.lots_label')}: {bucket.lots}
+                        {t('regular_summary.lots_label')}: {bucket.count}
                       </p>
                     </div>
                     <p className="text-sm font-black text-slate-950">{formatCurrency(bucket.netValue)}</p>
@@ -166,7 +141,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
               <TableBody>
                 {yearlyBuckets.map((bucket) => (<TableRow key={bucket.year}>
                     <TableCell className="font-medium">{bucket.year}</TableCell>
-                    <TableCell className="text-right">{bucket.lots}</TableCell>
+                    <TableCell className="text-right">{bucket.count}</TableCell>
                     <TableCell className="text-right">{formatCurrency(bucket.invested)}</TableCell>
                     <TableCell className="text-right text-emerald-700">
                       {formatCurrency(bucket.interest)}
@@ -197,7 +172,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 gap-3">
-              {recentLots.map((lot) => (<div key={`${lot.purchaseDate}-${lot.maturityDate}-${lot.investedAmount}`} className="rounded-2xl border p-4">
+              {recentLots.map(({ key, value: lot }) => (<div key={key} className="rounded-2xl border p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="space-y-1">
                       <p className="text-sm font-semibold text-foreground">

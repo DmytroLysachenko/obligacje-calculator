@@ -1,6 +1,5 @@
 'use client';
 import React, { useMemo } from 'react';
-import { format, parseISO } from 'date-fns';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, } from 'recharts';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,15 +13,10 @@ import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTabl
 import { ResultMetricCard } from '@/shared/components/results/ResultMetricCard';
 import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
+import { buildLadderMaturityBuckets, LadderMaturityBucket } from '@/shared/lib/ladder-display';
 interface LadderTimelineProps {
     results: RegularInvestmentResult;
 }
-type MaturityBucket = {
-    date: string;
-    displayDate: string;
-    amount: number;
-    count: number;
-};
 export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
     const { t, locale: language } = useAppI18n();
     const dateLocale = getDateFnsLocale(language);
@@ -32,30 +26,13 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
         maximumFractionDigits: 0,
     });
     const formatCurrency = (value: number) => currencyFormatter.format(value);
-    const chartData = useMemo<MaturityBucket[]>(() => {
-        const grouped = results.lots.reduce((accumulator, lot) => {
-            const maturityDate = parseISO(lot.maturityDate);
-            const key = format(maturityDate, 'yyyy-MM');
-            if (!accumulator[key]) {
-                accumulator[key] = {
-                    date: key,
-                    displayDate: format(maturityDate, 'MMM yyyy', { locale: dateLocale }),
-                    amount: 0,
-                    count: 0,
-                };
-            }
-            accumulator[key].amount += lot.netValue;
-            accumulator[key].count += 1;
-            return accumulator;
-        }, {} as Record<string, MaturityBucket>);
-        return Object.values(grouped).sort((left, right) => left.date.localeCompare(right.date));
-    }, [dateLocale, results.lots]);
+    const chartData = useMemo<LadderMaturityBucket[]>(() => buildLadderMaturityBuckets(results.lots, dateLocale), [dateLocale, results.lots]);
     const averageMaturityValue = chartData.length > 0
         ? chartData.reduce((accumulator, item) => accumulator + item.amount, 0) / chartData.length
         : 0;
     const monthlyContribution = results.lots.length > 0 ? results.totalInvested / results.lots.length : 0;
     const monthlySpreadGap = averageMaturityValue - monthlyContribution;
-    const peakMonth = chartData.reduce<MaturityBucket | null>((currentPeak, item) => (!currentPeak || item.amount > currentPeak.amount ? item : currentPeak), null);
+    const peakMonth = chartData.reduce<LadderMaturityBucket | null>((currentPeak, item) => (!currentPeak || item.amount > currentPeak.amount ? item : currentPeak), null);
     const earliestMonth = chartData[0] ?? null;
     const latestMonth = chartData[chartData.length - 1] ?? null;
     const peakShare = peakMonth && results.lots.length > 0 ? (peakMonth.count / results.lots.length) * 100 : 0;
