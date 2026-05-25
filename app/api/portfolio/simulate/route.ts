@@ -1,21 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { createSuccessResponse } from '@/shared/types/api';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import {
   PortfolioServiceError,
   simulateOwnerPortfolio,
 } from '@/lib/server/portfolio/service';
-import { createDomainErrorResponse, createValidationErrorResponse } from '@/lib/server/http/responses';
+import { createDomainErrorResponse } from '@/lib/server/http/responses';
 import { getPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
+import { readJsonBody } from '@/lib/server/http/read-json-body';
+
+const PortfolioSimulationPayloadSchema = z.object({
+  portfolioId: z.string().uuid(),
+  expectedInflation: z.number().optional(),
+});
 
 export const POST = apiHandler(async (req: NextRequest) => {
   const { owner } = await getPortfolioRouteContext();
-  const body = await req.json();
-  const {portfolioId, expectedInflation = 3.5} = body;
-
-  if (!portfolioId) {
-    return createValidationErrorResponse('Portfolio ID is required');
-  }
+  const { portfolioId, expectedInflation = 3.5 } = await readJsonBody(
+    req,
+    PortfolioSimulationPayloadSchema,
+  );
 
   try {
     const result = await simulateOwnerPortfolio(owner.ownerId, portfolioId, {expectedInflation});
