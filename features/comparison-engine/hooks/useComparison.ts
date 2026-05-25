@@ -13,6 +13,11 @@ import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/s
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/shared/lib/calculator-persistence';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
+import {
+  sanitizeScenarioOverride,
+  setScenarioCustomHorizonMonths,
+  toggleScenarioCustomHorizon,
+} from '../lib/comparison-scenario-state';
 
 type SharedComparisonConfig = IndependentBondComparisonPayload['sharedConfig'];
 type ScenarioOverride = IndependentBondComparisonPayload['scenarioA'];
@@ -59,18 +64,19 @@ function buildScenarioInputs(
   scenario: ScenarioOverride,
   definitions: Record<BondType, typeof BOND_DEFINITIONS[BondType]> | null,
 ): BondInputs {
-  const definition = definitions?.[scenario.bondType] ?? BOND_DEFINITIONS[scenario.bondType];
-  const purchaseDate = scenario.purchaseDate ?? sharedConfig.purchaseDate;
-  const timingMode = scenario.timingMode ?? sharedConfig.timingMode ?? 'general';
-  const horizonMonths = scenario.investmentHorizonMonths ?? sharedConfig.investmentHorizonMonths ?? DEFAULT_HORIZON_MONTHS;
+  const normalizedScenario = sanitizeScenarioOverride(sharedConfig, scenario);
+  const definition = definitions?.[normalizedScenario.bondType] ?? BOND_DEFINITIONS[normalizedScenario.bondType];
+  const purchaseDate = normalizedScenario.purchaseDate ?? sharedConfig.purchaseDate;
+  const timingMode = normalizedScenario.timingMode ?? sharedConfig.timingMode ?? 'general';
+  const horizonMonths = normalizedScenario.investmentHorizonMonths ?? sharedConfig.investmentHorizonMonths ?? DEFAULT_HORIZON_MONTHS;
   const withdrawalDate =
-    scenario.withdrawalDate
+    normalizedScenario.withdrawalDate
     ?? (timingMode === 'general'
       ? getWithdrawalDateFromMonths(purchaseDate, horizonMonths)
       : sharedConfig.withdrawalDate);
 
   return {
-    bondType: scenario.bondType,
+    bondType: normalizedScenario.bondType,
     initialInvestment: sharedConfig.initialInvestment,
     firstYearRate: definition.firstYearRate,
     expectedInflation: sharedConfig.expectedInflation,
@@ -86,10 +92,10 @@ function buildScenarioInputs(
     payoutFrequency: definition.payoutFrequency,
     purchaseDate,
     withdrawalDate,
-    isRebought: scenario.isRebought ?? false,
+    isRebought: normalizedScenario.isRebought ?? false,
     rebuyDiscount: definition.rebuyDiscount,
-    taxStrategy: scenario.taxStrategy ?? sharedConfig.taxStrategy ?? TaxStrategy.STANDARD,
-    rollover: scenario.rollover ?? false,
+    taxStrategy: normalizedScenario.taxStrategy ?? sharedConfig.taxStrategy ?? TaxStrategy.STANDARD,
+    rollover: normalizedScenario.rollover ?? false,
     timingMode,
     investmentHorizonMonths: horizonMonths,
   };
@@ -285,8 +291,8 @@ export function useComparison() {
       if (restoredState) {
         restoredFromPersistence.current = true;
         setSharedConfig(restoredState.sharedConfig);
-        setScenarioA(restoredState.scenarioA);
-        setScenarioB(restoredState.scenarioB);
+        setScenarioA(sanitizeScenarioOverride(restoredState.sharedConfig, restoredState.scenarioA));
+        setScenarioB(sanitizeScenarioOverride(restoredState.sharedConfig, restoredState.scenarioB));
         setComparisonEnvelope(restoredState.comparisonEnvelope ?? null);
         setIsDirty(restoredState.isDirty ?? true);
       }
@@ -312,12 +318,32 @@ export function useComparison() {
 
     savePersistedCalculatorState(STORAGE_KEY, {
       sharedConfig,
-      scenarioA,
-      scenarioB,
+      scenarioA: sanitizeScenarioOverride(sharedConfig, scenarioA),
+      scenarioB: sanitizeScenarioOverride(sharedConfig, scenarioB),
       comparisonEnvelope,
       isDirty,
     });
   }, [comparisonEnvelope, isDirty, isPersistenceReady, scenarioA, scenarioB, sharedConfig]);
+
+  const setScenarioACustomHorizonEnabled = useCallback((enabled: boolean) => {
+    setIsDirty(true);
+    setScenarioA((previous) => toggleScenarioCustomHorizon(sharedConfig, previous, enabled));
+  }, [sharedConfig]);
+
+  const setScenarioBCustomHorizonEnabled = useCallback((enabled: boolean) => {
+    setIsDirty(true);
+    setScenarioB((previous) => toggleScenarioCustomHorizon(sharedConfig, previous, enabled));
+  }, [sharedConfig]);
+
+  const setScenarioACustomHorizonMonths = useCallback((value: number | undefined) => {
+    setIsDirty(true);
+    setScenarioA((previous) => setScenarioCustomHorizonMonths(sharedConfig, previous, value));
+  }, [sharedConfig]);
+
+  const setScenarioBCustomHorizonMonths = useCallback((value: number | undefined) => {
+    setIsDirty(true);
+    setScenarioB((previous) => setScenarioCustomHorizonMonths(sharedConfig, previous, value));
+  }, [sharedConfig]);
 
   return {
     sharedConfig,
@@ -339,6 +365,10 @@ export function useComparison() {
     updateScenarioB,
     setBondTypeA,
     setBondTypeB,
+    setScenarioACustomHorizonEnabled,
+    setScenarioBCustomHorizonEnabled,
+    setScenarioACustomHorizonMonths,
+    setScenarioBCustomHorizonMonths,
     definitions: definitions ?? BOND_DEFINITIONS,
     isPersistenceReady,
   };
