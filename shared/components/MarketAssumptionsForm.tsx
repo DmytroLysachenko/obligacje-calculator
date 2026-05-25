@@ -10,9 +10,13 @@ import { BondInputs, BondType } from '@/features/bond-core/types';
 import { Target, AlertTriangle } from 'lucide-react';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { AssumptionHistoryPopover } from '@/shared/components/market-assumptions/AssumptionHistoryPopover';
+import { AssumptionSemanticsNote } from '@/shared/components/market-assumptions/AssumptionSemanticsNote';
+import { MacroDefaultsSummary } from '@/shared/components/market-assumptions/MacroDefaultsSummary';
 import { ProjectedRatePathEditor } from '@/shared/components/market-assumptions/ProjectedRatePathEditor';
+import { isFloatingNbpBondType, isInflationIndexedBondType } from '@/shared/lib/market-assumption-semantics';
+
 type UpdateHandler = {
-    bivarianceHack: (key: keyof BondInputs | string, value: unknown) => void;
+  bivarianceHack: (key: keyof BondInputs | string, value: unknown) => void;
 }['bivarianceHack'];
 interface MarketAssumptionsFormProps {
     expectedInflation: number;
@@ -25,37 +29,28 @@ interface MarketAssumptionsFormProps {
     compact?: boolean;
     inflationHorizonYears?: number;
 }
-const INDEXED_BONDS = new Set<BondType>([
-    BondType.COI,
-    BondType.EDO,
-    BondType.ROS,
-    BondType.ROD,
-]);
 export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bondType, customInflation, customNbpRate, inflationScenario = 'base', onUpdate, compact = false, inflationHorizonYears = 10, }: MarketAssumptionsFormProps) => {
     const { t } = useAppI18n();
-    const isInflationIndexedBond = INDEXED_BONDS.has(bondType);
-    const isNbpRelevant = bondType === BondType.ROR || bondType === BondType.DOR;
+    const isInflationIndexedBond = isInflationIndexedBondType(bondType);
+    const isNbpRelevant = isFloatingNbpBondType(bondType);
     const scenarioDescriptions = {
         low: t('bonds.market_assumptions.scenario_descriptions.low'),
         base: t('bonds.market_assumptions.scenario_descriptions.base'),
         high: t('bonds.market_assumptions.scenario_descriptions.high'),
     } as const;
     return (<div className="space-y-6">
-      <div className="space-y-2">
+      <div className="space-y-3">
         <p className={cn('font-semibold tracking-[0.08em] text-slate-900', compact ? 'text-xs uppercase' : 'text-sm')}>
           {t('bonds.market_assumptions.simple_title')}
         </p>
         <p className="text-[11px] leading-5 text-muted-foreground">
           {t('bonds.market_assumptions.advanced_desc')}
         </p>
+        <MacroDefaultsSummary showNbp={isNbpRelevant} compact={compact} />
       </div>
 
       <div className="space-y-4">
-        <div className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 text-[11px] leading-5 text-slate-600">
-          {isInflationIndexedBond
-            ? t('bonds.market_assumptions.indexed_context') : isNbpRelevant
-            ? t('bonds.market_assumptions.floating_context') : t('bonds.market_assumptions.real_value_context')}
-        </div>
+        <AssumptionSemanticsNote bondType={bondType} showNbpNote={isNbpRelevant} />
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

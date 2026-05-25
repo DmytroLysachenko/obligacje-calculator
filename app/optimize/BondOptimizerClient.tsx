@@ -42,6 +42,7 @@ import { CalculationMetaPanel } from '@/shared/components/results/CalculationMet
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
+import { MacroDefaultsSummary } from '@/shared/components/market-assumptions/MacroDefaultsSummary';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import {
@@ -266,6 +267,8 @@ export default function BondOptimizerClient() {
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="space-y-5 px-1 pt-4">
+                    <MacroDefaultsSummary showNbp compact />
+
                     <div className="space-y-3">
                       <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                         {t('optimizer_page.tax_strategy_label')}
@@ -362,6 +365,15 @@ export default function BondOptimizerClient() {
                           updateInput('expectedNbpRate', value)
                         }
                       />
+                    </div>
+
+                    <div className="grid gap-3 md:grid-cols-2">
+                      <div className="rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm leading-6 text-slate-600">
+                        {t('optimizer_page.macro_scope.indexed')}
+                      </div>
+                      <div className="rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm leading-6 text-slate-600">
+                        {t('optimizer_page.macro_scope.floating')}
+                      </div>
                     </div>
                   </AccordionContent>
                 </AccordionItem>

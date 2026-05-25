@@ -13,6 +13,9 @@ import {
   getRetirementSupportNote,
   RETIREMENT_SUPPORTED_BOND_TYPES,
 } from '@/features/bond-core/support-matrix';
+import { AssumptionSemanticsNote } from '@/shared/components/market-assumptions/AssumptionSemanticsNote';
+import { MacroDefaultsSummary } from '@/shared/components/market-assumptions/MacroDefaultsSummary';
+import { isFloatingNbpBondType } from '@/shared/lib/market-assumption-semantics';
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';
 
 export type RetirementInputs = {
@@ -47,6 +50,8 @@ export function RetirementInputsPanel({
   formatRate,
   onUpdateInput,
 }: RetirementInputsPanelProps) {
+  const showNbpNote = isFloatingNbpBondType(inputs.bondType);
+
   return (
     <Card className="rounded-2xl border-2">
       <CardHeader className="space-y-2">
@@ -139,6 +144,16 @@ export function RetirementInputsPanel({
               </div>
             </AccordionTrigger>
             <AccordionContent className="space-y-5 px-1 pt-4">
+              <MacroDefaultsSummary
+                showNbp={showNbpNote}
+                compact
+              />
+
+              <AssumptionSemanticsNote
+                bondType={inputs.bondType}
+                showNbpNote={showNbpNote}
+              />
+
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label className="text-xs font-bold uppercase text-muted-foreground">
