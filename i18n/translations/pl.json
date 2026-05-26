@@ -804,6 +804,50 @@
       }
     }
   },
+  "admin": {
+    "title": "Panel zdrowia synchronizacji",
+    "subtitle": "Monitor aktualnosci danych i statusu synchronizacji",
+    "access_required": "Wymagany dostep administratora",
+    "enter_secret": "Wpisz SYNC_SECRET, aby zobaczyc status systemu",
+    "unlock": "Odblokuj status",
+    "refresh": "Odswiez status",
+    "manual_sync": "Uruchom synchronizacje reczna",
+    "status_error": "Nie udalo sie pobrac statusu administratora.",
+    "confirm_sync_title": "Uruchomic pelna synchronizacje?",
+    "confirm_sync_description": "To uruchomi caly potok synchronizacji dla danych makro, ofert obligacji i historycznych providerow. Operacja moze potrwac kilka minut.",
+    "sync_confirm": "Czy na pewno chcesz uruchomic {mode}? To moze potrwac kilka minut.",
+    "sync_progress": "Trwa reczna synchronizacja... nie zamykaj tego okna.",
+    "sync_success": "Synchronizacja zakonczona pomyslnie!",
+    "metrics": {
+      "series_tracked": "Sledzone serie",
+      "series_desc": "Aktywne strumienie danych w bazie",
+      "data_points": "Laczna liczba punktow",
+      "points_desc": "Wszystkie zapisane rekordy historyczne",
+      "environment": "Srodowisko",
+      "env_desc": "Tryb uruchomienia serwera"
+    },
+    "inventory": {
+      "title": "Inwentarz zdrowia danych",
+      "subtitle": "Szczegolowy status i aktualnosc serii finansowych",
+      "cols": {
+        "name": "Nazwa serii i zrodlo",
+        "frequency": "Czestotliwosc",
+        "last_point": "Ostatni punkt",
+        "records": "Rekordy",
+        "last_sync": "Ostatnia proba synchronizacji",
+        "health": "Status zdrowia"
+      },
+      "health": {
+        "healthy": "Zdrowe",
+        "error": "Blad",
+        "initial": "Poczatkowy",
+        "gap": "Wykryto luke",
+        "missing": "Brak danych"
+      },
+      "never_synced": "Nigdy nie synchronizowano",
+      "empty": "Nie znaleziono serii danych. Kliknij \"Uruchom synchronizacje reczna\", aby zainicjalizowac baze."
+    }
+  },
   "multi_asset_page": {
     "page_notice_eyebrow": "Kontekst historyczny",
     "hero_title": "Kontekst historyczny po glownych kalkulatorach",

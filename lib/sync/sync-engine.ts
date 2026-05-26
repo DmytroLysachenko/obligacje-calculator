@@ -9,68 +9,27 @@ import { deriveSeriesCode, deriveSeriesWindow } from "@/lib/server/bonds/offer-t
 import { BOND_DEFINITIONS } from "@/features/bond-core/constants/bond-definitions";
 import { BondType } from "@/features/bond-core/types";
 import { bondSeries } from "@/db/schema";
+import { createSyncLogger, type SyncLogger } from "./sync-logger";
 
 export class SyncEngine {
-  constructor(private providers: SyncProvider[] = []) {}
+  constructor(
+    private providers: SyncProvider[] = [],
+    private readonly logger: SyncLogger = createSyncLogger('SyncEngine'),
+  ) {}
 
   /**
    * High-level orchestrator for ALL data sync tasks.
    * Can be called by a cron job or manual trigger.
    */
   async runFullSync(startYear: number = 1910) {
-    console.log('[SyncEngine] Starting full financial sync...');
+    this.logger.info('Starting full financial sync');
     
     // 1. Sync Macro Data (Inflation, NBP)
     const macro = await syncMacroData();
-    console.log('[SyncEngine] Macro data sync complete:', macro);
+    this.logger.info('Macro data sync complete', macro);
 
     // 2. Scrape & Sync Current Bond Offers
-    const bondOffers = await scrapeCurrentBondRates();
-    console.log('[SyncEngine] Bond offer scraping complete:', bondOffers.length, 'rates found');
-    const currentEmissionMonth = format(startOfMonth(new Date()), 'yyyy-MM-dd');
-
-    for (const offer of bondOffers) {
-      // Update the polishBonds table with current rates
-      await db.update(polishBonds)
-        .set({
-          firstYearRate: offer.firstYearRate.toString(),
-          baseMargin: offer.margin.toString(),
-          updatedAt: new Date()
-        })
-        .where(eq(polishBonds.symbol, offer.symbol));
-
-      const bond = await db.query.polishBonds.findFirst({
-        where: eq(polishBonds.symbol, offer.symbol),
-      });
-
-      if (!bond) {
-        continue;
-      }
-
-      const definition = BOND_DEFINITIONS[offer.symbol as BondType];
-      const seriesCode = offer.seriesCode ?? deriveSeriesCode(offer.symbol as BondType, currentEmissionMonth, definition);
-      const seriesWindow = deriveSeriesWindow(currentEmissionMonth, definition);
-
-      await db.insert(bondSeries).values({
-        bondTypeId: bond.id,
-        seriesCode,
-        emissionMonth: currentEmissionMonth,
-        sellStartDate: seriesWindow.sellStartDate,
-        sellEndDate: seriesWindow.sellEndDate,
-        maturityDate: seriesWindow.maturityDate,
-        firstYearRate: offer.firstYearRate.toString(),
-        baseMargin: offer.margin.toString(),
-      }).onConflictDoUpdate({
-        target: bondSeries.seriesCode,
-        set: {
-          firstYearRate: offer.firstYearRate.toString(),
-          baseMargin: offer.margin.toString(),
-          sellStartDate: seriesWindow.sellStartDate,
-          sellEndDate: seriesWindow.sellEndDate,
-          maturityDate: seriesWindow.maturityDate,
-        },
-      });
-    }
+    const bondOffers = await this.syncCurrentBondOffers();
 
     // 3. Sync Historical Providers (Stooq, etc.)
     const providerResults = await this.syncAll(startYear);
@@ -87,15 +46,88 @@ export class SyncEngine {
     const results = [];
     for (const provider of this.providers) {
       try {
-        console.log(`[SyncEngine] Starting sync for ${provider.name}...`);
+        this.logger.info(`Starting sync for ${provider.name}`);
         const status = await this.syncProvider(provider, startYear);
         results.push(status);
       } catch (error) {
-        console.error(`[SyncEngine] Failed sync for ${provider.name}:`, error);
+        this.logger.error(`Failed sync for ${provider.name}`, error);
         results.push({ provider: provider.name, error: String(error) });
       }
     }
     return results;
+  }
+
+  private async syncCurrentBondOffers() {
+    const bondOffers = await scrapeCurrentBondRates();
+    this.logger.info('Bond offer scraping complete', {count: bondOffers.length});
+    const currentEmissionMonth = format(startOfMonth(new Date()), 'yyyy-MM-dd');
+
+    for (const offer of bondOffers) {
+      await this.upsertCurrentBondOffer(offer.symbol as BondType, {
+        currentEmissionMonth,
+        firstYearRate: offer.firstYearRate.toString(),
+        margin: offer.margin.toString(),
+        seriesCode: offer.seriesCode,
+      });
+    }
+
+    return bondOffers;
+  }
+
+  private async upsertCurrentBondOffer(
+    bondType: BondType,
+    offer: {
+      currentEmissionMonth: string;
+      firstYearRate: string;
+      margin: string;
+      seriesCode?: string;
+    },
+  ) {
+    await db
+      .update(polishBonds)
+      .set({
+        firstYearRate: offer.firstYearRate,
+        baseMargin: offer.margin,
+        updatedAt: new Date(),
+      })
+      .where(eq(polishBonds.symbol, bondType));
+
+    const bond = await db.query.polishBonds.findFirst({
+      where: eq(polishBonds.symbol, bondType),
+    });
+
+    if (!bond) {
+      this.logger.error(`Bond definition missing for ${bondType} during offer sync`);
+      return;
+    }
+
+    const definition = BOND_DEFINITIONS[bondType];
+    const seriesCode =
+      offer.seriesCode ?? deriveSeriesCode(bondType, offer.currentEmissionMonth, definition);
+    const seriesWindow = deriveSeriesWindow(offer.currentEmissionMonth, definition);
+
+    await db
+      .insert(bondSeries)
+      .values({
+        bondTypeId: bond.id,
+        seriesCode,
+        emissionMonth: offer.currentEmissionMonth,
+        sellStartDate: seriesWindow.sellStartDate,
+        sellEndDate: seriesWindow.sellEndDate,
+        maturityDate: seriesWindow.maturityDate,
+        firstYearRate: offer.firstYearRate,
+        baseMargin: offer.margin,
+      })
+      .onConflictDoUpdate({
+        target: bondSeries.seriesCode,
+        set: {
+          firstYearRate: offer.firstYearRate,
+          baseMargin: offer.margin,
+          sellStartDate: seriesWindow.sellStartDate,
+          sellEndDate: seriesWindow.sellEndDate,
+          maturityDate: seriesWindow.maturityDate,
+        },
+      });
   }
 
   private async syncProvider(provider: SyncProvider, startYear: number) {
@@ -122,7 +154,7 @@ export class SyncEngine {
     const endDateStr = format(today, 'yyyy-MM-dd');
 
     if (isBefore(today, currentStartDate)) {
-      console.log(`[SyncEngine] ${provider.name} (${provider.seriesSlug}) is already up to date.`);
+      this.logger.info(`${provider.name} (${provider.seriesSlug}) is already up to date`);
       return {
         provider: provider.name,
         seriesSlug: provider.seriesSlug,
@@ -135,11 +167,14 @@ export class SyncEngine {
       };
     }
 
-    console.log(`[SyncEngine] Fetching ${provider.name} from ${startDateStr} to ${endDateStr}...`);
+    this.logger.info(`Fetching ${provider.name}`, {
+      startDate: startDateStr,
+      endDate: endDateStr,
+    });
     const data = await provider.fetchData(startDateStr, endDateStr);
     
     if (data.length === 0) {
-      console.log(`[SyncEngine] No new data found for ${provider.name}.`);
+      this.logger.info(`No new data found for ${provider.name}`);
       return {
         provider: provider.name,
         seriesSlug: provider.seriesSlug,
@@ -157,7 +192,7 @@ export class SyncEngine {
       [provider.seriesSlug]: series.id
     };
     
-    console.log(`[SyncEngine] Saving ${data.length} records in batches...`);
+    this.logger.info(`Saving records for ${provider.name}`, {count: data.length});
     
     // Prepare records for batch insert
     const recordsToInsert = [];

@@ -1,19 +1,12 @@
 import 'dotenv/config';
 import { pathToFileURL } from 'node:url';
 import { seedSeriesMetadata } from './seed-series-runner';
-import { SyncEngine } from './sync-engine';
-import { NbpSyncProvider } from './providers/nbp';
-import { StooqSyncProvider } from './providers/stooq';
-import { GusSyncProvider } from './providers/gus';
+import { createDefaultSyncEngine } from './create-sync-engine';
 
 export async function seedMarketHistory() {
   await seedSeriesMetadata();
 
-  const engine = new SyncEngine([
-    new NbpSyncProvider(),
-    new StooqSyncProvider(),
-    new GusSyncProvider(),
-  ]);
+  const engine = createDefaultSyncEngine('SeedMarketHistory');
 
   const results = await engine.syncAll(1990);
   return {

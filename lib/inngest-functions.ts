@@ -1,8 +1,5 @@
 import { inngest } from "./inngest";
-import { SyncEngine } from "./sync/sync-engine";
-import { NbpSyncProvider } from "./sync/providers/nbp";
-import { StooqSyncProvider } from "./sync/providers/stooq";
-import { GusSyncProvider } from "./sync/providers/gus";
+import { createDefaultSyncEngine } from "./sync/create-sync-engine";
 import { db } from "@/db";
 import { userInvestmentLots, communityInsights } from "@/db/schema";
 import { sql } from "drizzle-orm";
@@ -51,11 +48,7 @@ export const syncEconomicData = inngest.createFunction(
   },
   { cron: "0 2,14 * * *" }, // Run twice a day (2 AM and 2 PM)
   async ({ step }) => {
-    const engine = new SyncEngine([
-      new NbpSyncProvider(),
-      new StooqSyncProvider(),
-      new GusSyncProvider(),
-    ]);
+    const engine = createDefaultSyncEngine('InngestSync');
 
     // Perform a full sync from the last known point in the DB
     const results = await step.run("unified-sync", async () => {
