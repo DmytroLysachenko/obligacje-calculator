@@ -2,13 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   BarChart2,
   BookOpen,
   Calculator,
   ChevronRight,
-  FolderKanban,
   Layers,
   Menu,
   Scale,
@@ -16,15 +15,14 @@ import {
   Wallet,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { useAppI18n } from '@/i18n/client';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
-import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
-import { useWorkspacePortfolios } from '@/shared/hooks/useWorkspacePortfolios';
 import { cn } from '@/lib/utils';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { SidebarUtilityGroup, SidebarUtilityPanel } from './SidebarUtilityGroup';
+import { SidebarWorkspaceUtility } from './SidebarWorkspaceUtility';
 
 interface SidebarContentProps {
   onItemClick?: () => void;
@@ -84,26 +82,18 @@ function getFreshnessClass(freshness: CalculationDataFreshness) {
   return 'border-amber-200 bg-amber-50 text-amber-800';
 }
 
-function SidebarUtilityPanel({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return <div className="surface-panel rounded-2xl px-3 py-3">{children}</div>;
-}
-
 function SidebarBrand() {
   const { t } = useAppI18n();
 
   return (
-    <div className="border-b border-slate-200/80 px-4 py-3.5">
+    <div className="border-b border-slate-200/80 px-4 py-3">
       <Link href="/" className="flex items-center gap-2.5">
-        <div className="rounded-xl bg-slate-900 p-2 text-white shadow-sm shadow-slate-900/10">
-          <TrendingUp className="h-4 w-4" />
+        <div className="rounded-xl bg-slate-900 p-1.5 text-white shadow-sm shadow-slate-900/10">
+          <TrendingUp className="h-3.5 w-3.5" />
         </div>
         <div className="min-w-0 space-y-1">
-          <p className="text-[1.1rem] font-bold tracking-tight">{t('common.title')}</p>
-          <p className="max-w-[14rem] text-[11px] leading-5 text-slate-500">
+          <p className="text-[1rem] font-bold tracking-tight">{t('common.title')}</p>
+          <p className="max-w-[13rem] text-[10px] leading-5 text-slate-500">
             {t('sidebar.brand_tagline')}
           </p>
         </div>
@@ -210,71 +200,6 @@ function SidebarLanguageUtility() {
   );
 }
 
-function SidebarWorkspaceUtility() {
-  const { t } = useAppI18n();
-  const pathname = usePathname();
-  const { canManageWorkspace } = usePortfolioAccess();
-  const { portfolios, selectedPortfolioId, selectedPortfolio, setSelectedPortfolioId, refetch } = useWorkspacePortfolios({
-    enabled: canManageWorkspace,
-  });
-
-  useEffect(() => {
-    void refetch();
-  }, [pathname, refetch]);
-
-  if (!canManageWorkspace || portfolios.length === 0) {
-    return null;
-  }
-
-  return (
-    <SidebarUtilityPanel>
-      <div className="space-y-3">
-        <div className="flex items-start gap-2">
-          <FolderKanban className="mt-0.5 h-4 w-4 text-primary" />
-          <div>
-            <p className="text-xs font-semibold text-slate-500">{t('sidebar.workspace_title')}</p>
-            <p className="mt-0.5 text-[11px] leading-5 text-slate-600">
-              {t('sidebar.workspace_desc')}
-            </p>
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
-            {t('sidebar.portfolio_selector_label')}
-          </p>
-          <div className="rounded-xl border border-slate-200 bg-white/80 px-3 py-2 text-[11px] leading-5 text-slate-600">
-            {selectedPortfolio
-              ? t('sidebar.portfolio_selector_active', { name: selectedPortfolio.name })
-              : t('sidebar.portfolio_selector_empty')}
-          </div>
-          <Select
-            value={selectedPortfolioId ?? undefined}
-            onValueChange={(value) => {
-              setSelectedPortfolioId(value);
-            }}
-          >
-            <SelectTrigger className="h-10 rounded-xl border-slate-200 bg-white/90 text-left text-sm font-medium">
-              <SelectValue placeholder={t('sidebar.portfolio_selector_empty')} />
-            </SelectTrigger>
-            <SelectContent>
-              {portfolios.map((portfolio) => (
-                <SelectItem key={portfolio.id} value={portfolio.id}>
-                  {portfolio.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Button asChild variant="outline" className="h-9 w-full rounded-xl border-slate-200 bg-white/80 text-sm">
-          <Link href="/notebook">{t('sidebar.workspace_manage')}</Link>
-        </Button>
-      </div>
-    </SidebarUtilityPanel>
-  );
-}
-
 function SidebarSyncUtility({
   dataFreshness,
 }: {
@@ -318,17 +243,23 @@ function SidebarSyncUtility({
 
 function SidebarFooter({
   dataFreshness,
+  pathname,
 }: {
   dataFreshness?: CalculationDataFreshness;
+  pathname: string;
 }) {
   const { t } = useAppI18n();
   const hasMounted = useHasMounted();
 
   return (
-    <div className="space-y-2 border-t border-slate-200/80 bg-white/55 p-3">
-      <SidebarWorkspaceUtility />
-      <SidebarLanguageUtility />
-      <SidebarSyncUtility dataFreshness={dataFreshness} />
+    <div className="space-y-3 border-t border-slate-200/80 bg-white/55 p-3">
+      <SidebarUtilityGroup title={t('sidebar.workspace_title')}>
+        <SidebarWorkspaceUtility pathname={pathname} />
+      </SidebarUtilityGroup>
+      <SidebarUtilityGroup title={t('common.settings')}>
+        <SidebarLanguageUtility />
+        <SidebarSyncUtility dataFreshness={dataFreshness} />
+      </SidebarUtilityGroup>
       <div className="px-1 pt-1 text-xs text-slate-500">
         {'\u00A9'} {hasMounted ? new Date().getFullYear() : '----'} {t('common.title')}
       </div>
@@ -403,7 +334,7 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
         ))}
       </nav>
 
-      <SidebarFooter dataFreshness={dataFreshness} />
+      <SidebarFooter dataFreshness={dataFreshness} pathname={pathname} />
     </div>
   );
 }

@@ -2,6 +2,7 @@
   "common": {
     "title": "Obligacje Calculator",
     "description": "Profesjonalny kalkulator polskich obligacji skarbowych.",
+    "settings": "Ustawienia",
     "calculate": "Oblicz",
     "save": "Zapisz",
     "cancel": "Anuluj",

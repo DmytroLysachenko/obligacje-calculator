@@ -2,6 +2,7 @@
   "common": {
     "title": "Bonds Calculator",
     "description": "Professional calculator for Polish treasury bonds.",
+    "settings": "Settings",
     "calculate": "Calculate",
     "save": "Save",
     "cancel": "Cancel",
