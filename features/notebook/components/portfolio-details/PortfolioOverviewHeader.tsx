@@ -1,0 +1,184 @@
+'use client';
+
+import React from 'react';
+import { ArrowLeft, Check, Download, FolderOpen, Loader2, Share2, ShieldCheck, Trash2 } from 'lucide-react';
+import { UserPortfolio } from '@/db/schema';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+
+function PortfolioMiniStat({
+  label,
+  value,
+  description,
+}: {
+  label: string;
+  value: string;
+  description: string;
+}) {
+  return (
+    <div className="rounded-[1.5rem] border border-white/80 bg-white/78 px-4 py-4 shadow-[0_16px_32px_-28px_rgba(15,23,42,0.35)] backdrop-blur">
+      <p className="text-sm font-semibold text-slate-500">{label}</p>
+      <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">
+        {value}
+      </p>
+      <p className="mt-1 text-[13px] leading-6 text-slate-600">{description}</p>
+    </div>
+  );
+}
+
+type PortfolioOverviewHeaderProps = {
+  portfolio: UserPortfolio;
+  lotsCount: number;
+  nextMaturityDate: Date | null;
+  nextMaturityType: string | null;
+  totalInvestedValue: string;
+  isPublic: boolean;
+  isSharing: boolean;
+  justCopied: boolean;
+  formatDate: (value: Date) => string;
+  onBack: () => void;
+  onExport: (formatName: 'portfolio' | 'package') => void;
+  onToggleShare: () => void;
+  onCopyLink: () => void;
+  onDeleteRequest: () => void;
+  canDelete: boolean;
+  t: (key: string, values?: Record<string, string>) => string;
+};
+
+export function PortfolioOverviewHeader({
+  portfolio,
+  lotsCount,
+  nextMaturityDate,
+  nextMaturityType,
+  totalInvestedValue,
+  isPublic,
+  isSharing,
+  justCopied,
+  formatDate,
+  onBack,
+  onExport,
+  onToggleShare,
+  onCopyLink,
+  onDeleteRequest,
+  canDelete,
+  t,
+}: PortfolioOverviewHeaderProps) {
+  return (
+    <>
+      <Card className="overflow-hidden rounded-[2.2rem] border border-slate-200/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(248,250,252,0.9))] shadow-[0_24px_70px_-52px_rgba(15,23,42,0.45)]">
+        <CardContent className="space-y-6 p-6 lg:p-7">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+            <div className="max-w-2xl space-y-3">
+              <div className="inline-flex items-center gap-2 rounded-full border bg-white/80 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-slate-700">
+                <FolderOpen className="h-3.5 w-3.5 text-primary" />
+                {t('notebook.record_view')}
+              </div>
+              <h3 className="text-2xl font-black tracking-tight text-slate-900">
+                {t('notebook.record_intro_title')}
+              </h3>
+              <p className="text-sm leading-7 text-muted-foreground">
+                {t('notebook.record_intro_desc')}
+              </p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:w-[360px]">
+              <PortfolioMiniStat
+                label={t('notebook.stored_lots_label')}
+                value={String(lotsCount)}
+                description={t('notebook.stored_lots_card_desc')}
+              />
+              <PortfolioMiniStat
+                label={t('notebook.next_maturity_label')}
+                value={nextMaturityDate ? formatDate(nextMaturityDate) : '-'}
+                description={t('notebook.next_maturity_card_desc')}
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            <PortfolioMiniStat
+              label={t('notebook.total_invested')}
+              value={totalInvestedValue}
+              description={t('notebook.total_invested_desc')}
+            />
+            <PortfolioMiniStat
+              label={t('notebook.next_maturity')}
+              value={nextMaturityType ?? '-'}
+              description={
+                nextMaturityDate
+                  ? `${formatDate(nextMaturityDate)} ${t('notebook.next_maturity_suffix')}`
+                  : t('notebook.no_upcoming_maturity')
+              }
+            />
+            <PortfolioMiniStat
+              label={t('notebook.sharing_mode')}
+              value={isPublic ? t('notebook.public') : t('notebook.private')}
+              description={
+                isPublic
+                  ? t('notebook.public_share_desc')
+                  : t('notebook.private_share_desc')
+              }
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="flex flex-col gap-4 rounded-[1.8rem] border border-slate-200 bg-white/84 p-5 shadow-[0_18px_40px_-36px_rgba(15,23,42,0.35)] backdrop-blur md:flex-row md:items-start md:justify-between">
+        <div className="flex items-start gap-3">
+          <Button variant="ghost" size="icon" onClick={onBack} className="rounded-full">
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h2 className="text-3xl font-semibold text-foreground">{portfolio.name}</h2>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              {portfolio.description || t('notebook.portfolio_details')}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" className="gap-2" onClick={() => onExport('package')}>
+            <Download className="h-4 w-4" />
+            {t('notebook.export_package')}
+          </Button>
+          <Button variant="outline" className="gap-2" onClick={() => onExport('portfolio')}>
+            <Download className="h-4 w-4" />
+            {t('notebook.export_summary')}
+          </Button>
+          {canDelete ? (
+            <Button
+              variant="outline"
+              className="gap-2 border-destructive/20 bg-background text-destructive hover:bg-destructive/5 hover:text-destructive"
+              onClick={onDeleteRequest}
+            >
+              <Trash2 className="h-4 w-4" />
+              {t('notebook.delete_portfolio')}
+            </Button>
+          ) : null}
+          {isPublic ? (
+            <Button variant="outline" className="gap-2" onClick={onCopyLink}>
+              {justCopied ? (
+                <Check className="h-4 w-4 text-emerald-600" />
+              ) : (
+                <Share2 className="h-4 w-4" />
+              )}
+              {justCopied ? t('common.copied') : t('common.copy_link')}
+            </Button>
+          ) : null}
+          <Button
+            variant={isPublic ? 'default' : 'outline'}
+            className="gap-2"
+            onClick={onToggleShare}
+            disabled={isSharing}
+          >
+            {isSharing ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <ShieldCheck className="h-4 w-4" />
+            )}
+            {isPublic ? t('notebook.public') : t('notebook.private')}
+          </Button>
+        </div>
+      </div>
+    </>
+  );
+}
