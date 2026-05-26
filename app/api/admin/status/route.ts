@@ -20,6 +20,6 @@ export async function GET(req: NextRequest) {
     }
 
     console.error('[AdminStatus] Failed to fetch status:', error);
-    return NextResponse.json({ error: 'Failed to fetch status' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch status', code: 'ADMIN_STATUS_FAILED' }, { status: 500 });
   }
 }

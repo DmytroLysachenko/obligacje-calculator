@@ -14,6 +14,12 @@ The retained app now exposes several practical route families:
 - sharing routes
 - sync/support routes
 
+Current route-handling rule:
+
+- `app/api/**/route.ts` should parse requests, apply auth/validation, and shape responses only
+- DB reads belong in `lib/data/**`
+- server-side orchestration, mutations, admin logic, and sync triggers belong in `lib/server/**` or `lib/sync/**`
+
 ## 2. Calculator APIs
 
 ### 2.1 `POST /api/calculate/single`
@@ -202,9 +208,36 @@ Purpose:
 
 - read-only public portfolio page
 
-## 6. Single-Scenario Sharing APIs
+## 6. Admin and Sync Support APIs
 
-### 6.1 `POST /api/scenarios/share`
+### 6.1 `GET /api/admin/status`
+
+Purpose:
+
+- return the current admin health snapshot for tracked data series
+
+Current design:
+
+- route stays thin
+- status aggregation lives in `lib/server/admin/status.ts`
+- auth check lives in `lib/server/admin/auth.ts`
+
+### 6.2 `POST /api/admin/sync`
+
+Purpose:
+
+- trigger one allowed operational sync or seed mode
+
+Current design:
+
+- route stays thin
+- mode routing lives in `lib/server/admin/sync.ts`
+- default engine creation is centralized in `lib/sync/create-sync-engine.ts`
+- background sync logging is normalized through `lib/sync/sync-logger.ts`
+
+## 7. Single-Scenario Sharing APIs
+
+### 7.1 `POST /api/scenarios/share`
 
 Purpose:
 
@@ -220,7 +253,7 @@ Why:
 - dirty input state and committed result state must stay separate
 - a shared link should replay one known scenario, not leak whatever happened to be in the form
 
-### 6.2 `GET /shared-scenarios/[shareId]`
+### 7.2 `GET /shared-scenarios/[shareId]`
 
 Purpose:
 
@@ -233,9 +266,9 @@ Current behavior:
 - presents the scenario as a saved replay surface
 - deliberately does not piggyback on ad hoc query-param reconstruction
 
-## 7. External Integrations
+## 8. External Integrations
 
-## 7.1 Official bond offer pages
+## 8.1 Official bond offer pages
 
 Primary purpose:
 
@@ -252,7 +285,7 @@ Current truth rule:
 
 - `obligacjeskarbowe.pl` is the main reference for current offer terms
 
-## 7.2 GUS CPI archive
+## 8.2 GUS CPI archive
 
 Primary purpose:
 

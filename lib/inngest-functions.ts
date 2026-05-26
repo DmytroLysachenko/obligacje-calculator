@@ -50,7 +50,6 @@ export const syncEconomicData = inngest.createFunction(
   async ({ step }) => {
     const engine = createDefaultSyncEngine('InngestSync');
 
-    // Perform a full sync from the last known point in the DB
     const results = await step.run("unified-sync", async () => {
       try {
         return await engine.runFullSync();

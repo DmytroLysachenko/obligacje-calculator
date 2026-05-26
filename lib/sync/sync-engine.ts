@@ -187,14 +187,12 @@ export class SyncEngine {
       };
     }
 
-    // Cache slug -> UUID mapping for this run
     const slugToId: Record<string, string> = {
       [provider.seriesSlug]: series.id
     };
     
     this.logger.info(`Saving records for ${provider.name}`, {count: data.length});
     
-    // Prepare records for batch insert
     const recordsToInsert = [];
     for (const record of data) {
       if (!slugToId[record.seriesSlug]) {
@@ -220,7 +218,6 @@ export class SyncEngine {
         set: { value: sql`EXCLUDED.value` }
       });
 
-      // Update series metadata with the latest data point date
       const latestDate = recordsToInsert.map(r => r.date).sort().at(-1);
       if (latestDate) {
         await db.update(dataSeries)

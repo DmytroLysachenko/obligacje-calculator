@@ -1,5 +1,5 @@
 import {isBefore, subHours} from 'date-fns';
-import {SyncEngine} from '@/lib/sync/sync-engine';
+import {createDefaultSyncEngine} from '@/lib/sync/create-sync-engine';
 
 const OPPORTUNISTIC_SYNC_COOLDOWN_HOURS = 12;
 
@@ -20,6 +20,6 @@ export function getOpportunisticSyncStatus(lastSyncCookie: string | undefined) {
 }
 
 export async function triggerOpportunisticSync() {
-  const engine = new SyncEngine();
+  const engine = createDefaultSyncEngine('OpportunisticSync');
   await engine.runFullSync();
 }
