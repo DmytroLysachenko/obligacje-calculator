@@ -1,43 +1,110 @@
-# Obligacje Calculator - Production Ready
+# Obligacje Calculator
 
-The most trusted, accurate, and educational investment simulation platform for Polish Treasury Bonds and other assets.
+Production-focused simulation platform for Polish treasury bonds, recurring bond plans, comparison scenarios, and reference macro-data.
 
-## Core Features
-- **Production-Grade Bond Math:** Exact interest accrual, day-count conventions, and Belka tax rounding.
-- **Smart Bond Finder:** Multi-bond parallel simulation to recommend optimal choices for any duration.
-- **Tax Optimization:** Automatic modeling of annual IKE/IKZE limits and standard account overflow.
-- **Real Data Integration:** Automated sync with NBP (rates) and Stooq (S&P 500, Gold).
-- **Portfolio Intelligence:** Master growth projection, liquidity calendar, and tax health audits.
-- **Advanced Visualization:** Inflation range scenarios (Low/Base/High) and historical backtesting.
-- **Professional Reporting:** Step-by-step calculation audit traces and PDF report export.
-- **User Portfolios:** Private tracking of real investments with secure authenticated access.
+The current product direction is conservative and trust-first:
+- flagship surfaces: `single-calculator`, `compare`, `regular-investment`, `ladder`, `notebook`, `economic-data`
+- secondary/reference tools: `multi-asset`, `recovery-lab`, `optimize`, `retirement`
+- calculation truth and display consistency take priority over broad feature sprawl
 
-## Tech Stack
-- **Framework:** Next.js 16 (App Router)
-- **Database:** PostgreSQL with Drizzle ORM
-- **Worker Engine:** Inngest
-- **Math:** Decimal.js for financial precision
-- **Styling:** Tailwind CSS
+## What The App Does Today
 
-## Documentation
-The documentation is now segregated for better readability:
-- [Product Strategy](./docs/product/01_product_vision_and_purpose.md)
-- [System Architecture](./docs/architecture/19_system_architecture.md)
-- [Bond Domain Guide](./docs/domain/04_polish_bonds_domain_guide.md)
-- [Implementation Roadmap](./docs/plans/roadmap.md)
+- **Single bond simulation:** Full-cycle bond runs with issued-offer context, rollover handling, tax treatment, and real-value readouts.
+- **Scenario comparison:** Structured bond-vs-bond comparison under one committed shared setup.
+- **Regular investment and ladder planning:** Repeated purchase modeling for recurring contribution strategies.
+- **Workspace notebook:** A records-style portfolio workspace that is previewable for guests and intended to be fully actionable in signed-in mode.
+- **Economic reference dashboard:** CPI, NBP, and related reference context to support calculator interpretation.
+- **Structured exports:** Normalized CSV/PDF/report outputs built from display models, not screenshots.
 
-See the full [Documentation Index](./docs/index.md) for more details.
+## Current Architecture
 
-## Development
+- **Framework:** Next.js 16 App Router + React 19
+- **Language:** TypeScript
+- **Database:** PostgreSQL + Drizzle ORM
+- **Background jobs:** Inngest
+- **Precision math:** `decimal.js`
+- **Styling/UI:** Tailwind CSS 4 + Radix UI + Lucide
+- **Charts:** Recharts
+- **Tests:** Vitest
+- **i18n:** `next-intl`
+
+Important code boundaries:
+- `app/`: routes, layouts, metadata, thin route/page orchestration
+- `features/`: domain-specific UI, calculation handlers, adapters, and product flows
+- `shared/components/`: reusable UI grouped by subdomain
+- `shared/lib/`: shared display/export/workspace helpers
+- `lib/data/`: cached read models and data retrieval helpers
+- `lib/server/`: server-only services, repositories, sync/admin orchestration, HTTP helpers
+- `db/schemas/`: grouped schema entrypoints
+- `db/seed/`: seed modules split by concern
+
+## Local Development
 
 ### Setup
-1. Clone the repository.
-2. Install dependencies: `pnpm install`.
-3. Set up environment variables in `.env` (see `.env.example`).
-4. Generate DB migrations: `npx drizzle-kit generate`.
-5. Seed production data: `pnpm run db:seed:production`.
-6. Start dev server: `pnpm run dev`.
 
-### Testing
-- `pnpm run test`: Run all Vitest suites.
-- `pnpm run lint`: Run ESLint checks.
+1. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+2. Set environment variables in `.env.local` using `.env.example` and project-specific secrets.
+3. Prepare the database if needed:
+   ```bash
+   npx drizzle-kit generate
+   pnpm run db:seed:production
+   ```
+4. Start the app:
+   ```bash
+   pnpm dev
+   ```
+
+### Quality Checks
+
+```bash
+pnpm test
+pnpm test:core
+pnpm lint
+pnpm exec tsc --noEmit
+```
+
+### Data Sync
+
+The repo already contains both the full sync path and a bond-offer-focused operator alias:
+
+```bash
+pnpm sync:bond-offers
+pnpm sync:full
+```
+
+The underlying workflow refreshes:
+- current bond offers and issued series
+- CPI / macro reference data
+- market-history series used by supporting dashboards and secondary tools
+
+For local Inngest development:
+
+```bash
+pnpm dev
+npx inngest-cli@latest dev -u http://localhost:3000/api/inngest
+```
+
+Use `INNGEST_DEV=1` locally. Production/cloud signing keys are only needed for deployed Inngest usage.
+
+## Documentation
+
+Start from the central index:
+- [Documentation Index](./docs/index.md)
+
+High-value entry docs:
+- [Product Vision & Purpose](./docs/product/01_product_vision_and_purpose.md)
+- [System Architecture](./docs/technical/architecture/19_system_architecture.md)
+- [Database & Data Modeling](./docs/technical/architecture/20_database_and_data_modeling.md)
+- [Engineering and Coding Rules](./docs/technical/architecture/26_engineering_and_coding_rules.md)
+- [Current Product Roadmap](./docs/plans/00_roadmap.md)
+
+## Product Guardrails
+
+- no hardcoded translated UI copy in code
+- no browser-native prompts in product flows
+- no display settings that change engine truth
+- guest users may calculate and preview workspace surfaces, but portfolio/workspace mutations stay gated behind signed-in access
+- secondary tools should remain explicitly demoted and not compete with the flagship calculator flows

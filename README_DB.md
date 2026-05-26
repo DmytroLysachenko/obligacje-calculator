@@ -1,38 +1,81 @@
-# Database & Data Sync Infrastructure
+# Database and Data Sync Notes
 
-This project uses **Neon (Serverless PostgreSQL)**, **Drizzle ORM**, and **Inngest** for background data synchronization.
+This project uses PostgreSQL with Drizzle ORM, DB-backed bond-definition metadata, and scheduled/background sync for market and macro reference data.
 
-## 1. Setup Environment Variables
+## Environment
 
-Add the following to your `.env.local`:
+Typical local env values:
 
 ```env
 DATABASE_URL=postgres://user:password@hostname/dbname?sslmode=require
-INNGEST_EVENT_KEY=your_key_here
-INNGEST_SIGNING_KEY=your_key_here
+INNGEST_DEV=1
 ```
 
-## 2. Database Commands (Drizzle)
+For deployed Inngest usage, set the real production keys as well:
 
-- **Generate migrations:** `pnpm drizzle-kit generate`
-- **Push schema to DB (Direct):** `pnpm drizzle-kit push`
-- **Open Drizzle Studio:** `pnpm drizzle-kit studio`
+```env
+INNGEST_EVENT_KEY=...
+INNGEST_SIGNING_KEY=...
+```
 
-## 3. Data Synchronization (Inngest)
+## Current DB Structure
 
-The application fetches data from:
-- **NBP API** (Gold Prices, Interest Rates)
-- **Stooq API** (S&P 500, Stock Indices)
+The repo no longer treats `db/schema.ts` as the canonical long-term structure.
 
-Sync is handled by the `sync-economic-data` Inngest function, which runs twice daily.
+Current layout:
+- `db/schemas/**`: grouped schema entrypoints by connected model domains
+- `db/seed/**`: seed modules split by concern
+- `db/schema.ts`: compatibility aggregate export surface where still needed by current imports
 
-### To test locally:
-1. Start the Inngest Dev Server: `npx inngest-cli@latest dev`
-2. Open `http://localhost:8288` to trigger functions manually.
+## Drizzle Commands
 
-## 4. Architecture
+```bash
+npx drizzle-kit generate
+pnpm drizzle-kit push
+pnpm drizzle-kit studio
+```
 
-- `db/schema.ts`: Single source of truth for database structure.
-- `lib/api-clients/`: Abstracted fetchers for external economic data.
-- `lib/data-access.ts`: Server-side data fetching layer (used by Page components).
-- `app/api/inngest/route.ts`: Entry point for background jobs.
+## Seed and Sync Commands
+
+Production-oriented seed path:
+
+```bash
+pnpm run db:seed:production
+```
+
+Full sync paths:
+
+```bash
+pnpm sync:bond-offers
+pnpm sync:full
+```
+
+Both commands currently run the same underlying workflow, which covers:
+- current bond offers
+- issued monthly bond series
+- macro reference data
+- supporting market-history datasets
+
+## Inngest
+
+Local dev:
+
+```bash
+pnpm dev
+npx inngest-cli@latest dev -u http://localhost:3000/api/inngest
+```
+
+Important local behavior:
+- use `INNGEST_DEV=1`
+- local dev typically does **not** require manual signing-key setup
+- the local app endpoint is `http://localhost:3000/api/inngest`
+
+## Data-Layer Boundaries
+
+Use these boundaries when adding or refactoring data access:
+
+- `lib/data/**`: shared read models, cached reads, chart/reference data access
+- `lib/server/**`: server-only orchestration, mutations, ownership/auth rules, sync/admin services
+- `app/api/**/route.ts`: request parsing, validation, and response shaping only
+
+Do not add new route-local DB query logic when an existing `lib/data/**` or `lib/server/**` boundary already fits.
