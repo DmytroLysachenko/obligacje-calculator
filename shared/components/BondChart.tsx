@@ -3,10 +3,10 @@
 import React, { useMemo } from 'react';
 import { BaseAreaChart } from './charts/BaseAreaChart';
 import { useChartSync } from '@/shared/context/ChartSyncContext';
+import { ChartDatum } from './charts/chart-types';
 
 interface BondChartProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any[];
+  data: ChartDatum[];
   xAxisKey: string;
   areas: {
     key: string;

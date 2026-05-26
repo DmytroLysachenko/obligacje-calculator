@@ -18,10 +18,7 @@ import {
 } from 'recharts/types/component/DefaultTooltipContent';
 import { ChartContainer } from './ChartContainer';
 import { useChartSync } from '@/shared/context/ChartSyncContext';
-
-interface ChartData {
-  [key: string]: string | number;
-}
+import { ChartDatum, SyncedChartMouseState } from './chart-types';
 
 interface AreaConfig {
   key: string;
@@ -31,7 +28,7 @@ interface AreaConfig {
 }
 
 interface BaseAreaChartProps {
-  data: ChartData[];
+  data: ChartDatum[];
   xAxisKey: string;
   areas: AreaConfig[];
   height?: number;
@@ -41,8 +38,13 @@ interface BaseAreaChartProps {
   isAnimationActive?: boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const AreaChartWithTooltipIndex = AreaChart as any;
+type SyncedAreaChartProps = React.ComponentProps<typeof AreaChart> & {
+  activeTooltipIndex?: number;
+  onMouseMove?: (state: SyncedChartMouseState) => void;
+};
+
+const AreaChartWithTooltipIndex =
+  AreaChart as unknown as React.ComponentType<SyncedAreaChartProps>;
 
 export const BaseAreaChart: React.FC<BaseAreaChartProps> = ({
   data,
@@ -61,10 +63,9 @@ export const BaseAreaChart: React.FC<BaseAreaChartProps> = ({
         <AreaChartWithTooltipIndex 
           data={data} 
           margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          onMouseMove={(e: any) => {
-            if (e && e.activeTooltipIndex !== undefined) {
-              setHoverIndex(Number(e.activeTooltipIndex));
+          onMouseMove={(state) => {
+            if (state.activeTooltipIndex !== undefined) {
+              setHoverIndex(Number(state.activeTooltipIndex));
             }
           }}
           onMouseLeave={() => setHoverIndex(null)}

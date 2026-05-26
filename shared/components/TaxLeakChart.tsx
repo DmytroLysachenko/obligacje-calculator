@@ -10,10 +10,13 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  TooltipProps,
 } from 'recharts';
 import { ChartContainer } from './charts/ChartContainer';
 import { useChartSync } from '@/shared/context/ChartSyncContext';
 import { useAppI18n } from '@/i18n/client';
+import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
+import { SyncedChartMouseState, TooltipPayloadEntry } from './charts/chart-types';
 
 export interface TaxLeakDataPoint {
   year: number;
@@ -28,24 +31,38 @@ interface TaxLeakChartProps {
   height?: number;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const AreaChartWithTooltipIndex = AreaChart as any;
+type SyncedAreaChartProps = React.ComponentProps<typeof AreaChart> & {
+  activeTooltipIndex?: number;
+  onMouseMove?: (state: SyncedChartMouseState) => void;
+};
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const CustomTooltip = ({ active, payload, label }: any) => {
+const AreaChartWithTooltipIndex =
+  AreaChart as unknown as React.ComponentType<SyncedAreaChartProps>;
+
+type TaxLeakTooltipEntry = TooltipPayloadEntry<TaxLeakDataPoint>;
+
+interface TaxLeakTooltipProps extends TooltipProps<ValueType, NameType> {
+  payload?: TaxLeakTooltipEntry[];
+  label?: NameType;
+}
+
+const CustomTooltip = ({ active, payload, label }: TaxLeakTooltipProps) => {
   const { t } = useAppI18n();
 
   if (active && payload && payload.length) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const taxFree = payload.find((p: any) => p.dataKey === 'taxFreeCapital')?.value || 0;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const standard = payload.find((p: any) => p.dataKey === 'standardCapital')?.value || 0;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const leak = payload.find((p: any) => p.dataKey === 'taxLeak')?.value || 0;
+    const taxFree = Number(
+      payload.find((p) => p.dataKey === 'taxFreeCapital')?.value ?? 0,
+    );
+    const standard = Number(
+      payload.find((p) => p.dataKey === 'standardCapital')?.value ?? 0,
+    );
+    const leak = Number(payload.find((p) => p.dataKey === 'taxLeak')?.value ?? 0);
 
     return (
       <div className="bg-background border rounded p-3 shadow-md">
-        <p className="font-semibold mb-2">{t('bonds.tax_leak.year', { year: label })}</p>
+        <p className="font-semibold mb-2">
+          {t('bonds.tax_leak.year', { year: String(label ?? '') })}
+        </p>
         <div className="space-y-1 text-sm">
           <p className="text-emerald-500">IKE/IKZE: {taxFree.toFixed(2)} PLN</p>
           <p className="text-blue-500">{t('bonds.tax_leak.standard_account')}: {standard.toFixed(2)} PLN</p>
@@ -71,10 +88,9 @@ export const TaxLeakChart: React.FC<TaxLeakChartProps> = ({
         <AreaChartWithTooltipIndex
           data={data}
           margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          onMouseMove={(e: any) => {
-            if (e && e.activeTooltipIndex !== undefined) {
-              setHoverIndex(Number(e.activeTooltipIndex));
+          onMouseMove={(state) => {
+            if (state.activeTooltipIndex !== undefined) {
+              setHoverIndex(Number(state.activeTooltipIndex));
             }
           }}
           onMouseLeave={() => setHoverIndex(null)}

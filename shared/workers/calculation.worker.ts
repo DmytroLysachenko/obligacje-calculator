@@ -1,6 +1,7 @@
 import { ApiResponse } from '../types/api';
 import { calculateBondInvestment, calculateRegularInvestment } from '@/features/bond-core/utils/calculations';
 import { ScenarioKind } from '@/features/bond-core/types/scenarios';
+import { BondInputs, RegularInvestmentInputs } from '@/features/bond-core/types';
 
 type WorkerRequestMessage = {
   id: string;
@@ -44,11 +45,9 @@ self.onmessage = async (event: MessageEvent<WorkerRequestMessage>) => {
     try {
       let resultData: unknown;
       if (kind === ScenarioKind.SINGLE_BOND) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        resultData = calculateBondInvestment(payload as any);
+        resultData = calculateBondInvestment(payload as BondInputs);
       } else if (kind === ScenarioKind.REGULAR_INVESTMENT) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        resultData = calculateRegularInvestment(payload as any);
+        resultData = calculateRegularInvestment(payload as RegularInvestmentInputs);
       }
 
       if (resultData) {
