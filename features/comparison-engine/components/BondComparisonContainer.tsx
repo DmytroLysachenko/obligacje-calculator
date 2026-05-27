@@ -151,7 +151,7 @@ export const BondComparisonContainer = () => {
         }} duration={duration} onDurationChange={(value) => {
             setDuration(value);
             setIsDirty(true);
-        }} expectedInflation={expectedInflation} expectedNbpRate={expectedNbpRate} customInflation={customInflation} customNbpRate={customNbpRate} inflationScenario={inflationScenario} onUpdateAssumption={onUpdateAssumption} selectedBonds={selectedBonds} onToggleBond={toggleBond} showRealValue={showRealValue} onShowRealValueChange={setShowRealValue}/>
+        }} expectedInflation={expectedInflation} expectedNbpRate={expectedNbpRate} customInflation={customInflation} customNbpRate={customNbpRate} onUpdateAssumption={onUpdateAssumption} selectedBonds={selectedBonds} onToggleBond={toggleBond} showRealValue={showRealValue} onShowRealValueChange={setShowRealValue}/>
 
         <div className="space-y-8">
           <ComparisonResultsDashboard results={results} envelope={envelope} loading={loading} isDirty={isDirty} showRealValue={showRealValue} formatCurrency={formatCurrency} chartData={chartData} selectedBonds={selectedBonds} bestResult={bestResult} definitions={definitions} language={language} onRecalculate={calculateComparison}/>

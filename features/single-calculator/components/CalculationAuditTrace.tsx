@@ -1,7 +1,6 @@
 'use client';
 import React from 'react';
 import { ArrowRight, Scale } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { useAppI18n } from '@/i18n/client';
 import { YearlyTimelinePoint } from '@/features/bond-core/types';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
@@ -14,7 +13,7 @@ function AuditRow({ label, value, tone = 'text-slate-950', }: {
     value: string;
     tone?: string;
 }) {
-    return (<div className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+    return (<div className="flex items-center justify-between gap-4 border-b border-dashed border-slate-200 py-3 last:border-b-0">
       <span className="text-sm text-slate-600">{label}</span>
       <span className={cn('text-sm font-bold', tone)}>{value}</span>
     </div>);
@@ -29,8 +28,8 @@ export const CalculationAuditTrace: React.FC<CalculationAuditTraceProps> = ({ po
     const formatPercent = (value: number) => `${value.toFixed(2)}%`;
     const rateLabel = getRateSourceDisplayLabel(point.rateSource, language as AppLanguage);
     const referenceLabel = getReferenceDisplayLabel(point, language as AppLanguage);
-    return (<Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-      <CardContent className="space-y-5 p-6">
+    return (<section className="rounded-[2rem] border border-slate-200 bg-white px-6 py-6 shadow-none">
+      <div className="space-y-5">
         <div className="space-y-2">
           <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
             <Scale className="h-3.5 w-3.5 text-primary"/>
@@ -44,7 +43,7 @@ export const CalculationAuditTrace: React.FC<CalculationAuditTraceProps> = ({ po
           </p>
         </div>
 
-        <div className="space-y-3">
+        <div className="rounded-[1.5rem] border border-slate-200 px-4 py-2">
           <AuditRow label={t('bonds.base_value')} value={formatCurrency(point.nominalValueBeforeInterest)}/>
           <AuditRow label={t('common.interest_rate')} value={formatPercent(point.interestRate)} tone="text-primary"/>
           <AuditRow label={t('bonds.audit.rate_source')} value={rateLabel}/>
@@ -53,7 +52,7 @@ export const CalculationAuditTrace: React.FC<CalculationAuditTraceProps> = ({ po
           {point.taxDeducted > 0 ? (<AuditRow label={t('bonds.minus_tax')} value={`-${formatCurrency(point.taxDeducted)}`} tone="text-orange-700"/>) : null}
         </div>
 
-        <div className="flex items-center justify-between rounded-3xl border border-slate-200 bg-slate-50 px-4 py-4">
+        <div className="flex items-center justify-between rounded-[1.5rem] border border-slate-200 bg-slate-50/60 px-4 py-4">
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
               {t('bonds.net_period_gain')}
@@ -64,8 +63,8 @@ export const CalculationAuditTrace: React.FC<CalculationAuditTraceProps> = ({ po
           </div>
           <ArrowRight className="h-5 w-5 text-primary"/>
         </div>
-      </CardContent>
-    </Card>);
+      </div>
+    </section>);
 };
 
 

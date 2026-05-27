@@ -26,34 +26,44 @@ const MetaSection = ({
   icon,
   items,
   className,
+  formatItem,
 }: {
   title: string;
   icon: React.ReactNode;
   items: string[];
   className: string;
+  formatItem?: (item: string) => string;
 }) => {
   if (items.length === 0) {
     return null;
   }
 
   return (
-    <div className={className}>
+    <section className={className}>
       <div className="flex items-center gap-2">
         {icon}
         <p className="text-[10px] font-black uppercase tracking-widest">
           {title}
         </p>
       </div>
-      <ul className="space-y-2 text-sm leading-6">
+      <ul className="divide-y divide-dashed divide-current/15 text-sm leading-6">
         {items.map((item, index) => (
-          <li key={`${title}-${index}`} className="rounded-xl bg-white/70 px-3 py-2">
-            {item}
+          <li key={`${title}-${index}`} className="px-0 py-2.5 first:pt-0 last:pb-0">
+            {formatItem ? formatItem(item) : item}
           </li>
         ))}
       </ul>
-    </div>
+    </section>
   );
 };
+
+function humanizeFlag(value: string) {
+  return value
+    .split('_')
+    .filter(Boolean)
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join(' ');
+}
 
 export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
   warnings = [],
@@ -121,25 +131,26 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
           title={t('common.warnings')}
           items={warnings}
           icon={<AlertTriangle className="h-4 w-4" />}
-          className="space-y-3 rounded-2xl border border-orange-200 bg-orange-50/70 p-4 text-orange-950"
+          className="space-y-3 rounded-2xl border border-orange-200/80 px-4 py-4 text-orange-950"
         />
         <MetaSection
           title={t('common.assumptions')}
           items={assumptions}
           icon={<Target className="h-4 w-4" />}
-          className="space-y-3 rounded-2xl border border-blue-200 bg-blue-50/70 p-4 text-blue-950"
+          className="space-y-3 rounded-2xl border border-blue-200/80 px-4 py-4 text-blue-950"
         />
         <MetaSection
           title={t('common.notes')}
           items={calculationNotes}
           icon={<FileText className="h-4 w-4" />}
-          className="space-y-3 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-emerald-950"
+          className="space-y-3 rounded-2xl border border-emerald-200/80 px-4 py-4 text-emerald-950"
         />
         <MetaSection
           title={t('common.data_quality')}
           items={dataQualityFlags}
           icon={<ShieldAlert className="h-4 w-4" />}
-          className="space-y-3 rounded-2xl border border-amber-200 bg-amber-50/70 p-4 text-amber-950"
+          className="space-y-3 rounded-2xl border border-amber-200/80 px-4 py-4 text-amber-950"
+          formatItem={humanizeFlag}
         />
       </div>
 

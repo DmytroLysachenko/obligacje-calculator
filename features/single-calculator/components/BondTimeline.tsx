@@ -22,7 +22,7 @@ function TimelineStat({ label, value, }: {
     label: string;
     value: string;
 }) {
-    return (<div className="rounded-2xl border border-slate-200 bg-white/85 px-4 py-3">
+    return (<div className="border-b border-dashed border-slate-200 px-1 py-2.5 md:border-b-0 md:px-0">
       <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
         {label}
       </p>
@@ -87,14 +87,14 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
         setIsExpanded(false);
     };
     return (<div className="space-y-4">
-      <div className="space-y-4 rounded-[1.5rem] border border-slate-200 bg-slate-50/70 p-4">
+      <div className="space-y-4 rounded-[1.5rem] border border-slate-200 bg-white p-4">
         <div className="grid gap-3 md:grid-cols-3">
           <TimelineStat label={t('bonds.schedule.rows_after_filters')} value={visibleRangeLabel}/>
           <TimelineStat label={t('bonds.schedule.projected_points')} value={String(projectionCount)}/>
           <TimelineStat label={t('bonds.schedule.exit_markers')} value={String(exitMarkers)}/>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white/85 px-4 py-3">
+        <div className="border-t border-dashed border-slate-200 px-1 pt-3">
           <p className="text-sm leading-7 text-slate-600">
             {t('bonds.schedule.summary_note')}
           </p>
@@ -199,7 +199,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
             </TableRow>
           </TableHeader>
           <TableBody>
-            {displayedTimeline.map((row) => (<TableRow key={row.key} className={row.isWithdrawal ? 'bg-primary/5 font-semibold' : 'odd:bg-slate-50/30'}>
+            {displayedTimeline.map((row) => (<TableRow key={row.key} className={cn('border-b border-slate-100 transition-colors hover:bg-slate-50/70', row.isWithdrawal ? 'bg-primary/5 font-semibold hover:bg-primary/10' : 'odd:bg-slate-50/30')}>
                 <TableCell className="py-4 align-top">
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
@@ -284,7 +284,7 @@ function MobileValue({ label, value, }: {
     label: string;
     value: string;
 }) {
-    return (<div className="rounded-2xl border border-slate-200 bg-slate-50/70 px-3 py-2">
+    return (<div className="border-t border-dashed border-slate-200 px-1 py-2 first:border-t-0">
       <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
         {label}
       </p>
