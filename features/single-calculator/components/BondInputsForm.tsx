@@ -192,9 +192,9 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           <section className="border-t border-dashed pt-6">
             <Accordion type="single" collapsible defaultValue="">
               <AccordionItem value="advanced" className="border-none">
-                <AccordionTrigger className="rounded-2xl border bg-slate-50 px-4 py-4 hover:no-underline">
+                <AccordionTrigger className="border-b border-dashed px-0 py-4 hover:no-underline">
                   <div className="flex items-start gap-3 text-left">
-                    <div className="rounded-xl bg-primary/10 p-2 text-primary">
+                    <div className="rounded-lg bg-primary/10 p-2 text-primary">
                       <Settings2 className="h-4 w-4" />
                     </div>
                     <div className="space-y-1">
@@ -215,7 +215,6 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                       bondType={inputs.bondType}
                       customInflation={inputs.customInflation}
                       customNbpRate={inputs.customNbpRate}
-                      inflationScenario={inputs.inflationScenario}
                       inflationHorizonYears={Math.max(1, Math.ceil(investmentHorizonMonths / 12))}
                       onUpdate={handleUpdate as (key: string, value: unknown) => void}
                       compact

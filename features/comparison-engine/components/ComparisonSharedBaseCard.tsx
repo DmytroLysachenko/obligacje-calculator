@@ -197,7 +197,6 @@ export function ComparisonSharedBaseCard({
             expectedNbpRate={sharedConfig.expectedNbpRate}
             customInflation={sharedConfig.customInflation}
             customNbpRate={sharedConfig.customNbpRate}
-            inflationScenario={sharedConfig.inflationScenario}
             bondType={assumptionsBondType}
             inflationHorizonYears={Math.max(1, Math.ceil((sharedConfig.investmentHorizonMonths ?? 120) / 12))}
             onUpdate={onUpdateSharedConfig}

@@ -57,7 +57,6 @@ export function AdvancedSettingsSection({
                 bondType={inputs.bondType}
                 customInflation={inputs.customInflation}
                 customNbpRate={inputs.customNbpRate}
-                inflationScenario={inputs.inflationScenario}
                 inflationHorizonYears={Math.max(1, Math.ceil(inputs.investmentHorizonMonths / 12))}
                 onUpdate={onUpdate}
                 compact

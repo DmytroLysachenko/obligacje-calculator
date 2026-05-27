@@ -1,9 +1,7 @@
 'use client';
 import React from 'react';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { BondInputs, BondType } from '@/features/bond-core/types';
@@ -24,20 +22,52 @@ interface MarketAssumptionsFormProps {
     bondType: BondType;
     customInflation?: number[];
     customNbpRate?: number[];
-    inflationScenario?: 'low' | 'base' | 'high';
     onUpdate: UpdateHandler;
     compact?: boolean;
     inflationHorizonYears?: number;
 }
-export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bondType, customInflation, customNbpRate, inflationScenario = 'base', onUpdate, compact = false, inflationHorizonYears = 10, }: MarketAssumptionsFormProps) => {
+
+function ProjectionModeButtons({
+  simpleLabel,
+  advancedLabel,
+  advancedActive,
+  onSimple,
+  onAdvanced,
+}: {
+  simpleLabel: string;
+  advancedLabel: string;
+  advancedActive: boolean;
+  onSimple: () => void;
+  onAdvanced: () => void;
+}) {
+  return (
+    <div className="inline-flex rounded-lg border border-slate-200 bg-white p-1 shadow-sm">
+      <Button
+        type="button"
+        variant={advancedActive ? 'ghost' : 'default'}
+        size="sm"
+        className="h-8 px-3 text-[11px] font-semibold tracking-[0.06em]"
+        onClick={onSimple}
+      >
+        {simpleLabel}
+      </Button>
+      <Button
+        type="button"
+        variant={advancedActive ? 'default' : 'ghost'}
+        size="sm"
+        className="h-8 px-3 text-[11px] font-semibold tracking-[0.06em]"
+        onClick={onAdvanced}
+      >
+        {advancedLabel}
+      </Button>
+    </div>
+  );
+}
+
+export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bondType, customInflation, customNbpRate, onUpdate, compact = false, inflationHorizonYears = 10, }: MarketAssumptionsFormProps) => {
     const { t } = useAppI18n();
     const isInflationIndexedBond = isInflationIndexedBondType(bondType);
     const isNbpRelevant = isFloatingNbpBondType(bondType);
-    const scenarioDescriptions = {
-        low: t('bonds.market_assumptions.scenario_descriptions.low'),
-        base: t('bonds.market_assumptions.scenario_descriptions.base'),
-        high: t('bonds.market_assumptions.scenario_descriptions.high'),
-    } as const;
     return (<div className="space-y-6">
       <div className="space-y-3">
         <p className={cn('font-semibold tracking-[0.08em] text-slate-900', compact ? 'text-xs uppercase' : 'text-sm')}>
@@ -79,23 +109,48 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
 
         <CommittedSliderInput value={Number.isFinite(expectedInflation) ? expectedInflation : 0} disabled={!!customInflation} min={-2} max={15} step={0.1} unit="%" onCommit={(value) => onUpdate('expectedInflation', value)}/>
 
-        {isInflationIndexedBond ? (<>
-            <div className="space-y-3 border-t border-dashed pt-4">
-              <Label className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">
-                {t('bonds.market_assumptions.post_year_one_label')}
-              </Label>
-              <div className="grid grid-cols-3 gap-2">
-                {(['low', 'base', 'high'] as const).map((scenario) => (<Button key={scenario} variant="outline" size="sm" className={cn('h-9 min-w-0 text-[11px] font-semibold tracking-[0.08em]', inflationScenario === scenario && 'border-primary/50 bg-primary/10 text-primary')} onClick={() => onUpdate('inflationScenario', scenario)}>
-                    <span className="truncate">{t(`bonds.inflation.scenarios.${scenario}`)}</span>
-                  </Button>))}
-              </div>
-              <p className="text-[11px] italic leading-5 text-muted-foreground">
-                {scenarioDescriptions[inflationScenario]}
-              </p>
-            </div>
-          </>) : (<div className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 text-[11px] leading-5 text-slate-600">
+        {isInflationIndexedBond ? null : (<div className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 text-[11px] leading-5 text-slate-600">
             {t('bonds.market_assumptions.non_indexed_note')}
           </div>)}
+
+        {isInflationIndexedBond ? (
+          <div className="space-y-3 border-t border-dashed pt-4">
+            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+              <div className="space-y-1">
+                <p className="text-sm font-semibold text-slate-950">
+                  {t('bonds.market_assumptions.inflation_path_title')}
+                </p>
+                <p className="text-xs leading-5 text-muted-foreground">
+                  {t('bonds.market_assumptions.inflation_path_desc')}
+                </p>
+              </div>
+              <ProjectionModeButtons
+                simpleLabel={t('bonds.market_assumptions.simple_mode_label')}
+                advancedLabel={t('bonds.market_assumptions.advanced_mode_label')}
+                advancedActive={!!customInflation}
+                onSimple={() => onUpdate('customInflation', undefined)}
+                onAdvanced={() =>
+                  onUpdate(
+                    'customInflation',
+                    Array(Math.max(1, Math.round(inflationHorizonYears))).fill(expectedInflation),
+                  )
+                }
+              />
+            </div>
+            {customInflation ? (
+              <ProjectedRatePathEditor
+                values={customInflation}
+                prefix="Y"
+                step={0.1}
+                onChange={(values) => onUpdate('customInflation', values)}
+              />
+            ) : (
+              <p className="text-[11px] leading-5 text-muted-foreground">
+                {t('bonds.market_assumptions.inflation_simple_mode_note')}
+              </p>
+            )}
+          </div>
+        ) : null}
       </div>
 
       {isNbpRelevant ? (<div className="space-y-4 border-t border-dashed pt-4">
@@ -119,94 +174,43 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
           <p className="text-[11px] leading-5 text-muted-foreground">
             {t('bonds.market_assumptions.nbp_note')}
           </p>
-          <p className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 text-[11px] leading-5 text-slate-600">
-            {t('bonds.market_assumptions.nbp_flat_default_note')}
-          </p>
-        </div>) : null}
-
-      <Accordion type="multiple" className="space-y-3">
-        {isInflationIndexedBond ? (
-          <AccordionItem value="inflation-path" className="rounded-xl border px-4">
-            <AccordionTrigger className="py-4 text-left">
+          <div className="space-y-3 border-t border-dashed pt-4">
+            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div className="space-y-1">
-                <p className="text-sm font-semibold">
-                  {t('bonds.market_assumptions.inflation_path_title')}
-                </p>
-                <p className="text-xs leading-5 text-muted-foreground">
-                  {t('bonds.market_assumptions.inflation_path_desc')}
-                </p>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="space-y-4 pb-4">
-              <div className="flex items-center justify-between rounded-lg border border-primary/10 bg-muted/30 p-3.5">
-                <Label className="text-sm font-semibold">{t('bonds.advanced_inflation')}</Label>
-                <Switch
-                  checked={!!customInflation}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      onUpdate(
-                        'customInflation',
-                        Array(Math.max(1, Math.round(inflationHorizonYears))).fill(expectedInflation),
-                      );
-                      return;
-                    }
-                    onUpdate('customInflation', undefined);
-                  }}
-                />
-              </div>
-              {customInflation ? (
-                <ProjectedRatePathEditor
-                  values={customInflation}
-                  prefix="Y"
-                  step={0.1}
-                  onChange={(values) => onUpdate('customInflation', values)}
-                />
-              ) : null}
-            </AccordionContent>
-          </AccordionItem>
-        ) : null}
-
-        {isNbpRelevant ? (
-          <AccordionItem value="nbp-path" className="rounded-xl border px-4">
-            <AccordionTrigger className="py-4 text-left">
-              <div className="space-y-1">
-                <p className="text-sm font-semibold">
+                <p className="text-sm font-semibold text-slate-950">
                   {t('bonds.market_assumptions.nbp_path_title')}
                 </p>
                 <p className="text-xs leading-5 text-muted-foreground">
                   {t('bonds.market_assumptions.nbp_path_desc')}
                 </p>
               </div>
-            </AccordionTrigger>
-            <AccordionContent className="space-y-4 pb-4">
-              <div className="flex items-center justify-between rounded-lg border border-primary/10 bg-muted/30 p-3.5">
-                <Label className="text-sm font-semibold">{t('bonds.advanced_nbp')}</Label>
-                <Switch
-                  checked={!!customNbpRate}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      onUpdate(
-                        'customNbpRate',
-                        Array(Math.max(1, Math.round(inflationHorizonYears))).fill(expectedNbpRate ?? 5.25),
-                      );
-                      return;
-                    }
-                    onUpdate('customNbpRate', undefined);
-                  }}
-                />
-              </div>
-              {customNbpRate ? (
-                <ProjectedRatePathEditor
-                  values={customNbpRate}
-                  prefix="Y"
-                  step={0.05}
-                  onChange={(values) => onUpdate('customNbpRate', values)}
-                />
-              ) : null}
-            </AccordionContent>
-          </AccordionItem>
-        ) : null}
-      </Accordion>
+              <ProjectionModeButtons
+                simpleLabel={t('bonds.market_assumptions.simple_mode_label')}
+                advancedLabel={t('bonds.market_assumptions.advanced_mode_label')}
+                advancedActive={!!customNbpRate}
+                onSimple={() => onUpdate('customNbpRate', undefined)}
+                onAdvanced={() =>
+                  onUpdate(
+                    'customNbpRate',
+                    Array(Math.max(1, Math.round(inflationHorizonYears))).fill(expectedNbpRate ?? 5.25),
+                  )
+                }
+              />
+            </div>
+            {customNbpRate ? (
+              <ProjectedRatePathEditor
+                values={customNbpRate}
+                prefix="Y"
+                step={0.05}
+                onChange={(values) => onUpdate('customNbpRate', values)}
+              />
+            ) : (
+              <p className="text-[11px] leading-5 text-muted-foreground">
+                {t('bonds.market_assumptions.nbp_simple_mode_note')}
+              </p>
+            )}
+          </div>
+        </div>) : null}
     </div>);
 };
 

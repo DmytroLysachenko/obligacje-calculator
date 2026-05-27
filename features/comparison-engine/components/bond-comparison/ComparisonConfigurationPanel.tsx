@@ -47,7 +47,6 @@ type ComparisonConfigurationPanelProps = {
   expectedNbpRate: number;
   customInflation?: number[];
   customNbpRate?: number[];
-  inflationScenario: 'low' | 'base' | 'high';
   onUpdateAssumption: (key: string, value: unknown) => void;
   selectedBonds: BondType[];
   onToggleBond: (type: BondType) => void;
@@ -64,7 +63,6 @@ export function ComparisonConfigurationPanel({
   expectedNbpRate,
   customInflation,
   customNbpRate,
-  inflationScenario,
   onUpdateAssumption,
   selectedBonds,
   onToggleBond,
@@ -122,12 +120,11 @@ export function ComparisonConfigurationPanel({
 
           <div className="space-y-4 border-t border-dashed border-slate-200 pt-5">
             <MarketAssumptionsForm
-              expectedInflation={expectedInflation}
-              expectedNbpRate={expectedNbpRate}
-              customInflation={customInflation}
-              customNbpRate={customNbpRate}
-              inflationScenario={inflationScenario}
-              bondType={
+            expectedInflation={expectedInflation}
+            expectedNbpRate={expectedNbpRate}
+            customInflation={customInflation}
+            customNbpRate={customNbpRate}
+            bondType={
                 selectedBonds.includes(BondType.ROR) ||
                 selectedBonds.includes(BondType.DOR)
                   ? BondType.ROR

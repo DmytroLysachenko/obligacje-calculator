@@ -7,6 +7,7 @@ import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/s
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/shared/lib/calculator-persistence';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
+import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
 
 const DEFAULT_BOND = BondType.EDO;
 const STORAGE_KEY = 'obligacje.regular-calculator.v1';
@@ -91,6 +92,13 @@ export function useRegularInvestmentCalculator() {
     });
   });
 
+  const reconcilePersistedMacroDefaults = useEffectEvent((defaults: { expectedInflation: number; expectedNbpRate: number }) => {
+    setInputs((previous) => {
+      const next = applyMacroDefaultsToBaseline(previous, defaults);
+      return JSON.stringify(previous) === JSON.stringify(next) ? previous : next;
+    });
+  });
+
   useEffect(() => {
     if (!definitions || !definitions[inputs.bondType]) {
       return;
@@ -131,8 +139,15 @@ export function useRegularInvestmentCalculator() {
   }, []);
 
   useEffect(() => {
-    if (!macroDefaults || !isPersistenceReady || restoredFromPersistence.current || hasTouchedMacroAssumptions.current) {
+    if (!macroDefaults || !isPersistenceReady || hasTouchedMacroAssumptions.current) {
       return;
+    }
+
+    if (restoredFromPersistence.current) {
+      const timer = window.setTimeout(() => {
+        reconcilePersistedMacroDefaults(macroDefaults);
+      }, 0);
+      return () => window.clearTimeout(timer);
     }
 
     applyMacroDefaults(macroDefaults);

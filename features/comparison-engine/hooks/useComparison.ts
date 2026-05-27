@@ -13,6 +13,7 @@ import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/s
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/shared/lib/calculator-persistence';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
+import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
 import {
   sanitizeScenarioOverride,
   setScenarioCustomHorizonMonths,
@@ -131,6 +132,13 @@ export function useComparison() {
         expectedNbpRate: defaults.expectedNbpRate,
       };
 
+      return JSON.stringify(previous) === JSON.stringify(next) ? previous : next;
+    });
+  });
+
+  const reconcilePersistedMacroDefaults = useEffectEvent((defaults: { expectedInflation: number; expectedNbpRate: number }) => {
+    setSharedConfig((previous) => {
+      const next = applyMacroDefaultsToBaseline(previous, defaults);
       return JSON.stringify(previous) === JSON.stringify(next) ? previous : next;
     });
   });
@@ -304,8 +312,15 @@ export function useComparison() {
   }, []);
 
   useEffect(() => {
-    if (!macroDefaults || !isPersistenceReady || restoredFromPersistence.current || hasTouchedMacroAssumptions.current) {
+    if (!macroDefaults || !isPersistenceReady || hasTouchedMacroAssumptions.current) {
       return;
+    }
+
+    if (restoredFromPersistence.current) {
+      const timer = window.setTimeout(() => {
+        reconcilePersistedMacroDefaults(macroDefaults);
+      }, 0);
+      return () => window.clearTimeout(timer);
     }
 
     applyMacroDefaults(macroDefaults);

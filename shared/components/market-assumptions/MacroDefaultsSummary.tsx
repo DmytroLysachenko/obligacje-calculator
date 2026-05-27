@@ -23,7 +23,7 @@ function MacroDefaultRow({
   const { t } = useAppI18n();
 
   return (
-    <div className="flex items-start justify-between gap-3 rounded-lg border border-slate-200 bg-background px-3 py-2.5">
+    <div className="flex items-start justify-between gap-3 border-b border-dashed border-slate-200 py-2.5 last:border-b-0">
       <div className="space-y-1">
         <p className="text-[10px] font-black uppercase tracking-[0.08em] text-muted-foreground">
           {label}
@@ -47,7 +47,7 @@ export function MacroDefaultsSummary({
   const { defaults } = useMacroAssumptionDefaults();
 
   return (
-    <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50/80 p-3">
+    <div className="space-y-3 border-t border-dashed border-slate-200 pt-3">
       <div className="space-y-1">
         <div className="flex items-center gap-2">
           {defaults.usedFallback ? (
@@ -69,7 +69,7 @@ export function MacroDefaultsSummary({
         </p>
       </div>
 
-      <div className="grid gap-2">
+      <div className="grid gap-0">
         <MacroDefaultRow
           label={t('bonds.market_assumptions.source_inflation_label')}
           value={defaults.expectedInflation}
