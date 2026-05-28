@@ -1,7 +1,6 @@
 'use client';
 import React, { useMemo, useState } from 'react';
 import { Calendar, Wallet, } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import { RETIREMENT_SUPPORTED_BOND_TYPES, supportsRetirementBondType, } from '@/features/bond-core/support-matrix';
 import { RetirementPlannerCalculationEnvelope } from '@/features/bond-core/types/scenarios';
@@ -24,7 +23,7 @@ function formatRate(value: number) {
 const DEFAULT_INPUTS: RetirementInputs = {
     initialCapital: 500000,
     monthlyWithdrawal: 3000,
-    expectedInflation: 3.5,
+    expectedInflation: 2.5,
     expectedNbpRate: 5.25,
     bondType: BondType.EDO,
     taxStrategy: TaxStrategy.STANDARD,
@@ -37,20 +36,35 @@ const SummaryMetric = ({ label, value, detail, tone = 'default', }: {
     tone?: 'default' | 'success' | 'warning';
 }) => {
     const toneClass = tone === 'success'
-        ? 'border-emerald-200 bg-emerald-50/70'
+        ? 'text-emerald-700'
         : tone === 'warning'
-            ? 'border-amber-200 bg-amber-50/80'
-            : 'border-slate-200 bg-white';
-    return (<Card className={toneClass}>
-      <CardContent className="p-5">
-        <p className="text-[10px] font-black uppercase text-muted-foreground">
+            ? 'text-amber-700'
+            : 'text-slate-950';
+    return (<div className="space-y-2 border-b border-dashed border-slate-200 px-4 py-4 last:border-b-0 md:border-b-0 md:border-r last:md:border-r-0">
+        <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">
           {label}
         </p>
-        <p className="mt-2 text-lg font-black text-slate-950">{value}</p>
-        <p className="mt-1 text-xs leading-5 text-muted-foreground">{detail}</p>
-      </CardContent>
-    </Card>);
+        <p className={`text-xl font-black ${toneClass}`}>{value}</p>
+        <p className="text-xs leading-5 text-slate-600">{detail}</p>
+      </div>);
 };
+function RetirementSection({
+    title,
+    description,
+    children,
+}: {
+    title: string;
+    description?: string;
+    children: React.ReactNode;
+}) {
+    return (<section className="space-y-4 rounded-[1.9rem] border border-slate-200 bg-white px-5 py-5 md:px-6">
+        <div className="space-y-2">
+          <h3 className="text-xl font-black tracking-tight text-slate-950">{title}</h3>
+          {description ? <p className="max-w-3xl text-sm leading-7 text-slate-600">{description}</p> : null}
+        </div>
+        {children}
+      </section>);
+}
 export const RetirementPlannerContainer: React.FC = () => {
     const { t, locale: language } = useAppI18n();
     const { defaults: macroDefaults } = useMacroAssumptionDefaults();
@@ -190,7 +204,7 @@ export const RetirementPlannerContainer: React.FC = () => {
                   {labels.staleResults}
                 </div>) : null}
 
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+              <div className="grid gap-0 rounded-[1.9rem] border border-slate-200 bg-white md:grid-cols-2 xl:grid-cols-4">
                 <SummaryMetric label={labels.scenarioStatus} value={results.result.isSustainable
                 ? labels.balancePositive
                 : labels.balanceDepletes} detail={results.result.exhaustionDate
@@ -235,13 +249,13 @@ export const RetirementPlannerContainer: React.FC = () => {
                 },
             ]} footerText={labels.readyFooter}/>)}
 
-          <SecondaryInsightAccordion title={labels.limitsTitle} description={labels.limitsDesc} badge={labels.limitsBadge}>
-            <div className="grid grid-cols-1 gap-4 text-sm leading-6 text-muted-foreground md:grid-cols-3">
-              {modelLimits.map((item) => (<div key={item} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+          <RetirementSection title={labels.limitsTitle} description={labels.limitsDesc}>
+            <div className="divide-y divide-dashed divide-slate-200 rounded-[1.5rem] border border-slate-200">
+              {modelLimits.map((item) => (<div key={item} className="px-4 py-3 text-sm leading-6 text-slate-600">
                   {item}
                 </div>))}
             </div>
-          </SecondaryInsightAccordion>
+          </RetirementSection>
 
           {results?.result.exhaustionDate ? (<div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm leading-6 text-amber-950">
               <Calendar className="mt-0.5 h-5 w-5 shrink-0 text-amber-700"/>
