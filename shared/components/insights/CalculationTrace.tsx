@@ -24,20 +24,20 @@ export const CalculationTrace: React.FC<CalculationTraceProps> = ({ timeline }) 
   if (!timeline || timeline.length === 0) return null;
 
   return (
-    <div className="mt-8 border rounded-lg bg-card overflow-hidden">
-      <button 
+    <div className="mt-8 overflow-hidden rounded-[1.7rem] border border-slate-200 bg-white">
+      <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full p-4 flex items-center justify-between font-semibold hover:bg-muted/50 transition-colors"
+        className="flex w-full items-center justify-between px-5 py-4 font-semibold transition-colors hover:bg-muted/50"
       >
         <span className="flex items-center gap-2">
-          <Search className="w-4 h-4 text-primary" />
+          <Search className="h-4 w-4 text-primary" />
           {t('bonds.calculation_trace.title')}
         </span>
-        {isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+        {isOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
       </button>
 
-      {isOpen && (
-        <div className="p-4 border-t border-border overflow-x-auto">
+      {isOpen ? (
+        <div className="overflow-x-auto border-t border-dashed border-slate-200 p-4">
           <Table>
             <TableHeader>
               <TableRow>
@@ -55,19 +55,24 @@ export const CalculationTrace: React.FC<CalculationTraceProps> = ({ timeline }) 
                 <React.Fragment key={index}>
                   <TableRow className="bg-muted/20">
                     <TableCell className="font-medium" colSpan={2}>
-                      {t('bonds.calculation_trace.year_label', { year: point.year, label: point.periodLabel })}
+                      {t('bonds.calculation_trace.year_label', {
+                        year: point.year,
+                        label: point.periodLabel,
+                      })}
                     </TableCell>
-                    <TableCell className="text-right font-medium">{(point.nominalValueBeforeInterest).toFixed(2)} PLN</TableCell>
+                    <TableCell className="text-right font-medium">{point.nominalValueBeforeInterest.toFixed(2)} PLN</TableCell>
                     <TableCell className="text-right font-medium">{point.interestRate.toFixed(2)}%</TableCell>
                     <TableCell className="text-right font-medium text-emerald-600">+{point.interestEarned.toFixed(2)}</TableCell>
                     <TableCell className="text-right font-medium text-red-500">-{point.taxDeducted.toFixed(2)}</TableCell>
                     <TableCell className="text-right font-medium">{point.nominalValueAfterInterest.toFixed(2)} PLN</TableCell>
                   </TableRow>
-                  {point.events?.map((evt, eIdx) => (
-                    <TableRow key={`evt-${index}-${eIdx}`} className="text-sm text-muted-foreground">
-                      <TableCell></TableCell>
-                      <TableCell colSpan={5} className="pl-6 italic">↳ {evt.type}: {evt.description}</TableCell>
-                      <TableCell className="text-right">{evt.value ? evt.value.toFixed(2) : '-'}</TableCell>
+                  {point.events?.map((event, eventIndex) => (
+                    <TableRow key={`event-${index}-${eventIndex}`} className="text-sm text-muted-foreground">
+                      <TableCell />
+                      <TableCell colSpan={5} className="pl-6 italic">
+                        {`\u2192`} {event.type}: {event.description}
+                      </TableCell>
+                      <TableCell className="text-right">{event.value ? event.value.toFixed(2) : '-'}</TableCell>
                     </TableRow>
                   ))}
                 </React.Fragment>
@@ -75,11 +80,7 @@ export const CalculationTrace: React.FC<CalculationTraceProps> = ({ timeline }) 
             </TableBody>
           </Table>
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
-
-
-
-

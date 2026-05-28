@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Users, BarChart3, TrendingUp, Info } from 'lucide-react';
 import { useAppI18n } from '@/i18n/client';
 import { useChartData } from '@/shared/hooks/useChartData';
@@ -27,50 +26,48 @@ export const CommunityInsightsWidget: React.FC<CommunityInsightsWidgetProps> = (
   if (!insight) return null;
 
   return (
-    <Card className="border-2 border-primary/10 bg-primary/5 shadow-none rounded-2xl overflow-hidden">
-      <CardContent className="p-4 space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Users className="h-4 w-4 text-primary" />
-            <span className="text-[10px] font-black uppercase tracking-widest">{t('community.popularity')}</span>
-          </div>
-          <span className="text-sm font-black text-primary">{insight.popularityScore} {t('community.users')}</span>
+    <section className="space-y-4 rounded-[1.5rem] border border-primary/10 bg-primary/5 px-4 py-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Users className="h-4 w-4 text-primary" />
+          <span className="text-[10px] font-black uppercase tracking-widest">{t('community.popularity')}</span>
+        </div>
+        <span className="text-sm font-black text-primary">{insight.popularityScore} {t('community.users')}</span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-0 rounded-[1.25rem] border border-primary/10 bg-white/70">
+        <div className="space-y-1 border-r border-dashed border-primary/10 px-4 py-3">
+           <div className="flex items-center gap-1.5 text-muted-foreground">
+             <TrendingUp className="h-3 w-3" />
+             <span className="text-[8px] font-bold uppercase">{t('community.sentiment')}</span>
+           </div>
+           <div className="flex items-center gap-2">
+              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+                <div 
+                  className="h-full bg-green-500" 
+                  style={{ width: `${(parseFloat(insight.sentimentScore) + 1) * 50}%` }}
+                />
+              </div>
+              <span className="text-[10px] font-black">{parseFloat(insight.sentimentScore) > 0 ? 'Bullish' : 'Neutral'}</span>
+           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-1">
-             <div className="flex items-center gap-1.5 text-muted-foreground">
-               <TrendingUp className="h-3 w-3" />
-               <span className="text-[8px] font-bold uppercase">{t('community.sentiment')}</span>
-             </div>
-             <div className="flex items-center gap-2">
-                <div className="h-1.5 flex-1 bg-muted rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-green-500" 
-                    style={{ width: `${(parseFloat(insight.sentimentScore) + 1) * 50}%` }}
-                  />
-                </div>
-                <span className="text-[10px] font-black">{parseFloat(insight.sentimentScore) > 0 ? 'Bullish' : 'Neutral'}</span>
-             </div>
-          </div>
-
-          <div className="space-y-1">
-             <div className="flex items-center gap-1.5 text-muted-foreground">
-               <BarChart3 className="h-3 w-3" />
-               <span className="text-[8px] font-bold uppercase">{t('community.est_volume')}</span>
-             </div>
-             <p className="text-[10px] font-black">~{Math.round(parseFloat(insight.totalVolume) / 1000)}k PLN</p>
-          </div>
+        <div className="space-y-1 px-4 py-3">
+           <div className="flex items-center gap-1.5 text-muted-foreground">
+             <BarChart3 className="h-3 w-3" />
+             <span className="text-[8px] font-bold uppercase">{t('community.est_volume')}</span>
+           </div>
+           <p className="text-[10px] font-black">~{Math.round(parseFloat(insight.totalVolume) / 1000)}k PLN</p>
         </div>
+      </div>
 
-        <div className="pt-2 border-t border-dashed border-primary/10 flex items-start gap-2">
-           <Info className="h-3 w-3 text-primary shrink-0 mt-0.5" />
-           <p className="text-[8px] font-medium text-muted-foreground leading-tight italic">
-             {t('community.anonymized_notice')}
-           </p>
-        </div>
-      </CardContent>
-    </Card>
+      <div className="flex items-start gap-2 border-t border-dashed border-primary/10 pt-3">
+         <Info className="mt-0.5 h-3 w-3 shrink-0 text-primary" />
+         <p className="text-[8px] italic leading-tight text-muted-foreground">
+           {t('community.anonymized_notice')}
+         </p>
+      </div>
+    </section>
   );
 };
 
