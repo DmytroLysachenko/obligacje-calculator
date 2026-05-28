@@ -142,15 +142,15 @@ function SeriesStatusCard({
   ];
 
   return (
-    <Card
+    <section
       className={cn(
-        'surface-panel rounded-[2rem]',
+        'rounded-[2rem] border shadow-none',
         state.tone === 'warning'
           ? 'border-amber-200 bg-amber-50/70'
           : 'border-slate-200 bg-white',
       )}
     >
-      <CardContent className="space-y-4 p-5">
+      <div className="space-y-4 p-5">
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
@@ -175,19 +175,26 @@ function SeriesStatusCard({
           <p className="text-sm leading-7 text-slate-600">{state.description}</p>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          {rows.map((row) => (
+        <div className="grid gap-0 rounded-[1.5rem] border border-slate-200 sm:grid-cols-2">
+          {rows.map((row, index) => (
             <div
               key={row.label}
-              className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
+              className={[
+                'px-4 py-3',
+                'border-slate-200',
+                index >= 2 ? 'border-t' : '',
+                index % 2 === 1 ? 'sm:border-l' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
             >
               <p className="text-sm font-semibold text-slate-500">{row.label}</p>
               <p className="mt-2 text-sm font-medium text-slate-900">{row.value}</p>
             </div>
           ))}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 
@@ -282,7 +289,7 @@ export function EconomicDataPageClient() {
           metrics={heroMetrics}
         />
 
-        <Card className="surface-panel rounded-[2rem] border-slate-200 bg-white/88 shadow-none">
+        <Card className="surface-panel rounded-[2rem] border-slate-200 bg-white shadow-none">
           <CardContent className="p-4 md:p-6">
             <Accordion type="single" collapsible defaultValue="how-to-use" className="space-y-4">
               <AccordionItem value="how-to-use" className="rounded-[1.5rem] border border-slate-200 bg-white px-4">
@@ -296,9 +303,9 @@ export function EconomicDataPageClient() {
                 </AccordionTrigger>
                 <AccordionContent className="space-y-4 pb-4">
                   <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
-                    <div className="grid gap-3 md:grid-cols-2">
+                    <div className="grid gap-0 rounded-[1.5rem] border border-slate-200 md:grid-cols-2">
                       {usageGuide.map((item) => (
-                        <div key={item} className="rounded-[1.5rem] border border-slate-200 bg-slate-50/55 px-4 py-3.5">
+                        <div key={item} className="border-slate-200 px-4 py-3.5 md:[&:nth-child(2n)]:border-l md:[&:nth-child(n+3)]:border-t">
                           <div className="flex items-start gap-3">
                             <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                             <p className="text-sm leading-7 text-slate-600">{item}</p>
