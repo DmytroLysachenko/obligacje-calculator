@@ -39,7 +39,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
     return (<div className="space-y-6">
       <ResultSummaryHero eyebrow={t('ladder_page.timeline.eyebrow')} value={peakMonth
             ? peakMonth.displayDate
-            : t('ladder_page.timeline.no_peak_month')} description={t('ladder_page.timeline.description')} narrative={t('ladder_page.timeline.narrative')} aside={<div className="rounded-2xl border bg-slate-50 px-4 py-3 text-sm text-slate-700">
+            : t('ladder_page.timeline.no_peak_month')} description={t('ladder_page.timeline.description')} narrative={t('ladder_page.timeline.narrative')} aside={<div className="rounded-[1.4rem] border border-slate-200 px-4 py-3 text-sm text-slate-700">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
               {t('ladder_page.timeline.month_count')}
             </p>
@@ -80,7 +80,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
           </ChartContainer>
 
           <ResponsiveTableSheet title={t('ladder_page.timeline.mobile_sheet_title')} description={t('ladder_page.timeline.mobile_sheet_description')} triggerLabel={t('ladder_page.timeline.mobile_sheet_trigger')} triggerCount={`${chartData.length} ${t('ladder_page.timeline.mobile_sheet_count_suffix')}`}>
-            {chartData.map((item) => (<div key={`mobile-${item.date}`} className="rounded-3xl border border-slate-200 bg-white p-4">
+            {chartData.map((item) => (<div key={`mobile-${item.date}`} className="rounded-[1.5rem] border border-slate-200 bg-white p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-sm font-semibold text-slate-950">{item.displayDate}</p>
@@ -98,7 +98,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
           </ResponsiveTableSheet>
 
           <div className="hidden rounded-2xl border border-slate-200 bg-white lg:block">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-600">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-dashed border-slate-200 px-4 py-3 text-sm text-slate-600">
               <p>
                 {t('ladder_page.timeline.table_summary')}
               </p>
@@ -116,7 +116,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {chartData.map((item) => (<TableRow key={item.date} className="odd:bg-slate-50/30 hover:bg-slate-50/80">
+                {chartData.map((item) => (<TableRow key={item.date} className="border-b border-slate-100 transition-colors odd:bg-slate-50/30 hover:bg-slate-50/70">
                     <TableCell className="font-medium text-slate-900">{item.displayDate}</TableCell>
                     <TableCell className="text-right text-slate-700">{item.count}</TableCell>
                     <TableCell className="text-right font-semibold text-slate-900">
@@ -131,7 +131,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
           </div>
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <div className="rounded-2xl border bg-slate-50/70 p-4 text-sm leading-6 text-slate-600">
+            <div className="rounded-[1.4rem] border border-slate-200 px-4 py-4 text-sm leading-6 text-slate-600">
               <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
                 {t('ladder_page.timeline.peak_month_title')}
               </p>
@@ -144,8 +144,8 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
             </div>
 
             <div className={peakShare >= 25
-            ? 'rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950'
-            : 'rounded-2xl border bg-emerald-50/60 p-4 text-sm leading-6 text-emerald-950'}>
+            ? 'rounded-[1.4rem] border border-amber-200 bg-amber-50/55 p-4 text-sm leading-6 text-amber-950'
+            : 'rounded-[1.4rem] border border-emerald-200 bg-emerald-50/45 p-4 text-sm leading-6 text-emerald-950'}>
               <p className={peakShare >= 25
             ? 'text-[11px] font-bold uppercase tracking-wide text-amber-800'
             : 'text-[11px] font-bold uppercase tracking-wide text-emerald-800'}>
@@ -163,7 +163,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
             </div>
           </div>
 
-          <div className="rounded-2xl border bg-card p-4 text-sm leading-6 text-slate-600">
+          <div className="rounded-[1.4rem] border border-slate-200 px-4 py-4 text-sm leading-6 text-slate-600">
             <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">
               {t('ladder_page.timeline.interpretation_title')}
             </p>
@@ -179,7 +179,7 @@ function MobileLadderValue({ label, value, }: {
     label: string;
     value: string;
 }) {
-    return (<div className="rounded-2xl border border-slate-200 bg-slate-50/70 px-3 py-2">
+    return (<div className="border-t border-dashed border-slate-200 px-1 py-2 first:border-t-0">
       <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
         {label}
       </p>

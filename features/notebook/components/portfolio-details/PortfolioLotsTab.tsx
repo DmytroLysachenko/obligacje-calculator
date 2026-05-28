@@ -62,7 +62,7 @@ export function PortfolioLotsTab({
             </div>
           ) : (
             <div className="rounded-2xl border border-slate-200 bg-white">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-600">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-dashed border-slate-200 px-4 py-3 text-sm text-slate-600">
                 <p>{t('notebook.stored_lots_hint')}</p>
                 <p className="text-sm font-semibold text-slate-500">
                   {t('notebook.lots_count', { count: String(lots.length) })}
@@ -82,7 +82,7 @@ export function PortfolioLotsTab({
                   </TableHeader>
                   <TableBody>
                     {lots.map((lot) => (
-                      <TableRow key={lot.id} className="odd:bg-slate-50/30 hover:bg-slate-50/80">
+                      <TableRow key={lot.id} className="border-b border-slate-100 transition-colors odd:bg-slate-50/30 hover:bg-slate-50/70">
                         <TableCell className="py-4 font-medium">{lot.bondType}</TableCell>
                         <TableCell className="py-4 text-slate-600">
                           {formatBondDuration(
@@ -134,7 +134,7 @@ export function PortfolioLotsTab({
               ))}
             </div>
 
-            <div className="rounded-2xl border bg-muted/20 p-4">
+            <div className="rounded-[1.4rem] border border-slate-200 px-4 py-4">
               <p className="text-sm font-semibold text-muted-foreground">
                 {t('notebook.cash_in_window')}
               </p>
@@ -151,7 +151,7 @@ export function PortfolioLotsTab({
             ) : (
               <div className="space-y-3">
                 {filteredMaturities.slice(0, 6).map((item) => (
-                  <div key={item.id} className="rounded-2xl border p-4">
+                  <div key={item.id} className="rounded-[1.4rem] border border-slate-200 p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="font-medium text-foreground">{item.bondType}</p>
