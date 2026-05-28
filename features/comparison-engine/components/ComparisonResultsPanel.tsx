@@ -91,7 +91,7 @@ function ActionMetric({
   tone?: string;
 }) {
   return (
-    <div className="rounded-2xl border bg-white px-4 py-3">
+    <div className="border-slate-200 px-4 py-3 md:border-r last:md:border-r-0">
       <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
         {label}
       </p>
@@ -114,8 +114,8 @@ export function ComparisonResultsPanel({
   const { t } = useAppI18n();
 
   return (
-    <Card className="border shadow-sm">
-      <CardHeader className="border-b bg-muted/20">
+    <Card className="border shadow-none">
+      <CardHeader className="border-b border-dashed bg-white">
         <CardTitle className="flex items-center gap-2 text-xl font-black">
           <LineChart className="h-5 w-5 text-primary" />
           {t('comparison.performance_over_time')}
@@ -125,7 +125,7 @@ export function ComparisonResultsPanel({
         </p>
       </CardHeader>
       <CardContent className="p-6">
-        <div className="mb-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mb-5 grid gap-0 rounded-[1.4rem] border border-slate-200 md:grid-cols-2 xl:grid-cols-3">
           <ActionMetric
             label={showRealValue ? `${t('comparison.scenario_a')} ${t('common.real_value')}` : t('comparison.scenario_a')}
             value={formatCurrency(showRealValue ? resultsA.finalRealValue : resultsA.netPayoutValue)}
@@ -138,7 +138,7 @@ export function ComparisonResultsPanel({
           />
           <button
             type="button"
-            className="rounded-2xl border bg-white px-4 py-3 text-left transition-colors hover:border-primary/40"
+            className="px-4 py-3 text-left transition-colors hover:bg-slate-50/60 xl:border-l xl:border-slate-200"
             onClick={() =>
               exportComparisonCsv({
                 timelineA: resultsA.timeline,
@@ -228,11 +228,11 @@ export function ComparisonResultsPanel({
             className="mt-0"
           >
             <div className="space-y-4 text-sm leading-7 text-slate-600">
-              <div className="rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4">
+              <div className="rounded-[1.5rem] border border-slate-200 px-5 py-4">
                 <p>{t('comparison.comparison_chart_help_note')}</p>
               </div>
               {usesMixedTimelineCadence ? (
-                <div className="rounded-3xl border border-amber-200 bg-amber-50 px-5 py-4 text-amber-950">
+                <div className="rounded-[1.5rem] border border-amber-200 bg-amber-50/55 px-5 py-4 text-amber-950">
                   <p className="font-semibold">
                     {t('comparison.mixed_cadence_notice', {
                       bondTypeA: inputsA.bondType,
@@ -250,7 +250,7 @@ export function ComparisonResultsPanel({
                 </div>
               ) : null}
               <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-2xl border bg-white p-4">
+                <div className="rounded-[1.4rem] border border-slate-200 px-4 py-4">
                   <p className="text-sm font-bold text-slate-900">
                     {t('comparison.end_level')}
                   </p>
@@ -258,7 +258,7 @@ export function ComparisonResultsPanel({
                     {t('comparison.end_level_desc')}
                   </p>
                 </div>
-                <div className="rounded-2xl border bg-white p-4">
+                <div className="rounded-[1.4rem] border border-slate-200 px-4 py-4">
                   <p className="text-sm font-bold text-slate-900">
                     {t('comparison.update_rhythm')}
                   </p>

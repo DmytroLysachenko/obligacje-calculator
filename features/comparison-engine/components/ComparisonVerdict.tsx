@@ -33,7 +33,7 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, 
     const gap = Math.abs(resultAValue - resultBValue);
     const horizonYears = Math.max(resultsA.timeline.length / 12, resultsB.timeline.length / 12).toFixed(1);
     return (<Card className="overflow-hidden border border-slate-200 bg-white shadow-none">
-      <CardHeader className="border-b bg-slate-50/60 pb-4">
+      <CardHeader className="border-b border-dashed bg-white pb-4">
         <CardTitle className="flex items-center gap-2 text-xl font-black tracking-tight text-slate-900">
           <Scale className="h-5 w-5 text-primary"/>
           {t('comparison.summary') ?? 'Simulation Summary'}
@@ -43,7 +43,7 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, 
         <div className="flex flex-col gap-6 md:flex-row md:items-center">
           <div className="flex-1 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+              <div className="rounded-[1.4rem] border border-slate-200 px-4 py-3">
                 <span className={resultAValue > resultBValue
             ? 'text-2xl font-black text-blue-700'
             : 'text-2xl font-black text-emerald-700'}>
@@ -95,7 +95,7 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, 
           </div>
 
           <div className="w-full md:w-48 flex flex-col gap-2">
-            <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-4 text-center">
+            <div className="rounded-[1.4rem] border border-slate-200 px-4 py-4 text-center">
               <p className="mb-1 text-sm font-semibold text-muted-foreground">
                 {t('comparison.verdict_gap_label')}
               </p>

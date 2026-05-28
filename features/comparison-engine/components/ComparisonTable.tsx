@@ -34,7 +34,7 @@ function ComparisonTableStat({
   value: string;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+    <div className="border-slate-200 px-4 py-3 md:border-r last:md:border-r-0">
       <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
         {label}
       </p>
@@ -87,7 +87,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
 
   return (
     <Card className="overflow-hidden rounded-2xl border shadow-none">
-      <CardHeader className="border-b bg-muted/20 px-6 py-5">
+      <CardHeader className="border-b border-dashed bg-white px-6 py-5">
         <CardTitle className="flex items-center gap-2 text-xl font-black text-slate-900">
           <Scale className="h-5 w-5 text-primary" />
           {t('comparison.table_title')}
@@ -97,7 +97,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
         </p>
       </CardHeader>
       <CardContent className="space-y-6 p-0">
-        <div className="grid grid-cols-1 gap-3 border-b bg-slate-50/50 px-6 py-5 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-0 border-b border-dashed px-2 py-3 md:grid-cols-3 md:px-6">
           <ComparisonTableStat
             label={t('comparison.table_timeline_rows')}
             value={String(maxLen)}
@@ -112,12 +112,12 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
           />
         </div>
 
-        <div className="grid grid-cols-1 gap-3 border-b bg-slate-50/70 px-6 py-5 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 border-b border-dashed px-6 py-5 md:grid-cols-3">
           {summaryRows.map((row) => {
             const higherScenario = row.a === row.b ? null : row.a > row.b ? 'A' : 'B';
 
             return (
-              <div key={row.label} className="rounded-2xl border bg-white px-4 py-3">
+              <div key={row.label} className="rounded-[1.4rem] border border-slate-200 px-4 py-3">
                 <p className="text-sm font-semibold text-slate-500">
                   {row.label}
                 </p>
@@ -170,7 +170,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
               const valB = showRealValue ? pointB?.realValue : pointB?.totalValue;
 
               return (
-                <div key={`mobile-compare-${i}`} className="rounded-3xl border border-slate-200 bg-white p-4">
+                <div key={`mobile-compare-${i}`} className="rounded-[1.5rem] border border-slate-200 bg-white p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-sm font-semibold text-slate-950">
@@ -193,7 +193,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
           </ResponsiveTableSheet>
 
           <div className="hidden rounded-2xl border border-slate-200 bg-white lg:block">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/80 px-4 py-3 text-sm text-slate-600">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-dashed border-slate-200 px-4 py-3 text-sm text-slate-600">
               <p>
                 {t('comparison.table_desktop_note')}
               </p>
@@ -240,7 +240,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                             : null;
 
                     return (
-                      <TableRow key={i} className="transition-colors odd:bg-slate-50/30 hover:bg-slate-50/80">
+                      <TableRow key={i} className="border-b border-slate-100 transition-colors odd:bg-slate-50/30 hover:bg-slate-50/70">
                         <TableCell className="sticky left-0 z-10 bg-inherit px-4 py-4 font-bold text-slate-900">
                           <div className="space-y-1">
                             <p>
@@ -299,7 +299,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
           </div>
         </div>
 
-        <div className="border-t bg-slate-50/70 px-6 py-4 text-sm leading-6 text-slate-600">
+        <div className="border-t border-dashed px-6 py-4 text-sm leading-6 text-slate-600">
           {t('comparison.table_footer_note')}
         </div>
       </CardContent>
@@ -315,7 +315,7 @@ function MobileComparisonValue({
   value: string;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50/70 px-3 py-2">
+    <div className="border-t border-dashed border-slate-200 px-1 py-2 first:border-t-0">
       <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
         {label}
       </p>
