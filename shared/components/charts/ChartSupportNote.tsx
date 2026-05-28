@@ -10,7 +10,7 @@ export function ChartSupportNote({
   description: string;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
+    <div className="border-t border-dashed border-slate-200 px-1 pt-3">
       <p className="text-sm font-semibold text-slate-500">
         {title}
       </p>

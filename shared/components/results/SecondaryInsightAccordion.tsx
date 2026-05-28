@@ -39,7 +39,7 @@ export function SecondaryInsightAccordion({
         value="content"
         className="surface-panel overflow-hidden rounded-[2rem]"
       >
-        <AccordionTrigger className="rounded-[2rem] px-5 py-5 text-left hover:bg-slate-50/60 hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 md:px-6">
+        <AccordionTrigger className="rounded-[2rem] px-5 py-5 text-left hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 md:px-6">
           <div className="flex min-w-0 flex-1 items-start justify-between gap-4 pr-4 text-left">
             <div className="min-w-0 space-y-2">
               <p className="text-lg font-black tracking-tight text-slate-950">
@@ -56,7 +56,7 @@ export function SecondaryInsightAccordion({
             ) : null}
           </div>
         </AccordionTrigger>
-        <AccordionContent className={cn('px-5 pb-5 text-sm leading-7 text-slate-600 md:px-6', contentClassName)}>
+        <AccordionContent className={cn('border-t border-dashed border-slate-200 px-5 pb-5 pt-5 text-sm leading-7 text-slate-600 md:px-6', contentClassName)}>
           {children}
         </AccordionContent>
       </AccordionItem>

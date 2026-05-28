@@ -257,6 +257,14 @@ Preferred approach:
 - supporting scope/status guidance in secondary rails or accordions
 - less repeated "box inside box" chrome when the content is already dense
 
+For dense informational surfaces, prefer:
+
+- section shells with separators
+- compact split grids
+- bordered rows for short facts
+
+Do not stack multiple rounded bordered cards inside one another when the same content can be presented as one structured section.
+
 ## 6.5 Secondary Tool Direction
 
 Secondary tools such as multi-asset and recovery-lab must be framed as supporting or reference surfaces.
@@ -375,6 +383,7 @@ Retained calculator surfaces must preserve these contracts:
 
 - display settings such as chart granularity may change aggregation only; they must never change engine truth
 - chart, table, quick-audit, CSV, and PDF output for one calculator flow must derive from the same normalized display model
+- CPI and NBP chart overlays must be rendered from truthful reference-series display data; do not fabricate smooth transitions by interpolating reference values through bond checkpoints
 - single and comparison flows must reuse the same rollover inference rules where the product behavior is the same
 - current bond offer terms and NBP reference-rate assumptions must remain separate concepts in code, UI wording, and exported artifacts
 - simple-mode projected NBP defaults should be presented as a flat path from the latest synced rate until the user overrides it
