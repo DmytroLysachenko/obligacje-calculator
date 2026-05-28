@@ -1,10 +1,9 @@
 'use client';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useAppI18n } from '@/i18n/client';
-import { AlertCircle, BookOpen, CheckCircle2, FolderOpen, Plus, RefreshCcw, Upload, } from 'lucide-react';
+import { AlertCircle, BookOpen, FolderOpen, Plus, RefreshCcw, Upload, } from 'lucide-react';
 import { UserPortfolio } from '@/db/schema';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 import { useDateFormatter } from '@/shared/hooks/useLocalizedFormatters';
@@ -51,10 +50,9 @@ const EmptyPortfolioState = ({ onCreate, onCreateDemo, onImport, badgeLabel, tit
     demoLabel: string;
     importLabel: string;
     steps: NotebookStepItem[];
-}) => (<Card className="overflow-hidden rounded-[2rem] border border-slate-200/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.88),rgba(248,250,252,0.92))] shadow-[0_22px_60px_-48px_rgba(15,23,42,0.45)] backdrop-blur">
-    <CardContent className="space-y-6 p-6 md:p-8">
+}) => (<section className="space-y-6 rounded-[1.9rem] border border-slate-200 bg-white px-6 py-6 md:px-8 md:py-8">
       <div className="space-y-3">
-        <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-slate-700">
+        <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-slate-700">
           <BookOpen className="h-3.5 w-3.5 text-primary"/>
           {badgeLabel}
         </div>
@@ -67,11 +65,13 @@ const EmptyPortfolioState = ({ onCreate, onCreateDemo, onImport, badgeLabel, tit
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        {steps.map((step) => (<div key={step.id} className="rounded-[1.75rem] border border-white/80 bg-white/75 p-5 shadow-[0_16px_40px_-34px_rgba(15,23,42,0.45)] backdrop-blur">
+        {steps.map((step, index) => (<div key={step.id} className="space-y-3 rounded-[1.4rem] border border-slate-200 px-4 py-4">
             <div className="flex items-start gap-3">
-              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary"/>
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-slate-200 text-[11px] font-black text-slate-700">
+                {index + 1}
+              </div>
               <div className="space-y-2">
-                <p className="text-xs font-semibold tracking-[0.08em] text-slate-500">
+                <p className="text-xs font-semibold tracking-[0.08em] text-slate-500 uppercase">
                   {step.title}
                 </p>
                 <p className="text-sm leading-7 text-slate-600">{step.description}</p>
@@ -93,8 +93,7 @@ const EmptyPortfolioState = ({ onCreate, onCreateDemo, onImport, badgeLabel, tit
           {importLabel}
         </Button>
       </div>
-    </CardContent>
-  </Card>);
+    </section>);
 const NotebookLoadingState = () => (<div className="space-y-4">
     <Skeleton className="h-28 w-full rounded-[2rem]"/>
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -108,8 +107,8 @@ function NotebookMiniStat({ label, value, description, }: {
     value: string;
     description: string;
 }) {
-    return (<div className="rounded-[1.6rem] border border-white/80 bg-white/78 px-4 py-4 shadow-[0_16px_34px_-30px_rgba(15,23,42,0.35)] backdrop-blur">
-      <p className="text-xs font-semibold tracking-[0.08em] text-slate-500">
+    return (<div className="space-y-2 border-b border-dashed border-slate-200 px-4 py-4 last:border-b-0 md:border-b-0 md:border-r last:md:border-r-0">
+      <p className="text-xs font-semibold tracking-[0.08em] text-slate-500 uppercase">
         {label}
       </p>
       <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">
@@ -365,7 +364,7 @@ export const NotebookContainer: React.FC = () => {
             onCreatePortfolio={handleCreateDefault}
           />
 
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-0 rounded-[1.9rem] border border-slate-200 bg-white md:grid-cols-3">
             <NotebookMiniStat label={t('notebook.portfolios_label')} value={String(portfolios.length)} description={t('notebook.portfolios_label_desc')}/>
             <NotebookMiniStat label={t('notebook.public_links_label')} value={String(publicCount)} description={t('notebook.public_links_label_desc')}/>
             <NotebookMiniStat label={t('notebook.private_drafts_label')} value={String(privateCount)} description={t('notebook.private_drafts_label_desc')}/>
@@ -375,7 +374,7 @@ export const NotebookContainer: React.FC = () => {
 
       {isLoading ? (<NotebookLoadingState />) : portfolios.length === 0 ? (<EmptyPortfolioState onCreate={canManageWorkspace ? handleCreateDefault : () => {}} onCreateDemo={canManageWorkspace ? handleCreateDemo : () => {}} onImport={canManageWorkspace ? handleImportClick : () => {}} badgeLabel={t('notebook.empty_badge')} title={t('notebook.empty_title')} description={canManageWorkspace ? t('notebook.empty_desc') : t('workspace.empty_guest_description')} createLabel={canManageWorkspace ? t('notebook.create_first') : t('workspace.sign_in_required_short')} demoLabel={t('notebook.load_demo')} importLabel={t('notebook.import_json')} steps={emptyStateSteps}/>) : (<div className="space-y-8">
           <SectionBlock title={t('notebook.stored_portfolios')} description={t('notebook.stored_portfolios_desc')}>
-            <div className="rounded-[1.8rem] border border-slate-200 bg-white/84 px-5 py-4 text-sm leading-7 text-slate-600 shadow-[0_18px_44px_-40px_rgba(15,23,42,0.35)] backdrop-blur">
+            <div className="rounded-[1.5rem] border border-slate-200 px-5 py-4 text-sm leading-7 text-slate-600">
               {t('notebook.stored_portfolios_note')}
             </div>
 
@@ -409,21 +408,17 @@ export const NotebookContainer: React.FC = () => {
             </div>
           </SectionBlock>
 
-          <Card className="rounded-[2rem] border border-slate-200 bg-white/82 shadow-[0_16px_42px_-38px_rgba(15,23,42,0.4)] backdrop-blur">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-3">
-                <FolderOpen className="mt-0.5 h-5 w-5 text-primary"/>
-                <div className="space-y-2">
-                  <p className="text-xl font-black tracking-tight text-slate-950">
-                    {t('notebook.scope_title')}
-                  </p>
-                  <p className="text-sm leading-7 text-slate-600">
-                    {t('notebook.scope_desc')}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <section className="flex items-start gap-3 rounded-[1.7rem] border border-slate-200 bg-white px-5 py-5">
+            <FolderOpen className="mt-0.5 h-5 w-5 text-primary"/>
+            <div className="space-y-2">
+              <p className="text-xl font-black tracking-tight text-slate-950">
+                {t('notebook.scope_title')}
+              </p>
+              <p className="text-sm leading-7 text-slate-600">
+                {t('notebook.scope_desc')}
+              </p>
+            </div>
+          </section>
         </div>)}
 
       <ConfirmActionDialog
