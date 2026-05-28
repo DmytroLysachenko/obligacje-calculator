@@ -10,10 +10,15 @@ import { ComparisonAssetBreakdown } from './ComparisonAssetBreakdown';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { MonthlyReturn } from '@/features/bond-core/constants/historical-data';
 import { cn } from '@/lib/utils';
-import { Card, CardContent } from '@/components/ui/card';
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
+function MetaCell({label, value}: {label: string; value: string}) {
+    return (<div className="border-b border-dashed border-slate-200 px-4 py-3 last:border-b-0 md:border-b-0 md:border-r last:md:border-r-0">
+        <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">{label}</p>
+        <p className="mt-1 text-sm font-medium text-slate-900">{value}</p>
+      </div>);
+}
 interface ChartDataRow {
     date: string;
     inflation: number;
@@ -92,92 +97,73 @@ export const MultiAssetComparisonContainer = () => {
         </aside>
 
         <section className="space-y-6 xl:col-span-8">
-          <Card className={cn('rounded-2xl border shadow-none', usedFallbackHistory ? 'border-amber-200 bg-amber-50' : 'bg-card')}>
-            <CardContent className="space-y-4 p-5">
-              <div className="flex items-start gap-3">
-                {usedFallbackHistory ? (<AlertTriangle className="mt-0.5 h-5 w-5 text-amber-700"/>) : (<Database className="mt-0.5 h-5 w-5 text-primary"/>)}
-                <div className="space-y-2">
-                  <p className="font-semibold text-foreground">
-                    {usedFallbackHistory
+          <section className={cn('space-y-4 rounded-[1.9rem] border px-5 py-5', usedFallbackHistory ? 'border-amber-200 bg-amber-50/60' : 'border-slate-200 bg-white')}>
+            <div className="flex items-start gap-3">
+              {usedFallbackHistory ? (<AlertTriangle className="mt-0.5 h-5 w-5 text-amber-700"/>) : (<Database className="mt-0.5 h-5 w-5 text-primary"/>)}
+              <div className="space-y-2">
+                <p className="font-semibold text-foreground">
+                  {usedFallbackHistory
             ? t('multi_asset_page.history_state.reference_only_title')
             : t('multi_asset_page.history_state.live_title')}
-                  </p>
-                  <p className="text-sm leading-6 text-muted-foreground">
-                    {t('multi_asset_page.history_state.description')}
-                  </p>
-                </div>
+                </p>
+                <p className="text-sm leading-6 text-muted-foreground">
+                  {t('multi_asset_page.history_state.description')}
+                </p>
               </div>
-              <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-3">
-                <div className="rounded-xl border bg-background/70 p-3">
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">{t('multi_asset_page.history_state.coverage_label')}</p>
-                  <p className="mt-1 font-medium text-foreground">
-                    {historyCoverageLabel}
-                  </p>
-                </div>
-                <div className="rounded-xl border bg-background/70 p-3">
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">{t('multi_asset_page.history_state.source_label')}</p>
-                  <p className="mt-1 font-medium text-foreground">{historySourceLabel}</p>
-                </div>
-                <div className="rounded-xl border bg-background/70 p-3">
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">{t('multi_asset_page.history_state.as_of_label')}</p>
-                  <p className="mt-1 font-medium text-foreground">{historyAsOfLabel}</p>
-                </div>
-              </div>
-              {availabilitySummary ? (<p className="text-sm text-muted-foreground">
-                  {t('multi_asset_page.history_state.available_series_label')}{' '}
-                  <span className="font-medium text-foreground">{availabilitySummary}</span>
-                </p>) : null}
-              {usedFallbackHistory ? (<p className="text-sm text-amber-900">
-                  {t('multi_asset_page.history_state.fallback_warning')}
-                </p>) : null}
-            </CardContent>
-          </Card>
+            </div>
+            <div className="grid gap-0 rounded-[1.5rem] border border-slate-200 bg-white md:grid-cols-3">
+              <MetaCell label={t('multi_asset_page.history_state.coverage_label')} value={historyCoverageLabel}/>
+              <MetaCell label={t('multi_asset_page.history_state.source_label')} value={historySourceLabel}/>
+              <MetaCell label={t('multi_asset_page.history_state.as_of_label')} value={historyAsOfLabel}/>
+            </div>
+            {availabilitySummary ? (<p className="text-sm text-muted-foreground">
+                {t('multi_asset_page.history_state.available_series_label')}{' '}
+                <span className="font-medium text-foreground">{availabilitySummary}</span>
+              </p>) : null}
+            {usedFallbackHistory ? (<p className="text-sm text-amber-900">
+                {t('multi_asset_page.history_state.fallback_warning')}
+              </p>) : null}
+          </section>
 
           {assets.length > 0 && leadingAsset ? (<div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-              <Card className="rounded-2xl border shadow-none">
-                <CardContent className="p-5">
-                  <p className="text-[10px] font-black uppercase text-muted-foreground">
-                    {t('multi_asset_page.metrics.committed_start_label')}
-                  </p>
-                  <p className="mt-2 text-lg font-black text-slate-950">
-                    {committedScenario.startYear}-{committedScenario.startMonth}
-                  </p>
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                    {t('multi_asset_page.metrics.committed_start_detail')}
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="rounded-2xl border shadow-none">
-                <CardContent className="p-5">
-                  <p className="text-[10px] font-black uppercase text-muted-foreground">
-                    {t('multi_asset_page.metrics.total_invested_label')}
-                  </p>
-                  <p className="mt-2 text-lg font-black text-slate-950">
-                    {formatCurrency(totalInvested)}
-                  </p>
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                    {t('multi_asset_page.metrics.total_invested_detail')}
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="rounded-2xl border shadow-none">
-                <CardContent className="p-5">
-                  <p className="text-[10px] font-black uppercase text-muted-foreground">
-                    {t('multi_asset_page.metrics.leading_ending_value_label')}
-                  </p>
-                  <p className="mt-2 text-lg font-black text-slate-950">
-                    {leadingAsset.name}
-                  </p>
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                    {t('multi_asset_page.metrics.leading_ending_value_detail', {
-                        value: formatCurrency(leadingAsset.value),
-                        mode: showRealValue
-                            ? t('multi_asset_page.real_value_mode')
-                            : t('multi_asset_page.nominal_mode'),
-                    })}
-                  </p>
-                </CardContent>
-              </Card>
+              <section className="rounded-[1.6rem] border border-slate-200 bg-white px-4 py-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.12em] text-muted-foreground">
+                  {t('multi_asset_page.metrics.committed_start_label')}
+                </p>
+                <p className="mt-2 text-lg font-black text-slate-950">
+                  {committedScenario.startYear}-{committedScenario.startMonth}
+                </p>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                  {t('multi_asset_page.metrics.committed_start_detail')}
+                </p>
+              </section>
+              <section className="rounded-[1.6rem] border border-slate-200 bg-white px-4 py-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.12em] text-muted-foreground">
+                  {t('multi_asset_page.metrics.total_invested_label')}
+                </p>
+                <p className="mt-2 text-lg font-black text-slate-950">
+                  {formatCurrency(totalInvested)}
+                </p>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                  {t('multi_asset_page.metrics.total_invested_detail')}
+                </p>
+              </section>
+              <section className="rounded-[1.6rem] border border-slate-200 bg-white px-4 py-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.12em] text-muted-foreground">
+                  {t('multi_asset_page.metrics.leading_ending_value_label')}
+                </p>
+                <p className="mt-2 text-lg font-black text-slate-950">
+                  {leadingAsset.name}
+                </p>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                  {t('multi_asset_page.metrics.leading_ending_value_detail', {
+                      value: formatCurrency(leadingAsset.value),
+                      mode: showRealValue
+                          ? t('multi_asset_page.real_value_mode')
+                          : t('multi_asset_page.nominal_mode'),
+                  })}
+                </p>
+              </section>
             </div>) : null}
 
           {isDirty ? (<div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
@@ -207,14 +193,14 @@ export const MultiAssetComparisonContainer = () => {
             ]} footerText={t('multi_asset_page.ready.footer')}/>)}
 
           <SecondaryInsightAccordion title={t('multi_asset_page.scope_notes.title')} description={t('multi_asset_page.scope_notes.description')} badge={t('multi_asset_page.scope_notes.badge')}>
-            <div className="grid grid-cols-1 gap-4 text-sm leading-6 text-muted-foreground md:grid-cols-3">
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+            <div className="divide-y divide-dashed divide-slate-200 rounded-[1.5rem] border border-slate-200 bg-white text-sm leading-6 text-muted-foreground">
+              <div className="px-4 py-3">
                 {t('multi_asset_page.scope_notes.cards.reference_run')}
               </div>
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+              <div className="px-4 py-3">
                 {t('multi_asset_page.scope_notes.cards.start_month')}
               </div>
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+              <div className="px-4 py-3">
                 {t('multi_asset_page.scope_notes.cards.real_value')}
               </div>
             </div>

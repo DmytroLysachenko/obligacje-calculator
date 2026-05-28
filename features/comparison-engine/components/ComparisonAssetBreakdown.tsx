@@ -2,12 +2,6 @@
 
 import React from "react";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -37,76 +31,74 @@ export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> =
         const isProfit = netProfit >= 0;
 
         return (
-          <div key={asset.metadata.id}>
-            <Card className="h-full rounded-2xl border shadow-none">
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-2 h-6 rounded-full"
-                      style={{ backgroundColor: asset.metadata.color }}
-                    />
-                    <CardTitle className="text-[10px] font-black uppercase tracking-widest">
-                      {asset.metadata.name}
-                    </CardTitle>
-                  </div>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs">
-                          {asset.metadata.description[language]}
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6 flex-1 flex flex-col justify-between">
-                <div className="space-y-2">
-                  <p className="text-2xl font-semibold text-foreground tracking-tight">
-                    {formatCurrency(finalValue)}
-                  </p>
+          <article key={asset.metadata.id} className="flex h-full flex-col justify-between gap-5 rounded-[1.7rem] border border-slate-200 bg-white px-5 py-5">
+            <div className="space-y-5">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
                   <div
-                    className={cn(
-                      "text-sm font-semibold flex items-center gap-1.5",
-                      isProfit ? "text-green-600" : "text-destructive"
-                    )}
-                  >
-                    {isProfit ? (
-                      <TrendingUp className="h-4 w-4" />
-                    ) : (
-                      <Activity className="h-4 w-4" />
-                    )}
-                    {isProfit ? "+" : ""}
-                    {formatCurrency(netProfit)}
-                  </div>
+                    className="w-2 h-6 rounded-full"
+                    style={{ backgroundColor: asset.metadata.color }}
+                  />
+                  <p className="text-[10px] font-black uppercase tracking-widest">
+                    {asset.metadata.name}
+                  </p>
                 </div>
-                <div className="space-y-3 border-t pt-5">
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="font-medium text-muted-foreground">
-                      {t('comparison.max_drawdown')}
-                    </span>
-                    <span className="text-destructive font-semibold">
-                      -{maxDrawdown.toFixed(1)}%
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="font-medium text-muted-foreground">
-                      {t('comparison.total_return')}
-                    </span>
-                    <span className="text-green-600 font-semibold">
-                      +
-                      {((finalValue / totalInvested - 1) * 100).toFixed(1)}
-                      %
-                    </span>
-                  </div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-3 w-3 cursor-help text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-xs">
+                        {asset.metadata.description[language]}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-2xl font-semibold tracking-tight text-foreground">
+                  {formatCurrency(finalValue)}
+                </p>
+                <div
+                  className={cn(
+                    "flex items-center gap-1.5 text-sm font-semibold",
+                    isProfit ? "text-green-600" : "text-destructive"
+                  )}
+                >
+                  {isProfit ? (
+                    <TrendingUp className="h-4 w-4" />
+                  ) : (
+                    <Activity className="h-4 w-4" />
+                  )}
+                  {isProfit ? "+" : ""}
+                  {formatCurrency(netProfit)}
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </div>
+
+            <div className="divide-y divide-dashed divide-slate-200 rounded-[1.25rem] border border-slate-200">
+              <div className="flex items-center justify-between gap-4 px-4 py-3 text-xs">
+                <span className="font-medium text-muted-foreground">
+                  {t('comparison.max_drawdown')}
+                </span>
+                <span className="font-semibold text-destructive">
+                  -{maxDrawdown.toFixed(1)}%
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-4 px-4 py-3 text-xs">
+                <span className="font-medium text-muted-foreground">
+                  {t('comparison.total_return')}
+                </span>
+                <span className="font-semibold text-green-600">
+                  +
+                  {((finalValue / totalInvested - 1) * 100).toFixed(1)}
+                  %
+                </span>
+              </div>
+            </div>
+          </article>
         );
       })}
     </div>

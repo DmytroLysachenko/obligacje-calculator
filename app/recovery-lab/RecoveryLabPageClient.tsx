@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import {BarChart2, Calendar, ShieldAlert, TrendingUp} from 'lucide-react';
-import {Card, CardContent} from '@/components/ui/card';
 import {FeatureStatusNotice, FeatureStatusPill} from '@/shared/components/feedback/FeatureStatusNotice';
 import {SecondarySurfaceIntro} from '@/shared/components/page/SecondarySurfaceIntro';
 import {useAppI18n} from '@/i18n/client';
@@ -63,51 +62,43 @@ export function RecoveryLabPageClient() {
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
         {recoveryLabPages.map((page) => (
           <Link key={page.href} href={page.href} className="group block h-full">
-            <Card className="h-full overflow-hidden rounded-[2rem] border border-amber-200/80 bg-[linear-gradient(180deg,rgba(255,251,235,0.88),rgba(255,255,255,0.94))] shadow-[0_18px_48px_-40px_rgba(120,53,15,0.18)] transition-colors group-hover:border-amber-300">
-              <CardContent className="space-y-5 p-6">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="rounded-2xl bg-white p-3 text-amber-700 shadow-sm">
-                    <page.icon className="h-5 w-5" />
-                  </div>
-                  <FeatureStatusPill status={page.status} />
+            <article className="flex h-full flex-col gap-5 rounded-[1.75rem] border border-amber-200/90 bg-white px-5 py-5 transition-colors group-hover:border-amber-300">
+              <div className="flex items-start justify-between gap-3">
+                <div className="rounded-xl bg-amber-50 p-2.5 text-amber-700">
+                  <page.icon className="h-4.5 w-4.5" />
                 </div>
-                <div className="space-y-2">
-                  <p className="text-xl font-black tracking-tight text-slate-950">
-                    {t(`recovery_lab_page.pages.${page.i18nKey}.title`)}
-                  </p>
-                  <p className="text-sm leading-7 text-slate-600">
-                    {t(`recovery_lab_page.pages.${page.i18nKey}.description`)}
-                  </p>
-                </div>
-                <div className="rounded-2xl border border-white/80 bg-white/70 px-4 py-3 text-sm leading-6 text-slate-600">
-                  {t('recovery_lab_page.card_support_notice')}
-                </div>
-                <div className="rounded-2xl border border-amber-200/80 bg-white/80 px-4 py-3 text-sm leading-7 text-slate-700">
-                  {t('recovery_lab_page.card_notice')}
-                </div>
-              </CardContent>
-            </Card>
+                <FeatureStatusPill status={page.status} />
+              </div>
+              <div className="space-y-2">
+                <p className="text-xl font-black tracking-tight text-slate-950">
+                  {t(`recovery_lab_page.pages.${page.i18nKey}.title`)}
+                </p>
+                <p className="text-sm leading-7 text-slate-600">
+                  {t(`recovery_lab_page.pages.${page.i18nKey}.description`)}
+                </p>
+              </div>
+              <div className="space-y-3 border-t border-dashed border-amber-200 pt-4 text-sm leading-6 text-slate-600">
+                <p>{t('recovery_lab_page.card_support_notice')}</p>
+                <p>{t('recovery_lab_page.card_notice')}</p>
+              </div>
+            </article>
           </Link>
         ))}
       </div>
 
-      <Card className="rounded-[2rem] border border-slate-200 bg-white/88 shadow-[0_16px_42px_-38px_rgba(15,23,42,0.32)] backdrop-blur">
-        <CardContent className="space-y-4 p-6">
-          <div className="flex items-center gap-2 text-slate-950">
-            <ShieldAlert className="h-5 w-5 text-primary" />
-            <p className="text-xl font-black tracking-tight">
-              {t('recovery_lab_page.what_stays_core')}
-            </p>
-          </div>
-          <p className="text-sm leading-7 text-slate-600">
-            {t('recovery_lab_page.what_stays_core_desc')}
+      <section className="space-y-4 rounded-[1.9rem] border border-slate-200 bg-white px-6 py-6">
+        <div className="flex items-center gap-2 text-slate-950">
+          <ShieldAlert className="h-5 w-5 text-primary" />
+          <p className="text-xl font-black tracking-tight">
+            {t('recovery_lab_page.what_stays_core')}
           </p>
-          <div className="space-y-2 text-sm leading-7 text-slate-600">
-            <p>{t('recovery_lab_page.core_emphasis')}</p>
-            <p>{t('recovery_lab_page.core_improve_later')}</p>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+        <div className="space-y-2 border-t border-dashed border-slate-200 pt-4 text-sm leading-7 text-slate-600">
+          <p>{t('recovery_lab_page.what_stays_core_desc')}</p>
+          <p>{t('recovery_lab_page.core_emphasis')}</p>
+          <p>{t('recovery_lab_page.core_improve_later')}</p>
+        </div>
+      </section>
     </div>
   );
 }

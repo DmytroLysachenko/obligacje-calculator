@@ -57,7 +57,7 @@ export function FeatureStatusNotice({ status, title, children, className, eyebro
 }) {
     const config = statusConfig[status];
     const Icon = config.icon;
-    return (<div className={cn('surface-panel rounded-[1.8rem] px-5 py-4 md:px-6 md:py-5', config.noticeClassName, className)}>
+    return (<section className={cn('rounded-[1.7rem] border px-5 py-4 md:px-6 md:py-5', config.noticeClassName, className)}>
       <div className="flex items-start gap-3">
         <Icon className="mt-0.5 h-4 w-4 shrink-0 opacity-80"/>
         <div className="min-w-0 space-y-2">
@@ -71,7 +71,7 @@ export function FeatureStatusNotice({ status, title, children, className, eyebro
           <div className="text-[15px] leading-7 text-current/90">{children}</div>
         </div>
       </div>
-    </div>);
+    </section>);
 }
 
 
