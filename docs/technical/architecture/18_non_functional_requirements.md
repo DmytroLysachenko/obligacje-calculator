@@ -53,3 +53,5 @@ Quality and performance standards for the platform.
 - **NFR6.23:** Structured JSON API routes must use shared validated-body parsing instead of repeated ad hoc `req.json()` handling.
 - **NFR6.24:** Secondary tools such as multi-asset and recovery-lab should stay explicitly demoted and framed as supporting/reference surfaces, not peer flagship calculators.
 - **NFR6.25:** CPI and NBP reference overlays must be rendered from truthful reference display series rather than smoothed or interpolated through unrelated bond checkpoints.
+- **NFR6.26:** Sidebar and workspace utility chrome should prefer compact grouped rails and separators over stacks of visually identical floating mini-cards.
+- **NFR6.27:** Shared ready, support, and explanation panels should favor dense rows and light section framing over nested decorative cards.

@@ -262,8 +262,10 @@ For dense informational surfaces, prefer:
 - section shells with separators
 - compact split grids
 - bordered rows for short facts
+- flatter sidebar and workspace utility rails instead of stacked floating panels
 
 Do not stack multiple rounded bordered cards inside one another when the same content can be presented as one structured section.
+Do not solve short utility content with repeated decorative mini-cards when one grouped rail is enough.
 
 ## 6.5 Secondary Tool Direction
 

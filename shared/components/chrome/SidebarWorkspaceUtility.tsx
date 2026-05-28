@@ -48,7 +48,7 @@ export function SidebarWorkspaceUtility({ pathname }: { pathname: string }) {
           </div>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2.5">
+        <div className="border-l-2 border-slate-200 pl-3">
           <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
             {t('sidebar.portfolio_selector_label')}
           </p>
@@ -65,7 +65,7 @@ export function SidebarWorkspaceUtility({ pathname }: { pathname: string }) {
             setSelectedPortfolioId(value);
           }}
         >
-          <SelectTrigger className="h-10 rounded-xl border-slate-200 bg-white/90 text-left text-sm font-medium">
+          <SelectTrigger className="h-10 rounded-xl border-slate-200 bg-white text-left text-sm font-medium">
             <SelectValue placeholder={t('sidebar.portfolio_selector_empty')} />
           </SelectTrigger>
           <SelectContent>
@@ -77,7 +77,7 @@ export function SidebarWorkspaceUtility({ pathname }: { pathname: string }) {
           </SelectContent>
         </Select>
 
-        <Button asChild variant="outline" className="h-9 w-full rounded-xl border-slate-200 bg-white/80 text-sm">
+        <Button asChild variant="outline" className="h-9 w-full rounded-xl border-slate-200 bg-white text-sm">
           <Link href="/notebook" className="gap-2">
             <LayoutList className="h-4 w-4" />
             {t('sidebar.workspace_manage')}

@@ -20,9 +20,10 @@ import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { useAppI18n } from '@/i18n/client';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { cn } from '@/lib/utils';
-import { LanguageSwitcher } from './LanguageSwitcher';
-import { SidebarUtilityGroup, SidebarUtilityPanel } from './SidebarUtilityGroup';
+import { SidebarUtilityGroup } from './SidebarUtilityGroup';
 import { SidebarWorkspaceUtility } from './SidebarWorkspaceUtility';
+import { SidebarSettingsUtility } from './SidebarSettingsUtility';
+import { SidebarSyncSummary } from './SidebarSyncSummary';
 
 interface SidebarContentProps {
   onItemClick?: () => void;
@@ -40,60 +41,18 @@ type NavSection = {
   items: NavItem[];
 };
 
-function getFreshnessLabel(
-  freshness: CalculationDataFreshness,
-  t: (key: string, params?: Record<string, string | number>) => string,
-) {
-  if (freshness.status === 'fresh') {
-    return t('sidebar.freshness.fresh');
-  }
-
-  if (freshness.status === 'fallback' || freshness.usedFallback) {
-    return t('sidebar.freshness.partial');
-  }
-
-  return t('sidebar.freshness.caution');
-}
-
-function getFreshnessText(
-  freshness: CalculationDataFreshness,
-  t: (key: string, params?: Record<string, string | number>) => string,
-) {
-  if (freshness.status === 'fresh') {
-    return t('sidebar.freshness.text_fresh');
-  }
-
-  if (freshness.status === 'fallback' || freshness.usedFallback) {
-    return t('sidebar.freshness.text_partial');
-  }
-
-  return t('sidebar.freshness.text_caution');
-}
-
-function getFreshnessClass(freshness: CalculationDataFreshness) {
-  if (freshness.status === 'fresh') {
-    return 'border-emerald-200 bg-emerald-50 text-emerald-800';
-  }
-
-  if (freshness.status === 'fallback' || freshness.usedFallback) {
-    return 'border-orange-200 bg-orange-50 text-orange-800';
-  }
-
-  return 'border-amber-200 bg-amber-50 text-amber-800';
-}
-
 function SidebarBrand() {
   const { t } = useAppI18n();
 
   return (
     <div className="border-b border-slate-200/80 px-4 py-3">
       <Link href="/" className="flex items-center gap-2.5">
-        <div className="rounded-xl bg-slate-900 p-1.5 text-white shadow-sm shadow-slate-900/10">
-          <TrendingUp className="h-3.5 w-3.5" />
+        <div className="rounded-lg bg-slate-900 p-1.5 text-white shadow-sm shadow-slate-900/10">
+          <TrendingUp className="h-3 w-3" />
         </div>
         <div className="min-w-0 space-y-1">
-          <p className="text-[1rem] font-bold tracking-tight">{t('common.title')}</p>
-          <p className="max-w-[13rem] text-[10px] leading-5 text-slate-500">
+          <p className="text-[0.95rem] font-bold tracking-tight">{t('common.title')}</p>
+          <p className="max-w-[13rem] text-[10px] leading-[1.15rem] text-slate-500">
             {t('sidebar.brand_tagline')}
           </p>
         </div>
@@ -182,65 +141,6 @@ function NavSectionBlock({
   );
 }
 
-function SidebarLanguageUtility() {
-  const { t } = useAppI18n();
-
-  return (
-    <SidebarUtilityPanel>
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2.5">
-        <div className="min-w-0">
-          <p className="text-xs font-semibold text-slate-500">{t('common.language')}</p>
-          <p className="mt-0.5 text-[11px] text-slate-500">PL / EN</p>
-        </div>
-        <div className="justify-self-end">
-          <LanguageSwitcher />
-        </div>
-      </div>
-    </SidebarUtilityPanel>
-  );
-}
-
-function SidebarSyncUtility({
-  dataFreshness,
-}: {
-  dataFreshness?: CalculationDataFreshness;
-}) {
-  const { t } = useAppI18n();
-
-  return (
-    <SidebarUtilityPanel>
-      <div className="space-y-1.5">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-xs font-semibold text-slate-500">{t('common.sync_data')}</p>
-            <p className="mt-0.5 text-[13px] font-semibold text-slate-900">
-              {dataFreshness
-                ? dataFreshness.asOf ?? t('sidebar.freshness.no_date')
-                : t('sidebar.freshness.no_metadata')}
-            </p>
-          </div>
-          {dataFreshness ? (
-            <span
-              className={cn(
-                'inline-flex rounded-full border px-2 py-0.5 text-xs font-semibold',
-                getFreshnessClass(dataFreshness),
-              )}
-            >
-              {getFreshnessLabel(dataFreshness, t)}
-            </span>
-          ) : null}
-        </div>
-
-        <p className="text-xs leading-5 text-slate-600">
-          {dataFreshness
-            ? getFreshnessText(dataFreshness, t)
-            : t('sidebar.sync_unavailable')}
-        </p>
-      </div>
-    </SidebarUtilityPanel>
-  );
-}
-
 function SidebarFooter({
   dataFreshness,
   pathname,
@@ -257,8 +157,8 @@ function SidebarFooter({
         <SidebarWorkspaceUtility pathname={pathname} />
       </SidebarUtilityGroup>
       <SidebarUtilityGroup title={t('common.settings')}>
-        <SidebarLanguageUtility />
-        <SidebarSyncUtility dataFreshness={dataFreshness} />
+        <SidebarSettingsUtility />
+        <SidebarSyncSummary dataFreshness={dataFreshness} />
       </SidebarUtilityGroup>
       <div className="px-1 pt-1 text-xs text-slate-500">
         {'\u00A9'} {hasMounted ? new Date().getFullYear() : '----'} {t('common.title')}
