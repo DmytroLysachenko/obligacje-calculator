@@ -196,8 +196,8 @@ export const BondChart: React.FC<BondChartProps> = ({ results, chartStep = 'year
               <Line yAxisId="left" type="monotone" dataKey="high" name={t("bonds.inflation.scenarios.high")} stroke="#3b82f6" strokeWidth={1} strokeDasharray="3 3" dot={false} opacity={0.5} isAnimationActive={false}/>
               <Line yAxisId="left" type="monotone" dataKey="low" name={t("bonds.inflation.scenarios.low")} stroke="#3b82f6" strokeWidth={1} strokeDasharray="3 3" dot={false} opacity={0.5} isAnimationActive={false}/>
             </>) : null}
-          <Line yAxisId="right" type="monotone" dataKey="inflation" name={t("bonds.ref_inflation")} stroke="#f59e0b" strokeWidth={1.75} strokeDasharray="5 5" dot={false} opacity={0.45} isAnimationActive={false}/>
-          <Line yAxisId="right" type="monotone" dataKey="nbp" name={t("bonds.nbp_rate_short")} stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="3 3" dot={false} opacity={0.3} isAnimationActive={false}/>
+          <Line yAxisId="right" type="stepAfter" dataKey="inflation" name={t("bonds.ref_inflation")} stroke="#f59e0b" strokeWidth={1.75} strokeDasharray="5 5" dot={false} opacity={0.45} isAnimationActive={false}/>
+          <Line yAxisId="right" type="stepAfter" dataKey="nbp" name={t("bonds.nbp_rate_short")} stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="3 3" dot={false} opacity={0.3} isAnimationActive={false}/>
         </ComposedChart>
       </ResponsiveContainer>
     </ChartContainer>);

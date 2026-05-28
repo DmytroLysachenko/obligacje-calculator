@@ -90,4 +90,39 @@ describe('buildBondChartDisplayPoints', () => {
     expect(rows[1]?.periodLabel).toBe('Jun 2026');
     expect(points.at(-1)?.xLabel).toBe('May 2027');
   });
+
+  it('keeps CPI and NBP reference overlays flat between yearly checkpoints when densifying', () => {
+    const timeline: YearlyTimelinePoint[] = [
+      makeTimelinePoint({
+        periodLabel: 'Purchase',
+        cycleEndDate: '2026-05-19',
+        inflationReference: 2.5,
+        nbpReference: 3.75,
+      }),
+      makeTimelinePoint({
+        year: 2,
+        periodLabel: 'Year 1',
+        cycleEndDate: '2027-05-19',
+        inflationReference: 3.5,
+        nbpReference: 4.25,
+        nominalValueBeforeInterest: 10000,
+        interestEarned: 535,
+        netInterest: 535,
+        nominalValueAfterInterest: 10535,
+        totalValue: 10535,
+        realValue: 10192.13,
+        netProfit: 535,
+        isProjected: true,
+      }),
+    ];
+
+    const points = buildBondChartDisplayPoints(10000, timeline, 'en', undefined, 'monthly');
+
+    expect(points[0]?.inflation).toBe(2.5);
+    expect(points[0]?.nbp).toBe(3.75);
+    expect(points[1]?.inflation).toBe(2.5);
+    expect(points[1]?.nbp).toBe(3.75);
+    expect(points.at(-1)?.inflation).toBe(3.5);
+    expect(points.at(-1)?.nbp).toBe(4.25);
+  });
 });

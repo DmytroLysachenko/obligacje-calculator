@@ -70,6 +70,12 @@ function interpolateValue(start: number | undefined, end: number | undefined, pr
     }
     return Number((start + ((end - start) * progress)).toFixed(2));
 }
+function carryForwardValue<T>(start: T | undefined, end: T | undefined) {
+    if (start !== undefined) {
+        return start;
+    }
+    return end;
+}
 function densifyTimelinePoints(points: YearlyTimelinePoint[], chartStep: ChartAggregationStep): YearlyTimelinePoint[] {
     if (chartStep === 'daily' || chartStep === 'yearly' || points.length <= 1) {
         return points;
@@ -93,7 +99,7 @@ function densifyTimelinePoints(points: YearlyTimelinePoint[], chartStep: ChartAg
                 ...current,
                 cycleEndDate: checkpointDate.toISOString(),
                 periodLabel: current.periodLabel,
-                interestRate: interpolateValue(previous.interestRate, current.interestRate, progress) ?? current.interestRate,
+                interestRate: carryForwardValue(previous.interestRate, current.interestRate) ?? current.interestRate,
                 nominalValueBeforeInterest: interpolateValue(previous.nominalValueBeforeInterest, current.nominalValueBeforeInterest, progress) ?? current.nominalValueBeforeInterest,
                 interestEarned: interpolateValue(previous.interestEarned, current.interestEarned, progress) ?? current.interestEarned,
                 taxDeducted: interpolateValue(previous.taxDeducted, current.taxDeducted, progress) ?? current.taxDeducted,
@@ -105,8 +111,11 @@ function densifyTimelinePoints(points: YearlyTimelinePoint[], chartStep: ChartAg
                 netProfit: interpolateValue(previous.netProfit, current.netProfit, progress) ?? current.netProfit,
                 earlyWithdrawalValue: interpolateValue(previous.earlyWithdrawalValue, current.earlyWithdrawalValue, progress) ?? current.earlyWithdrawalValue,
                 cumulativeInflation: interpolateValue(previous.cumulativeInflation, current.cumulativeInflation, progress) ?? current.cumulativeInflation,
-                inflationReference: interpolateValue(previous.inflationReference, current.inflationReference, progress),
-                nbpReference: interpolateValue(previous.nbpReference, current.nbpReference, progress),
+                inflationReference: carryForwardValue(previous.inflationReference, current.inflationReference),
+                nbpReference: carryForwardValue(previous.nbpReference, current.nbpReference),
+                rateSource: carryForwardValue(previous.rateSource, current.rateSource) ?? current.rateSource,
+                rateReferenceValue: carryForwardValue(previous.rateReferenceValue, current.rateReferenceValue),
+                rateMarginApplied: carryForwardValue(previous.rateMarginApplied, current.rateMarginApplied),
                 events: [],
                 isMaturity: false,
                 isWithdrawal: false,
