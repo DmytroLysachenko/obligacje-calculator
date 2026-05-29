@@ -21,6 +21,7 @@ import {
   getStoredCurrentPortfolioId,
   setStoredCurrentPortfolioId,
 } from '@/shared/lib/workspace/current-portfolio';
+import { getWorkspaceSaveTarget } from '@/shared/lib/workspace/portfolio-selection';
 import { useBondCalculator } from '../hooks/useBondCalculator';
 import { applyGuardrailFix, getInputGuardrails, InputGuardrailIssue } from '../lib/input-guardrails';
 import { createSavedScenario, saveScenarioRecord } from '../lib/scenario-storage';
@@ -90,13 +91,13 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     try {
       const portfolioResponse = await fetch('/api/portfolio');
       const portfolioData = await portfolioResponse.json();
-      const portfolioList = unwrapApiData<Array<{ id: string }>>(portfolioData) ?? [];
+      const portfolioList = unwrapApiData<Array<{ id: string; name: string }>>(portfolioData) ?? [];
       const storedPortfolioId = getStoredCurrentPortfolioId();
-      let portfolioId: string | undefined =
-        portfolioList.find((portfolio) => portfolio.id === storedPortfolioId)?.id
-        ?? portfolioList[0]?.id;
+      const saveTarget = getWorkspaceSaveTarget(storedPortfolioId, portfolioList);
+      let portfolioId: string | undefined = saveTarget.portfolioId ?? undefined;
+      let portfolioName: string | null = saveTarget.portfolioName;
 
-      if (!portfolioId) {
+      if (saveTarget.needsPortfolioCreation) {
         const createResponse = await fetch('/api/portfolio', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -106,7 +107,9 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
           }),
         });
         const createData = await createResponse.json();
-        portfolioId = unwrapApiData<{ id: string }>(createData)?.id;
+        const createdPortfolio = unwrapApiData<{ id: string; name: string }>(createData);
+        portfolioId = createdPortfolio?.id;
+        portfolioName = createdPortfolio?.name ?? t('notebook.my_first_portfolio');
       }
 
       if (!portfolioId) {
@@ -127,7 +130,11 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
         }),
       });
       setStatusTone('success');
-      setStatusMessage(t('notebook.current_lot_added'));
+      setStatusMessage(
+        portfolioName
+          ? t('notebook.current_lot_added_to_active', { name: portfolioName })
+          : t('notebook.current_lot_added'),
+      );
     } catch (error) {
       console.error(error);
       setStatusTone('error');

@@ -6,9 +6,9 @@ import { unwrapApiData } from '@/shared/lib/api-response';
 import {
   persistSelectedPortfolioId,
   removePortfolioFromNotebookState,
-  resolveSelectedPortfolioId,
   upsertPortfolioInNotebookState,
 } from '@/shared/lib/workspace/notebook-state';
+import { resolveWorkspacePortfolioSelection } from '@/shared/lib/workspace/portfolio-selection';
 
 interface UseWorkspacePortfoliosOptions {
   enabled?: boolean;
@@ -28,7 +28,10 @@ export function useWorkspacePortfolios({ enabled = true }: UseWorkspacePortfolio
   const replacePortfolios = useCallback((nextPortfolios: UserPortfolio[]) => {
     setPortfoliosState(nextPortfolios);
     setSelectedPortfolioIdState((currentSelection) => {
-      const nextSelection = resolveSelectedPortfolioId(currentSelection, nextPortfolios);
+      const nextSelection = resolveWorkspacePortfolioSelection(
+        currentSelection,
+        nextPortfolios,
+      ).portfolioId;
       persistSelectedPortfolioId(nextSelection);
       return nextSelection;
     });
@@ -71,7 +74,10 @@ export function useWorkspacePortfolios({ enabled = true }: UseWorkspacePortfolio
     setPortfoliosState((current) => {
       const nextPortfolios = upsertPortfolioInNotebookState(current, portfolio);
       setSelectedPortfolioIdState((currentSelection) => {
-        const nextSelection = resolveSelectedPortfolioId(currentSelection, nextPortfolios);
+        const nextSelection = resolveWorkspacePortfolioSelection(
+          currentSelection,
+          nextPortfolios,
+        ).portfolioId;
         persistSelectedPortfolioId(nextSelection);
         return nextSelection;
       });
@@ -83,7 +89,10 @@ export function useWorkspacePortfolios({ enabled = true }: UseWorkspacePortfolio
     setPortfoliosState((current) => {
       const nextPortfolios = removePortfolioFromNotebookState(current, portfolioId);
       setSelectedPortfolioIdState((currentSelection) => {
-        const nextSelection = resolveSelectedPortfolioId(currentSelection, nextPortfolios);
+        const nextSelection = resolveWorkspacePortfolioSelection(
+          currentSelection,
+          nextPortfolios,
+        ).portfolioId;
         persistSelectedPortfolioId(nextSelection);
         return nextSelection;
       });

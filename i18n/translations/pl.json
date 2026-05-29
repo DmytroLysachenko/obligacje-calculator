@@ -1162,6 +1162,7 @@
     "scenario_saved": "Notatnik zapisanych scenariuszy",
     "add_current_lot": "Dodaj partie",
     "current_lot_added": "Biezaca partia obligacji zostala dodana do notatnika.",
+    "current_lot_added_to_active": "Biezaca partia obligacji zostala dodana do {name}.",
     "created_success": "Nowy portfel zostal utworzony.",
     "demo_loaded_success": "Portfel demonstracyjny zostal zaladowany.",
     "import_failed": "Import nie powiodl sie. Uzyj pakietu eksportu portfela w formacie JSON.",

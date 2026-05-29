@@ -9,12 +9,16 @@ interface WorkspaceStatusCardProps {
   isGuestWorkspace: boolean;
   canManageWorkspace: boolean;
   selectedPortfolio: UserPortfolio | null;
+  portfolios: UserPortfolio[];
+  onActivePortfolioChange: (portfolioId: string | null) => void;
 }
 
 export function WorkspaceStatusCard({
   isGuestWorkspace,
   canManageWorkspace,
   selectedPortfolio,
+  portfolios,
+  onActivePortfolioChange,
 }: WorkspaceStatusCardProps) {
   const { t } = useAppI18n();
   const workspaceStateIcon = canManageWorkspace ? FolderKanban : LockKeyhole;
@@ -37,12 +41,12 @@ export function WorkspaceStatusCard({
           </p>
         </div>
 
-        <div className="min-w-[240px] rounded-[1.5rem] border border-slate-200 px-4 py-4">
+        <div className="min-w-[280px] rounded-[1.5rem] border border-slate-200 px-4 py-4">
           <div className="flex items-start gap-3">
             <div className="rounded-xl bg-slate-100 p-2.5 text-slate-900">
               <WorkspaceStateIcon className="h-4.5 w-4.5" />
             </div>
-            <div className="space-y-2">
+            <div className="min-w-0 flex-1 space-y-3">
               <p className="text-xs font-semibold tracking-[0.08em] text-slate-500">
                 {t('workspace.active_selection_title')}
               </p>
@@ -56,6 +60,28 @@ export function WorkspaceStatusCard({
                     : t('workspace.create_first_portfolio_desc')
                   : t('workspace.preview_only_desc')}
               </p>
+
+              {canManageWorkspace && portfolios.length > 0 ? (
+                <label className="block space-y-2 border-t border-dashed border-slate-200 pt-3">
+                  <span className="text-xs font-semibold tracking-[0.08em] text-slate-500">
+                    {t('common.portfolio_selector_label')}
+                  </span>
+                  <select
+                    value={selectedPortfolio?.id ?? ''}
+                    onChange={(event) =>
+                      onActivePortfolioChange(event.target.value || null)
+                    }
+                    className="h-10 w-full rounded-2xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  >
+                    <option value="">{t('common.portfolio_selector_empty')}</option>
+                    {portfolios.map((portfolio) => (
+                      <option key={portfolio.id} value={portfolio.id}>
+                        {portfolio.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              ) : null}
             </div>
           </div>
         </div>

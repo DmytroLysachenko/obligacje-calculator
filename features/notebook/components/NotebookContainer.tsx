@@ -123,6 +123,7 @@ export const NotebookContainer: React.FC = () => {
     const [statusMessage, setStatusMessage] = useState<string | null>(null);
     const [portfolioPendingDelete, setPortfolioPendingDelete] = useState<UserPortfolio | null>(null);
     const [isMutating, setIsMutating] = useState(false);
+    const [detailPortfolioId, setDetailPortfolioId] = useState<string | null>(null);
     const importRef = useRef<HTMLInputElement | null>(null);
     const { canManageWorkspace, isGuestWorkspace } = usePortfolioAccess();
     const dateFormatter = useDateFormatter(language);
@@ -311,6 +312,7 @@ export const NotebookContainer: React.FC = () => {
                 return;
             }
             removePortfolioFromState(portfolio.id);
+            setDetailPortfolioId((current) => current === portfolio.id ? null : current);
             setError(null);
             setStatusMessage(t('notebook.delete_success'));
         }
@@ -322,11 +324,11 @@ export const NotebookContainer: React.FC = () => {
             setIsMutating(false);
         }
     };
-    if (selectedPortfolioId && canManageWorkspace) {
-        const portfolio = selectedPortfolio;
+    if (detailPortfolioId && canManageWorkspace) {
+        const portfolio = portfolios.find((item) => item.id === detailPortfolioId) ?? null;
         return portfolio ? (<PortfolioDetails portfolio={portfolio} onDelete={handleDeletePortfolio} onPortfolioUpdate={mergePortfolioIntoState} onBack={() => {
                 void fetchPortfolios();
-                setSelectedPortfolioId(null);
+                setDetailPortfolioId(null);
             }}/>) : (<NotebookLoadingState />);
     }
     const notebookIntro = t('notebook.workspace_intro');
@@ -354,6 +356,8 @@ export const NotebookContainer: React.FC = () => {
             isGuestWorkspace={isGuestWorkspace}
             canManageWorkspace={canManageWorkspace}
             selectedPortfolio={selectedPortfolio}
+            portfolios={portfolios}
+            onActivePortfolioChange={setSelectedPortfolioId}
           />
 
           <WorkspaceActionStrip
@@ -400,6 +404,7 @@ export const NotebookContainer: React.FC = () => {
                   onOpen={() => {
                     setSelectedPortfolioId(portfolio.id);
                     persistSelectedPortfolioId(portfolio.id);
+                    setDetailPortfolioId(portfolio.id);
                   }}
                   onRequestDelete={() => {
                     setPortfolioPendingDelete(portfolio);

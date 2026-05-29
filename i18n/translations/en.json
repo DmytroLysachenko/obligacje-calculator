@@ -1178,6 +1178,7 @@
     "scenario_saved": "Saved scenario notebook",
     "add_current_lot": "Add lot",
     "current_lot_added": "Current bond lot was added to the notebook.",
+    "current_lot_added_to_active": "Current bond lot was added to {name}.",
     "created_success": "A new portfolio was created.",
     "demo_loaded_success": "Demo portfolio loaded.",
     "import_failed": "Import failed. Use the portfolio export JSON package.",
