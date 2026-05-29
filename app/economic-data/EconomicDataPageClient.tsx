@@ -4,14 +4,17 @@ import React, {useState} from 'react';
 import {
   Activity,
   AlertTriangle,
+  BarChart3,
   CalendarRange,
   CheckCircle2,
   Database,
+  Info,
   ShieldAlert,
   Sparkles,
 } from 'lucide-react';
 import {Card, CardContent} from '@/components/ui/card';
-import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@/components/ui/accordion';
+import {Accordion} from '@/components/ui/accordion';
+import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {useAppI18n} from '@/i18n/client';
 import {InflationChart} from '@/features/economic-data/components/InflationChart';
 import {NBPRateChart} from '@/features/economic-data/components/NBPRateChart';
@@ -220,6 +223,154 @@ function SectionBlock({
   );
 }
 
+function DashboardTabFrame({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="space-y-5">
+      <div className="flex flex-col gap-3 rounded-[2rem] border border-slate-200 bg-white px-5 py-5 md:px-6">
+        <div className="flex items-start gap-3">
+          <div className="mt-0.5 rounded-2xl bg-primary/10 p-2 text-primary">
+            <Info className="h-4 w-4" />
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-2xl font-black tracking-tight text-slate-950">{title}</h3>
+            <p className="max-w-4xl text-sm leading-7 text-slate-600">{description}</p>
+          </div>
+        </div>
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function UsageGuidePanel({
+  usageGuide,
+  labels,
+}: {
+  usageGuide: string[];
+  labels: {
+    howToUse: string;
+    dataQuality: string;
+  };
+}) {
+  const {t} = useAppI18n();
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <Card className="surface-panel rounded-[2rem] border-slate-200 bg-white shadow-none">
+        <CardContent className="space-y-5 p-5 md:p-6">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-primary" />
+            <h3 className="text-2xl font-black tracking-tight text-slate-950">
+              {labels.howToUse}
+            </h3>
+          </div>
+          <div className="grid gap-0 overflow-hidden rounded-[1.5rem] border border-slate-200 md:grid-cols-2">
+            {usageGuide.map((item, index) => (
+              <div
+                key={item}
+                className={cn(
+                  'border-slate-200 px-4 py-4',
+                  index % 2 === 1 && 'md:border-l',
+                  index >= 2 && 'md:border-t',
+                  index > 0 && 'border-t md:border-t-0',
+                )}
+              >
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  <p className="text-sm leading-7 text-slate-600">{item}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <ReferenceNoteCard
+        icon={<AlertTriangle className="h-4 w-4 text-amber-700" />}
+        title={labels.dataQuality}
+        description={t('economic.data_quality_description')}
+        tone="warning"
+      />
+    </div>
+  );
+}
+
+function ReferenceStatusPanel({
+  inflationMeta,
+  nbpMeta,
+  isLoadingInflation,
+  isLoadingNbp,
+  labels,
+  language,
+}: {
+  inflationMeta?: ChartSeriesEnvelope<EconomicSeriesPoint>;
+  nbpMeta?: ChartSeriesEnvelope<EconomicSeriesPoint>;
+  isLoadingInflation: boolean;
+  isLoadingNbp: boolean;
+  labels: {
+    referenceRail: string;
+    statusRail: string;
+    pageScope: string;
+  };
+  language: 'pl' | 'en';
+}) {
+  const {t} = useAppI18n();
+
+  return (
+    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="grid gap-6 lg:grid-cols-2">
+        <SeriesStatusCard
+          title={t('economic.inflation_title')}
+          meta={inflationMeta}
+          isLoading={isLoadingInflation}
+          language={language}
+        />
+
+        <SeriesStatusCard
+          title={t('economic.nbp_rate_title')}
+          meta={nbpMeta}
+          isLoading={isLoadingNbp}
+          language={language}
+        />
+      </div>
+
+      <Accordion type="multiple" defaultValue={['scope', 'status']} className="space-y-4">
+        <ReferenceGuideRail
+          value="scope"
+          icon={<ShieldAlert className="h-4 w-4 text-primary" />}
+          title={labels.referenceRail}
+        >
+          <ReferenceNoteCard
+            icon={<ShieldAlert className="h-4 w-4 text-primary" />}
+            title={labels.pageScope}
+            description={t('economic.page_scope_description')}
+          />
+        </ReferenceGuideRail>
+
+        <ReferenceGuideRail
+          value="status"
+          icon={<Database className="h-4 w-4 text-primary" />}
+          title={labels.statusRail}
+        >
+          <ReferenceNoteCard
+            icon={<Database className="h-4 w-4 text-primary" />}
+            title={t('economic.reference_panel')}
+            description={t('economic.reference_status_description')}
+          />
+        </ReferenceGuideRail>
+      </Accordion>
+    </div>
+  );
+}
+
 export function EconomicDataPageClient() {
   const {t, locale: language} = useAppI18n();
   const {definitions} = useBondDefinitions();
@@ -242,6 +393,9 @@ export function EconomicDataPageClient() {
     pageScope: t('economic.page_scope_title'),
     referenceRail: t('economic.reference_rail_title'),
     statusRail: t('economic.status_rail_title'),
+    tabCharts: t('economic.tab_charts'),
+    tabStatus: t('economic.tab_status'),
+    tabGuide: t('economic.tab_guide'),
   } as const;
 
   const pageIntro = t('economic.page_intro');
@@ -289,99 +443,76 @@ export function EconomicDataPageClient() {
           metrics={heroMetrics}
         />
 
-        <Card className="surface-panel rounded-[2rem] border-slate-200 bg-white shadow-none">
-          <CardContent className="p-4 md:p-6">
-            <Accordion type="single" collapsible defaultValue="how-to-use" className="space-y-4">
-              <AccordionItem value="how-to-use" className="rounded-[1.5rem] border border-slate-200 bg-white px-4">
-                <AccordionTrigger className="py-4 text-left hover:no-underline">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-primary" />
-                    <p className="text-xl font-black tracking-tight text-slate-950">
-                      {labels.howToUse}
-                    </p>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="space-y-4 pb-4">
-                  <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
-                    <div className="grid gap-0 rounded-[1.5rem] border border-slate-200 md:grid-cols-2">
-                      {usageGuide.map((item) => (
-                        <div key={item} className="border-slate-200 px-4 py-3.5 md:[&:nth-child(2n)]:border-l md:[&:nth-child(n+3)]:border-t">
-                          <div className="flex items-start gap-3">
-                            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                            <p className="text-sm leading-7 text-slate-600">{item}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+        <Tabs defaultValue="charts" className="space-y-5">
+          <TabsList className="h-auto w-full flex-wrap justify-start rounded-[1.5rem] border border-slate-200 bg-white p-2">
+            <TabsTrigger value="charts" className="gap-2 rounded-[1.1rem] px-4 py-2.5">
+              <BarChart3 className="h-4 w-4" />
+              {labels.tabCharts}
+            </TabsTrigger>
+            <TabsTrigger value="status" className="gap-2 rounded-[1.1rem] px-4 py-2.5">
+              <Database className="h-4 w-4" />
+              {labels.tabStatus}
+            </TabsTrigger>
+            <TabsTrigger value="guide" className="gap-2 rounded-[1.1rem] px-4 py-2.5">
+              <Sparkles className="h-4 w-4" />
+              {labels.tabGuide}
+            </TabsTrigger>
+          </TabsList>
 
-                    <ReferenceNoteCard
-                      icon={<AlertTriangle className="h-4 w-4 text-amber-700" />}
-                      title={labels.dataQuality}
-                      description={t('economic.data_quality_description')}
-                      tone="warning"
-                    />
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </CardContent>
-        </Card>
-
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-8">
-          <div className="space-y-8 md:space-y-10">
-            <SectionBlock
-              title={t('economic.inflation_title')}
-              description={t('economic.inflation_desc')}
+          <TabsContent value="charts" className="space-y-8">
+            <DashboardTabFrame
+              title={t('economic.chart_dashboard_title')}
+              description={t('economic.chart_dashboard_description')}
             >
-              <InflationChart period={period} />
-            </SectionBlock>
+              <div className="space-y-8 md:space-y-10">
+                <SectionBlock
+                  title={t('economic.inflation_title')}
+                  description={t('economic.inflation_desc')}
+                >
+                  <InflationChart period={period} />
+                </SectionBlock>
 
-            <SectionBlock
-              title={t('economic.nbp_rate_title')}
-              description={t('economic.nbp_rate_desc')}
+                <SectionBlock
+                  title={t('economic.nbp_rate_title')}
+                  description={t('economic.nbp_rate_desc')}
+                >
+                  <NBPRateChart period={period} />
+                </SectionBlock>
+              </div>
+            </DashboardTabFrame>
+          </TabsContent>
+
+          <TabsContent value="status">
+            <DashboardTabFrame
+              title={t('economic.status_dashboard_title')}
+              description={t('economic.status_dashboard_description')}
             >
-              <NBPRateChart period={period} />
-            </SectionBlock>
-          </div>
+              <ReferenceStatusPanel
+                inflationMeta={inflationMeta}
+                nbpMeta={nbpMeta}
+                isLoadingInflation={isLoadingInflation}
+                isLoadingNbp={isLoadingNbp}
+                labels={labels}
+                language={language}
+              />
+            </DashboardTabFrame>
+          </TabsContent>
 
-          <aside className="space-y-6 xl:sticky xl:top-24 xl:h-fit">
-            <Accordion type="multiple" defaultValue={['scope', 'status']} className="space-y-4">
-              <ReferenceGuideRail
-                value="scope"
-                icon={<ShieldAlert className="h-4 w-4 text-primary" />}
-                title={labels.referenceRail}
-              >
-                <ReferenceNoteCard
-                  icon={<ShieldAlert className="h-4 w-4 text-primary" />}
-                  title={labels.pageScope}
-                  description={t('economic.page_scope_description')}
-                />
-              </ReferenceGuideRail>
-
-              <ReferenceGuideRail
-                value="status"
-                icon={<Database className="h-4 w-4 text-primary" />}
-                title={labels.statusRail}
-              >
-                <div className="space-y-4">
-                  <SeriesStatusCard
-                    title={t('economic.inflation_title')}
-                    meta={inflationMeta}
-                    isLoading={isLoadingInflation}
-                    language={language}
-                  />
-
-                  <SeriesStatusCard
-                    title={t('economic.nbp_rate_title')}
-                    meta={nbpMeta}
-                    isLoading={isLoadingNbp}
-                    language={language}
-                  />
-                </div>
-              </ReferenceGuideRail>
-            </Accordion>
-          </aside>
-        </div>
+          <TabsContent value="guide">
+            <DashboardTabFrame
+              title={t('economic.guide_dashboard_title')}
+              description={t('economic.guide_dashboard_description')}
+            >
+              <UsageGuidePanel
+                usageGuide={usageGuide}
+                labels={{
+                  howToUse: labels.howToUse,
+                  dataQuality: labels.dataQuality,
+                }}
+              />
+            </DashboardTabFrame>
+          </TabsContent>
+        </Tabs>
       </div>
     </CalculatorPageShell>
   );
