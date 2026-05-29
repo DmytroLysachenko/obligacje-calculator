@@ -12,8 +12,8 @@ The current product direction is conservative and trust-first:
 - **Single bond simulation:** Full-cycle bond runs with issued-offer context, rollover handling, tax treatment, and real-value readouts.
 - **Scenario comparison:** Structured bond-vs-bond comparison under one committed shared setup.
 - **Regular investment and ladder planning:** Repeated purchase modeling for recurring contribution strategies.
-- **Workspace notebook:** A records-style portfolio workspace that is previewable for guests and intended to be fully actionable in signed-in mode.
-- **Economic reference dashboard:** CPI, NBP, and related reference context to support calculator interpretation.
+- **Workspace notebook:** A records-style portfolio workspace with explicit active-portfolio selection, guest lock states, and save-to-active-portfolio behavior.
+- **Economic reference dashboard:** CPI, NBP, source status, and usage guidance grouped as a reference dashboard to support calculator interpretation.
 - **Structured exports:** Normalized CSV/PDF/report outputs built from display models, not screenshots.
 
 ## Current Architecture
@@ -37,6 +37,9 @@ Important code boundaries:
 - `lib/server/`: server-only services, repositories, sync/admin orchestration, HTTP helpers
 - `db/schemas/`: grouped schema entrypoints
 - `db/seed/`: seed modules split by concern
+
+Current product-quality tranche notes:
+- [Product Quality Verification Tranche](./docs/plans/07_product_quality_verification_tranche.md)
 
 ## Local Development
 

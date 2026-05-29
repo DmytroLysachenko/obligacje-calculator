@@ -37,6 +37,17 @@ function getNormalizedNamespaceKeys(messages: Record<string, unknown>, path: str
 }
 
 describe('locale parity for touched bond and economic helper namespaces', () => {
+  it('keeps full English key coverage available in Polish', () => {
+    const englishKeys = flattenMessageKeys(enMessages)
+      .map(normalizeArrayIndexes)
+      .sort();
+    const polishKeys = new Set(
+      flattenMessageKeys(plMessages).map(normalizeArrayIndexes),
+    );
+
+    expect(englishKeys.filter((key) => !polishKeys.has(key))).toEqual([]);
+  });
+
   it('keeps economic.reference_copy aligned between English and Polish', () => {
     expect(getNormalizedNamespaceKeys(enMessages, 'economic.reference_copy')).toEqual(
       getNormalizedNamespaceKeys(plMessages, 'economic.reference_copy'),
@@ -51,6 +62,10 @@ describe('locale parity for touched bond and economic helper namespaces', () => 
       'bonds.projection_start',
       'bonds.tax_deducted',
       'bonds.simulation.ready_steps',
+      'bonds.simulation.regular',
+      'comparison.page',
+      'workspace',
+      'notebook.ready_steps',
     ]) {
       expect(getNormalizedNamespaceKeys(enMessages, path)).toEqual(
         getNormalizedNamespaceKeys(plMessages, path),

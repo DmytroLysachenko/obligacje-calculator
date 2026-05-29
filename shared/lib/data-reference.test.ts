@@ -68,7 +68,7 @@ describe('data-reference localization', () => {
     expect(getReferenceMetaItems(undefined, 'en')).toEqual([
       { label: 'Source', value: 'Unavailable' },
       { label: 'As of', value: 'Unavailable' },
-      { label: 'Coverage', value: 'Coverage not available' },
+      { label: 'Coverage', value: 'Coverage unavailable' },
       { label: 'Use', value: 'Scope unknown' },
     ]);
   });
@@ -108,6 +108,6 @@ describe('data-reference localization', () => {
         },
         'en',
       ).description,
-    ).toContain('emergency fallback');
+    ).toContain('fallback coverage');
   });
 });

@@ -129,7 +129,6 @@ export const NotebookContainer: React.FC = () => {
     const dateFormatter = useDateFormatter(language);
     const {
         portfolios,
-        selectedPortfolioId,
         selectedPortfolio,
         isLoading,
         requestError,

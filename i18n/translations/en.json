@@ -1013,7 +1013,7 @@
       "steps": {
         "entry_point": {
           "title": "Pick one entry point",
-          "description": "The start month matters. Keep it explicit before reading any winner."
+          "description": "The start month matters. Keep it explicit before reading any leading result."
         },
         "cash_path": {
           "title": "Commit one cash path",
@@ -1037,7 +1037,7 @@
     },
     "guide_cards": {
       "context_only": "Read this page as a supporting historical context check, not as proof that one path will repeat.",
-      "start_month": "The start month can dominate the outcome. Keep entry timing explicit before judging any winner.",
+      "start_month": "The start month can dominate the outcome. Keep entry timing explicit before judging any leading result.",
       "after_core": "Use this after the core bond calculators when you want broader context, not as your first decision surface."
     }
   },
@@ -1392,7 +1392,6 @@
     "inflation_loss_context": "Due to inflation, your capital lost nearly {percent}% of its effective buying power.",
     "savings_context_title": "SAVINGS CONTEXT",
     "savings_context_desc": "\"Savings Account\" interest is not unified. It varies heavily between banks. This model assumes an average retail rate based on historical NBP margins (approx. 0.5-2%).",
-    "winner": "Winner",
     "insight": "Insight",
     "ready_to_compare": "Ready to compare?",
     "live_calculation": "Live Calculation...",
