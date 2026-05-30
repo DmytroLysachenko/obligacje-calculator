@@ -8,7 +8,59 @@ import {
 import { calculateBondInvestment } from '../utils/calculations';
 import { BondInputs, TaxStrategy } from '../types';
 import { BaseHandler, ScenarioHandler, HandlerContext } from './base';
-import { isBefore, parseISO, format, addMonths } from 'date-fns';
+import { addMonths, compareAsc, format, isBefore, parseISO } from 'date-fns';
+
+function getEarliestPurchaseDate(investments: PortfolioSimulationPayload['investments']) {
+  return investments.reduce(
+    (min, investment) =>
+      isBefore(parseISO(investment.purchaseDate), parseISO(min))
+        ? investment.purchaseDate
+        : min,
+    investments[0].purchaseDate,
+  );
+}
+
+function getPointDate(point: PortfolioSimulationItem['result']['timeline'][number]) {
+  return parseISO(point.cycleEndDate);
+}
+
+function getLatestPointAtOrBefore(
+  item: PortfolioSimulationItem,
+  currentDate: Date,
+) {
+  if (isBefore(currentDate, parseISO(item.purchaseDate))) {
+    return null;
+  }
+
+  let latestPoint: PortfolioSimulationItem['result']['timeline'][number] | null = null;
+
+  for (const point of item.result.timeline) {
+    const pointDate = getPointDate(point);
+
+    if (compareAsc(pointDate, currentDate) <= 0) {
+      latestPoint = point;
+      continue;
+    }
+
+    break;
+  }
+
+  return latestPoint;
+}
+
+function getProRatedFinalFee(
+  item: PortfolioSimulationItem,
+  currentDate: Date,
+  maxDate: Date,
+) {
+  const result = item.result;
+
+  if (result.totalEarlyWithdrawalFee <= 0) {
+    return 0;
+  }
+
+  return compareAsc(currentDate, maxDate) === 0 ? result.totalEarlyWithdrawalFee : 0;
+}
 
 export class PortfolioSimulationHandler extends BaseHandler implements ScenarioHandler<PortfolioSimulationPayload, PortfolioSimulationResult> {
   kind = ScenarioKind.PORTFOLIO_SIMULATION;
@@ -16,7 +68,7 @@ export class PortfolioSimulationHandler extends BaseHandler implements ScenarioH
   async handle(payload: PortfolioSimulationPayload, context: HandlerContext): Promise<PortfolioSimulationCalculationEnvelope> {
     const items: PortfolioSimulationItem[] = [];
     const allHistoricalData = await this.withHistoricalData({
-      purchaseDate: payload.investments.reduce((min, inv) => isBefore(parseISO(inv.purchaseDate), parseISO(min)) ? inv.purchaseDate : min, payload.investments[0].purchaseDate),
+      purchaseDate: getEarliestPurchaseDate(payload.investments),
       withdrawalDate: payload.withdrawalDate
     });
 
@@ -64,13 +116,13 @@ export class PortfolioSimulationHandler extends BaseHandler implements ScenarioH
       let totalFees = 0;
 
       for (const item of items) {
-        const point = item.result.timeline.find(p => p.periodLabel === format(curr, 'MMM yyyy'));
+        const point = getLatestPointAtOrBefore(item, curr);
         if (point) {
           totalNominalValue += point.nominalValueAfterInterest;
           totalNetValue += point.totalValue;
           totalProfit += point.netProfit; 
           totalTax += point.taxDeducted;
-          totalFees += point.earlyWithdrawalValue;
+          totalFees += getProRatedFinalFee(item, curr, maxDate);
         }
       }
 
@@ -95,6 +147,14 @@ export class PortfolioSimulationHandler extends BaseHandler implements ScenarioH
       }
     };
 
-    return this.createEnvelope(result, [], [], context.dataFreshness);
+    return this.createEnvelope(
+      result,
+      [],
+      [
+        'Portfolio simulation aggregates lot timelines by checkpoint date and carries the latest known lot value between sparse engine points.',
+        'Total fees are reported as redemption fees, not early-exit payout values.',
+      ],
+      context.dataFreshness,
+    );
   }
 }
