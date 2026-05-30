@@ -10,6 +10,7 @@ import { BondType, TaxStrategy, BondInputs } from '../types';
 import { BaseHandler, ScenarioHandler, HandlerContext } from './base';
 import { getWithdrawalDateFromMonths, differenceInMonths } from '@/shared/lib/date-timing';
 import { parseISO } from 'date-fns';
+import { resolveScenarioInputs } from './resolved-inputs';
 
 export class OptimizerHandler extends BaseHandler implements ScenarioHandler<BondOptimizerPayload, BondOptimizerResult> {
   kind = ScenarioKind.BOND_OPTIMIZER;
@@ -35,22 +36,21 @@ export class OptimizerHandler extends BaseHandler implements ScenarioHandler<Bon
         continue;
       }
 
+      const { inputs: resolvedInputs } = await resolveScenarioInputs({
+        inputs: {
+          bondType,
+          purchaseDate: payload.purchaseDate,
+        },
+        context,
+      });
       const enrichedInputs = await this.withHistoricalData({
-        bondType,
+        ...resolvedInputs,
         initialInvestment: payload.initialInvestment,
-        firstYearRate: def.firstYearRate,
         expectedInflation: payload.expectedInflation,
         expectedNbpRate: payload.expectedNbpRate ?? 5.25,
-        margin: def.margin,
-        duration: def.duration,
-        earlyWithdrawalFee: def.earlyWithdrawalFee,
         taxRate: 19,
-        isCapitalized: def.isCapitalized,
-        payoutFrequency: def.payoutFrequency,
-        purchaseDate: payload.purchaseDate,
         withdrawalDate,
         isRebought: false,
-        rebuyDiscount: def.rebuyDiscount,
         taxStrategy: payload.taxStrategy ?? TaxStrategy.STANDARD,
         rollover: true,
         chartStep: 'monthly' as import('@/features/bond-core/types').ChartStep,
