@@ -1,4 +1,9 @@
 import { BondInputs, RegularInvestmentInputs } from '../types';
+import {
+  createEngineFailureError,
+  createNumericFaultError,
+  isCalculationDomainError,
+} from '../errors';
 
 type SanitizeTarget = Partial<BondInputs> | Partial<RegularInvestmentInputs> | Record<string, unknown>;
 
@@ -50,70 +55,78 @@ export const sanitizeInputs = <T extends SanitizeTarget>(inputs: T): T => {
   return sanitized as unknown as T;
 };
 
+function isUnsafeNumber(value: unknown): value is number {
+  return typeof value === 'number' && (!Number.isFinite(value) || Number.isNaN(value));
+}
+
+function assertFiniteNumber(value: unknown, path: string) {
+  if (isUnsafeNumber(value)) {
+    throw createNumericFaultError(`Unsafe numeric value detected at ${path}`, {
+      details: { path, value: String(value) },
+    });
+  }
+}
+
+function assertNoUnsafeNumbers(value: unknown, path = 'result') {
+  if (value === null || value === undefined) {
+    return;
+  }
+
+  if (typeof value === 'number') {
+    assertFiniteNumber(value, path);
+    return;
+  }
+
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => assertNoUnsafeNumbers(item, `${path}[${index}]`));
+    return;
+  }
+
+  if (typeof value === 'object') {
+    Object.entries(value as Record<string, unknown>).forEach(([key, child]) => {
+      assertNoUnsafeNumbers(child, `${path}.${key}`);
+    });
+  }
+}
+
+function assertNonEmptyTimeline(result: Record<string, unknown>) {
+  if ('timeline' in result && Array.isArray(result.timeline) && result.timeline.length === 0) {
+    throw createNumericFaultError('Calculation produced an empty timeline.', {
+      details: { field: 'timeline' },
+    });
+  }
+}
+
+export function assertCalculationResultIntegrity(result: unknown) {
+  if (!result || typeof result !== 'object') {
+    throw createNumericFaultError('Calculation did not return an object result.');
+  }
+
+  assertNoUnsafeNumbers(result);
+  assertNonEmptyTimeline(result as Record<string, unknown>);
+}
+
 /**
  * Higher-order function that wraps a calculation engine with sanity guards.
- * It catches runtime errors and ensures the result does not contain NaN/Infinity.
+ * It rejects runtime errors and unsafe results instead of returning fake success.
  */
 export function withMathGuard<T, R>(fn: (inputs: T) => R): (inputs: T) => R {
   return (inputs: T): R => {
     try {
       const sanitized = sanitizeInputs(inputs as unknown as SanitizeTarget) as unknown as T;
       const result = fn(sanitized);
-
-      // Check for unstable math in the result
-      if (result && typeof result === 'object') {
-        const res = result as Record<string, unknown>;
-        const keysToCheck = ['totalProfit', 'netPayoutValue', 'finalNominalValue', 'totalInvested'];
-        
-        for (const key of keysToCheck) {
-          const val = res[key];
-          if (val !== undefined && (typeof val !== 'number' || isNaN(val) || !isFinite(val))) {
-            throw new Error(`NaN or Infinite detected in calculation result field: ${key}`);
-          }
-        }
-      }
+      assertCalculationResultIntegrity(result);
 
       return result;
     } catch (err) {
-      console.warn('[MathGuard] Sanity guard triggered, returning safe default:', err);
-      
-      const inp = inputs as Record<string, unknown>;
-      const initial = (inp.initialInvestment as number) || (inp.contributionAmount as number) || 0;
-      
-      // Determine if it's a regular investment or single bond result type based on input
-      const isRegular = inp.contributionAmount !== undefined;
-
-      if (isRegular) {
-        return {
-          totalInvested: initial,
-          finalNominalValue: initial,
-          finalRealValue: initial,
-          totalProfit: 0,
-          totalTax: 0,
-          totalEarlyWithdrawalFees: 0,
-          realAnnualizedReturn: 0,
-          timeline: [],
-          lots: [],
-          mathWarning: true
-        } as unknown as R;
+      if (isCalculationDomainError(err)) {
+        throw err;
       }
 
-      return {
-        initialInvestment: initial,
-        timeline: [],
-        finalNominalValue: initial,
-        finalRealValue: initial,
-        totalProfit: 0,
-        totalTax: 0,
-        totalEarlyWithdrawalFee: 0,
-        grossValue: initial,
-        netPayoutValue: initial,
-        isEarlyWithdrawal: false,
-        maturityDate: new Date().toISOString(),
-        nominalAnnualizedReturn: 0,
-        realAnnualizedReturn: 0,
-        mathWarning: true
-      } as unknown as R;
+      throw createEngineFailureError(
+        'Calculation failed before a trustworthy result could be produced.',
+        { cause: err },
+      );
     }
   };
 }
