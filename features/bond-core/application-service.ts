@@ -9,6 +9,7 @@ import {
 import { calculationCache } from './utils/calculation-cache';
 import { sanitizeInputs } from './utils/engine-guards';
 import { HandlerFactory, MODEL_VERSION } from './handlers';
+import { parseCalculationScenarioRequest } from './types/schemas';
 
 export { MODEL_VERSION };
 
@@ -17,10 +18,12 @@ export class CalculationApplicationService {
    * Main entry point for all calculation requests.
    */
   async calculate(request: CalculationScenarioRequest): Promise<CalculationEnvelope<unknown>> {
-    // 1. Sanitize inputs first to prevent extreme values or malicious payloads
-    const sanitizedPayload = sanitizeInputs(request.payload as unknown as Record<string, unknown>);
+    // 1. Validate before any normalization so invalid scenarios are rejected,
+    // not silently clamped into a different calculation.
+    const validatedRequest = parseCalculationScenarioRequest(request) as CalculationScenarioRequest;
+    const sanitizedPayload = sanitizeInputs(validatedRequest.payload as unknown as Record<string, unknown>);
     const sanitizedRequest = {
-      ...request,
+      ...validatedRequest,
       payload: sanitizedPayload
     } as unknown as CalculationScenarioRequest;
 

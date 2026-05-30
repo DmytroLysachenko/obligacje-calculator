@@ -11,6 +11,7 @@ import {
   BondComparisonScenarioPayloadSchema,
   BondInputsSchema,
   BondOptimizerPayloadSchema,
+  parseCalculationScenarioRequest,
   RegularInvestmentInputsSchema,
   RetirementPlannerPayloadSchema,
 } from '@/features/bond-core/types/schemas';
@@ -40,11 +41,9 @@ export function createCalculationRoute<
   return apiHandler(async (req: NextRequest) => {
     const body = await req.json();
     const payload = scenarioSchemas[kind].parse(body) as PayloadByScenarioKind[TKind];
+    const request = parseCalculationScenarioRequest({ kind, payload });
 
-    const envelope = await calculationService.calculate({
-      kind,
-      payload,
-    } as CalculationScenarioRequest);
+    const envelope = await calculationService.calculate(request as CalculationScenarioRequest);
 
     return NextResponse.json(createSuccessResponse(envelope));
   });
