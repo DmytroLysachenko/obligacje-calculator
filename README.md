@@ -102,6 +102,7 @@ High-value entry docs:
 - [System Architecture](./docs/technical/architecture/19_system_architecture.md)
 - [Database & Data Modeling](./docs/technical/architecture/20_database_and_data_modeling.md)
 - [Engineering and Coding Rules](./docs/technical/architecture/26_engineering_and_coding_rules.md)
+- [Calculation Stability Rules](./docs/technical/architecture/27_calculation_stability_rules.md)
 - [Current Product Roadmap](./docs/plans/00_roadmap.md)
 
 ## Product Guardrails

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
 import { headers } from 'next/headers';
+import { mapApiErrorToProblemDetails } from './problem-details';
 
 const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
 const RATE_LIMIT_MAX = 100;
@@ -69,32 +69,12 @@ export function apiHandler<TContext = { params: Promise<Record<string, never>> }
     try {
       return await handler(req, context);
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        return NextResponse.json(
-          {
-            type: 'https://api.obligacje.pl/errors/validation-failed',
-            title: 'Bad Request',
-            status: 400,
-            detail: 'The request payload is invalid.',
-            errors: error.issues,
-          },
-          { status: 400 }
-        );
-      }
-
+      const problem = mapApiErrorToProblemDetails(error, {
+        includeInternalMessage: process.env.NODE_ENV === 'development',
+      });
       console.error(`[API Error] ${req.method} ${req.nextUrl.pathname}:`, error);
 
-      return NextResponse.json(
-        {
-          type: 'https://api.obligacje.pl/errors/internal-server-error',
-          title: 'Internal Server Error',
-          status: 500,
-          detail: process.env.NODE_ENV === 'development' && error instanceof Error 
-            ? error.message 
-            : 'An unexpected internal error occurred. Please try again later.',
-        },
-        { status: 500 }
-      );
+      return NextResponse.json(problem, { status: problem.status });
     }
   };
 }
