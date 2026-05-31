@@ -75,8 +75,8 @@ function RangeActions({
   ];
 
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-1.5">
-      <span className="inline-flex items-center gap-1 px-3 text-sm font-medium text-slate-500">
+    <div className="flex flex-wrap items-center gap-1 rounded-md border border-border bg-card p-1">
+      <span className="inline-flex items-center gap-1 px-3 text-sm font-medium text-muted-foreground">
         <CalendarRange className="h-3.5 w-3.5" />
         {rangeLabel}
       </span>
@@ -85,10 +85,10 @@ function RangeActions({
           key={item.value}
           onClick={() => setPeriod(item.value)}
           className={cn(
-            'rounded-xl px-4 py-2 text-sm transition-colors',
+            'rounded px-3 py-1.5 text-sm transition-colors',
             period === item.value
-              ? 'bg-slate-900 font-semibold text-white'
-              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+              ? 'bg-foreground font-semibold text-background'
+              : 'text-muted-foreground hover:bg-muted hover:text-foreground',
           )}
         >
           {item.label}
@@ -147,10 +147,10 @@ function SeriesStatusCard({
   return (
     <section
       className={cn(
-        'rounded-[2rem] border shadow-none',
+        'rounded-lg border shadow-none',
         state.tone === 'warning'
-          ? 'border-amber-200 bg-amber-50/70'
-          : 'border-slate-200 bg-white',
+          ? 'border-warning/30 bg-warning/10'
+          : 'border-border bg-card',
       )}
     >
       <div className="space-y-4 p-5">
@@ -158,41 +158,41 @@ function SeriesStatusCard({
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               {state.tone === 'warning' ? (
-                <AlertTriangle className="h-4 w-4 text-amber-700" />
+                <AlertTriangle className="h-4 w-4 text-warning" />
               ) : (
-                <CheckCircle2 className="h-4 w-4 text-emerald-700" />
+                <CheckCircle2 className="h-4 w-4 text-success" />
               )}
-              <p className="text-xl font-black tracking-tight text-slate-950">{title}</p>
+              <p className="ui-card-title">{title}</p>
             </div>
             <span
               className={cn(
-                'rounded-full px-3 py-1 text-[11px] font-semibold',
+                'rounded-full border px-3 py-1 text-[11px] font-semibold',
                 state.tone === 'warning'
-                  ? 'bg-amber-100 text-amber-800'
-                  : 'bg-emerald-100 text-emerald-800',
+                  ? 'border-warning/30 bg-warning/10 text-warning'
+                  : 'border-success/30 bg-success/10 text-success',
               )}
             >
               {statusLabel}
             </span>
           </div>
-          <p className="text-sm leading-7 text-slate-600">{state.description}</p>
+          <p className="ui-body">{state.description}</p>
         </div>
 
-        <div className="grid gap-0 rounded-[1.5rem] border border-slate-200 sm:grid-cols-2">
+        <div className="grid gap-0 rounded-md border border-border sm:grid-cols-2">
           {rows.map((row, index) => (
             <div
               key={row.label}
               className={[
                 'px-4 py-3',
-                'border-slate-200',
+                'border-border',
                 index >= 2 ? 'border-t' : '',
                 index % 2 === 1 ? 'sm:border-l' : '',
               ]
                 .filter(Boolean)
                 .join(' ')}
             >
-              <p className="text-sm font-semibold text-slate-500">{row.label}</p>
-              <p className="mt-2 text-sm font-medium text-slate-900">{row.value}</p>
+              <p className="text-sm font-semibold text-muted-foreground">{row.label}</p>
+              <p className="mt-2 text-sm font-medium text-foreground">{row.value}</p>
             </div>
           ))}
         </div>
@@ -213,9 +213,9 @@ function SectionBlock({
   return (
     <section className="space-y-4">
       <div className="space-y-2">
-        <h3 className="text-2xl font-black tracking-tight text-slate-950">{title}</h3>
+        <h3 className="ui-section-title">{title}</h3>
         {description ? (
-          <p className="max-w-3xl text-sm leading-7 text-slate-600">{description}</p>
+          <p className="ui-body max-w-3xl">{description}</p>
         ) : null}
       </div>
       {children}
@@ -234,14 +234,14 @@ function DashboardTabFrame({
 }) {
   return (
     <section className="space-y-5">
-      <div className="flex flex-col gap-3 rounded-[2rem] border border-slate-200 bg-white px-5 py-5 md:px-6">
+      <div className="flex flex-col gap-3 rounded-lg border border-border bg-card px-5 py-5 md:px-6">
         <div className="flex items-start gap-3">
-          <div className="mt-0.5 rounded-2xl bg-primary/10 p-2 text-primary">
+          <div className="mt-0.5 rounded-md bg-muted p-2 text-foreground">
             <Info className="h-4 w-4" />
           </div>
           <div className="space-y-2">
-            <h3 className="text-2xl font-black tracking-tight text-slate-950">{title}</h3>
-            <p className="max-w-4xl text-sm leading-7 text-slate-600">{description}</p>
+            <h3 className="ui-section-title">{title}</h3>
+            <p className="ui-body max-w-4xl">{description}</p>
           </div>
         </div>
       </div>
@@ -264,28 +264,28 @@ function UsageGuidePanel({
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-      <Card className="surface-panel rounded-[2rem] border-slate-200 bg-white shadow-none">
+      <Card className="border-border bg-card shadow-none">
         <CardContent className="space-y-5 p-5 md:p-6">
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" />
-            <h3 className="text-2xl font-black tracking-tight text-slate-950">
+            <h3 className="ui-section-title">
               {labels.howToUse}
             </h3>
           </div>
-          <div className="grid gap-0 overflow-hidden rounded-[1.5rem] border border-slate-200 md:grid-cols-2">
+          <div className="grid gap-0 overflow-hidden rounded-md border border-border md:grid-cols-2">
             {usageGuide.map((item, index) => (
               <div
                 key={item}
                 className={cn(
-                  'border-slate-200 px-4 py-4',
+                  'border-border px-4 py-4',
                   index % 2 === 1 && 'md:border-l',
                   index >= 2 && 'md:border-t',
                   index > 0 && 'border-t md:border-t-0',
                 )}
               >
                 <div className="flex items-start gap-3">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  <p className="text-sm leading-7 text-slate-600">{item}</p>
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
+                  <p className="ui-body">{item}</p>
                 </div>
               </div>
             ))}
@@ -294,7 +294,7 @@ function UsageGuidePanel({
       </Card>
 
       <ReferenceNoteCard
-        icon={<AlertTriangle className="h-4 w-4 text-amber-700" />}
+            icon={<AlertTriangle className="h-4 w-4 text-warning" />}
         title={labels.dataQuality}
         description={t('economic.data_quality_description')}
         tone="warning"
@@ -433,8 +433,8 @@ export function EconomicDataPageClient() {
       <div className="space-y-5 md:space-y-6">
         <ReferenceDashboardHero
           badge={
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/90 bg-white/80 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-slate-700">
-              <Database className="h-3.5 w-3.5 text-primary" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-muted-foreground">
+              <Database className="h-3.5 w-3.5 text-foreground" />
               {labels.panel}
             </div>
           }
@@ -444,16 +444,16 @@ export function EconomicDataPageClient() {
         />
 
         <Tabs defaultValue="charts" className="space-y-5">
-          <TabsList className="h-auto w-fit flex-wrap justify-start rounded-[1rem] border border-slate-200 bg-white p-1 shadow-none">
-            <TabsTrigger value="charts" className="h-9 gap-2 rounded-[0.8rem] px-3.5 py-2">
+          <TabsList className="h-auto w-fit flex-wrap justify-start rounded-md border border-border bg-card p-1 shadow-none">
+            <TabsTrigger value="charts" className="h-9 gap-2 rounded px-3.5 py-2">
               <BarChart3 className="h-4 w-4" />
               {labels.tabCharts}
             </TabsTrigger>
-            <TabsTrigger value="status" className="h-9 gap-2 rounded-[0.8rem] px-3.5 py-2">
+            <TabsTrigger value="status" className="h-9 gap-2 rounded px-3.5 py-2">
               <Database className="h-4 w-4" />
               {labels.tabStatus}
             </TabsTrigger>
-            <TabsTrigger value="guide" className="h-9 gap-2 rounded-[0.8rem] px-3.5 py-2">
+            <TabsTrigger value="guide" className="h-9 gap-2 rounded px-3.5 py-2">
               <Sparkles className="h-4 w-4" />
               {labels.tabGuide}
             </TabsTrigger>

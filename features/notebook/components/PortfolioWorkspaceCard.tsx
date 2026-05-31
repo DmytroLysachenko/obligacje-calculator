@@ -36,22 +36,22 @@ export function PortfolioWorkspaceCard({
   onRequestDelete,
 }: PortfolioWorkspaceCardProps) {
   return (
-    <article className="space-y-4 rounded-[1.75rem] border border-slate-200 bg-white px-5 py-5 transition-colors hover:border-slate-300">
+    <article className="space-y-4 rounded-lg border border-border bg-card px-5 py-5 transition-colors hover:border-foreground/20">
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
-          <div className="rounded-xl bg-slate-100 p-2.5 text-slate-900">
+          <div className="rounded-md bg-muted p-2.5 text-foreground">
             <FileText className="h-4.5 w-4.5" />
           </div>
           <div className="min-w-0 space-y-2">
             <div className="flex flex-wrap items-center gap-2">
-              <p className="text-lg font-black tracking-tight text-slate-950">
+              <p className="text-base font-semibold tracking-tight text-foreground">
                 {portfolio.name}
               </p>
-              <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-[10px] font-semibold tracking-[0.08em] text-slate-600">
+              <span className="rounded-full border border-border bg-muted/40 px-2.5 py-0.5 text-[10px] font-semibold tracking-[0.08em] text-muted-foreground">
                 {statusLabel}
               </span>
             </div>
-            <p className="text-sm leading-7 text-slate-600">
+            <p className="ui-body">
               {portfolio.description || fallbackDescription}
             </p>
           </div>
@@ -59,7 +59,7 @@ export function PortfolioWorkspaceCard({
         <Button
           variant="ghost"
           size="icon"
-          className="h-9 w-9 rounded-full text-slate-500 hover:text-destructive"
+          className="h-9 w-9 rounded-full text-muted-foreground hover:text-destructive"
           onClick={(event) => {
             event.stopPropagation();
             onRequestDelete();
@@ -69,25 +69,25 @@ export function PortfolioWorkspaceCard({
         </Button>
       </div>
 
-      <div className="grid gap-0 rounded-[1.25rem] border border-slate-200 md:grid-cols-2">
-        <div className="border-b border-dashed border-slate-200 px-4 py-3 md:border-b-0 md:border-r">
-          <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">
+      <div className="grid gap-0 rounded-md border border-border md:grid-cols-2">
+        <div className="border-b border-dashed border-border px-4 py-3 md:border-b-0 md:border-r">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
             {createdAtLabel}
           </p>
-          <p className="mt-1 text-sm font-medium text-slate-900">
+          <p className="mt-1 text-sm font-medium text-foreground">
             {portfolio.createdAtLabelValue}
           </p>
         </div>
         <div className="px-4 py-3">
-          <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
             {usageLabel}
           </p>
-          <p className="mt-1 text-sm font-medium text-slate-900">{usageDescription}</p>
+          <p className="mt-1 text-sm font-medium text-foreground">{usageDescription}</p>
         </div>
       </div>
 
       <Button
-        className="w-full rounded-2xl"
+        className="w-full rounded-md"
         disabled={!canManageWorkspace}
         onClick={onOpen}
       >

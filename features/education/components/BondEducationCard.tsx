@@ -11,23 +11,23 @@ interface BondEducationCardProps {
 }
 export const BondEducationCard: React.FC<BondEducationCardProps> = ({ bond }) => {
     const { t, locale: language } = useAppI18n();
-    return (<Card className="flex h-full flex-col transition-shadow hover:shadow-md">
+    return (<Card className="flex h-full flex-col border-border bg-card shadow-none transition-colors hover:border-foreground/20">
       <CardHeader>
         <div className="mb-2 flex items-start justify-between">
           <Badge variant={bond.isInflationIndexed ? 'default' : 'secondary'}>
             {bond.isInflationIndexed ? t('bonds.inflation.indexed') : t('bonds.fixed_rate')}
           </Badge>
-          {bond.isFamilyOnly ? (<Badge variant="outline" className="border-primary text-primary">
+          {bond.isFamilyOnly ? (<Badge variant="outline" className="border-border text-foreground">
               {t('bonds.family_only')}
             </Badge>) : null}
         </div>
         <CardTitle className="flex items-baseline gap-2">
-          <span className="text-2xl font-bold text-primary">{bond.name}</span>
+          <span className="text-xl font-semibold text-foreground">{bond.name}</span>
           <span className="text-sm font-normal text-muted-foreground">
             {formatBondDuration(bond.duration, language)}
           </span>
         </CardTitle>
-        <CardDescription className="font-medium text-foreground/80">
+        <CardDescription className="font-medium text-muted-foreground">
           {bond.fullName[language]}
         </CardDescription>
       </CardHeader>
@@ -36,25 +36,25 @@ export const BondEducationCard: React.FC<BondEducationCardProps> = ({ bond }) =>
 
         <div className="grid grid-cols-2 gap-3 pt-2">
           <div className="flex items-center gap-2 text-xs">
-            <Clock className="h-3.5 w-3.5 text-primary"/>
+            <Clock className="h-3.5 w-3.5 text-foreground"/>
             <span>
               {t('bonds.duration')}: <strong>{formatBondDuration(bond.duration, language)}</strong>
             </span>
           </div>
           <div className="flex items-center gap-2 text-xs">
-            <Coins className="h-3.5 w-3.5 text-primary"/>
+            <Coins className="h-3.5 w-3.5 text-foreground"/>
             <span>
               {t('bonds.payout_type')}: <strong>{bond.isCapitalized ? t('bonds.capitalization') : t('bonds.payout')}</strong>
             </span>
           </div>
           {bond.margin > 0 ? (<div className="flex items-center gap-2 text-xs">
-              <TrendingUp className="h-3.5 w-3.5 text-primary"/>
+              <TrendingUp className="h-3.5 w-3.5 text-success"/>
               <span>
                 {t('bonds.margin')}: <strong>{bond.margin}%</strong>
               </span>
             </div>) : null}
           <div className="flex items-center gap-2 text-xs">
-            <ShieldCheck className="h-3.5 w-3.5 text-primary"/>
+            <ShieldCheck className="h-3.5 w-3.5 text-foreground"/>
             <span>
               {(bond.type === 'OTS'
             ? t('education_page.rate_labels.fixed_term') : bond.type === 'ROR' || bond.type === 'DOR'
@@ -64,9 +64,9 @@ export const BondEducationCard: React.FC<BondEducationCardProps> = ({ bond }) =>
           </div>
         </div>
 
-        <div className="mt-auto border-t pt-4">
+        <div className="mt-auto border-t border-border pt-4">
           <div className="flex items-start gap-2">
-            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-orange-500"/>
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-warning"/>
             <div className="text-[10px] text-muted-foreground">
               <span className="mb-1 block font-bold text-foreground">{t('bonds.early_exit_title')}:</span>
               {t('bonds.early_exit_desc', { fee: bond.earlyWithdrawalFee })}

@@ -42,7 +42,7 @@ interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
 const CustomTooltip = ({ active, payload, label, t }: CustomTooltipProps) => {
     if (!active || !payload || !payload.length)
         return null;
-    return (<div className="min-w-[140px] rounded-none border border-border bg-popover p-3 text-popover-foreground shadow-xl">
+    return (<div className="min-w-[140px] rounded-md border border-border bg-popover p-3 text-popover-foreground shadow-lg">
       <p className="mb-2 border-b border-border/50 pb-1 text-sm font-semibold">{label}</p>
       <div className="space-y-1.5">
         {payload.map((entry, index) => (<div key={index} className="flex items-center justify-between gap-4 text-sm">
@@ -78,7 +78,7 @@ export const InflationChart = ({ period = 'ALL', }: {
             Math.min(maxRate, clippedMax),
         ];
     if (isLoading) {
-        return <Skeleton className="h-[470px] w-full rounded-[1.75rem]"/>;
+        return <Skeleton className="h-[470px] w-full rounded-lg"/>;
     }
     if (isError) {
         return (<div className="flex h-[400px] w-full items-center justify-center text-destructive">
@@ -86,10 +86,10 @@ export const InflationChart = ({ period = 'ALL', }: {
       </div>);
     }
     return (<ReferenceChartFrame metaItems={getReferenceMetaItems(response, language)} actions={<div className="flex gap-2">
-          <Button type="button" size="sm" variant={scaleMode === 'readable' ? 'default' : 'outline'} onClick={() => setScaleMode('readable')} className="rounded-xl">
+          <Button type="button" size="sm" variant={scaleMode === 'readable' ? 'default' : 'outline'} onClick={() => setScaleMode('readable')} className="rounded-md">
             {t('economic.readable_scale')}
           </Button>
-          <Button type="button" size="sm" variant={scaleMode === 'full' ? 'default' : 'outline'} onClick={() => setScaleMode('full')} className="rounded-xl">
+          <Button type="button" size="sm" variant={scaleMode === 'full' ? 'default' : 'outline'} onClick={() => setScaleMode('full')} className="rounded-md">
             {t('economic.full_scale')}
           </Button>
         </div>} notice={scaleMode === 'readable' && maxRate > clippedMax
@@ -108,11 +108,11 @@ export const InflationChart = ({ period = 'ALL', }: {
             value: t('economic.nbp_target'),
             position: 'right',
             fontSize: 10,
-            fill: '#ef4444',
-        }} stroke="#ef4444" strokeDasharray="3 3"/>
-            {chartData.length > 24 ? (<Brush dataKey="date" height={22} stroke="#64748b" travellerWidth={8}/>) : null}
-            <Line type="monotone" dataKey="rate" stroke="#2563eb" strokeWidth={3} dot={chartData.length <= 24
-            ? { r: 4, fill: '#2563eb', strokeWidth: 2, stroke: '#fff' }
+            fill: '#C89D4F',
+        }} stroke="#C89D4F" strokeDasharray="3 3"/>
+            {chartData.length > 24 ? (<Brush dataKey="date" height={22} stroke="#5C5C5C" travellerWidth={8}/>) : null}
+            <Line type="monotone" dataKey="rate" stroke="#111111" strokeWidth={2} dot={chartData.length <= 24
+            ? { r: 4, fill: '#111111', strokeWidth: 2, stroke: '#fff' }
             : false} activeDot={{ r: 6, strokeWidth: 0 }}/>
           </LineChart>
         </ResponsiveContainer>

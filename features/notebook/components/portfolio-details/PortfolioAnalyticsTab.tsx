@@ -25,7 +25,7 @@ export function PortfolioAnalyticsTab({
 }: PortfolioAnalyticsTabProps) {
   return (
     <>
-      <Card className="rounded-2xl border shadow-none">
+      <Card className="border-border bg-card shadow-none">
         <CardHeader>
           <CardTitle>{t('notebook.projection_title')}</CardTitle>
           <CardDescription>{t('notebook.projection_desc')}</CardDescription>
@@ -53,8 +53,8 @@ export function PortfolioAnalyticsTab({
                 >
                   <defs>
                     <linearGradient id="portfolioNet" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#2563eb" stopOpacity={0.18} />
-                      <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#111111" stopOpacity={0.14} />
+                      <stop offset="95%" stopColor="#111111" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid
@@ -82,8 +82,8 @@ export function PortfolioAnalyticsTab({
                   <Area
                     type="monotone"
                     dataKey="totalNetValue"
-                    stroke="#2563eb"
-                    strokeWidth={3}
+                    stroke="#111111"
+                    strokeWidth={2}
                     fill="url(#portfolioNet)"
                     isAnimationActive={false}
                   />
@@ -98,9 +98,9 @@ export function PortfolioAnalyticsTab({
         </CardContent>
       </Card>
 
-      <div className="rounded-2xl border bg-muted/20 p-5">
+      <div className="rounded-lg border border-border bg-card p-5">
         <div className="flex items-start gap-3">
-          <TrendingUp className="mt-0.5 h-5 w-5 text-primary" />
+          <TrendingUp className="mt-0.5 h-5 w-5 text-success" />
           <div className="space-y-2">
             <p className="font-semibold text-foreground">{t('notebook.descriptive_title')}</p>
             <p className="text-sm leading-6 text-muted-foreground">

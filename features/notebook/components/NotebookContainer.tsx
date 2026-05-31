@@ -29,10 +29,10 @@ function SectionBlock({ title, description, children, }: {
 }) {
     return (<section className="space-y-4">
       <div className="space-y-2">
-        <h3 className="text-2xl font-black tracking-tight text-slate-950">
+        <h3 className="ui-section-title">
           {title}
         </h3>
-        {description ? (<p className="max-w-3xl text-sm leading-7 text-slate-600">
+        {description ? (<p className="ui-body max-w-3xl">
             {description}
           </p>) : null}
       </div>
@@ -50,56 +50,56 @@ const EmptyPortfolioState = ({ onCreate, onCreateDemo, onImport, badgeLabel, tit
     demoLabel: string;
     importLabel: string;
     steps: NotebookStepItem[];
-}) => (<section className="space-y-6 rounded-[1.9rem] border border-slate-200 bg-white px-6 py-6 md:px-8 md:py-8">
+}) => (<section className="space-y-6 rounded-lg border border-border bg-card px-5 py-5 md:px-6">
       <div className="space-y-3">
-        <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-slate-700">
-          <BookOpen className="h-3.5 w-3.5 text-primary"/>
+        <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-muted-foreground">
+          <BookOpen className="h-3.5 w-3.5 text-foreground"/>
           {badgeLabel}
         </div>
-        <h3 className="text-3xl font-black tracking-tight text-slate-950">
+        <h3 className="ui-section-title">
           {title}
         </h3>
-        <p className="max-w-3xl text-sm leading-8 text-slate-600">
+        <p className="ui-body max-w-3xl">
           {description}
         </p>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        {steps.map((step, index) => (<div key={step.id} className="space-y-3 rounded-[1.4rem] border border-slate-200 px-4 py-4">
+        {steps.map((step, index) => (<div key={step.id} className="space-y-3 rounded-md border border-border bg-muted/30 px-4 py-4">
             <div className="flex items-start gap-3">
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-slate-200 text-[11px] font-black text-slate-700">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border text-[11px] font-semibold text-muted-foreground">
                 {index + 1}
               </div>
               <div className="space-y-2">
-                <p className="text-xs font-semibold tracking-[0.08em] text-slate-500 uppercase">
+                <p className="text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">
                   {step.title}
                 </p>
-                <p className="text-sm leading-7 text-slate-600">{step.description}</p>
+                <p className="ui-body">{step.description}</p>
               </div>
             </div>
           </div>))}
       </div>
 
       <div className="flex flex-wrap gap-3">
-        <Button onClick={onCreate} className="gap-2 rounded-2xl">
+        <Button onClick={onCreate} className="gap-2 rounded-md">
           <Plus className="h-4 w-4"/>
           {createLabel}
         </Button>
-        <Button variant="outline" onClick={onCreateDemo} className="gap-2 rounded-2xl border-slate-200 bg-white/80">
+        <Button variant="outline" onClick={onCreateDemo} className="gap-2 rounded-md border-border bg-card">
           {demoLabel}
         </Button>
-        <Button variant="outline" onClick={onImport} className="gap-2 rounded-2xl border-slate-200 bg-white/80">
+        <Button variant="outline" onClick={onImport} className="gap-2 rounded-md border-border bg-card">
           <Upload className="h-4 w-4"/>
           {importLabel}
         </Button>
       </div>
     </section>);
 const NotebookLoadingState = () => (<div className="space-y-4">
-    <Skeleton className="h-28 w-full rounded-[2rem]"/>
+    <Skeleton className="h-28 w-full rounded-lg"/>
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-      <Skeleton className="h-56 w-full rounded-[2rem]"/>
-      <Skeleton className="h-56 w-full rounded-[2rem]"/>
-      <Skeleton className="h-56 w-full rounded-[2rem]"/>
+      <Skeleton className="h-56 w-full rounded-lg"/>
+      <Skeleton className="h-56 w-full rounded-lg"/>
+      <Skeleton className="h-56 w-full rounded-lg"/>
     </div>
   </div>);
 function NotebookMiniStat({ label, value, description, }: {
@@ -107,14 +107,14 @@ function NotebookMiniStat({ label, value, description, }: {
     value: string;
     description: string;
 }) {
-    return (<div className="space-y-2 border-b border-dashed border-slate-200 px-4 py-4 last:border-b-0 md:border-b-0 md:border-r last:md:border-r-0">
-      <p className="text-xs font-semibold tracking-[0.08em] text-slate-500 uppercase">
+    return (<div className="space-y-2 border-b border-dashed border-border px-4 py-4 last:border-b-0 md:border-b-0 md:border-r last:md:border-r-0">
+      <p className="text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">
         {label}
       </p>
-      <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">
+      <p className="mt-2 text-xl font-semibold tracking-tight text-foreground">
         {value}
       </p>
-      <p className="mt-1 text-[13px] leading-6 text-slate-600">{description}</p>
+      <p className="mt-1 text-[13px] leading-6 text-muted-foreground">{description}</p>
     </div>);
 }
 export const NotebookContainer: React.FC = () => {
@@ -336,7 +336,7 @@ export const NotebookContainer: React.FC = () => {
     return (<CalculatorPageShell title={t('notebook.title')} description={t('notebook.subtitle')} icon={<BookOpen className="h-8 w-8"/>} isCalculating={isLoading || isMutating} hasResults={portfolios.length > 0}>
       <input ref={importRef} type="file" accept="application/json" className="hidden" onChange={handleImportFile}/>
 
-      {error ? (<div className="rounded-[2rem] border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
+      {error ? (<div className="rounded-lg border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
           <div className="flex items-center gap-3 font-semibold">
             <AlertCircle className="h-5 w-5"/>
             {error}
@@ -367,7 +367,7 @@ export const NotebookContainer: React.FC = () => {
             onCreatePortfolio={handleCreateDefault}
           />
 
-          <div className="grid gap-0 rounded-[1.9rem] border border-slate-200 bg-white md:grid-cols-3">
+          <div className="grid gap-0 rounded-lg border border-border bg-card md:grid-cols-3">
             <NotebookMiniStat label={t('notebook.portfolios_label')} value={String(portfolios.length)} description={t('notebook.portfolios_label_desc')}/>
             <NotebookMiniStat label={t('notebook.public_links_label')} value={String(publicCount)} description={t('notebook.public_links_label_desc')}/>
             <NotebookMiniStat label={t('notebook.private_drafts_label')} value={String(privateCount)} description={t('notebook.private_drafts_label_desc')}/>
@@ -377,7 +377,7 @@ export const NotebookContainer: React.FC = () => {
 
       {isLoading ? (<NotebookLoadingState />) : portfolios.length === 0 ? (<EmptyPortfolioState onCreate={canManageWorkspace ? handleCreateDefault : () => {}} onCreateDemo={canManageWorkspace ? handleCreateDemo : () => {}} onImport={canManageWorkspace ? handleImportClick : () => {}} badgeLabel={t('notebook.empty_badge')} title={t('notebook.empty_title')} description={canManageWorkspace ? t('notebook.empty_desc') : t('workspace.empty_guest_description')} createLabel={canManageWorkspace ? t('notebook.create_first') : t('workspace.sign_in_required_short')} demoLabel={t('notebook.load_demo')} importLabel={t('notebook.import_json')} steps={emptyStateSteps}/>) : (<div className="space-y-8">
           <SectionBlock title={t('notebook.stored_portfolios')} description={t('notebook.stored_portfolios_desc')}>
-            <div className="rounded-[1.5rem] border border-slate-200 px-5 py-4 text-sm leading-7 text-slate-600">
+            <div className="rounded-md border border-border bg-muted/30 px-5 py-4 text-sm leading-7 text-muted-foreground">
               {t('notebook.stored_portfolios_note')}
             </div>
 
@@ -412,13 +412,13 @@ export const NotebookContainer: React.FC = () => {
             </div>
           </SectionBlock>
 
-          <section className="flex items-start gap-3 rounded-[1.7rem] border border-slate-200 bg-white px-5 py-5">
-            <FolderOpen className="mt-0.5 h-5 w-5 text-primary"/>
+          <section className="flex items-start gap-3 rounded-lg border border-border bg-card px-5 py-5">
+            <FolderOpen className="mt-0.5 h-5 w-5 text-foreground"/>
             <div className="space-y-2">
-              <p className="text-xl font-black tracking-tight text-slate-950">
+              <p className="ui-card-title">
                 {t('notebook.scope_title')}
               </p>
-              <p className="text-sm leading-7 text-slate-600">
+              <p className="ui-body">
                 {t('notebook.scope_desc')}
               </p>
             </div>

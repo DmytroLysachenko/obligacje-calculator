@@ -39,7 +39,7 @@ const CustomTooltip = ({ active, payload, label, t, }: {
 }) => {
     if (!active || !payload || !payload.length)
         return null;
-    return (<div className="min-w-[120px] rounded-none border border-border bg-popover p-3 text-popover-foreground shadow-xl">
+    return (<div className="min-w-[120px] rounded-md border border-border bg-popover p-3 text-popover-foreground shadow-lg">
       <p className="mb-2 border-b border-border/50 pb-1 text-sm font-semibold">{label}</p>
       <div className="space-y-1.5">
         {payload.map((entry, index) => (<div key={index} className="flex items-center justify-between gap-4 text-sm">
@@ -62,7 +62,7 @@ export const NBPRateChart = ({ period = 'ALL', }: {
         return sampleSeriesPoints(sliceSeriesByPeriod(rawData, period), 160);
     }, [period, response?.data]);
     if (isLoading) {
-        return <Skeleton className="h-[470px] w-full rounded-[1.75rem]"/>;
+        return <Skeleton className="h-[470px] w-full rounded-lg"/>;
     }
     if (isError) {
         return (<div className="flex h-[400px] w-full items-center justify-center text-destructive">
@@ -76,8 +76,8 @@ export const NBPRateChart = ({ period = 'ALL', }: {
           <AreaChart data={chartData}>
             <defs>
               <linearGradient id="colorRate" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.2}/>
-                <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#C89D4F" stopOpacity={0.2}/>
+                <stop offset="95%" stopColor="#C89D4F" stopOpacity={0}/>
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)"/>
@@ -85,8 +85,8 @@ export const NBPRateChart = ({ period = 'ALL', }: {
             <YAxis fontSize={12} tickFormatter={(value: number) => `${value}%`} tickLine={false} axisLine={false}/>
             <Tooltip content={<CustomTooltip t={t}/>}/>
             <ReferenceLine y={0} stroke="#000" strokeWidth={1}/>
-            {chartData.length > 24 ? (<Brush dataKey="date" height={22} stroke="#64748b" travellerWidth={8}/>) : null}
-            <Area type="stepAfter" dataKey="rate" stroke="#f59e0b" strokeWidth={3} fill="url(#colorRate)" activeDot={{ r: 6, strokeWidth: 0, fill: '#f59e0b' }}/>
+            {chartData.length > 24 ? (<Brush dataKey="date" height={22} stroke="#5C5C5C" travellerWidth={8}/>) : null}
+            <Area type="stepAfter" dataKey="rate" stroke="#C89D4F" strokeWidth={2} fill="url(#colorRate)" activeDot={{ r: 6, strokeWidth: 0, fill: '#C89D4F' }}/>
           </AreaChart>
         </ResponsiveContainer>
       </ChartContainer>

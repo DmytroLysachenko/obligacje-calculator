@@ -45,7 +45,7 @@ export function PortfolioLotsTab({
 }: PortfolioLotsTabProps) {
   return (
     <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.4fr_0.8fr]">
-      <Card className="rounded-2xl border shadow-none">
+      <Card className="border-border bg-card shadow-none">
         <CardHeader>
           <CardTitle>{t('notebook.stored_lots_title')}</CardTitle>
           <CardDescription>{t('notebook.stored_lots_desc')}</CardDescription>
@@ -57,14 +57,14 @@ export function PortfolioLotsTab({
               {t('notebook.updating')}
             </div>
           ) : lots.length === 0 ? (
-            <div className="rounded-2xl border border-dashed px-6 py-12 text-center">
+            <div className="rounded-md border border-dashed border-border px-6 py-12 text-center">
               <p className="text-sm text-muted-foreground">{t('notebook.no_lots')}</p>
             </div>
           ) : (
-            <div className="rounded-2xl border border-slate-200 bg-white">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-dashed border-slate-200 px-4 py-3 text-sm text-slate-600">
+            <div className="rounded-md border border-border bg-card">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-dashed border-border px-4 py-3 text-sm text-muted-foreground">
                 <p>{t('notebook.stored_lots_hint')}</p>
-                <p className="text-sm font-semibold text-slate-500">
+                <p className="text-sm font-semibold text-muted-foreground">
                   {t('notebook.lots_count', { count: String(lots.length) })}
                 </p>
               </div>
@@ -72,19 +72,19 @@ export function PortfolioLotsTab({
                 <Table>
                   <TableHeader>
                     <TableRow className="hover:bg-transparent">
-                      <TableHead className="h-12 text-sm font-semibold text-slate-600">{t('notebook.column_type')}</TableHead>
-                      <TableHead className="h-12 text-sm font-semibold text-slate-600">{t('notebook.column_duration')}</TableHead>
-                      <TableHead className="h-12 text-right text-sm font-semibold text-slate-600">{t('notebook.column_amount')}</TableHead>
-                      <TableHead className="h-12 text-sm font-semibold text-slate-600">{t('notebook.column_purchase_date')}</TableHead>
-                      <TableHead className="h-12 text-right text-sm font-semibold text-slate-600">{t('notebook.column_nominal_value')}</TableHead>
-                      <TableHead className="h-12 text-right text-sm font-semibold text-slate-600">{t('notebook.column_action')}</TableHead>
+                      <TableHead className="h-12 text-sm font-semibold text-muted-foreground">{t('notebook.column_type')}</TableHead>
+                      <TableHead className="h-12 text-sm font-semibold text-muted-foreground">{t('notebook.column_duration')}</TableHead>
+                      <TableHead className="h-12 text-right text-sm font-semibold text-muted-foreground">{t('notebook.column_amount')}</TableHead>
+                      <TableHead className="h-12 text-sm font-semibold text-muted-foreground">{t('notebook.column_purchase_date')}</TableHead>
+                      <TableHead className="h-12 text-right text-sm font-semibold text-muted-foreground">{t('notebook.column_nominal_value')}</TableHead>
+                      <TableHead className="h-12 text-right text-sm font-semibold text-muted-foreground">{t('notebook.column_action')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {lots.map((lot) => (
-                      <TableRow key={lot.id} className="border-b border-slate-100 transition-colors odd:bg-slate-50/30 hover:bg-slate-50/70">
+                      <TableRow key={lot.id} className="border-b border-border transition-colors odd:bg-muted/20 hover:bg-muted/40">
                         <TableCell className="py-4 font-medium">{lot.bondType}</TableCell>
-                        <TableCell className="py-4 text-slate-600">
+                        <TableCell className="py-4 text-muted-foreground">
                           {formatBondDuration(
                             definitions[lot.bondType as BondType]?.duration ?? 1,
                             language,
@@ -115,7 +115,7 @@ export function PortfolioLotsTab({
       </Card>
 
       <div className="space-y-6">
-        <Card className="rounded-2xl border shadow-none">
+        <Card className="border-border bg-card shadow-none">
           <CardHeader>
             <CardTitle>{t('notebook.liquidity_window_title')}</CardTitle>
             <CardDescription>{t('notebook.liquidity_window_desc')}</CardDescription>
@@ -134,7 +134,7 @@ export function PortfolioLotsTab({
               ))}
             </div>
 
-            <div className="rounded-[1.4rem] border border-slate-200 px-4 py-4">
+            <div className="rounded-md border border-border bg-muted/30 px-4 py-4">
               <p className="text-sm font-semibold text-muted-foreground">
                 {t('notebook.cash_in_window')}
               </p>
@@ -151,7 +151,7 @@ export function PortfolioLotsTab({
             ) : (
               <div className="space-y-3">
                 {filteredMaturities.slice(0, 6).map((item) => (
-                  <div key={item.id} className="rounded-[1.4rem] border border-slate-200 p-4">
+                  <div key={item.id} className="rounded-md border border-border p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="font-medium text-foreground">{item.bondType}</p>
@@ -176,7 +176,7 @@ export function PortfolioLotsTab({
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl border shadow-none">
+        <Card className="border-border bg-card shadow-none">
           <CardHeader>
             <CardTitle>{t('notebook.usage_note_title')}</CardTitle>
           </CardHeader>

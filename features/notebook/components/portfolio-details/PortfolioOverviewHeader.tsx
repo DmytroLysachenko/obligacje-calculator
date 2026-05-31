@@ -16,12 +16,12 @@ function PortfolioMiniStat({
   description: string;
 }) {
   return (
-    <div className="rounded-[1.5rem] border border-white/80 bg-white/78 px-4 py-4 shadow-[0_16px_32px_-28px_rgba(15,23,42,0.35)] backdrop-blur">
-      <p className="text-sm font-semibold text-slate-500">{label}</p>
-      <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">
+    <div className="rounded-md border border-border bg-card px-4 py-4 shadow-none">
+      <p className="text-sm font-semibold text-muted-foreground">{label}</p>
+      <p className="mt-2 text-xl font-semibold tracking-tight text-foreground">
         {value}
       </p>
-      <p className="mt-1 text-[13px] leading-6 text-slate-600">{description}</p>
+      <p className="mt-1 text-[13px] leading-6 text-muted-foreground">{description}</p>
     </div>
   );
 }
@@ -65,18 +65,18 @@ export function PortfolioOverviewHeader({
 }: PortfolioOverviewHeaderProps) {
   return (
     <>
-      <Card className="overflow-hidden rounded-[2.2rem] border border-slate-200/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.94),rgba(248,250,252,0.9))] shadow-[0_24px_70px_-52px_rgba(15,23,42,0.45)]">
+      <Card className="overflow-hidden border-border bg-card shadow-none">
         <CardContent className="space-y-6 p-6 lg:p-7">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-2xl space-y-3">
-              <div className="inline-flex items-center gap-2 rounded-full border bg-white/80 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-slate-700">
-                <FolderOpen className="h-3.5 w-3.5 text-primary" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-muted-foreground">
+                <FolderOpen className="h-3.5 w-3.5 text-foreground" />
                 {t('notebook.record_view')}
               </div>
-              <h3 className="text-2xl font-black tracking-tight text-slate-900">
+              <h3 className="ui-section-title">
                 {t('notebook.record_intro_title')}
               </h3>
-              <p className="text-sm leading-7 text-muted-foreground">
+              <p className="ui-body">
                 {t('notebook.record_intro_desc')}
               </p>
             </div>
@@ -122,13 +122,13 @@ export function PortfolioOverviewHeader({
         </CardContent>
       </Card>
 
-      <div className="flex flex-col gap-4 rounded-[1.8rem] border border-slate-200 bg-white/84 p-5 shadow-[0_18px_40px_-36px_rgba(15,23,42,0.35)] backdrop-blur md:flex-row md:items-start md:justify-between">
+      <div className="flex flex-col gap-4 rounded-lg border border-border bg-card p-5 shadow-none md:flex-row md:items-start md:justify-between">
         <div className="flex items-start gap-3">
-          <Button variant="ghost" size="icon" onClick={onBack} className="rounded-full">
+          <Button variant="ghost" size="icon" onClick={onBack} className="rounded-md">
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h2 className="text-3xl font-semibold text-foreground">{portfolio.name}</h2>
+            <h2 className="ui-section-title">{portfolio.name}</h2>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
               {portfolio.description || t('notebook.portfolio_details')}
             </p>
@@ -157,7 +157,7 @@ export function PortfolioOverviewHeader({
           {isPublic ? (
             <Button variant="outline" className="gap-2" onClick={onCopyLink}>
               {justCopied ? (
-                <Check className="h-4 w-4 text-emerald-600" />
+                <Check className="h-4 w-4 text-success" />
               ) : (
                 <Share2 className="h-4 w-4" />
               )}
