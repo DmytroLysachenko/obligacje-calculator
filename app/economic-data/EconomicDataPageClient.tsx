@@ -430,7 +430,7 @@ export function EconomicDataPageClient() {
         <RangeActions period={period} setPeriod={setPeriod} rangeLabel={t('economic.range_data')} />
       }
       >
-      <div className="space-y-6 md:space-y-8">
+      <div className="space-y-5 md:space-y-6">
         <ReferenceDashboardHero
           badge={
             <div className="inline-flex items-center gap-2 rounded-full border border-white/90 bg-white/80 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-slate-700">
@@ -444,16 +444,16 @@ export function EconomicDataPageClient() {
         />
 
         <Tabs defaultValue="charts" className="space-y-5">
-          <TabsList className="h-auto w-full flex-wrap justify-start rounded-[1.5rem] border border-slate-200 bg-white p-2">
-            <TabsTrigger value="charts" className="gap-2 rounded-[1.1rem] px-4 py-2.5">
+          <TabsList className="h-auto w-fit flex-wrap justify-start rounded-[1rem] border border-slate-200 bg-white p-1 shadow-none">
+            <TabsTrigger value="charts" className="h-9 gap-2 rounded-[0.8rem] px-3.5 py-2">
               <BarChart3 className="h-4 w-4" />
               {labels.tabCharts}
             </TabsTrigger>
-            <TabsTrigger value="status" className="gap-2 rounded-[1.1rem] px-4 py-2.5">
+            <TabsTrigger value="status" className="h-9 gap-2 rounded-[0.8rem] px-3.5 py-2">
               <Database className="h-4 w-4" />
               {labels.tabStatus}
             </TabsTrigger>
-            <TabsTrigger value="guide" className="gap-2 rounded-[1.1rem] px-4 py-2.5">
+            <TabsTrigger value="guide" className="h-9 gap-2 rounded-[0.8rem] px-3.5 py-2">
               <Sparkles className="h-4 w-4" />
               {labels.tabGuide}
             </TabsTrigger>
