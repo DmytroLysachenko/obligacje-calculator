@@ -35,28 +35,25 @@ export function SecondaryInsightAccordion({
       defaultValue={defaultOpen ? 'content' : ''}
       className={className}
     >
-      <AccordionItem
-        value="content"
-        className="surface-panel overflow-hidden rounded-[2rem]"
-      >
-        <AccordionTrigger className="rounded-[2rem] px-5 py-5 text-left hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 md:px-6">
+      <AccordionItem value="content" className="surface-panel overflow-hidden">
+        <AccordionTrigger className="px-4 py-4 text-left hover:no-underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40 md:px-5">
           <div className="flex min-w-0 flex-1 items-start justify-between gap-4 pr-4 text-left">
-            <div className="min-w-0 space-y-2">
-              <p className="text-lg font-black tracking-tight text-slate-950">
+            <div className="min-w-0 space-y-1.5">
+              <p className="ui-card-title">
                 {title}
               </p>
-              <p className="max-w-3xl text-sm leading-7 text-slate-600 md:text-[15px]">
+              <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
                 {description}
               </p>
             </div>
             {badge ? (
-              <span className="surface-chip mt-0.5 shrink-0 px-2.5 py-1 text-xs font-semibold text-slate-500">
+              <span className="surface-chip mt-0.5 shrink-0">
                 {badge}
               </span>
             ) : null}
           </div>
         </AccordionTrigger>
-        <AccordionContent className={cn('border-t border-dashed border-slate-200 px-5 pb-5 pt-5 text-sm leading-7 text-slate-600 md:px-6', contentClassName)}>
+        <AccordionContent className={cn('border-t border-border px-4 pb-4 pt-4 text-sm leading-6 text-muted-foreground md:px-5', contentClassName)}>
           {children}
         </AccordionContent>
       </AccordionItem>

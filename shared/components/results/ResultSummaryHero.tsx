@@ -33,19 +33,19 @@ export function ResultSummaryHero({
   aside,
 }: ResultSummaryHeroProps) {
   return (
-    <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-      <CardContent className="space-y-6 p-6 md:p-8">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-          <div className="max-w-4xl space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">
+    <Card className="border-border bg-card shadow-none">
+      <CardContent className="space-y-5 p-5 md:p-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-4xl space-y-3">
+            <div className="surface-chip">
               {eyebrow}
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-4xl font-black tracking-tight text-slate-950">
+              <h2 className="text-[32px] font-semibold leading-tight tracking-tight text-foreground">
                 {value}
               </h2>
-              <p className="max-w-4xl text-sm leading-8 text-slate-600 md:text-[15px]">
+              <p className="max-w-4xl text-sm leading-6 text-muted-foreground">
                 {description}
               </p>
             </div>
@@ -59,9 +59,9 @@ export function ResultSummaryHero({
                   key={action.label}
                   variant={action.variant ?? 'outline'}
                   className={cn(
-                    'gap-2 text-xs font-semibold focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2',
+                    'gap-2 text-xs font-medium',
                     (action.variant ?? 'outline') === 'outline'
-                      ? 'border-slate-200 bg-white text-slate-700'
+                      ? 'border-border bg-card text-foreground'
                       : '',
                   )}
                   onClick={action.onClick}
@@ -80,9 +80,9 @@ export function ResultSummaryHero({
         {narrative || deltaText ? (
           <div className="space-y-3">
             {narrative ? (
-              <p className="text-sm leading-7 text-slate-700 md:text-[15px]">{narrative}</p>
+              <p className="text-sm leading-6 text-foreground">{narrative}</p>
             ) : null}
-            {deltaText ? <p className="text-sm text-slate-600 md:text-[15px]">{deltaText}</p> : null}
+            {deltaText ? <p className="text-sm text-muted-foreground">{deltaText}</p> : null}
           </div>
         ) : null}
       </CardContent>

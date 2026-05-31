@@ -18,15 +18,15 @@ export function ReferenceNoteCard({
     <section
       className={
         tone === 'warning'
-          ? 'space-y-3 rounded-[1.6rem] border border-amber-200 bg-amber-50/55 px-4 py-4 shadow-none'
-          : 'space-y-3 rounded-[1.6rem] border border-slate-200 bg-white px-4 py-4 shadow-none'
+          ? 'space-y-3 rounded-lg border border-[var(--finance-warning)]/40 bg-card px-4 py-4 shadow-none'
+          : 'space-y-3 rounded-lg border border-border bg-card px-4 py-4 shadow-none'
       }
     >
       <div className="flex items-center gap-2">
         {icon}
-        <p className="text-lg font-black tracking-tight text-slate-950">{title}</p>
+        <p className="ui-card-title">{title}</p>
       </div>
-      <p className="text-sm leading-7 text-slate-600">{description}</p>
+      <p className="text-sm leading-6 text-muted-foreground">{description}</p>
     </section>
   );
 }

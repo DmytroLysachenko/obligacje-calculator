@@ -42,7 +42,7 @@ const MetaSection = ({
     <section className={className}>
       <div className="flex items-center gap-2">
         {icon}
-        <p className="text-[10px] font-black uppercase tracking-widest">
+        <p className="text-xs font-semibold text-muted-foreground">
           {title}
         </p>
       </div>
@@ -89,22 +89,20 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
 
   const freshnessTone =
     dataFreshness?.status === 'fresh'
-      ? 'border-emerald-200 bg-emerald-50 text-emerald-950'
-      : 'border-amber-200 bg-amber-50 text-amber-950';
+      ? 'border-[var(--finance-success)]/35 text-foreground'
+      : 'border-[var(--finance-warning)]/40 text-foreground';
 
   return (
     <div className="space-y-4">
       {dataFreshness ? (
-        <div
-          className={`rounded-2xl border px-4 py-3 text-sm leading-6 ${freshnessTone}`}
-        >
+        <div className={`rounded-md border bg-card px-4 py-3 text-sm leading-6 ${freshnessTone}`}>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <div className="flex items-center gap-2 font-semibold">
               <span
                 className={`h-2.5 w-2.5 rounded-full ${
                   dataFreshness.status === 'fresh'
-                    ? 'bg-emerald-500'
-                    : 'bg-amber-500'
+                    ? 'bg-[var(--finance-success)]'
+                    : 'bg-[var(--finance-warning)]'
                 }`}
               />
               <span>{t('comparison.freshness_status')}:</span>
@@ -131,40 +129,40 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
           title={t('common.warnings')}
           items={warnings}
           icon={<AlertTriangle className="h-4 w-4" />}
-          className="space-y-3 rounded-2xl border border-orange-200/80 px-4 py-4 text-orange-950"
+          className="space-y-3 rounded-md border border-[var(--finance-warning)]/45 px-4 py-4 text-foreground"
         />
         <MetaSection
           title={t('common.assumptions')}
           items={assumptions}
           icon={<Target className="h-4 w-4" />}
-          className="space-y-3 rounded-2xl border border-blue-200/80 px-4 py-4 text-blue-950"
+          className="space-y-3 rounded-md border border-border px-4 py-4 text-foreground"
         />
         <MetaSection
           title={t('common.notes')}
           items={calculationNotes}
           icon={<FileText className="h-4 w-4" />}
-          className="space-y-3 rounded-2xl border border-emerald-200/80 px-4 py-4 text-emerald-950"
+          className="space-y-3 rounded-md border border-border px-4 py-4 text-foreground"
         />
         <MetaSection
           title={t('common.data_quality')}
           items={dataQualityFlags}
           icon={<ShieldAlert className="h-4 w-4" />}
-          className="space-y-3 rounded-2xl border border-amber-200/80 px-4 py-4 text-amber-950"
+          className="space-y-3 rounded-md border border-[var(--finance-warning)]/45 px-4 py-4 text-foreground"
           formatItem={humanizeFlag}
         />
       </div>
 
-      <div className="flex flex-col gap-3 rounded-2xl border bg-card px-4 py-3 text-sm leading-6 text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 rounded-md border border-border bg-card px-4 py-3 text-sm leading-6 text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           <DatabaseZap className="h-4 w-4 text-primary" />
-          <span className="font-semibold text-slate-950">
+          <span className="font-semibold text-foreground">
             {t('common.calculation_audit')}
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
           <span>{t('comparison.live_calculation')}</span>
           <span>
-            {t('common.engine_version')}: <span className="font-semibold text-slate-950">{calculationVersion}</span>
+            {t('common.engine_version')}: <span className="font-semibold text-foreground">{calculationVersion}</span>
           </span>
         </div>
       </div>

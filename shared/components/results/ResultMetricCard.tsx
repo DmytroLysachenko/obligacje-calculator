@@ -15,16 +15,16 @@ export function ResultMetricCard({
   label,
   value,
   description,
-  tone = 'text-slate-950',
+  tone = 'text-foreground',
   className,
 }: ResultMetricCardProps) {
   return (
-    <div className={cn('surface-panel rounded-3xl px-5 py-4', className)}>
-      <p className="text-sm font-semibold text-slate-500">
+    <div className={cn('surface-panel px-4 py-4', className)}>
+      <p className="text-xs font-semibold text-muted-foreground">
         {label}
       </p>
-      <p className={cn('mt-2 text-2xl font-black tracking-tight md:text-[2rem]', tone)}>{value}</p>
-      <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
+      <p className={cn('mt-2 text-xl font-semibold tracking-tight', tone)}>{value}</p>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
     </div>
   );
 }

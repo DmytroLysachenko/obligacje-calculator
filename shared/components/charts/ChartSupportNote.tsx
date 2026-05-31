@@ -10,11 +10,11 @@ export function ChartSupportNote({
   description: string;
 }) {
   return (
-    <div className="border-t border-dashed border-slate-200 px-1 pt-3">
-      <p className="text-sm font-semibold text-slate-500">
+    <div className="border-t border-border px-1 pt-3">
+      <p className="text-xs font-semibold text-muted-foreground">
         {title}
       </p>
-      <p className="mt-2 text-[15px] leading-7 text-slate-600">{description}</p>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
     </div>
   );
 }

@@ -20,34 +20,34 @@ export function ScenarioFactsBlock({
   items,
 }: ScenarioFactsBlockProps) {
   return (
-    <section className="rounded-[2rem] border border-slate-200 bg-white px-6 py-6 shadow-none">
+    <section className="rounded-lg border border-border bg-card px-5 py-5 shadow-none">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h3 className="text-xl font-black tracking-tight text-slate-950">
+          <h3 className="ui-section-title">
             {title}
           </h3>
-          <p className="mt-1 text-sm leading-7 text-slate-600">
+          <p className="mt-1 text-sm leading-6 text-muted-foreground">
             {description}
           </p>
         </div>
         {actions}
       </div>
 
-      <div className="mt-5 grid gap-0 rounded-[1.5rem] border border-slate-200 sm:grid-cols-2">
+      <div className="mt-4 grid gap-0 overflow-hidden rounded-md border border-border sm:grid-cols-2">
         {items.map((fact, index) => (
           <div
             key={fact.label}
             className={[
-              'px-5 py-4',
-              'border-slate-200',
+              'px-4 py-3',
+              'border-border',
               index >= 2 ? 'border-t' : '',
               index % 2 === 1 ? 'sm:border-l' : '',
             ]
               .filter(Boolean)
               .join(' ')}
           >
-            <p className="text-sm font-semibold text-slate-500">{fact.label}</p>
-            <p className="mt-1 text-base font-semibold text-slate-950">{fact.value}</p>
+            <p className="text-xs font-semibold text-muted-foreground">{fact.label}</p>
+            <p className="mt-1 text-sm font-semibold text-foreground">{fact.value}</p>
           </div>
         ))}
       </div>

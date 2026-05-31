@@ -34,18 +34,18 @@ export function ResponsiveTableSheet({
           <Button
             type="button"
             variant="outline"
-            className="w-full justify-between rounded-2xl border-slate-200 bg-white px-4 py-5 text-left shadow-none"
+            className="w-full justify-between border-border bg-card px-4 py-4 text-left shadow-none"
           >
             <span className="flex items-center gap-3">
-              <span className="rounded-xl bg-slate-100 p-2 text-slate-700">
+              <span className="rounded-md bg-muted p-2 text-muted-foreground">
                 <Table2 className="h-4 w-4" />
               </span>
               <span className="space-y-1">
-                <span className="block text-sm font-semibold text-slate-950">
+                <span className="block text-sm font-semibold text-foreground">
                   {triggerLabel}
                 </span>
                 {triggerCount ? (
-                  <span className="block text-xs text-slate-500">
+                  <span className="block text-xs text-muted-foreground">
                     {triggerCount}
                   </span>
                 ) : null}
@@ -53,12 +53,12 @@ export function ResponsiveTableSheet({
             </span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="bottom" className="h-[88vh] rounded-t-[2rem] bg-white p-0">
-          <SheetHeader className="border-b border-slate-200 px-5 py-5">
-            <SheetTitle className="text-left text-lg font-black text-slate-950">
+        <SheetContent side="bottom" className="h-[88vh] rounded-t-lg bg-card p-0">
+          <SheetHeader className="border-b border-border px-5 py-5">
+            <SheetTitle className="text-left text-lg font-semibold text-foreground">
               {title}
             </SheetTitle>
-            <SheetDescription className="text-left text-sm leading-6 text-slate-600">
+            <SheetDescription className="text-left text-sm leading-6 text-muted-foreground">
               {description}
             </SheetDescription>
           </SheetHeader>
