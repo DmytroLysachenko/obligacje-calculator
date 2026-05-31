@@ -66,10 +66,10 @@ export function BondSelectionSection({
                       className={cn(
                         'rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-[0.08em]',
                         getBondSupportMeta(type).tone === 'caution'
-                          ? 'bg-amber-100 text-amber-800'
+                          ? 'bg-warning/10 text-warning'
                           : getBondSupportMeta(type).tone === 'limited'
-                            ? 'bg-slate-200 text-slate-700'
-                            : 'bg-emerald-100 text-emerald-700',
+                            ? 'bg-muted text-muted-foreground'
+                            : 'bg-success/10 text-success',
                       )}
                     >
                       {getBondSupportMeta(type).shortLabel}
@@ -84,8 +84,8 @@ export function BondSelectionSection({
           </SelectContent>
         </Select>
 
-        <div className="space-y-2 rounded-lg border border-primary/5 bg-muted/50 p-4 text-sm">
-          <div className="flex items-center gap-2 font-semibold text-primary">
+        <div className="space-y-2 rounded-lg bg-muted/35 p-4 text-sm">
+          <div className="flex items-center gap-2 font-semibold text-foreground">
             <Info className="h-3 w-3" />
             <span>{currentDef.fullName[language]}</span>
           </div>
@@ -96,7 +96,7 @@ export function BondSelectionSection({
             {currentBondSupport.description}
           </p>
           {isFamilyBondType(bondType) ? (
-            <p className="font-semibold text-amber-700">
+            <p className="font-semibold text-warning">
               {t('regular_investment_page.family_bond_note')}
             </p>
           ) : null}

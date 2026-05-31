@@ -36,16 +36,16 @@ const SummaryMetric = ({ label, value, detail, tone = 'default', }: {
     tone?: 'default' | 'success' | 'warning';
 }) => {
     const toneClass = tone === 'success'
-        ? 'text-emerald-700'
+        ? 'text-success'
         : tone === 'warning'
-            ? 'text-amber-700'
-            : 'text-slate-950';
-    return (<div className="space-y-2 border-b border-dashed border-slate-200 px-4 py-4 last:border-b-0 md:border-b-0 md:border-r last:md:border-r-0">
-        <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">
+            ? 'text-warning'
+            : 'text-foreground';
+    return (<div className="space-y-2 border-b border-dashed border-border px-4 py-4 last:border-b-0 md:border-b-0 md:border-r last:md:border-r-0">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
           {label}
         </p>
-        <p className={`text-xl font-black ${toneClass}`}>{value}</p>
-        <p className="text-xs leading-5 text-slate-600">{detail}</p>
+        <p className={`text-xl font-semibold ${toneClass}`}>{value}</p>
+        <p className="text-xs leading-5 text-muted-foreground">{detail}</p>
       </div>);
 };
 function RetirementSection({
@@ -57,10 +57,10 @@ function RetirementSection({
     description?: string;
     children: React.ReactNode;
 }) {
-    return (<section className="space-y-4 rounded-[1.9rem] border border-slate-200 bg-white px-5 py-5 md:px-6">
+    return (<section className="space-y-4 bg-transparent">
         <div className="space-y-2">
-          <h3 className="text-xl font-black tracking-tight text-slate-950">{title}</h3>
-          {description ? <p className="max-w-3xl text-sm leading-7 text-slate-600">{description}</p> : null}
+          <h3 className="ui-section-title">{title}</h3>
+          {description ? <p className="ui-body max-w-3xl text-muted-foreground">{description}</p> : null}
         </div>
         {children}
       </section>);
@@ -200,11 +200,11 @@ export const RetirementPlannerContainer: React.FC = () => {
 
         <div className="space-y-8 xl:col-span-8">
           {results ? (<>
-              {isDirty ? (<div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
+              {isDirty ? (<div className="ui-inline-notice border-l-2 border-warning text-foreground">
                   {labels.staleResults}
                 </div>) : null}
 
-              <div className="grid gap-0 rounded-[1.9rem] border border-slate-200 bg-white md:grid-cols-2 xl:grid-cols-4">
+              <div className="grid gap-0 rounded-lg bg-card md:grid-cols-2 xl:grid-cols-4">
                 <SummaryMetric label={labels.scenarioStatus} value={results.result.isSustainable
                 ? labels.balancePositive
                 : labels.balanceDepletes} detail={results.result.exhaustionDate
@@ -250,15 +250,15 @@ export const RetirementPlannerContainer: React.FC = () => {
             ]} footerText={labels.readyFooter}/>)}
 
           <RetirementSection title={labels.limitsTitle} description={labels.limitsDesc}>
-            <div className="divide-y divide-dashed divide-slate-200 rounded-[1.5rem] border border-slate-200">
-              {modelLimits.map((item) => (<div key={item} className="px-4 py-3 text-sm leading-6 text-slate-600">
+            <div className="divide-y divide-dashed divide-border">
+              {modelLimits.map((item) => (<div key={item} className="px-4 py-3 text-sm leading-6 text-muted-foreground">
                   {item}
                 </div>))}
             </div>
           </RetirementSection>
 
-          {results?.result.exhaustionDate ? (<div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-4 text-sm leading-6 text-amber-950">
-              <Calendar className="mt-0.5 h-5 w-5 shrink-0 text-amber-700"/>
+          {results?.result.exhaustionDate ? (<div className="ui-inline-notice flex items-start gap-3 border-l-2 border-warning text-foreground">
+              <Calendar className="mt-0.5 h-5 w-5 shrink-0 text-warning"/>
               <p>
                 {labels.depletionWarning.replace('{{date}}', results.result.exhaustionDate)}
               </p>

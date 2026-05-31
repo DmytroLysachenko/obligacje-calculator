@@ -34,13 +34,13 @@ export function AdvancedSettingsSection({
     <section className="border-t border-dashed pt-6">
       <Accordion type="single" collapsible defaultValue="">
         <AccordionItem value="advanced" className="border-none">
-          <AccordionTrigger className="rounded-2xl border bg-slate-50 px-4 py-4 hover:no-underline">
+          <AccordionTrigger className="rounded-lg bg-muted/35 px-4 py-4 hover:no-underline">
             <div className="flex items-start gap-3 text-left">
-              <div className="rounded-xl bg-primary/10 p-2 text-primary">
+              <div className="rounded-md bg-muted p-2 text-foreground">
                 <Settings2 className="h-4 w-4" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-sm font-semibold tracking-[0.08em] text-slate-700">
+                <h3 className="text-sm font-semibold tracking-[0.08em] text-foreground">
                   {t('common.advanced')}
                 </h3>
                 <p className="text-[15px] leading-7 text-muted-foreground">
@@ -94,9 +94,9 @@ export function AdvancedSettingsSection({
               ) : null}
 
               <div className="space-y-4 border-t border-dashed pt-6">
-                <div className="flex items-center justify-between rounded-xl border border-primary/10 bg-primary/5 p-4">
+                <div className="flex items-center justify-between rounded-lg bg-muted/35 p-4">
                   <div className="space-y-0.5">
-                    <Label className="text-sm font-bold text-primary">{t('bonds.reinvest')}</Label>
+                    <Label className="text-sm font-semibold text-foreground">{t('bonds.reinvest')}</Label>
                     <p className="text-xs font-medium italic text-muted-foreground">
                       {t('bonds.rollover_desc')}
                     </p>
@@ -149,7 +149,7 @@ export function AdvancedSettingsSection({
                 <Label className="text-sm font-semibold text-muted-foreground">
                   {t('bonds.chart.granularity')}
                 </Label>
-                <div className="flex gap-1 rounded-xl border bg-muted/50 p-1">
+                <div className="flex gap-1 rounded-lg bg-muted/50 p-1">
                   {(['monthly', 'quarterly', 'yearly'] as const).map((step) => (
                     <Button
                       key={step}
@@ -162,7 +162,7 @@ export function AdvancedSettingsSection({
                       className={cn(
                         'h-9 flex-1 text-[12px] font-semibold tracking-[0.08em] transition-all',
                         (inputs.chartStep === step || (!inputs.chartStep && step === 'quarterly')) &&
-                          'shadow-sm',
+                          'bg-card',
                       )}
                       onClick={() => onUpdate('chartStep', step)}
                     >

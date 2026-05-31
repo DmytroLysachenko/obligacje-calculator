@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -53,14 +52,14 @@ export function RetirementInputsPanel({
   const showNbpNote = isFloatingNbpBondType(inputs.bondType);
 
   return (
-    <Card className="rounded-2xl border-2">
-      <CardHeader className="space-y-2">
-        <CardTitle className="text-lg font-black uppercase tracking-widest">
+    <section className="space-y-6">
+      <div className="space-y-2">
+        <h2 className="ui-section-title">
           {labels.primaryInputs}
-        </CardTitle>
-        <p className="text-sm leading-6 text-muted-foreground">{labels.primaryInputsDesc}</p>
-      </CardHeader>
-      <CardContent className="space-y-6">
+        </h2>
+        <p className="ui-body text-muted-foreground">{labels.primaryInputsDesc}</p>
+      </div>
+      <div className="space-y-6">
         <div className="space-y-2">
           <Label className="text-xs font-bold uppercase text-muted-foreground">
             {labels.initialCapital}
@@ -69,7 +68,7 @@ export function RetirementInputsPanel({
             type="number"
             value={inputs.initialCapital}
             onChange={(event) => onUpdateInput('initialCapital', Number(event.target.value))}
-            className="rounded-xl font-bold"
+            className="rounded-md font-semibold"
           />
         </div>
 
@@ -78,7 +77,7 @@ export function RetirementInputsPanel({
             <Label className="text-xs font-bold uppercase text-muted-foreground">
               {labels.monthlyWithdrawal}
             </Label>
-            <span className="text-xs font-black text-primary">{formatCurrency(inputs.monthlyWithdrawal)}</span>
+            <span className="text-xs font-semibold text-foreground">{formatCurrency(inputs.monthlyWithdrawal)}</span>
           </div>
           <CommittedSliderInput
             value={inputs.monthlyWithdrawal}
@@ -95,7 +94,7 @@ export function RetirementInputsPanel({
             <Label className="text-xs font-bold uppercase text-muted-foreground">
               {labels.scenarioHorizon}
             </Label>
-            <span className="text-xs font-black text-primary">
+            <span className="text-xs font-semibold text-foreground">
               {formatHorizonMonths(inputs.horizonYears * 12, language)}
             </span>
           </div>
@@ -114,7 +113,7 @@ export function RetirementInputsPanel({
             {labels.bondFamily}
           </Label>
           <Select value={inputs.bondType} onValueChange={(value) => onUpdateInput('bondType', value as BondType)}>
-            <SelectTrigger className="rounded-xl font-bold">
+            <SelectTrigger className="rounded-md font-semibold">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -137,9 +136,9 @@ export function RetirementInputsPanel({
 
         <Accordion type="single" collapsible defaultValue="">
           <AccordionItem value="advanced" className="border-none">
-            <AccordionTrigger className="rounded-2xl border bg-slate-50 px-4 py-4 hover:no-underline">
+            <AccordionTrigger className="rounded-lg bg-muted/35 px-4 py-4 hover:no-underline">
               <div className="space-y-1 text-left">
-                <p className="text-sm font-bold text-slate-950">{labels.advancedAssumptions}</p>
+                <p className="text-sm font-semibold text-foreground">{labels.advancedAssumptions}</p>
                 <p className="text-xs leading-5 text-muted-foreground">{labels.advancedAssumptionsDesc}</p>
               </div>
             </AccordionTrigger>
@@ -159,7 +158,7 @@ export function RetirementInputsPanel({
                   <Label className="text-xs font-bold uppercase text-muted-foreground">
                     {labels.expectedInflation}
                   </Label>
-                  <span className="text-xs font-black text-primary">{formatRate(inputs.expectedInflation)}</span>
+                  <span className="text-xs font-semibold text-foreground">{formatRate(inputs.expectedInflation)}</span>
                 </div>
                 <CommittedSliderInput
                   value={inputs.expectedInflation}
@@ -176,7 +175,7 @@ export function RetirementInputsPanel({
                   <Label className="text-xs font-bold uppercase text-muted-foreground">
                     {labels.expectedNbpRate}
                   </Label>
-                  <span className="text-xs font-black text-primary">{formatRate(inputs.expectedNbpRate)}</span>
+                  <span className="text-xs font-semibold text-foreground">{formatRate(inputs.expectedNbpRate)}</span>
                 </div>
                 <CommittedSliderInput
                   value={inputs.expectedNbpRate}
@@ -196,7 +195,7 @@ export function RetirementInputsPanel({
                   value={inputs.taxStrategy}
                   onValueChange={(value) => onUpdateInput('taxStrategy', value as TaxStrategy)}
                 >
-                  <SelectTrigger className="rounded-xl font-bold">
+                  <SelectTrigger className="rounded-md font-semibold">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -216,10 +215,10 @@ export function RetirementInputsPanel({
           </AccordionItem>
         </Accordion>
 
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-600">
+        <div className="ui-inline-notice">
           {labels.floatingActionNote}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

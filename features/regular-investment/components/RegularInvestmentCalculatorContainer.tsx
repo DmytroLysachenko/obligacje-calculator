@@ -16,10 +16,10 @@ import { RegularInvestmentChart } from './RegularInvestmentChart';
 import { RegularInvestmentInputsForm } from './RegularInvestmentInputsForm';
 import { RegularInvestmentResultsSummary } from './RegularInvestmentResultsSummary';
 const LoadingState = () => (<div className="space-y-4">
-    <Skeleton className="h-28 w-full rounded-[1.7rem] md:h-32 md:rounded-[2rem]"/>
-    <Skeleton className="h-[280px] w-full rounded-[1.7rem] md:h-[320px] md:rounded-[2rem]"/>
-    <Skeleton className="h-[320px] w-full rounded-[1.7rem] md:h-[420px] md:rounded-[2rem]"/>
-    <Skeleton className="h-[220px] w-full rounded-[1.7rem] md:h-[260px] md:rounded-[2rem]"/>
+    <Skeleton className="h-28 w-full rounded-lg md:h-32"/>
+    <Skeleton className="h-[280px] w-full rounded-lg md:h-[320px]"/>
+    <Skeleton className="h-[320px] w-full rounded-lg md:h-[420px]"/>
+    <Skeleton className="h-[220px] w-full rounded-lg md:h-[260px]"/>
   </div>);
 export const RegularInvestmentCalculatorContainer: React.FC = () => {
     const { inputs, results, warnings, assumptions, isCalculating, calculate, updateInput, setBondType, isDirty, envelope, isPersistenceReady, } = useRegularInvestmentCalculator();
@@ -63,7 +63,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
             {isCalculating && !results ? <LoadingState /> : null}
 
             {results ? (<div className={cn('space-y-6 transition-opacity duration-200', isCalculating && 'pointer-events-none opacity-50')}>
-                {isDirty ? (<div className="rounded-3xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
+                {isDirty ? (<div className="ui-inline-notice border-l-2 border-warning text-foreground">
                     {t('bonds.simulation.stale_results')}{' '}
                     <span className="font-semibold">{t('common.recalculate')}</span>.
                   </div>) : null}
@@ -79,9 +79,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
             </SecondaryInsightAccordion>
 
             <CalculatorSection title={t('regular_investment_page.chart_title')} description={t('regular_investment_page.chart_description')}>
-              <div className="rounded-[1.7rem] border border-slate-200 bg-white p-3 shadow-none md:rounded-[2rem] md:p-4">
-                <RegularInvestmentChart results={results} bondType={inputs.bondType} chartStep={inputs.chartStep}/>
-              </div>
+              <RegularInvestmentChart results={results} bondType={inputs.bondType} chartStep={inputs.chartStep}/>
             </CalculatorSection>
 
             <SecondaryInsightAccordion title={t('bonds.simulation.calculation_context')} description={t('regular_investment_page.calculation_context_description')} badge={t('regular_investment_page.calculation_context_badge')}>

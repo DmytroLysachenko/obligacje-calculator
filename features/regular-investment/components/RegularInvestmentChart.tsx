@@ -32,15 +32,15 @@ interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
 }
 const CustomTooltip = ({ active, payload, label, formatCurrency }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
-        return (<div className="bg-popover border-2 border-border/50 p-4 shadow-2xl rounded-xl text-popover-foreground min-w-[200px] backdrop-blur-sm bg-opacity-95">
-        <p className="font-black text-xs uppercase tracking-widest mb-3 border-b pb-2 border-border/50">{label}</p>
+        return (<div className="min-w-[200px] rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-lg">
+        <p className="ui-metadata mb-3 border-b border-border pb-2 font-semibold text-foreground">{label}</p>
         <div className="space-y-2">
           {payload.map((entry, index) => (<div key={index} className="flex justify-between items-center gap-4 text-xs">
               <span className="flex items-center gap-1.5 font-medium">
                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }}/>
                 {entry.name}:
               </span>
-              <span className="font-mono font-black text-primary">{formatCurrency(Number(entry.value))}</span>
+              <span className="font-mono font-semibold text-primary">{formatCurrency(Number(entry.value))}</span>
             </div>))}
         </div>
       </div>);
@@ -61,10 +61,10 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ 
     const formatCurrency = React.useMemo(() => (value: number) => currencyFormatter.format(value), [currencyFormatter]);
     return (<div className="space-y-6">
       <div className="flex justify-center">
-        <Tabs value={view} onValueChange={(v) => setView(v as 'nominal' | 'real')} className="w-fit p-1 bg-muted/50 rounded-xl">
+        <Tabs value={view} onValueChange={(v) => setView(v as 'nominal' | 'real')} className="w-fit rounded-lg bg-muted/50 p-1">
           <TabsList className="grid w-full grid-cols-2 h-10">
-            <TabsTrigger value="nominal" className="text-[10px] font-black uppercase tracking-widest px-6">{t('common.nominal_value')}</TabsTrigger>
-            <TabsTrigger value="real" className="text-[10px] font-black uppercase tracking-widest px-6">{t('common.real_value')}</TabsTrigger>
+            <TabsTrigger value="nominal" className="px-6 text-xs font-semibold">{t('common.nominal_value')}</TabsTrigger>
+            <TabsTrigger value="real" className="px-6 text-xs font-semibold">{t('common.real_value')}</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
