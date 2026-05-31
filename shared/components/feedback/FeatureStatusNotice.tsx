@@ -14,28 +14,28 @@ const statusConfig: Record<FeatureStatus, {
 }> = {
     trusted: {
         icon: CheckCircle2,
-        noticeClassName: 'border-emerald-200 bg-emerald-50/55 text-emerald-950',
-        pillClassName: 'border-emerald-200 bg-emerald-50 text-emerald-800',
+        noticeClassName: 'border-success/25 bg-success/10 text-foreground',
+        pillClassName: 'border-success/25 bg-success/10 text-success',
     },
     conditional: {
         icon: Info,
-        noticeClassName: 'border-blue-200 bg-blue-50/55 text-blue-950',
-        pillClassName: 'border-blue-200 bg-blue-50 text-blue-800',
+        noticeClassName: 'border-border bg-muted/35 text-foreground',
+        pillClassName: 'border-border bg-card text-muted-foreground',
     },
     experimental: {
         icon: FlaskConical,
-        noticeClassName: 'border-amber-200 bg-amber-50/55 text-amber-950',
-        pillClassName: 'border-amber-200 bg-amber-50 text-amber-800',
+        noticeClassName: 'border-warning/25 bg-warning/10 text-foreground',
+        pillClassName: 'border-warning/25 bg-warning/10 text-warning',
     },
     limited: {
         icon: AlertTriangle,
-        noticeClassName: 'border-orange-200 bg-orange-50/55 text-orange-950',
-        pillClassName: 'border-orange-200 bg-orange-50 text-orange-800',
+        noticeClassName: 'border-warning/25 bg-warning/10 text-foreground',
+        pillClassName: 'border-warning/25 bg-warning/10 text-warning',
     },
     reference: {
         icon: Info,
-        noticeClassName: 'border-slate-200 bg-slate-50/80 text-slate-900',
-        pillClassName: 'border-slate-200 bg-slate-50 text-slate-700',
+        noticeClassName: 'border-border bg-card text-foreground',
+        pillClassName: 'border-border bg-muted/35 text-muted-foreground',
     },
 };
 export function FeatureStatusPill({ status, className, }: {
@@ -57,7 +57,7 @@ export function FeatureStatusNotice({ status, title, children, className, eyebro
 }) {
     const config = statusConfig[status];
     const Icon = config.icon;
-    return (<section className={cn('rounded-[1.7rem] border px-5 py-4 md:px-6 md:py-5', config.noticeClassName, className)}>
+    return (<section className={cn('rounded-lg border px-4 py-4 md:px-6', config.noticeClassName, className)}>
       <div className="flex items-start gap-3">
         <Icon className="mt-0.5 h-4 w-4 shrink-0 opacity-80"/>
         <div className="min-w-0 space-y-2">
@@ -65,10 +65,10 @@ export function FeatureStatusNotice({ status, title, children, className, eyebro
             {eyebrow ? (<span className="text-xs font-semibold text-current/65">
                 {eyebrow}
               </span>) : null}
-            <p className="text-[15px] font-semibold tracking-tight md:text-base">{title}</p>
+            <p className="ui-card-title">{title}</p>
             <FeatureStatusPill status={status}/>
           </div>
-          <div className="text-[15px] leading-7 text-current/90">{children}</div>
+          <div className="text-sm leading-6 text-current/80">{children}</div>
         </div>
       </div>
     </section>);

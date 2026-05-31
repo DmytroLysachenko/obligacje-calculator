@@ -140,7 +140,7 @@
     @apply text-[32px] leading-[1.12] font-semibold tracking-tight text-foreground;
   }
   .ui-section-title {
-    @apply text-xl leading-7 font-semibold tracking-tight text-foreground;
+    @apply text-lg leading-7 font-semibold tracking-tight text-foreground;
   }
   .ui-card-title {
     @apply text-[15px] leading-6 font-semibold tracking-tight text-foreground;
@@ -150,6 +150,21 @@
   }
   .ui-meta {
     @apply text-xs leading-5 text-muted-foreground;
+  }
+  .ui-primary-metric {
+    @apply text-[40px] leading-none font-semibold tracking-tight text-foreground;
+  }
+  .ui-large-metric {
+    @apply text-[32px] leading-none font-semibold tracking-tight text-foreground;
+  }
+  .ui-section-row {
+    @apply flex flex-col gap-2 md:flex-row md:items-start md:justify-between;
+  }
+  .ui-divider-group {
+    @apply divide-y divide-border;
+  }
+  .ui-inline-notice {
+    @apply rounded-md bg-muted/45 px-4 py-3 text-sm leading-6 text-muted-foreground;
   }
   .ui-surface {
     @apply border border-border bg-card;
