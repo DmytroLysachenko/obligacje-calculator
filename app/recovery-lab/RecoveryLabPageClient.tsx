@@ -62,22 +62,22 @@ export function RecoveryLabPageClient() {
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
         {recoveryLabPages.map((page) => (
           <Link key={page.href} href={page.href} className="group block h-full">
-            <article className="flex h-full flex-col gap-5 rounded-[1.75rem] border border-amber-200/90 bg-white px-5 py-5 transition-colors group-hover:border-amber-300">
+            <article className="flex h-full flex-col gap-5 border-t border-border py-5 transition-colors group-hover:border-foreground">
               <div className="flex items-start justify-between gap-3">
-                <div className="rounded-xl bg-amber-50 p-2.5 text-amber-700">
+                <div className="rounded-lg bg-muted p-2.5 text-foreground">
                   <page.icon className="h-4.5 w-4.5" />
                 </div>
                 <FeatureStatusPill status={page.status} />
               </div>
               <div className="space-y-2">
-                <p className="text-xl font-black tracking-tight text-slate-950">
+                <p className="ui-section-title">
                   {t(`recovery_lab_page.pages.${page.i18nKey}.title`)}
                 </p>
-                <p className="text-sm leading-7 text-slate-600">
+                <p className="ui-body text-muted-foreground">
                   {t(`recovery_lab_page.pages.${page.i18nKey}.description`)}
                 </p>
               </div>
-              <div className="space-y-3 border-t border-dashed border-amber-200 pt-4 text-sm leading-6 text-slate-600">
+              <div className="space-y-3 border-t border-dashed border-border pt-4 text-sm leading-6 text-muted-foreground">
                 <p>{t('recovery_lab_page.card_support_notice')}</p>
                 <p>{t('recovery_lab_page.card_notice')}</p>
               </div>
@@ -86,14 +86,14 @@ export function RecoveryLabPageClient() {
         ))}
       </div>
 
-      <section className="space-y-4 rounded-[1.9rem] border border-slate-200 bg-white px-6 py-6">
-        <div className="flex items-center gap-2 text-slate-950">
+      <section className="space-y-4 border-t border-border py-6">
+        <div className="flex items-center gap-2 text-foreground">
           <ShieldAlert className="h-5 w-5 text-primary" />
-          <p className="text-xl font-black tracking-tight">
+          <p className="ui-section-title">
             {t('recovery_lab_page.what_stays_core')}
           </p>
         </div>
-        <div className="space-y-2 border-t border-dashed border-slate-200 pt-4 text-sm leading-7 text-slate-600">
+        <div className="space-y-2 border-t border-dashed border-border pt-4 text-sm leading-7 text-muted-foreground">
           <p>{t('recovery_lab_page.what_stays_core_desc')}</p>
           <p>{t('recovery_lab_page.core_emphasis')}</p>
           <p>{t('recovery_lab_page.core_improve_later')}</p>

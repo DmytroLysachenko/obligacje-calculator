@@ -7,7 +7,6 @@ import {FeatureStatusNotice} from '@/shared/components/feedback/FeatureStatusNot
 import {SecondarySurfaceIntro} from '@/shared/components/page/SecondarySurfaceIntro';
 import {useAppI18n} from '@/i18n/client';
 import {Suspense} from 'react';
-import {Card, CardContent} from '@/components/ui/card';
 
 export function MultiAssetPageClient() {
   const {t} = useAppI18n();
@@ -46,11 +45,11 @@ export function MultiAssetPageClient() {
             'start_month',
             'after_core',
           ] as const).map((itemKey) => (
-            <Card key={itemKey} className="rounded-[1.75rem] border border-slate-200 bg-white/86 shadow-[0_16px_38px_-34px_rgba(15,23,42,0.3)] backdrop-blur">
-              <CardContent className="p-5 text-sm leading-7 text-slate-600">
+            <div key={itemKey} className="border-t border-border py-5">
+              <p className="ui-body text-muted-foreground">
                 {t(`multi_asset_page.guide_cards.${itemKey}`)}
-              </CardContent>
-            </Card>
+              </p>
+            </div>
           ))}
         </div>
 

@@ -15,7 +15,6 @@ import {
 import {useAppI18n} from '@/i18n/client';
 import {Badge} from '@/components/ui/badge';
 import {Button} from '@/components/ui/button';
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table';
 import {AppToast} from '@/shared/components/feedback/AppToast';
 import {ConfirmActionDialog} from '@/shared/components/feedback/ConfirmActionDialog';
@@ -69,18 +68,18 @@ export function AdminStatusDashboard({
   return (
     <>
       <div className="container mx-auto max-w-7xl space-y-8 py-10">
-        <header className="flex flex-col items-start justify-between gap-4 rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 p-8 text-white shadow-2xl md:flex-row md:items-center">
+        <header className="flex flex-col items-start justify-between gap-4 border-b border-border pb-8 md:flex-row md:items-center">
           <div className="space-y-1">
-            <h1 className="flex items-center gap-3 text-3xl font-black tracking-tight">
-              <Database className="h-8 w-8 text-blue-400" />
+            <h1 className="flex items-center gap-3 text-[40px] font-semibold leading-none text-foreground">
+              <Database className="h-8 w-8 text-primary" />
               {t('admin.title')}
             </h1>
-            <p className="font-medium text-slate-400">{t('admin.subtitle')}</p>
+            <p className="ui-body text-muted-foreground">{t('admin.subtitle')}</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Button
               variant="outline"
-              className="border-white/20 bg-white/10 text-white hover:bg-white/20"
+              className="rounded-lg"
               onClick={() => {
                 void onRefresh();
               }}
@@ -91,7 +90,7 @@ export function AdminStatusDashboard({
             </Button>
             <Button
               variant="default"
-              className="bg-blue-600 font-bold text-white hover:bg-blue-700"
+              className="rounded-lg font-semibold"
               onClick={() => onRequestSync('full-sync')}
               disabled={loading || syncing}
             >
@@ -106,7 +105,7 @@ export function AdminStatusDashboard({
         </header>
 
         {error && (
-          <div className="animate-pulse rounded-xl border-2 border-destructive/20 bg-destructive/10 p-4 font-bold text-destructive">
+          <div className="ui-inline-notice border-l-2 border-destructive font-semibold text-destructive">
             <div className="flex items-center gap-3">
               <AlertCircle className="h-5 w-5" />
               {error}
@@ -115,7 +114,7 @@ export function AdminStatusDashboard({
         )}
 
         {syncing && (
-          <div className="rounded-xl border-2 border-blue-500/20 bg-blue-500/10 p-4 font-bold text-blue-600">
+          <div className="ui-inline-notice border-l-2 border-primary font-semibold text-primary">
             <div className="flex items-center gap-3">
               <Loader2 className="h-5 w-5 animate-spin" />
               {t('admin.sync_progress')}
@@ -124,79 +123,66 @@ export function AdminStatusDashboard({
         )}
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <Card className="border-2 shadow-sm transition-shadow hover:shadow-md">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-xs font-black uppercase text-muted-foreground">
-                <Activity className="h-4 w-4 text-blue-500" />
+          <section className="border-t border-border py-5">
+              <p className="flex items-center gap-2 ui-metadata text-muted-foreground">
+                <Activity className="h-4 w-4 text-primary" />
                 {t('admin.metrics.series_tracked')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-4xl font-black tracking-tighter">{data?.series?.length || 0}</p>
-              <p className="mt-1 text-xs text-muted-foreground">{t('admin.metrics.series_desc')}</p>
-            </CardContent>
-          </Card>
-          <Card className="border-2 shadow-sm transition-shadow hover:shadow-md">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-xs font-black uppercase text-muted-foreground">
-                <Database className="h-4 w-4 text-emerald-500" />
+              </p>
+              <p className="mt-3 text-[40px] font-semibold leading-none text-foreground">{data?.series?.length || 0}</p>
+              <p className="mt-2 ui-metadata text-muted-foreground">{t('admin.metrics.series_desc')}</p>
+          </section>
+          <section className="border-t border-border py-5">
+              <p className="flex items-center gap-2 ui-metadata text-muted-foreground">
+                <Database className="h-4 w-4 text-success" />
                 {t('admin.metrics.data_points')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-4xl font-black tracking-tighter">
+              </p>
+              <p className="mt-3 text-[40px] font-semibold leading-none text-foreground">
                 {data?.series?.reduce((acc, item) => acc + item.pointCount, 0).toLocaleString() || 0}
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">{t('admin.metrics.points_desc')}</p>
-            </CardContent>
-          </Card>
-          <Card className="border-2 shadow-sm transition-shadow hover:shadow-md">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-xs font-black uppercase text-muted-foreground">
-                <Clock className="h-4 w-4 text-amber-500" />
+              <p className="mt-2 ui-metadata text-muted-foreground">{t('admin.metrics.points_desc')}</p>
+          </section>
+          <section className="border-t border-border py-5">
+              <p className="flex items-center gap-2 ui-metadata text-muted-foreground">
+                <Clock className="h-4 w-4 text-warning" />
                 {t('admin.metrics.environment')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </p>
               <div className="flex items-baseline gap-2">
-                <Badge variant="outline" className="px-3 text-lg font-black uppercase">
+                <Badge variant="outline" className="mt-3 px-3 text-lg font-semibold uppercase">
                   {data?.env || 'unknown'}
                 </Badge>
               </div>
-              <p className="mt-2 text-xs text-muted-foreground">{t('admin.metrics.env_desc')}</p>
-            </CardContent>
-          </Card>
+              <p className="mt-2 ui-metadata text-muted-foreground">{t('admin.metrics.env_desc')}</p>
+          </section>
         </div>
 
-        <Card className="overflow-hidden rounded-3xl border-2 shadow-lg">
-          <CardHeader className="border-b bg-muted/30 p-6">
-            <CardTitle className="flex items-center gap-2 text-xl font-black">
+        <section className="space-y-6 border-t border-border py-6">
+          <div className="space-y-2">
+            <h2 className="flex items-center gap-2 ui-section-title">
               <Activity className="h-5 w-5 text-primary" />
               {t('admin.inventory.title')}
-            </CardTitle>
-            <CardDescription className="font-medium">{t('admin.inventory.subtitle')}</CardDescription>
-          </CardHeader>
-          <CardContent className="p-0">
+            </h2>
+            <p className="ui-body text-muted-foreground">{t('admin.inventory.subtitle')}</p>
+          </div>
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-muted/50 hover:bg-muted/50">
-                    <TableHead className="w-[250px] px-6 py-4 text-[10px] font-black uppercase">
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead className="w-[250px] px-6 py-4 ui-metadata">
                       {t('admin.inventory.cols.name')}
                     </TableHead>
-                    <TableHead className="px-6 py-4 text-[10px] font-black uppercase">
+                    <TableHead className="px-6 py-4 ui-metadata">
                       {t('admin.inventory.cols.frequency')}
                     </TableHead>
-                    <TableHead className="px-6 py-4 text-[10px] font-black uppercase">
+                    <TableHead className="px-6 py-4 ui-metadata">
                       {t('admin.inventory.cols.last_point')}
                     </TableHead>
-                    <TableHead className="px-6 py-4 text-right text-[10px] font-black uppercase">
+                    <TableHead className="px-6 py-4 text-right ui-metadata">
                       {t('admin.inventory.cols.records')}
                     </TableHead>
-                    <TableHead className="px-6 py-4 text-[10px] font-black uppercase">
+                    <TableHead className="px-6 py-4 ui-metadata">
                       {t('admin.inventory.cols.last_sync')}
                     </TableHead>
-                    <TableHead className="px-6 py-4 text-[10px] font-black uppercase">
+                    <TableHead className="px-6 py-4 ui-metadata">
                       {t('admin.inventory.cols.health')}
                     </TableHead>
                   </TableRow>
@@ -205,19 +191,19 @@ export function AdminStatusDashboard({
                   {data?.series?.map((seriesItem) => {
                     const hasGap = isDataGap(seriesItem.lastDataPointDate);
                     return (
-                      <TableRow key={seriesItem.id} className="transition-colors hover:bg-muted/20">
-                        <TableCell className="px-6 py-4">
-                          <div className="text-sm font-black">{seriesItem.name}</div>
+                      <TableRow key={seriesItem.id} className="border-border transition-colors hover:bg-muted/20">
+                        <TableCell className="px-6 py-5">
+                          <div className="text-sm font-semibold">{seriesItem.name}</div>
                           <div className="mt-0.5 w-fit rounded bg-muted/50 px-1 font-mono text-[10px] text-muted-foreground">
                             {seriesItem.slug}
                           </div>
                         </TableCell>
-                        <TableCell className="px-6 py-4">
-                          <Badge variant="secondary" className="text-[9px] font-black uppercase tracking-wider">
+                        <TableCell className="px-6 py-5">
+                          <Badge variant="secondary" className="text-[9px] font-semibold uppercase tracking-wider">
                             {seriesItem.frequency}
                           </Badge>
                         </TableCell>
-                        <TableCell className="px-6 py-4">
+                        <TableCell className="px-6 py-5">
                           <div className="flex flex-col gap-1">
                             <span className="font-mono text-xs font-bold">
                               {seriesItem.lastDataPointDate || 'N/A'}
@@ -225,7 +211,7 @@ export function AdminStatusDashboard({
                             {hasGap && seriesItem.lastDataPointDate && (
                               <Badge
                                 variant="destructive"
-                                className="h-4 w-fit gap-1 px-1.5 py-0 text-[8px] font-black uppercase"
+                                className="h-4 w-fit gap-1 px-1.5 py-0 text-[8px] font-semibold uppercase"
                               >
                                 <AlertTriangle className="h-2 w-2" />
                                 {t('admin.inventory.health.gap')}
@@ -234,17 +220,17 @@ export function AdminStatusDashboard({
                             {!seriesItem.lastDataPointDate && (
                               <Badge
                                 variant="outline"
-                                className="h-4 w-fit border-amber-200 bg-amber-50 px-1.5 py-0 text-[8px] font-black uppercase text-amber-600"
+                                className="h-4 w-fit border-warning/30 bg-warning/10 px-1.5 py-0 text-[8px] font-semibold uppercase text-warning"
                               >
                                 {t('admin.inventory.health.missing')}
                               </Badge>
                             )}
                           </div>
                         </TableCell>
-                        <TableCell className="px-6 py-4 text-right font-mono text-xs font-bold">
+                        <TableCell className="px-6 py-5 text-right font-mono text-xs font-semibold">
                           {seriesItem.pointCount.toLocaleString()}
                         </TableCell>
-                        <TableCell className="px-6 py-4">
+                        <TableCell className="px-6 py-5">
                           <div className="flex flex-col">
                             <span className="text-xs font-medium">
                               {seriesItem.updatedAt
@@ -261,19 +247,19 @@ export function AdminStatusDashboard({
                             )}
                           </div>
                         </TableCell>
-                        <TableCell className="px-6 py-4">
+                        <TableCell className="px-6 py-5">
                           {seriesItem.lastSyncStatus === 'success' ? (
-                            <Badge className="gap-1 border-emerald-200 bg-emerald-100 font-black uppercase text-[10px] text-emerald-700 hover:bg-emerald-100">
+                            <Badge className="gap-1 border-success/30 bg-success/10 font-semibold uppercase text-[10px] text-success hover:bg-success/10">
                               <CheckCircle2 className="h-3 w-3" />
                               {t('admin.inventory.health.healthy')}
                             </Badge>
                           ) : seriesItem.lastSyncStatus === 'failed' ? (
-                            <Badge variant="destructive" className="gap-1 font-black uppercase text-[10px]">
+                            <Badge variant="destructive" className="gap-1 font-semibold uppercase text-[10px]">
                               <AlertCircle className="h-3 w-3" />
                               {t('admin.inventory.health.error')}
                             </Badge>
                           ) : (
-                            <Badge variant="outline" className="font-black uppercase text-[10px]">
+                            <Badge variant="outline" className="font-semibold uppercase text-[10px]">
                               {t('admin.inventory.health.initial')}
                             </Badge>
                           )}
@@ -291,8 +277,7 @@ export function AdminStatusDashboard({
                 </TableBody>
               </Table>
             </div>
-          </CardContent>
-        </Card>
+        </section>
       </div>
 
       <ConfirmActionDialog

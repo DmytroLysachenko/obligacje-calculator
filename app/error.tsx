@@ -17,27 +17,26 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
-      <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl border-2 border-primary/5 p-8 text-center space-y-6">
+    <div className="flex min-h-screen items-center justify-center bg-background p-6">
+      <section className="w-full max-w-md space-y-6 border-t border-border py-8 text-center">
         <div className="relative inline-block">
-          <div className="absolute -inset-1 rounded-full bg-red-500/20 blur-lg animate-pulse" />
-          <div className="relative bg-red-50 p-6 rounded-full border-2 border-red-100">
-            <AlertTriangle className="h-12 w-12 text-red-600" />
+          <div className="relative rounded-lg bg-muted p-6">
+            <AlertTriangle className="h-12 w-12 text-destructive" />
           </div>
         </div>
         
         <div className="space-y-2">
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight uppercase italic">
+          <h1 className="text-[32px] font-semibold leading-tight text-foreground">
             Engine Stall Detected
           </h1>
-          <p className="text-sm font-medium text-muted-foreground leading-relaxed">
+          <p className="ui-body text-muted-foreground">
             The calculation engine encountered an unexpected exception. Your data is safe, but we need to reset the current state.
           </p>
         </div>
 
         {error.digest && (
-          <div className="bg-muted/30 p-2 rounded-lg border border-dashed">
-            <code className="text-[10px] font-mono text-muted-foreground uppercase">
+          <div className="rounded-lg bg-muted/30 p-2">
+            <code className="ui-metadata font-mono text-muted-foreground">
               Incident ID: {error.digest}
             </code>
           </div>
@@ -46,7 +45,7 @@ export default function GlobalError({
         <div className="flex flex-col gap-3 pt-4">
           <Button 
             onClick={() => reset()}
-            className="h-12 rounded-xl font-black gap-2 shadow-lg shadow-primary/20 transition-all active:scale-95"
+            className="h-12 gap-2 rounded-lg font-semibold transition-all active:scale-95"
           >
             <RefreshCcw className="h-4 w-4" />
             RESTART ENGINE
@@ -55,7 +54,7 @@ export default function GlobalError({
           <Button 
             variant="outline"
             asChild
-            className="h-12 rounded-xl font-bold border-2"
+            className="h-12 rounded-lg font-semibold"
           >
             <Link href="/">
               <Home className="h-4 w-4 mr-2" />
@@ -64,10 +63,10 @@ export default function GlobalError({
           </Button>
         </div>
 
-        <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">
+        <p className="ui-metadata text-muted-foreground/70">
           Obligacje Calculator • Reliability Layer v2.1
         </p>
-      </div>
+      </section>
     </div>
   );
 }

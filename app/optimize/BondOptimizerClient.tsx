@@ -13,13 +13,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -81,15 +74,13 @@ const SupportMetric = ({
   value: string;
   detail: string;
 }) => (
-  <Card className="rounded-2xl border shadow-none">
-    <CardContent className="p-5">
-      <p className="text-[10px] font-black uppercase text-muted-foreground">
+  <div className="border-t border-border py-5">
+      <p className="ui-metadata text-muted-foreground">
         {label}
       </p>
-      <p className="mt-2 text-lg font-black text-slate-950">{value}</p>
-      <p className="mt-1 text-xs leading-5 text-muted-foreground">{detail}</p>
-    </CardContent>
-  </Card>
+      <p className="mt-2 text-[32px] font-semibold leading-none text-foreground">{value}</p>
+      <p className="mt-2 ui-metadata leading-5 text-muted-foreground">{detail}</p>
+  </div>
 );
 
 export default function BondOptimizerClient() {
@@ -181,16 +172,16 @@ export default function BondOptimizerClient() {
     >
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
         <aside className="space-y-6 xl:col-span-4">
-            <Card className="rounded-2xl border-2 shadow-none">
-            <CardHeader className="space-y-2">
-              <CardTitle className="text-lg font-black uppercase tracking-widest">
+            <section className="space-y-6">
+            <div className="space-y-2 border-b border-border pb-4">
+              <h2 className="ui-section-title">
                 {t('optimizer_page.input_title')}
-              </CardTitle>
-              <CardDescription className="text-sm leading-6">
+              </h2>
+              <p className="ui-body text-muted-foreground">
                 {t('optimizer_page.input_description')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
+              </p>
+            </div>
+            <div className="space-y-6">
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-4">
                   <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -250,15 +241,15 @@ export default function BondOptimizerClient() {
                   onChange={(event) =>
                     updateInput('purchaseDate', event.target.value)
                   }
-                  className="rounded-xl"
+                  className="rounded-lg"
                 />
               </div>
 
               <Accordion type="single" collapsible defaultValue="">
                 <AccordionItem value="advanced" className="border-none">
-                  <AccordionTrigger className="rounded-2xl border bg-slate-50 px-4 py-4 hover:no-underline">
+                  <AccordionTrigger className="rounded-lg bg-muted/35 px-4 py-4 hover:no-underline">
                     <div className="space-y-1 text-left">
-                      <p className="text-sm font-bold text-slate-950">
+                      <p className="text-sm font-semibold text-foreground">
                         {t('optimizer_page.advanced_title')}
                       </p>
                       <p className="text-xs leading-5 text-muted-foreground">
@@ -279,7 +270,7 @@ export default function BondOptimizerClient() {
                           updateInput('taxStrategy', value)
                         }
                       >
-                        <SelectTrigger className="rounded-xl">
+                        <SelectTrigger className="rounded-lg">
                           <SelectValue placeholder={t('optimizer_page.select_strategy')} />
                         </SelectTrigger>
                         <SelectContent>
@@ -296,7 +287,7 @@ export default function BondOptimizerClient() {
                       </Select>
                     </div>
 
-                    <div className="space-y-3 rounded-xl border border-amber-200 bg-amber-50/60 px-4 py-4">
+                    <div className="space-y-3 rounded-lg bg-muted/35 px-4 py-4">
                       <div className="flex items-center justify-between gap-4">
                         <Label
                           htmlFor="includeFamilyBonds"
@@ -317,7 +308,7 @@ export default function BondOptimizerClient() {
                           }
                         />
                       </div>
-                      <p className="text-xs leading-6 text-amber-950">
+                      <p className="ui-metadata leading-6 text-warning">
                         {t('optimizer_page.family_bonds_note', {
                           bonds: FAMILY_BOND_TYPES.join(' / '),
                           support: getBondSupportMeta(FAMILY_BOND_TYPES[0]).shortLabel.toLowerCase(),
@@ -368,10 +359,10 @@ export default function BondOptimizerClient() {
                     </div>
 
                     <div className="grid gap-3 md:grid-cols-2">
-                      <div className="rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm leading-6 text-slate-600">
+                      <div className="rounded-lg bg-muted/35 px-4 py-3 text-sm leading-6 text-muted-foreground">
                         {t('optimizer_page.macro_scope.indexed')}
                       </div>
-                      <div className="rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm leading-6 text-slate-600">
+                      <div className="rounded-lg bg-muted/35 px-4 py-3 text-sm leading-6 text-muted-foreground">
                         {t('optimizer_page.macro_scope.floating')}
                       </div>
                     </div>
@@ -379,18 +370,18 @@ export default function BondOptimizerClient() {
                 </AccordionItem>
               </Accordion>
 
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-600">
+              <div className="ui-inline-notice text-muted-foreground">
                 {t('optimizer_page.input_footer')}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         </aside>
 
         <section className="space-y-6 xl:col-span-8">
           {results && leadingScenario ? (
             <>
               {isDirty ? (
-                <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
+                <div className="ui-inline-notice border-l-2 border-warning text-warning">
                   {t('optimizer_page.stale_results')}
                 </div>
               ) : null}
@@ -423,20 +414,19 @@ export default function BondOptimizerClient() {
                 />
               </div>
 
-              <Card className="rounded-2xl border shadow-none">
-                <CardHeader className="border-b pb-4">
+              <section className="space-y-6 border-t border-border py-6">
                   <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                     <div className="space-y-2">
-                      <CardTitle className="flex items-center gap-2 text-xl">
+                      <h2 className="flex items-center gap-2 ui-section-title">
                         <ListOrdered className="h-5 w-5 text-primary" />
                         {t('optimizer_page.leading_card_title')}
-                      </CardTitle>
-                      <CardDescription className="text-sm leading-6">
+                      </h2>
+                      <p className="ui-body text-muted-foreground">
                         {t('optimizer_page.leading_card_description')}
-                      </CardDescription>
+                      </p>
                     </div>
-                    <div className="rounded-xl border bg-muted/20 px-4 py-3 text-right">
-                      <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    <div className="rounded-lg bg-muted/35 px-4 py-3 text-right">
+                      <p className="ui-metadata text-muted-foreground">
                         {t('optimizer_page.tax_wrapper_label')}
                       </p>
                       <p className="mt-1 text-sm font-semibold text-foreground">
@@ -444,9 +434,7 @@ export default function BondOptimizerClient() {
                       </p>
                     </div>
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-4 p-6">
-                  <div className="rounded-xl border bg-muted/20 p-4">
+                  <div className="rounded-lg bg-muted/35 p-4">
                     <p className="text-sm font-medium text-foreground">
                       {leadingScenario.name} ({leadingScenario.bondType})
                     </p>
@@ -456,47 +444,44 @@ export default function BondOptimizerClient() {
                     </p>
                   </div>
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                    <div className="rounded-xl border p-4">
-                      <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    <div className="border-t border-border py-4">
+                      <p className="ui-metadata text-muted-foreground">
                         {t('optimizer_page.tax_paid_label')}
                       </p>
-                      <p className="mt-2 text-xl font-semibold text-orange-700">
+                      <p className="mt-2 text-[32px] font-semibold leading-none text-warning">
                         {formatCurrency(leadingScenario.result.totalTax)}
                       </p>
                     </div>
-                    <div className="rounded-xl border p-4">
-                      <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    <div className="border-t border-border py-4">
+                      <p className="ui-metadata text-muted-foreground">
                         {t('optimizer_page.inflation_input_label')}
                       </p>
-                      <p className="mt-2 text-xl font-semibold text-foreground">
+                      <p className="mt-2 text-[32px] font-semibold leading-none text-foreground">
                         {inputs.expectedInflation.toFixed(1)}%
                       </p>
                     </div>
-                    <div className="rounded-xl border p-4">
-                      <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    <div className="border-t border-border py-4">
+                      <p className="ui-metadata text-muted-foreground">
                         {t('optimizer_page.nbp_input_label')}
                       </p>
-                      <p className="mt-2 text-xl font-semibold text-foreground">
+                      <p className="mt-2 text-[32px] font-semibold leading-none text-foreground">
                         {inputs.expectedNbpRate.toFixed(2)}%
                       </p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+              </section>
 
-              <Card className="rounded-2xl border shadow-none">
-                <CardHeader className="border-b pb-4">
-                  <CardTitle className="flex items-center gap-2 text-xl">
+              <section className="space-y-6 border-t border-border py-6">
+                  <h2 className="flex items-center gap-2 ui-section-title">
                     <ArrowDownUp className="h-5 w-5 text-primary" />
                     {t('optimizer_page.ranked_outcomes_title')}
-                  </CardTitle>
-                  <CardDescription className="text-sm leading-6">
+                  </h2>
+                  <p className="ui-body text-muted-foreground">
                     {t('optimizer_page.ranked_outcomes_description', {
                       years: horizonYears,
                     })}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4 p-6">
+                  </p>
+                <div className="divide-y divide-border">
                   {results.rankedBonds.map((item, index) => {
                     const gapToLead =
                       leadingScenario.netPayoutValue - item.netPayoutValue;
@@ -504,11 +489,11 @@ export default function BondOptimizerClient() {
                     return (
                       <div
                         key={item.bondType}
-                        className="rounded-2xl border p-4"
+                        className="py-4"
                       >
                         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                           <div className="flex items-start gap-4">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-full border bg-muted/20 text-sm font-semibold">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-sm font-semibold">
                               {index + 1}
                             </div>
                             <div className="space-y-1">
@@ -536,8 +521,8 @@ export default function BondOptimizerClient() {
                       </div>
                     );
                   })}
-                </CardContent>
-              </Card>
+                </div>
+              </section>
 
               <SecondaryInsightAccordion
                 title={t('optimizer_page.guardrail_title')}
@@ -545,10 +530,10 @@ export default function BondOptimizerClient() {
                 badge={t('optimizer_page.guardrail_badge')}
               >
                 <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-600">
+                  <div className="rounded-lg bg-muted/35 px-4 py-4 text-sm leading-6 text-muted-foreground">
                     {t('optimizer_page.guardrail_points.assumption_shift')}
                   </div>
-                  <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm leading-6 text-slate-600">
+                  <div className="rounded-lg bg-muted/35 px-4 py-4 text-sm leading-6 text-muted-foreground">
                     {t('optimizer_page.guardrail_points.suitability')}
                   </div>
                 </div>
