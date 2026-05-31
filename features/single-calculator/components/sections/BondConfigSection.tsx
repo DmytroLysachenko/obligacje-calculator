@@ -99,7 +99,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
                     <span className="rounded-md bg-muted px-2 py-0.5 text-xs font-semibold text-muted-foreground">
                       {formatDurationLabel(type)}
                     </span>
-                    {isFamilyBondType(type) ? (<span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+                    {isFamilyBondType(type) ? (<span className="rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-semibold text-warning">
                         {t('bonds.family_bond_badge')}
                       </span>) : null}
                   </div>
@@ -168,7 +168,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
           <p className="text-muted-foreground leading-relaxed">
             {currentBondSupport.description}
           </p>
-          {isFamilyBondType(inputs.bondType) ? (<p className="font-semibold text-amber-700">
+          {isFamilyBondType(inputs.bondType) ? (<p className="font-semibold text-warning">
               {t('bonds.family_bond_notice')}
             </p>) : null}
         </div>

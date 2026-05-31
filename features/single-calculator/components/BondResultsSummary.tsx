@@ -50,7 +50,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results,
         {
             label: headlineLabel,
             value: formatCurrency(headlineValue),
-            tone: 'text-emerald-700',
+            tone: 'text-success',
             description: inputs.showRealValue
                 ? t('bonds.explanation_inflation')
                 : t('bonds.actual_cash_in_hand'),
@@ -66,13 +66,13 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results,
         {
             label: t('bonds.real_cagr'),
             value: `${results.realAnnualizedReturn.toFixed(2)}%`,
-            tone: 'text-blue-700',
+            tone: 'text-foreground',
             description: t('bonds.real_cagr_desc'),
         },
         {
             label: t('bonds.tax'),
             value: formatCurrency(results.totalTax),
-            tone: 'text-orange-700',
+            tone: 'text-warning',
             description: t('bonds.tax_deducted'),
         },
     ];

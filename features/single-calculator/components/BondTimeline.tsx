@@ -86,8 +86,8 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
         setEventTypeFilter('all');
         setIsExpanded(false);
     };
-    return (<div className="space-y-4">
-      <div className="space-y-4 rounded-lg border border-border bg-card p-4">
+    return (<div className="space-y-6">
+      <div className="space-y-4 bg-transparent">
         <div className="grid gap-3 md:grid-cols-3">
           <TimelineStat label={t('bonds.schedule.rows_after_filters')} value={visibleRangeLabel}/>
           <TimelineStat label={t('bonds.schedule.projected_points')} value={String(projectionCount)}/>
@@ -133,7 +133,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
       </div>
 
       <ResponsiveTableSheet title={t('bonds.schedule.mobile_sheet_title')} description={t('bonds.schedule.mobile_sheet_description')} triggerLabel={t('bonds.schedule.mobile_sheet_trigger')} triggerCount={`${filteredTimeline.length} ${t('bonds.schedule.mobile_sheet_count_suffix')}`}>
-        {displayedTimeline.map((row) => (<div key={`mobile-${row.key}`} className="rounded-lg border border-border bg-card p-4 shadow-none">
+        {displayedTimeline.map((row) => (<div key={`mobile-${row.key}`} className="rounded-lg bg-muted/30 p-4 shadow-none">
             <div className="flex items-start justify-between gap-3">
               <div className="space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
@@ -168,7 +168,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
           </div>))}
       </ResponsiveTableSheet>
 
-      <div className="hidden w-full overflow-hidden rounded-lg border border-border bg-card shadow-none lg:block">
+      <div className="hidden w-full overflow-hidden rounded-lg bg-card shadow-none lg:block">
         <Table className="table-fixed w-full">
           <TableHeader>
             <TableRow className="bg-muted/35 hover:bg-muted/35">
@@ -206,8 +206,8 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
                       <span className="text-sm font-medium text-foreground">{row.periodLabel}</span>
                       {row.projectionLabel ? (<span className={cn('rounded-full px-2 py-0.5 text-[11px] font-semibold', row.projectionLabel === 'Prognoza' ||
                     row.projectionLabel === 'Projected'
-                    ? 'bg-orange-100 text-orange-700'
-                    : 'bg-blue-100 text-blue-700')}>
+                    ? 'bg-warning/10 text-warning'
+                    : 'bg-muted text-muted-foreground')}>
                           {row.projectionLabel}
                         </span>) : null}
                     </div>
@@ -218,7 +218,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
                       </div>) : null}
                   </div>
                 </TableCell>
-                <TableCell className="py-4 align-top text-xs text-slate-600">
+                <TableCell className="py-4 align-top text-xs text-muted-foreground">
                   <div className="space-y-1 pr-2">
                     <p className="font-medium leading-5 text-foreground">{row.cadenceLabel}</p>
                     <p className="line-clamp-2 text-xs leading-5 text-muted-foreground">
@@ -228,7 +228,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
                 </TableCell>
                 <TableCell className="py-4 align-top">
                   <div className="flex flex-col gap-1 pr-2">
-                    <span className="font-mono text-xs font-semibold text-slate-900">
+                    <span className="font-mono text-xs font-semibold text-foreground">
                       {row.interestRateLabel}
                     </span>
                     <span className="line-clamp-2 text-xs leading-5">{row.rateSourceLabel}</span>
@@ -240,7 +240,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
                 <TableCell className="py-4 align-top font-mono text-xs">
                   {formatCurrency(row.totalWealth)}
                 </TableCell>
-                <TableCell className="py-4 align-top font-mono text-xs text-slate-600">
+                <TableCell className="py-4 align-top font-mono text-xs text-muted-foreground">
                   {formatCurrency(row.paidOutCash)}
                 </TableCell>
                 <TableCell className={cn('py-4 align-top font-mono text-xs', row.netProfit >= 0 ? 'financial-positive' : 'text-destructive')}>

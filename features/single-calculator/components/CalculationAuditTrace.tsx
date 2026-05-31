@@ -8,14 +8,14 @@ import { AppLanguage, getRateSourceDisplayLabel, getReferenceDisplayLabel, } fro
 interface CalculationAuditTraceProps {
     point: YearlyTimelinePoint;
 }
-function AuditRow({ label, value, tone = 'text-slate-950', }: {
+function AuditRow({ label, value, tone = 'text-foreground', }: {
     label: string;
     value: string;
     tone?: string;
 }) {
-    return (<div className="flex items-center justify-between gap-4 border-b border-dashed border-slate-200 py-3 last:border-b-0">
-      <span className="text-sm text-slate-600">{label}</span>
-      <span className={cn('text-sm font-bold', tone)}>{value}</span>
+    return (<div className="flex items-center justify-between gap-4 border-b border-dashed border-border py-3 last:border-b-0">
+      <span className="text-sm text-muted-foreground">{label}</span>
+      <span className={cn('text-sm font-semibold', tone)}>{value}</span>
     </div>);
 }
 function cn(...classes: Array<string | false | null | undefined>) {
@@ -28,40 +28,40 @@ export const CalculationAuditTrace: React.FC<CalculationAuditTraceProps> = ({ po
     const formatPercent = (value: number) => `${value.toFixed(2)}%`;
     const rateLabel = getRateSourceDisplayLabel(point.rateSource, language as AppLanguage);
     const referenceLabel = getReferenceDisplayLabel(point, language as AppLanguage);
-    return (<section className="rounded-[2rem] border border-slate-200 bg-white px-6 py-6 shadow-none">
+    return (<section className="space-y-6">
       <div className="space-y-5">
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
-            <Scale className="h-3.5 w-3.5 text-primary"/>
+          <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+            <Scale className="h-3.5 w-3.5 text-foreground"/>
             {t('bonds.audit.eyebrow')}
           </div>
-          <h3 className="text-xl font-black tracking-tight text-slate-950">
+          <h3 className="ui-section-title">
             {t('bonds.audit.title', { period: point.periodLabel })}
           </h3>
-          <p className="text-sm leading-7 text-slate-600">
+          <p className="ui-body max-w-3xl text-muted-foreground">
             {t('bonds.audit.description')}
           </p>
         </div>
 
-        <div className="rounded-[1.5rem] border border-slate-200 px-4 py-2">
+        <div className="ui-divider-group">
           <AuditRow label={t('bonds.base_value')} value={formatCurrency(point.nominalValueBeforeInterest)}/>
-          <AuditRow label={t('common.interest_rate')} value={formatPercent(point.interestRate)} tone="text-primary"/>
+          <AuditRow label={t('common.interest_rate')} value={formatPercent(point.interestRate)} />
           <AuditRow label={t('bonds.audit.rate_source')} value={rateLabel}/>
           {referenceLabel ? (<AuditRow label={t('bonds.audit.reference_basis')} value={referenceLabel}/>) : null}
-          <AuditRow label={t('bonds.plus_interest')} value={`+${formatCurrency(point.interestEarned)}`} tone="text-emerald-700"/>
-          {point.taxDeducted > 0 ? (<AuditRow label={t('bonds.minus_tax')} value={`-${formatCurrency(point.taxDeducted)}`} tone="text-orange-700"/>) : null}
+          <AuditRow label={t('bonds.plus_interest')} value={`+${formatCurrency(point.interestEarned)}`} tone="text-success"/>
+          {point.taxDeducted > 0 ? (<AuditRow label={t('bonds.minus_tax')} value={`-${formatCurrency(point.taxDeducted)}`} tone="text-warning"/>) : null}
         </div>
 
-        <div className="flex items-center justify-between rounded-[1.5rem] border border-slate-200 bg-slate-50/60 px-4 py-4">
+        <div className="flex items-center justify-between bg-muted/35 px-4 py-4">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+            <p className="ui-meta font-semibold uppercase tracking-[0.12em]">
               {t('bonds.net_period_gain')}
             </p>
-            <p className="mt-2 text-xl font-black text-primary">
+            <p className="mt-2 ui-large-metric">
               {formatCurrency(point.netInterest)}
             </p>
           </div>
-          <ArrowRight className="h-5 w-5 text-primary"/>
+          <ArrowRight className="h-5 w-5 text-muted-foreground"/>
         </div>
       </div>
     </section>);

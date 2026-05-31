@@ -217,14 +217,14 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     >
       <div className="space-y-8 md:space-y-10">
         {sharedScenarioTitle ? (
-          <div className="rounded-3xl border border-sky-200 bg-sky-50 px-5 py-4 text-sm text-sky-950">
+          <div className="ui-inline-notice">
             <div className="flex flex-wrap items-center gap-2 font-semibold">
               <Link2 className="h-4 w-4" />
               {t('bonds.shared_scenario_badge')}
             </div>
             <p className="mt-2 leading-7">
               {sharedScenarioTitle}
-              {' • '}
+              {' - '}
               {t('bonds.shared_scenario_snapshot')}
             </p>
           </div>
@@ -276,9 +276,9 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
 
             {isCalculating && !results ? (
               <div className="space-y-4">
-                <Skeleton className="h-28 w-full rounded-[1.7rem] md:h-32 md:rounded-[2rem]" />
-                <Skeleton className="h-52 w-full rounded-[1.7rem] md:h-60 md:rounded-[2rem]" />
-                <Skeleton className="h-[320px] w-full rounded-[1.7rem] md:h-[420px] md:rounded-[2rem]" />
+                <Skeleton className="h-28 w-full rounded-lg md:h-32" />
+                <Skeleton className="h-52 w-full rounded-lg md:h-60" />
+                <Skeleton className="h-[320px] w-full rounded-lg md:h-[420px]" />
               </div>
             ) : null}
 
@@ -290,7 +290,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
                 )}
               >
                 {isDirty ? (
-                  <div className="rounded-3xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
+                  <div className="ui-inline-notice border-l-2 border-warning text-foreground">
                     {t('bonds.simulation.stale_results')}{' '}
                     <span className="font-semibold">{t('common.recalculate')}</span>.
                   </div>
@@ -332,14 +332,12 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
                 title={t('bonds.simulation.chart_help_title')}
                 description={t('bonds.simulation.chart_help_desc')}
               />
-              <div className="rounded-[1.7rem] border border-slate-200 bg-white p-3 shadow-none md:rounded-[2rem] md:p-4">
-                <BondChart
-                  results={results}
-                  initialInvestment={results.initialInvestment}
-                  chartStep={inputs.chartStep}
-                  showRealValue={inputs.showRealValue}
-                />
-              </div>
+              <BondChart
+                results={results}
+                initialInvestment={results.initialInvestment}
+                chartStep={inputs.chartStep}
+                showRealValue={inputs.showRealValue}
+              />
             </CalculatorSection>
 
             <CalculatorSection
