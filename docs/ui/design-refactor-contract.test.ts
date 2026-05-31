@@ -22,6 +22,63 @@ const productSurfaceFiles = [
   'shared/components/reference/ReferenceGuideRail.tsx',
 ] as const;
 
+const singleCalculatorRefinedFiles = [
+  'features/single-calculator/components/BondCalculatorContainer.tsx',
+  'features/single-calculator/components/BondChart.tsx',
+  'features/single-calculator/components/BondResultsSummary.tsx',
+  'features/single-calculator/components/BondTimeline.tsx',
+  'features/single-calculator/components/CalculationAuditTrace.tsx',
+  'features/single-calculator/components/SavedScenariosPanel.tsx',
+  'features/single-calculator/components/ScenarioStarterPanel.tsx',
+  'features/single-calculator/components/sections/BondConfigSection.tsx',
+] as const;
+
+const comparisonRefinedFiles = [
+  'features/comparison-engine/components/ComparisonContainer.tsx',
+  'features/comparison-engine/components/ComparisonTable.tsx',
+  'features/comparison-engine/components/ComparisonVerdict.tsx',
+  'features/comparison-engine/components/MultiAssetComparisonContainer.tsx',
+  'features/comparison-engine/components/ScenarioOverrideCard.tsx',
+] as const;
+
+const recurringAndRetirementRefinedFiles = [
+  'features/regular-investment/components/RegularInvestmentCalculatorContainer.tsx',
+  'features/regular-investment/components/RegularInvestmentChart.tsx',
+  'features/regular-investment/components/inputs/AdvancedSettingsSection.tsx',
+  'features/regular-investment/components/inputs/BondSelectionSection.tsx',
+  'features/regular-investment/components/inputs/SectionHeading.tsx',
+  'features/retirement/components/RetirementInputsPanel.tsx',
+  'features/retirement/components/RetirementPlannerContainer.tsx',
+  'features/retirement/components/RetirementResultsOverview.tsx',
+  'features/retirement/components/RetirementSupportList.tsx',
+] as const;
+
+const sideAndOperationalRefinedFiles = [
+  'app/LandingDashboardClient.tsx',
+  'app/admin/status/page.tsx',
+  'app/error.tsx',
+  'app/multi-asset/MultiAssetPageClient.tsx',
+  'app/optimize/BondOptimizerClient.tsx',
+  'app/recovery-lab/RecoveryLabPageClient.tsx',
+  'features/admin/status/AdminStatusDashboard.tsx',
+] as const;
+
+const feedbackRefinedFiles = [
+  'shared/components/feedback/AppToast.tsx',
+  'shared/components/feedback/ConfirmActionDialog.tsx',
+  'shared/components/feedback/FeatureStatusNotice.tsx',
+  'shared/components/feedback/RecalculateButton.tsx',
+  'shared/components/feedback/ScenarioReadyPanel.tsx',
+] as const;
+
+const currentRefactorFiles = [
+  ...singleCalculatorRefinedFiles,
+  ...comparisonRefinedFiles,
+  ...recurringAndRetirementRefinedFiles,
+  ...sideAndOperationalRefinedFiles,
+  ...feedbackRefinedFiles,
+] as const;
+
 const sharedShellFiles = [
   'components/ui/badge.tsx',
   'components/ui/button.tsx',
@@ -64,6 +121,51 @@ const filesWithAllowedLargeRadius = new Set([
   'components/ui/tooltip.tsx',
 ]);
 
+const excessiveFragmentationFragments = [
+  'rounded-[1.4rem]',
+  'rounded-[1.5rem]',
+  'rounded-[1.6rem]',
+  'rounded-[1.7rem]',
+  'rounded-[1.8rem]',
+  'rounded-[1.9rem]',
+  'rounded-[2rem]',
+  'rounded-[2.2rem]',
+  'rounded-2xl',
+  'rounded-3xl',
+  'border-2',
+  'shadow-2xl',
+  'shadow-[0_',
+  'bg-[linear-gradient',
+  'bg-[radial-gradient',
+] as const;
+
+const rawFinancialPaletteFragments = [
+  'border-slate-',
+  'bg-slate-',
+  'text-slate-',
+  'ring-slate-',
+  'hover:bg-slate-',
+  'hover:border-slate-',
+  'border-amber-',
+  'bg-amber-',
+  'text-amber-',
+  'border-blue-',
+  'bg-blue-',
+  'text-blue-',
+  'border-emerald-',
+  'bg-emerald-',
+  'text-emerald-',
+  'border-green-',
+  'bg-green-',
+  'text-green-',
+  'border-orange-',
+  'bg-orange-',
+  'text-orange-',
+  'border-purple-',
+  'bg-purple-',
+  'text-purple-',
+] as const;
+
 function readSource(relativePath: string) {
   return readFileSync(join(repoRoot, relativePath), 'utf8');
 }
@@ -91,21 +193,7 @@ function expectNoFragments(
 describe('financial UI design refactor contracts', () => {
   it('keeps refactored product pages off oversized card radii and decorative shadows', () => {
     for (const { relativePath, source } of readMany(productSurfaceFiles)) {
-      expectNoFragments(relativePath, source, [
-        'rounded-[1.4rem]',
-        'rounded-[1.5rem]',
-        'rounded-[1.6rem]',
-        'rounded-[1.7rem]',
-        'rounded-[1.8rem]',
-        'rounded-[1.9rem]',
-        'rounded-[2rem]',
-        'rounded-[2.2rem]',
-        'rounded-2xl',
-        'rounded-3xl',
-        'shadow-2xl',
-        'shadow-[0_',
-        'bg-[linear-gradient',
-      ]);
+      expectNoFragments(relativePath, source, excessiveFragmentationFragments);
     }
   });
 
@@ -117,6 +205,48 @@ describe('financial UI design refactor contracts', () => {
         'text-slate-',
         'hover:bg-slate-',
         'hover:border-slate-',
+      ]);
+    }
+  });
+
+  it('keeps the current calculator refactor tranche free of heavy card language', () => {
+    for (const { relativePath, source } of readMany(currentRefactorFiles)) {
+      expectNoFragments(relativePath, source, excessiveFragmentationFragments);
+    }
+  });
+
+  it('keeps the current calculator refactor tranche tokenized', () => {
+    for (const { relativePath, source } of readMany(currentRefactorFiles)) {
+      expectNoFragments(relativePath, source, rawFinancialPaletteFragments);
+    }
+  });
+
+  it('keeps refactored analysis surfaces off translucent decorative shells', () => {
+    const surfaceFiles = [
+      ...singleCalculatorRefinedFiles,
+      ...comparisonRefinedFiles,
+      ...recurringAndRetirementRefinedFiles,
+      ...sideAndOperationalRefinedFiles,
+    ] as const;
+
+    for (const { relativePath, source } of readMany(surfaceFiles)) {
+      expectNoFragments(relativePath, source, [
+        'bg-white/',
+        'backdrop-blur',
+        'blur-3xl',
+      ]);
+    }
+  });
+
+  it('keeps feedback widgets compact and token-based', () => {
+    for (const { relativePath, source } of readMany(feedbackRefinedFiles)) {
+      expectNoFragments(relativePath, source, [
+        'rounded-xl',
+        'rounded-2xl',
+        'rounded-3xl',
+        'shadow-xl',
+        'shadow-2xl',
+        'backdrop-blur',
       ]);
     }
   });
