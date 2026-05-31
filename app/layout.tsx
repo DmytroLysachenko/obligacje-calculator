@@ -103,15 +103,15 @@ export default async function RootLayout({
               <ChartSyncProvider>
                 <TooltipProvider>
                   <ErrorBoundary>
-                    <div className="flex min-h-screen">
+                    <div className="flex min-h-screen bg-background">
                       <Sidebar dataFreshness={dataFreshness} />
                       <OpportunisticSyncTrigger />
-                      <main className="flex min-h-screen flex-1 flex-col overflow-x-hidden border-l border-slate-200/70 bg-[radial-gradient(circle_at_top_left,rgba(226,232,240,0.35),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.98)_0%,rgba(248,250,252,0.98)_100%)] lg:pl-[22rem]">
-                        <div className="flex-1 px-4 py-4 md:px-8 md:py-8">
+                      <main className="flex min-h-screen flex-1 flex-col overflow-x-hidden border-l border-border bg-background lg:pl-[22rem]">
+                        <div className="flex-1 px-4 py-4 md:px-7 md:py-7">
                           <div className="container mx-auto max-w-[1320px]">{children}</div>
                         </div>
 
-                        <footer className="mt-auto border-t border-slate-200/70 bg-white/70 py-8 backdrop-blur">
+                        <footer className="mt-auto border-t border-border bg-card py-6">
                           <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
                             <p>
                               © {new Date().getFullYear()} {t('common.title')}.{' '}

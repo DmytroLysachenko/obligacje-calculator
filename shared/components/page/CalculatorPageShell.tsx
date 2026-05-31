@@ -26,7 +26,7 @@ function ShellMetaRow({ isCalculating, hasResults, }: {
     if (!isCalculating && !hasResults) {
         return null;
     }
-    return (<div className="flex flex-wrap items-center gap-3 text-[15px] leading-6 text-muted-foreground">
+    return (<div className="flex flex-wrap items-center gap-2 text-xs leading-5 text-muted-foreground">
       {isCalculating ? (<span className="inline-flex items-center gap-2">
           <Loader2 className="h-4 w-4 animate-spin"/>
           {t('common.calculating')}
@@ -52,19 +52,19 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({ title,
         }
     };
     const hasShareAction = onShare ? hasResults : (showImplicitShare && hasResults);
-    return (<div className="space-y-9 pb-20" onKeyDown={onKeyDown}>
-      <header className="surface-shell space-y-4 rounded-[1.9rem] px-5 py-5 md:space-y-5 md:rounded-3xl md:px-8 md:py-7">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-          <div className="max-w-4xl space-y-3 md:space-y-4">
-            <div className="flex items-start gap-3 md:items-center md:gap-4">
-              <div className="rounded-2xl bg-primary/10 p-2.5 text-primary md:p-3">
+    return (<div className="space-y-6 pb-14" onKeyDown={onKeyDown}>
+      <header className="surface-shell space-y-3 px-4 py-4 md:px-5 md:py-5">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-4xl space-y-2">
+            <div className="flex items-start gap-3 md:items-center">
+              <div className="rounded-md bg-muted p-2 text-foreground">
                 {icon}
               </div>
               <div className="space-y-1">
-                <h2 className="text-[2rem] font-black tracking-tight text-slate-950 md:text-[2.85rem]">
+                <h2 className="ui-page-title">
                   {title}
                 </h2>
-                <p className="max-w-3xl text-[15px] leading-7 text-muted-foreground md:text-[17px] md:leading-8">
+                <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
                   {description}
                 </p>
               </div>
@@ -74,7 +74,7 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({ title,
 
           {(extraHeaderActions || hasShareAction) ? (<div className="flex flex-wrap items-center gap-2 lg:justify-end">
               {extraHeaderActions}
-              {hasShareAction ? (<Button variant="outline" size="sm" className={cn('h-10 gap-2 rounded-xl px-4 text-[12px] font-semibold focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2', copied ? 'border-emerald-600 text-emerald-700' : '')} onClick={handleShare}>
+              {hasShareAction ? (<Button variant="outline" size="sm" className={cn('h-8 gap-2 px-3 text-xs font-medium', copied ? 'border-[var(--finance-success)] text-[var(--finance-success)]' : '')} onClick={handleShare}>
                   {copied ? (<Check className="h-3.5 w-3.5"/>) : (<Share2 className="h-3.5 w-3.5"/>)}
                   {copied
                     ? t('common.copied')

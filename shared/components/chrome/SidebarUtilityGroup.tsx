@@ -14,9 +14,9 @@ export function SidebarUtilityRow({
   return (
     <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2.5">
       <div className="min-w-0">
-        <p className="text-xs font-semibold text-slate-500">{title}</p>
+        <p className="text-xs font-semibold text-muted-foreground">{title}</p>
         {description ? (
-          <p className="mt-0.5 text-[11px] leading-5 text-slate-500">{description}</p>
+          <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{description}</p>
         ) : null}
       </div>
       {action ? <div className="justify-self-end">{action}</div> : null}
@@ -29,7 +29,7 @@ export function SidebarUtilityPanel({
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="border-t border-dashed border-slate-200 px-1 py-3 first:border-t-0 first:pt-0">{children}</div>;
+  return <div className="border-t border-border px-1 py-3 first:border-t-0 first:pt-0">{children}</div>;
 }
 
 export function SidebarUtilityGroup({
@@ -41,10 +41,10 @@ export function SidebarUtilityGroup({
 }) {
   return (
     <div className="space-y-2">
-      <p className="px-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+      <p className="px-1 text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground">
         {title}
       </p>
-      <div className="rounded-[1.6rem] border border-slate-200 bg-white px-3 py-3">
+      <div className="rounded-md border border-border bg-card px-3 py-3">
         {children}
       </div>
     </div>

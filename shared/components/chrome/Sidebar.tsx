@@ -18,13 +18,13 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { useAppI18n } from '@/i18n/client';
-import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { cn } from '@/lib/utils';
+import { useHasMounted } from '@/shared/hooks/useHasMounted';
+import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 import { SidebarUtilityGroup } from './SidebarUtilityGroup';
 import { SidebarWorkspaceUtility } from './SidebarWorkspaceUtility';
 import { SidebarSettingsUtility } from './SidebarSettingsUtility';
 import { SidebarSyncSummary } from './SidebarSyncSummary';
-import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 
 interface SidebarContentProps {
   onItemClick?: () => void;
@@ -46,14 +46,14 @@ function SidebarBrand() {
   const { t } = useAppI18n();
 
   return (
-    <div className="border-b border-slate-200/80 px-4 py-3">
+    <div className="border-b border-border px-4 py-3">
       <Link href="/" className="flex items-center gap-2.5">
-        <div className="rounded-lg bg-slate-900 p-1.5 text-white shadow-sm shadow-slate-900/10">
+        <div className="rounded-md bg-foreground p-1.5 text-background">
           <TrendingUp className="h-3 w-3" />
         </div>
         <div className="min-w-0 space-y-1">
-          <p className="text-[0.95rem] font-bold tracking-tight">{t('common.title')}</p>
-          <p className="max-w-[13rem] text-[10px] leading-[1.15rem] text-slate-500">
+          <p className="text-sm font-semibold tracking-tight text-foreground">{t('common.title')}</p>
+          <p className="max-w-[13rem] text-xs leading-5 text-muted-foreground">
             {t('sidebar.brand_tagline')}
           </p>
         </div>
@@ -63,7 +63,7 @@ function SidebarBrand() {
 }
 
 function SidebarSectionLabel({ children }: { children: React.ReactNode }) {
-  return <p className="px-2 text-xs font-semibold text-slate-500">{children}</p>;
+  return <p className="px-1 text-xs font-semibold text-muted-foreground">{children}</p>;
 }
 
 function NavLinkItem({
@@ -82,24 +82,24 @@ function NavLinkItem({
       href={item.href}
       onClick={onItemClick}
       className={cn(
-        'group block rounded-[1.35rem] border px-3.5 py-3 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2',
+        'group block rounded-md border px-3 py-2.5 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40',
         isActive
-          ? 'border-sky-200/80 bg-[linear-gradient(135deg,rgba(219,234,254,0.92),rgba(239,246,255,0.96))] text-slate-950 shadow-sm shadow-sky-100/50'
-          : 'border-slate-200/80 bg-white/90 text-slate-900 hover:border-slate-300 hover:bg-white',
+          ? 'border-border bg-card text-foreground'
+          : 'border-transparent bg-transparent text-muted-foreground hover:border-border hover:bg-card hover:text-foreground',
       )}
     >
       <div className="flex min-w-0 items-center gap-3">
         <div
           className={cn(
-            'rounded-xl p-2',
-            isActive ? 'bg-slate-900 text-white shadow-sm shadow-slate-900/10' : 'bg-slate-100 text-slate-700',
+            'rounded-md border border-border p-1.5',
+            isActive ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground',
           )}
         >
           <Icon className="h-4 w-4" />
         </div>
 
         <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
-          <p className="min-w-0 text-[15px] font-semibold leading-5 tracking-tight md:text-base">
+          <p className="min-w-0 text-sm font-medium leading-5">
             {item.label}
           </p>
           <ChevronRight
@@ -128,7 +128,7 @@ function NavSectionBlock({
   return (
     <div className="space-y-2.5">
       <SidebarSectionLabel>{section.label}</SidebarSectionLabel>
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {section.items.map((item) => (
           <NavLinkItem
             key={item.href}
@@ -154,7 +154,7 @@ function SidebarFooter({
   const { canManageWorkspace } = usePortfolioAccess();
 
   return (
-    <div className="space-y-3 border-t border-slate-200/80 bg-white/55 p-3">
+    <div className="space-y-3 border-t border-border bg-muted/35 p-3">
       {canManageWorkspace ? (
         <SidebarUtilityGroup title={t('sidebar.workspace_title')}>
           <SidebarWorkspaceUtility pathname={pathname} />
@@ -164,7 +164,7 @@ function SidebarFooter({
         <SidebarSettingsUtility />
         <SidebarSyncSummary dataFreshness={dataFreshness} />
       </SidebarUtilityGroup>
-      <div className="px-1 pt-1 text-xs text-slate-500">
+      <div className="px-1 pt-1 text-xs text-muted-foreground">
         {'\u00A9'} {hasMounted ? new Date().getFullYear() : '----'} {t('common.title')}
       </div>
     </div>
@@ -224,10 +224,10 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
   ];
 
   return (
-    <div className="flex h-full flex-col border-r border-slate-200 bg-[linear-gradient(180deg,rgba(248,250,252,0.98)_0%,rgba(241,245,249,0.96)_100%)] text-slate-900">
+    <div className="flex h-full flex-col border-r border-border bg-[#eeeeea] text-foreground">
       <SidebarBrand />
 
-      <nav className="custom-scrollbar flex-1 space-y-6 overflow-y-auto px-4 py-5">
+      <nav className="custom-scrollbar flex-1 space-y-5 overflow-y-auto px-3 py-4">
         {navSections.map((section) => (
           <NavSectionBlock
             key={section.label}
@@ -258,7 +258,7 @@ export function Sidebar({
             <Button
               variant="outline"
               size="icon"
-              className="border border-slate-200 bg-white shadow-sm"
+              className="border border-border bg-card shadow-none"
             >
               <Menu className="h-5 w-5" />
               <span className="sr-only">Toggle menu</span>
@@ -274,7 +274,7 @@ export function Sidebar({
         </Sheet>
       </div>
 
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[22rem] border-r bg-white lg:block">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[22rem] border-r border-border bg-[#eeeeea] lg:block">
         <SidebarContent dataFreshness={dataFreshness} />
       </aside>
     </>

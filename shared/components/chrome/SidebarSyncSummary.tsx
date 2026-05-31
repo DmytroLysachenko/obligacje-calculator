@@ -38,14 +38,14 @@ function getFreshnessText(
 
 function getFreshnessClass(freshness: CalculationDataFreshness) {
   if (freshness.status === 'fresh') {
-    return 'border-emerald-200 bg-emerald-50 text-emerald-800';
+    return 'border-[var(--finance-success)]/30 bg-transparent text-[var(--finance-success)]';
   }
 
   if (freshness.status === 'fallback' || freshness.usedFallback) {
-    return 'border-orange-200 bg-orange-50 text-orange-800';
+    return 'border-[var(--finance-warning)]/40 bg-transparent text-[var(--finance-warning)]';
   }
 
-  return 'border-amber-200 bg-amber-50 text-amber-800';
+  return 'border-[var(--finance-warning)]/40 bg-transparent text-[var(--finance-warning)]';
 }
 
 export function SidebarSyncSummary({
@@ -60,8 +60,8 @@ export function SidebarSyncSummary({
       <div className="space-y-1.5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-xs font-semibold text-slate-500">{t('common.sync_data')}</p>
-            <p className="mt-0.5 text-[13px] font-semibold text-slate-900">
+            <p className="text-xs font-semibold text-muted-foreground">{t('common.sync_data')}</p>
+            <p className="mt-0.5 text-sm font-semibold text-foreground">
               {dataFreshness
                 ? dataFreshness.asOf ?? t('sidebar.freshness.no_date')
                 : t('sidebar.freshness.no_metadata')}
@@ -70,7 +70,7 @@ export function SidebarSyncSummary({
           {dataFreshness ? (
             <span
               className={cn(
-                'inline-flex rounded-full border px-2 py-0.5 text-xs font-semibold',
+                'inline-flex rounded-md border px-2 py-0.5 text-xs font-semibold',
                 getFreshnessClass(dataFreshness),
               )}
             >
@@ -79,7 +79,7 @@ export function SidebarSyncSummary({
           ) : null}
         </div>
 
-        <p className="text-xs leading-5 text-slate-600">
+        <p className="text-xs leading-5 text-muted-foreground">
           {dataFreshness
             ? getFreshnessText(dataFreshness, t)
             : t('sidebar.sync_unavailable')}
