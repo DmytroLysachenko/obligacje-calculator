@@ -31,7 +31,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
     const isFutureDate = isAfter(parseISO(inputs.purchaseDate), new Date());
     const durationMonths = Math.round(currentDef.duration * 12);
     const autoRollover = investmentHorizonMonths > durationMonths;
-    return (<div className="space-y-6 pb-6">
+    return (<div className="space-y-5 pb-5">
       <div className="space-y-3">
         <Label className="font-semibold">{t('bonds.timing.mode.label')}</Label>
         <div className="flex gap-2">
@@ -51,7 +51,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
           </Label>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={cn("w-full justify-start text-left font-normal h-11 px-3", !inputs.purchaseDate && "text-muted-foreground", hasMounted && isFutureDate && "border-destructive focus-visible:ring-destructive")}>
+              <Button variant="outline" className={cn("w-full justify-start px-3 text-left font-normal", !inputs.purchaseDate && "text-muted-foreground", hasMounted && isFutureDate && "border-destructive focus-visible:ring-destructive")}>
                 <CalendarIcon className="mr-2 h-4 w-4"/>
                 {hasMounted && inputs.purchaseDate ? format(parseISO(inputs.purchaseDate), 'PPP', { locale: dateLocale }) : <span>{t('bonds.pick_date')}</span>}
               </Button>
@@ -71,7 +71,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
             </Label>
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" className={cn("w-full justify-start text-left font-normal h-11 px-3", !inputs.withdrawalDate && "text-muted-foreground")}>
+                <Button variant="outline" className={cn("w-full justify-start px-3 text-left font-normal", !inputs.withdrawalDate && "text-muted-foreground")}>
                   <CalendarIcon className="mr-2 h-4 w-4"/>
                   {hasMounted && inputs.withdrawalDate ? format(parseISO(inputs.withdrawalDate), 'PPP', { locale: dateLocale }) : <span>{t('bonds.pick_date')}</span>}
                 </Button>
@@ -86,7 +86,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
       <div className="space-y-4 pt-2">
         <div className="flex justify-between items-center">
           <Label className="font-semibold">{t('bonds.investment_horizon')}</Label>
-          <span className="text-sm font-black text-primary">
+          <span className="text-sm font-semibold text-foreground">
             {formatHorizonMonths(investmentHorizonMonths, language)}
           </span>
         </div>
@@ -106,7 +106,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
           </Tooltip>
         </div>
         <Select value={inputs.taxStrategy} onValueChange={(value) => onUpdate('taxStrategy', value as TaxStrategy)}>
-          <SelectTrigger className="h-11">
+          <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -116,10 +116,10 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
           </SelectContent>
         </Select>
         
-        {(inputs.taxStrategy === TaxStrategy.IKE || inputs.taxStrategy === TaxStrategy.IKZE) && (<div className="flex items-center justify-between rounded-xl border border-dashed bg-muted/50 p-3">
+        {(inputs.taxStrategy === TaxStrategy.IKE || inputs.taxStrategy === TaxStrategy.IKZE) && (<div className="flex items-center justify-between rounded-md border border-border bg-muted/35 p-3">
             <div className="space-y-0.5">
-              <Label className="text-xs font-bold uppercase tracking-tight">{t('bonds.use_tax_limit')}</Label>
-              <p className="text-[10px] text-muted-foreground leading-tight max-w-[200px]">
+              <Label className="text-xs font-semibold">{t('bonds.use_tax_limit')}</Label>
+              <p className="max-w-[200px] text-xs leading-5 text-muted-foreground">
                 {t('bonds.use_tax_limit_desc')}
               </p>
             </div>
@@ -127,22 +127,22 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
           </div>)}
       </div>
 
-      {currentDef.rebuyDiscount > 0 && (<div className="flex items-center justify-between p-4 bg-green-50/50 rounded-xl border border-green-100">
+      {currentDef.rebuyDiscount > 0 && (<div className="flex items-center justify-between rounded-md border border-[var(--finance-success)]/35 bg-card p-4">
           <div className="space-y-0.5">
-            <Label className="text-sm font-bold text-green-800">{t('bonds.is_rebought')}</Label>
-            <p className="text-[10px] text-green-600 font-medium italic">
+            <Label className="text-sm font-semibold text-foreground">{t('bonds.is_rebought')}</Label>
+            <p className="text-xs text-[var(--finance-success)]">
               {t('bonds.discount_per_bond', { amount: currentDef.rebuyDiscount.toFixed(2) })}
             </p>
           </div>
           <Switch checked={inputs.isRebought} onCheckedChange={(checked) => onUpdate('isRebought', checked)}/>
         </div>)}
 
-      <div className="rounded-xl border border-primary/10 bg-primary/5 p-4">
+      <div className="rounded-md border border-border bg-muted/35 p-4">
         <div className="space-y-0.5">
-          <Label className="text-sm font-bold text-primary">
+          <Label className="text-sm font-semibold text-foreground">
             {t('bonds.timing.rollover_title')}
           </Label>
-          <p className="text-[10px] font-medium italic text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             {autoRollover
             ? t('bonds.timing.rollover_auto') : t('bonds.timing.single_cycle')}
           </p>

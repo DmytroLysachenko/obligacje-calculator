@@ -27,20 +27,19 @@ export const BondDisplaySection: React.FC<BondDisplaySectionProps> = React.memo(
   const { t } = useAppI18n();
 
   return (
-    <div className="space-y-4 pb-6">
+    <div className="space-y-4 pb-5">
       <div className="space-y-3">
-        <Label className="text-xs font-bold uppercase text-muted-foreground tracking-widest">
+        <Label className="text-xs font-semibold text-muted-foreground">
           {t('bonds.chart.granularity')}
         </Label>
-        <div className="flex gap-1 bg-muted/50 p-1 rounded-xl border">
+        <div className="flex gap-1 rounded-md border border-border bg-card p-1">
           {(['monthly', 'quarterly', 'yearly'] as const).map((step) => (
             <Button
               key={step}
               type="button"
               variant={inputs.chartStep === step || (!inputs.chartStep && step === 'yearly') ? 'default' : 'ghost'}
               className={cn(
-                "flex-1 h-8 text-[10px] font-black uppercase tracking-tighter transition-all",
-                (inputs.chartStep === step || (!inputs.chartStep && step === 'yearly')) && "shadow-sm"
+                "h-8 flex-1 text-xs font-medium",
               )}
               onClick={() => onUpdate('chartStep', step)}
             >
@@ -50,20 +49,20 @@ export const BondDisplaySection: React.FC<BondDisplaySectionProps> = React.memo(
         </div>
       </div>
 
-      <div className="flex items-center justify-between p-4 bg-primary/5 rounded-xl border border-primary/10">
+      <div className="flex items-center justify-between rounded-md border border-border bg-muted/35 p-4">
         <div className="space-y-0.5">
           <div className="flex items-center gap-2">
-            <Label className="text-sm font-bold text-primary uppercase">{t('bonds.inflation.adjusted')}</Label>
+            <Label className="text-sm font-semibold text-foreground">{t('bonds.inflation.adjusted')}</Label>
             <Tooltip>
               <TooltipTrigger asChild>
-                <HelpCircle className="h-3.5 w-3.5 text-primary/60 cursor-help" />
+                <HelpCircle className="h-3.5 w-3.5 cursor-help text-muted-foreground" />
               </TooltipTrigger>
               <TooltipContent>
                 {t('bonds.glossary.real_value')}
               </TooltipContent>
             </Tooltip>
           </div>
-          <p className="text-[10px] text-muted-foreground font-medium italic">
+          <p className="text-xs text-muted-foreground">
             {t('bonds.show_purchasing_power')}
           </p>
         </div>
@@ -73,10 +72,10 @@ export const BondDisplaySection: React.FC<BondDisplaySectionProps> = React.memo(
         />
       </div>
 
-      <div className="flex items-center justify-between p-4 bg-muted/50 rounded-xl border">
+      <div className="flex items-center justify-between rounded-md border border-border bg-card p-4">
         <div className="space-y-0.5">
-          <Label className="text-sm font-bold">{t('bonds.custom_tax_rate')}</Label>
-          <p className="text-[10px] text-muted-foreground font-medium italic">
+          <Label className="text-sm font-semibold">{t('bonds.custom_tax_rate')}</Label>
+          <p className="text-xs text-muted-foreground">
             {t('bonds.standard_tax_note')}
           </p>
         </div>
@@ -90,7 +89,7 @@ export const BondDisplaySection: React.FC<BondDisplaySectionProps> = React.memo(
         <div className="px-4 py-2">
           <Input
             type="number"
-            className="h-10 font-bold"
+            className="font-medium"
             value={inputs.taxRate}
             onChange={(e) => onUpdate('taxRate', Number(e.target.value))}
           />

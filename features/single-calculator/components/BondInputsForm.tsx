@@ -81,23 +81,23 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
   if (isLoadingDefs || !definitions || !currentDef) {
     return (
-      <Card className="w-full overflow-hidden border-primary/10 shadow-sm">
-        <CardHeader className="border-b bg-muted/20">
+      <Card className="w-full overflow-hidden border-border shadow-none">
+        <CardHeader className="border-b border-border bg-card">
           <Skeleton className="mb-2 h-6 w-48" />
           <Skeleton className="h-4 w-64" />
         </CardHeader>
         <CardContent className="space-y-8 p-6">
           <div className="space-y-4">
             <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-10 w-full rounded-xl" />
+            <Skeleton className="h-9 w-full rounded-md" />
           </div>
           <div className="space-y-4">
             <Skeleton className="h-4 w-32" />
-            <Skeleton className="h-10 w-full rounded-xl" />
+            <Skeleton className="h-9 w-full rounded-md" />
           </div>
           <div className="space-y-4">
             <Skeleton className="h-4 w-28" />
-            <Skeleton className="h-32 w-full rounded-xl" />
+            <Skeleton className="h-32 w-full rounded-md" />
           </div>
         </CardContent>
       </Card>
@@ -106,29 +106,29 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
   return (
     <TooltipProvider>
-      <Card className="w-full overflow-hidden border-primary/10 shadow-sm">
+      <Card className="w-full overflow-hidden border-border shadow-none">
         {guardrails.length > 0 ? (
-          <div className="space-y-2 border-b border-amber-200 bg-amber-50 p-3">
+          <div className="space-y-2 border-b border-[var(--finance-warning)]/40 bg-card p-3">
             {guardrails.map((issue) => (
               <div
                 key={issue.id}
-                className="rounded-xl border border-amber-200/70 bg-white/80 p-3"
+                className="rounded-md border border-[var(--finance-warning)]/40 bg-card p-3"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-amber-700">
+                    <div className="flex items-center gap-2 text-xs font-semibold text-[var(--finance-warning)]">
                       <AlertCircle className="h-3 w-3" />
                       <span>{issue.severity}</span>
                     </div>
-                    <p className="text-sm font-bold text-slate-900">{issue.title}</p>
-                    <p className="text-xs text-slate-700">{issue.description}</p>
+                    <p className="text-sm font-semibold text-foreground">{issue.title}</p>
+                    <p className="text-xs text-muted-foreground">{issue.description}</p>
                   </div>
                   {issue.autoFixLabel && onApplyGuardrailFix ? (
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
-                      className="shrink-0 text-xs font-bold"
+                      className="shrink-0 text-xs font-medium"
                       onClick={() => onApplyGuardrailFix(issue)}
                     >
                       {issue.autoFixLabel}
@@ -140,8 +140,8 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           </div>
         ) : null}
 
-        <CardHeader className="border-b bg-muted/20">
-          <CardTitle className="flex items-center gap-2 text-xl">
+        <CardHeader className="border-b border-border bg-card">
+          <CardTitle className="flex items-center gap-2 ui-section-title">
             <Target className="h-5 w-5 text-primary" />
             {t('bonds.single_calculator')}
           </CardTitle>
@@ -150,10 +150,10 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-8 p-6">
+        <CardContent className="space-y-6 p-5">
           <section className="space-y-4">
             <div className="space-y-1">
-              <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-700">
+              <h3 className="text-xs font-semibold text-muted-foreground">
                 {t('bonds.step_core')}
               </h3>
               <p className="text-xs text-muted-foreground">
@@ -170,9 +170,9 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
             />
           </section>
 
-          <section className="space-y-4 border-t border-dashed pt-6">
+          <section className="space-y-4 border-t border-border pt-5">
             <div className="space-y-1">
-              <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-700">
+              <h3 className="text-xs font-semibold text-muted-foreground">
                 {t('bonds.step_timing')}
               </h3>
               <p className="text-xs text-muted-foreground">
@@ -189,16 +189,16 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
             />
           </section>
 
-          <section className="border-t border-dashed pt-6">
+          <section className="border-t border-border pt-5">
             <Accordion type="single" collapsible defaultValue="">
               <AccordionItem value="advanced" className="border-none">
-                <AccordionTrigger className="border-b border-dashed px-0 py-4 hover:no-underline">
+                <AccordionTrigger className="border-b border-border px-0 py-4 hover:no-underline">
                   <div className="flex items-start gap-3 text-left">
-                    <div className="rounded-lg bg-primary/10 p-2 text-primary">
+                    <div className="rounded-md bg-muted p-2 text-muted-foreground">
                       <Settings2 className="h-4 w-4" />
                     </div>
                     <div className="space-y-1">
-                      <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-700">
+                      <h3 className="text-xs font-semibold text-muted-foreground">
                         {t('common.advanced')}
                       </h3>
                       <p className="text-xs font-medium text-muted-foreground">
@@ -220,7 +220,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                       compact
                     />
 
-                    <div className="border-t border-dashed pt-6">
+                    <div className="border-t border-border pt-5">
                       <BondDisplaySection
                         inputs={inputs}
                         onUpdate={handleUpdate}

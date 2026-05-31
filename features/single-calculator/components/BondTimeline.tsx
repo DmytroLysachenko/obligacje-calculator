@@ -22,11 +22,11 @@ function TimelineStat({ label, value, }: {
     label: string;
     value: string;
 }) {
-    return (<div className="border-b border-dashed border-slate-200 px-1 py-2.5 md:border-b-0 md:px-0">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
+    return (<div className="border-b border-border px-1 py-2.5 md:border-b-0 md:px-0">
+      <p className="text-xs font-semibold text-muted-foreground">
         {label}
       </p>
-      <p className="mt-1 text-sm font-semibold text-slate-900">{value}</p>
+      <p className="mt-1 text-sm font-semibold text-foreground">{value}</p>
     </div>);
 }
 export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep = 'yearly' }) => {
@@ -87,15 +87,15 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
         setIsExpanded(false);
     };
     return (<div className="space-y-4">
-      <div className="space-y-4 rounded-[1.5rem] border border-slate-200 bg-white p-4">
+      <div className="space-y-4 rounded-lg border border-border bg-card p-4">
         <div className="grid gap-3 md:grid-cols-3">
           <TimelineStat label={t('bonds.schedule.rows_after_filters')} value={visibleRangeLabel}/>
           <TimelineStat label={t('bonds.schedule.projected_points')} value={String(projectionCount)}/>
           <TimelineStat label={t('bonds.schedule.exit_markers')} value={String(exitMarkers)}/>
         </div>
 
-        <div className="border-t border-dashed border-slate-200 px-1 pt-3">
-          <p className="text-sm leading-7 text-slate-600">
+        <div className="border-t border-border px-1 pt-3">
+          <p className="text-sm leading-6 text-muted-foreground">
             {t('bonds.schedule.summary_note')}
           </p>
         </div>
@@ -103,14 +103,14 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="relative w-full md:w-72">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"/>
-            <Input placeholder={t('common.search') || 'Search...'} className="pl-9 bg-background" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}/>
+            <Input placeholder={t('common.search') || 'Search...'} className="bg-background pl-9" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}/>
           </div>
 
           <div className="flex w-full flex-col gap-2 md:w-auto md:flex-row md:items-center">
             <div className="flex w-full items-center gap-2 md:w-auto">
               <Filter className="h-4 w-4 text-muted-foreground"/>
               <Select value={eventTypeFilter} onValueChange={setEventTypeFilter}>
-                <SelectTrigger className="w-full md:w-56 bg-background">
+                <SelectTrigger className="w-full bg-background md:w-56">
                   <SelectValue placeholder={t('bonds.filter_events') || 'Filter Events'}/>
                 </SelectTrigger>
                 <SelectContent>
@@ -124,7 +124,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
               </Select>
             </div>
 
-            {activeFilterCount > 0 ? (<Button type="button" variant="outline" size="sm" className="gap-2 rounded-xl" onClick={resetFilters}>
+            {activeFilterCount > 0 ? (<Button type="button" variant="outline" size="sm" className="gap-2" onClick={resetFilters}>
                 <RotateCcw className="h-4 w-4"/>
                 {t('common.reset_filters')}
               </Button>) : null}
@@ -133,18 +133,18 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
       </div>
 
       <ResponsiveTableSheet title={t('bonds.schedule.mobile_sheet_title')} description={t('bonds.schedule.mobile_sheet_description')} triggerLabel={t('bonds.schedule.mobile_sheet_trigger')} triggerCount={`${filteredTimeline.length} ${t('bonds.schedule.mobile_sheet_count_suffix')}`}>
-        {displayedTimeline.map((row) => (<div key={`mobile-${row.key}`} className="rounded-3xl border border-slate-200 bg-white p-4 shadow-none">
+        {displayedTimeline.map((row) => (<div key={`mobile-${row.key}`} className="rounded-lg border border-border bg-card p-4 shadow-none">
             <div className="flex items-start justify-between gap-3">
               <div className="space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <p className="text-sm font-semibold text-slate-950">{row.periodLabel}</p>
-                  {row.projectionLabel ? (<span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-700">
+                  <p className="text-sm font-semibold text-foreground">{row.periodLabel}</p>
+                  {row.projectionLabel ? (<span className="rounded-md bg-muted px-2 py-0.5 text-xs font-semibold text-muted-foreground">
                       {row.projectionLabel}
                     </span>) : null}
                 </div>
-                <p className="text-xs leading-5 text-slate-500">{row.cadenceLabel}</p>
+                <p className="text-xs leading-5 text-muted-foreground">{row.cadenceLabel}</p>
               </div>
-              <p className="text-sm font-black text-slate-950">
+              <p className="text-sm font-semibold text-foreground">
                 {formatCurrency(row.totalWealth)}
               </p>
             </div>
@@ -164,46 +164,46 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
               <MobileValue label={t('bonds.schedule.rate_source')} value={row.rateSourceLabel}/>
             </div>
 
-            {row.referenceLabel ? (<p className="mt-3 text-xs leading-5 text-slate-500">{row.referenceLabel}</p>) : null}
+            {row.referenceLabel ? (<p className="mt-3 text-xs leading-5 text-muted-foreground">{row.referenceLabel}</p>) : null}
           </div>))}
       </ResponsiveTableSheet>
 
-      <div className="hidden w-full rounded-[1.75rem] border border-slate-200 bg-white shadow-none lg:block">
+      <div className="hidden w-full overflow-hidden rounded-lg border border-border bg-card shadow-none lg:block">
         <Table className="table-fixed w-full">
           <TableHeader>
-            <TableRow className="bg-slate-50/80 hover:bg-slate-50/80">
-              <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-slate-50/95 text-xs font-semibold text-slate-600">
+            <TableRow className="bg-muted/35 hover:bg-muted/35">
+              <TableHead className="sticky top-0 z-10 h-10 w-[11%] bg-muted/60">
                 {t('common.period')}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 w-[18%] bg-slate-50/95 text-xs font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-10 w-[18%] bg-muted/60">
                 {t('bonds.schedule.checkpoint_meaning')}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 w-[17%] bg-slate-50/95 text-xs font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-10 w-[17%] bg-muted/60">
                 {t('bonds.schedule.rate_and_basis')}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-slate-50/95 text-xs font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-10 w-[11%] bg-muted/60">
                 {t('bonds.total_wealth')}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-slate-50/95 text-xs font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-10 w-[11%] bg-muted/60">
                 {displayedTimeline[0]?.cashFlowLabel ?? t('bonds.schedule.cash_flow')}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-slate-50/95 text-xs font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-10 w-[10%] bg-muted/60">
                 {t('common.net_profit')}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-slate-50/95 text-xs font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-10 w-[10%] bg-muted/60">
                 {t('bonds.real_value')}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 w-[12%] bg-slate-50/95 text-right text-xs font-semibold text-slate-600">
+              <TableHead className="sticky top-0 z-10 h-10 w-[12%] bg-muted/60 text-right">
                 {t('bonds.early_exit_payout')}
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {displayedTimeline.map((row) => (<TableRow key={row.key} className={cn('border-b border-slate-100 transition-colors hover:bg-slate-50/70', row.isWithdrawal ? 'bg-primary/5 font-semibold hover:bg-primary/10' : 'odd:bg-slate-50/30')}>
+            {displayedTimeline.map((row) => (<TableRow key={row.key} className={cn('border-b border-border transition-colors hover:bg-muted/35', row.isWithdrawal ? 'bg-muted/55 font-semibold' : '')}>
                 <TableCell className="py-4 align-top">
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">{row.periodLabel}</span>
+                      <span className="text-sm font-medium text-foreground">{row.periodLabel}</span>
                       {row.projectionLabel ? (<span className={cn('rounded-full px-2 py-0.5 text-[11px] font-semibold', row.projectionLabel === 'Prognoza' ||
                     row.projectionLabel === 'Projected'
                     ? 'bg-orange-100 text-orange-700'
@@ -220,8 +220,8 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
                 </TableCell>
                 <TableCell className="py-4 align-top text-xs text-slate-600">
                   <div className="space-y-1 pr-2">
-                    <p className="font-medium leading-5 text-slate-900">{row.cadenceLabel}</p>
-                    <p className="line-clamp-2 text-xs leading-5 text-slate-500">
+                    <p className="font-medium leading-5 text-foreground">{row.cadenceLabel}</p>
+                    <p className="line-clamp-2 text-xs leading-5 text-muted-foreground">
                       {row.valueMeaningLabel}
                     </p>
                   </div>
@@ -243,10 +243,10 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
                 <TableCell className="py-4 align-top font-mono text-xs text-slate-600">
                   {formatCurrency(row.paidOutCash)}
                 </TableCell>
-                <TableCell className={cn('py-4 align-top font-mono text-xs', row.netProfit >= 0 ? 'text-green-600' : 'text-destructive')}>
+                <TableCell className={cn('py-4 align-top font-mono text-xs', row.netProfit >= 0 ? 'financial-positive' : 'text-destructive')}>
                   {formatCurrency(row.netProfit)}
                 </TableCell>
-                <TableCell className="py-4 align-top font-mono text-xs text-blue-600">
+                <TableCell className="py-4 align-top font-mono text-xs text-muted-foreground">
                   {formatCurrency(row.realValue)}
                 </TableCell>
                 <TableCell className="py-4 align-top text-right font-mono text-xs font-semibold">
@@ -256,7 +256,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
           </TableBody>
         </Table>
 
-        {filteredTimeline.length > 12 ? (<div className="flex justify-center border-t bg-slate-50/70 p-4">
+        {filteredTimeline.length > 12 ? (<div className="flex justify-center border-t border-border bg-muted/35 p-4">
             <Button variant="ghost" size="sm" className="gap-2 text-sm font-semibold" onClick={() => setIsExpanded(!isExpanded)}>
               {isExpanded ? (<>
                   <ChevronUp className="h-4 w-4"/> {t('common.show_less') || 'Show Less'}
@@ -271,7 +271,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
         {filteredTimeline.length === 0 ? (<div className="space-y-3 p-12 text-center text-muted-foreground">
             <p>{t('common.no_results_found') || 'No results found for current filters.'}</p>
             {activeFilterCount > 0 ? (<div className="flex justify-center">
-                <Button type="button" variant="outline" size="sm" className="gap-2 rounded-xl" onClick={resetFilters}>
+                <Button type="button" variant="outline" size="sm" className="gap-2" onClick={resetFilters}>
                   <RotateCcw className="h-4 w-4"/>
                   {t('common.reset_filters')}
                 </Button>
@@ -284,11 +284,11 @@ function MobileValue({ label, value, }: {
     label: string;
     value: string;
 }) {
-    return (<div className="border-t border-dashed border-slate-200 px-1 py-2 first:border-t-0">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
+    return (<div className="border-t border-border px-1 py-2 first:border-t-0">
+      <p className="text-xs font-semibold text-muted-foreground">
         {label}
       </p>
-      <p className="mt-1 text-sm font-semibold text-slate-950">{value}</p>
+      <p className="mt-1 text-sm font-semibold text-foreground">{value}</p>
     </div>);
 }
 

@@ -43,19 +43,19 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
         onUpdate('initialInvestment', value);
     };
     const isDivisibleBy100 = inputs.initialInvestment % 100 === 0 && inputs.initialInvestment > 0;
-    return (<div className="space-y-6 pb-6">
-      <div className="mb-4 flex gap-1 rounded-xl bg-muted/50 p-1">
-        <Button variant={(!inputs.calculatorMode || inputs.calculatorMode === 'standard') ? 'default' : 'ghost'} className="h-11 flex-1 rounded-lg text-sm font-semibold" onClick={() => onUpdate('calculatorMode', 'standard')}>
+    return (<div className="space-y-5 pb-5">
+      <div className="mb-3 flex gap-1 rounded-md border border-border bg-card p-1">
+        <Button variant={(!inputs.calculatorMode || inputs.calculatorMode === 'standard') ? 'default' : 'ghost'} className="h-8 flex-1 text-sm font-medium" onClick={() => onUpdate('calculatorMode', 'standard')}>
           {t('bonds.standard_payout')}
         </Button>
-        <Button variant={inputs.calculatorMode === 'reverse' ? 'default' : 'ghost'} className="h-11 flex-1 rounded-lg text-sm font-semibold" onClick={() => onUpdate('calculatorMode', 'reverse')}>
+        <Button variant={inputs.calculatorMode === 'reverse' ? 'default' : 'ghost'} className="h-8 flex-1 text-sm font-medium" onClick={() => onUpdate('calculatorMode', 'reverse')}>
           {t('bonds.reverse_target')}
         </Button>
       </div>
 
       {inputs.calculatorMode === 'reverse' ? (<div className="space-y-3">
           <div className="flex items-center gap-2">
-            <Label className="flex items-center gap-2 text-[15px] font-semibold">
+            <Label className="flex items-center gap-2 text-sm font-semibold">
               {t('bonds.target_goal_req')}
             </Label>
             <Tooltip>
@@ -68,7 +68,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
             </Tooltip>
           </div>
           <div className="relative">
-            <Input type="number" placeholder={t('bonds.example_goal')} className="h-11 pl-4 pr-12" value={inputs.savingsGoal || ''} onChange={(e) => onUpdate('savingsGoal', e.target.value ? Number(e.target.value) : undefined)}/>
+            <Input type="number" placeholder={t('bonds.example_goal')} className="pl-4 pr-12" value={inputs.savingsGoal || ''} onChange={(e) => onUpdate('savingsGoal', e.target.value ? Number(e.target.value) : undefined)}/>
             <div className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">
               PLN
             </div>
@@ -77,7 +77,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
 
       <div className="space-y-3">
         <div className="flex items-center gap-2">
-          <Label htmlFor="bondType" className="text-[15px] font-semibold">{t('bonds.bond.type')}</Label>
+          <Label htmlFor="bondType" className="text-sm font-semibold">{t('bonds.bond.type')}</Label>
           {currentDef.isInflationIndexed && (<Tooltip>
               <TooltipTrigger asChild>
                 <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help"/>
@@ -88,22 +88,22 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
             </Tooltip>)}
         </div>
         <Select value={inputs.bondType} onValueChange={(value) => onBondTypeChange(value as BondType)}>
-          <SelectTrigger id="bondType" className="h-14 rounded-[1.35rem] border-slate-200 bg-white px-4 text-left shadow-none">
+          <SelectTrigger id="bondType" className="bg-card text-left shadow-none">
             <SelectValue placeholder={t('bonds.select_bond_type')}/>
           </SelectTrigger>
           <SelectContent>
             {Object.values(BondType).map((type) => (<SelectItem key={type} value={type} className="py-3">
                 <div className="flex min-w-0 flex-col gap-1">
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="font-black tracking-tight">{type}</span>
-                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
+                    <span className="font-semibold tracking-tight">{type}</span>
+                    <span className="rounded-md bg-muted px-2 py-0.5 text-xs font-semibold text-muted-foreground">
                       {formatDurationLabel(type)}
                     </span>
                     {isFamilyBondType(type) ? (<span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
                         {t('bonds.family_bond_badge')}
                       </span>) : null}
                   </div>
-                  <span className="max-w-[280px] text-sm font-medium text-slate-700">
+                  <span className="max-w-[280px] text-sm font-medium text-foreground">
                     {definitions[type]?.fullName[language] || type}
                   </span>
                 </div>
@@ -112,16 +112,16 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
         </Select>
 
         <div className="space-y-2 pt-2">
-          <Label className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">{t('bonds.bond.series')}</Label>
+          <Label className="text-xs font-semibold text-muted-foreground">{t('bonds.bond.series')}</Label>
           <Select value={selectedSeriesId || 'current'} onValueChange={(value) => onUpdate('selectedSeriesId', value)}>
-            <SelectTrigger className="h-14 rounded-[1.35rem] border-slate-200 bg-slate-50/80 px-4 text-left text-sm font-medium shadow-none">
+            <SelectTrigger className="bg-muted/45 text-left text-sm font-medium shadow-none">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="current" className="py-3 text-sm font-medium">
                 <div className="flex flex-col gap-1">
                   <span className="font-semibold">{t('bonds.offer.current')}</span>
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-muted-foreground">
                     {t('bonds.offer.current_description')}
                   </span>
                 </div>
@@ -130,11 +130,11 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold">{s.seriesCode}</span>
-                      <span className="text-xs text-slate-500">
+                      <span className="text-xs text-muted-foreground">
                         {formatSeriesMonth(s.emissionMonth)}
                       </span>
                     </div>
-                    <span className="text-xs text-slate-500">
+                    <span className="text-xs text-muted-foreground">
                       {Number(s.firstYearRate).toFixed(2)}% + {Number(s.baseMargin).toFixed(2)}%
                     </span>
                   </div>
@@ -143,19 +143,19 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
           </Select>
         </div>
         
-        <div className="space-y-2 rounded-lg border border-primary/10 bg-primary/5 p-4 text-sm">
-          <div className="flex items-center gap-2 font-semibold text-primary">
+        <div className="space-y-2 rounded-md border border-border bg-muted/35 p-4 text-sm">
+          <div className="flex items-center gap-2 font-semibold text-foreground">
             <Info className="h-3 w-3"/>
             <span>{currentDef.fullName[language]}</span>
           </div>
           <div className="flex flex-wrap gap-2">
-            <span className="rounded-full bg-white/80 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
+            <span className="rounded-md bg-card px-2.5 py-1 text-xs font-semibold text-muted-foreground">
               {formatDurationLabel(inputs.bondType)}
             </span>
-            {isFamilyBondType(inputs.bondType) ? (<span className="rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-semibold text-amber-700">
+            {isFamilyBondType(inputs.bondType) ? (<span className="rounded-md bg-card px-2.5 py-1 text-xs font-semibold text-[var(--finance-warning)]">
                 {t('bonds.family_bond')}
               </span>) : null}
-            <span className="rounded-full bg-white/80 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
+            <span className="rounded-md bg-card px-2.5 py-1 text-xs font-semibold text-muted-foreground">
               {rateContext.styleLabel}
             </span>
           </div>
@@ -185,7 +185,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
           </div>
           <div className="space-y-4">
             <div className="relative">
-              <Input id="initialInvestment" type="number" className={cn("h-11 pl-4 pr-12 text-lg font-medium", !isDivisibleBy100 && inputs.initialInvestment > 0 && "border-destructive focus-visible:ring-destructive")} value={inputs.initialInvestment} onChange={(e) => handleInvestmentChange(Number(e.target.value))}/>
+              <Input id="initialInvestment" type="number" className={cn("pl-4 pr-12 text-sm font-medium", !isDivisibleBy100 && inputs.initialInvestment > 0 && "border-destructive focus-visible:ring-destructive")} value={inputs.initialInvestment} onChange={(e) => handleInvestmentChange(Number(e.target.value))}/>
               <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
                 PLN
               </div>

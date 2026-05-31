@@ -1,7 +1,6 @@
 'use client';
 import React from 'react';
 import { FileSpreadsheet, FileText, Info, Plus, Save } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { BondInputs, CalculationResult } from '../../bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { buildTimelineExportHeaders } from '@/shared/lib/export-headers';
@@ -101,7 +100,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results,
         ? t('bonds.results.narrative_early_exit')
         : t('bonds.results.narrative_maturity');
     const auditPoint = getAuditTimelinePoint(results.timeline);
-    return (<div className="space-y-10">
+    return (<div className="space-y-6">
       <ResultSummaryHero eyebrow={t('bonds.results.summary_eyebrow')} value={formatCurrency(headlineValue)} description={t('bonds.results.summary_description')} narrative={summaryNarrative} actions={[
             {
                 label: t('common.save'),
@@ -127,18 +126,15 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results,
             },
         ]}/>
 
-      {!canManageWorkspace ? (<Card className="rounded-[1.8rem] border border-slate-200 bg-slate-50/80 shadow-none">
-          <CardContent className="p-4 text-sm leading-7 text-slate-600">
+      {!canManageWorkspace ? (<section className="rounded-lg border border-border bg-muted/35 p-4 text-sm leading-6 text-muted-foreground">
             {t('workspace.sign_in_needed_for_portfolio')}
-          </CardContent>
-        </Card>) : null}
+        </section>) : null}
 
       <MetricStrip items={[...primarySummaryCards, ...secondarySummaryCards]}/>
 
-      {results.overflowInfo ? (<Card className="rounded-[2rem] border border-blue-200 bg-blue-50/50 shadow-none">
-          <CardContent className="flex items-start gap-3 p-5">
-            <Info className="mt-0.5 h-5 w-5 shrink-0 text-blue-700"/>
-            <div className="space-y-1 text-sm leading-7 text-blue-950">
+      {results.overflowInfo ? (<section className="flex items-start gap-3 rounded-lg border border-border bg-card p-4">
+            <Info className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground"/>
+            <div className="space-y-1 text-sm leading-6 text-foreground">
               <p className="font-semibold">
                 {t('bonds.results.wrapper_limit_title')}
               </p>
@@ -149,10 +145,9 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results,
             })}
               </p>
             </div>
-          </CardContent>
-        </Card>) : null}
+        </section>) : null}
 
-      <div className="space-y-6">
+      <div className="space-y-5">
         {auditPoint ? (<CalculationAuditTrace point={auditPoint}/>) : (<div />)}
 
         <ScenarioFactsBlock title={t('bonds.results.scenario_facts_title')} description={t('bonds.results.scenario_facts_description')} actions={<MathDeepDive results={results} trigger={<HelpButton />}/>} items={scenarioFacts}/>
