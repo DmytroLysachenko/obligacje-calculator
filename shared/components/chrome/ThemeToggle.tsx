@@ -18,7 +18,7 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full text-slate-500">
+      <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full text-muted-foreground">
         <div className="h-4 w-4" />
       </Button>
     )
@@ -31,7 +31,7 @@ export function ThemeToggle() {
       variant="ghost"
       onClick={() => setTheme(isDark ? "light" : "dark")}
       size="icon"
-      className="h-9 w-9 rounded-full border border-slate-200 text-slate-500 transition-all hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+      className="h-9 w-9 rounded-full border border-border text-muted-foreground transition-all hover:border-foreground/20 hover:bg-muted hover:text-foreground"
       aria-label={isDark ? t('common.light_mode') : t('common.dark_mode')}
       title={isDark ? t('common.light_mode') : t('common.dark_mode')}
     >

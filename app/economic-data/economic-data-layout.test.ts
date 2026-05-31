@@ -32,7 +32,7 @@ describe('economic data layout source contracts', () => {
 
     expectContains(source, 'data-[orientation=horizontal]:flex-col');
     expectContains(source, 'data-[orientation=vertical]:flex-row');
-    expectContains(source, 'group-data-[orientation=horizontal]/tabs:h-10');
+    expectContains(source, 'group-data-[orientation=horizontal]/tabs:h-9');
     expectContains(source, 'group-data-[orientation=vertical]/tabs:flex-col');
     expectNotContains(source, 'data-horizontal:flex-col');
     expectNotContains(source, 'group-data-horizontal/tabs');
@@ -44,7 +44,7 @@ describe('economic data layout source contracts', () => {
     const tabsListLine = getClassLine(source, 'TabsList className');
 
     expect(tabsListLine).toContain('w-fit');
-    expect(tabsListLine).toContain('rounded-[1rem]');
+    expect(tabsListLine).toContain('rounded-md');
     expect(tabsListLine).toContain('p-1');
     expect(tabsListLine).not.toContain('w-full');
     expect(tabsListLine).not.toContain('rounded-[1.5rem]');
@@ -63,7 +63,7 @@ describe('economic data layout source contracts', () => {
       expect(triggerLine).toContain('h-9');
       expect(triggerLine).toContain('px-3.5');
       expect(triggerLine).toContain('py-2');
-      expect(triggerLine).toContain('rounded-[0.8rem]');
+      expect(triggerLine).toContain('rounded');
       expect(triggerLine).not.toContain('px-4');
       expect(triggerLine).not.toContain('py-2.5');
     }
@@ -74,7 +74,7 @@ describe('economic data layout source contracts', () => {
     const sectionLine = getClassLine(source, '<section className=');
     const gridLine = getClassLine(source, 'xl:grid-cols');
 
-    expect(sectionLine).toContain('rounded-[1.5rem]');
+    expect(sectionLine).toContain('rounded-lg');
     expect(sectionLine).toContain('px-5');
     expect(sectionLine).toContain('py-5');
     expect(sectionLine).toContain('md:px-6');
@@ -92,32 +92,30 @@ describe('economic data layout source contracts', () => {
   it('keeps hero typography dashboard-sized, not landing-page-sized', () => {
     const source = readSource('shared/components/reference/ReferenceDashboardHero.tsx');
     const titleLine = getClassLine(source, '<h2');
-    const descriptionLine = getClassLine(source, '<p className="max-w-3xl');
+    const descriptionLine = getClassLine(source, '<p className="ui-body');
 
-    expect(titleLine).toContain('text-2xl');
-    expect(titleLine).toContain('md:text-3xl');
-    expect(titleLine).toContain('leading-tight');
+    expect(titleLine).toContain('ui-section-title');
     expect(titleLine).not.toContain('text-4xl');
 
-    expect(descriptionLine).toContain('leading-7');
+    expect(descriptionLine).toContain('ui-body');
     expect(descriptionLine).not.toContain('leading-8');
   });
 
   it('keeps hero metric tiles dense enough for a reference dashboard', () => {
     const source = readSource('shared/components/reference/ReferenceDashboardHero.tsx');
-    const metricGridLine = getClassLine(source, 'overflow-hidden rounded-[1.25rem]');
+    const metricGridLine = getClassLine(source, 'overflow-hidden rounded-md');
     const tilePaddingLine = getClassLine(source, "'px-4 py-3'");
-    const valueLine = getClassLine(source, 'text-lg font-black');
+    const valueLine = getClassLine(source, 'text-base font-semibold');
 
     expect(metricGridLine).toContain('overflow-hidden');
-    expect(metricGridLine).toContain('rounded-[1.25rem]');
+    expect(metricGridLine).toContain('rounded-md');
     expect(metricGridLine).not.toContain('rounded-[1.5rem]');
 
     expect(tilePaddingLine).toContain('px-4 py-3');
     expect(tilePaddingLine).not.toContain('py-4');
 
     expect(valueLine).toContain('mt-1.5');
-    expect(valueLine).toContain('text-lg');
+    expect(valueLine).toContain('text-base');
     expect(valueLine).not.toContain('text-xl');
   });
 });

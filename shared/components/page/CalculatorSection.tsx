@@ -16,11 +16,11 @@ export function CalculatorSection({
   return (
     <section className="space-y-4">
       <div className="space-y-2">
-        <h3 className="text-2xl font-black tracking-tight text-slate-950">
+        <h3 className="ui-section-title">
           {title}
         </h3>
         {description ? (
-          <p className="max-w-3xl text-sm leading-7 text-slate-600">
+          <p className="ui-body max-w-3xl">
             {description}
           </p>
         ) : null}

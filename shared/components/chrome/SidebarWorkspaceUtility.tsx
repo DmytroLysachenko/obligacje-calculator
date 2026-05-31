@@ -35,24 +35,24 @@ export function SidebarWorkspaceUtility({ pathname }: { pathname: string }) {
     <SidebarUtilityPanel>
       <div className="space-y-3">
         <div className="flex items-start gap-2.5">
-          <div className="rounded-xl bg-slate-100 p-2 text-slate-700">
+          <div className="rounded-md bg-muted p-2 text-foreground">
             <FolderKanban className="h-4 w-4" />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-semibold text-slate-700">
+            <p className="text-xs font-semibold text-foreground">
               {t('sidebar.workspace_title')}
             </p>
-            <p className="mt-0.5 text-[11px] leading-5 text-slate-600">
+            <p className="mt-0.5 text-[11px] leading-5 text-muted-foreground">
               {t('sidebar.workspace_desc')}
             </p>
           </div>
         </div>
 
-        <div className="border-l-2 border-slate-200 pl-3">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+        <div className="border-l-2 border-border pl-3">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
             {t('sidebar.portfolio_selector_label')}
           </p>
-          <p className="mt-1 text-sm font-semibold text-slate-900">
+          <p className="mt-1 text-sm font-semibold text-foreground">
             {selectedPortfolio
               ? t('sidebar.portfolio_selector_active', { name: selectedPortfolio.name })
               : t('sidebar.portfolio_selector_empty')}
@@ -65,7 +65,7 @@ export function SidebarWorkspaceUtility({ pathname }: { pathname: string }) {
             setSelectedPortfolioId(value);
           }}
         >
-          <SelectTrigger className="h-10 rounded-xl border-slate-200 bg-white text-left text-sm font-medium">
+          <SelectTrigger className="h-10 rounded-md border-border bg-card text-left text-sm font-medium">
             <SelectValue placeholder={t('sidebar.portfolio_selector_empty')} />
           </SelectTrigger>
           <SelectContent>
@@ -77,7 +77,7 @@ export function SidebarWorkspaceUtility({ pathname }: { pathname: string }) {
           </SelectContent>
         </Select>
 
-        <Button asChild variant="outline" className="h-9 w-full rounded-xl border-slate-200 bg-white text-sm">
+        <Button asChild variant="outline" className="h-9 w-full rounded-md border-border bg-card text-sm">
           <Link href="/notebook" className="gap-2">
             <LayoutList className="h-4 w-4" />
             {t('sidebar.workspace_manage')}
