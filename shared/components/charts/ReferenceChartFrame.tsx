@@ -25,13 +25,13 @@ export function ReferenceChartFrame({
   children,
 }: ReferenceChartFrameProps) {
   return (
-    <div className="space-y-4">
+    <div className="w-full min-w-0 space-y-4">
       <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3.5">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="flex min-w-0 items-start gap-2">
+          <div className="flex min-w-0 flex-1 items-start gap-2">
             <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-500" />
-            <div className="min-w-0">
-              <div className="grid gap-0 rounded-[1.25rem] border border-slate-200 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="min-w-0 flex-1">
+              <div className="grid w-full gap-0 rounded-[1.25rem] border border-slate-200 sm:grid-cols-2 xl:grid-cols-4">
                 {metaItems.map((item) => (
                   <div
                     key={item.label}

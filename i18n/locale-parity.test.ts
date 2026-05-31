@@ -1,3 +1,5 @@
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import enMessages from './translations/en.json';
 import plMessages from './translations/pl.json';
@@ -36,6 +38,33 @@ function getNormalizedNamespaceKeys(messages: Record<string, unknown>, path: str
     .sort();
 }
 
+function collectSourceFiles(directory: string): string[] {
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const filePath = join(directory, entry.name);
+
+    if (entry.isDirectory()) {
+      return collectSourceFiles(filePath);
+    }
+
+    return /\.(ts|tsx|js|jsx)$/.test(entry.name) ? [filePath] : [];
+  });
+}
+
+function collectDirectCommonTranslationKeys() {
+  const roots = ['app', 'features', 'shared'];
+  const keys = new Set<string>();
+
+  for (const filePath of roots.flatMap(collectSourceFiles)) {
+    const source = readFileSync(filePath, 'utf8');
+
+    for (const match of source.matchAll(/t\(['"]common\.([A-Za-z0-9_]+)['"]/g)) {
+      keys.add(match[1]);
+    }
+  }
+
+  return Array.from(keys).sort();
+}
+
 describe('locale parity for touched bond and economic helper namespaces', () => {
   it('keeps full English key coverage available in Polish', () => {
     const englishKeys = flattenMessageKeys(enMessages)
@@ -71,5 +100,14 @@ describe('locale parity for touched bond and economic helper namespaces', () => 
         getNormalizedNamespaceKeys(plMessages, path),
       );
     }
+  });
+
+  it('keeps directly referenced common translation keys resolvable', () => {
+    const usedCommonKeys = collectDirectCommonTranslationKeys();
+    const enCommon = enMessages.common as Record<string, unknown>;
+    const plCommon = plMessages.common as Record<string, unknown>;
+
+    expect(usedCommonKeys.filter((key) => !(key in enCommon))).toEqual([]);
+    expect(usedCommonKeys.filter((key) => !(key in plCommon))).toEqual([]);
   });
 });

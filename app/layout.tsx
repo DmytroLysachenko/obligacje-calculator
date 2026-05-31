@@ -20,6 +20,8 @@ const geistSans = Geist({variable: '--font-geist-sans', subsets: ['latin']});
 const geistMono = Geist_Mono({variable: '--font-geist-mono', subsets: ['latin']});
 const inter = Inter({variable: '--font-inter', subsets: ['latin']});
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
   const language = (locale as Language) || defaultLocale;

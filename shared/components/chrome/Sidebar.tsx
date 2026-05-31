@@ -24,6 +24,7 @@ import { SidebarUtilityGroup } from './SidebarUtilityGroup';
 import { SidebarWorkspaceUtility } from './SidebarWorkspaceUtility';
 import { SidebarSettingsUtility } from './SidebarSettingsUtility';
 import { SidebarSyncSummary } from './SidebarSyncSummary';
+import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 
 interface SidebarContentProps {
   onItemClick?: () => void;
@@ -150,12 +151,15 @@ function SidebarFooter({
 }) {
   const { t } = useAppI18n();
   const hasMounted = useHasMounted();
+  const { canManageWorkspace } = usePortfolioAccess();
 
   return (
     <div className="space-y-3 border-t border-slate-200/80 bg-white/55 p-3">
-      <SidebarUtilityGroup title={t('sidebar.workspace_title')}>
-        <SidebarWorkspaceUtility pathname={pathname} />
-      </SidebarUtilityGroup>
+      {canManageWorkspace ? (
+        <SidebarUtilityGroup title={t('sidebar.workspace_title')}>
+          <SidebarWorkspaceUtility pathname={pathname} />
+        </SidebarUtilityGroup>
+      ) : null}
       <SidebarUtilityGroup title={t('common.settings')}>
         <SidebarSettingsUtility />
         <SidebarSyncSummary dataFreshness={dataFreshness} />

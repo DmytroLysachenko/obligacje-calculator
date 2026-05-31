@@ -26,9 +26,5 @@ export function getSeriesReferenceDate(series: {
   lastDataPointDate?: string | null;
   updatedAt?: Date | null;
 }) {
-  if (series.frequency === 'on-event' || NBP_RATE_SLUGS.includes(series.slug)) {
-    return series.updatedAt ?? (series.lastDataPointDate ? parseISO(series.lastDataPointDate) : undefined);
-  }
-
   return series.lastDataPointDate ? parseISO(series.lastDataPointDate) : series.updatedAt ?? undefined;
 }

@@ -102,7 +102,10 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
         </div>
 
         <div className="grid grid-cols-3 gap-2">
-          {[2.5, 6, -1].map((value) => (<Button key={value} variant="outline" size="sm" className={cn('h-9 text-[11px] font-semibold tracking-[0.08em]', expectedInflation === value && 'border-primary bg-primary text-primary-foreground')} onClick={() => onUpdate('expectedInflation', value)}>
+          {[2.5, 6, -1].map((value) => (<Button key={value} variant="outline" size="sm" className={cn('h-9 text-[11px] font-semibold tracking-[0.08em]', expectedInflation === value && !customInflation && 'border-primary bg-primary text-primary-foreground')} onClick={() => {
+              onUpdate('customInflation', undefined);
+              onUpdate('expectedInflation', value);
+            }}>
               {value === 2.5 ? t('bonds.stable') : value === 6 ? t('bonds.high') : t('bonds.deflation')} ({value}%)
             </Button>))}
         </div>
