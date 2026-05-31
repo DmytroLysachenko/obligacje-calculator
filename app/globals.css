@@ -55,26 +55,35 @@
 }
 
 :root {
-  --background: 0, 0%, 100%;
-  --foreground: 240, 10%, 3.9%;
+  --background: 60, 11%, 96%;
+  --foreground: 0, 0%, 7%;
   --card: 0, 0%, 100%;
-  --card-foreground: 240, 10%, 3.9%;
+  --card-foreground: 0, 0%, 7%;
   --popover: 0, 0%, 100%;
-  --popover-foreground: 240, 10%, 3.9%;
-  --primary: 240, 5.9%, 10%;
+  --popover-foreground: 0, 0%, 7%;
+  --primary: 0, 0%, 7%;
   --primary-foreground: 0, 0%, 98%;
-  --secondary: 240, 4.8%, 95.9%;
-  --secondary-foreground: 240, 5.9%, 10%;
-  --muted: 240, 4.8%, 95.9%;
-  --muted-foreground: 240, 3.8%, 40%;
-  --accent: 240, 4.8%, 95.9%;
-  --accent-foreground: 240, 5.9%, 10%;
+  --secondary: 60, 9%, 93%;
+  --secondary-foreground: 0, 0%, 7%;
+  --muted: 60, 9%, 93%;
+  --muted-foreground: 0, 0%, 36%;
+  --accent: 60, 9%, 93%;
+  --accent-foreground: 0, 0%, 7%;
   --destructive: 0, 84.2%, 60.2%;
   --destructive-foreground: 0, 0%, 98%;
-  --border: 240, 5.9%, 90%;
-  --input: 240, 5.9%, 90%;
-  --ring: 240, 10%, 3.9%;
+  --border: 45, 9%, 89%;
+  --input: 45, 9%, 89%;
+  --ring: 0, 0%, 7%;
   --radius: 0.5rem;
+  --finance-bg: #f7f7f5;
+  --finance-surface: #ffffff;
+  --finance-text: #111111;
+  --finance-muted: #5c5c5c;
+  --finance-border: #e6e5e1;
+  --finance-success: #4e8f71;
+  --finance-warning: #c89d4f;
+  --finance-radius-sm: 6px;
+  --finance-radius-md: 8px;
 }
 
 @layer base {
@@ -112,13 +121,10 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    font-size: 16px;
-    line-height: 1.6;
-    background-image:
-      radial-gradient(circle at top left, rgba(226, 232, 240, 0.32), transparent 22%),
-      radial-gradient(circle at top right, rgba(191, 219, 254, 0.18), transparent 18%),
-      linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(248, 250, 252, 0.96) 100%);
-    background-attachment: fixed;
+    font-size: 14px;
+    line-height: 1.5;
+    background-image: none;
+    background-attachment: initial;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
@@ -130,29 +136,71 @@
 }
 
 @layer utilities {
+  .ui-page-title {
+    @apply text-[32px] leading-[1.12] font-semibold tracking-tight text-foreground;
+  }
+  .ui-section-title {
+    @apply text-xl leading-7 font-semibold tracking-tight text-foreground;
+  }
+  .ui-card-title {
+    @apply text-[15px] leading-6 font-semibold tracking-tight text-foreground;
+  }
+  .ui-body {
+    @apply text-sm leading-6 text-foreground;
+  }
+  .ui-meta {
+    @apply text-xs leading-5 text-muted-foreground;
+  }
+  .ui-surface {
+    @apply border border-border bg-card;
+    border-radius: var(--finance-radius-md);
+  }
+  .ui-section {
+    @apply bg-transparent;
+  }
+  .ui-divider {
+    @apply border-t border-border;
+  }
+  .ui-muted-panel {
+    @apply border border-border bg-muted/45;
+    border-radius: var(--finance-radius-md);
+  }
+  .ui-success {
+    color: var(--finance-success);
+  }
+  .ui-warning {
+    color: var(--finance-warning);
+  }
   .financial-positive {
-    @apply text-emerald-600 font-bold;
+    color: var(--finance-success);
+    font-weight: 600;
   }
   .financial-negative {
-    @apply text-red-600 font-bold;
+    @apply text-red-600 font-semibold;
   }
   .glass-card {
-    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-xl;
+    @apply border border-border bg-card shadow-none;
+    border-radius: var(--finance-radius-md);
   }
   .surface-shell {
-    @apply border border-slate-200/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(248,250,252,0.92))] shadow-[0_22px_60px_-48px_rgba(15,23,42,0.38)] backdrop-blur;
+    @apply border border-border bg-card shadow-none;
+    border-radius: var(--finance-radius-md);
   }
   .surface-panel {
-    @apply rounded-[2rem] border border-slate-200/80 bg-white/90 shadow-[0_18px_46px_-40px_rgba(15,23,42,0.22)] backdrop-blur;
+    @apply border border-border bg-card shadow-none;
+    border-radius: var(--finance-radius-md);
   }
   .surface-soft {
-    @apply rounded-[1.75rem] border border-slate-200/80 bg-slate-50/88 shadow-none;
+    @apply border border-border bg-muted/40 shadow-none;
+    border-radius: var(--finance-radius-md);
   }
   .surface-inset {
-    @apply rounded-2xl border border-slate-200/80 bg-slate-50/86;
+    @apply border border-border bg-muted/45;
+    border-radius: var(--finance-radius-sm);
   }
   .surface-chip {
-    @apply inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/82 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700;
+    @apply inline-flex items-center gap-2 border border-border bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground;
+    border-radius: var(--finance-radius-sm);
   }
   .animate-in-fade {
     @apply animate-in fade-in duration-700;
