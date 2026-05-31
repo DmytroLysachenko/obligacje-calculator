@@ -24,14 +24,14 @@ function StepCard({
   description: string;
 }) {
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-5">
+    <div className="rounded-lg border border-border bg-card p-4">
       <div className="flex items-start gap-3">
-        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--finance-success)]" />
         <div className="space-y-2">
-          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
+          <p className="text-xs font-semibold text-muted-foreground">
             {title}
           </p>
-          <p className="text-sm leading-7 text-slate-600">{description}</p>
+          <p className="text-sm leading-6 text-muted-foreground">{description}</p>
         </div>
       </div>
     </div>
@@ -78,20 +78,20 @@ export function ComparisonConfigurationPanel({
   ];
 
   return (
-    <aside className="space-y-6 xl:sticky xl:top-24 xl:h-fit">
-      <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-        <CardHeader className="space-y-3 border-b border-slate-200 pb-5">
-          <CardTitle className="flex items-center gap-2 text-lg font-black tracking-tight text-slate-950">
+    <aside className="space-y-5 xl:sticky xl:top-24 xl:h-fit">
+      <Card className="border-border bg-card shadow-none">
+        <CardHeader className="space-y-2 border-b border-border pb-4">
+          <CardTitle className="flex items-center gap-2 ui-card-title">
             <Scale className="h-5 w-5 text-primary" />
             {t('comparison.page.configuration_title')}
           </CardTitle>
-          <CardDescription className="text-sm leading-7 text-slate-600">
+          <CardDescription className="text-sm leading-6 text-muted-foreground">
             {t('comparison.page.configuration_description')}
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6 p-5 md:p-6">
+        <CardContent className="space-y-5 p-5">
           <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+            <Label className="text-xs font-semibold text-muted-foreground">
               {t('comparison.page.initial_investment')}
             </Label>
             <CommittedSliderInput
@@ -104,8 +104,8 @@ export function ComparisonConfigurationPanel({
             />
           </div>
 
-          <div className="space-y-2 border-t border-dashed border-slate-200 pt-5">
-            <Label className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-500">
+          <div className="space-y-2 border-t border-border pt-5">
+            <Label className="text-xs font-semibold text-muted-foreground">
               {t('comparison.page.investment_horizon')}
             </Label>
             <CommittedSliderInput
@@ -118,7 +118,7 @@ export function ComparisonConfigurationPanel({
             />
           </div>
 
-          <div className="space-y-4 border-t border-dashed border-slate-200 pt-5">
+          <div className="space-y-4 border-t border-border pt-5">
             <MarketAssumptionsForm
             expectedInflation={expectedInflation}
             expectedNbpRate={expectedNbpRate}
@@ -138,13 +138,13 @@ export function ComparisonConfigurationPanel({
             />
           </div>
 
-          <div className="space-y-3 border-t border-dashed border-slate-200 pt-5">
-            <div className="flex items-center justify-between rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3">
+          <div className="space-y-3 border-t border-border pt-5">
+            <div className="flex items-center justify-between rounded-lg border border-border bg-muted/35 px-4 py-3">
               <div>
-                <p className="text-sm font-semibold text-slate-950">
+                <p className="text-sm font-semibold text-foreground">
                   {t('bonds.inflation.adjusted')}
                 </p>
-                <p className="text-xs leading-6 text-slate-600">
+                <p className="text-xs leading-5 text-muted-foreground">
                   {t('comparison.page.real_value_toggle_description')}
                 </p>
               </div>
@@ -153,11 +153,11 @@ export function ComparisonConfigurationPanel({
                 onCheckedChange={onShowRealValueChange}
               />
             </div>
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3">
-              <p className="text-sm font-semibold text-slate-950">
+            <div className="rounded-lg border border-border bg-muted/35 px-4 py-3">
+              <p className="text-sm font-semibold text-foreground">
                 {t('comparison.page.rollover_title')}
               </p>
-              <p className="mt-1 text-xs leading-6 text-slate-600">
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">
                 {t('comparison.page.rollover_description')}
               </p>
             </div>
@@ -165,28 +165,28 @@ export function ComparisonConfigurationPanel({
         </CardContent>
       </Card>
 
-      <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-        <CardHeader className="space-y-3 border-b border-slate-200 pb-5">
-          <CardTitle className="text-lg font-black tracking-tight text-slate-950">
+      <Card className="border-border bg-card shadow-none">
+        <CardHeader className="space-y-2 border-b border-border pb-4">
+          <CardTitle className="ui-card-title">
             {t('comparison.page.bond_picker_title')}
           </CardTitle>
-          <CardDescription className="text-sm leading-7 text-slate-600">
+          <CardDescription className="text-sm leading-6 text-muted-foreground">
             {t('comparison.page.bond_picker_description')}
           </CardDescription>
         </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-2 p-6">
+        <CardContent className="grid grid-cols-2 gap-2 p-5">
           {Object.values(BondType).map((type) => (
             <Button
               key={type}
               variant={selectedBonds.includes(type) ? 'default' : 'outline'}
               className={cn(
-                'h-auto min-h-14 justify-start rounded-2xl px-3 py-3 text-left',
-                !selectedBonds.includes(type) && 'text-slate-700',
+                'h-auto min-h-12 justify-start px-3 py-3 text-left',
+                !selectedBonds.includes(type) && 'text-foreground',
               )}
               onClick={() => onToggleBond(type)}
             >
               <div className="flex flex-col items-start leading-tight">
-                <span className="text-xs font-black uppercase tracking-wide">
+                <span className="text-xs font-semibold uppercase tracking-wide">
                   {type}
                 </span>
                 <span
@@ -194,7 +194,7 @@ export function ComparisonConfigurationPanel({
                     'mt-1 text-[10px] font-medium normal-case opacity-80',
                     selectedBonds.includes(type)
                       ? 'text-primary-foreground/85'
-                      : 'text-slate-500',
+                      : 'text-muted-foreground',
                   )}
                 >
                   {getBondSupportMeta(type).shortLabel}
@@ -210,10 +210,10 @@ export function ComparisonConfigurationPanel({
         description={t('comparison.page.how_to_read_description')}
         badge={t('comparison.page.how_to_read_badge')}
       >
-        <div className="space-y-4 text-sm leading-7 text-slate-600">
-          <div className="rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4">
-            <div className="flex items-center gap-2 font-black tracking-tight text-slate-950">
-              <AlertTriangle className="h-4 w-4 text-amber-600" />
+        <div className="space-y-4 text-sm leading-6 text-muted-foreground">
+          <div className="rounded-lg border border-border bg-muted/35 px-4 py-4">
+            <div className="flex items-center gap-2 font-semibold tracking-tight text-foreground">
+              <AlertTriangle className="h-4 w-4 text-[var(--finance-warning)]" />
               {t('comparison.page.reading_checklist_title')}
             </div>
             <div className="mt-3">

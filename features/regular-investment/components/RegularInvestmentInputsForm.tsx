@@ -29,9 +29,9 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
 
     if (isLoadingDefs || !definitions) {
       return (
-        <Card className="w-full border-primary/10 shadow-sm">
+        <Card className="w-full border-border shadow-none">
           <CardContent className="flex h-[600px] items-center justify-center">
-            <p className="text-base font-semibold tracking-[0.08em] text-muted-foreground">
+            <p className="text-sm font-semibold text-muted-foreground">
               {t('common.loading')}
             </p>
           </CardContent>
@@ -49,16 +49,16 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
       inputs.contributionAmount % 100 === 0 && inputs.contributionAmount > 0;
 
     return (
-      <Card className="w-full border-primary/10 shadow-sm">
-        <CardHeader className="border-b bg-muted/20 pb-4">
-          <CardTitle className="text-[1.65rem] font-black tracking-tight">
+      <Card className="w-full border-border shadow-none">
+        <CardHeader className="border-b border-border bg-card pb-4">
+          <CardTitle className="ui-section-title">
             {t('bonds.regular_calculator')}
           </CardTitle>
-          <CardDescription className="text-[15px] leading-7">
+          <CardDescription className="text-sm leading-6">
             {t('regular_investment_page.form_description')}
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-8 p-6">
+        <CardContent className="space-y-6 p-5">
           <BondSelectionSection
             bondType={inputs.bondType}
             definitions={definitions}
@@ -98,7 +98,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
           />
 
           <div className="pt-2">
-            <div className="space-y-1.5 rounded-lg border border-dashed bg-muted/30 p-4 text-xs text-muted-foreground">
+            <div className="space-y-1.5 rounded-md border border-border bg-muted/35 p-4 text-xs text-muted-foreground">
               <div className="flex justify-between">
                 <span>{t('bonds.duration')}:</span>
                 <span className="font-bold">{formatBondDuration(inputs.duration, language)}</span>
