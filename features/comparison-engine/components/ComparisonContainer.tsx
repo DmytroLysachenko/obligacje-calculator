@@ -79,8 +79,8 @@ export const ComparisonContainer: React.FC = () => {
 
           <div className="space-y-8">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <ScenarioOverrideCard title={t('comparison.scenario_a')} colorClass="bg-blue-100/20 text-slate-900" bondType={scenarioA.bondType} onBondTypeChange={setBondTypeA} isRebought={scenarioA.isRebought} onReboughtChange={(value) => updateScenarioA('isRebought', value)} taxStrategy={scenarioA.taxStrategy} onTaxStrategyChange={(value) => updateScenarioA('taxStrategy', value)} customHorizonEnabled={scenarioA.investmentHorizonMonths !== undefined} onCustomHorizonEnabledChange={setScenarioACustomHorizonEnabled} customHorizonMonths={scenarioA.investmentHorizonMonths} onCustomHorizonMonthsChange={setScenarioACustomHorizonMonths}/>
-              <ScenarioOverrideCard title={t('comparison.scenario_b')} colorClass="bg-emerald-100/20 text-slate-900" bondType={scenarioB.bondType} onBondTypeChange={setBondTypeB} isRebought={scenarioB.isRebought} onReboughtChange={(value) => updateScenarioB('isRebought', value)} taxStrategy={scenarioB.taxStrategy} onTaxStrategyChange={(value) => updateScenarioB('taxStrategy', value)} customHorizonEnabled={scenarioB.investmentHorizonMonths !== undefined} onCustomHorizonEnabledChange={setScenarioBCustomHorizonEnabled} customHorizonMonths={scenarioB.investmentHorizonMonths} onCustomHorizonMonthsChange={setScenarioBCustomHorizonMonths}/>
+              <ScenarioOverrideCard title={t('comparison.scenario_a')} colorClass="scenario-a" bondType={scenarioA.bondType} onBondTypeChange={setBondTypeA} isRebought={scenarioA.isRebought} onReboughtChange={(value) => updateScenarioA('isRebought', value)} taxStrategy={scenarioA.taxStrategy} onTaxStrategyChange={(value) => updateScenarioA('taxStrategy', value)} customHorizonEnabled={scenarioA.investmentHorizonMonths !== undefined} onCustomHorizonEnabledChange={setScenarioACustomHorizonEnabled} customHorizonMonths={scenarioA.investmentHorizonMonths} onCustomHorizonMonthsChange={setScenarioACustomHorizonMonths}/>
+              <ScenarioOverrideCard title={t('comparison.scenario_b')} colorClass="scenario-b" bondType={scenarioB.bondType} onBondTypeChange={setBondTypeB} isRebought={scenarioB.isRebought} onReboughtChange={(value) => updateScenarioB('isRebought', value)} taxStrategy={scenarioB.taxStrategy} onTaxStrategyChange={(value) => updateScenarioB('taxStrategy', value)} customHorizonEnabled={scenarioB.investmentHorizonMonths !== undefined} onCustomHorizonEnabledChange={setScenarioBCustomHorizonEnabled} customHorizonMonths={scenarioB.investmentHorizonMonths} onCustomHorizonMonthsChange={setScenarioBCustomHorizonMonths}/>
             </div>
 
             {!resultsA && !isCalculating ? (<ScenarioReadyPanel badge={t('comparison.ready_to_compare')} title={t('comparison.ready_title')} description={t('comparison.ready_desc')} steps={[
@@ -102,18 +102,18 @@ export const ComparisonContainer: React.FC = () => {
                 ]} footerText={t('comparison.ready_footer')}/>) : null}
 
             {isCalculating && !resultsA ? (<div className="space-y-6">
-                <Skeleton className="h-[300px] w-full rounded-[1.8rem] md:h-[360px] md:rounded-3xl"/>
+                <Skeleton className="h-[300px] w-full rounded-lg md:h-[360px]"/>
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                  <Skeleton className="h-[180px] rounded-[1.6rem] md:h-[220px] md:rounded-3xl"/>
-                  <Skeleton className="h-[180px] rounded-[1.6rem] md:h-[220px] md:rounded-3xl"/>
+                  <Skeleton className="h-[180px] rounded-lg md:h-[220px]"/>
+                  <Skeleton className="h-[180px] rounded-lg md:h-[220px]"/>
                 </div>
               </div>) : null}
 
             {resultsA && resultsB ? (<div className={cn('space-y-8', isCalculating && 'opacity-60')}>
-                {isDirty ? (<div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3">
-                    <TriangleAlert className="mt-0.5 h-5 w-5 text-amber-700"/>
+                {isDirty ? (<div className="ui-inline-notice flex items-start gap-3 border-l-2 border-warning text-foreground">
+                    <TriangleAlert className="mt-0.5 h-5 w-5 text-warning"/>
                     <div className="flex items-start gap-3">
-                      <p className="text-sm text-amber-900">
+                      <p className="text-sm text-foreground">
                         {t('comparison.stale_results')}
                       </p>
                     </div>

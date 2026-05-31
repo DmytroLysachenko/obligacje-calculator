@@ -1,11 +1,9 @@
 'use client';
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
-import { cn } from '@/lib/utils';
 import { useAppI18n } from '@/i18n/client';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
@@ -43,19 +41,19 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
         }
         return getBondRateContextCopy(type, Number(definition.firstYearRate), Number(definition.margin), t).styleLabel;
     };
-    return (<Card className="overflow-hidden border shadow-sm">
-      <CardHeader className={cn('border-b pb-4', colorClass)}>
-        <CardTitle className="text-base font-black tracking-tight">
+    return (<section className="space-y-5" data-scenario-tone={colorClass}>
+      <div className="border-b border-border pb-4">
+        <h3 className="ui-card-title">
           {title}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-5 pt-5">
+        </h3>
+      </div>
+      <div className="space-y-5">
         <div className="space-y-2">
           <Label className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">
             {t('bonds.bond.type')}
           </Label>
           <Select value={bondType} onValueChange={(value) => onBondTypeChange(value as BondType)}>
-            <SelectTrigger className="h-12 w-full min-w-0 rounded-2xl border-slate-200 bg-white/90 font-bold [&>span]:truncate">
+            <SelectTrigger className="h-12 w-full min-w-0 rounded-md border-border bg-card font-semibold [&>span]:truncate">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -63,14 +61,14 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
                   <div className="flex min-w-0 flex-col gap-1">
                     <div className="flex items-center gap-2 text-sm">
                       <span className="font-black tracking-tight">{type}</span>
-                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
+                      <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
                         {formatBondLabel(type)}
                       </span>
-                      {isFamilyBondType(type) ? (<span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+                      {isFamilyBondType(type) ? (<span className="rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-semibold text-warning">
                           {t('comparison.family_bond_badge')}
                         </span>) : null}
                     </div>
-                    <span className="truncate text-sm font-medium text-slate-700">
+                    <span className="truncate text-sm font-medium text-muted-foreground">
                       {definitions?.[type]?.fullName[language] ?? type}
                     </span>
                   </div>
@@ -81,15 +79,15 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
             formatBondLabel(bondType),
             ...(formatRateStyle(bondType) ? [formatRateStyle(bondType) as string] : []),
         ]} narrative={activeRateContext?.narrative ?? getBondSupportMeta(bondType).description}/>
-          {isFamilyBondType(bondType) ? (<p className="text-xs leading-5 text-amber-700">
+          {isFamilyBondType(bondType) ? (<p className="text-xs leading-5 text-warning">
               {t('comparison.family_override_note')}
             </p>) : null}
-          <p className="text-xs leading-5 text-slate-500">
+          <p className="text-xs leading-5 text-muted-foreground">
             {getBondSupportMeta(bondType).description}
           </p>
         </div>
 
-        <div className="rounded-xl border bg-muted/20 p-3">
+        <div className="rounded-lg bg-muted/30 p-3">
           <p className="text-sm font-semibold">
             {t('comparison.base_follows_shared_title')}
           </p>
@@ -98,7 +96,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
           </p>
         </div>
 
-        <div className="flex items-center justify-between rounded-xl border bg-muted/20 p-3">
+        <div className="flex items-center justify-between rounded-lg bg-muted/30 p-3">
           <div>
             <p className="text-sm font-semibold">{t('bonds.is_rebought')}</p>
             <p className="text-xs leading-5 text-muted-foreground">
@@ -131,12 +129,12 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
                   </SelectItem>
                 </SelectContent>
               </Select>
-              <p className="text-xs leading-5 text-slate-500">
+              <p className="text-xs leading-5 text-muted-foreground">
                 {t('comparison.tax_override_desc')}
               </p>
             </div>
 
-            <div className="flex items-center justify-between rounded-xl border bg-muted/20 p-3">
+            <div className="flex items-center justify-between rounded-lg bg-muted/30 p-3">
               <div>
                 <p className="text-sm font-semibold">{t('comparison.custom_horizon')}</p>
                 <p className="text-[10px] text-muted-foreground">
@@ -151,14 +149,14 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
                   {t('comparison.scenario_horizon')}
                 </Label>
                 <CommittedSliderInput value={customHorizonMonths ?? 12} min={12} max={360} step={1} unit="mo" onCommit={(value) => onCustomHorizonMonthsChange(value)}/>
-                <p className="text-xs leading-5 text-slate-500">
+                <p className="text-xs leading-5 text-muted-foreground">
                   {t('comparison.horizon_override_desc')}
                 </p>
               </div>) : null}
           </div>
         </SecondaryInsightAccordion>
-      </CardContent>
-    </Card>);
+      </div>
+    </section>);
 };
 
 

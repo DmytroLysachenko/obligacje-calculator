@@ -14,9 +14,9 @@ import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPa
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 function MetaCell({label, value}: {label: string; value: string}) {
-    return (<div className="border-b border-dashed border-slate-200 px-4 py-3 last:border-b-0 md:border-b-0 md:border-r last:md:border-r-0">
-        <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">{label}</p>
-        <p className="mt-1 text-sm font-medium text-slate-900">{value}</p>
+    return (<div className="border-b border-dashed border-border px-4 py-3 last:border-b-0 md:border-b-0 md:border-r last:md:border-r-0">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">{label}</p>
+        <p className="mt-1 text-sm font-medium text-foreground">{value}</p>
       </div>);
 }
 interface ChartDataRow {
@@ -97,9 +97,9 @@ export const MultiAssetComparisonContainer = () => {
         </aside>
 
         <section className="space-y-6 xl:col-span-8">
-          <section className={cn('space-y-4 rounded-[1.9rem] border px-5 py-5', usedFallbackHistory ? 'border-amber-200 bg-amber-50/60' : 'border-slate-200 bg-white')}>
+          <section className={cn('space-y-4 rounded-lg px-5 py-5', usedFallbackHistory ? 'bg-warning/10' : 'bg-transparent')}>
             <div className="flex items-start gap-3">
-              {usedFallbackHistory ? (<AlertTriangle className="mt-0.5 h-5 w-5 text-amber-700"/>) : (<Database className="mt-0.5 h-5 w-5 text-primary"/>)}
+              {usedFallbackHistory ? (<AlertTriangle className="mt-0.5 h-5 w-5 text-warning"/>) : (<Database className="mt-0.5 h-5 w-5 text-foreground"/>)}
               <div className="space-y-2">
                 <p className="font-semibold text-foreground">
                   {usedFallbackHistory
@@ -111,7 +111,7 @@ export const MultiAssetComparisonContainer = () => {
                 </p>
               </div>
             </div>
-            <div className="grid gap-0 rounded-[1.5rem] border border-slate-200 bg-white md:grid-cols-3">
+            <div className="grid gap-0 rounded-lg bg-card md:grid-cols-3">
               <MetaCell label={t('multi_asset_page.history_state.coverage_label')} value={historyCoverageLabel}/>
               <MetaCell label={t('multi_asset_page.history_state.source_label')} value={historySourceLabel}/>
               <MetaCell label={t('multi_asset_page.history_state.as_of_label')} value={historyAsOfLabel}/>
@@ -120,39 +120,39 @@ export const MultiAssetComparisonContainer = () => {
                 {t('multi_asset_page.history_state.available_series_label')}{' '}
                 <span className="font-medium text-foreground">{availabilitySummary}</span>
               </p>) : null}
-            {usedFallbackHistory ? (<p className="text-sm text-amber-900">
+            {usedFallbackHistory ? (<p className="text-sm text-warning">
                 {t('multi_asset_page.history_state.fallback_warning')}
               </p>) : null}
           </section>
 
           {assets.length > 0 && leadingAsset ? (<div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-              <section className="rounded-[1.6rem] border border-slate-200 bg-white px-4 py-4">
-                <p className="text-[10px] font-black uppercase tracking-[0.12em] text-muted-foreground">
+              <section className="px-4 py-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                   {t('multi_asset_page.metrics.committed_start_label')}
                 </p>
-                <p className="mt-2 text-lg font-black text-slate-950">
+                <p className="mt-2 text-lg font-semibold text-foreground">
                   {committedScenario.startYear}-{committedScenario.startMonth}
                 </p>
                 <p className="mt-1 text-xs leading-5 text-muted-foreground">
                   {t('multi_asset_page.metrics.committed_start_detail')}
                 </p>
               </section>
-              <section className="rounded-[1.6rem] border border-slate-200 bg-white px-4 py-4">
-                <p className="text-[10px] font-black uppercase tracking-[0.12em] text-muted-foreground">
+              <section className="px-4 py-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                   {t('multi_asset_page.metrics.total_invested_label')}
                 </p>
-                <p className="mt-2 text-lg font-black text-slate-950">
+                <p className="mt-2 text-lg font-semibold text-foreground">
                   {formatCurrency(totalInvested)}
                 </p>
                 <p className="mt-1 text-xs leading-5 text-muted-foreground">
                   {t('multi_asset_page.metrics.total_invested_detail')}
                 </p>
               </section>
-              <section className="rounded-[1.6rem] border border-slate-200 bg-white px-4 py-4">
-                <p className="text-[10px] font-black uppercase tracking-[0.12em] text-muted-foreground">
+              <section className="px-4 py-4">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                   {t('multi_asset_page.metrics.leading_ending_value_label')}
                 </p>
-                <p className="mt-2 text-lg font-black text-slate-950">
+                <p className="mt-2 text-lg font-semibold text-foreground">
                   {leadingAsset.name}
                 </p>
                 <p className="mt-1 text-xs leading-5 text-muted-foreground">
@@ -166,7 +166,7 @@ export const MultiAssetComparisonContainer = () => {
               </section>
             </div>) : null}
 
-          {isDirty ? (<div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
+          {isDirty ? (<div className="ui-inline-notice border-l-2 border-warning text-foreground">
               {t('multi_asset_page.stale_results')}
             </div>) : null}
 
@@ -193,7 +193,7 @@ export const MultiAssetComparisonContainer = () => {
             ]} footerText={t('multi_asset_page.ready.footer')}/>)}
 
           <SecondaryInsightAccordion title={t('multi_asset_page.scope_notes.title')} description={t('multi_asset_page.scope_notes.description')} badge={t('multi_asset_page.scope_notes.badge')}>
-            <div className="divide-y divide-dashed divide-slate-200 rounded-[1.5rem] border border-slate-200 bg-white text-sm leading-6 text-muted-foreground">
+            <div className="divide-y divide-dashed divide-border text-sm leading-6 text-muted-foreground">
               <div className="px-4 py-3">
                 {t('multi_asset_page.scope_notes.cards.reference_run')}
               </div>
