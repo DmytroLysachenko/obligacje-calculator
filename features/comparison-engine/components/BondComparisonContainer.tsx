@@ -143,18 +143,45 @@ export const BondComparisonContainer = () => {
     const chartData = useMemo(() => buildComparisonChartData(results, showRealValue), [results, showRealValue]);
     const formatCurrency = (value: number) => currencyFormatter.format(value);
     const bestResult = useMemo(() => getLeadingComparisonResult(results), [results]);
-    return (<div className="space-y-6 pb-20 md:space-y-8">
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[360px_minmax(0,1fr)] xl:gap-8">
-        <ComparisonConfigurationPanel initialInvestment={initialInvestment} onInitialInvestmentChange={(value) => {
+    return (<div className="space-y-8 pb-20">
+      <div className="grid grid-cols-1 gap-8 xl:grid-cols-[360px_minmax(0,1fr)]">
+        <ComparisonConfigurationPanel
+          initialInvestment={initialInvestment}
+          onInitialInvestmentChange={(value) => {
             setInitialInvestment(value);
             setIsDirty(true);
-        }} duration={duration} onDurationChange={(value) => {
+          }}
+          duration={duration}
+          onDurationChange={(value) => {
             setDuration(value);
             setIsDirty(true);
-        }} expectedInflation={expectedInflation} expectedNbpRate={expectedNbpRate} customInflation={customInflation} customNbpRate={customNbpRate} onUpdateAssumption={onUpdateAssumption} selectedBonds={selectedBonds} onToggleBond={toggleBond} showRealValue={showRealValue} onShowRealValueChange={setShowRealValue}/>
+          }}
+          expectedInflation={expectedInflation}
+          expectedNbpRate={expectedNbpRate}
+          customInflation={customInflation}
+          customNbpRate={customNbpRate}
+          onUpdateAssumption={onUpdateAssumption}
+          selectedBonds={selectedBonds}
+          onToggleBond={toggleBond}
+          showRealValue={showRealValue}
+          onShowRealValueChange={setShowRealValue}
+        />
 
-        <div className="space-y-8">
-          <ComparisonResultsDashboard results={results} envelope={envelope} loading={loading} isDirty={isDirty} showRealValue={showRealValue} formatCurrency={formatCurrency} chartData={chartData} selectedBonds={selectedBonds} bestResult={bestResult} definitions={definitions} language={language} onRecalculate={calculateComparison}/>
+        <div className="min-w-0 space-y-8">
+          <ComparisonResultsDashboard
+            results={results}
+            envelope={envelope}
+            loading={loading}
+            isDirty={isDirty}
+            showRealValue={showRealValue}
+            formatCurrency={formatCurrency}
+            chartData={chartData}
+            selectedBonds={selectedBonds}
+            bestResult={bestResult}
+            definitions={definitions}
+            language={language}
+            onRecalculate={calculateComparison}
+          />
         </div>
       </div>
     </div>);

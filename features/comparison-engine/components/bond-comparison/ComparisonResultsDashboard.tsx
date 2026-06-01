@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { Loader2, TrendingUp } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { BondType } from '@/features/bond-core/types';
 import {
   BondComparisonCalculationEnvelope,
@@ -35,11 +34,11 @@ function SectionBlock({
   return (
     <section className="space-y-4">
       <div className="space-y-2">
-        <h3 className="text-2xl font-black tracking-tight text-slate-950">
+        <h3 className="ui-section-title">
           {title}
         </h3>
         {description ? (
-          <p className="max-w-3xl text-sm leading-7 text-slate-600">
+          <p className="ui-body max-w-3xl text-muted-foreground">
             {description}
           </p>
         ) : null}
@@ -143,11 +142,11 @@ function ComparisonVerdictPanel({
         })}
         narrative={t('comparison.page.verdict_narrative')}
         aside={
-          <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+          <div className="border-t border-border py-4">
+            <p className="ui-metadata text-muted-foreground">
               {valueLabel}
             </p>
-            <p className="mt-2 text-2xl font-black tracking-tight text-emerald-700">
+            <p className="mt-2 ui-large-metric text-success">
               {formatCurrency(bestValue)}
             </p>
           </div>
@@ -166,7 +165,7 @@ function ComparisonVerdictPanel({
             label: valueLabel,
             value: formatCurrency(bestValue),
             description: t('comparison.page.modeled_value_desc'),
-            tone: 'text-emerald-700',
+            tone: 'text-success',
           },
           {
             label: t('comparison.page.next_result'),
@@ -199,19 +198,18 @@ function ScenarioResultCard({
   const { t } = useAppI18n();
 
   return (
-    <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-      <CardContent className="space-y-5 p-6">
+    <article className="space-y-5 border-t border-border py-5">
         <div className="space-y-2">
           <div className="flex items-center gap-3">
             <div
               className="h-3 w-3 rounded-full"
               style={{ backgroundColor: getBondColor(result.type) }}
             />
-            <p className="text-xl font-black tracking-tight text-slate-950">
+            <p className="ui-section-title">
               {result.type}
             </p>
           </div>
-          <p className="text-sm leading-7 text-slate-600">
+          <p className="ui-body text-muted-foreground">
             {definition
               ? definition.description[language]
               : getBondSupportMeta(result.type).description}
@@ -232,23 +230,22 @@ function ScenarioResultCard({
               label: t('common.net_profit'),
               value: formatCurrency(result.result.totalProfit),
               tone: result.result.totalProfit >= 0
-                ? 'text-emerald-700'
+                ? 'text-success'
                 : 'text-destructive',
             },
             {
               label: t('bonds.real_cagr'),
               value: `${result.result.realAnnualizedReturn.toFixed(1)}%`,
-              tone: 'text-blue-700',
+              tone: 'text-primary',
             },
             {
               label: t('bonds.tax'),
               value: formatCurrency(result.result.totalTax),
-              tone: 'text-orange-700',
+              tone: 'text-warning',
             },
           ]}
         />
-      </CardContent>
-    </Card>
+    </article>
   );
 }
 
@@ -256,17 +253,16 @@ function ComparisonEmptyState() {
   const { t } = useAppI18n();
 
   return (
-    <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-      <CardContent className="space-y-6 p-5 md:p-8">
+    <section className="space-y-6 border-t border-border py-6">
         <div className="space-y-3">
-          <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-700">
+          <div className="surface-chip">
             <TrendingUp className="h-3.5 w-3.5 text-primary" />
             {t('comparison.ready_to_compare')}
           </div>
-          <h3 className="text-3xl font-black tracking-tight text-slate-950">
+          <h3 className="text-[32px] font-semibold leading-tight text-foreground">
             {t('comparison.page.empty_state_title')}
           </h3>
-          <p className="max-w-3xl text-sm leading-8 text-slate-600">
+          <p className="ui-body max-w-3xl text-muted-foreground">
             {t('comparison.page.empty_state_description')}
           </p>
         </div>
@@ -285,8 +281,7 @@ function ComparisonEmptyState() {
             description={t('comparison.page.empty_steps.run_description')}
           />
         </div>
-      </CardContent>
-    </Card>
+    </section>
   );
 }
 
@@ -298,11 +293,11 @@ function ComparisonStepCard({
   description: string;
 }) {
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-5">
-      <p className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-500">
+    <div className="border-t border-border py-5">
+      <p className="ui-card-title">
         {title}
       </p>
-      <p className="mt-2 text-sm leading-7 text-slate-600">{description}</p>
+      <p className="mt-2 ui-body text-muted-foreground">{description}</p>
     </div>
   );
 }
@@ -340,7 +335,7 @@ export function ComparisonResultsDashboard({
 
   if (loading && !results.length) {
     return (
-      <div className="flex h-[420px] items-center justify-center rounded-[2rem] border border-slate-200 bg-white">
+      <div className="flex h-[420px] items-center justify-center border-t border-border">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
       </div>
     );
@@ -353,7 +348,7 @@ export function ComparisonResultsDashboard({
   return (
     <div className="space-y-8">
       {isDirty ? (
-        <div className="rounded-3xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
+        <div className="ui-inline-notice border-l-2 border-warning text-warning">
           {t('comparison.page.stale_results')}
         </div>
       ) : null}
@@ -369,8 +364,7 @@ export function ComparisonResultsDashboard({
         title={t('comparison.page.chart_title')}
         description={t('comparison.page.chart_description')}
       >
-        <Card className="rounded-[2rem] border border-slate-200 bg-white shadow-none">
-          <CardContent className="p-4 md:p-6">
+        <section className="space-y-5">
             <ChartSupportNote
               title={t('comparison.page.chart_note_title')}
               description={t('comparison.page.chart_note_description')}
@@ -407,8 +401,7 @@ export function ComparisonResultsDashboard({
                 </LineChart>
               </ResponsiveContainer>
             </ChartContainer>
-          </CardContent>
-        </Card>
+        </section>
       </SectionBlock>
 
       <SecondaryInsightAccordion

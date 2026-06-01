@@ -3,7 +3,6 @@
 import React from 'react';
 import { Scale } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { BondType } from '@/features/bond-core/types';
@@ -24,14 +23,16 @@ function StepCard({
   description: string;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className="border-t border-border py-4">
       <div className="flex items-start gap-3">
         <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--finance-success)]" />
         <div className="space-y-2">
-          <p className="text-xs font-semibold text-muted-foreground">
+          <p className="ui-metadata font-semibold text-muted-foreground">
             {title}
           </p>
-          <p className="text-sm leading-6 text-muted-foreground">{description}</p>
+          <p className="ui-body text-muted-foreground">
+            {description}
+          </p>
         </div>
       </div>
     </div>
@@ -79,17 +80,17 @@ export function ComparisonConfigurationPanel({
 
   return (
     <aside className="space-y-5 xl:sticky xl:top-24 xl:h-fit">
-      <Card className="border-border bg-card shadow-none">
-        <CardHeader className="space-y-2 border-b border-border pb-4">
-          <CardTitle className="flex items-center gap-2 ui-card-title">
+      <section className="space-y-5">
+        <div className="space-y-2 border-b border-border pb-4">
+          <h2 className="flex items-center gap-2 ui-section-title">
             <Scale className="h-5 w-5 text-primary" />
             {t('comparison.page.configuration_title')}
-          </CardTitle>
-          <CardDescription className="text-sm leading-6 text-muted-foreground">
+          </h2>
+          <p className="ui-body text-muted-foreground">
             {t('comparison.page.configuration_description')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-5 p-5">
+          </p>
+        </div>
+        <div className="space-y-5">
           <div className="space-y-2">
             <Label className="text-xs font-semibold text-muted-foreground">
               {t('comparison.page.initial_investment')}
@@ -139,7 +140,7 @@ export function ComparisonConfigurationPanel({
           </div>
 
           <div className="space-y-3 border-t border-border pt-5">
-            <div className="flex items-center justify-between rounded-lg border border-border bg-muted/35 px-4 py-3">
+            <div className="flex items-center justify-between rounded-lg bg-muted/35 px-4 py-3">
               <div>
                 <p className="text-sm font-semibold text-foreground">
                   {t('bonds.inflation.adjusted')}
@@ -153,7 +154,7 @@ export function ComparisonConfigurationPanel({
                 onCheckedChange={onShowRealValueChange}
               />
             </div>
-            <div className="rounded-lg border border-border bg-muted/35 px-4 py-3">
+            <div className="rounded-lg bg-muted/35 px-4 py-3">
               <p className="text-sm font-semibold text-foreground">
                 {t('comparison.page.rollover_title')}
               </p>
@@ -162,19 +163,19 @@ export function ComparisonConfigurationPanel({
               </p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      <Card className="border-border bg-card shadow-none">
-        <CardHeader className="space-y-2 border-b border-border pb-4">
-          <CardTitle className="ui-card-title">
+      <section className="space-y-5 border-t border-border py-5">
+        <div className="space-y-2">
+          <h2 className="ui-section-title">
             {t('comparison.page.bond_picker_title')}
-          </CardTitle>
-          <CardDescription className="text-sm leading-6 text-muted-foreground">
+          </h2>
+          <p className="ui-body text-muted-foreground">
             {t('comparison.page.bond_picker_description')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-2 p-5">
+          </p>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
           {Object.values(BondType).map((type) => (
             <Button
               key={type}
@@ -202,8 +203,8 @@ export function ComparisonConfigurationPanel({
               </div>
             </Button>
           ))}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       <SecondaryInsightAccordion
         title={t('comparison.page.how_to_read_title')}
@@ -211,7 +212,7 @@ export function ComparisonConfigurationPanel({
         badge={t('comparison.page.how_to_read_badge')}
       >
         <div className="space-y-4 text-sm leading-6 text-muted-foreground">
-          <div className="rounded-lg border border-border bg-muted/35 px-4 py-4">
+          <div className="rounded-lg bg-muted/35 px-4 py-4">
             <div className="flex items-center gap-2 font-semibold tracking-tight text-foreground">
               <AlertTriangle className="h-4 w-4 text-[var(--finance-warning)]" />
               {t('comparison.page.reading_checklist_title')}
