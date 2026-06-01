@@ -3,7 +3,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { parseISO } from 'date-fns';
 import { AlertCircle, Settings2, Target } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -81,12 +80,12 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
   if (isLoadingDefs || !definitions || !currentDef) {
     return (
-      <Card className="w-full overflow-hidden border-border shadow-none">
-        <CardHeader className="border-b border-border bg-card">
+      <section className="w-full space-y-6 border-t border-border py-5">
+        <div className="space-y-3">
           <Skeleton className="mb-2 h-6 w-48" />
           <Skeleton className="h-4 w-64" />
-        </CardHeader>
-        <CardContent className="space-y-8 p-6">
+        </div>
+        <div className="space-y-8">
           <div className="space-y-4">
             <Skeleton className="h-4 w-24" />
             <Skeleton className="h-9 w-full rounded-md" />
@@ -99,20 +98,20 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
             <Skeleton className="h-4 w-28" />
             <Skeleton className="h-32 w-full rounded-md" />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   return (
     <TooltipProvider>
-      <Card className="w-full overflow-hidden border-border shadow-none">
+      <section className="w-full space-y-6 border-t border-border py-5">
         {guardrails.length > 0 ? (
-          <div className="space-y-2 border-b border-[var(--finance-warning)]/40 bg-card p-3">
+          <div className="space-y-3 border-b border-[var(--finance-warning)]/40 pb-5">
             {guardrails.map((issue) => (
               <div
                 key={issue.id}
-                className="rounded-md border border-[var(--finance-warning)]/40 bg-card p-3"
+                className="border-l-2 border-[var(--finance-warning)]/60 pl-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1">
@@ -140,17 +139,17 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           </div>
         ) : null}
 
-        <CardHeader className="border-b border-border bg-card">
-          <CardTitle className="flex items-center gap-2 ui-section-title">
+        <div className="space-y-2">
+          <h2 className="flex items-center gap-2 ui-section-title">
             <Target className="h-5 w-5 text-primary" />
             {t('bonds.single_calculator')}
-          </CardTitle>
-          <CardDescription>
+          </h2>
+          <p className="text-sm leading-6 text-muted-foreground">
             {t('bonds.form.main_path_desc')}
-          </CardDescription>
-        </CardHeader>
+          </p>
+        </div>
 
-        <CardContent className="space-y-6 p-5">
+        <div className="space-y-6">
           <section className="space-y-4">
             <div className="space-y-1">
               <h3 className="text-xs font-semibold text-muted-foreground">
@@ -233,7 +232,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               </AccordionItem>
             </Accordion>
           </section>
-        </CardContent>
+        </div>
 
         <BondSummaryFooter
           inputs={inputs}
@@ -241,7 +240,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           maturityDate={maturityDate}
           hasMounted={hasMounted}
         />
-      </Card>
+      </section>
     </TooltipProvider>
   );
 };

@@ -35,7 +35,7 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
   return (
     <div
       className={cn(
-        'surface-soft relative w-full overflow-hidden rounded-[1.35rem]',
+        'surface-soft relative w-full overflow-hidden rounded-lg',
         responsiveHeightClassName,
         className,
       )}
