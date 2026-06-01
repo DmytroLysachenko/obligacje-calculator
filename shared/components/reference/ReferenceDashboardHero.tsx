@@ -20,7 +20,7 @@ export function ReferenceDashboardHero({
   metrics,
 }: ReferenceDashboardHeroProps) {
   return (
-    <section className="overflow-hidden rounded-lg border border-border bg-card px-5 py-5 shadow-none md:px-6 md:py-6">
+    <section className="border-y border-border py-6">
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(260px,440px)] xl:items-start">
         <div className="space-y-3">
           {badge}
@@ -28,18 +28,11 @@ export function ReferenceDashboardHero({
           <p className="ui-body max-w-3xl">{description}</p>
         </div>
 
-        <div className="grid gap-0 overflow-hidden rounded-md border border-border sm:grid-cols-2">
+        <div className="grid gap-0 divide-y divide-border border-y border-border sm:grid-cols-2 sm:divide-x sm:divide-y-0">
           {metrics.map((metric, index) => (
             <div
               key={metric.label}
-              className={[
-                'px-4 py-3',
-                'border-border',
-                index >= 2 ? 'border-t' : '',
-                index % 2 === 1 ? 'sm:border-l' : '',
-              ]
-                .filter(Boolean)
-                .join(' ')}
+              className={index >= 2 ? 'px-4 py-3 sm:border-t sm:border-border' : 'px-4 py-3'}
             >
               <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
                 {metric.label}

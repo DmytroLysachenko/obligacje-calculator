@@ -12,7 +12,6 @@ import {
   ShieldAlert,
   Sparkles,
 } from 'lucide-react';
-import {Card, CardContent} from '@/components/ui/card';
 import {Accordion} from '@/components/ui/accordion';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {useAppI18n} from '@/i18n/client';
@@ -75,7 +74,7 @@ function RangeActions({
   ];
 
   return (
-    <div className="flex flex-wrap items-center gap-1 rounded-md border border-border bg-card p-1">
+    <div className="flex flex-wrap items-center gap-1 border-b border-border pb-2">
       <span className="inline-flex items-center gap-1 px-3 text-sm font-medium text-muted-foreground">
         <CalendarRange className="h-3.5 w-3.5" />
         {rangeLabel}
@@ -147,13 +146,11 @@ function SeriesStatusCard({
   return (
     <section
       className={cn(
-        'rounded-lg border shadow-none',
-        state.tone === 'warning'
-          ? 'border-warning/30 bg-warning/10'
-          : 'border-border bg-card',
+        'border-t py-5',
+        state.tone === 'warning' ? 'border-warning/40' : 'border-border',
       )}
     >
-      <div className="space-y-4 p-5">
+      <div className="space-y-4">
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
@@ -178,18 +175,11 @@ function SeriesStatusCard({
           <p className="ui-body">{state.description}</p>
         </div>
 
-        <div className="grid gap-0 rounded-md border border-border sm:grid-cols-2">
+        <div className="grid gap-0 divide-y divide-border border-y border-border sm:grid-cols-2 sm:divide-x sm:divide-y-0">
           {rows.map((row, index) => (
             <div
               key={row.label}
-              className={[
-                'px-4 py-3',
-                'border-border',
-                index >= 2 ? 'border-t' : '',
-                index % 2 === 1 ? 'sm:border-l' : '',
-              ]
-                .filter(Boolean)
-                .join(' ')}
+              className={cn('px-4 py-3', index >= 2 && 'sm:border-t sm:border-border')}
             >
               <p className="text-sm font-semibold text-muted-foreground">{row.label}</p>
               <p className="mt-2 text-sm font-medium text-foreground">{row.value}</p>
@@ -234,7 +224,7 @@ function DashboardTabFrame({
 }) {
   return (
     <section className="space-y-5">
-      <div className="flex flex-col gap-3 rounded-lg border border-border bg-card px-5 py-5 md:px-6">
+      <div className="flex flex-col gap-3 border-t border-border py-5">
         <div className="flex items-start gap-3">
           <div className="mt-0.5 rounded-md bg-muted p-2 text-foreground">
             <Info className="h-4 w-4" />
@@ -264,24 +254,18 @@ function UsageGuidePanel({
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-      <Card className="border-border bg-card shadow-none">
-        <CardContent className="space-y-5 p-5 md:p-6">
+      <section className="space-y-5 border-t border-border py-5 md:py-6">
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" />
             <h3 className="ui-section-title">
               {labels.howToUse}
             </h3>
           </div>
-          <div className="grid gap-0 overflow-hidden rounded-md border border-border md:grid-cols-2">
+          <div className="grid gap-0 divide-y divide-border border-y border-border md:grid-cols-2 md:divide-x md:divide-y-0">
             {usageGuide.map((item, index) => (
               <div
                 key={item}
-                className={cn(
-                  'border-border px-4 py-4',
-                  index % 2 === 1 && 'md:border-l',
-                  index >= 2 && 'md:border-t',
-                  index > 0 && 'border-t md:border-t-0',
-                )}
+                className={cn('px-4 py-4', index >= 2 && 'md:border-t md:border-border')}
               >
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
@@ -290,11 +274,10 @@ function UsageGuidePanel({
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+      </section>
 
-      <ReferenceNoteCard
-            icon={<AlertTriangle className="h-4 w-4 text-warning" />}
+        <ReferenceNoteCard
+        icon={<AlertTriangle className="h-4 w-4 text-warning" />}
         title={labels.dataQuality}
         description={t('economic.data_quality_description')}
         tone="warning"
@@ -433,7 +416,7 @@ export function EconomicDataPageClient() {
       <div className="space-y-5 md:space-y-6">
         <ReferenceDashboardHero
           badge={
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-muted-foreground">
+            <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.08em] text-muted-foreground">
               <Database className="h-3.5 w-3.5 text-foreground" />
               {labels.panel}
             </div>
@@ -444,16 +427,25 @@ export function EconomicDataPageClient() {
         />
 
         <Tabs defaultValue="charts" className="space-y-5">
-          <TabsList className="h-auto w-fit flex-wrap justify-start rounded-md border border-border bg-card p-1 shadow-none">
-            <TabsTrigger value="charts" className="h-9 gap-2 rounded px-3.5 py-2">
+          <TabsList className="h-auto w-fit flex-wrap justify-start gap-1 border-b border-border bg-transparent p-0 shadow-none">
+            <TabsTrigger
+              value="charts"
+              className="h-9 gap-2 rounded-none border-b-2 border-transparent px-3.5 py-2 data-[state=active]:border-foreground"
+            >
               <BarChart3 className="h-4 w-4" />
               {labels.tabCharts}
             </TabsTrigger>
-            <TabsTrigger value="status" className="h-9 gap-2 rounded px-3.5 py-2">
+            <TabsTrigger
+              value="status"
+              className="h-9 gap-2 rounded-none border-b-2 border-transparent px-3.5 py-2 data-[state=active]:border-foreground"
+            >
               <Database className="h-4 w-4" />
               {labels.tabStatus}
             </TabsTrigger>
-            <TabsTrigger value="guide" className="h-9 gap-2 rounded px-3.5 py-2">
+            <TabsTrigger
+              value="guide"
+              className="h-9 gap-2 rounded-none border-b-2 border-transparent px-3.5 py-2 data-[state=active]:border-foreground"
+            >
               <Sparkles className="h-4 w-4" />
               {labels.tabGuide}
             </TabsTrigger>

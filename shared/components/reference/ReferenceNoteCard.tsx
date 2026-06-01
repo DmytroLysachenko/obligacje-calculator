@@ -18,8 +18,8 @@ export function ReferenceNoteCard({
     <section
       className={
         tone === 'warning'
-          ? 'space-y-3 rounded-lg border border-[var(--finance-warning)]/40 bg-card px-4 py-4 shadow-none'
-          : 'space-y-3 rounded-lg border border-border bg-card px-4 py-4 shadow-none'
+          ? 'space-y-3 border-t border-[var(--finance-warning)]/40 py-4'
+          : 'space-y-3 border-t border-border py-4'
       }
     >
       <div className="flex items-center gap-2">

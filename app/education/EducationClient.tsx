@@ -23,7 +23,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PageTransition } from '@/shared/components/page/PageTransition';
 
@@ -79,31 +78,31 @@ export default function EducationClient() {
               {t('education.concepts_subtitle')}
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-x-6 gap-y-2 md:grid-cols-2 lg:grid-cols-3">
             {concepts.map((concept) => (
-              <Card
+              <article
                 key={concept.key}
-                className="border-border bg-card shadow-none transition-colors hover:border-foreground/20"
+                className="border-t border-border py-5 transition-colors hover:border-foreground/20"
               >
-                <CardHeader className="pb-2">
+                <div className="pb-2">
                   <div className="flex items-center gap-3">
                     <div className="rounded-md bg-muted p-2 text-foreground">
                       <concept.icon className="h-5 w-5" />
                     </div>
-                    <CardTitle className="ui-card-title">
+                    <h4 className="ui-card-title">
                       {t(`education.concepts.${concept.key}.title`)}
-                    </CardTitle>
+                    </h4>
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
+                </div>
+                <div className="space-y-3">
                   <p className="ui-body">
                     {t(`education.concepts.${concept.key}.desc`)}
                   </p>
-                  <div className="rounded-md border border-border bg-muted/40 px-3 py-2 font-mono text-[10px] text-muted-foreground">
+                  <div className="rounded-md bg-muted/40 px-3 py-2 font-mono text-[10px] text-muted-foreground">
                     {t(`education.concepts.${concept.key}.formula`)}
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </article>
             ))}
           </div>
         </section>
@@ -115,17 +114,19 @@ export default function EducationClient() {
               {t('education.bond_types')}
             </h3>
           </div>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-x-6 gap-y-2 md:grid-cols-2 xl:grid-cols-3">
             {Object.values(definitions).map((bond) => (
               <BondEducationCard key={bond.type} bond={bond} />
             ))}
           </div>
-          <p className="rounded-md border border-dashed border-border bg-muted/40 p-4 text-xs italic text-muted-foreground">
-            {t('education.disclaimer')}
-          </p>
+          <div className="border-t border-dashed border-border pt-4">
+            <p className="max-w-4xl text-xs italic leading-relaxed text-muted-foreground">
+              {t('education.disclaimer')}
+            </p>
+          </div>
         </section>
 
-        <section className="space-y-6 rounded-lg border border-border bg-card p-6">
+        <section className="space-y-6 border-t border-border py-6">
           <div className="flex items-center gap-2">
             <HelpCircle className="h-5 w-5 text-foreground" />
             <h3 className="ui-section-title">{t('education.faq')}</h3>
