@@ -1,7 +1,6 @@
 'use client';
 import React, { useMemo, useState } from 'react';
 import { Scale, TriangleAlert } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAppI18n } from '@/i18n/client';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
@@ -150,16 +149,12 @@ export const ComparisonContainer: React.FC = () => {
                         envelope: envelopeB,
                         warnings: warningsB,
                     },
-                ].map((entry) => (<Card key={entry.label} className="border shadow-sm">
-                        <CardHeader className="border-b bg-muted/10 pb-3">
-                          <CardTitle className="text-[10px] font-black uppercase tracking-widest">
+                ].map((entry) => (<section key={entry.label} className="space-y-4 border-t border-border py-4">
+                          <h3 className="ui-card-title">
                             {entry.label} {t('comparison.notes_suffix')}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="pt-4">
+                          </h3>
                           <CalculationMetaPanel warnings={entry.warnings} assumptions={entry.envelope?.assumptions} calculationNotes={entry.envelope?.calculationNotes} dataQualityFlags={entry.envelope?.dataQualityFlags} dataFreshness={entry.envelope?.dataFreshness} compact/>
-                        </CardContent>
-                      </Card>))}
+                      </section>))}
                   </div>
                 </SecondaryInsightAccordion>
               </div>) : null}

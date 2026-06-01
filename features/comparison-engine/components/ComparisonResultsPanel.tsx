@@ -13,7 +13,6 @@ import {
   YAxis,
 } from 'recharts';
 import { FileSpreadsheet, LineChart } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BondInputs, CalculationResult, InterestPayout } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
@@ -60,8 +59,8 @@ function ComparisonChartTooltip({
   }
 
   return (
-    <div className="min-w-[150px] rounded border border-border bg-popover p-3 text-popover-foreground shadow-xl">
-      <p className="mb-2 border-b border-border/50 pb-1 text-xs font-bold">
+    <div className="min-w-[150px] rounded-lg border border-border bg-popover p-3 text-popover-foreground shadow-lg">
+      <p className="ui-metadata mb-2 border-b border-border/50 pb-1 font-semibold">
         {label}
       </p>
       <div className="space-y-1.5">
@@ -91,11 +90,11 @@ function ActionMetric({
   tone?: string;
 }) {
   return (
-    <div className="border-slate-200 px-4 py-3 md:border-r last:md:border-r-0">
-      <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+    <div className="border-border py-4 md:border-r md:px-4 last:md:border-r-0">
+      <p className="ui-metadata text-muted-foreground">
         {label}
       </p>
-      <p className={`mt-2 text-lg font-black ${tone ?? 'text-slate-950'}`}>{value}</p>
+      <p className={`mt-2 text-[32px] font-semibold leading-none ${tone ?? 'text-foreground'}`}>{value}</p>
     </div>
   );
 }
@@ -114,31 +113,31 @@ export function ComparisonResultsPanel({
   const { t } = useAppI18n();
 
   return (
-    <Card className="border shadow-none">
-      <CardHeader className="border-b border-dashed bg-white">
-        <CardTitle className="flex items-center gap-2 text-xl font-black">
+    <section className="space-y-6 border-t border-border py-6">
+      <div className="space-y-2">
+        <h2 className="flex items-center gap-2 ui-section-title">
           <LineChart className="h-5 w-5 text-primary" />
           {t('comparison.performance_over_time')}
-        </CardTitle>
-        <p className="text-sm leading-6 text-muted-foreground">
+        </h2>
+        <p className="ui-body text-muted-foreground">
           {t('comparison.chart_header_desc')}
         </p>
-      </CardHeader>
-      <CardContent className="p-6">
-        <div className="mb-5 grid gap-0 rounded-[1.4rem] border border-slate-200 md:grid-cols-2 xl:grid-cols-3">
+      </div>
+      <div>
+        <div className="mb-5 grid gap-0 divide-y divide-border border-y border-border md:grid-cols-2 md:divide-x md:divide-y-0 xl:grid-cols-3">
           <ActionMetric
             label={showRealValue ? `${t('comparison.scenario_a')} ${t('common.real_value')}` : t('comparison.scenario_a')}
             value={formatCurrency(showRealValue ? resultsA.finalRealValue : resultsA.netPayoutValue)}
-            tone="text-blue-700"
+            tone="text-primary"
           />
           <ActionMetric
             label={showRealValue ? `${t('comparison.scenario_b')} ${t('common.real_value')}` : t('comparison.scenario_b')}
             value={formatCurrency(showRealValue ? resultsB.finalRealValue : resultsB.netPayoutValue)}
-            tone="text-emerald-700"
+            tone="text-success"
           />
           <button
             type="button"
-            className="px-4 py-3 text-left transition-colors hover:bg-slate-50/60 xl:border-l xl:border-slate-200"
+            className="px-4 py-4 text-left transition-colors hover:bg-muted/35 xl:border-l xl:border-border"
             onClick={() =>
               exportComparisonCsv({
                 timelineA: resultsA.timeline,
@@ -149,10 +148,10 @@ export function ComparisonResultsPanel({
               })
             }
           >
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+            <p className="ui-metadata text-muted-foreground">
               {t('comparison.export')}
             </p>
-            <div className="mt-2 flex items-center gap-2 text-sm font-bold text-slate-900">
+            <div className="mt-2 flex items-center gap-2 text-sm font-semibold text-foreground">
               <FileSpreadsheet className="h-4 w-4 text-primary" />
               {t('comparison.export_comparison_csv')}
             </div>
@@ -227,12 +226,12 @@ export function ComparisonResultsPanel({
             badge={usesMixedTimelineCadence ? t('comparison.mixed_cadence') : undefined}
             className="mt-0"
           >
-            <div className="space-y-4 text-sm leading-7 text-slate-600">
-              <div className="rounded-[1.5rem] border border-slate-200 px-5 py-4">
+            <div className="space-y-4 text-sm leading-7 text-muted-foreground">
+              <div className="border-t border-border py-4">
                 <p>{t('comparison.comparison_chart_help_note')}</p>
               </div>
               {usesMixedTimelineCadence ? (
-                <div className="rounded-[1.5rem] border border-amber-200 bg-amber-50/55 px-5 py-4 text-amber-950">
+                <div className="ui-inline-notice border-l-2 border-warning text-warning">
                   <p className="font-semibold">
                     {t('comparison.mixed_cadence_notice', {
                       bondTypeA: inputsA.bondType,
@@ -250,16 +249,16 @@ export function ComparisonResultsPanel({
                 </div>
               ) : null}
               <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-[1.4rem] border border-slate-200 px-4 py-4">
-                  <p className="text-sm font-bold text-slate-900">
+                <div className="border-t border-border py-4">
+                  <p className="ui-card-title">
                     {t('comparison.end_level')}
                   </p>
                   <p className="mt-1 text-xs leading-6 text-muted-foreground">
                     {t('comparison.end_level_desc')}
                   </p>
                 </div>
-                <div className="rounded-[1.4rem] border border-slate-200 px-4 py-4">
-                  <p className="text-sm font-bold text-slate-900">
+                <div className="border-t border-border py-4">
+                  <p className="ui-card-title">
                     {t('comparison.update_rhythm')}
                   </p>
                   <p className="mt-1 text-xs leading-6 text-muted-foreground">
@@ -270,7 +269,7 @@ export function ComparisonResultsPanel({
             </div>
           </SecondaryInsightAccordion>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

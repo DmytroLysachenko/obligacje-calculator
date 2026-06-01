@@ -20,7 +20,7 @@ export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> =
 }) => {
   const { t, locale: language } = useAppI18n();
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
       {assets.map((asset) => {
         const last = asset.series[asset.series.length - 1];
         const maxDrawdown = Math.max(
@@ -31,7 +31,7 @@ export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> =
         const isProfit = netProfit >= 0;
 
         return (
-          <article key={asset.metadata.id} className="flex h-full flex-col justify-between gap-5 rounded-[1.7rem] border border-slate-200 bg-white px-5 py-5">
+          <article key={asset.metadata.id} className="flex h-full flex-col justify-between gap-5 border-t border-border py-5">
             <div className="space-y-5">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
@@ -64,7 +64,7 @@ export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> =
                 <div
                   className={cn(
                     "flex items-center gap-1.5 text-sm font-semibold",
-                    isProfit ? "text-green-600" : "text-destructive"
+                    isProfit ? "text-success" : "text-destructive"
                   )}
                 >
                   {isProfit ? (
@@ -78,8 +78,8 @@ export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> =
               </div>
             </div>
 
-            <div className="divide-y divide-dashed divide-slate-200 rounded-[1.25rem] border border-slate-200">
-              <div className="flex items-center justify-between gap-4 px-4 py-3 text-xs">
+            <div className="divide-y divide-dashed divide-border">
+              <div className="flex items-center justify-between gap-4 py-3 text-xs">
                 <span className="font-medium text-muted-foreground">
                   {t('comparison.max_drawdown')}
                 </span>
@@ -87,11 +87,11 @@ export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> =
                   -{maxDrawdown.toFixed(1)}%
                 </span>
               </div>
-              <div className="flex items-center justify-between gap-4 px-4 py-3 text-xs">
+              <div className="flex items-center justify-between gap-4 py-3 text-xs">
                 <span className="font-medium text-muted-foreground">
                   {t('comparison.total_return')}
                 </span>
-                <span className="font-semibold text-green-600">
+                <span className="font-semibold text-success">
                   +
                   {((finalValue / totalInvested - 1) * 100).toFixed(1)}
                   %

@@ -4,7 +4,6 @@ import React from 'react';
 import { format, parseISO } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -42,28 +41,28 @@ export function ComparisonSharedBaseCard({
   const { t, locale: language } = useAppI18n();
 
   return (
-    <Card className="overflow-hidden border shadow-sm">
-      <CardHeader className="border-b bg-muted/20">
-        <CardTitle className="text-sm font-black uppercase tracking-widest">
+    <section className="space-y-6">
+      <div className="space-y-2 border-b border-border pb-4">
+        <h2 className="ui-section-title">
           {t('comparison.shared_base_title')}
-        </CardTitle>
-        <p className="text-sm leading-6 text-muted-foreground">
+        </h2>
+        <p className="ui-body text-muted-foreground">
           {t('comparison.shared_base_desc')}
         </p>
-        <p className="text-xs leading-5 text-muted-foreground">
+        <p className="ui-metadata leading-5 text-muted-foreground">
           {t('comparison.shared_base_scope')}
         </p>
-      </CardHeader>
-      <CardContent className="space-y-6 pt-6">
+      </div>
+      <div className="space-y-6">
         <div className="space-y-3">
-          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+          <Label className="ui-metadata text-muted-foreground">
             {t('bonds.timing.mode.label')}
           </Label>
           <div className="flex gap-2">
             <Button
               type="button"
               variant={!sharedConfig.timingMode || sharedConfig.timingMode === 'general' ? 'default' : 'outline'}
-              className="h-10 flex-1 text-xs font-bold"
+              className="h-10 flex-1 text-xs font-semibold"
               onClick={() => onUpdateSharedConfig('timingMode', 'general')}
             >
               {t('bonds.timing.mode.general')}
@@ -71,7 +70,7 @@ export function ComparisonSharedBaseCard({
             <Button
               type="button"
               variant={sharedConfig.timingMode === 'exact' ? 'default' : 'outline'}
-              className="h-10 flex-1 text-xs font-bold"
+              className="h-10 flex-1 text-xs font-semibold"
               onClick={() => onUpdateSharedConfig('timingMode', 'exact')}
             >
               {t('bonds.timing.mode.exact')}
@@ -80,17 +79,17 @@ export function ComparisonSharedBaseCard({
         </div>
 
         <div className="space-y-2">
-          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+          <Label className="ui-metadata text-muted-foreground">
             {t('comparison.initial_sum')}
           </Label>
           <div className="relative">
             <Input
               type="number"
-              className="h-11 pr-12 text-lg font-bold"
+              className="h-11 rounded-lg pr-12 text-lg font-semibold"
               value={sharedConfig.initialInvestment}
               onChange={(event) => onUpdateSharedConfig('initialInvestment', Number(event.target.value))}
             />
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-black text-muted-foreground">
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 ui-metadata text-muted-foreground">
               PLN
             </div>
           </div>
@@ -98,7 +97,7 @@ export function ComparisonSharedBaseCard({
 
         <div className="grid grid-cols-1 gap-4 border-t border-dashed pt-4">
           <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+            <Label className="ui-metadata text-muted-foreground">
               {t('bonds.purchase_date')}
             </Label>
             <Popover>
@@ -106,7 +105,7 @@ export function ComparisonSharedBaseCard({
                 <Button
                   variant="outline"
                   className={cn(
-                    'h-11 w-full justify-start border text-left font-bold',
+                    'h-11 w-full justify-start text-left font-semibold',
                     !sharedConfig.purchaseDate && 'text-muted-foreground',
                   )}
                 >
@@ -136,7 +135,7 @@ export function ComparisonSharedBaseCard({
 
           {sharedConfig.timingMode === 'exact' ? (
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+              <Label className="ui-metadata text-muted-foreground">
                 {t('bonds.withdrawal_date')}
               </Label>
               <Popover>
@@ -144,7 +143,7 @@ export function ComparisonSharedBaseCard({
                   <Button
                     variant="outline"
                     className={cn(
-                      'h-11 w-full justify-start border text-left font-bold',
+                      'h-11 w-full justify-start text-left font-semibold',
                       !sharedConfig.withdrawalDate && 'text-muted-foreground',
                     )}
                   >
@@ -175,7 +174,7 @@ export function ComparisonSharedBaseCard({
         </div>
 
         <div className="space-y-4 border-t border-dashed pt-4">
-          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+          <Label className="ui-metadata text-muted-foreground">
             {t('bonds.investment_horizon')}
           </Label>
           <CommittedSliderInput
@@ -205,7 +204,7 @@ export function ComparisonSharedBaseCard({
         </div>
 
         <div className="space-y-2 border-t border-dashed pt-4">
-          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+          <Label className="ui-metadata text-muted-foreground">
             {t('bonds.tax_strategy')}
           </Label>
           <Select
@@ -226,7 +225,7 @@ export function ComparisonSharedBaseCard({
           </p>
         </div>
 
-        <div className="flex items-center justify-between rounded-xl border bg-muted/20 p-3">
+        <div className="flex items-center justify-between rounded-lg bg-muted/35 p-3">
           <div>
             <p className="text-sm font-semibold">{t('bonds.inflation.adjusted')}</p>
             <p className="text-xs leading-5 text-muted-foreground">
@@ -235,7 +234,7 @@ export function ComparisonSharedBaseCard({
           </div>
           <Switch checked={showRealValue} onCheckedChange={onShowRealValueChange} />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

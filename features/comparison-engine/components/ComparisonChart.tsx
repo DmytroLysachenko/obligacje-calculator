@@ -19,13 +19,6 @@ import {
   ValueType,
   NameType,
 } from "recharts/types/component/DefaultTooltipContent";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { TrendingUp, Activity } from "lucide-react";
 import { ComparisonChartProps } from "./types";
@@ -65,8 +58,8 @@ const CustomTooltip = ({
   const nbp = data.nbp;
 
   return (
-    <div className="bg-popover border-2 border-border/50 p-4 shadow-2xl rounded-xl text-popover-foreground min-w-[220px] backdrop-blur-sm bg-opacity-95">
-      <p className="font-black text-xs uppercase tracking-widest mb-3 border-b pb-2 border-border/50">
+    <div className="min-w-[220px] rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-lg">
+      <p className="ui-metadata mb-3 border-b border-border/50 pb-2 font-semibold">
         {label}
       </p>
       <div className="space-y-3">
@@ -85,7 +78,7 @@ const CustomTooltip = ({
                   />
                   {entry.name}:
                 </span>
-                <span className="font-mono font-black text-primary">
+                <span className="font-mono font-semibold text-primary">
                   {formatCurrency(Number(entry.value))}
                 </span>
               </div>
@@ -98,19 +91,19 @@ const CustomTooltip = ({
             {inflation !== undefined && (
               <div className="flex justify-between items-center text-[10px]">
                 <span className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-warning" />
                   <span className="text-muted-foreground font-medium">{t("bonds.ref_inflation")}:</span>
                 </span>
-                <span className="font-black text-orange-600">{Number(inflation).toFixed(2)}%</span>
+                <span className="font-semibold text-warning">{Number(inflation).toFixed(2)}%</span>
               </div>
             )}
             {nbp !== undefined && (
               <div className="flex justify-between items-center text-[10px]">
                 <span className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
                   <span className="text-muted-foreground font-medium">{t("bonds.nbp_rate_short")}:</span>
                 </span>
-                <span className="font-black text-blue-600">{Number(nbp).toFixed(2)}%</span>
+                <span className="font-semibold text-primary">{Number(nbp).toFixed(2)}%</span>
               </div>
             )}
           </div>
@@ -132,8 +125,8 @@ const DrawdownTooltip = ({
   if (!active || !payload || !payload.length) return null;
 
   return (
-    <div className="bg-popover border border-border p-3 shadow-xl rounded-xl text-popover-foreground min-w-[180px]">
-      <p className="font-bold mb-2 border-b pb-1 border-border/50 text-xs tracking-widest uppercase">
+    <div className="min-w-[180px] rounded-lg border border-border bg-popover p-3 text-popover-foreground shadow-lg">
+      <p className="ui-metadata mb-2 border-b border-border/50 pb-1 font-semibold">
         {label}
       </p>
       <div className="space-y-1.5">
@@ -169,17 +162,17 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
 
   return (
     <Tabs defaultValue="growth" className="w-full flex flex-col gap-6">
-      <TabsList className="grid w-full grid-cols-2 max-w-md h-12 p-1 bg-muted/50 rounded-xl">
+      <TabsList className="grid h-12 w-full max-w-md grid-cols-2 rounded-lg bg-muted/50 p-1">
         <TabsTrigger
           value="growth"
-          className="gap-2 rounded-lg data-[state=active]:shadow-md"
+          className="gap-2 rounded-lg"
         >
           <TrendingUp className="h-4 w-4" />
           {t('comparison.capital_growth')}
         </TabsTrigger>
         <TabsTrigger
           value="risk"
-          className="gap-2 rounded-lg data-[state=active]:shadow-md"
+          className="gap-2 rounded-lg"
         >
           <Activity className="h-4 w-4" />
           {t('comparison.risk_drawdown')}
@@ -187,18 +180,15 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
       </TabsList>
 
       <TabsContent value="growth" className="mt-0">
-        <Card className="rounded-2xl border shadow-none">
-          <CardHeader className="border-b px-6 py-5">
-            <div>
-              <CardTitle className="text-xl font-semibold">
+        <section className="space-y-6 border-t border-border py-6">
+            <div className="space-y-1">
+              <h2 className="ui-section-title">
                 {showRealValue ? t('comparison.real_value_projection') : t('comparison.nominal_growth')}
-              </CardTitle>
-              <CardDescription className="mt-1 text-sm leading-6">
+              </h2>
+              <p className="ui-body text-muted-foreground">
                 {t('comparison.performance_with_contributions')}
-              </CardDescription>
+              </p>
             </div>
-          </CardHeader>
-          <CardContent className="p-6">
             <ChartContainer height={420}>
               <ResponsiveContainer width="100%" height={420}>
                 <ComposedChart
@@ -313,28 +303,24 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
                 </ComposedChart>
               </ResponsiveContainer>
             </ChartContainer>
-          </CardContent>
-        </Card>
+        </section>
       </TabsContent>
 
       <TabsContent value="risk" className="mt-0">
-        <Card className="rounded-2xl border shadow-none">
-          <CardHeader className="border-b px-6 py-5">
+        <section className="space-y-6 border-t border-border py-6">
             <div className="flex items-center gap-3">
-              <div className="rounded-lg border bg-muted/30 p-2">
-                <Activity className="h-5 w-5 text-red-600" />
+              <div className="rounded-lg bg-muted/30 p-2">
+                <Activity className="h-5 w-5 text-destructive" />
               </div>
               <div>
-                <CardTitle className="text-xl font-semibold">
+                <h2 className="ui-section-title">
                   {t('comparison.historical_drawdown')}
-                </CardTitle>
-                <CardDescription className="mt-1 text-sm leading-6">
+                </h2>
+                <p className="ui-body text-muted-foreground">
                   {t('comparison.historical_drawdown_desc')}
-                </CardDescription>
+                </p>
               </div>
             </div>
-          </CardHeader>
-          <CardContent className="p-6">
             <ChartContainer height={420}>
               <ResponsiveContainer width="100%" height={420}>
                 <LineChart
@@ -388,8 +374,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
                 </LineChart>
               </ResponsiveContainer>
             </ChartContainer>
-          </CardContent>
-        </Card>
+        </section>
       </TabsContent>
     </Tabs>
   );

@@ -2,7 +2,6 @@
 import React from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@/components/ui/select';
@@ -18,17 +17,17 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({ initialS
         { label: t('comparison.preset_recovery_2023'), year: '2023', month: '01' },
     ];
     return (<div className="space-y-6">
-      <Card className="rounded-2xl border-2 shadow-none">
-        <CardHeader className="space-y-2">
-          <CardTitle className="flex items-center gap-2 text-lg font-black text-primary">
+      <section className="space-y-6">
+        <div className="space-y-2 border-b border-border pb-4">
+          <h2 className="flex items-center gap-2 ui-section-title">
             <Settings2 className="h-5 w-5"/>
             {t('comparison.configuration')}
-          </CardTitle>
-          <p className="text-sm leading-6 text-muted-foreground">
+          </h2>
+          <p className="ui-body text-muted-foreground">
             {t('comparison.controls.description')}
           </p>
-        </CardHeader>
-        <CardContent className="space-y-6">
+        </div>
+        <div className="space-y-6">
           <div className="space-y-4">
             <div className="flex items-center justify-between gap-4">
               <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -55,9 +54,9 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({ initialS
 
           <Accordion type="single" collapsible defaultValue="">
             <AccordionItem value="advanced" className="border-none">
-              <AccordionTrigger className="rounded-2xl border bg-slate-50 px-4 py-4 hover:no-underline">
+              <AccordionTrigger className="rounded-lg bg-muted/35 px-4 py-4 hover:no-underline">
                 <div className="space-y-1 text-left">
-                  <p className="text-sm font-bold text-slate-950">
+                  <p className="text-sm font-semibold text-foreground">
                     {t('comparison.controls.advanced_title')}
                   </p>
                   <p className="text-xs leading-5 text-muted-foreground">
@@ -116,7 +115,7 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({ initialS
                     </Button>))}
                 </div>
 
-                <div className="flex items-center justify-between rounded-2xl border bg-muted/20 p-4">
+                <div className="flex items-center justify-between rounded-lg bg-muted/35 p-4">
                   <div className="space-y-1">
                     <Label className="text-sm font-semibold text-foreground">
                       {t('bonds.inflation.adjusted')}
@@ -130,38 +129,34 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({ initialS
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      <Card className="rounded-2xl border border-orange-200 bg-orange-50 shadow-none">
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-sm font-semibold text-orange-900">
+      <section className="space-y-3 border-t border-border py-5">
+          <h3 className="flex items-center gap-2 ui-card-title">
             <ShoppingCart className="h-4 w-4"/>
             {t('comparison.purchasing_power_loss')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 text-sm leading-6 text-orange-950">
-          <p className="text-2xl font-semibold">
+          </h3>
+        <div className="space-y-3 text-sm leading-6 text-muted-foreground">
+          <p className="ui-large-metric text-warning">
             -{purchasingPowerLoss.toFixed(1)}%
           </p>
-          <p className="text-sm text-orange-900/80">
+          <p className="ui-body">
             {t('comparison.inflation_loss_context', {
             percent: purchasingPowerLoss.toFixed(1),
         })}
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      <Card className="rounded-2xl border shadow-none">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold">
+      <section className="space-y-2 border-t border-border py-5">
+          <h3 className="ui-card-title">
             {t('comparison.savings_context_title')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="text-sm leading-6 text-muted-foreground">
+          </h3>
+        <div className="ui-body text-muted-foreground">
           <p>{t('comparison.savings_context_desc')}</p>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>);
 };
 
