@@ -2,7 +2,6 @@
 import React, { useMemo } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, } from 'recharts';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { RegularInvestmentResult } from '../../bond-core/types';
 import { useAppI18n } from '@/i18n/client';
@@ -37,32 +36,52 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
     const latestMonth = chartData[chartData.length - 1] ?? null;
     const peakShare = peakMonth && results.lots.length > 0 ? (peakMonth.count / results.lots.length) * 100 : 0;
     return (<div className="space-y-6">
-      <ResultSummaryHero eyebrow={t('ladder_page.timeline.eyebrow')} value={peakMonth
+      <ResultSummaryHero
+        eyebrow={t('ladder_page.timeline.eyebrow')}
+        value={peakMonth
             ? peakMonth.displayDate
-            : t('ladder_page.timeline.no_peak_month')} description={t('ladder_page.timeline.description')} narrative={t('ladder_page.timeline.narrative')} aside={<div className="rounded-lg border border-border px-4 py-3 text-sm text-foreground">
+            : t('ladder_page.timeline.no_peak_month')}
+        description={t('ladder_page.timeline.description')}
+        narrative={t('ladder_page.timeline.narrative')}
+        aside={<div className="border-t border-border py-3 text-sm text-foreground">
             <p className="text-xs font-semibold text-muted-foreground">
               {t('ladder_page.timeline.month_count')}
             </p>
             <p className="mt-2 text-lg font-semibold text-foreground">{chartData.length}</p>
-          </div>}/>
+          </div>}
+      />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <ResultMetricCard label={t('ladder_page.timeline.average_maturity_value')} value={formatCurrency(averageMaturityValue)} description={t('ladder_page.timeline.average_maturity_value_description')}/>
-        <ResultMetricCard label={t('ladder_page.timeline.spread_gap')} value={formatCurrency(monthlySpreadGap)} description={t('ladder_page.timeline.spread_gap_description')}/>
-        <ResultMetricCard label={t('ladder_page.timeline.active_window')} value={`${earliestMonth ? earliestMonth.displayDate : '-'} ${latestMonth ? `- ${latestMonth.displayDate}` : ''}`} description={t('ladder_page.timeline.active_window_description')}/>
+        <ResultMetricCard
+          label={t('ladder_page.timeline.average_maturity_value')}
+          value={formatCurrency(averageMaturityValue)}
+          description={t('ladder_page.timeline.average_maturity_value_description')}
+        />
+        <ResultMetricCard
+          label={t('ladder_page.timeline.spread_gap')}
+          value={formatCurrency(monthlySpreadGap)}
+          description={t('ladder_page.timeline.spread_gap_description')}
+        />
+        <ResultMetricCard
+          label={t('ladder_page.timeline.active_window')}
+          value={`${earliestMonth ? earliestMonth.displayDate : '-'} ${latestMonth ? `- ${latestMonth.displayDate}` : ''}`}
+          description={t('ladder_page.timeline.active_window_description')}
+        />
       </div>
 
-      <Card className="border-border shadow-none">
-        <CardHeader className="pb-4">
-          <CardTitle className="ui-card-title">
+      <section className="space-y-6 border-t border-border py-6">
+        <div className="space-y-2">
+          <h2 className="ui-card-title">
             {t('ladder_page.timeline.chart_title')}
-          </CardTitle>
-          <CardDescription>
+          </h2>
+          <p className="ui-body text-muted-foreground">
             {t('ladder_page.timeline.chart_description')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <ChartSupportNote title={t('ladder_page.timeline.chart_note_title')} description={t('ladder_page.timeline.chart_note_description')}/>
+          </p>
+        </div>
+          <ChartSupportNote
+            title={t('ladder_page.timeline.chart_note_title')}
+            description={t('ladder_page.timeline.chart_note_description')}
+          />
 
           <ChartContainer responsiveHeightClassName="h-[320px] md:h-[360px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -79,8 +98,13 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
             </ResponsiveContainer>
           </ChartContainer>
 
-          <ResponsiveTableSheet title={t('ladder_page.timeline.mobile_sheet_title')} description={t('ladder_page.timeline.mobile_sheet_description')} triggerLabel={t('ladder_page.timeline.mobile_sheet_trigger')} triggerCount={`${chartData.length} ${t('ladder_page.timeline.mobile_sheet_count_suffix')}`}>
-            {chartData.map((item) => (<div key={`mobile-${item.date}`} className="rounded-lg border border-border bg-card p-4">
+          <ResponsiveTableSheet
+            title={t('ladder_page.timeline.mobile_sheet_title')}
+            description={t('ladder_page.timeline.mobile_sheet_description')}
+            triggerLabel={t('ladder_page.timeline.mobile_sheet_trigger')}
+            triggerCount={`${chartData.length} ${t('ladder_page.timeline.mobile_sheet_count_suffix')}`}
+          >
+            {chartData.map((item) => (<div key={`mobile-${item.date}`} className="border-t border-border py-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-sm font-semibold text-foreground">{item.displayDate}</p>
@@ -91,14 +115,20 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
                   <p className="text-sm font-semibold text-foreground">{formatCurrency(item.amount)}</p>
                 </div>
                 <div className="mt-4 grid grid-cols-2 gap-3">
-                  <MobileLadderValue label={t('ladder_page.timeline.mobile_share_of_lots')} value={chartData.length > 0 ? `${((item.count / results.lots.length) * 100).toFixed(1)}%` : '-'}/>
-                  <MobileLadderValue label={t('ladder_page.timeline.mobile_amount')} value={formatCurrency(item.amount)}/>
+                  <MobileLadderValue
+                    label={t('ladder_page.timeline.mobile_share_of_lots')}
+                    value={chartData.length > 0 ? `${((item.count / results.lots.length) * 100).toFixed(1)}%` : '-'}
+                  />
+                  <MobileLadderValue
+                    label={t('ladder_page.timeline.mobile_amount')}
+                    value={formatCurrency(item.amount)}
+                  />
                 </div>
               </div>))}
           </ResponsiveTableSheet>
 
-          <div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3 text-sm text-muted-foreground">
+          <div className="hidden overflow-hidden border-y border-border lg:block">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border py-3 text-sm text-muted-foreground">
               <p>
                 {t('ladder_page.timeline.table_summary')}
               </p>
@@ -131,7 +161,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
           </div>
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <div className="rounded-lg border border-border px-4 py-4 text-sm leading-6 text-muted-foreground">
+            <div className="border-t border-border py-4 text-sm leading-6 text-muted-foreground">
               <p className="text-xs font-semibold text-muted-foreground">
                 {t('ladder_page.timeline.peak_month_title')}
               </p>
@@ -144,8 +174,8 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
             </div>
 
             <div className={peakShare >= 25
-            ? 'rounded-lg border border-[var(--finance-warning)]/40 bg-card p-4 text-sm leading-6 text-foreground'
-            : 'rounded-lg border border-[var(--finance-success)]/35 bg-card p-4 text-sm leading-6 text-foreground'}>
+            ? 'border-t border-warning py-4 text-sm leading-6 text-foreground'
+            : 'border-t border-success py-4 text-sm leading-6 text-foreground'}>
               <p className={peakShare >= 25
             ? 'text-xs font-semibold text-[var(--finance-warning)]'
             : 'text-xs font-semibold text-[var(--finance-success)]'}>
@@ -163,7 +193,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
             </div>
           </div>
 
-          <div className="rounded-lg border border-border px-4 py-4 text-sm leading-6 text-muted-foreground">
+          <div className="border-t border-border py-4 text-sm leading-6 text-muted-foreground">
             <p className="text-xs font-semibold text-muted-foreground">
               {t('ladder_page.timeline.interpretation_title')}
             </p>
@@ -171,8 +201,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
               {t('ladder_page.timeline.interpretation_description')}
             </p>
           </div>
-        </CardContent>
-      </Card>
+      </section>
     </div>);
 };
 function MobileLadderValue({ label, value, }: {

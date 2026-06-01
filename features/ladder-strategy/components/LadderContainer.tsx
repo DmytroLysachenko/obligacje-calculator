@@ -1,7 +1,6 @@
 'use client';
 import React from 'react';
 import { ListTree, TrendingUp } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
@@ -16,8 +15,7 @@ import { useLadder } from '../hooks/useLadder';
 import { LadderTimeline } from './LadderTimeline';
 const LadderEmptyState = () => {
     const { t } = useAppI18n();
-    return (<Card className="border-border bg-card shadow-none">
-      <CardContent className="space-y-5 p-5 md:p-6">
+    return (<section className="space-y-5 border-t border-border py-6">
         <div className="space-y-3">
           <div className="surface-chip">
             <TrendingUp className="h-3.5 w-3.5 text-primary"/>
@@ -32,43 +30,36 @@ const LadderEmptyState = () => {
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
-          <Card className="border-border bg-muted/35 shadow-none">
-            <CardContent className="space-y-2 p-5">
-              <p className="text-xs font-semibold text-muted-foreground">
+          <div className="border-t border-border py-5">
+              <p className="ui-card-title">
                 {t('ladder_page.empty_cards.plan_title')}
               </p>
-              <p className="text-sm leading-6 text-muted-foreground">
+              <p className="ui-body mt-2 text-muted-foreground">
                 {t('ladder_page.empty_cards.plan_description')}
               </p>
-            </CardContent>
-          </Card>
-          <Card className="border-border bg-muted/35 shadow-none">
-            <CardContent className="space-y-2 p-5">
-              <p className="text-xs font-semibold text-muted-foreground">
+          </div>
+          <div className="border-t border-border py-5">
+              <p className="ui-card-title">
                 {t('ladder_page.empty_cards.committed_title')}
               </p>
-              <p className="text-sm leading-6 text-muted-foreground">
+              <p className="ui-body mt-2 text-muted-foreground">
                 {t('ladder_page.empty_cards.committed_description')}
               </p>
-            </CardContent>
-          </Card>
-          <Card className="border-border bg-muted/35 shadow-none">
-            <CardContent className="space-y-2 p-5">
-              <p className="text-xs font-semibold text-muted-foreground">
+          </div>
+          <div className="border-t border-border py-5">
+              <p className="ui-card-title">
                 {t('ladder_page.empty_cards.timing_title')}
               </p>
-              <p className="text-sm leading-6 text-muted-foreground">
+              <p className="ui-body mt-2 text-muted-foreground">
                 {t('ladder_page.empty_cards.timing_description')}
               </p>
-            </CardContent>
-          </Card>
+          </div>
         </div>
 
         <p className="text-sm leading-6 text-muted-foreground">
           {t('ladder_page.empty_state_footer')}
         </p>
-      </CardContent>
-    </Card>);
+    </section>);
 };
 const LadderLoadingState = () => (<div className="space-y-4">
     <Skeleton className="h-28 w-full rounded-lg"/>
@@ -91,37 +82,74 @@ export const LadderContainer: React.FC = () => {
       <div className="space-y-6">
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-[420px_minmax(0,1fr)] xl:items-start">
           <aside className="xl:sticky xl:top-28 xl:h-fit">
-            <RegularInvestmentInputsForm inputs={inputs} onUpdate={updateInput as (key: string, value: unknown) => void} onBondTypeChange={setBondType}/>
+            <RegularInvestmentInputsForm
+              inputs={inputs}
+              onUpdate={updateInput as (key: string, value: unknown) => void}
+              onBondTypeChange={setBondType}
+            />
           </aside>
 
           <section className="space-y-6">
             {!results && !isCalculating ? <LadderEmptyState /> : null}
             {isCalculating && !results ? <LadderLoadingState /> : null}
 
-            {results ? (<div className={cn('space-y-6 transition-opacity duration-200', isCalculating && 'pointer-events-none opacity-50')}>
-                {isDirty ? (<div className="rounded-lg border border-[var(--finance-warning)]/40 bg-card px-4 py-3 text-sm text-foreground">
+            {results ? (
+              <div
+                className={cn(
+                  'space-y-6 transition-opacity duration-200',
+                  isCalculating && 'pointer-events-none opacity-50',
+                )}
+              >
+                {isDirty ? (<div className="ui-inline-notice border-l-2 border-warning text-warning">
                     {t('ladder_page.stale_results')}
                   </div>) : null}
 
-                <RegularInvestmentResultsSummary results={results}/>
-              </div>) : null}
+                <RegularInvestmentResultsSummary results={results} />
+              </div>
+            ) : null}
           </section>
         </div>
 
-        {results ? (<div className={cn('space-y-8 transition-opacity duration-200', isCalculating && 'pointer-events-none opacity-50')}>
-            <SecondaryInsightAccordion title={t('ladder_page.how_to_read_title')} description={t('ladder_page.how_to_read_description')} badge={t('ladder_page.how_to_read_badge')}>
-              <ReadingChecklist items={readingGuide}/>
+        {results ? (
+          <div
+            className={cn(
+              'space-y-8 transition-opacity duration-200',
+              isCalculating && 'pointer-events-none opacity-50',
+            )}
+          >
+            <SecondaryInsightAccordion
+              title={t('ladder_page.how_to_read_title')}
+              description={t('ladder_page.how_to_read_description')}
+              badge={t('ladder_page.how_to_read_badge')}
+            >
+              <ReadingChecklist items={readingGuide} />
             </SecondaryInsightAccordion>
 
-            <LadderTimeline results={results}/>
+            <LadderTimeline results={results} />
 
-            <SecondaryInsightAccordion title={t('bonds.simulation.calculation_context')} description={t('ladder_page.calculation_context_description')} badge={t('ladder_page.calculation_context_badge')}>
-              <CalculationMetaPanel warnings={envelope?.warnings} assumptions={envelope?.assumptions} calculationNotes={envelope?.calculationNotes} dataQualityFlags={envelope?.dataQualityFlags} dataFreshness={envelope?.dataFreshness}/>
+            <SecondaryInsightAccordion
+              title={t('bonds.simulation.calculation_context')}
+              description={t('ladder_page.calculation_context_description')}
+              badge={t('ladder_page.calculation_context_badge')}
+            >
+              <CalculationMetaPanel
+                warnings={envelope?.warnings}
+                assumptions={envelope?.assumptions}
+                calculationNotes={envelope?.calculationNotes}
+                dataQualityFlags={envelope?.dataQualityFlags}
+                dataFreshness={envelope?.dataFreshness}
+              />
             </SecondaryInsightAccordion>
-          </div>) : null}
+          </div>
+        ) : null}
       </div>
 
-      <RecalculateButton isDirty={isDirty} hasResults={!!results} loading={isCalculating} onClick={() => calculate()}/>
+      <RecalculateButton
+        isDirty={isDirty}
+        hasResults={!!results}
+        loading={isCalculating}
+        onClick={() => calculate()}
+      />
     </CalculatorPageShell>);
 };
 
