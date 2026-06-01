@@ -23,10 +23,10 @@ export function AssumptionSemanticsNote({
   const shouldShowNbpNote = showNbpNote && isFloatingNbpBondType(bondType);
 
   return (
-    <div className="space-y-3 border-t border-dashed border-slate-200 pt-3">
+    <div className="space-y-3 border-t border-dashed border-border pt-3">
       <div className="flex items-center gap-2">
         <Sparkles className="h-4 w-4 text-primary" />
-        <p className="text-xs font-semibold uppercase tracking-[0.08em] text-slate-950">
+        <p className="ui-metadata font-semibold text-foreground">
           {t('bonds.market_assumptions.effect_title')}
         </p>
       </div>

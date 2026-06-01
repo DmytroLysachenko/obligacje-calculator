@@ -74,11 +74,11 @@ function HistoryPopoverContent({
         <span className="text-sm font-semibold tracking-[0.08em]">{title}</span>
       </div>
       <div className="space-y-2">
-        <div className="flex items-center justify-between rounded-lg border border-primary/10 bg-primary/5 p-2">
-          <span className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">
+        <div className="flex items-center justify-between rounded-lg bg-muted/35 p-2">
+          <span className="ui-metadata text-muted-foreground">
             {latestLabel}
           </span>
-          <span className="text-sm font-black text-primary">
+          <span className="text-sm font-semibold text-primary">
             {latest.rate}% ({latest.date})
           </span>
         </div>

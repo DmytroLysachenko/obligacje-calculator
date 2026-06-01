@@ -41,7 +41,7 @@ function ProjectionModeButtons({
   onAdvanced: () => void;
 }) {
   return (
-    <div className="inline-flex rounded-lg border border-slate-200 bg-white p-1 shadow-sm">
+    <div className="inline-flex rounded-lg bg-muted/35 p-1">
       <Button
         type="button"
         variant={advancedActive ? 'ghost' : 'default'}
@@ -64,19 +64,31 @@ function ProjectionModeButtons({
   );
 }
 
-export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bondType, customInflation, customNbpRate, onUpdate, compact = false, inflationHorizonYears = 10, }: MarketAssumptionsFormProps) => {
+export const MarketAssumptionsForm = ({
+  expectedInflation,
+  expectedNbpRate,
+  bondType,
+  customInflation,
+  customNbpRate,
+  onUpdate,
+  compact = false,
+  inflationHorizonYears = 10,
+}: MarketAssumptionsFormProps) => {
     const { t } = useAppI18n();
     const isInflationIndexedBond = isInflationIndexedBondType(bondType);
     const isNbpRelevant = isFloatingNbpBondType(bondType);
     return (<div className="space-y-6">
       <div className="space-y-3">
-        <p className={cn('font-semibold tracking-[0.08em] text-slate-900', compact ? 'text-xs uppercase' : 'text-sm')}>
+        <p className={cn('font-semibold tracking-[0.08em] text-foreground', compact ? 'text-xs uppercase' : 'text-sm')}>
           {t('bonds.market_assumptions.simple_title')}
         </p>
         <p className="text-[11px] leading-5 text-muted-foreground">
           {t('bonds.market_assumptions.advanced_desc')}
         </p>
-        <MacroDefaultsSummary showNbp={isNbpRelevant} compact={compact} />
+        <MacroDefaultsSummary
+          showNbp={isNbpRelevant}
+          compact={compact}
+        />
       </div>
 
       <div className="space-y-4">
@@ -84,7 +96,13 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Label htmlFor="expectedInflation" className={cn('font-semibold tracking-[0.08em] text-primary', compact ? 'text-xs' : 'text-sm')}>
+            <Label
+              htmlFor="expectedInflation"
+              className={cn(
+                'font-semibold tracking-[0.08em] text-primary',
+                compact ? 'text-xs' : 'text-sm',
+              )}
+            >
               {t('bonds.inflation.rate')} (%)
             </Label>
             <AssumptionHistoryPopover
@@ -94,25 +112,46 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
               footerNote={t('bonds.nbp_target_hint', { target: '2.5%' })}
             />
           </div>
-          <div className={cn('flex items-center gap-2 rounded-lg border bg-background px-3 py-1.5 font-black text-primary shadow-sm', compact ? 'text-xl' : 'text-[2rem]')}>
+          <div className={cn('flex items-center gap-2 rounded-lg bg-muted/35 px-3 py-1.5 font-semibold text-primary', compact ? 'text-xl' : 'text-[32px]')}>
             {expectedInflation}%
-            {expectedInflation <= 0 && <AlertTriangle className="h-4 w-4 text-orange-500"/>}
-            {Math.abs(expectedInflation - 2.5) <= 1 && <Target className="h-4 w-4 text-green-500"/>}
+            {expectedInflation <= 0 && <AlertTriangle className="h-4 w-4 text-warning"/>}
+            {Math.abs(expectedInflation - 2.5) <= 1 && <Target className="h-4 w-4 text-success"/>}
           </div>
         </div>
 
         <div className="grid grid-cols-3 gap-2">
-          {[2.5, 6, -1].map((value) => (<Button key={value} variant="outline" size="sm" className={cn('h-9 text-[11px] font-semibold tracking-[0.08em]', expectedInflation === value && !customInflation && 'border-primary bg-primary text-primary-foreground')} onClick={() => {
+          {[2.5, 6, -1].map((value) => (
+            <Button
+              key={value}
+              variant="outline"
+              size="sm"
+              className={cn(
+                'h-9 text-[11px] font-semibold tracking-[0.08em]',
+                expectedInflation === value &&
+                  !customInflation &&
+                  'border-primary bg-primary text-primary-foreground',
+              )}
+              onClick={() => {
               onUpdate('customInflation', undefined);
               onUpdate('expectedInflation', value);
-            }}>
+            }}
+            >
               {value === 2.5 ? t('bonds.stable') : value === 6 ? t('bonds.high') : t('bonds.deflation')} ({value}%)
-            </Button>))}
+            </Button>
+          ))}
         </div>
 
-        <CommittedSliderInput value={Number.isFinite(expectedInflation) ? expectedInflation : 0} disabled={!!customInflation} min={-2} max={15} step={0.1} unit="%" onCommit={(value) => onUpdate('expectedInflation', value)}/>
+        <CommittedSliderInput
+          value={Number.isFinite(expectedInflation) ? expectedInflation : 0}
+          disabled={!!customInflation}
+          min={-2}
+          max={15}
+          step={0.1}
+          unit="%"
+          onCommit={(value) => onUpdate('expectedInflation', value)}
+        />
 
-        {isInflationIndexedBond ? null : (<div className="rounded-lg border border-slate-200 bg-slate-50/80 p-3 text-[11px] leading-5 text-slate-600">
+        {isInflationIndexedBond ? null : (<div className="ui-inline-notice text-muted-foreground">
             {t('bonds.market_assumptions.non_indexed_note')}
           </div>)}
 
@@ -120,7 +159,7 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
           <div className="space-y-3 border-t border-dashed pt-4">
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div className="space-y-1">
-                <p className="text-sm font-semibold text-slate-950">
+                <p className="ui-card-title">
                   {t('bonds.market_assumptions.inflation_path_title')}
                 </p>
                 <p className="text-xs leading-5 text-muted-foreground">
@@ -159,7 +198,13 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
       {isNbpRelevant ? (<div className="space-y-4 border-t border-dashed pt-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Label htmlFor="expectedNbpRate" className={cn('font-semibold tracking-[0.08em] text-muted-foreground', compact ? 'text-xs' : 'text-sm')}>
+              <Label
+                htmlFor="expectedNbpRate"
+                className={cn(
+                  'font-semibold tracking-[0.08em] text-muted-foreground',
+                  compact ? 'text-xs' : 'text-sm',
+                )}
+              >
                 {t('bonds.nbp_rate_label')}
               </Label>
               <AssumptionHistoryPopover
@@ -173,14 +218,23 @@ export const MarketAssumptionsForm = ({ expectedInflation, expectedNbpRate, bond
               {expectedNbpRate ?? 5.25}%
             </span>
           </div>
-          <CommittedSliderInput value={Number.isFinite(expectedNbpRate ?? 5.25) ? (expectedNbpRate ?? 5.25) : 5.25} min={0} max={15} step={0.05} unit="%" onCommit={(value) => onUpdate('expectedNbpRate', value)}/>
+          <CommittedSliderInput
+            value={Number.isFinite(expectedNbpRate ?? 5.25)
+              ? (expectedNbpRate ?? 5.25)
+              : 5.25}
+            min={0}
+            max={15}
+            step={0.05}
+            unit="%"
+            onCommit={(value) => onUpdate('expectedNbpRate', value)}
+          />
           <p className="text-[11px] leading-5 text-muted-foreground">
             {t('bonds.market_assumptions.nbp_note')}
           </p>
           <div className="space-y-3 border-t border-dashed pt-4">
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div className="space-y-1">
-                <p className="text-sm font-semibold text-slate-950">
+                <p className="ui-card-title">
                   {t('bonds.market_assumptions.nbp_path_title')}
                 </p>
                 <p className="text-xs leading-5 text-muted-foreground">

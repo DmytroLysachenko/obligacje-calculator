@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
   LineChart, 
@@ -84,21 +83,21 @@ export const MacroAdjuster: React.FC<MacroAdjusterProps> = ({
   };
 
   return (
-    <Card className="border-2 rounded-3xl overflow-hidden shadow-xl">
-      <CardHeader className="bg-muted/30 border-b border-dashed flex flex-row items-center justify-between py-4">
+    <section className="space-y-6 border-t border-border py-6">
+      <div className="flex flex-row items-center justify-between gap-4 border-b border-dashed border-border pb-4">
         <div>
-          <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+          <h3 className="flex items-center gap-2 ui-card-title">
             <TrendingUp className="h-4 w-4 text-primary" />
             {t('bonds.macro_painter.title')}
-          </CardTitle>
-          <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('bonds.macro_painter.subtitle')}</p>
+          </h3>
+          <p className="ui-metadata text-muted-foreground">{t('bonds.macro_painter.subtitle')}</p>
         </div>
         <div className="flex gap-2">
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={handleReset}
-            className="h-8 rounded-xl text-[10px] font-black uppercase gap-1"
+            className="h-8 gap-1 rounded-lg text-xs font-semibold"
           >
             <RotateCcw className="h-3 w-3" />
             {t('bonds.macro_painter.reset')}
@@ -108,18 +107,18 @@ export const MacroAdjuster: React.FC<MacroAdjusterProps> = ({
  
             size="sm" 
             onClick={() => isEditing ? handleSave() : setIsEditing(true)}
-            className="h-8 rounded-xl text-[10px] font-black uppercase gap-1"
+            className="h-8 gap-1 rounded-lg text-xs font-semibold"
           >
             {isEditing ? <Save className="h-3 w-3" /> : <Edit3 className="h-3 w-3" />}
             {isEditing ? t('bonds.macro_painter.apply_path') : t('bonds.macro_painter.edit_path')}
           </Button>
         </div>
-      </CardHeader>
-      <CardContent className="p-6">
+      </div>
+      <div>
         <div className="h-[250px] w-full relative">
           {!isEditing && (
-            <div className="absolute inset-0 z-10 bg-white/5 backdrop-blur-[1px] flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-               <Button variant="secondary" size="sm" onClick={() => setIsEditing(true)} className="rounded-full font-black uppercase text-[10px]">{t('bonds.macro_painter.click_to_edit')}</Button>
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/40 opacity-0 transition-opacity hover:opacity-100">
+               <Button variant="secondary" size="sm" onClick={() => setIsEditing(true)} className="rounded-lg text-xs font-semibold">{t('bonds.macro_painter.click_to_edit')}</Button>
             </div>
           )}
           <ResponsiveContainer width="100%" height="100%">
@@ -128,13 +127,13 @@ export const MacroAdjuster: React.FC<MacroAdjusterProps> = ({
               <XAxis dataKey="year" hide />
               <YAxis tick={{fontSize: 10}} domain={['auto', 'auto']} />
               <Tooltip 
-                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                contentStyle={{ borderRadius: '8px', border: '1px solid hsl(var(--border))', boxShadow: 'none' }}
                 labelFormatter={(year) => t('bonds.tax_leak.year', { year })}
               />
               <Line 
                 type="monotone" 
                 dataKey="inflation" 
-                stroke="#ef4444" 
+                stroke="hsl(var(--destructive))"
                 strokeWidth={isEditing ? 4 : 2} 
                 dot={isEditing}
                 isAnimationActive={false}
@@ -142,7 +141,7 @@ export const MacroAdjuster: React.FC<MacroAdjusterProps> = ({
               <Line 
                 type="monotone" 
                 dataKey="nbpRate" 
-                stroke="#3b82f6" 
+                stroke="hsl(var(--primary))"
                 strokeWidth={isEditing ? 4 : 2} 
                 dot={isEditing}
                 isAnimationActive={false}
@@ -154,19 +153,19 @@ export const MacroAdjuster: React.FC<MacroAdjusterProps> = ({
           <div className="mt-4 grid grid-cols-5 gap-2">
              {data.filter((_, i) => i % Math.max(1, Math.floor(horizonYears/5)) === 0).map((point) => (
                <div key={point.year} className="space-y-1">
-                 <p className="text-[9px] font-black text-center uppercase">Y{point.year}</p>
+                 <p className="text-center ui-metadata">Y{point.year}</p>
                  <input 
                    type="number" 
                    value={point.inflation}
                    onChange={(e) => handlePointMove(point.year, 'inflation', Number(e.target.value))}
-                   className="w-full text-[10px] font-bold p-1 rounded border text-red-600 bg-red-50"
+                   className="w-full rounded border border-border bg-background p-1 text-[10px] font-semibold text-destructive"
                    step="0.1"
                  />
                  <input 
                    type="number" 
                    value={point.nbpRate}
                    onChange={(e) => handlePointMove(point.year, 'nbpRate', Number(e.target.value))}
-                   className="w-full text-[10px] font-bold p-1 rounded border text-blue-600 bg-blue-50"
+                   className="w-full rounded border border-border bg-background p-1 text-[10px] font-semibold text-primary"
                    step="0.1"
                  />
                </div>
@@ -175,16 +174,16 @@ export const MacroAdjuster: React.FC<MacroAdjusterProps> = ({
         )}
         <div className="mt-4 flex justify-center gap-6">
            <div className="flex items-center gap-2">
-             <div className="w-3 h-3 bg-red-500 rounded-full" />
-             <span className="text-[10px] font-bold uppercase text-muted-foreground">{t('bonds.macro_painter.inflation_path')}</span>
+             <div className="h-3 w-3 rounded-full bg-destructive" />
+             <span className="ui-metadata text-muted-foreground">{t('bonds.macro_painter.inflation_path')}</span>
            </div>
            <div className="flex items-center gap-2">
-             <div className="w-3 h-3 bg-blue-500 rounded-full" />
-             <span className="text-[10px] font-bold uppercase text-muted-foreground">{t('bonds.macro_painter.nbp_path')}</span>
+             <div className="h-3 w-3 rounded-full bg-primary" />
+             <span className="ui-metadata text-muted-foreground">{t('bonds.macro_painter.nbp_path')}</span>
            </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 };
 
