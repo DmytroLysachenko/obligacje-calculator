@@ -34,16 +34,26 @@ const singleCalculatorRefinedFiles = [
 ] as const;
 
 const comparisonRefinedFiles = [
+  'features/comparison-engine/components/BondComparisonContainer.tsx',
+  'features/comparison-engine/components/ComparisonAssetBreakdown.tsx',
+  'features/comparison-engine/components/ComparisonChart.tsx',
   'features/comparison-engine/components/ComparisonContainer.tsx',
+  'features/comparison-engine/components/ComparisonControls.tsx',
+  'features/comparison-engine/components/ComparisonResultsPanel.tsx',
+  'features/comparison-engine/components/ComparisonSharedBaseCard.tsx',
   'features/comparison-engine/components/ComparisonTable.tsx',
   'features/comparison-engine/components/ComparisonVerdict.tsx',
   'features/comparison-engine/components/MultiAssetComparisonContainer.tsx',
   'features/comparison-engine/components/ScenarioOverrideCard.tsx',
+  'features/comparison-engine/components/bond-comparison/ComparisonConfigurationPanel.tsx',
+  'features/comparison-engine/components/bond-comparison/ComparisonResultsDashboard.tsx',
 ] as const;
 
 const recurringAndRetirementRefinedFiles = [
   'features/regular-investment/components/RegularInvestmentCalculatorContainer.tsx',
   'features/regular-investment/components/RegularInvestmentChart.tsx',
+  'features/regular-investment/components/RegularInvestmentInputsForm.tsx',
+  'features/regular-investment/components/RegularInvestmentResultsSummary.tsx',
   'features/regular-investment/components/inputs/AdvancedSettingsSection.tsx',
   'features/regular-investment/components/inputs/BondSelectionSection.tsx',
   'features/regular-investment/components/inputs/SectionHeading.tsx',
@@ -51,6 +61,39 @@ const recurringAndRetirementRefinedFiles = [
   'features/retirement/components/RetirementPlannerContainer.tsx',
   'features/retirement/components/RetirementResultsOverview.tsx',
   'features/retirement/components/RetirementSupportList.tsx',
+] as const;
+
+const ladderRefinedFiles = [
+  'features/ladder-strategy/components/LadderContainer.tsx',
+  'features/ladder-strategy/components/LadderTimeline.tsx',
+] as const;
+
+const notebookRefinedFiles = [
+  'features/notebook/components/NotebookContainer.tsx',
+  'features/notebook/components/PortfolioWorkspaceCard.tsx',
+  'features/notebook/components/WorkspaceStatusCard.tsx',
+  'features/notebook/components/portfolio-details/PortfolioAnalyticsTab.tsx',
+  'features/notebook/components/portfolio-details/PortfolioLotsTab.tsx',
+  'features/notebook/components/portfolio-details/PortfolioOverviewHeader.tsx',
+] as const;
+
+const marketAssumptionRefinedFiles = [
+  'shared/components/MacroAdjuster.tsx',
+  'shared/components/MarketAssumptionsForm.tsx',
+  'shared/components/market-assumptions/AssumptionHistoryPopover.tsx',
+  'shared/components/market-assumptions/AssumptionSemanticsNote.tsx',
+  'shared/components/market-assumptions/MacroDefaultsSummary.tsx',
+  'shared/components/market-assumptions/ProjectedRatePathEditor.tsx',
+] as const;
+
+const insightRefinedFiles = [
+  'shared/components/CommunityInsightsWidget.tsx',
+  'shared/components/TaxLeakChart.tsx',
+  'shared/components/insights/AdvisorTips.tsx',
+  'shared/components/insights/CalculationExplainer.tsx',
+  'shared/components/insights/CalculationTrace.tsx',
+  'shared/components/insights/MathDeepDive.tsx',
+  'shared/components/insights/ReadingChecklist.tsx',
 ] as const;
 
 const sideAndOperationalRefinedFiles = [
@@ -75,6 +118,10 @@ const currentRefactorFiles = [
   ...singleCalculatorRefinedFiles,
   ...comparisonRefinedFiles,
   ...recurringAndRetirementRefinedFiles,
+  ...ladderRefinedFiles,
+  ...notebookRefinedFiles,
+  ...marketAssumptionRefinedFiles,
+  ...insightRefinedFiles,
   ...sideAndOperationalRefinedFiles,
   ...feedbackRefinedFiles,
 ] as const;
@@ -164,6 +211,9 @@ const rawFinancialPaletteFragments = [
   'border-purple-',
   'bg-purple-',
   'text-purple-',
+  'border-red-',
+  'bg-red-',
+  'text-red-',
 ] as const;
 
 function readSource(relativePath: string) {
@@ -226,6 +276,10 @@ describe('financial UI design refactor contracts', () => {
       ...singleCalculatorRefinedFiles,
       ...comparisonRefinedFiles,
       ...recurringAndRetirementRefinedFiles,
+      ...ladderRefinedFiles,
+      ...notebookRefinedFiles,
+      ...marketAssumptionRefinedFiles,
+      ...insightRefinedFiles,
       ...sideAndOperationalRefinedFiles,
     ] as const;
 
@@ -234,6 +288,27 @@ describe('financial UI design refactor contracts', () => {
         'bg-white/',
         'backdrop-blur',
         'blur-3xl',
+      ]);
+    }
+  });
+
+  it('keeps refactored feature surfaces from importing shadcn card wrappers', () => {
+    const flattenedFeatureFiles = [
+      ...comparisonRefinedFiles,
+      ...ladderRefinedFiles,
+      ...notebookRefinedFiles,
+      ...marketAssumptionRefinedFiles,
+      ...insightRefinedFiles,
+    ] as const;
+
+    for (const { relativePath, source } of readMany(flattenedFeatureFiles)) {
+      expectNoFragments(relativePath, source, [
+        "from '@/components/ui/card'",
+        '<Card',
+        '<CardContent',
+        '<CardHeader',
+        '<CardTitle',
+        '<CardDescription',
       ]);
     }
   });

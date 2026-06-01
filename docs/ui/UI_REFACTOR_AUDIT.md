@@ -1,67 +1,102 @@
 # UI Refactor Audit
 
-This audit tracks the remaining visual debt after the initial token and shell refactor. Scope is presentation only: no functionality, calculation logic, API contracts, persistence, or data structures change.
+This audit tracks visual debt after the premium financial UI refactor. Scope is presentation only: no functionality, calculation logic, API contracts, persistence, or data structures change.
 
-## Global Findings
+## Completed Areas
 
-- The product still overuses bordered cards for hierarchy. Several screens use Card > Card or bordered panel > bordered panel patterns where spacing, headings, and dividers would communicate structure better.
-- Remaining old styling is concentrated in secondary modules: charts, comparison details, retirement, regular advanced inputs, landing/recovery/admin pages, and feedback widgets.
-- Spacing is inconsistent. Older files mix arbitrary rounded radii, large padding, custom shadows, and slate/blue/amber/emerald utility colors instead of the finance token system.
-- Typography still carries “dashboard template” weight in places: oversized card titles, heavy uppercase labels, and colored badges where neutral metadata would work.
-- Premium direction: preserve density, reduce borders, use section rhythm, and make tables/ledgers feel quieter.
+- Feedback, ready states, toasts, confirmation dialogs, and recalculation controls use compact tokenized surfaces.
+- Single calculator secondary areas are flattened into chart, ledger, saved scenario, and starter sections.
+- Comparison core, bond-comparison dashboard, charts, shared base controls, result panels, and asset breakdowns avoid heavy Card shells and raw palette colors.
+- Regular investment input and result surfaces use section rhythm, quieter tables, and divider-led summaries.
+- Ladder strategy surfaces use timeline sections, metric rows, and subtle dividers instead of nested cards.
+- Notebook workspace and detail surfaces avoid nested card structures in portfolio lists, detail headers, lots, liquidity, and analytics projection.
+- Shared market assumption controls, macro defaults, projected paths, history popovers, and macro painter use tokenized form sections.
+- Shared insight and explainer components use ledgers, dividers, and semantic tokens instead of colored educational cards.
+- Guardrails in `docs/ui/design-refactor-contract.test.ts` now cover the refactored comparison, regular, ladder, notebook, market assumption, and insight files.
+
+## Current Rules
+
+- Use sections, whitespace, `border-t`, `border-b`, and `divide-y` before reaching for cards.
+- Keep product surfaces on shared typography helpers: `ui-primary-metric`, `ui-large-metric`, `ui-section-title`, `ui-card-title`, `ui-body`, and `ui-metadata`.
+- Keep product colors semantic: `text-success`, `text-warning`, `text-destructive`, `text-primary`, `text-muted-foreground`, `border-border`, `bg-muted`, and `bg-card`.
+- Do not reintroduce `rounded-2xl`, `rounded-3xl`, arbitrary large radii, `border-2`, decorative shadows, gradients, or translucent shells in refactored files.
+- Do not import `components/ui/card` into flattened product surfaces unless the design contract explicitly allows it.
+
+## Remaining Global Findings
+
+- Remaining visual debt is concentrated in older education/reference surfaces, low-level chart wrappers, and shared result primitives that intentionally still use `Card`.
+- Some low-level primitives still carry implementation-specific utility colors or radii. Keep those exceptions narrow and documented in the design contract.
+- Route and education copy can still drift toward marketing language even after layout cleanup.
+- Chart data-series colors need a separate policy if future work distinguishes chart palette semantics from UI status colors.
 
 ## Single Calculator Secondary Areas
 
-- Unnecessary cards: chart tooltip shell, saved scenario rows, scenario starter tiles, calculation audit shell, stale-result notices.
-- Hierarchy issues: chart context competes with result summary; audit trace reads like a detached card instead of a ledger.
-- Spacing inconsistencies: `rounded-[1.7rem]`, `rounded-[2rem]`, `rounded-3xl`, and large panel padding remain.
-- Typography issues: several helper labels use heavy black uppercase; positive/tax/context colors use raw emerald/orange/blue utilities.
-- Target: flatten saved scenarios into a list, make audit trace a ledger, and keep chart metadata inline.
+- Status: completed in earlier tranche.
+- Covered areas: chart tooltip, saved scenarios, starter panel, timeline, audit trace, stale notices, and config secondary surfaces.
+- Guardrail: current single calculator refined files are covered by the contract.
+- Remaining risk: form inputs still use some shared result primitives; refactor only when a broader form system pass is planned.
 
 ## Comparison And Multi-Asset Details
 
-- Unnecessary cards: verdict blocks, row comparison tiles, mobile table cards, multi-asset reference blocks, override selector wrappers.
-- Hierarchy issues: secondary tables visually compete with the main verdict and chart.
-- Spacing inconsistencies: `rounded-[1.4rem]`, `rounded-[1.5rem]`, `rounded-[1.9rem]`, `rounded-2xl`, and dense border stacks remain.
-- Typography issues: verdict and comparison table use strong blue/emerald/orange/purple badges for non-status meaning.
-- Target: make verdict typographic, make comparison table premium and calmer, and use dividers instead of nested panels.
+- Status: completed in this and prior tranches.
+- Covered areas: comparison controls, shared base config, chart tabs, result panel, asset breakdown, verdict, table, multi-asset reference blocks, and bond-comparison dashboard.
+- Guardrail: comparison files must not import shadcn `Card`, use raw slate/amber/blue/green/orange/purple/red classes, or use oversized card radii.
+- Remaining risk: chart series colors are still intentional data colors and should not be confused with UI status colors.
 
-## Regular Investment Remaining Areas
+## Regular Investment
 
-- Unnecessary cards: advanced settings trigger, chart tooltip, dirty-state warning, chart shell.
-- Hierarchy issues: advanced controls still feel heavier than primary contribution setup.
-- Spacing inconsistencies: skeletons and chart shell use large radii and custom padding.
-- Typography issues: bond selection status colors use old amber/slate/emerald classes.
-- Target: make advanced controls read like a secondary form section and keep chart context quiet.
+- Status: completed.
+- Covered areas: calculator container, chart, input form, advanced settings, bond selection, section headings, and results summary.
+- Guardrail: yearly and recent lot tables should stay row-based and divider-based.
+- Remaining risk: any new recurring contribution section should reuse the existing form sections rather than adding a framed card.
 
 ## Retirement Planner
 
-- Unnecessary cards: input shell, result overview stats, model limits, support list, warning blocks.
-- Hierarchy issues: inputs and model-limit notes compete with key result state.
-- Spacing inconsistencies: `rounded-[1.5rem]`, `rounded-[1.9rem]`, `rounded-2xl`, `border-2`, and slate utilities remain.
-- Typography issues: status colors and metric weights are inconsistent with the finance token system.
-- Target: one clear scenario status, dense input sections, and quieter supporting assumptions.
+- Status: completed in earlier tranche.
+- Covered areas: inputs, result overview, support list, model limits, dirty warnings, and summary metrics.
+- Guardrail: supporting assumptions should remain secondary to the primary retirement result.
+- Remaining risk: future planner outputs may need table-specific polish if more scenario detail is added.
 
-## Side And Recovery Surfaces
+## Ladder Strategy
 
-- Unnecessary cards: landing dashboard hub cards, recovery lab panels, optimize result cards, multi-asset page helper cards.
-- Hierarchy issues: landing page still feels marketing-like, with gradients and large hero styling.
-- Spacing inconsistencies: decorative gradients, large radii, blur/backdrop/shadow effects, and white translucent surfaces remain.
-- Typography issues: hero-scale labels are used for route hub content instead of financial-app navigation.
-- Target: route hub and side tools should feel like product surfaces, not marketing pages.
+- Status: completed.
+- Covered areas: empty state, stale notice, timeline chart, mobile maturity list, desktop maturity table, peak month, clustering, and interpretation notes.
+- Guardrail: ladder should read as a timeline and cash-flow analysis, not as repeated cards.
+- Remaining risk: clustering messages should keep semantic warning/success colors only.
+
+## Notebook Workspace
+
+- Status: completed.
+- Covered areas: workspace status, portfolio cards, mini stats, empty state, stored portfolio note, scope note, portfolio overview header, lots table, liquidity window, usage note, and analytics projection.
+- Guardrail: guest/signed-in workflow state must remain clear without using boxed dashboard panels.
+- Remaining risk: future notebook pages should preserve the hierarchy: portfolio identity, controls, key facts, lots, analytics.
+
+## Market Assumptions
+
+- Status: completed.
+- Covered areas: macro defaults summary, semantic notes, history popover, projected path editor, macro painter, and market assumptions form.
+- Guardrail: CPI/NBP controls must remain compact form sections with clear live/fallback context.
+- Remaining risk: chart path editing should stay dense and readable if more rates are added.
+
+## Shared Insights
+
+- Status: completed.
+- Covered areas: calculation explainer, math deep dive, calculation trace, advisor tips, reading checklist, community insights, and tax leak chart tooltip.
+- Guardrail: educational math explanations should be ledgers, not colored cards.
+- Remaining risk: formula blocks can still become noisy if new copy uses too many badges or status colors.
 
 ## Admin And Operational Screens
 
-- Unnecessary cards: gradient header, heavy status cards, bordered sync table shell.
-- Hierarchy issues: operational controls are hidden behind decorative dashboard styling.
-- Spacing inconsistencies: `rounded-3xl`, `border-2`, gradients, and strong blue/emerald/amber colors remain.
-- Typography issues: uppercase badges and bright colors dominate operational metadata.
-- Target: make admin/status an operational console: simple header, compact status strip, premium table.
+- Status: completed in previous tranche.
+- Covered areas: admin header, status metrics, sync notices, access gate, and inventory table.
+- Guardrail: operational tables should stay quiet, with row height and subtle separators carrying the hierarchy.
+- Remaining risk: new admin widgets should avoid dashboard-style bright cards.
 
-## Shared Feedback And Insights
+## Product Direction
 
-- Unnecessary cards: toasts, confirm dialog, feature status notices, recalculate control, ready panels, insight widgets.
-- Hierarchy issues: feedback surfaces use heavy shadows and large rounded cards, interrupting page rhythm.
-- Spacing inconsistencies: large radii, custom shadows, slate overlays, and arbitrary text sizing remain.
-- Typography issues: status tones use raw blue/emerald/amber/orange classes; some labels are too heavy for metadata.
-- Target: compact feedback with token colors, minimal borders, and no decorative depth.
+- This is a premium financial analysis application, not a marketing dashboard.
+- Increase density by making data visible, not by shrinking everything.
+- Reduce border usage by default; use borders only when they communicate structure.
+- Typography is the primary hierarchy tool.
+- Tables should feel operational and premium.
+- Sidebar remains anchored navigation infrastructure, not page content.
