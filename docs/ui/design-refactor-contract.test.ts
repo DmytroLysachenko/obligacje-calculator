@@ -20,9 +20,20 @@ const productSurfaceFiles = [
   'features/notebook/components/portfolio-details/PortfolioOverviewHeader.tsx',
   'shared/components/reference/ReferenceDashboardHero.tsx',
   'shared/components/reference/ReferenceGuideRail.tsx',
+  'shared/components/reference/ReferenceNoteCard.tsx',
+] as const;
+
+const referenceAndEducationRefinedFiles = [
+  'app/economic-data/EconomicDataPageClient.tsx',
+  'app/education/EducationClient.tsx',
+  'features/education/components/BondEducationCard.tsx',
+  'shared/components/reference/ReferenceDashboardHero.tsx',
+  'shared/components/reference/ReferenceGuideRail.tsx',
+  'shared/components/reference/ReferenceNoteCard.tsx',
 ] as const;
 
 const singleCalculatorRefinedFiles = [
+  'features/single-calculator/components/BondInputsForm.tsx',
   'features/single-calculator/components/BondCalculatorContainer.tsx',
   'features/single-calculator/components/BondChart.tsx',
   'features/single-calculator/components/BondResultsSummary.tsx',
@@ -107,6 +118,7 @@ const sideAndOperationalRefinedFiles = [
 ] as const;
 
 const feedbackRefinedFiles = [
+  'shared/components/feedback/ErrorBoundary.tsx',
   'shared/components/feedback/AppToast.tsx',
   'shared/components/feedback/ConfirmActionDialog.tsx',
   'shared/components/feedback/FeatureStatusNotice.tsx',
@@ -115,6 +127,7 @@ const feedbackRefinedFiles = [
 ] as const;
 
 const currentRefactorFiles = [
+  ...referenceAndEducationRefinedFiles,
   ...singleCalculatorRefinedFiles,
   ...comparisonRefinedFiles,
   ...recurringAndRetirementRefinedFiles,
@@ -143,10 +156,15 @@ const sharedShellFiles = [
   'shared/components/chrome/SidebarUtilityGroup.tsx',
   'shared/components/chrome/SidebarWorkspaceUtility.tsx',
   'shared/components/chrome/ThemeToggle.tsx',
+  'shared/components/charts/ChartContainer.tsx',
+  'shared/components/feedback/ErrorBoundary.tsx',
   'shared/components/page/CalculatorPageShell.tsx',
   'shared/components/page/CalculatorSection.tsx',
   'shared/components/page/PageSuspenseFallback.tsx',
   'shared/components/page/SecondarySurfaceIntro.tsx',
+  'shared/components/reference/ReferenceDashboardHero.tsx',
+  'shared/components/reference/ReferenceGuideRail.tsx',
+  'shared/components/reference/ReferenceNoteCard.tsx',
   'shared/components/results/CalculationMetaPanel.tsx',
   'shared/components/results/MetricStrip.tsx',
   'shared/components/results/RateContextNote.tsx',
@@ -159,7 +177,6 @@ const sharedShellFiles = [
 
 const filesWithAllowedSlateUtilities = new Set([
   'shared/components/chrome/Sidebar.tsx',
-  'components/ui/select.tsx',
   'components/ui/switch.tsx',
   'components/ui/tooltip.tsx',
 ]);
@@ -216,6 +233,43 @@ const rawFinancialPaletteFragments = [
   'text-red-',
 ] as const;
 
+const shadcnCardWrapperFragments = [
+  "from '@/components/ui/card'",
+  '<Card',
+  '<CardContent',
+  '<CardHeader',
+  '<CardTitle',
+  '<CardDescription',
+] as const;
+
+const translucentDecorativeFragments = [
+  'bg-white/',
+  'backdrop-blur',
+  'blur-3xl',
+] as const;
+
+const compactRadiusFragments = [
+  'rounded-[1.35rem]',
+  'rounded-[1.4rem]',
+  'rounded-[1.5rem]',
+  'rounded-[1.6rem]',
+  'rounded-[1.7rem]',
+  'rounded-[1.8rem]',
+  'rounded-[1.9rem]',
+  'rounded-[2rem]',
+  'rounded-2xl',
+  'rounded-3xl',
+] as const;
+
+const slateUtilityFragments = [
+  'border-slate-',
+  'bg-slate-',
+  'text-slate-',
+  'ring-slate-',
+  'hover:bg-slate-',
+  'hover:border-slate-',
+] as const;
+
 function readSource(relativePath: string) {
   return readFileSync(join(repoRoot, relativePath), 'utf8');
 }
@@ -249,13 +303,7 @@ describe('financial UI design refactor contracts', () => {
 
   it('keeps refactored product pages on shared tokens instead of slate color soup', () => {
     for (const { relativePath, source } of readMany(productSurfaceFiles)) {
-      expectNoFragments(relativePath, source, [
-        'border-slate-',
-        'bg-slate-',
-        'text-slate-',
-        'hover:bg-slate-',
-        'hover:border-slate-',
-      ]);
+      expectNoFragments(relativePath, source, slateUtilityFragments);
     }
   });
 
@@ -273,6 +321,7 @@ describe('financial UI design refactor contracts', () => {
 
   it('keeps refactored analysis surfaces off translucent decorative shells', () => {
     const surfaceFiles = [
+      ...referenceAndEducationRefinedFiles,
       ...singleCalculatorRefinedFiles,
       ...comparisonRefinedFiles,
       ...recurringAndRetirementRefinedFiles,
@@ -284,32 +333,25 @@ describe('financial UI design refactor contracts', () => {
     ] as const;
 
     for (const { relativePath, source } of readMany(surfaceFiles)) {
-      expectNoFragments(relativePath, source, [
-        'bg-white/',
-        'backdrop-blur',
-        'blur-3xl',
-      ]);
+      expectNoFragments(relativePath, source, translucentDecorativeFragments);
     }
   });
 
   it('keeps refactored feature surfaces from importing shadcn card wrappers', () => {
     const flattenedFeatureFiles = [
+      ...referenceAndEducationRefinedFiles,
+      ...singleCalculatorRefinedFiles,
       ...comparisonRefinedFiles,
       ...ladderRefinedFiles,
       ...notebookRefinedFiles,
       ...marketAssumptionRefinedFiles,
       ...insightRefinedFiles,
+      ...feedbackRefinedFiles,
+      'shared/components/results/ResultSummaryHero.tsx',
     ] as const;
 
     for (const { relativePath, source } of readMany(flattenedFeatureFiles)) {
-      expectNoFragments(relativePath, source, [
-        "from '@/components/ui/card'",
-        '<Card',
-        '<CardContent',
-        '<CardHeader',
-        '<CardTitle',
-        '<CardDescription',
-      ]);
+      expectNoFragments(relativePath, source, shadcnCardWrapperFragments);
     }
   });
 
@@ -363,18 +405,7 @@ describe('financial UI design refactor contracts', () => {
         continue;
       }
 
-      expectNoFragments(relativePath, source, [
-        'rounded-[1.35rem]',
-        'rounded-[1.4rem]',
-        'rounded-[1.5rem]',
-        'rounded-[1.6rem]',
-        'rounded-[1.7rem]',
-        'rounded-[1.8rem]',
-        'rounded-[1.9rem]',
-        'rounded-[2rem]',
-        'rounded-2xl',
-        'rounded-3xl',
-      ]);
+      expectNoFragments(relativePath, source, compactRadiusFragments);
     }
   });
 
@@ -384,14 +415,7 @@ describe('financial UI design refactor contracts', () => {
         continue;
       }
 
-      expectNoFragments(relativePath, source, [
-        'border-slate-',
-        'bg-slate-',
-        'text-slate-',
-        'ring-slate-',
-        'hover:bg-slate-',
-        'hover:border-slate-',
-      ]);
+      expectNoFragments(relativePath, source, slateUtilityFragments);
     }
   });
 });
