@@ -24,10 +24,10 @@ export const CalculationTrace: React.FC<CalculationTraceProps> = ({ timeline }) 
   if (!timeline || timeline.length === 0) return null;
 
   return (
-    <div className="mt-8 overflow-hidden rounded-[1.7rem] border border-slate-200 bg-white">
+    <div className="mt-8 border-t border-border">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between px-5 py-4 font-semibold transition-colors hover:bg-muted/50"
+        className="flex w-full items-center justify-between py-4 font-semibold transition-colors hover:bg-muted/50"
       >
         <span className="flex items-center gap-2">
           <Search className="h-4 w-4 text-primary" />
@@ -37,7 +37,7 @@ export const CalculationTrace: React.FC<CalculationTraceProps> = ({ timeline }) 
       </button>
 
       {isOpen ? (
-        <div className="overflow-x-auto border-t border-dashed border-slate-200 p-4">
+        <div className="overflow-x-auto border-t border-dashed border-border py-4">
           <Table>
             <TableHeader>
               <TableRow>
@@ -62,8 +62,8 @@ export const CalculationTrace: React.FC<CalculationTraceProps> = ({ timeline }) 
                     </TableCell>
                     <TableCell className="text-right font-medium">{point.nominalValueBeforeInterest.toFixed(2)} PLN</TableCell>
                     <TableCell className="text-right font-medium">{point.interestRate.toFixed(2)}%</TableCell>
-                    <TableCell className="text-right font-medium text-emerald-600">+{point.interestEarned.toFixed(2)}</TableCell>
-                    <TableCell className="text-right font-medium text-red-500">-{point.taxDeducted.toFixed(2)}</TableCell>
+                    <TableCell className="text-right font-medium text-success">+{point.interestEarned.toFixed(2)}</TableCell>
+                    <TableCell className="text-right font-medium text-destructive">-{point.taxDeducted.toFixed(2)}</TableCell>
                     <TableCell className="text-right font-medium">{point.nominalValueAfterInterest.toFixed(2)} PLN</TableCell>
                   </TableRow>
                   {point.events?.map((event, eventIndex) => (

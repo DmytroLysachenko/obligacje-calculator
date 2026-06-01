@@ -1,6 +1,5 @@
 'use client';
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAppI18n } from '@/i18n/client';
 import { CalculationResult, TaxStrategy } from '@/features/bond-core/types';
 import { Calculator, ShieldCheck, Landmark, ChevronRight, ChevronLeft, ArrowRight, TrendingDown, Percent } from 'lucide-react';
@@ -25,19 +24,19 @@ export const CalculationExplainer: React.FC<CalculationExplainerProps> = ({ resu
     const interestEarned = point.netInterest + point.taxDeducted;
     const effectiveTaxRate = point.taxDeducted > 0 ? (point.taxDeducted / (point.netInterest + point.taxDeducted) * 100) : 19;
     return (<div className="space-y-8">
-      <Card className="border-2 border-primary/10 shadow-lg overflow-hidden">
-        <CardHeader className="bg-primary/5 border-b">
-          <CardTitle className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
+      <section className="space-y-8 border-t border-border py-6">
+        <div>
+          <h3 className="flex items-center gap-2 ui-section-title">
             <Calculator className="h-4 w-4 text-primary"/>
             {t('bonds.how_calculated')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6 space-y-8">
+          </h3>
+        </div>
+        <div className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Step by Step Interest Trace */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h4 className="text-xs font-bold uppercase text-slate-700 flex items-center gap-2">
+                <h4 className="flex items-center gap-2 ui-card-title">
                   <Percent className="h-3.5 w-3.5 text-primary"/>
                   {t('bonds.step_by_step')}
                 </h4>
@@ -52,19 +51,19 @@ export const CalculationExplainer: React.FC<CalculationExplainerProps> = ({ resu
                 </div>
               </div>
 
-              <div className="bg-muted/30 rounded-2xl p-5 border border-primary/5 space-y-4">
+              <div className="space-y-4 rounded-lg bg-muted/30 p-5">
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-muted-foreground font-medium">{t('bonds.base_value')}</span>
                   <span className="font-mono font-bold">{formatCurrency(baseValue)}</span>
                 </div>
-                <div className="flex justify-between items-center text-xs text-green-600">
+                <div className="flex items-center justify-between text-xs text-success">
                   <span className="font-medium flex items-center gap-1">
                     <ArrowRight className="h-3 w-3"/>
                     {t('bonds.plus_interest')} ({point.interestRate.toFixed(2)}%)
                   </span>
                   <span className="font-mono font-bold">+{formatCurrency(interestEarned)}</span>
                 </div>
-                <div className="flex justify-between items-center text-xs text-red-500">
+                <div className="flex items-center justify-between text-xs text-destructive">
                   <span className="font-medium flex items-center gap-1">
                     <ArrowRight className="h-3 w-3"/>
                     {t('bonds.minus_tax')} ({effectiveTaxRate.toFixed(0)}%)
@@ -80,7 +79,7 @@ export const CalculationExplainer: React.FC<CalculationExplainerProps> = ({ resu
 
             {/* Inflation Protection Visualizer */}
             <div className="space-y-4">
-              <h4 className="text-xs font-bold uppercase text-slate-700 flex items-center gap-2">
+              <h4 className="flex items-center gap-2 ui-card-title">
                 <ShieldCheck className="h-3.5 w-3.5 text-primary"/>
                 {t('bonds.protection_visualizer')}
               </h4>
@@ -88,10 +87,10 @@ export const CalculationExplainer: React.FC<CalculationExplainerProps> = ({ resu
                 <div className="space-y-2">
                   <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground">
                     <span>{t('common.nominal_value')}</span>
-                    <span className="text-slate-900">{formatCurrency(results.grossValue)}</span>
+                    <span className="text-foreground">{formatCurrency(results.grossValue)}</span>
                   </div>
                   <div className="h-3 bg-muted rounded-full overflow-hidden flex">
-                    <div className="h-full bg-blue-500 w-full"/>
+                    <div className="h-full w-full bg-primary/45"/>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -103,12 +102,12 @@ export const CalculationExplainer: React.FC<CalculationExplainerProps> = ({ resu
                     <div className="h-full bg-primary" style={{ width: `${(results.finalRealValue / results.grossValue) * 100}%` }}/>
                   </div>
                 </div>
-                <div className="bg-orange-50 p-3 rounded-xl border border-orange-100 flex items-center justify-between">
+                <div className="flex items-center justify-between rounded-lg bg-muted/35 p-3">
                   <div className="flex items-center gap-2">
-                    <TrendingDown className="h-4 w-4 text-orange-600"/>
-                    <span className="text-[10px] font-black uppercase text-orange-800">{t('bonds.nominal_gap')}</span>
+                    <TrendingDown className="h-4 w-4 text-warning"/>
+                    <span className="ui-metadata text-warning">{t('bonds.nominal_gap')}</span>
                   </div>
-                  <Badge variant="outline" className="bg-white text-orange-700 border-orange-200 font-black">
+                  <Badge variant="outline" className="border-warning/30 bg-warning/10 font-semibold text-warning">
                     -{Math.round((1 - (results.finalRealValue / results.grossValue)) * 100)}%
                   </Badge>
                 </div>
@@ -125,7 +124,7 @@ export const CalculationExplainer: React.FC<CalculationExplainerProps> = ({ resu
               <ul className="text-xs space-y-2 text-muted-foreground list-disc pl-4 leading-relaxed">
                 <li>{t('bonds.rounding_desc')}</li>
                 <li>{t('bonds.tax_rounding_desc')}</li>
-                {taxStrategy !== TaxStrategy.STANDARD && (<li className="text-green-600 font-bold">
+                {taxStrategy !== TaxStrategy.STANDARD && (<li className="font-semibold text-success">
                     {t('bonds.ike_benefit', { amount: formatCurrency((results.grossValue - results.initialInvestment) * 0.19) })}
                   </li>)}
               </ul>
@@ -145,15 +144,15 @@ export const CalculationExplainer: React.FC<CalculationExplainerProps> = ({ resu
                   <span className="text-muted-foreground font-medium">{t('bonds.first_cycle_ends')}</span>
                   <span className="font-bold text-foreground">{results.maturityDate}</span>
                 </div>
-                {results.isEarlyWithdrawal && (<div className="flex justify-between border-b pb-2 text-orange-600">
+                {results.isEarlyWithdrawal && (<div className="flex justify-between border-b pb-2 text-warning">
                     <span className="font-medium">{t('bonds.early_exit_date')}</span>
                     <span className="font-bold">{results.timeline[results.timeline.length - 1].periodLabel}</span>
                   </div>)}
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     </div>);
 };
 

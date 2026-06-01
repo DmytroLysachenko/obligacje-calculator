@@ -59,15 +59,21 @@ const CustomTooltip = ({ active, payload, label }: TaxLeakTooltipProps) => {
     const leak = Number(payload.find((p) => p.dataKey === 'taxLeak')?.value ?? 0);
 
     return (
-      <div className="bg-background border rounded p-3 shadow-md">
-        <p className="font-semibold mb-2">
+      <div className="rounded-lg border border-border bg-popover p-3 text-popover-foreground shadow-lg">
+        <p className="mb-2 font-semibold">
           {t('bonds.tax_leak.year', { year: String(label ?? '') })}
         </p>
         <div className="space-y-1 text-sm">
-          <p className="text-emerald-500">IKE/IKZE: {taxFree.toFixed(2)} PLN</p>
-          <p className="text-blue-500">{t('bonds.tax_leak.standard_account')}: {standard.toFixed(2)} PLN</p>
-          <div className="h-px w-full bg-border my-1" />
-          <p className="text-red-500 font-medium">{t('bonds.tax_leak.tax_leak_label')}: {leak.toFixed(2)} PLN</p>
+          <p className="text-success">
+            IKE/IKZE: {taxFree.toFixed(2)} PLN
+          </p>
+          <p className="text-primary">
+            {t('bonds.tax_leak.standard_account')}: {standard.toFixed(2)} PLN
+          </p>
+          <div className="my-1 h-px w-full bg-border" />
+          <p className="font-medium text-destructive">
+            {t('bonds.tax_leak.tax_leak_label')}: {leak.toFixed(2)} PLN
+          </p>
         </div>
       </div>
     );

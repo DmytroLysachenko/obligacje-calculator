@@ -13,7 +13,7 @@ export function ReadingChecklist({ items }: ReadingChecklistProps) {
       {items.map((item) => (
         <div key={item} className="flex items-start gap-3">
           <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-          <p className="text-sm leading-7 text-slate-600">{item}</p>
+          <p className="ui-body text-muted-foreground">{item}</p>
         </div>
       ))}
     </div>
