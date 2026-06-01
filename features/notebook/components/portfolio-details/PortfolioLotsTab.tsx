@@ -6,7 +6,6 @@ import { format } from 'date-fns';
 import { UserInvestmentLot } from '@/db/schema';
 import { BondType } from '@/features/bond-core/types';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
@@ -45,24 +44,24 @@ export function PortfolioLotsTab({
 }: PortfolioLotsTabProps) {
   return (
     <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.4fr_0.8fr]">
-      <Card className="border-border bg-card shadow-none">
-        <CardHeader>
-          <CardTitle>{t('notebook.stored_lots_title')}</CardTitle>
-          <CardDescription>{t('notebook.stored_lots_desc')}</CardDescription>
-        </CardHeader>
-        <CardContent>
+      <section className="space-y-5 border-t border-border py-5">
+        <div className="space-y-2">
+          <h2 className="ui-section-title">{t('notebook.stored_lots_title')}</h2>
+          <p className="ui-body text-muted-foreground">{t('notebook.stored_lots_desc')}</p>
+        </div>
+        <div>
           {isLoading ? (
             <div className="flex min-h-48 items-center justify-center gap-3 text-sm text-muted-foreground">
               <Loader2 className="h-5 w-5 animate-spin" />
               {t('notebook.updating')}
             </div>
           ) : lots.length === 0 ? (
-            <div className="rounded-md border border-dashed border-border px-6 py-12 text-center">
+            <div className="border-t border-dashed border-border px-6 py-12 text-center">
               <p className="text-sm text-muted-foreground">{t('notebook.no_lots')}</p>
             </div>
           ) : (
-            <div className="rounded-md border border-border bg-card">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-dashed border-border px-4 py-3 text-sm text-muted-foreground">
+            <div className="border-y border-border">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-dashed border-border py-3 text-sm text-muted-foreground">
                 <p>{t('notebook.stored_lots_hint')}</p>
                 <p className="text-sm font-semibold text-muted-foreground">
                   {t('notebook.lots_count', { count: String(lots.length) })}
@@ -111,16 +110,15 @@ export function PortfolioLotsTab({
               </div>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       <div className="space-y-6">
-        <Card className="border-border bg-card shadow-none">
-          <CardHeader>
-            <CardTitle>{t('notebook.liquidity_window_title')}</CardTitle>
-            <CardDescription>{t('notebook.liquidity_window_desc')}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <section className="space-y-4 border-t border-border py-5">
+          <div className="space-y-2">
+            <h2 className="ui-section-title">{t('notebook.liquidity_window_title')}</h2>
+            <p className="ui-body text-muted-foreground">{t('notebook.liquidity_window_desc')}</p>
+          </div>
             <div className="flex flex-wrap gap-2">
               {[30, 90, 180].map((days) => (
                 <Button
@@ -134,7 +132,7 @@ export function PortfolioLotsTab({
               ))}
             </div>
 
-            <div className="rounded-md border border-border bg-muted/30 px-4 py-4">
+            <div className="rounded-lg bg-muted/30 px-4 py-4">
               <p className="text-sm font-semibold text-muted-foreground">
                 {t('notebook.cash_in_window')}
               </p>
@@ -151,7 +149,7 @@ export function PortfolioLotsTab({
             ) : (
               <div className="space-y-3">
                 {filteredMaturities.slice(0, 6).map((item) => (
-                  <div key={item.id} className="rounded-md border border-border p-4">
+                  <div key={item.id} className="border-t border-border py-4">
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="font-medium text-foreground">{item.bondType}</p>
@@ -173,17 +171,14 @@ export function PortfolioLotsTab({
                 ))}
               </div>
             )}
-          </CardContent>
-        </Card>
+        </section>
 
-        <Card className="border-border bg-card shadow-none">
-          <CardHeader>
-            <CardTitle>{t('notebook.usage_note_title')}</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm leading-6 text-muted-foreground">
+        <section className="space-y-2 border-t border-border py-5">
+          <h2 className="ui-card-title">{t('notebook.usage_note_title')}</h2>
+          <div className="text-sm leading-6 text-muted-foreground">
             {t('notebook.usage_note_desc')}
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       </div>
     </div>
   );

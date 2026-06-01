@@ -36,7 +36,7 @@ export function PortfolioWorkspaceCard({
   onRequestDelete,
 }: PortfolioWorkspaceCardProps) {
   return (
-    <article className="space-y-4 rounded-lg border border-border bg-card px-5 py-5 transition-colors hover:border-foreground/20">
+    <article className="space-y-4 border-t border-border py-5 transition-colors hover:border-foreground/20">
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
           <div className="rounded-md bg-muted p-2.5 text-foreground">
@@ -69,17 +69,17 @@ export function PortfolioWorkspaceCard({
         </Button>
       </div>
 
-      <div className="grid gap-0 rounded-md border border-border md:grid-cols-2">
-        <div className="border-b border-dashed border-border px-4 py-3 md:border-b-0 md:border-r">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+      <div className="grid gap-0 divide-y divide-dashed divide-border border-y border-border md:grid-cols-2 md:divide-x md:divide-y-0">
+        <div className="py-3 md:pr-4">
+          <p className="ui-metadata text-muted-foreground">
             {createdAtLabel}
           </p>
           <p className="mt-1 text-sm font-medium text-foreground">
             {portfolio.createdAtLabelValue}
           </p>
         </div>
-        <div className="px-4 py-3">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+        <div className="py-3 md:pl-4">
+          <p className="ui-metadata text-muted-foreground">
             {usageLabel}
           </p>
           <p className="mt-1 text-sm font-medium text-foreground">{usageDescription}</p>

@@ -50,7 +50,7 @@ const EmptyPortfolioState = ({ onCreate, onCreateDemo, onImport, badgeLabel, tit
     demoLabel: string;
     importLabel: string;
     steps: NotebookStepItem[];
-}) => (<section className="space-y-6 rounded-lg border border-border bg-card px-5 py-5 md:px-6">
+}) => (<section className="space-y-6 border-t border-border py-6">
       <div className="space-y-3">
         <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-muted-foreground">
           <BookOpen className="h-3.5 w-3.5 text-foreground"/>
@@ -65,7 +65,7 @@ const EmptyPortfolioState = ({ onCreate, onCreateDemo, onImport, badgeLabel, tit
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        {steps.map((step, index) => (<div key={step.id} className="space-y-3 rounded-md border border-border bg-muted/30 px-4 py-4">
+        {steps.map((step, index) => (<div key={step.id} className="space-y-3 border-t border-border py-4">
             <div className="flex items-start gap-3">
               <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border text-[11px] font-semibold text-muted-foreground">
                 {index + 1}
@@ -336,7 +336,7 @@ export const NotebookContainer: React.FC = () => {
     return (<CalculatorPageShell title={t('notebook.title')} description={t('notebook.subtitle')} icon={<BookOpen className="h-8 w-8"/>} isCalculating={isLoading || isMutating} hasResults={portfolios.length > 0}>
       <input ref={importRef} type="file" accept="application/json" className="hidden" onChange={handleImportFile}/>
 
-      {error ? (<div className="rounded-lg border border-destructive/20 bg-destructive/10 p-4 text-sm text-destructive">
+      {error ? (<div className="ui-inline-notice border-l-2 border-destructive text-destructive">
           <div className="flex items-center gap-3 font-semibold">
             <AlertCircle className="h-5 w-5"/>
             {error}
@@ -367,22 +367,55 @@ export const NotebookContainer: React.FC = () => {
             onCreatePortfolio={handleCreateDefault}
           />
 
-          <div className="grid gap-0 rounded-lg border border-border bg-card md:grid-cols-3">
-            <NotebookMiniStat label={t('notebook.portfolios_label')} value={String(portfolios.length)} description={t('notebook.portfolios_label_desc')}/>
-            <NotebookMiniStat label={t('notebook.public_links_label')} value={String(publicCount)} description={t('notebook.public_links_label_desc')}/>
-            <NotebookMiniStat label={t('notebook.private_drafts_label')} value={String(privateCount)} description={t('notebook.private_drafts_label_desc')}/>
+          <div className="grid gap-0 border-y border-border md:grid-cols-3">
+            <NotebookMiniStat
+              label={t('notebook.portfolios_label')}
+              value={String(portfolios.length)}
+              description={t('notebook.portfolios_label_desc')}
+            />
+            <NotebookMiniStat
+              label={t('notebook.public_links_label')}
+              value={String(publicCount)}
+              description={t('notebook.public_links_label_desc')}
+            />
+            <NotebookMiniStat
+              label={t('notebook.private_drafts_label')}
+              value={String(privateCount)}
+              description={t('notebook.private_drafts_label_desc')}
+            />
           </div>
         </div>
       </SectionBlock>
 
-      {isLoading ? (<NotebookLoadingState />) : portfolios.length === 0 ? (<EmptyPortfolioState onCreate={canManageWorkspace ? handleCreateDefault : () => {}} onCreateDemo={canManageWorkspace ? handleCreateDemo : () => {}} onImport={canManageWorkspace ? handleImportClick : () => {}} badgeLabel={t('notebook.empty_badge')} title={t('notebook.empty_title')} description={canManageWorkspace ? t('notebook.empty_desc') : t('workspace.empty_guest_description')} createLabel={canManageWorkspace ? t('notebook.create_first') : t('workspace.sign_in_required_short')} demoLabel={t('notebook.load_demo')} importLabel={t('notebook.import_json')} steps={emptyStateSteps}/>) : (<div className="space-y-8">
+      {isLoading ? (
+        <NotebookLoadingState />
+      ) : portfolios.length === 0 ? (
+        <EmptyPortfolioState
+          onCreate={canManageWorkspace ? handleCreateDefault : () => {}}
+          onCreateDemo={canManageWorkspace ? handleCreateDemo : () => {}}
+          onImport={canManageWorkspace ? handleImportClick : () => {}}
+          badgeLabel={t('notebook.empty_badge')}
+          title={t('notebook.empty_title')}
+          description={canManageWorkspace
+            ? t('notebook.empty_desc')
+            : t('workspace.empty_guest_description')}
+          createLabel={canManageWorkspace
+            ? t('notebook.create_first')
+            : t('workspace.sign_in_required_short')}
+          demoLabel={t('notebook.load_demo')}
+          importLabel={t('notebook.import_json')}
+          steps={emptyStateSteps}
+        />
+      ) : (
+        <div className="space-y-8">
           <SectionBlock title={t('notebook.stored_portfolios')} description={t('notebook.stored_portfolios_desc')}>
-            <div className="rounded-md border border-border bg-muted/30 px-5 py-4 text-sm leading-7 text-muted-foreground">
+            <div className="ui-inline-notice text-muted-foreground">
               {t('notebook.stored_portfolios_note')}
             </div>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {portfolios.map((portfolio) => (<PortfolioWorkspaceCard
+              {portfolios.map((portfolio) => (
+                <PortfolioWorkspaceCard
                   key={portfolio.id}
                   portfolio={{
                     id: portfolio.id,
@@ -408,11 +441,12 @@ export const NotebookContainer: React.FC = () => {
                   onRequestDelete={() => {
                     setPortfolioPendingDelete(portfolio);
                   }}
-                />))}
+                />
+              ))}
             </div>
           </SectionBlock>
 
-          <section className="flex items-start gap-3 rounded-lg border border-border bg-card px-5 py-5">
+          <section className="flex items-start gap-3 border-t border-border py-5">
             <FolderOpen className="mt-0.5 h-5 w-5 text-foreground"/>
             <div className="space-y-2">
               <p className="ui-card-title">
@@ -423,7 +457,8 @@ export const NotebookContainer: React.FC = () => {
               </p>
             </div>
           </section>
-        </div>)}
+        </div>
+      )}
 
       <ConfirmActionDialog
         open={!!portfolioPendingDelete}

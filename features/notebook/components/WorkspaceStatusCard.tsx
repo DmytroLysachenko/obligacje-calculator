@@ -25,7 +25,7 @@ export function WorkspaceStatusCard({
   const WorkspaceStateIcon = workspaceStateIcon;
 
   return (
-    <section className="space-y-5 rounded-lg border border-border bg-card px-5 py-5 md:px-6">
+    <section className="space-y-5 border-t border-border py-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-3xl space-y-3">
           <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-muted-foreground">
@@ -41,7 +41,7 @@ export function WorkspaceStatusCard({
           </p>
         </div>
 
-        <div className="min-w-[280px] rounded-md border border-border bg-muted/30 px-4 py-4">
+        <div className="min-w-[280px] rounded-lg bg-muted/30 px-4 py-4">
           <div className="flex items-start gap-3">
             <div className="rounded-md bg-card p-2.5 text-foreground">
               <WorkspaceStateIcon className="h-4.5 w-4.5" />

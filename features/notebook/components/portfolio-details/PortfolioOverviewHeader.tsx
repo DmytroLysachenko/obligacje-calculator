@@ -4,7 +4,6 @@ import React from 'react';
 import { ArrowLeft, Check, Download, FolderOpen, Loader2, Share2, ShieldCheck, Trash2 } from 'lucide-react';
 import { UserPortfolio } from '@/db/schema';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 
 function PortfolioMiniStat({
   label,
@@ -16,7 +15,7 @@ function PortfolioMiniStat({
   description: string;
 }) {
   return (
-    <div className="rounded-md border border-border bg-card px-4 py-4 shadow-none">
+    <div className="border-t border-border py-4">
       <p className="text-sm font-semibold text-muted-foreground">{label}</p>
       <p className="mt-2 text-xl font-semibold tracking-tight text-foreground">
         {value}
@@ -65,8 +64,7 @@ export function PortfolioOverviewHeader({
 }: PortfolioOverviewHeaderProps) {
   return (
     <>
-      <Card className="overflow-hidden border-border bg-card shadow-none">
-        <CardContent className="space-y-6 p-6 lg:p-7">
+      <section className="space-y-6 border-t border-border py-6">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-2xl space-y-3">
               <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-muted-foreground">
@@ -119,10 +117,9 @@ export function PortfolioOverviewHeader({
               }
             />
           </div>
-        </CardContent>
-      </Card>
+      </section>
 
-      <div className="flex flex-col gap-4 rounded-lg border border-border bg-card p-5 shadow-none md:flex-row md:items-start md:justify-between">
+      <div className="flex flex-col gap-4 border-t border-border py-5 md:flex-row md:items-start md:justify-between">
         <div className="flex items-start gap-3">
           <Button variant="ghost" size="icon" onClick={onBack} className="rounded-md">
             <ArrowLeft className="h-5 w-5" />

@@ -5,7 +5,6 @@ import { Loader2, TrendingUp } from 'lucide-react';
 import { format } from 'date-fns';
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { PortfolioSimulationResult } from '@/features/bond-core/types/scenarios';
@@ -25,12 +24,11 @@ export function PortfolioAnalyticsTab({
 }: PortfolioAnalyticsTabProps) {
   return (
     <>
-      <Card className="border-border bg-card shadow-none">
-        <CardHeader>
-          <CardTitle>{t('notebook.projection_title')}</CardTitle>
-          <CardDescription>{t('notebook.projection_desc')}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <section className="space-y-4 border-t border-border py-5">
+        <div className="space-y-2">
+          <h2 className="ui-section-title">{t('notebook.projection_title')}</h2>
+          <p className="ui-body text-muted-foreground">{t('notebook.projection_desc')}</p>
+        </div>
           <ChartSupportNote
             title={t('notebook.projection_read_title')}
             description={t('notebook.projection_read_desc')}
@@ -95,10 +93,9 @@ export function PortfolioAnalyticsTab({
               {t('notebook.projection_empty')}
             </div>
           )}
-        </CardContent>
-      </Card>
+      </section>
 
-      <div className="rounded-lg border border-border bg-card p-5">
+      <div className="border-t border-border py-5">
         <div className="flex items-start gap-3">
           <TrendingUp className="mt-0.5 h-5 w-5 text-success" />
           <div className="space-y-2">
