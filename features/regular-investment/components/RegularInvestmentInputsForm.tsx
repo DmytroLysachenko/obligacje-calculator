@@ -1,6 +1,5 @@
 'use client';
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { BondType, RegularInvestmentInputs } from '../../bond-core/types';
 import { useAppI18n } from '@/i18n/client';
@@ -29,13 +28,11 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
 
     if (isLoadingDefs || !definitions) {
       return (
-        <Card className="w-full border-border shadow-none">
-          <CardContent className="flex h-[600px] items-center justify-center">
+        <section className="flex h-[600px] w-full items-center justify-center border-t border-border">
             <p className="text-sm font-semibold text-muted-foreground">
               {t('common.loading')}
             </p>
-          </CardContent>
-        </Card>
+        </section>
       );
     }
 
@@ -49,16 +46,16 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
       inputs.contributionAmount % 100 === 0 && inputs.contributionAmount > 0;
 
     return (
-      <Card className="w-full border-border shadow-none">
-        <CardHeader className="border-b border-border bg-card pb-4">
-          <CardTitle className="ui-section-title">
+      <section className="w-full space-y-6">
+        <div className="space-y-2 border-b border-border pb-4">
+          <h2 className="ui-section-title">
             {t('bonds.regular_calculator')}
-          </CardTitle>
-          <CardDescription className="text-sm leading-6">
+          </h2>
+          <p className="ui-body text-muted-foreground">
             {t('regular_investment_page.form_description')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6 p-5">
+          </p>
+        </div>
+        <div className="space-y-6">
           <BondSelectionSection
             bondType={inputs.bondType}
             definitions={definitions}
@@ -132,8 +129,8 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   },
 );

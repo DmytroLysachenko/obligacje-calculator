@@ -1,7 +1,6 @@
 'use client';
 import React, { useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { RegularInvestmentResult } from '../../bond-core/types';
 import { useAppI18n } from '@/i18n/client';
@@ -80,34 +79,57 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
         });
     };
     return (<div className="space-y-6">
-      <ResultSummaryHero eyebrow={t('regular_summary.plan_eyebrow')} value={formatCurrency(results.finalNominalValue)} description={t('regular_summary.hero_description')} narrative={t('regular_summary.hero_narrative')} actions={[
+      <ResultSummaryHero
+        eyebrow={t('regular_summary.plan_eyebrow')}
+        value={formatCurrency(results.finalNominalValue)}
+        description={t('regular_summary.hero_description')}
+        narrative={t('regular_summary.hero_narrative')}
+        actions={[
             {
                 label: t('comparison.export'),
                 icon: <FileSpreadsheet className="h-4 w-4"/>,
                 onClick: handleExport,
             },
-        ]}/>
+        ]}
+      />
 
-      <MetricStrip items={primaryStats} columns="grid-cols-1 md:grid-cols-2 xl:grid-cols-4"/>
+      <MetricStrip
+        items={primaryStats}
+        columns="grid-cols-1 md:grid-cols-2 xl:grid-cols-4"
+      />
 
-      <MetricStrip items={supportingStats} columns="grid-cols-1 lg:grid-cols-2"/>
+      <MetricStrip
+        items={supportingStats}
+        columns="grid-cols-1 lg:grid-cols-2"
+      />
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1.1fr_0.9fr]">
-        <Card className="border-border shadow-none">
-          <CardHeader className="flex flex-row items-start justify-between gap-4 pb-4">
+        <section className="space-y-4 border-t border-border py-5">
+          <div className="flex flex-row items-start justify-between gap-4">
             <div>
-              <CardTitle className="ui-card-title">
+              <h2 className="ui-card-title">
                 {t('regular_summary.yearly_title')}
-              </CardTitle>
-              <CardDescription>{t('regular_summary.yearly_description')}</CardDescription>
+              </h2>
+              <p className="ui-body text-muted-foreground">{t('regular_summary.yearly_description')}</p>
             </div>
             <Badge variant="outline" className="border-border bg-muted/35 text-xs font-semibold text-muted-foreground">
               {t('regular_summary.yearly_badge')}
             </Badge>
-          </CardHeader>
-          <CardContent className="px-0 pb-0">
-            <ResponsiveTableSheet title={t('regular_summary.yearly_title')} description={t('regular_summary.yearly_mobile_description')} triggerLabel={t('regular_summary.open_yearly_buckets')} triggerCount={t('regular_summary.yearly_trigger_count', { count: yearlyBuckets.length })}>
-              {yearlyBuckets.map((bucket) => (<div key={`mobile-${bucket.year}`} className="rounded-lg border border-border bg-card p-4">
+          </div>
+          <div>
+            <ResponsiveTableSheet
+              title={t('regular_summary.yearly_title')}
+              description={t('regular_summary.yearly_mobile_description')}
+              triggerLabel={t('regular_summary.open_yearly_buckets')}
+              triggerCount={t('regular_summary.yearly_trigger_count', {
+                count: yearlyBuckets.length,
+              })}
+            >
+              {yearlyBuckets.map((bucket) => (
+                <div
+                  key={`mobile-${bucket.year}`}
+                  className="border-t border-border py-4"
+                >
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-sm font-semibold text-foreground">{bucket.year}</p>
@@ -118,12 +140,25 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                     <p className="text-sm font-semibold text-foreground">{formatCurrency(bucket.netValue)}</p>
                   </div>
                   <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                    <MobileBucketValue label={t('regular_summary.invested')} value={formatCurrency(bucket.invested)}/>
-                    <MobileBucketValue label={t('regular_summary.interest')} value={formatCurrency(bucket.interest)}/>
-                    <MobileBucketValue label={t('bonds.tax')} value={formatCurrency(bucket.tax)}/>
-                    <MobileBucketValue label={t('regular_summary.net_value')} value={formatCurrency(bucket.netValue)}/>
+                    <MobileBucketValue
+                      label={t('regular_summary.invested')}
+                      value={formatCurrency(bucket.invested)}
+                    />
+                    <MobileBucketValue
+                      label={t('regular_summary.interest')}
+                      value={formatCurrency(bucket.interest)}
+                    />
+                    <MobileBucketValue
+                      label={t('bonds.tax')}
+                      value={formatCurrency(bucket.tax)}
+                    />
+                    <MobileBucketValue
+                      label={t('regular_summary.net_value')}
+                      value={formatCurrency(bucket.netValue)}
+                    />
                   </div>
-                </div>))}
+                </div>
+              ))}
             </ResponsiveTableSheet>
 
             <div className="hidden lg:block">
@@ -139,7 +174,11 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {yearlyBuckets.map((bucket) => (<TableRow key={bucket.year} className="border-b border-border transition-colors hover:bg-muted/35">
+                {yearlyBuckets.map((bucket) => (
+                  <TableRow
+                    key={bucket.year}
+                    className="border-b border-border transition-colors hover:bg-muted/35"
+                  >
                     <TableCell className="font-medium">{bucket.year}</TableCell>
                     <TableCell className="text-right">{bucket.count}</TableCell>
                     <TableCell className="text-right">{formatCurrency(bucket.invested)}</TableCell>
@@ -152,27 +191,29 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                     <TableCell className="text-right font-semibold">
                       {formatCurrency(bucket.netValue)}
                     </TableCell>
-                  </TableRow>))}
+                  </TableRow>
+                ))}
               </TableBody>
               </Table>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
 
-        <Card className="border-border shadow-none">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2 ui-card-title">
+        <section className="space-y-4 border-t border-border py-5">
+          <div className="space-y-2">
+            <h2 className="flex items-center gap-2 ui-card-title">
               <Calendar className="h-5 w-5"/>
               {t('regular_summary.recent_title')}
-            </CardTitle>
-            <CardDescription>{t('regular_summary.recent_description')}</CardDescription>
+            </h2>
+            <p className="ui-body text-muted-foreground">{t('regular_summary.recent_description')}</p>
             <div className="border-t border-border px-1 pt-3 text-sm leading-6 text-muted-foreground">
               {t('regular_summary.recent_note')}
             </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
+          </div>
+          <div className="space-y-4">
             <div className="grid grid-cols-1 gap-3">
-              {recentLots.map(({ key, value: lot }) => (<div key={key} className="rounded-lg border border-border p-4">
+              {recentLots.map(({ key, value: lot }) => (
+                <div key={key} className="border-t border-border py-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="space-y-1">
                       <p className="text-sm font-semibold text-foreground">
@@ -224,23 +265,31 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                       </p>
                     </div>
                   </div>
-                </div>))}
+                </div>
+              ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       </div>
     </div>);
 };
-function MobileBucketValue({ label, value, }: {
-    label: string;
-    value: string;
+function MobileBucketValue({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
 }) {
-    return (<div className="border-t border-border px-1 py-2 first:border-t-0">
+    return (
+    <div className="border-t border-border px-1 py-2 first:border-t-0">
       <p className="text-xs font-semibold text-muted-foreground">
         {label}
       </p>
-      <p className="mt-1 text-sm font-semibold text-foreground">{value}</p>
-    </div>);
+      <p className="mt-1 text-sm font-semibold text-foreground">
+        {value}
+      </p>
+    </div>
+  );
 }
 
 
