@@ -2,22 +2,17 @@
 
 import React, { useCallback, useMemo } from 'react';
 import { parseISO } from 'date-fns';
-import { AlertCircle, Settings2, Target } from 'lucide-react';
+import { AlertCircle, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
 import { BondType, BondInputs } from '../../bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
+import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
 import { InputGuardrailIssue } from '../lib/input-guardrails';
 import { BondConfigSection } from './sections/BondConfigSection';
 import { BondTimingSection } from './sections/BondTimingSection';
@@ -189,48 +184,30 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           </section>
 
           <section className="border-t border-border pt-5">
-            <Accordion type="single" collapsible defaultValue="">
-              <AccordionItem value="advanced" className="border-none">
-                <AccordionTrigger className="border-b border-border px-0 py-4 hover:no-underline">
-                  <div className="flex items-start gap-3 text-left">
-                    <div className="rounded-md bg-muted p-2 text-muted-foreground">
-                      <Settings2 className="h-4 w-4" />
-                    </div>
-                    <div className="space-y-1">
-                      <h3 className="text-xs font-semibold text-muted-foreground">
-                        {t('common.advanced')}
-                      </h3>
-                      <p className="text-xs font-medium text-muted-foreground">
-                        {t('bonds.form.advanced_desc')}
-                      </p>
-                    </div>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-6 pt-4">
-                    <MarketAssumptionsForm
-                      expectedInflation={inputs.expectedInflation}
-                      expectedNbpRate={inputs.expectedNbpRate}
-                      bondType={inputs.bondType}
-                      customInflation={inputs.customInflation}
-                      customNbpRate={inputs.customNbpRate}
-                      inflationHorizonYears={Math.max(1, Math.ceil(investmentHorizonMonths / 12))}
-                      onUpdate={handleUpdate as (key: string, value: unknown) => void}
-                      compact
-                    />
+            <AdvancedAssumptionsDisclosure
+              title={t('common.advanced')}
+              description={t('bonds.form.advanced_desc')}
+            >
+              <MarketAssumptionsForm
+                expectedInflation={inputs.expectedInflation}
+                expectedNbpRate={inputs.expectedNbpRate}
+                bondType={inputs.bondType}
+                customInflation={inputs.customInflation}
+                customNbpRate={inputs.customNbpRate}
+                inflationHorizonYears={Math.max(1, Math.ceil(investmentHorizonMonths / 12))}
+                onUpdate={handleUpdate as (key: string, value: unknown) => void}
+                compact
+              />
 
-                    <div className="border-t border-border pt-5">
-                      <BondDisplaySection
-                        inputs={inputs}
-                        onUpdate={handleUpdate}
-                        showCustomTax={false}
-                        setShowCustomTax={() => undefined}
-                      />
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+              <div className="border-t border-border pt-5">
+                <BondDisplaySection
+                  inputs={inputs}
+                  onUpdate={handleUpdate}
+                  showCustomTax={false}
+                  setShowCustomTax={() => undefined}
+                />
+              </div>
+            </AdvancedAssumptionsDisclosure>
           </section>
         </div>
 
