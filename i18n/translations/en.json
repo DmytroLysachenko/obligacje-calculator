@@ -1302,6 +1302,8 @@
       "nbp_synced_context": "Reference-rate history is synchronized and can support treasury-bond result interpretation."
     },
     "reference_panel": "Reference Panel",
+    "compact_source_header": "Data source",
+    "data_health": "Data health",
     "series": "Series",
     "purpose": "Purpose",
     "mode": "Mode",

@@ -69,7 +69,7 @@ export const NBPRateChart = ({ period = 'ALL', }: {
         {t('economic.failed_to_load')}
       </div>);
     }
-    return (<ReferenceChartFrame metaItems={getReferenceMetaItems(response, language)} fallbackNotice={response?.usedFallback
+    return (<ReferenceChartFrame sourceLabel={t('economic.compact_source_header')} metaItems={getReferenceMetaItems(response, language)} fallbackNotice={response?.usedFallback
             ? t('economic.fallback_notices.nbp_warning') : t('economic.fallback_notices.nbp_live')} fallbackTone={response?.usedFallback ? 'warning' : 'good'}>
       <ChartContainer height={420}>
         <ResponsiveContainer width="100%" height="100%">

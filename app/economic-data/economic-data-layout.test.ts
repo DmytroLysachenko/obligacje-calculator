@@ -8,6 +8,7 @@ const economicPagePath = 'app/economic-data/EconomicDataPageClient.tsx';
 const referenceHeroPath = 'shared/components/reference/ReferenceDashboardHero.tsx';
 const referenceRailPath = 'shared/components/reference/ReferenceGuideRail.tsx';
 const referenceNotePath = 'shared/components/reference/ReferenceNoteCard.tsx';
+const referenceChartFramePath = 'shared/components/charts/ReferenceChartFrame.tsx';
 
 function readSource(relativePath: string) {
   return readFileSync(join(repoRoot, relativePath), 'utf8');
@@ -153,14 +154,22 @@ describe('economic data layout source contracts', () => {
     const source = readSource(economicPagePath);
 
     expectContains(source, "'border-t py-5'");
-    expectContains(source, 'divide-y divide-border border-y border-border');
+    expectContains(source, 'space-y-3 border-y border-border py-3');
+    expectContains(source, "t('economic.data_health')");
+    expectContains(source, '<dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2">');
     expectContains(source, 'border-t border-border py-5');
     expectContains(source, 'border-b border-border pb-2');
+    expectContains(source, 'actions?: React.ReactNode');
+    expectContains(source, '<div className="shrink-0 lg:max-w-[520px]">{actions}</div>');
+    expectContains(source, 'grid gap-x-6 gap-y-4 border-y border-border py-4 md:grid-cols-2');
+    expectContains(source, '<RangeActions');
+    expectNotContains(source, 'extraHeaderActions={');
     expectNoFragments(source, [
       "from '@/components/ui/card'",
       '<Card',
       '<CardContent',
       'rounded-lg border shadow-none',
+      'divide-y divide-border border-y border-border',
       'rounded-md border border-border bg-card',
       'rounded-full border border-border bg-muted/40',
       'rounded-md border border-border sm:grid-cols-2',
@@ -169,11 +178,41 @@ describe('economic data layout source contracts', () => {
     ]);
   });
 
+  it('keeps chart source metadata compact instead of table-like', () => {
+    const source = readSource(referenceChartFramePath);
+
+    expectContains(source, 'sourceLabel');
+    expectContains(source, '<dl className="grid gap-x-6 gap-y-3');
+    expectContains(source, 'border-y border-border py-4');
+    expectContains(source, 'border-l-2 pl-3 text-sm leading-6');
+    expectContains(source, 'border-t border-border pt-4');
+    expectNoFragments(source, [
+      'rounded-lg border border-border bg-card',
+      'overflow-hidden rounded-md border border-border',
+      'grid w-full gap-0',
+      'sm:border-r',
+      'shadow-none',
+      'bg-card p-4',
+    ]);
+  });
+
+  it('keeps economic charts passing localized compact source labels', () => {
+    const inflationSource = readSource('features/economic-data/components/InflationChart.tsx');
+    const nbpSource = readSource('features/economic-data/components/NBPRateChart.tsx');
+
+    for (const source of [inflationSource, nbpSource]) {
+      expectContains(source, "sourceLabel={t('economic.compact_source_header')}");
+      expectContains(source, 'getReferenceMetaItems(response, language)');
+      expectNotContains(source, 'sourceLabel="Data source"');
+    }
+  });
+
   it('keeps reference support components free of card wrappers', () => {
     const sources = [
       readSource(referenceHeroPath),
       readSource(referenceRailPath),
       readSource(referenceNotePath),
+      readSource(referenceChartFramePath),
     ];
 
     for (const source of sources) {

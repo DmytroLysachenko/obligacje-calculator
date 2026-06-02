@@ -85,7 +85,7 @@ export const InflationChart = ({ period = 'ALL', }: {
         {t('economic.failed_to_load')}
       </div>);
     }
-    return (<ReferenceChartFrame metaItems={getReferenceMetaItems(response, language)} actions={<div className="flex gap-2">
+    return (<ReferenceChartFrame sourceLabel={t('economic.compact_source_header')} metaItems={getReferenceMetaItems(response, language)} actions={<div className="flex gap-2">
           <Button type="button" size="sm" variant={scaleMode === 'readable' ? 'default' : 'outline'} onClick={() => setScaleMode('readable')} className="rounded-md">
             {t('economic.readable_scale')}
           </Button>

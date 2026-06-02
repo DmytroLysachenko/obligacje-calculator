@@ -142,6 +142,12 @@ function SeriesStatusCard({
       value: isLoading ? '...' : getReferenceScopeLabel(meta, language),
     },
   ];
+  const healthItems = [
+    rows[0],
+    rows[2],
+    rows[1],
+    rows[3],
+  ];
 
   return (
     <section
@@ -175,16 +181,21 @@ function SeriesStatusCard({
           <p className="ui-body">{state.description}</p>
         </div>
 
-        <div className="grid gap-0 divide-y divide-border border-y border-border sm:grid-cols-2 sm:divide-x sm:divide-y-0">
-          {rows.map((row, index) => (
-            <div
-              key={row.label}
-              className={cn('px-4 py-3', index >= 2 && 'sm:border-t sm:border-border')}
-            >
-              <p className="text-sm font-semibold text-muted-foreground">{row.label}</p>
-              <p className="mt-2 text-sm font-medium text-foreground">{row.value}</p>
-            </div>
-          ))}
+        <div className="space-y-3 border-y border-border py-3">
+          <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-muted-foreground">
+            <Database className="h-3.5 w-3.5" />
+            {t('economic.data_health')}
+          </div>
+          <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2">
+            {healthItems.map((row) => (
+              <div key={row.label} className="min-w-0">
+                <dt className="text-xs font-semibold text-muted-foreground">{row.label}</dt>
+                <dd className="mt-1 break-words text-sm font-medium text-foreground">
+                  {row.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </div>
     </section>
@@ -216,16 +227,19 @@ function SectionBlock({
 function DashboardTabFrame({
   title,
   description,
+  actions,
   children,
 }: {
   title: string;
   description: string;
+  actions?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
     <section className="space-y-5">
       <div className="flex flex-col gap-3 border-t border-border py-5">
-        <div className="flex items-start gap-3">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex items-start gap-3">
           <div className="mt-0.5 rounded-md bg-muted p-2 text-foreground">
             <Info className="h-4 w-4" />
           </div>
@@ -233,6 +247,8 @@ function DashboardTabFrame({
             <h3 className="ui-section-title">{title}</h3>
             <p className="ui-body max-w-4xl">{description}</p>
           </div>
+          </div>
+          {actions ? <div className="shrink-0 lg:max-w-[520px]">{actions}</div> : null}
         </div>
       </div>
       {children}
@@ -255,28 +271,25 @@ function UsageGuidePanel({
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <section className="space-y-5 border-t border-border py-5 md:py-6">
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-primary" />
-            <h3 className="ui-section-title">
-              {labels.howToUse}
-            </h3>
-          </div>
-          <div className="grid gap-0 divide-y divide-border border-y border-border md:grid-cols-2 md:divide-x md:divide-y-0">
-            {usageGuide.map((item, index) => (
-              <div
-                key={item}
-                className={cn('px-4 py-4', index >= 2 && 'md:border-t md:border-border')}
-              >
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
-                  <p className="ui-body">{item}</p>
-                </div>
+        <div className="flex items-center gap-2">
+          <Sparkles className="h-4 w-4 text-primary" />
+          <h3 className="ui-section-title">
+            {labels.howToUse}
+          </h3>
+        </div>
+        <div className="grid gap-x-6 gap-y-4 border-y border-border py-4 md:grid-cols-2">
+          {usageGuide.map((item) => (
+            <div key={item} className="flex items-start gap-3">
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
+              <div className="space-y-1">
+                <p className="ui-body">{item}</p>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
+        </div>
       </section>
 
-        <ReferenceNoteCard
+      <ReferenceNoteCard
         icon={<AlertTriangle className="h-4 w-4 text-warning" />}
         title={labels.dataQuality}
         description={t('economic.data_quality_description')}
@@ -409,10 +422,7 @@ export function EconomicDataPageClient() {
       icon={<Activity className="h-8 w-8" />}
       isCalculating={false}
       hasResults
-      extraHeaderActions={
-        <RangeActions period={period} setPeriod={setPeriod} rangeLabel={t('economic.range_data')} />
-      }
-      >
+    >
       <div className="space-y-5 md:space-y-6">
         <ReferenceDashboardHero
           badge={
@@ -455,6 +465,13 @@ export function EconomicDataPageClient() {
             <DashboardTabFrame
               title={t('economic.chart_dashboard_title')}
               description={t('economic.chart_dashboard_description')}
+              actions={
+                <RangeActions
+                  period={period}
+                  setPeriod={setPeriod}
+                  rangeLabel={t('economic.range_data')}
+                />
+              }
             >
               <div className="space-y-8 md:space-y-10">
                 <SectionBlock

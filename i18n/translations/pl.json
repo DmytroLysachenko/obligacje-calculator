@@ -1274,6 +1274,8 @@
   "economic": {
     "range_data": "Zakres danych",
     "reference_panel": "Panel kontekstowy",
+    "compact_source_header": "Zrodlo danych",
+    "data_health": "Stan danych",
     "series": "Serie",
     "purpose": "Rola",
     "mode": "Tryb",
