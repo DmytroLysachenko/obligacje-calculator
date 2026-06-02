@@ -1,10 +1,13 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { useAppI18n } from '@/i18n/client';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { BondEducationCard } from '@/features/education/components/BondEducationCard';
 import {
+  ArrowRight,
+  Clock,
   Info,
   HelpCircle,
   AlertTriangle,
@@ -16,6 +19,8 @@ import {
   Layers,
   Percent,
   LogOut,
+  ShieldCheck,
+  Users,
 } from 'lucide-react';
 import {
   Accordion,
@@ -36,6 +41,28 @@ export default function EducationClient() {
     { key: 'capitalization', icon: Layers },
     { key: 'belka_tax', icon: Percent },
     { key: 'early_redemption', icon: LogOut },
+  ];
+  const starterGuides = [
+    {
+      key: 'short_term',
+      icon: Clock,
+      bonds: 'OTS / ROR',
+    },
+    {
+      key: 'inflation',
+      icon: ShieldCheck,
+      bonds: 'COI / EDO',
+    },
+    {
+      key: 'family',
+      icon: Users,
+      bonds: 'ROS / ROD',
+    },
+    {
+      key: 'long_term',
+      icon: Target,
+      bonds: 'EDO / ROD',
+    },
   ];
 
   if (isLoading || !definitions) {
@@ -58,7 +85,7 @@ export default function EducationClient() {
 
   return (
     <PageTransition>
-      <div className="space-y-8 pb-12">
+      <div className="space-y-10 pb-12">
         <header className="space-y-4">
           <h2 className="ui-page-title">
             {t('nav.education')}
@@ -107,12 +134,56 @@ export default function EducationClient() {
           </div>
         </section>
 
-        <section className="space-y-6">
-          <div className="flex items-center gap-2">
-            <Briefcase className="h-5 w-5 text-foreground" />
-            <h3 className="ui-section-title">
-              {t('education.bond_types')}
-            </h3>
+        <section className="space-y-5 border-t border-border py-6">
+          <div className="ui-section-row">
+            <div className="space-y-2">
+              <h3 className="ui-section-title flex items-center gap-2">
+                <Target className="h-5 w-5 text-foreground" />
+                {t('education.starter_title')}
+              </h3>
+              <p className="ui-body max-w-3xl text-muted-foreground">
+                {t('education.starter_subtitle')}
+              </p>
+            </div>
+            <Link
+              href="/single-calculator"
+              className="inline-flex h-10 items-center gap-2 border-b border-foreground text-sm font-semibold text-foreground"
+            >
+              {t('education.starter_cta')}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2 xl:grid-cols-4">
+            {starterGuides.map((guide) => (
+              <article key={guide.key} className="border-t border-border py-4">
+                <div className="flex items-center gap-2">
+                  <guide.icon className="h-4 w-4 text-foreground" />
+                  <p className="ui-card-title">
+                    {t(`education.starter.${guide.key}.label`)}
+                  </p>
+                </div>
+                <p className="mt-2 text-[32px] font-semibold leading-none text-foreground">
+                  {guide.bonds}
+                </p>
+                <p className="ui-body mt-3 text-muted-foreground">
+                  {t(`education.starter.${guide.key}.description`)}
+                </p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="space-y-6 border-t border-border py-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Briefcase className="h-5 w-5 text-foreground" />
+              <h3 className="ui-section-title">
+                {t('education.bond_types')}
+              </h3>
+            </div>
+            <p className="ui-body max-w-3xl text-muted-foreground">
+              {t('education.bond_types_subtitle')}
+            </p>
           </div>
           <div className="grid grid-cols-1 gap-x-6 gap-y-2 md:grid-cols-2 xl:grid-cols-3">
             {Object.values(definitions).map((bond) => (

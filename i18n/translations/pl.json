@@ -203,7 +203,12 @@
     "subtitle": "Zrozum mechanizmy polskiego rynku obligacji skarbowych i podejmuj świadome decyzje inwestycyjne.",
     "concepts_title": "Podstawowe Pojęcia Finansowe",
     "concepts_subtitle": "Kluczowe terminy niezbędne do zrozumienia Twoich inwestycji.",
+    "starter_title": "Ktora obligacje sprawdzic najpierw?",
+    "starter_subtitle": "Uzyj tego jako szybkiej sciezki do kalkulatora. To punkt startowy analizy, nie rekomendacja.",
+    "starter_cta": "Otworz kalkulator",
     "bond_types": "Aktualna Oferta Obligacji",
+    "bond_types_subtitle": "Porownaj oferte wedlug czasu trwania, mechanizmu oprocentowania, kapitalizacji i kosztu wczesniejszego wykupu przed uruchomieniem scenariusza.",
+    "calculate_this_bond": "Policz te obligacje",
     "faq": "Często Zadawane Pytania",
     "q_inflation": "Jak działa indeksowanie inflacją?",
     "a_inflation": "Obligacje indeksowane inflacją (np. COI lub EDO) mają stałe oprocentowanie w pierwszym roku. W kolejnych latach oprocentowanie jest obliczane jako stopa inflacji z poprzedniego roku plus stała marża.",
@@ -238,6 +243,24 @@
         "title": "Wcześniejszy Wykup",
         "desc": "Możliwość wycofania środków przed terminem zapadalności obligacji za opłatą określoną w liście emisyjnym.",
         "formula": "Wypłata = Kapitał + Odsetki - Opłata za wykup"
+      }
+    },
+    "starter": {
+      "short_term": {
+        "label": "Krotki termin",
+        "description": "Zacznij tutaj, gdy plynnosc jest wazniejsza niz dlugie skladanie odsetek."
+      },
+      "inflation": {
+        "label": "Ochrona przed inflacja",
+        "description": "Uzyj ich, gdy najwazniejsze jest porownanie sily nabywczej."
+      },
+      "family": {
+        "label": "Obligacje rodzinne",
+        "description": "Sprawdzaj tylko wtedy, gdy warunek uprawnienia do obligacji rodzinnych ma zastosowanie."
+      },
+      "long_term": {
+        "label": "Dlugoterminowe oszczedzanie",
+        "description": "Uzyj ich, gdy horyzont jest wystarczajaco dlugi, aby kapitalizacja miala znaczenie."
       }
     },
     "disclaimer": "Uwaga: Warunki obligacji mogą się zmieniać. Zawsze weryfikuj aktualne parametry na oficjalnej stronie polskich obligacji skarbowych (obligacjeskarbowe.pl)."

@@ -203,7 +203,12 @@
     "subtitle": "Understand the mechanisms of the Polish treasury bond market and make informed investment decisions.",
     "concepts_title": "Fundamental Financial Concepts",
     "concepts_subtitle": "Key terms essential to understanding your investments.",
+    "starter_title": "Which bond should I check first?",
+    "starter_subtitle": "Use this as a quick route into the calculator. It is a starting point for analysis, not a recommendation.",
+    "starter_cta": "Open calculator",
     "bond_types": "Current Bond Offers",
+    "bond_types_subtitle": "Compare the current offer by duration, rate mechanism, capitalization, and early redemption cost before running a scenario.",
+    "calculate_this_bond": "Calculate this bond",
     "faq": "Frequently Asked Questions",
     "q_inflation": "How does inflation indexing work?",
     "a_inflation": "Inflation-indexed bonds (e.g., COI or EDO) have a fixed rate in the first year. In subsequent years, the interest rate is calculated as the inflation rate from the previous year plus a fixed margin.",
@@ -238,6 +243,24 @@
         "title": "Early Redemption",
         "desc": "The possibility of withdrawing funds before the bond's maturity date for a fee specified in the emission letter.",
         "formula": "Payout = Capital + Interest - Redemption Fee"
+      }
+    },
+    "starter": {
+      "short_term": {
+        "label": "Short term",
+        "description": "Start here when liquidity matters more than long compounding."
+      },
+      "inflation": {
+        "label": "Inflation protection",
+        "description": "Use these when purchasing-power comparison is the main question."
+      },
+      "family": {
+        "label": "Family bonds",
+        "description": "Check only when the family-bond eligibility condition applies."
+      },
+      "long_term": {
+        "label": "Long-term saving",
+        "description": "Use these when the horizon is long enough for capitalization to matter."
       }
     },
     "disclaimer": "Note: Bond conditions may change over time. Always verify the current parameters on the official Polish government bond website (obligacjeskarbowe.pl)."

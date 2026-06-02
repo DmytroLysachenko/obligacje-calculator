@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
-import { AlertCircle, Clock, Coins, ShieldCheck, TrendingUp } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
+import { AlertCircle, ArrowRight, Clock, Coins, ShieldCheck, TrendingUp } from 'lucide-react';
 import { BondDefinition } from '../../bond-core/constants/bond-definitions';
 import { useAppI18n } from '@/i18n/client';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
@@ -13,12 +13,12 @@ export const BondEducationCard: React.FC<BondEducationCardProps> = ({ bond }) =>
     return (<article className="flex h-full flex-col border-t border-border py-5 transition-colors hover:border-foreground/20">
       <div>
         <div className="mb-3 flex items-start justify-between gap-4">
-          <Badge variant={bond.isInflationIndexed ? 'default' : 'secondary'}>
+          <span className={bond.isInflationIndexed ? 'surface-chip border-foreground text-foreground' : 'surface-chip'}>
             {bond.isInflationIndexed ? t('bonds.inflation.indexed') : t('bonds.fixed_rate')}
-          </Badge>
-          {bond.isFamilyOnly ? (<Badge variant="outline" className="border-border text-foreground">
+          </span>
+          {bond.isFamilyOnly ? (<span className="surface-chip text-foreground">
               {t('bonds.family_only')}
-            </Badge>) : null}
+            </span>) : null}
         </div>
         <h4 className="flex items-baseline gap-3">
           <span className="text-[32px] font-semibold leading-none text-foreground">{bond.name}</span>
@@ -63,7 +63,7 @@ export const BondEducationCard: React.FC<BondEducationCardProps> = ({ bond }) =>
           </div>
         </div>
 
-        <div className="mt-auto pt-1">
+        <div className="mt-auto space-y-4 pt-1">
           <div className="flex items-start gap-2">
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-warning"/>
             <div className="text-[10px] text-muted-foreground">
@@ -71,6 +71,13 @@ export const BondEducationCard: React.FC<BondEducationCardProps> = ({ bond }) =>
               {t('bonds.early_exit_desc', { fee: bond.earlyWithdrawalFee })}
             </div>
           </div>
+          <Link
+            href="/single-calculator"
+            className="inline-flex h-9 items-center gap-2 border-b border-foreground text-sm font-semibold text-foreground"
+          >
+            {t('education.calculate_this_bond')}
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </div>
     </article>);
