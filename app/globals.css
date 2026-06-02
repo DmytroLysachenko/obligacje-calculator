@@ -190,6 +190,9 @@
     color: var(--finance-success);
     font-weight: 600;
   }
+  .financial-number {
+    font-variant-numeric: tabular-nums;
+  }
   .financial-negative {
     @apply text-red-600 font-semibold;
   }

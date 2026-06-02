@@ -145,20 +145,20 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
             <Table className="w-full table-fixed text-sm">
               <TableHeader>
                 <TableRow className="h-12 hover:bg-transparent">
-                  <TableHead className="w-[34%]">{t('ladder_page.timeline.table_month')}</TableHead>
-                  <TableHead className="w-[18%] text-right">{t('ladder_page.timeline.table_lots')}</TableHead>
-                  <TableHead className="w-[24%] text-right">{t('ladder_page.timeline.table_amount')}</TableHead>
-                  <TableHead className="w-[24%] text-right">{t('ladder_page.timeline.table_share')}</TableHead>
+                  <TableHead className="sticky top-0 z-10 w-[34%] bg-background">{t('ladder_page.timeline.table_month')}</TableHead>
+                  <TableHead className="sticky top-0 z-10 w-[18%] bg-background text-right">{t('ladder_page.timeline.table_lots')}</TableHead>
+                  <TableHead className="sticky top-0 z-10 w-[24%] bg-background text-right">{t('ladder_page.timeline.table_amount')}</TableHead>
+                  <TableHead className="sticky top-0 z-10 w-[24%] bg-background text-right">{t('ladder_page.timeline.table_share')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {displayedRows.map((item) => (<TableRow key={item.date} className="h-14 border-b border-border transition-colors hover:bg-muted/25">
                     <TableCell className="font-medium text-foreground">{item.displayDate}</TableCell>
-                    <TableCell className="text-right text-foreground">{item.count}</TableCell>
-                    <TableCell className="text-right font-semibold text-foreground">
+                    <TableCell className="financial-number text-right text-foreground">{item.count}</TableCell>
+                    <TableCell className="financial-number text-right font-semibold text-foreground">
                       {formatCurrency(item.amount)}
                     </TableCell>
-                    <TableCell className="text-right text-muted-foreground">
+                    <TableCell className="financial-number text-right text-muted-foreground">
                       {chartData.length > 0 ? `${((item.count / results.lots.length) * 100).toFixed(1)}%` : '-'}
                     </TableCell>
                   </TableRow>))}

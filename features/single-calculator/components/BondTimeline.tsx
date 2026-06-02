@@ -180,38 +180,38 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
           </div>))}
       </ResponsiveTableSheet>
 
-      <div className="hidden w-full overflow-hidden rounded-lg bg-card shadow-none lg:block">
-        <Table className="table-fixed w-full">
+      <div className="hidden w-full border-y border-border lg:block">
+        <Table className="w-full table-fixed text-sm">
           <TableHeader>
-            <TableRow className="bg-muted/35 hover:bg-muted/35">
-              <TableHead className="sticky top-0 z-10 h-10 w-[11%] bg-muted/60">
+            <TableRow className="h-12 hover:bg-transparent">
+              <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-background">
                 {t('common.period')}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-10 w-[18%] bg-muted/60">
+              <TableHead className="sticky top-0 z-10 h-12 w-[18%] bg-background">
                 {t('bonds.schedule.checkpoint_meaning')}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-10 w-[17%] bg-muted/60">
+              <TableHead className="sticky top-0 z-10 h-12 w-[17%] bg-background">
                 {t('bonds.schedule.rate_and_basis')}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-10 w-[11%] bg-muted/60">
+              <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-background">
                 {t('bonds.total_wealth')}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-10 w-[11%] bg-muted/60">
+              <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-background">
                 {displayedTimeline[0]?.cashFlowLabel ?? t('bonds.schedule.cash_flow')}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-10 w-[10%] bg-muted/60">
+              <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-background">
                 {t('common.net_profit')}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-10 w-[10%] bg-muted/60">
+              <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-background">
                 {t('bonds.real_value')}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-10 w-[12%] bg-muted/60 text-right">
+              <TableHead className="sticky top-0 z-10 h-12 w-[12%] bg-background text-right">
                 {t('bonds.early_exit_payout')}
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {displayedTimeline.map((row) => (<TableRow key={row.key} className={cn('border-b border-border transition-colors hover:bg-muted/35', row.isWithdrawal ? 'bg-muted/55 font-semibold' : '')}>
+            {displayedTimeline.map((row) => (<TableRow key={row.key} className={cn('h-14 border-b border-border transition-colors hover:bg-muted/25', row.isWithdrawal ? 'bg-muted/45 font-semibold' : '')}>
                 <TableCell className="py-4 align-top">
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
@@ -240,7 +240,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
                 </TableCell>
                 <TableCell className="py-4 align-top">
                   <div className="flex flex-col gap-1 pr-2">
-                    <span className="font-mono text-xs font-semibold text-foreground">
+                    <span className="financial-number font-mono text-xs font-semibold text-foreground">
                       {row.interestRateLabel}
                     </span>
                     <span className="line-clamp-2 text-xs leading-5">{row.rateSourceLabel}</span>
@@ -249,19 +249,19 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
                       </span>) : null}
                   </div>
                 </TableCell>
-                <TableCell className="py-4 align-top font-mono text-xs">
+                <TableCell className="financial-number py-4 align-top font-mono text-xs">
                   {formatCurrency(row.totalWealth)}
                 </TableCell>
-                <TableCell className="py-4 align-top font-mono text-xs text-muted-foreground">
+                <TableCell className="financial-number py-4 align-top font-mono text-xs text-muted-foreground">
                   {formatCurrency(row.paidOutCash)}
                 </TableCell>
-                <TableCell className={cn('py-4 align-top font-mono text-xs', row.netProfit >= 0 ? 'financial-positive' : 'text-destructive')}>
+                <TableCell className={cn('financial-number py-4 align-top font-mono text-xs', row.netProfit >= 0 ? 'financial-positive' : 'text-destructive')}>
                   {formatCurrency(row.netProfit)}
                 </TableCell>
-                <TableCell className="py-4 align-top font-mono text-xs text-muted-foreground">
+                <TableCell className="financial-number py-4 align-top font-mono text-xs text-muted-foreground">
                   {formatCurrency(row.realValue)}
                 </TableCell>
-                <TableCell className="py-4 align-top text-right font-mono text-xs font-semibold">
+                <TableCell className="financial-number py-4 align-top text-right font-mono text-xs font-semibold">
                   {formatCurrency(row.earlyExitValue)}
                 </TableCell>
               </TableRow>))}

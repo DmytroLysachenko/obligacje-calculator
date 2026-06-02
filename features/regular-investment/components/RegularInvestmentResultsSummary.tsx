@@ -167,12 +167,12 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
               <Table className="w-full table-fixed text-sm">
               <TableHeader>
                 <TableRow className="h-12 hover:bg-transparent">
-                  <TableHead className="w-[16%]">{t('common.year')}</TableHead>
-                  <TableHead className="w-[12%] text-right">{t('regular_summary.lots_label')}</TableHead>
-                  <TableHead className="w-[18%] text-right">{t('regular_summary.invested')}</TableHead>
-                  <TableHead className="w-[18%] text-right">{t('regular_summary.interest')}</TableHead>
-                  <TableHead className="w-[18%] text-right">{t('bonds.tax')}</TableHead>
-                  <TableHead className="w-[18%] text-right">{t('regular_summary.net_value')}</TableHead>
+                  <TableHead className="sticky top-0 z-10 w-[16%] bg-background">{t('common.year')}</TableHead>
+                  <TableHead className="sticky top-0 z-10 w-[12%] bg-background text-right">{t('regular_summary.lots_label')}</TableHead>
+                  <TableHead className="sticky top-0 z-10 w-[18%] bg-background text-right">{t('regular_summary.invested')}</TableHead>
+                  <TableHead className="sticky top-0 z-10 w-[18%] bg-background text-right">{t('regular_summary.interest')}</TableHead>
+                  <TableHead className="sticky top-0 z-10 w-[18%] bg-background text-right">{t('bonds.tax')}</TableHead>
+                  <TableHead className="sticky top-0 z-10 w-[18%] bg-background text-right">{t('regular_summary.net_value')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -182,15 +182,15 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                     className="h-14 border-b border-border transition-colors hover:bg-muted/25"
                   >
                     <TableCell className="font-medium">{bucket.year}</TableCell>
-                    <TableCell className="text-right">{bucket.count}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(bucket.invested)}</TableCell>
-                    <TableCell className="text-right financial-positive">
+                    <TableCell className="financial-number text-right">{bucket.count}</TableCell>
+                    <TableCell className="financial-number text-right">{formatCurrency(bucket.invested)}</TableCell>
+                    <TableCell className="financial-number text-right financial-positive">
                       {formatCurrency(bucket.interest)}
                     </TableCell>
-                    <TableCell className="text-right text-[var(--finance-warning)]">
+                    <TableCell className="financial-number text-right text-[var(--finance-warning)]">
                       {formatCurrency(bucket.tax)}
                     </TableCell>
-                    <TableCell className="text-right font-semibold">
+                    <TableCell className="financial-number text-right font-semibold">
                       {formatCurrency(bucket.netValue)}
                     </TableCell>
                   </TableRow>
