@@ -13,7 +13,7 @@ interface ChartLegendStripProps {
   items: ChartLegendItem[];
 }
 
-export function ChartLegendStrip({items}: ChartLegendStripProps) {
+export const ChartLegendStrip = React.memo(function ChartLegendStrip({items}: ChartLegendStripProps) {
   return (
     <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-border pb-3">
       {items.map((item) => (
@@ -34,4 +34,4 @@ export function ChartLegendStrip({items}: ChartLegendStripProps) {
       ))}
     </div>
   );
-}
+});

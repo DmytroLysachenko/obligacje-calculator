@@ -102,7 +102,7 @@ describe('strategy result layout contracts', () => {
     expectContains(source, '<section className="space-y-8 border-t border-border py-6">');
     expectContains(source, "const [chartMode, setChartMode] = useState<LadderChartMode>('yearly');");
     expectContains(source, 'const yearlyBuckets = useMemo<LadderYearBucket[]>(() => buildLadderYearBuckets(monthlyBuckets), [monthlyBuckets]);');
-    expectContains(source, "const chartData = chartMode === 'yearly' ? yearlyBuckets : monthlyBuckets;");
+    expectContains(source, "const chartData = useMemo(");
     expectContains(source, "t(`ladder_page.timeline.chart_modes.${mode}`)");
     expectContains(source, '<div className="hidden border-y border-border lg:block">');
     expectContains(source, '<Table className="w-full table-fixed text-sm">');

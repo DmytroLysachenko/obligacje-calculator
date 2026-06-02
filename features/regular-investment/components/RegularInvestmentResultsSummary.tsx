@@ -1,5 +1,5 @@
 'use client';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { RegularInvestmentResult } from '../../bond-core/types';
 import { useAppI18n } from '@/i18n/client';
@@ -30,12 +30,13 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
     const { t, locale: language } = useAppI18n();
     const [yearRowLimit, setYearRowLimit] = useState<TableRowLimit>(12);
     const dateLocale = getDateFnsLocale(language);
-    const formatCurrency = (value: number) => new Intl.NumberFormat(getIntlLocale(language), {
+    const currencyFormatter = useMemo(() => new Intl.NumberFormat(getIntlLocale(language), {
         style: 'currency',
         currency: 'PLN',
         maximumFractionDigits: 0,
-    }).format(value);
-    const primaryStats: SummaryStat[] = [
+    }), [language]);
+    const formatCurrency = useCallback((value: number) => currencyFormatter.format(value), [currencyFormatter]);
+    const primaryStats = useMemo<SummaryStat[]>(() => [
         {
             label: t('bonds.total_invested'),
             value: formatCurrency(results.totalInvested),
@@ -56,8 +57,8 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
             value: formatCurrency(results.finalRealValue),
             helper: t('regular_summary.real_value_helper'),
         },
-    ];
-    const supportingStats: SummaryStat[] = [
+    ], [formatCurrency, results.finalNominalValue, results.finalRealValue, results.totalInvested, results.totalProfit, t]);
+    const supportingStats = useMemo<SummaryStat[]>(() => [
         {
             label: t('bonds.real_cagr'),
             value: `${results.realAnnualizedReturn.toFixed(2)}%`,
@@ -68,31 +69,32 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
             value: formatCurrency(results.totalTax),
             helper: t('regular_summary.tax_helper'),
         },
-    ];
+    ], [formatCurrency, results.realAnnualizedReturn, results.totalTax, t]);
     const yearlyBuckets = useMemo<RegularInvestmentYearBucket[]>(() => buildRegularInvestmentYearBuckets(results.lots), [results.lots]);
     const visibleYearlyBuckets = useMemo(() => applyTableRowLimit(yearlyBuckets, yearRowLimit), [yearRowLimit, yearlyBuckets]);
     const recentLots = useMemo(() => buildRecentRegularInvestmentLots(results.lots, MAX_RECENT_LOTS), [results.lots]);
-    const handleExport = () => {
+    const handleExport = useCallback(() => {
         exportLotsCsv({
             lots: results.lots,
             headers: buildLotsExportHeaders(t),
             language,
             fileName: buildLotsCsvFilename(),
         });
-    };
+    }, [language, results.lots, t]);
+    const summaryActions = useMemo(() => [
+        {
+            label: t('comparison.export'),
+            icon: <FileSpreadsheet className="h-4 w-4"/>,
+            onClick: handleExport,
+        },
+    ], [handleExport, t]);
     return (<div className="space-y-8">
       <ResultSummaryHero
         eyebrow={t('regular_summary.plan_eyebrow')}
         value={formatCurrency(results.finalNominalValue)}
         description={t('regular_summary.hero_description')}
         narrative={t('regular_summary.hero_narrative')}
-        actions={[
-            {
-                label: t('comparison.export'),
-                icon: <FileSpreadsheet className="h-4 w-4"/>,
-                onClick: handleExport,
-            },
-        ]}
+        actions={summaryActions}
       />
 
       <MetricStrip

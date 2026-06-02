@@ -22,7 +22,7 @@ interface ResultSummaryHeroProps {
   aside?: React.ReactNode;
 }
 
-export function ResultSummaryHero({
+export const ResultSummaryHero = React.memo(function ResultSummaryHero({
   eyebrow,
   value,
   description,
@@ -85,4 +85,4 @@ export function ResultSummaryHero({
       ) : null}
     </section>
   );
-}
+});

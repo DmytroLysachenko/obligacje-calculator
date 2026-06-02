@@ -35,7 +35,7 @@ describe('single calculator result layout contracts', () => {
     const source = readSource(paths.summary);
 
     expectContains(source, '<ResultSummaryHero');
-    expectContains(source, '<MetricStrip items={[...primarySummaryCards, ...secondarySummaryCards]}/>');
+    expectContains(source, '<MetricStrip items={metricItems}/>');
     expectContains(source, '<SecondaryInsightAccordion title={t(\'bonds.results.scenario_facts_title\')}');
     expectContains(source, '<CalculationAuditTrace point={auditPoint}/>');
     expectContains(source, '<ScenarioFactsBlock');

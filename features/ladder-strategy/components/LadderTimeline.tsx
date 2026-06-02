@@ -1,5 +1,5 @@
 'use client';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, } from 'recharts';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -34,10 +34,13 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
         currency: 'PLN',
         maximumFractionDigits: 0,
     });
-    const formatCurrency = (value: number) => currencyFormatter.format(value);
+    const formatCurrency = useCallback((value: number) => currencyFormatter.format(value), [currencyFormatter]);
     const monthlyBuckets = useMemo<LadderMaturityBucket[]>(() => buildLadderMaturityBuckets(results.lots, dateLocale), [dateLocale, results.lots]);
     const yearlyBuckets = useMemo<LadderYearBucket[]>(() => buildLadderYearBuckets(monthlyBuckets), [monthlyBuckets]);
-    const chartData = chartMode === 'yearly' ? yearlyBuckets : monthlyBuckets;
+    const chartData = useMemo(
+        () => chartMode === 'yearly' ? yearlyBuckets : monthlyBuckets,
+        [chartMode, monthlyBuckets, yearlyBuckets],
+    );
     const displayedRows = useMemo(() => applyTableRowLimit(monthlyBuckets, rowLimit), [monthlyBuckets, rowLimit]);
     const averageMaturityValue = monthlyBuckets.length > 0
         ? monthlyBuckets.reduce((accumulator, item) => accumulator + item.amount, 0) / monthlyBuckets.length
@@ -48,6 +51,23 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
     const earliestMonth = monthlyBuckets[0] ?? null;
     const latestMonth = monthlyBuckets[monthlyBuckets.length - 1] ?? null;
     const peakShare = peakMonth && results.lots.length > 0 ? (peakMonth.count / results.lots.length) * 100 : 0;
+    const metricItems = useMemo(() => [
+        {
+            label: t('ladder_page.timeline.average_maturity_value'),
+            value: formatCurrency(averageMaturityValue),
+            description: t('ladder_page.timeline.average_maturity_value_description'),
+        },
+        {
+            label: t('ladder_page.timeline.spread_gap'),
+            value: formatCurrency(monthlySpreadGap),
+            description: t('ladder_page.timeline.spread_gap_description'),
+        },
+        {
+            label: t('ladder_page.timeline.active_window'),
+            value: `${earliestMonth ? earliestMonth.displayDate : '-'} ${latestMonth ? `- ${latestMonth.displayDate}` : ''}`,
+            description: t('ladder_page.timeline.active_window_description'),
+        },
+    ], [averageMaturityValue, earliestMonth, formatCurrency, latestMonth, monthlySpreadGap, t]);
     return (<div className="space-y-8">
       <ResultSummaryHero
         eyebrow={t('ladder_page.timeline.eyebrow')}
@@ -66,23 +86,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
 
       <MetricStrip
         columns="grid-cols-1 md:grid-cols-3"
-        items={[
-          {
-            label: t('ladder_page.timeline.average_maturity_value'),
-            value: formatCurrency(averageMaturityValue),
-            description: t('ladder_page.timeline.average_maturity_value_description'),
-          },
-          {
-            label: t('ladder_page.timeline.spread_gap'),
-            value: formatCurrency(monthlySpreadGap),
-            description: t('ladder_page.timeline.spread_gap_description'),
-          },
-          {
-            label: t('ladder_page.timeline.active_window'),
-            value: `${earliestMonth ? earliestMonth.displayDate : '-'} ${latestMonth ? `- ${latestMonth.displayDate}` : ''}`,
-            description: t('ladder_page.timeline.active_window_description'),
-          },
-        ]}
+        items={metricItems}
       />
 
       <section className="space-y-8 border-t border-border py-6">

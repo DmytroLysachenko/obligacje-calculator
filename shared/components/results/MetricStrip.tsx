@@ -15,7 +15,7 @@ interface MetricStripProps {
   columns?: string;
 }
 
-export function MetricStrip({
+export const MetricStrip = React.memo(function MetricStrip({
   items,
   columns = 'grid-cols-1 md:grid-cols-2 xl:grid-cols-4',
 }: MetricStripProps) {
@@ -36,4 +36,4 @@ export function MetricStrip({
       </div>
     </section>
   );
-}
+});
