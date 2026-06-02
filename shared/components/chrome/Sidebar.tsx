@@ -46,7 +46,7 @@ function SidebarBrand() {
   const { t } = useAppI18n();
 
   return (
-    <div className="border-b border-border px-4 py-3">
+    <div className="border-b border-border px-4 py-4">
       <Link href="/" className="flex items-center gap-2.5">
         <div className="rounded-md bg-foreground p-1.5 text-background">
           <TrendingUp className="h-3 w-3" />
@@ -63,7 +63,11 @@ function SidebarBrand() {
 }
 
 function SidebarSectionLabel({ children }: { children: React.ReactNode }) {
-  return <p className="px-1 text-xs font-semibold text-muted-foreground">{children}</p>;
+  return (
+    <p className="px-2 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+      {children}
+    </p>
+  );
 }
 
 function NavLinkItem({
@@ -82,17 +86,17 @@ function NavLinkItem({
       href={item.href}
       onClick={onItemClick}
       className={cn(
-        'group block rounded-md border px-3 py-2.5 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40',
+        'group block border-l-2 px-3 py-2.5 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40',
         isActive
-          ? 'border-border bg-card text-foreground'
-          : 'border-transparent bg-transparent text-muted-foreground hover:border-border hover:bg-card hover:text-foreground',
+          ? 'border-foreground bg-transparent text-foreground'
+          : 'border-transparent bg-transparent text-muted-foreground hover:border-border hover:text-foreground',
       )}
     >
       <div className="flex min-w-0 items-center gap-3">
         <div
           className={cn(
-            'rounded-md border border-border p-1.5',
-            isActive ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground',
+            'rounded-md p-1.5 transition-colors',
+            isActive ? 'bg-transparent text-foreground' : 'bg-muted/45 text-muted-foreground',
           )}
         >
           <Icon className="h-4 w-4" />
@@ -106,8 +110,8 @@ function NavLinkItem({
             className={cn(
               'h-4 w-4 shrink-0 transition-transform',
               isActive
-                ? 'text-slate-500'
-                : 'text-slate-400 group-hover:translate-x-0.5',
+                ? 'text-foreground'
+                : 'text-muted-foreground group-hover:translate-x-0.5',
             )}
           />
         </div>
@@ -154,7 +158,7 @@ function SidebarFooter({
   const { canManageWorkspace } = usePortfolioAccess();
 
   return (
-    <div className="space-y-3 border-t border-border bg-muted/35 p-3">
+    <div className="space-y-4 border-t border-border bg-muted/35 p-4">
       {canManageWorkspace ? (
         <SidebarUtilityGroup title={t('sidebar.workspace_title')}>
           <SidebarWorkspaceUtility pathname={pathname} />
@@ -227,7 +231,7 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
     <div className="flex h-full flex-col border-r border-border bg-[#eeeeea] text-foreground">
       <SidebarBrand />
 
-      <nav className="custom-scrollbar flex-1 space-y-5 overflow-y-auto px-3 py-4">
+      <nav className="custom-scrollbar flex-1 space-y-8 overflow-y-auto px-4 py-5">
         {navSections.map((section) => (
           <NavSectionBlock
             key={section.label}

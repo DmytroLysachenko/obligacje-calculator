@@ -10,7 +10,7 @@ export function SidebarSettingsUtility() {
   const { t } = useAppI18n();
 
   return (
-    <>
+    <div className="space-y-0">
       <SidebarUtilityPanel>
         <SidebarUtilityRow
           title={t('common.language')}
@@ -25,6 +25,6 @@ export function SidebarSettingsUtility() {
           action={<ThemeToggle />}
         />
       </SidebarUtilityPanel>
-    </>
+    </div>
   );
 }

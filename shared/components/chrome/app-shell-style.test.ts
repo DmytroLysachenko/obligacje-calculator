@@ -51,36 +51,40 @@ describe('app shell visual contracts', () => {
     const source = expectHas('shared/components/chrome/Sidebar.tsx', [
       'bg-[#eeeeea]',
       'border-r border-border',
-      'rounded-md border px-3 py-2.5',
+      'border-l-2 px-3 py-2.5',
       'border-transparent bg-transparent text-muted-foreground',
-      'hover:border-border hover:bg-card hover:text-foreground',
-      'bg-foreground text-background',
+      'hover:border-border hover:text-foreground',
+      'border-foreground bg-transparent text-foreground',
+      'space-y-8 overflow-y-auto px-4 py-5',
     ]);
 
     expect(source).not.toContain('linear-gradient');
     expect(source).not.toContain('rounded-[1.35rem]');
     expect(source).not.toContain('shadow-sky');
     expect(source).not.toContain('border-sky');
+    expect(source).not.toContain('hover:bg-card');
+    expect(source).not.toContain('text-slate-');
   });
 
   it('keeps sidebar utility groups simple and compact', () => {
     const source = expectHas('shared/components/chrome/SidebarUtilityGroup.tsx', [
       'border-t border-border',
-      'text-xs font-semibold uppercase tracking-[0.06em]',
-      'rounded-md border border-border bg-card px-3 py-3',
+      'text-xs font-semibold uppercase tracking-[0.08em]',
+      'border-y border-border py-1',
       'text-xs leading-5 text-muted-foreground',
     ]);
 
     expect(source).not.toContain('rounded-[1.6rem]');
     expect(source).not.toContain('border-dashed');
     expect(source).not.toContain('text-slate-500');
+    expect(source).not.toContain('rounded-md border border-border bg-card');
   });
 
   it('keeps sidebar freshness colors semantic', () => {
     const source = expectHas('shared/components/chrome/SidebarSyncSummary.tsx', [
       'text-[var(--finance-success)]',
       'text-[var(--finance-warning)]',
-      'rounded-md border px-2 py-0.5 text-xs font-semibold',
+      'inline-flex text-xs font-semibold',
       'text-sm font-semibold text-foreground',
       'text-xs leading-5 text-muted-foreground',
     ]);
@@ -88,5 +92,6 @@ describe('app shell visual contracts', () => {
     expect(source).not.toContain('bg-emerald-50');
     expect(source).not.toContain('bg-orange-50');
     expect(source).not.toContain('bg-amber-50');
+    expect(source).not.toContain('rounded-md border px-2 py-0.5');
   });
 });

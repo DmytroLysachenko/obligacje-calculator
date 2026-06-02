@@ -38,14 +38,14 @@ function getFreshnessText(
 
 function getFreshnessClass(freshness: CalculationDataFreshness) {
   if (freshness.status === 'fresh') {
-    return 'border-[var(--finance-success)]/30 bg-transparent text-[var(--finance-success)]';
+    return 'text-[var(--finance-success)]';
   }
 
   if (freshness.status === 'fallback' || freshness.usedFallback) {
-    return 'border-[var(--finance-warning)]/40 bg-transparent text-[var(--finance-warning)]';
+    return 'text-[var(--finance-warning)]';
   }
 
-  return 'border-[var(--finance-warning)]/40 bg-transparent text-[var(--finance-warning)]';
+  return 'text-[var(--finance-warning)]';
 }
 
 export function SidebarSyncSummary({
@@ -70,7 +70,7 @@ export function SidebarSyncSummary({
           {dataFreshness ? (
             <span
               className={cn(
-                'inline-flex rounded-md border px-2 py-0.5 text-xs font-semibold',
+                'inline-flex text-xs font-semibold',
                 getFreshnessClass(dataFreshness),
               )}
             >
