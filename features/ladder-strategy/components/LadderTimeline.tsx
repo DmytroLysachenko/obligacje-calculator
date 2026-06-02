@@ -9,7 +9,7 @@ import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
-import { ResultMetricCard } from '@/shared/components/results/ResultMetricCard';
+import { MetricStrip } from '@/shared/components/results/MetricStrip';
 import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
 import { applyTableRowLimit, TableDensityControls, TableRowLimit } from '@/shared/components/results/TableDensityControls';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
@@ -38,7 +38,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
     const earliestMonth = chartData[0] ?? null;
     const latestMonth = chartData[chartData.length - 1] ?? null;
     const peakShare = peakMonth && results.lots.length > 0 ? (peakMonth.count / results.lots.length) * 100 : 0;
-    return (<div className="space-y-6">
+    return (<div className="space-y-8">
       <ResultSummaryHero
         eyebrow={t('ladder_page.timeline.eyebrow')}
         value={peakMonth
@@ -54,25 +54,28 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
           </div>}
       />
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <ResultMetricCard
-          label={t('ladder_page.timeline.average_maturity_value')}
-          value={formatCurrency(averageMaturityValue)}
-          description={t('ladder_page.timeline.average_maturity_value_description')}
-        />
-        <ResultMetricCard
-          label={t('ladder_page.timeline.spread_gap')}
-          value={formatCurrency(monthlySpreadGap)}
-          description={t('ladder_page.timeline.spread_gap_description')}
-        />
-        <ResultMetricCard
-          label={t('ladder_page.timeline.active_window')}
-          value={`${earliestMonth ? earliestMonth.displayDate : '-'} ${latestMonth ? `- ${latestMonth.displayDate}` : ''}`}
-          description={t('ladder_page.timeline.active_window_description')}
-        />
-      </div>
+      <MetricStrip
+        columns="grid-cols-1 md:grid-cols-3"
+        items={[
+          {
+            label: t('ladder_page.timeline.average_maturity_value'),
+            value: formatCurrency(averageMaturityValue),
+            description: t('ladder_page.timeline.average_maturity_value_description'),
+          },
+          {
+            label: t('ladder_page.timeline.spread_gap'),
+            value: formatCurrency(monthlySpreadGap),
+            description: t('ladder_page.timeline.spread_gap_description'),
+          },
+          {
+            label: t('ladder_page.timeline.active_window'),
+            value: `${earliestMonth ? earliestMonth.displayDate : '-'} ${latestMonth ? `- ${latestMonth.displayDate}` : ''}`,
+            description: t('ladder_page.timeline.active_window_description'),
+          },
+        ]}
+      />
 
-      <section className="space-y-6 border-t border-border py-6">
+      <section className="space-y-8 border-t border-border py-6">
         <div className="space-y-2">
           <h2 className="ui-card-title">
             {t('ladder_page.timeline.chart_title')}
@@ -130,7 +133,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
               </div>))}
           </ResponsiveTableSheet>
 
-          <div className="hidden overflow-hidden border-y border-border lg:block">
+          <div className="hidden border-y border-border lg:block">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border py-3 text-sm text-muted-foreground">
               <p>
                 {t('ladder_page.timeline.table_summary')}
@@ -139,9 +142,9 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
                 {chartData.length} {t('ladder_page.timeline.table_count_suffix')}
               </p>
             </div>
-            <Table className="table-fixed w-full">
+            <Table className="w-full table-fixed text-sm">
               <TableHeader>
-                <TableRow className="hover:bg-transparent">
+                <TableRow className="h-12 hover:bg-transparent">
                   <TableHead className="w-[34%]">{t('ladder_page.timeline.table_month')}</TableHead>
                   <TableHead className="w-[18%] text-right">{t('ladder_page.timeline.table_lots')}</TableHead>
                   <TableHead className="w-[24%] text-right">{t('ladder_page.timeline.table_amount')}</TableHead>
@@ -149,7 +152,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {displayedRows.map((item) => (<TableRow key={item.date} className="border-b border-border transition-colors hover:bg-muted/35">
+                {displayedRows.map((item) => (<TableRow key={item.date} className="h-14 border-b border-border transition-colors hover:bg-muted/25">
                     <TableCell className="font-medium text-foreground">{item.displayDate}</TableCell>
                     <TableCell className="text-right text-foreground">{item.count}</TableCell>
                     <TableCell className="text-right font-semibold text-foreground">
