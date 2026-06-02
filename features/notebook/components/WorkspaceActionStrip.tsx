@@ -23,7 +23,7 @@ export function WorkspaceActionStrip({
   const { t } = useAppI18n();
 
   return (
-    <section className="space-y-4 rounded-lg border border-border bg-card px-5 py-5">
+    <section className="space-y-4 border-y border-border py-4">
       <div className="space-y-2">
         <p className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">
           {t('workspace.action_strip_title')}
@@ -35,15 +35,16 @@ export function WorkspaceActionStrip({
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-2 border-t border-dashed border-border pt-4">
+      <div className="flex flex-wrap gap-2 border-t border-border pt-4">
         <Button
-          variant="outline"
-          onClick={onImport}
-          className="gap-2 rounded-md border-border bg-card"
+          onClick={onCreatePortfolio}
+          className="gap-2 rounded-md"
           disabled={!canManageWorkspace}
         >
-          <Upload className="h-4 w-4" />
-          {t('notebook.import_json')}
+          <Plus className="h-4 w-4" />
+          {canManageWorkspace
+            ? t('notebook.new_portfolio')
+            : t('workspace.sign_in_required_short')}
         </Button>
         <Button
           variant="outline"
@@ -54,22 +55,17 @@ export function WorkspaceActionStrip({
           {t('notebook.load_demo')}
         </Button>
         <Button
-          variant="outline"
-          onClick={onRefresh}
-          className="gap-2 rounded-md border-border bg-card"
-        >
-          <RefreshCcw className="h-4 w-4" />
-          {t('common.refresh')}
-        </Button>
-        <Button
-          onClick={onCreatePortfolio}
+          variant="ghost"
+          onClick={onImport}
           className="gap-2 rounded-md"
           disabled={!canManageWorkspace}
         >
-          <Plus className="h-4 w-4" />
-          {canManageWorkspace
-            ? t('notebook.new_portfolio')
-            : t('workspace.sign_in_required_short')}
+          <Upload className="h-4 w-4" />
+          {t('notebook.import_json')}
+        </Button>
+        <Button variant="ghost" onClick={onRefresh} className="gap-2 rounded-md">
+          <RefreshCcw className="h-4 w-4" />
+          {t('common.refresh')}
         </Button>
       </div>
     </section>

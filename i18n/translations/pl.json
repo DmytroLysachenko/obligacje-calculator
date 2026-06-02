@@ -1233,6 +1233,25 @@
     "private_drafts_label": "Prywatne szkice",
     "private_drafts_label_desc": "Robocze portfele pozostajace tylko w prywatnym widoku.",
     "stored_portfolios_note": "Otworz jeden portfel, sprawdz partie i okno zapadalnosci, a dopiero potem przechodz do symulacji zagregowanej.",
+    "capabilities_title": "W notatniku portfela mozesz",
+    "capabilities": {
+      "track": {
+        "title": "Sledzic realne partie",
+        "desc": "Zapisuj typ obligacji, liczbe sztuk, date zakupu i robocze notatki w jednym rekordzie portfela."
+      },
+      "maturities": {
+        "title": "Sprawdzac zapadalnosci",
+        "desc": "Przegladaj przyszle wyplaty i okna plynnosci przed czytaniem projekcji."
+      },
+      "export": {
+        "title": "Eksportowac dane portfela",
+        "desc": "Zachowaj przenosny rekord JSON lub CSV do audytu i przekazania dalej."
+      },
+      "projection": {
+        "title": "Porownywac wartosc realna i prognozowana",
+        "desc": "Traktuj analityke jako kontekst po upewnieniu sie, ze zapisane partie sa poprawne."
+      }
+    },
     "record_view": "Widok portfela",
     "record_intro_title": "Otworz jeden portfel, sprawdz zapisane partie i dopiero potem przejdz do eksportu lub symulacji.",
     "record_intro_desc": "Najpierw przeczytaj zapisane partie oraz najblizsze zapadalnosci. Zakladka analityczna ma byc wsparciem dla rekordu, nie warstwa rekomendacyjna.",
@@ -1859,6 +1878,7 @@
     "action_strip_guest_desc": "Te akcje pokazuja przyszly przebieg dla zalogowanego uzytkownika. Odswiezanie pozostaje dostepne, ale zapisy i import sa celowo zablokowane.",
     "sign_in_required_short": "Wymagane logowanie",
     "sign_in_needed_for_portfolio": "Zapisywanie do portfela jest dostepne tylko w zalogowanym workspace. Nadal mozesz normalnie uzywac kalkulatora i zapisywac osobne scenariusze.",
+    "locked_notebook_notice": "Tryb goscia moze pokazac strukture notatnika, ale zapisywanie portfeli, import partii i ladowanie demo pozostaja zablokowane do czasu dostepu do przestrzeni.",
     "empty_guest_description": "Funkcje workspace dla zalogowanych nie sa dostepne w trybie goscia. Korzystaj swobodnie z kalkulatorow, a partie do portfeli zapiszesz po zalogowaniu."
   },
   "export": {

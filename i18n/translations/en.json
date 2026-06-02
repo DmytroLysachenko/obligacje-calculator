@@ -1233,6 +1233,25 @@
     "private_drafts_label": "Private drafts",
     "private_drafts_label_desc": "Working portfolios that stay in the private notebook view.",
     "stored_portfolios_note": "Open one portfolio, review lots and the maturity window, and only then move into the aggregated projection.",
+    "capabilities_title": "With Portfolio Notebook you can",
+    "capabilities": {
+      "track": {
+        "title": "Track real bond lots",
+        "desc": "Record bond type, quantity, purchase date, and working notes in one portfolio record."
+      },
+      "maturities": {
+        "title": "Inspect maturities",
+        "desc": "Review upcoming payouts and liquidity windows before reading projections."
+      },
+      "export": {
+        "title": "Export portfolio data",
+        "desc": "Keep a portable JSON or CSV record for audit and handoff."
+      },
+      "projection": {
+        "title": "Compare real and projected value",
+        "desc": "Use analytics as supporting context after the stored lots are correct."
+      }
+    },
     "record_view": "Portfolio record view",
     "record_intro_title": "Open one portfolio, inspect the stored lots, and only then move into export or simulation.",
     "record_intro_desc": "Start with the stored lots and the upcoming liquidity window. The analytics tab should support the record, not turn it into a recommendation layer.",
@@ -1855,6 +1874,7 @@
     "action_strip_guest_desc": "These actions preview the future signed-in workflow. Refresh stays available, but saving and importing are intentionally locked.",
     "sign_in_required_short": "Sign in required",
     "sign_in_needed_for_portfolio": "Portfolio saving is available only inside a signed-in workspace. You can still use the calculator normally and save scenarios separately.",
+    "locked_notebook_notice": "Guest mode can preview the notebook structure, but saving portfolios, importing lots, and loading demos stay locked until workspace access is available.",
     "empty_guest_description": "Signed-in workspace features are not available in guest mode. Use calculators freely, then sign in later to save lots into portfolios."
   },
   "export": {

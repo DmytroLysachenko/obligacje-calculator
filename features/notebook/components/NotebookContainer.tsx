@@ -1,7 +1,7 @@
 'use client';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useAppI18n } from '@/i18n/client';
-import { AlertCircle, BookOpen, FolderOpen, Plus, RefreshCcw, Upload, } from 'lucide-react';
+import { AlertCircle, BookOpen, FolderOpen, Plus, RefreshCcw, Upload, CheckCircle2, Lock, } from 'lucide-react';
 import { UserPortfolio } from '@/db/schema';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -39,7 +39,7 @@ function SectionBlock({ title, description, children, }: {
       {children}
     </section>);
 }
-const EmptyPortfolioState = ({ onCreate, onCreateDemo, onImport, badgeLabel, title, description, createLabel, demoLabel, importLabel, steps, }: {
+const EmptyPortfolioState = ({ onCreate, onCreateDemo, onImport, badgeLabel, title, description, createLabel, demoLabel, importLabel, capabilitiesTitle, capabilities, canManageWorkspace, }: {
     onCreate: () => void;
     onCreateDemo: () => void;
     onImport: () => void;
@@ -49,10 +49,12 @@ const EmptyPortfolioState = ({ onCreate, onCreateDemo, onImport, badgeLabel, tit
     createLabel: string;
     demoLabel: string;
     importLabel: string;
-    steps: NotebookStepItem[];
+    capabilitiesTitle: string;
+    capabilities: NotebookStepItem[];
+    canManageWorkspace: boolean;
 }) => (<section className="space-y-6 border-t border-border py-6">
       <div className="space-y-3">
-        <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-muted-foreground">
+        <div className="surface-chip">
           <BookOpen className="h-3.5 w-3.5 text-foreground"/>
           {badgeLabel}
         </div>
@@ -64,31 +66,44 @@ const EmptyPortfolioState = ({ onCreate, onCreateDemo, onImport, badgeLabel, tit
         </p>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        {steps.map((step, index) => (<div key={step.id} className="space-y-3 border-t border-border py-4">
-            <div className="flex items-start gap-3">
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border text-[11px] font-semibold text-muted-foreground">
-                {index + 1}
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="space-y-4 border-y border-border py-4">
+          <p className="ui-card-title">{capabilitiesTitle}</p>
+          <div className="grid gap-x-6 gap-y-4 md:grid-cols-2">
+            {capabilities.map((capability) => (
+              <div key={capability.id} className="flex items-start gap-3">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold text-foreground">{capability.title}</p>
+                  <p className="ui-body text-muted-foreground">{capability.description}</p>
+                </div>
               </div>
+            ))}
+          </div>
+        </div>
+
+        {!canManageWorkspace ? (
+          <div className="border-y border-border py-4">
+            <div className="flex items-start gap-3">
+              <Lock className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
               <div className="space-y-2">
-                <p className="text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">
-                  {step.title}
-                </p>
-                <p className="ui-body">{step.description}</p>
+                <p className="ui-card-title">{createLabel}</p>
+                <p className="ui-body text-muted-foreground">{description}</p>
               </div>
             </div>
-          </div>))}
+          </div>
+        ) : null}
       </div>
 
       <div className="flex flex-wrap gap-3">
-        <Button onClick={onCreate} className="gap-2 rounded-md">
+        <Button onClick={onCreate} className="gap-2 rounded-md" disabled={!canManageWorkspace}>
           <Plus className="h-4 w-4"/>
           {createLabel}
         </Button>
-        <Button variant="outline" onClick={onCreateDemo} className="gap-2 rounded-md border-border bg-card">
+        <Button variant="outline" onClick={onCreateDemo} className="gap-2 rounded-md border-border bg-card" disabled={!canManageWorkspace}>
           {demoLabel}
         </Button>
-        <Button variant="outline" onClick={onImport} className="gap-2 rounded-md border-border bg-card">
+        <Button variant="ghost" onClick={onImport} className="gap-2 rounded-md" disabled={!canManageWorkspace}>
           <Upload className="h-4 w-4"/>
           {importLabel}
         </Button>
@@ -158,19 +173,24 @@ export const NotebookContainer: React.FC = () => {
     }, [requestError, resolvePortfolioError]);
     const emptyStateSteps: NotebookStepItem[] = [
         {
-            id: 'create',
-            title: t('notebook.ready_steps.create.title'),
-            description: t('notebook.ready_steps.create.desc'),
+            id: 'track',
+            title: t('notebook.capabilities.track.title'),
+            description: t('notebook.capabilities.track.desc'),
         },
         {
-            id: 'store',
-            title: t('notebook.ready_steps.store.title'),
-            description: t('notebook.ready_steps.store.desc'),
+            id: 'maturities',
+            title: t('notebook.capabilities.maturities.title'),
+            description: t('notebook.capabilities.maturities.desc'),
         },
         {
-            id: 'inspect',
-            title: t('notebook.ready_steps.inspect.title'),
-            description: t('notebook.ready_steps.inspect.desc'),
+            id: 'export',
+            title: t('notebook.capabilities.export.title'),
+            description: t('notebook.capabilities.export.desc'),
+        },
+        {
+            id: 'projection',
+            title: t('notebook.capabilities.projection.title'),
+            description: t('notebook.capabilities.projection.desc'),
         },
     ];
     const handleCreateDefault = async () => {
@@ -351,6 +371,18 @@ export const NotebookContainer: React.FC = () => {
 
       <SectionBlock title={t('notebook.workspace_scope_title')} description={notebookIntro}>
         <div className="space-y-4">
+          {isGuestWorkspace ? (
+            <div className="ui-inline-notice border-l-2 border-border">
+              <div className="flex items-start gap-3">
+                <Lock className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold text-foreground">{t('workspace.sign_in_required_short')}</p>
+                  <p className="ui-body text-muted-foreground">{t('workspace.locked_notebook_notice')}</p>
+                </div>
+              </div>
+            </div>
+          ) : null}
+
           <WorkspaceStatusCard
             isGuestWorkspace={isGuestWorkspace}
             canManageWorkspace={canManageWorkspace}
@@ -404,7 +436,9 @@ export const NotebookContainer: React.FC = () => {
             : t('workspace.sign_in_required_short')}
           demoLabel={t('notebook.load_demo')}
           importLabel={t('notebook.import_json')}
-          steps={emptyStateSteps}
+          capabilitiesTitle={t('notebook.capabilities_title')}
+          capabilities={emptyStateSteps}
+          canManageWorkspace={canManageWorkspace}
         />
       ) : (
         <div className="space-y-8">
