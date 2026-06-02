@@ -9,6 +9,7 @@ import { MetricStrip } from '@/shared/components/results/MetricStrip';
 import { MathDeepDive } from '@/shared/components/insights/MathDeepDive';
 import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
 import { ScenarioFactsBlock } from '@/shared/components/results/ScenarioFactsBlock';
+import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { CalculationAuditTrace } from './CalculationAuditTrace';
 import { getAuditTimelinePoint } from '@/shared/lib/bond-display';
 import { buildTimelineCsvFilename, exportTimelineCsv, } from '@/shared/lib/retained-exports';
@@ -100,7 +101,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results,
         ? t('bonds.results.narrative_early_exit')
         : t('bonds.results.narrative_maturity');
     const auditPoint = getAuditTimelinePoint(results.timeline);
-    return (<div className="space-y-6">
+    return (<div className="space-y-8">
       <ResultSummaryHero eyebrow={t('bonds.results.summary_eyebrow')} value={formatCurrency(headlineValue)} description={t('bonds.results.summary_description')} narrative={summaryNarrative} actions={[
             {
                 label: t('common.save'),
@@ -126,32 +127,32 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results,
             },
         ]}/>
 
-      {!canManageWorkspace ? (<section className="rounded-lg border border-border bg-muted/35 p-4 text-sm leading-6 text-muted-foreground">
+      {!canManageWorkspace ? (<section className="border-l-2 border-border bg-muted/35 px-4 py-3 text-sm leading-6 text-muted-foreground">
             {t('workspace.sign_in_needed_for_portfolio')}
         </section>) : null}
 
       <MetricStrip items={[...primarySummaryCards, ...secondarySummaryCards]}/>
 
-      {results.overflowInfo ? (<section className="flex items-start gap-3 rounded-lg border border-border bg-card p-4">
-            <Info className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground"/>
-            <div className="space-y-1 text-sm leading-6 text-foreground">
-              <p className="font-semibold">
-                {t('bonds.results.wrapper_limit_title')}
-              </p>
-              <p>
-                {t('bonds.results.wrapper_limit_description', {
+      {results.overflowInfo ? (<SecondaryInsightAccordion title={t('bonds.results.wrapper_limit_title')} description={t('bonds.results.wrapper_limit_description', {
                 wrapperAmount: formatCurrency(results.overflowInfo.amountInWrapper),
                 standardAmount: formatCurrency(results.overflowInfo.amountInStandard),
-            })}
-              </p>
-            </div>
-        </section>) : null}
+            })} badge={t('bonds.simulation.secondary_badge')}>
+          <div className="flex items-start gap-3 text-foreground">
+            <Info className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground"/>
+            <p>{t('bonds.results.wrapper_limit_description', {
+                wrapperAmount: formatCurrency(results.overflowInfo.amountInWrapper),
+                standardAmount: formatCurrency(results.overflowInfo.amountInStandard),
+            })}</p>
+          </div>
+        </SecondaryInsightAccordion>) : null}
 
-      <div className="space-y-5">
+      <SecondaryInsightAccordion title={t('bonds.results.scenario_facts_title')} description={t('bonds.results.scenario_facts_description')} badge={t('bonds.simulation.meta_badge')}>
+        <div className="space-y-5">
         {auditPoint ? (<CalculationAuditTrace point={auditPoint}/>) : (<div />)}
 
         <ScenarioFactsBlock title={t('bonds.results.scenario_facts_title')} description={t('bonds.results.scenario_facts_description')} actions={<MathDeepDive results={results} trigger={<HelpButton />}/>} items={scenarioFacts}/>
       </div>
+      </SecondaryInsightAccordion>
     </div>);
 };
 const HelpButton = () => (<button className="group" type="button">

@@ -42,7 +42,7 @@ const MetaSection = ({
     <section className={className}>
       <div className="flex items-center gap-2">
         {icon}
-        <p className="text-xs font-semibold text-muted-foreground">
+        <p className="ui-meta font-semibold">
           {title}
         </p>
       </div>
@@ -89,13 +89,13 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
 
   const freshnessTone =
     dataFreshness?.status === 'fresh'
-      ? 'border-[var(--finance-success)]/35 text-foreground'
-      : 'border-[var(--finance-warning)]/40 text-foreground';
+      ? 'border-[var(--finance-success)] text-foreground'
+      : 'border-[var(--finance-warning)] text-foreground';
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {dataFreshness ? (
-        <div className={`rounded-md border bg-card px-4 py-3 text-sm leading-6 ${freshnessTone}`}>
+        <div className={`border-l-2 px-4 py-2 text-sm leading-6 ${freshnessTone}`}>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <div className="flex items-center gap-2 font-semibold">
               <span
@@ -121,7 +121,7 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
       ) : null}
 
       <div
-        className={`grid grid-cols-1 gap-4 ${
+        className={`grid grid-cols-1 gap-x-6 gap-y-5 ${
           compact ? 'xl:grid-cols-2' : 'md:grid-cols-2'
         }`}
       >
@@ -129,30 +129,30 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
           title={t('common.warnings')}
           items={warnings}
           icon={<AlertTriangle className="h-4 w-4" />}
-          className="space-y-3 rounded-md border border-[var(--finance-warning)]/45 px-4 py-4 text-foreground"
+          className="space-y-3 border-t border-[var(--finance-warning)]/45 pt-4 text-foreground"
         />
         <MetaSection
           title={t('common.assumptions')}
           items={assumptions}
           icon={<Target className="h-4 w-4" />}
-          className="space-y-3 rounded-md border border-border px-4 py-4 text-foreground"
+          className="space-y-3 border-t border-border pt-4 text-foreground"
         />
         <MetaSection
           title={t('common.notes')}
           items={calculationNotes}
           icon={<FileText className="h-4 w-4" />}
-          className="space-y-3 rounded-md border border-border px-4 py-4 text-foreground"
+          className="space-y-3 border-t border-border pt-4 text-foreground"
         />
         <MetaSection
           title={t('common.data_quality')}
           items={dataQualityFlags}
           icon={<ShieldAlert className="h-4 w-4" />}
-          className="space-y-3 rounded-md border border-[var(--finance-warning)]/45 px-4 py-4 text-foreground"
+          className="space-y-3 border-t border-[var(--finance-warning)]/45 pt-4 text-foreground"
           formatItem={humanizeFlag}
         />
       </div>
 
-      <div className="flex flex-col gap-3 rounded-md border border-border bg-card px-4 py-3 text-sm leading-6 text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-y border-border py-4 text-sm leading-6 text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           <DatabaseZap className="h-4 w-4 text-primary" />
           <span className="font-semibold text-foreground">
