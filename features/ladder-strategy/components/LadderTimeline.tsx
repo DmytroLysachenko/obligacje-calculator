@@ -3,6 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, } from 'recharts';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
 import { RegularInvestmentResult } from '../../bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
@@ -13,13 +14,20 @@ import { MetricStrip } from '@/shared/components/results/MetricStrip';
 import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
 import { applyTableRowLimit, TableDensityControls, TableRowLimit } from '@/shared/components/results/TableDensityControls';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
-import { buildLadderMaturityBuckets, LadderMaturityBucket } from '@/shared/lib/ladder-display';
+import {
+  buildLadderMaturityBuckets,
+  buildLadderYearBuckets,
+  LadderMaturityBucket,
+  LadderYearBucket,
+} from '@/shared/lib/ladder-display';
 interface LadderTimelineProps {
     results: RegularInvestmentResult;
 }
+type LadderChartMode = 'yearly' | 'monthly';
 export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
     const { t, locale: language } = useAppI18n();
     const [rowLimit, setRowLimit] = useState<TableRowLimit>(12);
+    const [chartMode, setChartMode] = useState<LadderChartMode>('yearly');
     const dateLocale = getDateFnsLocale(language);
     const currencyFormatter = useCurrencyFormatter(language, {
         style: 'currency',
@@ -27,16 +35,18 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
         maximumFractionDigits: 0,
     });
     const formatCurrency = (value: number) => currencyFormatter.format(value);
-    const chartData = useMemo<LadderMaturityBucket[]>(() => buildLadderMaturityBuckets(results.lots, dateLocale), [dateLocale, results.lots]);
-    const displayedRows = useMemo(() => applyTableRowLimit(chartData, rowLimit), [chartData, rowLimit]);
-    const averageMaturityValue = chartData.length > 0
-        ? chartData.reduce((accumulator, item) => accumulator + item.amount, 0) / chartData.length
+    const monthlyBuckets = useMemo<LadderMaturityBucket[]>(() => buildLadderMaturityBuckets(results.lots, dateLocale), [dateLocale, results.lots]);
+    const yearlyBuckets = useMemo<LadderYearBucket[]>(() => buildLadderYearBuckets(monthlyBuckets), [monthlyBuckets]);
+    const chartData = chartMode === 'yearly' ? yearlyBuckets : monthlyBuckets;
+    const displayedRows = useMemo(() => applyTableRowLimit(monthlyBuckets, rowLimit), [monthlyBuckets, rowLimit]);
+    const averageMaturityValue = monthlyBuckets.length > 0
+        ? monthlyBuckets.reduce((accumulator, item) => accumulator + item.amount, 0) / monthlyBuckets.length
         : 0;
     const monthlyContribution = results.lots.length > 0 ? results.totalInvested / results.lots.length : 0;
     const monthlySpreadGap = averageMaturityValue - monthlyContribution;
-    const peakMonth = chartData.reduce<LadderMaturityBucket | null>((currentPeak, item) => (!currentPeak || item.amount > currentPeak.amount ? item : currentPeak), null);
-    const earliestMonth = chartData[0] ?? null;
-    const latestMonth = chartData[chartData.length - 1] ?? null;
+    const peakMonth = monthlyBuckets.reduce<LadderMaturityBucket | null>((currentPeak, item) => (!currentPeak || item.amount > currentPeak.amount ? item : currentPeak), null);
+    const earliestMonth = monthlyBuckets[0] ?? null;
+    const latestMonth = monthlyBuckets[monthlyBuckets.length - 1] ?? null;
     const peakShare = peakMonth && results.lots.length > 0 ? (peakMonth.count / results.lots.length) * 100 : 0;
     return (<div className="space-y-8">
       <ResultSummaryHero
@@ -50,7 +60,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
             <p className="text-xs font-semibold text-muted-foreground">
               {t('ladder_page.timeline.month_count')}
             </p>
-            <p className="mt-2 text-lg font-semibold text-foreground">{chartData.length}</p>
+            <p className="mt-2 text-lg font-semibold text-foreground">{monthlyBuckets.length}</p>
           </div>}
       />
 
@@ -76,13 +86,31 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
       />
 
       <section className="space-y-8 border-t border-border py-6">
-        <div className="space-y-2">
-          <h2 className="ui-card-title">
-            {t('ladder_page.timeline.chart_title')}
-          </h2>
-          <p className="ui-body text-muted-foreground">
-            {t('ladder_page.timeline.chart_description')}
-          </p>
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="space-y-2">
+            <h2 className="ui-card-title">
+              {t('ladder_page.timeline.chart_title')}
+            </h2>
+            <p className="ui-body max-w-3xl text-muted-foreground">
+              {chartMode === 'yearly'
+                ? t('ladder_page.timeline.yearly_chart_description')
+                : t('ladder_page.timeline.monthly_chart_description')}
+            </p>
+          </div>
+          <div className="flex w-full items-center gap-1 border-b border-border pb-2 md:w-auto">
+            {(['yearly', 'monthly'] as const).map((mode) => (
+              <Button
+                key={mode}
+                type="button"
+                variant={chartMode === mode ? 'default' : 'ghost'}
+                size="sm"
+                className="h-8 px-3 text-xs font-semibold"
+                onClick={() => setChartMode(mode)}
+              >
+                {t(`ladder_page.timeline.chart_modes.${mode}`)}
+              </Button>
+            ))}
+          </div>
         </div>
           <ChartSupportNote
             title={t('ladder_page.timeline.chart_note_title')}
@@ -108,7 +136,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
             title={t('ladder_page.timeline.mobile_sheet_title')}
             description={t('ladder_page.timeline.mobile_sheet_description')}
             triggerLabel={t('ladder_page.timeline.mobile_sheet_trigger')}
-            triggerCount={`${chartData.length} ${t('ladder_page.timeline.mobile_sheet_count_suffix')}`}
+            triggerCount={`${monthlyBuckets.length} ${t('ladder_page.timeline.mobile_sheet_count_suffix')}`}
           >
             {displayedRows.map((item) => (<div key={`mobile-${item.date}`} className="border-t border-border py-4">
                 <div className="flex items-start justify-between gap-3">
@@ -123,7 +151,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
                 <div className="mt-4 grid grid-cols-2 gap-3">
                   <MobileLadderValue
                     label={t('ladder_page.timeline.mobile_share_of_lots')}
-                    value={chartData.length > 0 ? `${((item.count / results.lots.length) * 100).toFixed(1)}%` : '-'}
+                    value={monthlyBuckets.length > 0 ? `${((item.count / results.lots.length) * 100).toFixed(1)}%` : '-'}
                   />
                   <MobileLadderValue
                     label={t('ladder_page.timeline.mobile_amount')}
@@ -139,7 +167,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
                 {t('ladder_page.timeline.table_summary')}
               </p>
               <p className="text-xs font-semibold text-muted-foreground">
-                {chartData.length} {t('ladder_page.timeline.table_count_suffix')}
+                {monthlyBuckets.length} {t('ladder_page.timeline.table_count_suffix')}
               </p>
             </div>
             <Table className="w-full table-fixed text-sm">
@@ -159,14 +187,14 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
                       {formatCurrency(item.amount)}
                     </TableCell>
                     <TableCell className="financial-number text-right text-muted-foreground">
-                      {chartData.length > 0 ? `${((item.count / results.lots.length) * 100).toFixed(1)}%` : '-'}
+                      {monthlyBuckets.length > 0 ? `${((item.count / results.lots.length) * 100).toFixed(1)}%` : '-'}
                     </TableCell>
                   </TableRow>))}
               </TableBody>
             </Table>
             <TableDensityControls
               value={rowLimit}
-              totalRows={chartData.length}
+              totalRows={monthlyBuckets.length}
               visibleRows={displayedRows.length}
               onChange={setRowLimit}
               labels={{

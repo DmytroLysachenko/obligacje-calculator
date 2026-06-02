@@ -1048,6 +1048,12 @@
       "active_window_description": "Zakres od najwczesniejszego do najpozniejszego miesiaca zapadalnosci w tej drabince.",
       "chart_title": "Koncentracja zapadalnosci",
       "chart_description": "Kazdy slupek pokazuje, jaka wartosc netto wraca w danym miesiacu zapadalnosci.",
+      "yearly_chart_description": "Roczne wartosci zapadalnosci w drabince. Domyslny widok pozostaje czytelny, zanim sprawdzisz miesieczne szczegoly.",
+      "monthly_chart_description": "Miesieczne wartosci zapadalnosci w drabince. Uzyj tego widoku tylko wtedy, gdy potrzebujesz dokladnego terminu zapadalnosci.",
+      "chart_modes": {
+        "yearly": "Rocznie",
+        "monthly": "Miesiecznie"
+      },
       "chart_note_title": "Jak czytac wykres drabinki",
       "chart_note_description": "Zacznij od najwyzszego slupka, a potem sprawdz, czy sasiednie miesiace zostawiaja wystarczajacy odstep plynnosci.",
       "tooltip_amount_label": "Kwota zapadalnosci",

@@ -979,6 +979,12 @@
       "active_window_description": "Range from the earliest to the latest maturity month in this ladder.",
       "chart_title": "Maturity concentration",
       "chart_description": "Each bar shows how much net value returns in a given maturity month.",
+      "yearly_chart_description": "Yearly maturity values across the ladder. This keeps the default view readable before you inspect monthly detail.",
+      "monthly_chart_description": "Monthly maturity values across the ladder. Use this detailed view only when you need exact maturity timing.",
+      "chart_modes": {
+        "yearly": "Yearly",
+        "monthly": "Monthly"
+      },
       "chart_note_title": "How to read the ladder chart",
       "chart_note_description": "Start with the tallest bar, then check whether surrounding months leave enough liquidity spacing.",
       "tooltip_amount_label": "Maturity amount",

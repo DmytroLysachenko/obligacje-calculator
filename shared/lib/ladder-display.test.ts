@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { enUS } from 'date-fns/locale';
-import { buildLadderMaturityBuckets } from './ladder-display';
+import { buildLadderMaturityBuckets, buildLadderYearBuckets } from './ladder-display';
 
 describe('ladder display helpers', () => {
   it('groups maturity lots into sorted monthly buckets', () => {
@@ -32,6 +32,48 @@ describe('ladder display helpers', () => {
       date: '2036-06',
       amount: 900,
       count: 1,
+    });
+  });
+
+  it('groups monthly ladder buckets into sorted yearly buckets for default chart mode', () => {
+    const monthlyBuckets = buildLadderMaturityBuckets(
+      [
+        {
+          maturityDate: '2036-05-01T00:00:00.000Z',
+          netValue: 1200,
+        },
+        {
+          maturityDate: '2036-06-01T00:00:00.000Z',
+          netValue: 900,
+        },
+        {
+          maturityDate: '2037-01-01T00:00:00.000Z',
+          netValue: 750,
+        },
+      ] as never,
+      enUS,
+    );
+
+    const yearlyBuckets = buildLadderYearBuckets(monthlyBuckets);
+
+    expect(yearlyBuckets).toHaveLength(2);
+    expect(yearlyBuckets[0]).toMatchObject({
+      key: '2036',
+      year: '2036',
+      displayDate: '2036',
+      amount: 2100,
+      count: 2,
+      firstMonth: 'May 2036',
+      lastMonth: 'Jun 2036',
+    });
+    expect(yearlyBuckets[1]).toMatchObject({
+      key: '2037',
+      year: '2037',
+      displayDate: '2037',
+      amount: 750,
+      count: 1,
+      firstMonth: 'Jan 2037',
+      lastMonth: 'Jan 2037',
     });
   });
 });
