@@ -5,6 +5,7 @@ import { useAppI18n } from '@/i18n/client';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { cn } from '@/lib/utils';
+import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
@@ -23,7 +24,7 @@ import {
   usesMixedTimelineCadence,
 } from '../lib/comparison-display';
 export const ComparisonContainer: React.FC = () => {
-    const { sharedConfig, scenarioA, scenarioB, inputsA, inputsB, resultsA, resultsB, envelopeA, envelopeB, warningsA, warningsB, isCalculating, calculate, updateSharedConfig, updateScenarioA, updateScenarioB, setBondTypeA, setBondTypeB, setScenarioACustomHorizonEnabled, setScenarioBCustomHorizonEnabled, setScenarioACustomHorizonMonths, setScenarioBCustomHorizonMonths, isDirty, isPersistenceReady, } = useComparison();
+    const { sharedConfig, scenarioA, scenarioB, inputsA, inputsB, resultsA, resultsB, envelopeA, envelopeB, warningsA, warningsB, isCalculating, calculate, updateSharedConfig, updateScenarioA, updateScenarioB, setBondTypeA, setBondTypeB, setScenarioACustomHorizonEnabled, setScenarioBCustomHorizonEnabled, setScenarioACustomHorizonMonths, setScenarioBCustomHorizonMonths, isDirty, isPersistenceReady, definitions, } = useComparison();
     const { t, locale: language } = useAppI18n();
     const [showRealValue, setShowRealValue] = useState(false);
     const hasMounted = useHasMounted();
@@ -66,6 +67,16 @@ export const ComparisonContainer: React.FC = () => {
       () => getComparisonAssumptionsBondType(scenarioA.bondType, scenarioB.bondType),
       [scenarioA.bondType, scenarioB.bondType],
     );
+    const maturityMode = sharedConfig.maturityMode ?? 'reinvest_until_horizon';
+    const durationMismatch = definitions[scenarioA.bondType].duration !== definitions[scenarioB.bondType].duration;
+    const durationMismatchText = durationMismatch
+      ? t('comparison.duration_mismatch.description', {
+          bondA: scenarioA.bondType,
+          durationA: formatBondDuration(definitions[scenarioA.bondType].duration, language),
+          bondB: scenarioB.bondType,
+          durationB: formatBondDuration(definitions[scenarioB.bondType].duration, language),
+        })
+      : null;
     return (<CalculatorPageShell title={t('nav.comparison')} description={t('comparison.desc_independent')} icon={<Scale className="h-8 w-8"/>} isCalculating={isCalculating} isDirty={isDirty} hasResults={isPersistenceReady && !!resultsA} onKeyDown={handleKeyDown}>
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-[390px_minmax(0,1fr)]">
             <ComparisonSharedBaseCard
@@ -81,6 +92,33 @@ export const ComparisonContainer: React.FC = () => {
               <ScenarioOverrideCard title={t('comparison.scenario_a')} colorClass="scenario-a" bondType={scenarioA.bondType} onBondTypeChange={setBondTypeA} isRebought={scenarioA.isRebought} onReboughtChange={(value) => updateScenarioA('isRebought', value)} taxStrategy={scenarioA.taxStrategy} onTaxStrategyChange={(value) => updateScenarioA('taxStrategy', value)} customHorizonEnabled={scenarioA.investmentHorizonMonths !== undefined} onCustomHorizonEnabledChange={setScenarioACustomHorizonEnabled} customHorizonMonths={scenarioA.investmentHorizonMonths} onCustomHorizonMonthsChange={setScenarioACustomHorizonMonths}/>
               <ScenarioOverrideCard title={t('comparison.scenario_b')} colorClass="scenario-b" bondType={scenarioB.bondType} onBondTypeChange={setBondTypeB} isRebought={scenarioB.isRebought} onReboughtChange={(value) => updateScenarioB('isRebought', value)} taxStrategy={scenarioB.taxStrategy} onTaxStrategyChange={(value) => updateScenarioB('taxStrategy', value)} customHorizonEnabled={scenarioB.investmentHorizonMonths !== undefined} onCustomHorizonEnabledChange={setScenarioBCustomHorizonEnabled} customHorizonMonths={scenarioB.investmentHorizonMonths} onCustomHorizonMonthsChange={setScenarioBCustomHorizonMonths}/>
             </div>
+
+            <section className="space-y-3 border-y border-border py-4">
+              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                <div className="space-y-1">
+                  <h2 className="ui-card-title">{t('comparison.fairness.title')}</h2>
+                  <p className="text-sm leading-6 text-muted-foreground">
+                    {t(`comparison.maturity_mode.${maturityMode}.description`)}
+                  </p>
+                </div>
+                <div className="ui-metadata text-muted-foreground">
+                  {t('comparison.fairness.mode_label')}: {t(`comparison.maturity_mode.${maturityMode}.label`)}
+                </div>
+              </div>
+              {durationMismatchText ? (
+                <div className="ui-inline-notice flex items-start gap-3 border-l-2 border-warning text-foreground">
+                  <TriangleAlert className="mt-0.5 h-4 w-4 text-warning" />
+                  <div className="space-y-1">
+                    <p className="text-sm font-semibold text-foreground">
+                      {t('comparison.duration_mismatch.title')}
+                    </p>
+                    <p className="text-sm leading-6 text-muted-foreground">
+                      {durationMismatchText}
+                    </p>
+                  </div>
+                </div>
+              ) : null}
+            </section>
 
             {!resultsA && !isCalculating ? (<ScenarioReadyPanel badge={t('comparison.ready_to_compare')} title={t('comparison.ready_title')} description={t('comparison.ready_desc')} steps={[
                     {

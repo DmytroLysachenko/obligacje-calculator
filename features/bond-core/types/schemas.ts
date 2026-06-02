@@ -19,6 +19,13 @@ const HistoricalDataMapSchema = z.record(z.string(), z.object({
   nbpRate: percent('historical NBP rate', -10, 100).optional(),
 })).optional();
 
+const ComparisonMaturityModeSchema = z.enum([
+  'hold_to_maturity',
+  'reinvest_until_horizon',
+  'cash_after_maturity',
+  'align_to_shorter_duration',
+]);
+
 const DateStringSchema = z.string().refine((value) => !Number.isNaN(Date.parse(value)), {
   message: 'Invalid date string',
 });
@@ -168,6 +175,7 @@ const ComparisonSharedConfigSchema = withDateOrderValidation(z.object({
   taxStrategy: z.nativeEnum(TaxStrategy).optional(),
   timingMode: z.enum(['general', 'exact']).optional(),
   investmentHorizonMonths: horizonMonths(360).optional(),
+  maturityMode: ComparisonMaturityModeSchema.optional(),
 })).superRefine((value, ctx) => {
   let horizonYears: number;
   if (value.investmentHorizonMonths) {

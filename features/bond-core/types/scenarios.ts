@@ -101,6 +101,12 @@ export interface BondComparisonScenarioItem {
   result: CalculationResult;
 }
 
+export type ComparisonMaturityMode =
+  | 'hold_to_maturity'
+  | 'reinvest_until_horizon'
+  | 'cash_after_maturity'
+  | 'align_to_shorter_duration';
+
 export interface NormalizedBondComparisonPayload {
   mode?: 'normalized';
   bondTypes: BondType[];
@@ -130,6 +136,7 @@ export interface IndependentBondComparisonPayload {
     taxStrategy?: TaxStrategy;
     timingMode?: TimingMode;
     investmentHorizonMonths?: number;
+    maturityMode?: ComparisonMaturityMode;
   };
   scenarioA: {
     bondType: BondType;

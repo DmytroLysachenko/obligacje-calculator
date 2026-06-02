@@ -1519,6 +1519,34 @@
     "assumptions_meta_desc": "Both scenarios keep explicit assumptions and warnings, but they should not dominate the outcome and table.",
     "helper_secondary": "Secondary",
     "notes_suffix": "notes",
+    "fairness": {
+      "title": "Comparison fairness",
+      "mode_label": "Mode"
+    },
+    "duration_mismatch": {
+      "title": "Duration mismatch detected",
+      "description": "{bondA} matures after {durationA}, while {bondB} matures after {durationB}. The selected mode controls how matured funds are handled."
+    },
+    "maturity_mode": {
+      "label": "Maturity handling",
+      "description": "Choose how the comparison treats bonds that mature before the selected horizon ends.",
+      "reinvest_until_horizon": {
+        "label": "Reinvest until selected horizon",
+        "description": "Matured proceeds are automatically reinvested so both scenarios are evaluated across the full selected horizon."
+      },
+      "hold_to_maturity": {
+        "label": "Compare original maturities",
+        "description": "Each scenario stops at its native bond maturity or the selected exit date if it comes earlier."
+      },
+      "cash_after_maturity": {
+        "label": "Move to cash after maturity",
+        "description": "After native maturity, proceeds stay as cash without additional nominal interest until the selected horizon."
+      },
+      "align_to_shorter_duration": {
+        "label": "Compare until first maturity",
+        "description": "Both scenarios are evaluated only until the shorter native maturity within the selected horizon."
+      }
+    },
     "page_notice_eyebrow": "Shared scenario",
     "page_notice_title": "Scenario comparison",
     "page_notice_desc": "Use this page to compare two modeled outcomes under explicit assumptions. It is best treated as a scenario check, not as a universal ranking or recommendation engine.",

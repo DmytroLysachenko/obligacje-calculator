@@ -1519,6 +1519,34 @@
     "assumptions_meta_desc": "Obie strony porownania zachowuja jawne zalozenia i ostrzezenia, ale nie powinny dominowac nad wynikiem i tabela.",
     "helper_secondary": "Pomocnicze",
     "notes_suffix": "notatki",
+    "fairness": {
+      "title": "Uczciwosc porownania",
+      "mode_label": "Tryb"
+    },
+    "duration_mismatch": {
+      "title": "Wykryto rozne terminy wykupu",
+      "description": "{bondA} zapada po {durationA}, a {bondB} po {durationB}. Wybrany tryb decyduje, co dzieje sie ze srodkami po zapadalnosci."
+    },
+    "maturity_mode": {
+      "label": "Obsluga zapadalnosci",
+      "description": "Wybierz, jak porownanie traktuje obligacje, ktore zapadaja przed koncem wybranego horyzontu.",
+      "reinvest_until_horizon": {
+        "label": "Reinwestuj do wybranego horyzontu",
+        "description": "Srodki po zapadalnosci sa automatycznie reinwestowane, aby oba scenariusze byly oceniane przez caly wybrany horyzont."
+      },
+      "hold_to_maturity": {
+        "label": "Porownaj pierwotne terminy",
+        "description": "Kazdy scenariusz konczy sie w naturalnym terminie obligacji albo we wskazanej dacie wyjscia, jesli wypada wczesniej."
+      },
+      "cash_after_maturity": {
+        "label": "Przenies do gotowki po zapadalnosci",
+        "description": "Po naturalnej zapadalnosci srodki pozostaja jako gotowka bez dalszych odsetek nominalnych do wybranego horyzontu."
+      },
+      "align_to_shorter_duration": {
+        "label": "Porownaj do pierwszej zapadalnosci",
+        "description": "Oba scenariusze sa oceniane tylko do krotszego naturalnego terminu w ramach wybranego horyzontu."
+      }
+    },
     "page_notice_eyebrow": "Wspolny scenariusz",
     "page_notice_title": "Porownanie scenariuszy",
     "page_notice_desc": "Uzywaj tej strony do porownania dwoch modelowanych wynikow przy jawnych zalozeniach. Najlepiej traktowac ja jako sprawdzenie scenariusza, a nie uniwersalny ranking czy silnik rekomendacji.",

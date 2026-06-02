@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { History } from 'lucide-react';
 import { TaxStrategy, BondType } from '@/features/bond-core/types';
-import { IndependentBondComparisonPayload } from '@/features/bond-core/types/scenarios';
+import { ComparisonMaturityMode, IndependentBondComparisonPayload } from '@/features/bond-core/types/scenarios';
 import { useAppI18n } from '@/i18n/client';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
 import { cn } from '@/lib/utils';
@@ -20,6 +20,13 @@ import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm
 import { toDateString } from '@/shared/lib/date-timing';
 
 type SharedConfig = IndependentBondComparisonPayload['sharedConfig'];
+
+const comparisonMaturityModes: ComparisonMaturityMode[] = [
+  'reinvest_until_horizon',
+  'hold_to_maturity',
+  'cash_after_maturity',
+  'align_to_shorter_duration',
+];
 
 interface ComparisonSharedBaseCardProps {
   sharedConfig: SharedConfig;
@@ -39,6 +46,7 @@ export function ComparisonSharedBaseCard({
   onUpdateSharedConfig,
 }: ComparisonSharedBaseCardProps) {
   const { t, locale: language } = useAppI18n();
+  const activeMaturityMode = sharedConfig.maturityMode ?? 'reinvest_until_horizon';
 
   return (
     <section className="space-y-6">
@@ -188,6 +196,37 @@ export function ComparisonSharedBaseCard({
           <p className="text-xs leading-5 text-muted-foreground">
             {t('comparison.shared_horizon_desc')}
           </p>
+        </div>
+
+        <div className="space-y-4 border-t border-dashed pt-4">
+          <div className="space-y-1">
+            <Label className="ui-metadata text-muted-foreground">
+              {t('comparison.maturity_mode.label')}
+            </Label>
+            <p className="text-xs leading-5 text-muted-foreground">
+              {t('comparison.maturity_mode.description')}
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-2">
+            {comparisonMaturityModes.map((mode) => (
+              <Button
+                key={mode}
+                type="button"
+                variant={activeMaturityMode === mode ? 'default' : 'outline'}
+                className="h-auto justify-start px-3 py-3 text-left"
+                onClick={() => onUpdateSharedConfig('maturityMode', mode)}
+              >
+                <span className="space-y-1">
+                  <span className="block text-xs font-semibold">
+                    {t(`comparison.maturity_mode.${mode}.label`)}
+                  </span>
+                  <span className="block text-xs font-normal leading-5 opacity-80">
+                    {t(`comparison.maturity_mode.${mode}.description`)}
+                  </span>
+                </span>
+              </Button>
+            ))}
+          </div>
         </div>
 
         <div className="space-y-4 border-t border-dashed pt-4">

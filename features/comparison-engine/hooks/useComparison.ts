@@ -4,6 +4,7 @@ import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } fro
 import { BondInputs, BondType, TaxStrategy } from '../../bond-core/types';
 import {
   BondComparisonCalculationEnvelope,
+  ComparisonMaturityMode,
   IndependentBondComparisonPayload,
   SingleBondCalculationEnvelope,
 } from '../../bond-core/types/scenarios';
@@ -39,6 +40,7 @@ function buildDefaultSharedConfig(): SharedComparisonConfig {
     taxStrategy: TaxStrategy.STANDARD,
     timingMode: 'general',
     investmentHorizonMonths: DEFAULT_HORIZON_MONTHS,
+    maturityMode: 'reinvest_until_horizon',
   };
 }
 
