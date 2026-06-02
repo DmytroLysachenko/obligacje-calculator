@@ -1,5 +1,5 @@
 'use client';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, } from 'recharts';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -11,6 +11,7 @@ import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
 import { ResultMetricCard } from '@/shared/components/results/ResultMetricCard';
 import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
+import { applyTableRowLimit, TableDensityControls, TableRowLimit } from '@/shared/components/results/TableDensityControls';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
 import { buildLadderMaturityBuckets, LadderMaturityBucket } from '@/shared/lib/ladder-display';
 interface LadderTimelineProps {
@@ -18,6 +19,7 @@ interface LadderTimelineProps {
 }
 export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
     const { t, locale: language } = useAppI18n();
+    const [rowLimit, setRowLimit] = useState<TableRowLimit>(12);
     const dateLocale = getDateFnsLocale(language);
     const currencyFormatter = useCurrencyFormatter(language, {
         style: 'currency',
@@ -26,6 +28,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
     });
     const formatCurrency = (value: number) => currencyFormatter.format(value);
     const chartData = useMemo<LadderMaturityBucket[]>(() => buildLadderMaturityBuckets(results.lots, dateLocale), [dateLocale, results.lots]);
+    const displayedRows = useMemo(() => applyTableRowLimit(chartData, rowLimit), [chartData, rowLimit]);
     const averageMaturityValue = chartData.length > 0
         ? chartData.reduce((accumulator, item) => accumulator + item.amount, 0) / chartData.length
         : 0;
@@ -104,7 +107,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
             triggerLabel={t('ladder_page.timeline.mobile_sheet_trigger')}
             triggerCount={`${chartData.length} ${t('ladder_page.timeline.mobile_sheet_count_suffix')}`}
           >
-            {chartData.map((item) => (<div key={`mobile-${item.date}`} className="border-t border-border py-4">
+            {displayedRows.map((item) => (<div key={`mobile-${item.date}`} className="border-t border-border py-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-sm font-semibold text-foreground">{item.displayDate}</p>
@@ -146,7 +149,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {chartData.map((item) => (<TableRow key={item.date} className="border-b border-border transition-colors hover:bg-muted/35">
+                {displayedRows.map((item) => (<TableRow key={item.date} className="border-b border-border transition-colors hover:bg-muted/35">
                     <TableCell className="font-medium text-foreground">{item.displayDate}</TableCell>
                     <TableCell className="text-right text-foreground">{item.count}</TableCell>
                     <TableCell className="text-right font-semibold text-foreground">
@@ -158,6 +161,17 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
                   </TableRow>))}
               </TableBody>
             </Table>
+            <TableDensityControls
+              value={rowLimit}
+              totalRows={chartData.length}
+              visibleRows={displayedRows.length}
+              onChange={setRowLimit}
+              labels={{
+                rowsShown: t('common.rows_shown'),
+                rowsPerPage: t('common.rows_per_page'),
+                all: t('common.all'),
+              }}
+            />
           </div>
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">

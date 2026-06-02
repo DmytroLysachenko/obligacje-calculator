@@ -8,9 +8,10 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Filter, ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
+import { Search, Filter, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
+import { applyTableRowLimit, getVisibleRowLabel, TableDensityControls, TableRowLimit } from '@/shared/components/results/TableDensityControls';
 import { AppLanguage, buildBondTimelineDisplayRows, getSimulationEventDisplayLabel, } from '@/shared/lib/bond-display';
 import { getIntlLocale } from '@/i18n/locale-utils';
 import { ChartStep } from '@/features/bond-core/types';
@@ -34,7 +35,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
     const [hasMounted, setHasMounted] = React.useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [eventTypeFilter, setEventTypeFilter] = useState<string>('all');
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [rowLimit, setRowLimit] = useState<TableRowLimit>(12);
     const deferredSearchQuery = useDeferredValue(searchQuery);
     React.useEffect(() => {
         setHasMounted(true);
@@ -72,19 +73,19 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
             return matchesSearch && matchesEvent;
         });
     }, [deferredSearchQuery, displayRows, eventTypeFilter, language]);
-    const displayedTimeline = isExpanded
-        ? filteredTimeline
-        : filteredTimeline.slice(0, 12);
+    const displayedTimeline = useMemo(() => applyTableRowLimit(filteredTimeline, rowLimit), [filteredTimeline, rowLimit]);
     const activeFilterCount = (searchQuery.trim().length > 0 ? 1 : 0) + (eventTypeFilter !== 'all' ? 1 : 0);
-    const visibleRangeLabel = filteredTimeline.length > 12 && !isExpanded
-        ? `${displayedTimeline.length} / ${filteredTimeline.length}`
-        : `${filteredTimeline.length}`;
+    const visibleRangeLabel = getVisibleRowLabel({
+        visible: displayedTimeline.length,
+        total: filteredTimeline.length,
+        allLabel: t('common.rows_visible'),
+    });
     const projectionCount = displayRows.filter((row) => !!row.projectionLabel).length;
     const exitMarkers = displayRows.filter((row) => row.isWithdrawal).length;
     const resetFilters = () => {
         setSearchQuery('');
         setEventTypeFilter('all');
-        setIsExpanded(false);
+        setRowLimit(12);
     };
     return (<div className="space-y-6">
       <div className="space-y-4 bg-transparent">
@@ -130,6 +131,17 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
               </Button>) : null}
           </div>
         </div>
+        <TableDensityControls
+          value={rowLimit}
+          totalRows={filteredTimeline.length}
+          visibleRows={displayedTimeline.length}
+          onChange={setRowLimit}
+          labels={{
+            rowsShown: t('common.rows_shown'),
+            rowsPerPage: t('common.rows_per_page'),
+            all: t('common.all'),
+          }}
+        />
       </div>
 
       <ResponsiveTableSheet title={t('bonds.schedule.mobile_sheet_title')} description={t('bonds.schedule.mobile_sheet_description')} triggerLabel={t('bonds.schedule.mobile_sheet_trigger')} triggerCount={`${filteredTimeline.length} ${t('bonds.schedule.mobile_sheet_count_suffix')}`}>
@@ -256,17 +268,18 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
           </TableBody>
         </Table>
 
-        {filteredTimeline.length > 12 ? (<div className="flex justify-center border-t border-border bg-muted/35 p-4">
-            <Button variant="ghost" size="sm" className="gap-2 text-sm font-semibold" onClick={() => setIsExpanded(!isExpanded)}>
-              {isExpanded ? (<>
-                  <ChevronUp className="h-4 w-4"/> {t('common.show_less') || 'Show Less'}
-                </>) : (<>
-                  <ChevronDown className="h-4 w-4"/>{' '}
-                  {t('common.show_all', { count: filteredTimeline.length }) ||
-                    `Show All (${filteredTimeline.length})`}
-                </>)}
-            </Button>
-          </div>) : null}
+        <TableDensityControls
+          value={rowLimit}
+          totalRows={filteredTimeline.length}
+          visibleRows={displayedTimeline.length}
+          onChange={setRowLimit}
+          className="border-t border-border bg-muted/35 px-4"
+          labels={{
+            rowsShown: t('common.rows_shown'),
+            rowsPerPage: t('common.rows_per_page'),
+            all: t('common.all'),
+          }}
+        />
 
         {filteredTimeline.length === 0 ? (<div className="space-y-3 p-12 text-center text-muted-foreground">
             <p>{t('common.no_results_found') || 'No results found for current filters.'}</p>

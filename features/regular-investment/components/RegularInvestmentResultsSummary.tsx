@@ -1,5 +1,5 @@
 'use client';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { RegularInvestmentResult } from '../../bond-core/types';
@@ -10,6 +10,7 @@ import { buildLotsExportHeaders } from '@/shared/lib/export-headers';
 import { MetricStrip } from '@/shared/components/results/MetricStrip';
 import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
 import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
+import { applyTableRowLimit, TableDensityControls, TableRowLimit } from '@/shared/components/results/TableDensityControls';
 import { buildLotsCsvFilename, exportLotsCsv } from '@/shared/lib/retained-exports';
 import { getDateFnsLocale, getIntlLocale } from '@/i18n/locale-utils';
 import {
@@ -28,6 +29,7 @@ type SummaryStat = {
 const MAX_RECENT_LOTS = 12;
 export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsSummaryProps> = ({ results, }) => {
     const { t, locale: language } = useAppI18n();
+    const [yearRowLimit, setYearRowLimit] = useState<TableRowLimit>(12);
     const dateLocale = getDateFnsLocale(language);
     const formatCurrency = (value: number) => new Intl.NumberFormat(getIntlLocale(language), {
         style: 'currency',
@@ -69,6 +71,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
         },
     ];
     const yearlyBuckets = useMemo<RegularInvestmentYearBucket[]>(() => buildRegularInvestmentYearBuckets(results.lots), [results.lots]);
+    const visibleYearlyBuckets = useMemo(() => applyTableRowLimit(yearlyBuckets, yearRowLimit), [yearRowLimit, yearlyBuckets]);
     const recentLots = useMemo(() => buildRecentRegularInvestmentLots(results.lots, MAX_RECENT_LOTS), [results.lots]);
     const handleExport = () => {
         exportLotsCsv({
@@ -125,7 +128,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                 count: yearlyBuckets.length,
               })}
             >
-              {yearlyBuckets.map((bucket) => (
+              {visibleYearlyBuckets.map((bucket) => (
                 <div
                   key={`mobile-${bucket.year}`}
                   className="border-t border-border py-4"
@@ -174,7 +177,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {yearlyBuckets.map((bucket) => (
+                {visibleYearlyBuckets.map((bucket) => (
                   <TableRow
                     key={bucket.year}
                     className="border-b border-border transition-colors hover:bg-muted/35"
@@ -195,6 +198,17 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                 ))}
               </TableBody>
               </Table>
+              <TableDensityControls
+                value={yearRowLimit}
+                totalRows={yearlyBuckets.length}
+                visibleRows={visibleYearlyBuckets.length}
+                onChange={setYearRowLimit}
+                labels={{
+                  rowsShown: t('common.rows_shown'),
+                  rowsPerPage: t('common.rows_per_page'),
+                  all: t('common.all'),
+                }}
+              />
             </div>
           </div>
         </section>
