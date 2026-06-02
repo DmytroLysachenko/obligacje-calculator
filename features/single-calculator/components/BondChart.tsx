@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, Line, ComposedChart, TooltipProps, ReferenceLine, } from "recharts";
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, Line, ComposedChart, TooltipProps, ReferenceLine, } from "recharts";
 import { ValueType, NameType, } from "recharts/types/component/DefaultTooltipContent";
 import { CalculationResult } from "../../bond-core/types";
 import { ChartStep } from "../../bond-core/types";
@@ -9,6 +9,7 @@ import { useAppI18n } from '@/i18n/client';
 import { getIntlLocale } from '@/i18n/locale-utils';
 import { cn } from "@/lib/utils";
 import { ChartContainer } from "@/shared/components/charts/ChartContainer";
+import { ChartLegendStrip } from "@/shared/components/charts/ChartLegendStrip";
 import { AppLanguage, buildBondChartDisplayPoints, normalizeBondChartDisplayTimeline, } from "@/shared/lib/bond-display";
 import { computeNumericDomain, computeRateDomain, sampleSeriesPoints } from "@/shared/lib/chart-series";
 interface BondChartProps {
@@ -154,9 +155,31 @@ export const BondChart: React.FC<BondChartProps> = ({ results, chartStep = 'year
     }), [chartData]);
     const rightDomain = React.useMemo(() => computeRateDomain(chartData.flatMap((point) => [point.inflation, point.nbp].filter((value): value is number => typeof value === 'number'))), [chartData]);
     const firstProjectedIndex = React.useMemo(() => chartData.findIndex((point) => point.isProjected), [chartData]);
-    return (<ChartContainer responsiveHeightClassName="h-[360px] md:h-[460px] xl:h-[520px]">
+    const legendItems = React.useMemo(() => [
+        {
+            label: t("common.nominal_value"),
+            color: "#111111",
+        },
+        {
+            label: t("common.real_value"),
+            color: "#4E8F71",
+        },
+        {
+            label: t("bonds.ref_inflation"),
+            color: "#C89D4F",
+            style: "dashed" as const,
+        },
+        {
+            label: t("bonds.nbp_rate_short"),
+            color: "#5C5C5C",
+            style: "muted" as const,
+        },
+    ], [t]);
+    return (<div className="space-y-4">
+      <ChartLegendStrip items={legendItems}/>
+      <ChartContainer responsiveHeightClassName="h-[360px] md:h-[460px] xl:h-[520px]">
         <ResponsiveContainer width="100%" height="100%" key={`chart-${chartData.length}`}>
-        <ComposedChart data={chartData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
+        <ComposedChart data={chartData} margin={{ top: 12, right: 30, left: 40, bottom: 20 }}>
           <defs>
             <linearGradient id="colorNominal" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#111111" stopOpacity={0.12}/>
@@ -184,12 +207,6 @@ export const BondChart: React.FC<BondChartProps> = ({ results, chartStep = 'year
                 fontSize: 10,
                 fontWeight: 'bold',
             }}/>) : null}
-          <Legend verticalAlign="top" align="right" height={40} iconType="circle" wrapperStyle={{
-            fontSize: "10px",
-            fontWeight: "black",
-            textTransform: "uppercase",
-            letterSpacing: '0.05em',
-        }}/>
           <Area yAxisId="left" type="monotone" dataKey={showRealValue ? 'real' : 'nominal'} name={showRealValue ? t("common.real_value") : t("common.nominal_value")} stroke={showRealValue ? "#4E8F71" : "#111111"} strokeWidth={2} fillOpacity={1} fill={showRealValue ? "url(#colorReal)" : "url(#colorNominal)"} isAnimationActive={false}/>
           <Line yAxisId="left" type="monotone" dataKey={showRealValue ? 'nominal' : 'real'} name={showRealValue ? t("common.nominal_value") : t("common.real_value")} stroke={showRealValue ? "#111111" : "#4E8F71"} strokeWidth={2} strokeOpacity={0.55} dot={false} isAnimationActive={false}/>
           {results.comparisonScenarios ? (<>
@@ -200,7 +217,8 @@ export const BondChart: React.FC<BondChartProps> = ({ results, chartStep = 'year
           <Line yAxisId="right" type="stepAfter" dataKey="nbp" name={t("bonds.nbp_rate_short")} stroke="#5C5C5C" strokeWidth={1.5} strokeDasharray="3 3" dot={false} opacity={0.3} isAnimationActive={false}/>
         </ComposedChart>
       </ResponsiveContainer>
-    </ChartContainer>);
+    </ChartContainer>
+    </div>);
 };
 
 

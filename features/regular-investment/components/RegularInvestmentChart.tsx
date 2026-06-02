@@ -1,12 +1,13 @@
 'use client';
 import React from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, TooltipProps, } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, TooltipProps, } from 'recharts';
 import { ValueType, NameType, } from 'recharts/types/component/DefaultTooltipContent';
 import { RegularInvestmentResult } from '../../bond-core/types';
 import { ChartStep } from '../../bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { format } from 'date-fns';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
+import { ChartLegendStrip } from '@/shared/components/charts/ChartLegendStrip';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { getBondColor } from '@/shared/lib/charts/get-bond-color';
@@ -59,6 +60,17 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ 
     });
     const chartData = React.useMemo(() => sampleSeriesPoints(buildRegularInvestmentChartPoints(results.timeline, chartStep, (date) => format(date, 'MM.yy', { locale: dateLocale }), view), 180), [chartStep, dateLocale, results.timeline, view]);
     const formatCurrency = React.useMemo(() => (value: number) => currencyFormatter.format(value), [currencyFormatter]);
+    const legendItems = React.useMemo(() => [
+        {
+            label: t('bonds.total_invested'),
+            color: '#94a3b8',
+            style: 'muted' as const,
+        },
+        {
+            label: view === 'nominal' ? t('common.nominal_value') : t('common.real_value'),
+            color: primaryColor,
+        },
+    ], [primaryColor, t, view]);
     return (<div className="space-y-6">
       <div className="flex justify-center">
         <Tabs value={view} onValueChange={(v) => setView(v as 'nominal' | 'real')} className="w-fit rounded-lg bg-muted/50 p-1">
@@ -69,9 +81,11 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ 
         </Tabs>
       </div>
 
+      <ChartLegendStrip items={legendItems}/>
+
       <ChartContainer responsiveHeightClassName="h-[360px] md:h-[450px] xl:h-[500px]">
         <ResponsiveContainer width="100%" height="100%" key={`chart-${chartData.length}-${view}`}>
-          <AreaChart data={chartData} margin={{ top: 20, right: 30, left: 40, bottom: 20 }}>
+          <AreaChart data={chartData} margin={{ top: 12, right: 30, left: 40, bottom: 20 }}>
             <defs>
               <linearGradient id="colorInvested" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.15}/>
@@ -86,7 +100,6 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ 
             <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))', fontWeight: 'bold' }} tickLine={false} axisLine={false} dy={10}/>
             <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))', fontWeight: 'bold' }} tickLine={false} axisLine={false} tickFormatter={(value: number) => `${(value / 1000).toFixed(0)}k`}/>
             <Tooltip content={<CustomTooltip formatCurrency={formatCurrency}/>}/>
-            <Legend verticalAlign="top" align="right" height={40} iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 'black', textTransform: 'uppercase', letterSpacing: '0.05em' }}/>
             <Area type="monotone" dataKey="invested" name={t('bonds.total_invested')} stroke="#94a3b8" strokeWidth={3} fillOpacity={1} fill="url(#colorInvested)" animationDuration={1500}/>
             <Area type="monotone" dataKey="value" name={view === 'nominal' ? t('common.nominal_value') : t('common.real_value')} stroke={primaryColor} strokeWidth={4} fillOpacity={1} fill="url(#colorValue)" animationDuration={1500}/>
           </AreaChart>
