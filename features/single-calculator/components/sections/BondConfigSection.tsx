@@ -43,8 +43,8 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
         onUpdate('initialInvestment', value);
     };
     const isDivisibleBy100 = inputs.initialInvestment % 100 === 0 && inputs.initialInvestment > 0;
-    return (<div className="space-y-5 pb-5">
-      <div className="mb-3 flex gap-1 rounded-md border border-border bg-card p-1">
+    return (<div className="space-y-6">
+      <div className="flex gap-1 border-b border-border pb-2">
         <Button variant={(!inputs.calculatorMode || inputs.calculatorMode === 'standard') ? 'default' : 'ghost'} className="h-8 flex-1 text-sm font-medium" onClick={() => onUpdate('calculatorMode', 'standard')}>
           {t('bonds.standard_payout')}
         </Button>
@@ -143,19 +143,19 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
           </Select>
         </div>
         
-        <div className="space-y-2 rounded-md border border-border bg-muted/35 p-4 text-sm">
+        <div className="space-y-3 border-l-2 border-border bg-muted/30 px-4 py-3 text-sm">
           <div className="flex items-center gap-2 font-semibold text-foreground">
             <Info className="h-3 w-3"/>
             <span>{currentDef.fullName[language]}</span>
           </div>
           <div className="flex flex-wrap gap-2">
-            <span className="rounded-md bg-card px-2.5 py-1 text-xs font-semibold text-muted-foreground">
+            <span className="bg-background px-2.5 py-1 text-xs font-semibold text-muted-foreground">
               {formatDurationLabel(inputs.bondType)}
             </span>
-            {isFamilyBondType(inputs.bondType) ? (<span className="rounded-md bg-card px-2.5 py-1 text-xs font-semibold text-[var(--finance-warning)]">
+            {isFamilyBondType(inputs.bondType) ? (<span className="bg-background px-2.5 py-1 text-xs font-semibold text-[var(--finance-warning)]">
                 {t('bonds.family_bond')}
               </span>) : null}
-            <span className="rounded-md bg-card px-2.5 py-1 text-xs font-semibold text-muted-foreground">
+            <span className="bg-background px-2.5 py-1 text-xs font-semibold text-muted-foreground">
               {rateContext.styleLabel}
             </span>
           </div>

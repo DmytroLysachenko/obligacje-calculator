@@ -13,6 +13,7 @@ import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
+import { ScenarioFieldset } from '@/shared/components/forms/ScenarioFieldset';
 import { InputGuardrailIssue } from '../lib/input-guardrails';
 import { BondConfigSection } from './sections/BondConfigSection';
 import { BondTimingSection } from './sections/BondTimingSection';
@@ -75,7 +76,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
   if (isLoadingDefs || !definitions || !currentDef) {
     return (
-      <section className="w-full space-y-6 border-t border-border py-5">
+      <section className="w-full space-y-6 border-t border-border py-6">
         <div className="space-y-3">
           <Skeleton className="mb-2 h-6 w-48" />
           <Skeleton className="h-4 w-64" />
@@ -100,7 +101,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
   return (
     <TooltipProvider>
-      <section className="w-full space-y-6 border-t border-border py-5">
+      <section className="w-full space-y-8 border-t border-border py-6">
         {guardrails.length > 0 ? (
           <div className="space-y-3 border-b border-[var(--finance-warning)]/40 pb-5">
             {guardrails.map((issue) => (
@@ -144,16 +145,11 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           </p>
         </div>
 
-        <div className="space-y-6">
-          <section className="space-y-4">
-            <div className="space-y-1">
-              <h3 className="text-xs font-semibold text-muted-foreground">
-                {t('bonds.step_core')}
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                {t('bonds.form.step_core_desc')}
-              </p>
-            </div>
+        <div className="space-y-8">
+          <ScenarioFieldset
+            title={t('bonds.step_core')}
+            description={t('bonds.form.step_core_desc')}
+          >
             <BondConfigSection
               inputs={inputs}
               onUpdate={handleUpdate}
@@ -162,17 +158,13 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               availableSeries={availableSeries}
               selectedSeriesId={selectedSeriesId}
             />
-          </section>
+          </ScenarioFieldset>
 
-          <section className="space-y-4 border-t border-border pt-5">
-            <div className="space-y-1">
-              <h3 className="text-xs font-semibold text-muted-foreground">
-                {t('bonds.step_timing')}
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                {t('bonds.form.step_timing_desc')}
-              </p>
-            </div>
+          <ScenarioFieldset
+            title={t('bonds.step_timing')}
+            description={t('bonds.form.step_timing_desc')}
+            divided
+          >
             <BondTimingSection
               inputs={inputs}
               onUpdate={handleUpdate}
@@ -181,9 +173,13 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               currentDef={currentDef}
               hasMounted={hasMounted}
             />
-          </section>
+          </ScenarioFieldset>
 
-          <section className="border-t border-border pt-5">
+          <ScenarioFieldset
+            title={t('common.advanced')}
+            description={t('bonds.form.advanced_desc')}
+            divided
+          >
             <AdvancedAssumptionsDisclosure
               title={t('common.advanced')}
               description={t('bonds.form.advanced_desc')}
@@ -208,7 +204,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                 />
               </div>
             </AdvancedAssumptionsDisclosure>
-          </section>
+          </ScenarioFieldset>
         </div>
 
         <BondSummaryFooter

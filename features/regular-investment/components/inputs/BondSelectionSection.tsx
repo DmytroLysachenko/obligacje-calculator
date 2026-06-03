@@ -8,7 +8,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { BondType } from '@/features/bond-core/types';
 import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
 import { cn } from '@/lib/utils';
-import { SectionHeading } from './SectionHeading';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 
 type BondSelectionSectionProps = {
@@ -30,12 +29,7 @@ export function BondSelectionSection({
   const currentBondSupport = getBondSupportMeta(bondType);
 
   return (
-    <section className="space-y-6">
-      <SectionHeading
-        title={t('regular_investment_page.core_plan_title')}
-        description={t('regular_investment_page.core_plan_description')}
-      />
-
+    <div className="space-y-5">
       <div className="space-y-3">
         <div className="flex items-center gap-2">
           <Label htmlFor="bondType" className="text-[15px] font-semibold">
@@ -84,7 +78,7 @@ export function BondSelectionSection({
           </SelectContent>
         </Select>
 
-        <div className="space-y-2 rounded-lg bg-muted/35 p-4 text-sm">
+        <div className="space-y-2 border-l-2 border-border bg-muted/30 px-4 py-3 text-sm">
           <div className="flex items-center gap-2 font-semibold text-foreground">
             <Info className="h-3 w-3" />
             <span>{currentDef.fullName[language]}</span>
@@ -102,6 +96,6 @@ export function BondSelectionSection({
           ) : null}
         </div>
       </div>
-    </section>
+    </div>
   );
 }

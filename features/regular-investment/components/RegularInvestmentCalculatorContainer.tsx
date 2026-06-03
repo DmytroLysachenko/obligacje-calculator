@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
 import { CalculatorSection } from '@/shared/components/page/CalculatorSection';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
+import { pageLayout } from '@/shared/components/page/layout-system';
 import { ReadingChecklist } from '@/shared/components/insights/ReadingChecklist';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
@@ -35,13 +36,13 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
         }
     };
     return (<CalculatorPageShell title={t('nav.regular_investment')} description={t('bonds.regular_calculator')} icon={<PiggyBank className="h-8 w-8"/>} isCalculating={isCalculating} isDirty={isDirty} hasResults={isPersistenceReady && !!results} onKeyDown={handleKeyDown}>
-      <div className="space-y-8 md:space-y-10">
-        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[400px_minmax(0,1fr)] xl:items-start xl:gap-8">
-          <aside className="space-y-6 xl:sticky xl:top-24 xl:h-fit">
+      <div className={pageLayout.compactFlow}>
+        <div className={pageLayout.calculatorGrid}>
+          <aside className={pageLayout.stickyScenario}>
             <RegularInvestmentInputsForm inputs={inputs} onUpdate={updateInput as (key: string, value: unknown) => void} onBondTypeChange={setBondType}/>
           </aside>
 
-          <section className="space-y-6">
+          <section className={pageLayout.sectionFlow}>
             {!results && !isCalculating ? (<ScenarioReadyPanel badge={t('bonds.simulation.ready')} title={t('bonds.regular_simulation.ready_title')} description={t('bonds.regular_simulation.ready_desc')} steps={[
                 {
                     id: 'plan',
@@ -62,7 +63,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
 
             {isCalculating && !results ? <LoadingState /> : null}
 
-            {results ? (<div className={cn('space-y-6 transition-opacity duration-200', isCalculating && 'pointer-events-none opacity-50')}>
+            {results ? (<div className={cn('space-y-8 transition-opacity duration-200', isCalculating && 'pointer-events-none opacity-50')}>
                 {isDirty ? (<div className="ui-inline-notice border-l-2 border-warning text-foreground">
                     {t('bonds.simulation.stale_results')}{' '}
                     <span className="font-semibold">{t('common.recalculate')}</span>.
@@ -73,7 +74,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
           </section>
         </div>
 
-        {results ? (<div className={cn('space-y-8 transition-opacity duration-200', isCalculating && 'pointer-events-none opacity-50')}>
+        {results ? (<div className={cn('space-y-10 transition-opacity duration-200', isCalculating && 'pointer-events-none opacity-50')}>
             <SecondaryInsightAccordion title={t('regular_investment_page.how_to_read_title')} description={t('regular_investment_page.how_to_read_description')} badge={t('regular_investment_page.how_to_read_badge')}>
               <ReadingChecklist items={readingGuide}/>
             </SecondaryInsightAccordion>

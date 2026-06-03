@@ -1,12 +1,12 @@
 'use client';
 import React, { useState } from 'react';
-import { Separator } from '@/components/ui/separator';
 import { BondType, RegularInvestmentInputs } from '../../bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { getHorizonMonths } from '@/shared/lib/date-timing';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
+import { ScenarioFieldset } from '@/shared/components/forms/ScenarioFieldset';
 import { BondSelectionSection } from './inputs/BondSelectionSection';
 import { ContributionPlanSection } from './inputs/ContributionPlanSection';
 import { TimingSection } from './inputs/TimingSection';
@@ -46,7 +46,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
       inputs.contributionAmount % 100 === 0 && inputs.contributionAmount > 0;
 
     return (
-      <section className="w-full space-y-6">
+      <section className="w-full space-y-8 border-t border-border py-6">
         <div className="space-y-2 border-b border-border pb-4">
           <h2 className="ui-section-title">
             {t('bonds.regular_calculator')}
@@ -55,47 +55,56 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
             {t('regular_investment_page.form_description')}
           </p>
         </div>
-        <div className="space-y-6">
-          <BondSelectionSection
-            bondType={inputs.bondType}
-            definitions={definitions}
-            language={language}
-            onBondTypeChange={onBondTypeChange}
-            t={t}
-          />
+        <div className="space-y-8">
+          <ScenarioFieldset
+            title={t('regular_investment_page.core_plan_title')}
+            description={t('regular_investment_page.core_plan_description')}
+          >
+            <BondSelectionSection
+              bondType={inputs.bondType}
+              definitions={definitions}
+              language={language}
+              onBondTypeChange={onBondTypeChange}
+              t={t}
+            />
+          </ScenarioFieldset>
 
-          <Separator />
+          <ScenarioFieldset title={t('comparison.configuration')} divided>
+            <ContributionPlanSection
+              contributionAmount={inputs.contributionAmount}
+              frequency={inputs.frequency}
+              taxStrategy={inputs.taxStrategy}
+              isDivisibleBy100={isDivisibleBy100}
+              onUpdate={onUpdate}
+              t={t}
+            />
+          </ScenarioFieldset>
 
-          <ContributionPlanSection
-            contributionAmount={inputs.contributionAmount}
-            frequency={inputs.frequency}
-            taxStrategy={inputs.taxStrategy}
-            isDivisibleBy100={isDivisibleBy100}
-            onUpdate={onUpdate}
-            t={t}
-          />
+          <ScenarioFieldset title={t('bonds.step_timing')} divided>
+            <TimingSection
+              timingMode={inputs.timingMode}
+              purchaseDate={inputs.purchaseDate}
+              withdrawalDate={inputs.withdrawalDate}
+              investmentHorizonYears={investmentHorizonYears}
+              dateLocale={dateLocale}
+              onUpdate={onUpdate}
+              t={t}
+            />
+          </ScenarioFieldset>
 
-          <TimingSection
-            timingMode={inputs.timingMode}
-            purchaseDate={inputs.purchaseDate}
-            withdrawalDate={inputs.withdrawalDate}
-            investmentHorizonYears={investmentHorizonYears}
-            dateLocale={dateLocale}
-            onUpdate={onUpdate}
-            t={t}
-          />
-
-          <AdvancedSettingsSection
-            inputs={inputs}
-            currentDef={currentDef}
-            showCustomTax={showCustomTax}
-            onShowCustomTaxChange={setShowCustomTax}
-            onUpdate={onUpdate}
-            t={t}
-          />
+          <ScenarioFieldset title={t('common.advanced')} divided>
+            <AdvancedSettingsSection
+              inputs={inputs}
+              currentDef={currentDef}
+              showCustomTax={showCustomTax}
+              onShowCustomTaxChange={setShowCustomTax}
+              onUpdate={onUpdate}
+              t={t}
+            />
+          </ScenarioFieldset>
 
           <div className="pt-2">
-            <div className="space-y-1.5 rounded-md border border-border bg-muted/35 p-4 text-xs text-muted-foreground">
+            <div className="space-y-2 border-l-2 border-border bg-muted/30 px-4 py-3 text-xs text-muted-foreground">
               <div className="flex justify-between">
                 <span>{t('bonds.duration')}:</span>
                 <span className="font-bold">{formatBondDuration(inputs.duration, language)}</span>

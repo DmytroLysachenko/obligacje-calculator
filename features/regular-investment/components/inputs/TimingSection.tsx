@@ -11,7 +11,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { cn } from '@/lib/utils';
 import { toDateString } from '@/shared/lib/date-timing';
-import { SectionHeading } from './SectionHeading';
 
 type TimingSectionProps = {
   timingMode?: 'general' | 'exact';
@@ -33,12 +32,7 @@ export function TimingSection({
   t,
 }: TimingSectionProps) {
   return (
-    <section className="space-y-6 border-t border-dashed pt-6">
-      <SectionHeading
-        title="Timing"
-        description="Choose general horizon mode or exact dates, then define the full contribution window."
-      />
-
+    <div className="space-y-6">
       <div className="space-y-3">
         <Label className="text-[15px] font-semibold">{t('bonds.timing.mode.label')}</Label>
         <div className="flex gap-2">
@@ -177,7 +171,7 @@ export function TimingSection({
         </div>
 
         {timingMode === 'exact' ? (
-          <div className="rounded-lg border bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
+          <div className="border-l-2 border-border bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
             <span className="font-semibold text-foreground">
               {investmentHorizonYears % 1 === 0
                 ? investmentHorizonYears.toFixed(0)
@@ -197,6 +191,6 @@ export function TimingSection({
           />
         )}
       </div>
-    </section>
+    </div>
   );
 }
