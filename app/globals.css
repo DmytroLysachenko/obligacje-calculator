@@ -84,6 +84,10 @@
   --finance-warning: #c89d4f;
   --finance-radius-sm: 6px;
   --finance-radius-md: 8px;
+  --layout-reading-max: 720px;
+  --layout-content-max: 1120px;
+  --layout-wide-max: 1280px;
+  --layout-app-max: 1320px;
 }
 
 @layer base {
@@ -175,6 +179,27 @@
   }
   .ui-divider {
     @apply border-t border-border;
+  }
+  .ui-page-flow {
+    @apply space-y-12 pb-16 md:space-y-16;
+  }
+  .ui-compact-flow {
+    @apply space-y-8 md:space-y-10;
+  }
+  .ui-section-flow {
+    @apply space-y-6 md:space-y-8;
+  }
+  .ui-section-divider {
+    @apply border-t border-border pt-8 md:pt-12;
+  }
+  .ui-reading-width {
+    max-width: var(--layout-reading-max);
+  }
+  .ui-content-width {
+    max-width: var(--layout-content-max);
+  }
+  .ui-wide-width {
+    max-width: var(--layout-wide-max);
   }
   .ui-muted-panel {
     @apply border border-border bg-muted/45;

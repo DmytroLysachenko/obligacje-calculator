@@ -1,26 +1,32 @@
 'use client';
 
 import React from 'react';
+import { cn } from '@/lib/utils';
+import { pageLayout } from './layout-system';
 
 interface CalculatorSectionProps {
   title: string;
   description?: string;
   children: React.ReactNode;
+  divided?: boolean;
+  className?: string;
 }
 
 export function CalculatorSection({
   title,
   description,
   children,
+  divided = false,
+  className,
 }: CalculatorSectionProps) {
   return (
-    <section className="space-y-4">
+    <section className={cn(pageLayout.sectionFlow, divided && pageLayout.sectionDivider, className)}>
       <div className="space-y-2">
         <h3 className="ui-section-title">
           {title}
         </h3>
         {description ? (
-          <p className="ui-body max-w-3xl">
+          <p className="ui-body max-w-[var(--layout-reading-max)] text-muted-foreground">
             {description}
           </p>
         ) : null}

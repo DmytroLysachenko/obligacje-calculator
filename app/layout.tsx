@@ -107,12 +107,12 @@ export default async function RootLayout({
                       <Sidebar dataFreshness={dataFreshness} />
                       <OpportunisticSyncTrigger />
                       <main className="flex min-h-screen flex-1 flex-col overflow-x-hidden border-l border-border bg-background lg:pl-[22rem]">
-                        <div className="flex-1 px-4 py-4 md:px-7 md:py-7">
-                          <div className="container mx-auto max-w-[1320px]">{children}</div>
+                        <div className="flex-1 px-4 py-6 md:px-8 md:py-8">
+                          <div className="mx-auto w-full max-w-[var(--layout-app-max)]">{children}</div>
                         </div>
 
                         <footer className="mt-auto border-t border-border bg-card py-6">
-                          <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
+                          <div className="mx-auto w-full max-w-[var(--layout-app-max)] px-4 text-center text-sm text-muted-foreground">
                             <p>
                               © {new Date().getFullYear()} {t('common.title')}.{' '}
                               {t('site.footer_disclaimer')}

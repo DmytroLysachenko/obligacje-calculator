@@ -4,6 +4,7 @@ import { Check, Loader2, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
+import { pageLayout } from './layout-system';
 interface CalculatorPageShellProps {
     title: string;
     description: string;
@@ -52,10 +53,10 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({ title,
         }
     };
     const hasShareAction = onShare ? hasResults : (showImplicitShare && hasResults);
-    return (<div className="space-y-6 pb-14" onKeyDown={onKeyDown}>
-      <header className="surface-shell space-y-3 px-4 py-4 md:px-5 md:py-5">
+    return (<div className={pageLayout.pageFlow} onKeyDown={onKeyDown}>
+      <header className="space-y-4 border-b border-border pb-8 md:pb-10">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div className="max-w-4xl space-y-2">
+          <div className="max-w-[var(--layout-reading-max)] space-y-2">
             <div className="flex items-start gap-3 md:items-center">
               <div className="rounded-md bg-muted p-2 text-foreground">
                 {icon}
@@ -64,7 +65,7 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({ title,
                 <h2 className="ui-page-title">
                   {title}
                 </h2>
-                <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
+                <p className="ui-body text-muted-foreground">
                   {description}
                 </p>
               </div>
