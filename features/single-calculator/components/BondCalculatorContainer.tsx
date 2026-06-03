@@ -304,6 +304,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
                   onAddToNotebook={handleAddToNotebook}
                   onExportPDF={handleExportPDF}
                   canManageWorkspace={canManageWorkspace}
+                  dataQualityFlags={envelope?.dataQualityFlags}
                 />
               </div>
             ) : null}

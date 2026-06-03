@@ -1422,6 +1422,19 @@
     "reference_rail_title": "Panel referencyjny",
     "status_rail_title": "Status serii"
   },
+  "financial_insights": {
+    "title": "Interpretacja finansowa",
+    "description": "Uzyj tych kontroli, aby oddzielic wartosc nominalna, sile nabywcza, obciazenie podatkiem i pewnosc danych.",
+    "tax_impact_label": "Wplyw podatku",
+    "tax_impact_description": "Zysk brutto przed podatkiem: {grossProfit}. Zysk netto po potraceniach: {netProfit}.",
+    "real_value_label": "Kontrola wartosci realnej",
+    "real_value_description": "Nominalna wartosc koncowa to {nominalValue}. Inflacja obniza odczyt sily nabywczej o {gap}.",
+    "data_quality_label": "Jakosc danych",
+    "data_quality_flags": "{count} flag",
+    "data_quality_clean": "Brak flag",
+    "data_quality_description": "Otworz kontekst obliczen, aby sprawdzic dokladna liste ostrzezen przed poleganiem na wyniku.",
+    "data_quality_clean_description": "Ten zatwierdzony wynik nie zglosil flag jakosci danych."
+  },
   "comparison": {
     "title_bond_vs_bond": "Bond vs Bond",
     "desc_bond_vs_bond": "Porównaj różne polskie obligacje skarbowe w tych samych warunkach z automatycznym odnowieniem.",

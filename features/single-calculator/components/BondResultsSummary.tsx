@@ -10,6 +10,7 @@ import { MathDeepDive } from '@/shared/components/insights/MathDeepDive';
 import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
 import { ScenarioFactsBlock } from '@/shared/components/results/ScenarioFactsBlock';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
+import { FinancialInsightStrip, FinancialInsightItem } from '@/shared/components/results/FinancialInsightStrip';
 import { CalculationAuditTrace } from './CalculationAuditTrace';
 import { getAuditTimelinePoint } from '@/shared/lib/bond-display';
 import { buildTimelineCsvFilename, exportTimelineCsv, } from '@/shared/lib/retained-exports';
@@ -27,8 +28,9 @@ interface BondResultsSummaryProps {
     onAddToNotebook?: () => void;
     onExportPDF?: () => void;
     canManageWorkspace?: boolean;
+    dataQualityFlags?: string[];
 }
-export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results, inputs, onSaveScenario, onAddToNotebook, onExportPDF, canManageWorkspace = false, }) => {
+export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results, inputs, onSaveScenario, onAddToNotebook, onExportPDF, canManageWorkspace = false, dataQualityFlags = [], }) => {
     const { t, locale: language } = useAppI18n();
     const currencyFormatter = useCurrencyFormatter(language);
     const formatCurrency = React.useCallback((value: number) => currencyFormatter.format(value), [currencyFormatter]);
@@ -81,6 +83,40 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results,
         () => [...primarySummaryCards, ...secondarySummaryCards],
         [primarySummaryCards, secondarySummaryCards],
     );
+    const financialInsightItems = React.useMemo<FinancialInsightItem[]>(() => {
+        const grossProfit = Math.max(0, results.grossValue - results.initialInvestment);
+        const realValueGap = Math.max(0, results.netPayoutValue - results.finalRealValue);
+        return [
+            {
+                label: t('financial_insights.tax_impact_label'),
+                value: formatCurrency(results.totalTax),
+                description: t('financial_insights.tax_impact_description', {
+                    grossProfit: formatCurrency(grossProfit),
+                    netProfit: formatCurrency(results.totalProfit),
+                }),
+                tone: results.totalTax > 0 ? 'warning' : 'success',
+            },
+            {
+                label: t('financial_insights.real_value_label'),
+                value: formatCurrency(results.finalRealValue),
+                description: t('financial_insights.real_value_description', {
+                    nominalValue: formatCurrency(results.netPayoutValue),
+                    gap: formatCurrency(realValueGap),
+                }),
+                tone: realValueGap > 0 ? 'warning' : 'success',
+            },
+            {
+                label: t('financial_insights.data_quality_label'),
+                value: dataQualityFlags.length > 0
+                    ? t('financial_insights.data_quality_flags', { count: dataQualityFlags.length })
+                    : t('financial_insights.data_quality_clean'),
+                description: dataQualityFlags.length > 0
+                    ? t('financial_insights.data_quality_description')
+                    : t('financial_insights.data_quality_clean_description'),
+                tone: dataQualityFlags.length > 0 ? 'warning' : 'success',
+            },
+        ];
+    }, [dataQualityFlags.length, formatCurrency, results.finalRealValue, results.grossValue, results.initialInvestment, results.netPayoutValue, results.totalProfit, results.totalTax, t]);
     const scenarioFacts = React.useMemo(() => [
         {
             label: t('bonds.scenario_fields.bond_type'),
@@ -137,6 +173,12 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results,
         </section>) : null}
 
       <MetricStrip items={metricItems}/>
+
+      <FinancialInsightStrip
+        title={t('financial_insights.title')}
+        description={t('financial_insights.description')}
+        items={financialInsightItems}
+      />
 
       {results.overflowInfo ? (<SecondaryInsightAccordion title={t('bonds.results.wrapper_limit_title')} description={t('bonds.results.wrapper_limit_description', {
                 wrapperAmount: formatCurrency(results.overflowInfo.amountInWrapper),

@@ -105,7 +105,7 @@ export const LadderContainer: React.FC = () => {
                     {t('ladder_page.stale_results')}
                   </div>) : null}
 
-                <RegularInvestmentResultsSummary results={results} />
+                <RegularInvestmentResultsSummary results={results} dataQualityFlags={envelope?.dataQualityFlags} />
               </div>
             ) : null}
           </section>

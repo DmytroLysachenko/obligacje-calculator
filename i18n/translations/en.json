@@ -1422,6 +1422,19 @@
     "reference_rail_title": "Reference rail",
     "status_rail_title": "Series status"
   },
+  "financial_insights": {
+    "title": "Financial interpretation",
+    "description": "Use these checks to separate nominal value, purchasing power, tax drag, and data confidence.",
+    "tax_impact_label": "Tax impact",
+    "tax_impact_description": "Gross profit before tax: {grossProfit}. Net profit after deductions: {netProfit}.",
+    "real_value_label": "Real value check",
+    "real_value_description": "Nominal ending value is {nominalValue}. Inflation reduces purchasing-power read by {gap}.",
+    "data_quality_label": "Data quality",
+    "data_quality_flags": "{count} flags",
+    "data_quality_clean": "No flags",
+    "data_quality_description": "Open calculation context for the exact warning list before relying on the result.",
+    "data_quality_clean_description": "No data-quality flags were reported for this committed calculation."
+  },
   "comparison": {
     "title_bond_vs_bond": "Bond vs Bond",
     "desc_bond_vs_bond": "Compare different Polish Treasury Bonds under the same conditions with automatic rollover.",

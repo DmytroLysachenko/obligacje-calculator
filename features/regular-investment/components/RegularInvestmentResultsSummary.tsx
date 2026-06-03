@@ -9,6 +9,7 @@ import { buildLotsExportHeaders } from '@/shared/lib/export-headers';
 import { MetricStrip } from '@/shared/components/results/MetricStrip';
 import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
 import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
+import { FinancialInsightStrip, FinancialInsightItem } from '@/shared/components/results/FinancialInsightStrip';
 import { applyTableRowLimit, TableDensityControls, TableRowLimit } from '@/shared/components/results/TableDensityControls';
 import { buildLotsCsvFilename, exportLotsCsv } from '@/shared/lib/retained-exports';
 import { getDateFnsLocale, getIntlLocale } from '@/i18n/locale-utils';
@@ -19,6 +20,7 @@ import {
 } from '@/shared/lib/regular-investment-display';
 interface RegularInvestmentResultsSummaryProps {
     results: RegularInvestmentResult;
+    dataQualityFlags?: string[];
 }
 type SummaryStat = {
     label: string;
@@ -26,7 +28,7 @@ type SummaryStat = {
     helper: string;
 };
 const MAX_RECENT_LOTS = 12;
-export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsSummaryProps> = ({ results, }) => {
+export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsSummaryProps> = ({ results, dataQualityFlags = [], }) => {
     const { t, locale: language } = useAppI18n();
     const [yearRowLimit, setYearRowLimit] = useState<TableRowLimit>(12);
     const dateLocale = getDateFnsLocale(language);
@@ -70,6 +72,40 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
             helper: t('regular_summary.tax_helper'),
         },
     ], [formatCurrency, results.realAnnualizedReturn, results.totalTax, t]);
+    const financialInsightItems = useMemo<FinancialInsightItem[]>(() => {
+        const grossProfit = Math.max(0, results.totalProfit + results.totalTax);
+        const realValueGap = Math.max(0, results.finalNominalValue - results.finalRealValue);
+        return [
+            {
+                label: t('financial_insights.tax_impact_label'),
+                value: formatCurrency(results.totalTax),
+                description: t('financial_insights.tax_impact_description', {
+                    grossProfit: formatCurrency(grossProfit),
+                    netProfit: formatCurrency(results.totalProfit),
+                }),
+                tone: results.totalTax > 0 ? 'warning' : 'success',
+            },
+            {
+                label: t('financial_insights.real_value_label'),
+                value: formatCurrency(results.finalRealValue),
+                description: t('financial_insights.real_value_description', {
+                    nominalValue: formatCurrency(results.finalNominalValue),
+                    gap: formatCurrency(realValueGap),
+                }),
+                tone: realValueGap > 0 ? 'warning' : 'success',
+            },
+            {
+                label: t('financial_insights.data_quality_label'),
+                value: dataQualityFlags.length > 0
+                    ? t('financial_insights.data_quality_flags', { count: dataQualityFlags.length })
+                    : t('financial_insights.data_quality_clean'),
+                description: dataQualityFlags.length > 0
+                    ? t('financial_insights.data_quality_description')
+                    : t('financial_insights.data_quality_clean_description'),
+                tone: dataQualityFlags.length > 0 ? 'warning' : 'success',
+            },
+        ];
+    }, [dataQualityFlags.length, formatCurrency, results.finalNominalValue, results.finalRealValue, results.totalProfit, results.totalTax, t]);
     const yearlyBuckets = useMemo<RegularInvestmentYearBucket[]>(() => buildRegularInvestmentYearBuckets(results.lots), [results.lots]);
     const visibleYearlyBuckets = useMemo(() => applyTableRowLimit(yearlyBuckets, yearRowLimit), [yearRowLimit, yearlyBuckets]);
     const recentLots = useMemo(() => buildRecentRegularInvestmentLots(results.lots, MAX_RECENT_LOTS), [results.lots]);
@@ -105,6 +141,12 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
       <MetricStrip
         items={supportingStats}
         columns="grid-cols-1 lg:grid-cols-2"
+      />
+
+      <FinancialInsightStrip
+        title={t('financial_insights.title')}
+        description={t('financial_insights.description')}
+        items={financialInsightItems}
       />
 
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-[1.1fr_0.9fr]">

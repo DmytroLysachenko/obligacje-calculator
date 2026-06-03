@@ -69,7 +69,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
                     <span className="font-semibold">{t('common.recalculate')}</span>.
                   </div>) : null}
 
-                <RegularInvestmentResultsSummary results={results}/>
+                <RegularInvestmentResultsSummary results={results} dataQualityFlags={envelope?.dataQualityFlags}/>
               </div>) : null}
           </section>
         </div>
