@@ -17,6 +17,7 @@ interface ResponsiveTableSheetProps {
   description: string;
   triggerLabel: string;
   triggerCount?: string;
+  sheetLabel?: string;
   children: React.ReactNode;
 }
 
@@ -25,8 +26,12 @@ export function ResponsiveTableSheet({
   description,
   triggerLabel,
   triggerCount,
+  sheetLabel,
   children,
 }: ResponsiveTableSheetProps) {
+  const titleId = React.useId();
+  const descriptionId = React.useId();
+
   return (
     <div className="lg:hidden">
       <Sheet>
@@ -34,6 +39,7 @@ export function ResponsiveTableSheet({
           <Button
             type="button"
             variant="outline"
+            aria-label={sheetLabel ?? triggerLabel}
             className="w-full justify-between border-border bg-card px-4 py-4 text-left shadow-none"
           >
             <span className="flex items-center gap-3">
@@ -53,16 +59,25 @@ export function ResponsiveTableSheet({
             </span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="bottom" className="h-[88vh] rounded-t-lg bg-card p-0">
+        <SheetContent
+          side="bottom"
+          aria-labelledby={titleId}
+          aria-describedby={descriptionId}
+          className="h-[88vh] rounded-t-lg bg-card p-0"
+        >
           <SheetHeader className="border-b border-border px-5 py-5">
-            <SheetTitle className="text-left text-lg font-semibold text-foreground">
+            <SheetTitle id={titleId} className="text-left text-lg font-semibold text-foreground">
               {title}
             </SheetTitle>
-            <SheetDescription className="text-left text-sm leading-6 text-muted-foreground">
+            <SheetDescription id={descriptionId} className="text-left text-sm leading-6 text-muted-foreground">
               {description}
             </SheetDescription>
           </SheetHeader>
-          <div className="overflow-y-auto px-4 pb-8 pt-4">
+          <div
+            role="region"
+            aria-labelledby={titleId}
+            className="custom-scrollbar overflow-y-auto px-4 pb-8 pt-4"
+          >
             <div className="space-y-3">{children}</div>
           </div>
         </SheetContent>

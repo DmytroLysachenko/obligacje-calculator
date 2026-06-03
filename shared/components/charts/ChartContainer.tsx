@@ -7,6 +7,8 @@ interface ChartContainerProps {
   height?: number;
   responsiveHeightClassName?: string;
   className?: string;
+  ariaLabel?: string;
+  summary?: React.ReactNode;
   children: React.ReactNode;
 }
 
@@ -14,6 +16,8 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
   height,
   responsiveHeightClassName,
   className,
+  ariaLabel,
+  summary,
   children,
 }) => {
   const hasMounted = useSyncExternalStore(
@@ -39,8 +43,12 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
         responsiveHeightClassName,
         className,
       )}
+      role={ariaLabel ? 'img' : undefined}
+      aria-label={ariaLabel}
+      tabIndex={ariaLabel ? 0 : undefined}
       style={style}
     >
+      {summary ? <div className="sr-only">{summary}</div> : null}
       {hasMounted ? children : null}
     </div>
   );

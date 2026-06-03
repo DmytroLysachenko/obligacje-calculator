@@ -104,9 +104,19 @@ export default async function RootLayout({
                 <TooltipProvider>
                   <ErrorBoundary>
                     <div className="flex min-h-screen bg-background">
+                      <a
+                        href="#main-content"
+                        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[80] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-foreground focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                      >
+                        {t('common.skip_to_content')}
+                      </a>
                       <Sidebar dataFreshness={dataFreshness} />
                       <OpportunisticSyncTrigger />
-                      <main className="flex min-h-screen flex-1 flex-col overflow-x-hidden border-l border-border bg-background lg:pl-[22rem]">
+                      <main
+                        id="main-content"
+                        tabIndex={-1}
+                        className="flex min-h-screen flex-1 flex-col overflow-x-hidden border-l border-border bg-background outline-none lg:pl-[22rem]"
+                      >
                         <div className="flex-1 px-4 py-6 md:px-8 md:py-8">
                           <div className="mx-auto w-full max-w-[var(--layout-app-max)]">{children}</div>
                         </div>
@@ -114,7 +124,7 @@ export default async function RootLayout({
                         <footer className="mt-auto border-t border-border bg-card py-6">
                           <div className="mx-auto w-full max-w-[var(--layout-app-max)] px-4 text-center text-sm text-muted-foreground">
                             <p>
-                              © {new Date().getFullYear()} {t('common.title')}.{' '}
+                              {'\u00A9'} {new Date().getFullYear()} {t('common.title')}.{' '}
                               {t('site.footer_disclaimer')}
                             </p>
                             <div className="mt-4 flex justify-center gap-4">

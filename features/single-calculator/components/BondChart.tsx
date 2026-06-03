@@ -155,6 +155,21 @@ export const BondChart: React.FC<BondChartProps> = ({ results, chartStep = 'year
     }), [chartData]);
     const rightDomain = React.useMemo(() => computeRateDomain(chartData.flatMap((point) => [point.inflation, point.nbp].filter((value): value is number => typeof value === 'number'))), [chartData]);
     const firstProjectedIndex = React.useMemo(() => chartData.findIndex((point) => point.isProjected), [chartData]);
+    const chartSummary = React.useMemo(() => {
+        const firstPoint = chartData[0];
+        const lastPoint = chartData[chartData.length - 1];
+
+        if (!firstPoint || !lastPoint) {
+            return t('bonds.chart_accessible_summary_empty');
+        }
+
+        return t('bonds.chart_accessible_summary', {
+            count: chartData.length,
+            start: formatCurrency(firstPoint.nominal),
+            end: formatCurrency(lastPoint.nominal),
+            real: formatCurrency(lastPoint.real),
+        });
+    }, [chartData, formatCurrency, t]);
     const legendItems = React.useMemo(() => [
         {
             label: t("common.nominal_value"),
@@ -177,7 +192,11 @@ export const BondChart: React.FC<BondChartProps> = ({ results, chartStep = 'year
     ], [t]);
     return (<div className="space-y-4">
       <ChartLegendStrip items={legendItems}/>
-      <ChartContainer responsiveHeightClassName="h-[360px] md:h-[460px] xl:h-[520px]">
+      <ChartContainer
+        ariaLabel={t('bonds.value_chart_label')}
+        summary={<p>{chartSummary}</p>}
+        responsiveHeightClassName="h-[360px] md:h-[460px] xl:h-[520px]"
+      >
         <ResponsiveContainer width="100%" height="100%" key={`chart-${chartData.length}`}>
         <ComposedChart data={chartData} margin={{ top: 12, right: 30, left: 40, bottom: 20 }}>
           <defs>

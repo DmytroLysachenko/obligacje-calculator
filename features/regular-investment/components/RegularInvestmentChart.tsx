@@ -60,6 +60,20 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ 
     });
     const chartData = React.useMemo(() => sampleSeriesPoints(buildRegularInvestmentChartPoints(results.timeline, chartStep, (date) => format(date, 'MM.yy', { locale: dateLocale }), view), 180), [chartStep, dateLocale, results.timeline, view]);
     const formatCurrency = React.useMemo(() => (value: number) => currencyFormatter.format(value), [currencyFormatter]);
+    const chartSummary = React.useMemo(() => {
+        const firstPoint = chartData[0];
+        const lastPoint = chartData[chartData.length - 1];
+
+        if (!firstPoint || !lastPoint) {
+            return t('regular_investment_page.chart_accessible_summary_empty');
+        }
+
+        return t('regular_investment_page.chart_accessible_summary', {
+            count: chartData.length,
+            invested: formatCurrency(lastPoint.invested),
+            value: formatCurrency(lastPoint.value),
+        });
+    }, [chartData, formatCurrency, t]);
     const legendItems = React.useMemo(() => [
         {
             label: t('bonds.total_invested'),
@@ -83,7 +97,11 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ 
 
       <ChartLegendStrip items={legendItems}/>
 
-      <ChartContainer responsiveHeightClassName="h-[360px] md:h-[450px] xl:h-[500px]">
+      <ChartContainer
+        ariaLabel={t('regular_investment_page.value_chart_label')}
+        summary={<p>{chartSummary}</p>}
+        responsiveHeightClassName="h-[360px] md:h-[450px] xl:h-[500px]"
+      >
         <ResponsiveContainer width="100%" height="100%" key={`chart-${chartData.length}-${view}`}>
           <AreaChart data={chartData} margin={{ top: 12, right: 30, left: 40, bottom: 20 }}>
             <defs>

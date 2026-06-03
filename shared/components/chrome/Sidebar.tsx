@@ -231,7 +231,10 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
     <div className="flex h-full flex-col border-r border-border bg-[#eeeeea] text-foreground">
       <SidebarBrand />
 
-      <nav className="custom-scrollbar flex-1 space-y-8 overflow-y-auto px-4 py-5">
+      <nav
+        aria-label={t('common.primary_navigation')}
+        className="custom-scrollbar flex-1 space-y-8 overflow-y-auto px-4 py-5"
+      >
         {navSections.map((section) => (
           <NavSectionBlock
             key={section.label}
@@ -253,6 +256,7 @@ export function Sidebar({
   dataFreshness?: CalculationDataFreshness;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useAppI18n();
 
   return (
     <>
@@ -262,14 +266,15 @@ export function Sidebar({
             <Button
               variant="outline"
               size="icon"
+              aria-label={t('common.open_navigation')}
               className="border border-border bg-card shadow-none"
             >
               <Menu className="h-5 w-5" />
-              <span className="sr-only">Toggle menu</span>
+              <span className="sr-only">{t('common.open_navigation')}</span>
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-[min(22rem,100vw)] border-none p-0">
-            <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+            <SheetTitle className="sr-only">{t('common.navigation_menu')}</SheetTitle>
             <SidebarContent
               onItemClick={() => setIsOpen(false)}
               dataFreshness={dataFreshness}

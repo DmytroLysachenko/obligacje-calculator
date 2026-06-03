@@ -159,6 +159,52 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
   formatCurrency,
 }) => {
   const { t } = useAppI18n();
+  const chartSummary = React.useMemo(() => {
+    const lastPoint = chartData[chartData.length - 1];
+
+    if (!lastPoint || assets.length === 0) {
+      return t('comparison.chart_accessible_summary_empty');
+    }
+
+    const rankedValues = assets
+      .map((asset) => ({
+        name: asset.metadata.name,
+        value: Number(lastPoint[asset.metadata.id] ?? 0),
+      }))
+      .sort((left, right) => right.value - left.value);
+
+    const leading = rankedValues[0];
+    const trailing = rankedValues[rankedValues.length - 1];
+
+    return t('comparison.chart_accessible_summary', {
+      count: chartData.length,
+      leader: leading.name,
+      leaderValue: formatCurrency(leading.value),
+      trailing: trailing.name,
+      trailingValue: formatCurrency(trailing.value),
+    });
+  }, [assets, chartData, formatCurrency, t]);
+  const drawdownSummary = React.useMemo(() => {
+    const lastPoint = chartData[chartData.length - 1];
+
+    if (!lastPoint || assets.length === 0) {
+      return t('comparison.drawdown_accessible_summary_empty');
+    }
+
+    const drawdowns = assets.map((asset) => ({
+      name: asset.metadata.name,
+      value: Math.abs(Number(lastPoint[`${asset.metadata.id}_drawdown`] ?? 0)),
+    }));
+    const deepest = drawdowns.reduce((current, next) => (
+      next.value > current.value ? next : current
+    ), drawdowns[0]);
+
+    return t('comparison.drawdown_accessible_summary', {
+      count: chartData.length,
+      asset: deepest.name,
+      drawdown: deepest.value.toFixed(2),
+    });
+  }, [assets, chartData, t]);
 
   return (
     <Tabs defaultValue="growth" className="w-full flex flex-col gap-6">
@@ -189,7 +235,11 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
                 {t('comparison.performance_with_contributions')}
               </p>
             </div>
-            <ChartContainer height={420}>
+            <ChartContainer
+              ariaLabel={t('comparison.growth_chart_label')}
+              summary={<p>{chartSummary}</p>}
+              height={420}
+            >
               <ResponsiveContainer width="100%" height={420}>
                 <ComposedChart
                   data={chartData.length > 240 ? chartData.filter((_, i) => i % 2 === 0) : chartData}
@@ -321,7 +371,11 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
                 </p>
               </div>
             </div>
-            <ChartContainer height={420}>
+            <ChartContainer
+              ariaLabel={t('comparison.drawdown_chart_label')}
+              summary={<p>{drawdownSummary}</p>}
+              height={420}
+            >
               <ResponsiveContainer width="100%" height={420}>
                 <LineChart
                   data={chartData}
