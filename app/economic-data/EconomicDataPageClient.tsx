@@ -60,10 +60,12 @@ function RangeActions({
   period,
   setPeriod,
   rangeLabel,
+  hint,
 }: {
   period: PeriodValue;
   setPeriod: (value: PeriodValue) => void;
   rangeLabel: string;
+  hint: string;
 }) {
   const periods: {label: string; value: PeriodValue}[] = [
     {label: '1Y', value: '1Y'},
@@ -74,25 +76,32 @@ function RangeActions({
   ];
 
   return (
-    <div className="flex flex-wrap items-center gap-1 border-b border-border pb-2">
-      <span className="inline-flex items-center gap-1 px-3 text-sm font-medium text-muted-foreground">
-        <CalendarRange className="h-3.5 w-3.5" />
-        {rangeLabel}
-      </span>
-      {periods.map((item) => (
-        <button
-          key={item.value}
-          onClick={() => setPeriod(item.value)}
-          className={cn(
-            'rounded px-3 py-1.5 text-sm transition-colors',
-            period === item.value
-              ? 'bg-foreground font-semibold text-background'
-              : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-          )}
-        >
-          {item.label}
-        </button>
-      ))}
+    <div className="space-y-2 border-b border-border pb-3">
+      <div className="flex flex-wrap items-center gap-1">
+        <span className="inline-flex items-center gap-1 px-3 text-sm font-medium text-muted-foreground">
+          <CalendarRange className="h-3.5 w-3.5" />
+          {rangeLabel}
+        </span>
+        {periods.map((item) => (
+          <button
+            key={item.value}
+            type="button"
+            aria-pressed={period === item.value}
+            onClick={() => setPeriod(item.value)}
+            className={cn(
+              'rounded px-3 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2',
+              period === item.value
+                ? 'bg-foreground font-semibold text-background'
+                : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+            )}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+      <p className="px-3 text-xs leading-5 text-muted-foreground">
+        {hint}
+      </p>
     </div>
   );
 }
@@ -470,6 +479,7 @@ export function EconomicDataPageClient() {
                   period={period}
                   setPeriod={setPeriod}
                   rangeLabel={t('economic.range_data')}
+                  hint={t('economic.range_hint')}
                 />
               }
             >

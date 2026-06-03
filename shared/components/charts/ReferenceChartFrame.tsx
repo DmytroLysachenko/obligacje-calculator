@@ -13,6 +13,8 @@ interface ReferenceChartFrameProps {
   noticeTone?: 'default' | 'warning';
   fallbackNotice?: string;
   fallbackTone?: 'good' | 'warning';
+  fallbackStatusLabel?: string;
+  syncedStatusLabel?: string;
   children: React.ReactNode;
 }
 
@@ -24,9 +26,14 @@ export function ReferenceChartFrame({
   noticeTone = 'default',
   fallbackNotice,
   fallbackTone = 'good',
+  fallbackStatusLabel = 'Fallback',
+  syncedStatusLabel = 'Synced',
   children,
 }: ReferenceChartFrameProps) {
   const primaryMeta = metaItems.slice(0, 4);
+  const healthToneClass = fallbackTone === 'warning'
+    ? 'border-warning text-warning'
+    : 'border-success text-success';
 
   return (
     <div className="w-full min-w-0 space-y-5">
@@ -54,20 +61,16 @@ export function ReferenceChartFrame({
         </div>
 
         {fallbackNotice ? (
-          <div
-            className={cn(
-              'flex items-start gap-2 border-l-2 pl-3 text-sm leading-6',
-              fallbackTone === 'warning'
-                ? 'border-warning text-foreground'
-                : 'border-success text-foreground',
-            )}
-          >
-            {fallbackTone === 'warning' ? (
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-            ) : (
-              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
-            )}
-            <p>{fallbackNotice}</p>
+          <div className="flex flex-wrap items-start gap-x-4 gap-y-2 border-t border-border pt-3">
+            <div className={cn('inline-flex items-center gap-2 border-l-2 pl-3 text-xs font-semibold', healthToneClass)}>
+              {fallbackTone === 'warning' ? (
+                <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+              ) : (
+                <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+              )}
+              {fallbackTone === 'warning' ? fallbackStatusLabel : syncedStatusLabel}
+            </div>
+            <p className="max-w-3xl text-sm leading-6 text-muted-foreground">{fallbackNotice}</p>
           </div>
         ) : null}
       </div>

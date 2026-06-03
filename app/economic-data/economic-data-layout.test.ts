@@ -60,7 +60,7 @@ describe('economic data layout source contracts', () => {
 
     expectContains(source, 'data-[orientation=horizontal]:flex-col');
     expectContains(source, 'data-[orientation=vertical]:flex-row');
-    expectContains(source, 'group-data-[orientation=horizontal]/tabs:h-9');
+    expectContains(source, 'group-data-[orientation=horizontal]/tabs:h-10');
     expectContains(source, 'group-data-[orientation=vertical]/tabs:flex-col');
     expectNotContains(source, 'data-horizontal:flex-col');
     expectNotContains(source, 'group-data-horizontal/tabs');
@@ -158,7 +158,10 @@ describe('economic data layout source contracts', () => {
     expectContains(source, "t('economic.data_health')");
     expectContains(source, '<dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2">');
     expectContains(source, 'border-t border-border py-5');
-    expectContains(source, 'border-b border-border pb-2');
+    expectContains(source, 'space-y-2 border-b border-border pb-3');
+    expectContains(source, 'hint={t(\'economic.range_hint\')}');
+    expectContains(source, 'aria-pressed={period === item.value}');
+    expectContains(source, 'focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2');
     expectContains(source, 'actions?: React.ReactNode');
     expectContains(source, '<div className="shrink-0 lg:max-w-[520px]">{actions}</div>');
     expectContains(source, 'grid gap-x-6 gap-y-4 border-y border-border py-4 md:grid-cols-2');
@@ -184,7 +187,11 @@ describe('economic data layout source contracts', () => {
     expectContains(source, 'sourceLabel');
     expectContains(source, '<dl className="grid gap-x-6 gap-y-3');
     expectContains(source, 'border-y border-border py-4');
-    expectContains(source, 'border-l-2 pl-3 text-sm leading-6');
+    expectContains(source, "const healthToneClass = fallbackTone === 'warning'");
+    expectContains(source, 'fallbackStatusLabel?: string;');
+    expectContains(source, 'syncedStatusLabel?: string;');
+    expectContains(source, "inline-flex items-center gap-2 border-l-2 pl-3 text-xs font-semibold");
+    expectContains(source, 'max-w-3xl text-sm leading-6 text-muted-foreground');
     expectContains(source, 'border-t border-border pt-4');
     expectNoFragments(source, [
       'rounded-lg border border-border bg-card',

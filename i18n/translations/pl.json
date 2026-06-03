@@ -1321,6 +1321,7 @@
   },
   "economic": {
     "range_data": "Zakres danych",
+    "range_hint": "Ten zakres dziala na wykres CPI i NBP, aby kontekst makro pozostal spojny.",
     "reference_panel": "Panel kontekstowy",
     "compact_source_header": "Zrodlo danych",
     "data_health": "Stan danych",
