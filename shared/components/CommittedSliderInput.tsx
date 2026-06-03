@@ -6,6 +6,7 @@ import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
 
 interface CommittedSliderInputProps {
+  label?: string;
   value: number;
   min: number;
   max: number;
@@ -13,8 +14,10 @@ interface CommittedSliderInputProps {
   disabled?: boolean;
   unit?: string;
   showInput?: boolean;
+  showBounds?: boolean;
   sliderClassName?: string;
   inputClassName?: string;
+  valueFormatter?: (value: number) => string;
   onCommit: (value: number) => void;
 }
 
@@ -28,6 +31,7 @@ function toPrecision(value: number, step: number) {
 }
 
 export function CommittedSliderInput({
+  label,
   value,
   min,
   max,
@@ -35,8 +39,10 @@ export function CommittedSliderInput({
   disabled,
   unit,
   showInput = true,
+  showBounds = true,
   sliderClassName,
   inputClassName,
+  valueFormatter,
   onCommit,
 }: CommittedSliderInputProps) {
   const [draftValue, setDraftValue] = React.useState(value);
@@ -74,47 +80,77 @@ export function CommittedSliderInput({
     [max, min, step],
   );
 
+  const formatDisplayValue = React.useCallback((nextValue: number) => {
+    if (valueFormatter) {
+      return valueFormatter(nextValue);
+    }
+
+    return unit ? `${nextValue} ${unit}` : String(nextValue);
+  }, [unit, valueFormatter]);
+
   return (
-    <div className="flex items-center gap-4">
-      <Slider
-        value={[draftValue]}
-        disabled={disabled}
-        min={min}
-        max={max}
-        step={step}
-        onValueChange={handleSliderChange}
-        onValueCommit={([nextValue]) => commitValue(nextValue)}
-        className={cn('flex-1', sliderClassName)}
-      />
-      {showInput ? (
-        <div className="relative">
-          <Input
-            type="number"
-            inputMode="decimal"
-            step={step}
-            min={min}
-            max={max}
-            disabled={disabled}
-            className={cn(
-              'h-10 w-28 pr-10 text-right text-sm font-semibold',
-              inputClassName,
-            )}
-            value={draftText}
-            onChange={(event) => setDraftText(event.target.value)}
-            onBlur={handleInputBlur}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                event.currentTarget.blur();
-              }
-            }}
-          />
-          {unit ? (
-            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-muted-foreground">
-              {unit}
-            </span>
-          ) : null}
+    <div className="space-y-2">
+      {label || showBounds ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 text-xs leading-5">
+          <div className="min-w-0">
+            {label ? (
+              <p className="font-semibold text-foreground">{label}</p>
+            ) : null}
+            {showBounds ? (
+              <p className="text-muted-foreground">
+                {formatDisplayValue(min)} - {formatDisplayValue(max)}
+              </p>
+            ) : null}
+          </div>
+          <p className="financial-number shrink-0 text-sm font-semibold text-foreground">
+            {formatDisplayValue(draftValue)}
+          </p>
         </div>
       ) : null}
+
+      <div className="flex items-center gap-4">
+        <Slider
+          value={[draftValue]}
+          disabled={disabled}
+          min={min}
+          max={max}
+          step={step}
+          aria-label={label ?? unit ?? 'Committed slider input'}
+          onValueChange={handleSliderChange}
+          onValueCommit={([nextValue]) => commitValue(nextValue)}
+          className={cn('flex-1', sliderClassName)}
+        />
+        {showInput ? (
+          <div className="relative">
+            <Input
+              type="number"
+              inputMode="decimal"
+              step={step}
+              min={min}
+              max={max}
+              disabled={disabled}
+              aria-label={label ?? unit ?? 'Slider value'}
+              className={cn(
+                'h-10 w-28 pr-10 text-right text-sm font-semibold',
+                inputClassName,
+              )}
+              value={draftText}
+              onChange={(event) => setDraftText(event.target.value)}
+              onBlur={handleInputBlur}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  event.currentTarget.blur();
+                }
+              }}
+            />
+            {unit ? (
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-muted-foreground">
+                {unit}
+              </span>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }
