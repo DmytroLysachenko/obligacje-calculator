@@ -6,6 +6,7 @@ import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
+import { pageLayout } from '@/shared/components/page/layout-system';
 import { ReadingChecklist } from '@/shared/components/insights/ReadingChecklist';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
@@ -79,9 +80,9 @@ export const LadderContainer: React.FC = () => {
         }
     };
     return (<CalculatorPageShell title={t('nav.ladder')} description={t('ladder.what_is_desc')} icon={<ListTree className="h-8 w-8"/>} isCalculating={isCalculating} isDirty={isDirty} hasResults={isPersistenceReady && !!results} onKeyDown={handleKeyDown}>
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 gap-6 xl:grid-cols-[420px_minmax(0,1fr)] xl:items-start">
-          <aside className="xl:sticky xl:top-28 xl:h-fit">
+      <div className={pageLayout.compactFlow}>
+        <div className={pageLayout.calculatorGrid}>
+          <aside className={pageLayout.stickyScenario}>
             <RegularInvestmentInputsForm
               inputs={inputs}
               onUpdate={updateInput as (key: string, value: unknown) => void}
@@ -89,14 +90,14 @@ export const LadderContainer: React.FC = () => {
             />
           </aside>
 
-          <section className="space-y-6">
+          <section className={pageLayout.sectionFlow}>
             {!results && !isCalculating ? <LadderEmptyState /> : null}
             {isCalculating && !results ? <LadderLoadingState /> : null}
 
             {results ? (
               <div
                 className={cn(
-                  'space-y-6 transition-opacity duration-200',
+                  'space-y-8 transition-opacity duration-200',
                   isCalculating && 'pointer-events-none opacity-50',
                 )}
               >
@@ -113,7 +114,7 @@ export const LadderContainer: React.FC = () => {
         {results ? (
           <div
             className={cn(
-              'space-y-8 transition-opacity duration-200',
+              'space-y-10 transition-opacity duration-200',
               isCalculating && 'pointer-events-none opacity-50',
             )}
           >

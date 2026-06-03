@@ -1046,6 +1046,10 @@
       "spread_gap_description": "O ile typowy miesiac zapadalnosci rozni sie od jednej powtarzalnej skladki.",
       "active_window": "Aktywne okno zapadalnosci",
       "active_window_description": "Zakres od najwczesniejszego do najpozniejszego miesiaca zapadalnosci w tej drabince.",
+      "year_summary_title": "Roczne podsumowanie drabinki",
+      "year_summary_intro": "Najpierw sprawdz roczna koncentracje zwrotu kapitalu, a dopiero potem otwieraj miesieczne szczegoly.",
+      "year_summary_description": "{count} partii od {firstMonth} do {lastMonth}.",
+      "strongest_year": "Najwiekszy rok zapadalnosci",
       "chart_title": "Koncentracja zapadalnosci",
       "chart_description": "Kazdy slupek pokazuje, jaka wartosc netto wraca w danym miesiacu zapadalnosci.",
       "yearly_chart_description": "Roczne wartosci zapadalnosci w drabince. Domyslny widok pozostaje czytelny, zanim sprawdzisz miesieczne szczegoly.",
@@ -1065,6 +1069,11 @@
       "mobile_share_of_lots": "Udzial partii",
       "mobile_amount": "Kwota",
       "table_summary": "Kazdy wiersz pokazuje jeden miesiac zapadalnosci, liczbe konczacych sie tam partii i zwracana wartosc netto.",
+      "table_filters": {
+        "all": "Wszystkie miesiace",
+        "peak": "Tylko szczyt",
+        "clustered": "Skupione"
+      },
       "table_count_suffix": "miesiecy",
       "table_month": "Miesiac",
       "table_lots": "Partie",

@@ -24,10 +24,12 @@ interface LadderTimelineProps {
     results: RegularInvestmentResult;
 }
 type LadderChartMode = 'yearly' | 'monthly';
+type LadderTableFilter = 'all' | 'peak' | 'clustered';
 export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
     const { t, locale: language } = useAppI18n();
     const [rowLimit, setRowLimit] = useState<TableRowLimit>(12);
     const [chartMode, setChartMode] = useState<LadderChartMode>('yearly');
+    const [tableFilter, setTableFilter] = useState<LadderTableFilter>('all');
     const dateLocale = getDateFnsLocale(language);
     const currencyFormatter = useCurrencyFormatter(language, {
         style: 'currency',
@@ -41,7 +43,6 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
         () => chartMode === 'yearly' ? yearlyBuckets : monthlyBuckets,
         [chartMode, monthlyBuckets, yearlyBuckets],
     );
-    const displayedRows = useMemo(() => applyTableRowLimit(monthlyBuckets, rowLimit), [monthlyBuckets, rowLimit]);
     const averageMaturityValue = monthlyBuckets.length > 0
         ? monthlyBuckets.reduce((accumulator, item) => accumulator + item.amount, 0) / monthlyBuckets.length
         : 0;
@@ -51,6 +52,18 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
     const earliestMonth = monthlyBuckets[0] ?? null;
     const latestMonth = monthlyBuckets[monthlyBuckets.length - 1] ?? null;
     const peakShare = peakMonth && results.lots.length > 0 ? (peakMonth.count / results.lots.length) * 100 : 0;
+    const clusteredThreshold = Math.max(2, Math.ceil(results.lots.length * 0.08));
+    const filteredMonthlyBuckets = useMemo(() => {
+        if (tableFilter === 'peak') {
+            return peakMonth ? monthlyBuckets.filter((item) => item.date === peakMonth.date) : [];
+        }
+        if (tableFilter === 'clustered') {
+            return monthlyBuckets.filter((item) => item.count >= clusteredThreshold);
+        }
+        return monthlyBuckets;
+    }, [clusteredThreshold, monthlyBuckets, peakMonth, tableFilter]);
+    const displayedRows = useMemo(() => applyTableRowLimit(filteredMonthlyBuckets, rowLimit), [filteredMonthlyBuckets, rowLimit]);
+    const strongestYear = yearlyBuckets.reduce<LadderYearBucket | null>((currentPeak, item) => (!currentPeak || item.amount > currentPeak.amount ? item : currentPeak), null);
     const metricItems = useMemo(() => [
         {
             label: t('ladder_page.timeline.average_maturity_value'),
@@ -68,6 +81,15 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
             description: t('ladder_page.timeline.active_window_description'),
         },
     ], [averageMaturityValue, earliestMonth, formatCurrency, latestMonth, monthlySpreadGap, t]);
+    const yearlySummaryItems = useMemo(() => yearlyBuckets.slice(0, 4).map((bucket) => ({
+        label: bucket.year,
+        value: formatCurrency(bucket.amount),
+        description: t('ladder_page.timeline.year_summary_description', {
+            count: bucket.count,
+            firstMonth: bucket.firstMonth,
+            lastMonth: bucket.lastMonth,
+        }),
+    })), [formatCurrency, t, yearlyBuckets]);
     return (<div className="space-y-8">
       <ResultSummaryHero
         eyebrow={t('ladder_page.timeline.eyebrow')}
@@ -88,6 +110,31 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
         columns="grid-cols-1 md:grid-cols-3"
         items={metricItems}
       />
+
+      <section className="space-y-5 border-t border-border py-6">
+        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+          <div className="space-y-2">
+            <h2 className="ui-card-title">
+              {t('ladder_page.timeline.year_summary_title')}
+            </h2>
+            <p className="ui-body max-w-3xl text-muted-foreground">
+              {t('ladder_page.timeline.year_summary_intro')}
+            </p>
+          </div>
+          <div className="border-l-2 border-border px-4 py-2 text-sm leading-6 text-muted-foreground">
+            <p className="text-xs font-semibold text-muted-foreground">
+              {t('ladder_page.timeline.strongest_year')}
+            </p>
+            <p className="mt-1 font-semibold text-foreground">
+              {strongestYear ? `${strongestYear.year} - ${formatCurrency(strongestYear.amount)}` : '-'}
+            </p>
+          </div>
+        </div>
+        <MetricStrip
+          columns="grid-cols-1 md:grid-cols-2 xl:grid-cols-4"
+          items={yearlySummaryItems}
+        />
+      </section>
 
       <section className="space-y-8 border-t border-border py-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
@@ -170,9 +217,23 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
               <p>
                 {t('ladder_page.timeline.table_summary')}
               </p>
-              <p className="text-xs font-semibold text-muted-foreground">
-                {monthlyBuckets.length} {t('ladder_page.timeline.table_count_suffix')}
-              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                {(['all', 'peak', 'clustered'] as const).map((filter) => (
+                  <Button
+                    key={filter}
+                    type="button"
+                    size="sm"
+                    variant={tableFilter === filter ? 'default' : 'outline'}
+                    aria-pressed={tableFilter === filter}
+                    onClick={() => setTableFilter(filter)}
+                  >
+                    {t(`ladder_page.timeline.table_filters.${filter}`)}
+                  </Button>
+                ))}
+                <p className="text-xs font-semibold text-muted-foreground">
+                  {filteredMonthlyBuckets.length} {t('ladder_page.timeline.table_count_suffix')}
+                </p>
+              </div>
             </div>
             <Table className="w-full table-fixed text-sm">
               <TableHeader>
