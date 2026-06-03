@@ -198,7 +198,7 @@ export function ComparisonSharedBaseCard({
           </p>
         </div>
 
-        <div className="space-y-4 border-t border-dashed pt-4">
+        <div className="space-y-4 border-t border-border pt-5">
           <div className="space-y-1">
             <Label className="ui-metadata text-muted-foreground">
               {t('comparison.maturity_mode.label')}
@@ -214,6 +214,7 @@ export function ComparisonSharedBaseCard({
                 type="button"
                 variant={activeMaturityMode === mode ? 'default' : 'outline'}
                 className="h-auto justify-start px-3 py-3 text-left"
+                aria-pressed={activeMaturityMode === mode}
                 onClick={() => onUpdateSharedConfig('maturityMode', mode)}
               >
                 <span className="space-y-1">
@@ -226,6 +227,14 @@ export function ComparisonSharedBaseCard({
                 </span>
               </Button>
             ))}
+          </div>
+          <div className="border-l-2 border-border bg-muted/30 px-4 py-3">
+            <p className="text-xs font-semibold text-foreground">
+              {t('comparison.fairness.mode_label')}: {t(`comparison.maturity_mode.${activeMaturityMode}.label`)}
+            </p>
+            <p className="mt-1 text-xs leading-5 text-muted-foreground">
+              {t(`comparison.maturity_mode.${activeMaturityMode}.description`)}
+            </p>
           </div>
         </div>
 

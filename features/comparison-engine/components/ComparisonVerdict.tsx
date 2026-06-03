@@ -4,6 +4,7 @@ import { Scale, ShieldCheck, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useAppI18n } from '@/i18n/client';
 import { BondInputs, CalculationResult, TaxStrategy, } from '@/features/bond-core/types';
+import { ComparisonMaturityMode } from '@/features/bond-core/types/scenarios';
 interface ComparisonVerdictProps {
     resultsA: CalculationResult;
     resultsB: CalculationResult;
@@ -11,10 +12,45 @@ interface ComparisonVerdictProps {
     inputsB: BondInputs;
     expectedInflation: number;
     taxStrategy?: TaxStrategy;
+    maturityMode: ComparisonMaturityMode;
     showRealValue: boolean;
     formatCurrency: (val: number) => string;
 }
-export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, resultsB, inputsA, inputsB, expectedInflation, taxStrategy, showRealValue, formatCurrency, }) => {
+function getVerdictDrivers({
+    winner,
+    loser,
+    expectedInflation,
+    maturityMode,
+    t,
+}: {
+    winner: BondInputs;
+    loser: BondInputs;
+    expectedInflation: number;
+    maturityMode: ComparisonMaturityMode;
+    t: ReturnType<typeof useAppI18n>['t'];
+}) {
+    const drivers = [
+        t('comparison.verdict.driver_mode', {
+            mode: t(`comparison.maturity_mode.${maturityMode}.label`),
+        }),
+    ];
+    if (winner.duration !== loser.duration) {
+        drivers.push(t('comparison.verdict.driver_duration', {
+            winner: winner.bondType,
+            loser: loser.bondType,
+        }));
+    }
+    if (winner.isCapitalized !== loser.isCapitalized) {
+        drivers.push(t('comparison.verdict.driver_capitalization', {
+            winner: winner.bondType,
+        }));
+    }
+    if (expectedInflation > 5 && winner.expectedInflation > 0) {
+        drivers.push(t('comparison.verdict.driver_inflation'));
+    }
+    return drivers.slice(0, 3);
+}
+export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, resultsB, inputsA, inputsB, expectedInflation, taxStrategy, maturityMode, showRealValue, formatCurrency, }) => {
     const { t } = useAppI18n();
     const comparisonSnapshotLabel = t('comparison.verdict_snapshot_label');
     const higherText = showRealValue
@@ -29,6 +65,15 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, 
     const betterScenarioLabel = resultAValue > resultBValue
         ? t('comparison.scenario_a')
         : t('comparison.scenario_b');
+    const winnerInputs = resultAValue > resultBValue ? inputsA : inputsB;
+    const loserInputs = resultAValue > resultBValue ? inputsB : inputsA;
+    const verdictDrivers = getVerdictDrivers({
+        winner: winnerInputs,
+        loser: loserInputs,
+        expectedInflation,
+        maturityMode,
+        t,
+    });
     const gap = Math.abs(resultAValue - resultBValue);
     const horizonYears = Math.max(resultsA.timeline.length / 12, resultsB.timeline.length / 12).toFixed(1);
     return (<section className="space-y-6">
@@ -61,8 +106,26 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, 
                 {`${betterBondType} ${higherText} by ${formatCurrency(gap)} ${overText} ${horizonYears}-year setup.`}
               </p>
               <p className="text-sm leading-relaxed text-muted-foreground">
+                {t('comparison.verdict.mode_context', {
+                mode: t(`comparison.maturity_mode.${maturityMode}.label`),
+            })}
+              </p>
+              <p className="text-sm leading-relaxed text-muted-foreground">
                 {t('comparison.verdict.caution_text')}
               </p>
+            </div>
+
+            <div className="border-t border-border pt-4">
+              <p className="ui-metadata font-semibold text-muted-foreground">
+                {t('comparison.verdict.drivers_title')}
+              </p>
+              <ul className="mt-3 space-y-2 text-sm leading-6 text-muted-foreground">
+                {verdictDrivers.map((driver) => (
+                  <li key={driver} className="border-l-2 border-border pl-3">
+                    {driver}
+                  </li>
+                ))}
+              </ul>
             </div>
 
             <div className="flex flex-wrap gap-2 pt-2">

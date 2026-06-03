@@ -170,7 +170,7 @@ export const ComparisonContainer: React.FC = () => {
                   />
                 ) : null}
 
-                <ComparisonVerdict resultsA={resultsA} resultsB={resultsB} inputsA={inputsA} inputsB={inputsB} expectedInflation={sharedConfig.expectedInflation} taxStrategy={sharedConfig.taxStrategy} showRealValue={showRealValue} formatCurrency={formatCurrency}/>
+                <ComparisonVerdict resultsA={resultsA} resultsB={resultsB} inputsA={inputsA} inputsB={inputsB} expectedInflation={sharedConfig.expectedInflation} taxStrategy={sharedConfig.taxStrategy} maturityMode={maturityMode} showRealValue={showRealValue} formatCurrency={formatCurrency}/>
 
                 <ComparisonTable resultsA={resultsA} resultsB={resultsB} bondTypeA={inputsA.bondType} bondTypeB={inputsB.bondType} showRealValue={showRealValue} formatCurrency={formatCurrency}/>
 

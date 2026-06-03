@@ -1519,7 +1519,13 @@
     "verdict": {
       "higher_real_value": "currently shows the higher real value",
       "higher_net_payout": "currently shows the higher modeled net payout",
-      "caution_text": "Treat this as one scenario read, not a universal bond ranking. If assumptions change, the gap can change too."
+      "caution_text": "Treat this as one scenario read, not a universal bond ranking. If assumptions change, the gap can change too.",
+      "mode_context": "Maturity handling: {mode}. The verdict is only valid inside this comparison rule.",
+      "drivers_title": "Why this scenario leads",
+      "driver_mode": "Both scenarios are interpreted through the selected mode: {mode}.",
+      "driver_duration": "{winner} and {loser} have different native terms, so maturity handling affects the comparison window.",
+      "driver_capitalization": "{winner} compounds differently than the alternative, which changes the end value path.",
+      "driver_inflation": "High inflation assumptions make inflation-linked mechanics more important in this run."
     },
     "table_title": "Detailed Side-by-Side Comparison",
     "table_desc": "Plain year-by-year value check. Use it to inspect where one path is ahead at a given point, not as a recommendation signal.",
