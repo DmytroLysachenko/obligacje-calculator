@@ -33,18 +33,23 @@ describe('app shell visual contracts', () => {
   });
 
   it('keeps calculator headers dense and typographic', () => {
-    const source = expectHas('shared/components/page/CalculatorPageShell.tsx', [
+    const shell = expectHas('shared/components/page/CalculatorPageShell.tsx', [
       'className={pageLayout.pageFlow}',
+      '<PageHeader',
+      'h-8 gap-2 px-3 text-xs font-medium',
+    ]);
+    const header = expectHas('shared/components/page/PageHeader.tsx', [
       'border-b border-border pb-8 md:pb-10',
       'ui-page-title',
       'ui-body text-muted-foreground',
-      'h-8 gap-2 px-3 text-xs font-medium',
     ]);
 
-    expect(source).not.toContain('rounded-[1.9rem]');
-    expect(source).not.toContain('md:rounded-3xl');
-    expect(source).not.toContain('md:text-[2.85rem]');
-    expect(source).not.toContain('shadow');
+    for (const source of [shell, header]) {
+      expect(source).not.toContain('rounded-[1.9rem]');
+      expect(source).not.toContain('md:rounded-3xl');
+      expect(source).not.toContain('md:text-[2.85rem]');
+      expect(source).not.toContain('shadow');
+    }
   });
 
   it('keeps the sidebar visually anchored without decorative gradients', () => {

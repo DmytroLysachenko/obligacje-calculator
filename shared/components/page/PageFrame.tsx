@@ -42,8 +42,10 @@ interface SectionBlockProps {
   title?: string;
   description?: string;
   className?: string;
+  headerClassName?: string;
   divided?: boolean;
   surface?: boolean;
+  variant?: 'plain' | 'divided' | 'surface' | 'card';
 }
 
 export function SectionBlock({
@@ -51,20 +53,27 @@ export function SectionBlock({
   title,
   description,
   className,
+  headerClassName,
   divided = false,
   surface = false,
+  variant = surface ? 'card' : divided ? 'divided' : 'plain',
 }: SectionBlockProps) {
+  const isDivided = divided || variant === 'divided';
+  const isSurface = surface || variant === 'surface';
+  const isCard = variant === 'card';
+
   return (
     <section
       className={cn(
         pageLayout.sectionFlow,
-        divided && pageLayout.sectionDivider,
-        surface && 'rounded-lg border border-border bg-card p-5 shadow-sm md:p-6',
+        isDivided && pageLayout.sectionDivider,
+        isSurface && 'rounded-lg bg-muted/25 p-5 md:p-6',
+        isCard && 'rounded-lg border border-border bg-card p-5 shadow-sm md:p-6',
         className,
       )}
     >
       {title || description ? (
-        <div className={cn('space-y-2', surface && 'border-b border-border pb-4')}>
+        <div className={cn('space-y-2', (isSurface || isCard) && 'border-b border-border pb-4', headerClassName)}>
           {title ? <h2 className="ui-section-title">{title}</h2> : null}
           {description ? (
             <p className="ui-body max-w-[var(--layout-reading-max)] text-muted-foreground">

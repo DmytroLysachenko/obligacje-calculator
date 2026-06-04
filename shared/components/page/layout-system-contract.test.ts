@@ -10,6 +10,8 @@ const paths = {
   shell: 'shared/components/page/CalculatorPageShell.tsx',
   section: 'shared/components/page/CalculatorSection.tsx',
   frame: 'shared/components/page/PageFrame.tsx',
+  header: 'shared/components/page/PageHeader.tsx',
+  workspace: 'shared/components/page/CalculatorWorkspace.tsx',
   tokens: 'shared/components/page/layout-system.ts',
   fallback: 'shared/components/page/PageSuspenseFallback.tsx',
 } as const;
@@ -57,10 +59,12 @@ describe('layout system contracts', () => {
   it('uses section rhythm in shared calculator shell and sections', () => {
     const shell = readSource(paths.shell);
     const section = readSource(paths.section);
+    const header = readSource(paths.header);
 
     expectContains(shell, 'className={pageLayout.pageFlow}');
-    expectContains(shell, 'border-b border-border pb-8 md:pb-10');
-    expectContains(shell, 'max-w-[var(--layout-reading-max)]');
+    expectContains(shell, '<PageHeader');
+    expectContains(header, 'border-b border-border pb-8 md:pb-10');
+    expectContains(header, 'max-w-[var(--layout-reading-max)]');
     expectNotContains(shell, 'surface-shell space-y-3 px-4 py-4');
 
     expectContains(section, 'pageLayout.sectionFlow');
@@ -75,6 +79,22 @@ describe('layout system contracts', () => {
     expectContains(source, 'export function SectionBlock');
     expectContains(source, "width?: 'wide' | 'content' | 'reading';");
     expectContains(source, "flow?: 'page' | 'compact' | 'section' | 'none';");
+    expectContains(source, "variant?: 'plain' | 'divided' | 'surface' | 'card';");
+  });
+
+  it('provides shared page header status and calculator workspace primitives', () => {
+    const header = readSource(paths.header);
+    const workspace = readSource(paths.workspace);
+
+    expectContains(header, 'export function PageHeader');
+    expectContains(header, 'export function StatusLine');
+    expectContains(header, "state?: 'idle' | 'loading' | 'complete';");
+    expectContains(header, "tone?: PageHeaderStatusTone;");
+    expectContains(workspace, 'export function CalculatorWorkspace');
+    expectContains(workspace, 'controls: React.ReactNode;');
+    expectContains(workspace, 'results: React.ReactNode;');
+    expectContains(workspace, 'details?: React.ReactNode;');
+    expectContains(workspace, 'pageLayout.calculatorGrid');
   });
 
   it('keeps loading states section-led instead of card-led', () => {
