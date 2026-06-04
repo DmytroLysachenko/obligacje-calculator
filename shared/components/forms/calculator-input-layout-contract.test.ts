@@ -39,7 +39,8 @@ describe('calculator input layout contracts', () => {
     const source = readSource(paths.fieldset);
 
     expectContains(source, 'export function ScenarioFieldset');
-    expectContains(source, "className={cn('space-y-5', divided && 'border-t border-border pt-6', className)}");
+    expectContains(source, "'space-y-5'");
+    expectContains(source, "divided && 'border-t border-border pt-6'");
     expectContains(source, '<h3 className="ui-card-title">{title}</h3>');
     expectContains(source, 'max-w-[var(--layout-reading-max)]');
   });
@@ -87,7 +88,7 @@ describe('calculator input layout contracts', () => {
     ]);
   });
 
-  it('uses inline notes instead of nested cards inside calculator input sections', () => {
+  it('uses compact note panels instead of bulky nested cards inside calculator inputs', () => {
     const sources = [
       readSource(paths.singleConfig),
       readSource(paths.singleTiming),
@@ -95,12 +96,14 @@ describe('calculator input layout contracts', () => {
       readSource(paths.regularTiming),
     ].join('\n');
 
-    expectContains(sources, 'border-l-2 border-border bg-muted/30');
+    expectContains(sources, 'rounded-lg border border-border bg-muted/25');
+    expectContains(sources, 'rounded-lg border border-success/30 bg-success/5');
     expectNoFragments(sources, [
       'rounded-lg bg-muted/35 p-4',
       'rounded-md border border-border bg-muted/35 p-4',
       'rounded-md border border-[var(--finance-success)]/35 bg-card p-4',
       'rounded-lg border bg-muted/30 px-4 py-3',
+      'border-l-2 border-border bg-muted/30',
       'border-t border-dashed pt-6',
     ]);
   });

@@ -31,7 +31,7 @@ export function AdvancedSettingsSection({
   t,
 }: AdvancedSettingsSectionProps) {
   return (
-    <section className="border-t border-border pt-6">
+    <section>
       <AdvancedAssumptionsDisclosure
         title={t('common.advanced')}
         description={t('bonds.form.advanced_desc')}
@@ -134,7 +134,7 @@ export function AdvancedSettingsSection({
           <Label className="text-sm font-semibold text-muted-foreground">
             {t('bonds.chart.granularity')}
           </Label>
-          <div className="flex gap-1 border-b border-border pb-2">
+          <div className="flex gap-1 rounded-md border border-border bg-muted/25 p-1">
             {(['monthly', 'quarterly', 'yearly'] as const).map((step) => (
               <Button
                 key={step}
@@ -147,7 +147,7 @@ export function AdvancedSettingsSection({
                 className={cn(
                   'h-9 flex-1 text-[12px] font-semibold transition-all',
                   (inputs.chartStep === step || (!inputs.chartStep && step === 'quarterly')) &&
-                    'bg-card',
+                    'bg-card shadow-sm',
                 )}
                 onClick={() => onUpdate('chartStep', step)}
               >

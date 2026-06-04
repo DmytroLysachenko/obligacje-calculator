@@ -60,7 +60,7 @@ describe('premium financial table contracts', () => {
   it('keeps regular investment yearly table sticky and numerically aligned', () => {
     const source = read(files.regular);
 
-    expectContains(source, '<div className="hidden border-y border-border lg:block">');
+    expectContains(source, '<div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">');
     expectContains(source, '<Table className="w-full table-fixed text-sm">');
     expectContains(source, 'sticky top-0 z-10 w-[16%] bg-background');
     expectContains(source, 'sticky top-0 z-10 w-[18%] bg-background text-right');
@@ -81,7 +81,7 @@ describe('premium financial table contracts', () => {
   it('keeps ladder maturity table sticky and numerically aligned', () => {
     const source = read(files.ladder);
 
-    expectContains(source, '<div className="hidden border-y border-border lg:block">');
+    expectContains(source, '<div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">');
     expectContains(source, '<Table className="w-full table-fixed text-sm">');
     expectContains(source, 'sticky top-0 z-10 w-[34%] bg-background');
     expectContains(source, 'sticky top-0 z-10 w-[24%] bg-background text-right');

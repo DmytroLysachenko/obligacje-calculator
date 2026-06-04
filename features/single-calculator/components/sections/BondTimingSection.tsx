@@ -116,7 +116,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
           </SelectContent>
         </Select>
         
-        {(inputs.taxStrategy === TaxStrategy.IKE || inputs.taxStrategy === TaxStrategy.IKZE) && (<div className="flex items-center justify-between border-l-2 border-border bg-muted/30 px-3 py-3">
+        {(inputs.taxStrategy === TaxStrategy.IKE || inputs.taxStrategy === TaxStrategy.IKZE) && (<div className="flex items-center justify-between rounded-lg border border-border bg-muted/25 px-3 py-3">
             <div className="space-y-0.5">
               <Label className="text-xs font-semibold">{t('bonds.use_tax_limit')}</Label>
               <p className="max-w-[200px] text-xs leading-5 text-muted-foreground">
@@ -127,7 +127,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
           </div>)}
       </div>
 
-      {currentDef.rebuyDiscount > 0 && (<div className="flex items-center justify-between border-l-2 border-[var(--finance-success)]/50 bg-muted/25 px-4 py-3">
+      {currentDef.rebuyDiscount > 0 && (<div className="flex items-center justify-between rounded-lg border border-success/30 bg-success/5 px-4 py-3">
           <div className="space-y-0.5">
             <Label className="text-sm font-semibold text-foreground">{t('bonds.is_rebought')}</Label>
             <p className="text-xs text-[var(--finance-success)]">
@@ -137,7 +137,7 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
           <Switch checked={inputs.isRebought} onCheckedChange={(checked) => onUpdate('isRebought', checked)}/>
         </div>)}
 
-      <div className="border-l-2 border-border bg-muted/30 px-4 py-3">
+      <div className="rounded-lg border border-border bg-muted/25 px-4 py-3">
         <div className="space-y-0.5">
           <Label className="text-sm font-semibold text-foreground">
             {t('bonds.timing.rollover_title')}

@@ -149,8 +149,8 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
         items={financialInsightItems}
       />
 
-      <div className="grid grid-cols-1 gap-8 xl:grid-cols-[1.1fr_0.9fr]">
-        <section className="space-y-5 border-t border-border py-6">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+        <section className="surface-shell space-y-5 p-5">
           <div className="flex flex-row items-start justify-between gap-4">
             <div>
               <h2 className="ui-card-title">
@@ -207,7 +207,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
               ))}
             </ResponsiveTableSheet>
 
-            <div className="hidden border-y border-border lg:block">
+            <div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">
               <Table className="w-full table-fixed text-sm">
               <TableHeader>
                 <TableRow className="h-12 hover:bg-transparent">
@@ -256,21 +256,21 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
           </div>
         </section>
 
-        <section className="space-y-5 border-t border-border py-6">
+        <section className="surface-shell space-y-5 p-5">
           <div className="space-y-2">
             <h2 className="flex items-center gap-2 ui-card-title">
               <Calendar className="h-5 w-5"/>
               {t('regular_summary.recent_title')}
             </h2>
             <p className="ui-body text-muted-foreground">{t('regular_summary.recent_description')}</p>
-            <div className="border-t border-border pt-3 text-sm leading-6 text-muted-foreground">
+            <div className="rounded-md border border-border bg-muted/25 px-4 py-3 text-sm leading-6 text-muted-foreground">
               {t('regular_summary.recent_note')}
             </div>
           </div>
           <div className="space-y-5">
             <div className="grid grid-cols-1 gap-4">
               {recentLots.map(({ key, value: lot }) => (
-                <div key={key} className="border-t border-border py-4">
+                <div key={key} className="rounded-lg border border-border bg-card p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="space-y-1">
                       <p className="text-sm font-semibold text-foreground">

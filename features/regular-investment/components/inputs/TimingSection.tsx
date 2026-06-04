@@ -171,7 +171,7 @@ export function TimingSection({
         </div>
 
         {timingMode === 'exact' ? (
-          <div className="border-l-2 border-border bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
+          <div className="rounded-lg border border-border bg-muted/25 px-4 py-3 text-sm text-muted-foreground">
             <span className="font-semibold text-foreground">
               {investmentHorizonYears % 1 === 0
                 ? investmentHorizonYears.toFixed(0)

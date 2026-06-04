@@ -64,7 +64,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
             {isCalculating && !results ? <LoadingState /> : null}
 
             {results ? (<div className={cn('space-y-8 transition-opacity duration-200', isCalculating && 'pointer-events-none opacity-50')}>
-                {isDirty ? (<div className="ui-inline-notice border-l-2 border-warning text-foreground">
+                {isDirty ? (<div className="ui-inline-notice border-warning/30 bg-warning/5 text-foreground">
                     {t('bonds.simulation.stale_results')}{' '}
                     <span className="font-semibold">{t('common.recalculate')}</span>.
                   </div>) : null}
@@ -74,14 +74,14 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
           </section>
         </div>
 
-        {results ? (<div className={cn('space-y-10 transition-opacity duration-200', isCalculating && 'pointer-events-none opacity-50')}>
-            <SecondaryInsightAccordion title={t('regular_investment_page.how_to_read_title')} description={t('regular_investment_page.how_to_read_description')} badge={t('regular_investment_page.how_to_read_badge')}>
-              <ReadingChecklist items={readingGuide}/>
-            </SecondaryInsightAccordion>
-
+        {results ? (<div className={cn('space-y-8 transition-opacity duration-200', isCalculating && 'pointer-events-none opacity-50')}>
             <CalculatorSection title={t('regular_investment_page.chart_title')} description={t('regular_investment_page.chart_description')}>
               <RegularInvestmentChart results={results} bondType={inputs.bondType} chartStep={inputs.chartStep}/>
             </CalculatorSection>
+
+            <SecondaryInsightAccordion title={t('regular_investment_page.how_to_read_title')} description={t('regular_investment_page.how_to_read_description')} badge={t('regular_investment_page.how_to_read_badge')}>
+              <ReadingChecklist items={readingGuide}/>
+            </SecondaryInsightAccordion>
 
             <SecondaryInsightAccordion title={t('bonds.simulation.calculation_context')} description={t('regular_investment_page.calculation_context_description')} badge={t('regular_investment_page.calculation_context_badge')}>
               <CalculationMetaPanel warnings={warnings} assumptions={assumptions} calculationNotes={envelope?.calculationNotes} dataQualityFlags={envelope?.dataQualityFlags} dataFreshness={envelope?.dataFreshness}/>

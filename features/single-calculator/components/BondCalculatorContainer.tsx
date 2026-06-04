@@ -291,7 +291,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
                 )}
               >
                 {isDirty ? (
-                  <div className="ui-inline-notice border-l-2 border-warning text-foreground">
+                  <div className="ui-inline-notice border-warning/30 bg-warning/5 text-foreground">
                     {t('bonds.simulation.stale_results')}{' '}
                     <span className="font-semibold">{t('common.recalculate')}</span>.
                   </div>
@@ -314,18 +314,10 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
         {results ? (
           <div
             className={cn(
-              'space-y-10 transition-opacity duration-300',
+              'space-y-8 transition-opacity duration-300',
               isCalculating && 'pointer-events-none opacity-50',
             )}
           >
-            <SecondaryInsightAccordion
-              title={t('bonds.simulation.how_to_read_title')}
-              description={t('bonds.simulation.how_to_read_desc')}
-              badge={t('bonds.simulation.secondary_badge')}
-            >
-              <ReadingChecklist items={readingGuide} />
-            </SecondaryInsightAccordion>
-
             <CalculatorSection
               title={t('bonds.evolution')}
               description={t('bonds.simulation.chart_section_desc')}
@@ -341,6 +333,14 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
                 showRealValue={inputs.showRealValue}
               />
             </CalculatorSection>
+
+            <SecondaryInsightAccordion
+              title={t('bonds.simulation.how_to_read_title')}
+              description={t('bonds.simulation.how_to_read_desc')}
+              badge={t('bonds.simulation.secondary_badge')}
+            >
+              <ReadingChecklist items={readingGuide} />
+            </SecondaryInsightAccordion>
 
             <CalculatorSection
               title={t('bonds.timeline')}

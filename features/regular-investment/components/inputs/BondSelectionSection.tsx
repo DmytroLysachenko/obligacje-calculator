@@ -78,7 +78,7 @@ export function BondSelectionSection({
           </SelectContent>
         </Select>
 
-        <div className="space-y-2 border-l-2 border-border bg-muted/30 px-4 py-3 text-sm">
+        <div className="space-y-2 rounded-lg border border-border bg-muted/25 px-4 py-3 text-sm">
           <div className="flex items-center gap-2 font-semibold text-foreground">
             <Info className="h-3 w-3" />
             <span>{currentDef.fullName[language]}</span>

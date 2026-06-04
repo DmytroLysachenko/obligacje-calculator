@@ -76,7 +76,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
   if (isLoadingDefs || !definitions || !currentDef) {
     return (
-      <section className="w-full space-y-6 border-t border-border py-6">
+      <section className="surface-shell w-full space-y-6 p-5 md:p-6">
         <div className="space-y-3">
           <Skeleton className="mb-2 h-6 w-48" />
           <Skeleton className="h-4 w-64" />
@@ -101,13 +101,13 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
   return (
     <TooltipProvider>
-      <section className="w-full space-y-8 border-t border-border py-6">
+      <section className="surface-shell w-full space-y-8 p-5 md:p-6">
         {guardrails.length > 0 ? (
-          <div className="space-y-3 border-b border-[var(--finance-warning)]/40 pb-5">
+          <div className="space-y-3 rounded-lg border border-warning/30 bg-warning/5 p-4">
             {guardrails.map((issue) => (
               <div
                 key={issue.id}
-                className="border-l-2 border-[var(--finance-warning)]/60 pl-4"
+                className="rounded-md border border-warning/20 bg-card px-4 py-3"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1">
@@ -135,7 +135,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           </div>
         ) : null}
 
-        <div className="space-y-2">
+        <div className="space-y-2 border-b border-border pb-5">
           <h2 className="flex items-center gap-2 ui-section-title">
             <Target className="h-5 w-5 text-primary" />
             {t('bonds.single_calculator')}

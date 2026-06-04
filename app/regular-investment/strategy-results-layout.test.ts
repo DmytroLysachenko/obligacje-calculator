@@ -35,8 +35,8 @@ describe('strategy result layout contracts', () => {
     expectContains(source, 'return (<div className="space-y-8">');
     expectContains(source, '<ResultSummaryHero');
     expectContains(source, '<MetricStrip');
-    expectContains(source, 'grid grid-cols-1 gap-8 xl:grid-cols-[1.1fr_0.9fr]');
-    expectContains(source, 'space-y-5 border-t border-border py-6');
+    expectContains(source, 'grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]');
+    expectContains(source, 'surface-shell space-y-5 p-5');
     expectContains(source, '<span className="surface-chip shrink-0">');
 
     expectNoFragments(source, [
@@ -50,7 +50,7 @@ describe('strategy result layout contracts', () => {
   it('keeps regular investment desktop tables premium and readable', () => {
     const source = readSource(paths.regular);
 
-    expectContains(source, '<div className="hidden border-y border-border lg:block">');
+    expectContains(source, '<div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">');
     expectContains(source, '<Table className="w-full table-fixed text-sm">');
     expectContains(source, '<TableRow className="h-12 hover:bg-transparent">');
     expectContains(source, 'className="h-14 border-b border-border transition-colors hover:bg-muted/25"');
@@ -65,22 +65,21 @@ describe('strategy result layout contracts', () => {
     ]);
   });
 
-  it('keeps regular recent lots dense without mini-card shells', () => {
+  it('keeps regular recent lots grouped without losing dense financial detail', () => {
     const source = readSource(paths.regular);
 
-    expectContains(source, 'border-t border-border pt-3 text-sm leading-6 text-muted-foreground');
+    expectContains(source, 'rounded-md border border-border bg-muted/25 px-4 py-3 text-sm leading-6 text-muted-foreground');
     expectContains(source, '<div className="grid grid-cols-1 gap-4">');
+    expectContains(source, 'rounded-lg border border-border bg-card p-4');
     expectContains(source, 'mt-4 grid grid-cols-2 gap-x-6 gap-y-3 text-sm md:grid-cols-4');
 
     expectNoFragments(source, [
-      'rounded-lg border',
-      'bg-card p-4',
       'grid grid-cols-1 gap-3',
       'mt-4 grid grid-cols-2 gap-3 text-sm md:grid-cols-4',
     ]);
   });
 
-  it('keeps ladder result metrics divider-led instead of card-led', () => {
+  it('keeps ladder result metrics in shared grouped metric strips', () => {
     const source = readSource(paths.ladder);
 
     expectContains(source, "import { MetricStrip } from '@/shared/components/results/MetricStrip';");
@@ -96,22 +95,22 @@ describe('strategy result layout contracts', () => {
     ]);
   });
 
-  it('keeps ladder chart and maturity table separated by stronger section rhythm', () => {
+  it('keeps ladder chart and maturity table separated by stronger surface rhythm', () => {
     const source = readSource(paths.ladder);
 
-    expectContains(source, '<section className="space-y-8 border-t border-border py-6">');
+    expectContains(source, '<section className="surface-shell space-y-7 p-5">');
     expectContains(source, "const [chartMode, setChartMode] = useState<LadderChartMode>('yearly');");
     expectContains(source, 'const yearlyBuckets = useMemo<LadderYearBucket[]>(() => buildLadderYearBuckets(monthlyBuckets), [monthlyBuckets]);');
     expectContains(source, "const chartData = useMemo(");
     expectContains(source, "t(`ladder_page.timeline.chart_modes.${mode}`)");
-    expectContains(source, '<div className="hidden border-y border-border lg:block">');
+    expectContains(source, '<div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">');
     expectContains(source, '<Table className="w-full table-fixed text-sm">');
     expectContains(source, '<TableRow className="h-12 hover:bg-transparent">');
     expectContains(source, 'className="h-14 border-b border-border transition-colors hover:bg-muted/25"');
     expectContains(source, '<TableDensityControls');
 
     expectNoFragments(source, [
-      'hidden overflow-hidden border-y border-border',
+      'hidden border-y border-border',
       '<Table className="table-fixed w-full">',
       'transition-colors hover:bg-muted/35',
       '<section className="space-y-6 border-t border-border py-6">',

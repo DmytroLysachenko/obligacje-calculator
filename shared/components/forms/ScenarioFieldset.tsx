@@ -19,11 +19,19 @@ export function ScenarioFieldset({
   className,
 }: ScenarioFieldsetProps) {
   return (
-    <section className={cn('space-y-5', divided && 'border-t border-border pt-6', className)}>
-      <div className="space-y-1">
+    <section
+      className={cn(
+        'space-y-5',
+        divided && 'border-t border-border pt-6',
+        className,
+      )}
+    >
+      <div className="space-y-1.5">
         <h3 className="ui-card-title">{title}</h3>
         {description ? (
-          <p className="ui-meta max-w-[var(--layout-reading-max)]">{description}</p>
+          <p className="ui-meta max-w-[var(--layout-reading-max)] leading-5">
+            {description}
+          </p>
         ) : null}
       </div>
       {children}

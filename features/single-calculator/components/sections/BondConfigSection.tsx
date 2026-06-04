@@ -143,19 +143,19 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
           </Select>
         </div>
         
-        <div className="space-y-3 border-l-2 border-border bg-muted/30 px-4 py-3 text-sm">
+        <div className="space-y-3 rounded-lg border border-border bg-muted/25 px-4 py-3 text-sm">
           <div className="flex items-center gap-2 font-semibold text-foreground">
             <Info className="h-3 w-3"/>
             <span>{currentDef.fullName[language]}</span>
           </div>
           <div className="flex flex-wrap gap-2">
-            <span className="bg-background px-2.5 py-1 text-xs font-semibold text-muted-foreground">
+            <span className="rounded-md bg-background px-2.5 py-1 text-xs font-semibold text-muted-foreground">
               {formatDurationLabel(inputs.bondType)}
             </span>
-            {isFamilyBondType(inputs.bondType) ? (<span className="bg-background px-2.5 py-1 text-xs font-semibold text-[var(--finance-warning)]">
+            {isFamilyBondType(inputs.bondType) ? (<span className="rounded-md bg-background px-2.5 py-1 text-xs font-semibold text-[var(--finance-warning)]">
                 {t('bonds.family_bond')}
               </span>) : null}
-            <span className="bg-background px-2.5 py-1 text-xs font-semibold text-muted-foreground">
+            <span className="rounded-md bg-background px-2.5 py-1 text-xs font-semibold text-muted-foreground">
               {rateContext.styleLabel}
             </span>
           </div>

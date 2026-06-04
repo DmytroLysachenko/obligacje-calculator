@@ -98,7 +98,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
             : t('ladder_page.timeline.no_peak_month')}
         description={t('ladder_page.timeline.description')}
         narrative={t('ladder_page.timeline.narrative')}
-        aside={<div className="border-t border-border py-3 text-sm text-foreground">
+        aside={<div className="rounded-md border border-border bg-card px-4 py-3 text-sm text-foreground">
             <p className="text-xs font-semibold text-muted-foreground">
               {t('ladder_page.timeline.month_count')}
             </p>
@@ -111,7 +111,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
         items={metricItems}
       />
 
-      <section className="space-y-5 border-t border-border py-6">
+      <section className="surface-shell space-y-5 p-5">
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           <div className="space-y-2">
             <h2 className="ui-card-title">
@@ -121,7 +121,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
               {t('ladder_page.timeline.year_summary_intro')}
             </p>
           </div>
-          <div className="border-l-2 border-border px-4 py-2 text-sm leading-6 text-muted-foreground">
+          <div className="rounded-md border border-border bg-muted/25 px-4 py-3 text-sm leading-6 text-muted-foreground">
             <p className="text-xs font-semibold text-muted-foreground">
               {t('ladder_page.timeline.strongest_year')}
             </p>
@@ -136,7 +136,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
         />
       </section>
 
-      <section className="space-y-8 border-t border-border py-6">
+      <section className="surface-shell space-y-7 p-5">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="space-y-2">
             <h2 className="ui-card-title">
@@ -148,7 +148,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
                 : t('ladder_page.timeline.monthly_chart_description')}
             </p>
           </div>
-          <div className="flex w-full items-center gap-1 border-b border-border pb-2 md:w-auto">
+          <div className="flex w-full items-center gap-1 rounded-md border border-border bg-muted/25 p-1 md:w-auto">
             {(['yearly', 'monthly'] as const).map((mode) => (
               <Button
                 key={mode}
@@ -212,8 +212,8 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
               </div>))}
           </ResponsiveTableSheet>
 
-          <div className="hidden border-y border-border lg:block">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border py-3 text-sm text-muted-foreground">
+          <div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-muted/25 px-4 py-3 text-sm text-muted-foreground">
               <p>
                 {t('ladder_page.timeline.table_summary')}
               </p>
@@ -271,7 +271,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
           </div>
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <div className="border-t border-border py-4 text-sm leading-6 text-muted-foreground">
+            <div className="rounded-lg border border-border bg-card p-4 text-sm leading-6 text-muted-foreground">
               <p className="text-xs font-semibold text-muted-foreground">
                 {t('ladder_page.timeline.peak_month_title')}
               </p>
@@ -284,8 +284,8 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
             </div>
 
             <div className={peakShare >= 25
-            ? 'border-t border-warning py-4 text-sm leading-6 text-foreground'
-            : 'border-t border-success py-4 text-sm leading-6 text-foreground'}>
+            ? 'rounded-lg border border-warning/30 bg-warning/5 p-4 text-sm leading-6 text-foreground'
+            : 'rounded-lg border border-success/30 bg-success/5 p-4 text-sm leading-6 text-foreground'}>
               <p className={peakShare >= 25
             ? 'text-xs font-semibold text-[var(--finance-warning)]'
             : 'text-xs font-semibold text-[var(--finance-success)]'}>
@@ -303,7 +303,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
             </div>
           </div>
 
-          <div className="border-t border-border py-4 text-sm leading-6 text-muted-foreground">
+          <div className="rounded-lg border border-border bg-muted/25 p-4 text-sm leading-6 text-muted-foreground">
             <p className="text-xs font-semibold text-muted-foreground">
               {t('ladder_page.timeline.interpretation_title')}
             </p>

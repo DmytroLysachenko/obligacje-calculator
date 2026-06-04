@@ -28,7 +28,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
 
     if (isLoadingDefs || !definitions) {
       return (
-        <section className="flex h-[600px] w-full items-center justify-center border-t border-border">
+        <section className="surface-shell flex h-[600px] w-full items-center justify-center p-6">
             <p className="text-sm font-semibold text-muted-foreground">
               {t('common.loading')}
             </p>
@@ -46,7 +46,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
       inputs.contributionAmount % 100 === 0 && inputs.contributionAmount > 0;
 
     return (
-      <section className="w-full space-y-8 border-t border-border py-6">
+      <section className="surface-shell w-full space-y-8 p-5 md:p-6">
         <div className="space-y-2 border-b border-border pb-4">
           <h2 className="ui-section-title">
             {t('bonds.regular_calculator')}
@@ -104,7 +104,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
           </ScenarioFieldset>
 
           <div className="pt-2">
-            <div className="space-y-2 border-l-2 border-border bg-muted/30 px-4 py-3 text-xs text-muted-foreground">
+            <div className="space-y-2 rounded-lg border border-border bg-muted/25 px-4 py-3 text-xs text-muted-foreground">
               <div className="flex justify-between">
                 <span>{t('bonds.duration')}:</span>
                 <span className="font-bold">{formatBondDuration(inputs.duration, language)}</span>

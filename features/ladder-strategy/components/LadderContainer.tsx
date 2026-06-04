@@ -101,7 +101,7 @@ export const LadderContainer: React.FC = () => {
                   isCalculating && 'pointer-events-none opacity-50',
                 )}
               >
-                {isDirty ? (<div className="ui-inline-notice border-l-2 border-warning text-warning">
+                {isDirty ? (<div className="ui-inline-notice border-warning/30 bg-warning/5 text-foreground">
                     {t('ladder_page.stale_results')}
                   </div>) : null}
 
