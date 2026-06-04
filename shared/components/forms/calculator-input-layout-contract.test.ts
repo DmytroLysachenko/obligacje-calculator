@@ -50,15 +50,20 @@ describe('calculator input layout contracts', () => {
     const regular = readSource(paths.regularContainer);
 
     for (const source of [single, regular]) {
-      expectContains(source, "import { pageLayout } from '@/shared/components/page/layout-system';");
-      expectContains(source, '<div className={pageLayout.calculatorGrid}>');
-      expectContains(source, '<aside className={pageLayout.stickyScenario}>');
-      expectContains(source, 'className={pageLayout.sectionFlow}');
+      expectContains(source, "import { CalculatorWorkspace } from '@/shared/components/page/CalculatorWorkspace';");
+      expectContains(source, '<CalculatorWorkspace');
+      expectContains(source, 'controls={');
+      expectContains(source, 'results={');
       expectNoFragments(source, [
         'grid grid-cols-1 gap-6 xl:grid-cols-[400px_minmax(0,1fr)] xl:items-start xl:gap-8',
         'space-y-6 xl:sticky xl:top-24 xl:h-fit',
       ]);
     }
+
+    const workspace = readSource('shared/components/page/CalculatorWorkspace.tsx');
+    expectContains(workspace, 'pageLayout.calculatorGrid');
+    expectContains(workspace, 'pageLayout.stickyScenario');
+    expectContains(workspace, 'pageLayout.sectionFlow');
   });
 
   it('groups single calculator inputs into setup, timing, and advanced fieldsets', () => {

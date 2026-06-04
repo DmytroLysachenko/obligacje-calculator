@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
 import { CalculatorSection } from '@/shared/components/page/CalculatorSection';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
-import { pageLayout } from '@/shared/components/page/layout-system';
+import { CalculatorWorkspace } from '@/shared/components/page/CalculatorWorkspace';
 import { ReadingChecklist } from '@/shared/components/insights/ReadingChecklist';
 import { AppToast } from '@/shared/components/feedback/AppToast';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
@@ -216,7 +216,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
       showImplicitShare={false}
       onKeyDown={handleKeyDown}
     >
-      <div className={pageLayout.compactFlow}>
+      <div className="space-y-8 md:space-y-10">
         {sharedScenarioTitle ? (
           <div className="ui-inline-notice">
             <div className="flex flex-wrap items-center gap-2 font-semibold">
@@ -231,8 +231,8 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
           </div>
         ) : null}
 
-        <div className={pageLayout.calculatorGrid}>
-          <aside className={pageLayout.stickyScenario}>
+        <CalculatorWorkspace
+          controls={(
             <BondInputsForm
               inputs={inputs}
               onUpdate={updateInput}
@@ -242,9 +242,9 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
               guardrails={guardrails}
               onApplyGuardrailFix={handleApplyGuardrailFix}
             />
-          </aside>
-
-          <div className={pageLayout.sectionFlow} id="bond-report-content">
+          )}
+          results={(
+          <div id="bond-report-content">
             {!results && !isCalculating ? (
               <ScenarioReadyPanel
                 badge={t('bonds.simulation.ready')}
@@ -309,9 +309,8 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
               </div>
             ) : null}
           </div>
-        </div>
-
-        {results ? (
+          )}
+          details={results ? (
           <div
             className={cn(
               'space-y-8 transition-opacity duration-300',
@@ -364,6 +363,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
             </SecondaryInsightAccordion>
           </div>
         ) : null}
+        />
       </div>
 
       <RecalculateButton

@@ -27,11 +27,11 @@ describe('ladder summary contracts', () => {
   it('keeps ladder page on the shared calculator rhythm', () => {
     const source = readSource(paths.container);
 
-    expectContains(source, "import { pageLayout } from '@/shared/components/page/layout-system';");
-    expectContains(source, 'className={pageLayout.compactFlow}');
-    expectContains(source, '<div className={pageLayout.calculatorGrid}>');
-    expectContains(source, '<aside className={pageLayout.stickyScenario}>');
-    expectContains(source, '<section className={pageLayout.sectionFlow}>');
+    expectContains(source, "import { CalculatorWorkspace } from '@/shared/components/page/CalculatorWorkspace';");
+    expectContains(source, '<CalculatorWorkspace');
+    expectContains(source, 'controls={');
+    expectContains(source, 'results={');
+    expectContains(source, 'details={results ? (');
     expectNotContains(source, 'grid grid-cols-1 gap-6 xl:grid-cols-[420px_minmax(0,1fr)]');
     expectNotContains(source, 'xl:sticky xl:top-28 xl:h-fit');
   });

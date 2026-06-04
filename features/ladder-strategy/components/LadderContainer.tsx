@@ -6,7 +6,7 @@ import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
-import { pageLayout } from '@/shared/components/page/layout-system';
+import { CalculatorWorkspace } from '@/shared/components/page/CalculatorWorkspace';
 import { ReadingChecklist } from '@/shared/components/insights/ReadingChecklist';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
@@ -80,17 +80,16 @@ export const LadderContainer: React.FC = () => {
         }
     };
     return (<CalculatorPageShell title={t('nav.ladder')} description={t('ladder.what_is_desc')} icon={<ListTree className="h-8 w-8"/>} isCalculating={isCalculating} isDirty={isDirty} hasResults={isPersistenceReady && !!results} onKeyDown={handleKeyDown}>
-      <div className={pageLayout.compactFlow}>
-        <div className={pageLayout.calculatorGrid}>
-          <aside className={pageLayout.stickyScenario}>
-            <RegularInvestmentInputsForm
-              inputs={inputs}
-              onUpdate={updateInput as (key: string, value: unknown) => void}
-              onBondTypeChange={setBondType}
-            />
-          </aside>
-
-          <section className={pageLayout.sectionFlow}>
+      <CalculatorWorkspace
+        controls={(
+          <RegularInvestmentInputsForm
+            inputs={inputs}
+            onUpdate={updateInput as (key: string, value: unknown) => void}
+            onBondTypeChange={setBondType}
+          />
+        )}
+        results={(
+          <>
             {!results && !isCalculating ? <LadderEmptyState /> : null}
             {isCalculating && !results ? <LadderLoadingState /> : null}
 
@@ -108,10 +107,9 @@ export const LadderContainer: React.FC = () => {
                 <RegularInvestmentResultsSummary results={results} dataQualityFlags={envelope?.dataQualityFlags} />
               </div>
             ) : null}
-          </section>
-        </div>
-
-        {results ? (
+          </>
+        )}
+        details={results ? (
           <div
             className={cn(
               'space-y-10 transition-opacity duration-200',
@@ -143,7 +141,7 @@ export const LadderContainer: React.FC = () => {
             </SecondaryInsightAccordion>
           </div>
         ) : null}
-      </div>
+      />
 
       <RecalculateButton
         isDirty={isDirty}

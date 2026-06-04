@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
 import { CalculatorSection } from '@/shared/components/page/CalculatorSection';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
-import { pageLayout } from '@/shared/components/page/layout-system';
+import { CalculatorWorkspace } from '@/shared/components/page/CalculatorWorkspace';
 import { ReadingChecklist } from '@/shared/components/insights/ReadingChecklist';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
@@ -36,13 +36,10 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
         }
     };
     return (<CalculatorPageShell title={t('nav.regular_investment')} description={t('bonds.regular_calculator')} icon={<PiggyBank className="h-8 w-8"/>} isCalculating={isCalculating} isDirty={isDirty} hasResults={isPersistenceReady && !!results} onKeyDown={handleKeyDown}>
-      <div className={pageLayout.compactFlow}>
-        <div className={pageLayout.calculatorGrid}>
-          <aside className={pageLayout.stickyScenario}>
-            <RegularInvestmentInputsForm inputs={inputs} onUpdate={updateInput as (key: string, value: unknown) => void} onBondTypeChange={setBondType}/>
-          </aside>
-
-          <section className={pageLayout.sectionFlow}>
+      <CalculatorWorkspace
+        controls={<RegularInvestmentInputsForm inputs={inputs} onUpdate={updateInput as (key: string, value: unknown) => void} onBondTypeChange={setBondType}/>}
+        results={(
+          <>
             {!results && !isCalculating ? (<ScenarioReadyPanel badge={t('bonds.simulation.ready')} title={t('bonds.regular_simulation.ready_title')} description={t('bonds.regular_simulation.ready_desc')} steps={[
                 {
                     id: 'plan',
@@ -71,10 +68,9 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
 
                 <RegularInvestmentResultsSummary results={results} dataQualityFlags={envelope?.dataQualityFlags}/>
               </div>) : null}
-          </section>
-        </div>
-
-        {results ? (<div className={cn('space-y-8 transition-opacity duration-200', isCalculating && 'pointer-events-none opacity-50')}>
+          </>
+        )}
+        details={results ? (<div className={cn('space-y-8 transition-opacity duration-200', isCalculating && 'pointer-events-none opacity-50')}>
             <CalculatorSection title={t('regular_investment_page.chart_title')} description={t('regular_investment_page.chart_description')}>
               <RegularInvestmentChart results={results} bondType={inputs.bondType} chartStep={inputs.chartStep}/>
             </CalculatorSection>
@@ -87,7 +83,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
               <CalculationMetaPanel warnings={warnings} assumptions={assumptions} calculationNotes={envelope?.calculationNotes} dataQualityFlags={envelope?.dataQualityFlags} dataFreshness={envelope?.dataFreshness}/>
             </SecondaryInsightAccordion>
           </div>) : null}
-      </div>
+      />
 
       <RecalculateButton isDirty={isDirty} hasResults={!!results} loading={isCalculating} onClick={() => calculate()}/>
     </CalculatorPageShell>);
