@@ -1,6 +1,6 @@
 'use client';
 import React, { useMemo, useState } from 'react';
-import { Scale, TriangleAlert } from 'lucide-react';
+import { Scale } from 'lucide-react';
 import { useAppI18n } from '@/i18n/client';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
@@ -12,6 +12,7 @@ import { RecalculateButton } from '@/shared/components/feedback/RecalculateButto
 import { Skeleton } from '@/components/ui/skeleton';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
+import { Notice } from '@/shared/components/feedback/Notice';
 import { useComparison } from '../hooks/useComparison';
 import { ComparisonTable } from './ComparisonTable';
 import { ComparisonVerdict } from './ComparisonVerdict';
@@ -106,17 +107,9 @@ export const ComparisonContainer: React.FC = () => {
                 </div>
               </div>
               {durationMismatchText ? (
-                <div className="ui-inline-notice flex items-start gap-3 border-l-2 border-warning text-foreground">
-                  <TriangleAlert className="mt-0.5 h-4 w-4 text-warning" />
-                  <div className="space-y-1">
-                    <p className="text-sm font-semibold text-foreground">
-                      {t('comparison.duration_mismatch.title')}
-                    </p>
-                    <p className="text-sm leading-6 text-muted-foreground">
-                      {durationMismatchText}
-                    </p>
-                  </div>
-                </div>
+                <Notice tone="warning" title={t('comparison.duration_mismatch.title')}>
+                  {durationMismatchText}
+                </Notice>
               ) : null}
             </section>
 
@@ -147,14 +140,11 @@ export const ComparisonContainer: React.FC = () => {
               </div>) : null}
 
             {resultsA && resultsB ? (<div className={cn('space-y-8', isCalculating && 'opacity-60')}>
-                {isDirty ? (<div className="ui-inline-notice flex items-start gap-3 border-l-2 border-warning text-foreground">
-                    <TriangleAlert className="mt-0.5 h-5 w-5 text-warning"/>
-                    <div className="flex items-start gap-3">
-                      <p className="text-sm text-foreground">
-                        {t('comparison.stale_results')}
-                      </p>
-                    </div>
-                  </div>) : null}
+                {isDirty ? (
+                  <Notice tone="warning" compact>
+                    {t('comparison.stale_results')}
+                  </Notice>
+                ) : null}
 
                 {hasMounted ? (
                   <ComparisonResultsPanel

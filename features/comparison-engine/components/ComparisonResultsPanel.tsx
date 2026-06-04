@@ -93,18 +93,47 @@ export function ComparisonResultsPanel({
   language,
 }: ComparisonResultsPanelProps) {
   const { t } = useAppI18n();
+  const valueA = showRealValue ? resultsA.finalRealValue : resultsA.netPayoutValue;
+  const valueB = showRealValue ? resultsB.finalRealValue : resultsB.netPayoutValue;
+  const winner = valueA === valueB ? null : valueA > valueB ? 'A' : 'B';
+  const winnerInput = winner === 'A' ? inputsA : winner === 'B' ? inputsB : null;
+  const absoluteGap = Math.abs(valueA - valueB);
+  const lowerValue = Math.min(valueA, valueB);
+  const relativeGap = lowerValue > 0 ? (absoluteGap / lowerValue) * 100 : 0;
   const comparisonMetrics = React.useMemo<MetricStripItem[]>(() => [
     {
       label: showRealValue ? `${t('comparison.scenario_a')} ${t('common.real_value')}` : t('comparison.scenario_a'),
-      value: formatCurrency(showRealValue ? resultsA.finalRealValue : resultsA.netPayoutValue),
+      value: formatCurrency(valueA),
       tone: 'text-primary',
     },
     {
       label: showRealValue ? `${t('comparison.scenario_b')} ${t('common.real_value')}` : t('comparison.scenario_b'),
-      value: formatCurrency(showRealValue ? resultsB.finalRealValue : resultsB.netPayoutValue),
+      value: formatCurrency(valueB),
       tone: 'text-success',
     },
-  ], [formatCurrency, resultsA.finalRealValue, resultsA.netPayoutValue, resultsB.finalRealValue, resultsB.netPayoutValue, showRealValue, t]);
+  ], [formatCurrency, showRealValue, t, valueA, valueB]);
+  const differenceMetrics = React.useMemo<MetricStripItem[]>(() => [
+    {
+      label: t('comparison.summary_leading_bond'),
+      value: winnerInput ? `${winnerInput.bondType} (${winner})` : t('comparison.tie'),
+      description: winnerInput
+        ? `${winner === 'A' ? t('comparison.scenario_a') : t('comparison.scenario_b')} ${t('comparison.summary_higher_payout')}`
+        : t('comparison.summary_equal_outcome'),
+      tone: winner === 'B' ? 'text-success' : 'text-primary',
+    },
+    {
+      label: t('comparison.summary_absolute_gap'),
+      value: formatCurrency(absoluteGap),
+      description: showRealValue ? t('common.real_value') : t('comparison.summary_net_payout'),
+      tone: 'text-foreground',
+    },
+    {
+      label: t('comparison.summary_relative_gap'),
+      value: `${relativeGap.toFixed(1)}%`,
+      description: t('comparison.summary_compared_to_lower'),
+      tone: 'text-foreground',
+    },
+  ], [absoluteGap, formatCurrency, relativeGap, showRealValue, t, winner, winnerInput]);
 
   return (
     <section className="space-y-6 border-t border-border py-6">
@@ -118,8 +147,10 @@ export function ComparisonResultsPanel({
         </p>
       </div>
       <div>
-        <div className="mb-5 grid gap-3 xl:grid-cols-[minmax(0,1fr)_240px]">
-          <MetricStrip items={comparisonMetrics} columns="grid-cols-1 md:grid-cols-2" className="shadow-none" />
+        <div className="mb-5 space-y-3">
+          <MetricStrip items={differenceMetrics} columns="grid-cols-1 md:grid-cols-3" className="shadow-none" />
+          <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_240px]">
+            <MetricStrip items={comparisonMetrics} columns="grid-cols-1 md:grid-cols-2" className="shadow-none" />
           <button
             type="button"
             className="rounded-lg border border-border bg-card px-4 py-4 text-left transition-colors hover:bg-muted/35"
@@ -141,6 +172,7 @@ export function ComparisonResultsPanel({
               {t('comparison.export_comparison_csv')}
             </div>
           </button>
+          </div>
         </div>
 
         <ChartSupportNote
