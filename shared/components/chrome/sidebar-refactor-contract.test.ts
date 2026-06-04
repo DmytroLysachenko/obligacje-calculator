@@ -54,13 +54,14 @@ describe('sidebar refactor contracts', () => {
 
     expectContains(source, 'px-2 text-xs font-semibold uppercase tracking-[0.08em]');
     expectContains(source, 'custom-scrollbar flex-1 space-y-7 overflow-y-auto px-3 py-5');
-    expectContains(source, 'space-y-4 border-t border-border bg-muted/30 p-3');
+    expectContains(source, 'space-y-3 border-t border-border bg-muted/25 p-2.5');
     expectContains(source, 'border-b border-border px-4 py-4');
     expectContains(source, 'w-[var(--sidebar-width)]');
     expectContains(source, 'bg-secondary/70');
 
     expectNoFragments(source, [
       'custom-scrollbar flex-1 space-y-5 overflow-y-auto px-3 py-4',
+      'space-y-4 border-t border-border bg-muted/30 p-3',
       'space-y-3 border-t border-border bg-muted/35 p-3',
       'border-b border-border px-4 py-3',
     ]);
@@ -70,14 +71,18 @@ describe('sidebar refactor contracts', () => {
     const source = read(files.utilities);
 
     expectContains(source, 'grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3');
-    expectContains(source, 'border-t border-border py-3 first:border-t-0 first:pt-0');
-    expectContains(source, '<section className="space-y-2">');
+    expectContains(source, 'border-t border-border py-2.5 first:border-t-0 first:pt-0');
+    expectContains(source, '<section className="space-y-1.5">');
     expectContains(source, 'text-xs font-semibold uppercase tracking-[0.08em]');
-    expectContains(source, '<div className="border-y border-border py-1">');
+    expectContains(source, '<div className="border-y border-border py-0.5">');
+    expectContains(source, 'line-clamp-2 text-[11px] leading-4 text-muted-foreground');
 
     expectNoFragments(source, [
       'rounded-md border border-border bg-card px-3 py-3',
       'border-t border-border px-1 py-3',
+      'border-t border-border py-3 first:border-t-0 first:pt-0',
+      '<section className="space-y-2">',
+      '<div className="border-y border-border py-1">',
       'tracking-[0.06em]',
     ]);
   });
@@ -89,10 +94,12 @@ describe('sidebar refactor contracts', () => {
     expectContains(source, '<SidebarUtilityRow');
     expectContains(source, 'action={<LanguageSwitcher />}');
     expectContains(source, 'action={<ThemeToggle />}');
+    expectContains(source, 'mt-2.5 border-t border-border pt-2.5');
 
     expectNoFragments(source, [
       '<>',
       '</>',
+      '<SidebarUtilityPanel>\n        <SidebarUtilityRow\n          title={t(\'common.theme\')}',
     ]);
   });
 
@@ -103,11 +110,13 @@ describe('sidebar refactor contracts', () => {
     expectContains(source, "return 'text-[var(--finance-warning)]';");
     expectContains(source, 'inline-flex text-xs font-semibold');
     expectContains(source, 'text-sm font-semibold text-foreground');
+    expectContains(source, 'line-clamp-2 text-[11px] leading-4 text-muted-foreground');
 
     expectNoFragments(source, [
       'border-[var(--finance-success)]/30 bg-transparent',
       'border-[var(--finance-warning)]/40 bg-transparent',
       'rounded-md border px-2 py-0.5',
+      'text-xs leading-5 text-muted-foreground',
       'bg-emerald-50',
       'bg-orange-50',
       'bg-amber-50',

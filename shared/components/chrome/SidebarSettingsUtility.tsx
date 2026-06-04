@@ -17,13 +17,13 @@ export function SidebarSettingsUtility() {
           description="PL / EN"
           action={<LanguageSwitcher />}
         />
-      </SidebarUtilityPanel>
-      <SidebarUtilityPanel>
+        <div className="mt-2.5 border-t border-border pt-2.5">
         <SidebarUtilityRow
           title={t('common.theme')}
           description={t('common.theme_toggle_hint')}
           action={<ThemeToggle />}
         />
+        </div>
       </SidebarUtilityPanel>
     </div>
   );

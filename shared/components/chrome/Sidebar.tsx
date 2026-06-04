@@ -158,7 +158,7 @@ function SidebarFooter({
   const { canManageWorkspace } = usePortfolioAccess();
 
   return (
-    <div className="space-y-4 border-t border-border bg-muted/30 p-3">
+    <div className="space-y-3 border-t border-border bg-muted/25 p-2.5">
       {canManageWorkspace ? (
         <SidebarUtilityGroup title={t('sidebar.workspace_title')}>
           <SidebarWorkspaceUtility pathname={pathname} />

@@ -57,7 +57,7 @@ export function SidebarSyncSummary({
 
   return (
     <SidebarUtilityPanel>
-      <div className="space-y-1.5">
+      <div className="space-y-1">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="text-xs font-semibold text-muted-foreground">{t('common.sync_data')}</p>
@@ -79,7 +79,7 @@ export function SidebarSyncSummary({
           ) : null}
         </div>
 
-        <p className="text-xs leading-5 text-muted-foreground">
+        <p className="line-clamp-2 text-[11px] leading-4 text-muted-foreground">
           {dataFreshness
             ? getFreshnessText(dataFreshness, t)
             : t('sidebar.sync_unavailable')}

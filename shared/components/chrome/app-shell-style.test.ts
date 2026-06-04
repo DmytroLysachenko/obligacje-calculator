@@ -60,6 +60,7 @@ describe('app shell visual contracts', () => {
       'bg-transparent text-muted-foreground hover:bg-card/70 hover:text-foreground',
       'bg-card text-foreground shadow-sm',
       'space-y-7 overflow-y-auto px-3 py-5',
+      'space-y-3 border-t border-border bg-muted/25 p-2.5',
     ]);
 
     expect(source).not.toContain('linear-gradient');
@@ -73,14 +74,15 @@ describe('app shell visual contracts', () => {
     const source = expectHas('shared/components/chrome/SidebarUtilityGroup.tsx', [
       'border-t border-border',
       'text-xs font-semibold uppercase tracking-[0.08em]',
-      'border-y border-border py-1',
-      'text-xs leading-5 text-muted-foreground',
+      'border-y border-border py-0.5',
+      'line-clamp-2 text-[11px] leading-4 text-muted-foreground',
     ]);
 
     expect(source).not.toContain('rounded-[1.6rem]');
     expect(source).not.toContain('border-dashed');
     expect(source).not.toContain('text-slate-500');
     expect(source).not.toContain('rounded-md border border-border bg-card');
+    expect(source).not.toContain('border-y border-border py-1');
   });
 
   it('keeps sidebar freshness colors semantic', () => {
@@ -89,12 +91,13 @@ describe('app shell visual contracts', () => {
       'text-[var(--finance-warning)]',
       'inline-flex text-xs font-semibold',
       'text-sm font-semibold text-foreground',
-      'text-xs leading-5 text-muted-foreground',
+      'line-clamp-2 text-[11px] leading-4 text-muted-foreground',
     ]);
 
     expect(source).not.toContain('bg-emerald-50');
     expect(source).not.toContain('bg-orange-50');
     expect(source).not.toContain('bg-amber-50');
     expect(source).not.toContain('rounded-md border px-2 py-0.5');
+    expect(source).not.toContain('text-xs leading-5 text-muted-foreground');
   });
 });

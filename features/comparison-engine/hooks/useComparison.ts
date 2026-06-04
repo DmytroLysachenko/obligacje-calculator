@@ -4,7 +4,6 @@ import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } fro
 import { BondInputs, BondType, TaxStrategy } from '../../bond-core/types';
 import {
   BondComparisonCalculationEnvelope,
-  ComparisonMaturityMode,
   IndependentBondComparisonPayload,
   SingleBondCalculationEnvelope,
 } from '../../bond-core/types/scenarios';
