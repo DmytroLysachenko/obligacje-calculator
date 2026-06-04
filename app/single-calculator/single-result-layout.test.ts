@@ -51,31 +51,29 @@ describe('single calculator result layout contracts', () => {
   it('keeps the result hero using premium financial metric hierarchy', () => {
     const source = readSource(paths.hero);
 
-    expectContains(source, 'className="ui-primary-metric"');
-    expectContains(source, 'space-y-6 border-y border-border py-6 md:py-8');
+    expectContains(source, 'className="financial-number ui-primary-metric"');
+    expectContains(source, 'surface-shell overflow-hidden');
     expectContains(source, 'ui-body max-w-4xl text-muted-foreground');
-    expectContains(source, 'border-t border-border pt-4');
-    expectContains(source, 'lg:border-t-0 lg:pt-0');
+    expectContains(source, 'border-t border-border bg-muted/30 p-4');
+    expectContains(source, 'lg:border-l lg:border-t-0');
 
     expectNoFragments(source, [
       'text-[32px] font-semibold leading-tight',
       'text-sm leading-6 text-muted-foreground',
-      'rounded-lg border',
       'shadow-lg',
     ]);
   });
 
-  it('keeps the metric strip dense and divider-led instead of card-led', () => {
+  it('keeps the metric strip grouped and scannable instead of loose divider-led rows', () => {
     const source = readSource(paths.metrics);
 
-    expectContains(source, '<section className="border-y border-border">');
-    expectContains(source, 'grid divide-y divide-border md:divide-y-0 md:divide-x');
-    expectContains(source, 'space-y-2 px-4 py-5');
-    expectContains(source, 'ui-large-metric text-foreground');
+    expectContains(source, '<section className="overflow-hidden rounded-lg border border-border bg-border shadow-sm">');
+    expectContains(source, 'grid gap-px');
+    expectContains(source, 'space-y-2 bg-card px-4 py-5');
+    expectContains(source, 'financial-number ui-large-metric text-foreground');
     expectContains(source, 'ui-body text-muted-foreground');
 
     expectNoFragments(source, [
-      'overflow-hidden rounded-lg border border-border bg-card',
       'shadow-none',
       'text-xl font-semibold tracking-tight',
       'text-xs font-semibold text-muted-foreground',
@@ -85,32 +83,30 @@ describe('single calculator result layout contracts', () => {
   it('keeps scenario facts readable without nested bordered cards', () => {
     const source = readSource(paths.facts);
 
-    expectContains(source, '<section className="space-y-4 border-y border-border py-5">');
+    expectContains(source, '<section className="space-y-4 rounded-lg border border-border bg-card p-5 shadow-sm">');
     expectContains(source, '<dl className="grid gap-x-6 gap-y-4 sm:grid-cols-2">');
     expectContains(source, '<dt className="ui-meta font-semibold">{fact.label}</dt>');
     expectContains(source, 'break-words text-sm font-semibold text-foreground');
 
     expectNoFragments(source, [
-      'rounded-lg border border-border bg-card',
       'overflow-hidden rounded-md border border-border',
       'index >= 2 ? \'border-t\'',
       'index % 2 === 1 ? \'sm:border-l\'',
     ]);
   });
 
-  it('keeps calculation metadata as sections rather than mini-cards', () => {
+  it('keeps calculation metadata grouped as secondary compact panels', () => {
     const source = readSource(paths.meta);
 
-    expectContains(source, 'border-l-2 px-4 py-2 text-sm leading-6');
+    expectContains(source, 'rounded-md border bg-card px-4 py-3 text-sm leading-6');
     expectContains(source, 'grid grid-cols-1 gap-x-6 gap-y-5');
-    expectContains(source, 'border-t border-border pt-4 text-foreground');
-    expectContains(source, 'border-y border-border py-4 text-sm leading-6');
+    expectContains(source, 'rounded-md border border-border bg-card p-4 text-foreground');
+    expectContains(source, 'rounded-md border border-border bg-muted/25 px-4 py-3 text-sm leading-6');
 
     expectNoFragments(source, [
-      'rounded-md border bg-card px-4 py-3',
-      'rounded-md border border-border px-4 py-4',
-      'rounded-md border border-[var(--finance-warning)]/45 px-4 py-4',
-      'rounded-md border border-border bg-card px-4 py-3',
+      'border-l-2 px-4 py-2 text-sm leading-6',
+      'border-t border-border pt-4 text-foreground',
+      'border-y border-border py-4 text-sm leading-6',
     ]);
   });
 });

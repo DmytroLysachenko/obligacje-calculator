@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import { cn } from '@/lib/utils';
+
 interface ReferenceNoteCardProps {
   icon: React.ReactNode;
   title: string;
@@ -16,11 +18,12 @@ export function ReferenceNoteCard({
 }: ReferenceNoteCardProps) {
   return (
     <section
-      className={
+      className={cn(
+        'space-y-3 rounded-lg border p-4 shadow-sm',
         tone === 'warning'
-          ? 'space-y-3 border-t border-[var(--finance-warning)]/40 py-4'
-          : 'space-y-3 border-t border-border py-4'
-      }
+          ? 'border-warning/30 bg-warning/5'
+          : 'border-border bg-card',
+      )}
     >
       <div className="flex items-center gap-2">
         {icon}

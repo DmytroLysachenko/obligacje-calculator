@@ -100,15 +100,15 @@ describe('economic data layout source contracts', () => {
     }
   });
 
-  it('keeps the reference hero as a section rather than a card shell', () => {
+  it('keeps the reference hero as a compact dashboard surface', () => {
     const source = readSource(referenceHeroPath);
     const sectionLine = getClassLine(source, '<section className=');
     const gridLine = getClassLine(source, 'xl:grid-cols');
 
-    expect(sectionLine).toContain('border-y');
-    expect(sectionLine).toContain('py-6');
-    expect(sectionLine).not.toContain('rounded-lg');
-    expect(sectionLine).not.toContain('bg-card');
+    expect(sectionLine).toContain('rounded-lg');
+    expect(sectionLine).toContain('border border-border');
+    expect(sectionLine).toContain('bg-card');
+    expect(sectionLine).toContain('p-5');
     expect(sectionLine).not.toContain('shadow-none');
     expect(sectionLine).not.toContain('md:px-8');
     expect(sectionLine).not.toContain('md:py-8');
@@ -131,15 +131,15 @@ describe('economic data layout source contracts', () => {
     expect(descriptionLine).not.toContain('leading-8');
   });
 
-  it('keeps hero metric tiles dense and divider-led', () => {
+  it('keeps hero metric tiles dense and grouped', () => {
     const source = readSource(referenceHeroPath);
-    const metricGridLine = getClassLine(source, 'divide-y divide-border');
-    const tilePaddingLine = getClassLine(source, "'px-4 py-3'");
+    const metricGridLine = getClassLine(source, 'grid gap-px');
+    const tilePaddingLine = getClassLine(source, 'bg-card px-4 py-3');
     const valueLine = getClassLine(source, 'text-base font-semibold');
 
-    expect(metricGridLine).toContain('border-y');
-    expect(metricGridLine).toContain('sm:divide-x');
-    expect(metricGridLine).not.toContain('overflow-hidden rounded-md');
+    expect(metricGridLine).toContain('overflow-hidden rounded-lg');
+    expect(metricGridLine).toContain('border border-border');
+    expect(metricGridLine).toContain('bg-border');
     expect(metricGridLine).not.toContain('rounded-[1.5rem]');
 
     expect(tilePaddingLine).toContain('px-4 py-3');
@@ -173,10 +173,8 @@ describe('economic data layout source contracts', () => {
       '<CardContent',
       'rounded-lg border shadow-none',
       'divide-y divide-border border-y border-border',
-      'rounded-md border border-border bg-card',
       'rounded-full border border-border bg-muted/40',
       'rounded-md border border-border sm:grid-cols-2',
-      'rounded-md border border-border bg-card p-1',
       'overflow-hidden rounded-md border',
     ]);
   });
@@ -214,7 +212,7 @@ describe('economic data layout source contracts', () => {
     }
   });
 
-  it('keeps reference support components free of card wrappers', () => {
+  it('keeps reference support components free of shadcn card wrappers and decorative shapes', () => {
     const sources = [
       readSource(referenceHeroPath),
       readSource(referenceRailPath),
@@ -230,9 +228,6 @@ describe('economic data layout source contracts', () => {
         '<CardHeader',
         '<CardTitle',
         '<CardDescription',
-        'bg-card px',
-        'border border-border bg-card',
-        'rounded-lg border',
         'shadow-none',
         'rounded-2xl',
         'rounded-3xl',

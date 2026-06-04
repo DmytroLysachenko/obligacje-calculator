@@ -20,7 +20,7 @@ export function ScenarioFactsBlock({
   items,
 }: ScenarioFactsBlockProps) {
   return (
-    <section className="space-y-4 border-y border-border py-5">
+    <section className="space-y-4 rounded-lg border border-border bg-card p-5 shadow-sm">
       <div className="flex items-center justify-between gap-3">
         <div>
           <h3 className="ui-section-title">

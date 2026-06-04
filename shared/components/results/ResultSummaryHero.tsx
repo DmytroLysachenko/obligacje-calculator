@@ -32,15 +32,15 @@ export const ResultSummaryHero = React.memo(function ResultSummaryHero({
   aside,
 }: ResultSummaryHeroProps) {
   return (
-    <section className="space-y-6 border-y border-border py-6 md:py-8">
+    <section className="surface-shell overflow-hidden">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="max-w-4xl space-y-3">
+        <div className="max-w-4xl space-y-4 p-5 md:p-6">
           <div className="surface-chip">
             {eyebrow}
           </div>
 
           <div className="space-y-2">
-            <h2 className="ui-primary-metric">
+            <h2 className="financial-number ui-primary-metric">
               {value}
             </h2>
             <p className="ui-body max-w-4xl text-muted-foreground">
@@ -50,7 +50,7 @@ export const ResultSummaryHero = React.memo(function ResultSummaryHero({
         </div>
 
         {actions.length > 0 ? (
-          <div className="grid grid-cols-2 gap-2 border-t border-border pt-4 sm:grid-cols-4 lg:w-[440px] lg:shrink-0 lg:border-t-0 lg:pt-0">
+          <div className="grid grid-cols-2 gap-2 border-t border-border bg-muted/30 p-4 sm:grid-cols-4 lg:w-[440px] lg:shrink-0 lg:border-l lg:border-t-0">
             {actions.map((action) => (
               <Button
                 type="button"
@@ -71,12 +71,14 @@ export const ResultSummaryHero = React.memo(function ResultSummaryHero({
             ))}
           </div>
         ) : aside ? (
-          <div className="lg:w-[260px] lg:shrink-0">{aside}</div>
+          <div className="border-t border-border bg-muted/30 p-5 lg:w-[280px] lg:shrink-0 lg:border-l lg:border-t-0">
+            {aside}
+          </div>
         ) : null}
       </div>
 
       {narrative || deltaText ? (
-        <div className="max-w-4xl space-y-3">
+        <div className="max-w-4xl space-y-3 border-t border-border bg-muted/20 px-5 py-4 md:px-6">
           {narrative ? (
             <p className="ui-body">{narrative}</p>
           ) : null}

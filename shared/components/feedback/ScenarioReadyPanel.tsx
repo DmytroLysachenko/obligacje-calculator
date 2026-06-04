@@ -25,7 +25,7 @@ function ReadyStepCard({
   description,
 }: Pick<ReadyStepItem, 'title' | 'description'>) {
   return (
-    <div className="space-y-2 border-t border-border py-4 first:border-t-0">
+    <div className="space-y-2 rounded-md border border-border bg-card px-4 py-4">
       <p className="ui-card-title">
         {title}
       </p>
@@ -44,7 +44,7 @@ export function ScenarioReadyPanel({
   footerText,
 }: ScenarioReadyPanelProps) {
   return (
-    <section className="space-y-6 bg-transparent">
+    <section className="space-y-6 rounded-lg border border-border bg-card p-5 shadow-sm md:p-6">
       <div className="space-y-3">
         <div className="surface-chip">
           <TrendingUp className="h-3.5 w-3.5 text-primary" />
@@ -58,7 +58,7 @@ export function ScenarioReadyPanel({
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-3 md:grid-cols-3">
         {steps.map((step) => (
           <ReadyStepCard
             key={step.id}
@@ -69,7 +69,7 @@ export function ScenarioReadyPanel({
       </div>
 
       {ctaLabel && onClick ? (
-        <div className="max-w-xs border-t border-dashed border-border pt-4">
+        <div className="max-w-xs border-t border-border pt-4">
           <Button
             onClick={onClick}
             className="w-full focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
@@ -80,7 +80,7 @@ export function ScenarioReadyPanel({
       ) : null}
 
       {footerText ? (
-        <p className="border-t border-dashed border-border pt-4 text-sm leading-6 text-muted-foreground">
+        <p className="rounded-md border border-border bg-muted/25 px-4 py-3 text-sm leading-6 text-muted-foreground">
           {footerText}
         </p>
       ) : null}

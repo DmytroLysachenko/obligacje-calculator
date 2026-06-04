@@ -17,9 +17,9 @@ interface FinancialInsightStripProps {
 }
 
 const toneClass = {
-  default: 'border-border text-foreground',
-  success: 'border-[var(--finance-success)] text-foreground',
-  warning: 'border-[var(--finance-warning)] text-foreground',
+  default: 'border-border bg-card text-foreground',
+  success: 'border-success/30 bg-success/5 text-foreground',
+  warning: 'border-warning/30 bg-warning/5 text-foreground',
 } as const;
 
 export const FinancialInsightStrip = React.memo(function FinancialInsightStrip({
@@ -28,18 +28,18 @@ export const FinancialInsightStrip = React.memo(function FinancialInsightStrip({
   items,
 }: FinancialInsightStripProps) {
   return (
-    <section className="space-y-5 border-y border-border py-5">
+    <section className="space-y-5 rounded-lg border border-border bg-card p-5 shadow-sm">
       <div className="space-y-2">
         <h2 className="ui-card-title">{title}</h2>
         <p className="ui-body max-w-[var(--layout-reading-max)] text-muted-foreground">
           {description}
         </p>
       </div>
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-3 md:grid-cols-3">
         {items.map((item) => (
           <div
             key={item.label}
-            className={cn('border-l-2 px-4 py-2 text-sm leading-6', toneClass[item.tone ?? 'default'])}
+            className={cn('rounded-md border px-4 py-3 text-sm leading-6', toneClass[item.tone ?? 'default'])}
           >
             <p className="ui-meta font-semibold">{item.label}</p>
             <p className="financial-number mt-1 text-lg font-semibold text-foreground">
