@@ -65,7 +65,7 @@ export function SidebarWorkspaceUtility({ pathname }: { pathname: string }) {
             setSelectedPortfolioId(value);
           }}
         >
-          <SelectTrigger className="h-10 rounded-md border-border bg-card text-left text-sm font-medium">
+          <SelectTrigger className="border-border bg-card">
             <SelectValue placeholder={t('sidebar.portfolio_selector_empty')} />
           </SelectTrigger>
           <SelectContent>

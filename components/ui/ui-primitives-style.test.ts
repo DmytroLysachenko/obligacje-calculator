@@ -60,7 +60,7 @@ describe('ui primitive visual contracts', () => {
     const content = expectSource('components/ui/button.tsx', [
       'rounded-md',
       'transition-colors',
-      'focus-visible:ring-1',
+      'focus-visible:ring-2',
       'bg-primary text-primary-foreground',
       'border-border bg-secondary',
       'size-8',
@@ -84,8 +84,9 @@ describe('ui primitive visual contracts', () => {
       'rounded-md',
       'border border-input',
       'bg-background',
-      'data-[size=default]:h-9',
-      'data-[size=sm]:h-8',
+      'data-[size=default]:min-h-11',
+      'data-[size=sm]:min-h-9',
+      'py-2.5',
     ]);
   });
 
@@ -113,10 +114,10 @@ describe('ui primitive visual contracts', () => {
 
     expectSource('components/ui/tabs.tsx', [
       'rounded-md',
-      'group-data-[orientation=horizontal]/tabs:h-9',
+      'group-data-[orientation=horizontal]/tabs:h-10',
       'border border-border bg-card',
       'data-[state=active]:bg-muted',
-      'text-xs font-medium',
+      'text-xs font-semibold',
     ]);
   });
 

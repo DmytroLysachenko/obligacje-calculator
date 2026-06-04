@@ -49,7 +49,7 @@ export function ContributionPlanSection({
           </Badge>
         </div>
         <Select value={taxStrategy} onValueChange={(value) => onUpdate('taxStrategy', value as TaxStrategy)}>
-          <SelectTrigger className="h-11">
+          <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -129,7 +129,7 @@ export function ContributionPlanSection({
             </TooltipProvider>
           </div>
           <Select value={frequency} onValueChange={(value) => onUpdate('frequency', value as InvestmentFrequency)}>
-            <SelectTrigger id="frequency" className="h-11">
+            <SelectTrigger id="frequency">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

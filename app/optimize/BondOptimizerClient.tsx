@@ -270,7 +270,7 @@ export default function BondOptimizerClient() {
                           updateInput('taxStrategy', value)
                         }
                       >
-                        <SelectTrigger className="rounded-lg">
+                        <SelectTrigger>
                           <SelectValue placeholder={t('optimizer_page.select_strategy')} />
                         </SelectTrigger>
                         <SelectContent>

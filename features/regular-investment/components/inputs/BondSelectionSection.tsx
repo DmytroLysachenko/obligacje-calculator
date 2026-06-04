@@ -47,7 +47,7 @@ export function BondSelectionSection({
           </TooltipProvider>
         </div>
         <Select value={bondType} onValueChange={(value) => onBondTypeChange(value as BondType)}>
-          <SelectTrigger id="bondType" className="h-11">
+          <SelectTrigger id="bondType">
             <SelectValue placeholder={t('bonds.select_bond_type')} />
           </SelectTrigger>
           <SelectContent>

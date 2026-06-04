@@ -119,7 +119,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
     }, [language, results.lots, t]);
     const summaryActions = useMemo(() => [
         {
-            label: t('comparison.export'),
+            label: t('common.export_csv'),
             icon: <FileSpreadsheet className="h-4 w-4"/>,
             onClick: handleExport,
         },

@@ -113,7 +113,7 @@ export function RetirementInputsPanel({
             {labels.bondFamily}
           </Label>
           <Select value={inputs.bondType} onValueChange={(value) => onUpdateInput('bondType', value as BondType)}>
-            <SelectTrigger className="rounded-md font-semibold">
+            <SelectTrigger className="font-semibold">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -195,7 +195,7 @@ export function RetirementInputsPanel({
                   value={inputs.taxStrategy}
                   onValueChange={(value) => onUpdateInput('taxStrategy', value as TaxStrategy)}
                 >
-                  <SelectTrigger className="rounded-md font-semibold">
+                  <SelectTrigger className="font-semibold">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

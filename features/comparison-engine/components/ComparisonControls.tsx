@@ -78,7 +78,7 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({ initialS
                         {t('comparison.year')}
                       </Label>
                       <Select value={startYear} onValueChange={updateStartYear}>
-                        <SelectTrigger className="h-11">
+                        <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -93,7 +93,7 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({ initialS
                         {t('comparison.month')}
                       </Label>
                       <Select value={startMonth} onValueChange={updateStartMonth}>
-                        <SelectTrigger className="h-11">
+                        <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>

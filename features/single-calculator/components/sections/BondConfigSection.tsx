@@ -88,7 +88,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
             </Tooltip>)}
         </div>
         <Select value={inputs.bondType} onValueChange={(value) => onBondTypeChange(value as BondType)}>
-          <SelectTrigger id="bondType" className="bg-card text-left shadow-none">
+          <SelectTrigger id="bondType" className="bg-card">
             <SelectValue placeholder={t('bonds.select_bond_type')}/>
           </SelectTrigger>
           <SelectContent>
@@ -114,7 +114,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
         <div className="space-y-2 pt-2">
           <Label className="text-xs font-semibold text-muted-foreground">{t('bonds.bond.series')}</Label>
           <Select value={selectedSeriesId || 'current'} onValueChange={(value) => onUpdate('selectedSeriesId', value)}>
-            <SelectTrigger className="bg-muted/45 text-left text-sm font-medium shadow-none">
+            <SelectTrigger className="bg-muted/45">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

@@ -34,7 +34,7 @@ function ShellMetaRow({ isCalculating, hasResults, }: {
         </span>) : null}
       {!isCalculating && hasResults ? (<span className="inline-flex items-center gap-2 text-success">
           <Check className="h-4 w-4"/>
-          {t('comparison.up_to_date')}
+          {t('common.results_up_to_date')}
         </span>) : null}
     </div>);
 }

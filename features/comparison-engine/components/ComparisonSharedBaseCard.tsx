@@ -259,7 +259,7 @@ export function ComparisonSharedBaseCard({
             value={sharedConfig.taxStrategy ?? TaxStrategy.STANDARD}
             onValueChange={(value) => onUpdateSharedConfig('taxStrategy', value as TaxStrategy)}
           >
-            <SelectTrigger className="h-11 [&>span]:truncate">
+            <SelectTrigger className="[&>span]:truncate">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

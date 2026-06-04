@@ -50,7 +50,7 @@ export const ResultSummaryHero = React.memo(function ResultSummaryHero({
         </div>
 
         {actions.length > 0 ? (
-          <div className="grid grid-cols-2 gap-2 border-t border-border bg-muted/30 p-4 sm:grid-cols-4 lg:w-[440px] lg:shrink-0 lg:border-l lg:border-t-0">
+          <div className="grid grid-cols-2 gap-2 border-t border-border bg-muted/30 p-4 lg:w-[380px] lg:shrink-0 lg:border-l lg:border-t-0">
             {actions.map((action) => (
               <Button
                 type="button"

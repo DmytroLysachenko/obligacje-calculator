@@ -53,7 +53,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
             {t('bonds.bond.type')}
           </Label>
           <Select value={bondType} onValueChange={(value) => onBondTypeChange(value as BondType)}>
-            <SelectTrigger className="h-12 w-full min-w-0 rounded-md border-border bg-card font-semibold [&>span]:truncate">
+            <SelectTrigger className="w-full min-w-0 border-border bg-card font-semibold [&>span]:truncate">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -113,7 +113,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
                 {t('bonds.tax_strategy')}
               </Label>
               <Select value={taxStrategy ?? 'shared'} onValueChange={(value) => onTaxStrategyChange(value === 'shared' ? undefined : (value as TaxStrategy))}>
-                <SelectTrigger className="h-11 w-full min-w-0 [&>span]:truncate">
+                <SelectTrigger className="w-full min-w-0 [&>span]:truncate">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
