@@ -32,8 +32,8 @@ function SectionBlock({
   children: React.ReactNode;
 }) {
   return (
-    <section className="space-y-4">
-      <div className="space-y-2">
+    <section className="surface-shell space-y-5 p-5">
+      <div className="space-y-2 border-b border-border pb-4">
         <h3 className="ui-section-title">
           {title}
         </h3>
@@ -142,7 +142,7 @@ function ComparisonVerdictPanel({
         })}
         narrative={t('comparison.page.verdict_narrative')}
         aside={
-          <div className="border-t border-border py-4">
+          <div className="rounded-md border border-success/30 bg-success/5 px-4 py-3">
             <p className="ui-metadata text-muted-foreground">
               {valueLabel}
             </p>
@@ -198,7 +198,7 @@ function ScenarioResultCard({
   const { t } = useAppI18n();
 
   return (
-    <article className="space-y-5 border-t border-border py-5">
+    <article className="space-y-5 rounded-lg border border-border bg-card p-5">
         <div className="space-y-2">
           <div className="flex items-center gap-3">
             <div
@@ -253,7 +253,7 @@ function ComparisonEmptyState() {
   const { t } = useAppI18n();
 
   return (
-    <section className="space-y-6 border-t border-border py-6">
+    <section className="surface-shell space-y-6 p-5 md:p-6">
         <div className="space-y-3">
           <div className="surface-chip">
             <TrendingUp className="h-3.5 w-3.5 text-primary" />
@@ -293,7 +293,7 @@ function ComparisonStepCard({
   description: string;
 }) {
   return (
-    <div className="border-t border-border py-5">
+    <div className="rounded-lg border border-border bg-card p-4">
       <p className="ui-card-title">
         {title}
       </p>
@@ -348,7 +348,7 @@ export function ComparisonResultsDashboard({
   return (
     <div className="space-y-8">
       {isDirty ? (
-        <div className="ui-inline-notice border-l-2 border-warning text-warning">
+        <div className="ui-inline-notice border-warning/30 bg-warning/5 text-foreground">
           {t('comparison.page.stale_results')}
         </div>
       ) : null}

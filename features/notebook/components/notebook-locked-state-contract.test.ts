@@ -40,7 +40,8 @@ describe('notebook locked and empty state contracts', () => {
     expectContains(source, "t('notebook.capabilities.export.title')");
     expectContains(source, "t('notebook.capabilities.projection.title')");
     expectContains(source, 'grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]');
-    expectContains(source, 'space-y-4 border-y border-border py-4');
+    expectContains(source, 'space-y-4 rounded-lg border border-border bg-card p-4');
+    expectContains(source, 'rounded-md border border-border bg-muted/20 p-3');
 
     expectNoFragments(source, [
       'LegacyEmptyPortfolioState',
@@ -57,7 +58,7 @@ describe('notebook locked and empty state contracts', () => {
     expectContains(source, 'isGuestWorkspace ? (');
     expectContains(source, "t('workspace.locked_notebook_notice')");
     expectContains(source, '<Lock className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />');
-    expectContains(source, 'ui-inline-notice border-l-2 border-border');
+    expectContains(source, 'ui-inline-notice');
     expectContains(source, 'disabled={!canManageWorkspace}');
 
     expectNoFragments(source, [

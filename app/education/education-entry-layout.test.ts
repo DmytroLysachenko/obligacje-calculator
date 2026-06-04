@@ -44,35 +44,35 @@ describe('education entry layout contracts', () => {
     expectContains(source, "t('education.bond_types_subtitle')");
 
     expectNoFragments(source, [
-      'rounded-lg border',
       'shadow-xl',
       'bg-gradient',
       'hero',
     ]);
   });
 
-  it('keeps starter guidance section divider-led and dense', () => {
+  it('keeps starter guidance section grouped and dense', () => {
     const source = read(paths.page);
 
-    expectContains(source, '<section className="space-y-5 border-t border-border py-6">');
-    expectContains(source, 'grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2 xl:grid-cols-4');
-    expectContains(source, '<article key={guide.key} className="border-t border-border py-4">');
+    expectContains(source, '<section className="surface-shell space-y-5 p-5 md:p-6">');
+    expectContains(source, 'grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4');
+    expectContains(source, '<article key={guide.key} className="rounded-lg border border-border bg-card p-4">');
     expectContains(source, 'text-[32px] font-semibold leading-none text-foreground');
     expectContains(source, 'ui-body mt-3 text-muted-foreground');
 
     expectNoFragments(source, [
       'surface-panel',
-      'rounded-md border border-border',
       'grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4',
     ]);
   });
 
-  it('keeps bond offer cards free of badge component shells', () => {
+  it('keeps bond offer cards grouped without shadcn badge shells', () => {
     const source = read(paths.card);
 
     expectContains(source, "import Link from 'next/link';");
     expectContains(source, 'surface-chip border-foreground text-foreground');
     expectContains(source, 'surface-chip text-foreground');
+    expectContains(source, 'rounded-lg border border-border bg-card p-5 shadow-sm');
+    expectContains(source, 'rounded-lg border border-border bg-muted/20 p-4');
     expectContains(source, "t('education.calculate_this_bond')");
     expectContains(source, '<ArrowRight className="h-4 w-4" />');
 
@@ -80,8 +80,6 @@ describe('education entry layout contracts', () => {
       "import { Badge } from '@/components/ui/badge';",
       '<Badge',
       '</Badge>',
-      'rounded-lg border',
-      'bg-card',
     ]);
   });
 

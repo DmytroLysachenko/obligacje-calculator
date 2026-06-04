@@ -27,7 +27,7 @@ function HomeToolCard({ item }: {
         ? t('landing.route_labels.primary') : item.status === 'reference'
         ? t('landing.route_labels.reference') : t('landing.route_labels.next');
     return (<Link href={item.href} className="block h-full">
-      <article className="group flex h-full flex-col gap-5 border-t border-border py-6 transition-colors hover:border-foreground focus-within:ring-2 focus-within:ring-primary/25 focus-within:ring-offset-2">
+      <article className="group flex h-full flex-col gap-5 rounded-lg border border-border bg-card p-5 shadow-sm transition-colors hover:bg-muted/30 focus-within:ring-2 focus-within:ring-primary/25 focus-within:ring-offset-2">
           <div className="flex items-start gap-4">
             <div className="rounded-lg bg-foreground p-3 text-background">
               <item.icon className="h-5 w-5"/>
@@ -52,7 +52,7 @@ function HomeStep({ title, description, }: {
     title: string;
     description: string;
 }) {
-    return (<div className="border-t border-border py-5">
+    return (<div className="rounded-lg border border-border bg-card p-4">
       <div className="flex items-start gap-3">
         <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary"/>
         <div className="space-y-2">
@@ -69,8 +69,8 @@ function HomeStep({ title, description, }: {
 function HeroTrustStrip() {
     const { t } = useAppI18n();
     const itemKeys = ['item_1', 'item_2', 'item_3'] as const;
-    return (<div className="flex flex-wrap gap-2">
-      {itemKeys.map((itemKey) => (<span key={itemKey} className="rounded-full bg-muted px-3 py-1.5 text-xs font-semibold text-muted-foreground">
+    return (<div className="grid gap-px overflow-hidden rounded-lg border border-border bg-border md:grid-cols-3">
+      {itemKeys.map((itemKey) => (<span key={itemKey} className="bg-card px-4 py-3 text-xs font-semibold text-muted-foreground">
           {t(`landing.hero_trust_strip.${itemKey}`)}
         </span>))}
     </div>);
@@ -184,7 +184,7 @@ export function LandingDashboardClient() {
               </Button>
             </div>
 
-            <div className="space-y-3">
+            <div className="max-w-4xl space-y-3">
               <HeroTrustStrip />
               <p className="ui-metadata leading-6 text-muted-foreground">
                 {t('landing.hero_trust_note')}

@@ -483,21 +483,34 @@ export function EconomicDataPageClient() {
                 />
               }
             >
-              <div className="space-y-8 md:space-y-10">
-                <SectionBlock
-                  title={t('economic.inflation_title')}
-                  description={t('economic.inflation_desc')}
-                >
-                  <InflationChart period={period} />
-                </SectionBlock>
+              <Tabs defaultValue="cpi" className="space-y-5">
+                <TabsList className="h-auto w-fit flex-wrap justify-start gap-1 rounded-md border border-border bg-muted/25 p-1 shadow-none">
+                  <TabsTrigger value="cpi" className="h-8 px-3 text-xs font-semibold">
+                    {t('economic.inflation_title')}
+                  </TabsTrigger>
+                  <TabsTrigger value="nbp" className="h-8 px-3 text-xs font-semibold">
+                    {t('economic.nbp_rate_title')}
+                  </TabsTrigger>
+                </TabsList>
 
-                <SectionBlock
-                  title={t('economic.nbp_rate_title')}
-                  description={t('economic.nbp_rate_desc')}
-                >
-                  <NBPRateChart period={period} />
-                </SectionBlock>
-              </div>
+                <TabsContent value="cpi">
+                  <SectionBlock
+                    title={t('economic.inflation_title')}
+                    description={t('economic.inflation_desc')}
+                  >
+                    <InflationChart period={period} />
+                  </SectionBlock>
+                </TabsContent>
+
+                <TabsContent value="nbp">
+                  <SectionBlock
+                    title={t('economic.nbp_rate_title')}
+                    description={t('economic.nbp_rate_desc')}
+                  >
+                    <NBPRateChart period={period} />
+                  </SectionBlock>
+                </TabsContent>
+              </Tabs>
             </DashboardTabFrame>
           </TabsContent>
 

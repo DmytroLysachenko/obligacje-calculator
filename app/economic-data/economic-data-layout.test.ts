@@ -100,6 +100,21 @@ describe('economic data layout source contracts', () => {
     }
   });
 
+  it('keeps CPI and NBP charts separated inside chart sub-tabs', () => {
+    const source = readSource(economicPagePath);
+
+    expectContains(source, '<Tabs defaultValue="cpi" className="space-y-5">');
+    expectContains(source, '<TabsTrigger value="cpi" className="h-8 px-3 text-xs font-semibold">');
+    expectContains(source, '<TabsTrigger value="nbp" className="h-8 px-3 text-xs font-semibold">');
+    expectContains(source, '<TabsContent value="cpi">');
+    expectContains(source, '<TabsContent value="nbp">');
+    expectContains(source, '<InflationChart period={period} />');
+    expectContains(source, '<NBPRateChart period={period} />');
+    expectNoFragments(source, [
+      '<div className="space-y-8 md:space-y-10">',
+    ]);
+  });
+
   it('keeps the reference hero as a compact dashboard surface', () => {
     const source = readSource(referenceHeroPath);
     const sectionLine = getClassLine(source, '<section className=');

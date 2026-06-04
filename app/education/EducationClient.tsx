@@ -95,7 +95,7 @@ export default function EducationClient() {
           </p>
         </header>
 
-        <section className="space-y-6">
+        <section className="surface-shell space-y-6 p-5 md:p-6">
           <div className="space-y-2">
             <h3 className="ui-section-title flex items-center gap-2">
               <Zap className="h-5 w-5 text-foreground" />
@@ -105,11 +105,11 @@ export default function EducationClient() {
               {t('education.concepts_subtitle')}
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-x-6 gap-y-2 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {concepts.map((concept) => (
               <article
                 key={concept.key}
-                className="border-t border-border py-5 transition-colors hover:border-foreground/20"
+                className="rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted/25"
               >
                 <div className="pb-2">
                   <div className="flex items-center gap-3">
@@ -134,7 +134,7 @@ export default function EducationClient() {
           </div>
         </section>
 
-        <section className="space-y-5 border-t border-border py-6">
+        <section className="surface-shell space-y-5 p-5 md:p-6">
           <div className="ui-section-row">
             <div className="space-y-2">
               <h3 className="ui-section-title flex items-center gap-2">
@@ -153,9 +153,9 @@ export default function EducationClient() {
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-          <div className="grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
             {starterGuides.map((guide) => (
-              <article key={guide.key} className="border-t border-border py-4">
+              <article key={guide.key} className="rounded-lg border border-border bg-card p-4">
                 <div className="flex items-center gap-2">
                   <guide.icon className="h-4 w-4 text-foreground" />
                   <p className="ui-card-title">
@@ -173,7 +173,7 @@ export default function EducationClient() {
           </div>
         </section>
 
-        <section className="space-y-6 border-t border-border py-6">
+        <section className="surface-shell space-y-6 p-5 md:p-6">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Briefcase className="h-5 w-5 text-foreground" />
@@ -185,7 +185,7 @@ export default function EducationClient() {
               {t('education.bond_types_subtitle')}
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-x-6 gap-y-2 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {Object.values(definitions).map((bond) => (
               <BondEducationCard key={bond.type} bond={bond} />
             ))}
@@ -197,7 +197,7 @@ export default function EducationClient() {
           </div>
         </section>
 
-        <section className="space-y-6 border-t border-border py-6">
+        <section className="surface-shell space-y-6 p-5 md:p-6">
           <div className="flex items-center gap-2">
             <HelpCircle className="h-5 w-5 text-foreground" />
             <h3 className="ui-section-title">{t('education.faq')}</h3>

@@ -23,7 +23,7 @@ function StepCard({
   description: string;
 }) {
   return (
-    <div className="border-t border-border py-4">
+    <div className="rounded-lg border border-border bg-card p-4">
       <div className="flex items-start gap-3">
         <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--finance-success)]" />
         <div className="space-y-2">
@@ -79,8 +79,8 @@ export function ComparisonConfigurationPanel({
   ];
 
   return (
-    <aside className="space-y-5 xl:sticky xl:top-24 xl:h-fit">
-      <section className="space-y-5">
+    <aside className="space-y-5 xl:sticky xl:top-8 xl:h-fit">
+      <section className="surface-shell space-y-5 p-5">
         <div className="space-y-2 border-b border-border pb-4">
           <h2 className="flex items-center gap-2 ui-section-title">
             <Scale className="h-5 w-5 text-primary" />
@@ -140,7 +140,7 @@ export function ComparisonConfigurationPanel({
           </div>
 
           <div className="space-y-3 border-t border-border pt-5">
-            <div className="flex items-center justify-between rounded-lg bg-muted/35 px-4 py-3">
+            <div className="flex items-center justify-between rounded-lg border border-border bg-muted/25 px-4 py-3">
               <div>
                 <p className="text-sm font-semibold text-foreground">
                   {t('bonds.inflation.adjusted')}
@@ -154,7 +154,7 @@ export function ComparisonConfigurationPanel({
                 onCheckedChange={onShowRealValueChange}
               />
             </div>
-            <div className="rounded-lg bg-muted/35 px-4 py-3">
+            <div className="rounded-lg border border-border bg-muted/25 px-4 py-3">
               <p className="text-sm font-semibold text-foreground">
                 {t('comparison.page.rollover_title')}
               </p>
@@ -166,7 +166,7 @@ export function ComparisonConfigurationPanel({
         </div>
       </section>
 
-      <section className="space-y-5 border-t border-border py-5">
+      <section className="surface-shell space-y-5 p-5">
         <div className="space-y-2">
           <h2 className="ui-section-title">
             {t('comparison.page.bond_picker_title')}
@@ -212,7 +212,7 @@ export function ComparisonConfigurationPanel({
         badge={t('comparison.page.how_to_read_badge')}
       >
         <div className="space-y-4 text-sm leading-6 text-muted-foreground">
-          <div className="rounded-lg bg-muted/35 px-4 py-4">
+          <div className="rounded-lg border border-warning/30 bg-warning/5 px-4 py-4">
             <div className="flex items-center gap-2 font-semibold tracking-tight text-foreground">
               <AlertTriangle className="h-4 w-4 text-[var(--finance-warning)]" />
               {t('comparison.page.reading_checklist_title')}

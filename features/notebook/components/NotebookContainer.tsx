@@ -27,8 +27,8 @@ function SectionBlock({ title, description, children, }: {
     description?: string;
     children: React.ReactNode;
 }) {
-    return (<section className="space-y-4">
-      <div className="space-y-2">
+    return (<section className="surface-shell space-y-5 p-5 md:p-6">
+      <div className="space-y-2 border-b border-border pb-4">
         <h3 className="ui-section-title">
           {title}
         </h3>
@@ -52,7 +52,7 @@ const EmptyPortfolioState = ({ onCreate, onCreateDemo, onImport, badgeLabel, tit
     capabilitiesTitle: string;
     capabilities: NotebookStepItem[];
     canManageWorkspace: boolean;
-}) => (<section className="space-y-6 border-t border-border py-6">
+}) => (<section className="surface-shell space-y-6 p-5 md:p-6">
       <div className="space-y-3">
         <div className="surface-chip">
           <BookOpen className="h-3.5 w-3.5 text-foreground"/>
@@ -67,15 +67,17 @@ const EmptyPortfolioState = ({ onCreate, onCreateDemo, onImport, badgeLabel, tit
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="space-y-4 border-y border-border py-4">
+        <div className="space-y-4 rounded-lg border border-border bg-card p-4">
           <p className="ui-card-title">{capabilitiesTitle}</p>
           <div className="grid gap-x-6 gap-y-4 md:grid-cols-2">
             {capabilities.map((capability) => (
-              <div key={capability.id} className="flex items-start gap-3">
+              <div key={capability.id} className="rounded-md border border-border bg-muted/20 p-3">
+                <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
                 <div className="space-y-1">
                   <p className="text-sm font-semibold text-foreground">{capability.title}</p>
                   <p className="ui-body text-muted-foreground">{capability.description}</p>
+                </div>
                 </div>
               </div>
             ))}
@@ -83,7 +85,7 @@ const EmptyPortfolioState = ({ onCreate, onCreateDemo, onImport, badgeLabel, tit
         </div>
 
         {!canManageWorkspace ? (
-          <div className="border-y border-border py-4">
+          <div className="rounded-lg border border-border bg-muted/25 p-4">
             <div className="flex items-start gap-3">
               <Lock className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
               <div className="space-y-2">
@@ -122,7 +124,7 @@ function NotebookMiniStat({ label, value, description, }: {
     value: string;
     description: string;
 }) {
-    return (<div className="space-y-2 border-b border-dashed border-border px-4 py-4 last:border-b-0 md:border-b-0 md:border-r last:md:border-r-0">
+    return (<div className="space-y-2 bg-card px-4 py-4">
       <p className="text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">
         {label}
       </p>
@@ -356,7 +358,7 @@ export const NotebookContainer: React.FC = () => {
     return (<CalculatorPageShell title={t('notebook.title')} description={t('notebook.subtitle')} icon={<BookOpen className="h-8 w-8"/>} isCalculating={isLoading || isMutating} hasResults={portfolios.length > 0}>
       <input ref={importRef} type="file" accept="application/json" className="hidden" onChange={handleImportFile}/>
 
-      {error ? (<div className="ui-inline-notice border-l-2 border-destructive text-destructive">
+      {error ? (<div className="ui-inline-notice border-destructive/30 bg-destructive/5 text-destructive">
           <div className="flex items-center gap-3 font-semibold">
             <AlertCircle className="h-5 w-5"/>
             {error}
@@ -372,7 +374,7 @@ export const NotebookContainer: React.FC = () => {
       <SectionBlock title={t('notebook.workspace_scope_title')} description={notebookIntro}>
         <div className="space-y-4">
           {isGuestWorkspace ? (
-            <div className="ui-inline-notice border-l-2 border-border">
+            <div className="ui-inline-notice">
               <div className="flex items-start gap-3">
                 <Lock className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                 <div className="space-y-1">
@@ -399,7 +401,7 @@ export const NotebookContainer: React.FC = () => {
             onCreatePortfolio={handleCreateDefault}
           />
 
-          <div className="grid gap-0 border-y border-border md:grid-cols-3">
+          <div className="grid gap-px overflow-hidden rounded-lg border border-border bg-border md:grid-cols-3">
             <NotebookMiniStat
               label={t('notebook.portfolios_label')}
               value={String(portfolios.length)}
@@ -480,7 +482,7 @@ export const NotebookContainer: React.FC = () => {
             </div>
           </SectionBlock>
 
-          <section className="flex items-start gap-3 border-t border-border py-5">
+          <section className="surface-shell flex items-start gap-3 p-5">
             <FolderOpen className="mt-0.5 h-5 w-5 text-foreground"/>
             <div className="space-y-2">
               <p className="ui-card-title">
