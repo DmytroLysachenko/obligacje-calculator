@@ -22,10 +22,10 @@ export function AdvancedAssumptionsDisclosure({
 }: AdvancedAssumptionsDisclosureProps) {
   return (
     <Accordion type="single" collapsible defaultValue="">
-      <AccordionItem value="advanced-assumptions" className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
-        <AccordionTrigger className="px-4 py-4 hover:no-underline">
+      <AccordionItem value="advanced-assumptions" className="border-0">
+        <AccordionTrigger className="border-b border-border px-0 py-4 hover:no-underline">
           <div className="flex items-start gap-3 text-left">
-            <div className="rounded-md bg-muted p-2 text-foreground">
+            <div className="rounded-md bg-muted p-2 text-muted-foreground">
               <Settings2 className="h-4 w-4" />
             </div>
             <div className="space-y-1">
@@ -38,7 +38,7 @@ export function AdvancedAssumptionsDisclosure({
             </div>
           </div>
         </AccordionTrigger>
-        <AccordionContent className="border-t border-border bg-muted/20 px-4 pb-4">
+        <AccordionContent className="pb-4">
           <div className="space-y-6 pt-4">{children}</div>
         </AccordionContent>
       </AccordionItem>

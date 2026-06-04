@@ -41,7 +41,7 @@ describe('premium financial table contracts', () => {
     const source = read(files.single);
 
     expectContains(source, '<div className="hidden w-full border-y border-border lg:block">');
-    expectContains(source, '<Table className="w-full table-fixed text-sm">');
+    expectContains(source, '<Table className="w-full table-fixed text-sm tabular-nums">');
     expectContains(source, '<TableRow className="h-12 hover:bg-transparent">');
     expectContains(source, 'sticky top-0 z-10 h-12 w-[11%] bg-background');
     expectContains(source, 'sticky top-0 z-10 h-12 w-[12%] bg-background text-right');
@@ -51,6 +51,7 @@ describe('premium financial table contracts', () => {
     expectNoFragments(source, [
       'hidden w-full overflow-hidden rounded-lg bg-card shadow-none',
       '<Table className="table-fixed w-full">',
+      '<Table className="w-full table-fixed text-sm">',
       '<TableRow className="bg-muted/35 hover:bg-muted/35">',
       'h-10 w-[11%] bg-muted/60',
       'hover:bg-muted/35',
@@ -61,7 +62,7 @@ describe('premium financial table contracts', () => {
     const source = read(files.regular);
 
     expectContains(source, '<div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">');
-    expectContains(source, '<Table className="w-full table-fixed text-sm">');
+    expectContains(source, '<Table className="w-full table-fixed text-sm tabular-nums">');
     expectContains(source, 'sticky top-0 z-10 w-[16%] bg-background');
     expectContains(source, 'sticky top-0 z-10 w-[18%] bg-background text-right');
     expectContains(source, 'financial-number text-right');
@@ -82,7 +83,7 @@ describe('premium financial table contracts', () => {
     const source = read(files.ladder);
 
     expectContains(source, '<div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">');
-    expectContains(source, '<Table className="w-full table-fixed text-sm">');
+    expectContains(source, '<Table className="w-full table-fixed text-sm tabular-nums">');
     expectContains(source, 'sticky top-0 z-10 w-[34%] bg-background');
     expectContains(source, 'sticky top-0 z-10 w-[24%] bg-background text-right');
     expectContains(source, 'financial-number text-right text-foreground');
