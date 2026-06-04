@@ -115,9 +115,9 @@ export default async function RootLayout({
                       <main
                         id="main-content"
                         tabIndex={-1}
-                        className="flex min-h-screen flex-1 flex-col overflow-x-hidden border-l border-border bg-background outline-none lg:pl-[22rem]"
+                        className="flex min-h-screen flex-1 flex-col overflow-x-hidden bg-background outline-none lg:pl-[var(--sidebar-width)]"
                       >
-                        <div className="flex-1 px-4 py-6 md:px-8 md:py-8">
+                        <div className="flex-1 px-4 py-6 md:px-8 md:py-8 xl:px-10">
                           <div className="mx-auto w-full max-w-[var(--layout-app-max)]">{children}</div>
                         </div>
 

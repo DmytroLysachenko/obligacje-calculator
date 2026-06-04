@@ -32,23 +32,25 @@ describe('layout system contracts', () => {
     const tokens = readSource(paths.tokens);
 
     expectContains(globals, '--layout-reading-max: 720px;');
-    expectContains(globals, '--layout-content-max: 1120px;');
-    expectContains(globals, '--layout-wide-max: 1280px;');
-    expectContains(globals, '--layout-app-max: 1320px;');
+    expectContains(globals, '--layout-content-max: 1180px;');
+    expectContains(globals, '--layout-wide-max: 1440px;');
+    expectContains(globals, '--layout-app-max: 1500px;');
+    expectContains(globals, '--sidebar-width: 15rem;');
     expectContains(globals, '.ui-page-flow');
     expectContains(globals, '.ui-section-flow');
     expectContains(globals, '.ui-section-divider');
 
-    expectContains(tokens, "pageFlow: 'space-y-12 pb-16 md:space-y-16'");
-    expectContains(tokens, "calculatorGrid: 'grid grid-cols-1 gap-8 xl:grid-cols-[400px_minmax(0,1fr)] xl:items-start xl:gap-10'");
-    expectContains(tokens, "stickyScenario: 'space-y-6 xl:sticky xl:top-24 xl:h-fit'");
+    expectContains(tokens, "pageFlow: 'space-y-10 pb-16 md:space-y-14'");
+    expectContains(tokens, "calculatorGrid: 'grid grid-cols-1 gap-8 xl:grid-cols-[420px_minmax(0,1fr)] xl:items-start xl:gap-10'");
+    expectContains(tokens, "stickyScenario: 'space-y-5 xl:sticky xl:top-8 xl:h-fit'");
   });
 
   it('keeps root content and footer aligned to the same app width', () => {
     const source = readSource(paths.layout);
 
     expectContains(source, 'max-w-[var(--layout-app-max)]');
-    expectContains(source, 'px-4 py-6 md:px-8 md:py-8');
+    expectContains(source, 'px-4 py-6 md:px-8 md:py-8 xl:px-10');
+    expectContains(source, 'lg:pl-[var(--sidebar-width)]');
     expectNotContains(source, 'container mx-auto max-w-[1320px]');
   });
 

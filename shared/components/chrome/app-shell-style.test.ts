@@ -22,8 +22,8 @@ describe('app shell visual contracts', () => {
   it('keeps the root content surface flat and token-driven', () => {
     const source = expectHas('app/layout.tsx', [
       'flex min-h-screen bg-background',
-      'border-l border-border bg-background',
-      'md:px-7 md:py-7',
+      'bg-background outline-none lg:pl-[var(--sidebar-width)]',
+      'md:px-8 md:py-8 xl:px-10',
       'footer className="mt-auto border-t border-border bg-card py-6"',
     ]);
 
@@ -34,10 +34,10 @@ describe('app shell visual contracts', () => {
 
   it('keeps calculator headers dense and typographic', () => {
     const source = expectHas('shared/components/page/CalculatorPageShell.tsx', [
-      'space-y-6 pb-14',
-      'surface-shell space-y-3 px-4 py-4 md:px-5 md:py-5',
+      'className={pageLayout.pageFlow}',
+      'border-b border-border pb-8 md:pb-10',
       'ui-page-title',
-      'max-w-3xl text-sm leading-6 text-muted-foreground',
+      'ui-body text-muted-foreground',
       'h-8 gap-2 px-3 text-xs font-medium',
     ]);
 
@@ -49,20 +49,18 @@ describe('app shell visual contracts', () => {
 
   it('keeps the sidebar visually anchored without decorative gradients', () => {
     const source = expectHas('shared/components/chrome/Sidebar.tsx', [
-      'bg-[#eeeeea]',
+      'bg-secondary/70',
       'border-r border-border',
-      'border-l-2 px-3 py-2.5',
-      'border-transparent bg-transparent text-muted-foreground',
-      'hover:border-border hover:text-foreground',
-      'border-foreground bg-transparent text-foreground',
-      'space-y-8 overflow-y-auto px-4 py-5',
+      'rounded-md px-3 py-2.5',
+      'bg-transparent text-muted-foreground hover:bg-card/70 hover:text-foreground',
+      'bg-card text-foreground shadow-sm',
+      'space-y-7 overflow-y-auto px-3 py-5',
     ]);
 
     expect(source).not.toContain('linear-gradient');
     expect(source).not.toContain('rounded-[1.35rem]');
     expect(source).not.toContain('shadow-sky');
     expect(source).not.toContain('border-sky');
-    expect(source).not.toContain('hover:bg-card');
     expect(source).not.toContain('text-slate-');
   });
 

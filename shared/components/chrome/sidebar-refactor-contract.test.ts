@@ -33,18 +33,17 @@ describe('sidebar refactor contracts', () => {
   it('keeps active navigation subtle with a left-border cue', () => {
     const source = read(files.sidebar);
 
-    expectContains(source, 'group block border-l-2 px-3 py-2.5');
-    expectContains(source, 'border-foreground bg-transparent text-foreground');
-    expectContains(source, 'border-transparent bg-transparent text-muted-foreground hover:border-border hover:text-foreground');
-    expectContains(source, 'isActive ? \'bg-transparent text-foreground\' : \'bg-muted/45 text-muted-foreground\'');
+    expectContains(source, 'group relative block rounded-md px-3 py-2.5');
+    expectContains(source, 'bg-card text-foreground shadow-sm');
+    expectContains(source, 'before:absolute before:left-0 before:top-1/2 before:h-6 before:w-0.5');
+    expectContains(source, 'bg-transparent text-muted-foreground hover:bg-card/70 hover:text-foreground');
+    expectContains(source, 'isActive ? \'bg-primary text-primary-foreground\' : \'bg-muted text-muted-foreground\'');
     expectContains(source, 'isActive');
     expectContains(source, '? \'text-foreground\'');
 
     expectNoFragments(source, [
       'rounded-md border px-3 py-2.5',
       'border-border bg-card text-foreground',
-      'hover:border-border hover:bg-card hover:text-foreground',
-      'bg-foreground text-background',
       'text-slate-500',
       'text-slate-400',
     ]);
@@ -54,9 +53,11 @@ describe('sidebar refactor contracts', () => {
     const source = read(files.sidebar);
 
     expectContains(source, 'px-2 text-xs font-semibold uppercase tracking-[0.08em]');
-    expectContains(source, 'custom-scrollbar flex-1 space-y-8 overflow-y-auto px-4 py-5');
-    expectContains(source, 'space-y-4 border-t border-border bg-muted/35 p-4');
+    expectContains(source, 'custom-scrollbar flex-1 space-y-7 overflow-y-auto px-3 py-5');
+    expectContains(source, 'space-y-4 border-t border-border bg-muted/30 p-3');
     expectContains(source, 'border-b border-border px-4 py-4');
+    expectContains(source, 'w-[var(--sidebar-width)]');
+    expectContains(source, 'bg-secondary/70');
 
     expectNoFragments(source, [
       'custom-scrollbar flex-1 space-y-5 overflow-y-auto px-3 py-4',

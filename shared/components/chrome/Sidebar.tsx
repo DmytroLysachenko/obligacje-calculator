@@ -53,7 +53,7 @@ function SidebarBrand() {
         </div>
         <div className="min-w-0 space-y-1">
           <p className="text-sm font-semibold tracking-tight text-foreground">{t('common.title')}</p>
-          <p className="max-w-[13rem] text-xs leading-5 text-muted-foreground">
+          <p className="max-w-[11rem] text-xs leading-5 text-muted-foreground">
             {t('sidebar.brand_tagline')}
           </p>
         </div>
@@ -86,17 +86,17 @@ function NavLinkItem({
       href={item.href}
       onClick={onItemClick}
       className={cn(
-        'group block border-l-2 px-3 py-2.5 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40',
+        'group relative block rounded-md px-3 py-2.5 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40',
         isActive
-          ? 'border-foreground bg-transparent text-foreground'
-          : 'border-transparent bg-transparent text-muted-foreground hover:border-border hover:text-foreground',
+          ? 'bg-card text-foreground shadow-sm before:absolute before:left-0 before:top-1/2 before:h-6 before:w-0.5 before:-translate-y-1/2 before:bg-primary'
+          : 'bg-transparent text-muted-foreground hover:bg-card/70 hover:text-foreground',
       )}
     >
       <div className="flex min-w-0 items-center gap-3">
         <div
           className={cn(
             'rounded-md p-1.5 transition-colors',
-            isActive ? 'bg-transparent text-foreground' : 'bg-muted/45 text-muted-foreground',
+            isActive ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground',
           )}
         >
           <Icon className="h-4 w-4" />
@@ -158,7 +158,7 @@ function SidebarFooter({
   const { canManageWorkspace } = usePortfolioAccess();
 
   return (
-    <div className="space-y-4 border-t border-border bg-muted/35 p-4">
+    <div className="space-y-4 border-t border-border bg-muted/30 p-3">
       {canManageWorkspace ? (
         <SidebarUtilityGroup title={t('sidebar.workspace_title')}>
           <SidebarWorkspaceUtility pathname={pathname} />
@@ -228,12 +228,12 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
   ];
 
   return (
-    <div className="flex h-full flex-col border-r border-border bg-[#eeeeea] text-foreground">
+    <div className="flex h-full flex-col border-r border-border bg-secondary/70 text-foreground">
       <SidebarBrand />
 
       <nav
         aria-label={t('common.primary_navigation')}
-        className="custom-scrollbar flex-1 space-y-8 overflow-y-auto px-4 py-5"
+        className="custom-scrollbar flex-1 space-y-7 overflow-y-auto px-3 py-5"
       >
         {navSections.map((section) => (
           <NavSectionBlock
@@ -283,7 +283,7 @@ export function Sidebar({
         </Sheet>
       </div>
 
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[22rem] border-r border-border bg-[#eeeeea] lg:block">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[var(--sidebar-width)] border-r border-border bg-secondary/70 lg:block">
         <SidebarContent dataFreshness={dataFreshness} />
       </aside>
     </>
