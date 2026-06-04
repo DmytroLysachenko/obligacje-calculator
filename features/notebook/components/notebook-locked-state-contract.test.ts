@@ -40,8 +40,10 @@ describe('notebook locked and empty state contracts', () => {
     expectContains(source, "t('notebook.capabilities.export.title')");
     expectContains(source, "t('notebook.capabilities.projection.title')");
     expectContains(source, 'grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]');
-    expectContains(source, 'space-y-4 rounded-lg border border-border bg-card p-4');
-    expectContains(source, 'rounded-md border border-border bg-muted/20 p-3');
+    expectContains(source, "import { Notice } from '@/shared/components/feedback/Notice';");
+    expectContains(source, 'space-y-4');
+    expectContains(source, 'grid gap-x-6 gap-y-4 border-t border-border pt-4 md:grid-cols-2');
+    expectContains(source, 'border-t border-border pt-4 first:border-t-0 first:pt-0 md:first:border-t md:first:pt-4');
 
     expectNoFragments(source, [
       'LegacyEmptyPortfolioState',
@@ -49,6 +51,8 @@ describe('notebook locked and empty state contracts', () => {
       'ready_steps.store.title',
       'ready_steps.inspect.title',
       'rounded-full border border-border bg-muted/40',
+      'space-y-4 rounded-lg border border-border bg-card p-4',
+      'rounded-md border border-border bg-muted/20 p-3',
     ]);
   });
 
@@ -57,14 +61,16 @@ describe('notebook locked and empty state contracts', () => {
 
     expectContains(source, 'isGuestWorkspace ? (');
     expectContains(source, "t('workspace.locked_notebook_notice')");
-    expectContains(source, '<Lock className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />');
-    expectContains(source, 'ui-inline-notice');
+    expectContains(source, '<Notice tone="locked" title={t(\'workspace.sign_in_required_short\')}>');
+    expectContains(source, '<Notice tone="locked" title={createLabel}>');
     expectContains(source, 'disabled={!canManageWorkspace}');
 
     expectNoFragments(source, [
       'Workspace storage is reserved',
       'Anonymous visitors can still inspect',
       'saving lots and managing portfolios stays locked',
+      '<Lock className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />',
+      'ui-inline-notice',
     ]);
   });
 

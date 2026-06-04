@@ -1,7 +1,7 @@
 'use client';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useAppI18n } from '@/i18n/client';
-import { AlertCircle, BookOpen, FolderOpen, Plus, RefreshCcw, Upload, CheckCircle2, Lock, } from 'lucide-react';
+import { BookOpen, FolderOpen, Plus, RefreshCcw, Upload, CheckCircle2 } from 'lucide-react';
 import { UserPortfolio } from '@/db/schema';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -11,6 +11,7 @@ import { useWorkspacePortfolios } from '@/shared/hooks/useWorkspacePortfolios';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { AppToast } from '@/shared/components/feedback/AppToast';
 import { ConfirmActionDialog } from '@/shared/components/feedback/ConfirmActionDialog';
+import { Notice } from '@/shared/components/feedback/Notice';
 import { unwrapApiData } from '@/shared/lib/api-response';
 import { persistSelectedPortfolioId } from '@/shared/lib/workspace/notebook-state';
 import { PortfolioDetails } from './PortfolioDetails';
@@ -28,8 +29,8 @@ function SectionBlock({ title, description, children, }: {
     description?: string;
     children: React.ReactNode;
 }) {
-    return (<section className="surface-shell space-y-5 p-5 md:p-6">
-      <div className="space-y-2 border-b border-border pb-4">
+    return (<section className="space-y-5 border-t border-border py-8">
+      <div className="space-y-2">
         <h3 className="ui-section-title">
           {title}
         </h3>
@@ -53,7 +54,7 @@ const EmptyPortfolioState = ({ onCreate, onCreateDemo, onImport, badgeLabel, tit
     capabilitiesTitle: string;
     capabilities: NotebookStepItem[];
     canManageWorkspace: boolean;
-}) => (<section className="surface-shell space-y-6 p-5 md:p-6">
+}) => (<section className="space-y-6 border-t border-border py-8">
       <div className="space-y-3">
         <div className="surface-chip">
           <BookOpen className="h-3.5 w-3.5 text-foreground"/>
@@ -68,11 +69,11 @@ const EmptyPortfolioState = ({ onCreate, onCreateDemo, onImport, badgeLabel, tit
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="space-y-4 rounded-lg border border-border bg-card p-4">
+        <div className="space-y-4">
           <p className="ui-card-title">{capabilitiesTitle}</p>
-          <div className="grid gap-x-6 gap-y-4 md:grid-cols-2">
+          <div className="grid gap-x-6 gap-y-4 border-t border-border pt-4 md:grid-cols-2">
             {capabilities.map((capability) => (
-              <div key={capability.id} className="rounded-md border border-border bg-muted/20 p-3">
+              <div key={capability.id} className="border-t border-border pt-4 first:border-t-0 first:pt-0 md:first:border-t md:first:pt-4">
                 <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
                 <div className="space-y-1">
@@ -86,15 +87,9 @@ const EmptyPortfolioState = ({ onCreate, onCreateDemo, onImport, badgeLabel, tit
         </div>
 
         {!canManageWorkspace ? (
-          <div className="rounded-lg border border-border bg-muted/25 p-4">
-            <div className="flex items-start gap-3">
-              <Lock className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-              <div className="space-y-2">
-                <p className="ui-card-title">{createLabel}</p>
-                <p className="ui-body text-muted-foreground">{description}</p>
-              </div>
-            </div>
-          </div>
+          <Notice tone="locked" title={createLabel}>
+            {description}
+          </Notice>
         ) : null}
       </div>
 
@@ -361,31 +356,21 @@ export const NotebookContainer: React.FC = () => {
     return (<CalculatorPageShell title={t('notebook.title')} description={t('notebook.subtitle')} icon={<BookOpen className="h-8 w-8"/>} isCalculating={isLoading || isMutating} hasResults={portfolios.length > 0}>
       <input ref={importRef} type="file" accept="application/json" className="hidden" onChange={handleImportFile}/>
 
-      {error ? (<div className="ui-inline-notice border-destructive/30 bg-destructive/5 text-destructive">
-          <div className="flex items-center gap-3 font-semibold">
-            <AlertCircle className="h-5 w-5"/>
-            {error}
-          </div>
+      {error ? (<Notice tone="warning" title={error}>
           <div className="mt-3">
             <Button variant="outline" size="sm" className="gap-2" onClick={fetchPortfolios}>
               <RefreshCcw className="h-4 w-4"/>
               {t('common.retry')}
             </Button>
           </div>
-        </div>) : null}
+        </Notice>) : null}
 
       <SectionBlock title={t('notebook.workspace_scope_title')} description={notebookIntro}>
         <div className="space-y-4">
           {isGuestWorkspace ? (
-            <div className="ui-inline-notice">
-              <div className="flex items-start gap-3">
-                <Lock className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-                <div className="space-y-1">
-                  <p className="text-sm font-semibold text-foreground">{t('workspace.sign_in_required_short')}</p>
-                  <p className="ui-body text-muted-foreground">{t('workspace.locked_notebook_notice')}</p>
-                </div>
-              </div>
-            </div>
+            <Notice tone="locked" title={t('workspace.sign_in_required_short')}>
+              {t('workspace.locked_notebook_notice')}
+            </Notice>
           ) : null}
 
           <WorkspaceStatusCard
@@ -432,7 +417,7 @@ export const NotebookContainer: React.FC = () => {
       ) : (
         <div className="space-y-8">
           <SectionBlock title={t('notebook.stored_portfolios')} description={t('notebook.stored_portfolios_desc')}>
-            <div className="ui-inline-notice text-muted-foreground">
+            <div className="border-t border-border pt-4 text-sm leading-6 text-muted-foreground">
               {t('notebook.stored_portfolios_note')}
             </div>
 

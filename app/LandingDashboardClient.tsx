@@ -52,7 +52,7 @@ function HomeStep({ title, description, }: {
     title: string;
     description: string;
 }) {
-    return (<div className="rounded-lg border border-border bg-card p-4">
+    return (<div className="border-t border-border py-4">
       <div className="flex items-start gap-3">
         <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary"/>
         <div className="space-y-2">
@@ -155,6 +155,7 @@ export function LandingDashboardClient() {
     const secondaryDesc = t('landing.secondary_tools.description');
     return (<div className="space-y-8 pb-20 md:space-y-10">
       <section className="border-b border-border pb-8 md:pb-10">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end">
           <div className="max-w-5xl space-y-6 md:space-y-7">
             <p className="surface-chip text-xs font-semibold text-muted-foreground">
               <Sparkles className="h-3.5 w-3.5 text-primary"/>
@@ -199,6 +200,25 @@ export function LandingDashboardClient() {
                 </Link>
               </Button>
             </div>
+          </div>
+
+          <aside className="hidden border-l border-border pl-6 lg:block">
+            <p className="ui-metadata text-muted-foreground">
+              {startHereTitle}
+            </p>
+            <div className="mt-4 space-y-4">
+              {stepCopy.map((step, index) => (
+                <div key={step.id} className="border-t border-border pt-4">
+                  <p className="text-sm font-semibold text-foreground">
+                    {index + 1}. {step.title}
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                    {step.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </aside>
           </div>
       </section>
 

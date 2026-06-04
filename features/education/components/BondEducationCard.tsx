@@ -1,10 +1,11 @@
 'use client';
 import React from 'react';
 import Link from 'next/link';
-import { AlertCircle, ArrowRight, Clock, Coins, ShieldCheck, TrendingUp } from 'lucide-react';
+import { ArrowRight, Clock, Coins, ShieldCheck, TrendingUp } from 'lucide-react';
 import { BondDefinition } from '../../bond-core/constants/bond-definitions';
 import { useAppI18n } from '@/i18n/client';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
+import { Notice } from '@/shared/components/feedback/Notice';
 interface BondEducationCardProps {
     bond: BondDefinition;
 }
@@ -33,44 +34,45 @@ export const BondEducationCard: React.FC<BondEducationCardProps> = ({ bond }) =>
       <div className="flex-1 space-y-4 pt-4">
         <p className="text-sm leading-relaxed">{bond.description[language]}</p>
 
-        <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-lg border border-border bg-muted/20 p-4">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Clock className="h-3.5 w-3.5 text-foreground"/>
-            <span>
-              {t('bonds.duration')}: <strong>{formatBondDuration(bond.duration, language)}</strong>
-            </span>
+        <dl className="grid grid-cols-1 gap-x-4 divide-y divide-border border-y border-border text-xs text-muted-foreground sm:grid-cols-2 sm:divide-y-0">
+          <div className="flex items-center justify-between gap-3 py-3 sm:border-b sm:border-border">
+            <dt className="flex items-center gap-2">
+              <Clock className="h-3.5 w-3.5 text-foreground"/>
+              {t('bonds.duration')}
+            </dt>
+            <dd className="font-semibold text-foreground">{formatBondDuration(bond.duration, language)}</dd>
           </div>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Coins className="h-3.5 w-3.5 text-foreground"/>
-            <span>
-              {t('bonds.payout_type')}: <strong>{bond.isCapitalized ? t('bonds.capitalization') : t('bonds.payout')}</strong>
-            </span>
+          <div className="flex items-center justify-between gap-3 py-3 sm:border-b sm:border-border">
+            <dt className="flex items-center gap-2">
+              <Coins className="h-3.5 w-3.5 text-foreground"/>
+              {t('bonds.payout_type')}
+            </dt>
+            <dd className="font-semibold text-foreground">{bond.isCapitalized ? t('bonds.capitalization') : t('bonds.payout')}</dd>
           </div>
-          {bond.margin > 0 ? (<div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <TrendingUp className="h-3.5 w-3.5 text-success"/>
-              <span>
-                {t('bonds.margin')}: <strong>{bond.margin}%</strong>
-              </span>
-            </div>) : null}
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <ShieldCheck className="h-3.5 w-3.5 text-foreground"/>
-            <span>
+          {bond.margin > 0 ? (
+            <div className="flex items-center justify-between gap-3 py-3">
+              <dt className="flex items-center gap-2">
+                <TrendingUp className="h-3.5 w-3.5 text-success"/>
+                {t('bonds.margin')}
+              </dt>
+              <dd className="font-semibold text-foreground">{bond.margin}%</dd>
+            </div>
+          ) : null}
+          <div className="flex items-center justify-between gap-3 py-3">
+            <dt className="flex items-center gap-2">
+              <ShieldCheck className="h-3.5 w-3.5 text-foreground"/>
               {(bond.type === 'OTS'
             ? t('education_page.rate_labels.fixed_term') : bond.type === 'ROR' || bond.type === 'DOR'
             ? t('education_page.rate_labels.first_month') : t('bonds.first_year'))}
-              : <strong> {bond.firstYearRate}%</strong>
-            </span>
+            </dt>
+            <dd className="font-semibold text-foreground">{bond.firstYearRate}%</dd>
           </div>
-        </div>
+        </dl>
 
         <div className="mt-auto space-y-4 pt-1">
-          <div className="flex items-start gap-2 rounded-md border border-warning/30 bg-warning/5 px-3 py-2">
-            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-warning"/>
-            <div className="text-[10px] text-muted-foreground">
-              <span className="mb-1 block font-bold text-foreground">{t('bonds.early_exit_title')}:</span>
-              {t('bonds.early_exit_desc', { fee: bond.earlyWithdrawalFee })}
-            </div>
-          </div>
+          <Notice tone="warning" title={t('bonds.early_exit_title')} compact>
+            {t('bonds.early_exit_desc', { fee: bond.earlyWithdrawalFee })}
+          </Notice>
           <Link
             href="/single-calculator"
             className="inline-flex h-9 items-center gap-2 border-b border-foreground text-sm font-semibold text-foreground"

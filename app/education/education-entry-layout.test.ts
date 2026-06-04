@@ -53,14 +53,16 @@ describe('education entry layout contracts', () => {
   it('keeps starter guidance section grouped and dense', () => {
     const source = read(paths.page);
 
-    expectContains(source, '<section className="surface-shell space-y-5 p-5 md:p-6">');
+    expectContains(source, '<section className="space-y-5 border-t border-border py-8">');
     expectContains(source, 'grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4');
-    expectContains(source, '<article key={guide.key} className="rounded-lg border border-border bg-card p-4">');
+    expectContains(source, '<article key={guide.key} className="border-t border-border py-4">');
     expectContains(source, 'text-[32px] font-semibold leading-none text-foreground');
     expectContains(source, 'ui-body mt-3 text-muted-foreground');
 
     expectNoFragments(source, [
       'surface-panel',
+      '<section className="surface-shell space-y-5 p-5 md:p-6">',
+      '<article key={guide.key} className="rounded-lg border border-border bg-card p-4">',
       'grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4',
     ]);
   });
@@ -72,7 +74,9 @@ describe('education entry layout contracts', () => {
     expectContains(source, 'surface-chip border-foreground text-foreground');
     expectContains(source, 'surface-chip text-foreground');
     expectContains(source, 'rounded-lg border border-border bg-card p-5 shadow-sm');
-    expectContains(source, 'rounded-lg border border-border bg-muted/20 p-4');
+    expectContains(source, '<dl className="grid grid-cols-1 gap-x-4 divide-y divide-border border-y border-border');
+    expectContains(source, "import { Notice } from '@/shared/components/feedback/Notice';");
+    expectContains(source, '<Notice tone="warning" title={t(\'bonds.early_exit_title\')} compact>');
     expectContains(source, "t('education.calculate_this_bond')");
     expectContains(source, '<ArrowRight className="h-4 w-4" />');
 
@@ -80,6 +84,8 @@ describe('education entry layout contracts', () => {
       "import { Badge } from '@/components/ui/badge';",
       '<Badge',
       '</Badge>',
+      'rounded-lg border border-border bg-muted/20 p-4',
+      'rounded-md border border-warning/30 bg-warning/5',
     ]);
   });
 
