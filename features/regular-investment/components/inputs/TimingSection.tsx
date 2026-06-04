@@ -2,15 +2,15 @@
 
 import React from 'react';
 import { type Locale, format, parseISO } from 'date-fns';
-import { CalendarIcon, Info } from 'lucide-react';
+import { CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { cn } from '@/lib/utils';
 import { toDateString } from '@/shared/lib/date-timing';
+import { FormField } from '@/shared/components/forms/FormField';
+import { RangeField } from '@/shared/components/forms/RangeField';
+import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
 
 type TimingSectionProps = {
   timingMode?: 'general' | 'exact';
@@ -34,44 +34,23 @@ export function TimingSection({
   return (
     <div className="space-y-6">
       <div className="space-y-3">
-        <Label className="text-[15px] font-semibold">{t('bonds.timing.mode.label')}</Label>
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            variant={timingMode === 'general' ? 'default' : 'outline'}
-            className="flex-1"
-            onClick={() => onUpdate('timingMode', 'general')}
-          >
-            {t('bonds.timing.mode.general')}
-          </Button>
-          <Button
-            type="button"
-            variant={timingMode === 'exact' ? 'default' : 'outline'}
-            className="flex-1"
-            onClick={() => onUpdate('timingMode', 'exact')}
-          >
-            {t('bonds.timing.mode.exact')}
-          </Button>
-        </div>
+        <p className="text-[15px] font-semibold">{t('bonds.timing.mode.label')}</p>
+        <SegmentedControl
+          value={timingMode ?? 'general'}
+          options={[
+            { value: 'general', label: t('bonds.timing.mode.general') },
+            { value: 'exact', label: t('bonds.timing.mode.exact') },
+          ]}
+          onValueChange={(value) => onUpdate('timingMode', value)}
+        />
       </div>
 
       <div className={cn('grid gap-4', timingMode === 'exact' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1')}>
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Label className="text-sm font-semibold text-muted-foreground">
-              {t('bonds.purchase_date')}
-            </Label>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Info className="h-3 w-3 cursor-help text-muted-foreground" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="text-xs">{t('regular_form.start_date_help')}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+        <FormField
+          label={t('bonds.purchase_date')}
+          tooltip={t('regular_form.start_date_help')}
+          labelClassName="text-muted-foreground"
+        >
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -101,25 +80,14 @@ export function TimingSection({
               />
             </PopoverContent>
           </Popover>
-        </div>
+        </FormField>
 
         {timingMode === 'exact' ? (
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Label className="text-sm font-semibold text-muted-foreground">
-                {t('bonds.withdrawal_date')}
-              </Label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-3 w-3 cursor-help text-muted-foreground" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="text-xs">{t('regular_form.withdrawal_date_help')}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+          <FormField
+            label={t('bonds.withdrawal_date')}
+            tooltip={t('regular_form.withdrawal_date_help')}
+            labelClassName="text-muted-foreground"
+          >
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -149,28 +117,12 @@ export function TimingSection({
                 />
               </PopoverContent>
             </Popover>
-          </div>
+          </FormField>
         ) : null}
       </div>
 
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Label htmlFor="investmentHorizonMonths" className="font-semibold">
-            {t('bonds.investment_horizon')}
-          </Label>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info className="h-3 w-3 cursor-help text-muted-foreground" />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="text-xs">{t('regular_form.horizon_help')}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-
-        {timingMode === 'exact' ? (
+      {timingMode === 'exact' ? (
+        <FormField label={t('bonds.investment_horizon')} tooltip={t('regular_form.horizon_help')}>
           <div className="rounded-lg border border-border bg-muted/25 px-4 py-3 text-sm text-muted-foreground">
             <span className="font-semibold text-foreground">
               {investmentHorizonYears % 1 === 0
@@ -178,19 +130,21 @@ export function TimingSection({
                 : investmentHorizonYears.toFixed(2)}{' '}
               {t('common.years')}
             </span>{' '}
-            · {t('regular_form.horizon_help')}
+            - {t('regular_form.horizon_help')}
           </div>
-        ) : (
-          <CommittedSliderInput
-            value={investmentHorizonYears}
-            min={1}
-            max={30}
-            step={1}
-            unit="Y"
-            onCommit={(value) => onUpdate('investmentHorizonMonths', value * 12)}
-          />
-        )}
-      </div>
+        </FormField>
+      ) : (
+        <RangeField
+          label={t('bonds.investment_horizon')}
+          tooltip={t('regular_form.horizon_help')}
+          value={investmentHorizonYears}
+          min={1}
+          max={30}
+          step={1}
+          unit="Y"
+          onCommit={(value) => onUpdate('investmentHorizonMonths', value * 12)}
+        />
+      )}
     </div>
   );
 }

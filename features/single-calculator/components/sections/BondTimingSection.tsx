@@ -4,10 +4,8 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { CalendarIcon, AlertCircle, HelpCircle } from 'lucide-react';
+import { CalendarIcon, AlertCircle } from 'lucide-react';
 import { format, parseISO, isAfter } from 'date-fns';
 import { BondInputs, TaxStrategy } from '@/features/bond-core/types';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
@@ -15,8 +13,10 @@ import { useAppI18n } from '@/i18n/client';
 import { toDateString } from '@/shared/lib/date-timing';
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';
 import { cn } from '@/lib/utils';
-import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
+import { FormSelect } from '@/shared/components/forms/FormSelect';
+import { RangeField } from '@/shared/components/forms/RangeField';
+import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
 interface BondTimingSectionProps {
     inputs: BondInputs;
     onUpdate: (key: keyof BondInputs, value: string | number | boolean) => void;
@@ -31,17 +31,22 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
     const isFutureDate = isAfter(parseISO(inputs.purchaseDate), new Date());
     const durationMonths = Math.round(currentDef.duration * 12);
     const autoRollover = investmentHorizonMonths > durationMonths;
+    const taxOptions = [
+        { value: TaxStrategy.STANDARD, label: t('bonds.tax_standard') },
+        { value: TaxStrategy.IKE, label: t('bonds.tax_ike') },
+        { value: TaxStrategy.IKZE, label: t('bonds.tax_ikze') },
+    ];
     return (<div className="space-y-6">
       <div className="space-y-3">
         <Label className="font-semibold">{t('bonds.timing.mode.label')}</Label>
-        <div className="flex gap-2">
-          <Button type="button" variant={(!inputs.timingMode || inputs.timingMode === 'general') ? 'default' : 'outline'} className="flex-1" onClick={() => onUpdate('timingMode', 'general')}>
-            {t('bonds.timing.mode.general')}
-          </Button>
-          <Button type="button" variant={inputs.timingMode === 'exact' ? 'default' : 'outline'} className="flex-1" onClick={() => onUpdate('timingMode', 'exact')}>
-            {t('bonds.timing.mode.exact')}
-          </Button>
-        </div>
+        <SegmentedControl
+          value={inputs.timingMode ?? 'general'}
+          options={[
+            { value: 'general', label: t('bonds.timing.mode.general') },
+            { value: 'exact', label: t('bonds.timing.mode.exact') },
+          ]}
+          onValueChange={(value) => onUpdate('timingMode', value)}
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-4">
@@ -83,38 +88,25 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
           </div>) : null}
       </div>
 
-      <div className="space-y-4 pt-2">
-        <div className="flex justify-between items-center">
-          <Label className="font-semibold">{t('bonds.investment_horizon')}</Label>
-          <span className="text-sm font-semibold text-foreground">
-            {formatHorizonMonths(investmentHorizonMonths, language)}
-          </span>
-        </div>
-        <CommittedSliderInput value={investmentHorizonMonths} min={1} max={360} step={1} unit={t('common.month_compact')} onCommit={(value) => onUpdate('investmentHorizonMonths', value)}/>
-      </div>
+      <RangeField
+        label={t('bonds.investment_horizon')}
+        value={investmentHorizonMonths}
+        min={1}
+        max={360}
+        step={1}
+        unit={t('common.month_compact')}
+        valueFormatter={(value) => formatHorizonMonths(value, language)}
+        onCommit={(value) => onUpdate('investmentHorizonMonths', value)}
+      />
 
       <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Label className="font-semibold">{t('bonds.tax_strategy')}</Label>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <HelpCircle className="h-3.5 w-3.5 text-muted-foreground cursor-help"/>
-            </TooltipTrigger>
-            <TooltipContent>
-              {t('bonds.glossary.tax_wrapper')}
-            </TooltipContent>
-          </Tooltip>
-        </div>
-        <Select value={inputs.taxStrategy} onValueChange={(value) => onUpdate('taxStrategy', value as TaxStrategy)}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={TaxStrategy.STANDARD}>{t('bonds.tax_standard')}</SelectItem>
-            <SelectItem value={TaxStrategy.IKE}>{t('bonds.tax_ike')}</SelectItem>
-            <SelectItem value={TaxStrategy.IKZE}>{t('bonds.tax_ikze')}</SelectItem>
-          </SelectContent>
-        </Select>
+        <FormSelect
+          label={t('bonds.tax_strategy')}
+          value={inputs.taxStrategy}
+          options={taxOptions}
+          tooltip={t('bonds.glossary.tax_wrapper')}
+          onValueChange={(value) => onUpdate('taxStrategy', value as TaxStrategy)}
+        />
         
         {(inputs.taxStrategy === TaxStrategy.IKE || inputs.taxStrategy === TaxStrategy.IKZE) && (<div className="flex items-center justify-between rounded-lg border border-border bg-muted/25 px-3 py-3">
             <div className="space-y-0.5">
