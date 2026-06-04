@@ -181,7 +181,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
       </ResponsiveTableSheet>
 
       <div className="hidden w-full border-y border-border lg:block">
-        <Table className="w-full table-fixed text-sm">
+        <Table className="w-full table-fixed text-sm tabular-nums">
           <TableHeader>
             <TableRow className="h-12 hover:bg-transparent">
               <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-background">

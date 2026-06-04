@@ -23,6 +23,7 @@ import {CalculatorPageShell} from '@/shared/components/page/CalculatorPageShell'
 import {ReferenceDashboardHero} from '@/shared/components/reference/ReferenceDashboardHero';
 import {ReferenceGuideRail} from '@/shared/components/reference/ReferenceGuideRail';
 import {ReferenceNoteCard} from '@/shared/components/reference/ReferenceNoteCard';
+import {ChartSection} from '@/shared/components/charts/ChartSection';
 import {useChartData} from '@/shared/hooks/useChartData';
 import {
   getReferenceAsOfLabel,
@@ -207,28 +208,6 @@ function SeriesStatusCard({
           </dl>
         </div>
       </div>
-    </section>
-  );
-}
-
-function SectionBlock({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="space-y-4">
-      <div className="space-y-2">
-        <h3 className="ui-section-title">{title}</h3>
-        {description ? (
-          <p className="ui-body max-w-3xl">{description}</p>
-        ) : null}
-      </div>
-      {children}
     </section>
   );
 }
@@ -494,21 +473,21 @@ export function EconomicDataPageClient() {
                 </TabsList>
 
                 <TabsContent value="cpi">
-                  <SectionBlock
+                  <ChartSection
                     title={t('economic.inflation_title')}
                     description={t('economic.inflation_desc')}
                   >
                     <InflationChart period={period} />
-                  </SectionBlock>
+                  </ChartSection>
                 </TabsContent>
 
                 <TabsContent value="nbp">
-                  <SectionBlock
+                  <ChartSection
                     title={t('economic.nbp_rate_title')}
                     description={t('economic.nbp_rate_desc')}
                   >
                     <NBPRateChart period={period} />
-                  </SectionBlock>
+                  </ChartSection>
                 </TabsContent>
               </Tabs>
             </DashboardTabFrame>

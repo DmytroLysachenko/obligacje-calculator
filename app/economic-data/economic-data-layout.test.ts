@@ -9,6 +9,7 @@ const referenceHeroPath = 'shared/components/reference/ReferenceDashboardHero.ts
 const referenceRailPath = 'shared/components/reference/ReferenceGuideRail.tsx';
 const referenceNotePath = 'shared/components/reference/ReferenceNoteCard.tsx';
 const referenceChartFramePath = 'shared/components/charts/ReferenceChartFrame.tsx';
+const chartSectionPath = 'shared/components/charts/ChartSection.tsx';
 
 function readSource(relativePath: string) {
   return readFileSync(join(repoRoot, relativePath), 'utf8');
@@ -108,10 +109,27 @@ describe('economic data layout source contracts', () => {
     expectContains(source, '<TabsTrigger value="nbp" className="h-8 px-3 text-xs font-semibold">');
     expectContains(source, '<TabsContent value="cpi">');
     expectContains(source, '<TabsContent value="nbp">');
+    expectContains(source, "import {ChartSection} from '@/shared/components/charts/ChartSection';");
+    expectContains(source, '<ChartSection');
     expectContains(source, '<InflationChart period={period} />');
     expectContains(source, '<NBPRateChart period={period} />');
     expectNoFragments(source, [
       '<div className="space-y-8 md:space-y-10">',
+    ]);
+  });
+
+  it('keeps chart sections shared and divider-led', () => {
+    const source = readSource(chartSectionPath);
+
+    expectContains(source, "export function ChartSection");
+    expectContains(source, "space-y-4 border-t border-border py-5");
+    expectContains(source, "controls?: React.ReactNode");
+    expectContains(source, '<BarChart3 className="h-4 w-4" />');
+    expectContains(source, '<div className="shrink-0 lg:max-w-[520px]">');
+    expectNoFragments(source, [
+      "from '@/components/ui/card'",
+      '<Card',
+      'rounded-lg border border-border bg-card',
     ]);
   });
 

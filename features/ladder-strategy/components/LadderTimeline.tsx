@@ -235,7 +235,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
                 </p>
               </div>
             </div>
-            <Table className="w-full table-fixed text-sm">
+            <Table className="w-full table-fixed text-sm tabular-nums">
               <TableHeader>
                 <TableRow className="h-12 hover:bg-transparent">
                   <TableHead className="sticky top-0 z-10 w-[34%] bg-background">{t('ladder_page.timeline.table_month')}</TableHead>

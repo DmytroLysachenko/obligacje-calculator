@@ -208,7 +208,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
             </ResponsiveTableSheet>
 
             <div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">
-              <Table className="w-full table-fixed text-sm">
+              <Table className="w-full table-fixed text-sm tabular-nums">
               <TableHeader>
                 <TableRow className="h-12 hover:bg-transparent">
                   <TableHead className="sticky top-0 z-10 w-[16%] bg-background">{t('common.year')}</TableHead>

@@ -51,7 +51,7 @@ describe('strategy result layout contracts', () => {
     const source = readSource(paths.regular);
 
     expectContains(source, '<div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">');
-    expectContains(source, '<Table className="w-full table-fixed text-sm">');
+    expectContains(source, '<Table className="w-full table-fixed text-sm tabular-nums">');
     expectContains(source, '<TableRow className="h-12 hover:bg-transparent">');
     expectContains(source, 'className="h-14 border-b border-border transition-colors hover:bg-muted/25"');
     expectContains(source, '<TableDensityControls');
@@ -62,6 +62,7 @@ describe('strategy result layout contracts', () => {
       'hover:bg-muted/35',
       '<div className="hidden lg:block">',
       '<Table className="table-fixed w-full">',
+      '<Table className="w-full table-fixed text-sm">',
     ]);
   });
 
@@ -104,7 +105,7 @@ describe('strategy result layout contracts', () => {
     expectContains(source, "const chartData = useMemo(");
     expectContains(source, "t(`ladder_page.timeline.chart_modes.${mode}`)");
     expectContains(source, '<div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">');
-    expectContains(source, '<Table className="w-full table-fixed text-sm">');
+    expectContains(source, '<Table className="w-full table-fixed text-sm tabular-nums">');
     expectContains(source, '<TableRow className="h-12 hover:bg-transparent">');
     expectContains(source, 'className="h-14 border-b border-border transition-colors hover:bg-muted/25"');
     expectContains(source, '<TableDensityControls');
@@ -112,6 +113,7 @@ describe('strategy result layout contracts', () => {
     expectNoFragments(source, [
       'hidden border-y border-border',
       '<Table className="table-fixed w-full">',
+      '<Table className="w-full table-fixed text-sm">',
       'transition-colors hover:bg-muted/35',
       '<section className="space-y-6 border-t border-border py-6">',
     ]);

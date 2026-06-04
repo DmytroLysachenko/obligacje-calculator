@@ -202,7 +202,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
             </div>
 
             <div>
-              <Table className="table-fixed w-full">
+              <Table className="w-full table-fixed tabular-nums">
                 <TableHeader className="bg-white">
                   <TableRow className="border-b hover:bg-transparent">
                     <TableHead className="sticky left-0 top-0 z-10 h-12 w-[22%] bg-card px-4 text-xs font-semibold text-muted-foreground">
