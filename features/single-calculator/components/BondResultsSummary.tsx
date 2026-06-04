@@ -14,6 +14,7 @@ import { FinancialInsightStrip, FinancialInsightItem } from '@/shared/components
 import { CalculationAuditTrace } from './CalculationAuditTrace';
 import { getAuditTimelinePoint } from '@/shared/lib/bond-display';
 import { buildTimelineCsvFilename, exportTimelineCsv, } from '@/shared/lib/retained-exports';
+import { Notice } from '@/shared/components/feedback/Notice';
 function getTaxStrategyDisplayLabel(strategy: BondInputs['taxStrategy'], t: (key: string) => string) {
     if (strategy === 'IKE')
         return t('bonds.tax_ike');
@@ -170,9 +171,11 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results,
     return (<div className="space-y-8">
       <ResultSummaryHero eyebrow={t('bonds.results.summary_eyebrow')} value={formatCurrency(headlineValue)} description={t('bonds.results.summary_description')} narrative={summaryNarrative} actions={summaryActions}/>
 
-      {!canManageWorkspace ? (<section className="border-l-2 border-border bg-muted/35 px-4 py-3 text-sm leading-6 text-muted-foreground">
-            {t('workspace.sign_in_needed_for_portfolio')}
-        </section>) : null}
+      {!canManageWorkspace ? (
+        <Notice tone="locked" compact>
+          {t('workspace.sign_in_needed_for_portfolio')}
+        </Notice>
+      ) : null}
 
       <MetricStrip items={metricItems}/>
 

@@ -4,6 +4,7 @@ import React from 'react';
 import { AlertTriangle, CheckCircle2, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ReferenceMetaItem } from '@/shared/lib/data-reference';
+import { Notice } from '@/shared/components/feedback/Notice';
 
 interface ReferenceChartFrameProps {
   metaItems: ReferenceMetaItem[];
@@ -61,7 +62,8 @@ export function ReferenceChartFrame({
         </div>
 
         {fallbackNotice ? (
-          <div className="flex flex-wrap items-start gap-x-4 gap-y-2 border-t border-border pt-3">
+          <Notice tone={fallbackTone === 'warning' ? 'warning' : 'success'} compact className="border-t-0">
+            <div className="flex flex-wrap items-start gap-x-4 gap-y-2">
             <div className={cn('inline-flex items-center gap-2 border-l-2 pl-3 text-xs font-semibold', healthToneClass)}>
               {fallbackTone === 'warning' ? (
                 <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
@@ -71,21 +73,15 @@ export function ReferenceChartFrame({
               {fallbackTone === 'warning' ? fallbackStatusLabel : syncedStatusLabel}
             </div>
             <p className="max-w-3xl text-sm leading-6 text-muted-foreground">{fallbackNotice}</p>
-          </div>
+            </div>
+          </Notice>
         ) : null}
       </div>
 
       {notice ? (
-        <div
-          className={cn(
-            'border-l-2 pl-3 text-sm leading-6',
-            noticeTone === 'warning'
-              ? 'border-warning text-foreground'
-              : 'border-border text-muted-foreground',
-          )}
-        >
+        <Notice tone={noticeTone === 'warning' ? 'warning' : 'info'} compact>
           {notice}
-        </div>
+        </Notice>
       ) : null}
 
       <div className="border-t border-border pt-4">

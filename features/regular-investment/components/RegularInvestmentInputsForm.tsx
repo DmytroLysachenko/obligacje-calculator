@@ -7,6 +7,7 @@ import { getHorizonMonths } from '@/shared/lib/date-timing';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
 import { ScenarioFieldset } from '@/shared/components/forms/ScenarioFieldset';
+import { ParameterSummary } from '@/shared/components/results/ParameterSummary';
 import { BondSelectionSection } from './inputs/BondSelectionSection';
 import { ContributionPlanSection } from './inputs/ContributionPlanSection';
 import { TimingSection } from './inputs/TimingSection';
@@ -103,41 +104,35 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
             />
           </ScenarioFieldset>
 
-          <div className="pt-2">
-            <div className="space-y-2 rounded-lg border border-border bg-muted/25 px-4 py-3 text-xs text-muted-foreground">
-              <div className="flex justify-between">
-                <span>{t('bonds.duration')}:</span>
-                <span className="font-bold">{formatBondDuration(inputs.duration, language)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>
-                  {inputs.bondType === 'OTS'
-                    ? t('bonds.yield_three_months')
-                    : inputs.bondType === 'ROR' || inputs.bondType === 'DOR'
-                      ? t('bonds.first_month_rate')
-                      : t('bonds.first_year_rate')}
-                  :
-                </span>
-                <span className="font-bold">{inputs.firstYearRate}%</span>
-              </div>
-              {currentDef.margin > 0 ? (
-                <div className="flex justify-between">
-                  <span>{t('bonds.margin')}:</span>
-                  <span className="font-bold">{inputs.margin}%</span>
-                </div>
-              ) : null}
-              <div className="flex justify-between">
-                <span>{t('bonds.payout_type')}:</span>
-                <span className="font-bold">
-                  {inputs.isCapitalized ? t('bonds.capitalization') : t('bonds.payout')}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>{t('bonds.early_withdrawal_fee')}:</span>
-                <span className="font-bold">{inputs.earlyWithdrawalFee} PLN</span>
-              </div>
-            </div>
-          </div>
+          <ParameterSummary
+            variant="compact"
+            items={[
+              {
+                label: t('bonds.duration'),
+                value: formatBondDuration(inputs.duration, language),
+              },
+              {
+                label: inputs.bondType === 'OTS'
+                  ? t('bonds.yield_three_months')
+                  : inputs.bondType === 'ROR' || inputs.bondType === 'DOR'
+                    ? t('bonds.first_month_rate')
+                    : t('bonds.first_year_rate'),
+                value: `${inputs.firstYearRate}%`,
+              },
+              ...(currentDef.margin > 0 ? [{
+                label: t('bonds.margin'),
+                value: `${inputs.margin}%`,
+              }] : []),
+              {
+                label: t('bonds.payout_type'),
+                value: inputs.isCapitalized ? t('bonds.capitalization') : t('bonds.payout'),
+              },
+              {
+                label: t('bonds.early_withdrawal_fee'),
+                value: `${inputs.earlyWithdrawalFee} PLN`,
+              },
+            ]}
+          />
         </div>
       </section>
     );

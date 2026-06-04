@@ -9,6 +9,7 @@ import { useAppI18n } from '@/i18n/client';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
+import { ParameterSummary } from '@/shared/components/results/ParameterSummary';
 
 interface BondSummaryFooterProps {
     inputs: BondInputs;
@@ -20,61 +21,58 @@ export const BondSummaryFooter: React.FC<BondSummaryFooterProps> = React.memo(({
     const { t, locale: language } = useAppI18n();
     const dateLocale = getDateFnsLocale(language);
     const rateContext = getBondRateContextCopy(inputs.bondType, Number(inputs.firstYearRate), Number(inputs.margin), t);
+    const summaryItems = [
+        {
+            label: t('bonds.duration'),
+            value: formatBondDuration(inputs.duration, language),
+        },
+        {
+            label: rateContext.firstPeriodLabel,
+            value: rateContext.firstPeriodValueLabel,
+        },
+        ...(currentDef.margin > 0 ? [{
+            label: t('bonds.margin'),
+            value: `${inputs.margin}%`,
+        }] : []),
+        ...(rateContext.laterPeriodsLabel ? [{
+            label: t('bonds.rate_context.later_periods'),
+            value: rateContext.laterPeriodsLabel,
+        }] : []),
+        {
+            label: t('bonds.maturity_date'),
+            value: hasMounted ? format(maturityDate, 'PPP', { locale: dateLocale }) : '---',
+        },
+        {
+            label: (<span className="inline-flex items-center gap-1">
+              {t('bonds.payout_type')}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <HelpCircle className="h-3 w-3 cursor-help text-muted-foreground"/>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {t('bonds.glossary.capitalization')}
+                </TooltipContent>
+              </Tooltip>
+            </span>),
+            value: inputs.isCapitalized ? t('bonds.capitalization') : t('bonds.payout'),
+        },
+        {
+            label: (<span className="inline-flex items-center gap-1">
+              {t('bonds.early_withdrawal_fee')}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <HelpCircle className="h-3 w-3 cursor-help text-muted-foreground"/>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {t('bonds.glossary.early_withdrawal')}
+                </TooltipContent>
+              </Tooltip>
+            </span>),
+            value: `${inputs.earlyWithdrawalFee} PLN`,
+        },
+    ];
     return (<div className="pt-2 px-6 pb-6">
-      <div className="text-[10px] text-muted-foreground space-y-1 bg-muted/30 p-3 rounded-lg border border-dashed">
-        <div className="flex justify-between">
-          <span>{t('bonds.duration')}:</span>
-          <span className="font-bold">
-            {formatBondDuration(inputs.duration, language)}
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span>{rateContext.firstPeriodLabel}:</span>
-          <span className="font-bold">{rateContext.firstPeriodValueLabel}</span>
-        </div>
-        {currentDef.margin > 0 && (<div className="flex justify-between">
-            <span>{t('bonds.margin')}:</span>
-            <span className="font-bold">{inputs.margin}%</span>
-          </div>)}
-        {rateContext.laterPeriodsLabel ? (<div className="flex justify-between gap-4">
-            <span>{t('bonds.rate_context.later_periods')}:</span>
-            <span className="text-right font-bold">{rateContext.laterPeriodsLabel}</span>
-          </div>) : null}
-        <div className="flex justify-between">
-          <span>{t('bonds.maturity_date')}:</span>
-          <span className="font-bold">{hasMounted ? format(maturityDate, 'PPP', { locale: dateLocale }) : '---'}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="flex items-center gap-1">
-            {t('bonds.payout_type')}:
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help"/>
-              </TooltipTrigger>
-              <TooltipContent>
-                {t('bonds.glossary.capitalization')}
-              </TooltipContent>
-            </Tooltip>
-          </span>
-          <span className="font-bold">
-            {inputs.isCapitalized ? t('bonds.capitalization') : t('bonds.payout')}
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span className="flex items-center gap-1">
-            {t('bonds.early_withdrawal_fee')}:
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help"/>
-              </TooltipTrigger>
-              <TooltipContent>
-                {t('bonds.glossary.early_withdrawal')}
-              </TooltipContent>
-            </Tooltip>
-          </span>
-          <span className="font-bold">{inputs.earlyWithdrawalFee} PLN</span>
-        </div>
-      </div>
+      <ParameterSummary items={summaryItems} variant="compact" />
     </div>);
 });
 BondSummaryFooter.displayName = 'BondSummaryFooter';

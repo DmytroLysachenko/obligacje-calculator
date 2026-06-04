@@ -39,7 +39,8 @@ describe('single calculator result layout contracts', () => {
     expectContains(source, '<SecondaryInsightAccordion title={t(\'bonds.results.scenario_facts_title\')}');
     expectContains(source, '<CalculationAuditTrace point={auditPoint}/>');
     expectContains(source, '<ScenarioFactsBlock');
-    expectContains(source, 'border-l-2 border-border bg-muted/35 px-4 py-3');
+    expectContains(source, "import { Notice } from '@/shared/components/feedback/Notice';");
+    expectContains(source, '<Notice tone="locked" compact>');
 
     expectNoFragments(source, [
       'rounded-lg border border-border bg-muted/35 p-4',
