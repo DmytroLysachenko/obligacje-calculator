@@ -18,6 +18,7 @@ import { useAppI18n } from '@/i18n/client';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
+import { MetricStrip, MetricStripItem } from '@/shared/components/results/MetricStrip';
 import { buildComparisonExportHeaders } from '@/shared/lib/export-headers';
 import {
   buildCombinedComparisonCsvFilename,
@@ -80,25 +81,6 @@ function ComparisonChartTooltip({
   );
 }
 
-function ActionMetric({
-  label,
-  value,
-  tone,
-}: {
-  label: string;
-  value: string;
-  tone?: string;
-}) {
-  return (
-    <div className="border-border py-4 md:border-r md:px-4 last:md:border-r-0">
-      <p className="ui-metadata text-muted-foreground">
-        {label}
-      </p>
-      <p className={`mt-2 text-[32px] font-semibold leading-none ${tone ?? 'text-foreground'}`}>{value}</p>
-    </div>
-  );
-}
-
 export function ComparisonResultsPanel({
   chartData,
   showRealValue,
@@ -111,6 +93,18 @@ export function ComparisonResultsPanel({
   language,
 }: ComparisonResultsPanelProps) {
   const { t } = useAppI18n();
+  const comparisonMetrics = React.useMemo<MetricStripItem[]>(() => [
+    {
+      label: showRealValue ? `${t('comparison.scenario_a')} ${t('common.real_value')}` : t('comparison.scenario_a'),
+      value: formatCurrency(showRealValue ? resultsA.finalRealValue : resultsA.netPayoutValue),
+      tone: 'text-primary',
+    },
+    {
+      label: showRealValue ? `${t('comparison.scenario_b')} ${t('common.real_value')}` : t('comparison.scenario_b'),
+      value: formatCurrency(showRealValue ? resultsB.finalRealValue : resultsB.netPayoutValue),
+      tone: 'text-success',
+    },
+  ], [formatCurrency, resultsA.finalRealValue, resultsA.netPayoutValue, resultsB.finalRealValue, resultsB.netPayoutValue, showRealValue, t]);
 
   return (
     <section className="space-y-6 border-t border-border py-6">
@@ -124,20 +118,11 @@ export function ComparisonResultsPanel({
         </p>
       </div>
       <div>
-        <div className="mb-5 grid gap-0 divide-y divide-border border-y border-border md:grid-cols-2 md:divide-x md:divide-y-0 xl:grid-cols-3">
-          <ActionMetric
-            label={showRealValue ? `${t('comparison.scenario_a')} ${t('common.real_value')}` : t('comparison.scenario_a')}
-            value={formatCurrency(showRealValue ? resultsA.finalRealValue : resultsA.netPayoutValue)}
-            tone="text-primary"
-          />
-          <ActionMetric
-            label={showRealValue ? `${t('comparison.scenario_b')} ${t('common.real_value')}` : t('comparison.scenario_b')}
-            value={formatCurrency(showRealValue ? resultsB.finalRealValue : resultsB.netPayoutValue)}
-            tone="text-success"
-          />
+        <div className="mb-5 grid gap-3 xl:grid-cols-[minmax(0,1fr)_240px]">
+          <MetricStrip items={comparisonMetrics} columns="grid-cols-1 md:grid-cols-2" className="shadow-none" />
           <button
             type="button"
-            className="px-4 py-4 text-left transition-colors hover:bg-muted/35 xl:border-l xl:border-border"
+            className="rounded-lg border border-border bg-card px-4 py-4 text-left transition-colors hover:bg-muted/35"
             onClick={() =>
               exportComparisonCsv({
                 timelineA: resultsA.timeline,

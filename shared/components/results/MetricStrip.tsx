@@ -3,7 +3,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-interface MetricStripItem {
+export interface MetricStripItem {
   label: string;
   value: string;
   description?: string;
@@ -13,14 +13,16 @@ interface MetricStripItem {
 interface MetricStripProps {
   items: MetricStripItem[];
   columns?: string;
+  className?: string;
 }
 
 export const MetricStrip = React.memo(function MetricStrip({
   items,
   columns = 'grid-cols-1 md:grid-cols-2 xl:grid-cols-4',
+  className,
 }: MetricStripProps) {
   return (
-    <section className="overflow-hidden rounded-lg border border-border bg-border shadow-sm">
+    <section className={cn('overflow-hidden rounded-lg border border-border bg-border shadow-sm', className)}>
       <div className={cn('grid gap-px', columns)}>
         {items.map((item) => (
           <div key={item.label} className="space-y-2 bg-card px-4 py-5">

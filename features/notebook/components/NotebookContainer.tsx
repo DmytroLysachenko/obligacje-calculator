@@ -17,6 +17,7 @@ import { PortfolioDetails } from './PortfolioDetails';
 import { PortfolioWorkspaceCard } from './PortfolioWorkspaceCard';
 import { WorkspaceActionStrip } from './WorkspaceActionStrip';
 import { WorkspaceStatusCard } from './WorkspaceStatusCard';
+import { MetricStrip, MetricStripItem } from '@/shared/components/results/MetricStrip';
 type NotebookStepItem = {
     id: string;
     title: string;
@@ -119,21 +120,6 @@ const NotebookLoadingState = () => (<div className="space-y-4">
       <Skeleton className="h-56 w-full rounded-lg"/>
     </div>
   </div>);
-function NotebookMiniStat({ label, value, description, }: {
-    label: string;
-    value: string;
-    description: string;
-}) {
-    return (<div className="space-y-2 bg-card px-4 py-4">
-      <p className="text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">
-        {label}
-      </p>
-      <p className="mt-2 text-xl font-semibold tracking-tight text-foreground">
-        {value}
-      </p>
-      <p className="mt-1 text-[13px] leading-6 text-muted-foreground">{description}</p>
-    </div>);
-}
 export const NotebookContainer: React.FC = () => {
     const { t, locale: language } = useAppI18n();
     const [error, setError] = useState<string | null>(null);
@@ -355,6 +341,23 @@ export const NotebookContainer: React.FC = () => {
     const notebookIntro = t('notebook.workspace_intro');
     const publicCount = portfolios.filter((portfolio) => portfolio.isPublic).length;
     const privateCount = portfolios.length - publicCount;
+    const notebookStats: MetricStripItem[] = [
+        {
+            label: t('notebook.portfolios_label'),
+            value: String(portfolios.length),
+            description: t('notebook.portfolios_label_desc'),
+        },
+        {
+            label: t('notebook.public_links_label'),
+            value: String(publicCount),
+            description: t('notebook.public_links_label_desc'),
+        },
+        {
+            label: t('notebook.private_drafts_label'),
+            value: String(privateCount),
+            description: t('notebook.private_drafts_label_desc'),
+        },
+    ];
     return (<CalculatorPageShell title={t('notebook.title')} description={t('notebook.subtitle')} icon={<BookOpen className="h-8 w-8"/>} isCalculating={isLoading || isMutating} hasResults={portfolios.length > 0}>
       <input ref={importRef} type="file" accept="application/json" className="hidden" onChange={handleImportFile}/>
 
@@ -401,23 +404,7 @@ export const NotebookContainer: React.FC = () => {
             onCreatePortfolio={handleCreateDefault}
           />
 
-          <div className="grid gap-px overflow-hidden rounded-lg border border-border bg-border md:grid-cols-3">
-            <NotebookMiniStat
-              label={t('notebook.portfolios_label')}
-              value={String(portfolios.length)}
-              description={t('notebook.portfolios_label_desc')}
-            />
-            <NotebookMiniStat
-              label={t('notebook.public_links_label')}
-              value={String(publicCount)}
-              description={t('notebook.public_links_label_desc')}
-            />
-            <NotebookMiniStat
-              label={t('notebook.private_drafts_label')}
-              value={String(privateCount)}
-              description={t('notebook.private_drafts_label_desc')}
-            />
-          </div>
+          <MetricStrip items={notebookStats} columns="grid-cols-1 md:grid-cols-3" />
         </div>
       </SectionBlock>
 

@@ -68,7 +68,7 @@ describe('single calculator result layout contracts', () => {
   it('keeps the metric strip grouped and scannable instead of loose divider-led rows', () => {
     const source = readSource(paths.metrics);
 
-    expectContains(source, '<section className="overflow-hidden rounded-lg border border-border bg-border shadow-sm">');
+    expectContains(source, "cn('overflow-hidden rounded-lg border border-border bg-border shadow-sm', className)");
     expectContains(source, 'grid gap-px');
     expectContains(source, 'space-y-2 bg-card px-4 py-5');
     expectContains(source, 'financial-number ui-large-metric text-foreground');
