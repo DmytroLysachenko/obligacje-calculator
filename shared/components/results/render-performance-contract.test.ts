@@ -7,6 +7,7 @@ const projectRoot = process.cwd();
 const paths = {
   metricStrip: 'shared/components/results/MetricStrip.tsx',
   resultHero: 'shared/components/results/ResultSummaryHero.tsx',
+  recentLotList: 'shared/components/results/RecentLotList.tsx',
   chartLegend: 'shared/components/charts/ChartLegendStrip.tsx',
   singleSummary: 'features/single-calculator/components/BondResultsSummary.tsx',
   regularSummary: 'features/regular-investment/components/RegularInvestmentResultsSummary.tsx',
@@ -35,10 +36,12 @@ describe('result render performance contracts', () => {
   it('memoizes shared presentational result components', () => {
     const metricStrip = readSource(paths.metricStrip);
     const resultHero = readSource(paths.resultHero);
+    const recentLotList = readSource(paths.recentLotList);
     const chartLegend = readSource(paths.chartLegend);
 
     expectContains(metricStrip, 'export const MetricStrip = React.memo(function MetricStrip');
     expectContains(resultHero, 'export const ResultSummaryHero = React.memo(function ResultSummaryHero');
+    expectContains(recentLotList, 'export const RecentLotList = React.memo(function RecentLotList');
     expectContains(chartLegend, 'export const ChartLegendStrip = React.memo(function ChartLegendStrip');
 
     expectNoFragments(metricStrip, [
@@ -48,6 +51,10 @@ describe('result render performance contracts', () => {
     expectNoFragments(resultHero, [
       'export function ResultSummaryHero',
       'export default function ResultSummaryHero',
+    ]);
+    expectNoFragments(recentLotList, [
+      'export function RecentLotList',
+      'export default function RecentLotList',
     ]);
     expectNoFragments(chartLegend, [
       'export function ChartLegendStrip',
@@ -84,6 +91,8 @@ describe('result render performance contracts', () => {
     expectContains(source, 'const primaryStats = useMemo<SummaryStat[]>(() => [');
     expectContains(source, 'const supportingStats = useMemo<SummaryStat[]>(() => [');
     expectContains(source, 'const handleExport = useCallback(() => {');
+    expectContains(source, 'const recentLotItems = useMemo<RecentLotDisplayItem[]>(() =>');
+    expectContains(source, '<RecentLotList');
     expectContains(source, 'const summaryActions = useMemo(() => [');
     expectContains(source, 'actions={summaryActions}');
 

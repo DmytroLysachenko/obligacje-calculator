@@ -3,7 +3,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { RegularInvestmentResult } from '../../bond-core/types';
 import { useAppI18n } from '@/i18n/client';
-import { Calendar, FileSpreadsheet } from 'lucide-react';
+import { FileSpreadsheet } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { buildLotsExportHeaders } from '@/shared/lib/export-headers';
 import { MetricStrip } from '@/shared/components/results/MetricStrip';
@@ -18,6 +18,7 @@ import {
   buildRegularInvestmentYearBuckets,
   RegularInvestmentYearBucket,
 } from '@/shared/lib/regular-investment-display';
+import { RecentLotList, RecentLotDisplayItem } from '@/shared/components/results/RecentLotList';
 interface RegularInvestmentResultsSummaryProps {
     results: RegularInvestmentResult;
     dataQualityFlags?: string[];
@@ -109,6 +110,33 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
     const yearlyBuckets = useMemo<RegularInvestmentYearBucket[]>(() => buildRegularInvestmentYearBuckets(results.lots), [results.lots]);
     const visibleYearlyBuckets = useMemo(() => applyTableRowLimit(yearlyBuckets, yearRowLimit), [yearRowLimit, yearlyBuckets]);
     const recentLots = useMemo(() => buildRecentRegularInvestmentLots(results.lots, MAX_RECENT_LOTS), [results.lots]);
+    const recentLotItems = useMemo<RecentLotDisplayItem[]>(() => recentLots.map(({ key, value: lot }) => ({
+        key,
+        title: format(parseISO(lot.purchaseDate), 'MMMM yyyy', { locale: dateLocale }),
+        subtitle: `${t('regular_summary.matures')} ${format(parseISO(lot.maturityDate), 'MMM yyyy', { locale: dateLocale })}`,
+        value: formatCurrency(lot.netValue),
+        valueLabel: t('regular_summary.net_lot_value'),
+        details: [
+            {
+                label: t('regular_summary.invested'),
+                value: formatCurrency(lot.investedAmount),
+            },
+            {
+                label: t('regular_summary.interest'),
+                value: formatCurrency(lot.accumulatedInterest),
+                tone: 'positive',
+            },
+            {
+                label: t('bonds.tax'),
+                value: formatCurrency(lot.tax),
+                tone: 'warning',
+            },
+            {
+                label: t('bonds.early_withdrawal_fee'),
+                value: formatCurrency(lot.earlyWithdrawalFee),
+            },
+        ],
+    })), [dateLocale, formatCurrency, recentLots, t]);
     const handleExport = useCallback(() => {
         exportLotsCsv({
             lots: results.lots,
@@ -257,77 +285,12 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
           </div>
         </section>
 
-        <section className="surface-shell space-y-5 p-5">
-          <div className="space-y-2">
-            <h2 className="flex items-center gap-2 ui-card-title">
-              <Calendar className="h-5 w-5"/>
-              {t('regular_summary.recent_title')}
-            </h2>
-            <p className="ui-body text-muted-foreground">{t('regular_summary.recent_description')}</p>
-            <div className="rounded-md border border-border bg-muted/25 px-4 py-3 text-sm leading-6 text-muted-foreground">
-              {t('regular_summary.recent_note')}
-            </div>
-          </div>
-          <div className="space-y-5">
-            <div className="grid grid-cols-1 gap-4">
-              {recentLots.map(({ key, value: lot }) => (
-                <div key={key} className="rounded-lg border border-border bg-card p-4">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="space-y-1">
-                      <p className="text-sm font-semibold text-foreground">
-                        {format(parseISO(lot.purchaseDate), 'MMMM yyyy', { locale: dateLocale })}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {t('regular_summary.matures')}{' '}
-                        {format(parseISO(lot.maturityDate), 'MMM yyyy', { locale: dateLocale })}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-semibold text-foreground">
-                        {formatCurrency(lot.netValue)}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {t('regular_summary.net_lot_value')}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-4 grid grid-cols-2 gap-x-6 gap-y-3 text-sm md:grid-cols-4">
-                    <div>
-                      <p className="text-xs font-semibold text-muted-foreground">
-                        {t('regular_summary.invested')}
-                      </p>
-                      <p className="mt-1 font-medium">{formatCurrency(lot.investedAmount)}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-muted-foreground">
-                        {t('regular_summary.interest')}
-                      </p>
-                      <p className="mt-1 font-medium financial-positive">
-                        {formatCurrency(lot.accumulatedInterest)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-muted-foreground">
-                        {t('bonds.tax')}
-                      </p>
-                      <p className="mt-1 font-medium text-[var(--finance-warning)]">
-                        {formatCurrency(lot.tax)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-muted-foreground">
-                        {t('bonds.early_withdrawal_fee')}
-                      </p>
-                      <p className="mt-1 font-medium">
-                        {formatCurrency(lot.earlyWithdrawalFee)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        <RecentLotList
+          title={t('regular_summary.recent_title')}
+          description={t('regular_summary.recent_description')}
+          note={t('regular_summary.recent_note')}
+          items={recentLotItems}
+        />
       </div>
     </div>);
 };
