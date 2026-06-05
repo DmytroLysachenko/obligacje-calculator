@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/accordion';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PageTransition } from '@/shared/components/page/PageTransition';
+import { SectionBlock } from '@/shared/components/page/SectionBlock';
 
 export default function EducationClient() {
   const { t } = useAppI18n();
@@ -95,16 +96,11 @@ export default function EducationClient() {
           </p>
         </header>
 
-        <section className="space-y-6 border-t border-border py-8">
-          <div className="space-y-2">
-            <h3 className="ui-section-title flex items-center gap-2">
-              <Zap className="h-5 w-5 text-foreground" />
-              {t('education.concepts_title')}
-            </h3>
-            <p className="ui-body">
-              {t('education.concepts_subtitle')}
-            </p>
-          </div>
+        <SectionBlock
+          icon={<Zap className="h-5 w-5" />}
+          title={t('education.concepts_title')}
+          description={t('education.concepts_subtitle')}
+        >
           <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border md:grid-cols-2 lg:grid-cols-3">
             {concepts.map((concept) => (
               <article
@@ -132,19 +128,13 @@ export default function EducationClient() {
               </article>
             ))}
           </div>
-        </section>
+        </SectionBlock>
 
-        <section className="space-y-5 border-t border-border py-8">
-          <div className="ui-section-row">
-            <div className="space-y-2">
-              <h3 className="ui-section-title flex items-center gap-2">
-                <Target className="h-5 w-5 text-foreground" />
-                {t('education.starter_title')}
-              </h3>
-              <p className="ui-body max-w-3xl text-muted-foreground">
-                {t('education.starter_subtitle')}
-              </p>
-            </div>
+        <SectionBlock
+          icon={<Target className="h-5 w-5" />}
+          title={t('education.starter_title')}
+          description={t('education.starter_subtitle')}
+          action={
             <Link
               href="/single-calculator"
               className="inline-flex h-10 items-center gap-2 border-b border-foreground text-sm font-semibold text-foreground"
@@ -152,7 +142,8 @@ export default function EducationClient() {
               {t('education.starter_cta')}
               <ArrowRight className="h-4 w-4" />
             </Link>
-          </div>
+          }
+        >
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
             {starterGuides.map((guide) => (
               <article key={guide.key} className="border-t border-border py-4">
@@ -171,20 +162,13 @@ export default function EducationClient() {
               </article>
             ))}
           </div>
-        </section>
+        </SectionBlock>
 
-        <section className="space-y-6 border-t border-border py-8">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Briefcase className="h-5 w-5 text-foreground" />
-              <h3 className="ui-section-title">
-                {t('education.bond_types')}
-              </h3>
-            </div>
-            <p className="ui-body max-w-3xl text-muted-foreground">
-              {t('education.bond_types_subtitle')}
-            </p>
-          </div>
+        <SectionBlock
+          icon={<Briefcase className="h-5 w-5" />}
+          title={t('education.bond_types')}
+          description={t('education.bond_types_subtitle')}
+        >
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {Object.values(definitions).map((bond) => (
               <BondEducationCard key={bond.type} bond={bond} />
@@ -195,14 +179,12 @@ export default function EducationClient() {
               {t('education.disclaimer')}
             </p>
           </div>
-        </section>
+        </SectionBlock>
 
-        <section className="space-y-6 border-t border-border py-8">
-          <div className="flex items-center gap-2">
-            <HelpCircle className="h-5 w-5 text-foreground" />
-            <h3 className="ui-section-title">{t('education.faq')}</h3>
-          </div>
-
+        <SectionBlock
+          icon={<HelpCircle className="h-5 w-5" />}
+          title={t('education.faq')}
+        >
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="item-1" className="border-b-border">
               <AccordionTrigger className="text-left text-base font-semibold transition-colors hover:text-foreground">
@@ -252,7 +234,7 @@ export default function EducationClient() {
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-        </section>
+        </SectionBlock>
       </div>
     </PageTransition>
   );

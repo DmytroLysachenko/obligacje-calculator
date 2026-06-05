@@ -53,7 +53,9 @@ describe('education entry layout contracts', () => {
   it('keeps starter guidance section grouped and dense', () => {
     const source = read(paths.page);
 
-    expectContains(source, '<section className="space-y-5 border-t border-border py-8">');
+    expectContains(source, "import { SectionBlock } from '@/shared/components/page/SectionBlock';");
+    expectContains(source, '<SectionBlock');
+    expectContains(source, "title={t('education.starter_title')}");
     expectContains(source, 'grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4');
     expectContains(source, '<article key={guide.key} className="border-t border-border py-4">');
     expectContains(source, 'text-[32px] font-semibold leading-none text-foreground');
