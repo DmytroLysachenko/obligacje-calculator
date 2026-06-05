@@ -5,6 +5,7 @@ import { ArrowRight, BarChart2, BookOpen, Calculator, CheckCircle2, Layers, Scal
 import { Button } from '@/components/ui/button';
 import { useAppI18n } from '@/i18n/client';
 import { FeatureStatus } from '@/shared/components/feedback/FeatureStatusNotice';
+import { SectionHeading, ToolCard } from '@/shared/components/page/ToolCard';
 type ToolItem = {
     href: string;
     title: string;
@@ -26,27 +27,19 @@ function HomeToolCard({ item }: {
     const routeLabel = item.status === 'trusted'
         ? t('landing.route_labels.primary') : item.status === 'reference'
         ? t('landing.route_labels.reference') : t('landing.route_labels.next');
-    return (<Link href={item.href} className="block h-full">
-      <article className="group flex h-full flex-col gap-5 rounded-lg border border-border bg-card p-5 shadow-sm transition-colors hover:bg-muted/30 focus-within:ring-2 focus-within:ring-primary/25 focus-within:ring-offset-2">
-          <div className="flex items-start gap-4">
-            <div className="rounded-lg bg-foreground p-3 text-background">
-              <item.icon className="h-5 w-5"/>
-            </div>
-          </div>
-          <div className="space-y-3">
-            <h3 className="ui-section-title">
-              {item.title}
-            </h3>
-            <p className="ui-body max-w-xl text-muted-foreground">
-              {item.description}
-            </p>
-          </div>
-          <div className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-foreground">
-            <span>{routeLabel}</span>
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5"/>
-          </div>
-      </article>
-    </Link>);
+    const emphasis = item.status === 'trusted'
+        ? 'primary'
+        : item.status === 'reference'
+        ? 'reference'
+        : 'secondary';
+    return (<ToolCard
+      href={item.href}
+      title={item.title}
+      description={item.description}
+      icon={<item.icon className="h-5 w-5"/>}
+      label={routeLabel}
+      emphasis={emphasis}
+    />);
 }
 function HomeStep({ title, description, }: {
     title: string;
@@ -73,19 +66,6 @@ function HeroTrustStrip() {
       {itemKeys.map((itemKey) => (<span key={itemKey} className="bg-card px-4 py-3 text-xs font-semibold text-muted-foreground">
           {t(`landing.hero_trust_strip.${itemKey}`)}
         </span>))}
-    </div>);
-}
-function SectionHeading({ title, description, }: {
-    title: string;
-    description: string;
-}) {
-    return (<div className="space-y-2">
-      <h2 className="ui-section-title">
-        {title}
-      </h2>
-      <p className="ui-body max-w-3xl text-muted-foreground">
-        {description}
-      </p>
     </div>);
 }
 export function LandingDashboardClient() {
