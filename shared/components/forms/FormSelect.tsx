@@ -63,7 +63,7 @@ export function FormSelect({
         <SelectTrigger
           id={id}
           className={cn(
-            'min-h-12 px-3.5 py-2.5 [&>span]:min-w-0 [&>span]:truncate',
+            'min-h-12 px-3.5 py-2.5 ui-focus-ring [&>span]:min-w-0 [&>span]:truncate',
             triggerClassName,
           )}
         >
@@ -80,7 +80,7 @@ export function FormSelect({
               {option.description || option.meta || option.badge ? (
                 <span className="flex min-w-0 flex-col gap-1">
                   <span className="flex min-w-0 items-center gap-2">
-                    <span className="min-w-0 truncate font-semibold">{option.label}</span>
+                    <span className="ui-truncate-flex font-semibold">{option.label}</span>
                     {option.badge ? (
                       <span className="shrink-0">{option.badge}</span>
                     ) : null}
@@ -91,7 +91,7 @@ export function FormSelect({
                     ) : null}
                   </span>
                   {option.description ? (
-                    <span className="line-clamp-2 text-xs font-normal leading-5 text-muted-foreground">
+                    <span className="line-clamp-2 ui-safe-text text-xs font-normal leading-5 text-muted-foreground">
                       {option.description}
                     </span>
                   ) : null}

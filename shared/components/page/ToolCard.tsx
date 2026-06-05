@@ -31,7 +31,7 @@ export function ToolCard({
   className,
 }: ToolCardProps) {
   return (
-    <Link href={href} className="block h-full rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2">
+    <Link href={href} className="block h-full rounded-lg ui-focus-ring">
       <article
         className={cn(
           'group flex h-full flex-col gap-5 border-t border-border py-5 transition-colors',
@@ -52,11 +52,11 @@ export function ToolCard({
           </div>
         </div>
         <div className="space-y-3">
-          <h3 className="ui-section-title">{title}</h3>
-          <p className="ui-body max-w-xl text-muted-foreground">{description}</p>
+          <h3 className="ui-section-title ui-safe-text">{title}</h3>
+          <p className="ui-body ui-safe-text max-w-xl text-muted-foreground">{description}</p>
         </div>
         <div className="mt-auto inline-flex items-center gap-2 text-sm font-semibold text-foreground">
-          <span>{label}</span>
+          <span className="ui-safe-text">{label}</span>
           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
         </div>
       </article>
@@ -73,8 +73,8 @@ interface SectionHeadingProps {
 export function SectionHeading({ title, description, className }: SectionHeadingProps) {
   return (
     <div className={cn('space-y-2', className)}>
-      <h2 className="ui-section-title">{title}</h2>
-      <p className="ui-body max-w-3xl text-muted-foreground">{description}</p>
+      <h2 className="ui-section-title ui-safe-text">{title}</h2>
+      <p className="ui-body ui-safe-text max-w-3xl text-muted-foreground">{description}</p>
     </div>
   );
 }

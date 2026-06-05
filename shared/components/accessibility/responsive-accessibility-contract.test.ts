@@ -60,6 +60,23 @@ describe('responsive accessibility contract', () => {
     expect(sheet).toContain('custom-scrollbar overflow-y-auto');
   });
 
+  it('provides reusable text overflow and focus guardrails for dense controls', () => {
+    const globals = read('app/globals.css');
+    const select = read('shared/components/forms/FormSelect.tsx');
+    const actions = read('shared/components/results/ResultActionGrid.tsx');
+    const toolCard = read('shared/components/page/ToolCard.tsx');
+
+    expect(globals).toContain('.ui-safe-text');
+    expect(globals).toContain('overflow-wrap: anywhere;');
+    expect(globals).toContain('.ui-truncate-flex');
+    expect(globals).toContain('.ui-focus-ring');
+    expect(select).toContain('ui-focus-ring');
+    expect(select).toContain('ui-truncate-flex');
+    expect(actions).toContain('ui-focus-ring');
+    expect(actions).toContain('ui-truncate-flex');
+    expect(toolCard).toContain('ui-safe-text');
+  });
+
   it('keeps new accessibility copy in both locales', () => {
     const en = JSON.parse(read('i18n/translations/en.json'));
     const pl = JSON.parse(read('i18n/translations/pl.json'));

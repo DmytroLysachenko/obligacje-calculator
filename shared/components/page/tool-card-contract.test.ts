@@ -15,7 +15,7 @@ describe('tool card page primitive', () => {
     expect(source).toContain('export function ToolCard');
     expect(source).toContain("emphasis?: 'primary' | 'secondary' | 'reference';");
     expect(source).toContain('border-t border-border py-5');
-    expect(source).toContain('focus-visible:ring-2 focus-visible:ring-primary/30');
+    expect(source).toContain('ui-focus-ring');
     expect(source).not.toContain('rounded-lg border border-border bg-card p-5 shadow-sm');
   });
 

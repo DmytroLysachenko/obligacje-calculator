@@ -179,6 +179,19 @@
   html {
     font-family: var(--font-sans);
   }
+  button,
+  input,
+  select,
+  textarea,
+  [data-slot="select-trigger"],
+  [data-slot="button"] {
+    min-width: 0;
+  }
+  button,
+  [data-slot="button"],
+  [data-slot="select-trigger"] {
+    text-wrap: balance;
+  }
 }
 
 @layer utilities {
@@ -211,6 +224,16 @@
   }
   .ui-inline-notice {
     @apply rounded-md border border-border bg-card px-4 py-3 text-sm leading-6 text-muted-foreground;
+  }
+  .ui-safe-text {
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+  .ui-truncate-flex {
+    @apply min-w-0 truncate;
+  }
+  .ui-focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2;
   }
   .ui-surface {
     @apply border border-border bg-card;
