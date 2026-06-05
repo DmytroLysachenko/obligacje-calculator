@@ -9,6 +9,7 @@ import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/suppo
 import { cn } from '@/lib/utils';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
+import { BondInfoPanel } from '@/shared/components/forms/BondInfoPanel';
 
 type BondSelectionSectionProps = {
   bondType: BondType;
@@ -72,23 +73,12 @@ export function BondSelectionSection({
           }))}
         />
 
-        <div className="space-y-2 rounded-lg border border-border bg-muted/25 px-4 py-3 text-sm">
-          <div className="flex items-center gap-2 font-semibold text-foreground">
-            <Info className="h-3 w-3" />
-            <span>{currentDef.fullName[language]}</span>
-          </div>
-          <p className="leading-relaxed text-muted-foreground">
-            {currentDef.description[language]}
-          </p>
-          <p className="leading-relaxed text-muted-foreground">
-            {currentBondSupport.description}
-          </p>
-          {isFamilyBondType(bondType) ? (
-            <p className="font-semibold text-warning">
-              {t('regular_investment_page.family_bond_note')}
-            </p>
-          ) : null}
-        </div>
+        <BondInfoPanel
+          title={currentDef.fullName[language]}
+          description={currentDef.description[language]}
+          supportDescription={currentBondSupport.description}
+          notice={isFamilyBondType(bondType) ? t('regular_investment_page.family_bond_note') : null}
+        />
       </div>
     </div>
   );

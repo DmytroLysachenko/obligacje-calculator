@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { HelpCircle, Info, AlertCircle } from 'lucide-react';
+import { HelpCircle, AlertCircle } from 'lucide-react';
 import { BondType, BondInputs } from '@/features/bond-core/types';
 import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
@@ -14,6 +14,7 @@ import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
 import { getIntlLocale } from '@/i18n/locale-utils';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
+import { BondInfoPanel } from '@/shared/components/forms/BondInfoPanel';
 interface BondSeries {
     id: string;
     seriesCode: string;
@@ -128,35 +129,20 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
           ]}
         />
         
-        <div className="space-y-3 rounded-lg border border-border bg-muted/25 px-4 py-3 text-sm">
-          <div className="flex items-center gap-2 font-semibold text-foreground">
-            <Info className="h-3 w-3"/>
-            <span>{currentDef.fullName[language]}</span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <span className="rounded-md bg-background px-2.5 py-1 text-xs font-semibold text-muted-foreground">
-              {formatDurationLabel(inputs.bondType)}
-            </span>
-            {isFamilyBondType(inputs.bondType) ? (<span className="rounded-md bg-background px-2.5 py-1 text-xs font-semibold text-[var(--finance-warning)]">
-                {t('bonds.family_bond')}
-              </span>) : null}
-            <span className="rounded-md bg-background px-2.5 py-1 text-xs font-semibold text-muted-foreground">
-              {rateContext.styleLabel}
-            </span>
-          </div>
-          <p className="text-muted-foreground leading-relaxed italic">
-            {currentDef.description[language]}
-          </p>
-          <p className="text-muted-foreground leading-relaxed">
-            {rateContext.narrative}
-          </p>
-          <p className="text-muted-foreground leading-relaxed">
-            {currentBondSupport.description}
-          </p>
-          {isFamilyBondType(inputs.bondType) ? (<p className="font-semibold text-warning">
-              {t('bonds.family_bond_notice')}
-            </p>) : null}
-        </div>
+        <BondInfoPanel
+          title={currentDef.fullName[language]}
+          description={currentDef.description[language]}
+          narrative={rateContext.narrative}
+          supportDescription={currentBondSupport.description}
+          badges={[
+            { label: formatDurationLabel(inputs.bondType) },
+            ...(isFamilyBondType(inputs.bondType)
+              ? [{ label: t('bonds.family_bond'), tone: 'warning' as const }]
+              : []),
+            { label: rateContext.styleLabel },
+          ]}
+          notice={isFamilyBondType(inputs.bondType) ? t('bonds.family_bond_notice') : null}
+        />
       </div>
 
       {(!inputs.calculatorMode || inputs.calculatorMode === 'standard') && (<div className="space-y-4">
