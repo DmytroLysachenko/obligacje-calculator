@@ -122,6 +122,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
             label: t('common.export_csv'),
             icon: <FileSpreadsheet className="h-4 w-4"/>,
             onClick: handleExport,
+            kind: 'csv' as const,
         },
     ], [handleExport, t]);
     return (<div className="space-y-8">

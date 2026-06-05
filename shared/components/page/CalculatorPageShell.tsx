@@ -20,7 +20,7 @@ interface CalculatorPageShellProps {
     onKeyDown?: (e: React.KeyboardEvent) => void;
     showImplicitShare?: boolean;
 }
-export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({ title, description, icon, children, isCalculating, hasResults, onShare, extraHeaderActions, onKeyDown, showImplicitShare = true, }) => {
+export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({ title, description, icon, children, isCalculating, isDirty = false, hasResults, onShare, extraHeaderActions, onKeyDown, showImplicitShare = true, }) => {
     const { t } = useAppI18n();
     const [copied, setCopied] = useState(false);
     const handleShare = async () => {
@@ -43,6 +43,13 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({ title,
                 tone: 'neutral',
             };
         }
+        if (hasResults && isDirty) {
+            return {
+                label: t('common.recalculation_hint'),
+                state: 'idle',
+                tone: 'warning',
+            };
+        }
         if (hasResults) {
             return {
                 label: t('common.results_up_to_date'),
@@ -51,7 +58,7 @@ export const CalculatorPageShell: React.FC<CalculatorPageShellProps> = ({ title,
             };
         }
         return null;
-    }, [hasResults, isCalculating, t]);
+    }, [hasResults, isCalculating, isDirty, t]);
     const headerAction = (extraHeaderActions || hasShareAction) ? (<>
       {extraHeaderActions}
       {hasShareAction ? (<Button variant="outline" size="sm" className={cn('h-8 gap-2 px-3 text-xs font-medium', copied ? 'border-[var(--finance-success)] text-[var(--finance-success)]' : '')} onClick={handleShare}>

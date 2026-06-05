@@ -12,7 +12,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { FileSpreadsheet, LineChart } from 'lucide-react';
+import { LineChart } from 'lucide-react';
 import { BondInputs, CalculationResult, InterestPayout } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
@@ -25,6 +25,7 @@ import {
   exportComparisonCsv,
 } from '@/shared/lib/retained-exports';
 import { ComparisonChartPoint } from '../lib/comparison-display';
+import { ResultActionGrid } from '@/shared/components/results/ResultActionGrid';
 
 interface ComparisonResultsPanelProps {
   chartData: ComparisonChartPoint[];
@@ -134,6 +135,20 @@ export function ComparisonResultsPanel({
       tone: 'text-foreground',
     },
   ], [absoluteGap, formatCurrency, relativeGap, showRealValue, t, winner, winnerInput]);
+  const exportActions = React.useMemo(() => [
+    {
+      label: t('comparison.export_comparison_csv'),
+      kind: 'csv' as const,
+      onClick: () =>
+        exportComparisonCsv({
+          timelineA: resultsA.timeline,
+          timelineB: resultsB.timeline,
+          headers: buildComparisonExportHeaders(t),
+          language,
+          fileName: buildCombinedComparisonCsvFilename(inputsA.bondType, inputsB.bondType),
+        }),
+    },
+  ], [inputsA.bondType, inputsB.bondType, language, resultsA.timeline, resultsB.timeline, t]);
 
   return (
     <section className="space-y-6 border-t border-border py-6">
@@ -149,29 +164,12 @@ export function ComparisonResultsPanel({
       <div>
         <div className="mb-5 space-y-3">
           <MetricStrip items={differenceMetrics} columns="grid-cols-1 md:grid-cols-3" className="shadow-none" />
-          <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_240px]">
+          <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_280px]">
             <MetricStrip items={comparisonMetrics} columns="grid-cols-1 md:grid-cols-2" className="shadow-none" />
-          <button
-            type="button"
-            className="rounded-lg border border-border bg-card px-4 py-4 text-left transition-colors hover:bg-muted/35"
-            onClick={() =>
-              exportComparisonCsv({
-                timelineA: resultsA.timeline,
-                timelineB: resultsB.timeline,
-                headers: buildComparisonExportHeaders(t),
-                language,
-                fileName: buildCombinedComparisonCsvFilename(inputsA.bondType, inputsB.bondType),
-              })
-            }
-          >
-            <p className="ui-metadata text-muted-foreground">
-              {t('comparison.export')}
-            </p>
-            <div className="mt-2 flex items-center gap-2 text-sm font-semibold text-foreground">
-              <FileSpreadsheet className="h-4 w-4 text-primary" />
-              {t('comparison.export_comparison_csv')}
-            </div>
-          </button>
+            <ResultActionGrid
+              actions={exportActions}
+              className="border border-border bg-card p-3 lg:w-auto lg:border"
+            />
           </div>
         </div>
 

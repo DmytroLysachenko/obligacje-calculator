@@ -147,24 +147,28 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results,
             icon: <Save className="h-4 w-4"/>,
             onClick: onSaveScenario,
             variant: 'default' as const,
+            kind: 'primary' as const,
             disabled: !onSaveScenario,
         },
         {
             label: t('notebook.add_current_lot'),
             icon: <Plus className="h-4 w-4"/>,
             onClick: onAddToNotebook,
+            kind: 'secondary' as const,
             disabled: !canManageWorkspace,
         },
         {
             label: t('common.export_pdf'),
             icon: <FileText className="h-4 w-4"/>,
             onClick: onExportPDF,
+            kind: 'pdf' as const,
             disabled: !onExportPDF,
         },
         {
             label: t('common.export_csv'),
             icon: <FileSpreadsheet className="h-4 w-4"/>,
             onClick: handleExportCSV,
+            kind: 'csv' as const,
         },
     ], [canManageWorkspace, handleExportCSV, onAddToNotebook, onExportPDF, onSaveScenario, t]);
     const auditPoint = getAuditTimelinePoint(results.timeline);

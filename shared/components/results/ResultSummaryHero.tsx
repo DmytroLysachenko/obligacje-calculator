@@ -1,16 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-
-interface HeroAction {
-  label: string;
-  icon?: React.ReactNode;
-  onClick?: () => void;
-  variant?: 'default' | 'outline';
-  disabled?: boolean;
-}
+import { ResultAction, ResultActionGrid } from './ResultActionGrid';
 
 interface ResultSummaryHeroProps {
   eyebrow: string;
@@ -18,7 +9,7 @@ interface ResultSummaryHeroProps {
   description: string;
   narrative?: string;
   deltaText?: string;
-  actions?: HeroAction[];
+  actions?: ResultAction[];
   aside?: React.ReactNode;
 }
 
@@ -50,26 +41,7 @@ export const ResultSummaryHero = React.memo(function ResultSummaryHero({
         </div>
 
         {actions.length > 0 ? (
-          <div className="grid grid-cols-2 gap-2 border-t border-border bg-muted/30 p-4 lg:w-[380px] lg:shrink-0 lg:border-l lg:border-t-0">
-            {actions.map((action) => (
-              <Button
-                type="button"
-                key={action.label}
-                variant={action.variant ?? 'outline'}
-                className={cn(
-                  'gap-2 text-xs font-medium',
-                  (action.variant ?? 'outline') === 'outline'
-                    ? 'border-border bg-card text-foreground'
-                    : '',
-                )}
-                onClick={action.onClick}
-                disabled={action.disabled}
-              >
-                {action.icon}
-                {action.label}
-              </Button>
-            ))}
-          </div>
+          <ResultActionGrid actions={actions} />
         ) : aside ? (
           <div className="border-t border-border bg-muted/30 p-5 lg:w-[280px] lg:shrink-0 lg:border-l lg:border-t-0">
             {aside}
