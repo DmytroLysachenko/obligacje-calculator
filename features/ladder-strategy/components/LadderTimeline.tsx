@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { RegularInvestmentResult } from '../../bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
-import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
+import { ChartSection } from '@/shared/components/charts/ChartSection';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
 import { MetricStrip } from '@/shared/components/results/MetricStrip';
@@ -136,18 +136,15 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
         />
       </section>
 
-      <section className="surface-shell space-y-7 p-5">
-        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-          <div className="space-y-2">
-            <h2 className="ui-card-title">
-              {t('ladder_page.timeline.chart_title')}
-            </h2>
-            <p className="ui-body max-w-3xl text-muted-foreground">
-              {chartMode === 'yearly'
-                ? t('ladder_page.timeline.yearly_chart_description')
-                : t('ladder_page.timeline.monthly_chart_description')}
-            </p>
-          </div>
+      <ChartSection
+        title={t('ladder_page.timeline.chart_title')}
+        description={
+          chartMode === 'yearly'
+            ? t('ladder_page.timeline.yearly_chart_description')
+            : t('ladder_page.timeline.monthly_chart_description')
+        }
+        className="surface-shell border-t-0 p-5"
+        controls={(
           <div className="flex w-full items-center gap-1 rounded-md border border-border bg-muted/25 p-1 md:w-auto">
             {(['yearly', 'monthly'] as const).map((mode) => (
               <Button
@@ -162,12 +159,14 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
               </Button>
             ))}
           </div>
-        </div>
-          <ChartSupportNote
-            title={t('ladder_page.timeline.chart_note_title')}
-            description={t('ladder_page.timeline.chart_note_description')}
-          />
-
+        )}
+      >
+          <p className="border-l-2 border-border bg-muted/20 px-4 py-3 text-sm leading-6 text-muted-foreground">
+            <span className="font-semibold text-foreground">
+              {t('ladder_page.timeline.chart_note_title')}
+            </span>{' '}
+            {t('ladder_page.timeline.chart_note_description')}
+          </p>
           <ChartContainer responsiveHeightClassName="h-[320px] md:h-[360px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
@@ -311,7 +310,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
               {t('ladder_page.timeline.interpretation_description')}
             </p>
           </div>
-      </section>
+      </ChartSection>
     </div>);
 };
 function MobileLadderValue({ label, value, }: {
