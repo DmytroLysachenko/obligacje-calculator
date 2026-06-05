@@ -3,12 +3,12 @@
 import React from 'react';
 import { Info } from 'lucide-react';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { BondType } from '@/features/bond-core/types';
 import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
 import { cn } from '@/lib/utils';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
+import { FormSelect } from '@/shared/components/forms/FormSelect';
 
 type BondSelectionSectionProps = {
   bondType: BondType;
@@ -46,37 +46,31 @@ export function BondSelectionSection({
             </Tooltip>
           </TooltipProvider>
         </div>
-        <Select value={bondType} onValueChange={(value) => onBondTypeChange(value as BondType)}>
-          <SelectTrigger id="bondType">
-            <SelectValue placeholder={t('bonds.select_bond_type')} />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.values(BondType).map((type) => (
-              <SelectItem key={type} value={type}>
-                <div className="flex flex-col gap-0.5">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold">{type}</span>
-                    <span
-                      className={cn(
-                        'rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-[0.08em]',
-                        getBondSupportMeta(type).tone === 'caution'
-                          ? 'bg-warning/10 text-warning'
-                          : getBondSupportMeta(type).tone === 'limited'
-                            ? 'bg-muted text-muted-foreground'
-                            : 'bg-success/10 text-success',
-                      )}
-                    >
-                      {getBondSupportMeta(type).shortLabel}
-                    </span>
-                  </div>
-                  <span className="text-sm text-muted-foreground">
-                    {definitions[type]?.fullName[language] || type}
-                  </span>
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <FormSelect
+          id="bondType"
+          value={bondType}
+          onValueChange={(value) => onBondTypeChange(value as BondType)}
+          placeholder={t('bonds.select_bond_type')}
+          options={Object.values(BondType).map((type) => ({
+            value: type,
+            label: type,
+            description: definitions[type]?.fullName[language] || type,
+            badge: (
+              <span
+                className={cn(
+                  'rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-[0.08em]',
+                  getBondSupportMeta(type).tone === 'caution'
+                    ? 'bg-warning/10 text-warning'
+                    : getBondSupportMeta(type).tone === 'limited'
+                      ? 'bg-muted text-muted-foreground'
+                      : 'bg-success/10 text-success',
+                )}
+              >
+                {getBondSupportMeta(type).shortLabel}
+              </span>
+            ),
+          }))}
+        />
 
         <div className="space-y-2 rounded-lg border border-border bg-muted/25 px-4 py-3 text-sm">
           <div className="flex items-center gap-2 font-semibold text-foreground">

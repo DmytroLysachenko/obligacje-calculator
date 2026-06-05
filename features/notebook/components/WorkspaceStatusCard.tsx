@@ -4,6 +4,7 @@ import React from 'react';
 import { BookOpen, FolderKanban, LockKeyhole } from 'lucide-react';
 import { useAppI18n } from '@/i18n/client';
 import { UserPortfolio } from '@/db/schema';
+import { FormSelect } from '@/shared/components/forms/FormSelect';
 
 interface WorkspaceStatusCardProps {
   isGuestWorkspace: boolean;
@@ -62,25 +63,24 @@ export function WorkspaceStatusCard({
               </p>
 
               {canManageWorkspace && portfolios.length > 0 ? (
-                <label className="block space-y-2 border-t border-dashed border-border pt-3">
-                  <span className="text-xs font-semibold tracking-[0.08em] text-muted-foreground">
-                    {t('common.portfolio_selector_label')}
-                  </span>
-                  <select
-                    value={selectedPortfolio?.id ?? ''}
-                    onChange={(event) =>
-                      onActivePortfolioChange(event.target.value || null)
-                    }
-                    className="h-10 w-full rounded-md border border-border bg-card px-3 text-sm font-semibold text-foreground outline-none transition focus:border-foreground focus:ring-2 focus:ring-ring/30"
-                  >
-                    <option value="">{t('common.portfolio_selector_empty')}</option>
-                    {portfolios.map((portfolio) => (
-                      <option key={portfolio.id} value={portfolio.id}>
-                        {portfolio.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+                <div className="border-t border-dashed border-border pt-3">
+                  <FormSelect
+                    label={t('common.portfolio_selector_label')}
+                    value={selectedPortfolio?.id ?? 'none'}
+                    onValueChange={(value) => onActivePortfolioChange(value === 'none' ? null : value)}
+                    triggerClassName="bg-card"
+                    options={[
+                      {
+                        value: 'none',
+                        label: t('common.portfolio_selector_empty'),
+                      },
+                      ...portfolios.map((portfolio) => ({
+                        value: portfolio.id,
+                        label: portfolio.name,
+                      })),
+                    ]}
+                  />
+                </div>
               ) : null}
             </div>
           </div>

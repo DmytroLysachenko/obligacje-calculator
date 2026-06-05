@@ -2,7 +2,6 @@
 import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { HelpCircle, Info, AlertCircle } from 'lucide-react';
@@ -14,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
 import { getIntlLocale } from '@/i18n/locale-utils';
+import { FormSelect } from '@/shared/components/forms/FormSelect';
 interface BondSeries {
     id: string;
     seriesCode: string;
@@ -87,61 +87,46 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
               </TooltipContent>
             </Tooltip>)}
         </div>
-        <Select value={inputs.bondType} onValueChange={(value) => onBondTypeChange(value as BondType)}>
-          <SelectTrigger id="bondType" className="bg-card">
-            <SelectValue placeholder={t('bonds.select_bond_type')}/>
-          </SelectTrigger>
-          <SelectContent>
-            {Object.values(BondType).map((type) => (<SelectItem key={type} value={type} className="py-3">
-                <div className="flex min-w-0 flex-col gap-1">
-                  <div className="flex items-center gap-2 text-sm">
-                    <span className="font-semibold tracking-tight">{type}</span>
-                    <span className="rounded-md bg-muted px-2 py-0.5 text-xs font-semibold text-muted-foreground">
-                      {formatDurationLabel(type)}
-                    </span>
-                    {isFamilyBondType(type) ? (<span className="rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-semibold text-warning">
-                        {t('bonds.family_bond_badge')}
-                      </span>) : null}
-                  </div>
-                  <span className="max-w-[280px] text-sm font-medium text-foreground">
-                    {definitions[type]?.fullName[language] || type}
-                  </span>
-                </div>
-              </SelectItem>))}
-          </SelectContent>
-        </Select>
+        <FormSelect
+          id="bondType"
+          label=""
+          className="space-y-0"
+          value={inputs.bondType}
+          onValueChange={(value) => onBondTypeChange(value as BondType)}
+          placeholder={t('bonds.select_bond_type')}
+          triggerClassName="bg-card"
+          options={Object.values(BondType).map((type) => ({
+            value: type,
+            label: type,
+            meta: formatDurationLabel(type),
+            description: definitions[type]?.fullName[language] || type,
+            badge: isFamilyBondType(type) ? (
+              <span className="rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-semibold text-warning">
+                {t('bonds.family_bond_badge')}
+              </span>
+            ) : null,
+          }))}
+        />
 
-        <div className="space-y-2 pt-2">
-          <Label className="text-xs font-semibold text-muted-foreground">{t('bonds.bond.series')}</Label>
-          <Select value={selectedSeriesId || 'current'} onValueChange={(value) => onUpdate('selectedSeriesId', value)}>
-            <SelectTrigger className="bg-muted/45">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="current" className="py-3 text-sm font-medium">
-                <div className="flex flex-col gap-1">
-                  <span className="font-semibold">{t('bonds.offer.current')}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {t('bonds.offer.current_description')}
-                  </span>
-                </div>
-              </SelectItem>
-              {availableSeries.map((s) => (<SelectItem key={s.id} value={s.id} className="py-3 text-sm">
-                  <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold">{s.seriesCode}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {formatSeriesMonth(s.emissionMonth)}
-                      </span>
-                    </div>
-                    <span className="text-xs text-muted-foreground">
-                      {Number(s.firstYearRate).toFixed(2)}% + {Number(s.baseMargin).toFixed(2)}%
-                    </span>
-                  </div>
-                </SelectItem>))}
-            </SelectContent>
-          </Select>
-        </div>
+        <FormSelect
+          label={t('bonds.bond.series')}
+          value={selectedSeriesId || 'current'}
+          onValueChange={(value) => onUpdate('selectedSeriesId', value)}
+          triggerClassName="bg-muted/45"
+          options={[
+            {
+              value: 'current',
+              label: t('bonds.offer.current'),
+              description: t('bonds.offer.current_description'),
+            },
+            ...availableSeries.map((s) => ({
+              value: s.id,
+              label: s.seriesCode,
+              meta: formatSeriesMonth(s.emissionMonth),
+              description: `${Number(s.firstYearRate).toFixed(2)}% + ${Number(s.baseMargin).toFixed(2)}%`,
+            })),
+          ]}
+        />
         
         <div className="space-y-3 rounded-lg border border-border bg-muted/25 px-4 py-3 text-sm">
           <div className="flex items-center gap-2 font-semibold text-foreground">

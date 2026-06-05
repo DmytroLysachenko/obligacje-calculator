@@ -7,7 +7,6 @@ import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { History } from 'lucide-react';
 import { TaxStrategy, BondType } from '@/features/bond-core/types';
@@ -18,6 +17,7 @@ import { cn } from '@/lib/utils';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 import { toDateString } from '@/shared/lib/date-timing';
+import { FormSelect } from '@/shared/components/forms/FormSelect';
 
 type SharedConfig = IndependentBondComparisonPayload['sharedConfig'];
 
@@ -255,19 +255,15 @@ export function ComparisonSharedBaseCard({
           <Label className="ui-metadata text-muted-foreground">
             {t('bonds.tax_strategy')}
           </Label>
-          <Select
+          <FormSelect
             value={sharedConfig.taxStrategy ?? TaxStrategy.STANDARD}
             onValueChange={(value) => onUpdateSharedConfig('taxStrategy', value as TaxStrategy)}
-          >
-            <SelectTrigger className="[&>span]:truncate">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={TaxStrategy.STANDARD}>{t('bonds.tax_standard')}</SelectItem>
-              <SelectItem value={TaxStrategy.IKE}>{t('bonds.tax_ike')}</SelectItem>
-              <SelectItem value={TaxStrategy.IKZE}>{t('bonds.tax_ikze')}</SelectItem>
-            </SelectContent>
-          </Select>
+            options={[
+              { value: TaxStrategy.STANDARD, label: t('bonds.tax_standard') },
+              { value: TaxStrategy.IKE, label: t('bonds.tax_ike') },
+              { value: TaxStrategy.IKZE, label: t('bonds.tax_ikze') },
+            ]}
+          />
           <p className="text-xs leading-5 text-muted-foreground">
             {t('comparison.shared_tax_desc')}
           </p>

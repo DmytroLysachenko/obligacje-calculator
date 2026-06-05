@@ -39,8 +39,9 @@ describe('shared form control contracts', () => {
     expectContains(field, 'tooltip?: React.ReactNode;');
     expectContains(field, 'description?: React.ReactNode;');
     expectContains(select, 'export function FormSelect');
-    expectContains(select, 'SelectTrigger id={id}');
-    expectContains(select, "'min-h-9 pr-8'");
+    expectContains(select, '<SelectTrigger');
+    expectContains(select, 'id={id}');
+    expectContains(select, "'min-h-11 py-2.5 pl-3 pr-10'");
     expectContains(segmented, 'export function SegmentedControl');
     expectContains(segmented, "rounded-md border border-border bg-card p-1");
     expectContains(money, 'export function MoneyInput');

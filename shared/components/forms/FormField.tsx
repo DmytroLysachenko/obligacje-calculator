@@ -7,7 +7,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { cn } from '@/lib/utils';
 
 interface FormFieldProps {
-  label: React.ReactNode;
+  label?: React.ReactNode;
   htmlFor?: string;
   tooltip?: React.ReactNode;
   description?: React.ReactNode;
@@ -29,25 +29,29 @@ export function FormField({
 }: FormFieldProps) {
   return (
     <div className={cn('space-y-2', className)}>
-      <div className="flex items-center gap-2">
-        <Label htmlFor={htmlFor} className={cn('text-sm font-semibold text-foreground', labelClassName)}>
-          {label}
-        </Label>
-        {tooltip ? (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Info className="h-3.5 w-3.5 cursor-help text-muted-foreground" />
-              </TooltipTrigger>
-              <TooltipContent>
-                <div className="max-w-xs text-xs leading-5">
-                  {tooltip}
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        ) : null}
-      </div>
+      {label || tooltip ? (
+        <div className="flex items-center gap-2">
+          {label ? (
+            <Label htmlFor={htmlFor} className={cn('text-sm font-semibold text-foreground', labelClassName)}>
+              {label}
+            </Label>
+          ) : null}
+          {tooltip ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-3.5 w-3.5 cursor-help text-muted-foreground" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <div className="max-w-xs text-xs leading-5">
+                    {tooltip}
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : null}
+        </div>
+      ) : null}
       {children}
       {error ? (
         <p className="text-xs font-medium leading-5 text-destructive">{error}</p>

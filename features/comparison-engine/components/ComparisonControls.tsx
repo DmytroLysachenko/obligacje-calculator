@@ -4,11 +4,11 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, } from '@
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from '@/components/ui/select';
 import { History, Settings2, ShoppingCart } from 'lucide-react';
 import { useAppI18n } from '@/i18n/client';
 import { ComparisonControlsProps } from './types';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
+import { FormSelect } from '@/shared/components/forms/FormSelect';
 export const ComparisonControls: React.FC<ComparisonControlsProps> = ({ initialSum, updateInitialSum, monthlyContribution, updateMonthlyContribution, startYear, updateStartYear, startMonth, updateStartMonth, years, months, showRealValue, updateShowRealValue, purchasingPowerLoss, formatCurrency, }) => {
     const { t } = useAppI18n();
     const presets = [
@@ -77,31 +77,29 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({ initialS
                       <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                         {t('comparison.year')}
                       </Label>
-                      <Select value={startYear} onValueChange={updateStartYear}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {years.map((year) => (<SelectItem key={year} value={year}>
-                              {year}
-                            </SelectItem>))}
-                        </SelectContent>
-                      </Select>
+                      <FormSelect
+                        value={startYear}
+                        onValueChange={updateStartYear}
+                        triggerClassName="min-h-10"
+                        options={years.map((year) => ({
+                          value: year,
+                          label: year,
+                        }))}
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                         {t('comparison.month')}
                       </Label>
-                      <Select value={startMonth} onValueChange={updateStartMonth}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {months.map((month) => (<SelectItem key={month} value={month}>
-                              {month}
-                            </SelectItem>))}
-                        </SelectContent>
-                      </Select>
+                      <FormSelect
+                        value={startMonth}
+                        onValueChange={updateStartMonth}
+                        triggerClassName="min-h-10"
+                        options={months.map((month) => ({
+                          value: month,
+                          label: month,
+                        }))}
+                      />
                     </div>
                   </div>
                 </div>
