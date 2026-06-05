@@ -138,10 +138,10 @@
     "freshness": {
       "fresh": "Fresh",
       "partial": "Partial",
-      "caution": "Caution",
+      "caution": "Review",
       "text_fresh": "Core pages are reading current metadata.",
       "text_partial": "Some data may still be fallback coverage.",
-      "text_caution": "Read reference pages more cautiously.",
+      "text_caution": "Reference data may need a closer freshness check.",
       "no_date": "No date",
       "no_metadata": "No metadata"
     }

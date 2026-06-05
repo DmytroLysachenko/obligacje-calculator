@@ -138,10 +138,10 @@
     "freshness": {
       "fresh": "Aktualne",
       "partial": "Czesciowe",
-      "caution": "Ostroznie",
+      "caution": "Do przegladu",
       "text_fresh": "Glowne strony korzystaja z aktualnych metadanych.",
       "text_partial": "Czesc danych nadal moze byc zastepcza.",
-      "text_caution": "Czytaj strony pomocnicze ostrozniej.",
+      "text_caution": "Sprawdz swiezosc danych referencyjnych przed wnioskami.",
       "no_date": "Brak daty",
       "no_metadata": "Brak metadanych"
     }

@@ -54,6 +54,8 @@ export function SidebarSyncSummary({
   dataFreshness?: CalculationDataFreshness;
 }) {
   const { t } = useAppI18n();
+  const freshnessLabel = dataFreshness ? getFreshnessLabel(dataFreshness, t) : null;
+  const freshnessText = dataFreshness ? getFreshnessText(dataFreshness, t) : t('sidebar.sync_unavailable');
 
   return (
     <SidebarUtilityPanel>
@@ -69,20 +71,19 @@ export function SidebarSyncSummary({
           </div>
           {dataFreshness ? (
             <span
+              aria-label={`${t('common.sync_data')}: ${freshnessLabel}`}
               className={cn(
                 'inline-flex text-xs font-semibold',
                 getFreshnessClass(dataFreshness),
               )}
             >
-              {getFreshnessLabel(dataFreshness, t)}
+              {freshnessLabel}
             </span>
           ) : null}
         </div>
 
         <p className="line-clamp-2 text-[11px] leading-4 text-muted-foreground">
-          {dataFreshness
-            ? getFreshnessText(dataFreshness, t)
-            : t('sidebar.sync_unavailable')}
+          {freshnessText}
         </p>
       </div>
     </SidebarUtilityPanel>

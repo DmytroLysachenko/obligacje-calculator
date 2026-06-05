@@ -109,6 +109,7 @@ describe('sidebar refactor contracts', () => {
     expectContains(source, "return 'text-[var(--finance-success)]';");
     expectContains(source, "return 'text-[var(--finance-warning)]';");
     expectContains(source, 'inline-flex text-xs font-semibold');
+    expectContains(source, 'aria-label={`${t(\'common.sync_data\')}: ${freshnessLabel}`}');
     expectContains(source, 'text-sm font-semibold text-foreground');
     expectContains(source, 'line-clamp-2 text-[11px] leading-4 text-muted-foreground');
 
@@ -121,5 +122,17 @@ describe('sidebar refactor contracts', () => {
       'bg-orange-50',
       'bg-amber-50',
     ]);
+  });
+
+  it('keeps freshness copy calm instead of alarming', () => {
+    const en = read('i18n/translations/en.json');
+    const pl = read('i18n/translations/pl.json');
+
+    expectContains(en, '"caution": "Review"');
+    expectContains(en, '"text_caution": "Reference data may need a closer freshness check."');
+    expectContains(pl, '"caution": "Do przegladu"');
+    expectContains(pl, '"text_caution": "Sprawdz swiezosc danych referencyjnych przed wnioskami."');
+    expectNoFragments(en, ['"caution": "Caution"', 'Read reference pages more cautiously.']);
+    expectNoFragments(pl, ['"caution": "Ostroznie"', 'Czytaj strony pomocnicze ostrozniej.']);
   });
 });
