@@ -68,15 +68,18 @@ describe('strategy result layout contracts', () => {
 
   it('keeps regular recent lots grouped without losing dense financial detail', () => {
     const source = readSource(paths.regular);
+    const recentList = readSource('shared/components/results/RecentLotList.tsx');
 
-    expectContains(source, 'rounded-md border border-border bg-muted/25 px-4 py-3 text-sm leading-6 text-muted-foreground');
-    expectContains(source, '<div className="grid grid-cols-1 gap-4">');
-    expectContains(source, 'rounded-lg border border-border bg-card p-4');
-    expectContains(source, 'mt-4 grid grid-cols-2 gap-x-6 gap-y-3 text-sm md:grid-cols-4');
+    expectContains(source, "import { RecentLotList, RecentLotDisplayItem } from '@/shared/components/results/RecentLotList';");
+    expectContains(source, 'const recentLotItems = useMemo<RecentLotDisplayItem[]>(() =>');
+    expectContains(source, '<RecentLotList');
+    expectContains(recentList, 'divide-y divide-border');
+    expectContains(recentList, 'mt-4 grid grid-cols-2 gap-x-6 gap-y-3 text-sm');
 
     expectNoFragments(source, [
       'grid grid-cols-1 gap-3',
       'mt-4 grid grid-cols-2 gap-3 text-sm md:grid-cols-4',
+      'rounded-lg border border-border bg-card p-4',
     ]);
   });
 
@@ -99,7 +102,8 @@ describe('strategy result layout contracts', () => {
   it('keeps ladder chart and maturity table separated by stronger surface rhythm', () => {
     const source = readSource(paths.ladder);
 
-    expectContains(source, '<section className="surface-shell space-y-7 p-5">');
+    expectContains(source, '<ChartSection');
+    expectContains(source, 'className="surface-shell border-t-0 p-5"');
     expectContains(source, "const [chartMode, setChartMode] = useState<LadderChartMode>('yearly');");
     expectContains(source, 'const yearlyBuckets = useMemo<LadderYearBucket[]>(() => buildLadderYearBuckets(monthlyBuckets), [monthlyBuckets]);');
     expectContains(source, "const chartData = useMemo(");

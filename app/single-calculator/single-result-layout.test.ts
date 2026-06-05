@@ -55,7 +55,8 @@ describe('single calculator result layout contracts', () => {
     expectContains(source, 'className="financial-number ui-primary-metric"');
     expectContains(source, 'surface-shell overflow-hidden');
     expectContains(source, 'ui-body max-w-4xl text-muted-foreground');
-    expectContains(source, 'border-t border-border bg-muted/30 p-4');
+    expectContains(source, '<ResultActionGrid actions={actions} />');
+    expectContains(source, 'border-t border-border bg-muted/30 p-5');
     expectContains(source, 'lg:border-l lg:border-t-0');
 
     expectNoFragments(source, [
