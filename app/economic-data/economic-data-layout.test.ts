@@ -122,10 +122,11 @@ describe('economic data layout source contracts', () => {
     const source = readSource(chartSectionPath);
 
     expectContains(source, "export function ChartSection");
-    expectContains(source, "space-y-4 border-t border-border py-5");
+    expectContains(source, "space-y-5 border-t border-border py-5");
     expectContains(source, "controls?: React.ReactNode");
     expectContains(source, '<BarChart3 className="h-4 w-4" />');
     expectContains(source, '<div className="shrink-0 lg:max-w-[520px]">');
+    expectContains(source, 'border-l-2 border-border pl-3');
     expectNoFragments(source, [
       "from '@/components/ui/card'",
       '<Card',
@@ -138,10 +139,11 @@ describe('economic data layout source contracts', () => {
     const sectionLine = getClassLine(source, '<section className=');
     const gridLine = getClassLine(source, 'xl:grid-cols');
 
-    expect(sectionLine).toContain('rounded-lg');
-    expect(sectionLine).toContain('border border-border');
-    expect(sectionLine).toContain('bg-card');
-    expect(sectionLine).toContain('p-5');
+    expect(sectionLine).toContain('border-y border-border');
+    expect(sectionLine).toContain('py-5');
+    expect(sectionLine).not.toContain('rounded-lg');
+    expect(sectionLine).not.toContain('bg-card');
+    expect(sectionLine).not.toContain('p-5');
     expect(sectionLine).not.toContain('shadow-none');
     expect(sectionLine).not.toContain('md:px-8');
     expect(sectionLine).not.toContain('md:py-8');
@@ -166,16 +168,20 @@ describe('economic data layout source contracts', () => {
 
   it('keeps hero metric tiles dense and grouped', () => {
     const source = readSource(referenceHeroPath);
-    const metricGridLine = getClassLine(source, 'grid gap-px');
-    const tilePaddingLine = getClassLine(source, 'bg-card px-4 py-3');
+    const metricGridLine = getClassLine(source, 'grid border-y');
+    const tilePaddingLine = getClassLine(source, 'border-b border-border py-3');
     const valueLine = getClassLine(source, 'text-base font-semibold');
 
-    expect(metricGridLine).toContain('overflow-hidden rounded-lg');
-    expect(metricGridLine).toContain('border border-border');
-    expect(metricGridLine).toContain('bg-border');
+    expect(metricGridLine).toContain('border-y border-border');
+    expect(metricGridLine).toContain('sm:grid-cols-2');
+    expect(metricGridLine).toContain('sm:border-y-0');
+    expect(metricGridLine).not.toContain('overflow-hidden');
+    expect(metricGridLine).not.toContain('bg-border');
     expect(metricGridLine).not.toContain('rounded-[1.5rem]');
 
-    expect(tilePaddingLine).toContain('px-4 py-3');
+    expect(tilePaddingLine).toContain('py-3');
+    expect(tilePaddingLine).toContain('sm:px-4');
+    expect(tilePaddingLine).toContain('sm:[&:nth-child(2)]:border-l');
     expect(tilePaddingLine).not.toContain('py-4');
 
     expect(valueLine).toContain('mt-1.5');
@@ -190,13 +196,13 @@ describe('economic data layout source contracts', () => {
     expectContains(source, 'space-y-3 border-y border-border py-3');
     expectContains(source, "t('economic.data_health')");
     expectContains(source, '<dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2">');
-    expectContains(source, 'border-t border-border py-5');
-    expectContains(source, 'space-y-2 border-b border-border pb-3');
+    expectContains(source, "import {SectionBlock} from '@/shared/components/page/SectionBlock';");
+    expectContains(source, '<SectionBlock');
+    expectContains(source, 'contentClassName="space-y-5"');
+    expectContains(source, 'space-y-2 border-y border-border py-3');
     expectContains(source, 'hint={t(\'economic.range_hint\')}');
     expectContains(source, 'aria-pressed={period === item.value}');
     expectContains(source, 'focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2');
-    expectContains(source, 'actions?: React.ReactNode');
-    expectContains(source, '<div className="shrink-0 lg:max-w-[520px]">{actions}</div>');
     expectContains(source, 'grid gap-x-6 gap-y-4 border-y border-border py-4 md:grid-cols-2');
     expectContains(source, '<RangeActions');
     expectNotContains(source, 'extraHeaderActions={');
@@ -209,6 +215,8 @@ describe('economic data layout source contracts', () => {
       'rounded-full border border-border bg-muted/40',
       'rounded-md border border-border sm:grid-cols-2',
       'overflow-hidden rounded-md border',
+      'function DashboardTabFrame',
+      'actions?: React.ReactNode',
     ]);
   });
 
@@ -223,6 +231,7 @@ describe('economic data layout source contracts', () => {
     expectContains(source, 'syncedStatusLabel?: string;');
     expectContains(source, "inline-flex items-center gap-2 border-l-2 pl-3 text-xs font-semibold");
     expectContains(source, 'max-w-3xl text-sm leading-6 text-muted-foreground');
+    expectContains(source, 'border-t-0 bg-transparent px-0');
     expectContains(source, 'border-t border-border pt-4');
     expectNoFragments(source, [
       'rounded-lg border border-border bg-card',
@@ -262,6 +271,7 @@ describe('economic data layout source contracts', () => {
         '<CardTitle',
         '<CardDescription',
         'shadow-none',
+        'shadow-sm',
         'rounded-2xl',
         'rounded-3xl',
         'shadow-2xl',

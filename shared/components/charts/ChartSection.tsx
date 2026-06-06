@@ -18,10 +18,10 @@ export function ChartSection({
   className,
 }: ChartSectionProps) {
   return (
-    <section className={cn('space-y-4 border-t border-border py-5', className)}>
+    <section className={cn('space-y-5 border-t border-border py-5', className)}>
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex items-start gap-3">
-          <div className="mt-0.5 rounded-md bg-muted p-2 text-foreground">
+          <div className="mt-0.5 border-l-2 border-border pl-3 text-foreground">
             <BarChart3 className="h-4 w-4" />
           </div>
           <div className="space-y-2">

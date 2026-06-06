@@ -24,6 +24,7 @@ import {ReferenceDashboardHero} from '@/shared/components/reference/ReferenceDas
 import {ReferenceGuideRail} from '@/shared/components/reference/ReferenceGuideRail';
 import {ReferenceNoteCard} from '@/shared/components/reference/ReferenceNoteCard';
 import {ChartSection} from '@/shared/components/charts/ChartSection';
+import {SectionBlock} from '@/shared/components/page/SectionBlock';
 import {useChartData} from '@/shared/hooks/useChartData';
 import {
   getReferenceAsOfLabel,
@@ -77,7 +78,7 @@ function RangeActions({
   ];
 
   return (
-    <div className="space-y-2 border-b border-border pb-3">
+    <div className="space-y-2 border-y border-border py-3">
       <div className="flex flex-wrap items-center gap-1">
         <span className="inline-flex items-center gap-1 px-3 text-sm font-medium text-muted-foreground">
           <CalendarRange className="h-3.5 w-3.5" />
@@ -208,38 +209,6 @@ function SeriesStatusCard({
           </dl>
         </div>
       </div>
-    </section>
-  );
-}
-
-function DashboardTabFrame({
-  title,
-  description,
-  actions,
-  children,
-}: {
-  title: string;
-  description: string;
-  actions?: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="space-y-5">
-      <div className="flex flex-col gap-3 border-t border-border py-5">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <div className="flex items-start gap-3">
-          <div className="mt-0.5 rounded-md bg-muted p-2 text-foreground">
-            <Info className="h-4 w-4" />
-          </div>
-          <div className="space-y-2">
-            <h3 className="ui-section-title">{title}</h3>
-            <p className="ui-body max-w-4xl">{description}</p>
-          </div>
-          </div>
-          {actions ? <div className="shrink-0 lg:max-w-[520px]">{actions}</div> : null}
-        </div>
-      </div>
-      {children}
     </section>
   );
 }
@@ -450,10 +419,11 @@ export function EconomicDataPageClient() {
           </TabsList>
 
           <TabsContent value="charts" className="space-y-8">
-            <DashboardTabFrame
+            <SectionBlock
               title={t('economic.chart_dashboard_title')}
               description={t('economic.chart_dashboard_description')}
-              actions={
+              icon={<Info className="h-4 w-4" />}
+              action={
                 <RangeActions
                   period={period}
                   setPeriod={setPeriod}
@@ -461,6 +431,7 @@ export function EconomicDataPageClient() {
                   hint={t('economic.range_hint')}
                 />
               }
+              contentClassName="space-y-5"
             >
               <Tabs defaultValue="cpi" className="space-y-5">
                 <TabsList className="h-auto w-fit flex-wrap justify-start gap-1 rounded-md border border-border bg-muted/25 p-1 shadow-none">
@@ -490,13 +461,15 @@ export function EconomicDataPageClient() {
                   </ChartSection>
                 </TabsContent>
               </Tabs>
-            </DashboardTabFrame>
+            </SectionBlock>
           </TabsContent>
 
           <TabsContent value="status">
-            <DashboardTabFrame
+            <SectionBlock
               title={t('economic.status_dashboard_title')}
               description={t('economic.status_dashboard_description')}
+              icon={<Info className="h-4 w-4" />}
+              contentClassName="space-y-5"
             >
               <ReferenceStatusPanel
                 inflationMeta={inflationMeta}
@@ -506,13 +479,15 @@ export function EconomicDataPageClient() {
                 labels={labels}
                 language={language}
               />
-            </DashboardTabFrame>
+            </SectionBlock>
           </TabsContent>
 
           <TabsContent value="guide">
-            <DashboardTabFrame
+            <SectionBlock
               title={t('economic.guide_dashboard_title')}
               description={t('economic.guide_dashboard_description')}
+              icon={<Info className="h-4 w-4" />}
+              contentClassName="space-y-5"
             >
               <UsageGuidePanel
                 usageGuide={usageGuide}
@@ -521,7 +496,7 @@ export function EconomicDataPageClient() {
                   dataQuality: labels.dataQuality,
                 }}
               />
-            </DashboardTabFrame>
+            </SectionBlock>
           </TabsContent>
         </Tabs>
       </div>

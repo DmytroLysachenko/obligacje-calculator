@@ -19,10 +19,10 @@ export function ReferenceNoteCard({
   return (
     <section
       className={cn(
-        'space-y-3 rounded-lg border p-4 shadow-sm',
+        'space-y-2 border-l-2 px-4 py-3',
         tone === 'warning'
-          ? 'border-warning/30 bg-warning/5'
-          : 'border-border bg-card',
+          ? 'border-warning bg-warning/5'
+          : 'border-border bg-muted/20',
       )}
     >
       <div className="flex items-center gap-2">

@@ -62,17 +62,17 @@ export function ReferenceChartFrame({
         </div>
 
         {fallbackNotice ? (
-          <Notice tone={fallbackTone === 'warning' ? 'warning' : 'success'} compact className="border-t-0">
+          <Notice tone={fallbackTone === 'warning' ? 'warning' : 'success'} compact className="border-t-0 bg-transparent px-0">
             <div className="flex flex-wrap items-start gap-x-4 gap-y-2">
-            <div className={cn('inline-flex items-center gap-2 border-l-2 pl-3 text-xs font-semibold', healthToneClass)}>
-              {fallbackTone === 'warning' ? (
-                <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-              ) : (
-                <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
-              )}
-              {fallbackTone === 'warning' ? fallbackStatusLabel : syncedStatusLabel}
-            </div>
-            <p className="max-w-3xl text-sm leading-6 text-muted-foreground">{fallbackNotice}</p>
+              <div className={cn('inline-flex items-center gap-2 border-l-2 pl-3 text-xs font-semibold', healthToneClass)}>
+                {fallbackTone === 'warning' ? (
+                  <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                ) : (
+                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+                )}
+                {fallbackTone === 'warning' ? fallbackStatusLabel : syncedStatusLabel}
+              </div>
+              <p className="max-w-3xl text-sm leading-6 text-muted-foreground">{fallbackNotice}</p>
             </div>
           </Notice>
         ) : null}
