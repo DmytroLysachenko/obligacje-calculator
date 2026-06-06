@@ -101,8 +101,8 @@ describe('calculator input layout contracts', () => {
       readSource(paths.regularTiming),
     ].join('\n');
 
-    expectContains(sources, 'rounded-lg border border-border bg-muted/25');
-    expectContains(sources, 'rounded-lg border border-success/30 bg-success/5');
+    expectContains(sources, 'FormInlineNotice');
+    expectContains(readSource('shared/components/forms/FormInlineNotice.tsx'), 'border-l-2 px-4 py-3 text-sm leading-6');
     expectNoFragments(sources, [
       'rounded-lg bg-muted/35 p-4',
       'rounded-md border border-border bg-muted/35 p-4',

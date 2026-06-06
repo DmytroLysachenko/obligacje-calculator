@@ -10,6 +10,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { RegularInvestmentInputs } from '@/features/bond-core/types';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
+import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { cn } from '@/lib/utils';
 
@@ -49,12 +50,11 @@ export function AdvancedSettingsSection({
 
         {currentDef.rebuyDiscount > 0 ? (
           <div className="space-y-4 border-t border-border pt-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-2">
-                  <Label className="text-sm font-semibold">
-                    {t('bonds.is_rebought')}
-                  </Label>
+            <FormInlineNotice
+              tone="success"
+              title={(
+                <span className="inline-flex items-center gap-2">
+                  {t('bonds.is_rebought')}
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -65,32 +65,30 @@ export function AdvancedSettingsSection({
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {t('bonds.is_rebought_desc')} (-{currentDef.rebuyDiscount.toFixed(2)} PLN/szt)
-                </p>
-              </div>
-              <Switch
-                checked={inputs.isRebought}
-                onCheckedChange={(checked) => onUpdate('isRebought', checked)}
-              />
-            </div>
+                </span>
+              )}
+              description={`${t('bonds.is_rebought_desc')} (-${currentDef.rebuyDiscount.toFixed(2)} PLN/szt)`}
+              action={(
+                <Switch
+                  checked={inputs.isRebought}
+                  onCheckedChange={(checked) => onUpdate('isRebought', checked)}
+                />
+              )}
+            />
           </div>
         ) : null}
 
         <div className="space-y-4 border-t border-border pt-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label className="text-sm font-semibold text-foreground">{t('bonds.reinvest')}</Label>
-              <p className="text-xs font-medium italic text-muted-foreground">
-                {t('bonds.rollover_desc')}
-              </p>
-            </div>
-            <Switch
-              checked={!!inputs.rollover}
-              onCheckedChange={(checked) => onUpdate('rollover', checked)}
-            />
-          </div>
+          <FormInlineNotice
+            title={t('bonds.reinvest')}
+            description={t('bonds.rollover_desc')}
+            action={(
+              <Switch
+                checked={!!inputs.rollover}
+                onCheckedChange={(checked) => onUpdate('rollover', checked)}
+              />
+            )}
+          />
 
           <div className="flex items-center justify-between border-t border-border pt-4">
             <div className="space-y-0.5">

@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { cn } from '@/lib/utils';
 import { toDateString } from '@/shared/lib/date-timing';
 import { FormField } from '@/shared/components/forms/FormField';
+import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 import { RangeField } from '@/shared/components/forms/RangeField';
 import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
 
@@ -123,15 +124,12 @@ export function TimingSection({
 
       {timingMode === 'exact' ? (
         <FormField label={t('bonds.investment_horizon')} tooltip={t('regular_form.horizon_help')}>
-          <div className="rounded-lg border border-border bg-muted/25 px-4 py-3 text-sm text-muted-foreground">
-            <span className="font-semibold text-foreground">
-              {investmentHorizonYears % 1 === 0
-                ? investmentHorizonYears.toFixed(0)
-                : investmentHorizonYears.toFixed(2)}{' '}
-              {t('common.years')}
-            </span>{' '}
-            - {t('regular_form.horizon_help')}
-          </div>
+          <FormInlineNotice
+            title={`${investmentHorizonYears % 1 === 0
+              ? investmentHorizonYears.toFixed(0)
+              : investmentHorizonYears.toFixed(2)} ${t('common.years')}`}
+            description={t('regular_form.horizon_help')}
+          />
         </FormField>
       ) : (
         <RangeField

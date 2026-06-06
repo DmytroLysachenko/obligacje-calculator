@@ -17,6 +17,7 @@ import { getDateFnsLocale } from '@/i18n/locale-utils';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
 import { RangeField } from '@/shared/components/forms/RangeField';
 import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
+import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 interface BondTimingSectionProps {
     inputs: BondInputs;
     onUpdate: (key: keyof BondInputs, value: string | number | boolean) => void;
@@ -108,38 +109,28 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(({
           onValueChange={(value) => onUpdate('taxStrategy', value as TaxStrategy)}
         />
         
-        {(inputs.taxStrategy === TaxStrategy.IKE || inputs.taxStrategy === TaxStrategy.IKZE) && (<div className="flex items-center justify-between rounded-lg border border-border bg-muted/25 px-3 py-3">
-            <div className="space-y-0.5">
-              <Label className="text-xs font-semibold">{t('bonds.use_tax_limit')}</Label>
-              <p className="max-w-[200px] text-xs leading-5 text-muted-foreground">
-                {t('bonds.use_tax_limit_desc')}
-              </p>
-            </div>
-            <Switch checked={!!inputs.useTaxWrapperLimit} onCheckedChange={(checked) => onUpdate('useTaxWrapperLimit', checked)}/>
-          </div>)}
+        {(inputs.taxStrategy === TaxStrategy.IKE || inputs.taxStrategy === TaxStrategy.IKZE) && (
+          <FormInlineNotice
+            title={t('bonds.use_tax_limit')}
+            description={t('bonds.use_tax_limit_desc')}
+            action={<Switch checked={!!inputs.useTaxWrapperLimit} onCheckedChange={(checked) => onUpdate('useTaxWrapperLimit', checked)}/>}
+          />
+        )}
       </div>
 
-      {currentDef.rebuyDiscount > 0 && (<div className="flex items-center justify-between rounded-lg border border-success/30 bg-success/5 px-4 py-3">
-          <div className="space-y-0.5">
-            <Label className="text-sm font-semibold text-foreground">{t('bonds.is_rebought')}</Label>
-            <p className="text-xs text-[var(--finance-success)]">
-              {t('bonds.discount_per_bond', { amount: currentDef.rebuyDiscount.toFixed(2) })}
-            </p>
-          </div>
-          <Switch checked={inputs.isRebought} onCheckedChange={(checked) => onUpdate('isRebought', checked)}/>
-        </div>)}
+      {currentDef.rebuyDiscount > 0 && (
+        <FormInlineNotice
+          tone="success"
+          title={t('bonds.is_rebought')}
+          description={t('bonds.discount_per_bond', { amount: currentDef.rebuyDiscount.toFixed(2) })}
+          action={<Switch checked={inputs.isRebought} onCheckedChange={(checked) => onUpdate('isRebought', checked)}/>}
+        />
+      )}
 
-      <div className="rounded-lg border border-border bg-muted/25 px-4 py-3">
-        <div className="space-y-0.5">
-          <Label className="text-sm font-semibold text-foreground">
-            {t('bonds.timing.rollover_title')}
-          </Label>
-          <p className="text-xs text-muted-foreground">
-            {autoRollover
-            ? t('bonds.timing.rollover_auto') : t('bonds.timing.single_cycle')}
-          </p>
-        </div>
-      </div>
+      <FormInlineNotice
+        title={t('bonds.timing.rollover_title')}
+        description={autoRollover ? t('bonds.timing.rollover_auto') : t('bonds.timing.single_cycle')}
+      />
     </div>);
 });
 BondTimingSection.displayName = 'BondTimingSection';
