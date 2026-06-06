@@ -4,10 +4,10 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { FolderKanban, LayoutList } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAppI18n } from '@/i18n/client';
 import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 import { useWorkspacePortfolios } from '@/shared/hooks/useWorkspacePortfolios';
+import { FormSelect } from '@/shared/components/forms/FormSelect';
 import { SidebarUtilityPanel } from './SidebarUtilityGroup';
 
 export function SidebarWorkspaceUtility({ pathname }: { pathname: string }) {
@@ -59,23 +59,18 @@ export function SidebarWorkspaceUtility({ pathname }: { pathname: string }) {
           </p>
         </div>
 
-        <Select
-          value={selectedPortfolioId ?? undefined}
+        <FormSelect
+          value={selectedPortfolioId ?? ''}
           onValueChange={(value) => {
             setSelectedPortfolioId(value);
           }}
-        >
-          <SelectTrigger className="border-border bg-card">
-            <SelectValue placeholder={t('sidebar.portfolio_selector_empty')} />
-          </SelectTrigger>
-          <SelectContent>
-            {portfolios.map((portfolio) => (
-              <SelectItem key={portfolio.id} value={portfolio.id}>
-                {portfolio.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          placeholder={t('sidebar.portfolio_selector_empty')}
+          triggerClassName="border-border bg-card"
+          options={portfolios.map((portfolio) => ({
+            value: portfolio.id,
+            label: portfolio.name,
+          }))}
+        />
 
         <Button asChild variant="outline" className="h-9 w-full rounded-md border-border bg-card text-sm">
           <Link href="/notebook" className="gap-2">

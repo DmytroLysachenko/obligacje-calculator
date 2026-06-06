@@ -15,13 +15,6 @@ import {
 } from '@/components/ui/accordion';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { BondOptimizerCalculationEnvelope } from '@/features/bond-core/types/scenarios';
 import { TaxStrategy } from '@/features/bond-core/types';
@@ -33,6 +26,7 @@ import {
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
+import { FormSelect } from '@/shared/components/forms/FormSelect';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
 import { MacroDefaultsSummary } from '@/shared/components/market-assumptions/MacroDefaultsSummary';
@@ -264,27 +258,27 @@ export default function BondOptimizerClient() {
                       <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                         {t('optimizer_page.tax_strategy_label')}
                       </Label>
-                      <Select
+                      <FormSelect
                         value={inputs.taxStrategy}
                         onValueChange={(value) =>
                           updateInput('taxStrategy', value)
                         }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder={t('optimizer_page.select_strategy')} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value={TaxStrategy.STANDARD}>
-                            {taxStrategyLabels[TaxStrategy.STANDARD]}
-                          </SelectItem>
-                          <SelectItem value={TaxStrategy.IKE}>
-                            {taxStrategyLabels[TaxStrategy.IKE]}
-                          </SelectItem>
-                          <SelectItem value={TaxStrategy.IKZE}>
-                            {taxStrategyLabels[TaxStrategy.IKZE]}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
+                        placeholder={t('optimizer_page.select_strategy')}
+                        options={[
+                          {
+                            value: TaxStrategy.STANDARD,
+                            label: taxStrategyLabels[TaxStrategy.STANDARD],
+                          },
+                          {
+                            value: TaxStrategy.IKE,
+                            label: taxStrategyLabels[TaxStrategy.IKE],
+                          },
+                          {
+                            value: TaxStrategy.IKZE,
+                            label: taxStrategyLabels[TaxStrategy.IKZE],
+                          },
+                        ]}
+                      />
                     </div>
 
                     <div className="space-y-3 rounded-lg bg-muted/35 px-4 py-4">

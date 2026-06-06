@@ -7,9 +7,9 @@ import { useAppI18n } from '@/i18n/client';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Filter, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { FormSelect } from '@/shared/components/forms/FormSelect';
 import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
 import { applyTableRowLimit, getVisibleRowLabel, TableDensityControls, TableRowLimit } from '@/shared/components/results/TableDensityControls';
 import { AppLanguage, buildBondTimelineDisplayRows, getSimulationEventDisplayLabel, } from '@/shared/lib/bond-display';
@@ -110,19 +110,19 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
           <div className="flex w-full flex-col gap-2 md:w-auto md:flex-row md:items-center">
             <div className="flex w-full items-center gap-2 md:w-auto">
               <Filter className="h-4 w-4 text-muted-foreground"/>
-              <Select value={eventTypeFilter} onValueChange={setEventTypeFilter}>
-                <SelectTrigger className="w-full bg-background md:w-56">
-                  <SelectValue placeholder={t('bonds.filter_events') || 'Filter Events'}/>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">
-                    {t('common.all_events') || 'All Events'}
-                  </SelectItem>
-                  {eventOptions.map((type) => (<SelectItem key={type.value} value={type.value}>
-                      {type.label}
-                    </SelectItem>))}
-                </SelectContent>
-              </Select>
+              <FormSelect
+                value={eventTypeFilter}
+                onValueChange={setEventTypeFilter}
+                placeholder={t('bonds.filter_events') || 'Filter Events'}
+                triggerClassName="w-full bg-background md:w-56"
+                options={[
+                  {
+                    value: 'all',
+                    label: t('common.all_events') || 'All Events',
+                  },
+                  ...eventOptions,
+                ]}
+              />
             </div>
 
             {activeFilterCount > 0 ? (<Button type="button" variant="outline" size="sm" className="gap-2" onClick={resetFilters}>

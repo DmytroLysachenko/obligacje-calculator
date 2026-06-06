@@ -4,8 +4,8 @@ import React from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
+import { FormSelect } from '@/shared/components/forms/FormSelect';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import {
   getBondSupportMeta,
@@ -112,23 +112,16 @@ export function RetirementInputsPanel({
           <Label className="text-xs font-bold uppercase text-muted-foreground">
             {labels.bondFamily}
           </Label>
-          <Select value={inputs.bondType} onValueChange={(value) => onUpdateInput('bondType', value as BondType)}>
-            <SelectTrigger className="font-semibold">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {RETIREMENT_SUPPORTED_BOND_TYPES.map((type) => (
-                <SelectItem key={type} value={type}>
-                  <div className="flex flex-col">
-                    <span>{type}</span>
-                    <span className="text-[10px] text-muted-foreground">
-                      {getBondSupportMeta(type).shortLabel}
-                    </span>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <FormSelect
+            value={inputs.bondType}
+            onValueChange={(value) => onUpdateInput('bondType', value as BondType)}
+            triggerClassName="font-semibold"
+            options={RETIREMENT_SUPPORTED_BOND_TYPES.map((type) => ({
+              value: type,
+              label: type,
+              description: getBondSupportMeta(type).shortLabel,
+            }))}
+          />
           <p className="text-xs leading-5 text-muted-foreground">
             {getRetirementSupportNote(inputs.bondType)}
           </p>
@@ -191,25 +184,25 @@ export function RetirementInputsPanel({
                 <Label className="text-xs font-bold uppercase text-muted-foreground">
                   {labels.taxWrapper}
                 </Label>
-                <Select
+                <FormSelect
                   value={inputs.taxStrategy}
                   onValueChange={(value) => onUpdateInput('taxStrategy', value as TaxStrategy)}
-                >
-                  <SelectTrigger className="font-semibold">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={TaxStrategy.STANDARD}>
-                      {taxStrategyLabels[TaxStrategy.STANDARD]}
-                    </SelectItem>
-                    <SelectItem value={TaxStrategy.IKE}>
-                      {taxStrategyLabels[TaxStrategy.IKE]}
-                    </SelectItem>
-                    <SelectItem value={TaxStrategy.IKZE}>
-                      {taxStrategyLabels[TaxStrategy.IKZE]}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+                  triggerClassName="font-semibold"
+                  options={[
+                    {
+                      value: TaxStrategy.STANDARD,
+                      label: taxStrategyLabels[TaxStrategy.STANDARD],
+                    },
+                    {
+                      value: TaxStrategy.IKE,
+                      label: taxStrategyLabels[TaxStrategy.IKE],
+                    },
+                    {
+                      value: TaxStrategy.IKZE,
+                      label: taxStrategyLabels[TaxStrategy.IKZE],
+                    },
+                  ]}
+                />
               </div>
             </AccordionContent>
           </AccordionItem>

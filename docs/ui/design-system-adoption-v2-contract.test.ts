@@ -19,12 +19,26 @@ function expectAvoidsLocalPattern(source: string, pattern: string) {
 describe('design system adoption v2 contract', () => {
   it('keeps selector usage centralized for calculator input surfaces', () => {
     const singleConfig = read('features/single-calculator/components/sections/BondConfigSection.tsx');
+    const singleTimeline = read('features/single-calculator/components/BondTimeline.tsx');
     const regularBond = read('features/regular-investment/components/inputs/BondSelectionSection.tsx');
     const comparisonControls = read('features/comparison-engine/components/ComparisonControls.tsx');
     const comparisonShared = read('features/comparison-engine/components/ComparisonSharedBaseCard.tsx');
     const notebookStatus = read('features/notebook/components/WorkspaceStatusCard.tsx');
+    const sidebarWorkspace = read('shared/components/chrome/SidebarWorkspaceUtility.tsx');
+    const retirementInputs = read('features/retirement/components/RetirementInputsPanel.tsx');
+    const optimizer = read('app/optimize/BondOptimizerClient.tsx');
 
-    for (const source of [singleConfig, regularBond, comparisonControls, comparisonShared, notebookStatus]) {
+    for (const source of [
+      singleConfig,
+      singleTimeline,
+      regularBond,
+      comparisonControls,
+      comparisonShared,
+      notebookStatus,
+      sidebarWorkspace,
+      retirementInputs,
+      optimizer,
+    ]) {
       expectUsesShared(source, 'FormSelect');
       expectAvoidsLocalPattern(source, "from '@/components/ui/select'");
     }
