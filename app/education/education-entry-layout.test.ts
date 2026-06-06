@@ -75,17 +75,19 @@ describe('education entry layout contracts', () => {
     expectContains(source, "import Link from 'next/link';");
     expectContains(source, 'surface-chip border-foreground text-foreground');
     expectContains(source, 'surface-chip text-foreground');
-    expectContains(source, 'rounded-lg border border-border bg-card p-5 shadow-sm');
+    expectContains(source, 'border-t border-border py-5');
     expectContains(source, '<dl className="grid grid-cols-1 gap-x-4 divide-y divide-border border-y border-border');
-    expectContains(source, "import { Notice } from '@/shared/components/feedback/Notice';");
-    expectContains(source, '<Notice tone="warning" title={t(\'bonds.early_exit_title\')} compact>');
+    expectContains(source, "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
+    expectContains(source, '<FormInlineNotice');
     expectContains(source, "t('education.calculate_this_bond')");
     expectContains(source, '<ArrowRight className="h-4 w-4" />');
 
     expectNoFragments(source, [
       "import { Badge } from '@/components/ui/badge';",
+      "import { Notice } from '@/shared/components/feedback/Notice';",
       '<Badge',
       '</Badge>',
+      'rounded-lg border border-border bg-card p-5 shadow-sm',
       'rounded-lg border border-border bg-muted/20 p-4',
       'rounded-md border border-warning/30 bg-warning/5',
     ]);

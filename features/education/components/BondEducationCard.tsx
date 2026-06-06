@@ -5,13 +5,13 @@ import { ArrowRight, Clock, Coins, ShieldCheck, TrendingUp } from 'lucide-react'
 import { BondDefinition } from '../../bond-core/constants/bond-definitions';
 import { useAppI18n } from '@/i18n/client';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
-import { Notice } from '@/shared/components/feedback/Notice';
+import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 interface BondEducationCardProps {
     bond: BondDefinition;
 }
 export const BondEducationCard: React.FC<BondEducationCardProps> = ({ bond }) => {
     const { t, locale: language } = useAppI18n();
-    return (<article className="flex h-full flex-col rounded-lg border border-border bg-card p-5 shadow-sm transition-colors hover:bg-muted/25">
+    return (<article className="flex h-full flex-col border-t border-border py-5 transition-colors hover:bg-muted/20">
       <div>
         <div className="mb-3 flex items-start justify-between gap-4">
           <span className={bond.isInflationIndexed ? 'surface-chip border-foreground text-foreground' : 'surface-chip'}>
@@ -70,9 +70,11 @@ export const BondEducationCard: React.FC<BondEducationCardProps> = ({ bond }) =>
         </dl>
 
         <div className="mt-auto space-y-4 pt-1">
-          <Notice tone="warning" title={t('bonds.early_exit_title')} compact>
-            {t('bonds.early_exit_desc', { fee: bond.earlyWithdrawalFee })}
-          </Notice>
+          <FormInlineNotice
+            tone="warning"
+            title={t('bonds.early_exit_title')}
+            description={t('bonds.early_exit_desc', { fee: bond.earlyWithdrawalFee })}
+          />
           <Link
             href="/single-calculator"
             className="inline-flex h-9 items-center gap-2 border-b border-foreground text-sm font-semibold text-foreground"
