@@ -15,38 +15,13 @@ import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
+import { SectionBlock } from '@/shared/components/page/SectionBlock';
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 import { ComparisonChartPoint } from './display-model';
 import { getBondColor } from '@/shared/lib/charts/get-bond-color';
 import { getBondSupportMeta } from '@/features/bond-core/support-matrix';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
-
-function SectionBlock({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="surface-shell space-y-5 p-5">
-      <div className="space-y-2 border-b border-border pb-4">
-        <h3 className="ui-section-title">
-          {title}
-        </h3>
-        {description ? (
-          <p className="ui-body max-w-3xl text-muted-foreground">
-            {description}
-          </p>
-        ) : null}
-      </div>
-      {children}
-    </section>
-  );
-}
 
 function getModeledValue(result: BondComparisonScenarioItem, showRealValue: boolean) {
   return showRealValue
@@ -142,7 +117,7 @@ function ComparisonVerdictPanel({
         })}
         narrative={t('comparison.page.verdict_narrative')}
         aside={
-          <div className="rounded-md border border-success/30 bg-success/5 px-4 py-3">
+          <div className="border-l-2 border-success bg-success/5 px-4 py-3">
             <p className="ui-metadata text-muted-foreground">
               {valueLabel}
             </p>
@@ -198,7 +173,7 @@ function ScenarioResultCard({
   const { t } = useAppI18n();
 
   return (
-    <article className="space-y-5 rounded-lg border border-border bg-card p-5">
+    <article className="space-y-5 border-t border-border py-5">
         <div className="space-y-2">
           <div className="flex items-center gap-3">
             <div
@@ -253,7 +228,7 @@ function ComparisonEmptyState() {
   const { t } = useAppI18n();
 
   return (
-    <section className="surface-shell space-y-6 p-5 md:p-6">
+    <section className="space-y-6 border-t border-border py-6">
         <div className="space-y-3">
           <div className="surface-chip">
             <TrendingUp className="h-3.5 w-3.5 text-primary" />
@@ -293,7 +268,7 @@ function ComparisonStepCard({
   description: string;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className="border-t border-border py-4">
       <p className="ui-card-title">
         {title}
       </p>
@@ -363,8 +338,9 @@ export function ComparisonResultsDashboard({
       <SectionBlock
         title={t('comparison.page.chart_title')}
         description={t('comparison.page.chart_description')}
+        contentClassName="space-y-5"
       >
-        <section className="space-y-5">
+        <>
             <ChartSupportNote
               title={t('comparison.page.chart_note_title')}
               description={t('comparison.page.chart_note_description')}
@@ -401,7 +377,7 @@ export function ComparisonResultsDashboard({
                 </LineChart>
               </ResponsiveContainer>
             </ChartContainer>
-        </section>
+        </>
       </SectionBlock>
 
       <SecondaryInsightAccordion

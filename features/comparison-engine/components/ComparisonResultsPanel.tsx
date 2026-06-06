@@ -168,7 +168,7 @@ export function ComparisonResultsPanel({
             <MetricStrip items={comparisonMetrics} columns="grid-cols-1 md:grid-cols-2" className="shadow-none" />
             <ResultActionGrid
               actions={exportActions}
-              className="border border-border bg-card p-3 lg:w-auto lg:border"
+              className="border-y border-border bg-transparent px-0 py-3 lg:w-auto lg:border-x-0"
             />
           </div>
         </div>
