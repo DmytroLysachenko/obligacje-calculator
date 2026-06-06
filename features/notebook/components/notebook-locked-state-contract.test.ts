@@ -7,6 +7,7 @@ const root = process.cwd();
 const files = {
   notebook: 'features/notebook/components/NotebookContainer.tsx',
   actions: 'features/notebook/components/WorkspaceActionStrip.tsx',
+  status: 'features/notebook/components/WorkspaceStatusCard.tsx',
   en: 'i18n/translations/en.json',
   pl: 'i18n/translations/pl.json',
 } as const;
@@ -39,20 +40,23 @@ describe('notebook locked and empty state contracts', () => {
     expectContains(source, "t('notebook.capabilities.maturities.title')");
     expectContains(source, "t('notebook.capabilities.export.title')");
     expectContains(source, "t('notebook.capabilities.projection.title')");
-    expectContains(source, 'grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]');
+    expectContains(source, "import { SectionBlock } from '@/shared/components/page/SectionBlock';");
     expectContains(source, "import { Notice } from '@/shared/components/feedback/Notice';");
     expectContains(source, 'space-y-4');
-    expectContains(source, 'grid gap-x-6 gap-y-4 border-t border-border pt-4 md:grid-cols-2');
-    expectContains(source, 'border-t border-border pt-4 first:border-t-0 first:pt-0 md:first:border-t md:first:pt-4');
+    expectContains(source, 'grid gap-x-6 gap-y-4 border-y border-border py-4 md:grid-cols-2');
+    expectContains(source, 'border-t border-border pt-4 first:border-t-0 first:pt-0 md:border-t-0 md:pt-0');
 
     expectNoFragments(source, [
+      'function SectionBlock(',
       'LegacyEmptyPortfolioState',
       'ready_steps.create.title',
       'ready_steps.store.title',
       'ready_steps.inspect.title',
+      'grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]',
       'rounded-full border border-border bg-muted/40',
       'space-y-4 rounded-lg border border-border bg-card p-4',
       'rounded-md border border-border bg-muted/20 p-3',
+      'gap-2 rounded-md border-border bg-card',
     ]);
   });
 
@@ -62,7 +66,7 @@ describe('notebook locked and empty state contracts', () => {
     expectContains(source, 'isGuestWorkspace ? (');
     expectContains(source, "t('workspace.locked_notebook_notice')");
     expectContains(source, '<Notice tone="locked" title={t(\'workspace.sign_in_required_short\')}>');
-    expectContains(source, '<Notice tone="locked" title={createLabel}>');
+    expectContains(source, '<Notice tone="locked" title={createLabel} compact>');
     expectContains(source, 'disabled={!canManageWorkspace}');
 
     expectNoFragments(source, [
@@ -84,11 +88,33 @@ describe('notebook locked and empty state contracts', () => {
     expectContains(source, 'variant="ghost"');
     expectContains(source, 'onClick={onImport}');
     expectContains(source, 'onClick={onRefresh}');
+    expectContains(source, 'className="rounded-md border-border"');
 
     expectNoFragments(source, [
       'rounded-lg border border-border bg-card px-5 py-5',
       'border-t border-dashed border-border',
+      'className="rounded-md border-border bg-card"',
       'onClick={onImport}\\n          className="gap-2 rounded-md border-border bg-card"',
+    ]);
+  });
+
+  it('keeps workspace status as inline reference content', () => {
+    const source = read(files.status);
+
+    expectContains(source, '<section className="space-y-5 border-t border-border py-5">');
+    expectContains(source, '<p className="ui-meta font-semibold">');
+    expectContains(source, 'min-w-[280px] border-l-2 border-border px-4 py-3');
+    expectContains(source, '<div className="pt-0.5 text-foreground">');
+    expectContains(source, '<div className="border-t border-border pt-3">');
+    expectContains(source, '<FormSelect');
+
+    expectNoFragments(source, [
+      'BookOpen',
+      'rounded-full border border-border bg-muted/40',
+      'rounded-lg bg-muted/30',
+      'rounded-md bg-card',
+      'border-t border-dashed border-border',
+      'triggerClassName="bg-card"',
     ]);
   });
 

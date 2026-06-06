@@ -49,7 +49,7 @@ export function WorkspaceActionStrip({
         <Button
           variant="outline"
           onClick={onCreateDemo}
-          className="rounded-md border-border bg-card"
+          className="rounded-md border-border"
           disabled={!canManageWorkspace}
         >
           {t('notebook.load_demo')}

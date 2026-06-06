@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { BookOpen, FolderKanban, LockKeyhole } from 'lucide-react';
+import { FolderKanban, LockKeyhole } from 'lucide-react';
 import { useAppI18n } from '@/i18n/client';
 import { UserPortfolio } from '@/db/schema';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
@@ -29,12 +29,11 @@ export function WorkspaceStatusCard({
     <section className="space-y-5 border-t border-border py-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-3xl space-y-3">
-          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-muted-foreground">
-            <BookOpen className="h-3.5 w-3.5 text-foreground" />
+          <p className="ui-meta font-semibold">
             {isGuestWorkspace
               ? t('workspace.guest_preview_badge')
               : t('workspace.active_workspace_badge')}
-          </div>
+          </p>
           <p className="text-sm leading-7 text-muted-foreground">
             {isGuestWorkspace
               ? t('workspace.guest_preview_description')
@@ -42,9 +41,9 @@ export function WorkspaceStatusCard({
           </p>
         </div>
 
-        <div className="min-w-[280px] rounded-lg bg-muted/30 px-4 py-4">
+        <div className="min-w-[280px] border-l-2 border-border px-4 py-3">
           <div className="flex items-start gap-3">
-            <div className="rounded-md bg-card p-2.5 text-foreground">
+            <div className="pt-0.5 text-foreground">
               <WorkspaceStateIcon className="h-4.5 w-4.5" />
             </div>
             <div className="min-w-0 flex-1 space-y-3">
@@ -63,12 +62,11 @@ export function WorkspaceStatusCard({
               </p>
 
               {canManageWorkspace && portfolios.length > 0 ? (
-                <div className="border-t border-dashed border-border pt-3">
+                <div className="border-t border-border pt-3">
                   <FormSelect
                     label={t('common.portfolio_selector_label')}
                     value={selectedPortfolio?.id ?? 'none'}
                     onValueChange={(value) => onActivePortfolioChange(value === 'none' ? null : value)}
-                    triggerClassName="bg-card"
                     options={[
                       {
                         value: 'none',

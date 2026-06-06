@@ -9,6 +9,7 @@ import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 import { useDateFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { useWorkspacePortfolios } from '@/shared/hooks/useWorkspacePortfolios';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
+import { SectionBlock } from '@/shared/components/page/SectionBlock';
 import { AppToast } from '@/shared/components/feedback/AppToast';
 import { ConfirmActionDialog } from '@/shared/components/feedback/ConfirmActionDialog';
 import { Notice } from '@/shared/components/feedback/Notice';
@@ -24,23 +25,6 @@ type NotebookStepItem = {
     title: string;
     description: string;
 };
-function SectionBlock({ title, description, children, }: {
-    title: string;
-    description?: string;
-    children: React.ReactNode;
-}) {
-    return (<section className="space-y-5 border-t border-border py-8">
-      <div className="space-y-2">
-        <h3 className="ui-section-title">
-          {title}
-        </h3>
-        {description ? (<p className="ui-body max-w-3xl">
-            {description}
-          </p>) : null}
-      </div>
-      {children}
-    </section>);
-}
 const EmptyPortfolioState = ({ onCreate, onCreateDemo, onImport, badgeLabel, title, description, createLabel, demoLabel, importLabel, capabilitiesTitle, capabilities, canManageWorkspace, }: {
     onCreate: () => void;
     onCreateDemo: () => void;
@@ -68,29 +52,27 @@ const EmptyPortfolioState = ({ onCreate, onCreateDemo, onImport, badgeLabel, tit
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="space-y-4">
-          <p className="ui-card-title">{capabilitiesTitle}</p>
-          <div className="grid gap-x-6 gap-y-4 border-t border-border pt-4 md:grid-cols-2">
-            {capabilities.map((capability) => (
-              <div key={capability.id} className="border-t border-border pt-4 first:border-t-0 first:pt-0 md:first:border-t md:first:pt-4">
-                <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
-                <div className="space-y-1">
-                  <p className="text-sm font-semibold text-foreground">{capability.title}</p>
-                  <p className="ui-body text-muted-foreground">{capability.description}</p>
-                </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+      {!canManageWorkspace ? (
+        <Notice tone="locked" title={createLabel} compact>
+          {description}
+        </Notice>
+      ) : null}
 
-        {!canManageWorkspace ? (
-          <Notice tone="locked" title={createLabel}>
-            {description}
-          </Notice>
-        ) : null}
+      <div className="space-y-4">
+        <p className="ui-card-title">{capabilitiesTitle}</p>
+        <div className="grid gap-x-6 gap-y-4 border-y border-border py-4 md:grid-cols-2">
+          {capabilities.map((capability) => (
+            <div key={capability.id} className="border-t border-border pt-4 first:border-t-0 first:pt-0 md:border-t-0 md:pt-0">
+              <div className="flex items-start gap-3">
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
+              <div className="space-y-1">
+                <p className="text-sm font-semibold text-foreground">{capability.title}</p>
+                <p className="ui-body text-muted-foreground">{capability.description}</p>
+              </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-3">
@@ -98,7 +80,7 @@ const EmptyPortfolioState = ({ onCreate, onCreateDemo, onImport, badgeLabel, tit
           <Plus className="h-4 w-4"/>
           {createLabel}
         </Button>
-        <Button variant="outline" onClick={onCreateDemo} className="gap-2 rounded-md border-border bg-card" disabled={!canManageWorkspace}>
+        <Button variant="outline" onClick={onCreateDemo} className="gap-2 rounded-md border-border" disabled={!canManageWorkspace}>
           {demoLabel}
         </Button>
         <Button variant="ghost" onClick={onImport} className="gap-2 rounded-md" disabled={!canManageWorkspace}>
