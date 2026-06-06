@@ -48,9 +48,9 @@ export default async function SharedPortfolioPage({params}: Props) {
 
   return (
     <div className="mx-auto max-w-7xl py-8">
-      <div className="mb-8 flex items-center justify-between rounded-lg border border-border bg-card p-4 shadow-none">
+      <div className="mb-8 flex items-center justify-between gap-4 border-y border-border py-4">
         <p className="text-sm font-semibold text-muted-foreground">{page('public_notice')}</p>
-        <div className="rounded-md border border-border bg-muted px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-foreground">
+        <div className="border-l-2 border-border pl-3 text-[10px] font-semibold uppercase tracking-widest text-foreground">
           {page('read_only')}
         </div>
       </div>

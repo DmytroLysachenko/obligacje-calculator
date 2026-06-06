@@ -39,7 +39,7 @@ export function PortfolioWorkspaceCard({
     <article className="space-y-4 border-t border-border py-5 transition-colors hover:border-foreground/20">
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
-          <div className="rounded-md bg-muted p-2.5 text-foreground">
+          <div className="border-l-2 border-border pl-3 pt-0.5 text-foreground">
             <FileText className="h-4.5 w-4.5" />
           </div>
           <div className="min-w-0 space-y-2">
@@ -47,7 +47,7 @@ export function PortfolioWorkspaceCard({
               <p className="text-base font-semibold tracking-tight text-foreground">
                 {portfolio.name}
               </p>
-              <span className="rounded-full border border-border bg-muted/40 px-2.5 py-0.5 text-[10px] font-semibold tracking-[0.08em] text-muted-foreground">
+              <span className="text-[10px] font-semibold tracking-[0.08em] text-muted-foreground">
                 {statusLabel}
               </span>
             </div>
@@ -59,7 +59,7 @@ export function PortfolioWorkspaceCard({
         <Button
           variant="ghost"
           size="icon"
-          className="h-9 w-9 rounded-full text-muted-foreground hover:text-destructive"
+          className="h-9 w-9 rounded-md text-muted-foreground hover:text-destructive"
           onClick={(event) => {
             event.stopPropagation();
             onRequestDelete();

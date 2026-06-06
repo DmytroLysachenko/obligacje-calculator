@@ -32,7 +32,7 @@ export function ScenarioSetupCard({
     <section
       data-tone={tone}
       className={cn(
-        'rounded-lg border border-l-2 bg-card px-4 py-4 shadow-sm sm:px-5',
+        'border-l-2 border-t px-4 py-4 sm:px-5',
         toneClass[tone],
         className,
       )}

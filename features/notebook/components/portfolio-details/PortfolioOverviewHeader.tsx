@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ArrowLeft, Check, Download, FolderOpen, Loader2, Share2, ShieldCheck, Trash2 } from 'lucide-react';
+import { ArrowLeft, Check, Download, Loader2, Share2, ShieldCheck, Trash2 } from 'lucide-react';
 import { UserPortfolio } from '@/db/schema';
 import { Button } from '@/components/ui/button';
 
@@ -67,10 +67,9 @@ export function PortfolioOverviewHeader({
       <section className="space-y-6 border-t border-border py-6">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-2xl space-y-3">
-              <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-muted-foreground">
-                <FolderOpen className="h-3.5 w-3.5 text-foreground" />
+              <p className="ui-meta font-semibold">
                 {t('notebook.record_view')}
-              </div>
+              </p>
               <h3 className="ui-section-title">
                 {t('notebook.record_intro_title')}
               </h3>
