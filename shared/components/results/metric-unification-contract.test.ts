@@ -20,7 +20,9 @@ describe('metric unification contracts', () => {
 
     expect(source).toContain('export interface MetricStripItem');
     expect(source).toContain('className?: string;');
-    expect(source).toContain("cn('overflow-hidden rounded-lg border border-border bg-border shadow-sm', className)");
+    expect(source).toContain("cn('border-y border-border', className)");
+    expect(source).toContain('grid divide-y divide-border md:divide-y-0');
+    expect(source).toContain('space-y-2 py-4 md:border-l md:border-border md:px-4 md:first:border-l-0 md:first:pl-0');
   });
 
   it('removes local metric renderers from comparison and notebook surfaces', () => {

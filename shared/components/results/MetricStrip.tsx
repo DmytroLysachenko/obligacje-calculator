@@ -22,10 +22,10 @@ export const MetricStrip = React.memo(function MetricStrip({
   className,
 }: MetricStripProps) {
   return (
-    <section className={cn('overflow-hidden rounded-lg border border-border bg-border shadow-sm', className)}>
-      <div className={cn('grid gap-px', columns)}>
+    <section className={cn('border-y border-border', className)}>
+      <div className={cn('grid divide-y divide-border md:divide-y-0', columns)}>
         {items.map((item) => (
-          <div key={item.label} className="space-y-2 bg-card px-4 py-5">
+          <div key={item.label} className="space-y-2 py-4 md:border-l md:border-border md:px-4 md:first:border-l-0 md:first:pl-0">
             <p className="ui-meta font-semibold">{item.label}</p>
             <p className={cn('financial-number ui-large-metric text-foreground', item.tone)}>
               {item.value}

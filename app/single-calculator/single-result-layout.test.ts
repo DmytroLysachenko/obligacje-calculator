@@ -66,16 +66,18 @@ describe('single calculator result layout contracts', () => {
     ]);
   });
 
-  it('keeps the metric strip grouped and scannable instead of loose divider-led rows', () => {
+  it('keeps the metric strip divider-led and scannable instead of boxed dashboard tiles', () => {
     const source = readSource(paths.metrics);
 
-    expectContains(source, "cn('overflow-hidden rounded-lg border border-border bg-border shadow-sm', className)");
-    expectContains(source, 'grid gap-px');
-    expectContains(source, 'space-y-2 bg-card px-4 py-5');
+    expectContains(source, "cn('border-y border-border', className)");
+    expectContains(source, 'grid divide-y divide-border md:divide-y-0');
+    expectContains(source, 'space-y-2 py-4 md:border-l md:border-border md:px-4 md:first:border-l-0 md:first:pl-0');
     expectContains(source, 'financial-number ui-large-metric text-foreground');
     expectContains(source, 'ui-body text-muted-foreground');
 
     expectNoFragments(source, [
+      'overflow-hidden rounded-lg border border-border bg-border shadow-sm',
+      'space-y-2 bg-card px-4 py-5',
       'shadow-none',
       'text-xl font-semibold tracking-tight',
       'text-xs font-semibold text-muted-foreground',
