@@ -87,12 +87,13 @@ describe('single calculator result layout contracts', () => {
   it('keeps scenario facts readable without nested bordered cards', () => {
     const source = readSource(paths.facts);
 
-    expectContains(source, '<section className="space-y-4 rounded-lg border border-border bg-card p-5 shadow-sm">');
-    expectContains(source, '<dl className="grid gap-x-6 gap-y-4 sm:grid-cols-2">');
+    expectContains(source, '<section className="space-y-4 border-t border-border py-5">');
+    expectContains(source, '<dl className="grid gap-x-6 gap-y-4 border-y border-border py-4 sm:grid-cols-2">');
     expectContains(source, '<dt className="ui-meta font-semibold">{fact.label}</dt>');
     expectContains(source, 'break-words text-sm font-semibold text-foreground');
 
     expectNoFragments(source, [
+      'rounded-lg border border-border bg-card p-5 shadow-sm',
       'overflow-hidden rounded-md border border-border',
       'index >= 2 ? \'border-t\'',
       'index % 2 === 1 ? \'sm:border-l\'',
@@ -102,15 +103,16 @@ describe('single calculator result layout contracts', () => {
   it('keeps calculation metadata grouped as secondary compact panels', () => {
     const source = readSource(paths.meta);
 
-    expectContains(source, 'rounded-md border bg-card px-4 py-3 text-sm leading-6');
+    expectContains(source, 'border-l-2 px-4 py-3 text-sm leading-6');
     expectContains(source, 'grid grid-cols-1 gap-x-6 gap-y-5');
-    expectContains(source, 'rounded-md border border-border bg-card p-4 text-foreground');
-    expectContains(source, 'rounded-md border border-border bg-muted/25 px-4 py-3 text-sm leading-6');
+    expectContains(source, 'space-y-3 border-t border-border py-4 text-foreground');
+    expectContains(source, 'space-y-3 border-t border-warning/40 py-4 text-foreground');
+    expectContains(source, 'border-y border-border py-3 text-sm leading-6');
 
     expectNoFragments(source, [
-      'border-l-2 px-4 py-2 text-sm leading-6',
-      'border-t border-border pt-4 text-foreground',
-      'border-y border-border py-4 text-sm leading-6',
+      'rounded-md border bg-card px-4 py-3 text-sm leading-6',
+      'rounded-md border border-border bg-card p-4 text-foreground',
+      'rounded-md border border-border bg-muted/25 px-4 py-3 text-sm leading-6',
     ]);
   });
 });

@@ -17,9 +17,9 @@ interface FinancialInsightStripProps {
 }
 
 const toneClass = {
-  default: 'border-border bg-card text-foreground',
-  success: 'border-success/30 bg-success/5 text-foreground',
-  warning: 'border-warning/30 bg-warning/5 text-foreground',
+  default: 'border-border text-foreground',
+  success: 'border-success/50 text-foreground',
+  warning: 'border-warning/50 text-foreground',
 } as const;
 
 export const FinancialInsightStrip = React.memo(function FinancialInsightStrip({
@@ -28,7 +28,7 @@ export const FinancialInsightStrip = React.memo(function FinancialInsightStrip({
   items,
 }: FinancialInsightStripProps) {
   return (
-    <section className="space-y-5 rounded-lg border border-border bg-card p-5 shadow-sm">
+    <section className="space-y-5 border-t border-border py-5">
       <div className="space-y-2">
         <h2 className="ui-card-title">{title}</h2>
         <p className="ui-body max-w-[var(--layout-reading-max)] text-muted-foreground">
@@ -39,7 +39,7 @@ export const FinancialInsightStrip = React.memo(function FinancialInsightStrip({
         {items.map((item) => (
           <div
             key={item.label}
-            className={cn('rounded-md border px-4 py-3 text-sm leading-6', toneClass[item.tone ?? 'default'])}
+            className={cn('border-l-2 px-4 py-3 text-sm leading-6', toneClass[item.tone ?? 'default'])}
           >
             <p className="ui-meta font-semibold">{item.label}</p>
             <p className="financial-number mt-1 text-lg font-semibold text-foreground">

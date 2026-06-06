@@ -95,7 +95,7 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
   return (
     <div className="space-y-5">
       {dataFreshness ? (
-        <div className={`rounded-md border bg-card px-4 py-3 text-sm leading-6 ${freshnessTone}`}>
+        <div className={`border-l-2 px-4 py-3 text-sm leading-6 ${freshnessTone}`}>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <div className="flex items-center gap-2 font-semibold">
               <span
@@ -129,30 +129,30 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
           title={t('common.warnings')}
           items={warnings}
           icon={<AlertTriangle className="h-4 w-4" />}
-          className="space-y-3 rounded-md border border-warning/30 bg-warning/5 p-4 text-foreground"
+          className="space-y-3 border-t border-warning/40 py-4 text-foreground"
         />
         <MetaSection
           title={t('common.assumptions')}
           items={assumptions}
           icon={<Target className="h-4 w-4" />}
-          className="space-y-3 rounded-md border border-border bg-card p-4 text-foreground"
+          className="space-y-3 border-t border-border py-4 text-foreground"
         />
         <MetaSection
           title={t('common.notes')}
           items={calculationNotes}
           icon={<FileText className="h-4 w-4" />}
-          className="space-y-3 rounded-md border border-border bg-card p-4 text-foreground"
+          className="space-y-3 border-t border-border py-4 text-foreground"
         />
         <MetaSection
           title={t('common.data_quality')}
           items={dataQualityFlags}
           icon={<ShieldAlert className="h-4 w-4" />}
-          className="space-y-3 rounded-md border border-warning/30 bg-warning/5 p-4 text-foreground"
+          className="space-y-3 border-t border-warning/40 py-4 text-foreground"
           formatItem={humanizeFlag}
         />
       </div>
 
-      <div className="flex flex-col gap-3 rounded-md border border-border bg-muted/25 px-4 py-3 text-sm leading-6 text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-y border-border py-3 text-sm leading-6 text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           <DatabaseZap className="h-4 w-4 text-primary" />
           <span className="font-semibold text-foreground">

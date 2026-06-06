@@ -29,10 +29,13 @@ describe('financial insight contracts', () => {
 
     expectContains(source, 'export interface FinancialInsightItem');
     expectContains(source, 'export const FinancialInsightStrip = React.memo(function FinancialInsightStrip');
-    expectContains(source, 'rounded-lg border border-border bg-card p-5 shadow-sm');
+    expectContains(source, 'space-y-5 border-t border-border py-5');
     expectContains(source, 'grid gap-3 md:grid-cols-3');
-    expectContains(source, 'rounded-md border px-4 py-3 text-sm leading-6');
+    expectContains(source, 'border-l-2 px-4 py-3 text-sm leading-6');
     expectContains(source, 'financial-number mt-1 text-lg font-semibold');
+    expectContains(source, "default: 'border-border text-foreground'");
+    expectContains(source, "success: 'border-success/50 text-foreground'");
+    expectContains(source, "warning: 'border-warning/50 text-foreground'");
   });
 
   it('adds tax, real value, and data quality interpretation to single calculator results', () => {
