@@ -14,6 +14,8 @@ const flattenedSurfaceFiles = [
   'shared/components/results/FinancialInsightStrip.tsx',
   'shared/components/scenario/ScenarioSetupCard.tsx',
   'shared/components/feedback/ScenarioReadyPanel.tsx',
+  'shared/components/feedback/FeatureStatusNotice.tsx',
+  'shared/components/page/SecondarySurfaceIntro.tsx',
   'features/notebook/components/WorkspaceStatusCard.tsx',
   'features/notebook/components/PortfolioWorkspaceCard.tsx',
   'features/comparison-engine/components/bond-comparison/ComparisonResultsDashboard.tsx',
@@ -62,6 +64,10 @@ describe('flattened shared surface system contract', () => {
     expect(sourceByPath.get('shared/components/scenario/ScenarioSetupCard.tsx')).toContain('border-l-2 border-t px-4 py-4');
     expect(sourceByPath.get('shared/components/feedback/ScenarioReadyPanel.tsx')).toContain('space-y-6 border-t border-border py-6');
     expect(sourceByPath.get('shared/components/feedback/ScenarioReadyPanel.tsx')).toContain('border-l-2 border-border bg-muted/20 px-4 py-3');
+    expect(sourceByPath.get('shared/components/feedback/FeatureStatusNotice.tsx')).toContain('border-l-2 px-4 py-4');
+    expect(sourceByPath.get('shared/components/feedback/FeatureStatusNotice.tsx')).toContain('text-[10px] font-semibold uppercase tracking-[0.08em]');
+    expect(sourceByPath.get('shared/components/page/SecondarySurfaceIntro.tsx')).toContain('space-y-4 border-y py-5 md:py-6');
+    expect(sourceByPath.get('shared/components/page/SecondarySurfaceIntro.tsx')).toContain('<div className="ui-meta font-semibold">');
     expect(sourceByPath.get('features/notebook/components/WorkspaceStatusCard.tsx')).toContain('border-l-2 border-border px-4 py-3');
     expect(sourceByPath.get('features/notebook/components/PortfolioWorkspaceCard.tsx')).toContain('border-l-2 border-border pl-3 pt-0.5');
     expect(sourceByPath.get('features/comparison-engine/components/bond-comparison/ComparisonResultsDashboard.tsx')).toContain("import { SectionBlock } from '@/shared/components/page/SectionBlock';");

@@ -14,28 +14,28 @@ const statusConfig: Record<FeatureStatus, {
 }> = {
     trusted: {
         icon: CheckCircle2,
-        noticeClassName: 'border-success/25 bg-success/10 text-foreground',
-        pillClassName: 'border-success/25 bg-success/10 text-success',
+        noticeClassName: 'border-success bg-success/5 text-foreground',
+        pillClassName: 'text-success',
     },
     conditional: {
         icon: Info,
-        noticeClassName: 'border-border bg-muted/35 text-foreground',
-        pillClassName: 'border-border bg-card text-muted-foreground',
+        noticeClassName: 'border-border bg-muted/20 text-foreground',
+        pillClassName: 'text-muted-foreground',
     },
     experimental: {
         icon: FlaskConical,
-        noticeClassName: 'border-warning/25 bg-warning/10 text-foreground',
-        pillClassName: 'border-warning/25 bg-warning/10 text-warning',
+        noticeClassName: 'border-warning bg-warning/5 text-foreground',
+        pillClassName: 'text-warning',
     },
     limited: {
         icon: AlertTriangle,
-        noticeClassName: 'border-warning/25 bg-warning/10 text-foreground',
-        pillClassName: 'border-warning/25 bg-warning/10 text-warning',
+        noticeClassName: 'border-warning bg-warning/5 text-foreground',
+        pillClassName: 'text-warning',
     },
     reference: {
         icon: Info,
-        noticeClassName: 'border-border bg-card text-foreground',
-        pillClassName: 'border-border bg-muted/35 text-muted-foreground',
+        noticeClassName: 'border-border bg-muted/20 text-foreground',
+        pillClassName: 'text-muted-foreground',
     },
 };
 export function FeatureStatusPill({ status, className, }: {
@@ -44,7 +44,7 @@ export function FeatureStatusPill({ status, className, }: {
 }) {
     const { t } = useAppI18n();
     const config = statusConfig[status];
-    return (<span className={cn('inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-semibold tracking-[0.08em]', config.pillClassName, className)}>
+    return (<span className={cn('inline-flex items-center text-[10px] font-semibold uppercase tracking-[0.08em]', config.pillClassName, className)}>
       {t(`shared.feature_status.labels.${status}`)}
     </span>);
 }
@@ -57,7 +57,7 @@ export function FeatureStatusNotice({ status, title, children, className, eyebro
 }) {
     const config = statusConfig[status];
     const Icon = config.icon;
-    return (<section className={cn('rounded-lg border px-4 py-4 md:px-6', config.noticeClassName, className)}>
+    return (<section className={cn('border-l-2 px-4 py-4', config.noticeClassName, className)}>
       <div className="flex items-start gap-3">
         <Icon className="mt-0.5 h-4 w-4 shrink-0 opacity-80"/>
         <div className="min-w-0 space-y-2">

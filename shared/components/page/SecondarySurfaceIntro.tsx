@@ -29,13 +29,13 @@ export function SecondarySurfaceIntro({
   return (
     <section
       className={cn(
-        'space-y-4 rounded-lg border px-5 py-5 md:px-6 md:py-6',
+        'space-y-4 border-y py-5 md:py-6',
         tone === 'amber'
-          ? 'border-warning/30 bg-warning/10'
-          : 'border-border bg-card',
+          ? 'border-warning/40 bg-warning/5'
+          : 'border-border',
       )}
     >
-      <div className="inline-flex items-center gap-2 rounded-full border border-border bg-muted/40 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+      <div className="ui-meta font-semibold">
         {eyebrow}
       </div>
       <div className="space-y-3">
@@ -47,7 +47,7 @@ export function SecondarySurfaceIntro({
         </p>
       </div>
       {actions.length > 0 ? (
-        <div className="flex flex-wrap gap-3 border-t border-dashed border-border pt-4">
+        <div className="flex flex-wrap gap-3 border-t border-border pt-4">
           {actions.map((action) => (
             <Button
               key={`${action.href}-${action.label}`}
@@ -56,7 +56,7 @@ export function SecondarySurfaceIntro({
               className={cn(
                 'rounded-md',
                 action.variant === 'outline'
-                  ? 'border-border bg-card'
+                  ? 'border-border'
                   : undefined,
               )}
             >
