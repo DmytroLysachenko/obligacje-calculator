@@ -76,6 +76,15 @@ describe('calculator input layout contracts', () => {
     expectContains(source, 'description={t(\'bonds.form.step_core_desc\')}');
     expectContains(source, 'description={t(\'bonds.form.step_timing_desc\')}');
     expectContains(source, 'description={t(\'bonds.form.advanced_desc\')}');
+    expectContains(source, "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
+    expectContains(source, '<FormInlineNotice');
+    expectContains(source, 'tone="warning"');
+    expectContains(source, 'title={`${issue.severity}: ${issue.title}`}');
+    expectNoFragments(source, [
+      'space-y-3 rounded-lg border border-warning/30 bg-warning/5 p-4',
+      'rounded-md border border-warning/20 bg-card px-4 py-3',
+      '<AlertCircle',
+    ]);
   });
 
   it('groups regular investment inputs into shared fieldsets without separator-only rhythm', () => {

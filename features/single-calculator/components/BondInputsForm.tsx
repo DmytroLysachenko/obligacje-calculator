@@ -2,7 +2,7 @@
 
 import React, { useCallback, useMemo } from 'react';
 import { parseISO } from 'date-fns';
-import { AlertCircle, Target } from 'lucide-react';
+import { Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -19,6 +19,7 @@ import { BondConfigSection } from './sections/BondConfigSection';
 import { BondTimingSection } from './sections/BondTimingSection';
 import { BondDisplaySection } from './sections/BondDisplaySection';
 import { BondSummaryFooter } from './sections/BondSummaryFooter';
+import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 
 interface BondSeries {
   id: string;
@@ -103,22 +104,15 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
     <TooltipProvider>
       <section className="surface-shell w-full space-y-8 p-5 md:p-6">
         {guardrails.length > 0 ? (
-          <div className="space-y-3 rounded-lg border border-warning/30 bg-warning/5 p-4">
+          <div className="space-y-3">
             {guardrails.map((issue) => (
-              <div
+              <FormInlineNotice
                 key={issue.id}
-                className="rounded-md border border-warning/20 bg-card px-4 py-3"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-xs font-semibold text-[var(--finance-warning)]">
-                      <AlertCircle className="h-3 w-3" />
-                      <span>{issue.severity}</span>
-                    </div>
-                    <p className="text-sm font-semibold text-foreground">{issue.title}</p>
-                    <p className="text-xs text-muted-foreground">{issue.description}</p>
-                  </div>
-                  {issue.autoFixLabel && onApplyGuardrailFix ? (
+                tone="warning"
+                title={`${issue.severity}: ${issue.title}`}
+                description={issue.description}
+                action={
+                  issue.autoFixLabel && onApplyGuardrailFix ? (
                     <Button
                       type="button"
                       variant="outline"
@@ -128,9 +122,9 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                     >
                       {issue.autoFixLabel}
                     </Button>
-                  ) : null}
-                </div>
-              </div>
+                  ) : null
+                }
+              />
             ))}
           </div>
         ) : null}
