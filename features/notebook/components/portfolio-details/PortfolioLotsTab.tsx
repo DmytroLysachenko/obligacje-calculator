@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
+import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
+import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 
 type PortfolioMaturityItem = UserInvestmentLot & {
   maturityDate: Date;
@@ -28,6 +30,8 @@ type PortfolioLotsTabProps = {
   maturityWindowLabel: string;
   t: (key: string, values?: Record<string, string>) => string;
 };
+
+const maturityWindowOptions = [30, 90, 180] as const;
 
 export function PortfolioLotsTab({
   isLoading,
@@ -68,20 +72,20 @@ export function PortfolioLotsTab({
                 </p>
               </div>
               <div className="overflow-x-auto">
-                <Table>
+                <Table className="w-full table-fixed text-sm tabular-nums">
                   <TableHeader>
-                    <TableRow className="hover:bg-transparent">
-                      <TableHead className="h-12 text-sm font-semibold text-muted-foreground">{t('notebook.column_type')}</TableHead>
-                      <TableHead className="h-12 text-sm font-semibold text-muted-foreground">{t('notebook.column_duration')}</TableHead>
-                      <TableHead className="h-12 text-right text-sm font-semibold text-muted-foreground">{t('notebook.column_amount')}</TableHead>
-                      <TableHead className="h-12 text-sm font-semibold text-muted-foreground">{t('notebook.column_purchase_date')}</TableHead>
-                      <TableHead className="h-12 text-right text-sm font-semibold text-muted-foreground">{t('notebook.column_nominal_value')}</TableHead>
-                      <TableHead className="h-12 text-right text-sm font-semibold text-muted-foreground">{t('notebook.column_action')}</TableHead>
+                    <TableRow className="h-12 hover:bg-transparent">
+                      <TableHead className="sticky top-0 z-10 h-12 w-[14%] bg-background text-sm font-semibold text-muted-foreground">{t('notebook.column_type')}</TableHead>
+                      <TableHead className="sticky top-0 z-10 h-12 w-[22%] bg-background text-sm font-semibold text-muted-foreground">{t('notebook.column_duration')}</TableHead>
+                      <TableHead className="sticky top-0 z-10 h-12 w-[14%] bg-background text-right text-sm font-semibold text-muted-foreground">{t('notebook.column_amount')}</TableHead>
+                      <TableHead className="sticky top-0 z-10 h-12 w-[18%] bg-background text-sm font-semibold text-muted-foreground">{t('notebook.column_purchase_date')}</TableHead>
+                      <TableHead className="sticky top-0 z-10 h-12 w-[20%] bg-background text-right text-sm font-semibold text-muted-foreground">{t('notebook.column_nominal_value')}</TableHead>
+                      <TableHead className="sticky top-0 z-10 h-12 w-[12%] bg-background text-right text-sm font-semibold text-muted-foreground">{t('notebook.column_action')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {lots.map((lot) => (
-                      <TableRow key={lot.id} className="border-b border-border transition-colors odd:bg-muted/20 hover:bg-muted/40">
+                      <TableRow key={lot.id} className="h-14 border-b border-border transition-colors hover:bg-muted/25">
                         <TableCell className="py-4 font-medium">{lot.bondType}</TableCell>
                         <TableCell className="py-4 text-muted-foreground">
                           {formatBondDuration(
@@ -89,11 +93,11 @@ export function PortfolioLotsTab({
                             language,
                           )}
                         </TableCell>
-                        <TableCell className="py-4 text-right">{lot.amount}</TableCell>
+                        <TableCell className="financial-number py-4 text-right">{lot.amount}</TableCell>
                         <TableCell className="py-4">
                           {format(new Date(lot.purchaseDate), 'dd.MM.yyyy')}
                         </TableCell>
-                        <TableCell className="py-4 text-right">
+                        <TableCell className="financial-number py-4 text-right font-semibold">
                           {formatCurrency(Number(lot.amount) * 100)}
                         </TableCell>
                         <TableCell className="py-4 text-right">
@@ -119,33 +123,30 @@ export function PortfolioLotsTab({
             <h2 className="ui-section-title">{t('notebook.liquidity_window_title')}</h2>
             <p className="ui-body text-muted-foreground">{t('notebook.liquidity_window_desc')}</p>
           </div>
-            <div className="flex flex-wrap gap-2">
-              {[30, 90, 180].map((days) => (
-                <Button
-                  key={days}
-                  variant={maturityWindowDays === days ? 'default' : 'outline'}
-                  className="h-9"
-                  onClick={() => onWindowChange(days as 30 | 90 | 180)}
-                >
-                  {days}d
-                </Button>
-              ))}
-            </div>
+            <SegmentedControl
+              value={String(maturityWindowDays)}
+              options={maturityWindowOptions.map((days) => ({
+                value: String(days),
+                label: `${days}d`,
+              }))}
+              onValueChange={(days) => onWindowChange(Number(days) as 30 | 90 | 180)}
+              className="grid-cols-3"
+            />
 
-            <div className="rounded-lg bg-muted/30 px-4 py-4">
+            <div className="border-y border-border py-4">
               <p className="text-sm font-semibold text-muted-foreground">
                 {t('notebook.cash_in_window')}
               </p>
-              <p className="mt-2 text-2xl font-semibold text-foreground">
+              <p className="financial-number mt-2 text-2xl font-semibold text-foreground">
                 {formatCurrency(upcomingCashflow)}
               </p>
               <p className="mt-1 text-sm text-muted-foreground">{maturityWindowLabel}</p>
             </div>
 
             {filteredMaturities.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                {t('notebook.no_maturities_in_window')}
-              </p>
+              <FormInlineNotice
+                description={t('notebook.no_maturities_in_window')}
+              />
             ) : (
               <div className="space-y-3">
                 {filteredMaturities.slice(0, 6).map((item) => (
@@ -163,7 +164,7 @@ export function PortfolioLotsTab({
                           )}
                         </p>
                       </div>
-                      <p className="font-semibold text-foreground">
+                      <p className="financial-number font-semibold text-foreground">
                         {formatCurrency(item.value)}
                       </p>
                     </div>

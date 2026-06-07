@@ -6,7 +6,10 @@ const root = process.cwd();
 
 const files = {
   workspaceCard: 'features/notebook/components/PortfolioWorkspaceCard.tsx',
+  details: 'features/notebook/components/PortfolioDetails.tsx',
   overviewHeader: 'features/notebook/components/portfolio-details/PortfolioOverviewHeader.tsx',
+  lotsTab: 'features/notebook/components/portfolio-details/PortfolioLotsTab.tsx',
+  analyticsTab: 'features/notebook/components/portfolio-details/PortfolioAnalyticsTab.tsx',
   sharedPortfolioPage: 'app/shared-portfolios/[shareId]/page.tsx',
 } as const;
 
@@ -55,6 +58,63 @@ describe('portfolio notebook surface contract', () => {
       'rounded-full border border-border bg-muted/40',
       'bg-card p-4',
       'shadow-sm',
+    ]);
+  });
+
+  it('keeps portfolio detail tabs divider-led instead of boxed', () => {
+    const source = read(files.details);
+
+    expectContains(source, 'const detailTabTriggerClassName =');
+    expectContains(source, 'rounded-none border-b-2 border-transparent px-3.5 py-2');
+    expectContains(source, 'data-[state=active]:border-foreground data-[state=active]:bg-transparent');
+    expectContains(source, '<TabsList className="mb-5 h-auto w-full justify-start gap-3 border-b border-border bg-transparent p-0 md:w-fit">');
+    expectContains(source, 'className={detailTabTriggerClassName}');
+
+    expectNoFragments(source, [
+      '<TabsList className="mb-4 grid w-full grid-cols-2 md:w-fit">',
+      'data-[state=active]:bg-background',
+      'rounded-lg border border-border bg-card',
+    ]);
+  });
+
+  it('keeps portfolio lots and liquidity windows row-based', () => {
+    const source = read(files.lotsTab);
+
+    expectContains(source, "import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';");
+    expectContains(source, "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
+    expectContains(source, 'const maturityWindowOptions = [30, 90, 180] as const;');
+    expectContains(source, '<Table className="w-full table-fixed text-sm tabular-nums">');
+    expectContains(source, 'sticky top-0 z-10 h-12 w-[14%] bg-background');
+    expectContains(source, 'className="h-14 border-b border-border transition-colors hover:bg-muted/25"');
+    expectContains(source, '<SegmentedControl');
+    expectContains(source, 'className="grid-cols-3"');
+    expectContains(source, '<div className="border-y border-border py-4">');
+    expectContains(source, 'financial-number mt-2 text-2xl font-semibold text-foreground');
+    expectContains(source, '<FormInlineNotice');
+
+    expectNoFragments(source, [
+      'rounded-lg bg-muted/30 px-4 py-4',
+      'odd:bg-muted/20 hover:bg-muted/40',
+      '<Table>',
+      'className="h-9"',
+      '[30, 90, 180].map',
+      'variant={maturityWindowDays === days ?',
+    ]);
+  });
+
+  it('keeps portfolio analytics explanatory copy inline', () => {
+    const source = read(files.analyticsTab);
+
+    expectContains(source, "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
+    expectContains(source, '<section className="border-t border-border py-5">');
+    expectContains(source, '<FormInlineNotice');
+    expectContains(source, 'tone="success"');
+    expectContains(source, '<TrendingUp className="h-4 w-4 text-success" />');
+
+    expectNoFragments(source, [
+      '<div className="border-t border-border py-5">',
+      '<div className="flex items-start gap-3">',
+      '<TrendingUp className="mt-0.5 h-5 w-5 text-success" />',
     ]);
   });
 

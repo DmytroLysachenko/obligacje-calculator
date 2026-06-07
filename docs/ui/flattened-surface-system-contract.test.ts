@@ -26,6 +26,9 @@ const flattenedSurfaceFiles = [
   'shared/components/results/RecentLotList.tsx',
   'features/notebook/components/WorkspaceStatusCard.tsx',
   'features/notebook/components/PortfolioWorkspaceCard.tsx',
+  'features/notebook/components/PortfolioDetails.tsx',
+  'features/notebook/components/portfolio-details/PortfolioLotsTab.tsx',
+  'features/notebook/components/portfolio-details/PortfolioAnalyticsTab.tsx',
   'features/comparison-engine/components/ScenarioOverrideCard.tsx',
   'features/comparison-engine/components/bond-comparison/ComparisonConfigurationPanel.tsx',
   'features/comparison-engine/components/bond-comparison/ComparisonResultsDashboard.tsx',
@@ -95,6 +98,12 @@ describe('flattened shared surface system contract', () => {
     expect(sourceByPath.get('shared/components/results/RecentLotList.tsx')).toContain('space-y-5 border-y border-border py-6');
     expect(sourceByPath.get('features/notebook/components/WorkspaceStatusCard.tsx')).toContain('border-l-2 border-border px-4 py-3');
     expect(sourceByPath.get('features/notebook/components/PortfolioWorkspaceCard.tsx')).toContain('border-l-2 border-border pl-3 pt-0.5');
+    expect(sourceByPath.get('features/notebook/components/PortfolioDetails.tsx')).toContain('rounded-none border-b-2 border-transparent px-3.5 py-2');
+    expect(sourceByPath.get('features/notebook/components/PortfolioDetails.tsx')).toContain('border-b border-border bg-transparent p-0');
+    expect(sourceByPath.get('features/notebook/components/portfolio-details/PortfolioLotsTab.tsx')).toContain("import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';");
+    expect(sourceByPath.get('features/notebook/components/portfolio-details/PortfolioLotsTab.tsx')).toContain('financial-number mt-2 text-2xl font-semibold text-foreground');
+    expect(sourceByPath.get('features/notebook/components/portfolio-details/PortfolioAnalyticsTab.tsx')).toContain("import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
+    expect(sourceByPath.get('features/notebook/components/portfolio-details/PortfolioAnalyticsTab.tsx')).toContain('<FormInlineNotice');
     expect(sourceByPath.get('features/comparison-engine/components/ScenarioOverrideCard.tsx')).toContain("import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
     expect(sourceByPath.get('features/comparison-engine/components/bond-comparison/ComparisonConfigurationPanel.tsx')).toContain("import { SectionBlock } from '@/shared/components/page/SectionBlock';");
     expect(sourceByPath.get('features/comparison-engine/components/bond-comparison/ComparisonResultsDashboard.tsx')).toContain("import { SectionBlock } from '@/shared/components/page/SectionBlock';");

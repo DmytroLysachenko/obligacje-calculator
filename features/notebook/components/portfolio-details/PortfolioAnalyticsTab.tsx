@@ -7,6 +7,7 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
+import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 import { PortfolioSimulationResult } from '@/features/bond-core/types/scenarios';
 
 type PortfolioAnalyticsTabProps = {
@@ -95,17 +96,18 @@ export function PortfolioAnalyticsTab({
           )}
       </section>
 
-      <div className="border-t border-border py-5">
-        <div className="flex items-start gap-3">
-          <TrendingUp className="mt-0.5 h-5 w-5 text-success" />
-          <div className="space-y-2">
-            <p className="font-semibold text-foreground">{t('notebook.descriptive_title')}</p>
-            <p className="text-sm leading-6 text-muted-foreground">
-              {t('notebook.descriptive_desc')}
-            </p>
-          </div>
-        </div>
-      </div>
+      <section className="border-t border-border py-5">
+        <FormInlineNotice
+          tone="success"
+          title={(
+            <span className="inline-flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-success" />
+              {t('notebook.descriptive_title')}
+            </span>
+          )}
+          description={t('notebook.descriptive_desc')}
+        />
+      </section>
     </>
   );
 }

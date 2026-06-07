@@ -10,6 +10,10 @@ import { usePortfolioDetailsWorkspace } from '@/features/notebook/hooks/usePortf
 import { PortfolioOverviewHeader } from './portfolio-details/PortfolioOverviewHeader';
 import { PortfolioLotsTab } from './portfolio-details/PortfolioLotsTab';
 import { PortfolioAnalyticsTab } from './portfolio-details/PortfolioAnalyticsTab';
+
+const detailTabTriggerClassName =
+  'h-9 rounded-none border-b-2 border-transparent px-3.5 py-2 text-sm font-semibold data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none';
+
 interface PortfolioDetailsProps {
     portfolio: UserPortfolio;
     onBack: () => void;
@@ -66,9 +70,9 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
       <PortfolioOverviewHeader portfolio={portfolio} lotsCount={lots.length} nextMaturityDate={nextMaturity?.maturityDate ?? null} nextMaturityType={nextMaturity?.bondType ?? null} totalInvestedValue={formatCurrency(totalValue)} isPublic={isPublic} isSharing={isSharing} justCopied={justCopied} formatDate={(value) => dateFormatter.format(value)} onBack={onBack} onExport={handleExport} onToggleShare={handleToggleShare} onCopyLink={copyToClipboard} onDeleteRequest={() => setIsDeleteDialogOpen(true)} canDelete={Boolean(onDelete)} t={t}/>
 
       <Tabs defaultValue="lots" className="w-full">
-        <TabsList className="mb-4 grid w-full grid-cols-2 md:w-fit">
-          <TabsTrigger value="lots">{t('notebook.lots_tab')}</TabsTrigger>
-          <TabsTrigger value="analytics">{t('notebook.analytics_tab_short')}</TabsTrigger>
+        <TabsList className="mb-5 h-auto w-full justify-start gap-3 border-b border-border bg-transparent p-0 md:w-fit">
+          <TabsTrigger value="lots" className={detailTabTriggerClassName}>{t('notebook.lots_tab')}</TabsTrigger>
+          <TabsTrigger value="analytics" className={detailTabTriggerClassName}>{t('notebook.analytics_tab_short')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="lots" className="space-y-6">
