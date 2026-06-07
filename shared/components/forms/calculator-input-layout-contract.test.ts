@@ -14,6 +14,8 @@ const paths = {
   singleTiming: 'features/single-calculator/components/sections/BondTimingSection.tsx',
   regularBond: 'features/regular-investment/components/inputs/BondSelectionSection.tsx',
   regularTiming: 'features/regular-investment/components/inputs/TimingSection.tsx',
+  singleDisplay: 'features/single-calculator/components/sections/BondDisplaySection.tsx',
+  regularAdvanced: 'features/regular-investment/components/inputs/AdvancedSettingsSection.tsx',
 } as const;
 
 function readSource(relativePath: string) {
@@ -106,15 +108,21 @@ describe('calculator input layout contracts', () => {
     const sources = [
       readSource(paths.singleConfig),
       readSource(paths.singleTiming),
+      readSource(paths.singleDisplay),
       readSource(paths.regularBond),
       readSource(paths.regularTiming),
+      readSource(paths.regularAdvanced),
     ].join('\n');
 
     expectContains(sources, 'FormInlineNotice');
+    expectContains(sources, '<SegmentedControl');
     expectContains(readSource('shared/components/forms/FormInlineNotice.tsx'), 'border-l-2 px-4 py-3 text-sm leading-6');
     expectNoFragments(sources, [
       'rounded-lg bg-muted/35 p-4',
       'rounded-md border border-border bg-muted/35 p-4',
+      'rounded-md border border-border bg-card p-4',
+      'rounded-md border border-border bg-card p-1',
+      'rounded-md border border-border bg-muted/25 p-1',
       'rounded-md border border-[var(--finance-success)]/35 bg-card p-4',
       'rounded-lg border bg-muted/30 px-4 py-3',
       'border-l-2 border-border bg-muted/30',

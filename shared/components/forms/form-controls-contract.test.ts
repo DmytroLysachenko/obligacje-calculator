@@ -43,7 +43,11 @@ describe('shared form control contracts', () => {
     expectContains(select, 'id={id}');
     expectContains(select, "'min-h-11 py-2.5 pl-3 pr-10'");
     expectContains(segmented, 'export function SegmentedControl');
-    expectContains(segmented, "rounded-md border border-border bg-card p-1");
+    expectContains(segmented, "grid grid-cols-2 gap-1 border-y border-border py-1");
+    expectContains(segmented, 'h-9 min-w-0 px-3 text-xs font-semibold leading-tight');
+    expectContains(segmented, '<span className="truncate">{option.label}</span>');
+    expectNotContains(segmented, 'rounded-md border border-border bg-card p-1');
+    expectNotContains(segmented, 'rounded-md border border-border bg-muted/25 p-1');
     expectContains(money, 'export function MoneyInput');
     expectContains(money, "currency = 'PLN'");
     expectContains(range, 'export function RangeField');

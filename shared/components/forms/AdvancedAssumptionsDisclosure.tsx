@@ -25,7 +25,7 @@ export function AdvancedAssumptionsDisclosure({
       <AccordionItem value="advanced-assumptions" className="border-0">
         <AccordionTrigger className="border-b border-border px-0 py-4 hover:no-underline">
           <div className="flex items-start gap-3 text-left">
-            <div className="rounded-md bg-muted p-2 text-muted-foreground">
+            <div className="border-l-2 border-border pl-3 pt-0.5 text-muted-foreground">
               <Settings2 className="h-4 w-4" />
             </div>
             <div className="space-y-1">

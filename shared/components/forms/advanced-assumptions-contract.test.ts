@@ -35,12 +35,13 @@ describe('advanced assumptions disclosure contracts', () => {
     expectContains(source, 'Accordion type="single" collapsible defaultValue=""');
     expectContains(source, 'value="advanced-assumptions"');
     expectContains(source, 'border-b border-border px-0 py-4');
-    expectContains(source, 'rounded-md bg-muted p-2 text-muted-foreground');
+    expectContains(source, 'border-l-2 border-border pl-3 pt-0.5 text-muted-foreground');
     expectContains(source, 'max-w-2xl text-xs font-medium leading-5 text-muted-foreground');
     expectContains(source, '<div className="space-y-6 pt-4">{children}</div>');
 
     expectNoFragments(source, [
       'rounded-lg bg-muted/35 px-4 py-4',
+      'rounded-md bg-muted p-2',
       'surface-panel',
       'border border-border bg-card',
       'defaultValue="advanced"',

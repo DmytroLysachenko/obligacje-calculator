@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { Info } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
@@ -11,8 +10,8 @@ import { RegularInvestmentInputs } from '@/features/bond-core/types';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
+import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
-import { cn } from '@/lib/utils';
 
 type AdvancedSettingsSectionProps = {
   inputs: RegularInvestmentInputs;
@@ -132,27 +131,15 @@ export function AdvancedSettingsSection({
           <Label className="text-sm font-semibold text-muted-foreground">
             {t('bonds.chart.granularity')}
           </Label>
-          <div className="flex gap-1 rounded-md border border-border bg-muted/25 p-1">
-            {(['monthly', 'quarterly', 'yearly'] as const).map((step) => (
-              <Button
-                key={step}
-                type="button"
-                variant={
-                  inputs.chartStep === step || (!inputs.chartStep && step === 'quarterly')
-                    ? 'default'
-                    : 'ghost'
-                }
-                className={cn(
-                  'h-9 flex-1 text-[12px] font-semibold transition-all',
-                  (inputs.chartStep === step || (!inputs.chartStep && step === 'quarterly')) &&
-                    'bg-card shadow-sm',
-                )}
-                onClick={() => onUpdate('chartStep', step)}
-              >
-                {t(`bonds.chart.periods.${step}`)}
-              </Button>
-            ))}
-          </div>
+          <SegmentedControl
+            value={inputs.chartStep ?? 'quarterly'}
+            options={(['monthly', 'quarterly', 'yearly'] as const).map((step) => ({
+              value: step,
+              label: t(`bonds.chart.periods.${step}`),
+            }))}
+            onValueChange={(step) => onUpdate('chartStep', step)}
+            className="grid-cols-3"
+          />
         </div>
       </AdvancedAssumptionsDisclosure>
     </section>

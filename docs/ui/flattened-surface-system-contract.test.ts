@@ -16,7 +16,11 @@ const flattenedSurfaceFiles = [
   'shared/components/feedback/ScenarioReadyPanel.tsx',
   'shared/components/feedback/FeatureStatusNotice.tsx',
   'shared/components/page/SecondarySurfaceIntro.tsx',
+  'shared/components/forms/AdvancedAssumptionsDisclosure.tsx',
+  'shared/components/forms/SegmentedControl.tsx',
   'features/single-calculator/components/BondInputsForm.tsx',
+  'features/single-calculator/components/sections/BondDisplaySection.tsx',
+  'features/regular-investment/components/inputs/AdvancedSettingsSection.tsx',
   'features/notebook/components/WorkspaceStatusCard.tsx',
   'features/notebook/components/PortfolioWorkspaceCard.tsx',
   'features/comparison-engine/components/ScenarioOverrideCard.tsx',
@@ -32,6 +36,9 @@ const oldSurfaceFragments = [
   'rounded-lg border border-border bg-card p-4',
   'rounded-lg border border-border bg-muted/20',
   'rounded-md border border-border bg-card p-4',
+  'rounded-md border border-border bg-card p-1',
+  'rounded-md border border-border bg-muted/25 p-1',
+  'rounded-md border border-border bg-muted/35 p-4',
   'rounded-md border bg-card px-4 py-3',
   'rounded-full border border-border bg-muted/40',
   'overflow-hidden rounded-lg border border-border bg-border shadow-sm',
@@ -71,7 +78,12 @@ describe('flattened shared surface system contract', () => {
     expect(sourceByPath.get('shared/components/feedback/FeatureStatusNotice.tsx')).toContain('text-[10px] font-semibold uppercase tracking-[0.08em]');
     expect(sourceByPath.get('shared/components/page/SecondarySurfaceIntro.tsx')).toContain('space-y-4 border-y py-5 md:py-6');
     expect(sourceByPath.get('shared/components/page/SecondarySurfaceIntro.tsx')).toContain('<div className="ui-meta font-semibold">');
+    expect(sourceByPath.get('shared/components/forms/AdvancedAssumptionsDisclosure.tsx')).toContain('border-l-2 border-border pl-3 pt-0.5');
+    expect(sourceByPath.get('shared/components/forms/SegmentedControl.tsx')).toContain('grid grid-cols-2 gap-1 border-y border-border py-1');
     expect(sourceByPath.get('features/single-calculator/components/BondInputsForm.tsx')).toContain("import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
+    expect(sourceByPath.get('features/single-calculator/components/sections/BondDisplaySection.tsx')).toContain("import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';");
+    expect(sourceByPath.get('features/single-calculator/components/sections/BondDisplaySection.tsx')).toContain("import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
+    expect(sourceByPath.get('features/regular-investment/components/inputs/AdvancedSettingsSection.tsx')).toContain("import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';");
     expect(sourceByPath.get('features/notebook/components/WorkspaceStatusCard.tsx')).toContain('border-l-2 border-border px-4 py-3');
     expect(sourceByPath.get('features/notebook/components/PortfolioWorkspaceCard.tsx')).toContain('border-l-2 border-border pl-3 pt-0.5');
     expect(sourceByPath.get('features/comparison-engine/components/ScenarioOverrideCard.tsx')).toContain("import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
