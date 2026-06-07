@@ -1,0 +1,43 @@
+import {readFileSync} from 'node:fs';
+import {join} from 'node:path';
+import {describe, expect, it} from 'vitest';
+
+const root = process.cwd();
+
+function read(relativePath: string) {
+  return readFileSync(join(root, relativePath), 'utf8');
+}
+
+function expectContains(source: string, fragment: string) {
+  expect(source).toContain(fragment);
+}
+
+function expectNoFragments(source: string, fragments: readonly string[]) {
+  for (const fragment of fragments) {
+    expect(source).not.toContain(fragment);
+  }
+}
+
+describe('scenario override controls contract', () => {
+  it('keeps override controls aligned with shared form surfaces', () => {
+    const source = read('features/comparison-engine/components/ScenarioOverrideCard.tsx');
+
+    expectContains(source, "import { FormSelect, FormSelectOption } from '@/shared/components/forms/FormSelect';");
+    expectContains(source, "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
+    expectContains(source, '<ScenarioSetupCard');
+    expectContains(source, 'triggerClassName="font-semibold"');
+    expectContains(source, '<FormInlineNotice');
+    expectContains(source, 'border-l-2 border-border bg-muted/20 px-4 py-3');
+    expectContains(source, '<Switch checked={!!isRebought}');
+    expectContains(source, '<Switch checked={customHorizonEnabled}');
+
+    expectNoFragments(source, [
+      'rounded-full bg-muted px-2 py-0.5',
+      'rounded-full bg-warning/10 px-2 py-0.5',
+      'rounded-full border border-border bg-muted/30',
+      'triggerClassName="bg-card font-semibold"',
+      'rounded-lg border border-border bg-muted/20 px-3 py-3',
+      'flex items-center justify-between gap-4 rounded-lg border border-border bg-muted/20',
+    ]);
+  });
+});

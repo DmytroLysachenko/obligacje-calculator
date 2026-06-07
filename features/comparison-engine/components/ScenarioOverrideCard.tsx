@@ -14,6 +14,7 @@ import { FormSelect, FormSelectOption } from '@/shared/components/forms/FormSele
 import { FormField } from '@/shared/components/forms/FormField';
 import { Notice } from '@/shared/components/feedback/Notice';
 import { ScenarioSetupCard } from '@/shared/components/scenario/ScenarioSetupCard';
+import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 interface ScenarioOverrideCardProps {
     title: string;
     colorClass: 'scenario-a' | 'scenario-b';
@@ -53,11 +54,11 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
           <div className="flex min-w-0 flex-col gap-1">
             <div className="flex min-w-0 items-center gap-2 text-sm">
               <span className="font-semibold tracking-tight">{type}</span>
-              <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+              <span className="text-[10px] font-semibold text-muted-foreground">
                 {formatBondLabel(type)}
               </span>
               {isFamilyBondType(type) ? (
-                <span className="rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-semibold text-warning">
+                <span className="text-[10px] font-semibold text-warning">
                   {t('comparison.family_bond_badge')}
                 </span>
               ) : null}
@@ -83,7 +84,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
         description={t('comparison.base_follows_shared_desc')}
         tone={colorClass}
         meta={(
-          <span className="rounded-full border border-border bg-muted/30 px-2.5 py-1 text-[11px] font-semibold text-muted-foreground">
+          <span className="text-[11px] font-semibold text-muted-foreground">
             {formatBondLabel(bondType)}
           </span>
         )}
@@ -93,7 +94,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
           value={bondType}
           onValueChange={(value) => onBondTypeChange(value as BondType)}
           options={bondOptions}
-          triggerClassName="bg-card font-semibold"
+          triggerClassName="font-semibold"
         />
         <RateContextNote className="space-y-2 border-t border-border pt-4" title={t('comparison.override_scope_title')} badges={[
             formatBondLabel(bondType),
@@ -108,16 +109,12 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
             {getBondSupportMeta(bondType).description}
         </p>
 
-        <div className="rounded-lg border border-border bg-muted/20 px-3 py-3">
-          <p className="text-sm font-semibold text-foreground">
-            {t('comparison.base_follows_shared_title')}
-          </p>
-          <p className="mt-1 text-xs leading-5 text-muted-foreground">
-            {t('comparison.base_follows_shared_desc')}
-          </p>
-        </div>
+        <FormInlineNotice
+          title={t('comparison.base_follows_shared_title')}
+          description={t('comparison.base_follows_shared_desc')}
+        />
 
-        <div className="flex items-center justify-between gap-4 rounded-lg border border-border bg-muted/20 px-3 py-3">
+        <div className="flex items-center justify-between gap-4 border-l-2 border-border bg-muted/20 px-4 py-3">
           <div className="min-w-0">
             <p className="text-sm font-semibold">{t('bonds.is_rebought')}</p>
             <p className="text-xs leading-5 text-muted-foreground">
@@ -137,7 +134,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
               description={t('comparison.tax_override_desc')}
             />
 
-            <div className="flex items-center justify-between gap-4 rounded-lg border border-border bg-muted/20 px-3 py-3">
+            <div className="flex items-center justify-between gap-4 border-l-2 border-border bg-muted/20 px-4 py-3">
               <div className="min-w-0">
                 <p className="text-sm font-semibold">{t('comparison.custom_horizon')}</p>
                 <p className="text-xs leading-5 text-muted-foreground">

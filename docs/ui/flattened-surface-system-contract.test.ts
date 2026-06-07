@@ -18,6 +18,7 @@ const flattenedSurfaceFiles = [
   'shared/components/page/SecondarySurfaceIntro.tsx',
   'features/notebook/components/WorkspaceStatusCard.tsx',
   'features/notebook/components/PortfolioWorkspaceCard.tsx',
+  'features/comparison-engine/components/ScenarioOverrideCard.tsx',
   'features/comparison-engine/components/bond-comparison/ComparisonConfigurationPanel.tsx',
   'features/comparison-engine/components/bond-comparison/ComparisonResultsDashboard.tsx',
 ] as const;
@@ -71,6 +72,7 @@ describe('flattened shared surface system contract', () => {
     expect(sourceByPath.get('shared/components/page/SecondarySurfaceIntro.tsx')).toContain('<div className="ui-meta font-semibold">');
     expect(sourceByPath.get('features/notebook/components/WorkspaceStatusCard.tsx')).toContain('border-l-2 border-border px-4 py-3');
     expect(sourceByPath.get('features/notebook/components/PortfolioWorkspaceCard.tsx')).toContain('border-l-2 border-border pl-3 pt-0.5');
+    expect(sourceByPath.get('features/comparison-engine/components/ScenarioOverrideCard.tsx')).toContain("import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
     expect(sourceByPath.get('features/comparison-engine/components/bond-comparison/ComparisonConfigurationPanel.tsx')).toContain("import { SectionBlock } from '@/shared/components/page/SectionBlock';");
     expect(sourceByPath.get('features/comparison-engine/components/bond-comparison/ComparisonResultsDashboard.tsx')).toContain("import { SectionBlock } from '@/shared/components/page/SectionBlock';");
   });
