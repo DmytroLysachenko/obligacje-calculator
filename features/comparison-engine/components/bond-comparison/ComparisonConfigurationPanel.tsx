@@ -14,6 +14,8 @@ import { ReadingChecklist } from '@/shared/components/insights/ReadingChecklist'
 import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getBondSupportMeta } from '@/features/bond-core/support-matrix';
+import { SectionBlock } from '@/shared/components/page/SectionBlock';
+import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 
 function StepCard({
   title,
@@ -23,7 +25,7 @@ function StepCard({
   description: string;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
+    <div className="border-t border-border py-4">
       <div className="flex items-start gap-3">
         <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--finance-success)]" />
         <div className="space-y-2">
@@ -80,16 +82,14 @@ export function ComparisonConfigurationPanel({
 
   return (
     <aside className="space-y-5 xl:sticky xl:top-8 xl:h-fit">
-      <section className="surface-shell space-y-5 p-5">
-        <div className="space-y-2 border-b border-border pb-4">
-          <h2 className="flex items-center gap-2 ui-section-title">
-            <Scale className="h-5 w-5 text-primary" />
-            {t('comparison.page.configuration_title')}
-          </h2>
-          <p className="ui-body text-muted-foreground">
-            {t('comparison.page.configuration_description')}
-          </p>
-        </div>
+      <SectionBlock
+        title={t('comparison.page.configuration_title')}
+        description={t('comparison.page.configuration_description')}
+        icon={<Scale className="h-5 w-5 text-primary" />}
+        variant="divided"
+        className="py-5"
+        contentClassName="space-y-5"
+      >
         <div className="space-y-5">
           <div className="space-y-2">
             <Label className="text-xs font-semibold text-muted-foreground">
@@ -140,7 +140,7 @@ export function ComparisonConfigurationPanel({
           </div>
 
           <div className="space-y-3 border-t border-border pt-5">
-            <div className="flex items-center justify-between rounded-lg border border-border bg-muted/25 px-4 py-3">
+            <div className="flex items-center justify-between gap-4 border-l-2 border-border bg-muted/20 px-4 py-3">
               <div>
                 <p className="text-sm font-semibold text-foreground">
                   {t('bonds.inflation.adjusted')}
@@ -154,27 +154,21 @@ export function ComparisonConfigurationPanel({
                 onCheckedChange={onShowRealValueChange}
               />
             </div>
-            <div className="rounded-lg border border-border bg-muted/25 px-4 py-3">
-              <p className="text-sm font-semibold text-foreground">
-                {t('comparison.page.rollover_title')}
-              </p>
-              <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                {t('comparison.page.rollover_description')}
-              </p>
-            </div>
+            <FormInlineNotice
+              title={t('comparison.page.rollover_title')}
+              description={t('comparison.page.rollover_description')}
+            />
           </div>
         </div>
-      </section>
+      </SectionBlock>
 
-      <section className="surface-shell space-y-5 p-5">
-        <div className="space-y-2">
-          <h2 className="ui-section-title">
-            {t('comparison.page.bond_picker_title')}
-          </h2>
-          <p className="ui-body text-muted-foreground">
-            {t('comparison.page.bond_picker_description')}
-          </p>
-        </div>
+      <SectionBlock
+        title={t('comparison.page.bond_picker_title')}
+        description={t('comparison.page.bond_picker_description')}
+        variant="divided"
+        className="py-5"
+        contentClassName="space-y-5"
+      >
         <div className="grid grid-cols-2 gap-2">
           {Object.values(BondType).map((type) => (
             <Button
@@ -204,7 +198,7 @@ export function ComparisonConfigurationPanel({
             </Button>
           ))}
         </div>
-      </section>
+      </SectionBlock>
 
       <SecondaryInsightAccordion
         title={t('comparison.page.how_to_read_title')}
@@ -212,7 +206,7 @@ export function ComparisonConfigurationPanel({
         badge={t('comparison.page.how_to_read_badge')}
       >
         <div className="space-y-4 text-sm leading-6 text-muted-foreground">
-          <div className="rounded-lg border border-warning/30 bg-warning/5 px-4 py-4">
+          <div className="border-l-2 border-warning bg-warning/5 px-4 py-4">
             <div className="flex items-center gap-2 font-semibold tracking-tight text-foreground">
               <AlertTriangle className="h-4 w-4 text-[var(--finance-warning)]" />
               {t('comparison.page.reading_checklist_title')}
