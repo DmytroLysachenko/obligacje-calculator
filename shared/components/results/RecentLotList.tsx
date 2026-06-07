@@ -36,7 +36,7 @@ export const RecentLotList = React.memo(function RecentLotList({
   items,
 }: RecentLotListProps) {
   return (
-    <section className="surface-shell space-y-5 p-5">
+    <section className="space-y-5 border-y border-border py-6">
       <div className="space-y-2">
         <h2 className="flex items-center gap-2 ui-card-title">
           <Calendar className="h-5 w-5" />

@@ -41,6 +41,8 @@ describe('premium financial table contracts', () => {
     const source = read(files.single);
 
     expectContains(source, '<div className="hidden w-full border-y border-border lg:block">');
+    expectContains(source, 'className="border-t border-border py-4 first:border-t-0"');
+    expectContains(source, 'className="mt-3 border-l-2 border-border px-3 text-xs leading-5 text-muted-foreground"');
     expectContains(source, '<Table className="w-full table-fixed text-sm tabular-nums">');
     expectContains(source, '<TableRow className="h-12 hover:bg-transparent">');
     expectContains(source, 'sticky top-0 z-10 h-12 w-[11%] bg-background');
@@ -50,6 +52,7 @@ describe('premium financial table contracts', () => {
 
     expectNoFragments(source, [
       'hidden w-full overflow-hidden rounded-lg bg-card shadow-none',
+      'rounded-lg bg-muted/30 p-4 shadow-none',
       '<Table className="table-fixed w-full">',
       '<Table className="w-full table-fixed text-sm">',
       '<TableRow className="bg-muted/35 hover:bg-muted/35">',
@@ -61,7 +64,9 @@ describe('premium financial table contracts', () => {
   it('keeps regular investment yearly table sticky and numerically aligned', () => {
     const source = read(files.regular);
 
-    expectContains(source, '<div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">');
+    expectContains(source, '<SectionBlock');
+    expectContains(source, 'className="border-y border-border py-6"');
+    expectContains(source, '<div className="hidden border-y border-border lg:block">');
     expectContains(source, '<Table className="w-full table-fixed text-sm tabular-nums">');
     expectContains(source, 'sticky top-0 z-10 w-[16%] bg-background');
     expectContains(source, 'sticky top-0 z-10 w-[18%] bg-background text-right');
@@ -72,6 +77,7 @@ describe('premium financial table contracts', () => {
 
     expectNoFragments(source, [
       '<TableHead className="w-[16%]">',
+      '<div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">',
       '<TableHead className="w-[18%] text-right">',
       '<TableCell className="text-right">{formatCurrency(bucket.invested)}</TableCell>',
       '<TableCell className="text-right financial-positive">',
@@ -82,7 +88,12 @@ describe('premium financial table contracts', () => {
   it('keeps ladder maturity table sticky and numerically aligned', () => {
     const source = read(files.ladder);
 
-    expectContains(source, '<div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">');
+    expectContains(source, "import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';");
+    expectContains(source, "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
+    expectContains(source, '<SegmentedControl');
+    expectContains(source, "import { SectionBlock } from '@/shared/components/page/SectionBlock';");
+    expectContains(source, 'className="border-y border-border py-6"');
+    expectContains(source, '<div className="hidden border-y border-border lg:block">');
     expectContains(source, '<Table className="w-full table-fixed text-sm tabular-nums">');
     expectContains(source, 'sticky top-0 z-10 w-[34%] bg-background');
     expectContains(source, 'sticky top-0 z-10 w-[24%] bg-background text-right');
@@ -92,6 +103,12 @@ describe('premium financial table contracts', () => {
 
     expectNoFragments(source, [
       '<TableHead className="w-[34%]">',
+      '<div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">',
+      'surface-shell space-y-5 p-5',
+      'surface-shell border-t-0 p-5',
+      'rounded-md border border-border bg-muted/25 p-1',
+      'rounded-lg border border-border bg-card p-4',
+      'rounded-lg border border-border bg-muted/25 p-4',
       '<TableHead className="w-[24%] text-right">',
       '<TableCell className="text-right text-foreground">',
       '<TableCell className="text-right font-semibold text-foreground">',

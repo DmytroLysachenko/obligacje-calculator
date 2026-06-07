@@ -36,10 +36,13 @@ describe('strategy result layout contracts', () => {
     expectContains(source, '<ResultSummaryHero');
     expectContains(source, '<MetricStrip');
     expectContains(source, 'grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]');
-    expectContains(source, 'surface-shell space-y-5 p-5');
-    expectContains(source, '<span className="surface-chip shrink-0">');
+    expectContains(source, '<SectionBlock');
+    expectContains(source, 'className="border-y border-border py-6"');
+    expectContains(source, '<span className="ui-meta shrink-0 border-l-2 border-border px-3 py-1 font-semibold">');
 
     expectNoFragments(source, [
+      'surface-shell space-y-5 p-5',
+      '<span className="surface-chip shrink-0">',
       "import { Badge } from '@/components/ui/badge';",
       '<Badge variant="outline"',
       'grid grid-cols-1 gap-5 xl:grid-cols-[1.1fr_0.9fr]',
@@ -50,7 +53,7 @@ describe('strategy result layout contracts', () => {
   it('keeps regular investment desktop tables premium and readable', () => {
     const source = readSource(paths.regular);
 
-    expectContains(source, '<div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">');
+    expectContains(source, '<div className="hidden border-y border-border lg:block">');
     expectContains(source, '<Table className="w-full table-fixed text-sm tabular-nums">');
     expectContains(source, '<TableRow className="h-12 hover:bg-transparent">');
     expectContains(source, 'className="h-14 border-b border-border transition-colors hover:bg-muted/25"');
@@ -59,6 +62,7 @@ describe('strategy result layout contracts', () => {
 
     expectNoFragments(source, [
       '<TableRow className="bg-muted/35 hover:bg-muted/35">',
+      '<div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">',
       'hover:bg-muted/35',
       '<div className="hidden lg:block">',
       '<Table className="table-fixed w-full">',
@@ -73,6 +77,7 @@ describe('strategy result layout contracts', () => {
     expectContains(source, "import { RecentLotList, RecentLotDisplayItem } from '@/shared/components/results/RecentLotList';");
     expectContains(source, 'const recentLotItems = useMemo<RecentLotDisplayItem[]>(() =>');
     expectContains(source, '<RecentLotList');
+    expectContains(recentList, 'space-y-5 border-y border-border py-6');
     expectContains(recentList, 'divide-y divide-border');
     expectContains(recentList, 'mt-4 grid grid-cols-2 gap-x-6 gap-y-3 text-sm');
 
@@ -80,6 +85,7 @@ describe('strategy result layout contracts', () => {
       'grid grid-cols-1 gap-3',
       'mt-4 grid grid-cols-2 gap-3 text-sm md:grid-cols-4',
       'rounded-lg border border-border bg-card p-4',
+      'surface-shell space-y-5 p-5',
     ]);
   });
 
@@ -103,19 +109,22 @@ describe('strategy result layout contracts', () => {
     const source = readSource(paths.ladder);
 
     expectContains(source, '<ChartSection');
-    expectContains(source, 'className="surface-shell border-t-0 p-5"');
+    expectContains(source, 'className="border-y border-border py-6"');
+    expectContains(source, '<SectionBlock');
     expectContains(source, "const [chartMode, setChartMode] = useState<LadderChartMode>('yearly');");
     expectContains(source, 'const yearlyBuckets = useMemo<LadderYearBucket[]>(() => buildLadderYearBuckets(monthlyBuckets), [monthlyBuckets]);');
     expectContains(source, "const chartData = useMemo(");
     expectContains(source, "t(`ladder_page.timeline.chart_modes.${mode}`)");
-    expectContains(source, '<div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">');
+    expectContains(source, '<div className="hidden border-y border-border lg:block">');
     expectContains(source, '<Table className="w-full table-fixed text-sm tabular-nums">');
     expectContains(source, '<TableRow className="h-12 hover:bg-transparent">');
     expectContains(source, 'className="h-14 border-b border-border transition-colors hover:bg-muted/25"');
     expectContains(source, '<TableDensityControls');
 
     expectNoFragments(source, [
-      'hidden border-y border-border',
+      '<div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">',
+      'surface-shell space-y-5 p-5',
+      'surface-shell border-t-0 p-5',
       '<Table className="table-fixed w-full">',
       '<Table className="w-full table-fixed text-sm">',
       'transition-colors hover:bg-muted/35',

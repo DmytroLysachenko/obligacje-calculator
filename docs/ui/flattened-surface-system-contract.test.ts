@@ -21,6 +21,9 @@ const flattenedSurfaceFiles = [
   'features/single-calculator/components/BondInputsForm.tsx',
   'features/single-calculator/components/sections/BondDisplaySection.tsx',
   'features/regular-investment/components/inputs/AdvancedSettingsSection.tsx',
+  'features/regular-investment/components/RegularInvestmentResultsSummary.tsx',
+  'features/ladder-strategy/components/LadderTimeline.tsx',
+  'shared/components/results/RecentLotList.tsx',
   'features/notebook/components/WorkspaceStatusCard.tsx',
   'features/notebook/components/PortfolioWorkspaceCard.tsx',
   'features/comparison-engine/components/ScenarioOverrideCard.tsx',
@@ -84,6 +87,12 @@ describe('flattened shared surface system contract', () => {
     expect(sourceByPath.get('features/single-calculator/components/sections/BondDisplaySection.tsx')).toContain("import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';");
     expect(sourceByPath.get('features/single-calculator/components/sections/BondDisplaySection.tsx')).toContain("import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
     expect(sourceByPath.get('features/regular-investment/components/inputs/AdvancedSettingsSection.tsx')).toContain("import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';");
+    expect(sourceByPath.get('features/regular-investment/components/RegularInvestmentResultsSummary.tsx')).toContain("import { SectionBlock } from '@/shared/components/page/SectionBlock';");
+    expect(sourceByPath.get('features/regular-investment/components/RegularInvestmentResultsSummary.tsx')).toContain('<div className="hidden border-y border-border lg:block">');
+    expect(sourceByPath.get('features/ladder-strategy/components/LadderTimeline.tsx')).toContain("import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
+    expect(sourceByPath.get('features/ladder-strategy/components/LadderTimeline.tsx')).toContain("import { SectionBlock } from '@/shared/components/page/SectionBlock';");
+    expect(sourceByPath.get('features/ladder-strategy/components/LadderTimeline.tsx')).toContain('<div className="hidden border-y border-border lg:block">');
+    expect(sourceByPath.get('shared/components/results/RecentLotList.tsx')).toContain('space-y-5 border-y border-border py-6');
     expect(sourceByPath.get('features/notebook/components/WorkspaceStatusCard.tsx')).toContain('border-l-2 border-border px-4 py-3');
     expect(sourceByPath.get('features/notebook/components/PortfolioWorkspaceCard.tsx')).toContain('border-l-2 border-border pl-3 pt-0.5');
     expect(sourceByPath.get('features/comparison-engine/components/ScenarioOverrideCard.tsx')).toContain("import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");

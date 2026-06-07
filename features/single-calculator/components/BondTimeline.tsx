@@ -145,7 +145,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
       </div>
 
       <ResponsiveTableSheet title={t('bonds.schedule.mobile_sheet_title')} description={t('bonds.schedule.mobile_sheet_description')} triggerLabel={t('bonds.schedule.mobile_sheet_trigger')} triggerCount={`${filteredTimeline.length} ${t('bonds.schedule.mobile_sheet_count_suffix')}`}>
-        {displayedTimeline.map((row) => (<div key={`mobile-${row.key}`} className="rounded-lg bg-muted/30 p-4 shadow-none">
+        {displayedTimeline.map((row) => (<div key={`mobile-${row.key}`} className="border-t border-border py-4 first:border-t-0">
             <div className="flex items-start justify-between gap-3">
               <div className="space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
@@ -176,7 +176,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
               <MobileValue label={t('bonds.schedule.rate_source')} value={row.rateSourceLabel}/>
             </div>
 
-            {row.referenceLabel ? (<p className="mt-3 text-xs leading-5 text-muted-foreground">{row.referenceLabel}</p>) : null}
+            {row.referenceLabel ? (<p className="mt-3 border-l-2 border-border px-3 text-xs leading-5 text-muted-foreground">{row.referenceLabel}</p>) : null}
           </div>))}
       </ResponsiveTableSheet>
 
@@ -273,7 +273,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
           totalRows={filteredTimeline.length}
           visibleRows={displayedTimeline.length}
           onChange={setRowLimit}
-          className="border-t border-border bg-muted/35 px-4"
+          className="border-t border-border px-1"
           labels={{
             rowsShown: t('common.rows_shown'),
             rowsPerPage: t('common.rows_per_page'),

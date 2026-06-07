@@ -19,6 +19,7 @@ import {
   RegularInvestmentYearBucket,
 } from '@/shared/lib/regular-investment-display';
 import { RecentLotList, RecentLotDisplayItem } from '@/shared/components/results/RecentLotList';
+import { SectionBlock } from '@/shared/components/page/SectionBlock';
 interface RegularInvestmentResultsSummaryProps {
     results: RegularInvestmentResult;
     dataQualityFlags?: string[];
@@ -179,18 +180,17 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
       />
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        <section className="surface-shell space-y-5 p-5">
-          <div className="flex flex-row items-start justify-between gap-4">
-            <div>
-              <h2 className="ui-card-title">
-                {t('regular_summary.yearly_title')}
-              </h2>
-              <p className="ui-body text-muted-foreground">{t('regular_summary.yearly_description')}</p>
-            </div>
-            <span className="surface-chip shrink-0">
+        <SectionBlock
+          title={t('regular_summary.yearly_title')}
+          description={t('regular_summary.yearly_description')}
+          action={(
+            <span className="ui-meta shrink-0 border-l-2 border-border px-3 py-1 font-semibold">
               {t('regular_summary.yearly_badge')}
             </span>
-          </div>
+          )}
+          className="border-y border-border py-6"
+          contentClassName="space-y-4"
+        >
           <div>
             <ResponsiveTableSheet
               title={t('regular_summary.yearly_title')}
@@ -236,7 +236,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
               ))}
             </ResponsiveTableSheet>
 
-            <div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">
+            <div className="hidden border-y border-border lg:block">
               <Table className="w-full table-fixed text-sm tabular-nums">
               <TableHeader>
                 <TableRow className="h-12 hover:bg-transparent">
@@ -280,10 +280,11 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
                   rowsPerPage: t('common.rows_per_page'),
                   all: t('common.all'),
                 }}
+                className="px-1"
               />
             </div>
           </div>
-        </section>
+        </SectionBlock>
 
         <RecentLotList
           title={t('regular_summary.recent_title')}
