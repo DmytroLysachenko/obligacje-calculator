@@ -1,12 +1,12 @@
 'use client';
 import React from 'react';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { BondInputs, BondType } from '@/features/bond-core/types';
 import { Target, AlertTriangle } from 'lucide-react';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
+import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
 import { AssumptionHistoryPopover } from '@/shared/components/market-assumptions/AssumptionHistoryPopover';
 import { AssumptionSemanticsNote } from '@/shared/components/market-assumptions/AssumptionSemanticsNote';
 import { MacroDefaultsSummary } from '@/shared/components/market-assumptions/MacroDefaultsSummary';
@@ -41,25 +41,84 @@ function ProjectionModeButtons({
   onAdvanced: () => void;
 }) {
   return (
-    <div className="inline-flex rounded-lg bg-muted/35 p-1">
-      <Button
-        type="button"
-        variant={advancedActive ? 'ghost' : 'default'}
-        size="sm"
-        className="h-8 px-3 text-[11px] font-semibold tracking-[0.06em]"
-        onClick={onSimple}
-      >
-        {simpleLabel}
-      </Button>
-      <Button
-        type="button"
-        variant={advancedActive ? 'default' : 'ghost'}
-        size="sm"
-        className="h-8 px-3 text-[11px] font-semibold tracking-[0.06em]"
-        onClick={onAdvanced}
-      >
-        {advancedLabel}
-      </Button>
+    <SegmentedControl
+      value={advancedActive ? 'advanced' : 'simple'}
+      options={[
+        { value: 'simple', label: simpleLabel },
+        { value: 'advanced', label: advancedLabel },
+      ]}
+      onValueChange={(value) => {
+        if (value === 'advanced') {
+          onAdvanced();
+          return;
+        }
+
+        onSimple();
+      }}
+      className="w-full min-w-[14rem] md:w-auto"
+      itemClassName="h-8 text-[11px] tracking-[0.06em]"
+    />
+  );
+}
+
+function CurrentAssumptionValue({
+  value,
+  unit = '%',
+  compact,
+  children,
+}: {
+  value: number;
+  unit?: string;
+  compact: boolean;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-center gap-2 border-l border-border pl-4 text-right">
+      <span className={cn('font-black tabular-nums text-foreground', compact ? 'text-xl' : 'text-2xl')}>
+        {value}
+        {unit}
+      </span>
+      {children}
+    </div>
+  );
+}
+
+function AssumptionHeader({
+  label,
+  htmlFor,
+  muted = false,
+  compact,
+  history,
+  value,
+  children,
+}: {
+  label: React.ReactNode;
+  htmlFor: string;
+  muted?: boolean;
+  compact: boolean;
+  history: React.ReactNode;
+  value: React.ReactNode;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-3 border-y border-border py-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-2">
+          <Label
+            htmlFor={htmlFor}
+            className={cn(
+              'font-semibold tracking-[0.08em]',
+              muted ? 'text-muted-foreground' : 'text-primary',
+              compact ? 'text-xs' : 'text-sm',
+            )}
+          >
+            {label}
+          </Label>
+          {history}
+        </div>
+        {value}
+      </div>
+      {children}
     </div>
   );
 }
@@ -94,52 +153,49 @@ export const MarketAssumptionsForm = ({
       <div className="space-y-4">
         <AssumptionSemanticsNote bondType={bondType} showNbpNote={isNbpRelevant} />
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Label
-              htmlFor="expectedInflation"
-              className={cn(
-                'font-semibold tracking-[0.08em] text-primary',
-                compact ? 'text-xs' : 'text-sm',
-              )}
-            >
-              {t('bonds.inflation.rate')} (%)
-            </Label>
+        <AssumptionHeader
+          htmlFor="expectedInflation"
+          compact={compact}
+          label={`${t('bonds.inflation.rate')} (%)`}
+          history={(
             <AssumptionHistoryPopover
               endpoint="/api/charts/inflation"
               title={t('bonds.historical_context')}
               latestLabel={t('bonds.latest_official')}
               footerNote={t('bonds.nbp_target_hint', { target: '2.5%' })}
             />
-          </div>
-          <div className={cn('flex items-center gap-2 rounded-lg bg-muted/35 px-3 py-1.5 font-semibold text-primary', compact ? 'text-xl' : 'text-[32px]')}>
-            {expectedInflation}%
-            {expectedInflation <= 0 && <AlertTriangle className="h-4 w-4 text-warning"/>}
-            {Math.abs(expectedInflation - 2.5) <= 1 && <Target className="h-4 w-4 text-success"/>}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-3 gap-2">
-          {[2.5, 6, -1].map((value) => (
-            <Button
-              key={value}
-              variant="outline"
-              size="sm"
-              className={cn(
-                'h-9 text-[11px] font-semibold tracking-[0.08em]',
-                expectedInflation === value &&
-                  !customInflation &&
-                  'border-primary bg-primary text-primary-foreground',
-              )}
-              onClick={() => {
+          )}
+          value={(
+            <CurrentAssumptionValue value={expectedInflation} compact={compact}>
+              {expectedInflation <= 0 && <AlertTriangle className="h-4 w-4 text-warning"/>}
+              {Math.abs(expectedInflation - 2.5) <= 1 && <Target className="h-4 w-4 text-success"/>}
+            </CurrentAssumptionValue>
+          )}
+        >
+          <SegmentedControl
+            value={
+              !customInflation && expectedInflation === 2.5
+                ? 'stable'
+                : !customInflation && expectedInflation === 6
+                  ? 'high'
+                  : !customInflation && expectedInflation === -1
+                    ? 'deflation'
+                    : 'custom'
+            }
+            options={[
+              { value: 'stable', label: `${t('bonds.stable')} (2.5%)` },
+              { value: 'high', label: `${t('bonds.high')} (6%)` },
+              { value: 'deflation', label: `${t('bonds.deflation')} (-1%)` },
+            ]}
+            onValueChange={(value) => {
+              const presetValue = value === 'stable' ? 2.5 : value === 'high' ? 6 : -1;
               onUpdate('customInflation', undefined);
-              onUpdate('expectedInflation', value);
+              onUpdate('expectedInflation', presetValue);
             }}
-            >
-              {value === 2.5 ? t('bonds.stable') : value === 6 ? t('bonds.high') : t('bonds.deflation')} ({value}%)
-            </Button>
-          ))}
-        </div>
+            className="grid-cols-3"
+            itemClassName="text-[11px] tracking-[0.06em]"
+          />
+        </AssumptionHeader>
 
         <CommittedSliderInput
           value={Number.isFinite(expectedInflation) ? expectedInflation : 0}
@@ -196,28 +252,21 @@ export const MarketAssumptionsForm = ({
       </div>
 
       {isNbpRelevant ? (<div className="space-y-4 border-t border-dashed pt-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Label
-                htmlFor="expectedNbpRate"
-                className={cn(
-                  'font-semibold tracking-[0.08em] text-muted-foreground',
-                  compact ? 'text-xs' : 'text-sm',
-                )}
-              >
-                {t('bonds.nbp_rate_label')}
-              </Label>
+          <AssumptionHeader
+            htmlFor="expectedNbpRate"
+            muted
+            compact={compact}
+            label={t('bonds.nbp_rate_label')}
+            history={(
               <AssumptionHistoryPopover
                 endpoint="/api/charts/nbp-rate"
                 title={t('bonds.market_assumptions.nbp_history_title')}
                 latestLabel={t('bonds.market_assumptions.latest_nbp_label')}
                 footerNote={t('bonds.market_assumptions.nbp_flat_default_note')}
               />
-            </div>
-            <span className={cn('font-black text-primary', compact ? 'text-xl' : 'text-2xl')}>
-              {expectedNbpRate ?? 5.25}%
-            </span>
-          </div>
+            )}
+            value={<CurrentAssumptionValue value={expectedNbpRate ?? 5.25} compact={compact} />}
+          />
           <CommittedSliderInput
             value={Number.isFinite(expectedNbpRate ?? 5.25)
               ? (expectedNbpRate ?? 5.25)
