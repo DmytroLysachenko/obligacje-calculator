@@ -19,9 +19,11 @@ const flattenedSurfaceFiles = [
   'shared/components/forms/AdvancedAssumptionsDisclosure.tsx',
   'shared/components/forms/SegmentedControl.tsx',
   'features/single-calculator/components/BondInputsForm.tsx',
+  'features/regular-investment/components/RegularInvestmentInputsForm.tsx',
   'features/single-calculator/components/sections/BondDisplaySection.tsx',
   'features/regular-investment/components/inputs/AdvancedSettingsSection.tsx',
   'features/regular-investment/components/RegularInvestmentResultsSummary.tsx',
+  'shared/components/results/ResultSummaryHero.tsx',
   'features/ladder-strategy/components/LadderTimeline.tsx',
   'shared/components/results/RecentLotList.tsx',
   'shared/components/page/ToolCard.tsx',
@@ -40,6 +42,10 @@ const flattenedSurfaceFiles = [
 const oldSurfaceFragments = [
   'surface-shell space-y-5 p-5',
   'surface-shell space-y-6 p-5',
+  'surface-shell w-full space-y-6 p-5',
+  'surface-shell w-full space-y-8 p-5',
+  'surface-shell flex h-[600px]',
+  'surface-shell overflow-hidden',
   'rounded-lg border border-border bg-card p-5 shadow-sm',
   'rounded-lg border border-border bg-card p-5',
   'rounded-lg border border-border bg-card p-4',
@@ -90,11 +96,14 @@ describe('flattened shared surface system contract', () => {
     expect(sourceByPath.get('shared/components/forms/AdvancedAssumptionsDisclosure.tsx')).toContain('border-l-2 border-border pl-3 pt-0.5');
     expect(sourceByPath.get('shared/components/forms/SegmentedControl.tsx')).toContain('grid grid-cols-2 gap-1 border-y border-border py-1');
     expect(sourceByPath.get('features/single-calculator/components/BondInputsForm.tsx')).toContain("import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
+    expect(sourceByPath.get('features/single-calculator/components/BondInputsForm.tsx')).toContain('w-full space-y-8 border-y border-border bg-background p-5 md:p-6');
+    expect(sourceByPath.get('features/regular-investment/components/RegularInvestmentInputsForm.tsx')).toContain('w-full space-y-8 border-y border-border bg-background p-5 md:p-6');
     expect(sourceByPath.get('features/single-calculator/components/sections/BondDisplaySection.tsx')).toContain("import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';");
     expect(sourceByPath.get('features/single-calculator/components/sections/BondDisplaySection.tsx')).toContain("import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
     expect(sourceByPath.get('features/regular-investment/components/inputs/AdvancedSettingsSection.tsx')).toContain("import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';");
     expect(sourceByPath.get('features/regular-investment/components/RegularInvestmentResultsSummary.tsx')).toContain("import { SectionBlock } from '@/shared/components/page/SectionBlock';");
     expect(sourceByPath.get('features/regular-investment/components/RegularInvestmentResultsSummary.tsx')).toContain('<div className="hidden border-y border-border lg:block">');
+    expect(sourceByPath.get('shared/components/results/ResultSummaryHero.tsx')).toContain('overflow-hidden border-y border-border bg-background');
     expect(sourceByPath.get('features/ladder-strategy/components/LadderTimeline.tsx')).toContain("import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
     expect(sourceByPath.get('features/ladder-strategy/components/LadderTimeline.tsx')).toContain("import { SectionBlock } from '@/shared/components/page/SectionBlock';");
     expect(sourceByPath.get('features/ladder-strategy/components/LadderTimeline.tsx')).toContain('<div className="hidden border-y border-border lg:block">');

@@ -29,7 +29,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
 
     if (isLoadingDefs || !definitions) {
       return (
-        <section className="surface-shell flex h-[600px] w-full items-center justify-center p-6">
+        <section className="flex h-[600px] w-full items-center justify-center border-y border-border bg-background p-6">
             <p className="text-sm font-semibold text-muted-foreground">
               {t('common.loading')}
             </p>
@@ -47,7 +47,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
       inputs.contributionAmount % 100 === 0 && inputs.contributionAmount > 0;
 
     return (
-      <section className="surface-shell w-full space-y-8 p-5 md:p-6">
+      <section className="w-full space-y-8 border-y border-border bg-background p-5 md:p-6">
         <div className="space-y-2 border-b border-border pb-4">
           <h2 className="ui-section-title">
             {t('bonds.regular_calculator')}

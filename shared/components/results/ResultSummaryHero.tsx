@@ -23,7 +23,7 @@ export const ResultSummaryHero = React.memo(function ResultSummaryHero({
   aside,
 }: ResultSummaryHeroProps) {
   return (
-    <section className="surface-shell overflow-hidden">
+    <section className="overflow-hidden border-y border-border bg-background">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-4xl space-y-4 p-5 md:p-6">
           <div className="surface-chip">
@@ -43,14 +43,14 @@ export const ResultSummaryHero = React.memo(function ResultSummaryHero({
         {actions.length > 0 ? (
           <ResultActionGrid actions={actions} />
         ) : aside ? (
-          <div className="border-t border-border bg-muted/30 p-5 lg:w-[280px] lg:shrink-0 lg:border-l lg:border-t-0">
+          <div className="border-t border-border bg-muted/20 p-5 lg:w-[280px] lg:shrink-0 lg:border-l lg:border-t-0">
             {aside}
           </div>
         ) : null}
       </div>
 
       {narrative || deltaText ? (
-        <div className="max-w-4xl space-y-3 border-t border-border bg-muted/20 px-5 py-4 md:px-6">
+        <div className="max-w-4xl space-y-3 border-t border-border bg-background px-5 py-4 md:px-6">
           {narrative ? (
             <p className="ui-body">{narrative}</p>
           ) : null}

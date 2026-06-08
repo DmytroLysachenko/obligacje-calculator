@@ -77,7 +77,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
   if (isLoadingDefs || !definitions || !currentDef) {
     return (
-      <section className="surface-shell w-full space-y-6 p-5 md:p-6">
+      <section className="w-full space-y-6 border-y border-border bg-background p-5 md:p-6">
         <div className="space-y-3">
           <Skeleton className="mb-2 h-6 w-48" />
           <Skeleton className="h-4 w-64" />
@@ -102,7 +102,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
   return (
     <TooltipProvider>
-      <section className="surface-shell w-full space-y-8 p-5 md:p-6">
+      <section className="w-full space-y-8 border-y border-border bg-background p-5 md:p-6">
         {guardrails.length > 0 ? (
           <div className="space-y-3">
             {guardrails.map((issue) => (
