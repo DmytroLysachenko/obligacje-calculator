@@ -46,9 +46,9 @@ describe('economic data health contracts', () => {
     expectContains(source, "import { Notice } from '@/shared/components/feedback/Notice';");
     expectContains(source, "tone={fallbackTone === 'warning' ? 'warning' : 'success'}");
     expectContains(source, 'className="border-0 bg-transparent px-0"');
-    expectContains(source, 'flex flex-wrap items-start gap-x-4 gap-y-2');
+    expectContains(source, 'flex flex-wrap items-start gap-x-4 gap-y-1.5');
     expectContains(source, 'inline-flex items-center gap-2 border-l-2 pl-3 text-xs font-semibold');
-    expectContains(source, 'max-w-3xl text-sm leading-6 text-muted-foreground');
+    expectContains(source, 'max-w-4xl text-sm leading-6 text-muted-foreground');
     expectNotContains(source, 'className="border-t-0 bg-transparent px-0"');
     expectNotContains(source, 'flex items-start gap-2 border-l-2 pl-3 text-sm leading-6');
   });

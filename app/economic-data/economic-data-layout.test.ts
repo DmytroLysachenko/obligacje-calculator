@@ -168,27 +168,28 @@ describe('economic data layout source contracts', () => {
 
   it('keeps hero metric tiles dense and grouped', () => {
     const source = readSource(referenceHeroPath);
-    const metricGridLine = getClassLine(source, 'grid gap-x-6 gap-y-4 border-y');
-    const tilePaddingLine = getClassLine(source, 'border-t border-border pt-3');
+    const metricGridLine = getClassLine(source, 'grid gap-x-8 gap-y-5 border-y');
+    const tilePaddingLine = getClassLine(source, 'border-l border-border/70 pl-4');
     const valueLine = getClassLine(source, 'text-base font-semibold');
 
-    expect(metricGridLine).toContain('gap-x-6');
-    expect(metricGridLine).toContain('gap-y-4');
+    expect(metricGridLine).toContain('gap-x-8');
+    expect(metricGridLine).toContain('gap-y-5');
     expect(metricGridLine).toContain('border-y border-border');
-    expect(metricGridLine).toContain('py-3');
+    expect(metricGridLine).toContain('py-4');
     expect(metricGridLine).toContain('sm:grid-cols-2');
     expect(metricGridLine).toContain('sm:border-y-0');
     expect(metricGridLine).not.toContain('overflow-hidden');
     expect(metricGridLine).not.toContain('bg-border');
     expect(metricGridLine).not.toContain('rounded-[1.5rem]');
 
-    expect(tilePaddingLine).toContain('pt-3');
-    expect(tilePaddingLine).toContain('first:border-t-0');
-    expect(tilePaddingLine).not.toContain('py-4');
+    expect(tilePaddingLine).toContain('pl-4');
+    expect(tilePaddingLine).toContain('first:border-l-0');
+    expect(tilePaddingLine).not.toContain('pt-3');
     expect(tilePaddingLine).not.toContain('sm:[&:nth-child(2)]:border-l');
 
     expect(valueLine).toContain('mt-1.5');
     expect(valueLine).toContain('text-base');
+    expect(valueLine).toContain('leading-6');
     expect(valueLine).not.toContain('text-xl');
   });
 
@@ -227,15 +228,15 @@ describe('economic data layout source contracts', () => {
     const source = readSource(referenceChartFramePath);
 
     expectContains(source, 'sourceLabel');
-    expectContains(source, '<dl className="grid gap-x-6 gap-y-3');
-    expectContains(source, 'border-y border-border py-4');
+    expectContains(source, '<dl className="grid gap-x-8 gap-y-2.5');
+    expectContains(source, 'space-y-3 border-y border-border py-3');
     expectContains(source, "const healthToneClass = fallbackTone === 'warning'");
     expectContains(source, 'fallbackStatusLabel?: string;');
     expectContains(source, 'syncedStatusLabel?: string;');
     expectContains(source, "inline-flex items-center gap-2 border-l-2 pl-3 text-xs font-semibold");
-    expectContains(source, 'max-w-3xl text-sm leading-6 text-muted-foreground');
+    expectContains(source, 'max-w-4xl text-sm leading-6 text-muted-foreground');
     expectContains(source, 'border-0 bg-transparent px-0');
-    expectContains(source, 'border-t border-border pt-4');
+    expectContains(source, 'border-t border-border pt-3');
     expectNoFragments(source, [
       'rounded-lg border border-border bg-card',
       'overflow-hidden rounded-md border border-border',

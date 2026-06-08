@@ -77,13 +77,15 @@ describe('screenshot regression contracts', () => {
   it('keeps economic reference metrics spaced instead of cell-like', () => {
     const source = read(files.economicHero);
 
-    expectContains(source, 'grid gap-x-6 gap-y-4 border-y border-border py-3 sm:grid-cols-2 sm:border-y-0 sm:py-0');
-    expectContains(source, 'border-t border-border pt-3 first:border-t-0 sm:first:border-t sm:first:pt-3');
+    expectContains(source, 'grid gap-x-8 gap-y-5 border-y border-border py-4 sm:grid-cols-2 sm:border-y-0 sm:py-1');
+    expectContains(source, 'border-l border-border/70 pl-4 first:border-l-0 first:pl-0');
     expectContains(source, 'text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground');
-    expectContains(source, 'mt-1.5 text-base font-semibold tracking-tight text-foreground');
+    expectContains(source, 'mt-1.5 text-base font-semibold leading-6 tracking-tight text-foreground');
 
     expectNoFragments(source, [
+      'grid gap-x-6 gap-y-4 border-y border-border py-3',
       'grid border-y border-border sm:grid-cols-2 sm:border-y-0',
+      'border-t border-border pt-3',
       'border-b border-border py-3 last:border-b-0',
       'sm:[&:nth-child(2)]:border-l',
       'sm:[&:nth-child(4)]:border-l',
@@ -98,8 +100,9 @@ describe('screenshot regression contracts', () => {
     expectContains(source, "import { Notice } from '@/shared/components/feedback/Notice';");
     expectContains(source, "tone={fallbackTone === 'warning' ? 'warning' : 'success'}");
     expectContains(source, 'compact className="border-0 bg-transparent px-0"');
+    expectContains(source, 'gap-x-4 gap-y-1.5');
     expectContains(source, 'inline-flex items-center gap-2 border-l-2 pl-3 text-xs font-semibold');
-    expectContains(source, 'max-w-3xl text-sm leading-6 text-muted-foreground');
+    expectContains(source, 'max-w-4xl text-sm leading-6 text-muted-foreground');
 
     expectNoFragments(source, [
       'compact className="border-t-0 bg-transparent px-0"',

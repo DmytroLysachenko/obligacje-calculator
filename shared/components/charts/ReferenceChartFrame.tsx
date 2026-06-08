@@ -37,21 +37,21 @@ export function ReferenceChartFrame({
     : 'border-success text-success';
 
   return (
-    <div className="w-full min-w-0 space-y-5">
-      <div className="space-y-4 border-y border-border py-4">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="min-w-0 flex-1 space-y-3">
-            <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+    <div className="w-full min-w-0 space-y-4">
+      <div className="space-y-3 border-y border-border py-3">
+        <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
+          <div className="min-w-0 flex-1 space-y-2.5">
+            <div className="flex items-center gap-2 text-xs font-semibold leading-5 text-muted-foreground">
               <Info className="h-3.5 w-3.5 shrink-0" />
               <span>{sourceLabel}</span>
             </div>
-            <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2 xl:grid-cols-4">
+            <dl className="grid gap-x-8 gap-y-2.5 sm:grid-cols-2 xl:grid-cols-4">
               {primaryMeta.map((item) => (
-                <div key={item.label} className="min-w-0">
+                <div key={item.label} className="min-w-0 border-l border-border/70 pl-3 first:border-l-0 first:pl-0">
                   <dt className="text-xs font-semibold text-muted-foreground">
                     {item.label}
                   </dt>
-                  <dd className="mt-1 break-words text-sm font-medium text-foreground">
+                  <dd className="mt-1 break-words text-sm font-medium leading-5 text-foreground">
                     {item.value}
                   </dd>
                 </div>
@@ -63,7 +63,7 @@ export function ReferenceChartFrame({
 
         {fallbackNotice ? (
           <Notice tone={fallbackTone === 'warning' ? 'warning' : 'success'} compact className="border-0 bg-transparent px-0">
-            <div className="flex flex-wrap items-start gap-x-4 gap-y-2">
+            <div className="flex flex-wrap items-start gap-x-4 gap-y-1.5">
               <div className={cn('inline-flex items-center gap-2 border-l-2 pl-3 text-xs font-semibold', healthToneClass)}>
                 {fallbackTone === 'warning' ? (
                   <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
@@ -72,7 +72,7 @@ export function ReferenceChartFrame({
                 )}
                 {fallbackTone === 'warning' ? fallbackStatusLabel : syncedStatusLabel}
               </div>
-              <p className="max-w-3xl text-sm leading-6 text-muted-foreground">{fallbackNotice}</p>
+              <p className="max-w-4xl text-sm leading-6 text-muted-foreground">{fallbackNotice}</p>
             </div>
           </Notice>
         ) : null}
@@ -84,7 +84,7 @@ export function ReferenceChartFrame({
         </Notice>
       ) : null}
 
-      <div className="border-t border-border pt-4">
+      <div className="border-t border-border pt-3">
         {children}
       </div>
     </div>

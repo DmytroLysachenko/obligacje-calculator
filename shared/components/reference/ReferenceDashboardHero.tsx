@@ -28,16 +28,16 @@ export function ReferenceDashboardHero({
           <p className="ui-body max-w-3xl">{description}</p>
         </div>
 
-        <div className="grid gap-x-6 gap-y-4 border-y border-border py-3 sm:grid-cols-2 sm:border-y-0 sm:py-0">
+        <div className="grid gap-x-8 gap-y-5 border-y border-border py-4 sm:grid-cols-2 sm:border-y-0 sm:py-1">
           {metrics.map((metric) => (
             <div
               key={metric.label}
-              className="border-t border-border pt-3 first:border-t-0 sm:first:border-t sm:first:pt-3"
+              className="border-l border-border/70 pl-4 first:border-l-0 first:pl-0 sm:[&:nth-child(odd)]:border-l-0 sm:[&:nth-child(odd)]:pl-0"
             >
               <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
                 {metric.label}
               </p>
-              <p className="mt-1.5 text-base font-semibold tracking-tight text-foreground">{metric.value}</p>
+              <p className="mt-1.5 text-base font-semibold leading-6 tracking-tight text-foreground">{metric.value}</p>
             </div>
           ))}
         </div>
