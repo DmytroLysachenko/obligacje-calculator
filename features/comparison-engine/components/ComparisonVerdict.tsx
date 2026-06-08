@@ -1,7 +1,6 @@
 'use client';
 import React from 'react';
 import { Scale, ShieldCheck, Zap } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { useAppI18n } from '@/i18n/client';
 import { BondInputs, CalculationResult, TaxStrategy, } from '@/features/bond-core/types';
 import { ComparisonMaturityMode } from '@/features/bond-core/types/scenarios';
@@ -128,33 +127,33 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, 
               </ul>
             </div>
 
-            <div className="flex flex-wrap gap-2 pt-2">
-              {resultAValue > resultBValue ? (<Badge variant="outline" className="border-border bg-muted/35 text-xs font-semibold text-muted-foreground">
-                  <Scale className="h-3 w-3 mr-1"/>
+            <div className="flex flex-wrap gap-x-4 gap-y-2 border-t border-border pt-4">
+              {resultAValue > resultBValue ? (<span className="inline-flex items-center gap-2 border-l-2 border-border pl-3 text-xs font-semibold text-muted-foreground">
+                  <Scale className="h-3 w-3"/>
                   {(resultsA.timeline.length / 12) < 4
                 ? t('comparison.verdict_short_term')
                 : t('comparison.verdict_long_term')}
-                </Badge>) : (<Badge variant="outline" className="border-border bg-muted/35 text-xs font-semibold text-muted-foreground">
-                  <Scale className="h-3 w-3 mr-1"/>
+                </span>) : (<span className="inline-flex items-center gap-2 border-l-2 border-border pl-3 text-xs font-semibold text-muted-foreground">
+                  <Scale className="h-3 w-3"/>
                   {(resultsB.timeline.length / 12) < 4
                 ? t('comparison.verdict_short_term')
                 : t('comparison.verdict_long_term')}
-                </Badge>)}
+                </span>)}
 
-              {expectedInflation > 5 ? (<Badge variant="outline" className="border-warning/30 bg-warning/10 text-xs font-semibold text-warning">
-                  <Zap className="h-3 w-3 mr-1"/>
+              {expectedInflation > 5 ? (<span className="inline-flex items-center gap-2 border-l-2 border-warning pl-3 text-xs font-semibold text-warning">
+                  <Zap className="h-3 w-3"/>
                   {t('comparison.verdict_high_inflation_badge')}
-                </Badge>) : null}
+                </span>) : null}
 
-              {taxStrategy !== TaxStrategy.STANDARD ? (<Badge variant="outline" className="border-border bg-muted/35 text-xs font-semibold text-muted-foreground">
-                  <ShieldCheck className="h-3 w-3 mr-1"/>
+              {taxStrategy !== TaxStrategy.STANDARD ? (<span className="inline-flex items-center gap-2 border-l-2 border-border pl-3 text-xs font-semibold text-muted-foreground">
+                  <ShieldCheck className="h-3 w-3"/>
                   {t('comparison.verdict_tax_wrapper_badge')}
-                </Badge>) : null}
+                </span>) : null}
             </div>
           </div>
 
           <div className="w-full md:w-48 flex flex-col gap-2">
-            <div className="bg-muted/35 px-4 py-4 text-center">
+            <div className="border-l-2 border-border px-4 py-4 text-center">
               <p className="mb-1 text-sm font-semibold text-muted-foreground">
                 {t('comparison.verdict_gap_label')}
               </p>

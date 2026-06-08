@@ -9,7 +9,6 @@ import {
   CartesianGrid,
   Tooltip as RechartsTooltip,
   ResponsiveContainer,
-  Legend,
   LineChart,
   Line,
   ComposedChart,
@@ -23,6 +22,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { TrendingUp, Activity } from "lucide-react";
 import { ComparisonChartProps } from "./types";
 import { ChartContainer } from "@/shared/components/charts/ChartContainer";
+import { ChartLegendStrip } from "@/shared/components/charts/ChartLegendStrip";
 import { useAppI18n } from "@/i18n/client";
 
 interface PayloadEntry {
@@ -205,6 +205,15 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
       drawdown: deepest.value.toFixed(2),
     });
   }, [assets, chartData, t]);
+  const growthLegendItems = React.useMemo(() => assets.map((asset) => ({
+    label: asset.metadata.name,
+    color: asset.metadata.color,
+  })), [assets]);
+  const drawdownLegendItems = React.useMemo(() => assets.map((asset) => ({
+    label: asset.metadata.name,
+    color: asset.metadata.color,
+    style: 'dashed' as const,
+  })), [assets]);
 
   return (
     <Tabs defaultValue="growth" className="w-full flex flex-col gap-6">
@@ -235,6 +244,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
                 {t('comparison.performance_with_contributions')}
               </p>
             </div>
+            <ChartLegendStrip items={growthLegendItems} />
             <ChartContainer
               ariaLabel={t('comparison.growth_chart_label')}
               summary={<p>{chartSummary}</p>}
@@ -289,26 +299,8 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
                     axisLine={false}
                     tickFormatter={(v: number) => `${v / 1000}k`}
                   />
-                  <YAxis
-                    yAxisId="right"
-                    orientation="right"
-                    fontSize={9}
-                    opacity={0.5}
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={(v: number) => `${v}%`}
-                  />
                   <RechartsTooltip
                     content={<CustomTooltip formatCurrency={formatCurrency} />}
-                  />
-                  <Legend
-                    verticalAlign="top"
-                    align="right"
-                    height={40}
-                    iconType="circle"
-                    wrapperStyle={{
-                      fontSize: "11px",
-                    }}
                   />
                   {chartData.length > 24 ? <Brush dataKey="date" height={22} stroke="#cbd5e1" travellerWidth={8} /> : null}
                   {assets.map((asset) => (
@@ -326,30 +318,6 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
                       isAnimationActive={false}
                     />
                   ))}
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="inflation"
-                    name={t("bonds.ref_inflation")}
-                    stroke="#f59e0b"
-                    strokeWidth={2}
-                    strokeDasharray="5 5"
-                    dot={false}
-                    opacity={0.4}
-                    isAnimationActive={false}
-                  />
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="nbp"
-                    name={t("bonds.nbp_rate_short")}
-                    stroke="#94a3b8"
-                    strokeWidth={2}
-                    strokeDasharray="3 3"
-                    dot={false}
-                    opacity={0.3}
-                    isAnimationActive={false}
-                  />
                 </ComposedChart>
               </ResponsiveContainer>
             </ChartContainer>
@@ -371,6 +339,7 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
                 </p>
               </div>
             </div>
+            <ChartLegendStrip items={drawdownLegendItems} />
             <ChartContainer
               ariaLabel={t('comparison.drawdown_chart_label')}
               summary={<p>{drawdownSummary}</p>}
@@ -403,15 +372,6 @@ export const ComparisonChart: React.FC<ComparisonChartProps> = ({
                     reversed
                   />
                   <RechartsTooltip content={<DrawdownTooltip />} />
-                  <Legend
-                    verticalAlign="top"
-                    align="right"
-                    height={40}
-                    iconType="circle"
-                    wrapperStyle={{
-                      fontSize: "11px",
-                    }}
-                  />
                   {chartData.length > 24 ? <Brush dataKey="date" height={22} stroke="#cbd5e1" travellerWidth={8} /> : null}
                   {assets.map((asset) => (
                     <Line
