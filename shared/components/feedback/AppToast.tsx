@@ -42,11 +42,13 @@ export function AppToast({
   return (
     <div className="pointer-events-none fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
       <div
+        role="status"
+        aria-live="polite"
         className={cn(
-          'pointer-events-auto flex min-w-[280px] max-w-[420px] items-start gap-3 rounded-lg border px-4 py-3 shadow-lg',
+          'pointer-events-auto flex min-w-[280px] max-w-[420px] items-start gap-3 border border-l-2 bg-background px-4 py-3 shadow-none',
           isSuccess
-            ? 'border-success/30 bg-card text-foreground'
-            : 'border-destructive/30 bg-card text-foreground',
+            ? 'border-border border-l-success text-foreground'
+            : 'border-border border-l-destructive text-foreground',
         )}
       >
         <Icon className={cn('mt-0.5 h-5 w-5 shrink-0', isSuccess ? 'text-success' : 'text-destructive')} />

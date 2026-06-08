@@ -28,15 +28,21 @@ export function ConfirmActionDialog({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/30 px-4">
-      <div className="w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-lg">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/30 px-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirm-action-dialog-title"
+      aria-describedby="confirm-action-dialog-description"
+    >
+      <div className="w-full max-w-md border border-border bg-background p-6 shadow-none">
         <div className="flex items-start gap-3">
-          <div className="rounded-md bg-warning/10 p-3 text-warning">
+          <div className="border-l-2 border-warning px-3 py-2 text-warning">
             <AlertTriangle className="h-5 w-5" />
           </div>
           <div className="space-y-2">
-            <h3 className="ui-card-title">{title}</h3>
-            <p className="ui-body text-muted-foreground">{description}</p>
+            <h3 id="confirm-action-dialog-title" className="ui-card-title">{title}</h3>
+            <p id="confirm-action-dialog-description" className="ui-body text-muted-foreground">{description}</p>
           </div>
         </div>
 

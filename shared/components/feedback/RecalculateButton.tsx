@@ -22,8 +22,8 @@ export const RecalculateButton = ({ isDirty, loading, hasResults = true, disable
     const helperText = loading
         ? t('common.calculation_in_progress') : isInitialRun
         ? t('common.initial_calculation_hint') : t('common.recalculation_hint');
-    return (<div className="fixed inset-x-3 bottom-3 z-50 sm:inset-x-auto sm:bottom-4 sm:right-4 sm:w-[min(22rem,calc(100vw-1.5rem))]">
-      <div className="rounded-lg border border-border bg-background px-4 py-4 text-foreground shadow-lg shadow-foreground/10">
+    return (<div className="fixed inset-x-3 bottom-3 z-50 sm:inset-x-auto sm:bottom-4 sm:right-4 sm:w-[min(22rem,calc(100vw-1.5rem))]" role="status" aria-live="polite">
+      <div className="border border-border bg-background px-4 py-4 text-foreground shadow-none">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1">
             <p className="text-xs font-semibold text-muted-foreground">
