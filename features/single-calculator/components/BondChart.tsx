@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { ChartContainer } from "@/shared/components/charts/ChartContainer";
 import { ChartLegendStrip } from "@/shared/components/charts/ChartLegendStrip";
 import { AppLanguage, buildBondChartDisplayPoints, normalizeBondChartDisplayTimeline, } from "@/shared/lib/bond-display";
-import { computeNumericDomain, computeRateDomain, sampleSeriesPoints } from "@/shared/lib/chart-series";
+import { computeNumericDomain, sampleSeriesPoints } from "@/shared/lib/chart-series";
 interface BondChartProps {
     results: CalculationResult;
     initialInvestment: number;
@@ -153,7 +153,6 @@ export const BondChart: React.FC<BondChartProps> = ({ results, chartStep = 'year
         minPadding: 250,
         paddingRatio: 0.08,
     }), [chartData]);
-    const rightDomain = React.useMemo(() => computeRateDomain(chartData.flatMap((point) => [point.inflation, point.nbp].filter((value): value is number => typeof value === 'number'))), [chartData]);
     const firstProjectedIndex = React.useMemo(() => chartData.findIndex((point) => point.isProjected), [chartData]);
     const chartSummary = React.useMemo(() => {
         const firstPoint = chartData[0];
@@ -178,16 +177,6 @@ export const BondChart: React.FC<BondChartProps> = ({ results, chartStep = 'year
         {
             label: t("common.real_value"),
             color: "#4E8F71",
-        },
-        {
-            label: t("bonds.ref_inflation"),
-            color: "#C89D4F",
-            style: "dashed" as const,
-        },
-        {
-            label: t("bonds.nbp_rate_short"),
-            color: "#5C5C5C",
-            style: "muted" as const,
         },
     ], [t]);
     return (<div className="space-y-4">
@@ -217,7 +206,6 @@ export const BondChart: React.FC<BondChartProps> = ({ results, chartStep = 'year
             return value.slice(0, 9);
         }}/>
           <YAxis yAxisId="left" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))", fontWeight: "bold" }} tickLine={false} axisLine={false} tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`} domain={leftDomain}/>
-          <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))", opacity: 0.5 }} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}%`} domain={rightDomain}/>
           <Tooltip content={<CustomTooltip formatCurrency={formatCurrency} t={t}/>}/>
           {firstProjectedIndex !== -1 ? (<ReferenceLine x={chartData[firstProjectedIndex].date} stroke="#C89D4F" strokeDasharray="3 3" label={{
                 value: t('bonds.projection_start'),
@@ -232,8 +220,6 @@ export const BondChart: React.FC<BondChartProps> = ({ results, chartStep = 'year
               <Line yAxisId="left" type="monotone" dataKey="high" name={t("bonds.inflation.scenarios.high")} stroke="#111111" strokeWidth={1} strokeDasharray="3 3" dot={false} opacity={0.5} isAnimationActive={false}/>
               <Line yAxisId="left" type="monotone" dataKey="low" name={t("bonds.inflation.scenarios.low")} stroke="#111111" strokeWidth={1} strokeDasharray="3 3" dot={false} opacity={0.5} isAnimationActive={false}/>
             </>) : null}
-          <Line yAxisId="right" type="stepAfter" dataKey="inflation" name={t("bonds.ref_inflation")} stroke="#C89D4F" strokeWidth={1.75} strokeDasharray="5 5" dot={false} opacity={0.45} isAnimationActive={false}/>
-          <Line yAxisId="right" type="stepAfter" dataKey="nbp" name={t("bonds.nbp_rate_short")} stroke="#5C5C5C" strokeWidth={1.5} strokeDasharray="3 3" dot={false} opacity={0.3} isAnimationActive={false}/>
         </ComposedChart>
       </ResponsiveContainer>
     </ChartContainer>

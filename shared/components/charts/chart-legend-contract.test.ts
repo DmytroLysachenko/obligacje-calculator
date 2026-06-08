@@ -54,12 +54,19 @@ describe('chart legend contracts', () => {
     expectContains(source, 'const legendItems = React.useMemo(() => [');
     expectContains(source, 't("common.nominal_value")');
     expectContains(source, 't("common.real_value")');
-    expectContains(source, 't("bonds.ref_inflation")');
-    expectContains(source, 't("bonds.nbp_rate_short")');
     expectContains(source, '<ChartLegendStrip items={legendItems}/>');
     expectContains(source, 'margin={{ top: 12, right: 30, left: 40, bottom: 20 }}');
+    expectContains(source, '{t("bonds.ref_inflation")}:');
+    expectContains(source, '{t("bonds.nbp_rate_short")}:');
 
     expectNoFragments(source, [
+      'computeRateDomain',
+      'const rightDomain',
+      'yAxisId="right"',
+      'dataKey="inflation" name={t("bonds.ref_inflation")}',
+      'dataKey="nbp" name={t("bonds.nbp_rate_short")}',
+      'label: t("bonds.ref_inflation")',
+      'label: t("bonds.nbp_rate_short")',
       'Legend, ResponsiveContainer',
       '<Legend',
       'wrapperStyle',
