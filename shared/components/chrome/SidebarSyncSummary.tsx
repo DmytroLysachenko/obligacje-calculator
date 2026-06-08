@@ -59,11 +59,11 @@ export function SidebarSyncSummary({
 
   return (
     <SidebarUtilityPanel>
-      <div className="space-y-1">
-        <div className="flex items-start justify-between gap-3">
+      <div className="space-y-2">
+        <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <p className="text-xs font-semibold text-muted-foreground">{t('common.sync_data')}</p>
-            <p className="mt-0.5 text-sm font-semibold text-foreground">
+            <p className="mt-1 text-sm font-semibold text-foreground">
               {dataFreshness
                 ? dataFreshness.asOf ?? t('sidebar.freshness.no_date')
                 : t('sidebar.freshness.no_metadata')}
@@ -82,7 +82,7 @@ export function SidebarSyncSummary({
           ) : null}
         </div>
 
-        <p className="line-clamp-2 text-[11px] leading-4 text-muted-foreground">
+        <p className="max-w-[14rem] text-[11px] leading-5 text-muted-foreground">
           {freshnessText}
         </p>
       </div>

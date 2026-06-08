@@ -158,7 +158,7 @@ function SidebarFooter({
   const { canManageWorkspace } = usePortfolioAccess();
 
   return (
-    <div className="space-y-3 border-t border-border bg-muted/25 p-2.5">
+    <div className="space-y-4 border-t border-border bg-muted/20 px-3 py-4">
       {canManageWorkspace ? (
         <SidebarUtilityGroup title={t('sidebar.workspace_title')}>
           <SidebarWorkspaceUtility pathname={pathname} />
@@ -168,7 +168,7 @@ function SidebarFooter({
         <SidebarSettingsUtility />
         <SidebarSyncSummary dataFreshness={dataFreshness} />
       </SidebarUtilityGroup>
-      <div className="px-1 pt-1 text-xs text-muted-foreground">
+      <div className="border-t border-border px-0.5 pt-3 text-xs leading-5 text-muted-foreground">
         {'\u00A9'} {hasMounted ? new Date().getFullYear() : '----'} {t('common.title')}
       </div>
     </div>

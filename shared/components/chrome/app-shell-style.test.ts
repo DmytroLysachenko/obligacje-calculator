@@ -60,7 +60,7 @@ describe('app shell visual contracts', () => {
       'bg-transparent text-muted-foreground hover:bg-card/70 hover:text-foreground',
       'bg-card text-foreground shadow-sm',
       'space-y-7 overflow-y-auto px-3 py-5',
-      'space-y-3 border-t border-border bg-muted/25 p-2.5',
+      'space-y-4 border-t border-border bg-muted/20 px-3 py-4',
     ]);
 
     expect(source).not.toContain('linear-gradient');
@@ -74,7 +74,9 @@ describe('app shell visual contracts', () => {
     const source = expectHas('shared/components/chrome/SidebarUtilityGroup.tsx', [
       'border-t border-border',
       'text-xs font-semibold uppercase tracking-[0.08em]',
-      'border-y border-border py-0.5',
+      'border-y border-border py-1',
+      'grid min-h-12 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-1',
+      'divide-y divide-border',
       'line-clamp-2 text-[11px] leading-4 text-muted-foreground',
     ]);
 
@@ -82,7 +84,7 @@ describe('app shell visual contracts', () => {
     expect(source).not.toContain('border-dashed');
     expect(source).not.toContain('text-slate-500');
     expect(source).not.toContain('rounded-md border border-border bg-card');
-    expect(source).not.toContain('border-y border-border py-1');
+    expect(source).not.toContain('border-y border-border py-0.5');
   });
 
   it('keeps sidebar freshness colors semantic', () => {
@@ -91,7 +93,7 @@ describe('app shell visual contracts', () => {
       'text-[var(--finance-warning)]',
       'inline-flex text-xs font-semibold',
       'text-sm font-semibold text-foreground',
-      'line-clamp-2 text-[11px] leading-4 text-muted-foreground',
+      'max-w-[14rem] text-[11px] leading-5 text-muted-foreground',
     ]);
 
     expect(source).not.toContain('bg-emerald-50');
@@ -99,5 +101,6 @@ describe('app shell visual contracts', () => {
     expect(source).not.toContain('bg-amber-50');
     expect(source).not.toContain('rounded-md border px-2 py-0.5');
     expect(source).not.toContain('text-xs leading-5 text-muted-foreground');
+    expect(source).not.toContain('line-clamp-2 text-[11px] leading-4 text-muted-foreground');
   });
 });

@@ -33,7 +33,7 @@ export function SidebarWorkspaceUtility({ pathname }: { pathname: string }) {
 
   return (
     <SidebarUtilityPanel>
-      <div className="space-y-3">
+      <div className="space-y-4">
         <div className="flex items-start gap-2.5">
           <div className="rounded-md bg-muted p-2 text-foreground">
             <FolderKanban className="h-4 w-4" />
@@ -48,7 +48,7 @@ export function SidebarWorkspaceUtility({ pathname }: { pathname: string }) {
           </div>
         </div>
 
-        <div className="border-l-2 border-border pl-3">
+        <div className="border-l border-border pl-3.5">
           <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
             {t('sidebar.portfolio_selector_label')}
           </p>
