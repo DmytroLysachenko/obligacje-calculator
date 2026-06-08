@@ -85,6 +85,30 @@ describe('premium financial table contracts', () => {
     ]);
   });
 
+  it('keeps regular investment recent lots capped beside the yearly table', () => {
+    const regular = read(files.regular);
+    const recentList = read('shared/components/results/RecentLotList.tsx');
+
+    expectContains(regular, 'const MAX_RECENT_LOTS = 12;');
+    expectContains(regular, 'const recentLots = useMemo(() => buildRecentRegularInvestmentLots(results.lots, MAX_RECENT_LOTS), [results.lots]);');
+    expectContains(regular, 'grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.75fr)] xl:items-start');
+    expectContains(regular, 'className="xl:max-h-[42rem] xl:overflow-y-auto xl:pr-2"');
+    expectContains(regular, 'compact');
+    expectContains(recentList, 'compact?: boolean;');
+    expectContains(recentList, 'compact = false');
+    expectContains(recentList, "compact ? 'py-3 first:pt-0 last:pb-0' : 'py-4 first:pt-0 last:pb-0'");
+
+    expectNoFragments(regular, [
+      'grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]',
+      'xl:items-stretch',
+      '<RecentLotList\n          title={t(\'regular_summary.recent_title\')}\n          description={t(\'regular_summary.recent_description\')}\n          note={t(\'regular_summary.recent_note\')}\n          items={recentLotItems}\n        />',
+    ]);
+    expectNoFragments(recentList, [
+      '<section className="space-y-5 border-y border-border py-6">',
+      'mt-4 grid grid-cols-2 gap-x-6 gap-y-3 text-sm',
+    ]);
+  });
+
   it('keeps ladder maturity table sticky and numerically aligned', () => {
     const source = read(files.ladder);
 

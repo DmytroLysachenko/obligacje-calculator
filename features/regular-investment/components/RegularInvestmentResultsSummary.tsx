@@ -179,7 +179,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
         items={financialInsightItems}
       />
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.75fr)] xl:items-start">
         <SectionBlock
           title={t('regular_summary.yearly_title')}
           description={t('regular_summary.yearly_description')}
@@ -291,6 +291,8 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
           description={t('regular_summary.recent_description')}
           note={t('regular_summary.recent_note')}
           items={recentLotItems}
+          compact
+          className="xl:max-h-[42rem] xl:overflow-y-auto xl:pr-2"
         />
       </div>
     </div>);

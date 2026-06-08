@@ -35,16 +35,19 @@ describe('strategy result layout contracts', () => {
     expectContains(source, 'return (<div className="space-y-8">');
     expectContains(source, '<ResultSummaryHero');
     expectContains(source, '<MetricStrip');
-    expectContains(source, 'grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]');
+    expectContains(source, 'grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.75fr)] xl:items-start');
     expectContains(source, '<SectionBlock');
     expectContains(source, 'className="border-y border-border py-6"');
     expectContains(source, '<span className="ui-meta shrink-0 border-l-2 border-border px-3 py-1 font-semibold">');
+    expectContains(source, 'compact');
+    expectContains(source, 'className="xl:max-h-[42rem] xl:overflow-y-auto xl:pr-2"');
 
     expectNoFragments(source, [
       'surface-shell space-y-5 p-5',
       '<span className="surface-chip shrink-0">',
       "import { Badge } from '@/components/ui/badge';",
       '<Badge variant="outline"',
+      'grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]',
       'grid grid-cols-1 gap-5 xl:grid-cols-[1.1fr_0.9fr]',
       'return (<div className="space-y-6">',
     ]);
@@ -78,14 +81,26 @@ describe('strategy result layout contracts', () => {
     expectContains(source, 'const recentLotItems = useMemo<RecentLotDisplayItem[]>(() =>');
     expectContains(source, '<RecentLotList');
     expectContains(recentList, 'space-y-5 border-y border-border py-6');
+    expectContains(recentList, 'className?: string;');
+    expectContains(recentList, 'compact?: boolean;');
+    expectContains(recentList, "compact ? 'space-y-1.5' : 'space-y-2'");
+    expectContains(recentList, "compact ? 'px-3 py-2' : 'px-4 py-3'");
+    expectContains(recentList, "compact ? 'py-3 first:pt-0 last:pb-0' : 'py-4 first:pt-0 last:pb-0'");
+    expectContains(recentList, "compact ? 'mt-3 gap-y-2.5' : 'mt-4 gap-y-3'");
     expectContains(recentList, 'divide-y divide-border');
-    expectContains(recentList, 'mt-4 grid grid-cols-2 gap-x-6 gap-y-3 text-sm');
+    expectContains(recentList, 'grid grid-cols-2 gap-x-6 text-sm md:grid-cols-4 xl:grid-cols-2 2xl:grid-cols-4');
 
     expectNoFragments(source, [
       'grid grid-cols-1 gap-3',
       'mt-4 grid grid-cols-2 gap-3 text-sm md:grid-cols-4',
       'rounded-lg border border-border bg-card p-4',
       'surface-shell space-y-5 p-5',
+    ]);
+    expectNoFragments(recentList, [
+      '<section className="space-y-5 border-y border-border py-6">',
+      '<p className="ui-body text-muted-foreground">{description}</p>',
+      '<article key={item.key} className="py-4 first:pt-0 last:pb-0">',
+      'mt-4 grid grid-cols-2 gap-x-6 gap-y-3 text-sm',
     ]);
   });
 
