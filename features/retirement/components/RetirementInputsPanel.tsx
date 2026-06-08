@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
+import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import {
@@ -127,15 +127,10 @@ export function RetirementInputsPanel({
           </p>
         </div>
 
-        <Accordion type="single" collapsible defaultValue="">
-          <AccordionItem value="advanced" className="border-none">
-            <AccordionTrigger className="rounded-lg bg-muted/35 px-4 py-4 hover:no-underline">
-              <div className="space-y-1 text-left">
-                <p className="text-sm font-semibold text-foreground">{labels.advancedAssumptions}</p>
-                <p className="text-xs leading-5 text-muted-foreground">{labels.advancedAssumptionsDesc}</p>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="space-y-5 px-1 pt-4">
+        <AdvancedAssumptionsDisclosure
+          title={labels.advancedAssumptions}
+          description={labels.advancedAssumptionsDesc}
+        >
               <MacroDefaultsSummary
                 showNbp={showNbpNote}
                 compact
@@ -204,9 +199,7 @@ export function RetirementInputsPanel({
                   ]}
                 />
               </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+        </AdvancedAssumptionsDisclosure>
 
         <div className="ui-inline-notice">
           {labels.floatingActionNote}

@@ -7,12 +7,6 @@ import {
   ListOrdered,
   TrendingUp,
 } from 'lucide-react';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
@@ -26,6 +20,8 @@ import {
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
+import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
+import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
@@ -239,19 +235,10 @@ export default function BondOptimizerClient() {
                 />
               </div>
 
-              <Accordion type="single" collapsible defaultValue="">
-                <AccordionItem value="advanced" className="border-none">
-                  <AccordionTrigger className="rounded-lg bg-muted/35 px-4 py-4 hover:no-underline">
-                    <div className="space-y-1 text-left">
-                      <p className="text-sm font-semibold text-foreground">
-                        {t('optimizer_page.advanced_title')}
-                      </p>
-                      <p className="text-xs leading-5 text-muted-foreground">
-                        {t('optimizer_page.advanced_description')}
-                      </p>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="space-y-5 px-1 pt-4">
+              <AdvancedAssumptionsDisclosure
+                title={t('optimizer_page.advanced_title')}
+                description={t('optimizer_page.advanced_description')}
+              >
                     <MacroDefaultsSummary showNbp compact />
 
                     <div className="space-y-3">
@@ -281,19 +268,14 @@ export default function BondOptimizerClient() {
                       />
                     </div>
 
-                    <div className="space-y-3 rounded-lg bg-muted/35 px-4 py-4">
-                      <div className="flex items-center justify-between gap-4">
-                        <Label
-                          htmlFor="includeFamilyBonds"
-                          className="flex flex-col gap-1"
-                        >
-                          <span className="font-medium text-foreground">
-                            {t('optimizer_page.family_bonds_title')}
-                          </span>
-                          <span className="text-sm font-normal leading-6 text-muted-foreground">
-                            {t('optimizer_page.family_bonds_description')}
-                          </span>
-                        </Label>
+                    <FormInlineNotice
+                      tone="warning"
+                      title={t('optimizer_page.family_bonds_title')}
+                      description={`${t('optimizer_page.family_bonds_description')} ${t('optimizer_page.family_bonds_note', {
+                        bonds: FAMILY_BOND_TYPES.join(' / '),
+                        support: getBondSupportMeta(FAMILY_BOND_TYPES[0]).shortLabel.toLowerCase(),
+                      })}`}
+                      action={(
                         <Switch
                           id="includeFamilyBonds"
                           checked={inputs.includeFamilyBonds}
@@ -301,14 +283,8 @@ export default function BondOptimizerClient() {
                             updateInput('includeFamilyBonds', value)
                           }
                         />
-                      </div>
-                      <p className="ui-metadata leading-6 text-warning">
-                        {t('optimizer_page.family_bonds_note', {
-                          bonds: FAMILY_BOND_TYPES.join(' / '),
-                          support: getBondSupportMeta(FAMILY_BOND_TYPES[0]).shortLabel.toLowerCase(),
-                        })}
-                      </p>
-                    </div>
+                      )}
+                    />
 
                     <div className="space-y-3">
                       <div className="flex items-center justify-between gap-4">
@@ -353,16 +329,14 @@ export default function BondOptimizerClient() {
                     </div>
 
                     <div className="grid gap-3 md:grid-cols-2">
-                      <div className="rounded-lg bg-muted/35 px-4 py-3 text-sm leading-6 text-muted-foreground">
-                        {t('optimizer_page.macro_scope.indexed')}
-                      </div>
-                      <div className="rounded-lg bg-muted/35 px-4 py-3 text-sm leading-6 text-muted-foreground">
-                        {t('optimizer_page.macro_scope.floating')}
-                      </div>
+                      <FormInlineNotice
+                        description={t('optimizer_page.macro_scope.indexed')}
+                      />
+                      <FormInlineNotice
+                        description={t('optimizer_page.macro_scope.floating')}
+                      />
                     </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
+              </AdvancedAssumptionsDisclosure>
 
               <div className="ui-inline-notice text-muted-foreground">
                 {t('optimizer_page.input_footer')}
@@ -419,7 +393,7 @@ export default function BondOptimizerClient() {
                         {t('optimizer_page.leading_card_description')}
                       </p>
                     </div>
-                    <div className="rounded-lg bg-muted/35 px-4 py-3 text-right">
+                    <div className="border-l-2 border-border px-4 py-3 text-right">
                       <p className="ui-metadata text-muted-foreground">
                         {t('optimizer_page.tax_wrapper_label')}
                       </p>
@@ -428,15 +402,11 @@ export default function BondOptimizerClient() {
                       </p>
                     </div>
                   </div>
-                  <div className="rounded-lg bg-muted/35 p-4">
-                    <p className="text-sm font-medium text-foreground">
-                      {leadingScenario.name} ({leadingScenario.bondType})
-                    </p>
-                    <p className="mt-2 flex items-start gap-2 text-sm leading-6 text-muted-foreground">
-                      <Info className="mt-0.5 h-4 w-4 text-primary" />
-                      <span>{leadingScenario.scenarioReason}</span>
-                    </p>
-                  </div>
+                  <FormInlineNotice
+                    title={`${leadingScenario.name} (${leadingScenario.bondType})`}
+                    description={leadingScenario.scenarioReason}
+                    action={<Info className="h-4 w-4 text-primary" />}
+                  />
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                     <div className="border-t border-border py-4">
                       <p className="ui-metadata text-muted-foreground">
@@ -524,12 +494,12 @@ export default function BondOptimizerClient() {
                 badge={t('optimizer_page.guardrail_badge')}
               >
                 <div className="grid gap-4 md:grid-cols-2">
-                  <div className="rounded-lg bg-muted/35 px-4 py-4 text-sm leading-6 text-muted-foreground">
-                    {t('optimizer_page.guardrail_points.assumption_shift')}
-                  </div>
-                  <div className="rounded-lg bg-muted/35 px-4 py-4 text-sm leading-6 text-muted-foreground">
-                    {t('optimizer_page.guardrail_points.suitability')}
-                  </div>
+                  <FormInlineNotice
+                    description={t('optimizer_page.guardrail_points.assumption_shift')}
+                  />
+                  <FormInlineNotice
+                    description={t('optimizer_page.guardrail_points.suitability')}
+                  />
                 </div>
               </SecondaryInsightAccordion>
 
