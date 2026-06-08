@@ -37,18 +37,23 @@ describe('screenshot regression contracts', () => {
   it('keeps education sections spaced after the flattened concept card pass', () => {
     const source = read(files.education);
 
-    expectContains(source, 'space-y-12 pb-12 md:space-y-14');
-    expectContains(source, 'grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 lg:grid-cols-3');
-    expectContains(source, 'grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 xl:grid-cols-4');
-    expectContains(source, 'grid grid-cols-1 gap-x-6 gap-y-10 md:grid-cols-2 xl:grid-cols-3');
-    expectContains(source, 'border-t border-border py-4 transition-colors hover:border-foreground/30');
+    expectContains(source, 'space-y-14 pb-12 md:space-y-16');
+    expectContains(source, 'grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3');
+    expectContains(source, 'grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 xl:grid-cols-4');
+    expectContains(source, 'grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3');
+    expectContains(source, 'border-t border-border py-5 transition-colors hover:border-foreground/30');
     expectContains(source, 'border-l-2 border-border pl-3 text-foreground');
 
     expectNoFragments(source, [
+      'space-y-12 pb-12 md:space-y-14',
       'space-y-10 pb-12',
+      'grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 lg:grid-cols-3',
+      'grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 xl:grid-cols-4',
+      'grid grid-cols-1 gap-x-6 gap-y-10 md:grid-cols-2 xl:grid-cols-3',
       'grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3',
       'grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4',
       'grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3',
+      'border-t border-border py-4 transition-colors hover:border-foreground/30',
       'grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border',
       'bg-card p-4 transition-colors hover:bg-muted/25',
       'rounded-md bg-muted p-2 text-foreground',
@@ -115,13 +120,15 @@ describe('screenshot regression contracts', () => {
   it('keeps sidebar settings from feeling stuck together', () => {
     const source = read(files.sidebarSettings);
 
-    expectContains(source, '<div className="space-y-3">');
-    expectContains(source, 'mt-3.5 border-t border-border pt-3.5');
+    expectContains(source, '<SidebarUtilityStack>');
+    expectContains(source, '<SidebarUtilityPanel flush>');
     expectContains(source, 'action={<LanguageSwitcher />}');
     expectContains(source, 'action={<ThemeToggle />}');
 
     expectNoFragments(source, [
+      '<div className="space-y-3">',
       '<div className="space-y-0">',
+      'mt-3.5 border-t border-border pt-3.5',
       'mt-2.5 border-t border-border pt-2.5',
       '<>',
       '</>',
@@ -137,7 +144,7 @@ describe('screenshot regression contracts', () => {
     expectContains(economicLayout, 'border-0 bg-transparent px-0');
     expectContains(comparisonContract, 'min-w-0 space-y-1 whitespace-normal');
     expectContains(comparisonContract, 'block max-w-full text-xs font-normal leading-5 opacity-80');
-    expectContains(sidebarContract, '<div className="space-y-3">');
-    expectContains(sidebarContract, 'mt-3.5 border-t border-border pt-3.5');
+    expectContains(sidebarContract, '<SidebarUtilityStack>');
+    expectContains(sidebarContract, '<SidebarUtilityPanel flush>');
   });
 });

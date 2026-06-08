@@ -11,7 +11,7 @@ interface BondEducationCardProps {
 }
 export const BondEducationCard: React.FC<BondEducationCardProps> = ({ bond }) => {
     const { t, locale: language } = useAppI18n();
-    return (<article className="flex h-full flex-col border-t border-border py-5 transition-colors hover:bg-muted/20">
+    return (<article className="flex h-full flex-col border-t border-border py-6 transition-colors hover:bg-muted/20">
       <div>
         <div className="mb-3 flex items-start justify-between gap-4">
           <span className={bond.isInflationIndexed ? 'surface-chip border-foreground text-foreground' : 'surface-chip'}>
@@ -31,7 +31,7 @@ export const BondEducationCard: React.FC<BondEducationCardProps> = ({ bond }) =>
           {bond.fullName[language]}
         </p>
       </div>
-      <div className="flex-1 space-y-4 pt-4">
+      <div className="flex-1 space-y-5 pt-5">
         <p className="text-sm leading-relaxed">{bond.description[language]}</p>
 
         <dl className="grid grid-cols-1 gap-x-4 divide-y divide-border border-y border-border text-xs text-muted-foreground sm:grid-cols-2 sm:divide-y-0">
@@ -69,7 +69,7 @@ export const BondEducationCard: React.FC<BondEducationCardProps> = ({ bond }) =>
           </div>
         </dl>
 
-        <div className="mt-auto space-y-4 pt-1">
+        <div className="mt-auto space-y-4 pt-2">
           <FormInlineNotice
             tone="warning"
             title={t('bonds.early_exit_title')}

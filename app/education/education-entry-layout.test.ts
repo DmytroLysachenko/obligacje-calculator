@@ -56,9 +56,9 @@ describe('education entry layout contracts', () => {
     expectContains(source, "import { SectionBlock } from '@/shared/components/page/SectionBlock';");
     expectContains(source, '<SectionBlock');
     expectContains(source, "title={t('education.starter_title')}");
-    expectContains(source, 'space-y-12 pb-12 md:space-y-14');
-    expectContains(source, 'grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 xl:grid-cols-4');
-    expectContains(source, '<article key={guide.key} className="border-t border-border py-4">');
+    expectContains(source, 'space-y-14 pb-12 md:space-y-16');
+    expectContains(source, 'grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 xl:grid-cols-4');
+    expectContains(source, '<article key={guide.key} className="border-t border-border py-5">');
     expectContains(source, 'text-[32px] font-semibold leading-none text-foreground');
     expectContains(source, 'ui-body mt-3 text-muted-foreground');
 
@@ -66,6 +66,9 @@ describe('education entry layout contracts', () => {
       'surface-panel',
       '<section className="surface-shell space-y-5 p-5 md:p-6">',
       '<article key={guide.key} className="rounded-lg border border-border bg-card p-4">',
+      'space-y-12 pb-12 md:space-y-14',
+      'grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 xl:grid-cols-4',
+      '<article key={guide.key} className="border-t border-border py-4">',
       'grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4',
       'grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4',
     ]);
@@ -77,7 +80,9 @@ describe('education entry layout contracts', () => {
     expectContains(source, "import Link from 'next/link';");
     expectContains(source, 'surface-chip border-foreground text-foreground');
     expectContains(source, 'surface-chip text-foreground');
-    expectContains(source, 'border-t border-border py-5');
+    expectContains(source, 'border-t border-border py-6');
+    expectContains(source, 'flex-1 space-y-5 pt-5');
+    expectContains(source, 'mt-auto space-y-4 pt-2');
     expectContains(source, '<dl className="grid grid-cols-1 gap-x-4 divide-y divide-border border-y border-border');
     expectContains(source, "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
     expectContains(source, '<FormInlineNotice');
@@ -89,6 +94,9 @@ describe('education entry layout contracts', () => {
       "import { Notice } from '@/shared/components/feedback/Notice';",
       '<Badge',
       '</Badge>',
+      'border-t border-border py-5',
+      'flex-1 space-y-4 pt-4',
+      'mt-auto space-y-4 pt-1',
       'rounded-lg border border-border bg-card p-5 shadow-sm',
       'rounded-lg border border-border bg-muted/20 p-4',
       'rounded-md border border-warning/30 bg-warning/5',

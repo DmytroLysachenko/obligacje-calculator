@@ -86,7 +86,7 @@ export default function EducationClient() {
 
   return (
     <PageTransition>
-      <div className="space-y-12 pb-12 md:space-y-14">
+      <div className="space-y-14 pb-12 md:space-y-16">
         <header className="space-y-4">
           <h2 className="ui-page-title">
             {t('nav.education')}
@@ -101,11 +101,11 @@ export default function EducationClient() {
           title={t('education.concepts_title')}
           description={t('education.concepts_subtitle')}
         >
-          <div className="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3">
             {concepts.map((concept) => (
               <article
                 key={concept.key}
-                className="border-t border-border py-4 transition-colors hover:border-foreground/30"
+                className="border-t border-border py-5 transition-colors hover:border-foreground/30"
               >
                 <div className="pb-2">
                   <div className="flex items-center gap-3">
@@ -144,9 +144,9 @@ export default function EducationClient() {
             </Link>
           }
         >
-          <div className="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 xl:grid-cols-4">
             {starterGuides.map((guide) => (
-              <article key={guide.key} className="border-t border-border py-4">
+              <article key={guide.key} className="border-t border-border py-5">
                 <div className="flex items-center gap-2">
                   <guide.icon className="h-4 w-4 text-foreground" />
                   <p className="ui-card-title">
@@ -169,7 +169,7 @@ export default function EducationClient() {
           title={t('education.bond_types')}
           description={t('education.bond_types_subtitle')}
         >
-          <div className="grid grid-cols-1 gap-x-6 gap-y-10 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3">
             {Object.values(definitions).map((bond) => (
               <BondEducationCard key={bond.type} bond={bond} />
             ))}

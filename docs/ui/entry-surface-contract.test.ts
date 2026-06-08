@@ -73,16 +73,21 @@ describe('entry surface contracts', () => {
   it('keeps education concept cards airy instead of stitched cell grids', () => {
     const source = read(files.education);
 
-    expectContains(source, 'space-y-12 pb-12 md:space-y-14');
-    expectContains(source, 'grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 lg:grid-cols-3');
-    expectContains(source, 'grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 xl:grid-cols-4');
-    expectContains(source, 'grid grid-cols-1 gap-x-6 gap-y-10 md:grid-cols-2 xl:grid-cols-3');
-    expectContains(source, 'border-t border-border py-4 transition-colors hover:border-foreground/30');
+    expectContains(source, 'space-y-14 pb-12 md:space-y-16');
+    expectContains(source, 'grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3');
+    expectContains(source, 'grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 xl:grid-cols-4');
+    expectContains(source, 'grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3');
+    expectContains(source, 'border-t border-border py-5 transition-colors hover:border-foreground/30');
     expectContains(source, 'border-l-2 border-border pl-3 text-foreground');
     expectContains(source, 'border-t border-border pt-3 font-mono text-[11px]');
 
     expectNoFragments(source, [
       'grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border',
+      'space-y-12 pb-12 md:space-y-14',
+      'grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 lg:grid-cols-3',
+      'grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 xl:grid-cols-4',
+      'grid grid-cols-1 gap-x-6 gap-y-10 md:grid-cols-2 xl:grid-cols-3',
+      'border-t border-border py-4 transition-colors hover:border-foreground/30',
       'grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3',
       'grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4',
       'grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3',
@@ -95,7 +100,9 @@ describe('entry surface contracts', () => {
   it('keeps education bond offer cards row-based and calculator-linked', () => {
     const source = read(files.educationCard);
 
-    expectContains(source, 'flex h-full flex-col border-t border-border py-5 transition-colors');
+    expectContains(source, 'flex h-full flex-col border-t border-border py-6 transition-colors');
+    expectContains(source, 'flex-1 space-y-5 pt-5');
+    expectContains(source, 'mt-auto space-y-4 pt-2');
     expectContains(source, 'surface-chip border-foreground text-foreground');
     expectContains(source, 'surface-chip text-foreground');
     expectContains(source, '<dl className="grid grid-cols-1 gap-x-4 divide-y divide-border border-y border-border');
@@ -106,6 +113,9 @@ describe('entry surface contracts', () => {
 
     expectNoFragments(source, [
       '<Badge',
+      'flex h-full flex-col border-t border-border py-5 transition-colors',
+      'flex-1 space-y-4 pt-4',
+      'mt-auto space-y-4 pt-1',
       'rounded-lg border border-border bg-card p-5 shadow-sm',
       'rounded-lg border border-border bg-muted/20 p-4',
       'rounded-md border border-warning/30 bg-warning/5',
@@ -118,7 +128,7 @@ describe('entry surface contracts', () => {
 
     expectContains(source, 'grid border-y border-border py-2 md:grid-cols-3 md:divide-x md:divide-border');
     expectContains(source, 'border-l-2 border-border py-1 pl-4');
-    expectContains(source, 'grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 lg:grid-cols-3');
+    expectContains(source, 'grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3');
     expectContains(source, 'rounded-md bg-muted p-2 text-foreground');
   });
 });
