@@ -66,10 +66,14 @@ describe('design system adoption v2 contract', () => {
     expectAvoidsLocalPattern(landing, 'grid gap-px overflow-hidden rounded-lg border border-border bg-border');
     expectAvoidsLocalPattern(landing, 'bg-card px-4 py-3 text-xs font-semibold text-muted-foreground');
     expectAvoidsLocalPattern(landing, 'surface-chip text-xs font-semibold text-muted-foreground');
-    expect(education).toContain('grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3');
+    expect(education).toContain('space-y-12 pb-12 md:space-y-14');
+    expect(education).toContain('grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 lg:grid-cols-3');
+    expect(education).toContain('grid grid-cols-1 gap-x-6 gap-y-10 md:grid-cols-2 xl:grid-cols-3');
     expect(education).toContain('border-t border-border py-4 transition-colors hover:border-foreground/30');
     expect(education).toContain('border-l-2 border-border pl-3 text-foreground');
     expectAvoidsLocalPattern(education, 'grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border');
+    expectAvoidsLocalPattern(education, 'grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3');
+    expectAvoidsLocalPattern(education, 'grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3');
     expectAvoidsLocalPattern(education, 'bg-card p-4 transition-colors hover:bg-muted/25');
     expectAvoidsLocalPattern(education, 'rounded-md bg-muted p-2 text-foreground');
     expectAvoidsLocalPattern(toolCard, 'rounded-md p-2.5');

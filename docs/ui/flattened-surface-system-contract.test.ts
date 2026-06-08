@@ -101,7 +101,8 @@ describe('flattened shared surface system contract', () => {
     expect(sourceByPath.get('shared/components/results/RecentLotList.tsx')).toContain('space-y-5 border-y border-border py-6');
     expect(sourceByPath.get('shared/components/page/ToolCard.tsx')).toContain('border-l-2 pl-3 pt-0.5');
     expect(sourceByPath.get('app/LandingDashboardClient.tsx')).toContain('grid border-y border-border py-2 md:grid-cols-3 md:divide-x md:divide-border');
-    expect(sourceByPath.get('app/education/EducationClient.tsx')).toContain('border-t border-border py-4 transition-colors hover:border-foreground/30');
+    expect(sourceByPath.get('app/education/EducationClient.tsx')).toContain('grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 lg:grid-cols-3');
+    expect(sourceByPath.get('app/education/EducationClient.tsx')).toContain('grid grid-cols-1 gap-x-6 gap-y-10 md:grid-cols-2 xl:grid-cols-3');
     expect(sourceByPath.get('features/notebook/components/WorkspaceStatusCard.tsx')).toContain('border-l-2 border-border px-4 py-3');
     expect(sourceByPath.get('features/notebook/components/PortfolioWorkspaceCard.tsx')).toContain('border-l-2 border-border pl-3 pt-0.5');
     expect(sourceByPath.get('features/notebook/components/PortfolioDetails.tsx')).toContain('rounded-none border-b-2 border-transparent px-3.5 py-2');

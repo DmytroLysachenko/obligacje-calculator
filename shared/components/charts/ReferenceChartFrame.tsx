@@ -62,7 +62,7 @@ export function ReferenceChartFrame({
         </div>
 
         {fallbackNotice ? (
-          <Notice tone={fallbackTone === 'warning' ? 'warning' : 'success'} compact className="border-t-0 bg-transparent px-0">
+          <Notice tone={fallbackTone === 'warning' ? 'warning' : 'success'} compact className="border-0 bg-transparent px-0">
             <div className="flex flex-wrap items-start gap-x-4 gap-y-2">
               <div className={cn('inline-flex items-center gap-2 border-l-2 pl-3 text-xs font-semibold', healthToneClass)}>
                 {fallbackTone === 'warning' ? (

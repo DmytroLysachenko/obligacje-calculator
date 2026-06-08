@@ -168,21 +168,24 @@ describe('economic data layout source contracts', () => {
 
   it('keeps hero metric tiles dense and grouped', () => {
     const source = readSource(referenceHeroPath);
-    const metricGridLine = getClassLine(source, 'grid border-y');
-    const tilePaddingLine = getClassLine(source, 'border-b border-border py-3');
+    const metricGridLine = getClassLine(source, 'grid gap-x-6 gap-y-4 border-y');
+    const tilePaddingLine = getClassLine(source, 'border-t border-border pt-3');
     const valueLine = getClassLine(source, 'text-base font-semibold');
 
+    expect(metricGridLine).toContain('gap-x-6');
+    expect(metricGridLine).toContain('gap-y-4');
     expect(metricGridLine).toContain('border-y border-border');
+    expect(metricGridLine).toContain('py-3');
     expect(metricGridLine).toContain('sm:grid-cols-2');
     expect(metricGridLine).toContain('sm:border-y-0');
     expect(metricGridLine).not.toContain('overflow-hidden');
     expect(metricGridLine).not.toContain('bg-border');
     expect(metricGridLine).not.toContain('rounded-[1.5rem]');
 
-    expect(tilePaddingLine).toContain('py-3');
-    expect(tilePaddingLine).toContain('sm:px-4');
-    expect(tilePaddingLine).toContain('sm:[&:nth-child(2)]:border-l');
+    expect(tilePaddingLine).toContain('pt-3');
+    expect(tilePaddingLine).toContain('first:border-t-0');
     expect(tilePaddingLine).not.toContain('py-4');
+    expect(tilePaddingLine).not.toContain('sm:[&:nth-child(2)]:border-l');
 
     expect(valueLine).toContain('mt-1.5');
     expect(valueLine).toContain('text-base');
@@ -231,7 +234,7 @@ describe('economic data layout source contracts', () => {
     expectContains(source, 'syncedStatusLabel?: string;');
     expectContains(source, "inline-flex items-center gap-2 border-l-2 pl-3 text-xs font-semibold");
     expectContains(source, 'max-w-3xl text-sm leading-6 text-muted-foreground');
-    expectContains(source, 'border-t-0 bg-transparent px-0');
+    expectContains(source, 'border-0 bg-transparent px-0');
     expectContains(source, 'border-t border-border pt-4');
     expectNoFragments(source, [
       'rounded-lg border border-border bg-card',

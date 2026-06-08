@@ -56,7 +56,8 @@ describe('education entry layout contracts', () => {
     expectContains(source, "import { SectionBlock } from '@/shared/components/page/SectionBlock';");
     expectContains(source, '<SectionBlock');
     expectContains(source, "title={t('education.starter_title')}");
-    expectContains(source, 'grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4');
+    expectContains(source, 'space-y-12 pb-12 md:space-y-14');
+    expectContains(source, 'grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 xl:grid-cols-4');
     expectContains(source, '<article key={guide.key} className="border-t border-border py-4">');
     expectContains(source, 'text-[32px] font-semibold leading-none text-foreground');
     expectContains(source, 'ui-body mt-3 text-muted-foreground');
@@ -66,6 +67,7 @@ describe('education entry layout contracts', () => {
       '<section className="surface-shell space-y-5 p-5 md:p-6">',
       '<article key={guide.key} className="rounded-lg border border-border bg-card p-4">',
       'grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4',
+      'grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4',
     ]);
   });
 

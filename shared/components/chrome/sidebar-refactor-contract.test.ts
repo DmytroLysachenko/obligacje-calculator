@@ -90,13 +90,15 @@ describe('sidebar refactor contracts', () => {
   it('keeps settings utilities as one grouped stack', () => {
     const source = read(files.settings);
 
-    expectContains(source, '<div className="space-y-0">');
+    expectContains(source, '<div className="space-y-3">');
     expectContains(source, '<SidebarUtilityRow');
     expectContains(source, 'action={<LanguageSwitcher />}');
     expectContains(source, 'action={<ThemeToggle />}');
-    expectContains(source, 'mt-2.5 border-t border-border pt-2.5');
+    expectContains(source, 'mt-3.5 border-t border-border pt-3.5');
 
     expectNoFragments(source, [
+      '<div className="space-y-0">',
+      'mt-2.5 border-t border-border pt-2.5',
       '<>',
       '</>',
       '<SidebarUtilityPanel>\n        <SidebarUtilityRow\n          title={t(\'common.theme\')}',

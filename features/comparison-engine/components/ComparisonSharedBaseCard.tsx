@@ -213,22 +213,22 @@ export function ComparisonSharedBaseCard({
                 key={mode}
                 type="button"
                 variant={activeMaturityMode === mode ? 'default' : 'outline'}
-                className="h-auto justify-start px-3 py-3 text-left"
+                className="h-auto min-w-0 justify-start overflow-hidden px-3 py-3 text-left"
                 aria-pressed={activeMaturityMode === mode}
                 onClick={() => onUpdateSharedConfig('maturityMode', mode)}
               >
-                <span className="space-y-1">
+                <span className="min-w-0 space-y-1 whitespace-normal">
                   <span className="block text-xs font-semibold">
                     {t(`comparison.maturity_mode.${mode}.label`)}
                   </span>
-                  <span className="block text-xs font-normal leading-5 opacity-80">
+                  <span className="block max-w-full text-xs font-normal leading-5 opacity-80">
                     {t(`comparison.maturity_mode.${mode}.description`)}
                   </span>
                 </span>
               </Button>
             ))}
           </div>
-          <div className="border-l-2 border-border bg-muted/30 px-4 py-3">
+          <div className="border-l-2 border-border px-4 py-3">
             <p className="text-xs font-semibold text-foreground">
               {t('comparison.fairness.mode_label')}: {t(`comparison.maturity_mode.${activeMaturityMode}.label`)}
             </p>
@@ -269,7 +269,7 @@ export function ComparisonSharedBaseCard({
           </p>
         </div>
 
-        <div className="flex items-center justify-between rounded-lg bg-muted/35 p-3">
+        <div className="flex items-center justify-between border-l-2 border-border px-4 py-3">
           <div>
             <p className="text-sm font-semibold">{t('bonds.inflation.adjusted')}</p>
             <p className="text-xs leading-5 text-muted-foreground">

@@ -73,13 +73,19 @@ describe('entry surface contracts', () => {
   it('keeps education concept cards airy instead of stitched cell grids', () => {
     const source = read(files.education);
 
-    expectContains(source, 'grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3');
+    expectContains(source, 'space-y-12 pb-12 md:space-y-14');
+    expectContains(source, 'grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 lg:grid-cols-3');
+    expectContains(source, 'grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 xl:grid-cols-4');
+    expectContains(source, 'grid grid-cols-1 gap-x-6 gap-y-10 md:grid-cols-2 xl:grid-cols-3');
     expectContains(source, 'border-t border-border py-4 transition-colors hover:border-foreground/30');
     expectContains(source, 'border-l-2 border-border pl-3 text-foreground');
     expectContains(source, 'border-t border-border pt-3 font-mono text-[11px]');
 
     expectNoFragments(source, [
       'grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border',
+      'grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3',
+      'grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4',
+      'grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3',
       'bg-card p-4 transition-colors hover:bg-muted/25',
       'rounded-md bg-muted p-2 text-foreground',
       'overflow-hidden rounded-lg',
@@ -112,7 +118,7 @@ describe('entry surface contracts', () => {
 
     expectContains(source, 'grid border-y border-border py-2 md:grid-cols-3 md:divide-x md:divide-border');
     expectContains(source, 'border-l-2 border-border py-1 pl-4');
-    expectContains(source, 'border-t border-border py-4 transition-colors hover:border-foreground/30');
+    expectContains(source, 'grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 lg:grid-cols-3');
     expectContains(source, 'rounded-md bg-muted p-2 text-foreground');
   });
 });

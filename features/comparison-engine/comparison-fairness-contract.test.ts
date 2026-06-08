@@ -30,8 +30,11 @@ describe('comparison fairness contracts', () => {
     expectContains(source, "'cash_after_maturity'");
     expectContains(source, "'align_to_shorter_duration'");
     expectContains(source, 'aria-pressed={activeMaturityMode === mode}');
+    expectContains(source, 'className="h-auto min-w-0 justify-start overflow-hidden px-3 py-3 text-left"');
+    expectContains(source, 'className="min-w-0 space-y-1 whitespace-normal"');
+    expectContains(source, 'className="block max-w-full text-xs font-normal leading-5 opacity-80"');
     expectContains(source, "{t('comparison.fairness.mode_label')}: {t(`comparison.maturity_mode.${activeMaturityMode}.label`)}");
-    expectContains(source, 'border-l-2 border-border bg-muted/30 px-4 py-3');
+    expectContains(source, 'border-l-2 border-border px-4 py-3');
   });
 
   it('passes the active maturity mode into the verdict', () => {
