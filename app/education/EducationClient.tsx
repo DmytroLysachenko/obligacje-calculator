@@ -101,15 +101,15 @@ export default function EducationClient() {
           title={t('education.concepts_title')}
           description={t('education.concepts_subtitle')}
         >
-          <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
             {concepts.map((concept) => (
               <article
                 key={concept.key}
-                className="bg-card p-4 transition-colors hover:bg-muted/25"
+                className="border-t border-border py-4 transition-colors hover:border-foreground/30"
               >
                 <div className="pb-2">
                   <div className="flex items-center gap-3">
-                    <div className="rounded-md bg-muted p-2 text-foreground">
+                    <div className="border-l-2 border-border pl-3 text-foreground">
                       <concept.icon className="h-5 w-5" />
                     </div>
                     <h4 className="ui-card-title">

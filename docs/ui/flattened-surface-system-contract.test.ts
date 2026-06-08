@@ -24,6 +24,9 @@ const flattenedSurfaceFiles = [
   'features/regular-investment/components/RegularInvestmentResultsSummary.tsx',
   'features/ladder-strategy/components/LadderTimeline.tsx',
   'shared/components/results/RecentLotList.tsx',
+  'shared/components/page/ToolCard.tsx',
+  'app/LandingDashboardClient.tsx',
+  'app/education/EducationClient.tsx',
   'features/notebook/components/WorkspaceStatusCard.tsx',
   'features/notebook/components/PortfolioWorkspaceCard.tsx',
   'features/notebook/components/PortfolioDetails.tsx',
@@ -96,6 +99,9 @@ describe('flattened shared surface system contract', () => {
     expect(sourceByPath.get('features/ladder-strategy/components/LadderTimeline.tsx')).toContain("import { SectionBlock } from '@/shared/components/page/SectionBlock';");
     expect(sourceByPath.get('features/ladder-strategy/components/LadderTimeline.tsx')).toContain('<div className="hidden border-y border-border lg:block">');
     expect(sourceByPath.get('shared/components/results/RecentLotList.tsx')).toContain('space-y-5 border-y border-border py-6');
+    expect(sourceByPath.get('shared/components/page/ToolCard.tsx')).toContain('border-l-2 pl-3 pt-0.5');
+    expect(sourceByPath.get('app/LandingDashboardClient.tsx')).toContain('grid border-y border-border py-2 md:grid-cols-3 md:divide-x md:divide-border');
+    expect(sourceByPath.get('app/education/EducationClient.tsx')).toContain('border-t border-border py-4 transition-colors hover:border-foreground/30');
     expect(sourceByPath.get('features/notebook/components/WorkspaceStatusCard.tsx')).toContain('border-l-2 border-border px-4 py-3');
     expect(sourceByPath.get('features/notebook/components/PortfolioWorkspaceCard.tsx')).toContain('border-l-2 border-border pl-3 pt-0.5');
     expect(sourceByPath.get('features/notebook/components/PortfolioDetails.tsx')).toContain('rounded-none border-b-2 border-transparent px-3.5 py-2');

@@ -45,7 +45,7 @@ function HomeStep({ title, description, }: {
     title: string;
     description: string;
 }) {
-    return (<div className="border-t border-border py-4">
+    return (<div className="border-l-2 border-border py-1 pl-4">
       <div className="flex items-start gap-3">
         <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary"/>
         <div className="space-y-2">
@@ -62,8 +62,8 @@ function HomeStep({ title, description, }: {
 function HeroTrustStrip() {
     const { t } = useAppI18n();
     const itemKeys = ['item_1', 'item_2', 'item_3'] as const;
-    return (<div className="grid gap-px overflow-hidden rounded-lg border border-border bg-border md:grid-cols-3">
-      {itemKeys.map((itemKey) => (<span key={itemKey} className="bg-card px-4 py-3 text-xs font-semibold text-muted-foreground">
+    return (<div className="grid border-y border-border py-2 md:grid-cols-3 md:divide-x md:divide-border">
+      {itemKeys.map((itemKey) => (<span key={itemKey} className="px-1 py-2 text-xs font-semibold leading-5 text-muted-foreground md:px-4">
           {t(`landing.hero_trust_strip.${itemKey}`)}
         </span>))}
     </div>);
@@ -137,7 +137,7 @@ export function LandingDashboardClient() {
       <section className="border-b border-border pb-8 md:pb-10">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end">
           <div className="max-w-5xl space-y-6 md:space-y-7">
-            <p className="surface-chip text-xs font-semibold text-muted-foreground">
+            <p className="inline-flex items-center gap-2 border-l-2 border-border px-3 py-1 text-xs font-semibold text-muted-foreground">
               <Sparkles className="h-3.5 w-3.5 text-primary"/>
               {t('landing.recovery_home.eyebrow')}
             </p>
@@ -204,7 +204,7 @@ export function LandingDashboardClient() {
 
       <section className="space-y-4">
         <SectionHeading title={startHereTitle} description={startHereDesc}/>
-        <div className="grid gap-4 lg:grid-cols-3">
+        <div className="grid gap-5 lg:grid-cols-3">
           {stepCopy.map((step) => (<HomeStep key={step.id} title={step.title} description={step.description}/>))}
         </div>
       </section>

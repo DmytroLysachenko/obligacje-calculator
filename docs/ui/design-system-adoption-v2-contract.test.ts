@@ -56,8 +56,25 @@ describe('design system adoption v2 contract', () => {
     expectUsesShared(education, 'SectionBlock');
     expectUsesShared(landing, 'ToolCard');
     expectUsesShared(toolCard, 'ui-safe-text');
+    expectUsesShared(toolCard, 'iconAccentClass');
+    expectUsesShared(toolCard, 'border-l-2 pl-3 pt-0.5');
     expectUsesShared(sectionBlock, "variant?: SectionBlockVariant");
     expectAvoidsLocalPattern(landing, 'rounded-lg border border-border bg-card p-5 shadow-sm');
+    expect(landing).toContain('grid border-y border-border py-2 md:grid-cols-3 md:divide-x md:divide-border');
+    expect(landing).toContain('inline-flex items-center gap-2 border-l-2 border-border px-3 py-1');
+    expect(landing).toContain('border-l-2 border-border py-1 pl-4');
+    expectAvoidsLocalPattern(landing, 'grid gap-px overflow-hidden rounded-lg border border-border bg-border');
+    expectAvoidsLocalPattern(landing, 'bg-card px-4 py-3 text-xs font-semibold text-muted-foreground');
+    expectAvoidsLocalPattern(landing, 'surface-chip text-xs font-semibold text-muted-foreground');
+    expect(education).toContain('grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3');
+    expect(education).toContain('border-t border-border py-4 transition-colors hover:border-foreground/30');
+    expect(education).toContain('border-l-2 border-border pl-3 text-foreground');
+    expectAvoidsLocalPattern(education, 'grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border');
+    expectAvoidsLocalPattern(education, 'bg-card p-4 transition-colors hover:bg-muted/25');
+    expectAvoidsLocalPattern(education, 'rounded-md bg-muted p-2 text-foreground');
+    expectAvoidsLocalPattern(toolCard, 'rounded-md p-2.5');
+    expectAvoidsLocalPattern(toolCard, 'bg-foreground text-background');
+    expectAvoidsLocalPattern(toolCard, 'bg-muted text-foreground');
   });
 
   it('keeps result actions and long result lists on shared components', () => {

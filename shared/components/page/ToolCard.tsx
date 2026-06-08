@@ -21,6 +21,12 @@ const emphasisClass = {
   reference: 'hover:border-primary/40',
 } as const;
 
+const iconAccentClass = {
+  primary: 'border-foreground text-foreground',
+  secondary: 'border-border text-foreground',
+  reference: 'border-primary/50 text-foreground',
+} as const;
+
 export function ToolCard({
   href,
   title,
@@ -42,10 +48,8 @@ export function ToolCard({
         <div className="flex items-start gap-4">
           <div
             className={cn(
-              'rounded-md p-2.5',
-              emphasis === 'primary'
-                ? 'bg-foreground text-background'
-                : 'bg-muted text-foreground',
+              'border-l-2 pl-3 pt-0.5',
+              iconAccentClass[emphasis],
             )}
           >
             {icon}
