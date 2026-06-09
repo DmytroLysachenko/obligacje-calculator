@@ -60,6 +60,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
     rebuyDiscount,
     historicalData,
     taxStrategy,
+    taxRate,
     ikzeTaxBracket,
   } = normalizedInputs;
 
@@ -153,9 +154,9 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
       const { value: lagInflation, isProjected: isInflationProjected } = getHistoricalValue(period.startDate, 'inflation', 2, historicalData);
       const { value: lagNbp, isProjected: isNbpProjected } = getHistoricalValue(period.startDate, 'nbpRate', 0, historicalData);
 
-      const yearIntoCycle = Math.floor(monthsIntoCycle / 12);
-      const customInfValue = inputs.customInflation?.[yearIntoCycle];
-      const customNbpVal = inputs.customNbpRate?.[yearIntoCycle];
+      const inflationResetYearIndex = Math.max(0, periodYearIndex - 1);
+      const customInfValue = inputs.customInflation?.[inflationResetYearIndex];
+      const customNbpVal = inputs.customNbpRate?.[periodYearIndex];
 
       const currentInterestRate = determineInterestRate(
         bondType,
@@ -221,11 +222,6 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
         }
       }
 
-      const pointIsProjected =
-        bondType === BondType.ROR || bondType === BondType.DOR
-          ? isNbpProjected
-          : isInflationProjected;
-
       if (usedProjectedRate) {
         dataQualityFlags.add('projected_rate_segment');
       }
@@ -256,7 +252,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
       let taxDeducted = new Decimal(0);
       if (shouldWithholdPeriodicTax(taxStrategy, isCapitalized)) {
         if (!period.isWithdrawal || !isEarlyWithdrawal) {
-          taxDeducted = calculateTaxAmount(interestEarned, taxStrategy, true);
+          taxDeducted = calculateTaxAmount(interestEarned, taxStrategy, true, taxRate);
           periodicTaxPaidSoFar = periodicTaxPaidSoFar.plus(taxDeducted);
           if (taxDeducted.gt(0)) {
             events.push({
@@ -335,6 +331,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
             ),
             taxStrategy,
             useOfficialRounding,
+            taxRate,
           );
       
       if (period.isWithdrawal && !shouldWithholdPeriodicTax(taxStrategy, isCapitalized) && currentTaxAtPoint.gt(0)) {
@@ -395,7 +392,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
         cumulativeInflation: cumulativeInflation.toNumber(),
         isMaturity: period.isMaturity,
         isWithdrawal: period.endDate.getTime() === targetWithdrawalDate.getTime(),
-        isProjected: pointIsProjected,
+        isProjected: rateSource === 'projected_cpi' || rateSource === 'projected_nbp',
         inflationReference: customInfValue ?? (lagInflation !== undefined ? lagInflation : activeExpectedInflation),
         nbpReference: customNbpVal ?? (lagNbp !== undefined ? lagNbp : expectedNbpRate),
         events: events.length > 0 ? events : undefined
@@ -417,6 +414,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
           ),
           taxStrategy,
           true,
+          taxRate,
         );
     
     totalTaxAcc = totalTaxAcc.plus(cycleTax);
@@ -509,7 +507,8 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
     isRebought,
     rebuyDiscount,
     historicalData,
-    taxStrategy
+    taxStrategy,
+    taxRate,
   } = normalizedInputs;
 
   const bondDef = BOND_DEFINITIONS[bondType];
@@ -623,14 +622,16 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
 
         if (monthsHeld <= bondDurationMonths) {
           const monthIndex = monthsHeld - 1;
-          const yearIndex = Math.floor(monthIndex / 12);
+          const globalMonthIndex = Math.max(0, differenceInMonths(currentMonthDate, startPurchaseDate));
+          const globalYearIndex = Math.floor(globalMonthIndex / 12);
+          const inflationResetYearIndex = Math.max(0, globalYearIndex - 1);
           const projectedInflation = getExpectedInflationForYearIndex(
             expectedInflation,
             inputs.customInflation,
-            yearIndex,
+            inflationResetYearIndex,
           );
-          const customInflationValue = inputs.customInflation?.[yearIndex];
-          const customNbpValue = inputs.customNbpRate?.[yearIndex];
+          const customInflationValue = inputs.customInflation?.[inflationResetYearIndex];
+          const customNbpValue = inputs.customNbpRate?.[globalYearIndex];
           const currentInterestRate = determineInterestRate(
             bondType,
             monthIndex,
@@ -654,7 +655,7 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
             lot.grossValue = dLotGrossValue.plus(interestThisMonth).toNumber();
           } else {
             if (shouldWithholdTaxForLot) {
-              const taxThisMonth = calculateTaxAmount(interestThisMonth, taxStrategy);
+              const taxThisMonth = calculateTaxAmount(interestThisMonth, taxStrategy, false, taxRate);
               lot.tax = dLotTax.plus(taxThisMonth).toNumber();
             }
           }
@@ -688,6 +689,7 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
               ),
               taxStrategy,
               isWithdrawalStep,
+              taxRate,
             );
 
         const finalNetValue = currentGrossValue.minus(currentTaxPaid).minus(dFinalFee);

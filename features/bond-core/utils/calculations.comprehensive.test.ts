@@ -217,6 +217,29 @@ describe('Comprehensive Bond Calculations', () => {
     expect(results.dataQualityFlags).toContain('projected_rate_segment');
   });
 
+  it('does not mark fixed first-year indexed segments as projected macro segments', () => {
+    const inputs = {
+      ...baseInputs,
+      bondType: BondType.EDO,
+      duration: 10,
+      firstYearRate: 5.6,
+      expectedInflation: 4.0,
+      margin: 2.0,
+      isCapitalized: true,
+      payoutFrequency: InterestPayout.MATURITY,
+      purchaseDate: '2026-03-01T00:00:00.000Z',
+      withdrawalDate: '2028-03-01T00:00:00.000Z',
+      historicalData: {},
+    };
+
+    const results = calculateBondInvestment(inputs);
+
+    expect(results.timeline[1].rateSource).toBe('first_year_fixed');
+    expect(results.timeline[1].isProjected).toBe(false);
+    expect(results.timeline[2].rateSource).toBe('projected_cpi');
+    expect(results.timeline[2].isProjected).toBe(true);
+  });
+
   it('EDO: 10-year inflation-indexed, capitalization, tax at end', () => {
     const inputs = {
       ...baseInputs,
@@ -342,6 +365,38 @@ describe('Comprehensive Bond Calculations', () => {
     expect(results.timeline.every((point) => point.taxDeducted === 0)).toBe(true);
   });
 
+  it('uses the configured standard withdrawal tax rate when calculating net payout', () => {
+    const standardTax = calculateBondInvestment({
+      ...baseInputs,
+      bondType: BondType.EDO,
+      duration: 10,
+      firstYearRate: 5.6,
+      expectedInflation: 4.0,
+      margin: 2.0,
+      isCapitalized: true,
+      payoutFrequency: InterestPayout.MATURITY,
+      withdrawalDate: '2036-03-01T00:00:00.000Z',
+      taxRate: 19,
+      taxStrategy: TaxStrategy.STANDARD,
+    });
+    const reducedTax = calculateBondInvestment({
+      ...baseInputs,
+      bondType: BondType.EDO,
+      duration: 10,
+      firstYearRate: 5.6,
+      expectedInflation: 4.0,
+      margin: 2.0,
+      isCapitalized: true,
+      payoutFrequency: InterestPayout.MATURITY,
+      withdrawalDate: '2036-03-01T00:00:00.000Z',
+      taxRate: 10,
+      taxStrategy: TaxStrategy.STANDARD,
+    });
+
+    expect(reducedTax.totalTax).toBeLessThan(standardTax.totalTax);
+    expect(reducedTax.netPayoutValue).toBeGreaterThan(standardTax.netPayoutValue);
+  });
+
   it('keeps the initial purchase at nominal price even when rollover swap discount is enabled', () => {
     const inputs = {
       ...baseInputs,
@@ -372,5 +427,130 @@ describe('Comprehensive Bond Calculations', () => {
 
     expect(cycleIndexes.size).toBeGreaterThan(1);
     expect(results.netPayoutValue).toBeGreaterThan(results.initialInvestment);
+  });
+
+  it('uses global projected CPI path years across EDO rollover cycles', () => {
+    const results = calculateBondInvestment({
+      ...baseInputs,
+      bondType: BondType.EDO,
+      initialInvestment: 100000,
+      duration: 10,
+      firstYearRate: 5.35,
+      margin: 2,
+      isCapitalized: true,
+      payoutFrequency: InterestPayout.MATURITY,
+      purchaseDate: '2026-05-27T00:00:00.000Z',
+      withdrawalDate: '2046-05-27T00:00:00.000Z',
+      investmentHorizonMonths: 240,
+      rollover: true,
+      historicalData: {},
+      customInflation: [
+        1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1,
+        8, 8, 8, 8, 8,
+        8, 8, 8, 8, 8,
+      ],
+    });
+
+    const secondCycleIndexedPoint = results.timeline.find(
+      (point) => point.cycleIndex === 2 && point.rateSource === 'projected_cpi',
+    );
+
+    expect(secondCycleIndexedPoint?.inflationReference).toBe(8);
+    expect(secondCycleIndexedPoint?.interestRate).toBe(10);
+  });
+
+  it('keeps EDO nominal payout positive while real CAGR can be negative under high inflation', () => {
+    const results = calculateBondInvestment({
+      ...baseInputs,
+      bondType: BondType.EDO,
+      initialInvestment: 100000,
+      duration: 10,
+      firstYearRate: 5.35,
+      expectedInflation: 5,
+      margin: 2,
+      isCapitalized: true,
+      payoutFrequency: InterestPayout.MATURITY,
+      purchaseDate: '2026-05-27T00:00:00.000Z',
+      withdrawalDate: '2046-05-27T00:00:00.000Z',
+      investmentHorizonMonths: 240,
+      rollover: true,
+      historicalData: {},
+      customInflation: [
+        1, 3, 4, 5, 5,
+        4, 3, 2, 1, 2,
+        3, 4, 5, 6, 7,
+        7, 6, 5, 4, 3,
+      ],
+    });
+
+    expect(results.netPayoutValue).toBeGreaterThan(results.initialInvestment);
+    expect(results.totalProfit).toBeGreaterThan(0);
+    expect(results.finalRealValue).toBeLessThan(results.netPayoutValue);
+    expect(results.realAnnualizedReturn).toBeLessThan(results.nominalAnnualizedReturn);
+  });
+
+  it('uses global projected NBP path years across ROR rollover cycles', () => {
+    const results = calculateBondInvestment({
+      ...baseInputs,
+      bondType: BondType.ROR,
+      initialInvestment: 100000,
+      duration: 1,
+      firstYearRate: 4,
+      expectedNbpRate: 3.75,
+      margin: 0,
+      isCapitalized: false,
+      payoutFrequency: InterestPayout.MONTHLY,
+      purchaseDate: '2026-05-27T00:00:00.000Z',
+      withdrawalDate: '2030-05-27T00:00:00.000Z',
+      investmentHorizonMonths: 48,
+      rollover: true,
+      historicalData: {},
+      customNbpRate: [3, 4, 5, 6],
+    });
+
+    const secondCycleNbpPoint = results.timeline.find(
+      (point) => point.cycleIndex === 2 && point.rateSource === 'projected_nbp',
+    );
+    const fourthYearNbpPoint = results.timeline.find(
+      (point) => point.cycleIndex === 4 && point.rateSource === 'projected_nbp',
+    );
+
+    expect(secondCycleNbpPoint?.nbpReference).toBe(4);
+    expect(secondCycleNbpPoint?.interestRate).toBe(4);
+    expect(fourthYearNbpPoint?.nbpReference).toBe(6);
+    expect(fourthYearNbpPoint?.interestRate).toBe(6);
+  });
+
+  it('does not treat chart granularity as a calculation input', () => {
+    const yearly = calculateBondInvestment({
+      ...baseInputs,
+      bondType: BondType.EDO,
+      duration: 10,
+      firstYearRate: 5.6,
+      expectedInflation: 4.0,
+      margin: 2.0,
+      isCapitalized: true,
+      payoutFrequency: InterestPayout.MATURITY,
+      withdrawalDate: '2036-03-01T00:00:00.000Z',
+      chartStep: 'yearly',
+    });
+    const monthly = calculateBondInvestment({
+      ...baseInputs,
+      bondType: BondType.EDO,
+      duration: 10,
+      firstYearRate: 5.6,
+      expectedInflation: 4.0,
+      margin: 2.0,
+      isCapitalized: true,
+      payoutFrequency: InterestPayout.MATURITY,
+      withdrawalDate: '2036-03-01T00:00:00.000Z',
+      chartStep: 'monthly',
+    });
+
+    expect(monthly.netPayoutValue).toBeCloseTo(yearly.netPayoutValue, 8);
+    expect(monthly.totalTax).toBeCloseTo(yearly.totalTax, 8);
+    expect(monthly.finalRealValue).toBeCloseTo(yearly.finalRealValue, 8);
+    expect(monthly.timeline).toHaveLength(yearly.timeline.length);
   });
 });
