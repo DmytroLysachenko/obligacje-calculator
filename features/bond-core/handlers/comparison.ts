@@ -126,7 +126,7 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
       ...this.generateScenarioAssumptions('Scenario B', payload.scenarioB),
     ];
     assumptions.push('Independent comparison resolves issued-series terms per scenario purchase date when present.');
-    assumptions.push(`Comparison maturity mode: ${maturityMode}.`);
+    assumptions.push(`Maturity handling: ${this.getComparisonMaturityModeLabel(maturityMode)}.`);
     assumptions.push(this.describeComparisonMaturityMode(maturityMode));
 
     return this.createEnvelope(results, warnings, assumptions, context.dataFreshness);
@@ -311,6 +311,22 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
       case 'reinvest_until_horizon':
       default:
         return 'Matured proceeds are reinvested until the selected comparison horizon.';
+    }
+  }
+
+  private getComparisonMaturityModeLabel(
+    maturityMode: IndependentBondComparisonPayload['sharedConfig']['maturityMode'],
+  ) {
+    switch (maturityMode) {
+      case 'hold_to_maturity':
+        return 'Compare original maturities';
+      case 'cash_after_maturity':
+        return 'Move to cash after maturity';
+      case 'align_to_shorter_duration':
+        return 'Compare until first maturity';
+      case 'reinvest_until_horizon':
+      default:
+        return 'Reinvest until selected horizon';
     }
   }
 

@@ -261,7 +261,8 @@ describe('Comparison and ladder golden regressions', () => {
     expect(edo?.timeline.at(-1)?.cycleEndDate.slice(0, 7)).toBe(withdrawalDate.slice(0, 7));
     expect(ror?.timeline.some((point) => point.cycleIndex > 1)).toBe(true);
     expect(edo?.timeline.some((point) => point.cycleIndex > 1)).toBe(false);
-    expect(envelope.assumptions).toContain('Comparison maturity mode: reinvest_until_horizon.');
+    expect(envelope.assumptions).toContain('Maturity handling: Reinvest until selected horizon.');
+    expect(envelope.assumptions.join('\n')).not.toContain('reinvest_until_horizon');
   });
 
   it('can compare original maturities without reinvesting short bonds', async () => {
@@ -300,7 +301,8 @@ describe('Comparison and ladder golden regressions', () => {
     expect(getHorizonMonths(purchaseDate, edo?.timeline.at(-1)?.cycleEndDate ?? purchaseDate)).toBeGreaterThanOrEqual(119);
     expect(ror?.timeline.some((point) => point.cycleIndex > 1)).toBe(false);
     expect(edo?.timeline.some((point) => point.cycleIndex > 1)).toBe(false);
-    expect(envelope.assumptions).toContain('Comparison maturity mode: hold_to_maturity.');
+    expect(envelope.assumptions).toContain('Maturity handling: Compare original maturities.');
+    expect(envelope.assumptions.join('\n')).not.toContain('hold_to_maturity');
   });
 
   it('can keep matured short-bond proceeds as cash until the shared horizon', async () => {
@@ -377,8 +379,100 @@ describe('Comparison and ladder golden regressions', () => {
     expect(getHorizonMonths(purchaseDate, ror?.timeline.at(-1)?.cycleEndDate ?? purchaseDate)).toBeLessThanOrEqual(12);
     expect(getHorizonMonths(purchaseDate, edo?.timeline.at(-1)?.cycleEndDate ?? purchaseDate)).toBeLessThanOrEqual(12);
     expect(edo?.isEarlyWithdrawal).toBe(true);
-    expect(envelope.assumptions).toContain('Comparison maturity mode: align_to_shorter_duration.');
+    expect(envelope.assumptions).toContain('Maturity handling: Compare until first maturity.');
+    expect(envelope.assumptions.join('\n')).not.toContain('align_to_shorter_duration');
   });
+
+  it.each([
+    {
+      maturityMode: 'reinvest_until_horizon' as const,
+      label: 'Reinvest until selected horizon',
+      forbidden: 'reinvest_until_horizon',
+      rorFinalHorizonMonths: 120,
+      edoFinalHorizonMonths: 120,
+      rorRolls: true,
+      edoRolls: false,
+    },
+    {
+      maturityMode: 'hold_to_maturity' as const,
+      label: 'Compare original maturities',
+      forbidden: 'hold_to_maturity',
+      rorFinalHorizonMonths: 12,
+      edoFinalHorizonMonths: 120,
+      rorRolls: false,
+      edoRolls: false,
+    },
+    {
+      maturityMode: 'cash_after_maturity' as const,
+      label: 'Move to cash after maturity',
+      forbidden: 'cash_after_maturity',
+      rorFinalHorizonMonths: 120,
+      edoFinalHorizonMonths: 120,
+      rorRolls: false,
+      edoRolls: false,
+    },
+    {
+      maturityMode: 'align_to_shorter_duration' as const,
+      label: 'Compare until first maturity',
+      forbidden: 'align_to_shorter_duration',
+      rorFinalHorizonMonths: 12,
+      edoFinalHorizonMonths: 12,
+      rorRolls: false,
+      edoRolls: false,
+    },
+  ])(
+    'renders readable assumptions and distinct timeline behavior for $maturityMode',
+    async ({
+      maturityMode,
+      label,
+      forbidden,
+      rorFinalHorizonMonths,
+      edoFinalHorizonMonths,
+      rorRolls,
+      edoRolls,
+    }) => {
+      const purchaseDate = toDateString(today);
+      const withdrawalDate = getWithdrawalDateFromMonths(purchaseDate, 120);
+      const expectedRorFinalMonth = getWithdrawalDateFromMonths(purchaseDate, rorFinalHorizonMonths);
+      const expectedEdoFinalMonth = getWithdrawalDateFromMonths(purchaseDate, edoFinalHorizonMonths);
+
+      const envelope = await calculationService.calculate({
+        kind: ScenarioKind.BOND_COMPARISON,
+        payload: {
+          mode: 'independent',
+          sharedConfig: {
+            initialInvestment: 10000,
+            purchaseDate,
+            withdrawalDate,
+            expectedInflation: 2.5,
+            expectedNbpRate: 3.75,
+            taxStrategy: TaxStrategy.STANDARD,
+            timingMode: 'general',
+            investmentHorizonMonths: 120,
+            maturityMode,
+          },
+          scenarioA: {
+            bondType: BondType.ROR,
+          },
+          scenarioB: {
+            bondType: BondType.EDO,
+          },
+        },
+      });
+
+      const result = envelope.result as BondComparisonScenarioItem[];
+      const ror = result.find((item) => item.scenarioKey === 'scenarioA')?.result;
+      const edo = result.find((item) => item.scenarioKey === 'scenarioB')?.result;
+      const allAssumptions = envelope.assumptions.join('\n');
+
+      expect(envelope.assumptions).toContain(`Maturity handling: ${label}.`);
+      expect(allAssumptions).not.toContain(forbidden);
+      expect(ror?.timeline.at(-1)?.cycleEndDate.slice(0, 7)).toBe(expectedRorFinalMonth.slice(0, 7));
+      expect(edo?.timeline.at(-1)?.cycleEndDate.slice(0, 7)).toBe(expectedEdoFinalMonth.slice(0, 7));
+      expect(ror?.timeline.some((point) => point.cycleIndex > 1)).toBe(rorRolls);
+      expect(edo?.timeline.some((point) => point.cycleIndex > 1)).toBe(edoRolls);
+    },
+  );
 
   it('applies rebuy discount differences in long-horizon independent comparison scenarios', async () => {
     const purchaseDate = toDateString(today);

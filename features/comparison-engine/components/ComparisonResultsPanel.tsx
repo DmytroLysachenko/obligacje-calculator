@@ -1,21 +1,10 @@
 'use client';
 
 import React from 'react';
-import {
-  Area,
-  AreaChart,
-  Brush,
-  CartesianGrid,
-  Legend,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
 import { LineChart } from 'lucide-react';
-import { BondInputs, CalculationResult, InterestPayout } from '@/features/bond-core/types';
+import { BondInputs, CalculationResult, ChartStep, InterestPayout } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
-import { ChartContainer } from '@/shared/components/charts/ChartContainer';
+import { BondValueChart, BondValueChartPoint } from '@/shared/components/charts/BondValueChart';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { MetricStrip, MetricStripItem } from '@/shared/components/results/MetricStrip';
@@ -26,6 +15,7 @@ import {
 } from '@/shared/lib/retained-exports';
 import { ComparisonChartPoint } from '../lib/comparison-display';
 import { ResultActionGrid } from '@/shared/components/results/ResultActionGrid';
+import { computeNumericDomain, computeRateDomain } from '@/shared/lib/chart-series';
 
 interface ComparisonResultsPanelProps {
   chartData: ComparisonChartPoint[];
@@ -37,49 +27,8 @@ interface ComparisonResultsPanelProps {
   inputsB: BondInputs;
   formatCurrency: (value: number) => string;
   language: 'pl' | 'en';
-}
-
-interface PayloadEntry {
-  name: string;
-  value: number;
-  color: string;
-}
-
-function ComparisonChartTooltip({
-  active,
-  payload,
-  label,
-  formatCurrency,
-}: {
-  active?: boolean;
-  payload?: PayloadEntry[];
-  label?: string;
-  formatCurrency: (value: number) => string;
-}) {
-  if (!active || !payload || !payload.length) {
-    return null;
-  }
-
-  return (
-    <div className="min-w-[150px] rounded-lg border border-border bg-popover p-3 text-popover-foreground shadow-lg">
-      <p className="ui-metadata mb-2 border-b border-border/50 pb-1 font-semibold">
-        {label}
-      </p>
-      <div className="space-y-1.5">
-        {payload.map((entry, index) => (
-          <div key={index} className="flex items-center justify-between gap-4 text-xs">
-            <span className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
-              {entry.name}:
-            </span>
-            <span className="font-mono font-bold">
-              {formatCurrency(Number(entry.value))}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+  chartStep: ChartStep;
+  onChartStepChange: (step: ChartStep) => void;
 }
 
 export function ComparisonResultsPanel({
@@ -92,6 +41,8 @@ export function ComparisonResultsPanel({
   inputsB,
   formatCurrency,
   language,
+  chartStep,
+  onChartStepChange,
 }: ComparisonResultsPanelProps) {
   const { t } = useAppI18n();
   const valueA = showRealValue ? resultsA.finalRealValue : resultsA.netPayoutValue;
@@ -149,6 +100,75 @@ export function ComparisonResultsPanel({
         }),
     },
   ], [inputsA.bondType, inputsB.bondType, language, resultsA.timeline, resultsB.timeline, t]);
+  const valueChartData = React.useMemo<BondValueChartPoint[]>(
+    () =>
+      chartData.map((point) => ({
+        label: point.label,
+        date: point.label,
+        dateKey: point.dateKey,
+        valA: point.valA,
+        valB: point.valB,
+        inflation: point.inflation,
+        nbp: point.nbp,
+        isProjected: point.isProjected,
+      })),
+    [chartData],
+  );
+  const leftDomain = React.useMemo(
+    () =>
+      computeNumericDomain(
+        valueChartData
+          .flatMap((point) => [Number(point.valA), Number(point.valB)])
+          .filter((value) => Number.isFinite(value)),
+        {
+          minFloor: 0,
+          minPadding: 250,
+          paddingRatio: 0.08,
+        },
+      ),
+    [valueChartData],
+  );
+  const rightDomain = React.useMemo(
+    () =>
+      computeRateDomain(
+        valueChartData
+          .flatMap((point) => [point.inflation, point.nbp])
+          .filter((value): value is number => typeof value === 'number'),
+      ),
+    [valueChartData],
+  );
+  const chartSummary = React.useMemo(() => {
+    const firstPoint = valueChartData[0];
+    const lastPoint = valueChartData[valueChartData.length - 1];
+
+    if (!firstPoint || !lastPoint) {
+      return t('bonds.chart_accessible_summary_empty');
+    }
+
+    return t('comparison.chart_accessible_summary', {
+      count: valueChartData.length,
+      startA: formatCurrency(Number(firstPoint.valA)),
+      endA: formatCurrency(Number(lastPoint.valA)),
+      startB: formatCurrency(Number(firstPoint.valB)),
+      endB: formatCurrency(Number(lastPoint.valB)),
+    });
+  }, [formatCurrency, t, valueChartData]);
+  const chartSeries = React.useMemo(
+    () => [
+      {
+        key: 'valA',
+        label: `${inputsA.bondType} (A)`,
+        color: '#111111',
+      },
+      {
+        key: 'valB',
+        label: `${inputsB.bondType} (B)`,
+        color: '#4E8F71',
+        secondary: true,
+      },
+    ],
+    [inputsA.bondType, inputsB.bondType],
+  );
 
   return (
     <section className="space-y-6 border-t border-border py-6">
@@ -178,61 +198,18 @@ export function ComparisonResultsPanel({
           description={t('comparison.chart_help_desc')}
         />
 
-        <ChartContainer responsiveHeightClassName="h-[360px] md:h-[420px] xl:h-[460px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData}>
-              <defs>
-                <linearGradient id="comparison-a" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="comparison-b" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
-              <XAxis dataKey="label" axisLine={false} tickLine={false} fontSize={10} minTickGap={24} />
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                fontSize={10}
-                tickFormatter={(value: number) => `${(value / 1000).toFixed(0)}k`}
-              />
-              <Tooltip content={<ComparisonChartTooltip formatCurrency={formatCurrency} />} />
-              <Legend
-                verticalAlign="top"
-                align="right"
-                height={40}
-                iconType="circle"
-                wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase' }}
-              />
-              {chartData.length > 12 ? (
-                <Brush dataKey="label" height={24} stroke="#cbd5e1" travellerWidth={8} />
-              ) : null}
-              <Area
-                type="monotone"
-                dataKey="valA"
-                name={`${inputsA.bondType} (A)`}
-                stroke="#3b82f6"
-                strokeWidth={3}
-                fill="url(#comparison-a)"
-                connectNulls
-                activeDot={{ r: 5, strokeWidth: 0 }}
-              />
-              <Area
-                type="monotone"
-                dataKey="valB"
-                name={`${inputsB.bondType} (B)`}
-                stroke="#10b981"
-                strokeWidth={3}
-                fill="url(#comparison-b)"
-                connectNulls
-                activeDot={{ r: 5, strokeWidth: 0 }}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </ChartContainer>
+        <BondValueChart
+          data={valueChartData}
+          series={chartSeries}
+          formatCurrency={formatCurrency}
+          leftDomain={leftDomain}
+          rightDomain={rightDomain}
+          summary={chartSummary}
+          defaultGranularity={chartStep}
+          onGranularityChange={onChartStepChange}
+          ariaLabel={t('comparison.performance_over_time')}
+          heightClassName="h-[360px] md:h-[420px] xl:h-[460px]"
+        />
 
         <div className="mt-6">
           <SecondaryInsightAccordion

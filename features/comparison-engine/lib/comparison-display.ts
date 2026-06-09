@@ -1,5 +1,5 @@
 import { addMonths, compareAsc, format, parseISO } from 'date-fns';
-import { BondType, CalculationResult } from '@/features/bond-core/types';
+import { BondType, CalculationResult, ChartStep } from '@/features/bond-core/types';
 import { BondInputs } from '@/features/bond-core/types';
 import { sampleSeriesPoints } from '@/shared/lib/chart-series';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
@@ -11,6 +11,9 @@ export type ComparisonChartPoint = {
   label: string;
   valA: number;
   valB: number;
+  inflation?: number;
+  nbp?: number;
+  isProjected?: boolean;
 };
 
 export function buildComparisonChartData({
@@ -22,6 +25,7 @@ export function buildComparisonChartData({
   showRealValue,
   language,
   t,
+  chartStep = 'monthly',
 }: {
   purchaseDate: string;
   withdrawalDateA: string;
@@ -31,6 +35,7 @@ export function buildComparisonChartData({
   showRealValue: boolean;
   language: 'pl' | 'en';
   t: Translator;
+  chartStep?: ChartStep;
 }): ComparisonChartPoint[] {
   const startDate = parseISO(purchaseDate);
   const endA = parseISO(withdrawalDateA);
@@ -76,23 +81,83 @@ export function buildComparisonChartData({
     });
   };
 
+  const projectContext = (
+    timeline: CalculationResult['timeline'],
+    dates: Date[],
+  ) => {
+    let index = 0;
+    let inflation: number | undefined = timeline[0]?.inflationReference;
+    let nbp: number | undefined = timeline[0]?.nbpReference;
+    let isProjected = Boolean(timeline[0]?.isProjected);
+
+    return dates.map((date) => {
+      while (
+        index < timeline.length
+        && compareAsc(parseISO(timeline[index].cycleEndDate), date) <= 0
+      ) {
+        inflation = timeline[index].inflationReference ?? inflation;
+        nbp = timeline[index].nbpReference ?? nbp;
+        isProjected = isProjected || Boolean(timeline[index].isProjected);
+        index += 1;
+      }
+
+      return { inflation, nbp, isProjected };
+    });
+  };
+
   const seriesA = projectSeries(resultsA.timeline, resultsA.initialInvestment, anchorDates);
   const seriesB = projectSeries(resultsB.timeline, resultsB.initialInvestment, anchorDates);
+  const contextA = projectContext(resultsA.timeline, anchorDates);
+  const contextB = projectContext(resultsB.timeline, anchorDates);
 
-  return sampleSeriesPoints(
-    anchorDates.map((date, index) => ({
+  const rawPoints = anchorDates.map((date, index) => ({
       dateKey: date.toISOString(),
       label:
         index === 0
           ? t('comparison.start')
           : format(date, 'MMM yyyy', {
-              locale: getDateFnsLocale(language),
-            }),
+            locale: getDateFnsLocale(language),
+          }),
       valA: seriesA[index],
       valB: seriesB[index],
-    })),
-    180,
-  );
+      inflation: contextA[index].inflation ?? contextB[index].inflation,
+      nbp: contextA[index].nbp ?? contextB[index].nbp,
+      isProjected: contextA[index].isProjected || contextB[index].isProjected,
+    }));
+
+  const displayPoints = aggregateComparisonChartPoints(rawPoints, chartStep);
+
+  return sampleSeriesPoints(displayPoints, 180);
+}
+
+function aggregateComparisonChartPoints(
+  points: ComparisonChartPoint[],
+  chartStep: ChartStep,
+) {
+  if (chartStep === 'daily' || chartStep === 'monthly') {
+    return points;
+  }
+
+  const groups = new Map<string, ComparisonChartPoint[]>();
+
+  for (const point of points) {
+    const date = parseISO(point.dateKey);
+    const groupKey = chartStep === 'quarterly'
+      ? `${date.getUTCFullYear()}-Q${Math.floor(date.getUTCMonth() / 3) + 1}`
+      : `${date.getUTCFullYear()}`;
+    const bucket = groups.get(groupKey) ?? [];
+    bucket.push(point);
+    groups.set(groupKey, bucket);
+  }
+
+  return Array.from(groups.values()).map((bucket) => {
+    const last = bucket[bucket.length - 1];
+
+    return {
+      ...last,
+      isProjected: bucket.some((point) => point.isProjected),
+    };
+  });
 }
 
 export function getComparisonAssumptionsBondType(

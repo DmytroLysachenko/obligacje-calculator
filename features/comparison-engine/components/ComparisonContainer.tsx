@@ -1,6 +1,7 @@
 'use client';
 import React, { useMemo, useState } from 'react';
 import { Scale } from 'lucide-react';
+import { ChartStep } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
@@ -28,6 +29,7 @@ export const ComparisonContainer: React.FC = () => {
     const { sharedConfig, scenarioA, scenarioB, inputsA, inputsB, resultsA, resultsB, envelopeA, envelopeB, warningsA, warningsB, isCalculating, calculate, updateSharedConfig, updateScenarioA, updateScenarioB, setBondTypeA, setBondTypeB, setScenarioACustomHorizonEnabled, setScenarioBCustomHorizonEnabled, setScenarioACustomHorizonMonths, setScenarioBCustomHorizonMonths, isDirty, isPersistenceReady, definitions, } = useComparison();
     const { t, locale: language } = useAppI18n();
     const [showRealValue, setShowRealValue] = useState(false);
+    const [chartStep, setChartStep] = useState<ChartStep>('yearly');
     const hasMounted = useHasMounted();
     const currencyFormatter = useCurrencyFormatter(language, {
         style: 'currency',
@@ -56,9 +58,10 @@ export const ComparisonContainer: React.FC = () => {
               showRealValue,
               language,
               t,
+              chartStep,
             })
           : [],
-      [inputsA.withdrawalDate, inputsB.withdrawalDate, language, resultsA, resultsB, sharedConfig.purchaseDate, showRealValue, t],
+      [chartStep, inputsA.withdrawalDate, inputsB.withdrawalDate, language, resultsA, resultsB, sharedConfig.purchaseDate, showRealValue, t],
     );
     const hasMixedTimelineCadence = useMemo(
       () => usesMixedTimelineCadence(inputsA, inputsB),
@@ -157,6 +160,8 @@ export const ComparisonContainer: React.FC = () => {
                     inputsB={inputsB}
                     formatCurrency={formatCurrency}
                     language={language}
+                    chartStep={chartStep}
+                    onChartStepChange={setChartStep}
                   />
                 ) : null}
 
