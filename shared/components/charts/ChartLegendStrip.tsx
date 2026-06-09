@@ -11,11 +11,12 @@ export interface ChartLegendItem {
 
 interface ChartLegendStripProps {
   items: ChartLegendItem[];
+  className?: string;
 }
 
-export const ChartLegendStrip = React.memo(function ChartLegendStrip({items}: ChartLegendStripProps) {
+export const ChartLegendStrip = React.memo(function ChartLegendStrip({items, className}: ChartLegendStripProps) {
   return (
-    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-border pb-3">
+    <div className={cn('flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-border pb-3', className)}>
       {items.map((item) => (
         <div key={item.label} className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
           <span
