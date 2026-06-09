@@ -71,13 +71,19 @@ describe('calculator input layout contracts', () => {
   it('groups single calculator inputs into setup, timing, and advanced fieldsets', () => {
     const source = readSource(paths.singleForm);
 
-    expectContains(source, "import { ScenarioFieldset } from '@/shared/components/forms/ScenarioFieldset';");
+    expectContains(source, "import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';");
     expectContains(source, 'title={t(\'bonds.step_core\')}');
     expectContains(source, 'title={t(\'bonds.step_timing\')}');
-    expectContains(source, 'title={t(\'common.advanced\')}');
+    expectContains(source, 'title="3. Inflation setup"');
+    expectContains(source, 'title="4. NBP rate setup"');
     expectContains(source, 'description={t(\'bonds.form.step_core_desc\')}');
     expectContains(source, 'description={t(\'bonds.form.step_timing_desc\')}');
-    expectContains(source, 'description={t(\'bonds.form.advanced_desc\')}');
+    expectContains(source, 'section="inflation"');
+    expectContains(source, 'section="nbp"');
+    expectContains(source, 'showIntro={false}');
+    expectContains(source, '<BondDisplaySection');
+    expectNotContains(source, 'showCustomTax={showCustomTax}');
+    expectNotContains(source, 'setShowCustomTax={setShowCustomTax}');
     expectContains(source, "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
     expectContains(source, '<FormInlineNotice');
     expectContains(source, 'tone="warning"');

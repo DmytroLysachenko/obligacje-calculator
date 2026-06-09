@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { parseISO } from 'date-fns';
 import { Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -11,9 +11,8 @@ import { useAppI18n } from '@/i18n/client';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
-import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
+import { AssumptionSetupMode, MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
-import { ScenarioFieldset } from '@/shared/components/forms/ScenarioFieldset';
 import { InputGuardrailIssue } from '../lib/input-guardrails';
 import { BondConfigSection } from './sections/BondConfigSection';
 import { BondTimingSection } from './sections/BondTimingSection';
@@ -51,6 +50,8 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
   const { t } = useAppI18n();
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
   const hasMounted = useHasMounted();
+  const [inflationSetupMode, setInflationSetupMode] = useState<AssumptionSetupMode>('fixed');
+  const [nbpSetupMode, setNbpSetupMode] = useState<AssumptionSetupMode>('fixed');
 
   const handleUpdate = useCallback(
     (key: keyof BondInputs, value: unknown) => {
@@ -139,8 +140,8 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           </p>
         </div>
 
-        <div className="space-y-8">
-          <ScenarioFieldset
+        <div className="space-y-4">
+          <AdvancedAssumptionsDisclosure
             title={t('bonds.step_core')}
             description={t('bonds.form.step_core_desc')}
           >
@@ -152,12 +153,11 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               availableSeries={availableSeries}
               selectedSeriesId={selectedSeriesId}
             />
-          </ScenarioFieldset>
+          </AdvancedAssumptionsDisclosure>
 
-          <ScenarioFieldset
+          <AdvancedAssumptionsDisclosure
             title={t('bonds.step_timing')}
             description={t('bonds.form.step_timing_desc')}
-            divided
           >
             <BondTimingSection
               inputs={inputs}
@@ -167,38 +167,54 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               currentDef={currentDef}
               hasMounted={hasMounted}
             />
-          </ScenarioFieldset>
+          </AdvancedAssumptionsDisclosure>
 
-          <ScenarioFieldset
-            title={t('common.advanced')}
-            description={t('bonds.form.advanced_desc')}
-            divided
+          <AdvancedAssumptionsDisclosure
+            title="3. Inflation setup"
+            description="Choose fixed presets, one simple inflation value, or a yearly inflation path."
           >
-            <AdvancedAssumptionsDisclosure
-              title={t('common.advanced')}
-              description={t('bonds.form.advanced_desc')}
-            >
-              <MarketAssumptionsForm
-                expectedInflation={inputs.expectedInflation}
-                expectedNbpRate={inputs.expectedNbpRate}
-                bondType={inputs.bondType}
-                customInflation={inputs.customInflation}
-                customNbpRate={inputs.customNbpRate}
-                inflationHorizonYears={Math.max(1, Math.ceil(investmentHorizonMonths / 12))}
-                onUpdate={handleUpdate as (key: string, value: unknown) => void}
-                compact
-              />
+            <MarketAssumptionsForm
+              expectedInflation={inputs.expectedInflation}
+              expectedNbpRate={inputs.expectedNbpRate}
+              bondType={inputs.bondType}
+              customInflation={inputs.customInflation}
+              customNbpRate={inputs.customNbpRate}
+              inflationHorizonYears={Math.max(1, Math.ceil(investmentHorizonMonths / 12))}
+              onUpdate={handleUpdate as (key: string, value: unknown) => void}
+              compact
+              section="inflation"
+              showIntro={false}
+              inflationSetupMode={inflationSetupMode}
+              onInflationSetupModeChange={setInflationSetupMode}
+            />
+          </AdvancedAssumptionsDisclosure>
 
-              <div className="border-t border-border pt-5">
-                <BondDisplaySection
-                  inputs={inputs}
-                  onUpdate={handleUpdate}
-                  showCustomTax={false}
-                  setShowCustomTax={() => undefined}
-                />
-              </div>
-            </AdvancedAssumptionsDisclosure>
-          </ScenarioFieldset>
+          <AdvancedAssumptionsDisclosure
+            title="4. NBP rate setup"
+            description="Choose fixed presets, one simple NBP rate, or a yearly NBP path."
+          >
+            <MarketAssumptionsForm
+              expectedInflation={inputs.expectedInflation}
+              expectedNbpRate={inputs.expectedNbpRate}
+              bondType={inputs.bondType}
+              customInflation={inputs.customInflation}
+              customNbpRate={inputs.customNbpRate}
+              inflationHorizonYears={Math.max(1, Math.ceil(investmentHorizonMonths / 12))}
+              onUpdate={handleUpdate as (key: string, value: unknown) => void}
+              compact
+              section="nbp"
+              showIntro={false}
+              nbpSetupMode={nbpSetupMode}
+              onNbpSetupModeChange={setNbpSetupMode}
+            />
+          </AdvancedAssumptionsDisclosure>
+
+          <div className="border-t border-border pt-5">
+            <BondDisplaySection
+              inputs={inputs}
+              onUpdate={handleUpdate}
+            />
+          </div>
         </div>
 
         <BondSummaryFooter

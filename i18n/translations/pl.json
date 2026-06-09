@@ -290,6 +290,9 @@
       "singular": "Obligacja"
     },
     "initial_investment": "Kwota Zakupu",
+    "bond_quantity": "Liczba obligacji",
+    "bond_unit_price": "100 PLN za obligacje",
+    "bond_quantity_limit": "1 - {max} obligacji",
     "units": "sztuk",
     "purchase_date": "Data Zakupu",
     "withdrawal_date": "Planowana Data Wypłaty",
@@ -429,7 +432,9 @@
       "main_path_desc": "Glowna sciezka wejsc. Zalozenia zaawansowane pozostaja zwiniete, dopoki nie sa potrzebne.",
       "step_core_desc": "Wybierz jedna obligacje, ustaw kwote, a potem zdecyduj, czy liczysz standardowa wyplate czy cel.",
       "step_timing_desc": "Ustal date zakupu, horyzont, tryb wyjscia i opakowanie podatkowe przed uruchomieniem obliczen.",
-      "advanced_desc": "Zalozenia inflacyjne, sciezka NBP, ustawienia wykresu i inne drugorzedne kontrolki."
+      "advanced_desc": "Zalozenia inflacyjne, sciezka NBP, ustawienia wykresu i inne drugorzedne kontrolki.",
+      "display_summary_title": "Kontrolki wyswietlania",
+      "display_summary_desc": "Granulacja wykresu jest sterowana bezposrednio w pasku wykresu i nie zmienia wyniku obliczen."
     },
     "tax_standard": "Konto standardowe (19% podatek)",
     "tax_ike": "Konto IKE (0% podatek)",
@@ -1583,7 +1588,7 @@
     "growth_chart_label": "Wykres wzrostu porownania",
     "drawdown_chart_label": "Wykres obsuniec porownania",
     "chart_accessible_summary_empty": "Wykres porownania nie ma jeszcze widocznych danych aktywow.",
-    "chart_accessible_summary": "Wykres zawiera {count} probkowanych punktow. {leader} prowadzi z wartoscia {leaderValue}; {trailing} jest nizej z wartoscia {trailingValue}.",
+    "chart_accessible_summary": "Wykres zawiera {count} probkowanych punktow. Scenariusz A przechodzi z {startA} do {endA}; Scenariusz B przechodzi z {startB} do {endB}.",
     "drawdown_accessible_summary_empty": "Wykres obsuniec nie ma jeszcze widocznych danych ryzyka.",
     "drawdown_accessible_summary": "Wykres obsuniec zawiera {count} probkowanych punktow. Najglebsze obecne obsuniecie to {drawdown}% dla {asset}.",
     "table_row_fallback": "Wiersz {row}",

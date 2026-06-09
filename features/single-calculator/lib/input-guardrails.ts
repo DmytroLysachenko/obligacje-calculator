@@ -14,10 +14,6 @@ export interface InputGuardrailIssue {
   applyAutoFix?: (inputs: BondInputs) => BondInputs;
 }
 
-function roundToLotSize(amount: number) {
-  return Math.max(100, Math.round(amount / 100) * 100);
-}
-
 function getBondYearLimit(strategy: TaxStrategy) {
   const year = new Date().getFullYear();
   if (strategy === TaxStrategy.IKE) {
@@ -43,7 +39,6 @@ export function getInputGuardrails(
   const withdrawal = new Date(inputs.withdrawalDate);
   const today = new Date();
   const yearWindowLimit = getBondYearLimit(inputs.taxStrategy);
-  const roundedInvestment = roundToLotSize(inputs.initialInvestment);
 
   if (inputs.initialInvestment < 100) {
     issues.push({
@@ -54,18 +49,6 @@ export function getInputGuardrails(
       description: 'Retail bond simulations assume at least 100 PLN nominal purchase.',
       autoFixLabel: 'Set to 100 PLN',
       applyAutoFix: (current) => ({ ...current, initialInvestment: 100 }),
-    });
-  }
-
-  if (inputs.initialInvestment % 100 !== 0) {
-    issues.push({
-      id: 'lot-size',
-      severity: 'caution',
-      field: 'initialInvestment',
-      title: 'Amount not aligned to 100 PLN lots',
-      description: 'Most retail bonds use 100 PLN nominal units. Rounded lots are easier to interpret.',
-      autoFixLabel: `Round to ${roundedInvestment} PLN`,
-      applyAutoFix: (current) => ({ ...current, initialInvestment: roundToLotSize(current.initialInvestment) }),
     });
   }
 

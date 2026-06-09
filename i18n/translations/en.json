@@ -290,6 +290,9 @@
       "singular": "Bond"
     },
     "initial_investment": "Purchase Amount",
+    "bond_quantity": "Bond Quantity",
+    "bond_unit_price": "100 PLN per bond",
+    "bond_quantity_limit": "1 - {max} bonds",
     "units": "units",
     "purchase_date": "Purchase Date",
     "withdrawal_date": "Planned Withdrawal Date",
@@ -429,7 +432,9 @@
       "main_path_desc": "Main input path only. Advanced assumptions stay collapsed until you need them.",
       "step_core_desc": "Choose one bond, set amount, then decide whether you are targeting payout or goal.",
       "step_timing_desc": "Commit purchase date, horizon, withdrawal timing, and tax wrapper before you calculate.",
-      "advanced_desc": "Inflation assumptions, NBP path, chart display, and other secondary controls."
+      "advanced_desc": "Inflation assumptions, NBP path, chart display, and other secondary controls.",
+      "display_summary_title": "Display controls",
+      "display_summary_desc": "Chart granularity is controlled directly in the chart toolbar and does not change the calculation result."
     },
     "tax_standard": "Standard Account (19% Tax)",
     "tax_ike": "IKE Account (0% Tax)",
@@ -1583,7 +1588,7 @@
     "growth_chart_label": "Comparison growth chart",
     "drawdown_chart_label": "Comparison drawdown chart",
     "chart_accessible_summary_empty": "The comparison chart has no visible asset data yet.",
-    "chart_accessible_summary": "The chart contains {count} sampled points. {leader} leads at {leaderValue}; {trailing} trails at {trailingValue}.",
+    "chart_accessible_summary": "The chart contains {count} sampled points. Scenario A moves from {startA} to {endA}; Scenario B moves from {startB} to {endB}.",
     "drawdown_accessible_summary_empty": "The drawdown chart has no visible risk data yet.",
     "drawdown_accessible_summary": "The drawdown chart contains {count} sampled points. The deepest current drawdown is {drawdown}% for {asset}.",
     "table_row_fallback": "Row {row}",

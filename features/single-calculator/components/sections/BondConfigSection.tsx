@@ -4,13 +4,11 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { HelpCircle, AlertCircle } from 'lucide-react';
+import { HelpCircle } from 'lucide-react';
 import { BondType, BondInputs } from '@/features/bond-core/types';
 import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { useAppI18n } from '@/i18n/client';
-import { cn } from '@/lib/utils';
-import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
 import { getIntlLocale } from '@/i18n/locale-utils';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
@@ -36,14 +34,20 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
     const currentBondSupport = getBondSupportMeta(inputs.bondType);
     const rateContext = getBondRateContextCopy(inputs.bondType, Number(inputs.firstYearRate), Number(inputs.margin), t);
     const formatDurationLabel = (type: BondType) => `${Math.round((definitions[type]?.duration ?? 1) * 12)} ${t('common.month_compact')}`;
+    const maxBondUnits = 1000;
+    const bondUnits = Math.max(1, Math.round(inputs.initialInvestment / 100));
+    const purchaseValueLabel = inputs.initialInvestment.toLocaleString(getIntlLocale(language));
     const formatSeriesMonth = (value: string) => new Date(value).toLocaleDateString(getIntlLocale(language), {
         month: 'short',
         year: 'numeric',
     });
-    const handleInvestmentChange = (value: number) => {
-        onUpdate('initialInvestment', value);
+    const handleBondUnitsChange = (value: number) => {
+        if (!Number.isFinite(value)) {
+            return;
+        }
+        const safeUnits = Math.min(maxBondUnits, Math.max(1, Math.trunc(value)));
+        onUpdate('initialInvestment', safeUnits * 100);
     };
-    const isDivisibleBy100 = inputs.initialInvestment % 100 === 0 && inputs.initialInvestment > 0;
     return (<div className="space-y-6">
       <div className="flex gap-1 border-b border-border pb-2">
         <Button variant={(!inputs.calculatorMode || inputs.calculatorMode === 'standard') ? 'default' : 'ghost'} className="h-8 flex-1 text-sm font-medium" onClick={() => onUpdate('calculatorMode', 'standard')}>
@@ -147,25 +151,34 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({
 
       {(!inputs.calculatorMode || inputs.calculatorMode === 'standard') && (<div className="space-y-4">
           <div className="flex justify-between items-center">
-            <Label htmlFor="initialInvestment" className="font-semibold">
-              {t('bonds.initial_investment')}
+            <Label htmlFor="bondUnits" className="font-semibold">
+              {t('bonds.bond_quantity')}
             </Label>
             <span className="text-sm font-medium text-muted-foreground">
-              {Math.floor(inputs.initialInvestment / 100)} {t('bonds.units')}
+              {purchaseValueLabel} PLN
             </span>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-3">
             <div className="relative">
-              <Input id="initialInvestment" type="number" className={cn("pl-4 pr-12 text-sm font-medium", !isDivisibleBy100 && inputs.initialInvestment > 0 && "border-destructive focus-visible:ring-destructive")} value={inputs.initialInvestment} onChange={(e) => handleInvestmentChange(Number(e.target.value))}/>
+              <Input
+                id="bondUnits"
+                type="number"
+                min={1}
+                max={maxBondUnits}
+                step={1}
+                inputMode="numeric"
+                className="pl-4 pr-16 text-sm font-medium"
+                value={bondUnits}
+                onChange={(e) => handleBondUnitsChange(Number(e.target.value))}
+              />
               <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
-                PLN
+                {t('bonds.units')}
               </div>
             </div>
-            {!isDivisibleBy100 && inputs.initialInvestment > 0 && (<div className="flex items-center gap-2 text-xs font-medium text-destructive">
-                <AlertCircle className="h-3 w-3"/>
-                <span>{t('bonds.error_100_pln')}</span>
-              </div>)}
-            <CommittedSliderInput value={inputs.initialInvestment} min={100} max={100000} step={100} unit="PLN" sliderClassName="py-4" showInput={false} onCommit={handleInvestmentChange}/>
+            <div className="flex items-center justify-between text-xs leading-5 text-muted-foreground">
+              <span>{t('bonds.bond_unit_price')}</span>
+              <span>{t('bonds.bond_quantity_limit', { max: maxBondUnits })}</span>
+            </div>
           </div>
         </div>)}
     </div>);
