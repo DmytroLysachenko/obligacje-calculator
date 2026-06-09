@@ -34,21 +34,50 @@ describe('market assumption control contracts', () => {
     const source = read(files.form);
 
     expectContains(source, "import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';");
+    expectContains(source, "type AssumptionSetupMode = 'fixed' | 'simple' | 'advanced';");
     expectContains(source, 'function ProjectionModeButtons');
-    expectContains(source, "value={advancedActive ? 'advanced' : 'simple'}");
-    expectContains(source, "{ value: 'simple', label: simpleLabel }");
-    expectContains(source, "{ value: 'advanced', label: advancedLabel }");
-    expectContains(source, "className=\"w-full min-w-[14rem] md:w-auto\"");
+    expectContains(source, 'value={value}');
+    expectContains(source, "{ value: 'fixed', label: 'Fixed' }");
+    expectContains(source, "{ value: 'simple', label: 'Simple' }");
+    expectContains(source, "{ value: 'advanced', label: 'Advanced' }");
     expectContains(source, "itemClassName=\"h-8 text-[11px] tracking-[0.06em]\"");
+    expectContains(source, "const [inflationMode, setInflationMode]");
+    expectContains(source, "const [nbpMode, setNbpMode]");
+    expectContains(source, 'const activeInflationMode = inflationSetupMode ?? inflationMode;');
+    expectContains(source, 'const activeNbpMode = nbpSetupMode ?? nbpMode;');
+    expectContains(source, 'function formatPathAverage');
+    expectContains(source, "return `Avg ${average.toFixed(1)}%`;");
+    expectContains(source, 'const inflationHeaderValue =');
+    expectContains(source, 'const nbpHeaderValue =');
+    expectContains(source, "unit={activeInflationMode === 'advanced' ? '' : '%'}");
+    expectContains(source, "unit={activeNbpMode === 'advanced' ? '' : '%'}");
+    expectContains(source, 'onInflationSetupModeChange?.(mode);');
+    expectContains(source, 'onNbpSetupModeChange?.(mode);');
+    expectContains(source, "section?: 'all' | 'inflation' | 'nbp';");
+    expectContains(source, "showIntro?: boolean;");
+    expectContains(source, "inflationSetupMode?: AssumptionSetupMode;");
+    expectContains(source, "nbpSetupMode?: AssumptionSetupMode;");
+    expectContains(source, 'showInflationSection');
+    expectContains(source, 'showNbpSection');
     expectContains(source, "value={");
     expectContains(source, "? 'stable'");
-    expectContains(source, ": 'custom'");
     expectContains(source, "{ value: 'stable', label: `${t('bonds.stable')} (2.5%)` }");
     expectContains(source, "{ value: 'high', label: `${t('bonds.high')} (6%)` }");
     expectContains(source, "{ value: 'deflation', label: `${t('bonds.deflation')} (-1%)` }");
+    expectContains(source, "{ value: 'current', label: 'Current (5.25%)' }");
+    expectContains(source, "{ value: 'high', label: 'High (6.75%)' }");
+    expectContains(source, "{ value: 'low', label: 'Low (3.75%)' }");
     expectContains(source, "className=\"grid-cols-3\"");
     expectContains(source, "onUpdate('customInflation', undefined)");
     expectContains(source, "onUpdate('expectedInflation', presetValue)");
+    expectContains(source, "onUpdate('customNbpRate', undefined)");
+    expectContains(source, "onUpdate('expectedNbpRate', presetValue)");
+    expectContains(source, "activeInflationMode === 'fixed'");
+    expectContains(source, "activeInflationMode === 'simple'");
+    expectContains(source, "activeInflationMode === 'advanced'");
+    expectContains(source, "activeNbpMode === 'fixed'");
+    expectContains(source, "activeNbpMode === 'simple'");
+    expectContains(source, "activeNbpMode === 'advanced'");
 
     expectNoFragments(source, [
       "import { Button } from '@/components/ui/button';",
@@ -56,6 +85,7 @@ describe('market assumption control contracts', () => {
       'grid grid-cols-3 gap-2',
       "variant=\"outline\"",
       "'border-primary bg-primary text-primary-foreground'",
+      "value={advancedActive ? 'advanced' : 'simple'}",
     ]);
   });
 
@@ -68,8 +98,8 @@ describe('market assumption control contracts', () => {
     expectContains(source, '<AssumptionHeader');
     expectContains(source, 'space-y-3 border-y border-border py-3');
     expectContains(source, 'sm:flex-row sm:items-center sm:justify-between');
-    expectContains(source, '<CurrentAssumptionValue value={expectedInflation} compact={compact}>');
-    expectContains(source, '<CurrentAssumptionValue value={expectedNbpRate ?? 5.25} compact={compact} />');
+    expectContains(source, 'value={inflationHeaderValue}');
+    expectContains(source, 'value={nbpHeaderValue}');
 
     expectNoFragments(source, [
       'rounded-lg bg-muted/35 px-3 py-1.5',

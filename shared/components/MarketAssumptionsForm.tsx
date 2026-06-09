@@ -25,37 +25,33 @@ interface MarketAssumptionsFormProps {
     onUpdate: UpdateHandler;
     compact?: boolean;
     inflationHorizonYears?: number;
+    section?: 'all' | 'inflation' | 'nbp';
+    showIntro?: boolean;
+    inflationSetupMode?: AssumptionSetupMode;
+    nbpSetupMode?: AssumptionSetupMode;
+    onInflationSetupModeChange?: (mode: AssumptionSetupMode) => void;
+    onNbpSetupModeChange?: (mode: AssumptionSetupMode) => void;
 }
 
+export type AssumptionSetupMode = 'fixed' | 'simple' | 'advanced';
+
 function ProjectionModeButtons({
-  simpleLabel,
-  advancedLabel,
-  advancedActive,
-  onSimple,
-  onAdvanced,
+  value,
+  onChange,
 }: {
-  simpleLabel: string;
-  advancedLabel: string;
-  advancedActive: boolean;
-  onSimple: () => void;
-  onAdvanced: () => void;
+  value: AssumptionSetupMode;
+  onChange: (value: AssumptionSetupMode) => void;
 }) {
   return (
     <SegmentedControl
-      value={advancedActive ? 'advanced' : 'simple'}
+      value={value}
       options={[
-        { value: 'simple', label: simpleLabel },
-        { value: 'advanced', label: advancedLabel },
+        { value: 'fixed', label: 'Fixed' },
+        { value: 'simple', label: 'Simple' },
+        { value: 'advanced', label: 'Advanced' },
       ]}
-      onValueChange={(value) => {
-        if (value === 'advanced') {
-          onAdvanced();
-          return;
-        }
-
-        onSimple();
-      }}
-      className="w-full min-w-[14rem] md:w-auto"
+      onValueChange={onChange}
+      className="grid-cols-3"
       itemClassName="h-8 text-[11px] tracking-[0.06em]"
     />
   );
@@ -67,7 +63,7 @@ function CurrentAssumptionValue({
   compact,
   children,
 }: {
-  value: number;
+  value: number | string;
   unit?: string;
   compact: boolean;
   children?: React.ReactNode;
@@ -81,6 +77,17 @@ function CurrentAssumptionValue({
       {children}
     </div>
   );
+}
+
+function formatPathAverage(values: number[] | undefined, fallback: number) {
+  const pathValues = values?.filter(Number.isFinite);
+
+  if (!pathValues?.length) {
+    return `Avg ${fallback.toFixed(1)}%`;
+  }
+
+  const average = pathValues.reduce((sum, value) => sum + value, 0) / pathValues.length;
+  return `Avg ${average.toFixed(1)}%`;
 }
 
 function AssumptionHeader({
@@ -132,12 +139,83 @@ export const MarketAssumptionsForm = ({
   onUpdate,
   compact = false,
   inflationHorizonYears = 10,
+  section = 'all',
+  showIntro = true,
+  inflationSetupMode,
+  nbpSetupMode,
+  onInflationSetupModeChange,
+  onNbpSetupModeChange,
 }: MarketAssumptionsFormProps) => {
     const { t } = useAppI18n();
     const isInflationIndexedBond = isInflationIndexedBondType(bondType);
     const isNbpRelevant = isFloatingNbpBondType(bondType);
+    const [inflationMode, setInflationMode] = React.useState<AssumptionSetupMode>(
+      customInflation ? 'advanced' : 'fixed',
+    );
+    const [nbpMode, setNbpMode] = React.useState<AssumptionSetupMode>(
+      customNbpRate ? 'advanced' : 'fixed',
+    );
+    const activeInflationMode = inflationSetupMode ?? inflationMode;
+    const activeNbpMode = nbpSetupMode ?? nbpMode;
+    const inflationHeaderValue =
+      activeInflationMode === 'advanced'
+        ? formatPathAverage(customInflation, expectedInflation)
+        : expectedInflation;
+    const nbpHeaderValue =
+      activeNbpMode === 'advanced'
+        ? formatPathAverage(customNbpRate, expectedNbpRate ?? 5.25)
+        : (expectedNbpRate ?? 5.25);
+    const horizonLength = Math.max(1, Math.round(inflationHorizonYears));
+    const showInflationSection = section === 'all' || section === 'inflation';
+    const showNbpSection = section === 'all' || section === 'nbp';
+
+    React.useEffect(() => {
+      if (customInflation) {
+        if (inflationSetupMode === undefined) {
+          setInflationMode('advanced');
+        }
+        onInflationSetupModeChange?.('advanced');
+      }
+    }, [customInflation, inflationSetupMode, onInflationSetupModeChange]);
+
+    React.useEffect(() => {
+      if (customNbpRate) {
+        if (nbpSetupMode === undefined) {
+          setNbpMode('advanced');
+        }
+        onNbpSetupModeChange?.('advanced');
+      }
+    }, [customNbpRate, nbpSetupMode, onNbpSetupModeChange]);
+
+    const updateInflationMode = (mode: AssumptionSetupMode) => {
+      setInflationMode(mode);
+      onInflationSetupModeChange?.(mode);
+      if (mode === 'advanced') {
+        onUpdate('customInflation', Array(horizonLength).fill(expectedInflation));
+        return;
+      }
+      onUpdate('customInflation', undefined);
+      if (mode === 'fixed') {
+        onUpdate('expectedInflation', 2.5);
+      }
+    };
+
+    const updateNbpMode = (mode: AssumptionSetupMode) => {
+      const baseNbp = expectedNbpRate ?? 5.25;
+      setNbpMode(mode);
+      onNbpSetupModeChange?.(mode);
+      if (mode === 'advanced') {
+        onUpdate('customNbpRate', Array(horizonLength).fill(baseNbp));
+        return;
+      }
+      onUpdate('customNbpRate', undefined);
+      if (mode === 'fixed') {
+        onUpdate('expectedNbpRate', 5.25);
+      }
+    };
+
     return (<div className="space-y-6">
-      <div className="space-y-3">
+      {showIntro ? (<div className="space-y-3">
         <p className={cn('font-semibold tracking-[0.08em] text-foreground', compact ? 'text-xs uppercase' : 'text-sm')}>
           {t('bonds.market_assumptions.simple_title')}
         </p>
@@ -145,15 +223,18 @@ export const MarketAssumptionsForm = ({
           {t('bonds.market_assumptions.advanced_desc')}
         </p>
         <MacroDefaultsSummary
-          showNbp={isNbpRelevant}
+          showNbp={isNbpRelevant || section === 'nbp'}
           compact={compact}
         />
-      </div>
+      </div>) : null}
 
       <div className="space-y-4">
-        <AssumptionSemanticsNote bondType={bondType} showNbpNote={isNbpRelevant} />
+        {section === 'all' ? (
+          <AssumptionSemanticsNote bondType={bondType} showNbpNote={isNbpRelevant} />
+        ) : null}
 
-        <AssumptionHeader
+        {showInflationSection ? (<>
+          <AssumptionHeader
           htmlFor="expectedInflation"
           compact={compact}
           label={`${t('bonds.inflation.rate')} (%)`}
@@ -166,21 +247,29 @@ export const MarketAssumptionsForm = ({
             />
           )}
           value={(
-            <CurrentAssumptionValue value={expectedInflation} compact={compact}>
-              {expectedInflation <= 0 && <AlertTriangle className="h-4 w-4 text-warning"/>}
-              {Math.abs(expectedInflation - 2.5) <= 1 && <Target className="h-4 w-4 text-success"/>}
+            <CurrentAssumptionValue
+              value={inflationHeaderValue}
+              unit={activeInflationMode === 'advanced' ? '' : '%'}
+              compact={compact}
+            >
+              {activeInflationMode !== 'advanced' && expectedInflation <= 0 && <AlertTriangle className="h-4 w-4 text-warning"/>}
+              {activeInflationMode !== 'advanced' && Math.abs(expectedInflation - 2.5) <= 1 && <Target className="h-4 w-4 text-success"/>}
             </CurrentAssumptionValue>
           )}
         >
+          <ProjectionModeButtons value={activeInflationMode} onChange={updateInflationMode} />
+        </AssumptionHeader>
+
+        {activeInflationMode === 'fixed' ? (
           <SegmentedControl
             value={
-              !customInflation && expectedInflation === 2.5
+              expectedInflation === 2.5
                 ? 'stable'
-                : !customInflation && expectedInflation === 6
+                : expectedInflation === 6
                   ? 'high'
-                  : !customInflation && expectedInflation === -1
+                  : expectedInflation === -1
                     ? 'deflation'
-                    : 'custom'
+                    : 'stable'
             }
             options={[
               { value: 'stable', label: `${t('bonds.stable')} (2.5%)` },
@@ -195,23 +284,24 @@ export const MarketAssumptionsForm = ({
             className="grid-cols-3"
             itemClassName="text-[11px] tracking-[0.06em]"
           />
-        </AssumptionHeader>
+        ) : null}
 
-        <CommittedSliderInput
-          value={Number.isFinite(expectedInflation) ? expectedInflation : 0}
-          disabled={!!customInflation}
-          min={-2}
-          max={15}
-          step={0.1}
-          unit="%"
-          onCommit={(value) => onUpdate('expectedInflation', value)}
-        />
+        {activeInflationMode === 'simple' ? (
+          <CommittedSliderInput
+            value={Number.isFinite(expectedInflation) ? expectedInflation : 0}
+            min={-2}
+            max={15}
+            step={0.1}
+            unit="%"
+            onCommit={(value) => onUpdate('expectedInflation', value)}
+          />
+        ) : null}
 
         {isInflationIndexedBond ? null : (<div className="ui-inline-notice text-muted-foreground">
             {t('bonds.market_assumptions.non_indexed_note')}
           </div>)}
 
-        {isInflationIndexedBond ? (
+        {isInflationIndexedBond && activeInflationMode === 'advanced' ? (
           <div className="space-y-3 border-t border-dashed pt-4">
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div className="space-y-1">
@@ -222,18 +312,6 @@ export const MarketAssumptionsForm = ({
                   {t('bonds.market_assumptions.inflation_path_desc')}
                 </p>
               </div>
-              <ProjectionModeButtons
-                simpleLabel={t('bonds.market_assumptions.simple_mode_label')}
-                advancedLabel={t('bonds.market_assumptions.advanced_mode_label')}
-                advancedActive={!!customInflation}
-                onSimple={() => onUpdate('customInflation', undefined)}
-                onAdvanced={() =>
-                  onUpdate(
-                    'customInflation',
-                    Array(Math.max(1, Math.round(inflationHorizonYears))).fill(expectedInflation),
-                  )
-                }
-              />
             </div>
             {customInflation ? (
               <ProjectedRatePathEditor
@@ -248,10 +326,10 @@ export const MarketAssumptionsForm = ({
               </p>
             )}
           </div>
-        ) : null}
+        ) : null}</>) : null}
       </div>
 
-      {isNbpRelevant ? (<div className="space-y-4 border-t border-dashed pt-4">
+      {showNbpSection ? (<div className={cn('space-y-4', section === 'all' && 'border-t border-dashed pt-4')}>
           <AssumptionHeader
             htmlFor="expectedNbpRate"
             muted
@@ -265,22 +343,57 @@ export const MarketAssumptionsForm = ({
                 footerNote={t('bonds.market_assumptions.nbp_flat_default_note')}
               />
             )}
-            value={<CurrentAssumptionValue value={expectedNbpRate ?? 5.25} compact={compact} />}
-          />
-          <CommittedSliderInput
-            value={Number.isFinite(expectedNbpRate ?? 5.25)
-              ? (expectedNbpRate ?? 5.25)
-              : 5.25}
-            min={0}
-            max={15}
-            step={0.05}
-            unit="%"
-            onCommit={(value) => onUpdate('expectedNbpRate', value)}
-          />
+            value={(
+              <CurrentAssumptionValue
+                value={nbpHeaderValue}
+                unit={activeNbpMode === 'advanced' ? '' : '%'}
+                compact={compact}
+              />
+            )}
+          >
+            <ProjectionModeButtons value={activeNbpMode} onChange={updateNbpMode} />
+          </AssumptionHeader>
+          {activeNbpMode === 'fixed' ? (
+            <SegmentedControl
+              value={
+                (expectedNbpRate ?? 5.25) === 5.25
+                  ? 'current'
+                  : (expectedNbpRate ?? 5.25) === 6.75
+                    ? 'high'
+                    : (expectedNbpRate ?? 5.25) === 3.75
+                      ? 'low'
+                      : 'current'
+              }
+              options={[
+                { value: 'current', label: 'Current (5.25%)' },
+                { value: 'high', label: 'High (6.75%)' },
+                { value: 'low', label: 'Low (3.75%)' },
+              ]}
+              onValueChange={(value) => {
+                const presetValue = value === 'current' ? 5.25 : value === 'high' ? 6.75 : 3.75;
+                onUpdate('customNbpRate', undefined);
+                onUpdate('expectedNbpRate', presetValue);
+              }}
+              className="grid-cols-3"
+              itemClassName="text-[11px] tracking-[0.06em]"
+            />
+          ) : null}
+          {activeNbpMode === 'simple' ? (
+            <CommittedSliderInput
+              value={Number.isFinite(expectedNbpRate ?? 5.25)
+                ? (expectedNbpRate ?? 5.25)
+                : 5.25}
+              min={0}
+              max={15}
+              step={0.05}
+              unit="%"
+              onCommit={(value) => onUpdate('expectedNbpRate', value)}
+            />
+          ) : null}
           <p className="text-[11px] leading-5 text-muted-foreground">
-            {t('bonds.market_assumptions.nbp_note')}
+            {isNbpRelevant ? t('bonds.market_assumptions.nbp_note') : t('bonds.market_assumptions.nbp_flat_default_note')}
           </p>
-          <div className="space-y-3 border-t border-dashed pt-4">
+          {activeNbpMode === 'advanced' ? (<div className="space-y-3 border-t border-dashed pt-4">
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div className="space-y-1">
                 <p className="ui-card-title">
@@ -290,18 +403,6 @@ export const MarketAssumptionsForm = ({
                   {t('bonds.market_assumptions.nbp_path_desc')}
                 </p>
               </div>
-              <ProjectionModeButtons
-                simpleLabel={t('bonds.market_assumptions.simple_mode_label')}
-                advancedLabel={t('bonds.market_assumptions.advanced_mode_label')}
-                advancedActive={!!customNbpRate}
-                onSimple={() => onUpdate('customNbpRate', undefined)}
-                onAdvanced={() =>
-                  onUpdate(
-                    'customNbpRate',
-                    Array(Math.max(1, Math.round(inflationHorizonYears))).fill(expectedNbpRate ?? 5.25),
-                  )
-                }
-              />
             </div>
             {customNbpRate ? (
               <ProjectedRatePathEditor
@@ -315,7 +416,7 @@ export const MarketAssumptionsForm = ({
                 {t('bonds.market_assumptions.nbp_simple_mode_note')}
               </p>
             )}
-          </div>
+          </div>) : null}
         </div>) : null}
     </div>);
 };

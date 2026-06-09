@@ -49,14 +49,23 @@ describe('advanced assumptions disclosure contracts', () => {
     ]);
   });
 
-  it('keeps single calculator advanced controls on the shared disclosure', () => {
+  it('keeps single calculator sidebar groups on the shared disclosure primitive', () => {
     const source = read(files.single);
 
     expectContains(source, "import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';");
     expectContains(source, '<AdvancedAssumptionsDisclosure');
-    expectContains(source, "title={t('common.advanced')}");
-    expectContains(source, "description={t('bonds.form.advanced_desc')}");
+    expectContains(source, "title={t('bonds.step_core')}");
+    expectContains(source, "title={t('bonds.step_timing')}");
+    expectContains(source, 'title="3. Inflation setup"');
+    expectContains(source, 'title="4. NBP rate setup"');
     expectContains(source, '<MarketAssumptionsForm');
+    expectContains(source, 'section="inflation"');
+    expectContains(source, 'section="nbp"');
+    expectContains(source, 'showIntro={false}');
+    expectContains(source, 'inflationSetupMode={inflationSetupMode}');
+    expectContains(source, 'nbpSetupMode={nbpSetupMode}');
+    expectContains(source, 'onInflationSetupModeChange={setInflationSetupMode}');
+    expectContains(source, 'onNbpSetupModeChange={setNbpSetupMode}');
     expectContains(source, '<BondDisplaySection');
 
     expectNoFragments(source, [
@@ -64,6 +73,8 @@ describe('advanced assumptions disclosure contracts', () => {
       "from '@/components/ui/accordion'",
       '<Accordion type="single" collapsible defaultValue="">',
       '<AccordionTrigger className="border-b border-border px-0 py-4',
+      "title={t('common.advanced')}",
+      "description={t('bonds.form.advanced_desc')}",
     ]);
   });
 
