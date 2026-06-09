@@ -102,7 +102,8 @@ describe('sidebar refactor contracts', () => {
     expectContains(source, '<SidebarUtilityPanel flush>');
     expectContains(source, '<SidebarUtilityRow');
     expectContains(source, 'action={<LanguageSwitcher />}');
-    expectContains(source, 'action={<ThemeToggle />}');
+    expectNotContains(source, 'ThemeToggle');
+    expectNotContains(source, 'description="PL / EN"');
 
     expectNoFragments(source, [
       '<div className="space-y-3">',

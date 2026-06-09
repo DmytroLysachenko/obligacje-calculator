@@ -194,6 +194,11 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
           icon: Calculator,
         },
         {
+          href: '/compare',
+          label: t('nav.comparison'),
+          icon: Scale,
+        },
+        {
           href: '/economic-data',
           label: t('nav.economic_data'),
           icon: BarChart2,
@@ -203,11 +208,6 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
     {
       label: t('sidebar.sections.conditional'),
       items: [
-        {
-          href: '/compare',
-          label: t('nav.comparison'),
-          icon: Scale,
-        },
         {
           href: '/regular-investment',
           label: t('nav.regular_investment'),

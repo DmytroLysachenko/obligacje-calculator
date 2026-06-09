@@ -71,17 +71,16 @@ describe('sidebar utility spacing contracts', () => {
     ]);
   });
 
-  it('keeps language and theme as peer rows instead of manually spaced nested content', () => {
+  it('keeps language as the only visible settings control until theme is fully designed', () => {
     const source = read(files.settings);
 
     expectContains(source, '<SidebarUtilityStack>');
     expectContains(source, '<SidebarUtilityPanel flush>');
     expectContains(source, 'title={t(\'common.language\')}');
-    expectContains(source, 'description="PL / EN"');
     expectContains(source, 'action={<LanguageSwitcher />}');
-    expectContains(source, 'title={t(\'common.theme\')}');
-    expectContains(source, 'description={t(\'common.theme_toggle_hint\')}');
-    expectContains(source, 'action={<ThemeToggle />}');
+    expectNotContains(source, 'description="PL / EN"');
+    expectNotContains(source, 'ThemeToggle');
+    expectNotContains(source, 'title={t(\'common.theme\')}');
 
     expectNoFragments(source, [
       'mt-3.5 border-t border-border pt-3.5',
