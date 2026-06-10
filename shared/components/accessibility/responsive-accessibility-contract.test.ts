@@ -41,7 +41,7 @@ describe('responsive accessibility contract', () => {
     const regularChart = read('features/regular-investment/components/RegularInvestmentChart.tsx');
     const comparisonChart = read('features/comparison-engine/components/ComparisonChart.tsx');
 
-    expect(singleChart).toContain("ariaLabel={t('bonds.value_chart_label')}");
+    expect(singleChart).toContain('ariaLabel={t("bonds.value_chart_label")}');
     expect(singleChart).toContain('chart_accessible_summary');
     expect(regularChart).toContain("ariaLabel={t('regular_investment_page.value_chart_label')}");
     expect(regularChart).toContain('regular_investment_page.chart_accessible_summary');

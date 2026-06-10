@@ -45,6 +45,11 @@ interface PersistedRegularCalculatorState {
   isDirty: boolean;
 }
 
+function withoutDisplayOnlyInputs(inputs: RegularInvestmentInputs): RegularInvestmentInputs {
+  const { chartStep: _chartStep, ...calculationInputs } = inputs;
+  return calculationInputs;
+}
+
 function applyDefinitionToInputs(
   previous: RegularInvestmentInputs,
   definition: typeof BOND_DEFINITIONS[BondType],
@@ -127,7 +132,7 @@ export function useRegularInvestmentCalculator() {
 
       if (restoredState) {
         restoredFromPersistence.current = true;
-        setInputs(restoredState.inputs);
+        setInputs(withoutDisplayOnlyInputs(restoredState.inputs));
         setEnvelope(restoredState.envelope ?? null);
         setIsDirty(restoredState.isDirty ?? true);
       }

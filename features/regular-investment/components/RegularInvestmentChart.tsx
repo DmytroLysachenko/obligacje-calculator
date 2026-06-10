@@ -1,131 +1,128 @@
 'use client';
+
 import React from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, TooltipProps, } from 'recharts';
-import { ValueType, NameType, } from 'recharts/types/component/DefaultTooltipContent';
-import { RegularInvestmentResult } from '../../bond-core/types';
-import { ChartStep } from '../../bond-core/types';
-import { useAppI18n } from '@/i18n/client';
 import { format } from 'date-fns';
-import { ChartContainer } from '@/shared/components/charts/ChartContainer';
-import { ChartLegendStrip } from '@/shared/components/charts/ChartLegendStrip';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ChartStep, RegularInvestmentResult } from '@/features/bond-core/types';
+import { useAppI18n } from '@/i18n/client';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { getBondColor } from '@/shared/lib/charts/get-bond-color';
-import { sampleSeriesPoints } from '@/shared/lib/chart-series';
-import { buildRegularInvestmentChartPoints } from '@/shared/lib/regular-investment-display';
+import { computeNumericDomain } from '@/shared/lib/chart-series';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
+import { buildRegularInvestmentChartPoints } from '@/shared/lib/regular-investment-display';
+import { BondValueChart, BondValueChartPoint } from '@/shared/components/charts/BondValueChart';
+
 interface RegularInvestmentChartProps {
-    results: RegularInvestmentResult;
-    bondType: string;
-    chartStep?: ChartStep;
+  results: RegularInvestmentResult;
+  bondType: string;
 }
-interface PayloadEntry {
-    name: string;
-    value: number;
-    color: string;
-    dataKey?: string | number;
-}
-interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
-    active?: boolean;
-    payload?: PayloadEntry[];
-    label?: NameType;
-    formatCurrency: (value: number) => string;
-}
-const CustomTooltip = ({ active, payload, label, formatCurrency }: CustomTooltipProps) => {
-    if (active && payload && payload.length) {
-        return (<div className="min-w-[200px] rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-lg">
-        <p className="ui-metadata mb-3 border-b border-border pb-2 font-semibold text-foreground">{label}</p>
-        <div className="space-y-2">
-          {payload.map((entry, index) => (<div key={index} className="flex justify-between items-center gap-4 text-xs">
-              <span className="flex items-center gap-1.5 font-medium">
-                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }}/>
-                {entry.name}:
-              </span>
-              <span className="font-mono font-semibold text-primary">{formatCurrency(Number(entry.value))}</span>
-            </div>))}
-        </div>
-      </div>);
+
+export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({
+  results,
+  bondType,
+}) => {
+  const { t, locale: language } = useAppI18n();
+  const [view, setView] = React.useState<'nominal' | 'real'>('nominal');
+  const [displayStep, setDisplayStep] = React.useState<ChartStep>('quarterly');
+  const dateLocale = getDateFnsLocale(language);
+  const primaryColor = getBondColor(bondType);
+  const currencyFormatter = useCurrencyFormatter(language, {
+    style: 'currency',
+    currency: 'PLN',
+    maximumFractionDigits: 0,
+  });
+  const formatCurrency = React.useMemo(
+    () => (value: number) => currencyFormatter.format(value),
+    [currencyFormatter],
+  );
+  const chartData = React.useMemo<BondValueChartPoint[]>(
+    () =>
+      buildRegularInvestmentChartPoints(
+        results.timeline,
+        displayStep,
+        (date) => format(date, 'MM.yy', { locale: dateLocale }),
+        view,
+      ).map((point) => ({
+        label: point.date,
+        date: point.date,
+        invested: point.invested,
+        value: point.value,
+      })),
+    [dateLocale, displayStep, results.timeline, view],
+  );
+  const leftDomain = React.useMemo(
+    () =>
+      computeNumericDomain(
+        chartData
+          .flatMap((point) => [Number(point.invested), Number(point.value)])
+          .filter((value) => Number.isFinite(value)),
+        {
+          minFloor: 0,
+          minPadding: 250,
+          paddingRatio: 0.08,
+        },
+      ),
+    [chartData],
+  );
+  const chartSummary = React.useMemo(() => {
+    const firstPoint = chartData[0];
+    const lastPoint = chartData[chartData.length - 1];
+
+    if (!firstPoint || !lastPoint) {
+      return t('regular_investment_page.chart_accessible_summary_empty');
     }
-    return null;
-};
-export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({ results, bondType, chartStep = 'monthly' }) => {
-    const { t, locale: language } = useAppI18n();
-    const [view, setView] = React.useState<'nominal' | 'real'>('nominal');
-    const dateLocale = getDateFnsLocale(language);
-    const primaryColor = getBondColor(bondType);
-    const currencyFormatter = useCurrencyFormatter(language, {
-        style: 'currency',
-        currency: 'PLN',
-        maximumFractionDigits: 0,
+
+    return t('regular_investment_page.chart_accessible_summary', {
+      count: chartData.length,
+      invested: formatCurrency(Number(lastPoint.invested)),
+      value: formatCurrency(Number(lastPoint.value)),
     });
-    const chartData = React.useMemo(() => sampleSeriesPoints(buildRegularInvestmentChartPoints(results.timeline, chartStep, (date) => format(date, 'MM.yy', { locale: dateLocale }), view), 180), [chartStep, dateLocale, results.timeline, view]);
-    const formatCurrency = React.useMemo(() => (value: number) => currencyFormatter.format(value), [currencyFormatter]);
-    const chartSummary = React.useMemo(() => {
-        const firstPoint = chartData[0];
-        const lastPoint = chartData[chartData.length - 1];
+  }, [chartData, formatCurrency, t]);
+  const chartSeries = React.useMemo(
+    () => [
+      {
+        key: 'invested',
+        label: t('bonds.total_invested'),
+        color: '#94a3b8',
+        secondary: true,
+      },
+      {
+        key: 'value',
+        label: view === 'nominal' ? t('common.nominal_value') : t('common.real_value'),
+        color: primaryColor,
+      },
+    ],
+    [primaryColor, t, view],
+  );
 
-        if (!firstPoint || !lastPoint) {
-            return t('regular_investment_page.chart_accessible_summary_empty');
-        }
-
-        return t('regular_investment_page.chart_accessible_summary', {
-            count: chartData.length,
-            invested: formatCurrency(lastPoint.invested),
-            value: formatCurrency(lastPoint.value),
-        });
-    }, [chartData, formatCurrency, t]);
-    const legendItems = React.useMemo(() => [
-        {
-            label: t('bonds.total_invested'),
-            color: '#94a3b8',
-            style: 'muted' as const,
-        },
-        {
-            label: view === 'nominal' ? t('common.nominal_value') : t('common.real_value'),
-            color: primaryColor,
-        },
-    ], [primaryColor, t, view]);
-    return (<div className="space-y-6">
+  return (
+    <div className="space-y-4">
       <div className="flex justify-center">
         <Tabs value={view} onValueChange={(v) => setView(v as 'nominal' | 'real')} className="w-fit rounded-lg bg-muted/50 p-1">
-          <TabsList className="grid w-full grid-cols-2 h-10">
-            <TabsTrigger value="nominal" className="px-6 text-xs font-semibold">{t('common.nominal_value')}</TabsTrigger>
-            <TabsTrigger value="real" className="px-6 text-xs font-semibold">{t('common.real_value')}</TabsTrigger>
+          <TabsList className="grid h-10 w-full grid-cols-2">
+            <TabsTrigger value="nominal" className="px-6 text-xs font-semibold">
+              {t('common.nominal_value')}
+            </TabsTrigger>
+            <TabsTrigger value="real" className="px-6 text-xs font-semibold">
+              {t('common.real_value')}
+            </TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
 
-      <ChartLegendStrip items={legendItems}/>
-
-      <ChartContainer
+      <BondValueChart
+        data={chartData}
+        series={chartSeries}
+        formatCurrency={formatCurrency}
+        leftDomain={leftDomain}
+        rightDomain={[-1, 1]}
+        summary={chartSummary}
+        defaultGranularity={displayStep}
+        onGranularityChange={setDisplayStep}
+        showContextControls={false}
         ariaLabel={t('regular_investment_page.value_chart_label')}
-        summary={<p>{chartSummary}</p>}
-        responsiveHeightClassName="h-[360px] md:h-[450px] xl:h-[500px]"
-      >
-        <ResponsiveContainer width="100%" height="100%" key={`chart-${chartData.length}-${view}`}>
-          <AreaChart data={chartData} margin={{ top: 12, right: 30, left: 40, bottom: 20 }}>
-            <defs>
-              <linearGradient id="colorInvested" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.15}/>
-                <stop offset="95%" stopColor="#94a3b8" stopOpacity={0}/>
-              </linearGradient>
-              <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={primaryColor} stopOpacity={0.15}/>
-                <stop offset="95%" stopColor={primaryColor} stopOpacity={0}/>
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)"/>
-            <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))', fontWeight: 'bold' }} tickLine={false} axisLine={false} dy={10}/>
-            <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))', fontWeight: 'bold' }} tickLine={false} axisLine={false} tickFormatter={(value: number) => `${(value / 1000).toFixed(0)}k`}/>
-            <Tooltip content={<CustomTooltip formatCurrency={formatCurrency}/>}/>
-            <Area type="monotone" dataKey="invested" name={t('bonds.total_invested')} stroke="#94a3b8" strokeWidth={3} fillOpacity={1} fill="url(#colorInvested)" animationDuration={1500}/>
-            <Area type="monotone" dataKey="value" name={view === 'nominal' ? t('common.nominal_value') : t('common.real_value')} stroke={primaryColor} strokeWidth={4} fillOpacity={1} fill="url(#colorValue)" animationDuration={1500}/>
-          </AreaChart>
-        </ResponsiveContainer>
-      </ChartContainer>
-    </div>);
+        heightClassName="h-[360px] md:h-[450px] xl:h-[500px]"
+      />
+    </div>
+  );
 };
-
-
-
-

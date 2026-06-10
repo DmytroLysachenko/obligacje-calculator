@@ -10,7 +10,6 @@ import { RegularInvestmentInputs } from '@/features/bond-core/types';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
-import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 
 type AdvancedSettingsSectionProps = {
@@ -127,20 +126,6 @@ export function AdvancedSettingsSection({
           ) : null}
         </div>
 
-        <div className="space-y-4 border-t border-border pt-6">
-          <Label className="text-sm font-semibold text-muted-foreground">
-            {t('bonds.chart.granularity')}
-          </Label>
-          <SegmentedControl
-            value={inputs.chartStep ?? 'quarterly'}
-            options={(['monthly', 'quarterly', 'yearly'] as const).map((step) => ({
-              value: step,
-              label: t(`bonds.chart.periods.${step}`),
-            }))}
-            onValueChange={(step) => onUpdate('chartStep', step)}
-            className="grid-cols-3"
-          />
-        </div>
       </AdvancedAssumptionsDisclosure>
     </section>
   );

@@ -58,6 +58,7 @@ interface BondValueChartProps {
   summary: string;
   defaultGranularity?: ChartStep;
   onGranularityChange?: (step: ChartStep) => void;
+  showContextControls?: boolean;
   ariaLabel: string;
   heightClassName?: string;
 }
@@ -174,6 +175,7 @@ export function BondValueChart({
   summary,
   defaultGranularity = "yearly",
   onGranularityChange,
+  showContextControls = true,
   ariaLabel,
   heightClassName = "h-[360px] md:h-[460px] xl:h-[520px]",
 }: BondValueChartProps) {
@@ -191,14 +193,14 @@ export function BondValueChart({
         color: item.color,
         style: item.dashed ? ("dashed" as const) : undefined,
       })),
-      ...(showInflationOverlay
+      ...(showContextControls && showInflationOverlay
         ? [{ label: t("bonds.ref_inflation"), color: "#C89D4F", style: "dashed" as const }]
         : []),
-      ...(showNbpOverlay
+      ...(showContextControls && showNbpOverlay
         ? [{ label: t("bonds.nbp_rate_short"), color: "#6F7782", style: "dashed" as const }]
         : []),
     ],
-    [series, showInflationOverlay, showNbpOverlay, t],
+    [series, showContextControls, showInflationOverlay, showNbpOverlay, t],
   );
 
   const handleGranularityChange = (nextStep: ChartStep) => {
@@ -227,33 +229,37 @@ export function BondValueChart({
               {t(`bonds.chart.periods.${step}`)}
             </button>
           ))}
-          <span className="mx-1 h-5 w-px bg-border" aria-hidden />
-          <button
-            type="button"
-            aria-pressed={showInflationOverlay}
-            className={cn(
-              "rounded-md border px-3 py-1.5 text-xs font-semibold transition-colors",
-              showInflationOverlay
-                ? "border-warning bg-warning/10 text-warning"
-                : "border-border bg-background text-muted-foreground hover:text-foreground",
-            )}
-            onClick={() => setShowInflationOverlay((current) => !current)}
-          >
-            {t("bonds.ref_inflation")}
-          </button>
-          <button
-            type="button"
-            aria-pressed={showNbpOverlay}
-            className={cn(
-              "rounded-md border px-3 py-1.5 text-xs font-semibold transition-colors",
-              showNbpOverlay
-                ? "border-muted-foreground bg-muted text-foreground"
-                : "border-border bg-background text-muted-foreground hover:text-foreground",
-            )}
-            onClick={() => setShowNbpOverlay((current) => !current)}
-          >
-            {t("bonds.nbp_rate_short")}
-          </button>
+          {showContextControls ? (
+            <>
+              <span className="mx-1 h-5 w-px bg-border" aria-hidden />
+              <button
+                type="button"
+                aria-pressed={showInflationOverlay}
+                className={cn(
+                  "rounded-md border px-3 py-1.5 text-xs font-semibold transition-colors",
+                  showInflationOverlay
+                    ? "border-warning bg-warning/10 text-warning"
+                    : "border-border bg-background text-muted-foreground hover:text-foreground",
+                )}
+                onClick={() => setShowInflationOverlay((current) => !current)}
+              >
+                {t("bonds.ref_inflation")}
+              </button>
+              <button
+                type="button"
+                aria-pressed={showNbpOverlay}
+                className={cn(
+                  "rounded-md border px-3 py-1.5 text-xs font-semibold transition-colors",
+                  showNbpOverlay
+                    ? "border-muted-foreground bg-muted text-foreground"
+                    : "border-border bg-background text-muted-foreground hover:text-foreground",
+                )}
+                onClick={() => setShowNbpOverlay((current) => !current)}
+              >
+                {t("bonds.nbp_rate_short")}
+              </button>
+            </>
+          ) : null}
         </div>
       </div>
 

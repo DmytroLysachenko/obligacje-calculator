@@ -82,15 +82,23 @@ describe('chart legend contracts', () => {
 
   it('keeps regular investment chart on custom legend instead of Recharts Legend', () => {
     const source = read(files.regular);
+    const shared = read(files.sharedValue);
 
-    expectContains(source, "import { ChartLegendStrip } from '@/shared/components/charts/ChartLegendStrip';");
-    expectContains(source, 'const legendItems = React.useMemo(() => [');
+    expectContains(source, "import { BondValueChart, BondValueChartPoint } from '@/shared/components/charts/BondValueChart';");
+    expectContains(source, '<BondValueChart');
     expectContains(source, "t('bonds.total_invested')");
     expectContains(source, "view === 'nominal' ? t('common.nominal_value') : t('common.real_value')");
-    expectContains(source, '<ChartLegendStrip items={legendItems}/>');
-    expectContains(source, 'margin={{ top: 12, right: 30, left: 40, bottom: 20 }}');
+    expectContains(source, 'defaultGranularity={displayStep}');
+    expectContains(source, 'onGranularityChange={setDisplayStep}');
+    expectContains(source, 'showContextControls={false}');
+    expectContains(shared, '<ChartLegendStrip items={legendItems} className="border-b-0 pb-0" />');
+    expectContains(shared, 'showContextControls = true');
+    expectContains(shared, 'showContextControls && showInflationOverlay');
+    expectContains(shared, 'showContextControls && showNbpOverlay');
+    expectContains(shared, 'margin={{ top: 12, right: 52, left: 40, bottom: 20 }}');
 
     expectNoFragments(source, [
+      'ChartLegendStrip',
       'Legend, ResponsiveContainer',
       '<Legend',
       'wrapperStyle',

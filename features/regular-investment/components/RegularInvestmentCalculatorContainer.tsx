@@ -72,7 +72,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
         )}
         details={results ? (<div className={cn('space-y-8 transition-opacity duration-200', isCalculating && 'pointer-events-none opacity-50')}>
             <CalculatorSection title={t('regular_investment_page.chart_title')} description={t('regular_investment_page.chart_description')}>
-              <RegularInvestmentChart results={results} bondType={inputs.bondType} chartStep={inputs.chartStep}/>
+              <RegularInvestmentChart results={results} bondType={inputs.bondType}/>
             </CalculatorSection>
 
             <SecondaryInsightAccordion title={t('regular_investment_page.how_to_read_title')} description={t('regular_investment_page.how_to_read_description')} badge={t('regular_investment_page.how_to_read_badge')}>
