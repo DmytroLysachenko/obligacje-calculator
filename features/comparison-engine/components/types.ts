@@ -27,7 +27,7 @@ export interface ComparisonControlsProps {
   updateHorizon?: (val: number) => void;
 }
 
-export interface ComparisonChartProps {
+export interface MultiAssetComparisonChartProps {
   chartData: Record<string, string | number>[];
   assets: AssetPerformanceSeries[];
   showRealValue: boolean;

@@ -20,7 +20,7 @@ import {
 } from "recharts/types/component/DefaultTooltipContent";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { TrendingUp, Activity } from "lucide-react";
-import { ComparisonChartProps } from "./types";
+import { MultiAssetComparisonChartProps } from "./types";
 import { ChartContainer } from "@/shared/components/charts/ChartContainer";
 import { ChartLegendStrip } from "@/shared/components/charts/ChartLegendStrip";
 import { useAppI18n } from "@/i18n/client";
@@ -152,7 +152,7 @@ const DrawdownTooltip = ({
   );
 };
 
-export const ComparisonChart: React.FC<ComparisonChartProps> = ({
+export const MultiAssetComparisonChart: React.FC<MultiAssetComparisonChartProps> = ({
   chartData,
   assets,
   showRealValue,

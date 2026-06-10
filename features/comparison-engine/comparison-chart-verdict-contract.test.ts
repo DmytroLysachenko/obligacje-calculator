@@ -5,7 +5,9 @@ import { describe, expect, it } from 'vitest';
 const root = process.cwd();
 
 const files = {
-  chart: 'features/comparison-engine/components/ComparisonChart.tsx',
+  chart: 'features/comparison-engine/components/MultiAssetComparisonChart.tsx',
+  resultsPanel: 'features/comparison-engine/components/ComparisonResultsPanel.tsx',
+  sharedValueChart: 'shared/components/charts/BondValueChart.tsx',
   verdict: 'features/comparison-engine/components/ComparisonVerdict.tsx',
   chartLegendContract: 'shared/components/charts/chart-legend-contract.test.ts',
   resultsContract: 'features/comparison-engine/comparison-results-surface-contract.test.ts',
@@ -30,9 +32,11 @@ function expectNoFragments(source: string, fragments: readonly string[]) {
 }
 
 describe('comparison chart and verdict contracts', () => {
-  it('keeps comparison growth charts focused on scenario value lines', () => {
+  it('keeps multi-asset charts scoped away from bond comparison charts', () => {
     const source = read(files.chart);
 
+    expectContains(source, 'export const MultiAssetComparisonChart');
+    expectContains(source, 'MultiAssetComparisonChartProps');
     expectContains(source, "import { ChartLegendStrip } from \"@/shared/components/charts/ChartLegendStrip\";");
     expectContains(source, 'const growthLegendItems = React.useMemo(() => assets.map((asset) => ({');
     expectContains(source, 'const drawdownLegendItems = React.useMemo(() => assets.map((asset) => ({');
@@ -53,6 +57,31 @@ describe('comparison chart and verdict contracts', () => {
       'dataKey="nbp"',
       'name={t("bonds.ref_inflation")}',
       'name={t("bonds.nbp_rate_short")}',
+    ]);
+  });
+
+  it('keeps bond comparison on the shared value chart renderer', () => {
+    const source = read(files.resultsPanel);
+    const sharedChart = read(files.sharedValueChart);
+
+    expectContains(source, "import { BondValueChart, BondValueChartPoint } from '@/shared/components/charts/BondValueChart';");
+    expectContains(source, '<BondValueChart');
+    expectContains(source, 'defaultGranularity={chartStep}');
+    expectContains(source, 'onGranularityChange={onChartStepChange}');
+    expectContains(source, 'rightDomain={rightDomain}');
+    expectContains(sharedChart, 'showContextControls = true');
+    expectContains(sharedChart, 'dataKey="inflation"');
+    expectContains(sharedChart, 'dataKey="nbp"');
+
+    expectNoFragments(source, [
+      'AreaChart',
+      'LineChart,',
+      '<Legend',
+      'Brush',
+      './ComparisonChart',
+      '<ComparisonChart',
+      './MultiAssetComparisonChart',
+      '<MultiAssetComparisonChart',
     ]);
   });
 

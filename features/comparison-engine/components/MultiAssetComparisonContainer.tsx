@@ -5,7 +5,7 @@ import { useAppI18n } from '@/i18n/client';
 import { AlertTriangle, Database, LineChart } from 'lucide-react';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { ComparisonControls } from './ComparisonControls';
-import { ComparisonChart } from './ComparisonChart';
+import { MultiAssetComparisonChart } from './MultiAssetComparisonChart';
 import { ComparisonAssetBreakdown } from './ComparisonAssetBreakdown';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { MonthlyReturn } from '@/features/bond-core/constants/historical-data';
@@ -171,7 +171,7 @@ export const MultiAssetComparisonContainer = () => {
             </div>) : null}
 
           {assets.length > 0 && assets[0]?.series.length > 0 ? (<>
-              <ComparisonChart chartData={chartData} assets={assets} showRealValue={showRealValue} formatCurrency={formatCurrency}/>
+              <MultiAssetComparisonChart chartData={chartData} assets={assets} showRealValue={showRealValue} formatCurrency={formatCurrency}/>
 
               <ComparisonAssetBreakdown assets={assets} totalInvested={totalInvested} showRealValue={showRealValue} formatCurrency={formatCurrency} language={language as 'en' | 'pl'}/>
             </>) : (<ScenarioReadyPanel badge={t('multi_asset_page.ready.badge')} title={t('multi_asset_page.ready.title')} description={t('multi_asset_page.ready.description')} steps={[

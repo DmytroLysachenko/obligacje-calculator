@@ -39,7 +39,7 @@ describe('responsive accessibility contract', () => {
   it('requires major financial charts to provide accessible summaries', () => {
     const singleChart = read('features/single-calculator/components/BondChart.tsx');
     const regularChart = read('features/regular-investment/components/RegularInvestmentChart.tsx');
-    const comparisonChart = read('features/comparison-engine/components/ComparisonChart.tsx');
+    const comparisonChart = read('features/comparison-engine/components/MultiAssetComparisonChart.tsx');
 
     expect(singleChart).toContain('ariaLabel={t("bonds.value_chart_label")}');
     expect(singleChart).toContain('chart_accessible_summary');
