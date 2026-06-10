@@ -60,7 +60,9 @@ function withoutDisplayOnlyInputs(inputs: BondInputs | null): BondInputs | null 
     return null;
   }
 
-  const { chartStep: _chartStep, ...calculationInputs } = inputs;
+  const calculationInputs = { ...inputs };
+  delete calculationInputs.chartStep;
+
   return calculationInputs;
 }
 

@@ -49,9 +49,10 @@ export const ResultActionGrid = React.memo(function ResultActionGrid({
   return (
     <div
       className={cn(
-        'grid grid-cols-2 gap-2 border-t border-border bg-muted/30 p-4 lg:w-[380px] lg:shrink-0 lg:border-l lg:border-t-0',
+        'grid min-w-0 grid-cols-1 gap-2 border-t border-border bg-muted/30 p-4 sm:grid-cols-2 lg:w-[380px] lg:shrink-0 lg:border-l lg:border-t-0',
         className,
       )}
+      aria-label="Result actions"
     >
       {actions.map((action) => {
         const kind = action.kind ?? (action.variant === 'default' ? 'primary' : 'secondary');
@@ -69,7 +70,7 @@ export const ResultActionGrid = React.memo(function ResultActionGrid({
             onClick={action.onClick}
             disabled={action.disabled}
           >
-            <span className="shrink-0">
+            <span className="shrink-0" aria-hidden={!action.icon}>
               {action.icon ?? <DefaultActionIcon kind={kind} />}
             </span>
             <span className="ui-truncate-flex">{action.label}</span>

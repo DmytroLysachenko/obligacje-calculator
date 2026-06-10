@@ -40,18 +40,18 @@ export function ResponsiveTableSheet({
             type="button"
             variant="outline"
             aria-label={sheetLabel ?? triggerLabel}
-            className="w-full justify-between border-border bg-card px-4 py-4 text-left shadow-none"
+            className="h-auto w-full justify-between border-border bg-card px-4 py-4 text-left shadow-none"
           >
-            <span className="flex items-center gap-3">
+            <span className="flex min-w-0 items-center gap-3">
               <span className="rounded-md bg-muted p-2 text-muted-foreground">
                 <Table2 className="h-4 w-4" />
               </span>
-              <span className="space-y-1">
-                <span className="block text-sm font-semibold text-foreground">
+              <span className="min-w-0 space-y-1">
+                <span className="block ui-truncate-flex text-sm font-semibold text-foreground">
                   {triggerLabel}
                 </span>
                 {triggerCount ? (
-                  <span className="block text-xs text-muted-foreground">
+                  <span className="block ui-truncate-flex text-xs text-muted-foreground">
                     {triggerCount}
                   </span>
                 ) : null}
@@ -63,7 +63,7 @@ export function ResponsiveTableSheet({
           side="bottom"
           aria-labelledby={titleId}
           aria-describedby={descriptionId}
-          className="h-[88vh] rounded-t-lg bg-card p-0"
+          className="flex h-[88vh] flex-col rounded-t-lg bg-card p-0"
         >
           <SheetHeader className="border-b border-border px-5 py-5">
             <SheetTitle id={titleId} className="text-left text-lg font-semibold text-foreground">
@@ -76,7 +76,7 @@ export function ResponsiveTableSheet({
           <div
             role="region"
             aria-labelledby={titleId}
-            className="custom-scrollbar overflow-y-auto px-4 pb-8 pt-4"
+            className="custom-scrollbar min-h-0 flex-1 overflow-y-auto px-4 pb-8 pt-4"
           >
             <div className="space-y-3">{children}</div>
           </div>

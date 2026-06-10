@@ -57,7 +57,7 @@ describe('responsive accessibility contract', () => {
     expect(sheet).toContain('aria-labelledby={titleId}');
     expect(sheet).toContain('aria-describedby={descriptionId}');
     expect(sheet).toContain('role="region"');
-    expect(sheet).toContain('custom-scrollbar overflow-y-auto');
+    expect(sheet).toContain('custom-scrollbar min-h-0 flex-1 overflow-y-auto');
   });
 
   it('provides reusable text overflow and focus guardrails for dense controls', () => {

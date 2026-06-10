@@ -52,7 +52,7 @@ describe('single calculator result layout contracts', () => {
   it('keeps the result hero using premium financial metric hierarchy', () => {
     const source = readSource(paths.hero);
 
-    expectContains(source, 'className="financial-number ui-primary-metric"');
+    expectContains(source, 'className="financial-number ui-primary-metric min-w-0 break-words"');
     expectContains(source, 'overflow-hidden border-y border-border bg-background');
     expectContains(source, 'ui-body max-w-4xl text-muted-foreground');
     expectContains(source, '<ResultActionGrid actions={actions} />');
@@ -72,8 +72,8 @@ describe('single calculator result layout contracts', () => {
 
     expectContains(source, "cn('border-y border-border', className)");
     expectContains(source, 'grid divide-y divide-border md:divide-y-0');
-    expectContains(source, 'space-y-2 py-4 md:border-l md:border-border md:px-4 md:first:border-l-0 md:first:pl-0');
-    expectContains(source, 'financial-number ui-large-metric text-foreground');
+    expectContains(source, 'min-w-0 space-y-2 py-4 md:border-l md:border-border md:px-4 md:first:border-l-0 md:first:pl-0');
+    expectContains(source, 'financial-number ui-large-metric min-w-0 break-words text-foreground');
     expectContains(source, 'ui-body text-muted-foreground');
 
     expectNoFragments(source, [

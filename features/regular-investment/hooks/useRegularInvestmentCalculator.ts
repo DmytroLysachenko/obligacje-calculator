@@ -46,7 +46,9 @@ interface PersistedRegularCalculatorState {
 }
 
 function withoutDisplayOnlyInputs(inputs: RegularInvestmentInputs): RegularInvestmentInputs {
-  const { chartStep: _chartStep, ...calculationInputs } = inputs;
+  const calculationInputs = { ...inputs };
+  delete calculationInputs.chartStep;
+
   return calculationInputs;
 }
 
