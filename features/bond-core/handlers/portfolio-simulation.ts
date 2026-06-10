@@ -93,7 +93,6 @@ export class PortfolioSimulationHandler extends BaseHandler implements ScenarioH
         taxStrategy: inv.taxStrategy ?? TaxStrategy.STANDARD,
         rollover: inv.rollover ?? false,
         historicalData: allHistoricalData.historicalData as Record<string, import('@/features/bond-core/types').HistoricalEntry>,
-        chartStep: 'monthly'
       } as BondInputs & { rollover: boolean });
       items.push({
         bondType: inv.bondType,

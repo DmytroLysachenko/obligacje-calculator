@@ -99,7 +99,6 @@ export const BondInputsSchema = withDateOrderValidation(BaseInstrumentInputsSche
   rollover: z.boolean().optional(),
   timingMode: z.enum(['general', 'exact']).optional(),
   investmentHorizonMonths: horizonMonths(360).optional(),
-  chartStep: z.enum(['monthly', 'quarterly', 'yearly']).optional(),
   useTaxWrapperLimit: z.boolean().optional(),
   inflationScenario: z.enum(['low', 'base', 'high']).optional(),
   selectedSeriesId: z.string().uuid().nullable().optional(),

@@ -5,7 +5,6 @@ import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
-import { ChartStep } from '@/features/bond-core/types';
 import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/shared/lib/calculator-persistence';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
@@ -56,8 +55,13 @@ interface BondSeries {
   emissionMonth: string;
 }
 
-function getDefaultChartStep(payoutFrequency: InterestPayout): ChartStep {
-  return payoutFrequency === InterestPayout.MONTHLY ? 'monthly' : 'yearly';
+function withoutDisplayOnlyInputs(inputs: BondInputs | null): BondInputs | null {
+  if (!inputs) {
+    return null;
+  }
+
+  const { chartStep: _chartStep, ...calculationInputs } = inputs;
+  return calculationInputs;
 }
 
 function applyDefinitionToInputs(
@@ -66,7 +70,6 @@ function applyDefinitionToInputs(
   selectedSeriesId: string | null,
 ): BondInputs {
   const shouldUseCurrentOffer = !selectedSeriesId || selectedSeriesId === 'current';
-  const nextChartStep = previous.chartStep ?? getDefaultChartStep(definition.payoutFrequency);
 
   return {
     ...previous,
@@ -79,7 +82,6 @@ function applyDefinitionToInputs(
     rebuyDiscount: definition.rebuyDiscount,
     nominalValue: definition.nominalValue,
     isInflationIndexed: definition.isInflationIndexed,
-    chartStep: nextChartStep,
   };
 }
 
@@ -158,10 +160,10 @@ export function useBondCalculator(initialInputs?: BondInputs) {
 
       if (restoredState) {
         restoredFromPersistence.current = true;
-        setInputs(restoredState.inputs);
+        setInputs(withoutDisplayOnlyInputs(restoredState.inputs) ?? fallbackInputs);
         setEnvelope(restoredState.envelope ?? null);
         setSelectedSeriesId(restoredState.selectedSeriesId ?? null);
-        setLastCommittedInputs(restoredState.lastCommittedInputs ?? null);
+        setLastCommittedInputs(withoutDisplayOnlyInputs(restoredState.lastCommittedInputs ?? null));
         setIsDirty(restoredState.isDirty ?? true);
       }
 
@@ -334,7 +336,6 @@ export function useBondCalculator(initialInputs?: BondInputs) {
           ...prev,
           firstYearRate: def.firstYearRate,
           margin: def.margin,
-          chartStep: prev.chartStep ?? getDefaultChartStep(def.payoutFrequency),
         }));
         return;
       }
@@ -384,7 +385,6 @@ export function useBondCalculator(initialInputs?: BondInputs) {
       investmentHorizonMonths: nextHorizonMonths,
       nominalValue: def.nominalValue,
       isInflationIndexed: def.isInflationIndexed,
-      chartStep: getDefaultChartStep(def.payoutFrequency),
     }));
   };
 

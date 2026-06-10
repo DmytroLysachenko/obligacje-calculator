@@ -11,17 +11,15 @@ import { computeNumericDomain, computeRateDomain, sampleSeriesPoints } from "@/s
 interface BondChartProps {
   results: CalculationResult;
   initialInvestment: number;
-  chartStep?: ChartStep;
   showRealValue?: boolean;
 }
 
 export const BondChart: React.FC<BondChartProps> = ({
   results,
-  chartStep = "yearly",
   showRealValue = false,
 }) => {
   const { t, locale: language } = useAppI18n();
-  const [displayStep, setDisplayStep] = React.useState<ChartStep>(chartStep);
+  const [displayStep, setDisplayStep] = React.useState<ChartStep>("yearly");
 
   const formatCurrency = React.useMemo(
     () => (value: number) =>

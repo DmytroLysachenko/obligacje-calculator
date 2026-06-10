@@ -169,6 +169,40 @@ describe('calculation request validation hardening', () => {
     ).toHaveLength(4);
   });
 
+  it('strips legacy chart granularity from single-bond calculation requests', () => {
+    const parsed = BondInputsSchema.parse({
+      ...singlePayload(),
+      chartStep: 'monthly',
+    });
+
+    expect('chartStep' in parsed).toBe(false);
+  });
+
+  it('strips legacy chart granularity during full single-bond request parsing', () => {
+    const parsed = parseCalculationScenarioRequest({
+      kind: ScenarioKind.SINGLE_BOND,
+      payload: {
+        ...singlePayload(),
+        chartStep: 'quarterly',
+      },
+    });
+
+    expect(parsed.kind).toBe(ScenarioKind.SINGLE_BOND);
+    if (parsed.kind !== ScenarioKind.SINGLE_BOND) {
+      throw new Error('expected single-bond request');
+    }
+    expect('chartStep' in parsed.payload).toBe(false);
+  });
+
+  it('keeps regular investment schema independent from chart display controls', () => {
+    const parsed = RegularInvestmentInputsSchema.parse({
+      ...regularPayload(),
+      chartStep: 'yearly',
+    });
+
+    expect('chartStep' in parsed).toBe(false);
+  });
+
   it('rejects optimizer requests without any horizon definition', () => {
     expectInvalid('optimizer missing horizon', () =>
       BondOptimizerPayloadSchema.parse({

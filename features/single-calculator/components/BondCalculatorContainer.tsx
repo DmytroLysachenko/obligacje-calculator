@@ -344,7 +344,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
               title={t('bonds.timeline')}
               description={t('bonds.simulation.timeline_section_desc')}
             >
-              <BondTimeline results={results} chartStep={inputs.chartStep} />
+              <BondTimeline results={results} />
             </CalculatorSection>
 
             <SecondaryInsightAccordion

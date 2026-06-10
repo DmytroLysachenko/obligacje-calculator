@@ -53,7 +53,6 @@ export class OptimizerHandler extends BaseHandler implements ScenarioHandler<Bon
         isRebought: false,
         taxStrategy: payload.taxStrategy ?? TaxStrategy.STANDARD,
         rollover: true,
-        chartStep: 'monthly' as import('@/features/bond-core/types').ChartStep,
       });
 
       const result = calculateBondInvestment(enrichedInputs as BondInputs & { rollover: boolean });
