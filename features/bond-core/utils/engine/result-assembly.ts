@@ -51,7 +51,6 @@ export function createInitialTimelinePoint({
 interface FinalSingleBondResultParams {
   initialInvestment: number;
   timeline: YearlyTimelinePoint[];
-  cycleGrossValue: Decimal;
   cycleNetProceeds: Decimal;
   totalTax: Decimal;
   totalFee: Decimal;
@@ -65,7 +64,6 @@ interface FinalSingleBondResultParams {
 export function createFinalSingleBondResult({
   initialInvestment,
   timeline,
-  cycleGrossValue,
   cycleNetProceeds,
   totalTax,
   totalFee,
@@ -76,6 +74,7 @@ export function createFinalSingleBondResult({
   dataQualityFlags = [],
 }: FinalSingleBondResultParams): CalculationResult {
   const lastPoint = timeline[timeline.length - 1];
+  const aggregateGrossValue = cycleNetProceeds.plus(totalTax).plus(totalFee);
 
   const nominalAnnualizedReturn = calculateCAGR(
     new Decimal(initialInvestment),
@@ -92,12 +91,12 @@ export function createFinalSingleBondResult({
   return {
     initialInvestment,
     timeline,
-    finalNominalValue: cycleGrossValue.toNumber(),
+    finalNominalValue: aggregateGrossValue.toNumber(),
     finalRealValue: lastPoint.realValue,
     totalProfit: cycleNetProceeds.minus(initialInvestment).toNumber(),
     totalTax: totalTax.toNumber(),
     totalEarlyWithdrawalFee: totalFee.toNumber(),
-    grossValue: cycleGrossValue.toNumber(),
+    grossValue: aggregateGrossValue.toNumber(),
     netPayoutValue: cycleNetProceeds.toNumber(),
     isEarlyWithdrawal,
     maturityDate: cycleMaturityDate.toISOString(),

@@ -1638,6 +1638,9 @@
       "title": "Wykryto rozne terminy wykupu",
       "description": "{bondA} zapada po {durationA}, a {bondB} po {durationB}. Wybrany tryb decyduje, co dzieje sie ze srodkami po zapadalnosci."
     },
+    "auto_rollover_mode_label": "Automatyczne rolowanie do horyzontu",
+    "auto_rollover_fairness_desc": "Krotsze serie sa automatycznie reinwestowane, aby oba scenariusze byly porownane w tym samym wybranym horyzoncie.",
+    "auto_rollover_notice": "Porownywane obligacje maja rozne naturalne terminy. Krotsze serie sa automatycznie rolowane, aby utrzymac wspolny horyzont.",
     "maturity_mode": {
       "label": "Obsluga zapadalnosci",
       "description": "Wybierz, jak porownanie traktuje obligacje, ktore zapadaja przed koncem wybranego horyzontu.",

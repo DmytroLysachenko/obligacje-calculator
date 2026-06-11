@@ -45,7 +45,8 @@ describe('financial insight contracts', () => {
     expectContains(source, "import { FinancialInsightStrip, FinancialInsightItem } from '@/shared/components/results/FinancialInsightStrip';");
     expectContains(source, 'dataQualityFlags?: string[];');
     expectContains(source, 'const financialInsightItems = React.useMemo<FinancialInsightItem[]>(() => {');
-    expectContains(source, 'const grossProfit = Math.max(0, results.grossValue - results.initialInvestment);');
+    expectContains(source, 'const grossProfitBeforeDeductions = Math.max(');
+    expectContains(source, 'results.totalProfit + results.totalTax + results.totalEarlyWithdrawalFee,');
     expectContains(source, 'const realValueGap = Math.max(0, results.netPayoutValue - results.finalRealValue);');
     expectContains(source, "t('financial_insights.tax_impact_label')");
     expectContains(source, "t('financial_insights.real_value_label')");

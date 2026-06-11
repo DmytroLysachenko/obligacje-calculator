@@ -7,16 +7,11 @@ import {
 } from '../types/scenarios';
 import { BondComparisonScenarioRequestSchema } from '../types/schemas';
 import { calculateBondInvestment } from '../utils/calculations';
-import { BondInputs, CalculationResult, TaxStrategy, YearlyTimelinePoint } from '../types';
+import { BondInputs, TaxStrategy } from '../types';
 import { BaseHandler, ScenarioHandler, HandlerContext } from './base';
 import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 import { shouldAutoRollover } from './rollover';
 import { resolveScenarioInputs } from './resolved-inputs';
-import { addMonths, differenceInDays, differenceInMonths, format, isAfter, parseISO } from 'date-fns';
-import { Decimal } from 'decimal.js';
-import { calculateCumulativeInflation } from '../utils/engine/inflation';
-import { calculateCAGR, calculateRealValue } from '../utils/engine/real-return';
-import { BOND_DEFINITIONS } from '../constants/bond-definitions';
 
 export class ComparisonHandler extends BaseHandler implements ScenarioHandler<NormalizedBondComparisonPayload | IndependentBondComparisonPayload, BondComparisonScenarioItem[]> {
   kind = ScenarioKind.BOND_COMPARISON;
@@ -76,11 +71,9 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
     payload: IndependentBondComparisonPayload,
     context: HandlerContext
   ): Promise<BondComparisonCalculationEnvelope> {
-    const maturityMode = payload.sharedConfig.maturityMode ?? 'reinvest_until_horizon';
-    const sharedConfig = this.applySharedMaturityMode(payload);
     const [scenarioA, scenarioB] = await Promise.all([
-      this.buildIndependentScenarioInputs(sharedConfig, payload.scenarioA, context).then((inputs) => this.withHistoricalData(inputs)),
-      this.buildIndependentScenarioInputs(sharedConfig, payload.scenarioB, context).then((inputs) => this.withHistoricalData(inputs)),
+      this.buildIndependentScenarioInputs(payload.sharedConfig, payload.scenarioA, context).then((inputs) => this.withHistoricalData(inputs)),
+      this.buildIndependentScenarioInputs(payload.sharedConfig, payload.scenarioB, context).then((inputs) => this.withHistoricalData(inputs)),
     ]);
 
     const resultA = calculateBondInvestment({
@@ -91,7 +84,7 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
           scenarioA.inflationScenario,
         ),
       },
-      rollover: this.resolveComparisonRollover(maturityMode, scenarioA, context.dbDefinitions[scenarioA.bondType].duration),
+      rollover: shouldAutoRollover(scenarioA, context.dbDefinitions[scenarioA.bondType].duration),
     } as BondInputs & { rollover: boolean });
 
     const resultB = calculateBondInvestment({
@@ -102,7 +95,7 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
           scenarioB.inflationScenario,
         ),
       },
-      rollover: this.resolveComparisonRollover(maturityMode, scenarioB, context.dbDefinitions[scenarioB.bondType].duration),
+      rollover: shouldAutoRollover(scenarioB, context.dbDefinitions[scenarioB.bondType].duration),
     } as BondInputs & { rollover: boolean });
 
     const results: BondComparisonScenarioItem[] = [
@@ -110,13 +103,13 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
         scenarioKey: 'scenarioA',
         type: scenarioA.bondType,
         name: context.dbDefinitions[scenarioA.bondType].fullName.en,
-        result: this.applyCashAfterMaturity(maturityMode, scenarioA, resultA),
+        result: resultA,
       },
       {
         scenarioKey: 'scenarioB',
         type: scenarioB.bondType,
         name: context.dbDefinitions[scenarioB.bondType].fullName.en,
-        result: this.applyCashAfterMaturity(maturityMode, scenarioB, resultB),
+        result: resultB,
       },
     ];
 
@@ -126,208 +119,10 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
       ...this.generateScenarioAssumptions('Scenario B', payload.scenarioB),
     ];
     assumptions.push('Independent comparison resolves issued-series terms per scenario purchase date when present.');
-    assumptions.push(`Maturity handling: ${this.getComparisonMaturityModeLabel(maturityMode)}.`);
-    assumptions.push(this.describeComparisonMaturityMode(maturityMode));
+    assumptions.push('Maturity handling: automatic rollover to the selected shared horizon.');
+    assumptions.push('Shorter native terms are reinvested when needed so both scenarios cover the same selected horizon.');
 
     return this.createEnvelope(results, warnings, assumptions, context.dataFreshness);
-  }
-
-  private applySharedMaturityMode(
-    payload: IndependentBondComparisonPayload,
-  ): IndependentBondComparisonPayload['sharedConfig'] {
-    const maturityMode = payload.sharedConfig.maturityMode ?? 'reinvest_until_horizon';
-
-    if (maturityMode !== 'align_to_shorter_duration') {
-      return payload.sharedConfig;
-    }
-
-    const sharedHorizonMonths = payload.sharedConfig.investmentHorizonMonths
-      ?? Math.max(1, differenceInMonths(
-        parseISO(payload.sharedConfig.withdrawalDate),
-        parseISO(payload.sharedConfig.purchaseDate),
-      ));
-    const scenarioADurationMonths = Math.round(BOND_DEFINITIONS[payload.scenarioA.bondType].duration * 12);
-    const scenarioBDurationMonths = Math.round(BOND_DEFINITIONS[payload.scenarioB.bondType].duration * 12);
-    const alignedHorizonMonths = Math.max(
-      1,
-      Math.min(sharedHorizonMonths, scenarioADurationMonths, scenarioBDurationMonths),
-    );
-
-    return {
-      ...payload.sharedConfig,
-      timingMode: 'general',
-      investmentHorizonMonths: alignedHorizonMonths,
-      withdrawalDate: getWithdrawalDateFromMonths(payload.sharedConfig.purchaseDate, alignedHorizonMonths),
-    };
-  }
-
-  private resolveComparisonRollover(
-    maturityMode: IndependentBondComparisonPayload['sharedConfig']['maturityMode'],
-    inputs: BondInputs,
-    durationYears: number,
-  ) {
-    if (maturityMode === 'hold_to_maturity' || maturityMode === 'cash_after_maturity' || maturityMode === 'align_to_shorter_duration') {
-      return false;
-    }
-
-    return shouldAutoRollover(inputs, durationYears);
-  }
-
-  private applyCashAfterMaturity(
-    maturityMode: IndependentBondComparisonPayload['sharedConfig']['maturityMode'],
-    inputs: BondInputs,
-    result: CalculationResult,
-  ): CalculationResult {
-    if (maturityMode !== 'cash_after_maturity') {
-      return result;
-    }
-
-    const targetWithdrawalDate = parseISO(inputs.withdrawalDate);
-    const lastPoint = result.timeline.at(-1);
-    if (!lastPoint) {
-      return result;
-    }
-
-    const maturityDate = parseISO(lastPoint.cycleEndDate);
-    if (!isAfter(targetWithdrawalDate, maturityDate)) {
-      return result;
-    }
-
-    const startDate = parseISO(inputs.purchaseDate);
-    const cashValue = new Decimal(result.netPayoutValue);
-    const extension: YearlyTimelinePoint[] = [];
-
-    for (
-      let cursor = addMonths(maturityDate, 1);
-      !isAfter(cursor, targetWithdrawalDate);
-      cursor = addMonths(cursor, 1)
-    ) {
-      extension.push(this.createCashHoldingPoint({
-        basePoint: lastPoint,
-        date: cursor,
-        startDate,
-        cashValue,
-        inputs,
-        isFinal: cursor.getTime() === targetWithdrawalDate.getTime(),
-      }));
-    }
-
-    if (extension.length === 0 || extension.at(-1)?.cycleEndDate !== targetWithdrawalDate.toISOString()) {
-      extension.push(this.createCashHoldingPoint({
-        basePoint: lastPoint,
-        date: targetWithdrawalDate,
-        startDate,
-        cashValue,
-        inputs,
-        isFinal: true,
-      }));
-    }
-
-    const timeline = [
-      ...result.timeline.map((point) => ({ ...point, isWithdrawal: false })),
-      ...extension,
-    ];
-    const finalPoint = timeline[timeline.length - 1];
-    const horizonYears = Math.max(1 / 12, differenceInDays(targetWithdrawalDate, startDate) / 365.25);
-
-    return {
-      ...result,
-      timeline,
-      finalNominalValue: cashValue.toNumber(),
-      finalRealValue: finalPoint.realValue,
-      grossValue: cashValue.toNumber(),
-      netPayoutValue: cashValue.toNumber(),
-      totalProfit: cashValue.minus(inputs.initialInvestment).toNumber(),
-      nominalAnnualizedReturn: calculateCAGR(new Decimal(inputs.initialInvestment), cashValue, horizonYears).toNumber(),
-      realAnnualizedReturn: calculateCAGR(new Decimal(inputs.initialInvestment), new Decimal(finalPoint.realValue), horizonYears).toNumber(),
-      calculationNotes: [
-        ...(result.calculationNotes ?? []),
-        'After maturity, bond proceeds are modeled as cash with no further nominal interest.',
-      ],
-    };
-  }
-
-  private createCashHoldingPoint({
-    basePoint,
-    date,
-    startDate,
-    cashValue,
-    inputs,
-    isFinal,
-  }: {
-    basePoint: YearlyTimelinePoint;
-    date: Date;
-    startDate: Date;
-    cashValue: Decimal;
-    inputs: BondInputs;
-    isFinal: boolean;
-  }): YearlyTimelinePoint {
-    const monthsFromStart = Math.max(0, differenceInMonths(date, startDate));
-    const cumulativeInflation = calculateCumulativeInflation(
-      monthsFromStart,
-      inputs.expectedInflation,
-      inputs.customInflation,
-      startDate,
-    );
-
-    return {
-      ...basePoint,
-      year: monthsFromStart / 12,
-      periodLabel: format(date, 'MMM yyyy'),
-      cycleEndDate: date.toISOString(),
-      interestRate: 0,
-      rateSource: 'fixed_rate',
-      rateReferenceValue: 0,
-      rateMarginApplied: 0,
-      usedProjectedRate: true,
-      nominalValueBeforeInterest: cashValue.toNumber(),
-      interestEarned: 0,
-      taxDeducted: 0,
-      netInterest: 0,
-      nominalValueAfterInterest: cashValue.toNumber(),
-      accumulatedNetInterest: 0,
-      totalValue: cashValue.toNumber(),
-      realValue: calculateRealValue(cashValue, cumulativeInflation).toNumber(),
-      netProfit: cashValue.minus(inputs.initialInvestment).toNumber(),
-      earlyWithdrawalValue: cashValue.toNumber(),
-      cumulativeInflation: cumulativeInflation.toNumber(),
-      isMaturity: false,
-      isWithdrawal: isFinal,
-      isProjected: true,
-      events: undefined,
-    };
-  }
-
-  private describeComparisonMaturityMode(
-    maturityMode: IndependentBondComparisonPayload['sharedConfig']['maturityMode'],
-  ) {
-    switch (maturityMode) {
-      case 'hold_to_maturity':
-        return 'Each scenario stops after its native bond maturity or earlier selected exit date.';
-      case 'cash_after_maturity':
-        return 'After native maturity, proceeds are treated as cash without additional nominal interest until the selected horizon.';
-      case 'align_to_shorter_duration':
-        return 'Both scenarios are evaluated only until the shorter native maturity within the selected horizon.';
-      case 'reinvest_until_horizon':
-      default:
-        return 'Matured proceeds are reinvested until the selected comparison horizon.';
-    }
-  }
-
-  private getComparisonMaturityModeLabel(
-    maturityMode: IndependentBondComparisonPayload['sharedConfig']['maturityMode'],
-  ) {
-    switch (maturityMode) {
-      case 'hold_to_maturity':
-        return 'Compare original maturities';
-      case 'cash_after_maturity':
-        return 'Move to cash after maturity';
-      case 'align_to_shorter_duration':
-        return 'Compare until first maturity';
-      case 'reinvest_until_horizon':
-      default:
-        return 'Reinvest until selected horizon';
-    }
   }
 
   private async buildComparisonScenarioInputs(
@@ -393,7 +188,7 @@ export class ComparisonHandler extends BaseHandler implements ScenarioHandler<No
       inflationScenario: sharedConfig.inflationScenario,
       taxRate: 19,
       withdrawalDate,
-      isRebought: scenario.isRebought ?? false,
+      isRebought: false,
       taxStrategy: scenario.taxStrategy ?? sharedConfig.taxStrategy ?? TaxStrategy.STANDARD,
       timingMode,
       investmentHorizonMonths,

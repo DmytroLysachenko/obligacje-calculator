@@ -20,8 +20,6 @@ interface ScenarioOverrideCardProps {
     colorClass: 'scenario-a' | 'scenario-b';
     bondType: BondType;
     onBondTypeChange: (value: BondType) => void;
-    isRebought?: boolean;
-    onReboughtChange: (value: boolean) => void;
     taxStrategy?: TaxStrategy;
     onTaxStrategyChange: (value: TaxStrategy | undefined) => void;
     customHorizonEnabled: boolean;
@@ -29,7 +27,7 @@ interface ScenarioOverrideCardProps {
     customHorizonMonths?: number;
     onCustomHorizonMonthsChange: (value: number | undefined) => void;
 }
-export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ title, colorClass, bondType, onBondTypeChange, isRebought, onReboughtChange, taxStrategy, onTaxStrategyChange, customHorizonEnabled, onCustomHorizonEnabledChange, customHorizonMonths, onCustomHorizonMonthsChange, }) => {
+export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ title, colorClass, bondType, onBondTypeChange, taxStrategy, onTaxStrategyChange, customHorizonEnabled, onCustomHorizonEnabledChange, customHorizonMonths, onCustomHorizonMonthsChange, }) => {
     const { t, locale: language } = useAppI18n();
     const { definitions } = useBondDefinitions();
     const activeDefinition = definitions?.[bondType];
@@ -113,16 +111,6 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
           title={t('comparison.base_follows_shared_title')}
           description={t('comparison.base_follows_shared_desc')}
         />
-
-        <div className="flex items-center justify-between gap-4 border-l-2 border-border bg-muted/20 px-4 py-3">
-          <div className="min-w-0">
-            <p className="text-sm font-semibold">{t('bonds.is_rebought')}</p>
-            <p className="text-xs leading-5 text-muted-foreground">
-              {t('bonds.is_rebought_desc')}
-            </p>
-          </div>
-          <Switch checked={!!isRebought} onCheckedChange={onReboughtChange}/>
-        </div>
 
         <SecondaryInsightAccordion title={t('comparison.optional_overrides_title')} description={t('comparison.optional_overrides_desc')} badge={t('comparison.helper_secondary')} className="mt-0">
           <div className="space-y-5">

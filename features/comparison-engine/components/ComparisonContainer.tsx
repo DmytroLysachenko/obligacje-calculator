@@ -6,7 +6,6 @@ import { useAppI18n } from '@/i18n/client';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { cn } from '@/lib/utils';
-import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
@@ -28,7 +27,6 @@ import {
 export const ComparisonContainer: React.FC = () => {
     const { sharedConfig, scenarioA, scenarioB, inputsA, inputsB, resultsA, resultsB, envelopeA, envelopeB, warningsA, warningsB, isCalculating, calculate, updateSharedConfig, updateScenarioA, updateScenarioB, setBondTypeA, setBondTypeB, setScenarioACustomHorizonEnabled, setScenarioBCustomHorizonEnabled, setScenarioACustomHorizonMonths, setScenarioBCustomHorizonMonths, isDirty, isPersistenceReady, definitions, } = useComparison();
     const { t, locale: language } = useAppI18n();
-    const [showRealValue, setShowRealValue] = useState(false);
     const [chartStep, setChartStep] = useState<ChartStep>('yearly');
     const hasMounted = useHasMounted();
     const currencyFormatter = useCurrencyFormatter(language, {
@@ -55,13 +53,12 @@ export const ComparisonContainer: React.FC = () => {
               withdrawalDateB: inputsB.withdrawalDate,
               resultsA,
               resultsB,
-              showRealValue,
               language,
               t,
               chartStep,
             })
           : [],
-      [chartStep, inputsA.withdrawalDate, inputsB.withdrawalDate, language, resultsA, resultsB, sharedConfig.purchaseDate, showRealValue, t],
+      [chartStep, inputsA.withdrawalDate, inputsB.withdrawalDate, language, resultsA, resultsB, sharedConfig.purchaseDate, t],
     );
     const hasMixedTimelineCadence = useMemo(
       () => usesMixedTimelineCadence(inputsA, inputsB),
@@ -71,30 +68,20 @@ export const ComparisonContainer: React.FC = () => {
       () => getComparisonAssumptionsBondType(scenarioA.bondType, scenarioB.bondType),
       [scenarioA.bondType, scenarioB.bondType],
     );
-    const maturityMode = sharedConfig.maturityMode ?? 'reinvest_until_horizon';
     const durationMismatch = definitions[scenarioA.bondType].duration !== definitions[scenarioB.bondType].duration;
-    const durationMismatchText = durationMismatch
-      ? t('comparison.duration_mismatch.description', {
-          bondA: scenarioA.bondType,
-          durationA: formatBondDuration(definitions[scenarioA.bondType].duration, language),
-          bondB: scenarioB.bondType,
-          durationB: formatBondDuration(definitions[scenarioB.bondType].duration, language),
-        })
-      : null;
+    const durationMismatchText = durationMismatch ? t('comparison.auto_rollover_notice') : null;
     return (<CalculatorPageShell title={t('nav.comparison')} description={t('comparison.desc_independent')} icon={<Scale className="h-8 w-8"/>} isCalculating={isCalculating} isDirty={isDirty} hasResults={isPersistenceReady && !!resultsA} onKeyDown={handleKeyDown}>
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-[390px_minmax(0,1fr)]">
             <ComparisonSharedBaseCard
               sharedConfig={sharedConfig}
               assumptionsBondType={assumptionsBondType}
-              showRealValue={showRealValue}
-              onShowRealValueChange={setShowRealValue}
               onUpdateSharedConfig={updateSharedConfig as (key: keyof typeof sharedConfig | string, value: unknown) => void}
             />
 
           <div className="space-y-8">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <ScenarioOverrideCard title={t('comparison.scenario_a')} colorClass="scenario-a" bondType={scenarioA.bondType} onBondTypeChange={setBondTypeA} isRebought={scenarioA.isRebought} onReboughtChange={(value) => updateScenarioA('isRebought', value)} taxStrategy={scenarioA.taxStrategy} onTaxStrategyChange={(value) => updateScenarioA('taxStrategy', value)} customHorizonEnabled={scenarioA.investmentHorizonMonths !== undefined} onCustomHorizonEnabledChange={setScenarioACustomHorizonEnabled} customHorizonMonths={scenarioA.investmentHorizonMonths} onCustomHorizonMonthsChange={setScenarioACustomHorizonMonths}/>
-              <ScenarioOverrideCard title={t('comparison.scenario_b')} colorClass="scenario-b" bondType={scenarioB.bondType} onBondTypeChange={setBondTypeB} isRebought={scenarioB.isRebought} onReboughtChange={(value) => updateScenarioB('isRebought', value)} taxStrategy={scenarioB.taxStrategy} onTaxStrategyChange={(value) => updateScenarioB('taxStrategy', value)} customHorizonEnabled={scenarioB.investmentHorizonMonths !== undefined} onCustomHorizonEnabledChange={setScenarioBCustomHorizonEnabled} customHorizonMonths={scenarioB.investmentHorizonMonths} onCustomHorizonMonthsChange={setScenarioBCustomHorizonMonths}/>
+              <ScenarioOverrideCard title={t('comparison.scenario_a')} colorClass="scenario-a" bondType={scenarioA.bondType} onBondTypeChange={setBondTypeA} taxStrategy={scenarioA.taxStrategy} onTaxStrategyChange={(value) => updateScenarioA('taxStrategy', value)} customHorizonEnabled={scenarioA.investmentHorizonMonths !== undefined} onCustomHorizonEnabledChange={setScenarioACustomHorizonEnabled} customHorizonMonths={scenarioA.investmentHorizonMonths} onCustomHorizonMonthsChange={setScenarioACustomHorizonMonths}/>
+              <ScenarioOverrideCard title={t('comparison.scenario_b')} colorClass="scenario-b" bondType={scenarioB.bondType} onBondTypeChange={setBondTypeB} taxStrategy={scenarioB.taxStrategy} onTaxStrategyChange={(value) => updateScenarioB('taxStrategy', value)} customHorizonEnabled={scenarioB.investmentHorizonMonths !== undefined} onCustomHorizonEnabledChange={setScenarioBCustomHorizonEnabled} customHorizonMonths={scenarioB.investmentHorizonMonths} onCustomHorizonMonthsChange={setScenarioBCustomHorizonMonths}/>
             </div>
 
             <section className="space-y-3 border-y border-border py-4">
@@ -102,11 +89,11 @@ export const ComparisonContainer: React.FC = () => {
                 <div className="space-y-1">
                   <h2 className="ui-card-title">{t('comparison.fairness.title')}</h2>
                   <p className="text-sm leading-6 text-muted-foreground">
-                    {t(`comparison.maturity_mode.${maturityMode}.description`)}
+                    {t('comparison.auto_rollover_fairness_desc')}
                   </p>
                 </div>
                 <div className="ui-metadata text-muted-foreground">
-                  {t('comparison.fairness.mode_label')}: {t(`comparison.maturity_mode.${maturityMode}.label`)}
+                  {t('comparison.fairness.mode_label')}: {t('comparison.auto_rollover_mode_label')}
                 </div>
               </div>
               {durationMismatchText ? (
@@ -152,7 +139,6 @@ export const ComparisonContainer: React.FC = () => {
                 {hasMounted ? (
                   <ComparisonResultsPanel
                     chartData={chartData}
-                    showRealValue={showRealValue}
                     usesMixedTimelineCadence={hasMixedTimelineCadence}
                     resultsA={resultsA}
                     resultsB={resultsB}
@@ -165,9 +151,9 @@ export const ComparisonContainer: React.FC = () => {
                   />
                 ) : null}
 
-                <ComparisonVerdict resultsA={resultsA} resultsB={resultsB} inputsA={inputsA} inputsB={inputsB} expectedInflation={sharedConfig.expectedInflation} taxStrategy={sharedConfig.taxStrategy} maturityMode={maturityMode} showRealValue={showRealValue} formatCurrency={formatCurrency}/>
+                <ComparisonVerdict resultsA={resultsA} resultsB={resultsB} inputsA={inputsA} inputsB={inputsB} expectedInflation={sharedConfig.expectedInflation} taxStrategy={sharedConfig.taxStrategy} formatCurrency={formatCurrency}/>
 
-                <ComparisonTable resultsA={resultsA} resultsB={resultsB} bondTypeA={inputsA.bondType} bondTypeB={inputsB.bondType} showRealValue={showRealValue} formatCurrency={formatCurrency}/>
+                <ComparisonTable resultsA={resultsA} resultsB={resultsB} bondTypeA={inputsA.bondType} bondTypeB={inputsB.bondType} formatCurrency={formatCurrency}/>
 
                 <SecondaryInsightAccordion title={t('comparison.assumptions_meta')} description={t('comparison.assumptions_meta_desc')} badge={t('comparison.helper_secondary')}>
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2">

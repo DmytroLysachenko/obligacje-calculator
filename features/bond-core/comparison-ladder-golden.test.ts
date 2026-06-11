@@ -261,11 +261,11 @@ describe('Comparison and ladder golden regressions', () => {
     expect(edo?.timeline.at(-1)?.cycleEndDate.slice(0, 7)).toBe(withdrawalDate.slice(0, 7));
     expect(ror?.timeline.some((point) => point.cycleIndex > 1)).toBe(true);
     expect(edo?.timeline.some((point) => point.cycleIndex > 1)).toBe(false);
-    expect(envelope.assumptions).toContain('Maturity handling: Reinvest until selected horizon.');
+    expect(envelope.assumptions).toContain('Maturity handling: automatic rollover to the selected shared horizon.');
     expect(envelope.assumptions.join('\n')).not.toContain('reinvest_until_horizon');
   });
 
-  it('can compare original maturities without reinvesting short bonds', async () => {
+  it('ignores legacy original-maturity mode and keeps the selected horizon aligned', async () => {
     const purchaseDate = toDateString(today);
     const withdrawalDate = getWithdrawalDateFromMonths(purchaseDate, 120);
 
@@ -297,15 +297,15 @@ describe('Comparison and ladder golden regressions', () => {
     const ror = result.find((item) => item.scenarioKey === 'scenarioA')?.result;
     const edo = result.find((item) => item.scenarioKey === 'scenarioB')?.result;
 
-    expect(getHorizonMonths(purchaseDate, ror?.timeline.at(-1)?.cycleEndDate ?? purchaseDate)).toBeLessThanOrEqual(12);
+    expect(getHorizonMonths(purchaseDate, ror?.timeline.at(-1)?.cycleEndDate ?? purchaseDate)).toBeGreaterThanOrEqual(119);
     expect(getHorizonMonths(purchaseDate, edo?.timeline.at(-1)?.cycleEndDate ?? purchaseDate)).toBeGreaterThanOrEqual(119);
-    expect(ror?.timeline.some((point) => point.cycleIndex > 1)).toBe(false);
+    expect(ror?.timeline.some((point) => point.cycleIndex > 1)).toBe(true);
     expect(edo?.timeline.some((point) => point.cycleIndex > 1)).toBe(false);
-    expect(envelope.assumptions).toContain('Maturity handling: Compare original maturities.');
+    expect(envelope.assumptions).toContain('Maturity handling: automatic rollover to the selected shared horizon.');
     expect(envelope.assumptions.join('\n')).not.toContain('hold_to_maturity');
   });
 
-  it('can keep matured short-bond proceeds as cash until the shared horizon', async () => {
+  it('ignores legacy cash-after-maturity mode and reinvests to the shared horizon', async () => {
     const purchaseDate = toDateString(today);
     const withdrawalDate = getWithdrawalDateFromMonths(purchaseDate, 120);
 
@@ -339,12 +339,12 @@ describe('Comparison and ladder golden regressions', () => {
     const rorFinalPoint = ror?.timeline.at(-1);
 
     expect(rorFinalPoint?.cycleEndDate.slice(0, 7)).toBe(withdrawalDate.slice(0, 7));
-    expect(rorFinalPoint?.totalValue).toBeCloseTo(rorMaturityPoint?.totalValue ?? 0, 8);
+    expect(rorFinalPoint?.totalValue).toBeGreaterThan(rorMaturityPoint?.totalValue ?? 0);
     expect(rorFinalPoint?.realValue).toBeLessThan(rorFinalPoint?.totalValue ?? 0);
-    expect(ror?.calculationNotes).toContain('After maturity, bond proceeds are modeled as cash with no further nominal interest.');
+    expect(ror?.calculationNotes?.join('\n')).toContain('Simulation covered');
   });
 
-  it('can align different-duration comparisons to the first native maturity', async () => {
+  it('ignores legacy shorter-duration alignment and keeps full selected horizon', async () => {
     const purchaseDate = toDateString(today);
     const withdrawalDate = getWithdrawalDateFromMonths(purchaseDate, 120);
 
@@ -376,17 +376,17 @@ describe('Comparison and ladder golden regressions', () => {
     const ror = result.find((item) => item.scenarioKey === 'scenarioA')?.result;
     const edo = result.find((item) => item.scenarioKey === 'scenarioB')?.result;
 
-    expect(getHorizonMonths(purchaseDate, ror?.timeline.at(-1)?.cycleEndDate ?? purchaseDate)).toBeLessThanOrEqual(12);
-    expect(getHorizonMonths(purchaseDate, edo?.timeline.at(-1)?.cycleEndDate ?? purchaseDate)).toBeLessThanOrEqual(12);
-    expect(edo?.isEarlyWithdrawal).toBe(true);
-    expect(envelope.assumptions).toContain('Maturity handling: Compare until first maturity.');
+    expect(getHorizonMonths(purchaseDate, ror?.timeline.at(-1)?.cycleEndDate ?? purchaseDate)).toBeGreaterThanOrEqual(119);
+    expect(getHorizonMonths(purchaseDate, edo?.timeline.at(-1)?.cycleEndDate ?? purchaseDate)).toBeGreaterThanOrEqual(119);
+    expect(edo?.isEarlyWithdrawal).toBe(false);
+    expect(envelope.assumptions).toContain('Maturity handling: automatic rollover to the selected shared horizon.');
     expect(envelope.assumptions.join('\n')).not.toContain('align_to_shorter_duration');
   });
 
   it.each([
     {
       maturityMode: 'reinvest_until_horizon' as const,
-      label: 'Reinvest until selected horizon',
+      label: 'automatic rollover to the selected shared horizon',
       forbidden: 'reinvest_until_horizon',
       rorFinalHorizonMonths: 120,
       edoFinalHorizonMonths: 120,
@@ -395,33 +395,33 @@ describe('Comparison and ladder golden regressions', () => {
     },
     {
       maturityMode: 'hold_to_maturity' as const,
-      label: 'Compare original maturities',
+      label: 'automatic rollover to the selected shared horizon',
       forbidden: 'hold_to_maturity',
-      rorFinalHorizonMonths: 12,
+      rorFinalHorizonMonths: 120,
       edoFinalHorizonMonths: 120,
-      rorRolls: false,
+      rorRolls: true,
       edoRolls: false,
     },
     {
       maturityMode: 'cash_after_maturity' as const,
-      label: 'Move to cash after maturity',
+      label: 'automatic rollover to the selected shared horizon',
       forbidden: 'cash_after_maturity',
       rorFinalHorizonMonths: 120,
       edoFinalHorizonMonths: 120,
-      rorRolls: false,
+      rorRolls: true,
       edoRolls: false,
     },
     {
       maturityMode: 'align_to_shorter_duration' as const,
-      label: 'Compare until first maturity',
+      label: 'automatic rollover to the selected shared horizon',
       forbidden: 'align_to_shorter_duration',
-      rorFinalHorizonMonths: 12,
-      edoFinalHorizonMonths: 12,
-      rorRolls: false,
+      rorFinalHorizonMonths: 120,
+      edoFinalHorizonMonths: 120,
+      rorRolls: true,
       edoRolls: false,
     },
   ])(
-    'renders readable assumptions and distinct timeline behavior for $maturityMode',
+    'keeps legacy $maturityMode payloads on automatic full-horizon comparison',
     async ({
       maturityMode,
       label,
@@ -474,7 +474,7 @@ describe('Comparison and ladder golden regressions', () => {
     },
   );
 
-  it('applies rebuy discount differences in long-horizon independent comparison scenarios', async () => {
+  it('ignores legacy rebuy discount differences in independent comparison scenarios', async () => {
     const purchaseDate = toDateString(today);
     const withdrawalDate = getWithdrawalDateFromMonths(purchaseDate, 240);
 
@@ -505,7 +505,7 @@ describe('Comparison and ladder golden regressions', () => {
 
     const result = envelope.result as BondComparisonScenarioItem[];
 
-    expect(result[1].result.netPayoutValue).toBeGreaterThan(result[0].result.netPayoutValue);
+    expect(result[1].result.netPayoutValue).toBeCloseTo(result[0].result.netPayoutValue, 8);
   });
 
   it('keeps exact-date comparison scenarios aligned to a shared 20-year withdrawal boundary', async () => {

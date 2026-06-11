@@ -198,7 +198,7 @@ describe('cross-calculator consistency', () => {
     expect(ikze.totalTax).toBeGreaterThan(standard.totalTax);
   });
 
-  it('keeps rebuy discount behavior consistent in single and comparison paths', async () => {
+  it('keeps rebuy discount single-only while comparison ignores legacy swap overrides', async () => {
     const plain = await calculateSingle(BondType.EDO, {
       initialInvestment: 100000,
       isRebought: false,
@@ -233,10 +233,11 @@ describe('cross-calculator consistency', () => {
       comparisonEnvelope.result as BondComparisonScenarioItem[];
 
     expect(rebought.netPayoutValue).toBeGreaterThan(plain.netPayoutValue);
-    expect(comparisonRebought.result.netPayoutValue).toBeGreaterThan(
+    expect(comparisonRebought.result.netPayoutValue).toBeCloseTo(
       comparisonPlain.result.netPayoutValue,
+      8,
     );
-    expectCloseResult(rebought, comparisonRebought.result);
+    expectCloseResult(plain, comparisonRebought.result);
   });
 
   it('keeps custom CPI path effect consistent between single and comparison', async () => {

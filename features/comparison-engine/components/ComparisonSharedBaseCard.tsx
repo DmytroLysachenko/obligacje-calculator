@@ -7,10 +7,9 @@ import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Switch } from '@/components/ui/switch';
 import { History } from 'lucide-react';
 import { TaxStrategy, BondType } from '@/features/bond-core/types';
-import { ComparisonMaturityMode, IndependentBondComparisonPayload } from '@/features/bond-core/types/scenarios';
+import { IndependentBondComparisonPayload } from '@/features/bond-core/types/scenarios';
 import { useAppI18n } from '@/i18n/client';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
 import { cn } from '@/lib/utils';
@@ -21,18 +20,9 @@ import { FormSelect } from '@/shared/components/forms/FormSelect';
 
 type SharedConfig = IndependentBondComparisonPayload['sharedConfig'];
 
-const comparisonMaturityModes: ComparisonMaturityMode[] = [
-  'reinvest_until_horizon',
-  'hold_to_maturity',
-  'cash_after_maturity',
-  'align_to_shorter_duration',
-];
-
 interface ComparisonSharedBaseCardProps {
   sharedConfig: SharedConfig;
   assumptionsBondType: BondType;
-  showRealValue: boolean;
-  onShowRealValueChange: (value: boolean) => void;
   onUpdateSharedConfig: {
     bivarianceHack: (key: keyof SharedConfig | string, value: unknown) => void;
   }['bivarianceHack'];
@@ -41,12 +31,9 @@ interface ComparisonSharedBaseCardProps {
 export function ComparisonSharedBaseCard({
   sharedConfig,
   assumptionsBondType,
-  showRealValue,
-  onShowRealValueChange,
   onUpdateSharedConfig,
 }: ComparisonSharedBaseCardProps) {
   const { t, locale: language } = useAppI18n();
-  const activeMaturityMode = sharedConfig.maturityMode ?? 'reinvest_until_horizon';
 
   return (
     <section className="space-y-6">
@@ -198,46 +185,6 @@ export function ComparisonSharedBaseCard({
           </p>
         </div>
 
-        <div className="space-y-4 border-t border-border pt-5">
-          <div className="space-y-1">
-            <Label className="ui-metadata text-muted-foreground">
-              {t('comparison.maturity_mode.label')}
-            </Label>
-            <p className="text-xs leading-5 text-muted-foreground">
-              {t('comparison.maturity_mode.description')}
-            </p>
-          </div>
-          <div className="grid grid-cols-1 gap-2">
-            {comparisonMaturityModes.map((mode) => (
-              <Button
-                key={mode}
-                type="button"
-                variant={activeMaturityMode === mode ? 'default' : 'outline'}
-                className="h-auto min-w-0 justify-start overflow-hidden px-3 py-3 text-left"
-                aria-pressed={activeMaturityMode === mode}
-                onClick={() => onUpdateSharedConfig('maturityMode', mode)}
-              >
-                <span className="min-w-0 space-y-1 whitespace-normal">
-                  <span className="block text-xs font-semibold">
-                    {t(`comparison.maturity_mode.${mode}.label`)}
-                  </span>
-                  <span className="block max-w-full text-xs font-normal leading-5 opacity-80">
-                    {t(`comparison.maturity_mode.${mode}.description`)}
-                  </span>
-                </span>
-              </Button>
-            ))}
-          </div>
-          <div className="border-l-2 border-border px-4 py-3">
-            <p className="text-xs font-semibold text-foreground">
-              {t('comparison.fairness.mode_label')}: {t(`comparison.maturity_mode.${activeMaturityMode}.label`)}
-            </p>
-            <p className="mt-1 text-xs leading-5 text-muted-foreground">
-              {t(`comparison.maturity_mode.${activeMaturityMode}.description`)}
-            </p>
-          </div>
-        </div>
-
         <div className="space-y-4 border-t border-dashed pt-4">
           <MarketAssumptionsForm
             expectedInflation={sharedConfig.expectedInflation}
@@ -269,15 +216,6 @@ export function ComparisonSharedBaseCard({
           </p>
         </div>
 
-        <div className="flex items-center justify-between border-l-2 border-border px-4 py-3">
-          <div>
-            <p className="text-sm font-semibold">{t('bonds.inflation.adjusted')}</p>
-            <p className="text-xs leading-5 text-muted-foreground">
-              {t('bonds.show_purchasing_power')}
-            </p>
-          </div>
-          <Switch checked={showRealValue} onCheckedChange={onShowRealValueChange} />
-        </div>
       </div>
     </section>
   );

@@ -75,6 +75,23 @@ function finalCycleIndexes(result: ReturnType<typeof calculateBondInvestment>) {
   return new Set(result.timeline.slice(1).map((point) => point.cycleIndex));
 }
 
+function expectSingleBondAccountingIdentity(result: ReturnType<typeof calculateBondInvestment>) {
+  expect(result.netPayoutValue).toBeCloseTo(
+    result.grossValue - result.totalTax - result.totalEarlyWithdrawalFee,
+    2,
+  );
+  expect(result.totalProfit).toBeCloseTo(
+    result.netPayoutValue - result.initialInvestment,
+    2,
+  );
+  expect(result.totalProfit + result.totalTax + result.totalEarlyWithdrawalFee).toBeCloseTo(
+    result.grossValue - result.initialInvestment,
+    2,
+  );
+  expect(result.timeline.at(-1)?.totalValue).toBeCloseTo(result.netPayoutValue, 2);
+  expect(result.timeline.at(-1)?.realValue).toBeCloseTo(result.finalRealValue, 2);
+}
+
 describe('production scenario calculation regressions', () => {
   it('keeps a 20-year EDO rollover nominally profitable while real value reflects purchasing power', () => {
     const result = calculateBondInvestment(singleInputs(BondType.EDO, {
@@ -89,6 +106,7 @@ describe('production scenario calculation regressions', () => {
     const finalPoint = result.timeline.at(-1);
 
     expect(finalPoint?.isWithdrawal).toBe(true);
+    expectSingleBondAccountingIdentity(result);
     expect(finalPoint?.cycleEndDate).toBe('2046-05-27T00:00:00.000Z');
     expect(finalCycleIndexes(result).size).toBe(2);
     expect(result.netPayoutValue).toBeGreaterThan(result.initialInvestment);
@@ -110,6 +128,7 @@ describe('production scenario calculation regressions', () => {
     const secondYearPoint = result.timeline[2];
     const thirdYearPoint = result.timeline[3];
 
+    expectSingleBondAccountingIdentity(result);
     expect(firstFixedPoint.rateSource).toBe('first_year_fixed');
     expect(secondYearPoint.rateSource).toBe('projected_cpi');
     expect(secondYearPoint.inflationReference).toBe(2);
@@ -138,6 +157,7 @@ describe('production scenario calculation regressions', () => {
       (point) => point.cycleIndex === 4 && point.rateSource === 'projected_nbp',
     );
 
+    expectSingleBondAccountingIdentity(result);
     expect(finalCycleIndexes(result).size).toBeGreaterThanOrEqual(4);
     expect(cycleTwoProjectedNbp?.nbpReference).toBe(4);
     expect(cycleTwoProjectedNbp?.interestRate).toBe(4);
@@ -155,6 +175,7 @@ describe('production scenario calculation regressions', () => {
     const finalPoint = result.timeline.at(-1);
 
     expect(result.isEarlyWithdrawal).toBe(true);
+    expectSingleBondAccountingIdentity(result);
     expect(result.netPayoutValue).toBeGreaterThanOrEqual(result.initialInvestment);
     expect(result.totalEarlyWithdrawalFee).toBeGreaterThan(0);
     expect(result.totalEarlyWithdrawalFee).toBeLessThan(100);

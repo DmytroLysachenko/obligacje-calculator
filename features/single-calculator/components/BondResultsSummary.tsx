@@ -85,14 +85,17 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results,
         [primarySummaryCards, secondarySummaryCards],
     );
     const financialInsightItems = React.useMemo<FinancialInsightItem[]>(() => {
-        const grossProfit = Math.max(0, results.grossValue - results.initialInvestment);
+        const grossProfitBeforeDeductions = Math.max(
+            0,
+            results.totalProfit + results.totalTax + results.totalEarlyWithdrawalFee,
+        );
         const realValueGap = Math.max(0, results.netPayoutValue - results.finalRealValue);
         return [
             {
                 label: t('financial_insights.tax_impact_label'),
                 value: formatCurrency(results.totalTax),
                 description: t('financial_insights.tax_impact_description', {
-                    grossProfit: formatCurrency(grossProfit),
+                    grossProfit: formatCurrency(grossProfitBeforeDeductions),
                     netProfit: formatCurrency(results.totalProfit),
                 }),
                 tone: results.totalTax > 0 ? 'warning' : 'success',
@@ -117,7 +120,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({ results,
                 tone: dataQualityFlags.length > 0 ? 'warning' : 'success',
             },
         ];
-    }, [dataQualityFlags.length, formatCurrency, results.finalRealValue, results.grossValue, results.initialInvestment, results.netPayoutValue, results.totalProfit, results.totalTax, t]);
+    }, [dataQualityFlags.length, formatCurrency, results.finalRealValue, results.netPayoutValue, results.totalEarlyWithdrawalFee, results.totalProfit, results.totalTax, t]);
     const scenarioFacts = React.useMemo(() => [
         {
             label: t('bonds.scenario_fields.bond_type'),

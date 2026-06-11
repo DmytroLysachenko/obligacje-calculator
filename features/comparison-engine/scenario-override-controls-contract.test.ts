@@ -27,9 +27,9 @@ describe('scenario override controls contract', () => {
     expectContains(source, '<ScenarioSetupCard');
     expectContains(source, 'triggerClassName="font-semibold"');
     expectContains(source, '<FormInlineNotice');
-    expectContains(source, 'border-l-2 border-border bg-muted/20 px-4 py-3');
-    expectContains(source, '<Switch checked={!!isRebought}');
     expectContains(source, '<Switch checked={customHorizonEnabled}');
+    expect(source).not.toContain('isRebought?: boolean');
+    expect(source).not.toContain('<Switch checked={!!isRebought}');
 
     expectNoFragments(source, [
       'rounded-full bg-muted px-2 py-0.5',

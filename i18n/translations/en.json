@@ -1638,6 +1638,9 @@
       "title": "Duration mismatch detected",
       "description": "{bondA} matures after {durationA}, while {bondB} matures after {durationB}. The selected mode controls how matured funds are handled."
     },
+    "auto_rollover_mode_label": "Auto rollover to selected horizon",
+    "auto_rollover_fairness_desc": "Shorter native terms are reinvested automatically so both scenarios are compared across the same selected horizon.",
+    "auto_rollover_notice": "The compared bonds have different native terms. Shorter terms are automatically rolled over to keep the horizon aligned.",
     "maturity_mode": {
       "label": "Maturity handling",
       "description": "Choose how the comparison treats bonds that mature before the selected horizon ends.",

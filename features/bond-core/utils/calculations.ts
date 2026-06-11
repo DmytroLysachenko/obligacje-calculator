@@ -468,7 +468,6 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
       return createFinalSingleBondResult({
         initialInvestment,
         timeline: globalTimeline,
-        cycleGrossValue,
         cycleNetProceeds: netProceeds,
         totalTax: totalTaxAcc,
         totalFee: totalFeeAcc,

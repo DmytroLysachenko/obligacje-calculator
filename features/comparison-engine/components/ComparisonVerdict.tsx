@@ -3,7 +3,6 @@ import React from 'react';
 import { Scale, ShieldCheck, Zap } from 'lucide-react';
 import { useAppI18n } from '@/i18n/client';
 import { BondInputs, CalculationResult, TaxStrategy, } from '@/features/bond-core/types';
-import { ComparisonMaturityMode } from '@/features/bond-core/types/scenarios';
 interface ComparisonVerdictProps {
     resultsA: CalculationResult;
     resultsB: CalculationResult;
@@ -11,26 +10,22 @@ interface ComparisonVerdictProps {
     inputsB: BondInputs;
     expectedInflation: number;
     taxStrategy?: TaxStrategy;
-    maturityMode: ComparisonMaturityMode;
-    showRealValue: boolean;
     formatCurrency: (val: number) => string;
 }
 function getVerdictDrivers({
     winner,
     loser,
     expectedInflation,
-    maturityMode,
     t,
 }: {
     winner: BondInputs;
     loser: BondInputs;
     expectedInflation: number;
-    maturityMode: ComparisonMaturityMode;
     t: ReturnType<typeof useAppI18n>['t'];
 }) {
     const drivers = [
         t('comparison.verdict.driver_mode', {
-            mode: t(`comparison.maturity_mode.${maturityMode}.label`),
+            mode: t('comparison.auto_rollover_mode_label'),
         }),
     ];
     if (winner.duration !== loser.duration) {
@@ -49,15 +44,13 @@ function getVerdictDrivers({
     }
     return drivers.slice(0, 3);
 }
-export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, resultsB, inputsA, inputsB, expectedInflation, taxStrategy, maturityMode, showRealValue, formatCurrency, }) => {
+export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, resultsB, inputsA, inputsB, expectedInflation, taxStrategy, formatCurrency, }) => {
     const { t } = useAppI18n();
     const comparisonSnapshotLabel = t('comparison.verdict_snapshot_label');
-    const higherText = showRealValue
-        ? t('comparison.verdict.higher_real_value')
-        : t('comparison.verdict.higher_net_payout');
+    const higherText = t('comparison.verdict.higher_net_payout');
     const overText = t('comparison.verdict_over_text');
-    const resultAValue = showRealValue ? resultsA.finalRealValue : resultsA.netPayoutValue;
-    const resultBValue = showRealValue ? resultsB.finalRealValue : resultsB.netPayoutValue;
+    const resultAValue = resultsA.netPayoutValue;
+    const resultBValue = resultsB.netPayoutValue;
     const betterBondType = resultAValue > resultBValue
         ? inputsA.bondType
         : inputsB.bondType;
@@ -70,7 +63,6 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, 
         winner: winnerInputs,
         loser: loserInputs,
         expectedInflation,
-        maturityMode,
         t,
     });
     const gap = Math.abs(resultAValue - resultBValue);
@@ -106,7 +98,7 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({ resultsA, 
               </p>
               <p className="text-sm leading-relaxed text-muted-foreground">
                 {t('comparison.verdict.mode_context', {
-                mode: t(`comparison.maturity_mode.${maturityMode}.label`),
+                mode: t('comparison.auto_rollover_mode_label'),
             })}
               </p>
               <p className="text-sm leading-relaxed text-muted-foreground">
