@@ -22,41 +22,85 @@ export interface RecordSyncRunInput {
   finishedAt?: Date;
 }
 
-export async function recordSyncRun(input: RecordSyncRunInput) {
-  const [run] = await db
-    .insert(syncRuns)
-    .values({
-      scope: input.scope,
-      provider: input.provider ?? null,
-      seriesSlug: input.seriesSlug ?? null,
-      mode: input.mode,
-      status: input.status,
-      rangeStart: input.rangeStart ?? null,
-      rangeEnd: input.rangeEnd ?? null,
-      inserted: input.inserted ?? 0,
-      updated: input.updated ?? 0,
-      skipped: input.skipped ?? 0,
-      latestDataPointDate: input.latestDataPointDate ?? null,
-      message: input.message ?? null,
-      error: input.error ?? null,
-      startedAt: input.startedAt ?? new Date(),
-      finishedAt: input.finishedAt ?? new Date(),
-    } satisfies NewSyncRun)
-    .returning();
+function isMissingSyncRunsTableError(error: unknown) {
+  if (!(error instanceof Error)) {
+    return false;
+  }
 
-  return run;
+  const maybeDbError = error as Error & {
+    code?: string;
+    cause?: {
+      code?: string;
+      message?: string;
+    };
+  };
+
+  return (
+    maybeDbError.code === '42P01' ||
+    maybeDbError.cause?.code === '42P01' ||
+    error.message.includes('relation "sync_runs" does not exist')
+  );
+}
+
+export async function recordSyncRun(input: RecordSyncRunInput) {
+  try {
+    const [run] = await db
+      .insert(syncRuns)
+      .values({
+        scope: input.scope,
+        provider: input.provider ?? null,
+        seriesSlug: input.seriesSlug ?? null,
+        mode: input.mode,
+        status: input.status,
+        rangeStart: input.rangeStart ?? null,
+        rangeEnd: input.rangeEnd ?? null,
+        inserted: input.inserted ?? 0,
+        updated: input.updated ?? 0,
+        skipped: input.skipped ?? 0,
+        latestDataPointDate: input.latestDataPointDate ?? null,
+        message: input.message ?? null,
+        error: input.error ?? null,
+        startedAt: input.startedAt ?? new Date(),
+        finishedAt: input.finishedAt ?? new Date(),
+      } satisfies NewSyncRun)
+      .returning();
+
+    return run;
+  } catch (error) {
+    if (isMissingSyncRunsTableError(error)) {
+      return null;
+    }
+
+    throw error;
+  }
 }
 
 export async function listRecentSyncRuns(limit = 25) {
-  return db.query.syncRuns.findMany({
-    orderBy: [desc(syncRuns.startedAt)],
-    limit,
-  });
+  try {
+    return await db.query.syncRuns.findMany({
+      orderBy: [desc(syncRuns.startedAt)],
+      limit,
+    });
+  } catch (error) {
+    if (isMissingSyncRunsTableError(error)) {
+      return [];
+    }
+
+    throw error;
+  }
 }
 
 export async function getLatestSyncRunForSeries(seriesSlug: string) {
-  return db.query.syncRuns.findFirst({
-    where: eq(syncRuns.seriesSlug, seriesSlug),
-    orderBy: [desc(syncRuns.startedAt)],
-  });
+  try {
+    return await db.query.syncRuns.findFirst({
+      where: eq(syncRuns.seriesSlug, seriesSlug),
+      orderBy: [desc(syncRuns.startedAt)],
+    });
+  } catch (error) {
+    if (isMissingSyncRunsTableError(error)) {
+      return null;
+    }
+
+    throw error;
+  }
 }
