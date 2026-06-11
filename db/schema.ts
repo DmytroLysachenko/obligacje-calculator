@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, numeric, integer, boolean, pgEnum, serial, date, uniqueIndex, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, numeric, integer, boolean, pgEnum, serial, date, uniqueIndex, primaryKey, index } from "drizzle-orm/pg-core";
 import { type AdapterAccountType } from "next-auth/adapters";
 
 export const instrumentTypeEnum = pgEnum("instrument_type", ["bond", "equity", "commodity", "crypto"]);
@@ -71,6 +71,29 @@ export const polishBonds = pgTable("polish_bonds", {
   isFamilyOnly: boolean("is_family_only").default(false),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
+
+export const syncRuns = pgTable("sync_runs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  scope: text("scope").notNull(),
+  provider: text("provider"),
+  seriesSlug: text("series_slug"),
+  mode: text("mode").notNull(),
+  status: text("status").notNull(),
+  rangeStart: date("range_start"),
+  rangeEnd: date("range_end"),
+  inserted: integer("inserted").default(0).notNull(),
+  updated: integer("updated").default(0).notNull(),
+  skipped: integer("skipped").default(0).notNull(),
+  latestDataPointDate: date("latest_data_point_date"),
+  message: text("message"),
+  error: text("error"),
+  startedAt: timestamp("started_at").defaultNow().notNull(),
+  finishedAt: timestamp("finished_at"),
+}, (table) => ({
+  scopeIdx: index("sync_runs_scope_idx").on(table.scope),
+  seriesSlugIdx: index("sync_runs_series_slug_idx").on(table.seriesSlug),
+  startedAtIdx: index("sync_runs_started_at_idx").on(table.startedAt),
+}));
 
 export type PolishBond = typeof polishBonds.$inferSelect;
 
@@ -173,6 +196,9 @@ export type DataSeries = typeof dataSeries.$inferSelect;
 
 export type NewDataPoint = typeof dataPoints.$inferInsert;
 export type DataPoint = typeof dataPoints.$inferSelect;
+
+export type NewSyncRun = typeof syncRuns.$inferInsert;
+export type SyncRun = typeof syncRuns.$inferSelect;
 
 export type NewUserPortfolio = typeof userPortfolios.$inferInsert;
 export type UserPortfolio = typeof userPortfolios.$inferSelect;

@@ -5,6 +5,7 @@ import { db } from '@/db';
 import { dataPoints, dataSeries } from '@/db/schema';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { CPI_SLUGS, getCached, getSeriesReferenceDate, NBP_RATE_SLUGS, setCache } from './market-data-cache';
+import { listRecentSyncRuns } from '@/lib/server/sync/run-history';
 
 export interface MacroAssumptionDefaults {
   expectedInflation: number;
@@ -35,10 +36,15 @@ export const getGlobalDataFreshness = cache(async (): Promise<CalculationDataFre
 
   const STALE_THRESHOLD_DAYS = 45;
   const now = new Date();
-  const latestSyncCheck = criticalSeries
+  const recentSyncRuns = await listRecentSyncRuns(20);
+  const latestRecordedSync = recentSyncRuns
+    .filter((run) => run.finishedAt)
+    .sort((a, b) => (b.finishedAt?.getTime() ?? 0) - (a.finishedAt?.getTime() ?? 0))[0];
+  const latestSeriesSyncCheck = criticalSeries
     .map((series) => series.updatedAt)
     .filter((value): value is Date => Boolean(value))
     .sort((a, b) => b.getTime() - a.getTime())[0];
+  const latestSyncCheck = latestRecordedSync?.finishedAt ?? latestSeriesSyncCheck;
   const seriesWithDates = criticalSeries
     .map((series) => ({ series, referenceDate: getSeriesReferenceDate(series) }))
     .filter(

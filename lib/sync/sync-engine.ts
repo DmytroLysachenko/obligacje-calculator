@@ -10,6 +10,7 @@ import { BOND_DEFINITIONS } from "@/features/bond-core/constants/bond-definition
 import { BondType } from "@/features/bond-core/types";
 import { bondSeries } from "@/db/schema";
 import { createSyncLogger, type SyncLogger } from "./sync-logger";
+import { recordSyncRun } from "@/lib/server/sync/run-history";
 
 export class SyncEngine {
   constructor(
@@ -22,6 +23,7 @@ export class SyncEngine {
    * Can be called by a cron job or manual trigger.
    */
   async runFullSync(startYear: number = 1910) {
+    const startedAt = new Date();
     this.logger.info('Starting full financial sync');
     
     // 1. Sync Macro Data (Inflation, NBP)
@@ -34,12 +36,26 @@ export class SyncEngine {
     // 3. Sync Historical Providers (Stooq, etc.)
     const providerResults = await this.syncAll(startYear);
 
-    return {
+    const summary = {
       mode: 'full-sync',
       macro,
       bondOffers: bondOffers.length,
       historical: providerResults
     };
+
+    await this.safeRecordSyncRun({
+      scope: 'full-sync',
+      mode: 'full-sync',
+      status: providerResults.some((result) => 'error' in result) ? 'partial' : 'success',
+      inserted: providerResults.reduce((sum, result) => sum + ('inserted' in result ? result.inserted : 0), 0),
+      updated: providerResults.reduce((sum, result) => sum + ('updated' in result ? result.updated : 0), 0),
+      skipped: providerResults.reduce((sum, result) => sum + ('skipped' in result ? result.skipped : 0), 0),
+      message: `Macro sync complete; ${bondOffers.length} bond offers processed.`,
+      startedAt,
+      finishedAt: new Date(),
+    });
+
+    return summary;
   }
 
   async syncAll(startYear: number = 1910) {
@@ -51,7 +67,17 @@ export class SyncEngine {
         results.push(status);
       } catch (error) {
         this.logger.error(`Failed sync for ${provider.name}`, error);
-        results.push({ provider: provider.name, error: String(error) });
+        const failure = { provider: provider.name, seriesSlug: provider.seriesSlug, status: 'failed', error: String(error) };
+        await this.safeRecordSyncRun({
+          scope: provider.name,
+          provider: provider.name,
+          seriesSlug: provider.seriesSlug,
+          mode: 'provider-sync',
+          status: 'failed',
+          error: String(error),
+          finishedAt: new Date(),
+        });
+        results.push(failure);
       }
     }
     return results;
@@ -155,7 +181,7 @@ export class SyncEngine {
 
     if (isBefore(today, currentStartDate)) {
       this.logger.info(`${provider.name} (${provider.seriesSlug}) is already up to date`);
-      return {
+      const result = {
         provider: provider.name,
         seriesSlug: provider.seriesSlug,
         status: 'up-to-date',
@@ -165,6 +191,8 @@ export class SyncEngine {
         updated: 0,
         skipped: 0,
       };
+      await this.recordProviderResult(result);
+      return result;
     }
 
     this.logger.info(`Fetching ${provider.name}`, {
@@ -175,7 +203,7 @@ export class SyncEngine {
     
     if (data.length === 0) {
       this.logger.info(`No new data found for ${provider.name}`);
-      return {
+      const result = {
         provider: provider.name,
         seriesSlug: provider.seriesSlug,
         status: 'no-new-data',
@@ -185,6 +213,8 @@ export class SyncEngine {
         updated: 0,
         skipped: data.length,
       };
+      await this.recordProviderResult(result);
+      return result;
     }
 
     const slugToId: Record<string, string> = {
@@ -229,7 +259,7 @@ export class SyncEngine {
       }
     }
 
-    return {
+    const result = {
       provider: provider.name,
       seriesSlug: provider.seriesSlug,
       status: 'success',
@@ -239,6 +269,45 @@ export class SyncEngine {
       updated: 0,
       skipped: Math.max(0, data.length - recordsToInsert.length),
     };
+    await this.recordProviderResult(result, recordsToInsert.map((record) => record.date).sort().at(-1));
+    return result;
+  }
+
+  private async recordProviderResult(
+    result: {
+      provider: string;
+      seriesSlug: string;
+      status: string;
+      rangeStart: string;
+      rangeEnd: string;
+      inserted: number;
+      updated: number;
+      skipped: number;
+    },
+    latestDataPointDate?: string,
+  ) {
+    await this.safeRecordSyncRun({
+      scope: result.provider,
+      provider: result.provider,
+      seriesSlug: result.seriesSlug,
+      mode: 'provider-sync',
+      status: result.status,
+      rangeStart: result.rangeStart,
+      rangeEnd: result.rangeEnd,
+      inserted: result.inserted,
+      updated: result.updated,
+      skipped: result.skipped,
+      latestDataPointDate,
+      finishedAt: new Date(),
+    });
+  }
+
+  private async safeRecordSyncRun(input: Parameters<typeof recordSyncRun>[0]) {
+    try {
+      await recordSyncRun(input);
+    } catch (error) {
+      this.logger.error('Failed to persist sync run history', error);
+    }
   }
 }
 
