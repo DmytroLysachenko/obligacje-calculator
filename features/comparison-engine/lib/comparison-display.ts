@@ -9,8 +9,10 @@ type Translator = (key: string, params?: Record<string, string | number>) => str
 export type ComparisonChartPoint = {
   dateKey: string;
   label: string;
-  valA: number;
-  valB: number;
+  nominalA: number;
+  realA: number;
+  nominalB: number;
+  realB: number;
   inflation?: number;
   nbp?: number;
   isProjected?: boolean;
@@ -22,7 +24,6 @@ export function buildComparisonChartData({
   withdrawalDateB,
   resultsA,
   resultsB,
-  showRealValue,
   language,
   t,
   chartStep = 'monthly',
@@ -32,7 +33,6 @@ export function buildComparisonChartData({
   withdrawalDateB: string;
   resultsA: CalculationResult;
   resultsB: CalculationResult;
-  showRealValue: boolean;
   language: 'pl' | 'en';
   t: Translator;
   chartStep?: ChartStep;
@@ -66,18 +66,23 @@ export function buildComparisonChartData({
     dates: Date[],
   ) => {
     let index = 0;
-    let currentValue = initialInvestment;
+    let currentNominalValue = initialInvestment;
+    let currentRealValue = initialInvestment;
 
     return dates.map((date) => {
       while (
         index < timeline.length
         && compareAsc(parseISO(timeline[index].cycleEndDate), date) <= 0
       ) {
-        currentValue = showRealValue ? timeline[index].realValue : timeline[index].totalValue;
+        currentNominalValue = timeline[index].totalValue;
+        currentRealValue = timeline[index].realValue;
         index += 1;
       }
 
-      return currentValue;
+      return {
+        nominal: currentNominalValue,
+        real: currentRealValue,
+      };
     });
   };
 
@@ -118,8 +123,10 @@ export function buildComparisonChartData({
           : format(date, 'MMM yyyy', {
             locale: getDateFnsLocale(language),
           }),
-      valA: seriesA[index],
-      valB: seriesB[index],
+      nominalA: seriesA[index].nominal,
+      realA: seriesA[index].real,
+      nominalB: seriesB[index].nominal,
+      realB: seriesB[index].real,
       inflation: contextA[index].inflation ?? contextB[index].inflation,
       nbp: contextA[index].nbp ?? contextB[index].nbp,
       isProjected: contextA[index].isProjected || contextB[index].isProjected,

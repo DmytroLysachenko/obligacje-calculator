@@ -19,7 +19,6 @@ import { computeNumericDomain, computeRateDomain } from '@/shared/lib/chart-seri
 
 interface ComparisonResultsPanelProps {
   chartData: ComparisonChartPoint[];
-  showRealValue: boolean;
   usesMixedTimelineCadence: boolean;
   resultsA: CalculationResult;
   resultsB: CalculationResult;
@@ -33,7 +32,6 @@ interface ComparisonResultsPanelProps {
 
 export function ComparisonResultsPanel({
   chartData,
-  showRealValue,
   usesMixedTimelineCadence,
   resultsA,
   resultsB,
@@ -45,8 +43,8 @@ export function ComparisonResultsPanel({
   onChartStepChange,
 }: ComparisonResultsPanelProps) {
   const { t } = useAppI18n();
-  const valueA = showRealValue ? resultsA.finalRealValue : resultsA.netPayoutValue;
-  const valueB = showRealValue ? resultsB.finalRealValue : resultsB.netPayoutValue;
+  const valueA = resultsA.netPayoutValue;
+  const valueB = resultsB.netPayoutValue;
   const winner = valueA === valueB ? null : valueA > valueB ? 'A' : 'B';
   const winnerInput = winner === 'A' ? inputsA : winner === 'B' ? inputsB : null;
   const absoluteGap = Math.abs(valueA - valueB);
@@ -54,16 +52,26 @@ export function ComparisonResultsPanel({
   const relativeGap = lowerValue > 0 ? (absoluteGap / lowerValue) * 100 : 0;
   const comparisonMetrics = React.useMemo<MetricStripItem[]>(() => [
     {
-      label: showRealValue ? `${t('comparison.scenario_a')} ${t('common.real_value')}` : t('comparison.scenario_a'),
+      label: t('comparison.scenario_a'),
       value: formatCurrency(valueA),
       tone: 'text-primary',
     },
     {
-      label: showRealValue ? `${t('comparison.scenario_b')} ${t('common.real_value')}` : t('comparison.scenario_b'),
+      label: t('comparison.scenario_b'),
       value: formatCurrency(valueB),
       tone: 'text-success',
     },
-  ], [formatCurrency, showRealValue, t, valueA, valueB]);
+    {
+      label: `${t('comparison.scenario_a')} ${t('common.real_value')}`,
+      value: formatCurrency(resultsA.finalRealValue),
+      tone: 'text-foreground',
+    },
+    {
+      label: `${t('comparison.scenario_b')} ${t('common.real_value')}`,
+      value: formatCurrency(resultsB.finalRealValue),
+      tone: 'text-foreground',
+    },
+  ], [formatCurrency, resultsA.finalRealValue, resultsB.finalRealValue, t, valueA, valueB]);
   const differenceMetrics = React.useMemo<MetricStripItem[]>(() => [
     {
       label: t('comparison.summary_leading_bond'),
@@ -76,7 +84,7 @@ export function ComparisonResultsPanel({
     {
       label: t('comparison.summary_absolute_gap'),
       value: formatCurrency(absoluteGap),
-      description: showRealValue ? t('common.real_value') : t('comparison.summary_net_payout'),
+      description: t('comparison.summary_net_payout'),
       tone: 'text-foreground',
     },
     {
@@ -85,7 +93,7 @@ export function ComparisonResultsPanel({
       description: t('comparison.summary_compared_to_lower'),
       tone: 'text-foreground',
     },
-  ], [absoluteGap, formatCurrency, relativeGap, showRealValue, t, winner, winnerInput]);
+  ], [absoluteGap, formatCurrency, relativeGap, t, winner, winnerInput]);
   const exportActions = React.useMemo(() => [
     {
       label: t('comparison.export_comparison_csv'),
@@ -106,8 +114,10 @@ export function ComparisonResultsPanel({
         label: point.label,
         date: point.label,
         dateKey: point.dateKey,
-        valA: point.valA,
-        valB: point.valB,
+        nominalA: point.nominalA,
+        realA: point.realA,
+        nominalB: point.nominalB,
+        realB: point.realB,
         inflation: point.inflation,
         nbp: point.nbp,
         isProjected: point.isProjected,
@@ -118,7 +128,12 @@ export function ComparisonResultsPanel({
     () =>
       computeNumericDomain(
         valueChartData
-          .flatMap((point) => [Number(point.valA), Number(point.valB)])
+          .flatMap((point) => [
+            Number(point.nominalA),
+            Number(point.realA),
+            Number(point.nominalB),
+            Number(point.realB),
+          ])
           .filter((value) => Number.isFinite(value)),
         {
           minFloor: 0,
@@ -147,27 +162,38 @@ export function ComparisonResultsPanel({
 
     return t('comparison.chart_accessible_summary', {
       count: valueChartData.length,
-      startA: formatCurrency(Number(firstPoint.valA)),
-      endA: formatCurrency(Number(lastPoint.valA)),
-      startB: formatCurrency(Number(firstPoint.valB)),
-      endB: formatCurrency(Number(lastPoint.valB)),
+      startA: formatCurrency(Number(firstPoint.nominalA)),
+      endA: formatCurrency(Number(lastPoint.nominalA)),
+      startB: formatCurrency(Number(firstPoint.nominalB)),
+      endB: formatCurrency(Number(lastPoint.nominalB)),
     });
   }, [formatCurrency, t, valueChartData]);
   const chartSeries = React.useMemo(
     () => [
       {
-        key: 'valA',
+        key: 'nominalA',
         label: `${inputsA.bondType} (A)`,
         color: '#111111',
       },
       {
-        key: 'valB',
+        key: 'realA',
+        label: `${inputsA.bondType} (A) ${t('common.real_value')}`,
+        color: '#8FBDA7',
+        secondary: true,
+      },
+      {
+        key: 'nominalB',
         label: `${inputsB.bondType} (B)`,
         color: '#4E8F71',
+      },
+      {
+        key: 'realB',
+        label: `${inputsB.bondType} (B) ${t('common.real_value')}`,
+        color: '#9A9A9A',
         secondary: true,
       },
     ],
-    [inputsA.bondType, inputsB.bondType],
+    [inputsA.bondType, inputsB.bondType, t],
   );
 
   return (

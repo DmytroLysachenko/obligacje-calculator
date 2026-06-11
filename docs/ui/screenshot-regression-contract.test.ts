@@ -63,12 +63,9 @@ describe('screenshot regression contracts', () => {
   it('keeps maturity-mode controls from overflowing into comparison results', () => {
     const source = read(files.comparisonSharedBase);
 
-    expectContains(source, 'className="h-auto min-w-0 justify-start overflow-hidden px-3 py-3 text-left"');
-    expectContains(source, 'className="min-w-0 space-y-1 whitespace-normal"');
-    expectContains(source, 'className="block max-w-full text-xs font-normal leading-5 opacity-80"');
-    expectContains(source, 'aria-pressed={activeMaturityMode === mode}');
-    expectContains(source, 'onClick={() => onUpdateSharedConfig(\'maturityMode\', mode)}');
-    expectContains(source, 'border-l-2 border-border px-4 py-3');
+    expectNotContains(source, 'activeMaturityMode');
+    expectNotContains(source, "onClick={() => onUpdateSharedConfig('maturityMode', mode)}");
+    expectNotContains(source, "t('bonds.inflation.adjusted')");
 
     expectNoFragments(source, [
       'className="h-auto justify-start px-3 py-3 text-left"',
@@ -123,7 +120,7 @@ describe('screenshot regression contracts', () => {
     expectContains(source, '<SidebarUtilityStack>');
     expectContains(source, '<SidebarUtilityPanel flush>');
     expectContains(source, 'action={<LanguageSwitcher />}');
-    expectContains(source, 'action={<ThemeToggle />}');
+    expectNotContains(source, 'action={<ThemeToggle />}');
 
     expectNoFragments(source, [
       '<div className="space-y-3">',
@@ -142,8 +139,8 @@ describe('screenshot regression contracts', () => {
 
     expectContains(economicLayout, 'grid gap-x-6 gap-y-4 border-y');
     expectContains(economicLayout, 'border-0 bg-transparent px-0');
-    expectContains(comparisonContract, 'min-w-0 space-y-1 whitespace-normal');
-    expectContains(comparisonContract, 'block max-w-full text-xs font-normal leading-5 opacity-80');
+    expectContains(comparisonContract, 'auto_rollover_mode_label');
+    expectContains(comparisonContract, 'auto_rollover_fairness_desc');
     expectContains(sidebarContract, '<SidebarUtilityStack>');
     expectContains(sidebarContract, '<SidebarUtilityPanel flush>');
   });

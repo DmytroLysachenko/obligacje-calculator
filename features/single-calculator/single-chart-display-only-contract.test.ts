@@ -30,7 +30,8 @@ describe('single calculator chart display-only contract', () => {
     const source = read(files.hook);
 
     expectContains(source, 'function withoutDisplayOnlyInputs(inputs: BondInputs | null): BondInputs | null');
-    expectContains(source, 'const { chartStep: _chartStep, ...calculationInputs } = inputs;');
+    expectContains(source, 'const calculationInputs = { ...inputs };');
+    expectContains(source, 'delete calculationInputs.chartStep;');
     expectNotContains(source, 'function getDefaultChartStep');
     expectNotContains(source, 'nextChartStep');
     expectNotContains(source, 'chartStep: getDefaultChartStep');

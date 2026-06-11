@@ -52,8 +52,10 @@ describe('comparison chart ownership contract', () => {
     expectContains(results, 'rightDomain={rightDomain}');
     expectContains(results, 'computeRateDomain(');
     expectContains(results, 'valueChartData');
-    expectContains(results, 'valA');
-    expectContains(results, 'valB');
+    expectContains(results, 'nominalA');
+    expectContains(results, 'realA');
+    expectContains(results, 'nominalB');
+    expectContains(results, 'realB');
     expectContains(results, 'inflation: point.inflation');
     expectContains(results, 'nbp: point.nbp');
 

@@ -21,7 +21,6 @@ interface ComparisonTableProps {
   resultsB: CalculationResult;
   bondTypeA: string;
   bondTypeB: string;
-  showRealValue: boolean;
   formatCurrency: (val: number) => string;
 }
 
@@ -47,15 +46,14 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
   resultsB,
   bondTypeA,
   bondTypeB,
-  showRealValue,
   formatCurrency,
 }) => {
     const { t } = useAppI18n();
   const higherColumnLabel = t('comparison.table_ahead_in_row');
   const higherBadgeSuffix = t('comparison.table_ahead_badge_suffix');
   const tieLabel = t('comparison.table_tie');
-  const resultAValue = showRealValue ? resultsA.finalRealValue : resultsA.netPayoutValue;
-  const resultBValue = showRealValue ? resultsB.finalRealValue : resultsB.netPayoutValue;
+  const resultAValue = resultsA.netPayoutValue;
+  const resultBValue = resultsB.netPayoutValue;
   const firstLead =
     resultAValue === resultBValue
       ? tieLabel
@@ -66,11 +64,14 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
   const maxLen = Math.max(resultsA.timeline.length, resultsB.timeline.length);
   const summaryRows = [
     {
-      label: showRealValue
-        ? t('bonds.real_value_inflation')
-        : t('bonds.net_payout'),
+      label: t('bonds.net_payout'),
       a: resultAValue,
       b: resultBValue,
+    },
+    {
+      label: t('bonds.real_value_inflation'),
+      a: resultsA.finalRealValue,
+      b: resultsB.finalRealValue,
     },
     {
       label: t('common.net_profit'),
@@ -165,8 +166,8 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
             {Array.from({ length: maxLen }).map((_, i) => {
               const pointA = resultsA.timeline[i];
               const pointB = resultsB.timeline[i];
-              const valA = showRealValue ? pointA?.realValue : pointA?.totalValue;
-              const valB = showRealValue ? pointB?.realValue : pointB?.totalValue;
+              const valA = pointA?.totalValue;
+              const valB = pointB?.totalValue;
 
               return (
                 <div key={`mobile-compare-${i}`} className="rounded-lg bg-muted/30 p-4">
@@ -223,8 +224,8 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                   {Array.from({ length: maxLen }).map((_, i) => {
                     const pointA = resultsA.timeline[i];
                     const pointB = resultsB.timeline[i];
-                    const valA = showRealValue ? pointA?.realValue : pointA?.totalValue;
-                    const valB = showRealValue ? pointB?.realValue : pointB?.totalValue;
+                    const valA = pointA?.totalValue;
+                    const valB = pointB?.totalValue;
                     const higherScenario =
                       valA !== undefined && valB !== undefined
                         ? valA === valB

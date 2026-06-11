@@ -94,7 +94,7 @@ function buildScenarioInputs(
     payoutFrequency: definition.payoutFrequency,
     purchaseDate,
     withdrawalDate,
-    isRebought: normalizedScenario.isRebought ?? false,
+    isRebought: false,
     rebuyDiscount: definition.rebuyDiscount,
     taxStrategy: normalizedScenario.taxStrategy ?? sharedConfig.taxStrategy ?? TaxStrategy.STANDARD,
     rollover: normalizedScenario.rollover ?? false,

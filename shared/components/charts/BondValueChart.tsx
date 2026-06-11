@@ -19,6 +19,10 @@ import { ChartContainer } from "@/shared/components/charts/ChartContainer";
 import { ChartLegendStrip } from "@/shared/components/charts/ChartLegendStrip";
 import { ChartStep } from "@/features/bond-core/types";
 import { useAppI18n } from "@/i18n/client";
+import {
+  loadChartDisplayPreferences,
+  saveChartDisplayPreferences,
+} from "@/shared/lib/chart-display-preferences";
 
 export interface BondValueChartSeries {
   key: string;
@@ -180,11 +184,20 @@ export function BondValueChart({
   heightClassName = "h-[360px] md:h-[460px] xl:h-[520px]",
 }: BondValueChartProps) {
   const { t } = useAppI18n();
-  const [showInflationOverlay, setShowInflationOverlay] = React.useState(false);
-  const [showNbpOverlay, setShowNbpOverlay] = React.useState(false);
-  const [granularity, setGranularity] = React.useState<ChartStep>(defaultGranularity);
+  const [preferences, setPreferences] = React.useState(() =>
+    loadChartDisplayPreferences(defaultGranularity),
+  );
+  const showInflationOverlay = preferences.showInflationOverlay;
+  const showNbpOverlay = preferences.showNbpOverlay;
+  const granularity = preferences.granularity;
   const showContextAxis = showInflationOverlay || showNbpOverlay;
   const firstProjectedIndex = React.useMemo(() => data.findIndex((point) => point.isProjected), [data]);
+
+  React.useEffect(() => {
+    if (granularity !== defaultGranularity) {
+      onGranularityChange?.(granularity);
+    }
+  }, [defaultGranularity, granularity, onGranularityChange]);
 
   const legendItems = React.useMemo(
     () => [
@@ -204,8 +217,29 @@ export function BondValueChart({
   );
 
   const handleGranularityChange = (nextStep: ChartStep) => {
-    setGranularity(nextStep);
+    setPreferences((current) => {
+      const next = {
+        ...current,
+        granularity: nextStep,
+      };
+      saveChartDisplayPreferences(next);
+      return next;
+    });
     onGranularityChange?.(nextStep);
+  };
+
+  const updateOverlayPreference = (
+    key: "showInflationOverlay" | "showNbpOverlay",
+    value: boolean,
+  ) => {
+    setPreferences((current) => {
+      const next = {
+        ...current,
+        [key]: value,
+      };
+      saveChartDisplayPreferences(next);
+      return next;
+    });
   };
 
   return (
@@ -241,7 +275,7 @@ export function BondValueChart({
                     ? "border-warning bg-warning/10 text-warning"
                     : "border-border bg-background text-muted-foreground hover:text-foreground",
                 )}
-                onClick={() => setShowInflationOverlay((current) => !current)}
+                onClick={() => updateOverlayPreference("showInflationOverlay", !showInflationOverlay)}
               >
                 {t("bonds.ref_inflation")}
               </button>
@@ -254,7 +288,7 @@ export function BondValueChart({
                     ? "border-muted-foreground bg-muted text-foreground"
                     : "border-border bg-background text-muted-foreground hover:text-foreground",
                 )}
-                onClick={() => setShowNbpOverlay((current) => !current)}
+                onClick={() => updateOverlayPreference("showNbpOverlay", !showNbpOverlay)}
               >
                 {t("bonds.nbp_rate_short")}
               </button>
