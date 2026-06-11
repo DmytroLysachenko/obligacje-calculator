@@ -23,6 +23,10 @@ export const BondSummaryFooter: React.FC<BondSummaryFooterProps> = React.memo(({
     const rateContext = getBondRateContextCopy(inputs.bondType, Number(inputs.firstYearRate), Number(inputs.margin), t);
     const summaryItems = [
         {
+            label: t('bonds.bond.type'),
+            value: `${inputs.bondType} - ${currentDef.fullName[language]}`,
+        },
+        {
             label: t('bonds.duration'),
             value: formatBondDuration(inputs.duration, language),
         },

@@ -16,7 +16,6 @@ import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/Advance
 import { InputGuardrailIssue } from '../lib/input-guardrails';
 import { BondConfigSection } from './sections/BondConfigSection';
 import { BondTimingSection } from './sections/BondTimingSection';
-import { BondDisplaySection } from './sections/BondDisplaySection';
 import { BondSummaryFooter } from './sections/BondSummaryFooter';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 
@@ -208,13 +207,6 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               onNbpSetupModeChange={setNbpSetupMode}
             />
           </AdvancedAssumptionsDisclosure>
-
-          <div className="border-t border-border pt-5">
-            <BondDisplaySection
-              inputs={inputs}
-              onUpdate={handleUpdate}
-            />
-          </div>
         </div>
 
         <BondSummaryFooter

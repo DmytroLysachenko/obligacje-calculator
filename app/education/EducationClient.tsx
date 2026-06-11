@@ -191,8 +191,8 @@ export default function EducationClient() {
                 {t('education.q_inflation')}
               </AccordionTrigger>
               <AccordionContent className="leading-relaxed text-muted-foreground">
-                <div className="flex items-start gap-4 py-2">
-                  <TrendingDown className="mt-1 h-5 w-5 shrink-0 text-foreground" />
+                <div className="flex items-start gap-3 py-2">
+                  <TrendingDown className="mt-0.5 h-5 w-5 shrink-0 text-foreground" />
                   <p>{t('education.a_inflation')}</p>
                 </div>
               </AccordionContent>
@@ -203,8 +203,8 @@ export default function EducationClient() {
                 {t('education.q_tax')}
               </AccordionTrigger>
               <AccordionContent className="leading-relaxed text-muted-foreground">
-                <div className="flex items-start gap-4 py-2">
-                  <Scale className="mt-1 h-5 w-5 shrink-0 text-foreground" />
+                <div className="flex items-start gap-3 py-2">
+                  <Scale className="mt-0.5 h-5 w-5 shrink-0 text-foreground" />
                   <p>{t('education.a_tax')}</p>
                 </div>
               </AccordionContent>
@@ -215,8 +215,8 @@ export default function EducationClient() {
                 {t('education.q_early_exit')}
               </AccordionTrigger>
               <AccordionContent className="leading-relaxed text-muted-foreground">
-                <div className="flex items-start gap-4 py-2">
-                  <AlertTriangle className="mt-1 h-5 w-5 shrink-0 text-warning" />
+                <div className="flex items-start gap-3 py-2">
+                  <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
                   <p>{t('education.a_early_exit')}</p>
                 </div>
               </AccordionContent>
@@ -227,8 +227,8 @@ export default function EducationClient() {
                 {t('education.q_monthly_payout')}
               </AccordionTrigger>
               <AccordionContent className="leading-relaxed text-muted-foreground">
-                <div className="flex items-start gap-4 py-2">
-                  <Info className="mt-1 h-5 w-5 shrink-0 text-foreground" />
+                <div className="flex items-start gap-3 py-2">
+                  <Info className="mt-0.5 h-5 w-5 shrink-0 text-foreground" />
                   <p>{t('education.a_monthly_payout')}</p>
                 </div>
               </AccordionContent>

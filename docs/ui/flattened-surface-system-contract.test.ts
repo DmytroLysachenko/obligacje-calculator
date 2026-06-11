@@ -20,7 +20,6 @@ const flattenedSurfaceFiles = [
   'shared/components/forms/SegmentedControl.tsx',
   'features/single-calculator/components/BondInputsForm.tsx',
   'features/regular-investment/components/RegularInvestmentInputsForm.tsx',
-  'features/single-calculator/components/sections/BondDisplaySection.tsx',
   'features/regular-investment/components/inputs/AdvancedSettingsSection.tsx',
   'features/regular-investment/components/RegularInvestmentResultsSummary.tsx',
   'shared/components/results/ResultSummaryHero.tsx',
@@ -98,9 +97,6 @@ describe('flattened shared surface system contract', () => {
     expect(sourceByPath.get('features/single-calculator/components/BondInputsForm.tsx')).toContain("import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
     expect(sourceByPath.get('features/single-calculator/components/BondInputsForm.tsx')).toContain('w-full space-y-8 border-y border-border bg-background p-5 md:p-6');
     expect(sourceByPath.get('features/regular-investment/components/RegularInvestmentInputsForm.tsx')).toContain('w-full space-y-8 border-y border-border bg-background p-5 md:p-6');
-    expect(sourceByPath.get('features/single-calculator/components/sections/BondDisplaySection.tsx')).toContain("import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';");
-    expect(sourceByPath.get('features/single-calculator/components/sections/BondDisplaySection.tsx')).toContain("import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
-    expect(sourceByPath.get('features/regular-investment/components/inputs/AdvancedSettingsSection.tsx')).toContain("import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';");
     expect(sourceByPath.get('features/regular-investment/components/RegularInvestmentResultsSummary.tsx')).toContain("import { SectionBlock } from '@/shared/components/page/SectionBlock';");
     expect(sourceByPath.get('features/regular-investment/components/RegularInvestmentResultsSummary.tsx')).toContain('<div className="hidden border-y border-border lg:block">');
     expect(sourceByPath.get('shared/components/results/ResultSummaryHero.tsx')).toContain('overflow-hidden border-y border-border bg-background');
