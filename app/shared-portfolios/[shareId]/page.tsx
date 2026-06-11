@@ -1,11 +1,9 @@
 import type {Metadata} from 'next';
-import {and, eq} from 'drizzle-orm';
 import {notFound} from 'next/navigation';
 import {getTranslations} from 'next-intl/server';
 import {PortfolioDetails} from '@/features/notebook/components/PortfolioDetails';
-import {db} from '@/db';
-import {userPortfolios} from '@/db/schema';
 import {ensurePortfolioSchemaCompat} from '@/lib/server/db/portfolio-schema-compat';
+import {getPublicSharedPortfolioByShareId} from '@/lib/server/portfolio/service';
 
 interface Props {
   params: Promise<{shareId: string}>;
@@ -17,9 +15,7 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
   const common = await getTranslations('common');
   const {shareId} = await params;
 
-  const portfolio = await db.query.userPortfolios.findFirst({
-    where: and(eq(userPortfolios.shareId, shareId), eq(userPortfolios.isPublic, true)),
-  });
+  const portfolio = await getPublicSharedPortfolioByShareId(shareId);
 
   if (!portfolio) {
     return {
@@ -38,9 +34,7 @@ export default async function SharedPortfolioPage({params}: Props) {
   await ensurePortfolioSchemaCompat();
   const page = await getTranslations('shared_portfolio_page');
   const {shareId} = await params;
-  const portfolio = await db.query.userPortfolios.findFirst({
-    where: and(eq(userPortfolios.shareId, shareId), eq(userPortfolios.isPublic, true)),
-  });
+  const portfolio = await getPublicSharedPortfolioByShareId(shareId);
 
   if (!portfolio) {
     notFound();

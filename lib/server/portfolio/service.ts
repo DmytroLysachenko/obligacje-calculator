@@ -12,6 +12,7 @@ import {
   deleteLotById,
   deletePortfolioById,
   findPortfolioById,
+  findPortfolioByShareId,
   listLotsByPortfolio,
   listLotsByPortfolioIds,
   listPortfoliosByOwner,
@@ -42,6 +43,16 @@ export class PortfolioServiceError extends Error {
 
 export async function listOwnerPortfolios(ownerId: string) {
   return listPortfoliosByOwner(ownerId);
+}
+
+export async function getPublicSharedPortfolioByShareId(shareId: string) {
+  const portfolio = await findPortfolioByShareId(shareId);
+
+  if (!portfolio || !portfolio.isPublic) {
+    return null;
+  }
+
+  return portfolio;
 }
 
 export async function createOwnerPortfolio(ownerId: string, input: {name: string; description?: string}) {

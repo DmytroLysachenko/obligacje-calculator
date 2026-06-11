@@ -29,6 +29,12 @@ export function findPortfolioById(portfolioId: string) {
   });
 }
 
+export function findPortfolioByShareId(shareId: string) {
+  return db.query.userPortfolios.findFirst({
+    where: eq(userPortfolios.shareId, shareId),
+  });
+}
+
 export function deletePortfolioById(portfolioId: string) {
   return db.delete(userPortfolios).where(eq(userPortfolios.id, portfolioId)).returning();
 }
