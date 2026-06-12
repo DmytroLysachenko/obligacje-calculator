@@ -28,6 +28,8 @@ interface ComparisonResultsPanelProps {
   language: 'pl' | 'en';
   chartStep: ChartStep;
   onChartStepChange: (step: ChartStep) => void;
+  scenarioAColor: string;
+  scenarioBColor: string;
 }
 
 export function ComparisonResultsPanel({
@@ -41,6 +43,8 @@ export function ComparisonResultsPanel({
   language,
   chartStep,
   onChartStepChange,
+  scenarioAColor,
+  scenarioBColor,
 }: ComparisonResultsPanelProps) {
   const { t } = useAppI18n();
   const valueA = resultsA.netPayoutValue;
@@ -173,27 +177,27 @@ export function ComparisonResultsPanel({
       {
         key: 'nominalA',
         label: `${inputsA.bondType} (A)`,
-        color: '#111111',
+        color: scenarioAColor,
       },
       {
         key: 'realA',
         label: `${inputsA.bondType} (A) ${t('common.real_value')}`,
-        color: '#8FBDA7',
+        color: scenarioAColor,
         secondary: true,
       },
       {
         key: 'nominalB',
         label: `${inputsB.bondType} (B)`,
-        color: '#4E8F71',
+        color: scenarioBColor,
       },
       {
         key: 'realB',
         label: `${inputsB.bondType} (B) ${t('common.real_value')}`,
-        color: '#9A9A9A',
+        color: scenarioBColor,
         secondary: true,
       },
     ],
-    [inputsA.bondType, inputsB.bondType, t],
+    [inputsA.bondType, inputsB.bondType, scenarioAColor, scenarioBColor, t],
   );
 
   return (
@@ -210,7 +214,7 @@ export function ComparisonResultsPanel({
       <div>
         <div className="mb-5 space-y-3">
           <MetricStrip items={differenceMetrics} columns="grid-cols-1 md:grid-cols-3" className="shadow-none" />
-          <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_280px]">
+          <div className="grid gap-3 2xl:grid-cols-[minmax(0,1fr)_280px]">
             <MetricStrip items={comparisonMetrics} columns="grid-cols-1 md:grid-cols-2" className="shadow-none" />
             <ResultActionGrid
               actions={exportActions}
@@ -234,7 +238,7 @@ export function ComparisonResultsPanel({
           defaultGranularity={chartStep}
           onGranularityChange={onChartStepChange}
           ariaLabel={t('comparison.performance_over_time')}
-          heightClassName="h-[360px] md:h-[420px] xl:h-[460px]"
+          heightClassName="h-[360px] md:h-[440px] xl:h-[500px]"
         />
 
         <div className="mt-6">

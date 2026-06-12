@@ -24,7 +24,7 @@ type SharedComparisonConfig = IndependentBondComparisonPayload['sharedConfig'];
 type ScenarioOverride = IndependentBondComparisonPayload['scenarioA'];
 
 const DEFAULT_HORIZON_MONTHS = 120;
-const STORAGE_KEY = 'obligacje.comparison-calculator.v1';
+const STORAGE_KEY = 'obligacje.comparison-calculator.v3';
 
 function buildDefaultSharedConfig(): SharedComparisonConfig {
   const today = toDateString(new Date());
@@ -58,6 +58,8 @@ interface PersistedComparisonState {
   scenarioA: ScenarioOverride;
   scenarioB: ScenarioOverride;
   comparisonEnvelope: BondComparisonCalculationEnvelope | null;
+  committedInputsA: BondInputs | null;
+  committedInputsB: BondInputs | null;
   isDirty: boolean;
 }
 
@@ -118,6 +120,8 @@ export function useComparison() {
   const [comparisonEnvelope, setComparisonEnvelope] = useState<BondComparisonCalculationEnvelope | null>(
     null,
   );
+  const [committedInputsA, setCommittedInputsA] = useState<BondInputs | null>(null);
+  const [committedInputsB, setCommittedInputsB] = useState<BondInputs | null>(null);
   const [isDirty, setIsDirty] = useState(true);
   const [isPersistenceReady, setIsPersistenceReady] = useState(false);
   const hasRestoredState = useRef(false);
@@ -194,10 +198,12 @@ export function useComparison() {
         { preferWorker: true },
       );
       setComparisonEnvelope(envelope);
+      setCommittedInputsA(inputsA);
+      setCommittedInputsB(inputsB);
     } catch (error) {
       console.error('Comparison error:', error);
     }
-  }, [post, scenarioA, scenarioB, sharedConfig]);
+  }, [inputsA, inputsB, post, scenarioA, scenarioB, sharedConfig]);
 
   const updateSharedConfig = (key: keyof SharedComparisonConfig, value: string | number | boolean | undefined) => {
     setIsDirty(true);
@@ -303,6 +309,8 @@ export function useComparison() {
         setScenarioA(sanitizeScenarioOverride(restoredState.sharedConfig, restoredState.scenarioA));
         setScenarioB(sanitizeScenarioOverride(restoredState.sharedConfig, restoredState.scenarioB));
         setComparisonEnvelope(restoredState.comparisonEnvelope ?? null);
+        setCommittedInputsA(restoredState.committedInputsA ?? null);
+        setCommittedInputsB(restoredState.committedInputsB ?? null);
         setIsDirty(restoredState.isDirty ?? true);
       }
 
@@ -337,9 +345,11 @@ export function useComparison() {
       scenarioA: sanitizeScenarioOverride(sharedConfig, scenarioA),
       scenarioB: sanitizeScenarioOverride(sharedConfig, scenarioB),
       comparisonEnvelope,
+      committedInputsA,
+      committedInputsB,
       isDirty,
     });
-  }, [comparisonEnvelope, isDirty, isPersistenceReady, scenarioA, scenarioB, sharedConfig]);
+  }, [committedInputsA, committedInputsB, comparisonEnvelope, isDirty, isPersistenceReady, scenarioA, scenarioB, sharedConfig]);
 
   const setScenarioACustomHorizonEnabled = useCallback((enabled: boolean) => {
     setIsDirty(true);
@@ -367,6 +377,8 @@ export function useComparison() {
     scenarioB,
     inputsA,
     inputsB,
+    committedInputsA,
+    committedInputsB,
     resultsA,
     resultsB,
     envelopeA,

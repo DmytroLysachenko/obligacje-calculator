@@ -79,6 +79,23 @@ export function buildComparisonChartData({
         index += 1;
       }
 
+      const previousPoint = timeline[Math.max(0, index - 1)];
+      const nextPoint = timeline[index];
+
+      if (previousPoint && nextPoint) {
+        const previousDate = parseISO(previousPoint.cycleEndDate);
+        const nextDate = parseISO(nextPoint.cycleEndDate);
+        const previousTime = previousDate.getTime();
+        const nextTime = nextDate.getTime();
+        const currentTime = date.getTime();
+
+        if (nextTime > previousTime && currentTime > previousTime && currentTime < nextTime) {
+          const progress = (currentTime - previousTime) / (nextTime - previousTime);
+          currentNominalValue = interpolateValue(previousPoint.totalValue, nextPoint.totalValue, progress);
+          currentRealValue = interpolateValue(previousPoint.realValue, nextPoint.realValue, progress);
+        }
+      }
+
       return {
         nominal: currentNominalValue,
         real: currentRealValue,
@@ -135,6 +152,10 @@ export function buildComparisonChartData({
   const displayPoints = aggregateComparisonChartPoints(rawPoints, chartStep);
 
   return sampleSeriesPoints(displayPoints, 180);
+}
+
+function interpolateValue(start: number, end: number, progress: number) {
+  return start + (end - start) * progress;
 }
 
 function aggregateComparisonChartPoints(

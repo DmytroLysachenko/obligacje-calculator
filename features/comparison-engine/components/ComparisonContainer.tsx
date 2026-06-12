@@ -1,7 +1,8 @@
 'use client';
 import React, { useMemo, useState } from 'react';
-import { Scale } from 'lucide-react';
+import { Loader2, RotateCcw, Scale } from 'lucide-react';
 import { ChartStep } from '@/features/bond-core/types';
+import { Button } from '@/components/ui/button';
 import { useAppI18n } from '@/i18n/client';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
@@ -13,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
 import { Notice } from '@/shared/components/feedback/Notice';
+import { getBondColor } from '@/shared/lib/charts/get-bond-color';
 import { useComparison } from '../hooks/useComparison';
 import { ComparisonTable } from './ComparisonTable';
 import { ComparisonVerdict } from './ComparisonVerdict';
@@ -25,7 +27,7 @@ import {
   usesMixedTimelineCadence,
 } from '../lib/comparison-display';
 export const ComparisonContainer: React.FC = () => {
-    const { sharedConfig, scenarioA, scenarioB, inputsA, inputsB, resultsA, resultsB, envelopeA, envelopeB, warningsA, warningsB, isCalculating, calculate, updateSharedConfig, updateScenarioA, updateScenarioB, setBondTypeA, setBondTypeB, setScenarioACustomHorizonEnabled, setScenarioBCustomHorizonEnabled, setScenarioACustomHorizonMonths, setScenarioBCustomHorizonMonths, isDirty, isPersistenceReady, definitions, } = useComparison();
+    const { sharedConfig, scenarioA, scenarioB, inputsA, inputsB, committedInputsA, committedInputsB, resultsA, resultsB, envelopeA, envelopeB, warningsA, warningsB, isCalculating, calculate, updateSharedConfig, updateScenarioA, updateScenarioB, setBondTypeA, setBondTypeB, setScenarioACustomHorizonEnabled, setScenarioBCustomHorizonEnabled, setScenarioACustomHorizonMonths, setScenarioBCustomHorizonMonths, isDirty, isPersistenceReady, definitions, } = useComparison();
     const { t, locale: language } = useAppI18n();
     const [chartStep, setChartStep] = useState<ChartStep>('yearly');
     const hasMounted = useHasMounted();
@@ -44,13 +46,15 @@ export const ComparisonContainer: React.FC = () => {
             return '---';
         return currencyFormatter.format(value);
     }, [currencyFormatter, hasMounted]);
+    const resultInputsA = committedInputsA ?? inputsA;
+    const resultInputsB = committedInputsB ?? inputsB;
     const chartData = useMemo(
       () =>
         resultsA && resultsB
           ? buildComparisonChartData({
-              purchaseDate: sharedConfig.purchaseDate,
-              withdrawalDateA: inputsA.withdrawalDate,
-              withdrawalDateB: inputsB.withdrawalDate,
+              purchaseDate: resultInputsA.purchaseDate,
+              withdrawalDateA: resultInputsA.withdrawalDate,
+              withdrawalDateB: resultInputsB.withdrawalDate,
               resultsA,
               resultsB,
               language,
@@ -58,11 +62,11 @@ export const ComparisonContainer: React.FC = () => {
               chartStep,
             })
           : [],
-      [chartStep, inputsA.withdrawalDate, inputsB.withdrawalDate, language, resultsA, resultsB, sharedConfig.purchaseDate, t],
+      [chartStep, language, resultInputsA.purchaseDate, resultInputsA.withdrawalDate, resultInputsB.withdrawalDate, resultsA, resultsB, t],
     );
     const hasMixedTimelineCadence = useMemo(
-      () => usesMixedTimelineCadence(inputsA, inputsB),
-      [inputsA, inputsB],
+      () => usesMixedTimelineCadence(resultInputsA, resultInputsB),
+      [resultInputsA, resultInputsB],
     );
     const assumptionsBondType = useMemo(
       () => getComparisonAssumptionsBondType(scenarioA.bondType, scenarioB.bondType),
@@ -70,16 +74,19 @@ export const ComparisonContainer: React.FC = () => {
     );
     const durationMismatch = definitions[scenarioA.bondType].duration !== definitions[scenarioB.bondType].duration;
     const durationMismatchText = durationMismatch ? t('comparison.auto_rollover_notice') : null;
+    const scenarioAColor = getBondColor(scenarioA.bondType);
+    const scenarioBColor = getBondColor(scenarioB.bondType);
     return (<CalculatorPageShell title={t('nav.comparison')} description={t('comparison.desc_independent')} icon={<Scale className="h-8 w-8"/>} isCalculating={isCalculating} isDirty={isDirty} hasResults={isPersistenceReady && !!resultsA} onKeyDown={handleKeyDown}>
-      <div className="grid grid-cols-1 gap-8 xl:grid-cols-[390px_minmax(0,1fr)]">
+      <div className="space-y-8">
+        <div className="grid grid-cols-1 gap-8 2xl:grid-cols-[420px_minmax(0,1fr)] 2xl:items-start 2xl:gap-10">
             <ComparisonSharedBaseCard
               sharedConfig={sharedConfig}
               assumptionsBondType={assumptionsBondType}
               onUpdateSharedConfig={updateSharedConfig as (key: keyof typeof sharedConfig | string, value: unknown) => void}
             />
 
-          <div className="space-y-8">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="min-w-0 space-y-8">
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
               <ScenarioOverrideCard title={t('comparison.scenario_a')} colorClass="scenario-a" bondType={scenarioA.bondType} onBondTypeChange={setBondTypeA} taxStrategy={scenarioA.taxStrategy} onTaxStrategyChange={(value) => updateScenarioA('taxStrategy', value)} customHorizonEnabled={scenarioA.investmentHorizonMonths !== undefined} onCustomHorizonEnabledChange={setScenarioACustomHorizonEnabled} customHorizonMonths={scenarioA.investmentHorizonMonths} onCustomHorizonMonthsChange={setScenarioACustomHorizonMonths}/>
               <ScenarioOverrideCard title={t('comparison.scenario_b')} colorClass="scenario-b" bondType={scenarioB.bondType} onBondTypeChange={setBondTypeB} taxStrategy={scenarioB.taxStrategy} onTaxStrategyChange={(value) => updateScenarioB('taxStrategy', value)} customHorizonEnabled={scenarioB.investmentHorizonMonths !== undefined} onCustomHorizonEnabledChange={setScenarioBCustomHorizonEnabled} customHorizonMonths={scenarioB.investmentHorizonMonths} onCustomHorizonMonthsChange={setScenarioBCustomHorizonMonths}/>
             </div>
@@ -97,10 +104,19 @@ export const ComparisonContainer: React.FC = () => {
                 </div>
               </div>
               {durationMismatchText ? (
-                <Notice tone="warning" title={t('comparison.duration_mismatch.title')}>
+                <Notice tone="info" title={t('comparison.auto_rollover_notice_title')}>
                   {durationMismatchText}
                 </Notice>
               ) : null}
+              <Button
+                type="button"
+                className="h-11 w-full gap-2 text-sm font-semibold md:w-auto"
+                onClick={() => calculate()}
+                disabled={isCalculating}
+              >
+                {isCalculating ? <Loader2 className="h-4 w-4 animate-spin" /> : <RotateCcw className="h-4 w-4" />}
+                {resultsA && resultsB ? t('common.recalculate') : t('common.calculate')}
+              </Button>
             </section>
 
             {!resultsA && !isCalculating ? (<ScenarioReadyPanel badge={t('comparison.ready_to_compare')} title={t('comparison.ready_title')} description={t('comparison.ready_desc')} steps={[
@@ -129,7 +145,10 @@ export const ComparisonContainer: React.FC = () => {
                 </div>
               </div>) : null}
 
-            {resultsA && resultsB ? (<div className={cn('space-y-8', isCalculating && 'opacity-60')}>
+          </div>
+        </div>
+
+        {resultsA && resultsB ? (<div className={cn('space-y-8', isCalculating && 'opacity-60')}>
                 {isDirty ? (
                   <Notice tone="warning" compact>
                     {t('comparison.stale_results')}
@@ -142,18 +161,20 @@ export const ComparisonContainer: React.FC = () => {
                     usesMixedTimelineCadence={hasMixedTimelineCadence}
                     resultsA={resultsA}
                     resultsB={resultsB}
-                    inputsA={inputsA}
-                    inputsB={inputsB}
+                    inputsA={resultInputsA}
+                    inputsB={resultInputsB}
                     formatCurrency={formatCurrency}
                     language={language}
                     chartStep={chartStep}
                     onChartStepChange={setChartStep}
+                    scenarioAColor={scenarioAColor}
+                    scenarioBColor={scenarioBColor}
                   />
                 ) : null}
 
-                <ComparisonVerdict resultsA={resultsA} resultsB={resultsB} inputsA={inputsA} inputsB={inputsB} expectedInflation={sharedConfig.expectedInflation} taxStrategy={sharedConfig.taxStrategy} formatCurrency={formatCurrency}/>
+                <ComparisonVerdict resultsA={resultsA} resultsB={resultsB} inputsA={resultInputsA} inputsB={resultInputsB} expectedInflation={resultInputsA.expectedInflation} taxStrategy={resultInputsA.taxStrategy} formatCurrency={formatCurrency}/>
 
-                <ComparisonTable resultsA={resultsA} resultsB={resultsB} bondTypeA={inputsA.bondType} bondTypeB={inputsB.bondType} formatCurrency={formatCurrency}/>
+                <ComparisonTable resultsA={resultsA} resultsB={resultsB} bondTypeA={resultInputsA.bondType} bondTypeB={resultInputsB.bondType} formatCurrency={formatCurrency}/>
 
                 <SecondaryInsightAccordion title={t('comparison.assumptions_meta')} description={t('comparison.assumptions_meta_desc')} badge={t('comparison.helper_secondary')}>
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -177,8 +198,7 @@ export const ComparisonContainer: React.FC = () => {
                   </div>
                 </SecondaryInsightAccordion>
               </div>) : null}
-          </div>
-        </div>
+      </div>
       <RecalculateButton isDirty={isDirty} hasResults={!!resultsA && !!resultsB} loading={isCalculating} onClick={() => calculate()}/>
     </CalculatorPageShell>);
 };

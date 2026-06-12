@@ -64,6 +64,9 @@
     "rows_shown": "Widoczne wiersze",
     "rows_per_page": "Wiersze na strone",
     "rows_visible": "widoczne",
+    "previous": "Poprzednia",
+    "next": "Nastepna",
+    "page": "Strona",
     "no_data": "Brak danych",
     "no_results_found": "Brak wynikow dla aktualnych filtrow.",
     "portfolio_selector_label": "Biezacy portfel",
@@ -1640,6 +1643,7 @@
     },
     "auto_rollover_mode_label": "Automatyczne rolowanie do horyzontu",
     "auto_rollover_fairness_desc": "Krotsze serie sa automatycznie reinwestowane, aby oba scenariusze byly porownane w tym samym wybranym horyzoncie.",
+    "auto_rollover_notice_title": "Automatyczne rolowanie aktywne",
     "auto_rollover_notice": "Porownywane obligacje maja rozne naturalne terminy. Krotsze serie sa automatycznie rolowane, aby utrzymac wspolny horyzont.",
     "maturity_mode": {
       "label": "Obsluga zapadalnosci",

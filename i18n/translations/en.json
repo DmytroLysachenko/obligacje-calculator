@@ -64,6 +64,9 @@
     "rows_shown": "Rows shown",
     "rows_per_page": "Rows per page",
     "rows_visible": "visible",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page",
     "no_data": "No data",
     "no_results_found": "No results found for current filters.",
     "portfolio_selector_label": "Current portfolio",
@@ -1640,6 +1643,7 @@
     },
     "auto_rollover_mode_label": "Auto rollover to selected horizon",
     "auto_rollover_fairness_desc": "Shorter native terms are reinvested automatically so both scenarios are compared across the same selected horizon.",
+    "auto_rollover_notice_title": "Auto rollover active",
     "auto_rollover_notice": "The compared bonds have different native terms. Shorter terms are automatically rolled over to keep the horizon aligned.",
     "maturity_mode": {
       "label": "Maturity handling",

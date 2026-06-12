@@ -34,8 +34,11 @@ describe('comparison fairness contracts', () => {
     const source = readSource(paths.container);
 
     expectContains(source, "t('comparison.auto_rollover_notice')");
+    expectContains(source, "t('comparison.auto_rollover_notice_title')");
     expectContains(source, "t('comparison.auto_rollover_fairness_desc')");
     expectContains(source, "t('comparison.auto_rollover_mode_label')");
+    expectContains(source, '<Notice tone="info"');
+    expect(source).not.toContain('<Notice tone="warning" title={t(\'comparison.duration_mismatch.title\')}>');
     expect(source).not.toContain('maturityMode={maturityMode}');
   });
 
@@ -65,6 +68,7 @@ describe('comparison fairness contracts', () => {
       expectContains(source, '"driver_inflation"');
       expectContains(source, '"auto_rollover_mode_label"');
       expectContains(source, '"auto_rollover_fairness_desc"');
+      expectContains(source, '"auto_rollover_notice_title"');
       expectContains(source, '"auto_rollover_notice"');
     }
   });

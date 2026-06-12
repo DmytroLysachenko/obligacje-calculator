@@ -68,6 +68,10 @@ describe('comparison chart and verdict contracts', () => {
     expectContains(source, '<BondValueChart');
     expectContains(source, 'defaultGranularity={chartStep}');
     expectContains(source, 'onGranularityChange={onChartStepChange}');
+    expectContains(source, 'scenarioAColor: string;');
+    expectContains(source, 'scenarioBColor: string;');
+    expectContains(source, 'color: scenarioAColor');
+    expectContains(source, 'color: scenarioBColor');
     expectContains(source, 'rightDomain={rightDomain}');
     expectContains(sharedChart, 'showContextControls = true');
     expectContains(sharedChart, 'dataKey="inflation"');
