@@ -7,7 +7,7 @@ import {
 } from '@/lib/server/portfolio/service';
 import { createDomainErrorResponse } from '@/lib/server/http/responses';
 import { apiHandler } from '@/lib/server/http/api-handler';
-import { getPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
+import { getAuthenticatedPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
 
 const SavePortfolioLotPayloadSchema = z.object({
@@ -20,7 +20,10 @@ const SavePortfolioLotPayloadSchema = z.object({
 });
 
 export const POST = apiHandler(async (req: NextRequest) => {
-  const { owner } = await getPortfolioRouteContext();
+  const authContext = await getAuthenticatedPortfolioRouteContext();
+  if (!authContext.ok) return authContext.response;
+
+  const { owner } = authContext.context;
 
   try {
     const { portfolioId, bondType, purchaseDate, amount, isRebought, notes } =

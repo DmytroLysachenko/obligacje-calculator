@@ -175,6 +175,10 @@
         "title": "Notatnik portfela",
         "description": "Zapisuj realne partie obligacji, sprawdzaj zapadalnosci i wracaj do kontekstu notatnika bez zmieniania go w dashboard planistyczny."
       },
+      "login": {
+        "title": "Logowanie",
+        "description": "Zaloguj sie przez zewnetrznego dostawce OAuth, aby zapisywac portfele, importowac partie i zarzadzac prywatnym notatnikiem."
+      },
       "optimize": {
         "title": "Dobierz Obligacje",
         "description": "Eksperymentalny sorter scenariuszy dla modelowanych wynikow obligacji skarbowych przy jawnych zalozeniach."

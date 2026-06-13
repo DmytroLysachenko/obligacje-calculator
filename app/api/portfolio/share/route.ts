@@ -7,7 +7,7 @@ import {
   toggleOwnerPortfolioSharing,
 } from '@/lib/server/portfolio/service';
 import { createDomainErrorResponse } from '@/lib/server/http/responses';
-import { getPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
+import { getAuthenticatedPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
 
 const PortfolioSharePayloadSchema = z.object({
@@ -16,7 +16,10 @@ const PortfolioSharePayloadSchema = z.object({
 });
 
 export const POST = apiHandler(async (req: NextRequest) => {
-  const { owner } = await getPortfolioRouteContext();
+  const authContext = await getAuthenticatedPortfolioRouteContext();
+  if (!authContext.ok) return authContext.response;
+
+  const { owner } = authContext.context;
   const { portfolioId, isPublic } = await readJsonBody(req, PortfolioSharePayloadSchema);
 
   try {

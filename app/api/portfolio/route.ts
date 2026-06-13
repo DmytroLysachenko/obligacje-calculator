@@ -3,7 +3,11 @@ import { PortfolioSchema } from '@/features/bond-core/types/portfolio-schemas';
 import { createSuccessResponse } from '@/shared/types/api';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { createDomainErrorResponse, createValidationErrorResponse } from '@/lib/server/http/responses';
-import { getPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
+import {
+  getAuthenticatedPortfolioRouteContext,
+  getPortfolioRouteContext,
+  withPortfolioOwnerResponse,
+} from '@/lib/server/portfolio/http';
 import {
   createOwnerPortfolio,
   deleteOwnerPortfolio,
@@ -19,7 +23,10 @@ export const GET = apiHandler(async () => {
 });
 
 export const POST = apiHandler(async (req: NextRequest) => {
-  const { owner } = await getPortfolioRouteContext();
+  const authContext = await getAuthenticatedPortfolioRouteContext();
+  if (!authContext.ok) return authContext.response;
+
+  const { owner } = authContext.context;
   const body = await req.json();
   const validated = PortfolioSchema.parse(body);
   const newPortfolio = await createOwnerPortfolio(owner.ownerId, validated);
@@ -28,7 +35,10 @@ export const POST = apiHandler(async (req: NextRequest) => {
 });
 
 export const DELETE = apiHandler(async (req: NextRequest) => {
-  const { owner } = await getPortfolioRouteContext();
+  const authContext = await getAuthenticatedPortfolioRouteContext();
+  if (!authContext.ok) return authContext.response;
+
+  const { owner } = authContext.context;
   const { searchParams } = new URL(req.url);
   const id = searchParams.get('id');
 

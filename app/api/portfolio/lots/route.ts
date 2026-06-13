@@ -9,7 +9,11 @@ import {
   PortfolioServiceError,
 } from '@/lib/server/portfolio/service';
 import { createDomainErrorResponse, createValidationErrorResponse } from '@/lib/server/http/responses';
-import { getPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
+import {
+  getAuthenticatedPortfolioRouteContext,
+  getPortfolioRouteContext,
+  withPortfolioOwnerResponse,
+} from '@/lib/server/portfolio/http';
 
 export const GET = apiHandler(async (req: NextRequest) => {
   const { owner } = await getPortfolioRouteContext();
@@ -33,7 +37,10 @@ export const GET = apiHandler(async (req: NextRequest) => {
 });
 
 export const POST = apiHandler(async (req: NextRequest) => {
-  const { owner } = await getPortfolioRouteContext();
+  const authContext = await getAuthenticatedPortfolioRouteContext();
+  if (!authContext.ok) return authContext.response;
+
+  const { owner } = authContext.context;
   const body = await req.json();
   const validated = InvestmentLotSchema.parse(body);
 
@@ -50,7 +57,10 @@ export const POST = apiHandler(async (req: NextRequest) => {
 });
 
 export const DELETE = apiHandler(async (req: NextRequest) => {
-  const { owner } = await getPortfolioRouteContext();
+  const authContext = await getAuthenticatedPortfolioRouteContext();
+  if (!authContext.ok) return authContext.response;
+
+  const { owner } = authContext.context;
   const url = new URL(req.url);
   const id = url.searchParams.get('id');
 

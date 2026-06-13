@@ -3,10 +3,13 @@ import { apiHandler } from '@/lib/server/http/api-handler';
 import { createSuccessResponse } from '@/shared/types/api';
 import { exportOwnerPortfolio, PortfolioServiceError } from '@/lib/server/portfolio/service';
 import { createDomainErrorResponse } from '@/lib/server/http/responses';
-import { getPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
+import { getAuthenticatedPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
 
 export const GET = apiHandler(async (req: NextRequest) => {
-  const { owner } = await getPortfolioRouteContext();
+  const authContext = await getAuthenticatedPortfolioRouteContext();
+  if (!authContext.ok) return authContext.response;
+
+  const { owner } = authContext.context;
   const { searchParams } = new URL(req.url);
   const portfolioId = searchParams.get('portfolioId');
   const formatMode = searchParams.get('format') ?? 'portfolio';

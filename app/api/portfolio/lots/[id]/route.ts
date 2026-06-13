@@ -8,14 +8,17 @@ import {
 import { createErrorResponse, createSuccessResponse } from '@/shared/types/api';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { createDomainErrorResponse } from '@/lib/server/http/responses';
-import { getPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
+import { getAuthenticatedPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
 
 export const PATCH = apiHandler<{ params: Promise<{ id: string }> }>(async (
   req: NextRequest,
   { params },
 ) => {
   try {
-    const { owner } = await getPortfolioRouteContext();
+    const authContext = await getAuthenticatedPortfolioRouteContext();
+    if (!authContext.ok) return authContext.response;
+
+    const { owner } = authContext.context;
     const {id} = await params;
     const body = await req.json();
     const validated = InvestmentLotSchema.partial().parse(body);
@@ -37,7 +40,10 @@ export const DELETE = apiHandler<{ params: Promise<{ id: string }> }>(async (
   { params },
 ) => {
   try {
-    const { owner } = await getPortfolioRouteContext();
+    const authContext = await getAuthenticatedPortfolioRouteContext();
+    if (!authContext.ok) return authContext.response;
+
+    const { owner } = authContext.context;
     const {id} = await params;
 
     await deleteOwnerLot(owner.ownerId, id);

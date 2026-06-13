@@ -175,6 +175,10 @@
         "title": "Portfolio Notebook",
         "description": "Store real bond lots, inspect maturities, and revisit notebook context without turning it into a planning dashboard."
       },
+      "login": {
+        "title": "Sign in",
+        "description": "Sign in with an OAuth provider to save portfolios, import lots, and manage private notebook data."
+      },
       "optimize": {
         "title": "Smart Bond Finder",
         "description": "Experimental scenario sorter for modeled treasury bond outcomes under explicit assumptions."

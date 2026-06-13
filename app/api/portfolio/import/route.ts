@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { createErrorResponse, createSuccessResponse } from '@/shared/types/api';
 import { importOwnerPortfolio } from '@/lib/server/portfolio/service';
-import { getPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
+import { getAuthenticatedPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
 
 const ImportedLotSchema = z.object({
   bondType: z.string().min(1),
@@ -22,7 +22,10 @@ const ImportPayloadSchema = z.object({
 });
 
 export const POST = apiHandler(async (req: NextRequest) => {
-  const { owner } = await getPortfolioRouteContext();
+  const authContext = await getAuthenticatedPortfolioRouteContext();
+  if (!authContext.ok) return authContext.response;
+
+  const { owner } = authContext.context;
   const body = await req.json();
   const parsed = ImportPayloadSchema.safeParse(body);
 
