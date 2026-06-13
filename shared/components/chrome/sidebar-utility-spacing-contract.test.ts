@@ -96,6 +96,9 @@ describe('sidebar utility spacing contracts', () => {
     expectContains(source, '<div className="space-y-2">');
     expectContains(source, 'flex items-start justify-between gap-4');
     expectContains(source, 'mt-1 text-sm font-semibold text-foreground');
+    expectContains(source, 'mt-0.5 text-[11px] leading-4 text-muted-foreground');
+    expectContains(source, 'getFreshnessDisplayState(');
+    expectContains(source, 'dataFreshness ? t(\'sidebar.freshness.no_date\') : t(\'sidebar.freshness.no_metadata\')');
     expectContains(source, 'max-w-[14rem] text-[11px] leading-5 text-muted-foreground');
 
     expectNoFragments(source, [
@@ -103,6 +106,7 @@ describe('sidebar utility spacing contracts', () => {
       'flex items-start justify-between gap-3',
       'mt-0.5 text-sm font-semibold text-foreground',
       'line-clamp-2 text-[11px] leading-4 text-muted-foreground',
+      'dataFreshness.asOf ?? t(\'sidebar.freshness.no_date\')',
     ]);
   });
 

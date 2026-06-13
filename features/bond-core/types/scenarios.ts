@@ -16,7 +16,13 @@ export type DataFreshnessStatus = 'fresh' | 'stale' | 'projected' | 'unknown' | 
 
 export interface CalculationDataFreshness {
   status: DataFreshnessStatus;
+  /**
+   * Backward-compatible coverage date used by older display components.
+   * Prefer coverageAsOf for new UI because lastSyncedAt carries a different meaning.
+   */
   asOf?: string;
+  coverageAsOf?: string;
+  lastSyncedAt?: string;
   lastCheck?: string;
   usedFallback: boolean;
 }

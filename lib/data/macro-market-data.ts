@@ -63,6 +63,8 @@ export const getGlobalDataFreshness = cache(async (): Promise<CalculationDataFre
     const result: CalculationDataFreshness = {
       status: 'unknown',
       asOf: latestSyncCheck ? format(latestSyncCheck, 'yyyy-MM-dd') : undefined,
+      coverageAsOf: undefined,
+      lastSyncedAt: latestSyncCheck?.toISOString(),
       lastCheck: latestSyncCheck?.toISOString(),
       usedFallback: true,
     };
@@ -80,6 +82,8 @@ export const getGlobalDataFreshness = cache(async (): Promise<CalculationDataFre
   const result: CalculationDataFreshness = {
     status: status as CalculationDataFreshness['status'],
     asOf: oldestCriticalPoint ? format(oldestCriticalPoint, 'yyyy-MM') : undefined,
+    coverageAsOf: oldestCriticalPoint ? format(oldestCriticalPoint, 'yyyy-MM') : undefined,
+    lastSyncedAt: latestSyncCheck?.toISOString(),
     lastCheck: latestSyncCheck?.toISOString(),
     usedFallback,
   };

@@ -127,6 +127,9 @@ describe('sidebar refactor contracts', () => {
     expectContains(source, 'max-w-[14rem] text-[11px] leading-5 text-muted-foreground');
     expectContains(source, 'flex items-start justify-between gap-4');
     expectContains(source, '<div className="space-y-2">');
+    expectContains(source, "import { getFreshnessDisplayState } from '@/shared/lib/data-freshness-display';");
+    expectContains(source, 'const { coverageLabel, lastSyncLabel } = getFreshnessDisplayState(');
+    expectContains(source, "{t('admin.inventory.cols.last_sync')}: {lastSyncLabel}");
 
     expectNoFragments(source, [
       'border-[var(--finance-success)]/30 bg-transparent',
@@ -135,6 +138,8 @@ describe('sidebar refactor contracts', () => {
       'text-xs leading-5 text-muted-foreground',
       'line-clamp-2 text-[11px] leading-4 text-muted-foreground',
       'flex items-start justify-between gap-3',
+      'dataFreshness.asOf ?? t(\'sidebar.freshness.no_date\')',
+      'dataFreshness?.lastSyncedAt ?? dataFreshness?.lastCheck',
       'bg-emerald-50',
       'bg-orange-50',
       'bg-amber-50',

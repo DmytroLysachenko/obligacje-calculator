@@ -109,11 +109,17 @@ describe('single calculator result layout contracts', () => {
     expectContains(source, 'space-y-3 border-t border-border py-4 text-foreground');
     expectContains(source, 'space-y-3 border-t border-warning/40 py-4 text-foreground');
     expectContains(source, 'border-y border-border py-3 text-sm leading-6');
+    expectContains(source, "import {\n  getFreshnessCoverageLabel,\n  getFreshnessLastSyncLabel,\n} from '@/shared/lib/data-freshness-display';");
+    expectContains(source, 'const coverageLabel = getFreshnessCoverageLabel(dataFreshness);');
+    expectContains(source, 'const lastSyncedLabel = getFreshnessLastSyncLabel(dataFreshness);');
+    expectContains(source, "{t('common.coverage')}:");
+    expectContains(source, "{t('admin.inventory.cols.last_sync')}:");
 
     expectNoFragments(source, [
       'rounded-md border bg-card px-4 py-3 text-sm leading-6',
       'rounded-md border border-border bg-card p-4 text-foreground',
       'rounded-md border border-border bg-muted/25 px-4 py-3 text-sm leading-6',
+      "{t('economic.as_of')}: <span className=\"font-semibold\">{dataFreshness.asOf}</span>",
     ]);
   });
 });

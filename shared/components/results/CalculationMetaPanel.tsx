@@ -10,6 +10,10 @@ import {
 } from 'lucide-react';
 import { useAppI18n } from '@/i18n/client';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
+import {
+  getFreshnessCoverageLabel,
+  getFreshnessLastSyncLabel,
+} from '@/shared/lib/data-freshness-display';
 
 interface CalculationMetaPanelProps {
   warnings?: string[];
@@ -91,6 +95,8 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
     dataFreshness?.status === 'fresh'
       ? 'border-[var(--finance-success)] text-foreground'
       : 'border-[var(--finance-warning)] text-foreground';
+  const coverageLabel = getFreshnessCoverageLabel(dataFreshness);
+  const lastSyncedLabel = getFreshnessLastSyncLabel(dataFreshness);
 
   return (
     <div className="space-y-5">
@@ -108,9 +114,14 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
               <span>{t('comparison.freshness_status')}:</span>
               <span>{t(`comparison.status_${dataFreshness.status}`)}</span>
             </div>
-            {dataFreshness.asOf ? (
+            {coverageLabel ? (
               <div>
-                {t('economic.as_of')}: <span className="font-semibold">{dataFreshness.asOf}</span>
+                {t('common.coverage')}: <span className="font-semibold">{coverageLabel}</span>
+              </div>
+            ) : null}
+            {lastSyncedLabel ? (
+              <div>
+                {t('admin.inventory.cols.last_sync')}: <span className="font-semibold">{lastSyncedLabel}</span>
               </div>
             ) : null}
             {dataFreshness.usedFallback ? (

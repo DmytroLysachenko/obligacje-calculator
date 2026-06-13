@@ -5,6 +5,7 @@ import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { SidebarUtilityPanel } from './SidebarUtilityGroup';
+import { getFreshnessDisplayState } from '@/shared/lib/data-freshness-display';
 
 function getFreshnessLabel(
   freshness: CalculationDataFreshness,
@@ -56,6 +57,10 @@ export function SidebarSyncSummary({
   const { t } = useAppI18n();
   const freshnessLabel = dataFreshness ? getFreshnessLabel(dataFreshness, t) : null;
   const freshnessText = dataFreshness ? getFreshnessText(dataFreshness, t) : t('sidebar.sync_unavailable');
+  const { coverageLabel, lastSyncLabel } = getFreshnessDisplayState(
+    dataFreshness,
+    dataFreshness ? t('sidebar.freshness.no_date') : t('sidebar.freshness.no_metadata'),
+  );
 
   return (
     <SidebarUtilityPanel>
@@ -64,10 +69,13 @@ export function SidebarSyncSummary({
           <div className="min-w-0">
             <p className="text-xs font-semibold text-muted-foreground">{t('common.sync_data')}</p>
             <p className="mt-1 text-sm font-semibold text-foreground">
-              {dataFreshness
-                ? dataFreshness.asOf ?? t('sidebar.freshness.no_date')
-                : t('sidebar.freshness.no_metadata')}
+              {coverageLabel}
             </p>
+            {lastSyncLabel ? (
+              <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground">
+                {t('admin.inventory.cols.last_sync')}: {lastSyncLabel}
+              </p>
+            ) : null}
           </div>
           {dataFreshness ? (
             <span
