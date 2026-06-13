@@ -17,8 +17,56 @@ Our infrastructure is designed for high performance, low cost, and zero-downtime
 
 ## 3. Database Management
 - **Provider:** Neon (Serverless Postgres) or Supabase.
-- **Migration:** Drizzle Kit runs migrations during the build step.
+- **Migration:** Apply checked-in SQL migrations before deploying application code.
 - **Backups:** Daily automated snapshots.
+
+### Required Production Migrations
+
+The production database must include the additive migrations in `drizzle/`:
+
+1. `0000_unified_schema.sql` creates the core calculator, metadata, and portfolio tables.
+2. `0001_sync_runs.sql` creates sync history used by freshness reporting.
+3. `0002_auth_tables.sql` creates the Auth.js adapter tables for OAuth sessions.
+
+Do not deploy portfolio-auth changes until `0002_auth_tables.sql` is applied.
+Without those tables, Auth.js cannot persist OAuth users, accounts, sessions, or
+verification tokens. The application has defensive read paths for missing sync
+history, but auth-backed portfolio management should be treated as unavailable
+until the auth migration exists.
+
+### Required Environment Variables
+
+Core runtime:
+
+- `DATABASE_URL`: Neon/Supabase Postgres connection string.
+- `AUTH_SECRET`: Auth.js secret for session signing. `NEXTAUTH_SECRET` remains
+  accepted as a compatibility fallback, but production should use `AUTH_SECRET`.
+
+OAuth providers:
+
+- `AUTH_GOOGLE_ID`
+- `AUTH_GOOGLE_SECRET`
+- `AUTH_GITHUB_ID`
+- `AUTH_GITHUB_SECRET`
+
+At least one OAuth provider pair must be configured for users to sign in. The
+login surface is intentionally OAuth-only; do not add password credentials
+without revisiting storage, reset, throttling, and abuse controls.
+
+Sync/admin:
+
+- `SYNC_SECRET`: protects admin sync/status endpoints.
+- Any provider-specific sync credentials required by future data providers.
+
+### Deployment Guardrails
+
+- Run migrations against the target database before warming the app.
+- Run `pnpm exec tsc --noEmit` and `pnpm test:core` before promoting a build.
+- Verify `/login` shows the configured OAuth providers.
+- Verify `/api/portfolio/access` reports `canManageWorkspace: true` after sign-in.
+- Verify `/admin/status` shows recent `sync_runs` rows after a manual sync.
+- Verify calculation meta displays both data coverage and last sync attempt when
+  sync history is present.
 
 ## 4. Monitoring & Observability
 - **Error Tracking:** Sentry (captures both frontend and backend errors).
