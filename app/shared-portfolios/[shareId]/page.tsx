@@ -2,39 +2,33 @@ import type {Metadata} from 'next';
 import {notFound} from 'next/navigation';
 import {getTranslations} from 'next-intl/server';
 import {PortfolioDetails} from '@/features/notebook/components/PortfolioDetails';
-import {ensurePortfolioSchemaCompat} from '@/lib/server/db/portfolio-schema-compat';
-import {getPublicSharedPortfolioByShareId} from '@/lib/server/portfolio/service';
+import {
+  buildSharedPortfolioPageMetadata,
+  getPublicSharedPortfolioPageData,
+} from '@/lib/server/portfolio/service';
 
 interface Props {
   params: Promise<{shareId: string}>;
 }
 
 export async function generateMetadata({params}: Props): Promise<Metadata> {
-  await ensurePortfolioSchemaCompat();
   const page = await getTranslations('metadata.pages.shared_portfolio');
   const common = await getTranslations('common');
   const {shareId} = await params;
+  const portfolio = await getPublicSharedPortfolioPageData(shareId);
 
-  const portfolio = await getPublicSharedPortfolioByShareId(shareId);
-
-  if (!portfolio) {
-    return {
-      title: `${page('title')} | ${common('title')}`,
-      description: page('description'),
-    };
-  }
-
-  return {
-    title: `${portfolio.name} | ${page('title')}`,
-    description: portfolio.description || page('description'),
-  };
+  return buildSharedPortfolioPageMetadata({
+    portfolio,
+    pageTitle: page('title'),
+    pageDescription: page('description'),
+    appTitle: common('title'),
+  });
 }
 
 export default async function SharedPortfolioPage({params}: Props) {
-  await ensurePortfolioSchemaCompat();
   const page = await getTranslations('shared_portfolio_page');
   const {shareId} = await params;
-  const portfolio = await getPublicSharedPortfolioByShareId(shareId);
+  const portfolio = await getPublicSharedPortfolioPageData(shareId);
 
   if (!portfolio) {
     notFound();

@@ -11,6 +11,7 @@ const files = {
   lotsTab: 'features/notebook/components/portfolio-details/PortfolioLotsTab.tsx',
   analyticsTab: 'features/notebook/components/portfolio-details/PortfolioAnalyticsTab.tsx',
   sharedPortfolioPage: 'app/shared-portfolios/[shareId]/page.tsx',
+  portfolioService: 'lib/server/portfolio/service.ts',
 } as const;
 
 function read(relativePath: string) {
@@ -120,12 +121,20 @@ describe('portfolio notebook surface contract', () => {
 
   it('keeps shared portfolio notice divider-led and read-only clear', () => {
     const source = read(files.sharedPortfolioPage);
+    const service = read(files.portfolioService);
 
+    expectContains(source, 'getPublicSharedPortfolioPageData');
+    expectContains(source, 'buildSharedPortfolioPageMetadata');
     expectContains(source, 'mb-8 flex items-center justify-between gap-4 border-y border-border py-4');
     expectContains(source, 'border-l-2 border-border pl-3 text-[10px] font-semibold uppercase tracking-widest text-foreground');
     expectContains(source, '<PortfolioDetails portfolio={portfolio} onBack={() => {}} />');
+    expectContains(service, 'export async function getPublicSharedPortfolioPageData');
+    expectContains(service, 'await ensurePortfolioSchemaCompat();');
+    expectContains(service, 'export function buildSharedPortfolioPageMetadata');
 
     expectNoFragments(source, [
+      'ensurePortfolioSchemaCompat',
+      'getPublicSharedPortfolioByShareId',
       'rounded-lg border border-border bg-card p-4 shadow-none',
       'rounded-md border border-border bg-muted',
       'surface-shell',

@@ -3,6 +3,7 @@ import {PortfolioSimulationCalculationEnvelope, ScenarioKind, type PortfolioSimu
 import {TaxStrategy} from '@/features/bond-core/types';
 import {getMacroAssumptionDefaults} from '@/lib/data/market-data';
 import {resolveStoredBondLotContext} from '@/lib/server/bonds/offer-terms';
+import {ensurePortfolioSchemaCompat} from '@/lib/server/db/portfolio-schema-compat';
 import {buildPortfolioSimulationPayload} from '@/lib/server/portfolio/simulation';
 import {getOwnedLot, getOwnedPortfolio} from '@/lib/server/portfolio/access';
 import {
@@ -53,6 +54,36 @@ export async function getPublicSharedPortfolioByShareId(shareId: string) {
   }
 
   return portfolio;
+}
+
+export async function getPublicSharedPortfolioPageData(shareId: string) {
+  await ensurePortfolioSchemaCompat();
+
+  return getPublicSharedPortfolioByShareId(shareId);
+}
+
+export function buildSharedPortfolioPageMetadata({
+  portfolio,
+  pageTitle,
+  pageDescription,
+  appTitle,
+}: {
+  portfolio: Awaited<ReturnType<typeof getPublicSharedPortfolioByShareId>>;
+  pageTitle: string;
+  pageDescription: string;
+  appTitle: string;
+}) {
+  if (!portfolio) {
+    return {
+      title: `${pageTitle} | ${appTitle}`,
+      description: pageDescription,
+    };
+  }
+
+  return {
+    title: `${portfolio.name} | ${pageTitle}`,
+    description: portfolio.description || pageDescription,
+  };
 }
 
 export async function createOwnerPortfolio(ownerId: string, input: {name: string; description?: string}) {
