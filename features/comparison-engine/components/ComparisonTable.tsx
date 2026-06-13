@@ -54,12 +54,38 @@ export type ComparisonAlignedTableRow = {
   key: string;
   label: string;
   dateLabel: string;
-  valueA: number;
-  valueB: number;
+  scenarioA: ComparisonScenarioSnapshot;
+  scenarioB: ComparisonScenarioSnapshot;
+  gap: number;
+  leader: 'A' | 'B' | 'tie';
 };
 
 function interpolateValue(start: number, end: number, progress: number) {
   return start + (end - start) * progress;
+}
+
+type ComparisonScenarioSnapshot = {
+  nominalValue: number;
+  realValue: number;
+  netProfit: number;
+};
+
+function interpolateTimelineNumber(
+  previousValue: number | undefined,
+  nextValue: number | undefined,
+  fallback: number,
+  progress: number,
+) {
+  if (
+    typeof previousValue !== 'number'
+    || typeof nextValue !== 'number'
+    || !Number.isFinite(previousValue)
+    || !Number.isFinite(nextValue)
+  ) {
+    return fallback;
+  }
+
+  return interpolateValue(previousValue, nextValue, progress);
 }
 
 export function getComparisonTablePageCount(totalRows: number, rowLimit: TableRowLimit) {
@@ -114,19 +140,28 @@ function getComparisonVisibleRangeLabel({
   return `${start}-${end} / ${totalRows}`;
 }
 
-function projectTimelineValue(
+function projectTimelineSnapshot(
   timeline: CalculationResult['timeline'],
   date: Date,
   initialInvestment: number,
 ) {
-  let currentValue = initialInvestment;
+  let currentSnapshot: ComparisonScenarioSnapshot = {
+    nominalValue: initialInvestment,
+    realValue: initialInvestment,
+    netProfit: 0,
+  };
   let index = 0;
 
   while (
     index < timeline.length
     && compareAsc(parseISO(timeline[index].cycleEndDate), date) <= 0
   ) {
-    currentValue = timeline[index].totalValue;
+    const point = timeline[index];
+    currentSnapshot = {
+      nominalValue: point.totalValue,
+      realValue: point.realValue ?? point.totalValue,
+      netProfit: point.netProfit ?? point.totalValue - initialInvestment,
+    };
     index += 1;
   }
 
@@ -134,7 +169,7 @@ function projectTimelineValue(
   const nextPoint = timeline[index];
 
   if (!previousPoint || !nextPoint) {
-    return currentValue;
+    return currentSnapshot;
   }
 
   const previousDate = parseISO(previousPoint.cycleEndDate);
@@ -144,14 +179,31 @@ function projectTimelineValue(
   const currentTime = date.getTime();
 
   if (nextTime <= previousTime || currentTime <= previousTime || currentTime >= nextTime) {
-    return currentValue;
+    return currentSnapshot;
   }
 
-  return interpolateValue(
-    previousPoint.totalValue,
-    nextPoint.totalValue,
-    (currentTime - previousTime) / (nextTime - previousTime),
-  );
+  const progress = (currentTime - previousTime) / (nextTime - previousTime);
+
+  return {
+    nominalValue: interpolateTimelineNumber(
+      previousPoint.totalValue,
+      nextPoint.totalValue,
+      currentSnapshot.nominalValue,
+      progress,
+    ),
+    realValue: interpolateTimelineNumber(
+      previousPoint.realValue,
+      nextPoint.realValue,
+      currentSnapshot.realValue,
+      progress,
+    ),
+    netProfit: interpolateTimelineNumber(
+      previousPoint.netProfit,
+      nextPoint.netProfit,
+      currentSnapshot.netProfit,
+      progress,
+    ),
+  };
 }
 
 export function buildComparisonAlignedTableRows({
@@ -196,15 +248,23 @@ export function buildComparisonAlignedTableRows({
     dates.push(endDate);
   }
 
-  const rawRows = dates.map((date, index) => ({
-    key: date.toISOString(),
-    label: index === 0
-      ? startLabel
-      : format(date, 'MMM yyyy', { locale: getDateFnsLocale(language) }),
-    dateLabel: format(date, 'yyyy-MM-dd'),
-    valueA: projectTimelineValue(resultsA.timeline, date, resultsA.initialInvestment),
-    valueB: projectTimelineValue(resultsB.timeline, date, resultsB.initialInvestment),
-  }));
+  const rawRows = dates.map((date, index) => {
+    const scenarioA = projectTimelineSnapshot(resultsA.timeline, date, resultsA.initialInvestment);
+    const scenarioB = projectTimelineSnapshot(resultsB.timeline, date, resultsB.initialInvestment);
+    const gap = scenarioB.nominalValue - scenarioA.nominalValue;
+
+    return {
+      key: date.toISOString(),
+      label: index === 0
+        ? startLabel
+        : format(date, 'MMM yyyy', { locale: getDateFnsLocale(language) }),
+      dateLabel: format(date, 'yyyy-MM-dd'),
+      scenarioA,
+      scenarioB,
+      gap,
+      leader: gap === 0 ? 'tie' : gap > 0 ? 'B' : 'A',
+    } satisfies ComparisonAlignedTableRow;
+  });
 
   if (granularity === 'monthly') {
     return rawRows;
@@ -393,23 +453,9 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
               </button>
             ))}
           </div>
-          <ComparisonTablePaginationControls
-            page={currentPage}
-            totalPages={totalPages}
-            rowLimit={rowLimit}
-            totalRows={tableRows.length}
-            visibleRangeLabel={visibleRangeLabel}
-            onPageChange={setCurrentPage}
-            onRowLimitChange={setRowLimit}
-            labels={{
-              rowsShown: t('common.rows_shown'),
-              rowsPerPage: t('common.rows_per_page'),
-              all: t('common.all'),
-              previous: t('common.previous'),
-              next: t('common.next'),
-              page: t('common.page'),
-            }}
-          />
+          <p className="text-xs font-semibold text-muted-foreground">
+            {t('common.rows_shown')}: {visibleRangeLabel}
+          </p>
         </div>
 
         <div className="px-6">
@@ -432,10 +478,24 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                       </p>
                     </div>
                   </div>
-                  <div className="mt-4 grid grid-cols-2 gap-3">
-                    <MobileComparisonValue label={bondTypeA} value={formatCurrency(row.valueA)} />
-                    <MobileComparisonValue label={bondTypeB} value={formatCurrency(row.valueB)} />
+                  <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <MobileComparisonScenario
+                      label={`${bondTypeA} (A)`}
+                      snapshot={row.scenarioA}
+                      formatCurrency={formatCurrency}
+                    />
+                    <MobileComparisonScenario
+                      label={`${bondTypeB} (B)`}
+                      snapshot={row.scenarioB}
+                      formatCurrency={formatCurrency}
+                    />
                   </div>
+                  <MobileComparisonValue
+                    label={higherColumnLabel}
+                    value={row.leader === 'tie'
+                      ? tieLabel
+                      : `${row.leader === 'A' ? bondTypeA : bondTypeB} ${formatCurrency(Math.abs(row.gap))}`}
+                  />
                 </div>
               );
             })}
@@ -458,33 +518,20 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                     <TableHead className="sticky left-0 top-0 z-10 h-12 w-[22%] bg-card px-4 text-xs font-semibold text-muted-foreground">
                       {t('common.year')}
                     </TableHead>
-                    <TableHead className="sticky top-0 z-10 h-12 w-[26%] bg-card px-4 text-xs font-semibold text-foreground">
+                    <TableHead className="sticky top-0 z-10 h-12 w-[28%] bg-card px-4 text-xs font-semibold text-foreground">
                       {bondTypeA} (A)
                     </TableHead>
-                    <TableHead className="sticky top-0 z-10 h-12 w-[26%] bg-card px-4 text-xs font-semibold text-foreground">
+                    <TableHead className="sticky top-0 z-10 h-12 w-[28%] bg-card px-4 text-xs font-semibold text-foreground">
                       {bondTypeB} (B)
                     </TableHead>
-                    <TableHead className="sticky top-0 z-10 h-12 w-[26%] bg-card px-4 text-right text-xs font-semibold text-muted-foreground">
+                    <TableHead className="sticky top-0 z-10 h-12 w-[22%] bg-card px-4 text-right text-xs font-semibold text-muted-foreground">
                       {higherColumnLabel}
                     </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {displayedRows.map((row) => {
-                    const valA = row.valueA;
-                    const valB = row.valueB;
-                    const higherScenario =
-                      valA !== undefined && valB !== undefined
-                        ? valA === valB
-                          ? null
-                          : valA > valB
-                            ? 'A'
-                            : 'B'
-                        : valA !== undefined
-                          ? 'A'
-                          : valB !== undefined
-                            ? 'B'
-                            : null;
+                    const higherScenario = row.leader === 'tie' ? null : row.leader;
 
                     return (
                       <TableRow key={row.key} className="border-b border-border transition-colors odd:bg-muted/20 hover:bg-muted/35">
@@ -498,37 +545,48 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                         </TableCell>
                         <TableCell
                           className={cn(
-                            'px-4 py-4 font-mono text-xs',
+                            'px-4 py-4',
                             higherScenario === 'A'
-                              ? 'font-semibold text-foreground'
+                              ? 'text-foreground'
                               : 'text-muted-foreground',
                           )}
                         >
-                          {formatCurrency(valA)}
+                          <ComparisonScenarioCell
+                            snapshot={row.scenarioA}
+                            formatCurrency={formatCurrency}
+                          />
                         </TableCell>
                         <TableCell
                           className={cn(
-                            'px-4 py-4 font-mono text-xs',
+                            'px-4 py-4',
                             higherScenario === 'B'
-                              ? 'font-semibold text-foreground'
+                              ? 'text-foreground'
                               : 'text-muted-foreground',
                           )}
                         >
-                          {formatCurrency(valB)}
+                          <ComparisonScenarioCell
+                            snapshot={row.scenarioB}
+                            formatCurrency={formatCurrency}
+                          />
                         </TableCell>
                         <TableCell className="px-4 py-4 text-right">
                           {higherScenario ? (
-                            <Badge
-                              variant="outline"
-                              className={cn(
-                                'border px-3 py-0.5 text-xs font-semibold',
-                                higherScenario === 'A'
-                                  ? 'border-border bg-card text-foreground'
-                                  : 'border-success/30 bg-success/10 text-success',
-                              )}
-                            >
-                              {higherScenario === 'A' ? bondTypeA : bondTypeB} {higherBadgeSuffix}
-                            </Badge>
+                            <div className="space-y-2">
+                              <Badge
+                                variant="outline"
+                                className={cn(
+                                  'border px-3 py-0.5 text-xs font-semibold',
+                                  higherScenario === 'A'
+                                    ? 'border-border bg-card text-foreground'
+                                    : 'border-success/30 bg-success/10 text-success',
+                                )}
+                              >
+                                {higherScenario === 'A' ? bondTypeA : bondTypeB} {higherBadgeSuffix}
+                              </Badge>
+                              <p className="font-mono text-xs font-semibold text-foreground">
+                                {formatCurrency(Math.abs(row.gap))}
+                              </p>
+                            </div>
                           ) : (
                             <span className="text-xs font-semibold text-muted-foreground">{tieLabel}</span>
                           )}
@@ -540,6 +598,24 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
               </Table>
             </div>
           </div>
+
+          <ComparisonTablePaginationControls
+            page={currentPage}
+            totalPages={totalPages}
+            rowLimit={rowLimit}
+            totalRows={tableRows.length}
+            visibleRangeLabel={visibleRangeLabel}
+            onPageChange={setCurrentPage}
+            onRowLimitChange={setRowLimit}
+            labels={{
+              rowsShown: t('common.rows_shown'),
+              rowsPerPage: t('common.rows_per_page'),
+              all: t('common.all'),
+              previous: t('common.previous'),
+              next: t('common.next'),
+              page: t('common.page'),
+            }}
+          />
         </div>
 
         <div className="border-t border-dashed border-border px-6 py-4 text-sm leading-6 text-muted-foreground">
@@ -642,6 +718,97 @@ function MobileComparisonValue({
         {label}
       </p>
       <p className="mt-1 text-sm font-semibold text-foreground">{value}</p>
+    </div>
+  );
+}
+
+function ComparisonScenarioCell({
+  snapshot,
+  formatCurrency,
+}: {
+  snapshot: ComparisonScenarioSnapshot;
+  formatCurrency: (val: number) => string;
+}) {
+  return (
+    <div className="grid grid-cols-1 gap-2 text-xs sm:grid-cols-3">
+      <ScenarioSnapshotMetric
+        label="Nominal"
+        value={formatCurrency(snapshot.nominalValue)}
+        strong
+      />
+      <ScenarioSnapshotMetric
+        label="Real"
+        value={formatCurrency(snapshot.realValue)}
+      />
+      <ScenarioSnapshotMetric
+        label="Profit"
+        value={formatCurrency(snapshot.netProfit)}
+        tone={snapshot.netProfit >= 0 ? 'positive' : 'negative'}
+      />
+    </div>
+  );
+}
+
+function MobileComparisonScenario({
+  label,
+  snapshot,
+  formatCurrency,
+}: {
+  label: string;
+  snapshot: ComparisonScenarioSnapshot;
+  formatCurrency: (val: number) => string;
+}) {
+  return (
+    <div className="border-t border-dashed border-border px-1 py-2 first:border-t-0">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+        {label}
+      </p>
+      <div className="mt-2 grid grid-cols-1 gap-2">
+        <ScenarioSnapshotMetric
+          label="Nominal"
+          value={formatCurrency(snapshot.nominalValue)}
+          strong
+        />
+        <ScenarioSnapshotMetric
+          label="Real"
+          value={formatCurrency(snapshot.realValue)}
+        />
+        <ScenarioSnapshotMetric
+          label="Profit"
+          value={formatCurrency(snapshot.netProfit)}
+          tone={snapshot.netProfit >= 0 ? 'positive' : 'negative'}
+        />
+      </div>
+    </div>
+  );
+}
+
+function ScenarioSnapshotMetric({
+  label,
+  value,
+  strong = false,
+  tone,
+}: {
+  label: string;
+  value: string;
+  strong?: boolean;
+  tone?: 'positive' | 'negative';
+}) {
+  return (
+    <div>
+      <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+        {label}
+      </p>
+      <p
+        className={cn(
+          'mt-1 font-mono text-xs',
+          strong ? 'font-semibold text-foreground' : 'text-muted-foreground',
+          tone === 'positive' ? 'financial-positive' : '',
+          tone === 'negative' ? 'text-destructive' : '',
+        )}
+      >
+        {value}
+      </p>
     </div>
   );
 }

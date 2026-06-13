@@ -45,8 +45,13 @@ describe('market assumption control contracts', () => {
     expectContains(source, "const [nbpMode, setNbpMode]");
     expectContains(source, 'const activeInflationMode = inflationSetupMode ?? inflationMode;');
     expectContains(source, 'const activeNbpMode = nbpSetupMode ?? nbpMode;');
+    expectContains(source, 'function formatCompactPercent');
     expectContains(source, 'function formatPathAverage');
-    expectContains(source, "return `Avg ${average.toFixed(1)}%`;");
+    expectContains(source, "return `Avg ${formatCompactPercent(average)}%`;");
+    expectNoFragments(source, [
+      'fallback.toFixed(1)',
+      'average.toFixed(1)',
+    ]);
     expectContains(source, 'const inflationHeaderValue =');
     expectContains(source, 'const nbpHeaderValue =');
     expectContains(source, "unit={activeInflationMode === 'advanced' ? '' : '%'}");

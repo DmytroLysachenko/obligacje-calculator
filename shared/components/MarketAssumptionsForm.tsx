@@ -79,15 +79,25 @@ function CurrentAssumptionValue({
   );
 }
 
+function formatCompactPercent(value: number) {
+  if (!Number.isFinite(value)) {
+    return '0';
+  }
+
+  return value
+    .toFixed(2)
+    .replace(/\.?0+$/, '');
+}
+
 function formatPathAverage(values: number[] | undefined, fallback: number) {
   const pathValues = values?.filter(Number.isFinite);
 
   if (!pathValues?.length) {
-    return `Avg ${fallback.toFixed(1)}%`;
+    return `Avg ${formatCompactPercent(fallback)}%`;
   }
 
   const average = pathValues.reduce((sum, value) => sum + value, 0) / pathValues.length;
-  return `Avg ${average.toFixed(1)}%`;
+  return `Avg ${formatCompactPercent(average)}%`;
 }
 
 function AssumptionHeader({

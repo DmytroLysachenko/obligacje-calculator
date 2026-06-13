@@ -187,10 +187,10 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
               <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-background">
                 {t('common.period')}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 w-[18%] bg-background">
+              <TableHead className="sticky top-0 z-10 h-12 w-[22%] bg-background">
                 {t('bonds.schedule.checkpoint_meaning')}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 h-12 w-[17%] bg-background">
+              <TableHead className="sticky top-0 z-10 h-12 w-[15%] bg-background">
                 {t('bonds.schedule.rate_and_basis')}
               </TableHead>
               <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-background">
@@ -230,10 +230,10 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
                       </div>) : null}
                   </div>
                 </TableCell>
-                <TableCell className="py-4 align-top text-xs text-muted-foreground">
-                  <div className="space-y-1 pr-2">
-                    <p className="font-medium leading-5 text-foreground">{row.cadenceLabel}</p>
-                    <p className="line-clamp-2 text-xs leading-5 text-muted-foreground">
+                <TableCell className="min-w-0 py-4 align-top text-xs text-muted-foreground">
+                  <div className="max-w-[28ch] space-y-1 pr-3">
+                    <p className="whitespace-normal break-words font-medium leading-5 text-foreground">{row.cadenceLabel}</p>
+                    <p className="whitespace-normal break-words text-xs leading-5 text-muted-foreground">
                       {row.valueMeaningLabel}
                     </p>
                   </div>

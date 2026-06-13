@@ -46,8 +46,12 @@ describe('premium financial table contracts', () => {
     expectContains(source, '<Table className="w-full table-fixed text-sm tabular-nums">');
     expectContains(source, '<TableRow className="h-12 hover:bg-transparent">');
     expectContains(source, 'sticky top-0 z-10 h-12 w-[11%] bg-background');
+    expectContains(source, 'sticky top-0 z-10 h-12 w-[22%] bg-background');
     expectContains(source, 'sticky top-0 z-10 h-12 w-[12%] bg-background text-right');
     expectContains(source, 'h-14 border-b border-border transition-colors hover:bg-muted/25');
+    expectContains(source, 'className="max-w-[28ch] space-y-1 pr-3"');
+    expectContains(source, 'whitespace-normal break-words font-medium leading-5 text-foreground');
+    expectContains(source, 'whitespace-normal break-words text-xs leading-5 text-muted-foreground');
     expectContains(source, 'financial-number py-4 align-top font-mono text-xs');
 
     expectNoFragments(source, [
@@ -58,6 +62,7 @@ describe('premium financial table contracts', () => {
       '<TableRow className="bg-muted/35 hover:bg-muted/35">',
       'h-10 w-[11%] bg-muted/60',
       'hover:bg-muted/35',
+      '<p className="line-clamp-2 text-xs leading-5 text-muted-foreground">',
     ]);
   });
 

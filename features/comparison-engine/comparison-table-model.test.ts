@@ -10,7 +10,8 @@ function point(date: string, totalValue: number) {
   return {
     cycleEndDate: date,
     totalValue,
-    realValue: totalValue,
+    realValue: totalValue * 0.9,
+    netProfit: totalValue - 10000,
   };
 }
 
@@ -44,9 +45,12 @@ describe('comparison aligned table model', () => {
 
     const june = rows.find((row) => row.dateLabel === '2026-06-22');
 
-    expect(june?.valueA).toBe(10025);
-    expect(june?.valueB).toBeGreaterThan(10000);
-    expect(june?.valueB).toBeLessThan(11200);
+    expect(june?.scenarioA.nominalValue).toBe(10025);
+    expect(june?.scenarioA.realValue).toBe(9022.5);
+    expect(june?.scenarioA.netProfit).toBe(25);
+    expect(june?.scenarioB.nominalValue).toBeGreaterThan(10000);
+    expect(june?.scenarioB.nominalValue).toBeLessThan(11200);
+    expect(june?.leader).toBe('B');
   });
 
   it('aggregates aligned rows without changing terminal comparison values', () => {
@@ -65,8 +69,9 @@ describe('comparison aligned table model', () => {
       language: 'en',
     });
 
-    expect(rows.at(-1)?.valueA).toBe(10300);
-    expect(rows.at(-1)?.valueB).toBe(11200);
+    expect(rows.at(-1)?.scenarioA.nominalValue).toBe(10300);
+    expect(rows.at(-1)?.scenarioB.nominalValue).toBe(11200);
+    expect(rows.at(-1)?.gap).toBe(900);
     expect(rows.length).toBe(2);
   });
 

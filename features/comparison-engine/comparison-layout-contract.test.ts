@@ -71,7 +71,8 @@ describe('comparison layout contract', () => {
     const table = read(files.table);
 
     expect(table).toContain('buildComparisonAlignedTableRows');
-    expect(table).toContain('projectTimelineValue');
+    expect(table).toContain('projectTimelineSnapshot');
+    expect(table).toContain('ComparisonScenarioSnapshot');
     expect(table).toContain('getComparisonTablePageRows');
     expect(table).toContain('getComparisonTablePageCount');
     expect(table).toContain('<ComparisonTablePaginationControls');
