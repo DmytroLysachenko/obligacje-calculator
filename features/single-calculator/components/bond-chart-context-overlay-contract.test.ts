@@ -26,8 +26,9 @@ describe('single calculator chart context overlay contract', () => {
     expectContains(source, 't("common.real_value")');
     expectContains(source, 'computeRateDomain');
     expectContains(source, 'const rightDomain');
-    expectContains(shared, 'const [showInflationOverlay, setShowInflationOverlay] = React.useState(false);');
-    expectContains(shared, 'const [showNbpOverlay, setShowNbpOverlay] = React.useState(false);');
+    expectContains(shared, 'loadChartDisplayPreferences(defaultGranularity)');
+    expectContains(shared, 'const showInflationOverlay = preferences.showInflationOverlay;');
+    expectContains(shared, 'const showNbpOverlay = preferences.showNbpOverlay;');
     expectContains(shared, 'const showContextAxis = showInflationOverlay || showNbpOverlay;');
     expectContains(shared, 'margin={{ top: 12, right: 52, left: 40, bottom: 20 }}');
     expectContains(shared, 'yAxisId="right"');
@@ -35,8 +36,8 @@ describe('single calculator chart context overlay contract', () => {
     expectContains(shared, 'width={44}');
     expectContains(shared, 'aria-pressed={showInflationOverlay}');
     expectContains(shared, 'aria-pressed={showNbpOverlay}');
-    expectContains(shared, 'onClick={() => setShowInflationOverlay((current) => !current)}');
-    expectContains(shared, 'onClick={() => setShowNbpOverlay((current) => !current)}');
+    expectContains(shared, 'onClick={() => updateOverlayPreference("showInflationOverlay", !showInflationOverlay)}');
+    expectContains(shared, 'onClick={() => updateOverlayPreference("showNbpOverlay", !showNbpOverlay)}');
     expectContains(shared, 'showInflationOverlay ? (');
     expectContains(shared, 'dataKey="inflation"');
     expectContains(shared, 'showNbpOverlay ? (');

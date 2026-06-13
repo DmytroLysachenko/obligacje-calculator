@@ -57,8 +57,6 @@ export const BondChart: React.FC<BondChartProps> = ({
         dateKey: point.dateKey,
         primary: showRealValue ? point.real : point.nominal,
         secondary: showRealValue ? point.nominal : point.real,
-        high: point.high,
-        low: point.low,
         isProjected: point.isProjected,
         isMaturity: point.isMaturity,
         inflation: point.inflation,
@@ -85,8 +83,6 @@ export const BondChart: React.FC<BondChartProps> = ({
         chartData.flatMap((point) => [
           Number(point.primary),
           Number(point.secondary),
-          typeof point.high === "number" ? point.high : Number.NaN,
-          typeof point.low === "number" ? point.low : Number.NaN,
         ]).filter((value) => Number.isFinite(value)),
         {
           minFloor: 0,
@@ -136,26 +132,8 @@ export const BondChart: React.FC<BondChartProps> = ({
         color: showRealValue ? "#111111" : "#4E8F71",
         secondary: true,
       },
-      ...(results.comparisonScenarios
-        ? [
-            {
-              key: "high",
-              label: t("bonds.inflation.scenarios.high"),
-              color: "#111111",
-              secondary: true,
-              dashed: true,
-            },
-            {
-              key: "low",
-              label: t("bonds.inflation.scenarios.low"),
-              color: "#111111",
-              secondary: true,
-              dashed: true,
-            },
-          ]
-        : []),
     ],
-    [results.comparisonScenarios, showRealValue, t],
+    [showRealValue, t],
   );
 
   return (

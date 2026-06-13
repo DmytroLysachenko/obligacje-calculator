@@ -4,7 +4,11 @@ import React from 'react';
 import { LineChart } from 'lucide-react';
 import { BondInputs, CalculationResult, ChartStep, InterestPayout } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
-import { BondValueChart, BondValueChartPoint } from '@/shared/components/charts/BondValueChart';
+import {
+  BondValueChart,
+  BondValueChartPoint,
+  BondValueChartTooltipGroup,
+} from '@/shared/components/charts/BondValueChart';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { MetricStrip, MetricStripItem } from '@/shared/components/results/MetricStrip';
@@ -114,19 +118,80 @@ export function ComparisonResultsPanel({
   ], [inputsA.bondType, inputsB.bondType, language, resultsA.timeline, resultsB.timeline, t]);
   const valueChartData = React.useMemo<BondValueChartPoint[]>(
     () =>
-      chartData.map((point) => ({
-        label: point.label,
-        date: point.label,
-        dateKey: point.dateKey,
-        nominalA: point.nominalA,
-        realA: point.realA,
-        nominalB: point.nominalB,
-        realB: point.realB,
-        inflation: point.inflation,
-        nbp: point.nbp,
-        isProjected: point.isProjected,
-      })),
-    [chartData],
+      chartData.map((point) => {
+        const scenarioGroups: BondValueChartTooltipGroup[] = [
+          {
+            id: 'scenario-a',
+            title: `${inputsA.bondType} (${t('comparison.scenario_a')})`,
+            color: scenarioAColor,
+            projected: point.isProjected,
+            metrics: [
+              {
+                label: t('common.nominal_value'),
+                value: point.nominalA,
+                color: scenarioAColor,
+              },
+              {
+                label: t('common.real_value'),
+                value: point.realA,
+                color: scenarioAColor,
+              },
+              {
+                label: t('common.net_profit'),
+                value: point.nominalA - resultsA.initialInvestment,
+                color: scenarioAColor,
+              },
+            ],
+          },
+          {
+            id: 'scenario-b',
+            title: `${inputsB.bondType} (${t('comparison.scenario_b')})`,
+            color: scenarioBColor,
+            projected: point.isProjected,
+            metrics: [
+              {
+                label: t('common.nominal_value'),
+                value: point.nominalB,
+                color: scenarioBColor,
+              },
+              {
+                label: t('common.real_value'),
+                value: point.realB,
+                color: scenarioBColor,
+              },
+              {
+                label: t('common.net_profit'),
+                value: point.nominalB - resultsB.initialInvestment,
+                color: scenarioBColor,
+              },
+            ],
+          },
+        ];
+
+        return {
+          label: point.label,
+          date: point.label,
+          dateKey: point.dateKey,
+          nominalA: point.nominalA,
+          realA: point.realA,
+          nominalB: point.nominalB,
+          realB: point.realB,
+          inflation: point.inflation,
+          nbp: point.nbp,
+          isProjected: point.isProjected,
+          scenarioGroups,
+        };
+      }),
+    [
+      chartData,
+      inputsA.bondType,
+      inputsB.bondType,
+      resultsA.initialInvestment,
+      resultsB.initialInvestment,
+      scenarioAColor,
+      scenarioBColor,
+      t,
+    ],
   );
   const leftDomain = React.useMemo(
     () =>

@@ -64,7 +64,9 @@ describe('comparison chart and verdict contracts', () => {
     const source = read(files.resultsPanel);
     const sharedChart = read(files.sharedValueChart);
 
-    expectContains(source, "import { BondValueChart, BondValueChartPoint } from '@/shared/components/charts/BondValueChart';");
+    expectContains(source, "from '@/shared/components/charts/BondValueChart';");
+    expectContains(source, 'BondValueChart,');
+    expectContains(source, 'BondValueChartPoint');
     expectContains(source, '<BondValueChart');
     expectContains(source, 'defaultGranularity={chartStep}');
     expectContains(source, 'onGranularityChange={onChartStepChange}');
