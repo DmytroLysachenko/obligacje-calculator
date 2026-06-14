@@ -53,6 +53,11 @@ export function TableDensityControls({
   labels,
   className,
 }: TableDensityControlsProps) {
+  const smallestLimit = tableRowLimitOptions.find(
+    (option): option is Exclude<TableRowLimit, 'all'> => option !== 'all',
+  ) ?? 12;
+  const needsDensityControls = totalRows > smallestLimit;
+
   return (
     <div
       className={cn(
@@ -63,23 +68,25 @@ export function TableDensityControls({
       <p className="text-xs font-semibold text-muted-foreground">
         {labels.rowsShown}: {visibleRows} / {totalRows}
       </p>
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-semibold text-muted-foreground">
-          {labels.rowsPerPage}
-        </span>
-        {tableRowLimitOptions.map((option) => (
-          <Button
-            key={String(option)}
-            type="button"
-            variant={value === option ? 'default' : 'outline'}
-            size="sm"
-            className="h-8 min-w-10 px-3 text-xs font-semibold"
-            onClick={() => onChange(option)}
-          >
-            {option === 'all' ? labels.all : option}
-          </Button>
-        ))}
-      </div>
+      {needsDensityControls ? (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-semibold text-muted-foreground">
+            {labels.rowsPerPage}
+          </span>
+          {tableRowLimitOptions.map((option) => (
+            <Button
+              key={String(option)}
+              type="button"
+              variant={value === option ? 'default' : 'outline'}
+              size="sm"
+              className="h-8 min-w-10 px-3 text-xs font-semibold"
+              onClick={() => onChange(option)}
+            >
+              {option === 'all' ? labels.all : option}
+            </Button>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -85,7 +85,7 @@ export const BondChart: React.FC<BondChartProps> = ({
           Number(point.secondary),
         ]).filter((value) => Number.isFinite(value)),
         {
-          minFloor: 0,
+          minFloor: null,
           minPadding: 250,
           paddingRatio: 0.08,
         },

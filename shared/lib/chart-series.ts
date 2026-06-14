@@ -50,21 +50,26 @@ export function computeNumericDomain(
     minPadding = 1,
     paddingRatio = 0.08,
   }: {
-    minFloor?: number;
+    minFloor?: number | null;
     minPadding?: number;
     paddingRatio?: number;
   } = {},
 ): [number, number] {
   if (values.length === 0) {
-    return [minFloor, minFloor + Math.max(1, minPadding)];
+    const floor = minFloor ?? 0;
+    return [floor, floor + Math.max(1, minPadding)];
   }
 
   const seriesMin = Math.min(...values);
   const seriesMax = Math.max(...values);
   const span = Math.max(seriesMax - seriesMin, minPadding);
   const padding = Math.max(minPadding, Math.round(span * paddingRatio));
+  const lowerBound = seriesMin - padding;
 
-  return [Math.max(minFloor, seriesMin - padding), seriesMax + padding];
+  return [
+    minFloor === null ? lowerBound : Math.max(minFloor, lowerBound),
+    seriesMax + padding,
+  ];
 }
 
 export function computeRateDomain(values: number[]) {
@@ -79,4 +84,28 @@ export function computeRateDomain(values: number[]) {
     Math.min(-1, Math.floor(seriesMin - 0.5)),
     Math.ceil(seriesMax + 0.5),
   ] as [number, number];
+}
+
+export function formatMoneyAxisTick(value: number) {
+  const numericValue = Number(value);
+
+  if (!Number.isFinite(numericValue)) {
+    return '';
+  }
+
+  const absoluteValue = Math.abs(numericValue);
+
+  if (absoluteValue >= 1_000_000) {
+    return `${(numericValue / 1_000_000).toFixed(1).replace(/\.0$/, '')}m`;
+  }
+
+  if (absoluteValue >= 10_000) {
+    return `${Math.round(numericValue / 1000)}k`;
+  }
+
+  if (absoluteValue >= 1000) {
+    return `${(numericValue / 1000).toFixed(1).replace(/\.0$/, '')}k`;
+  }
+
+  return `${Math.round(numericValue)}`;
 }

@@ -23,6 +23,7 @@ import {
   loadChartDisplayPreferences,
   saveChartDisplayPreferences,
 } from "@/shared/lib/chart-display-preferences";
+import { formatMoneyAxisTick } from "@/shared/lib/chart-series";
 
 export interface BondValueChartSeries {
   key: string;
@@ -482,7 +483,7 @@ export function BondValueChart({
               tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))", fontWeight: "bold" }}
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => `${(Number(value) / 1000).toFixed(0)}k`}
+              tickFormatter={(value) => formatMoneyAxisTick(Number(value))}
               domain={leftDomain}
             />
             <YAxis

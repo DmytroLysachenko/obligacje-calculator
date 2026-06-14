@@ -1,4 +1,4 @@
-import { addMonths, compareAsc, format, parseISO } from 'date-fns';
+import { addMonths, compareAsc, differenceInMonths, format, parseISO } from 'date-fns';
 import { BondType, CalculationResult, ChartStep } from '@/features/bond-core/types';
 import { BondInputs } from '@/features/bond-core/types';
 import { sampleSeriesPoints } from '@/shared/lib/chart-series';
@@ -167,12 +167,16 @@ function aggregateComparisonChartPoints(
   }
 
   const groups = new Map<string, ComparisonChartPoint[]>();
+  const firstDate = points[0] ? parseISO(points[0].dateKey) : null;
 
   for (const point of points) {
     const date = parseISO(point.dateKey);
+    const monthsFromStart = firstDate
+      ? Math.max(0, differenceInMonths(date, firstDate))
+      : 0;
     const groupKey = chartStep === 'quarterly'
-      ? `${date.getUTCFullYear()}-Q${Math.floor(date.getUTCMonth() / 3) + 1}`
-      : `${date.getUTCFullYear()}`;
+      ? `q-${Math.floor(monthsFromStart / 3)}`
+      : `y-${Math.floor(monthsFromStart / 12)}`;
     const bucket = groups.get(groupKey) ?? [];
     bucket.push(point);
     groups.set(groupKey, bucket);

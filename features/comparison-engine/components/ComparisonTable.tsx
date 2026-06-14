@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { addMonths, compareAsc, format, parseISO } from 'date-fns';
+import { addMonths, compareAsc, differenceInMonths, format, parseISO } from 'date-fns';
 import { Scale } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -22,6 +22,12 @@ import {
   tableRowLimitOptions,
 } from '@/shared/components/results/TableDensityControls';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
+import {
+  AppLanguage,
+  getRateSourceDisplayLabel,
+  getSimulationEventDisplayLabel,
+} from '@/shared/lib/bond-display';
+import { SimulationEventType } from '@/features/bond-core/types/simulation';
 
 interface ComparisonTableProps {
   resultsA: CalculationResult;
@@ -68,6 +74,10 @@ type ComparisonScenarioSnapshot = {
   nominalValue: number;
   realValue: number;
   netProfit: number;
+  taxDeducted: number;
+  interestRate?: number;
+  rateSourceLabel?: string;
+  eventLabels: string[];
 };
 
 function interpolateTimelineNumber(
@@ -144,11 +154,14 @@ function projectTimelineSnapshot(
   timeline: CalculationResult['timeline'],
   date: Date,
   initialInvestment: number,
+  language: AppLanguage,
 ) {
   let currentSnapshot: ComparisonScenarioSnapshot = {
     nominalValue: initialInvestment,
     realValue: initialInvestment,
     netProfit: 0,
+    taxDeducted: 0,
+    eventLabels: [],
   };
   let index = 0;
 
@@ -161,6 +174,14 @@ function projectTimelineSnapshot(
       nominalValue: point.totalValue,
       realValue: point.realValue ?? point.totalValue,
       netProfit: point.netProfit ?? point.totalValue - initialInvestment,
+      taxDeducted: point.taxDeducted ?? 0,
+      interestRate: point.interestRate,
+      rateSourceLabel: point.rateSource
+        ? getRateSourceDisplayLabel(point.rateSource, language)
+        : undefined,
+      eventLabels: point.events?.map((event) =>
+        getSimulationEventDisplayLabel(event.type as SimulationEventType, language),
+      ) ?? [],
     };
     index += 1;
   }
@@ -203,6 +224,15 @@ function projectTimelineSnapshot(
       currentSnapshot.netProfit,
       progress,
     ),
+    taxDeducted: interpolateTimelineNumber(
+      previousPoint.taxDeducted,
+      nextPoint.taxDeducted,
+      currentSnapshot.taxDeducted,
+      progress,
+    ),
+    interestRate: currentSnapshot.interestRate,
+    rateSourceLabel: currentSnapshot.rateSourceLabel,
+    eventLabels: currentSnapshot.eventLabels,
   };
 }
 
@@ -249,8 +279,8 @@ export function buildComparisonAlignedTableRows({
   }
 
   const rawRows = dates.map((date, index) => {
-    const scenarioA = projectTimelineSnapshot(resultsA.timeline, date, resultsA.initialInvestment);
-    const scenarioB = projectTimelineSnapshot(resultsB.timeline, date, resultsB.initialInvestment);
+    const scenarioA = projectTimelineSnapshot(resultsA.timeline, date, resultsA.initialInvestment, language);
+    const scenarioB = projectTimelineSnapshot(resultsB.timeline, date, resultsB.initialInvestment, language);
     const gap = scenarioB.nominalValue - scenarioA.nominalValue;
 
     return {
@@ -274,9 +304,10 @@ export function buildComparisonAlignedTableRows({
 
   for (const row of rawRows) {
     const date = parseISO(row.key);
+    const monthsFromStart = Math.max(0, differenceInMonths(date, startDate));
     const groupKey = granularity === 'quarterly'
-      ? `${date.getUTCFullYear()}-Q${Math.floor(date.getUTCMonth() / 3) + 1}`
-      : `${date.getUTCFullYear()}`;
+      ? `q-${Math.floor(monthsFromStart / 3)}`
+      : `y-${Math.floor(monthsFromStart / 12)}`;
     const bucket = groups.get(groupKey) ?? [];
     bucket.push(row);
     groups.set(groupKey, bucket);
@@ -483,11 +514,21 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                       label={`${bondTypeA} (A)`}
                       snapshot={row.scenarioA}
                       formatCurrency={formatCurrency}
+                      labels={{
+                        nominal: t('common.nominal_value'),
+                        real: t('common.real_value'),
+                        profit: t('common.net_profit'),
+                      }}
                     />
                     <MobileComparisonScenario
                       label={`${bondTypeB} (B)`}
                       snapshot={row.scenarioB}
                       formatCurrency={formatCurrency}
+                      labels={{
+                        nominal: t('common.nominal_value'),
+                        real: t('common.real_value'),
+                        profit: t('common.net_profit'),
+                      }}
                     />
                   </div>
                   <MobileComparisonValue
@@ -554,6 +595,11 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                           <ComparisonScenarioCell
                             snapshot={row.scenarioA}
                             formatCurrency={formatCurrency}
+                            labels={{
+                              nominal: t('common.nominal_value'),
+                              real: t('common.real_value'),
+                              profit: t('common.net_profit'),
+                            }}
                           />
                         </TableCell>
                         <TableCell
@@ -567,6 +613,11 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                           <ComparisonScenarioCell
                             snapshot={row.scenarioB}
                             formatCurrency={formatCurrency}
+                            labels={{
+                              nominal: t('common.nominal_value'),
+                              real: t('common.real_value'),
+                              profit: t('common.net_profit'),
+                            }}
                           />
                         </TableCell>
                         <TableCell className="px-4 py-4 text-right">
@@ -652,29 +703,37 @@ function ComparisonTablePaginationControls({
     page: string;
   };
 }) {
+  const smallestLimit = tableRowLimitOptions.find(
+    (option): option is Exclude<TableRowLimit, 'all'> => option !== 'all',
+  ) ?? 12;
+  const needsDensityControls = totalRows > smallestLimit;
+  const needsPageControls = rowLimit !== 'all' && totalPages > 1;
+
   return (
     <div className="flex flex-col gap-3 md:items-end">
       <p className="text-xs font-semibold text-muted-foreground">
         {labels.rowsShown}: {visibleRangeLabel}
       </p>
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-semibold text-muted-foreground">
-          {labels.rowsPerPage}
-        </span>
-        {tableRowLimitOptions.map((option) => (
-          <Button
-            key={String(option)}
-            type="button"
-            variant={rowLimit === option ? 'default' : 'outline'}
-            size="sm"
-            className="h-8 min-w-10 px-3 text-xs font-semibold"
-            onClick={() => onRowLimitChange(option)}
-          >
-            {option === 'all' ? labels.all : option}
-          </Button>
-        ))}
-      </div>
-      {rowLimit !== 'all' && totalRows > 0 ? (
+      {needsDensityControls ? (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-semibold text-muted-foreground">
+            {labels.rowsPerPage}
+          </span>
+          {tableRowLimitOptions.map((option) => (
+            <Button
+              key={String(option)}
+              type="button"
+              variant={rowLimit === option ? 'default' : 'outline'}
+              size="sm"
+              className="h-8 min-w-10 px-3 text-xs font-semibold"
+              onClick={() => onRowLimitChange(option)}
+            >
+              {option === 'all' ? labels.all : option}
+            </Button>
+          ))}
+        </div>
+      ) : null}
+      {needsPageControls ? (
         <div className="flex flex-wrap items-center justify-end gap-2">
           <Button
             type="button"
@@ -725,26 +784,53 @@ function MobileComparisonValue({
 function ComparisonScenarioCell({
   snapshot,
   formatCurrency,
+  labels,
 }: {
   snapshot: ComparisonScenarioSnapshot;
   formatCurrency: (val: number) => string;
+  labels: {
+    nominal: string;
+    real: string;
+    profit: string;
+  };
 }) {
   return (
-    <div className="grid grid-cols-1 gap-2 text-xs sm:grid-cols-3">
+    <div className="space-y-3 text-xs">
+      {snapshot.eventLabels.length > 0 ? (
+        <div className="flex flex-wrap gap-1">
+          {snapshot.eventLabels.map((label) => (
+            <Badge key={label} variant="secondary" className="h-5 px-2 text-[10px] font-semibold">
+              {label}
+            </Badge>
+          ))}
+        </div>
+      ) : null}
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
       <ScenarioSnapshotMetric
-        label="Nominal"
+        label={labels.nominal}
         value={formatCurrency(snapshot.nominalValue)}
         strong
       />
       <ScenarioSnapshotMetric
-        label="Real"
+        label={labels.real}
         value={formatCurrency(snapshot.realValue)}
       />
       <ScenarioSnapshotMetric
-        label="Profit"
+        label={labels.profit}
         value={formatCurrency(snapshot.netProfit)}
         tone={snapshot.netProfit >= 0 ? 'positive' : 'negative'}
       />
+      </div>
+      {snapshot.interestRate !== undefined || snapshot.rateSourceLabel ? (
+        <div className="border-t border-dashed border-border pt-2 text-[11px] leading-5 text-muted-foreground">
+          {snapshot.interestRate !== undefined ? (
+            <span className="font-semibold text-foreground">{snapshot.interestRate.toFixed(2)}%</span>
+          ) : null}
+          {snapshot.rateSourceLabel ? (
+            <span className="ml-2">{snapshot.rateSourceLabel}</span>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -753,32 +839,57 @@ function MobileComparisonScenario({
   label,
   snapshot,
   formatCurrency,
+  labels,
 }: {
   label: string;
   snapshot: ComparisonScenarioSnapshot;
   formatCurrency: (val: number) => string;
+  labels: {
+    nominal: string;
+    real: string;
+    profit: string;
+  };
 }) {
   return (
     <div className="border-t border-dashed border-border px-1 py-2 first:border-t-0">
       <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
         {label}
       </p>
+      {snapshot.eventLabels.length > 0 ? (
+        <div className="mt-2 flex flex-wrap gap-1">
+          {snapshot.eventLabels.map((eventLabel) => (
+            <Badge key={eventLabel} variant="secondary" className="h-5 px-2 text-[10px] font-semibold">
+              {eventLabel}
+            </Badge>
+          ))}
+        </div>
+      ) : null}
       <div className="mt-2 grid grid-cols-1 gap-2">
         <ScenarioSnapshotMetric
-          label="Nominal"
+          label={labels.nominal}
           value={formatCurrency(snapshot.nominalValue)}
           strong
         />
         <ScenarioSnapshotMetric
-          label="Real"
+          label={labels.real}
           value={formatCurrency(snapshot.realValue)}
         />
         <ScenarioSnapshotMetric
-          label="Profit"
+          label={labels.profit}
           value={formatCurrency(snapshot.netProfit)}
           tone={snapshot.netProfit >= 0 ? 'positive' : 'negative'}
         />
       </div>
+      {snapshot.interestRate !== undefined || snapshot.rateSourceLabel ? (
+        <p className="mt-2 border-t border-dashed border-border pt-2 text-[11px] leading-5 text-muted-foreground">
+          {snapshot.interestRate !== undefined ? (
+            <span className="font-semibold text-foreground">{snapshot.interestRate.toFixed(2)}%</span>
+          ) : null}
+          {snapshot.rateSourceLabel ? (
+            <span className="ml-2">{snapshot.rateSourceLabel}</span>
+          ) : null}
+        </p>
+      ) : null}
     </div>
   );
 }

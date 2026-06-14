@@ -45,7 +45,8 @@ describe('comparison chart ownership contract', () => {
     expectContains(container, 'onChartStepChange={setChartStep}');
     expectContains(container, 'const [chartStep, setChartStep] = useState<ChartStep>(\'yearly\');');
 
-    expectContains(results, "import { BondValueChart, BondValueChartPoint } from '@/shared/components/charts/BondValueChart';");
+    expectContains(results, "BondValueChartPoint");
+    expectContains(results, "from '@/shared/components/charts/BondValueChart';");
     expectContains(results, '<BondValueChart');
     expectContains(results, 'defaultGranularity={chartStep}');
     expectContains(results, 'onGranularityChange={onChartStepChange}');
