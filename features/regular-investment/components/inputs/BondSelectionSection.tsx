@@ -27,7 +27,7 @@ export function BondSelectionSection({
   t,
 }: BondSelectionSectionProps) {
   const currentDef = definitions[bondType];
-  const currentBondSupport = getBondSupportMeta(bondType);
+  const currentBondSupport = getBondSupportMeta(bondType, language);
 
   return (
     <div className="space-y-5">
@@ -60,14 +60,14 @@ export function BondSelectionSection({
               <span
                 className={cn(
                   'rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-[0.08em]',
-                  getBondSupportMeta(type).tone === 'caution'
+                  getBondSupportMeta(type, language).tone === 'caution'
                     ? 'bg-warning/10 text-warning'
-                    : getBondSupportMeta(type).tone === 'limited'
+                    : getBondSupportMeta(type, language).tone === 'limited'
                       ? 'bg-muted text-muted-foreground'
                       : 'bg-success/10 text-success',
                 )}
               >
-                {getBondSupportMeta(type).shortLabel}
+                {getBondSupportMeta(type, language).shortLabel}
               </span>
             ),
           }))}

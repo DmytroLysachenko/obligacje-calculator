@@ -177,7 +177,7 @@ export function ComparisonSharedBaseCard({
             min={12}
             max={360}
             step={1}
-            unit="mo"
+            unit={t('common.month_compact')}
             onCommit={(value) => onUpdateSharedConfig('investmentHorizonMonths', value)}
           />
           <p className="text-xs leading-5 text-muted-foreground">

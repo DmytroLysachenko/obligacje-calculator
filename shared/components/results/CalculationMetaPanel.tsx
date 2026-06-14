@@ -61,12 +61,68 @@ const MetaSection = ({
   );
 };
 
-function humanizeFlag(value: string) {
+function humanizeFlag(value: string, t: (key: string, params?: Record<string, string | number>) => string) {
+  const knownFlag = t(`bonds.data_quality_flags.${value}`);
+
+  if (knownFlag && knownFlag !== `bonds.data_quality_flags.${value}`) {
+    return knownFlag;
+  }
+
   return value
     .split('_')
     .filter(Boolean)
     .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
     .join(' ');
+}
+
+function translateEngineMessage(
+  value: string,
+  t: (key: string, params?: Record<string, string | number>) => string,
+) {
+  const numericValue = value.match(/-?\d+(?:\.\d+)?/)?.[0];
+
+  if (value.startsWith('Expected annual inflation:')) {
+    return t('bonds.engine_messages.expected_inflation', { value: numericValue ?? '' });
+  }
+
+  if (value.startsWith('Expected NBP reference rate:')) {
+    return t('bonds.engine_messages.expected_nbp_rate', { value: numericValue ?? '' });
+  }
+
+  if (value === 'Using custom user-supplied inflation overrides.') {
+    return t('bonds.engine_messages.custom_inflation');
+  }
+
+  if (value === 'Using custom user-supplied NBP rate overrides.') {
+    return t('bonds.engine_messages.custom_nbp');
+  }
+
+  if (value === 'Inflation history is missing; projected assumptions may be used.') {
+    return t('bonds.engine_messages.missing_inflation_history');
+  }
+
+  if (value === 'NBP rate history is missing; projected assumptions may be used.') {
+    return t('bonds.engine_messages.missing_nbp_history');
+  }
+
+  if (value === 'Historical data was unavailable; projected assumptions may be used.') {
+    return t('bonds.engine_messages.missing_history');
+  }
+
+  if (value === 'Rollover is disabled; the simulation stops at the first bond cycle or selected withdrawal date.') {
+    return t('bonds.engine_messages.rollover_disabled');
+  }
+
+  if (value === 'Early redemption fee logic was applied before the native maturity date.') {
+    return t('bonds.engine_messages.early_redemption_applied');
+  }
+
+  const cycleMatch = value.match(/^Simulation covered (\d+) bond cycles? across the selected horizon\.$/);
+  if (cycleMatch) {
+    return t('bonds.engine_messages.rollover_cycles', { count: cycleMatch[1] });
+  }
+
+  return value;
 }
 
 export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
@@ -138,19 +194,19 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
       >
         <MetaSection
           title={t('common.warnings')}
-          items={warnings}
+          items={warnings.map((item) => translateEngineMessage(item, t))}
           icon={<AlertTriangle className="h-4 w-4" />}
           className="space-y-3 border-t border-warning/40 py-4 text-foreground"
         />
         <MetaSection
           title={t('common.assumptions')}
-          items={assumptions}
+          items={assumptions.map((item) => translateEngineMessage(item, t))}
           icon={<Target className="h-4 w-4" />}
           className="space-y-3 border-t border-border py-4 text-foreground"
         />
         <MetaSection
           title={t('common.notes')}
-          items={calculationNotes}
+          items={calculationNotes.map((item) => translateEngineMessage(item, t))}
           icon={<FileText className="h-4 w-4" />}
           className="space-y-3 border-t border-border py-4 text-foreground"
         />
@@ -159,7 +215,7 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
           items={dataQualityFlags}
           icon={<ShieldAlert className="h-4 w-4" />}
           className="space-y-3 border-t border-warning/40 py-4 text-foreground"
-          formatItem={humanizeFlag}
+          formatItem={(item) => humanizeFlag(item, t)}
         />
       </div>
 

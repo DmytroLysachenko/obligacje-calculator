@@ -71,7 +71,7 @@
     "no_results_found": "Brak wynikow dla aktualnych filtrow.",
     "portfolio_selector_label": "Biezacy portfel",
     "portfolio_selector_empty": "Brak wybranego portfela",
-    "month_compact": "m",
+    "month_compact": "mies",
     "reset_filters": "Wyczysc filtry",
     "skip_to_content": "Przejdz do glownej tresci",
     "primary_navigation": "Nawigacja glowna",
@@ -767,6 +767,12 @@
       "non_indexed_note": "Ta obligacja nie jest indeksowana CPI. Inflacja sluzy tu tylko do pokazania wartosci realnej, a nie do resetu kuponu.",
       "nbp_note": "Ta prognozowana sciezka NBP steruje kolejnymi okresami obligacji zmiennoprocentowych po zakonczeniu pierwszej stopy z oferty.",
       "nbp_context_only": "Ta obligacja nie resetuje kuponu wedlug stopy referencyjnej NBP, wiec NBP pozostaje tu kontekstem pomocniczym, a nie wejsciem kuponowym.",
+      "mode_fixed": "Stale",
+      "mode_simple": "Proste",
+      "mode_advanced": "Zaawansowane",
+      "nbp_preset_current": "Biezaca",
+      "nbp_preset_high": "Wysoka",
+      "nbp_preset_low": "Niska",
       "simple_mode_label": "Tryb prosty",
       "advanced_mode_label": "Sciezka zaawansowana",
       "inflation_simple_mode_note": "Uzyj jednej sredniej wartosci CPI, gdy chcesz utrzymac czysta projekcje dla calego horyzontu.",
@@ -786,6 +792,29 @@
       "source_fallback_note": "Aktywne sa wartosci zapasowe. Czytaj te dane otwarcia ostrozniej do czasu kolejnej udanej synchronizacji.",
       "latest_nbp_label": "Najnowsza oficjalna stopa NBP",
       "nbp_flat_default_note": "Domyslnie kalkulator utrzymuje najnowsza zsynchronizowana stope NBP bez zmian w przyszlym horyzoncie, dopoki jej nie nadpiszesz."
+    },
+    "support": {
+      "standard_label": "Standard",
+      "standard_description": "Standardowy przeplyw detalicznej obligacji skarbowej.",
+      "short_term_label": "Krotki termin",
+      "short_term_description": "Bardzo krotki czas trwania. Dobry do prostych testow wyplaty, slabszy do dlugiego modelowania.",
+      "family_label": "Rodzinna",
+      "family_description": "Obligacja rodzinna. Uzywaj tylko wtedy, gdy warunek uprawnienia gospodarstwa domowego rzeczywiscie ma zastosowanie."
+    },
+    "engine_messages": {
+      "expected_inflation": "Przewidywana roczna inflacja: {value}%",
+      "expected_nbp_rate": "Przewidywana stopa referencyjna NBP: {value}%",
+      "custom_inflation": "Uzyto wlasnych nadpisan sciezki inflacji.",
+      "custom_nbp": "Uzyto wlasnych nadpisan sciezki NBP.",
+      "missing_inflation_history": "Brakuje historii inflacji; moga zostac uzyte zalozenia prognozowane.",
+      "missing_nbp_history": "Brakuje historii stopy NBP; moga zostac uzyte zalozenia prognozowane.",
+      "missing_history": "Dane historyczne byly niedostepne; moga zostac uzyte zalozenia prognozowane.",
+      "rollover_disabled": "Rollover jest wylaczony; symulacja konczy sie na pierwszym cyklu obligacji albo wybranej dacie wyjscia.",
+      "early_redemption_applied": "Zastosowano logike oplaty za wczesniejszy wykup przed naturalna zapadalnoscia.",
+      "rollover_cycles": "Symulacja objela {count} cykli obligacji w wybranym horyzoncie."
+    },
+    "data_quality_flags": {
+      "projected_rate_segment": "Odcinek stopy prognozowanej"
     },
     "family_bond_badge": "Rodzinne"
   },

@@ -187,7 +187,7 @@ function ScenarioResultCard({
           <p className="ui-body text-muted-foreground">
             {definition
               ? definition.description[language]
-              : getBondSupportMeta(result.type).description}
+              : getBondSupportMeta(result.type, language).description}
           </p>
         </div>
 

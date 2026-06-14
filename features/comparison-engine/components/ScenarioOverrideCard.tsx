@@ -97,14 +97,14 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
         <RateContextNote className="space-y-2 border-t border-border pt-4" title={t('comparison.override_scope_title')} badges={[
             formatBondLabel(bondType),
             ...(formatRateStyle(bondType) ? [formatRateStyle(bondType) as string] : []),
-        ]} narrative={activeRateContext?.narrative ?? getBondSupportMeta(bondType).description}/>
+        ]} narrative={activeRateContext?.narrative ?? getBondSupportMeta(bondType, language).description}/>
         {isFamilyBondType(bondType) ? (
           <Notice tone="warning" compact>
             {t('comparison.family_override_note')}
           </Notice>
         ) : null}
         <p className="text-xs leading-5 text-muted-foreground">
-            {getBondSupportMeta(bondType).description}
+            {getBondSupportMeta(bondType, language).description}
         </p>
 
         <FormInlineNotice
@@ -134,7 +134,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
 
             {customHorizonEnabled ? (<div className="space-y-3">
                 <FormField label={t('comparison.scenario_horizon')} description={t('comparison.horizon_override_desc')}>
-                  <CommittedSliderInput value={customHorizonMonths ?? 12} min={12} max={360} step={1} unit="mo" onCommit={(value) => onCustomHorizonMonthsChange(value)}/>
+                  <CommittedSliderInput value={customHorizonMonths ?? 12} min={12} max={360} step={1} unit={t('common.month_compact')} onCommit={(value) => onCustomHorizonMonthsChange(value)}/>
                 </FormField>
               </div>) : null}
           </div>

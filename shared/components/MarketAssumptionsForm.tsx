@@ -42,13 +42,15 @@ function ProjectionModeButtons({
   value: AssumptionSetupMode;
   onChange: (value: AssumptionSetupMode) => void;
 }) {
+  const { t } = useAppI18n();
+
   return (
     <SegmentedControl
       value={value}
       options={[
-        { value: 'fixed', label: 'Fixed' },
-        { value: 'simple', label: 'Simple' },
-        { value: 'advanced', label: 'Advanced' },
+        { value: 'fixed', label: t('bonds.market_assumptions.mode_fixed') },
+        { value: 'simple', label: t('bonds.market_assumptions.mode_simple') },
+        { value: 'advanced', label: t('bonds.market_assumptions.mode_advanced') },
       ]}
       onValueChange={onChange}
       className="grid-cols-3"
@@ -220,7 +222,7 @@ export const MarketAssumptionsForm = ({
       }
       onUpdate('customNbpRate', undefined);
       if (mode === 'fixed') {
-        onUpdate('expectedNbpRate', 5.25);
+              onUpdate('expectedNbpRate', 5.25);
       }
     };
 
@@ -374,10 +376,10 @@ export const MarketAssumptionsForm = ({
                       ? 'low'
                       : 'current'
               }
-              options={[
-                { value: 'current', label: 'Current (5.25%)' },
-                { value: 'high', label: 'High (6.75%)' },
-                { value: 'low', label: 'Low (3.75%)' },
+            options={[
+                { value: 'current', label: `${t('bonds.market_assumptions.nbp_preset_current')} (5.25%)` },
+                { value: 'high', label: `${t('bonds.market_assumptions.nbp_preset_high')} (6.75%)` },
+                { value: 'low', label: `${t('bonds.market_assumptions.nbp_preset_low')} (3.75%)` },
               ]}
               onValueChange={(value) => {
                 const presetValue = value === 'current' ? 5.25 : value === 'high' ? 6.75 : 3.75;

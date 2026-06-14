@@ -37,9 +37,9 @@ describe('market assumption control contracts', () => {
     expectContains(source, "type AssumptionSetupMode = 'fixed' | 'simple' | 'advanced';");
     expectContains(source, 'function ProjectionModeButtons');
     expectContains(source, 'value={value}');
-    expectContains(source, "{ value: 'fixed', label: 'Fixed' }");
-    expectContains(source, "{ value: 'simple', label: 'Simple' }");
-    expectContains(source, "{ value: 'advanced', label: 'Advanced' }");
+    expectContains(source, "{ value: 'fixed', label: t('bonds.market_assumptions.mode_fixed') }");
+    expectContains(source, "{ value: 'simple', label: t('bonds.market_assumptions.mode_simple') }");
+    expectContains(source, "{ value: 'advanced', label: t('bonds.market_assumptions.mode_advanced') }");
     expectContains(source, "itemClassName=\"h-8 text-[11px] tracking-[0.06em]\"");
     expectContains(source, "const [inflationMode, setInflationMode]");
     expectContains(source, "const [nbpMode, setNbpMode]");
@@ -69,9 +69,17 @@ describe('market assumption control contracts', () => {
     expectContains(source, "{ value: 'stable', label: `${t('bonds.stable')} (2.5%)` }");
     expectContains(source, "{ value: 'high', label: `${t('bonds.high')} (6%)` }");
     expectContains(source, "{ value: 'deflation', label: `${t('bonds.deflation')} (-1%)` }");
-    expectContains(source, "{ value: 'current', label: 'Current (5.25%)' }");
-    expectContains(source, "{ value: 'high', label: 'High (6.75%)' }");
-    expectContains(source, "{ value: 'low', label: 'Low (3.75%)' }");
+    expectContains(source, "{ value: 'current', label: `${t('bonds.market_assumptions.nbp_preset_current')} (5.25%)` }");
+    expectContains(source, "{ value: 'high', label: `${t('bonds.market_assumptions.nbp_preset_high')} (6.75%)` }");
+    expectContains(source, "{ value: 'low', label: `${t('bonds.market_assumptions.nbp_preset_low')} (3.75%)` }");
+    expectNoFragments(source, [
+      "label: 'Fixed'",
+      "label: 'Simple'",
+      "label: 'Advanced'",
+      "label: 'Current (5.25%)'",
+      "label: 'High (6.75%)'",
+      "label: 'Low (3.75%)'",
+    ]);
     expectContains(source, "className=\"grid-cols-3\"");
     expectContains(source, "onUpdate('customInflation', undefined)");
     expectContains(source, "onUpdate('expectedInflation', presetValue)");

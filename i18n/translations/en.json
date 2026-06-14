@@ -767,6 +767,12 @@
       "non_indexed_note": "This bond is not CPI-indexed. Inflation here is used for real-value context, not coupon resets.",
       "nbp_note": "This projected NBP path drives later floating-rate periods after the issued first-period offer ends.",
       "nbp_context_only": "This bond does not reset from the NBP reference rate, so NBP stays supporting context rather than a coupon input.",
+      "mode_fixed": "Fixed",
+      "mode_simple": "Simple",
+      "mode_advanced": "Advanced",
+      "nbp_preset_current": "Current",
+      "nbp_preset_high": "High",
+      "nbp_preset_low": "Low",
       "simple_mode_label": "Simple mode",
       "advanced_mode_label": "Advanced path",
       "inflation_simple_mode_note": "Use one average CPI number when you want a clean projected path for the full horizon.",
@@ -786,6 +792,29 @@
       "source_fallback_note": "Fallback defaults are active. Treat these opening values more cautiously until the next successful sync.",
       "latest_nbp_label": "Latest official NBP rate",
       "nbp_flat_default_note": "By default, the calculator holds the latest synced NBP rate flat across the future horizon until you override it."
+    },
+    "support": {
+      "standard_label": "Standard",
+      "standard_description": "Standard retail treasury bond flow.",
+      "short_term_label": "Short-term",
+      "short_term_description": "Very short duration. Fine for simple payout tests, weak fit for long-horizon withdrawal modeling.",
+      "family_label": "Family-only",
+      "family_description": "Family-targeted bond. Only use when household eligibility assumptions actually apply."
+    },
+    "engine_messages": {
+      "expected_inflation": "Expected annual inflation: {value}%",
+      "expected_nbp_rate": "Expected NBP reference rate: {value}%",
+      "custom_inflation": "Using custom user-supplied inflation overrides.",
+      "custom_nbp": "Using custom user-supplied NBP rate overrides.",
+      "missing_inflation_history": "Inflation history is missing; projected assumptions may be used.",
+      "missing_nbp_history": "NBP rate history is missing; projected assumptions may be used.",
+      "missing_history": "Historical data was unavailable; projected assumptions may be used.",
+      "rollover_disabled": "Rollover is disabled; the simulation stops at the first bond cycle or selected withdrawal date.",
+      "early_redemption_applied": "Early redemption fee logic was applied before the native maturity date.",
+      "rollover_cycles": "Simulation covered {count} bond cycles across the selected horizon."
+    },
+    "data_quality_flags": {
+      "projected_rate_segment": "Projected rate segment"
     },
     "family_bond_badge": "Family"
   },

@@ -31,7 +31,7 @@ interface BondConfigSectionProps {
 export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(({ inputs, onUpdate, onBondTypeChange, definitions, availableSeries, selectedSeriesId, }) => {
     const { t, locale: language } = useAppI18n();
     const currentDef = definitions[inputs.bondType];
-    const currentBondSupport = getBondSupportMeta(inputs.bondType);
+    const currentBondSupport = getBondSupportMeta(inputs.bondType, language);
     const rateContext = getBondRateContextCopy(inputs.bondType, Number(inputs.firstYearRate), Number(inputs.margin), t);
     const formatDurationLabel = (type: BondType) => `${Math.round((definitions[type]?.duration ?? 1) * 12)} ${t('common.month_compact')}`;
     const maxBondUnits = 1000;
