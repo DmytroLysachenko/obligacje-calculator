@@ -328,6 +328,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
               <BondChart
                 results={results}
                 initialInvestment={results.initialInvestment}
+                inputs={inputs}
                 showRealValue={inputs.showRealValue}
               />
             </CalculatorSection>

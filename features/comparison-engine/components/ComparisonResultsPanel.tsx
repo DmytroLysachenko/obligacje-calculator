@@ -20,6 +20,7 @@ import {
 import { ComparisonChartPoint } from '../lib/comparison-display';
 import { ResultActionGrid } from '@/shared/components/results/ResultActionGrid';
 import { computeNumericDomain, computeRateDomain } from '@/shared/lib/chart-series';
+import { applyChartContextRates } from '@/shared/lib/chart-context-rates';
 
 interface ComparisonResultsPanelProps {
   chartData: ComparisonChartPoint[];
@@ -117,8 +118,8 @@ export function ComparisonResultsPanel({
     },
   ], [inputsA.bondType, inputsB.bondType, language, resultsA.timeline, resultsB.timeline, t]);
   const valueChartData = React.useMemo<BondValueChartPoint[]>(
-    () =>
-      chartData.map((point) => {
+    () => {
+      const mappedPoints = chartData.map((point) => {
         const scenarioGroups: BondValueChartTooltipGroup[] = [
           {
             id: 'scenario-a',
@@ -181,9 +182,13 @@ export function ComparisonResultsPanel({
           isProjected: point.isProjected,
           scenarioGroups,
         };
-      }),
+      });
+
+      return applyChartContextRates(mappedPoints, inputsA);
+    },
     [
       chartData,
+      inputsA,
       inputsA.bondType,
       inputsB.bondType,
       resultsA.initialInvestment,

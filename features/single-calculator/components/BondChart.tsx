@@ -1,21 +1,24 @@
 "use client";
 
 import React from "react";
-import { CalculationResult, ChartStep } from "../../bond-core/types";
+import { BondInputs, CalculationResult, ChartStep } from "../../bond-core/types";
 import { useAppI18n } from "@/i18n/client";
 import { getIntlLocale } from "@/i18n/locale-utils";
 import { BondValueChart, BondValueChartPoint } from "@/shared/components/charts/BondValueChart";
 import { AppLanguage, buildBondChartDisplayPoints, normalizeBondChartDisplayTimeline } from "@/shared/lib/bond-display";
 import { computeNumericDomain, computeRateDomain, sampleSeriesPoints } from "@/shared/lib/chart-series";
+import { applyChartContextRates } from "@/shared/lib/chart-context-rates";
 
 interface BondChartProps {
   results: CalculationResult;
   initialInvestment: number;
+  inputs: Pick<BondInputs, "purchaseDate" | "expectedInflation" | "expectedNbpRate" | "customInflation" | "customNbpRate">;
   showRealValue?: boolean;
 }
 
 export const BondChart: React.FC<BondChartProps> = ({
   results,
+  inputs,
   showRealValue = false,
 }) => {
   const { t, locale: language } = useAppI18n();
@@ -67,9 +70,10 @@ export const BondChart: React.FC<BondChartProps> = ({
       };
     });
 
-    return sampleSeriesPoints(rawData, 180);
+    return sampleSeriesPoints(applyChartContextRates(rawData, inputs), 180);
   }, [
     displayStep,
+    inputs,
     language,
     results.comparisonScenarios,
     results.initialInvestment,
