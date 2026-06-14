@@ -87,6 +87,17 @@
     "footer_disclaimer": "Tylko do celow edukacyjnych.",
     "official_bonds_link_label": "Oficjalna strona obligacji skarbowych"
   },
+  "login": {
+    "eyebrow": "Przestrzen portfela",
+    "title": "Zaloguj sie, aby zapisywac portfele obligacji",
+    "description": "Kalkulatory pozostaja dostepne bez konta. Zapisywanie partii, import portfeli, udostepnianie linkow i eksport danych notatnika wymagaja zalogowanej przestrzeni.",
+    "provider_title": "Wybierz zewnetrznego dostawce OAuth",
+    "oauth_only_note": "Tylko logowanie OAuth. Konta z haslem nie sa obslugiwane.",
+    "providers": {
+      "google": "Kontynuuj z Google",
+      "facebook": "Kontynuuj z Facebook"
+    }
+  },
   "single_calculator": {
     "saved_scenarios": {
       "title": "Zapisane scenariusze",

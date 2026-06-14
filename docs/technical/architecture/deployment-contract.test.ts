@@ -29,8 +29,8 @@ describe('deployment documentation contract', () => {
       'NEXTAUTH_SECRET',
       'AUTH_GOOGLE_ID',
       'AUTH_GOOGLE_SECRET',
-      'AUTH_GITHUB_ID',
-      'AUTH_GITHUB_SECRET',
+      'AUTH_FACEBOOK_ID',
+      'AUTH_FACEBOOK_SECRET',
       'SYNC_SECRET',
     ]) {
       expect(source).toContain(variable);

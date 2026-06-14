@@ -33,15 +33,16 @@ function expectNotContains(source: string, fragment: string) {
 }
 
 describe('portfolio auth boundary contracts', () => {
-  it('keeps Auth.js configured as OAuth-only with Google and GitHub providers', () => {
+  it('keeps Auth.js configured as OAuth-only with Google and Facebook providers', () => {
     const source = read(files.auth);
 
-    expectContains(source, 'import GitHub from "next-auth/providers/github";');
+    expectContains(source, 'import Facebook from "next-auth/providers/facebook";');
     expectContains(source, 'import Google from "next-auth/providers/google";');
     expectContains(source, 'pages: {');
     expectContains(source, 'signIn: "/login"');
-    expectContains(source, 'if (process.env.AUTH_GITHUB_ID && process.env.AUTH_GITHUB_SECRET)');
+    expectContains(source, 'if (process.env.AUTH_FACEBOOK_ID && process.env.AUTH_FACEBOOK_SECRET)');
     expectContains(source, 'if (process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET)');
+    expectNotContains(source, 'next-auth/providers/github');
     expectNotContains(source, 'CredentialsProvider');
     expectNotContains(source, 'next-auth/providers/credentials');
   });
@@ -51,11 +52,15 @@ describe('portfolio auth boundary contracts', () => {
     const en = read(files.en);
     const pl = read(files.pl);
 
-    expectContains(source, "href: '/api/auth/signin/google'");
-    expectContains(source, "href: '/api/auth/signin/github'");
-    expectContains(source, 'Calculators stay available without an account.');
-    expectContains(source, 'Saving lots, importing portfolios,');
+    expectContains(source, "await signIn(provider.id, { redirectTo: '/notebook' });");
+    expectContains(source, "id: 'google'");
+    expectContains(source, "id: 'facebook'");
+    expectContains(source, "t('login.description')");
+    expectContains(source, "t('login.oauth_only_note')");
     expectContains(source, "getLocalizedPageMetadata('login')");
+    expectContains(en, '"providers": {');
+    expectContains(en, '"facebook": "Continue with Facebook"');
+    expectContains(pl, '"facebook": "Kontynuuj z Facebook"');
     expectContains(en, '"login": {');
     expectContains(pl, '"login": {');
     expectNotContains(source, 'type="password"');

@@ -46,8 +46,8 @@ OAuth providers:
 
 - `AUTH_GOOGLE_ID`
 - `AUTH_GOOGLE_SECRET`
-- `AUTH_GITHUB_ID`
-- `AUTH_GITHUB_SECRET`
+- `AUTH_FACEBOOK_ID`
+- `AUTH_FACEBOOK_SECRET`
 
 At least one OAuth provider pair must be configured for users to sign in. The
 login surface is intentionally OAuth-only; do not add password credentials

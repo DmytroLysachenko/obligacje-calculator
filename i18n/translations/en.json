@@ -87,6 +87,17 @@
     "footer_disclaimer": "For educational purposes only.",
     "official_bonds_link_label": "Official Polish Bonds Website"
   },
+  "login": {
+    "eyebrow": "Portfolio workspace",
+    "title": "Sign in to save bond portfolios",
+    "description": "Calculators stay available without an account. Saving lots, importing portfolios, sharing portfolio links, and exporting notebook data require an authenticated workspace.",
+    "provider_title": "Choose an OAuth provider",
+    "oauth_only_note": "OAuth sign-in only. Password accounts are not supported.",
+    "providers": {
+      "google": "Continue with Google",
+      "facebook": "Continue with Facebook"
+    }
+  },
   "single_calculator": {
     "saved_scenarios": {
       "title": "Saved scenarios",
