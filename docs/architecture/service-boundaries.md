@@ -63,3 +63,14 @@ fallback. The page owns only translations, `notFound()`, and rendering.
 - Data freshness should distinguish successful sync checks from actual source
   freshness, because CPI and NBP sources do not necessarily publish new values
   every calendar month.
+- `SyncEngine` is only an orchestrator. It may sequence macro sync, bond-offer
+  sync, provider sync, and full-run summary recording, but it should not contain
+  provider fetch loops or table upsert details.
+- Provider history ingestion belongs in `lib/sync/services/provider-sync-service.ts`.
+  New market providers should implement `SyncProvider` and be added through the
+  default engine factory, not hard-coded into page or admin route code.
+- Current bond offer scraping/upsert logic belongs in
+  `lib/sync/services/bond-offer-sync-service.ts`.
+- Sync run persistence and schema compatibility belong in
+  `lib/server/sync/run-history.ts`; callers should not write directly to the
+  `sync_runs` table.
