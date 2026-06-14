@@ -222,5 +222,49 @@ describe('csv-utils', () => {
     expect(csv).toContain('Scenario B Interest Payment');
     expect(csv).toContain('"2026-06-30"');
     expect(csv).toContain('"2026-07-31"');
+    expect(csv).toContain('Scenario A Rate Source');
+    expect(csv).toContain('Scenario B Rate Source');
+    expect(csv).toContain('Scenario A Events');
+    expect(csv).toContain('Scenario B Events');
+    expect(csv).toContain('Historical NBP + margin');
+    expect(csv).toContain('Fixed bond rate');
+    expect(csv).toContain('Payout');
+    expect(csv).toContain('Interest accrual');
+  });
+
+  it('keeps comparison export rows useful when only one scenario has a date', () => {
+    const headers = buildComparisonExportHeaders((key) => translateMessage('en', key));
+    const timelineA = [
+      {
+        periodLabel: 'Start',
+        cycleIndex: 1,
+        cycleStartDate: '2026-06-01',
+        cycleEndDate: '2026-06-01',
+        interestRate: 5.25,
+        rateSource: 'first_year_fixed',
+        nominalValueBeforeInterest: 10000,
+        interestEarned: 0,
+        taxDeducted: 0,
+        netInterest: 0,
+        nominalValueAfterInterest: 10000,
+        accumulatedNetInterest: 0,
+        totalValue: 10000,
+        realValue: 10000,
+        netProfit: 0,
+        earlyWithdrawalValue: 10000,
+        isMaturity: false,
+        isWithdrawal: false,
+        cumulativeInflation: 1,
+        events: [{ type: SimulationEventType.PURCHASE, date: '2026-06-01', description: 'Purchase' }],
+      },
+    ] as unknown as YearlyTimelinePoint[];
+    const timelineB = [] as unknown as YearlyTimelinePoint[];
+
+    const csv = convertComparisonToCSV(timelineA, timelineB, headers, 'en');
+
+    expect(csv).toContain('"2026-06-01"');
+    expect(csv).toContain('"Scenario A"');
+    expect(csv).toContain('First-year fixed rate');
+    expect(csv).toContain('Purchase');
   });
 });

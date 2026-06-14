@@ -62,5 +62,9 @@ export function buildComparisonExportHeaders(
     netProfitB: `${t('comparison.scenario_b')} ${t('common.net_profit')}`,
     projectionA: `${t('comparison.scenario_a')} ${t('bonds.projected')}`,
     projectionB: `${t('comparison.scenario_b')} ${t('bonds.projected')}`,
+    rateA: `${t('comparison.scenario_a')} ${t('bonds.rate_source')}`,
+    rateB: `${t('comparison.scenario_b')} ${t('bonds.rate_source')}`,
+    eventsA: `${t('comparison.scenario_a')} ${t('common.events')}`,
+    eventsB: `${t('comparison.scenario_b')} ${t('common.events')}`,
   } as const;
 }

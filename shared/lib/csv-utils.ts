@@ -149,6 +149,10 @@ export function convertComparisonToCSV(timelineA: YearlyTimelinePoint[], timelin
         { key: 'netProfitB', header: headers.netProfitB || 'Scenario B net profit' },
         { key: 'projectionA', header: headers.projectionA || 'Scenario A mode' },
         { key: 'projectionB', header: headers.projectionB || 'Scenario B mode' },
+        { key: 'rateA', header: headers.rateA || 'Scenario A rate source' },
+        { key: 'rateB', header: headers.rateB || 'Scenario B rate source' },
+        { key: 'eventsA', header: headers.eventsA || 'Scenario A events' },
+        { key: 'eventsB', header: headers.eventsB || 'Scenario B events' },
     ];
     csvRows.push(columns.map((column) => column.header).join(SEPARATOR));
     const rowMap = new Map<string, {
@@ -210,6 +214,10 @@ export function convertComparisonToCSV(timelineA: YearlyTimelinePoint[], timelin
             formatCsvValue(rowB?.netProfit ?? '', language),
             formatCsvValue(rowA?.projectionLabel ?? '', language),
             formatCsvValue(rowB?.projectionLabel ?? '', language),
+            formatCsvValue([rowA?.interestRateLabel, rowA?.rateSourceLabel, rowA?.referenceLabel].filter(Boolean).join(' | '), language),
+            formatCsvValue([rowB?.interestRateLabel, rowB?.rateSourceLabel, rowB?.referenceLabel].filter(Boolean).join(' | '), language),
+            formatCsvValue(rowA?.eventLabels ?? [], language),
+            formatCsvValue(rowB?.eventLabels ?? [], language),
         ];
         csvRows.push(row.join(SEPARATOR));
     }

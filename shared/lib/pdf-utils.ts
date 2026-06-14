@@ -22,6 +22,42 @@ function buildAssumptionRows(results: CalculationResult, inputs: BondInputs, lan
         [translateMessage(language, "export.single_bond_pdf.real_annualized_return"), `${results.realAnnualizedReturn.toFixed(2)}%`],
     ] as const;
 }
+
+function translateReportNote(note: string, language: 'pl' | 'en') {
+    const numericValue = note.match(/-?\d+(?:\.\d+)?/)?.[0] ?? '';
+
+    if (note.startsWith('Expected annual inflation:')) {
+        return translateMessage(language, 'bonds.engine_messages.expected_inflation', { value: numericValue });
+    }
+
+    if (note.startsWith('Expected NBP reference rate:')) {
+        return translateMessage(language, 'bonds.engine_messages.expected_nbp_rate', { value: numericValue });
+    }
+
+    if (note === 'Using custom user-supplied inflation overrides.') {
+        return translateMessage(language, 'bonds.engine_messages.custom_inflation');
+    }
+
+    if (note === 'Using custom user-supplied NBP rate overrides.') {
+        return translateMessage(language, 'bonds.engine_messages.custom_nbp');
+    }
+
+    if (note === 'Rollover is disabled; the simulation stops at the first bond cycle or selected withdrawal date.') {
+        return translateMessage(language, 'bonds.engine_messages.rollover_disabled');
+    }
+
+    if (note === 'Early redemption fee logic was applied before the native maturity date.') {
+        return translateMessage(language, 'bonds.engine_messages.early_redemption_applied');
+    }
+
+    const cycleMatch = note.match(/^Simulation covered (\d+) bond cycles? across the selected horizon\.$/);
+    if (cycleMatch) {
+        return translateMessage(language, 'bonds.engine_messages.rollover_cycles', { count: cycleMatch[1] });
+    }
+
+    return note;
+}
+
 export async function generateSingleBondReportPdf(results: CalculationResult, inputs: BondInputs, language: 'pl' | 'en', filename = 'bond-report.pdf') {
     const pdf = new jsPDF('p', 'mm', 'a4');
     const margin = 18;
@@ -43,6 +79,24 @@ export async function generateSingleBondReportPdf(results: CalculationResult, in
         pdf.text(lines, margin + indent, y);
         y += lineHeight * lines.length;
     };
+    const writeSectionHeading = (text: string) => {
+        y += 3;
+        pdf.setDrawColor(220);
+        pdf.line(margin, y, margin + contentWidth, y);
+        y += 7;
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(12);
+        pdf.text(text, margin, y);
+        y += 7;
+    };
+    const writeLabelValueRow = (label: string, value: string) => {
+        pdf.setFontSize(10);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(label, margin, y);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text(String(value), margin + 72, y);
+        y += 7;
+    };
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(20);
     pdf.text(translateMessage(language, "export.single_bond_pdf.title"), margin, y);
@@ -51,20 +105,16 @@ export async function generateSingleBondReportPdf(results: CalculationResult, in
     pdf.setFontSize(10);
     pdf.text(`${translateMessage(language, "export.single_bond_pdf.generated_label")}: ${new Date().toISOString().slice(0, 10)}`, margin, y);
     y += 10;
-    pdf.setFontSize(11);
+    writeSectionHeading(translateMessage(language, "export.single_bond_pdf.structured_summary_note"));
     for (const [label, value] of rows) {
-        writeWrapped(`${label}: ${value}`, { bold: true });
+        writeLabelValueRow(label, value);
     }
-    y += 4;
-    pdf.setFontSize(12);
-    writeWrapped(translateMessage(language, "export.single_bond_pdf.run_notes"), { bold: true });
+    writeSectionHeading(translateMessage(language, "export.single_bond_pdf.run_notes"));
     pdf.setFontSize(10);
     for (const note of notes) {
-        writeWrapped(`- ${note}`);
+        writeWrapped(`- ${translateReportNote(note, language)}`);
     }
-    y += 4;
-    pdf.setFontSize(12);
-    writeWrapped(translateMessage(language, "export.single_bond_pdf.data_context"), { bold: true });
+    writeSectionHeading(translateMessage(language, "export.single_bond_pdf.data_context"));
     pdf.setFontSize(10);
     writeWrapped(translateMessage(language, "export.single_bond_pdf.normalized_layer_note"));
     pdf.save(filename);

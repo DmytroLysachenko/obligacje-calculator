@@ -3,6 +3,7 @@ import { dataSeries, dataPoints } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { NbpApiClient } from "../api-clients/nbp";
 import { GusCpiApiClient } from "../api-clients/gus-cpi";
+import { recordSyncRun } from "@/lib/server/sync/run-history";
 
 /**
  * Helper to retry a function with exponential backoff.
@@ -23,6 +24,7 @@ async function retry<T>(fn: () => Promise<T>, retries = 3, delay = 1000): Promis
  * CPI is synced from the official monthly GUS archive CSV.
  */
 export async function syncMacroData() {
+  const startedAt = new Date();
   const nbpClient = new NbpApiClient();
   const gusCpiClient = new GusCpiApiClient();
 
@@ -111,6 +113,22 @@ export async function syncMacroData() {
           updatedAt: new Date(),
         })
         .where(eq(dataSeries.id, nbpSeries.id));
+
+      await recordSyncRun({
+        scope: 'macro-sync',
+        provider: nbpUsesFallback ? 'NBP fallback reference history' : 'NBP official API',
+        seriesSlug: 'nbp-ref-rate',
+        mode: 'macro-sync',
+        status: nbpUsesFallback ? 'partial' : 'success',
+        inserted: nbpIndicators.length,
+        updated: nbpIndicators.length,
+        latestDataPointDate: latestNbpRate?.date,
+        message: nbpUsesFallback
+          ? 'NBP official API unavailable; curated fallback reference-rate history was used.'
+          : 'NBP reference-rate history synchronized.',
+        startedAt,
+        finishedAt: new Date(),
+      });
     }
 
     if (cpiIndicators.length > 0 && cpiSeries) {
@@ -144,6 +162,20 @@ export async function syncMacroData() {
           updatedAt: new Date(),
         })
         .where(eq(dataSeries.id, cpiSeries.id));
+
+      await recordSyncRun({
+        scope: 'macro-sync',
+        provider: 'GUS CPI archive',
+        seriesSlug: 'pl-cpi',
+        mode: 'macro-sync',
+        status: 'success',
+        inserted: cpiIndicators.length,
+        updated: cpiIndicators.length,
+        latestDataPointDate: latestCpiRate?.date,
+        message: 'GUS CPI monthly archive synchronized.',
+        startedAt,
+        finishedAt: new Date(),
+      });
     }
 
     const results = {
@@ -184,6 +216,16 @@ export async function syncMacroData() {
         })
         .where(eq(dataSeries.id, nbpSeries.id));
     }
+
+    await recordSyncRun({
+      scope: 'macro-sync',
+      provider: 'macro-data',
+      mode: 'macro-sync',
+      status: 'failed',
+      error: String(error),
+      startedAt,
+      finishedAt: new Date(),
+    });
 
     return null;
   }

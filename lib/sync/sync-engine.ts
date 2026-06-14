@@ -46,11 +46,11 @@ export class SyncEngine {
     await this.safeRecordSyncRun({
       scope: 'full-sync',
       mode: 'full-sync',
-      status: providerResults.some((result) => 'error' in result) ? 'partial' : 'success',
+      status: !macro || providerResults.some((result) => 'error' in result) ? 'partial' : 'success',
       inserted: providerResults.reduce((sum, result) => sum + ('inserted' in result ? result.inserted : 0), 0),
       updated: providerResults.reduce((sum, result) => sum + ('updated' in result ? result.updated : 0), 0),
       skipped: providerResults.reduce((sum, result) => sum + ('skipped' in result ? result.skipped : 0), 0),
-      message: `Macro sync complete; ${bondOffers.length} bond offers processed.`,
+      message: `${macro ? 'Macro sync complete' : 'Macro sync failed'}; ${bondOffers.length} bond offers processed.`,
       startedAt,
       finishedAt: new Date(),
     });
