@@ -30,7 +30,7 @@ function MacroDefaultRow({
         </p>
         <p className="text-[11px] leading-5 text-muted-foreground">
           {asOf
-            ? t('bonds.market_assumptions.synced_as_of', { date: asOf })
+            ? t('bonds.market_assumptions.source_up_to_date')
             : t('bonds.market_assumptions.source_missing_date')}
         </p>
       </div>

@@ -161,7 +161,7 @@ function interpolateValue(start: number, end: number, progress: number) {
 function aggregateComparisonChartPoints(
   points: ComparisonChartPoint[],
   chartStep: ChartStep,
-) {
+): ComparisonChartPoint[] {
   if (chartStep === 'daily' || chartStep === 'monthly') {
     return points;
   }
@@ -182,14 +182,21 @@ function aggregateComparisonChartPoints(
     groups.set(groupKey, bucket);
   }
 
-  return Array.from(groups.values()).map((bucket) => {
-    const last = bucket[bucket.length - 1];
+  const aggregated: ComparisonChartPoint[] = Array.from(groups.values()).map((bucket) => {
+    const first = bucket[0];
 
     return {
-      ...last,
+      ...first,
       isProjected: bucket.some((point) => point.isProjected),
     };
   });
+
+  const terminal = points.at(-1);
+  if (terminal && aggregated.at(-1)?.dateKey !== terminal.dateKey) {
+    aggregated.push(terminal);
+  }
+
+  return aggregated;
 }
 
 export function getComparisonAssumptionsBondType(

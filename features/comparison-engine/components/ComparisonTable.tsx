@@ -32,6 +32,7 @@ import { SimulationEventType } from '@/features/bond-core/types/simulation';
 interface ComparisonTableProps {
   resultsA: CalculationResult;
   resultsB: CalculationResult;
+  purchaseDate: string;
   bondTypeA: string;
   bondTypeB: string;
   formatCurrency: (val: number) => string;
@@ -239,12 +240,14 @@ function projectTimelineSnapshot(
 export function buildComparisonAlignedTableRows({
   resultsA,
   resultsB,
+  purchaseDate,
   granularity,
   language,
   startLabel = 'Start',
 }: {
   resultsA: CalculationResult;
   resultsB: CalculationResult;
+  purchaseDate: string;
   granularity: ComparisonTableGranularity;
   language: 'pl' | 'en';
   startLabel?: string;
@@ -258,9 +261,7 @@ export function buildComparisonAlignedTableRows({
     return [];
   }
 
-  const startDate = compareAsc(parseISO(firstA.cycleEndDate), parseISO(firstB.cycleEndDate)) <= 0
-    ? parseISO(firstA.cycleEndDate)
-    : parseISO(firstB.cycleEndDate);
+  const startDate = parseISO(purchaseDate);
   const endDate = compareAsc(parseISO(lastA.cycleEndDate), parseISO(lastB.cycleEndDate)) >= 0
     ? parseISO(lastA.cycleEndDate)
     : parseISO(lastB.cycleEndDate);
@@ -313,12 +314,20 @@ export function buildComparisonAlignedTableRows({
     groups.set(groupKey, bucket);
   }
 
-  return Array.from(groups.values()).map((bucket) => bucket[bucket.length - 1]);
+  const aggregated = Array.from(groups.values()).map((bucket) => bucket[0]);
+  const terminal = rawRows.at(-1);
+
+  if (terminal && aggregated.at(-1)?.key !== terminal.key) {
+    aggregated.push(terminal);
+  }
+
+  return aggregated;
 }
 
 export const ComparisonTable: React.FC<ComparisonTableProps> = ({
   resultsA,
   resultsB,
+  purchaseDate,
   bondTypeA,
   bondTypeB,
   formatCurrency,
@@ -343,11 +352,12 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
     () => buildComparisonAlignedTableRows({
       resultsA,
       resultsB,
+      purchaseDate,
       granularity,
       language,
       startLabel: t('comparison.start'),
     }),
-    [granularity, language, resultsA, resultsB, t],
+    [granularity, language, purchaseDate, resultsA, resultsB, t],
   );
 
   const totalPages = getComparisonTablePageCount(tableRows.length, rowLimit);

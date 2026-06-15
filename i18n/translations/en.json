@@ -802,6 +802,7 @@
       "source_nbp_label": "Current NBP default",
       "synced_as_of": "Synced as of {date}",
       "source_missing_date": "Sync date unavailable",
+      "source_up_to_date": "Up to date",
       "source_live_note": "Live synced data is available, so the simple defaults begin from the latest market readings.",
       "source_fallback_note": "Fallback defaults are active. Treat these opening values more cautiously until the next successful sync.",
       "latest_nbp_label": "Latest official NBP rate",

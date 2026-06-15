@@ -155,6 +155,20 @@ export function useComparison() {
   const scenarioBResult = comparisonEnvelope?.result.find((item) => item.scenarioKey === 'scenarioB');
   const resultsA = scenarioAResult?.result || null;
   const resultsB = scenarioBResult?.result || null;
+  const displayIsDirty = useMemo(() => {
+    if (!resultsA || !resultsB) {
+      return isDirty;
+    }
+
+    if (!committedInputsA || !committedInputsB) {
+      return true;
+    }
+
+    return (
+      JSON.stringify(inputsA) !== JSON.stringify(committedInputsA)
+      || JSON.stringify(inputsB) !== JSON.stringify(committedInputsB)
+    );
+  }, [committedInputsA, committedInputsB, inputsA, inputsB, isDirty, resultsA, resultsB]);
   const sharedWarnings = comparisonEnvelope?.warnings || [];
   const sharedAssumptions = comparisonEnvelope?.assumptions || [];
   const sharedNotes = comparisonEnvelope?.calculationNotes || [];
@@ -347,9 +361,9 @@ export function useComparison() {
       comparisonEnvelope,
       committedInputsA,
       committedInputsB,
-      isDirty,
+      isDirty: displayIsDirty,
     });
-  }, [committedInputsA, committedInputsB, comparisonEnvelope, isDirty, isPersistenceReady, scenarioA, scenarioB, sharedConfig]);
+  }, [committedInputsA, committedInputsB, comparisonEnvelope, displayIsDirty, isPersistenceReady, scenarioA, scenarioB, sharedConfig]);
 
   const setScenarioACustomHorizonEnabled = useCallback((enabled: boolean) => {
     setIsDirty(true);
@@ -386,7 +400,7 @@ export function useComparison() {
     warningsA: envelopeA?.warnings || [],
     warningsB: envelopeB?.warnings || [],
     isCalculating,
-    isDirty,
+    isDirty: displayIsDirty,
     calculate,
     updateSharedConfig,
     updateScenarioA,

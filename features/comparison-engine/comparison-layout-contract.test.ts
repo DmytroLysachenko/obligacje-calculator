@@ -67,6 +67,15 @@ describe('comparison layout contract', () => {
     expect(container).toContain('inputsB={resultInputsB}');
   });
 
+  it('derives comparison dirty state from committed result inputs', () => {
+    const hook = read(files.hook);
+
+    expect(hook).toContain('const displayIsDirty = useMemo(() => {');
+    expect(hook).toContain('JSON.stringify(inputsA) !== JSON.stringify(committedInputsA)');
+    expect(hook).toContain('JSON.stringify(inputsB) !== JSON.stringify(committedInputsB)');
+    expect(hook).toContain('isDirty: displayIsDirty');
+  });
+
   it('keeps comparison table date-aligned instead of pairing timeline rows by index', () => {
     const table = read(files.table);
 

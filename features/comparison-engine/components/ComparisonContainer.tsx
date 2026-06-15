@@ -34,7 +34,8 @@ export const ComparisonContainer: React.FC = () => {
     const currencyFormatter = useCurrencyFormatter(language, {
         style: 'currency',
         currency: 'PLN',
-        maximumFractionDigits: 0,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
     });
     const handleKeyDown = (event: React.KeyboardEvent) => {
         if (event.key === 'Enter' && (isDirty || !resultsA)) {
@@ -174,7 +175,7 @@ export const ComparisonContainer: React.FC = () => {
 
                 <ComparisonVerdict resultsA={resultsA} resultsB={resultsB} inputsA={resultInputsA} inputsB={resultInputsB} expectedInflation={resultInputsA.expectedInflation} taxStrategy={resultInputsA.taxStrategy} formatCurrency={formatCurrency}/>
 
-                <ComparisonTable resultsA={resultsA} resultsB={resultsB} bondTypeA={resultInputsA.bondType} bondTypeB={resultInputsB.bondType} formatCurrency={formatCurrency}/>
+                <ComparisonTable resultsA={resultsA} resultsB={resultsB} purchaseDate={resultInputsA.purchaseDate} bondTypeA={resultInputsA.bondType} bondTypeB={resultInputsB.bondType} formatCurrency={formatCurrency}/>
 
                 <SecondaryInsightAccordion title={t('comparison.assumptions_meta')} description={t('comparison.assumptions_meta_desc')} badge={t('comparison.helper_secondary')}>
                   <div className="grid grid-cols-1 gap-6 md:grid-cols-2">

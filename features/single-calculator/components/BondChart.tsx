@@ -29,7 +29,8 @@ export const BondChart: React.FC<BondChartProps> = ({
       new Intl.NumberFormat(getIntlLocale(language), {
         style: "currency",
         currency: "PLN",
-        maximumFractionDigits: 0,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
       }).format(value),
     [language],
   );

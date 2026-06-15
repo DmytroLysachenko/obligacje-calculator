@@ -29,7 +29,8 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({
   const currencyFormatter = useCurrencyFormatter(language, {
     style: 'currency',
     currency: 'PLN',
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   });
   const formatCurrency = React.useMemo(
     () => (value: number) => currencyFormatter.format(value),

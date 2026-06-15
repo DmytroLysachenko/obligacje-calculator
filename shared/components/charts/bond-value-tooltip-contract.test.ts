@@ -45,4 +45,15 @@ describe('bond value chart tooltip contract', () => {
     expect(source).not.toContain('bonds.inflation.scenarios.high');
     expect(source).not.toContain('bonds.inflation.scenarios.low');
   });
+
+  it('formats shared bond value chart currency with groszy precision', () => {
+    const single = read('features/single-calculator/components/BondChart.tsx');
+    const regular = read('features/regular-investment/components/RegularInvestmentChart.tsx');
+    const comparison = read('features/comparison-engine/components/ComparisonContainer.tsx');
+
+    for (const source of [single, regular, comparison]) {
+      expect(source).toContain('minimumFractionDigits: 2');
+      expect(source).toContain('maximumFractionDigits: 2');
+    }
+  });
 });

@@ -802,6 +802,7 @@
       "source_nbp_label": "Domyslne NBP",
       "synced_as_of": "Synchronizacja na {date}",
       "source_missing_date": "Brak daty synchronizacji",
+      "source_up_to_date": "Aktualne",
       "source_live_note": "Dostepne sa zsynchronizowane dane, wiec proste domysly startuja od najnowszych odczytow rynkowych.",
       "source_fallback_note": "Aktywne sa wartosci zapasowe. Czytaj te dane otwarcia ostrozniej do czasu kolejnej udanej synchronizacji.",
       "latest_nbp_label": "Najnowsza oficjalna stopa NBP",

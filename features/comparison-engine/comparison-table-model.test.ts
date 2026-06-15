@@ -39,6 +39,7 @@ describe('comparison aligned table model', () => {
         point('2026-05-22', 10000),
         point('2027-05-22', 11200),
       ]),
+      purchaseDate: '2026-05-22',
       granularity: 'monthly',
       language: 'en',
     });
@@ -65,6 +66,7 @@ describe('comparison aligned table model', () => {
         point('2026-05-22', 10000),
         point('2027-05-22', 11200),
       ]),
+      purchaseDate: '2026-05-22',
       granularity: 'yearly',
       language: 'en',
     });
@@ -73,6 +75,28 @@ describe('comparison aligned table model', () => {
     expect(rows.at(-1)?.scenarioB.nominalValue).toBe(11200);
     expect(rows.at(-1)?.gap).toBe(900);
     expect(rows.length).toBe(2);
+  });
+
+  it('keeps aggregated table rows anchored to the purchase date', () => {
+    const rows = buildComparisonAlignedTableRows({
+      resultsA: result([
+        point('2026-08-12', 10072.42),
+        point('2027-06-12', 10535),
+      ]),
+      resultsB: result([
+        point('2026-08-12', 10052.58),
+        point('2027-06-12', 10375),
+      ]),
+      purchaseDate: '2026-06-12',
+      granularity: 'quarterly',
+      language: 'en',
+    });
+
+    expect(rows[0]).toMatchObject({
+      label: 'Start',
+      dateLabel: '2026-06-12',
+    });
+    expect(rows[1]?.dateLabel).toBe('2026-09-12');
   });
 
   it('paginates aligned comparison rows instead of only truncating the first page', () => {

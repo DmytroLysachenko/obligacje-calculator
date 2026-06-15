@@ -1,4 +1,5 @@
 import {describe, expect, it} from 'vitest';
+import {parseISO} from 'date-fns';
 import {CalculationResult, ChartStep} from '@/features/bond-core/types';
 import {buildComparisonChartData} from './lib/comparison-display';
 
@@ -60,5 +61,30 @@ describe('comparison display model', () => {
     expect(quarterly.at(-1)?.nominalB).toBe(11000);
     expect(yearly.at(-1)?.nominalA).toBe(10300);
     expect(yearly.at(-1)?.nominalB).toBe(11000);
+  });
+
+  it('keeps aggregated chart points anchored to the purchase date cadence', () => {
+    const quarterly = buildComparisonChartData({
+      purchaseDate: '2026-06-12',
+      withdrawalDateA: '2027-06-12',
+      withdrawalDateB: '2027-06-12',
+      resultsA: result([
+        point('2026-08-12', 10072.42),
+        point('2027-06-12', 10535),
+      ]),
+      resultsB: result([
+        point('2026-08-12', 10052.58),
+        point('2027-06-12', 10375),
+      ]),
+      language: 'en',
+      t: (key) => key,
+      chartStep: 'quarterly',
+    });
+
+    expect(quarterly[0]).toMatchObject({
+      label: 'comparison.start',
+      dateKey: parseISO('2026-06-12').toISOString(),
+    });
+    expect(quarterly[1]?.label).toBe('Sep 2026');
   });
 });
