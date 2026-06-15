@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { differenceInDays, format } from 'date-fns';
+import { differenceInCalendarMonths, differenceInDays, format } from 'date-fns';
 import { and, asc, desc, eq, gte, inArray, lte } from 'drizzle-orm';
 import { db } from '@/db';
 import { dataPoints, dataSeries } from '@/db/schema';
@@ -21,22 +21,52 @@ const FALLBACK_MACRO_ASSUMPTIONS: MacroAssumptionDefaults = {
   usedFallback: true,
 };
 
-export const getGlobalDataFreshness = cache(async (): Promise<CalculationDataFreshness> => {
-  const cacheKey = 'global-freshness';
-  const cached = getCached<CalculationDataFreshness>(cacheKey);
-  if (cached) return cached;
+type FreshnessSeries = Awaited<ReturnType<typeof db.query.dataSeries.findMany>>[number];
+type FreshnessSyncRun = Awaited<ReturnType<typeof listRecentSyncRuns>>[number];
 
-  const criticalSeries = await db.query.dataSeries.findMany({
-    where: inArray(dataSeries.slug, [...CPI_SLUGS, ...NBP_RATE_SLUGS]),
-  });
+const CANONICAL_CPI_SLUG = 'pl-cpi';
+const CANONICAL_NBP_SLUG = 'nbp-ref-rate';
+const CPI_PUBLICATION_LAG_MONTHS = 2;
+const NBP_CHECK_STALE_DAYS = 14;
+
+function selectFreshnessSeries(series: FreshnessSeries[]) {
+  const cpiSeries =
+    series.find((item) => item.slug === CANONICAL_CPI_SLUG)
+    ?? series.find((item) => CPI_SLUGS.includes(item.slug));
+  const nbpSeries =
+    series.find((item) => item.slug === CANONICAL_NBP_SLUG)
+    ?? series.find((item) => NBP_RATE_SLUGS.includes(item.slug));
+
+  return [cpiSeries, nbpSeries].filter((item): item is FreshnessSeries => Boolean(item));
+}
+
+function getLatestSyncDate(syncRuns: FreshnessSyncRun[], seriesSlug: string) {
+  return syncRuns
+    .filter((run) => run.seriesSlug === seriesSlug && run.finishedAt)
+    .map((run) => run.finishedAt)
+    .filter((value): value is Date => Boolean(value))
+    .sort((a, b) => b.getTime() - a.getTime())[0];
+}
+
+function isCpiCoverageStale(referenceDate: Date, now: Date) {
+  return differenceInCalendarMonths(now, referenceDate) > CPI_PUBLICATION_LAG_MONTHS;
+}
+
+function getNbpCheckDate(series: FreshnessSeries, syncRuns: FreshnessSyncRun[]) {
+  return getLatestSyncDate(syncRuns, series.slug) ?? series.updatedAt ?? getSeriesReferenceDate(series);
+}
+
+export function resolveGlobalDataFreshness(
+  allSeries: FreshnessSeries[],
+  recentSyncRuns: FreshnessSyncRun[],
+  now = new Date(),
+): CalculationDataFreshness {
+  const criticalSeries = selectFreshnessSeries(allSeries);
 
   if (criticalSeries.length === 0) {
     return { status: 'unknown', usedFallback: true };
   }
 
-  const STALE_THRESHOLD_DAYS = 45;
-  const now = new Date();
-  const recentSyncRuns = await listRecentSyncRuns(20);
   const latestRecordedSync = recentSyncRuns
     .filter((run) => run.finishedAt)
     .sort((a, b) => (b.finishedAt?.getTime() ?? 0) - (a.finishedAt?.getTime() ?? 0))[0];
@@ -45,22 +75,25 @@ export const getGlobalDataFreshness = cache(async (): Promise<CalculationDataFre
     .filter((value): value is Date => Boolean(value))
     .sort((a, b) => b.getTime() - a.getTime())[0];
   const latestSyncCheck = latestRecordedSync?.finishedAt ?? latestSeriesSyncCheck;
-  const seriesWithDates = criticalSeries
-    .map((series) => ({ series, referenceDate: getSeriesReferenceDate(series) }))
-    .filter(
-      (
-        item,
-      ): item is {
-        series: (typeof criticalSeries)[number];
-        referenceDate: Date;
-      } => item.referenceDate instanceof Date,
-    );
-  const usedFallback =
-    seriesWithDates.length !== criticalSeries.length ||
-    criticalSeries.some((series) => series.lastSyncStatus === 'failed');
+  const cpiSeries = criticalSeries.find((series) => CPI_SLUGS.includes(series.slug));
+  const nbpSeries = criticalSeries.find((series) => NBP_RATE_SLUGS.includes(series.slug));
+  const cpiReferenceDate = cpiSeries ? getSeriesReferenceDate(cpiSeries) : undefined;
+  const nbpCheckDate = nbpSeries ? getNbpCheckDate(nbpSeries, recentSyncRuns) : undefined;
+  const coverageDates = [cpiReferenceDate, nbpCheckDate].filter((value): value is Date => Boolean(value));
+  const oldestCoverageDate = coverageDates.sort((a, b) => a.getTime() - b.getTime())[0];
 
-  if (!seriesWithDates.length) {
-    const result: CalculationDataFreshness = {
+  const missingRequiredSeries = !cpiSeries || !nbpSeries;
+  const missingRequiredDates = !cpiReferenceDate || !nbpCheckDate;
+  const hasFailure = criticalSeries.some((series) => series.lastSyncStatus === 'failed');
+  const cpiIsStale = cpiReferenceDate ? isCpiCoverageStale(cpiReferenceDate, now) : true;
+  const nbpCheckIsStale = nbpCheckDate ? differenceInDays(now, nbpCheckDate) > NBP_CHECK_STALE_DAYS : true;
+  const usesPartialReference = criticalSeries.some(
+    (series) => series.lastSyncStatus === 'partial' && series.slug !== CANONICAL_NBP_SLUG,
+  );
+  const usedFallback = missingRequiredSeries || missingRequiredDates || hasFailure || usesPartialReference;
+
+  if (!oldestCoverageDate) {
+    return {
       status: 'unknown',
       asOf: latestSyncCheck ? format(latestSyncCheck, 'yyyy-MM-dd') : undefined,
       coverageAsOf: undefined,
@@ -68,25 +101,39 @@ export const getGlobalDataFreshness = cache(async (): Promise<CalculationDataFre
       lastCheck: latestSyncCheck?.toISOString(),
       usedFallback: true,
     };
-    setCache(cacheKey, result);
-    return result;
   }
 
-  const oldestCriticalPoint = seriesWithDates
-    .map((item) => item.referenceDate)
-    .sort((a, b) => a.getTime() - b.getTime())[0];
+  const status: CalculationDataFreshness['status'] = hasFailure || cpiIsStale || nbpCheckIsStale
+    ? 'stale'
+    : usedFallback
+      ? 'fallback'
+      : 'fresh';
 
-  const daysOld = differenceInDays(now, oldestCriticalPoint);
-  const status = usedFallback ? 'fallback' : daysOld > STALE_THRESHOLD_DAYS ? 'stale' : 'fresh';
-
-  const result: CalculationDataFreshness = {
-    status: status as CalculationDataFreshness['status'],
-    asOf: oldestCriticalPoint ? format(oldestCriticalPoint, 'yyyy-MM') : undefined,
-    coverageAsOf: oldestCriticalPoint ? format(oldestCriticalPoint, 'yyyy-MM') : undefined,
+  return {
+    status,
+    asOf: format(oldestCoverageDate, 'yyyy-MM'),
+    coverageAsOf: format(oldestCoverageDate, 'yyyy-MM'),
     lastSyncedAt: latestSyncCheck?.toISOString(),
     lastCheck: latestSyncCheck?.toISOString(),
     usedFallback,
   };
+}
+
+export const getGlobalDataFreshness = cache(async (): Promise<CalculationDataFreshness> => {
+  const cacheKey = 'global-freshness';
+  const cached = getCached<CalculationDataFreshness>(cacheKey);
+  if (cached) return cached;
+
+  const allMacroSeries = await db.query.dataSeries.findMany({
+    where: inArray(dataSeries.slug, [...CPI_SLUGS, ...NBP_RATE_SLUGS]),
+  });
+
+  if (allMacroSeries.length === 0) {
+    return { status: 'unknown', usedFallback: true };
+  }
+
+  const recentSyncRuns = await listRecentSyncRuns(20);
+  const result = resolveGlobalDataFreshness(allMacroSeries, recentSyncRuns);
   setCache(cacheKey, result);
   return result;
 });

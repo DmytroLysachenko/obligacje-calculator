@@ -128,8 +128,10 @@ describe('sidebar refactor contracts', () => {
     expectContains(source, 'flex items-start justify-between gap-4');
     expectContains(source, '<div className="space-y-2">');
     expectContains(source, "import { getFreshnessDisplayState } from '@/shared/lib/data-freshness-display';");
-    expectContains(source, 'const { coverageLabel, lastSyncLabel } = getFreshnessDisplayState(');
-    expectContains(source, "{t('admin.inventory.cols.last_sync')}: {lastSyncLabel}");
+    expectContains(source, 'const { lastSyncLabel } = getFreshnessDisplayState(');
+    expectContains(source, "{t('sidebar.freshness.reference_label')}");
+    expectContains(source, "{freshnessLabel ?? t('sidebar.freshness.no_metadata')}");
+    expectContains(source, "{t('sidebar.freshness.last_checked')}: {lastSyncLabel}");
 
     expectNoFragments(source, [
       'border-[var(--finance-success)]/30 bg-transparent',

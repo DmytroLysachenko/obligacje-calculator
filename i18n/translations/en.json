@@ -156,6 +156,9 @@
       "text_fresh": "Core pages are reading current metadata.",
       "text_partial": "Some data may still be fallback coverage.",
       "text_caution": "Reference data may need a closer freshness check.",
+      "coverage_label": "Coverage through",
+      "reference_label": "Reference data",
+      "last_checked": "Last checked",
       "no_date": "No date",
       "no_metadata": "No metadata"
     }

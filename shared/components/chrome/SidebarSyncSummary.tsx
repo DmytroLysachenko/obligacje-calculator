@@ -57,7 +57,7 @@ export function SidebarSyncSummary({
   const { t } = useAppI18n();
   const freshnessLabel = dataFreshness ? getFreshnessLabel(dataFreshness, t) : null;
   const freshnessText = dataFreshness ? getFreshnessText(dataFreshness, t) : t('sidebar.sync_unavailable');
-  const { coverageLabel, lastSyncLabel } = getFreshnessDisplayState(
+  const { lastSyncLabel } = getFreshnessDisplayState(
     dataFreshness,
     dataFreshness ? t('sidebar.freshness.no_date') : t('sidebar.freshness.no_metadata'),
   );
@@ -67,13 +67,13 @@ export function SidebarSyncSummary({
       <div className="space-y-2">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <p className="text-xs font-semibold text-muted-foreground">{t('common.sync_data')}</p>
+            <p className="text-xs font-semibold text-muted-foreground">{t('sidebar.freshness.reference_label')}</p>
             <p className="mt-1 text-sm font-semibold text-foreground">
-              {coverageLabel}
+              {freshnessLabel ?? t('sidebar.freshness.no_metadata')}
             </p>
             {lastSyncLabel ? (
               <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground">
-                {t('admin.inventory.cols.last_sync')}: {lastSyncLabel}
+                {t('sidebar.freshness.last_checked')}: {lastSyncLabel}
               </p>
             ) : null}
           </div>
