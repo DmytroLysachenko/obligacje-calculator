@@ -16,16 +16,12 @@ export class StooqSyncProvider implements SyncProvider {
     ];
 
     for (const item of symbols) {
-      try {
-        const data = await this.fetchSymbol(item.symbol, item.slug);
-        const filtered = data.filter(d => 
-          (d.date >= startDate && d.date <= endDate)
-        );
-        results.push(...filtered);
-        await new Promise(resolve => setTimeout(resolve, 500));
-      } catch (error) {
-        console.error(`[Stooq Provider] Failed for ${item.symbol}:`, error);
-      }
+      const data = await this.fetchSymbol(item.symbol, item.slug);
+      const filtered = data.filter(d =>
+        (d.date >= startDate && d.date <= endDate)
+      );
+      results.push(...filtered);
+      await new Promise(resolve => setTimeout(resolve, 500));
     }
 
     return results;
@@ -40,12 +36,13 @@ export class StooqSyncProvider implements SyncProvider {
       }
     });
     if (!response.ok) {
-      console.error(`[Stooq Provider] Fetch failed for ${symbol}: ${response.status} ${response.statusText}`);
-      return [];
+      throw new Error(`Stooq fetch failed for ${symbol}: ${response.status} ${response.statusText}`);
     }
-    
+
     const csvText = await response.text();
     console.log(`[Stooq Provider] Received CSV for ${symbol}, length: ${csvText.length}`);
+    this.assertCsvResponse(symbol, csvText, response.headers.get('content-type'));
+
     const lines = csvText.split(/\r?\n/);
     if (lines.length < 2) {
       console.warn(`[Stooq Provider] CSV for ${symbol} has no data lines`);
@@ -57,8 +54,7 @@ export class StooqSyncProvider implements SyncProvider {
     const closeIdx = header.indexOf("close");
 
     if (dateIdx === -1 || closeIdx === -1) {
-      console.error(`[Stooq Provider] Missing columns in CSV for ${symbol}. Header: ${lines[0]}`);
-      return [];
+      throw new Error(`Stooq CSV format changed for ${symbol}. Missing required columns. Found: ${lines[0]}`);
     }
 
     const records = lines.slice(1)
@@ -87,5 +83,24 @@ export class StooqSyncProvider implements SyncProvider {
       
     console.log(`[Stooq Provider] Parsed ${records.length} records for ${symbol}`);
     return records;
+  }
+
+  private assertCsvResponse(symbol: string, body: string, contentType: string | null): void {
+    const trimmed = body.trimStart();
+    const firstLine = trimmed.split(/\r?\n/, 1)[0] ?? '';
+
+    if (
+      contentType?.toLowerCase().includes('text/html') ||
+      trimmed.startsWith('<!DOCTYPE html>') ||
+      trimmed.startsWith('<html') ||
+      trimmed.includes('/__verify') ||
+      trimmed.includes('requires JavaScript to verify your browser')
+    ) {
+      throw new Error(`Stooq blocked CSV export for ${symbol}; received browser verification HTML instead of CSV.`);
+    }
+
+    if (firstLine.toLowerCase() === 'access denied') {
+      throw new Error(`Stooq denied CSV export for ${symbol}; automated access is blocked.`);
+    }
   }
 }

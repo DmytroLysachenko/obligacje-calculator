@@ -12,10 +12,12 @@ export class StooqApiClient extends BaseApiClient {
     // i=d for daily, i=m for monthly. Monthly is better for long-term bond comparisons.
     const response = await fetchWithTimeout(`${this.baseUrl}?s=${symbol}&i=m`);
     if (!response.ok) throw new Error(`Stooq API error: ${response.statusText}`);
-    
+
     const csvText = await response.text();
+    this.assertCsvResponse(symbol, csvText, response.headers.get('content-type'));
+
     const lines = csvText.split(/\r?\n/);
-    
+
     if (lines.length < 2) return [];
 
     const header = lines[0].toLowerCase().split(",");
@@ -49,5 +51,24 @@ export class StooqApiClient extends BaseApiClient {
     }
 
     return results;
+  }
+
+  private assertCsvResponse(symbol: string, body: string, contentType: string | null): void {
+    const trimmed = body.trimStart();
+    const firstLine = trimmed.split(/\r?\n/, 1)[0] ?? '';
+
+    if (
+      contentType?.toLowerCase().includes('text/html') ||
+      trimmed.startsWith('<!DOCTYPE html>') ||
+      trimmed.startsWith('<html') ||
+      trimmed.includes('/__verify') ||
+      trimmed.includes('requires JavaScript to verify your browser')
+    ) {
+      throw new Error(`Stooq blocked CSV export for ${symbol}; received browser verification HTML instead of CSV.`);
+    }
+
+    if (firstLine.toLowerCase() === 'access denied') {
+      throw new Error(`Stooq denied CSV export for ${symbol}; automated access is blocked.`);
+    }
   }
 }
