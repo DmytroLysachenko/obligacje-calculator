@@ -125,4 +125,41 @@ describe('buildBondChartDisplayPoints', () => {
     expect(points.at(-1)?.inflation).toBe(3.5);
     expect(points.at(-1)?.nbp).toBe(4.25);
   });
+
+  it('anchors quarterly and yearly chart aggregation to the purchase date cadence', () => {
+    const timeline: YearlyTimelinePoint[] = [
+      makeTimelinePoint({
+        periodLabel: 'Purchase',
+        cycleEndDate: '2026-06-12',
+      }),
+      makeTimelinePoint({
+        periodLabel: 'Aug checkpoint',
+        cycleEndDate: '2026-08-12',
+        totalValue: 10050,
+        realValue: 9950,
+      }),
+      makeTimelinePoint({
+        periodLabel: 'Sep checkpoint',
+        cycleEndDate: '2026-09-12',
+        totalValue: 10080,
+        realValue: 9970,
+      }),
+      makeTimelinePoint({
+        periodLabel: 'Year checkpoint',
+        cycleEndDate: '2027-06-12',
+        totalValue: 10400,
+        realValue: 10010,
+        isMaturity: true,
+      }),
+    ];
+
+    const quarterly = buildBondChartDisplayPoints(10000, timeline, 'en', undefined, 'quarterly');
+    const yearly = buildBondChartDisplayPoints(10000, timeline, 'en', undefined, 'yearly');
+
+    expect(quarterly[0]?.dateKey).toBe('2026-06-12');
+    expect(quarterly[1]?.dateKey).toBe('2026-09-12');
+    expect(yearly[0]?.dateKey).toBe('2026-06-12');
+    expect(yearly[1]?.dateKey).toBe('2027-06-12');
+    expect(yearly.at(-1)?.nominal).toBe(10400);
+  });
 });

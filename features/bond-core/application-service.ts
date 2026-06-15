@@ -28,7 +28,10 @@ export class CalculationApplicationService {
     } as unknown as CalculationScenarioRequest;
 
     // 2. Check cache with sanitized inputs
-    const cacheKey = calculationCache.generateKey(sanitizedRequest);
+    const cacheKey = calculationCache.generateKey({
+      modelVersion: MODEL_VERSION,
+      request: sanitizedRequest,
+    });
     const cachedResult = calculationCache.get(cacheKey);
     if (cachedResult) {
       return cachedResult as CalculationEnvelope<unknown>;

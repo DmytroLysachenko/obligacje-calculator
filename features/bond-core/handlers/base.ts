@@ -3,8 +3,9 @@ import { BondDefinition } from '../constants/bond-definitions';
 import { BondType, BondInputs } from '../types';
 import { getHistoricalDataMap, getHistoricalAverages } from '@/lib/data/market-data';
 import { format, subMonths, parseISO } from 'date-fns';
+import { MODEL_VERSION } from '../model-version';
 
-export const MODEL_VERSION = '2.7.0-db-driven-metadata';
+export { MODEL_VERSION };
 
 export interface HandlerContext {
   dataFreshness: CalculationDataFreshness;

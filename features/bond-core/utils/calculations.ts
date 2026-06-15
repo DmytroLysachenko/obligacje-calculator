@@ -401,7 +401,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
       const hypotheticalEarlyExitValue = currentGrossValue
         .minus(hypotheticalEarlyExitFee)
         .minus(currentTaxAtPoint);
-      const totalValue = liquidationValue;
+      const totalValue = liquidationValue.plus(leftoverCash);
       const realValue = calculateRealValue(totalValue, cumulativeInflation);
       const checkpointNetProfit = totalValue.minus(initialInvestment);
 
@@ -457,7 +457,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
     totalTaxAcc = totalTaxAcc.plus(cycleTax);
     totalFeeAcc = totalFeeAcc.plus(cycleFee);
 
-    const netProceeds = cycleGrossValue.minus(cycleFee).minus(cycleTax);
+    const netProceeds = cycleGrossValue.minus(cycleFee).minus(cycleTax).plus(leftoverCash);
 
     if (!rollover || isEarlyWithdrawal || actualCycleEndDate.getTime() === targetWithdrawalDate.getTime()) {
       const totalHorizonYears = differenceInDays(actualCycleEndDate, startDate) / 365.25;
@@ -480,6 +480,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
     }
 
     currentInitialInvestment = netProceeds;
+    leftoverCash = new Decimal(0);
     globalAccumulatedNetInterest = new Decimal(0);
     currentPurchaseDate = actualCycleEndDate;
     applySwapDiscountThisCycle = isRebought;

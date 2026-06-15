@@ -1,7 +1,8 @@
-import { useState, useCallback, useEffect, useEffectEvent, useRef } from 'react';
+import { useState, useCallback, useEffect, useEffectEvent, useMemo, useRef } from 'react';
 import { BondInputs, BondType, TaxStrategy, InterestPayout } from '../../bond-core/types';
 import { SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
+import { MODEL_VERSION } from '../../bond-core/model-version';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
@@ -90,7 +91,7 @@ function applyDefinitionToInputs(
 export function useBondCalculator(initialInputs?: BondInputs) {
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
   const { defaults: macroDefaults } = useMacroAssumptionDefaults();
-  const fallbackInputs = buildFallbackInputs();
+  const fallbackInputs = useMemo(() => buildFallbackInputs(), []);
   const [inputs, setInputs] = useState<BondInputs>(
     initialInputs ?? fallbackInputs,
   );
@@ -161,19 +162,23 @@ export function useBondCalculator(initialInputs?: BondInputs) {
       hasRestoredState.current = true;
 
       if (restoredState) {
+        const restoredEnvelope =
+          restoredState.envelope?.calculationVersion === MODEL_VERSION
+            ? restoredState.envelope
+            : null;
         restoredFromPersistence.current = true;
         setInputs(withoutDisplayOnlyInputs(restoredState.inputs) ?? fallbackInputs);
-        setEnvelope(restoredState.envelope ?? null);
+        setEnvelope(restoredEnvelope);
         setSelectedSeriesId(restoredState.selectedSeriesId ?? null);
-        setLastCommittedInputs(withoutDisplayOnlyInputs(restoredState.lastCommittedInputs ?? null));
-        setIsDirty(restoredState.isDirty ?? true);
+        setLastCommittedInputs(restoredEnvelope ? withoutDisplayOnlyInputs(restoredState.lastCommittedInputs ?? null) : null);
+        setIsDirty(restoredEnvelope ? (restoredState.isDirty ?? true) : true);
       }
 
       setIsPersistenceReady(true);
     }, 0);
 
     return () => window.clearTimeout(timer);
-  }, [initialInputs]);
+  }, [fallbackInputs, initialInputs]);
 
   useEffect(() => {
     if (!macroDefaults || initialInputs || !isPersistenceReady || hasTouchedMacroAssumptions.current) {

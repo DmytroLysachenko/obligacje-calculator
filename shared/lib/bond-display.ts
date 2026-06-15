@@ -290,24 +290,30 @@ function aggregateBondChartDisplayPoints(points: BondChartDisplayPoint[], chartS
         return points;
     }
     const groups = new Map<string, BondChartDisplayPoint[]>();
+    const firstDate = points[0] ? new Date(points[0].dateKey) : null;
     for (const point of points) {
         const date = new Date(point.dateKey);
+        const monthsFromStart = firstDate ? Math.max(0, differenceInMonths(date, firstDate)) : 0;
         const groupKey = chartStep === 'quarterly'
-            ? `${date.getUTCFullYear()}-Q${Math.floor(date.getUTCMonth() / 3) + 1}`
-            : `${date.getUTCFullYear()}`;
+            ? `q-${Math.floor(monthsFromStart / 3)}`
+            : `y-${Math.floor(monthsFromStart / 12)}`;
         const bucket = groups.get(groupKey) ?? [];
         bucket.push(point);
         groups.set(groupKey, bucket);
     }
     const aggregated = Array.from(groups.values()).map((bucket) => {
-        const last = bucket[bucket.length - 1];
+        const first = bucket[0];
         return {
-            ...last,
+            ...first,
             eventLabels: Array.from(new Set(bucket.flatMap((point) => point.eventLabels))),
             isProjected: bucket.some((point) => point.isProjected),
             isMaturity: bucket.some((point) => point.isMaturity),
         };
     });
+    const terminal = points.at(-1);
+    if (terminal && aggregated.at(-1)?.dateKey !== terminal.dateKey) {
+        aggregated.push(terminal);
+    }
     return aggregated;
 }
 

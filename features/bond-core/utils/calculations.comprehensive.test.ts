@@ -429,6 +429,84 @@ describe('Comprehensive Bond Calculations', () => {
     expect(results.netPayoutValue).toBeGreaterThan(results.initialInvestment);
   });
 
+  it('carries leftover cash through discounted ROR rollovers instead of resetting profit', () => {
+    const results = calculateBondInvestment({
+      ...baseInputs,
+      bondType: BondType.ROR,
+      initialInvestment: 100,
+      duration: 1,
+      firstYearRate: 4,
+      expectedNbpRate: 3.75,
+      margin: 0,
+      isCapitalized: false,
+      payoutFrequency: InterestPayout.MONTHLY,
+      earlyWithdrawalFee: 0.5,
+      purchaseDate: '2026-06-15T00:00:00.000Z',
+      withdrawalDate: '2028-06-15T00:00:00.000Z',
+      isRebought: true,
+      rebuyDiscount: 0.1,
+      rollover: true,
+      historicalData: {},
+    });
+
+    const firstMaturity = results.timeline.find((point) => point.cycleIndex === 1 && point.isMaturity);
+    const secondCycleFirstPoint = results.timeline.find((point) => point.cycleIndex === 2);
+
+    expect(firstMaturity?.totalValue).toBeGreaterThan(100);
+    expect(secondCycleFirstPoint?.totalValue).toBeGreaterThan(firstMaturity?.totalValue ?? 0);
+    expect(secondCycleFirstPoint?.netProfit).toBeGreaterThan(firstMaturity?.netProfit ?? 0);
+  });
+
+  it('shows negative real CAGR when ROR yield trails inflation after tax', () => {
+    const results = calculateBondInvestment({
+      ...baseInputs,
+      bondType: BondType.ROR,
+      initialInvestment: 100,
+      duration: 1,
+      firstYearRate: 4,
+      expectedInflation: 3.8,
+      expectedNbpRate: 3.75,
+      margin: 0,
+      isCapitalized: false,
+      payoutFrequency: InterestPayout.MONTHLY,
+      earlyWithdrawalFee: 0.5,
+      purchaseDate: '2026-06-16T00:00:00.000Z',
+      withdrawalDate: '2036-06-16T00:00:00.000Z',
+      isRebought: true,
+      rebuyDiscount: 0.1,
+      rollover: true,
+      historicalData: {},
+    });
+
+    expect(results.netPayoutValue).toBeGreaterThan(results.initialInvestment);
+    expect(results.finalRealValue).toBeLessThan(results.initialInvestment);
+    expect(results.realAnnualizedReturn).toBeLessThan(0);
+  });
+
+  it('keeps OTS rollover cycles on the fixed OTS rate across long horizons', () => {
+    const results = calculateBondInvestment({
+      ...baseInputs,
+      bondType: BondType.OTS,
+      initialInvestment: 1000,
+      duration: 0.25,
+      firstYearRate: 2,
+      expectedNbpRate: 3.75,
+      margin: 0,
+      isCapitalized: false,
+      payoutFrequency: InterestPayout.MATURITY,
+      earlyWithdrawalFee: 0,
+      purchaseDate: '2026-06-15T00:00:00.000Z',
+      withdrawalDate: '2027-06-15T00:00:00.000Z',
+      rollover: true,
+      historicalData: {},
+    });
+
+    const nonInitialPoints = results.timeline.filter((point) => point.cycleIndex > 0);
+
+    expect(new Set(nonInitialPoints.map((point) => point.interestRate))).toEqual(new Set([2]));
+    expect(nonInitialPoints.every((point) => point.rateSource === 'fixed_rate')).toBe(true);
+  });
+
   it('uses global projected CPI path years across EDO rollover cycles', () => {
     const results = calculateBondInvestment({
       ...baseInputs,

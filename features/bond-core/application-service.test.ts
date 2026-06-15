@@ -49,7 +49,7 @@ describe('CalculationApplicationService - Integration', () => {
       payload,
     });
 
-    expect(envelope.calculationVersion).toContain('2.7.0');
+    expect(envelope.calculationVersion).toContain('2.8.0');
     expect(envelope.result).toBeDefined();
     
     // Verify calculation notes reflect the simulation state
