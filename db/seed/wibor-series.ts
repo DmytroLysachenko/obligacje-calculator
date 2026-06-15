@@ -9,7 +9,7 @@ export async function seedWiborSeriesMetadata() {
       category: 'instrument',
       unit: '%',
       frequency: 'monthly',
-      dataSource: 'Stooq',
+      dataSource: 'GPW Benchmark historical access required',
     },
     {
       slug: 'wibor-6m',
@@ -17,7 +17,7 @@ export async function seedWiborSeriesMetadata() {
       category: 'instrument',
       unit: '%',
       frequency: 'monthly',
-      dataSource: 'Stooq',
+      dataSource: 'GPW Benchmark historical access required',
     },
   ]).onConflictDoNothing();
 }

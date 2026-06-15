@@ -1,8 +1,8 @@
 import { db } from "@/db";
 import { dataSeries, dataPoints, investmentInstruments } from "@/db/schema";
-import { StooqApiClient } from "@/lib/api-clients/stooq";
 import { GusCpiApiClient } from "@/lib/api-clients/gus-cpi";
 import { eq, sql } from "drizzle-orm";
+import { YahooFinanceSyncProvider } from "./providers/yahoo-finance";
 import "dotenv/config";
 
 interface NbpRateItem {
@@ -11,8 +11,12 @@ interface NbpRateItem {
 }
 
 async function seedMacroAndMarket() {
-  const stooq = new StooqApiClient();
   const gusCpiClient = new GusCpiApiClient();
+  const sp500Provider = new YahooFinanceSyncProvider({
+    name: 'Yahoo Finance S&P 500',
+    symbol: '^GSPC',
+    seriesSlug: 'sp500',
+  });
 
   const seriesMetadata = [
     {
@@ -37,7 +41,7 @@ async function seedMacroAndMarket() {
       category: 'index' as const,
       unit: 'USD',
       frequency: 'monthly',
-      dataSource: 'Stooq'
+      dataSource: 'Yahoo Finance'
     },
     {
       slug: 'gold-usd',
@@ -45,7 +49,7 @@ async function seedMacroAndMarket() {
       category: 'instrument' as const,
       unit: 'USD',
       frequency: 'daily',
-      dataSource: 'NBP/Stooq'
+      dataSource: 'Yahoo Finance'
     }
   ];
 
@@ -83,12 +87,12 @@ async function seedMacroAndMarket() {
     console.error("[Seed] Failed to fetch NBP rates:", e);
   }
 
-  // 2. Fetch and seed S&P 500 (Stooq)
+  // 2. Fetch and seed S&P 500 (Yahoo Finance)
   console.log("[Seed] Fetching S&P 500 data...");
   try {
     const spxSeries = await db.query.dataSeries.findFirst({ where: eq(dataSeries.slug, 'sp500') });
     if (spxSeries) {
-      const spxData = await stooq.fetchHistoricalData('2000-01-01', '^SPX');
+      const spxData = await sp500Provider.fetchData('2000-01-01', new Date().toISOString().slice(0, 10));
       const points = spxData.map(d => ({
         seriesId: spxSeries.id,
         date: d.date,
@@ -102,7 +106,7 @@ async function seedMacroAndMarket() {
 
       await db.insert(investmentInstruments).values({
         seriesId: spxSeries.id,
-        ticker: '^SPX',
+        ticker: '^GSPC',
         displayName: 'S&P 500 Index',
         riskScore: 4,
         currency: 'USD',

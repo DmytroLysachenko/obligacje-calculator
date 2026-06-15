@@ -28,7 +28,7 @@ const SERIES = [
     category: 'index' as const,
     unit: 'USD',
     frequency: 'monthly',
-    dataSource: 'Stooq',
+    dataSource: 'Yahoo Finance',
   },
   {
     slug: 'gold-usd',
@@ -37,7 +37,7 @@ const SERIES = [
     category: 'instrument' as const,
     unit: 'USD',
     frequency: 'daily',
-    dataSource: 'NBP/Stooq',
+    dataSource: 'Yahoo Finance',
   },
 ];
 

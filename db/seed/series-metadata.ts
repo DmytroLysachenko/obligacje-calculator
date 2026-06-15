@@ -30,7 +30,7 @@ const baseSeries = [
     unit: 'USD',
     frequency: 'monthly',
     displayPrecision: 2,
-    dataSource: 'Stooq',
+    dataSource: 'Yahoo Finance',
   },
   {
     slug: 'gold-price',

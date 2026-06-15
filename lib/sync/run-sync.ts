@@ -2,16 +2,8 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 async function run() {
-  const { SyncEngine } = await import("./sync-engine");
-  const { NbpSyncProvider } = await import("./providers/nbp");
-  const { StooqSyncProvider } = await import("./providers/stooq");
-  const { GusSyncProvider } = await import("./providers/gus");
-
-  const engine = new SyncEngine([
-    new NbpSyncProvider(),
-    new StooqSyncProvider(),
-    new GusSyncProvider()
-  ]);
+  const { createDefaultSyncEngine } = await import("./create-sync-engine");
+  const engine = createDefaultSyncEngine("CLI Sync");
 
   const startYear = 1990;
   console.log(`[CLI Sync] Starting full unified sync from ${startYear}...`);

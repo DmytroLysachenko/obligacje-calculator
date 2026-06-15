@@ -11,7 +11,7 @@ async function seed() {
       displayName: "S&P 500",
       category: "equity" as const,
       riskScore: 4,
-      dataSource: "Stooq",
+      dataSource: "Yahoo Finance",
       currency: "USD"
     },
     {
@@ -19,7 +19,7 @@ async function seed() {
       displayName: "Gold",
       category: "commodity" as const,
       riskScore: 3,
-      dataSource: "NBP/Stooq",
+      dataSource: "Yahoo Finance",
       currency: "USD"
     }
   ];

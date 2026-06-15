@@ -34,7 +34,7 @@ async function seed() {
       category: 'index',
       unit: 'USD',
       frequency: 'monthly',
-      data_source: 'Stooq'
+      data_source: 'Yahoo Finance'
     },
     {
       slug: 'gold-usd',
@@ -43,7 +43,7 @@ async function seed() {
       category: 'instrument',
       unit: 'USD',
       frequency: 'daily',
-      data_source: 'NBP/Stooq'
+      data_source: 'Yahoo Finance'
     },
     {
       slug: 'pl-unemployment',

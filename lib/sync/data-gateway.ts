@@ -38,22 +38,6 @@ export class FinancialDataGateway {
   }
 
   /**
-   * Fetches unofficial WIBOR data from Stooq's CSV export endpoint.
-   */
-  static async fetchWiborFromStooq(ticker: string = 'plopln3m'): Promise<FinancialDataResponse> {
-    const url = `https://stooq.pl/q/d/l/?s=${ticker}&i=d`;
-    try {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`Stooq API Error: ${response.statusText}`);
-      const data = await response.text(); // CSV format
-      return { source: 'Stooq', data, timestamp: new Date().toISOString() };
-    } catch (error) {
-      console.error('Failed to fetch from Stooq:', error);
-      throw error;
-    }
-  }
-
-  /**
    * Fetches EU-harmonized inflation (HICP) from Eurostat.
    */
   static async fetchHICPFromEurostat(): Promise<FinancialDataResponse> {

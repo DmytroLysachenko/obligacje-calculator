@@ -1,18 +1,18 @@
 export type WorkerMessage = 
-  | { type: 'PARSE_STOOQ_CSV'; payload: { csv: string } }
+  | { type: 'PARSE_MARKET_CSV'; payload: { csv: string } }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   | { type: 'TRANSFORM_EUROSTAT_JSON'; payload: { json: any } };
 
 self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
   const { type, payload } = e.data;
 
-  if (type === 'PARSE_STOOQ_CSV') {
+  if (type === 'PARSE_MARKET_CSV') {
     try {
       const csvText = payload.csv;
       const lines = csvText.split('\n');
       const dataPoints = lines.slice(1).map((line: string) => {
         const parts = line.split(',');
-        // Typical Stooq format: Date,Open,High,Low,Close,Volume
+        // Typical OHLCV CSV format: Date,Open,High,Low,Close,Volume
         const date = parts[0];
         const close = parts[4];
         return { date, value: parseFloat(close) };
