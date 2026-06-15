@@ -5,8 +5,8 @@ import {InterestPayout} from '../../features/bond-core/types';
 import {seedTaxRules} from './tax-rules';
 
 const metadataSeries = [
-  {slug: 'sp500', name: 'S&P 500 Index', category: 'index' as const, unit: 'points', frequency: 'daily', dataSource: 'Stooq'},
-  {slug: 'gold-usd', name: 'Gold Price (USD)', category: 'commodity' as const, unit: 'USD/oz', frequency: 'daily', dataSource: 'Stooq'},
+  {slug: 'sp500', name: 'S&P 500 Index', category: 'index' as const, unit: 'points', frequency: 'daily', dataSource: 'Yahoo Finance'},
+  {slug: 'gold-usd', name: 'Gold Price (USD)', category: 'commodity' as const, unit: 'USD/oz', frequency: 'daily', dataSource: 'Yahoo Finance'},
   {slug: 'wibor-3m', name: 'WIBOR 3M', category: 'macro' as const, unit: '%', frequency: 'daily', dataSource: 'Stooq'},
   {slug: 'wibor-6m', name: 'WIBOR 6M', category: 'macro' as const, unit: '%', frequency: 'daily', dataSource: 'Stooq'},
   {slug: 'pl-cpi', name: 'Poland Inflation (CPI)', category: 'macro' as const, unit: '%', frequency: 'monthly', dataSource: 'GUS official CPI monthly archive CSV'},
