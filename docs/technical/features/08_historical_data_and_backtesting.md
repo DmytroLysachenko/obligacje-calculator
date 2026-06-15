@@ -8,9 +8,10 @@ To provide realistic simulations, the platform relies on high-quality historical
 | :--- | :--- | :--- | :--- |
 | **Inflation (CPI)** | GUS (Statistics Poland) | Monthly | Calculating historical bond returns |
 | **NBP Rates** | National Bank of Poland | On Event | Floating rate bond calculations |
-| **Equities (S&P 500)** | Stooq / Yahoo Finance | Daily | Benchmarking and comparisons |
-| **Crypto (BTC)** | CoinGecko / Stooq | Daily | Risk/Reward visualizations |
-| **Gold** | NBP / Stooq | Daily | Commodity hedging simulations |
+| **Equities (S&P 500)** | Yahoo Finance | Daily, stored monthly | Benchmarking and comparisons |
+| **Crypto (BTC)** | CoinGecko | Daily | Risk/Reward visualizations |
+| **Gold** | Yahoo Finance | Daily, stored monthly | Commodity hedging simulations |
+| **WIBOR 3M/6M** | GPW Benchmark historical access required | Daily/monthly when available | Floating-rate context |
 
 ## 2. Inflation Data Handling
 - **The "Final" CPI:** GUS publishes final CPI data for the previous month around the 15th day of the current month.

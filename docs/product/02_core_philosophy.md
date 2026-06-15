@@ -18,7 +18,7 @@ The platform is a tool for long-term thinking. We avoid high-contrast "red/green
 The system architecture treats financial logic as separate from the UI. This allows the core calculation engines to be tested independently and allows for the rapid addition of new financial instruments without breaking existing functionality.
 
 ## 6. Real-World Context
-Investments do not exist in a vacuum. We use real historical data (from NBP, GUS, and Stooq) to provide context. Instead of just "5% growth," we show "5% growth during a 10% inflation period," highlighting the concept of *real return*.
+Investments do not exist in a vacuum. We use real historical data from NBP, GUS, and Yahoo Finance to provide context. Instead of just "5% growth," we show "5% growth during a 10% inflation period," highlighting the concept of *real return*.
 
 ## 7. User Privacy by Default
 The platform provides high value without requiring an account. Sensitive financial simulations are kept private, and data persistence is handled with a "privacy-first" mindset.

@@ -33,7 +33,7 @@ A high-level table used for comparing different asset classes (Stocks, Crypto, G
 | `ticker` | String | e.g., "BTC", "SPX", "GOLD". |
 | `display_name` | String | User-friendly name. |
 | `risk_score` | Integer | 1-5 scale. |
-| `data_source` | String | `nbp`, `stooq`, `gus`. |
+| `data_source` | String | `nbp`, `gus`, `yahoo-finance`, etc. |
 | `currency` | String | `PLN`, `USD`, etc. |
 
 ## 3. Price History Schema (`instrument_price_history`)

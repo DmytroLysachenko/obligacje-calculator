@@ -26,7 +26,7 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [Non-Functional Requirements](./technical/architecture/18_non_functional_requirements.md) - Quality and performance.
 - [Database & Data Modeling](./technical/architecture/20_database_and_data_modeling.md) - Schema and strategy.
 - [Detailed Data Schemas](./technical/architecture/20_detailed_data_schemas.md) - Table structures.
-- [API Design & Integrations](./technical/architecture/21_api_design_and_integrations.md) - NBP, Stooq, GUS.
+- [API Design & Integrations](./technical/architecture/21_api_design_and_integrations.md) - NBP, GUS, Yahoo Finance.
 - [Security & Privacy](./technical/architecture/22_security_and_privacy.md) - Protecting user data.
 - [Testing & Quality Assurance](./technical/architecture/23_testing_and_quality_assurance.md) - Correctness.
 - [Deployment & DevOps](./technical/architecture/24_deployment_and_devops.md) - CI/CD strategy.

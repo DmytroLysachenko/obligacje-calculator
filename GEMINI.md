@@ -50,7 +50,7 @@ npx drizzle-kit generate
 # Seed production bond definitions and historical data
 pnpm run db:seed:production
 
-# Run full data sync (NBP, Stooq)
+# Run full data sync (NBP, GUS, Yahoo Finance)
 pnpm run sync:full
 ```
 

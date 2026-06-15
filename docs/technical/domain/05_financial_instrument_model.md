@@ -41,7 +41,7 @@ interface BondMetadata extends FinancialInstrument {
 ```typescript
 interface MarketAssetMetadata extends FinancialInstrument {
   ticker: string;             // e.g., "BTC", "SPX"
-  historicalSource: "stooq" | "coingecko";
+  historicalSource: "yahoo-finance" | "coingecko" | "nbp" | "gus";
   volatilityIndex?: number;   // Calculated based on history
 }
 ```

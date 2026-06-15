@@ -16,7 +16,7 @@ The platform is designed as a modern, decoupled web application.
 
 ### C. Data Ingestion Service
 - **Scheduler:** Inngest or GitHub Actions.
-- **Task:** Fetch CPI from GUS, Rates from NBP, and Tickers from Stooq.
+- **Task:** Fetch CPI from GUS, rates from NBP, and market benchmark history from Yahoo Finance.
 - **Storage:** PostgreSQL (Drizzle ORM) for historical series.
 
 ### D. Persistence Layer
