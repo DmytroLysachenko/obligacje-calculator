@@ -1,26 +1,20 @@
 # 24. Deployment & DevOps
 
-Our infrastructure is designed for high performance, low cost, and zero-downtime updates.
+The first production target is **Google Cloud Run**. The release should stay
+narrow: trusted core routes only, with recovery-lab tools treated as secondary
+unless they pass the same calculation and UX checks.
 
 ## 1. Hosting Environment
-- **Platform:** Vercel (for Next.js).
-- **Benefits:** Global Edge Network, Instant Rollbacks, and Built-in Image Optimization.
-- **Region:** `fra1` (Frankfurt) to minimize latency for Polish users.
 
-## 2. CI/CD Pipeline (GitHub Actions)
-1.  **Lint & Format:** Run Prettier and ESLint.
-2.  **Test:** Run Vitest unit tests and Playwright E2E tests.
-3.  **Audit:** Run the financial correctness audit.
-4.  **Build:** Compile Next.js and the `finance-core` package.
-5.  **Preview:** Deploy to a unique "Preview URL" for every Pull Request.
-6.  **Deploy:** Push to Production on Merge to `main`.
+- **Platform:** Google Cloud Run.
+- **Container:** checked-in `Dockerfile` builds the Next.js standalone output.
+- **Build:** checked-in `cloudbuild.yaml` builds, pushes, and deploys the image.
+- **Default region:** `europe-central2`, close to Polish users and supported by
+  Cloud Run and Artifact Registry.
+- **Runtime port:** Cloud Run provides `PORT`; the container exposes `8080` and
+  runs the standalone `server.js` with `HOSTNAME=0.0.0.0`.
 
-## 3. Database Management
-- **Provider:** Neon (Serverless Postgres) or Supabase.
-- **Migration:** Apply checked-in SQL migrations before deploying application code.
-- **Backups:** Daily automated snapshots.
-
-### Required Production Migrations
+## 2. Required Production Migrations
 
 The production database must include the additive migrations in `drizzle/`:
 
@@ -34,13 +28,14 @@ verification tokens. The application has defensive read paths for missing sync
 history, but auth-backed portfolio management should be treated as unavailable
 until the auth migration exists.
 
-### Required Environment Variables
+## 3. Required Environment Variables
 
 Core runtime:
 
-- `DATABASE_URL`: Neon/Supabase Postgres connection string.
+- `DATABASE_URL`: Neon/Supabase/Postgres connection string reachable from Cloud Run.
 - `AUTH_SECRET`: Auth.js secret for session signing. `NEXTAUTH_SECRET` remains
   accepted as a compatibility fallback, but production should use `AUTH_SECRET`.
+- `NEXT_PUBLIC_APP_URL`: canonical deployed app URL used by metadata and shared links.
 
 OAuth providers:
 
@@ -56,28 +51,71 @@ without revisiting storage, reset, throttling, and abuse controls.
 Sync/admin:
 
 - `SYNC_SECRET`: protects admin sync/status endpoints.
+- Inngest signing/event keys if production Inngest is enabled.
 - Any provider-specific sync credentials required by future data providers.
 
-### Deployment Guardrails
+## 4. First Cloud Run Deploy
+
+Prepare Google Cloud resources:
+
+```bash
+gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com
+gcloud artifacts repositories create obligacje-calculator \
+  --repository-format=docker \
+  --location=europe-central2
+```
+
+Run release checks before building:
+
+```bash
+pnpm exec tsc --noEmit
+pnpm lint
+pnpm test:ci
+pnpm build
+```
+
+Apply migrations and seed/sync the target database before promoting traffic:
+
+```bash
+npx drizzle-kit push
+pnpm run db:seed:production
+pnpm run sync:full
+```
+
+Submit the Cloud Build deployment:
+
+```bash
+gcloud builds submit \
+  --config cloudbuild.yaml \
+  --substitutions _REGION=europe-central2,_SERVICE=obligacje-calculator,_AR_REPOSITORY=obligacje-calculator
+```
+
+Set secrets and environment variables through Cloud Run service configuration or
+Secret Manager. Do not commit `.env` files.
+
+## 5. Deployment Guardrails
 
 - Run migrations against the target database before warming the app.
-- Run `pnpm exec tsc --noEmit` and `pnpm test:core` before promoting a build.
+- Run `pnpm exec tsc --noEmit`, `pnpm lint`, `pnpm test:ci`, and `pnpm build`
+  before promoting a build.
+- Verify `/api/health` returns `ok: true`.
+- Verify `/api/readiness` returns `ok: true` after production env and database
+  setup are complete.
 - Verify `/login` shows the configured OAuth providers.
 - Verify `/api/portfolio/access` reports `canManageWorkspace: true` after sign-in.
 - Verify `/admin/status` shows recent `sync_runs` rows after a manual sync.
 - Verify calculation meta displays both data coverage and last sync attempt when
   sync history is present.
+- Verify single, comparison, regular investment, ladder, notebook, and economic
+  data routes load on desktop and mobile widths.
 
-## 4. Monitoring & Observability
-- **Error Tracking:** Sentry (captures both frontend and backend errors).
-- **Logging:** Logtail or Vercel Logs.
-- **Uptime:** BetterStack or Checkly monitoring the `/api/health` endpoint.
-- **Analytics:** Plausible Analytics for privacy-conscious usage tracking.
+## 6. Monitoring & Operations
 
-## 5. Caching Strategy
-- **Static Assets:** Cached forever on Vercel Edge.
-- **Historical Data API:** Stale-While-Revalidate (SWR) with a 24-hour TTL.
-- **GUS/NBP Data:** Cached in the database; revalidated only once a day.
-
-## 6. Infrastructure as Code (IaC)
-- Any complex cloud resources (e.g., S3 buckets for exports) are managed via Terraform or Pulumi to ensure reproducibility.
+- Cloud Run logs are the first operational log source for the initial deploy.
+- Add uptime monitoring against `/api/health`.
+- Add readiness monitoring against `/api/readiness` only where protected access
+  or private uptime checks are available.
+- Trigger `pnpm run sync:full` manually after deploy until scheduled production
+  sync is configured.
+- Treat failed or stale sync metadata as a release blocker when it affects trusted
+  core calculator interpretation.

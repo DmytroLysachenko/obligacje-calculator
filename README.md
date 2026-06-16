@@ -104,6 +104,19 @@ High-value entry docs:
 - [Engineering and Coding Rules](./docs/technical/architecture/26_engineering_and_coding_rules.md)
 - [Calculation Stability Rules](./docs/technical/architecture/27_calculation_stability_rules.md)
 - [Current Product Roadmap](./docs/plans/00_roadmap.md)
+- [Cloud Run Release Candidate Plan](./docs/plans/08_cloud_run_release_candidate_plan.md)
+
+## Deployment Target
+
+The first production-style deployment target is Google Cloud Run. The checked-in
+container and build files are:
+
+- `Dockerfile`
+- `.dockerignore`
+- `cloudbuild.yaml`
+
+Deployment details, required environment variables, migration order, and smoke
+checks live in [Deployment & DevOps](./docs/technical/architecture/24_deployment_and_devops.md).
 
 ## Product Guardrails
 

@@ -10,6 +10,16 @@ function readDoc() {
 }
 
 describe('deployment documentation contract', () => {
+  it('documents Cloud Run as the production deployment target', () => {
+    const source = readDoc();
+
+    expect(source).toContain('Google Cloud Run');
+    expect(source).toContain('Dockerfile');
+    expect(source).toContain('cloudbuild.yaml');
+    expect(source).toContain('europe-central2');
+    expect(source).toContain('standalone `server.js`');
+  });
+
   it('documents the production migration order for portfolio auth and sync history', () => {
     const source = readDoc();
 
@@ -32,6 +42,7 @@ describe('deployment documentation contract', () => {
       'AUTH_FACEBOOK_ID',
       'AUTH_FACEBOOK_SECRET',
       'SYNC_SECRET',
+      'NEXT_PUBLIC_APP_URL',
     ]) {
       expect(source).toContain(variable);
     }
@@ -43,6 +54,8 @@ describe('deployment documentation contract', () => {
   it('documents smoke checks for sync status and authenticated portfolio access', () => {
     const source = readDoc();
 
+    expect(source).toContain('Verify `/api/health` returns `ok: true`.');
+    expect(source).toContain('Verify `/api/readiness` returns `ok: true`');
     expect(source).toContain('Verify `/login` shows the configured OAuth providers.');
     expect(source).toContain('Verify `/api/portfolio/access` reports `canManageWorkspace: true` after sign-in.');
     expect(source).toContain('Verify `/admin/status` shows recent `sync_runs` rows after a manual sync.');

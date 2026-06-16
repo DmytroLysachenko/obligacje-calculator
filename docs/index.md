@@ -53,6 +53,7 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [04. Post-Refactor Polish and Hardening Plan](./plans/04_post_refactor_polish_and_hardening_plan.md) - Separate plan for i18n cleanup, UI/UX polish, edge-case handling, accessibility, and finish-quality hardening.
 - [05. Retained Route Regression Execution Log](./plans/05_retained_route_regression_execution_log.md) - Current retained-route evidence snapshot, trust limits, and release-position log.
 - [06. Future Backend Migration to .NET Plan](./plans/06_future_backend_migration_to_dotnet_plan.md) - Deferred architecture sketch for keeping Next.js as frontend-only and moving backend logic to a dedicated .NET platform later.
+- [08. Cloud Run Release Candidate Plan](./plans/08_cloud_run_release_candidate_plan.md) - First Cloud Run deploy checklist for the trusted-core production scope.
 
 ### 6. Archived Plans
 - [Archived Plans Index](./archive/plans/index.md) - Historical and completed execution plans preserved for reference.
