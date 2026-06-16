@@ -169,6 +169,44 @@ describe('Flagship calculation regressions', () => {
       expect(result.maturityDate).toBe('2027-05-04T22:00:00.000Z');
     });
 
+    it.each([
+      BondType.OTS,
+      BondType.ROR,
+      BondType.DOR,
+      BondType.TOS,
+      BondType.COI,
+      BondType.EDO,
+      BondType.ROS,
+      BondType.ROD,
+    ])('keeps %s native-term rate semantics aligned with official bond family rules', async (bondType) => {
+      const definition = BOND_DEFINITIONS[bondType];
+      const result = await getSingleBondResult(bondType);
+      const nonInitialPoints = result.timeline.filter((point) => point.cycleIndex > 0);
+      const firstAccrual = nonInitialPoints[0];
+      const firstReset = nonInitialPoints.find((point) => point.rateSource !== 'first_year_fixed');
+
+      expect(result.netPayoutValue).toBeGreaterThan(result.initialInvestment);
+      expect(result.timeline.at(-1)?.isWithdrawal).toBe(true);
+      expect(firstAccrual?.interestRate).toBeCloseTo(definition.firstYearRate, 6);
+
+      if (bondType === BondType.OTS || bondType === BondType.TOS) {
+        expect(new Set(nonInitialPoints.map((point) => point.rateSource))).toEqual(new Set(['fixed_rate']));
+        expect(new Set(nonInitialPoints.map((point) => point.interestRate))).toEqual(new Set([definition.firstYearRate]));
+        return;
+      }
+
+      expect(firstAccrual?.rateSource).toBe('first_year_fixed');
+
+      if (bondType === BondType.ROR || bondType === BondType.DOR) {
+        expect(firstReset?.rateSource).toMatch(/nbp/);
+        expect(firstReset?.rateMarginApplied).toBeCloseTo(definition.margin, 6);
+        return;
+      }
+
+      expect(firstReset?.rateSource).toMatch(/cpi/);
+      expect(firstReset?.rateMarginApplied).toBeCloseTo(definition.margin, 6);
+    });
+
     it('keeps the EDO tax-wrapper ordering stable', async () => {
       const standard = await getSingleBondResult(BondType.EDO, TaxStrategy.STANDARD);
       const ike = await getSingleBondResult(BondType.EDO, TaxStrategy.IKE);
