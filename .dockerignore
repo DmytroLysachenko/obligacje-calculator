@@ -1,0 +1,12 @@
+.git
+.next
+.turbo
+coverage
+node_modules
+*.log
+.env
+.env.*
+!.env.example
+docs/ui/APP_ANALYSIS_REPORT_02_06_26.md
+docs/ui/bonds-calculator-ui-ux-improvement-plan-v2.md
+docs/ui/bonds-calculator-ui-ux-improvement-plan.md
