@@ -1,4 +1,4 @@
-import { format, parseISO } from 'date-fns';
+import { differenceInMonths, format, parseISO } from 'date-fns';
 import { RegularInvestmentResult, ChartStep } from '@/features/bond-core/types';
 import { DisplayBucketMetricRow, DisplayRecentItem } from './display-model';
 
@@ -10,21 +10,32 @@ export function aggregateRegularTimelinePoints(
     return timeline;
   }
 
-  const grouped = new Map<string, RegularInvestmentResult['timeline'][number]>();
+  const grouped = new Map<string, RegularInvestmentResult['timeline']>;
+  const firstDate = timeline[0] ? parseISO(timeline[0].date) : null;
 
   for (const point of timeline) {
     const date = parseISO(point.date);
-    const year = date.getFullYear();
-    const month = date.getMonth();
+    const monthsFromStart = firstDate
+      ? Math.max(0, differenceInMonths(date, firstDate))
+      : 0;
     const key =
       chartStep === 'quarterly'
-        ? `${year}-Q${Math.floor(month / 3) + 1}`
-        : `${year}`;
+        ? `q-${Math.floor(monthsFromStart / 3)}`
+        : `y-${Math.floor(monthsFromStart / 12)}`;
 
-    grouped.set(key, point);
+    const bucket = grouped.get(key) ?? [];
+    bucket.push(point);
+    grouped.set(key, bucket);
   }
 
-  return Array.from(grouped.values());
+  const aggregated = Array.from(grouped.values()).map((bucket) => bucket[0]);
+  const terminal = timeline.at(-1);
+
+  if (terminal && aggregated.at(-1)?.date !== terminal.date) {
+    aggregated.push(terminal);
+  }
+
+  return aggregated;
 }
 
 export function buildRegularInvestmentChartPoints(

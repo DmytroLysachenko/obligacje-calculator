@@ -72,7 +72,7 @@ describe('regular investment display helpers', () => {
     expect(points[1]?.date).toBe('2026-02');
   });
 
-  it('aggregates quarterly chart data to the last point in each quarter', () => {
+  it('aggregates quarterly chart data from the purchase cadence and preserves terminal value', () => {
     const points = buildRegularInvestmentChartPoints(
       timeline,
       'quarterly',
@@ -80,9 +80,10 @@ describe('regular investment display helpers', () => {
       'nominal',
     );
 
-    expect(points).toHaveLength(2);
-    expect(points[0]).toMatchObject({ date: '2026-03', invested: 3000, value: 3030 });
-    expect(points[1]).toMatchObject({ date: '2026-05', invested: 5000, value: 5100 });
+    expect(points).toHaveLength(3);
+    expect(points[0]).toMatchObject({ date: '2026-01', invested: 1000, value: 1000 });
+    expect(points[1]).toMatchObject({ date: '2026-04', invested: 4000, value: 4060 });
+    expect(points[2]).toMatchObject({ date: '2026-05', invested: 5000, value: 5100 });
   });
 
   it('builds yearly buckets from lots for summary tables', () => {
