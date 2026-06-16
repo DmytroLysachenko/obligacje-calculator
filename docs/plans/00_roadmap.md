@@ -121,19 +121,21 @@ Primary outputs:
 
 ### Phase 4. Production Narrowing
 
-Status: `Later`
+Status: `Current release-candidate preparation`
 
 Goals:
 
 - decide which calculators remain in production scope
 - archive or hide unstable features
 - polish only the set that passes trust and UX thresholds
+- prepare the first Google Cloud Run deployment for the trusted-core scope
 
 Primary outputs:
 
 - reduced feature set
 - stronger quality bar
 - believable release candidate path
+- Cloud Run release checklist and deployment runbook
 
 ### Phase 5. Backend Platform Migration
 

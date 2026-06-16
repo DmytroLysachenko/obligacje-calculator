@@ -64,6 +64,11 @@ The app now enforces part of it directly through UI behavior:
 
 The remaining gap is deeper calculator validation, not only labeling.
 
+The current production-readiness target is a first Google Cloud Run deployment
+for trusted core routes only. Conditional and experimental surfaces may stay
+visible only when their copy and navigation treatment remain clearly narrower
+than the trusted-core promise.
+
 ## Current Matrix
 
 ## 1. Trusted Core
