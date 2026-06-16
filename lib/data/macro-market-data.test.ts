@@ -135,6 +135,47 @@ describe('resolveGlobalDataFreshness', () => {
     });
   });
 
+  it('reports latest sync attempt separately from older macro coverage', () => {
+    const result = resolveGlobalDataFreshness(
+      [
+        series({
+          slug: 'pl-cpi',
+          lastDataPointDate: '2026-04-01',
+          lastSyncStatus: 'success',
+          updatedAt: new Date('2026-04-30T10:00:00.000Z'),
+        }),
+        series({
+          slug: 'nbp-ref-rate',
+          lastDataPointDate: '2026-03-05',
+          lastSyncStatus: 'partial',
+          updatedAt: new Date('2026-04-30T10:00:00.000Z'),
+        }),
+      ],
+      [
+        syncRun({
+          seriesSlug: 'pl-cpi',
+          finishedAt: new Date('2026-06-15T09:00:00.000Z'),
+          latestDataPointDate: '2026-04-01',
+        }),
+        syncRun({
+          seriesSlug: 'nbp-ref-rate',
+          finishedAt: new Date('2026-06-15T09:01:00.000Z'),
+          latestDataPointDate: '2026-03-05',
+        }),
+      ],
+      now,
+    );
+
+    expect(result).toMatchObject({
+      status: 'fresh',
+      usedFallback: false,
+      asOf: '2026-04',
+      coverageAsOf: '2026-04',
+      lastSyncedAt: '2026-06-15T09:01:00.000Z',
+      lastCheck: '2026-06-15T09:01:00.000Z',
+    });
+  });
+
   it('marks CPI stale when monthly coverage falls beyond the publication lag', () => {
     const result = resolveGlobalDataFreshness(
       [
