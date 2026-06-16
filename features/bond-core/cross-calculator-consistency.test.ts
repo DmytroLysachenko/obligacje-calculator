@@ -134,6 +134,44 @@ describe('cross-calculator consistency', () => {
     expectCloseResult(single, comparison!);
   });
 
+  it.each([
+    BondType.OTS,
+    BondType.ROR,
+    BondType.DOR,
+    BondType.TOS,
+    BondType.COI,
+    BondType.EDO,
+    BondType.ROS,
+    BondType.ROD,
+  ])('keeps independent comparison output equal to matching single %s scenario', async (bondType) => {
+    const single = await calculateSingle(bondType);
+    const comparisonEnvelope = await calculationService.calculate({
+      kind: ScenarioKind.BOND_COMPARISON,
+      payload: {
+        mode: 'independent',
+        sharedConfig: {
+          initialInvestment,
+          purchaseDate,
+          withdrawalDate,
+          expectedInflation: 3,
+          expectedNbpRate: 5,
+          taxStrategy: TaxStrategy.STANDARD,
+          timingMode: 'exact',
+          investmentHorizonMonths: 120,
+        },
+        scenarioA: { bondType },
+        scenarioB: { bondType: BondType.EDO },
+      },
+    });
+    const comparison = (comparisonEnvelope.result as BondComparisonScenarioItem[])
+      .find((item) => item.scenarioKey === 'scenarioA')
+      ?.result;
+
+    expect(comparison).toBeDefined();
+    expectCloseResult(single, comparison!);
+    expect(comparison!.timeline.at(-1)?.cycleEndDate).toBe(single.timeline.at(-1)?.cycleEndDate);
+  });
+
   it('keeps portfolio single-lot output equal to matching single ROR scenario', async () => {
     const single = await calculateSingle(BondType.ROR, {
       rollover: true,
