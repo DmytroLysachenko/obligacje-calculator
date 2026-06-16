@@ -42,15 +42,11 @@ export function useCalculationWorker<TResponse>() {
       setError(null);
 
       try {
-        // Attempt local calculation if historicalData is present
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const canCalculateLocally = (payload as any).historicalData && Object.keys((payload as any).historicalData).length > 0;
-        
         const data = await postCalculationInWorker<TResponse>(
           url, 
           payload, 
           controller.signal,
-          canCalculateLocally ? 'local' : 'remote',
+          'remote',
           kind
         );
         
