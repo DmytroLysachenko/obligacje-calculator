@@ -11,7 +11,7 @@ const files = {
 } as const;
 
 function read(relativePath: string) {
-  return readFileSync(join(root, relativePath), 'utf8');
+  return readFileSync(join(root, relativePath), 'utf8').replace(/\r\n/g, '\n');
 }
 
 function expectContains(source: string, fragment: string) {
@@ -66,7 +66,9 @@ describe('advanced assumptions disclosure contracts', () => {
     expectContains(source, 'nbpSetupMode={nbpSetupMode}');
     expectContains(source, 'onInflationSetupModeChange={setInflationSetupMode}');
     expectContains(source, 'onNbpSetupModeChange={setNbpSetupMode}');
-    expectContains(source, '<BondDisplaySection');
+    expectContains(source, '<BondConfigSection');
+    expectContains(source, '<BondTimingSection');
+    expectContains(source, '<BondSummaryFooter');
 
     expectNoFragments(source, [
       "import { AlertCircle, Settings2, Target } from 'lucide-react';",

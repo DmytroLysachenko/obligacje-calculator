@@ -13,7 +13,7 @@ const files = {
 } as const;
 
 function read(relativePath: string) {
-  return readFileSync(join(root, relativePath), 'utf8');
+  return readFileSync(join(root, relativePath), 'utf8').replace(/\r\n/g, '\n');
 }
 
 function expectContains(source: string, fragment: string) {
@@ -100,12 +100,12 @@ describe('entry surface contracts', () => {
   it('keeps education bond offer cards row-based and calculator-linked', () => {
     const source = read(files.educationCard);
 
-    expectContains(source, 'flex h-full flex-col border-t border-border py-6 transition-colors');
-    expectContains(source, 'flex-1 space-y-5 pt-5');
-    expectContains(source, 'mt-auto space-y-4 pt-2');
+    expectContains(source, 'flex h-full min-h-[440px] flex-col border-t border-border py-6 transition-colors');
+    expectContains(source, 'flex flex-1 flex-col space-y-5 pt-5');
+    expectContains(source, 'mt-auto space-y-5 pt-6');
     expectContains(source, 'surface-chip border-foreground text-foreground');
     expectContains(source, 'surface-chip text-foreground');
-    expectContains(source, '<dl className="grid grid-cols-1 gap-x-4 divide-y divide-border border-y border-border');
+    expectContains(source, '<dl className="grid min-h-[132px] grid-cols-1 gap-x-4 divide-y divide-border border-y border-border');
     expectContains(source, "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
     expectContains(source, '<FormInlineNotice');
     expectContains(source, 'inline-flex h-9 items-center gap-2 border-b border-foreground');

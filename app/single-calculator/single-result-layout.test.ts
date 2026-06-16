@@ -13,7 +13,7 @@ const paths = {
 } as const;
 
 function readSource(relativePath: string) {
-  return readFileSync(join(projectRoot, relativePath), 'utf8');
+  return readFileSync(join(projectRoot, relativePath), 'utf8').replace(/\r\n/g, '\n');
 }
 
 function expectContains(source: string, fragment: string) {

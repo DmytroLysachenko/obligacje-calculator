@@ -16,7 +16,7 @@ const files = {
 } as const;
 
 function read(relativePath: string) {
-  return readFileSync(join(root, relativePath), 'utf8');
+  return readFileSync(join(root, relativePath), 'utf8').replace(/\r\n/g, '\n');
 }
 
 function expectContains(source: string, fragment: string) {
@@ -43,9 +43,9 @@ describe('final layout regression contracts', () => {
     expectContains(page, 'grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 xl:grid-cols-4');
     expectContains(page, 'grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3');
     expectContains(page, 'border-t border-border py-5 transition-colors hover:border-foreground/30');
-    expectContains(card, 'flex h-full flex-col border-t border-border py-6 transition-colors hover:bg-muted/20');
-    expectContains(card, 'flex-1 space-y-5 pt-5');
-    expectContains(card, 'mt-auto space-y-4 pt-2');
+    expectContains(card, 'flex h-full min-h-[440px] flex-col border-t border-border py-6 transition-colors hover:bg-muted/20');
+    expectContains(card, 'flex flex-1 flex-col space-y-5 pt-5');
+    expectContains(card, 'mt-auto space-y-5 pt-6');
 
     expectNoFragments(`${page}\n${card}`, [
       'space-y-12 pb-12 md:space-y-14',

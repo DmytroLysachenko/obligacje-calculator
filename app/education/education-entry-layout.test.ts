@@ -12,7 +12,7 @@ const paths = {
 } as const;
 
 function read(relativePath: string) {
-  return readFileSync(join(root, relativePath), 'utf8');
+  return readFileSync(join(root, relativePath), 'utf8').replace(/\r\n/g, '\n');
 }
 
 function expectContains(source: string, fragment: string) {
@@ -81,9 +81,9 @@ describe('education entry layout contracts', () => {
     expectContains(source, 'surface-chip border-foreground text-foreground');
     expectContains(source, 'surface-chip text-foreground');
     expectContains(source, 'border-t border-border py-6');
-    expectContains(source, 'flex-1 space-y-5 pt-5');
-    expectContains(source, 'mt-auto space-y-4 pt-2');
-    expectContains(source, '<dl className="grid grid-cols-1 gap-x-4 divide-y divide-border border-y border-border');
+    expectContains(source, 'flex flex-1 flex-col space-y-5 pt-5');
+    expectContains(source, 'mt-auto space-y-5 pt-6');
+    expectContains(source, '<dl className="grid min-h-[132px] grid-cols-1 gap-x-4 divide-y divide-border border-y border-border');
     expectContains(source, "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
     expectContains(source, '<FormInlineNotice');
     expectContains(source, "t('education.calculate_this_bond')");

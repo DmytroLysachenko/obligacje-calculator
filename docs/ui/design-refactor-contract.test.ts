@@ -47,7 +47,7 @@ const singleCalculatorRefinedFiles = [
 const comparisonRefinedFiles = [
   'features/comparison-engine/components/BondComparisonContainer.tsx',
   'features/comparison-engine/components/ComparisonAssetBreakdown.tsx',
-  'features/comparison-engine/components/ComparisonChart.tsx',
+  'features/comparison-engine/components/MultiAssetComparisonChart.tsx',
   'features/comparison-engine/components/ComparisonContainer.tsx',
   'features/comparison-engine/components/ComparisonControls.tsx',
   'features/comparison-engine/components/ComparisonResultsPanel.tsx',
@@ -271,7 +271,7 @@ const slateUtilityFragments = [
 ] as const;
 
 function readSource(relativePath: string) {
-  return readFileSync(join(repoRoot, relativePath), 'utf8');
+  return readFileSync(join(repoRoot, relativePath), 'utf8').replace(/\r\n/g, '\n');
 }
 
 function readMany(relativePaths: readonly string[]) {

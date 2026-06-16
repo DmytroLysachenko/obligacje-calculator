@@ -12,14 +12,14 @@ const paths = {
   regularForm: 'features/regular-investment/components/RegularInvestmentInputsForm.tsx',
   singleConfig: 'features/single-calculator/components/sections/BondConfigSection.tsx',
   singleTiming: 'features/single-calculator/components/sections/BondTimingSection.tsx',
+  singleSummary: 'features/single-calculator/components/sections/BondSummaryFooter.tsx',
   regularBond: 'features/regular-investment/components/inputs/BondSelectionSection.tsx',
   regularTiming: 'features/regular-investment/components/inputs/TimingSection.tsx',
-  singleDisplay: 'features/single-calculator/components/sections/BondDisplaySection.tsx',
   regularAdvanced: 'features/regular-investment/components/inputs/AdvancedSettingsSection.tsx',
 } as const;
 
 function readSource(relativePath: string) {
-  return readFileSync(join(projectRoot, relativePath), 'utf8');
+  return readFileSync(join(projectRoot, relativePath), 'utf8').replace(/\r\n/g, '\n');
 }
 
 function expectContains(source: string, fragment: string) {
@@ -81,7 +81,9 @@ describe('calculator input layout contracts', () => {
     expectContains(source, 'section="inflation"');
     expectContains(source, 'section="nbp"');
     expectContains(source, 'showIntro={false}');
-    expectContains(source, '<BondDisplaySection');
+    expectContains(source, '<BondConfigSection');
+    expectContains(source, '<BondTimingSection');
+    expectContains(source, '<BondSummaryFooter');
     expectNotContains(source, 'showCustomTax={showCustomTax}');
     expectNotContains(source, 'setShowCustomTax={setShowCustomTax}');
     expectContains(source, "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
@@ -114,7 +116,7 @@ describe('calculator input layout contracts', () => {
     const sources = [
       readSource(paths.singleConfig),
       readSource(paths.singleTiming),
-      readSource(paths.singleDisplay),
+      readSource(paths.singleSummary),
       readSource(paths.regularBond),
       readSource(paths.regularTiming),
       readSource(paths.regularAdvanced),

@@ -24,7 +24,7 @@ const genericShellFragments = [
 ] as const;
 
 function read(relativePath: string) {
-  return readFileSync(join(root, relativePath), 'utf8');
+  return readFileSync(join(root, relativePath), 'utf8').replace(/\r\n/g, '\n');
 }
 
 function expectContains(source: string, fragment: string) {
@@ -48,8 +48,9 @@ describe('calculator shell migration contract', () => {
     expectContains(source, 'w-full space-y-6 border-y border-border bg-background p-5 md:p-6');
     expectContains(source, 'w-full space-y-8 border-y border-border bg-background p-5 md:p-6');
     expectContains(source, '<TooltipProvider>');
-    expectContains(source, '<ScenarioFieldset');
     expectContains(source, '<AdvancedAssumptionsDisclosure');
+    expectContains(source, '<BondConfigSection');
+    expectContains(source, '<BondTimingSection');
     expectContains(source, '<FormInlineNotice');
     expectContains(source, '<BondSummaryFooter');
     expectContains(source, 'space-y-2 border-b border-border pb-5');
@@ -77,8 +78,8 @@ describe('calculator shell migration contract', () => {
     const source = read(migratedCalculatorShells.resultHero);
 
     expectContains(source, 'overflow-hidden border-y border-border bg-background');
-    expectContains(source, 'flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between');
-    expectContains(source, 'max-w-4xl space-y-4 p-5 md:p-6');
+    expectContains(source, 'flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between');
+    expectContains(source, 'min-w-0 max-w-4xl space-y-4 p-5 md:p-6');
     expectContains(source, 'financial-number ui-primary-metric');
     expectContains(source, 'ui-body max-w-4xl text-muted-foreground');
     expectContains(source, '<ResultActionGrid actions={actions} />');
@@ -116,7 +117,7 @@ describe('calculator shell migration contract', () => {
       expectContains(source, 'p-5 md:p-6');
       expectContains(source, 'space-y-8');
       expectContains(source, 'border-b border-border');
-      expectContains(source, 'ScenarioFieldset');
+      expectContains(source, source === singleInputs ? 'AdvancedAssumptionsDisclosure' : 'ScenarioFieldset');
       expectNoFragments(source, [
         'bg-card p-5',
         'bg-card p-6',

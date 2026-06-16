@@ -10,7 +10,7 @@ const files = {
 } as const;
 
 function read(relativePath: string) {
-  return readFileSync(join(root, relativePath), 'utf8');
+  return readFileSync(join(root, relativePath), 'utf8').replace(/\r\n/g, '\n');
 }
 
 function expectContains(source: string, fragment: string) {
@@ -60,10 +60,11 @@ describe('comparison results surface contracts', () => {
     const source = read(files.panel);
 
     expectContains(source, '<ResultActionGrid');
-    expectContains(source, 'className="border-y border-border bg-transparent px-0 py-3 lg:w-auto lg:border-x-0"');
+    expectContains(source, 'className="border-0 bg-transparent px-0 py-3 lg:w-auto"');
 
     expectNoFragments(source, [
       'className="border border-border bg-card p-3 lg:w-auto lg:border"',
+      'border-y border-border bg-transparent px-0 py-3 lg:w-auto lg:border-x-0',
       'bg-card p-3',
       'rounded-lg border border-border bg-card',
     ]);

@@ -13,7 +13,7 @@ const files = {
 } as const;
 
 function read(relativePath: string) {
-  return readFileSync(join(root, relativePath), 'utf8');
+  return readFileSync(join(root, relativePath), 'utf8').replace(/\r\n/g, '\n');
 }
 
 function expectContains(source: string, fragment: string) {
@@ -34,19 +34,19 @@ describe('chart and disclosure regression contracts', () => {
   it('keeps the single calculator chart focused on PLN values', () => {
     const source = read(files.singleChart);
 
-    expectContains(source, "import { computeNumericDomain, sampleSeriesPoints } from \"@/shared/lib/chart-series\";");
-    expectContains(source, 'const leftDomain = React.useMemo(() => computeNumericDomain');
-    expectContains(source, 'dataKey={showRealValue ? \'real\' : \'nominal\'}');
-    expectContains(source, 'dataKey={showRealValue ? \'nominal\' : \'real\'}');
-    expectContains(source, 'const inflation = data.inflation as number | undefined;');
-    expectContains(source, 'const nbp = data.nbp as number | undefined;');
-    expectContains(source, '{t("bonds.ref_inflation")}:');
-    expectContains(source, '{t("bonds.nbp_rate_short")}:');
-    expectContains(source, '<Tooltip content={<CustomTooltip formatCurrency={formatCurrency} t={t}/>}/>');
+    expectContains(source, 'import { computeNumericDomain, computeRateDomain, sampleSeriesPoints } from "@/shared/lib/chart-series";');
+    expectContains(source, 'const leftDomain = React.useMemo(');
+    expectContains(source, 'const rightDomain = React.useMemo(');
+    expectContains(source, 'computeRateDomain(');
+    expectContains(source, 'primary: showRealValue ? point.real : point.nominal');
+    expectContains(source, 'secondary: showRealValue ? point.nominal : point.real');
+    expectContains(source, 'inflation: point.inflation');
+    expectContains(source, 'nbp: point.nbp');
+    expectContains(source, '<BondValueChart');
+    expectContains(source, 'leftDomain={leftDomain}');
+    expectContains(source, 'rightDomain={rightDomain}');
 
     expectNoFragments(source, [
-      'computeRateDomain',
-      'const rightDomain',
       '<YAxis yAxisId="right"',
       'yAxisId="right" type="stepAfter" dataKey="inflation"',
       'yAxisId="right" type="stepAfter" dataKey="nbp"',
@@ -58,10 +58,10 @@ describe('chart and disclosure regression contracts', () => {
   it('keeps the chart legend aligned with visible series only', () => {
     const source = read(files.singleChart);
 
-    expectContains(source, 'const legendItems = React.useMemo(() => [');
-    expectContains(source, 'label: t("common.nominal_value")');
-    expectContains(source, 'label: t("common.real_value")');
-    expectContains(source, '<ChartLegendStrip items={legendItems}/>');
+    expectContains(source, 'const series = React.useMemo(');
+    expectContains(source, 't("common.nominal_value")');
+    expectContains(source, 't("common.real_value")');
+    expectContains(source, 'series={series}');
 
     expectNoFragments(source, [
       'label: t("bonds.ref_inflation")',
@@ -94,10 +94,10 @@ describe('chart and disclosure regression contracts', () => {
     const overlayContract = read(files.overlayContract);
     const disclosureContract = read(files.disclosureContract);
 
-    expectContains(chartLegend, 'computeRateDomain');
-    expectContains(chartLegend, 'dataKey="inflation" name={t("bonds.ref_inflation")}');
-    expectContains(overlayContract, 'keeps macro context rates out of the main PLN value chart overlay');
-    expectContains(overlayContract, 'expectNotContains(source, \'yAxisId="right"\')');
+    expectContains(chartLegend, 'const showContextAxis = showInflationOverlay || showNbpOverlay;');
+    expectContains(chartLegend, 'dataKey="inflation"');
+    expectContains(overlayContract, 'keeps macro context rates optional through chart toolbar controls');
+    expectContains(overlayContract, 'expectContains(shared, \'yAxisId="right"\')');
     expectContains(disclosureContract, 'border-0 border-b border-border px-0 py-4');
     expectContains(disclosureContract, 'className="border-b border-border px-0 py-4');
   });

@@ -14,7 +14,7 @@ const files = {
 } as const;
 
 function read(relativePath: string) {
-  return readFileSync(join(root, relativePath), 'utf8');
+  return readFileSync(join(root, relativePath), 'utf8').replace(/\r\n/g, '\n');
 }
 
 function expectContains(source: string, fragment: string) {
@@ -42,7 +42,7 @@ describe('single calculator chart display-only contract', () => {
     const source = read(files.hook);
 
     expectContains(source, 'setInputs(withoutDisplayOnlyInputs(restoredState.inputs) ?? fallbackInputs);');
-    expectContains(source, 'setLastCommittedInputs(withoutDisplayOnlyInputs(restoredState.lastCommittedInputs ?? null));');
+    expectContains(source, 'setLastCommittedInputs(restoredEnvelope ? withoutDisplayOnlyInputs(restoredState.lastCommittedInputs ?? null) : null);');
     expectContains(source, 'savePersistedCalculatorState(STORAGE_KEY');
   });
 
