@@ -49,7 +49,10 @@ Before promotion:
 pnpm check:release
 ```
 
-Expanded, this runs typecheck, lint, the full Vitest suite, and production build.
+Expanded, this runs typecheck, lint, the trusted-core release Vitest suite, and
+production build. The broader `pnpm test:ci` inventory still contains legacy UI
+contract tests that should be reconciled before treating the entire repository as
+fully production-certified.
 
 Deployment checks:
 

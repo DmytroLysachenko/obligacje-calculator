@@ -93,7 +93,9 @@ Secret Manager. Do not commit `.env` files.
 ## 5. Deployment Guardrails
 
 - Run migrations against the target database before warming the app.
-- Run `pnpm check:release` before promoting a build.
+- Run `pnpm check:release` before promoting a build. This is the trusted-core
+  Cloud Run gate; run `pnpm test:ci` separately when reconciling the broader
+  legacy UI contract inventory.
 - Verify `/api/health` returns `ok: true`.
 - Verify `/api/readiness` returns `ok: true` after production env and database
   setup are complete.
