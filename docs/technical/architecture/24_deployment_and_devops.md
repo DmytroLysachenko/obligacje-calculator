@@ -68,10 +68,7 @@ gcloud artifacts repositories create obligacje-calculator \
 Run release checks before building:
 
 ```bash
-pnpm exec tsc --noEmit
-pnpm lint
-pnpm test:ci
-pnpm build
+pnpm check:release
 ```
 
 Apply migrations and seed/sync the target database before promoting traffic:
@@ -96,8 +93,7 @@ Secret Manager. Do not commit `.env` files.
 ## 5. Deployment Guardrails
 
 - Run migrations against the target database before warming the app.
-- Run `pnpm exec tsc --noEmit`, `pnpm lint`, `pnpm test:ci`, and `pnpm build`
-  before promoting a build.
+- Run `pnpm check:release` before promoting a build.
 - Verify `/api/health` returns `ok: true`.
 - Verify `/api/readiness` returns `ok: true` after production env and database
   setup are complete.

@@ -46,11 +46,10 @@ Before release candidate signoff:
 Before promotion:
 
 ```bash
-pnpm exec tsc --noEmit
-pnpm lint
-pnpm test:ci
-pnpm build
+pnpm check:release
 ```
+
+Expanded, this runs typecheck, lint, the full Vitest suite, and production build.
 
 Deployment checks:
 
