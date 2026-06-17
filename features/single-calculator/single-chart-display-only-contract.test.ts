@@ -29,9 +29,8 @@ describe('single calculator chart display-only contract', () => {
   it('keeps chart granularity out of single calculator calculation state defaults', () => {
     const source = read(files.hook);
 
-    expectContains(source, 'function withoutDisplayOnlyInputs(inputs: BondInputs | null): BondInputs | null');
-    expectContains(source, 'const calculationInputs = { ...inputs };');
-    expectContains(source, 'delete calculationInputs.chartStep;');
+    expectContains(source, "stripDisplayOnlyInputs,");
+    expectNotContains(source, 'function withoutDisplayOnlyInputs');
     expectNotContains(source, 'function getDefaultChartStep');
     expectNotContains(source, 'nextChartStep');
     expectNotContains(source, 'chartStep: getDefaultChartStep');
@@ -41,8 +40,8 @@ describe('single calculator chart display-only contract', () => {
   it('normalizes restored persistence before it re-enters single calculator state', () => {
     const source = read(files.hook);
 
-    expectContains(source, 'setInputs(withoutDisplayOnlyInputs(restoredState.inputs) ?? fallbackInputs);');
-    expectContains(source, 'setLastCommittedInputs(restoredEnvelope ? withoutDisplayOnlyInputs(restoredState.lastCommittedInputs ?? null) : null);');
+    expectContains(source, 'setInputs(stripDisplayOnlyInputs(restoredState.inputs) ?? fallbackInputs);');
+    expectContains(source, 'setLastCommittedInputs(restoredEnvelope ? stripDisplayOnlyInputs(restoredState.lastCommittedInputs ?? null) : null);');
     expectContains(source, 'savePersistedCalculatorState(STORAGE_KEY');
   });
 
@@ -100,7 +99,7 @@ describe('single calculator chart display-only contract', () => {
 
     expectContains(source, 'const finalInputs = { ...currentInputs };');
     expectContains(source, 'setLastCommittedInputs(finalInputs);');
-    expectContains(source, 'withoutDisplayOnlyInputs(restoredState.lastCommittedInputs ?? null)');
+    expectContains(source, 'stripDisplayOnlyInputs(restoredState.lastCommittedInputs ?? null)');
     expectNotContains(source, 'finalInputs.chartStep');
   });
 });

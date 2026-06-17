@@ -10,6 +10,11 @@ import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/sh
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
+import {
+  preserveStableState,
+  restoreVersionedEnvelope,
+  stripDisplayOnlyInputs,
+} from '@/shared/lib/calculator-state';
 
 const DEFAULT_BOND = BondType.EDO;
 const STORAGE_KEY = 'obligacje.single-calculator.v1';
@@ -55,17 +60,6 @@ interface BondSeries {
   firstYearRate: string | number;
   baseMargin: string | number;
   emissionMonth: string;
-}
-
-function withoutDisplayOnlyInputs(inputs: BondInputs | null): BondInputs | null {
-  if (!inputs) {
-    return null;
-  }
-
-  const calculationInputs = { ...inputs };
-  delete calculationInputs.chartStep;
-
-  return calculationInputs;
 }
 
 function applyDefinitionToInputs(
@@ -125,14 +119,14 @@ export function useBondCalculator(initialInputs?: BondInputs) {
         expectedNbpRate: defaults.expectedNbpRate,
       };
 
-      return JSON.stringify(previous) === JSON.stringify(next) ? previous : next;
+      return preserveStableState(previous, next);
     });
   });
 
   const reconcilePersistedMacroDefaults = useEffectEvent((defaults: { expectedInflation: number; expectedNbpRate: number }) => {
     setInputs((previous) => {
       const next = applyMacroDefaultsToBaseline(previous, defaults);
-      return JSON.stringify(previous) === JSON.stringify(next) ? previous : next;
+      return preserveStableState(previous, next);
     });
   });
 
@@ -145,7 +139,7 @@ export function useBondCalculator(initialInputs?: BondInputs) {
     const timer = window.setTimeout(() => {
       setInputs((previous) => {
         const next = applyDefinitionToInputs(previous, definition, selectedSeriesId);
-        return JSON.stringify(previous) === JSON.stringify(next) ? previous : next;
+        return preserveStableState(previous, next);
       });
     }, 0);
 
@@ -163,15 +157,12 @@ export function useBondCalculator(initialInputs?: BondInputs) {
       hasRestoredState.current = true;
 
       if (restoredState) {
-        const restoredEnvelope =
-          restoredState.envelope?.calculationVersion === MODEL_VERSION
-            ? restoredState.envelope
-            : null;
+        const restoredEnvelope = restoreVersionedEnvelope(restoredState.envelope, MODEL_VERSION);
         restoredFromPersistence.current = true;
-        setInputs(withoutDisplayOnlyInputs(restoredState.inputs) ?? fallbackInputs);
+        setInputs(stripDisplayOnlyInputs(restoredState.inputs) ?? fallbackInputs);
         setEnvelope(restoredEnvelope);
         setSelectedSeriesId(restoredState.selectedSeriesId ?? null);
-        setLastCommittedInputs(restoredEnvelope ? withoutDisplayOnlyInputs(restoredState.lastCommittedInputs ?? null) : null);
+        setLastCommittedInputs(restoredEnvelope ? stripDisplayOnlyInputs(restoredState.lastCommittedInputs ?? null) : null);
         setIsDirty(restoredEnvelope ? (restoredState.isDirty ?? true) : true);
       }
 

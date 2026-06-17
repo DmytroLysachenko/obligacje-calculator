@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useEffectEvent, useRef } from 'react';
+import { useState, useCallback, useEffect, useEffectEvent, useMemo, useRef } from 'react';
 import { RegularInvestmentInputs, BondType, InvestmentFrequency, TaxStrategy, InterestPayout } from '../../bond-core/types';
 import { RegularInvestmentCalculationEnvelope, ScenarioKind } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
@@ -9,6 +9,10 @@ import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/sh
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
+import {
+  preserveStableState,
+  stripDisplayOnlyInputs,
+} from '@/shared/lib/calculator-state';
 
 const DEFAULT_BOND = BondType.EDO;
 const STORAGE_KEY = 'obligacje.regular-calculator.v1';
@@ -46,13 +50,6 @@ interface PersistedRegularCalculatorState {
   isDirty: boolean;
 }
 
-function withoutDisplayOnlyInputs(inputs: RegularInvestmentInputs): RegularInvestmentInputs {
-  const calculationInputs = { ...inputs };
-  delete calculationInputs.chartStep;
-
-  return calculationInputs;
-}
-
 function applyDefinitionToInputs(
   previous: RegularInvestmentInputs,
   definition: typeof BOND_DEFINITIONS[BondType],
@@ -74,7 +71,7 @@ function applyDefinitionToInputs(
 export function useRegularInvestmentCalculator() {
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
   const { defaults: macroDefaults } = useMacroAssumptionDefaults();
-  const fallbackInputs = buildFallbackInputs();
+  const fallbackInputs = useMemo(() => buildFallbackInputs(), []);
   const [inputs, setInputs] = useState<RegularInvestmentInputs>(
     fallbackInputs,
   );
@@ -96,14 +93,14 @@ export function useRegularInvestmentCalculator() {
         expectedNbpRate: defaults.expectedNbpRate,
       };
 
-      return JSON.stringify(previous) === JSON.stringify(next) ? previous : next;
+      return preserveStableState(previous, next);
     });
   });
 
   const reconcilePersistedMacroDefaults = useEffectEvent((defaults: { expectedInflation: number; expectedNbpRate: number }) => {
     setInputs((previous) => {
       const next = applyMacroDefaultsToBaseline(previous, defaults);
-      return JSON.stringify(previous) === JSON.stringify(next) ? previous : next;
+      return preserveStableState(previous, next);
     });
   });
 
@@ -116,7 +113,7 @@ export function useRegularInvestmentCalculator() {
     const timer = window.setTimeout(() => {
       setInputs((previous) => {
         const next = applyDefinitionToInputs(previous, definition);
-        return JSON.stringify(previous) === JSON.stringify(next) ? previous : next;
+        return preserveStableState(previous, next);
       });
     }, 0);
 
@@ -135,7 +132,7 @@ export function useRegularInvestmentCalculator() {
 
       if (restoredState) {
         restoredFromPersistence.current = true;
-        setInputs(withoutDisplayOnlyInputs(restoredState.inputs));
+        setInputs(stripDisplayOnlyInputs(restoredState.inputs) ?? fallbackInputs);
         setEnvelope(restoredState.envelope ?? null);
         setIsDirty(restoredState.isDirty ?? true);
       }
@@ -144,7 +141,7 @@ export function useRegularInvestmentCalculator() {
     }, 0);
 
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [fallbackInputs]);
 
   useEffect(() => {
     if (!macroDefaults || !isPersistenceReady || hasTouchedMacroAssumptions.current) {
