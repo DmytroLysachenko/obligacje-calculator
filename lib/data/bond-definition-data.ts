@@ -147,6 +147,16 @@ export const getBondDefinitionsMap = cache(async (): Promise<Record<BondType, Bo
   }, {} as Record<BondType, BondDefinition>);
 });
 
+export interface BondDefinitionRepository {
+  listDefinitions(): Promise<BondDefinition[]>;
+  getDefinitionsMap(): Promise<Record<BondType, BondDefinition>>;
+}
+
+export const bondDefinitionRepository: BondDefinitionRepository = {
+  listDefinitions: getBondDefinitions,
+  getDefinitionsMap: getBondDefinitionsMap,
+};
+
 export const getTaxRulesForYear = cache(async (year: number) => {
   const cacheKey = `tax-rules-${year}`;
   const cached = getCached<typeof taxRules.$inferSelect>(cacheKey);

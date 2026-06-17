@@ -1,17 +1,13 @@
-import { NextResponse } from 'next/server';
-import { getBondDefinitionsMap } from '@/lib/data/market-data';
-import { createSuccessResponse, createErrorResponse } from '@/shared/types/api';
+import { bondDefinitionRepository } from '@/lib/data/market-data';
+import { errorJson, okJson } from '@/lib/server/http/responses';
 
 export async function GET() {
   try {
-    const definitions = await getBondDefinitionsMap();
-    return NextResponse.json(createSuccessResponse(definitions));
+    const definitions = await bondDefinitionRepository.getDefinitionsMap();
+    return okJson(definitions);
   } catch (error) {
     console.error('Failed to fetch bond definitions:', error);
-    return NextResponse.json(
-      createErrorResponse('Failed to fetch definitions', 'INTERNAL_ERROR'), 
-      { status: 500 }
-    );
+    return errorJson('Failed to fetch definitions', 'INTERNAL_ERROR', undefined, {status: 500});
   }
 }
 

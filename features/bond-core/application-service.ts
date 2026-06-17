@@ -6,9 +6,9 @@ import {
 } from './types/scenarios';
 import { BondDefinition } from './constants/bond-definitions';
 import { BondType } from './types';
-import { 
-  getGlobalDataFreshness, 
-  getBondDefinitionsMap, 
+import {
+  getGlobalDataFreshness,
+  getBondDefinitionsMap,
 } from '@/lib/data/market-data';
 import { calculationCache } from './utils/calculation-cache';
 import { sanitizeInputs } from './utils/engine-guards';

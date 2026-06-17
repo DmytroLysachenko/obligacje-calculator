@@ -7,6 +7,8 @@ export {
 
 export {
   mergeBondDefinitionsWithSeries,
+  bondDefinitionRepository,
+  type BondDefinitionRepository,
   getBondDefinitions,
   getBondDefinitionsMap,
   getTaxRulesForYear,
