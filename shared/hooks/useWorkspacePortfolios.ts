@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { UserPortfolio } from '@/db/schema';
-import { unwrapApiData } from '@/shared/lib/api-response';
+import { portfolioClient } from '@/shared/lib/portfolio-client';
 import {
   persistSelectedPortfolioId,
   removePortfolioFromNotebookState,
@@ -47,14 +47,7 @@ export function useWorkspacePortfolios({ enabled = true }: UseWorkspacePortfolio
     setRequestError(null);
 
     try {
-      const response = await fetch('/api/portfolio');
-      const payload = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        throw payload ?? new Error('Workspace portfolios request failed.');
-      }
-
-      const nextPortfolios = unwrapApiData<UserPortfolio[]>(payload) ?? [];
+      const nextPortfolios = await portfolioClient.listPortfolios();
       replacePortfolios(Array.isArray(nextPortfolios) ? nextPortfolios : []);
       return nextPortfolios;
     } catch (error) {

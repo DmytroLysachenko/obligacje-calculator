@@ -1,14 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { unwrapApiData } from '@/shared/lib/api-response';
-
-type PortfolioAccessResponse = {
-  ownerId: string;
-  isGuest: boolean;
-  authMode: 'authenticated' | 'guest' | 'auth_unavailable_guest_fallback';
-  canManageWorkspace: boolean;
-};
+import { portfolioClient, PortfolioAccessResponse } from '@/shared/lib/portfolio-client';
 
 export function usePortfolioAccess() {
   const [access, setAccess] = useState<PortfolioAccessResponse | null>(null);
@@ -19,14 +12,12 @@ export function usePortfolioAccess() {
 
     const load = async () => {
       try {
-        const response = await fetch('/api/portfolio/access');
-        const payload = await response.json().catch(() => null);
-
-        if (!response.ok || !isMounted) {
+        const nextAccess = await portfolioClient.getAccess();
+        if (!isMounted) {
           return;
         }
 
-        setAccess(unwrapApiData<PortfolioAccessResponse>(payload) ?? null);
+        setAccess(nextAccess);
       } finally {
         if (isMounted) {
           setIsLoading(false);

@@ -15,9 +15,9 @@ import { RecalculateButton } from '@/shared/components/feedback/RecalculateButto
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
-import { unwrapApiData } from '@/shared/lib/api-response';
 import { generateSingleBondReportPdf } from '@/shared/lib/pdf-utils';
 import { buildSharedSingleScenarioPayload } from '@/shared/lib/single-scenario-share';
+import { portfolioClient } from '@/shared/lib/portfolio-client';
 import {
   getStoredCurrentPortfolioId,
   setStoredCurrentPortfolioId,
@@ -90,25 +90,17 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     }
 
     try {
-      const portfolioResponse = await fetch('/api/portfolio');
-      const portfolioData = await portfolioResponse.json();
-      const portfolioList = unwrapApiData<Array<{ id: string; name: string }>>(portfolioData) ?? [];
+      const portfolioList = await portfolioClient.listPortfolios();
       const storedPortfolioId = getStoredCurrentPortfolioId();
       const saveTarget = getWorkspaceSaveTarget(storedPortfolioId, portfolioList);
       let portfolioId: string | undefined = saveTarget.portfolioId ?? undefined;
       let portfolioName: string | null = saveTarget.portfolioName;
 
       if (saveTarget.needsPortfolioCreation) {
-        const createResponse = await fetch('/api/portfolio', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: t('notebook.my_first_portfolio'),
-            description: '',
-          }),
+        const createdPortfolio = await portfolioClient.createPortfolio({
+          name: t('notebook.my_first_portfolio'),
+          description: '',
         });
-        const createData = await createResponse.json();
-        const createdPortfolio = unwrapApiData<{ id: string; name: string }>(createData);
         portfolioId = createdPortfolio?.id;
         portfolioName = createdPortfolio?.name ?? t('notebook.my_first_portfolio');
       }
@@ -118,17 +110,13 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
       }
       setStoredCurrentPortfolioId(portfolioId);
 
-      await fetch('/api/portfolio/lots', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          portfolioId,
-          bondType: inputs.bondType,
-          selectedSeriesId: selectedSeriesId && selectedSeriesId !== 'current' ? selectedSeriesId : null,
-          purchaseDate: inputs.purchaseDate,
-          amount: Math.floor(inputs.initialInvestment / 100),
-          isRebought: inputs.isRebought,
-        }),
+      await portfolioClient.createLot({
+        portfolioId,
+        bondType: inputs.bondType,
+        selectedSeriesId: selectedSeriesId && selectedSeriesId !== 'current' ? selectedSeriesId : null,
+        purchaseDate: inputs.purchaseDate,
+        amount: Math.floor(inputs.initialInvestment / 100),
+        isRebought: inputs.isRebought,
       });
       setStatusTone('success');
       setStatusMessage(
