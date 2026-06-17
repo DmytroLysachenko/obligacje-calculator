@@ -1,11 +1,46 @@
 import {describe, expect, it} from 'vitest';
 import {
+  createdJson,
   createDomainErrorResponse,
   createUnauthorizedResponse,
   createValidationErrorResponse,
+  errorJson,
+  okJson,
 } from '@/lib/server/http/responses';
 
 describe('http response helpers', () => {
+  it('wraps success payloads consistently', async () => {
+    const response = okJson({value: 1});
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toMatchObject({
+      data: {value: 1},
+      meta: {version: '1.2.0'},
+    });
+  });
+
+  it('supports created success responses', async () => {
+    const response = createdJson({id: 'new'});
+
+    expect(response.status).toBe(201);
+    await expect(response.json()).resolves.toMatchObject({
+      data: {id: 'new'},
+    });
+  });
+
+  it('wraps generic API errors consistently', async () => {
+    const response = errorJson('Nope', 'NOPE', {field: 'x'}, {status: 409});
+
+    expect(response.status).toBe(409);
+    await expect(response.json()).resolves.toMatchObject({
+      error: {
+        message: 'Nope',
+        code: 'NOPE',
+        details: {field: 'x'},
+      },
+    });
+  });
+
   it('creates unauthorized responses', async () => {
     const response = createUnauthorizedResponse();
 

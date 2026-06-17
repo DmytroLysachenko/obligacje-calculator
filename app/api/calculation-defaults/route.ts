@@ -1,16 +1,12 @@
-import { NextResponse } from 'next/server';
 import { getMacroAssumptionDefaults } from '@/lib/data/market-data';
-import { createErrorResponse, createSuccessResponse } from '@/shared/types/api';
+import { errorJson, okJson } from '@/lib/server/http/responses';
 
 export async function GET() {
   try {
     const defaults = await getMacroAssumptionDefaults();
-    return NextResponse.json(createSuccessResponse(defaults));
+    return okJson(defaults);
   } catch (error) {
     console.error('Failed to fetch calculation defaults:', error);
-    return NextResponse.json(
-      createErrorResponse('Failed to fetch calculation defaults', 'INTERNAL_ERROR'),
-      { status: 500 },
-    );
+    return errorJson('Failed to fetch calculation defaults', 'INTERNAL_ERROR', undefined, {status: 500});
   }
 }

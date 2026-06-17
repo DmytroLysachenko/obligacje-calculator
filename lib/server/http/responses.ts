@@ -1,5 +1,28 @@
 import {NextResponse} from 'next/server';
-import {createErrorResponse} from '@/shared/types/api';
+import {createErrorResponse, createSuccessResponse} from '@/shared/types/api';
+
+export function okJson<T>(data: T, init?: ResponseInit) {
+  return NextResponse.json(createSuccessResponse(data), init);
+}
+
+export function createdJson<T>(data: T, init: ResponseInit = {}) {
+  return okJson(data, {
+    ...init,
+    status: init.status ?? 201,
+  });
+}
+
+export function errorJson(
+  message: string,
+  code?: string,
+  details?: unknown,
+  init: ResponseInit = {},
+) {
+  return NextResponse.json(
+    createErrorResponse(message, code, details),
+    init,
+  );
+}
 
 export function createUnauthorizedResponse() {
   return NextResponse.json({error: 'Unauthorized'}, {status: 401});
@@ -10,7 +33,7 @@ export function createValidationErrorResponse(
   code = 'VALIDATION_ERROR',
   details?: unknown,
 ) {
-  return NextResponse.json(createErrorResponse(message, code, details), {status: 400});
+  return errorJson(message, code, details, {status: 400});
 }
 
 export function createDomainErrorResponse(error: {
@@ -19,8 +42,5 @@ export function createDomainErrorResponse(error: {
   status: number;
   details?: unknown;
 }) {
-  return NextResponse.json(
-    createErrorResponse(error.message, error.code, error.details),
-    {status: error.status},
-  );
+  return errorJson(error.message, error.code, error.details, {status: error.status});
 }

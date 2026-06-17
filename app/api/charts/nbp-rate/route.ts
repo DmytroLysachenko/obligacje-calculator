@@ -1,13 +1,12 @@
-import { NextResponse } from 'next/server';
 import { getFallbackNbpSeries, getNbpChartSeries } from '@/lib/data/chart-series';
-import { createSuccessResponse } from '@/shared/types/api';
+import { okJson } from '@/lib/server/http/responses';
 
 export async function GET() {
   try {
     const response = await getNbpChartSeries();
-    return NextResponse.json(createSuccessResponse(response));
+    return okJson(response);
   } catch (error) {
     console.error('Failed to fetch NBP data:', error);
-    return NextResponse.json(createSuccessResponse(getFallbackNbpSeries()));
+    return okJson(getFallbackNbpSeries());
   }
 }
