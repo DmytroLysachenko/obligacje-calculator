@@ -5,7 +5,7 @@ import {PortfolioDetails} from '@/features/notebook/components/PortfolioDetails'
 import {
   buildSharedPortfolioPageMetadata,
   getPublicSharedPortfolioPageData,
-} from '@/lib/server/portfolio/service';
+} from '@/lib/server/portfolio/queries';
 
 interface Props {
   params: Promise<{shareId: string}>;

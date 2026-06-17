@@ -8,12 +8,9 @@ import {
   getPortfolioRouteContext,
   withPortfolioOwnerResponse,
 } from '@/lib/server/portfolio/http';
-import {
-  createOwnerPortfolio,
-  deleteOwnerPortfolio,
-  listOwnerPortfolios,
-  PortfolioServiceError,
-} from '@/lib/server/portfolio/service';
+import { PortfolioServiceError } from '@/lib/server/portfolio/service';
+import { listOwnerPortfolios } from '@/lib/server/portfolio/queries';
+import { createOwnerPortfolio, deleteOwnerPortfolio } from '@/lib/server/portfolio/commands';
 
 export const GET = apiHandler(async () => {
   const { owner } = await getPortfolioRouteContext();

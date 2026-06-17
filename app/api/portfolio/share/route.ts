@@ -4,8 +4,8 @@ import { createSuccessResponse } from '@/shared/types/api';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import {
   PortfolioServiceError,
-  toggleOwnerPortfolioSharing,
 } from '@/lib/server/portfolio/service';
+import { toggleOwnerPortfolioSharing } from '@/lib/server/portfolio/commands';
 import { createDomainErrorResponse } from '@/lib/server/http/responses';
 import { getAuthenticatedPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
 import { readJsonBody } from '@/lib/server/http/read-json-body';

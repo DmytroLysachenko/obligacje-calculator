@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { createErrorResponse, createSuccessResponse } from '@/shared/types/api';
-import { importOwnerPortfolio } from '@/lib/server/portfolio/service';
+import { importOwnerPortfolio } from '@/lib/server/portfolio/commands';
 import { getAuthenticatedPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
 
 const ImportedLotSchema = z.object({

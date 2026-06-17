@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { InvestmentLotSchema } from '@/features/bond-core/types/portfolio-schemas';
 import {
-  deleteOwnerLot,
   PortfolioServiceError,
-  updateOwnerLot,
 } from '@/lib/server/portfolio/service';
+import { deleteOwnerLot, updateOwnerLot } from '@/lib/server/portfolio/commands';
 import { createErrorResponse, createSuccessResponse } from '@/shared/types/api';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { createDomainErrorResponse } from '@/lib/server/http/responses';

@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createSuccessResponse, createErrorResponse } from '@/shared/types/api';
-import {
-  createPortfolioLotWithBuyTransaction,
-  PortfolioServiceError,
-} from '@/lib/server/portfolio/service';
+import { PortfolioServiceError } from '@/lib/server/portfolio/service';
+import { createPortfolioLotWithBuyTransaction } from '@/lib/server/portfolio/commands';
 import { createDomainErrorResponse } from '@/lib/server/http/responses';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { getAuthenticatedPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
