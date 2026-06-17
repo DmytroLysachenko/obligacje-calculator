@@ -1,42 +1,70 @@
 # 19. System Architecture
 
-The platform is designed as a modern, decoupled web application.
+The application is a layered Next.js product. UI code asks for work through shared gateways, API routes act as thin controllers, and financial truth stays in business/domain modules.
 
-## 1. High-Level Components
+## 1. Runtime Layers
 
-### A. Frontend (Next.js)
-- **UI Layer:** React components using Tailwind CSS and Radix UI.
-- **Visualization:** Recharts or Highcharts for interactive data display.
-- **State:** Zustand for local calculator state; React Query for data fetching.
+### UI and Page Layer
 
-### B. Core Calculation Library (`finance-core`)
-- A pure TypeScript package.
-- Contains the Bond Engine, Market Engine, and Tax Logic.
-- 100% test coverage.
+- `app/` contains route segments, layouts, metadata, and thin page orchestration.
+- `features/**/components` renders workflows and prepared display models.
+- `features/**/hooks` owns UI state transitions, persistence restoration, and user-triggered actions.
 
-### C. Data Ingestion Service
-- **Scheduler:** Inngest or GitHub Actions.
-- **Task:** Fetch CPI from GUS, rates from NBP, and market benchmark history from Yahoo Finance.
-- **Storage:** PostgreSQL (Drizzle ORM) for historical series.
+Shared browser-facing gateways live under `shared/lib`:
 
-### D. Persistence Layer
-- **Client-Side:** IndexedDB (via Dexie.js) for the Notebook and Scenarios.
-- **Server-Side:** Optional Supabase/PostgreSQL for account-based sync.
+- `api-client.ts` owns fetch behavior, JSON parsing, and API errors.
+- `calculation-endpoints.ts` maps `ScenarioKind` to calculation endpoints.
+- `portfolio-client.ts` owns migrated portfolio API calls.
+- `calculator-state.ts` owns display-only stripping, stable state comparison, and envelope restoration.
 
-## 2. Data Flow
-1.  **User Input:** User changes a slider in the UI.
-2.  **Calculation:** The `finance-core` engine runs locally in the browser.
-3.  **Result:** UI updates instantly with new values and charts.
-4.  **Sync:** If enabled, the scenario is saved to `IndexedDB`.
+`app/api/**/route.ts` files should only:
 
-## 3. Scalability Strategy
-- **Static Content:** Educational articles are pre-rendered (ISR) for speed.
-- **Calculations:** Running calculations on the client offloads the server and provides zero latency.
-- **Data Scaling:** Historical market data is aggregated into "Day/Month" snapshots to keep chart payloads small.
+- parse HTTP input
+- resolve auth and ownership context
+- validate request shape
+- call an application service, command, query, or repository
+- return a structured response through shared response helpers
 
-## 4. Technology Stack
-- **Language:** TypeScript.
-- **Framework:** Next.js (App Router).
-- **Database:** PostgreSQL (via Drizzle).
-- **Styling:** Tailwind CSS.
-- **Testing:** Vitest for engine logic; Playwright for E2E.
+Core financial behavior lives in `features/bond-core`:
+
+- `CalculationApplicationService` sanitizes requests, checks cache, gathers shared context, and dispatches by scenario kind.
+- `features/bond-core/handlers/**` contains scenario handlers for each calculator flow.
+- The calculation service accepts dependencies for cache, data freshness, bond definitions, and handler lookup so tests can inject narrow fakes.
+
+- `lib/server/**` owns server services, commands, queries, HTTP helpers, auth/ownership helpers, and sync/admin orchestration.
+- `lib/server/portfolio/commands.ts` owns portfolio mutations.
+- `lib/server/portfolio/queries.ts` owns portfolio reads and simulations.
+- `lib/data/**` owns shared read models, repository interfaces, and external-data-backed retrieval.
+- `db/**` owns schema, migrations, and seed data.
+
+## 2. Main Calculation Flow
+
+1. The user changes calculator inputs in a feature component.
+2. The feature hook normalizes UI state and strips display-only values.
+3. The hook resolves the endpoint through `getCalculationEndpoint(...)`.
+4. `useCalculationRequest` or the shared worker posts the scenario payload.
+5. The API route delegates to `CalculationApplicationService`.
+6. The service gathers shared context, selects the scenario handler, and returns a `CalculationEnvelope`.
+7. The UI renders results through display adapters, chart models, and table models.
+
+Chart granularity is a display setting. It must never become engine input or change calculation truth.
+
+The portfolio stack is moving toward the same boundary model:
+
+- UI code calls `portfolioClient` for migrated workspace operations.
+- Portfolio API routes resolve ownership and validate payloads.
+- Reads go through `lib/server/portfolio/queries.ts`.
+- Mutations go through `lib/server/portfolio/commands.ts`.
+
+Some notebook workspace surfaces still call portfolio endpoints directly. Those are migration targets; new portfolio UI code should use `portfolioClient`.
+
+## 3. Boundary Enforcement
+
+Architecture rules are executable where practical:
+
+- `shared/lib/calculation-endpoints.test.ts` locks scenario endpoint mapping.
+- `lib/server/portfolio/portfolio-service-boundary.test.ts` checks portfolio route facade usage.
+- `lib/data/bond-definition-repository-contract.test.ts` checks bond definition repository shape.
+- `docs/technical/architecture/layer-boundary-contract.test.ts` checks cross-layer endpoint, gateway, route, and response-helper boundaries.
+
+When changing architecture, update both the implementation and the relevant contract test.

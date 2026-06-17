@@ -358,6 +358,21 @@ Route helpers must be reused when a route family already has a shared contract.
 - structured JSON endpoints should use shared validated-body helpers instead of ad hoc `await req.json()` parsing repeated in each route
 - route-level validation belongs at the edge; business rules stay in `features/**` or `lib/server/**`
 
+### 11.0.1 Client and Server Gateway Boundaries
+
+Browser-facing code should depend on shared client gateways, not endpoint strings scattered through feature files.
+
+Required defaults:
+
+- calculation UI calls `getCalculationEndpoint(...)`
+- portfolio UI calls `portfolioClient` when the operation has been migrated
+- generic JSON calls use `api-client.ts`
+- display-only calculator state uses `calculator-state.ts`
+
+Server-facing route files should depend on application services, command/query facades, or repositories. Do not import low-level database modules into route controllers when a service boundary exists.
+
+When a legacy direct fetch remains, document it as a migration target instead of expanding the pattern.
+
 ### 11.1 Workspace Boundaries
 
 Notebook and portfolio workspace state must follow these rules:
