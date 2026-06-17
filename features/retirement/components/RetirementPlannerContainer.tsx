@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { Calendar, Wallet, } from 'lucide-react';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import { RETIREMENT_SUPPORTED_BOND_TYPES, supportsRetirementBondType, } from '@/features/bond-core/support-matrix';
-import { RetirementPlannerCalculationEnvelope } from '@/features/bond-core/types/scenarios';
+import { RetirementPlannerCalculationEnvelope, ScenarioKind } from '@/features/bond-core/types/scenarios';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
@@ -16,6 +16,7 @@ import { useAppI18n } from '@/i18n/client';
 import { RetirementInputs, RetirementInputsPanel } from './RetirementInputsPanel';
 import { RetirementResultsOverview } from './RetirementResultsOverview';
 import { RetirementSupportList } from './RetirementSupportList';
+import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 
 function formatRate(value: number) {
     return `${value.toFixed(2)}%`;
@@ -93,7 +94,7 @@ export const RetirementPlannerContainer: React.FC = () => {
         const bondType = supportsRetirementBondType(inputs.bondType)
             ? inputs.bondType
             : BondType.EDO;
-        const response = await post<RetirementPlannerCalculationEnvelope>('/api/calculate/retirement', {
+        const response = await post<RetirementPlannerCalculationEnvelope>(getCalculationEndpoint(ScenarioKind.RETIREMENT_PLANNER), {
             ...inputs,
             bondType,
         });

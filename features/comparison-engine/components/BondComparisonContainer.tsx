@@ -2,11 +2,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { addYears } from 'date-fns';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
-import { BondComparisonCalculationEnvelope } from '@/features/bond-core/types/scenarios';
+import { BondComparisonCalculationEnvelope, ScenarioKind } from '@/features/bond-core/types/scenarios';
 import { useAppI18n } from '@/i18n/client';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
+import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
+import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 import { buildComparisonChartData, getLeadingComparisonResult } from '@/features/comparison-engine/components/bond-comparison/display-model';
 import { ComparisonConfigurationPanel } from '@/features/comparison-engine/components/bond-comparison/ComparisonConfigurationPanel';
 import { ComparisonResultsDashboard } from '@/features/comparison-engine/components/bond-comparison/ComparisonResultsDashboard';
@@ -33,7 +35,7 @@ export const BondComparisonContainer = () => {
         BondType.ROR,
     ]);
     const [envelope, setEnvelope] = useState<BondComparisonCalculationEnvelope | null>(null);
-    const [loading, setLoading] = useState(false);
+    const { isCalculating, post } = useCalculationRequest();
     const [showRealValue, setShowRealValue] = useState(false);
     const [isDirty, setIsDirty] = useState(true);
     const hasTouchedMacroAssumptions = React.useRef(false);
@@ -45,7 +47,11 @@ export const BondComparisonContainer = () => {
         if (customInflation.length === nextLength) {
             return;
         }
-        setCustomInflation(Array.from({ length: nextLength }, (_, index) => customInflation[index] ?? expectedInflation));
+        const timer = window.setTimeout(() => {
+            setCustomInflation(Array.from({ length: nextLength }, (_, index) => customInflation[index] ?? expectedInflation));
+        }, 0);
+
+        return () => window.clearTimeout(timer);
     }, [customInflation, duration, expectedInflation]);
     useEffect(() => {
         if (!customNbpRate) {
@@ -55,14 +61,22 @@ export const BondComparisonContainer = () => {
         if (customNbpRate.length === nextLength) {
             return;
         }
-        setCustomNbpRate(Array.from({ length: nextLength }, (_, index) => customNbpRate[index] ?? expectedNbpRate));
+        const timer = window.setTimeout(() => {
+            setCustomNbpRate(Array.from({ length: nextLength }, (_, index) => customNbpRate[index] ?? expectedNbpRate));
+        }, 0);
+
+        return () => window.clearTimeout(timer);
     }, [customNbpRate, duration, expectedNbpRate]);
     useEffect(() => {
         if (!macroDefaults || hasTouchedMacroAssumptions.current) {
             return;
         }
-        setExpectedInflation(macroDefaults.expectedInflation);
-        setExpectedNbpRate(macroDefaults.expectedNbpRate);
+        const timer = window.setTimeout(() => {
+            setExpectedInflation(macroDefaults.expectedInflation);
+            setExpectedNbpRate(macroDefaults.expectedNbpRate);
+        }, 0);
+
+        return () => window.clearTimeout(timer);
     }, [macroDefaults]);
     const results = useMemo(() => (Array.isArray(envelope?.result) ? envelope.result : []), [envelope]);
     const purchaseDate = new Date().toISOString().split('T')[0];
@@ -73,13 +87,11 @@ export const BondComparisonContainer = () => {
         if (selectedBonds.length === 0) {
             return;
         }
-        setLoading(true);
         setIsDirty(false);
         try {
-            const response = await fetch('/api/calculate/compare', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
+            const nextEnvelope = await post<BondComparisonCalculationEnvelope>(
+                getCalculationEndpoint(ScenarioKind.BOND_COMPARISON),
+                {
                     mode: 'normalized',
                     bondTypes: selectedBonds,
                     initialInvestment,
@@ -91,17 +103,12 @@ export const BondComparisonContainer = () => {
                     customNbpRate,
                     inflationScenario,
                     taxStrategy: TaxStrategy.STANDARD,
-                }),
-            });
-            const data = await response.json();
-            const nextEnvelope = data?.data ?? data;
+                },
+            );
             setEnvelope(nextEnvelope);
         }
         catch (error) {
             console.error('Comparison failed:', error);
-        }
-        finally {
-            setLoading(false);
         }
     }, [
         customInflation,
@@ -111,6 +118,7 @@ export const BondComparisonContainer = () => {
         inflationScenario,
         initialInvestment,
         purchaseDate,
+        post,
         selectedBonds,
         withdrawalDate,
     ]);
@@ -171,7 +179,7 @@ export const BondComparisonContainer = () => {
           <ComparisonResultsDashboard
             results={results}
             envelope={envelope}
-            loading={loading}
+        loading={isCalculating}
             isDirty={isDirty}
             showRealValue={showRealValue}
             formatCurrency={formatCurrency}

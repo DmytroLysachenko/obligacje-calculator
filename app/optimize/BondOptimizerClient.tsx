@@ -10,7 +10,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { BondOptimizerCalculationEnvelope } from '@/features/bond-core/types/scenarios';
+import { BondOptimizerCalculationEnvelope, ScenarioKind } from '@/features/bond-core/types/scenarios';
 import { TaxStrategy } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import {
@@ -34,6 +34,7 @@ import {
 } from '@/shared/hooks/useLocalizedFormatters';
 import { toDateString } from '@/shared/lib/date-timing';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
+import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 
 type OptimizerInputs = {
   initialInvestment: number;
@@ -141,7 +142,7 @@ export default function BondOptimizerClient() {
   const handleCalculate = async () => {
     try {
       const data = await post<BondOptimizerCalculationEnvelope>(
-        '/api/calculate/optimize',
+        getCalculationEndpoint(ScenarioKind.BOND_OPTIMIZER),
         inputs,
       );
       setEnvelope(data);

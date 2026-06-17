@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useEffectEvent, useMemo, useRef } from 'react';
 import { BondInputs, BondType, TaxStrategy, InterestPayout } from '../../bond-core/types';
-import { SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
+import { ScenarioKind, SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { MODEL_VERSION } from '../../bond-core/model-version';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
@@ -9,6 +9,7 @@ import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/shared/lib/calculator-persistence';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
+import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 
 const DEFAULT_BOND = BondType.EDO;
 const STORAGE_KEY = 'obligacje.single-calculator.v1';
@@ -205,7 +206,7 @@ export function useBondCalculator(initialInputs?: BondInputs) {
       if (currentInputs.calculatorMode === 'reverse' && currentInputs.savingsGoal) {
         const testBase = 10000;
         const simEnvelope = await post<SingleBondCalculationEnvelope>(
-          '/api/calculate/single',
+          getCalculationEndpoint(ScenarioKind.SINGLE_BOND),
           {
             ...currentInputs,
             initialInvestment: testBase,
@@ -219,7 +220,11 @@ export function useBondCalculator(initialInputs?: BondInputs) {
         finalInputs.initialInvestment = requiredBonds * bondPrice;
       }
 
-      const data = await post<SingleBondCalculationEnvelope>('/api/calculate/single', finalInputs, { preferWorker: true });
+      const data = await post<SingleBondCalculationEnvelope>(
+        getCalculationEndpoint(ScenarioKind.SINGLE_BOND),
+        finalInputs,
+        { preferWorker: true },
+      );
       setEnvelope(data);
       setLastCommittedInputs(finalInputs);
     } catch (error) {

@@ -7,7 +7,7 @@ import {
   RegularInvestmentInputs,
   TaxStrategy,
 } from '../../bond-core/types';
-import { RegularInvestmentCalculationEnvelope } from '../../bond-core/types/scenarios';
+import { RegularInvestmentCalculationEnvelope, ScenarioKind } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import {
@@ -19,6 +19,7 @@ import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/sh
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
+import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 
 const DEFAULT_BOND = BondType.EDO;
 const DEFAULT_DEFINITION = BOND_DEFINITIONS[DEFAULT_BOND];
@@ -244,7 +245,7 @@ export function useLadder() {
   const calculate = useCallback(async () => {
     try {
       const data = await post<RegularInvestmentCalculationEnvelope>(
-        '/api/calculate/regular',
+        getCalculationEndpoint(ScenarioKind.REGULAR_INVESTMENT),
         inputs,
         { preferWorker: true },
       );

@@ -5,6 +5,7 @@ import { BondInputs, BondType, TaxStrategy } from '../../bond-core/types';
 import {
   BondComparisonCalculationEnvelope,
   IndependentBondComparisonPayload,
+  ScenarioKind,
   SingleBondCalculationEnvelope,
 } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
@@ -14,6 +15,7 @@ import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/shared/lib/calculator-persistence';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
+import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 import {
   sanitizeScenarioOverride,
   setScenarioCustomHorizonMonths,
@@ -202,7 +204,7 @@ export function useComparison() {
     setIsDirty(false);
     try {
       const envelope = await post<BondComparisonCalculationEnvelope>(
-        '/api/calculate/compare',
+        getCalculationEndpoint(ScenarioKind.BOND_COMPARISON),
         {
           mode: 'independent',
           sharedConfig,

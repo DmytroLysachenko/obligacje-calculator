@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useEffectEvent, useRef } from 'react';
 import { RegularInvestmentInputs, BondType, InvestmentFrequency, TaxStrategy, InterestPayout } from '../../bond-core/types';
-import { RegularInvestmentCalculationEnvelope } from '../../bond-core/types/scenarios';
+import { RegularInvestmentCalculationEnvelope, ScenarioKind } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
@@ -8,6 +8,7 @@ import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/shared/lib/calculator-persistence';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
+import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 
 const DEFAULT_BOND = BondType.EDO;
 const STORAGE_KEY = 'obligacje.regular-calculator.v1';
@@ -166,7 +167,11 @@ export function useRegularInvestmentCalculator() {
     setIsDirty(false);
     try {
       clearError();
-      const data = await post<RegularInvestmentCalculationEnvelope>('/api/calculate/regular', currentInputs, { preferWorker: true });
+      const data = await post<RegularInvestmentCalculationEnvelope>(
+        getCalculationEndpoint(ScenarioKind.REGULAR_INVESTMENT),
+        currentInputs,
+        { preferWorker: true },
+      );
       setEnvelope(data);
     } catch (error) {
       console.error('Calculation error:', error);
