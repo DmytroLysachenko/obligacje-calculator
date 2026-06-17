@@ -1,19 +1,39 @@
 import { 
+  CalculationDataFreshness,
   CalculationScenarioRequest, 
   CalculationEnvelope, 
+  ScenarioKind,
 } from './types/scenarios';
+import { BondDefinition } from './constants/bond-definitions';
+import { BondType } from './types';
 import { 
   getGlobalDataFreshness, 
   getBondDefinitionsMap, 
 } from '@/lib/data/market-data';
 import { calculationCache } from './utils/calculation-cache';
 import { sanitizeInputs } from './utils/engine-guards';
-import { HandlerFactory, MODEL_VERSION } from './handlers';
+import { HandlerFactory, MODEL_VERSION, ScenarioHandler } from './handlers';
 import { parseCalculationScenarioRequest } from './types/schemas';
 
 export { MODEL_VERSION };
 
+export interface CalculationServiceDependencies {
+  cache: Pick<typeof calculationCache, 'generateKey' | 'get' | 'set'>;
+  getDataFreshness: () => Promise<CalculationDataFreshness>;
+  getDefinitions: () => Promise<Record<BondType, BondDefinition>>;
+  getHandler: (kind: ScenarioKind) => ScenarioHandler<unknown, unknown>;
+}
+
+const defaultDependencies: CalculationServiceDependencies = {
+  cache: calculationCache,
+  getDataFreshness: getGlobalDataFreshness,
+  getDefinitions: getBondDefinitionsMap,
+  getHandler: (kind) => HandlerFactory.getHandler(kind),
+};
+
 export class CalculationApplicationService {
+  constructor(private readonly dependencies: CalculationServiceDependencies = defaultDependencies) {}
+
   /**
    * Main entry point for all calculation requests.
    */
@@ -28,26 +48,26 @@ export class CalculationApplicationService {
     } as unknown as CalculationScenarioRequest;
 
     // 2. Check cache with sanitized inputs
-    const cacheKey = calculationCache.generateKey({
+    const cacheKey = this.dependencies.cache.generateKey({
       modelVersion: MODEL_VERSION,
       request: sanitizedRequest,
     });
-    const cachedResult = calculationCache.get(cacheKey);
+    const cachedResult = this.dependencies.cache.get(cacheKey);
     if (cachedResult) {
       return cachedResult as CalculationEnvelope<unknown>;
     }
 
-    const dataFreshness = await getGlobalDataFreshness();
-    const dbDefinitions = await getBondDefinitionsMap();
+    const dataFreshness = await this.dependencies.getDataFreshness();
+    const dbDefinitions = await this.dependencies.getDefinitions();
     
     try {
-      const handler = HandlerFactory.getHandler(sanitizedRequest.kind);
+      const handler = this.dependencies.getHandler(sanitizedRequest.kind);
       const response = await handler.handle(sanitizedRequest.payload, {
         dataFreshness,
         dbDefinitions
       });
 
-      calculationCache.set(cacheKey, response);
+      this.dependencies.cache.set(cacheKey, response);
       return response;
     } catch (error) {
       console.error(`[CalculationService] FAILED v=${MODEL_VERSION} kind=${request.kind}`, error);
