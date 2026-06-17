@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { MacroAssumptionDefaults } from '@/lib/data/market-data';
+import { apiGet } from '@/shared/lib/api-client';
 
 let cachedDefaults: MacroAssumptionDefaults | null = null;
 
@@ -27,17 +28,7 @@ export function useMacroAssumptionDefaults() {
 
     async function fetchDefaults() {
       try {
-        const response = await fetch('/api/calculation-defaults');
-        if (!response.ok) {
-          throw new Error('Failed to fetch macro assumption defaults');
-        }
-
-        const payload = await response.json();
-        if (!payload?.data) {
-          throw new Error(payload?.error?.message || 'Failed to fetch macro assumption defaults');
-        }
-
-        cachedDefaults = payload.data as MacroAssumptionDefaults;
+        cachedDefaults = await apiGet<MacroAssumptionDefaults>('/api/calculation-defaults');
         if (!isCancelled) {
           setDefaults(cachedDefaults);
         }
