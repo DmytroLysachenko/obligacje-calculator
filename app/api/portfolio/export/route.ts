@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { createSuccessResponse } from '@/shared/types/api';
-import { PortfolioServiceError } from '@/lib/server/portfolio/service';
+import { PortfolioServiceError } from '@/lib/server/portfolio/errors';
 import { exportOwnerPortfolio } from '@/lib/server/portfolio/queries';
 import { createDomainErrorResponse } from '@/lib/server/http/responses';
 import { getAuthenticatedPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';

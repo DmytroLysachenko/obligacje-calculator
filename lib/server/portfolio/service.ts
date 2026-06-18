@@ -6,6 +6,7 @@ import {resolveStoredBondLotContext} from '@/lib/server/bonds/offer-terms';
 import {ensurePortfolioSchemaCompat} from '@/lib/server/db/portfolio-schema-compat';
 import {buildPortfolioSimulationPayload} from '@/lib/server/portfolio/simulation';
 import {getOwnedLot, getOwnedPortfolio} from '@/lib/server/portfolio/access';
+import {PortfolioServiceError} from '@/lib/server/portfolio/errors';
 import {
   createLot,
   createLotWithBuyTransaction,
@@ -30,17 +31,6 @@ const emptySimulationResult: PortfolioSimulationResult = {
     totalProfit: 0,
   },
 };
-
-export class PortfolioServiceError extends Error {
-  constructor(
-    message: string,
-    public readonly status: number,
-    public readonly code: string,
-    public readonly details?: unknown,
-  ) {
-    super(message);
-  }
-}
 
 export async function listOwnerPortfolios(ownerId: string) {
   return listPortfoliosByOwner(ownerId);

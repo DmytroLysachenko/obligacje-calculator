@@ -8,7 +8,7 @@ import {
   getPortfolioRouteContext,
   withPortfolioOwnerResponse,
 } from '@/lib/server/portfolio/http';
-import { PortfolioServiceError } from '@/lib/server/portfolio/service';
+import { PortfolioServiceError } from '@/lib/server/portfolio/errors';
 import { listOwnerPortfolios } from '@/lib/server/portfolio/queries';
 import { createOwnerPortfolio, deleteOwnerPortfolio } from '@/lib/server/portfolio/commands';
 

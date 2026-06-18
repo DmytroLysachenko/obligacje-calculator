@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createSuccessResponse, createErrorResponse } from '@/shared/types/api';
-import { PortfolioServiceError } from '@/lib/server/portfolio/service';
+import { PortfolioServiceError } from '@/lib/server/portfolio/errors';
 import { createPortfolioLotWithBuyTransaction } from '@/lib/server/portfolio/commands';
 import { createDomainErrorResponse } from '@/lib/server/http/responses';
 import { apiHandler } from '@/lib/server/http/api-handler';

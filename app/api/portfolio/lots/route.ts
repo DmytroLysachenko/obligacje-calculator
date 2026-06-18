@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { InvestmentLotSchema } from '@/features/bond-core/types/portfolio-schemas';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { createSuccessResponse } from '@/shared/types/api';
-import { PortfolioServiceError } from '@/lib/server/portfolio/service';
+import { PortfolioServiceError } from '@/lib/server/portfolio/errors';
 import { listPortfolioLots } from '@/lib/server/portfolio/queries';
 import { createPortfolioLot, deleteOwnerLot } from '@/lib/server/portfolio/commands';
 import { createDomainErrorResponse, createValidationErrorResponse } from '@/lib/server/http/responses';

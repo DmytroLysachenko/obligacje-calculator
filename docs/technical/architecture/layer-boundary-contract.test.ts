@@ -36,17 +36,6 @@ function listMatchingFiles(pattern: RegExp) {
     .filter((file) => pattern.test(read(file)));
 }
 
-function forbiddenPortfolioServiceImports(source: string) {
-  const serviceImports = source.matchAll(
-    /import\s+\{([^}]+)\}\s+from ['"]@\/lib\/server\/portfolio\/service['"]/g,
-  );
-
-  return Array.from(serviceImports)
-    .flatMap((match) => (match[1] ?? '').split(','))
-    .map((name) => name.trim())
-    .filter((name) => name && name !== 'PortfolioServiceError');
-}
-
 describe('layer boundary contract', () => {
   it('keeps calculation endpoint literals centralized in the shared endpoint registry', () => {
     const endpointLiteral = /['"`]\/api\/calculate\/(?:single|regular|compare|optimize|retirement)['"`]/;
@@ -107,7 +96,7 @@ describe('layer boundary contract', () => {
     for (const routeFile of routeFiles) {
       const source = read(routeFile);
 
-      expect(forbiddenPortfolioServiceImports(source), routeFile).toEqual([]);
+      expect(source, routeFile).not.toMatch(/from ['"]@\/lib\/server\/portfolio\/service['"]/);
       expect(source, routeFile).toMatch(/from ['"]@\/lib\/server\/portfolio\/(?:commands|queries)['"]/);
     }
   });
