@@ -70,6 +70,8 @@ describe('layer boundary contract', () => {
       'shared/hooks/useWorkspacePortfolios.ts',
       'shared/hooks/usePortfolioAccess.ts',
       'features/single-calculator/components/BondCalculatorContainer.tsx',
+      'features/notebook/components/NotebookContainer.tsx',
+      'features/notebook/hooks/usePortfolioDetailsWorkspace.ts',
     ];
 
     for (const client of clients) {
