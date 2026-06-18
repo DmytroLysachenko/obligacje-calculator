@@ -5,8 +5,8 @@ import { addDays, isAfter, parseISO } from 'date-fns';
 import { UserInvestmentLot, UserPortfolio } from '@/db/schema';
 import { BondType } from '@/features/bond-core/types';
 import { PortfolioSimulationResult } from '@/features/bond-core/types/scenarios';
-import { unwrapApiData } from '@/shared/lib/api-response';
 import { downloadJsonFile } from '@/shared/lib/csv-utils';
+import { portfolioClient } from '@/shared/lib/portfolio-client';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 
 export type MaturityWindow = 30 | 90 | 180;
@@ -42,12 +42,8 @@ export function usePortfolioDetailsWorkspace({
   const fetchLots = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/portfolio/lots?portfolioId=${portfolio.id}`);
-      const data = await response.json();
-      if (response.ok) {
-        const nextLots = unwrapApiData<UserInvestmentLot[]>(data);
-        setLots(Array.isArray(nextLots) ? nextLots : []);
-      }
+      const nextLots = await portfolioClient.listLots(portfolio.id);
+      setLots(Array.isArray(nextLots) ? nextLots : []);
     } catch (caughtError) {
       console.error('Failed to fetch lots:', caughtError);
       setLots([]);
@@ -64,16 +60,8 @@ export function usePortfolioDetailsWorkspace({
 
     setIsSimulating(true);
     try {
-      const response = await fetch('/api/portfolio/simulate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ portfolioId: portfolio.id }),
-      });
-      const data = await response.json();
-
-      if (response.ok) {
-        setSimulation(unwrapApiData<PortfolioSimulationResult>(data) ?? null);
-      }
+      const nextSimulation = await portfolioClient.simulatePortfolio(portfolio.id);
+      setSimulation(nextSimulation ?? null);
     } catch (caughtError) {
       console.error('Simulation failed:', caughtError);
       setSimulation(null);
@@ -144,20 +132,14 @@ export function usePortfolioDetailsWorkspace({
   const handleToggleShare = useCallback(async () => {
     setIsSharing(true);
     try {
-      const response = await fetch('/api/portfolio/share', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ portfolioId: portfolio.id, isPublic: !isPublic }),
+      const nextIsPublic = !isPublic;
+      await portfolioClient.toggleSharing(portfolio.id, nextIsPublic);
+      setIsPublic(nextIsPublic);
+      onPortfolioUpdate?.({
+        ...portfolio,
+        isPublic: nextIsPublic,
+        updatedAt: new Date(),
       });
-      if (response.ok) {
-        const nextIsPublic = !isPublic;
-        setIsPublic(nextIsPublic);
-        onPortfolioUpdate?.({
-          ...portfolio,
-          isPublic: nextIsPublic,
-          updatedAt: new Date(),
-        });
-      }
     } catch (caughtError) {
       console.error('Failed to update sharing:', caughtError);
     } finally {
@@ -178,27 +160,14 @@ export function usePortfolioDetailsWorkspace({
   const handleExport = useCallback(
     async (formatName: 'portfolio' | 'package') => {
       try {
-        const response = await fetch(
-          `/api/portfolio/export?portfolioId=${portfolio.id}&format=${formatName}`,
-        );
-        const data = await response.json();
-        if (!response.ok) {
-          throw new Error('Export failed');
-        }
+        const { data, fileName } = await portfolioClient.exportPortfolio(portfolio, formatName);
 
-        const exportPayload = unwrapApiData<Record<string, unknown>>(data);
-        const responseFilename =
-          response.headers
-            .get('content-disposition')
-            ?.match(/filename="([^"]+)"/i)?.[1] ??
-          `${portfolio.name.replace(/\s+/g, '_').toLowerCase()}_${formatName}.json`;
-
-        downloadJsonFile(exportPayload, responseFilename);
+        downloadJsonFile(data, fileName);
       } catch (caughtError) {
         console.error('Export failed:', caughtError);
       }
     },
-    [portfolio.id, portfolio.name],
+    [portfolio],
   );
 
   return {
