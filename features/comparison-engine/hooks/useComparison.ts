@@ -16,6 +16,7 @@ import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/sh
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
+import { areCalculatorStatesEqual, preserveStableState } from '@/shared/lib/calculator-state';
 import {
   sanitizeScenarioOverride,
   setScenarioCustomHorizonMonths,
@@ -139,14 +140,14 @@ export function useComparison() {
         expectedNbpRate: defaults.expectedNbpRate,
       };
 
-      return JSON.stringify(previous) === JSON.stringify(next) ? previous : next;
+      return preserveStableState(previous, next);
     });
   });
 
   const reconcilePersistedMacroDefaults = useEffectEvent((defaults: { expectedInflation: number; expectedNbpRate: number }) => {
     setSharedConfig((previous) => {
       const next = applyMacroDefaultsToBaseline(previous, defaults);
-      return JSON.stringify(previous) === JSON.stringify(next) ? previous : next;
+      return preserveStableState(previous, next);
     });
   });
 
@@ -166,10 +167,8 @@ export function useComparison() {
       return true;
     }
 
-    return (
-      JSON.stringify(inputsA) !== JSON.stringify(committedInputsA)
-      || JSON.stringify(inputsB) !== JSON.stringify(committedInputsB)
-    );
+    return !areCalculatorStatesEqual(inputsA, committedInputsA)
+      || !areCalculatorStatesEqual(inputsB, committedInputsB);
   }, [committedInputsA, committedInputsB, inputsA, inputsB, isDirty, resultsA, resultsB]);
   const sharedWarnings = comparisonEnvelope?.warnings || [];
   const sharedAssumptions = comparisonEnvelope?.assumptions || [];

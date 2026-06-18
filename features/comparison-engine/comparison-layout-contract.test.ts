@@ -71,8 +71,9 @@ describe('comparison layout contract', () => {
     const hook = read(files.hook);
 
     expect(hook).toContain('const displayIsDirty = useMemo(() => {');
-    expect(hook).toContain('JSON.stringify(inputsA) !== JSON.stringify(committedInputsA)');
-    expect(hook).toContain('JSON.stringify(inputsB) !== JSON.stringify(committedInputsB)');
+    expect(hook).toContain('areCalculatorStatesEqual(inputsA, committedInputsA)');
+    expect(hook).toContain('areCalculatorStatesEqual(inputsB, committedInputsB)');
+    expect(hook).toContain('preserveStableState(previous, next)');
     expect(hook).toContain('isDirty: displayIsDirty');
   });
 

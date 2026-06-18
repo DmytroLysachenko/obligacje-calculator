@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  areCalculatorStatesEqual,
   preserveStableState,
   restoreVersionedEnvelope,
   stripDisplayOnlyInputs,
@@ -32,6 +33,11 @@ describe('calculator-state helpers', () => {
     const next = { expectedInflation: 3.3 };
 
     expect(preserveStableState(previous, next)).toBe(next);
+  });
+
+  it('compares calculator state by serialized value', () => {
+    expect(areCalculatorStatesEqual({ value: 1 }, { value: 1 })).toBe(true);
+    expect(areCalculatorStatesEqual({ value: 1 }, { value: 2 })).toBe(false);
   });
 
   it('restores only envelopes matching the active model version', () => {

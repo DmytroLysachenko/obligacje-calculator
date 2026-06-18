@@ -20,7 +20,11 @@ export function stripDisplayOnlyInputs<T extends DisplayOnlyInputs>(
 }
 
 export function preserveStableState<T>(previous: T, next: T): T {
-  return JSON.stringify(previous) === JSON.stringify(next) ? previous : next;
+  return areCalculatorStatesEqual(previous, next) ? previous : next;
+}
+
+export function areCalculatorStatesEqual<T>(left: T, right: T): boolean {
+  return JSON.stringify(left) === JSON.stringify(right);
 }
 
 export function restoreVersionedEnvelope<TEnvelope extends VersionedEnvelope>(
