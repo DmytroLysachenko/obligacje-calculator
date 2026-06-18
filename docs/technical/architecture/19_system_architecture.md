@@ -34,6 +34,7 @@ Core financial behavior lives in `features/bond-core`:
 - `lib/server/**` owns server services, commands, queries, HTTP helpers, auth/ownership helpers, and sync/admin orchestration.
 - `lib/server/portfolio/commands.ts` owns portfolio mutations.
 - `lib/server/portfolio/queries.ts` owns portfolio reads and simulations.
+- `lib/server/portfolio/errors.ts` owns portfolio service error types shared by commands, queries, and routes.
 - `lib/data/**` owns shared read models, repository interfaces, and external-data-backed retrieval.
 - `db/**` owns schema, migrations, and seed data.
 
@@ -51,12 +52,11 @@ Chart granularity is a display setting. It must never become engine input or cha
 
 The portfolio stack is moving toward the same boundary model:
 
-- UI code calls `portfolioClient` for migrated workspace operations.
+- Notebook and migrated portfolio UI code calls `portfolioClient` for workspace operations.
 - Portfolio API routes resolve ownership and validate payloads.
 - Reads go through `lib/server/portfolio/queries.ts`.
 - Mutations go through `lib/server/portfolio/commands.ts`.
-
-Some notebook workspace surfaces still call portfolio endpoints directly. Those are migration targets; new portfolio UI code should use `portfolioClient`.
+- Route error handling imports `PortfolioServiceError` from `lib/server/portfolio/errors.ts`, not the legacy service module.
 
 ## 3. Boundary Enforcement
 
@@ -65,6 +65,7 @@ Architecture rules are executable where practical:
 - `shared/lib/calculation-endpoints.test.ts` locks scenario endpoint mapping.
 - `lib/server/portfolio/portfolio-service-boundary.test.ts` checks portfolio route facade usage.
 - `lib/data/bond-definition-repository-contract.test.ts` checks bond definition repository shape.
+- `features/notebook/notebook-portfolio-gateway-contract.test.ts` checks notebook portfolio gateway usage.
 - `docs/technical/architecture/layer-boundary-contract.test.ts` checks cross-layer endpoint, gateway, route, and response-helper boundaries.
 
 When changing architecture, update both the implementation and the relevant contract test.

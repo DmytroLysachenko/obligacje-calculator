@@ -365,13 +365,13 @@ Browser-facing code should depend on shared client gateways, not endpoint string
 Required defaults:
 
 - calculation UI calls `getCalculationEndpoint(...)`
-- portfolio UI calls `portfolioClient` when the operation has been migrated
+- notebook and migrated portfolio UI calls `portfolioClient`
 - generic JSON calls use `api-client.ts`
 - display-only calculator state uses `calculator-state.ts`
 
 Server-facing route files should depend on application services, command/query facades, or repositories. Do not import low-level database modules into route controllers when a service boundary exists.
 
-When a legacy direct fetch remains, document it as a migration target instead of expanding the pattern.
+Portfolio route controllers must not import from `lib/server/portfolio/service.ts`. Use command/query facades for behavior and `lib/server/portfolio/errors.ts` for `PortfolioServiceError`.
 
 ### 11.1 Workspace Boundaries
 
@@ -379,6 +379,7 @@ Notebook and portfolio workspace state must follow these rules:
 
 - guest users may browse calculators and preview workspace surfaces, but workspace mutations must be explicitly gated behind signed-in access
 - shared workspace selection state, such as the active portfolio id, belongs in `shared/lib/workspace/**`, not in one feature-local folder that other features import ad hoc
+- notebook workspace API access belongs behind `shared/lib/portfolio-client.ts`
 - portfolio and notebook API routes must stay thin and delegate ownership and mutation rules to `lib/server/portfolio/**`
 - notebook pages should read as a records workspace, not a pseudo-advisory dashboard
 ### 11.2 Naming
