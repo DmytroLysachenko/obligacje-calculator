@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { apiGet, apiPost, ApiClientError } from './api-client';
+import { apiGet, apiPost } from './api-client';
 
 describe('api client', () => {
   it('unwraps typed success payloads', async () => {

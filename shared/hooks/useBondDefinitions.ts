@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { BondType } from '@/features/bond-core/types';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
+import { apiGet } from '@/shared/lib/api-client';
 
 let cachedDefinitions: Record<BondType, BondDefinition> | null = null;
 
@@ -19,17 +20,9 @@ export function useBondDefinitions() {
 
     async function fetchDefinitions() {
       try {
-        const response = await fetch('/api/bond-definitions');
-        if (!response.ok) {
-          throw new Error('Failed to fetch bond definitions');
-        }
-        const data = await response.json();
-        if (data.data) {
-          cachedDefinitions = data.data;
-          setDefinitions(data.data);
-        } else {
-          throw new Error(data.error?.message || 'Failed to fetch bond definitions');
-        }
+        const data = await apiGet<Record<BondType, BondDefinition>>('/api/bond-definitions');
+        cachedDefinitions = data;
+        setDefinitions(data);
       } catch (err) {
         setError(err instanceof Error ? err : new Error(String(err)));
       } finally {
