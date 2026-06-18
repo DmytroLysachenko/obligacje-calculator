@@ -20,6 +20,7 @@ import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
+import { preserveStableState } from '@/shared/lib/calculator-state';
 
 const DEFAULT_BOND = BondType.EDO;
 const DEFAULT_DEFINITION = BOND_DEFINITIONS[DEFAULT_BOND];
@@ -185,14 +186,14 @@ export function useLadder() {
         expectedNbpRate: defaults.expectedNbpRate,
       };
 
-      return JSON.stringify(previous) === JSON.stringify(next) ? previous : next;
+      return preserveStableState(previous, next);
     });
   });
 
   const reconcilePersistedMacroDefaults = useEffectEvent((defaults: { expectedInflation: number; expectedNbpRate: number }) => {
     setInputs((previous) => {
       const next = applyMacroDefaultsToBaseline(previous, defaults);
-      return JSON.stringify(previous) === JSON.stringify(next) ? previous : next;
+      return preserveStableState(previous, next);
     });
   });
 
