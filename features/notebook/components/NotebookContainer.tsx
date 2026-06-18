@@ -13,7 +13,8 @@ import { SectionBlock } from '@/shared/components/page/SectionBlock';
 import { AppToast } from '@/shared/components/feedback/AppToast';
 import { ConfirmActionDialog } from '@/shared/components/feedback/ConfirmActionDialog';
 import { Notice } from '@/shared/components/feedback/Notice';
-import { unwrapApiData } from '@/shared/lib/api-response';
+import { ApiClientError } from '@/shared/lib/api-client';
+import { portfolioClient } from '@/shared/lib/portfolio-client';
 import { persistSelectedPortfolioId } from '@/shared/lib/workspace/notebook-state';
 import { PortfolioDetails } from './PortfolioDetails';
 import { PortfolioWorkspaceCard } from './PortfolioWorkspaceCard';
@@ -126,6 +127,15 @@ export const NotebookContainer: React.FC = () => {
         }
         return payload?.error || t('notebook.create_error');
     }, [t]);
+    const resolveCaughtPortfolioError = useCallback((caughtError: unknown) => {
+        if (caughtError instanceof ApiClientError) {
+            return resolvePortfolioError({
+                error: caughtError.message,
+                code: caughtError.code,
+            });
+        }
+        return t('notebook.create_error');
+    }, [resolvePortfolioError, t]);
     useEffect(() => {
         if (requestError) {
             setError(resolvePortfolioError(requestError as {
@@ -161,20 +171,10 @@ export const NotebookContainer: React.FC = () => {
     const handleCreateDefault = async () => {
         setIsMutating(true);
         try {
-            const response = await fetch('/api/portfolio', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: t('notebook.my_first_portfolio'),
-                    description: t('notebook.default_description'),
-                }),
+            const created = await portfolioClient.createPortfolio({
+                name: t('notebook.my_first_portfolio'),
+                description: t('notebook.default_description'),
             });
-            if (!response.ok) {
-                const payload = await response.json().catch(() => null);
-                setError(resolvePortfolioError(payload));
-                return;
-            }
-            const created = unwrapApiData<UserPortfolio>(await response.json().catch(() => null));
             setError(null);
             setStatusMessage(t('notebook.created_success'));
             if (created?.id) {
@@ -187,7 +187,7 @@ export const NotebookContainer: React.FC = () => {
         }
         catch (caughtError) {
             console.error(caughtError);
-            setError(t('notebook.create_error'));
+            setError(resolveCaughtPortfolioError(caughtError));
         }
         finally {
             setIsMutating(false);
@@ -196,31 +196,22 @@ export const NotebookContainer: React.FC = () => {
     const handleCreateDemo = async () => {
         setIsMutating(true);
         try {
-            const response = await fetch('/api/portfolio', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: t('notebook.demo_name'),
-                    description: t('notebook.demo_description'),
-                }),
+            const createdPortfolio = await portfolioClient.createPortfolio({
+                name: t('notebook.demo_name'),
+                description: t('notebook.demo_description'),
             });
-            if (!response.ok) {
-                throw new Error(t('notebook.create_error'));
-            }
-            const portfolioResponse = await response.json();
-            const createdPortfolio = unwrapApiData<UserPortfolio>(portfolioResponse);
             const portfolioId = createdPortfolio?.id;
+            if (!portfolioId) {
+                await fetchPortfolios();
+                return;
+            }
             const demoLots = [
                 { bondType: 'EDO', amount: 50, purchaseDate: '2023-01-01' },
                 { bondType: 'COI', amount: 100, purchaseDate: '2023-06-15' },
                 { bondType: 'TOS', amount: 200, purchaseDate: '2024-01-10' },
             ];
             for (const lot of demoLots) {
-                await fetch('/api/portfolio/lots', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ portfolioId, ...lot }),
-                });
+                await portfolioClient.createLot({ portfolioId, ...lot });
             }
             if (createdPortfolio?.id) {
                 mergePortfolioIntoState(createdPortfolio);
@@ -233,7 +224,7 @@ export const NotebookContainer: React.FC = () => {
         }
         catch (caughtError) {
             console.error(caughtError);
-            setError(t('notebook.create_error'));
+            setError(resolveCaughtPortfolioError(caughtError));
         }
         finally {
             setIsMutating(false);
@@ -251,19 +242,8 @@ export const NotebookContainer: React.FC = () => {
             setIsMutating(true);
             const text = await file.text();
             const parsed = JSON.parse(text);
-            const response = await fetch('/api/portfolio/import', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(parsed),
-            });
-            if (!response.ok) {
-                throw new Error(t('notebook.create_error'));
-            }
+            const importPayload = await portfolioClient.importPortfolio(parsed);
             setError(null);
-            const importPayload = unwrapApiData<{
-                portfolio?: UserPortfolio;
-                importedLots?: number;
-            }>(await response.clone().json().catch(() => null));
             if (importPayload?.portfolio?.id) {
                 mergePortfolioIntoState(importPayload.portfolio);
                 setSelectedPortfolioId(importPayload.portfolio.id);
@@ -287,14 +267,7 @@ export const NotebookContainer: React.FC = () => {
     const handleDeletePortfolio = async (portfolio: UserPortfolio) => {
         setIsMutating(true);
         try {
-            const response = await fetch(`/api/portfolio?id=${portfolio.id}`, {
-                method: 'DELETE',
-            });
-            if (!response.ok) {
-                const payload = await response.json().catch(() => null);
-                setError(resolvePortfolioError(payload));
-                return;
-            }
+            await portfolioClient.deletePortfolio(portfolio.id);
             removePortfolioFromState(portfolio.id);
             setDetailPortfolioId((current) => current === portfolio.id ? null : current);
             setError(null);
@@ -302,7 +275,7 @@ export const NotebookContainer: React.FC = () => {
         }
         catch (caughtError) {
             console.error(caughtError);
-            setError(t('notebook.delete_failed'));
+            setError(caughtError instanceof ApiClientError ? resolveCaughtPortfolioError(caughtError) : t('notebook.delete_failed'));
         }
         finally {
             setIsMutating(false);

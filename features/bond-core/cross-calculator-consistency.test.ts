@@ -47,6 +47,22 @@ vi.mock('@/lib/data/market-data', async () => {
   };
 });
 
+vi.mock('@/lib/server/bonds/offer-terms', async () => {
+  const { BOND_DEFINITIONS: runtimeDefinitions } = await import('./constants/bond-definitions');
+
+  return {
+    resolveBondOfferTerms: vi.fn().mockImplementation((bondType: BondType) => {
+      const definition = runtimeDefinitions[bondType];
+
+      return Promise.resolve({
+        firstYearRate: definition.firstYearRate,
+        margin: definition.margin,
+        source: 'definition-fallback',
+      });
+    }),
+  };
+});
+
 const purchaseDate = '2026-01-01';
 const withdrawalDate = '2036-01-01';
 const initialInvestment = 10000;
