@@ -1,9 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
 import { portfolioClient } from './portfolio-client';
-import { apiGet, apiPost } from './api-client';
+import { apiDelete, apiGet, apiGetWithResponse, apiPatch, apiPost } from './api-client';
 
 vi.mock('./api-client', () => ({
+  apiDelete: vi.fn(),
   apiGet: vi.fn(),
+  apiGetWithResponse: vi.fn(),
+  apiPatch: vi.fn(),
   apiPost: vi.fn(),
 }));
 
@@ -31,5 +34,48 @@ describe('portfolio client', () => {
     await portfolioClient.createLot(input);
 
     expect(apiPost).toHaveBeenCalledWith('/api/portfolio/lots', input);
+  });
+
+  it('routes portfolio workspace operations through shared API primitives', async () => {
+    vi.mocked(apiPost).mockResolvedValue({});
+    vi.mocked(apiDelete).mockResolvedValue({});
+    vi.mocked(apiPatch).mockResolvedValue({});
+    vi.mocked(apiGet).mockResolvedValue([]);
+
+    await portfolioClient.importPortfolio({ portfolio: { name: 'Import', lots: [] } });
+    await portfolioClient.deletePortfolio('p1');
+    await portfolioClient.listLots('p1');
+    await portfolioClient.updateLot('lot1', { amount: 12 });
+    await portfolioClient.deleteLot('lot1');
+    await portfolioClient.simulatePortfolio('p1');
+    await portfolioClient.toggleSharing('p1', true);
+
+    expect(apiPost).toHaveBeenCalledWith('/api/portfolio/import', { portfolio: { name: 'Import', lots: [] } });
+    expect(apiDelete).toHaveBeenCalledWith('/api/portfolio?id=p1');
+    expect(apiGet).toHaveBeenCalledWith('/api/portfolio/lots?portfolioId=p1');
+    expect(apiPatch).toHaveBeenCalledWith('/api/portfolio/lots/lot1', { amount: 12 });
+    expect(apiDelete).toHaveBeenCalledWith('/api/portfolio/lots/lot1');
+    expect(apiPost).toHaveBeenCalledWith('/api/portfolio/simulate', { portfolioId: 'p1' });
+    expect(apiPost).toHaveBeenCalledWith('/api/portfolio/share', { portfolioId: 'p1', isPublic: true });
+  });
+
+  it('preserves export response filename metadata', async () => {
+    vi.mocked(apiGetWithResponse).mockResolvedValueOnce({
+      data: { portfolio: { name: 'Demo' } },
+      response: new Response(null, {
+        headers: {
+          'content-disposition': 'attachment; filename="demo_export.json"',
+        },
+      }),
+    });
+
+    await expect(
+      portfolioClient.exportPortfolio({ id: 'p1', name: 'Demo Portfolio' }, 'package'),
+    ).resolves.toEqual({
+      data: { portfolio: { name: 'Demo' } },
+      fileName: 'demo_export.json',
+    });
+
+    expect(apiGetWithResponse).toHaveBeenCalledWith('/api/portfolio/export?portfolioId=p1&format=package');
   });
 });

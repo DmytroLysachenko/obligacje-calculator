@@ -42,6 +42,22 @@ export async function apiGet<T>(url: string, options: ApiRequestOptions = {}): P
   return parseApiResponse<T>(response);
 }
 
+export async function apiGetWithResponse<T>(
+  url: string,
+  options: ApiRequestOptions = {},
+): Promise<{ data: T; response: Response }> {
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: options.headers,
+    signal: options.signal,
+  });
+
+  return {
+    data: await parseApiResponse<T>(response),
+    response,
+  };
+}
+
 export async function apiPost<T>(
   url: string,
   payload: unknown,
@@ -49,6 +65,24 @@ export async function apiPost<T>(
 ): Promise<T> {
   const response = await fetch(url, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+    body: JSON.stringify(payload),
+    signal: options.signal,
+  });
+
+  return parseApiResponse<T>(response);
+}
+
+export async function apiPatch<T>(
+  url: string,
+  payload: unknown,
+  options: ApiRequestOptions = {},
+): Promise<T> {
+  const response = await fetch(url, {
+    method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
       ...options.headers,
