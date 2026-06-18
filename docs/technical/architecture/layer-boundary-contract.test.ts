@@ -105,8 +105,12 @@ describe('layer boundary contract', () => {
     const routeFiles = [
       'app/api/bond-definitions/route.ts',
       'app/api/calculation-defaults/route.ts',
+      'app/api/calculate/bond-series/route.ts',
+      'app/api/charts/multi-asset-history/route.ts',
       'app/api/charts/inflation/route.ts',
       'app/api/charts/nbp-rate/route.ts',
+      'app/api/community/insights/route.ts',
+      'app/api/admin/status/route.ts',
     ];
 
     for (const routeFile of routeFiles) {
