@@ -162,4 +162,65 @@ describe('buildBondChartDisplayPoints', () => {
     expect(yearly[1]?.dateKey).toBe('2027-06-12');
     expect(yearly.at(-1)?.nominal).toBe(10400);
   });
+
+  it('uses the same purchase-date cadence for quarterly timeline rows', () => {
+    const timeline: YearlyTimelinePoint[] = [
+      makeTimelinePoint({
+        periodLabel: 'Purchase',
+        cycleEndDate: '2026-06-12',
+      }),
+      makeTimelinePoint({
+        periodLabel: 'Year checkpoint',
+        cycleEndDate: '2027-06-12',
+        totalValue: 10400,
+        realValue: 10010,
+        netProfit: 400,
+        isMaturity: true,
+      }),
+    ];
+
+    const rows = buildBondTimelineDisplayRows(timeline, 'en', 'quarterly');
+
+    expect(rows.map((row) => row.periodLabel)).toEqual([
+      'Jun 2026',
+      'Sept 2026',
+      'Dec 2026',
+      'Mar 2027',
+      'Jun 2027',
+    ]);
+    expect(rows.at(-1)).toMatchObject({
+      totalWealth: 10400,
+      netProfit: 400,
+      isWithdrawal: false,
+    });
+  });
+
+  it('keeps yearly timeline rows on actual engine checkpoints', () => {
+    const timeline: YearlyTimelinePoint[] = [
+      makeTimelinePoint({
+        periodLabel: 'Purchase',
+        cycleEndDate: '2026-06-12',
+      }),
+      makeTimelinePoint({
+        periodLabel: 'Year 1',
+        cycleEndDate: '2027-06-12',
+        totalValue: 10375,
+      }),
+      makeTimelinePoint({
+        periodLabel: 'Withdrawal',
+        cycleEndDate: '2027-09-12',
+        totalValue: 10450,
+        isWithdrawal: true,
+      }),
+    ];
+
+    const rows = buildBondTimelineDisplayRows(timeline, 'en', 'yearly');
+
+    expect(rows.map((row) => row.periodLabel)).toEqual([
+      'Jun 2026',
+      'Jun 2027',
+      'Sept 2027',
+    ]);
+    expect(rows.at(-1)?.totalWealth).toBe(10450);
+  });
 });

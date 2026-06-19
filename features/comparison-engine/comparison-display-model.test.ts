@@ -87,4 +87,36 @@ describe('comparison display model', () => {
     });
     expect(quarterly[1]?.label).toBe('Sep 2026');
   });
+
+  it('keeps yearly comparison charts anchored to purchase anniversaries plus terminal date', () => {
+    const yearly = buildComparisonChartData({
+      purchaseDate: '2026-06-12',
+      withdrawalDateA: '2028-09-12',
+      withdrawalDateB: '2028-09-12',
+      resultsA: result([
+        point('2027-06-12', 10535),
+        point('2028-06-12', 11120),
+        point('2028-09-12', 11200),
+      ]),
+      resultsB: result([
+        point('2027-06-12', 10375),
+        point('2028-06-12', 10740),
+        point('2028-09-12', 10800),
+      ]),
+      language: 'en',
+      t: (key) => key,
+      chartStep: 'yearly',
+    });
+
+    expect(yearly.map((item) => item.label)).toEqual([
+      'comparison.start',
+      'Jun 2027',
+      'Jun 2028',
+      'Sep 2028',
+    ]);
+    expect(yearly.at(-1)).toMatchObject({
+      nominalA: 11200,
+      nominalB: 10800,
+    });
+  });
 });

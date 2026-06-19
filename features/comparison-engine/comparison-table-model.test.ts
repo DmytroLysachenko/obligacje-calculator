@@ -99,6 +99,35 @@ describe('comparison aligned table model', () => {
     expect(rows[1]?.dateLabel).toBe('2026-09-12');
   });
 
+  it('keeps yearly table rows on purchase anniversaries and preserves the final withdrawal row', () => {
+    const rows = buildComparisonAlignedTableRows({
+      resultsA: result([
+        point('2027-06-12', 10535),
+        point('2028-06-12', 11120),
+        point('2028-09-12', 11200),
+      ]),
+      resultsB: result([
+        point('2027-06-12', 10375),
+        point('2028-06-12', 10740),
+        point('2028-09-12', 10800),
+      ]),
+      purchaseDate: '2026-06-12',
+      granularity: 'yearly',
+      language: 'en',
+    });
+
+    expect(rows.map((row) => row.dateLabel)).toEqual([
+      '2026-06-12',
+      '2027-06-12',
+      '2028-06-12',
+      '2028-09-12',
+    ]);
+    expect(rows.at(-1)).toMatchObject({
+      gap: -400,
+      leader: 'A',
+    });
+  });
+
   it('paginates aligned comparison rows instead of only truncating the first page', () => {
     const rows = Array.from({ length: 30 }, (_, index) => ({ index }));
 
