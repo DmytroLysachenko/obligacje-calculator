@@ -1,12 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
-import { createSuccessResponse } from '@/shared/types/api';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import {
   PortfolioServiceError,
 } from '@/lib/server/portfolio/errors';
 import { simulateOwnerPortfolio } from '@/lib/server/portfolio/queries';
-import { createDomainErrorResponse } from '@/lib/server/http/responses';
+import { createDomainErrorResponse, okJson } from '@/lib/server/http/responses';
 import { getAuthenticatedPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
 
@@ -27,7 +26,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
 
   try {
     const result = await simulateOwnerPortfolio(owner.ownerId, portfolioId, {expectedInflation});
-    return withPortfolioOwnerResponse(NextResponse.json(createSuccessResponse(result)), owner);
+    return withPortfolioOwnerResponse(okJson(result), owner);
   } catch (error) {
     if (error instanceof PortfolioServiceError) {
       return withPortfolioOwnerResponse(

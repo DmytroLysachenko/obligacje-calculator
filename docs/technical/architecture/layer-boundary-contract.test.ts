@@ -124,4 +124,21 @@ describe('layer boundary contract', () => {
       expect(source, routeFile).not.toContain('NextResponse.json');
     }
   });
+
+  it('keeps migrated portfolio controllers on shared response helpers', () => {
+    const routeFiles = [
+      'app/api/portfolio/route.ts',
+      'app/api/portfolio/lots/route.ts',
+      'app/api/portfolio/simulate/route.ts',
+      'app/api/portfolio/summary/route.ts',
+    ];
+
+    for (const routeFile of routeFiles) {
+      const source = read(routeFile);
+
+      expect(source, routeFile).toContain("from '@/lib/server/http/responses'");
+      expect(source, routeFile).not.toContain('NextResponse.json');
+      expect(source, routeFile).not.toContain('createSuccessResponse');
+    }
+  });
 });

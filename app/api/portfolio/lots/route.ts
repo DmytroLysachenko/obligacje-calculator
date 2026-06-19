@@ -1,11 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { InvestmentLotSchema } from '@/features/bond-core/types/portfolio-schemas';
 import { apiHandler } from '@/lib/server/http/api-handler';
-import { createSuccessResponse } from '@/shared/types/api';
 import { PortfolioServiceError } from '@/lib/server/portfolio/errors';
 import { listPortfolioLots } from '@/lib/server/portfolio/queries';
 import { createPortfolioLot, deleteOwnerLot } from '@/lib/server/portfolio/commands';
-import { createDomainErrorResponse, createValidationErrorResponse } from '@/lib/server/http/responses';
+import { createDomainErrorResponse, createValidationErrorResponse, okJson } from '@/lib/server/http/responses';
 import {
   getAuthenticatedPortfolioRouteContext,
   getPortfolioRouteContext,
@@ -23,7 +22,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
 
   try {
     const lots = await listPortfolioLots(owner.ownerId, portfolioId);
-    return withPortfolioOwnerResponse(NextResponse.json(createSuccessResponse(lots)), owner);
+    return withPortfolioOwnerResponse(okJson(lots), owner);
   } catch (error) {
     if (error instanceof PortfolioServiceError) {
       return createDomainErrorResponse(error);
@@ -43,7 +42,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
 
   try {
     const newLot = await createPortfolioLot(owner.ownerId, validated);
-    return withPortfolioOwnerResponse(NextResponse.json(createSuccessResponse(newLot)), owner);
+    return withPortfolioOwnerResponse(okJson(newLot), owner);
   } catch (error) {
     if (error instanceof PortfolioServiceError) {
       return createDomainErrorResponse(error);
@@ -67,7 +66,7 @@ export const DELETE = apiHandler(async (req: NextRequest) => {
 
   try {
     await deleteOwnerLot(owner.ownerId, id);
-    return withPortfolioOwnerResponse(NextResponse.json(createSuccessResponse({success: true})), owner);
+    return withPortfolioOwnerResponse(okJson({success: true}), owner);
   } catch (error) {
     if (error instanceof PortfolioServiceError) {
       return createDomainErrorResponse(error);

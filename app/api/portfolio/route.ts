@@ -1,8 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { PortfolioSchema } from '@/features/bond-core/types/portfolio-schemas';
-import { createSuccessResponse } from '@/shared/types/api';
 import { apiHandler } from '@/lib/server/http/api-handler';
-import { createDomainErrorResponse, createValidationErrorResponse } from '@/lib/server/http/responses';
+import { createDomainErrorResponse, createValidationErrorResponse, okJson } from '@/lib/server/http/responses';
 import {
   getAuthenticatedPortfolioRouteContext,
   getPortfolioRouteContext,
@@ -16,7 +15,7 @@ export const GET = apiHandler(async () => {
   const { owner } = await getPortfolioRouteContext();
   const portfolios = await listOwnerPortfolios(owner.ownerId);
 
-  return withPortfolioOwnerResponse(NextResponse.json(createSuccessResponse(portfolios)), owner);
+  return withPortfolioOwnerResponse(okJson(portfolios), owner);
 });
 
 export const POST = apiHandler(async (req: NextRequest) => {
@@ -28,7 +27,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
   const validated = PortfolioSchema.parse(body);
   const newPortfolio = await createOwnerPortfolio(owner.ownerId, validated);
 
-  return withPortfolioOwnerResponse(NextResponse.json(createSuccessResponse(newPortfolio)), owner);
+  return withPortfolioOwnerResponse(okJson(newPortfolio), owner);
 });
 
 export const DELETE = apiHandler(async (req: NextRequest) => {
@@ -50,7 +49,7 @@ export const DELETE = apiHandler(async (req: NextRequest) => {
     const deletedPortfolio = await deleteOwnerPortfolio(owner.ownerId, id);
 
     return withPortfolioOwnerResponse(
-      NextResponse.json(createSuccessResponse(deletedPortfolio)),
+      okJson(deletedPortfolio),
       owner,
     );
   } catch (error) {
