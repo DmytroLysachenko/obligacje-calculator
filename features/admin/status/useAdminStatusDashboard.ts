@@ -2,24 +2,11 @@
 
 import {useCallback, useEffect, useState} from 'react';
 import {useAppI18n} from '@/i18n/client';
+import { ApiClientError } from '@/shared/lib/api-client';
+import { adminClient, AdminSeriesStatus, AdminStatusData, AdminSyncMode } from '@/shared/lib/admin-client';
 
-export interface SeriesStatus {
-  id: string;
-  name: string;
-  slug: string;
-  frequency: string;
-  lastDataPointDate: string | null;
-  pointCount: number;
-  updatedAt: string | null;
-  lastSyncStatus: string | null;
-  lastSyncError: string | null;
-}
-
-export interface StatusData {
-  series: SeriesStatus[];
-  systemTime: string;
-  env: string;
-}
+export type SeriesStatus = AdminSeriesStatus;
+export type StatusData = AdminStatusData;
 
 export function useAdminStatusDashboard() {
   const {t} = useAppI18n();
@@ -37,25 +24,10 @@ export function useAdminStatusDashboard() {
     setError(null);
 
     try {
-      const response = await fetch('/api/admin/status', {
-        headers: {
-          Authorization: `Bearer ${secret}`,
-        },
-      });
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          throw new Error('Unauthorized');
-        }
-
-        throw new Error('Fetch failed');
-      }
-
-      const result = await response.json();
-      setData(result.data);
+      setData(await adminClient.getStatus(secret));
     } catch (err: unknown) {
       setError(
-        err instanceof Error && err.message === 'Unauthorized'
+        err instanceof ApiClientError && err.status === 401
           ? t('admin.access_required')
           : t('admin.status_error'),
       );
@@ -65,35 +37,18 @@ export function useAdminStatusDashboard() {
   }, [secret, t]);
 
   const executeSync = useCallback(
-    async (mode: 'full-sync') => {
+    async (mode: AdminSyncMode) => {
       setSyncing(true);
       setError(null);
 
       try {
-        const response = await fetch('/api/admin/sync', {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${secret}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({mode}),
-        });
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            throw new Error('Unauthorized');
-          }
-
-          const errData = await response.json();
-          throw new Error(errData.error || 'Sync failed');
-        }
-
+        await adminClient.runSync(secret, mode);
         await fetchStatus();
         setToastTone('success');
         setToastMessage(t('admin.sync_success'));
       } catch (err: unknown) {
         const message =
-          err instanceof Error && err.message === 'Unauthorized'
+          err instanceof ApiClientError && err.status === 401
             ? t('admin.access_required')
             : t('admin.status_error');
         setError(message);
@@ -124,7 +79,7 @@ export function useAdminStatusDashboard() {
     void fetchStatus();
   }, [fetchStatus, secret]);
 
-  const requestSync = useCallback((mode: 'full-sync') => {
+  const requestSync = useCallback((mode: AdminSyncMode) => {
     setPendingMode(mode);
   }, []);
 
