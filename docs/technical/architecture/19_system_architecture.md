@@ -15,6 +15,9 @@ Shared browser-facing gateways live under `shared/lib`:
 - `api-client.ts` owns fetch behavior, JSON parsing, and API errors.
 - `calculation-endpoints.ts` maps `ScenarioKind` to calculation endpoints.
 - `portfolio-client.ts` owns migrated portfolio API calls.
+- `admin-client.ts`, `bond-series-client.ts`, `scenario-share-client.ts`, and
+  `sync-client.ts` own the remaining browser API calls for admin, metadata,
+  sharing, and opportunistic sync surfaces.
 - `calculator-state.ts` owns display-only stripping, stable state comparison, and envelope restoration.
 
 `app/api/**/route.ts` files should only:
@@ -49,6 +52,8 @@ Core financial behavior lives in `features/bond-core`:
 7. The UI renders results through display adapters, chart models, and table models.
 
 Chart granularity is a display setting. It must never become engine input or change calculation truth.
+Quarterly and yearly chart or table views are anchored to the purchase-date
+cadence and must preserve terminal withdrawal values.
 
 The portfolio stack is moving toward the same boundary model:
 
@@ -57,6 +62,9 @@ The portfolio stack is moving toward the same boundary model:
 - Reads go through `lib/server/portfolio/queries.ts`.
 - Mutations go through `lib/server/portfolio/commands.ts`.
 - Route error handling imports `PortfolioServiceError` from `lib/server/portfolio/errors.ts`, not the legacy service module.
+- Migrated API routes return through `lib/server/http/responses.ts`; raw
+  `NextResponse.json(createSuccessResponse(...))` should not be reintroduced in
+  touched controllers.
 
 ## 3. Boundary Enforcement
 

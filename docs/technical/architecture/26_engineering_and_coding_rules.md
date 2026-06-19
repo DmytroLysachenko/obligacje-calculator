@@ -212,6 +212,12 @@ Formatting rules belong here too:
 - do not create page-local `Intl.*Format` instances repeatedly inside large route components when the same behavior already exists in shared formatters/hooks
 - if formatting semantics are user-visible across multiple surfaces, centralize them
 - comparison, single, regular, ladder, and other retained calculators should prefer one normalized display adapter over page-local chart/table/export transformations
+- browser API calls belong behind narrow shared clients; feature components and
+  hooks should not parse API envelopes, compose auth headers, or hardcode
+  endpoint request details when a client gateway exists
+- API route controllers should use shared response helpers for standard JSON
+  envelopes and should keep ownership/auth checks, validation, and service calls
+  visibly separate
 
 ## 6.1 Calculator Shell Hierarchy
 

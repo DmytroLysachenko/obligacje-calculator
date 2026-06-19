@@ -29,7 +29,10 @@ Before release candidate signoff:
 - portfolio single-lot simulation agrees with matching single-bond output
 - real-value output moves correctly when CPI changes
 - ROR/DOR monthly payout, rollover, rebuy discount, and tax paths have coverage
-- chart and table aggregation remains display-only and preserves terminal values
+- ROR/DOR retained-interest displays distinguish per-cycle retained interest from
+  cumulative total wealth
+- chart and table aggregation remains display-only, starts at the purchase date,
+  and preserves terminal values
 
 ## Data And Sync Gates
 
@@ -54,6 +57,10 @@ production build. The broader `pnpm test:ci` inventory still contains legacy UI
 contract tests that should be reconciled before treating the entire repository as
 fully production-certified.
 
+The release suite also locks Cloud Run artifacts and API/controller boundaries:
+browser surfaces route API calls through shared clients, and migrated API routes
+return through shared response helpers.
+
 Deployment checks:
 
 - Docker image builds from `Dockerfile`
@@ -63,6 +70,8 @@ Deployment checks:
 - `/login` shows configured OAuth providers
 - signed-in `/api/portfolio/access` reports `canManageWorkspace: true`
 - `/admin/status` is protected by `SYNC_SECRET`
+- single and comparison monthly/quarterly/yearly chart and table views are
+  anchored to purchase date and preserve final withdrawal values
 
 ## Manual QA Smoke
 

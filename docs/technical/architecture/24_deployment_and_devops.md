@@ -71,6 +71,13 @@ Run release checks before building:
 pnpm check:release
 ```
 
+This gate runs typecheck, lint, the trusted release Vitest contracts, and the
+Next production build. It includes deterministic checks for `Dockerfile`,
+`cloudbuild.yaml`, health/readiness routes, and the package release script.
+On Windows, Next standalone tracing may print a local copy warning for Node
+externals while still exiting successfully; treat Linux Cloud Build and Cloud Run
+health/readiness checks as the production signal.
+
 Apply migrations and seed/sync the target database before promoting traffic:
 
 ```bash
@@ -96,6 +103,12 @@ Secret Manager. Do not commit `.env` files.
 - Run `pnpm check:release` before promoting a build. This is the trusted-core
   Cloud Run gate; run `pnpm test:ci` separately when reconciling the broader
   legacy UI contract inventory.
+- Keep browser API calls behind shared clients (`admin-client`,
+  `bond-series-client`, `portfolio-client`, `scenario-share-client`,
+  `sync-client`) so UI code does not own request envelopes.
+- Keep route responses on `okJson`, `createdJson`, `errorJson`, or the existing
+  domain response helpers unless a route intentionally streams or returns a
+  non-envelope response.
 - Verify `/api/health` returns `ok: true`.
 - Verify `/api/readiness` returns `ok: true` after production env and database
   setup are complete.
@@ -104,6 +117,8 @@ Secret Manager. Do not commit `.env` files.
 - Verify `/admin/status` shows recent `sync_runs` rows after a manual sync.
 - Verify calculation meta displays both data coverage and last sync attempt when
   sync history is present.
+- Verify single and comparison chart/table monthly, quarterly, and yearly views
+  start at the purchase date and preserve the final withdrawal value.
 - Verify single, comparison, regular investment, ladder, notebook, and economic
   data routes load on desktop and mobile widths.
 
