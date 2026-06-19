@@ -10,6 +10,7 @@ import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/sh
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
+import { bondSeriesClient, BondSeriesMetadata } from '@/shared/lib/bond-series-client';
 import {
   preserveStableState,
   restoreVersionedEnvelope,
@@ -54,14 +55,6 @@ interface PersistedSingleCalculatorState {
   isDirty: boolean;
 }
 
-interface BondSeries {
-  id: string;
-  seriesCode: string;
-  firstYearRate: string | number;
-  baseMargin: string | number;
-  emissionMonth: string;
-}
-
 function applyDefinitionToInputs(
   previous: BondInputs,
   definition: typeof BOND_DEFINITIONS[BondType],
@@ -96,7 +89,7 @@ export function useBondCalculator(initialInputs?: BondInputs) {
   const [isDirty, setIsDirty] = useState(
     initialInputs ? false : true,
   );
-  const [availableSeries, setAvailableSeries] = useState<BondSeries[]>([]);
+  const [availableSeries, setAvailableSeries] = useState<BondSeriesMetadata[]>([]);
   const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(
     initialInputs?.selectedSeriesId ?? null,
   );
@@ -229,9 +222,7 @@ export function useBondCalculator(initialInputs?: BondInputs) {
   const fetchSeries = useCallback(async (symbol: BondType) => {
     try {
       await Promise.resolve();
-      const response = await fetch(`/api/calculate/bond-series?symbol=${symbol}`);
-      const data = await response.json();
-      setAvailableSeries(data.result || []);
+      setAvailableSeries(await bondSeriesClient.listBySymbol(symbol));
     } catch (error) {
       console.error('Failed to fetch series:', error);
     }
