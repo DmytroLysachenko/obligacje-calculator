@@ -165,6 +165,58 @@ describe('production scenario calculation regressions', () => {
     expect(cycleFourProjectedNbp?.interestRate).toBe(6);
   });
 
+  it('keeps ROR rollover wealth cumulative while per-cycle retained interest resets', () => {
+    const result = calculateBondInvestment(singleInputs(BondType.ROR, {
+      initialInvestment: 100,
+      duration: 1,
+      firstYearRate: 4,
+      expectedInflation: 3.8,
+      expectedNbpRate: 3.75,
+      margin: 0,
+      isCapitalized: false,
+      payoutFrequency: InterestPayout.MONTHLY,
+      withdrawalDate: '2036-05-27T00:00:00.000Z',
+      investmentHorizonMonths: 120,
+      rollover: true,
+      isRebought: true,
+      rebuyDiscount: 0.1,
+    }));
+    const firstMaturity = result.timeline.find((point) => point.cycleIndex === 1 && point.isMaturity);
+    const firstRolloverMonth = result.timeline.find(
+      (point) => point.cycleIndex === 2 && point.events?.some((event) => event.type === 'ROLLOVER_PURCHASE'),
+    );
+    const finalPoint = result.timeline.at(-1);
+
+    expectSingleBondAccountingIdentity(result);
+    expect(firstMaturity?.accumulatedNetInterest).toBeGreaterThan(3);
+    expect(firstRolloverMonth?.accumulatedNetInterest).toBeLessThan(1);
+    expect(firstRolloverMonth?.totalValue).toBeGreaterThan(firstMaturity?.totalValue ?? 0);
+    expect(finalPoint?.totalValue).toBeCloseTo(result.netPayoutValue, 2);
+    expect(result.netPayoutValue).toBeGreaterThan(138);
+    expect(result.totalProfit).toBeCloseTo(result.netPayoutValue - 100, 2);
+  });
+
+  it('shows low-value ROR nominal gain can still lose real purchasing power', () => {
+    const result = calculateBondInvestment(singleInputs(BondType.ROR, {
+      initialInvestment: 100,
+      duration: 1,
+      firstYearRate: 4,
+      expectedInflation: 3.8,
+      expectedNbpRate: 3.75,
+      margin: 0,
+      isCapitalized: false,
+      payoutFrequency: InterestPayout.MONTHLY,
+      withdrawalDate: '2036-05-27T00:00:00.000Z',
+      investmentHorizonMonths: 120,
+      rollover: true,
+    }));
+
+    expect(result.netPayoutValue).toBeGreaterThan(result.initialInvestment);
+    expect(result.finalRealValue).toBeLessThan(result.initialInvestment);
+    expect(result.realAnnualizedReturn).toBeLessThan(0);
+    expect(result.finalRealValue).toBeLessThan(result.netPayoutValue);
+  });
+
   it('keeps early-exit payout value at or above principal when official fee is capped by earned interest', () => {
     const result = calculateBondInvestment(singleInputs(BondType.EDO, {
       initialInvestment: 10000,
