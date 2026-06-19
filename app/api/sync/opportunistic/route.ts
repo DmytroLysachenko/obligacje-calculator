@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import {
   getOpportunisticSyncStatus,
   triggerOpportunisticSync,
 } from '@/lib/server/sync/opportunistic-service';
+import { okJson } from '@/lib/server/http/responses';
 
 export async function GET() {
   const cookieStore = await cookies();
@@ -11,14 +11,14 @@ export async function GET() {
 
   const syncStatus = getOpportunisticSyncStatus(lastSyncCookie);
   if (syncStatus.status === 'cooldown') {
-    return NextResponse.json(syncStatus);
+    return okJson(syncStatus);
   }
 
-  const response = NextResponse.json({ status: 'triggered' });
-  response.cookies.set('last_sync_check', new Date().toISOString(), { 
+  const response = okJson({ status: 'triggered' as const });
+  response.cookies.set('last_sync_check', new Date().toISOString(), {
     maxAge: 60 * 60 * 12,
     path: '/',
-    httpOnly: true
+    httpOnly: true,
   });
 
   (async () => {

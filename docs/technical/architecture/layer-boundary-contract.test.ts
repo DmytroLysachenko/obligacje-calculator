@@ -113,6 +113,8 @@ describe('layer boundary contract', () => {
       'app/api/charts/nbp-rate/route.ts',
       'app/api/community/insights/route.ts',
       'app/api/admin/status/route.ts',
+      'app/api/admin/sync/route.ts',
+      'app/api/sync/opportunistic/route.ts',
     ];
 
     for (const routeFile of routeFiles) {
