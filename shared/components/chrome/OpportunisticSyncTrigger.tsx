@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { syncClient } from '@/shared/lib/sync-client';
 
 export const OpportunisticSyncTrigger = () => {
   useEffect(() => {
@@ -9,7 +10,7 @@ export const OpportunisticSyncTrigger = () => {
     }
 
     const timer = setTimeout(() => {
-      fetch('/api/sync/opportunistic').catch(() => {});
+      syncClient.triggerOpportunisticSync().catch(() => {});
     }, 2000);
 
     return () => clearTimeout(timer);
