@@ -17,6 +17,7 @@ import { SecondaryInsightAccordion } from '@/shared/components/results/Secondary
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { generateSingleBondReportPdf } from '@/shared/lib/pdf-utils';
 import { buildSharedSingleScenarioPayload } from '@/shared/lib/single-scenario-share';
+import { scenarioShareClient } from '@/shared/lib/scenario-share-client';
 import { portfolioClient } from '@/shared/lib/portfolio-client';
 import {
   getStoredCurrentPortfolioId,
@@ -169,22 +170,8 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
       `Committed single-bond scenario for ${lastCommittedInputs.bondType}.`,
     );
 
-    const response = await fetch('/api/scenarios/share', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await response.json();
-    const shareUrl = data?.data?.shareUrl as string | undefined;
-
-    if (!response.ok || !shareUrl) {
-      throw new Error(data?.error?.message || 'Failed to create share link.');
-    }
-
-    return shareUrl;
+    const shareSnapshot = await scenarioShareClient.createSingleScenario(payload);
+    return shareSnapshot.shareUrl;
   };
 
   const handleApplyGuardrailFix = (issue: InputGuardrailIssue) => {
