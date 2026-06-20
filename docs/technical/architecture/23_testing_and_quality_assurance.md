@@ -35,3 +35,8 @@ Financial applications require a rigorous testing strategy to ensure mathematica
 ## 5. Deployment Checks
 - **Staging Environment:** All changes deployed to a staging URL for final verification before production.
 - **Smoke Tests:** Automated check of the 5 most popular bond calculators immediately after deployment.
+
+## 6. Release Contracts
+- `pnpm test:release` runs the calculation, worker, data freshness, API readiness, deployment, product readiness, script, and clean-code contract suites.
+- `docs/technical/architecture/clean-code-contract.test.ts` blocks broad code-smell regressions in production paths: stale TODO/FIXME/debug markers, unmanaged route responses, direct feature-layer fetch calls, and undocumented lint-disable comments.
+- When a new architecture rule becomes release-critical, add or update a contract test in the same change as the documentation.

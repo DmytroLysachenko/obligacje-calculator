@@ -146,6 +146,8 @@ If code is no longer used, delete it. If context is important, preserve it in co
 
 Short explanatory comments are allowed only when they clarify non-obvious intent or a financial/product rule that would otherwise be hard to infer from the code.
 
+Do not commit TODO, FIXME, `debugger`, or `@ts-ignore` markers. If a known defect must remain, capture it in docs or a tracked issue with enough context to reproduce it.
+
 ## 4. No Dead Legacy Paths
 
 Do not preserve old code “just in case.”
@@ -156,6 +158,7 @@ When a path is replaced:
 - remove duplicate helper logic
 - remove stale adapters and unused props
 - remove obsolete local state and fallback branches that are no longer part of the chosen design
+- delete pass-through facade files after their responsibilities move into commands, queries, clients, models, or services
 
 Leaving old code beside new code is treated as unfinished work unless there is an explicit migration boundary documented in the architecture docs.
 
@@ -190,6 +193,14 @@ Signals that a component is too large:
 - heavy conditional forests
 - inline domain calculations
 - many local helper functions that should be shared or extracted
+
+When touching a large component, extract in this order:
+
+- pure model logic first
+- presentational sections second
+- controls, toolbars, and local event orchestration third
+
+This keeps behavior testable before markup is moved.
 
 ## 6. Shared Logic Belongs in Shared Helpers
 
@@ -336,6 +347,19 @@ A change is not production-ready if it:
 - hides domain truth inside page-local UI conditionals
 
 The default review posture for this repository is to reject these patterns rather than tolerate them.
+
+## 10.1 Release Clean-Code Gates
+
+`docs/technical/architecture/clean-code-contract.test.ts` enforces the current clean-code boundaries:
+
+- no stale TODO/FIXME/debug markers in production paths
+- direct browser fetch only through approved client modules
+- API JSON responses through shared response helpers except documented platform endpoints
+- lint-disable comments only in documented exceptions
+
+Update that contract when the architecture intentionally changes. Do not weaken it to land unrelated work.
+
+New release-blocking boundaries should be added to a contract test first, then documented in the project map or architecture rules.
 
 ## 11. Folder and Layer Boundaries
 
