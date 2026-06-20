@@ -9,6 +9,7 @@ const files = {
   container: 'features/comparison-engine/components/ComparisonContainer.tsx',
   results: 'features/comparison-engine/components/ComparisonResultsPanel.tsx',
   table: 'features/comparison-engine/components/ComparisonTable.tsx',
+  tableParts: 'features/comparison-engine/components/comparison-table/ComparisonTableParts.tsx',
   tableModel: 'features/comparison-engine/lib/comparison-table-model.ts',
   hook: 'features/comparison-engine/hooks/useComparison.ts',
 } as const;
@@ -80,19 +81,23 @@ describe('comparison layout contract', () => {
 
   it('keeps comparison table date-aligned instead of pairing timeline rows by index', () => {
     const table = read(files.table);
+    const tableParts = read(files.tableParts);
     const tableModel = read(files.tableModel);
 
     expect(table).toContain('buildComparisonAlignedTableRows');
-    expect(table).toContain('ComparisonScenarioSnapshot');
+    expect(table).toContain('ComparisonTableParts');
     expect(table).toContain('getComparisonTablePageRows');
     expect(table).toContain('getComparisonTablePageCount');
     expect(tableModel).toContain('projectTimelineSnapshot');
     expect(tableModel).toContain('ComparisonScenarioSnapshot');
     expect(tableModel).toContain('getComparisonTablePageRows');
     expect(tableModel).toContain('getComparisonTablePageCount');
+    expect(tableParts).toContain('ComparisonTablePaginationControls');
+    expect(tableParts).toContain('MobileComparisonScenario');
+    expect(tableParts).toContain('ComparisonScenarioSnapshot');
     expect(table).toContain('<ComparisonTablePaginationControls');
-    expect(table).toContain('disabled={page <= 1}');
-    expect(table).toContain('disabled={page >= totalPages}');
+    expect(tableParts).toContain('disabled={page <= 1}');
+    expect(tableParts).toContain('disabled={page >= totalPages}');
     expect(table).toContain("(['monthly', 'quarterly', 'yearly'] as ComparisonTableGranularity[])");
     expect(table).not.toContain('resultsA.timeline[i]');
     expect(table).not.toContain('resultsB.timeline[i]');
