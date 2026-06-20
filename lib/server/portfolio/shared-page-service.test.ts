@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   buildSharedPortfolioPageMetadata,
   getPublicSharedPortfolioPageData,
-} from './service';
+} from './shared-page-service';
 import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
 
 vi.mock('@/lib/server/db/portfolio-schema-compat', () => ({
@@ -31,38 +31,6 @@ vi.mock('./repository', () => ({
       isPublic: true,
     };
   }),
-  createLot: vi.fn(),
-  createLotWithBuyTransaction: vi.fn(),
-  createPortfolio: vi.fn(),
-  deleteLotById: vi.fn(),
-  deletePortfolioById: vi.fn(),
-  findPortfolioById: vi.fn(),
-  listLotsByPortfolio: vi.fn(),
-  listLotsByPortfolioIds: vi.fn(),
-  listPortfoliosByOwner: vi.fn(),
-  updateLotById: vi.fn(),
-  updatePortfolioVisibility: vi.fn(),
-}));
-
-vi.mock('@/features/bond-core/application-service', () => ({
-  calculationService: {},
-}));
-
-vi.mock('@/lib/data/market-data', () => ({
-  getMacroAssumptionDefaults: vi.fn(),
-}));
-
-vi.mock('@/lib/server/bonds/offer-terms', () => ({
-  resolveStoredBondLotContext: vi.fn(),
-}));
-
-vi.mock('@/lib/server/portfolio/simulation', () => ({
-  buildPortfolioSimulationPayload: vi.fn(),
-}));
-
-vi.mock('@/lib/server/portfolio/access', () => ({
-  getOwnedLot: vi.fn(),
-  getOwnedPortfolio: vi.fn(),
 }));
 
 describe('shared portfolio page service', () => {

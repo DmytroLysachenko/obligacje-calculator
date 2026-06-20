@@ -11,7 +11,7 @@ const files = {
   lotsTab: 'features/notebook/components/portfolio-details/PortfolioLotsTab.tsx',
   analyticsTab: 'features/notebook/components/portfolio-details/PortfolioAnalyticsTab.tsx',
   sharedPortfolioPage: 'app/shared-portfolios/[shareId]/page.tsx',
-  portfolioService: 'lib/server/portfolio/service.ts',
+  sharedPageService: 'lib/server/portfolio/shared-page-service.ts',
 } as const;
 
 function read(relativePath: string) {
@@ -121,7 +121,7 @@ describe('portfolio notebook surface contract', () => {
 
   it('keeps shared portfolio notice divider-led and read-only clear', () => {
     const source = read(files.sharedPortfolioPage);
-    const service = read(files.portfolioService);
+    const service = read(files.sharedPageService);
 
     expectContains(source, 'getPublicSharedPortfolioPageData');
     expectContains(source, 'buildSharedPortfolioPageMetadata');
