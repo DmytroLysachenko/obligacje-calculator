@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 const root = process.cwd();
 const deploymentDoc = 'docs/technical/architecture/24_deployment_and_devops.md';
+const docsIndex = 'docs/index.md';
 
 function readDoc() {
   return readFileSync(join(root, deploymentDoc), 'utf8');
@@ -60,5 +61,15 @@ describe('deployment documentation contract', () => {
     expect(source).toContain('Verify `/api/portfolio/access` reports `canManageWorkspace: true` after sign-in.');
     expect(source).toContain('Verify `/admin/status` shows recent `sync_runs` rows after a manual sync.');
     expect(source).toContain('Verify calculation meta displays both data coverage and last sync attempt');
+  });
+
+  it('keeps the project map discoverable from the documentation index', () => {
+    const source = readFileSync(join(root, docsIndex), 'utf8');
+    const projectMap = readFileSync(join(root, 'docs/technical/architecture/28_project_map.md'), 'utf8');
+
+    expect(source).toContain('./technical/architecture/28_project_map.md');
+    expect(projectMap).toContain('Browser API calls belong behind `shared/lib/*-client.ts`');
+    expect(projectMap).toContain('Portfolio writes live in `lib/server/portfolio/commands.ts`');
+    expect(projectMap).toContain('Large components should be reduced by extracting pure models first');
   });
 });
