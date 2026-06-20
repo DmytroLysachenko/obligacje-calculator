@@ -1,0 +1,82 @@
+import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { join, relative } from 'node:path';
+import { describe, expect, it } from 'vitest';
+
+const root = process.cwd();
+const codeRoots = ['app', 'features', 'shared', 'lib'];
+const codeExtensions = new Set(['.ts', '.tsx']);
+
+function read(relativePath: string) {
+  return readFileSync(join(root, relativePath), 'utf8').replace(/\r\n/g, '\n');
+}
+
+function listCodeFiles(directory: string): string[] {
+  const absoluteDirectory = join(root, directory);
+
+  return readdirSync(absoluteDirectory).flatMap((entry) => {
+    const absolutePath = join(absoluteDirectory, entry);
+    const relativePath = relative(root, absolutePath).replace(/\\/g, '/');
+    const stat = statSync(absolutePath);
+
+    if (stat.isDirectory()) {
+      if (entry === 'node_modules' || entry === '.next') {
+        return [];
+      }
+      return listCodeFiles(relativePath);
+    }
+
+    const extension = relativePath.slice(relativePath.lastIndexOf('.'));
+    return codeExtensions.has(extension) ? [relativePath] : [];
+  });
+}
+
+function filesContaining(pattern: RegExp) {
+  return codeRoots
+    .flatMap(listCodeFiles)
+    .filter((file) => pattern.test(read(file)));
+}
+
+describe('clean code architecture contract', () => {
+  it('keeps browser fetch calls behind approved gateway and worker files', () => {
+    const approvedFetchFiles = new Set([
+      'shared/lib/api-client.ts',
+      'shared/lib/calculation-client.ts',
+      'shared/workers/calculation.worker.ts',
+    ]);
+    const matches = filesContaining(/\bfetch\(/)
+      .filter((file) => file.startsWith('app/') || file.startsWith('features/') || file.startsWith('shared/'))
+      .filter((file) => !file.endsWith('.test.ts') && !file.endsWith('.test.tsx'))
+      .filter((file) => !approvedFetchFiles.has(file));
+
+    expect(matches).toEqual([]);
+  });
+
+  it('keeps app api route response envelopes on shared helpers', () => {
+    const allowedRawJsonRoutes = new Set([
+      'app/api/health/route.ts',
+      'app/api/readiness/route.ts',
+      'app/api/portfolio/access/route.ts',
+    ]);
+    const matches = filesContaining(/NextResponse\.json/)
+      .filter((file) => file.startsWith('app/api/'))
+      .filter((file) => !allowedRawJsonRoutes.has(file));
+
+    expect(matches).toEqual([]);
+  });
+
+  it('keeps broad lint and comment escape hatches explicit', () => {
+    const approvedDisableFiles = new Set([
+      'shared/components/MacroAdjuster.tsx',
+      'shared/hooks/useQuerySync.ts',
+      'shared/workers/data-processor.worker.ts',
+      'lib/sync/seed-series.ts',
+    ]);
+    const disallowedMarkers = filesContaining(/TODO|FIXME|debugger|@ts-ignore/)
+      .filter((file) => !file.endsWith('clean-code-contract.test.ts'));
+    const unapprovedLintDisables = filesContaining(/eslint-disable/)
+      .filter((file) => !approvedDisableFiles.has(file));
+
+    expect(disallowedMarkers).toEqual([]);
+    expect(unapprovedLintDisables).toEqual([]);
+  });
+});
