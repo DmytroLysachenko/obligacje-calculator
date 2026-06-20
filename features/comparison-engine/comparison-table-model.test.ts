@@ -4,7 +4,7 @@ import {
   buildComparisonAlignedTableRows,
   getComparisonTablePageCount,
   getComparisonTablePageRows,
-} from './components/ComparisonTable';
+} from './lib/comparison-table-model';
 
 function point(date: string, totalValue: number) {
   return {

@@ -9,6 +9,7 @@ const files = {
   container: 'features/comparison-engine/components/ComparisonContainer.tsx',
   results: 'features/comparison-engine/components/ComparisonResultsPanel.tsx',
   table: 'features/comparison-engine/components/ComparisonTable.tsx',
+  tableModel: 'features/comparison-engine/lib/comparison-table-model.ts',
   hook: 'features/comparison-engine/hooks/useComparison.ts',
 } as const;
 
@@ -79,12 +80,16 @@ describe('comparison layout contract', () => {
 
   it('keeps comparison table date-aligned instead of pairing timeline rows by index', () => {
     const table = read(files.table);
+    const tableModel = read(files.tableModel);
 
     expect(table).toContain('buildComparisonAlignedTableRows');
-    expect(table).toContain('projectTimelineSnapshot');
     expect(table).toContain('ComparisonScenarioSnapshot');
     expect(table).toContain('getComparisonTablePageRows');
     expect(table).toContain('getComparisonTablePageCount');
+    expect(tableModel).toContain('projectTimelineSnapshot');
+    expect(tableModel).toContain('ComparisonScenarioSnapshot');
+    expect(tableModel).toContain('getComparisonTablePageRows');
+    expect(tableModel).toContain('getComparisonTablePageCount');
     expect(table).toContain('<ComparisonTablePaginationControls');
     expect(table).toContain('disabled={page <= 1}');
     expect(table).toContain('disabled={page >= totalPages}');
