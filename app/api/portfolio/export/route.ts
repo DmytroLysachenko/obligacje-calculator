@@ -1,9 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { apiHandler } from '@/lib/server/http/api-handler';
-import { createSuccessResponse } from '@/shared/types/api';
 import { PortfolioServiceError } from '@/lib/server/portfolio/errors';
 import { exportOwnerPortfolio } from '@/lib/server/portfolio/queries';
-import { createDomainErrorResponse } from '@/lib/server/http/responses';
+import { createDomainErrorResponse, createValidationErrorResponse, okJson } from '@/lib/server/http/responses';
 import { getAuthenticatedPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
 
 export const GET = apiHandler(async (req: NextRequest) => {
@@ -16,7 +15,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
   const formatMode = searchParams.get('format') ?? 'portfolio';
 
   if (!portfolioId) {
-    throw new Error('Portfolio ID is required');
+    return createValidationErrorResponse('Portfolio ID is required', 'MISSING_PARAM');
   }
 
   try {
@@ -26,7 +25,7 @@ export const GET = apiHandler(async (req: NextRequest) => {
       formatMode === 'package' ? 'package' : 'portfolio',
     );
 
-    const response = NextResponse.json(createSuccessResponse(exportData), {
+    const response = okJson(exportData, {
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
         'Content-Disposition': `attachment; filename="${fileName}"`,

@@ -131,7 +131,10 @@ describe('layer boundary contract', () => {
       'app/api/portfolio/lots/route.ts',
       'app/api/portfolio/lots/[id]/route.ts',
       'app/api/portfolio/lots/save/route.ts',
+      'app/api/portfolio/share/route.ts',
       'app/api/portfolio/simulate/route.ts',
+      'app/api/portfolio/import/route.ts',
+      'app/api/portfolio/export/route.ts',
       'app/api/portfolio/summary/route.ts',
     ];
 

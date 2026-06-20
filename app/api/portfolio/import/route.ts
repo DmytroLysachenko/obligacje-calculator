@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { apiHandler } from '@/lib/server/http/api-handler';
-import { createErrorResponse, createSuccessResponse } from '@/shared/types/api';
+import { errorJson, okJson } from '@/lib/server/http/responses';
 import { importOwnerPortfolio } from '@/lib/server/portfolio/commands';
 import { getAuthenticatedPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
 
@@ -30,20 +30,17 @@ export const POST = apiHandler(async (req: NextRequest) => {
   const parsed = ImportPayloadSchema.safeParse(body);
 
   if (!parsed.success) {
-    return NextResponse.json(
-      createErrorResponse('Invalid import payload', 'IMPORT_VALIDATION_ERROR', parsed.error.issues),
-      { status: 400 },
-    );
+    return errorJson('Invalid import payload', 'IMPORT_VALIDATION_ERROR', parsed.error.issues, { status: 400 });
   }
 
   const { portfolio } = parsed.data;
   const importedPortfolio = await importOwnerPortfolio(owner.ownerId, portfolio);
 
   return withPortfolioOwnerResponse(
-    NextResponse.json(createSuccessResponse({
+    okJson({
       portfolio: importedPortfolio.portfolio,
       importedLots: importedPortfolio.importedLots,
-    })),
+    }),
     owner,
   );
 });
