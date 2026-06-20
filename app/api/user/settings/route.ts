@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createSuccessResponse } from '@/shared/types/api';
+import { NextRequest } from 'next/server';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { z } from 'zod';
 import { getOwnerSettings, updateOwnerSettings } from '@/lib/server/settings/service';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
 import { getPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
+import { okJson } from '@/lib/server/http/responses';
 
 const UserSettingsUpdateSchema = z.object({
   currency: z.string().optional(),
@@ -17,7 +17,7 @@ export const GET = apiHandler(async () => {
   const { owner } = await getPortfolioRouteContext();
   const settings = await getOwnerSettings(owner.ownerId);
 
-  return withPortfolioOwnerResponse(NextResponse.json(createSuccessResponse(settings)), owner);
+  return withPortfolioOwnerResponse(okJson(settings), owner);
 });
 
 export const PATCH = apiHandler(async (req: NextRequest) => {
@@ -25,6 +25,6 @@ export const PATCH = apiHandler(async (req: NextRequest) => {
   const validated = await readJsonBody(req, UserSettingsUpdateSchema);
   const updated = await updateOwnerSettings(owner.ownerId, validated);
 
-  return withPortfolioOwnerResponse(NextResponse.json(createSuccessResponse(updated)), owner);
+  return withPortfolioOwnerResponse(okJson(updated), owner);
 });
 
