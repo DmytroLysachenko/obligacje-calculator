@@ -129,6 +129,8 @@ describe('layer boundary contract', () => {
     const routeFiles = [
       'app/api/portfolio/route.ts',
       'app/api/portfolio/lots/route.ts',
+      'app/api/portfolio/lots/[id]/route.ts',
+      'app/api/portfolio/lots/save/route.ts',
       'app/api/portfolio/simulate/route.ts',
       'app/api/portfolio/summary/route.ts',
     ];

@@ -1,9 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
-import { createSuccessResponse, createErrorResponse } from '@/shared/types/api';
 import { PortfolioServiceError } from '@/lib/server/portfolio/errors';
 import { createPortfolioLotWithBuyTransaction } from '@/lib/server/portfolio/commands';
-import { createDomainErrorResponse } from '@/lib/server/http/responses';
+import { createDomainErrorResponse, errorJson, okJson } from '@/lib/server/http/responses';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { getAuthenticatedPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
@@ -37,7 +36,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
     });
 
     return withPortfolioOwnerResponse(
-      NextResponse.json(createSuccessResponse(result)),
+      okJson(result),
       owner
     );
   } catch (error) {
@@ -46,7 +45,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
     }
 
     console.error('Failed to save lot transactionally:', error);
-    return NextResponse.json(createErrorResponse('Internal error', 'INTERNAL_ERROR'), { status: 500 });
+    return errorJson('Internal error', 'INTERNAL_ERROR', undefined, { status: 500 });
   }
 });
 
