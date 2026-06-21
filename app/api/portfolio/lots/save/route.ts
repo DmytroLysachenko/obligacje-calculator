@@ -1,10 +1,9 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
-import { PortfolioServiceError } from '@/lib/server/portfolio/errors';
 import { createPortfolioLotWithBuyTransaction } from '@/lib/server/portfolio/commands';
-import { createDomainErrorResponse, errorJson, okJson } from '@/lib/server/http/responses';
+import { errorJson, okJson } from '@/lib/server/http/responses';
 import { apiHandler } from '@/lib/server/http/api-handler';
-import { getAuthenticatedPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
+import { portfolioDomainErrorResponse, withAuthenticatedPortfolioOwner } from '@/lib/server/portfolio/http';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
 
 const SavePortfolioLotPayloadSchema = z.object({
@@ -17,35 +16,28 @@ const SavePortfolioLotPayloadSchema = z.object({
 });
 
 export const POST = apiHandler(async (req: NextRequest) => {
-  const authContext = await getAuthenticatedPortfolioRouteContext();
-  if (!authContext.ok) return authContext.response;
+  return withAuthenticatedPortfolioOwner(async (owner) => {
+    try {
+      const { portfolioId, bondType, purchaseDate, amount, isRebought, notes } =
+        await readJsonBody(req, SavePortfolioLotPayloadSchema);
 
-  const { owner } = authContext.context;
+      const result = await createPortfolioLotWithBuyTransaction(owner.ownerId, {
+        portfolioId,
+        bondType,
+        purchaseDate,
+        amount,
+        isRebought,
+        notes,
+      });
 
-  try {
-    const { portfolioId, bondType, purchaseDate, amount, isRebought, notes } =
-      await readJsonBody(req, SavePortfolioLotPayloadSchema);
+      return okJson(result);
+    } catch (error) {
+      const response = portfolioDomainErrorResponse(error);
+      if (response) return response;
 
-    const result = await createPortfolioLotWithBuyTransaction(owner.ownerId, {
-      portfolioId,
-      bondType,
-      purchaseDate,
-      amount,
-      isRebought,
-      notes,
-    });
-
-    return withPortfolioOwnerResponse(
-      okJson(result),
-      owner
-    );
-  } catch (error) {
-    if (error instanceof PortfolioServiceError) {
-      return withPortfolioOwnerResponse(createDomainErrorResponse(error), owner);
+      console.error('Failed to save lot transactionally:', error);
+      return errorJson('Internal error', 'INTERNAL_ERROR', undefined, { status: 500 });
     }
-
-    console.error('Failed to save lot transactionally:', error);
-    return errorJson('Internal error', 'INTERNAL_ERROR', undefined, { status: 500 });
-  }
+  });
 });
 

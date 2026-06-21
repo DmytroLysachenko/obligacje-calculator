@@ -1,45 +1,39 @@
 import { NextRequest } from 'next/server';
 import { apiHandler } from '@/lib/server/http/api-handler';
-import { PortfolioServiceError } from '@/lib/server/portfolio/errors';
 import { exportOwnerPortfolio } from '@/lib/server/portfolio/queries';
-import { createDomainErrorResponse, createValidationErrorResponse, okJson } from '@/lib/server/http/responses';
-import { getAuthenticatedPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
+import { createValidationErrorResponse, okJson } from '@/lib/server/http/responses';
+import { portfolioDomainErrorResponse, withAuthenticatedPortfolioOwner } from '@/lib/server/portfolio/http';
 
 export const GET = apiHandler(async (req: NextRequest) => {
-  const authContext = await getAuthenticatedPortfolioRouteContext();
-  if (!authContext.ok) return authContext.response;
+  return withAuthenticatedPortfolioOwner(async (owner) => {
+    const { searchParams } = new URL(req.url);
+    const portfolioId = searchParams.get('portfolioId');
+    const formatMode = searchParams.get('format') ?? 'portfolio';
 
-  const { owner } = authContext.context;
-  const { searchParams } = new URL(req.url);
-  const portfolioId = searchParams.get('portfolioId');
-  const formatMode = searchParams.get('format') ?? 'portfolio';
-
-  if (!portfolioId) {
-    return createValidationErrorResponse('Portfolio ID is required', 'MISSING_PARAM');
-  }
-
-  try {
-    const { exportData, fileName } = await exportOwnerPortfolio(
-      owner.ownerId,
-      portfolioId,
-      formatMode === 'package' ? 'package' : 'portfolio',
-    );
-
-    const response = okJson(exportData, {
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-        'Content-Disposition': `attachment; filename="${fileName}"`,
-        'X-Export-Format': formatMode,
-      },
-    });
-
-    return withPortfolioOwnerResponse(response, owner);
-  } catch (error) {
-    if (error instanceof PortfolioServiceError) {
-      return createDomainErrorResponse(error);
+    if (!portfolioId) {
+      return createValidationErrorResponse('Portfolio ID is required', 'MISSING_PARAM');
     }
 
-    throw error;
-  }
+    try {
+      const { exportData, fileName } = await exportOwnerPortfolio(
+        owner.ownerId,
+        portfolioId,
+        formatMode === 'package' ? 'package' : 'portfolio',
+      );
+
+      return okJson(exportData, {
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Content-Disposition': `attachment; filename="${fileName}"`,
+          'X-Export-Format': formatMode,
+        },
+      });
+    } catch (error) {
+      const response = portfolioDomainErrorResponse(error);
+      if (response) return response;
+
+      throw error;
+    }
+  });
 });
 

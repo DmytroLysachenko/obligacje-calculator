@@ -1,12 +1,9 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { apiHandler } from '@/lib/server/http/api-handler';
-import {
-  PortfolioServiceError,
-} from '@/lib/server/portfolio/errors';
 import { toggleOwnerPortfolioSharing } from '@/lib/server/portfolio/commands';
-import { createDomainErrorResponse, okJson } from '@/lib/server/http/responses';
-import { getAuthenticatedPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
+import { okJson } from '@/lib/server/http/responses';
+import { portfolioDomainErrorResponse, withAuthenticatedPortfolioOwner } from '@/lib/server/portfolio/http';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
 
 const PortfolioSharePayloadSchema = z.object({
@@ -15,27 +12,18 @@ const PortfolioSharePayloadSchema = z.object({
 });
 
 export const POST = apiHandler(async (req: NextRequest) => {
-  const authContext = await getAuthenticatedPortfolioRouteContext();
-  if (!authContext.ok) return authContext.response;
+  return withAuthenticatedPortfolioOwner(async (owner) => {
+    const { portfolioId, isPublic } = await readJsonBody(req, PortfolioSharePayloadSchema);
 
-  const { owner } = authContext.context;
-  const { portfolioId, isPublic } = await readJsonBody(req, PortfolioSharePayloadSchema);
+    try {
+      const result = await toggleOwnerPortfolioSharing(owner.ownerId, portfolioId, Boolean(isPublic));
+      return okJson(result);
+    } catch (error) {
+      const response = portfolioDomainErrorResponse(error);
+      if (response) return response;
 
-  try {
-    const result = await toggleOwnerPortfolioSharing(owner.ownerId, portfolioId, Boolean(isPublic));
-    return withPortfolioOwnerResponse(
-      okJson(result),
-      owner,
-    );
-  } catch (error) {
-    if (error instanceof PortfolioServiceError) {
-      return withPortfolioOwnerResponse(
-        createDomainErrorResponse(error),
-        owner,
-      );
+      throw error;
     }
-
-    throw error;
-  }
+  });
 });
 

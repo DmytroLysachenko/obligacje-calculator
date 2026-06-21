@@ -4,7 +4,7 @@ import { apiHandler } from '@/lib/server/http/api-handler';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
 import { okJson } from '@/lib/server/http/responses';
 import { importOwnerPortfolio } from '@/lib/server/portfolio/commands';
-import { getAuthenticatedPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
+import { withAuthenticatedPortfolioOwner } from '@/lib/server/portfolio/http';
 
 const ImportedLotSchema = z.object({
   bondType: z.string().min(1),
@@ -23,19 +23,14 @@ const ImportPayloadSchema = z.object({
 });
 
 export const POST = apiHandler(async (req: NextRequest) => {
-  const authContext = await getAuthenticatedPortfolioRouteContext();
-  if (!authContext.ok) return authContext.response;
+  return withAuthenticatedPortfolioOwner(async (owner) => {
+    const { portfolio } = await readJsonBody(req, ImportPayloadSchema);
+    const importedPortfolio = await importOwnerPortfolio(owner.ownerId, portfolio);
 
-  const { owner } = authContext.context;
-  const { portfolio } = await readJsonBody(req, ImportPayloadSchema);
-  const importedPortfolio = await importOwnerPortfolio(owner.ownerId, portfolio);
-
-  return withPortfolioOwnerResponse(
-    okJson({
+    return okJson({
       portfolio: importedPortfolio.portfolio,
       importedLots: importedPortfolio.importedLots,
-    }),
-    owner,
-  );
+    });
+  });
 });
 
