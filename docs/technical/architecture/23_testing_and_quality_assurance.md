@@ -39,6 +39,19 @@ Financial applications require a rigorous testing strategy to ensure mathematica
 ## 6. Release Contracts
 - `pnpm test:release` runs the calculation, worker, data freshness, API readiness, deployment, product readiness, script, and clean-code contract suites.
 - `docs/technical/architecture/clean-code-contract.test.ts` blocks broad code-smell regressions in production paths: stale TODO/FIXME/debug markers, unmanaged route responses, direct feature-layer fetch calls, direct sync/provider fetch calls, unmanaged API body parsing, and undocumented lint-disable comments.
-- Feature-local state models require focused unit tests before hook/page rewrites. This applies to calculator state, dashboard metadata state, chart tooltip models, and similar non-React decision logic.
+- Feature-local state models require focused unit tests before hook/page rewrites. This applies to calculator state, optimizer readiness/default models, notebook workspace models, dashboard metadata state, chart tooltip models, and similar non-React decision logic.
+- Shared form models require focused unit tests before component splits. Current examples include market assumption setup-mode transitions and header value formatting.
+- Source-contract tests must follow implementation ownership after refactors. If a public barrel re-exports a moved engine, contracts should inspect the concrete engine module where the invariant lives.
+- Component split tests should assert ownership across model, control, and container files when the split is architecture-relevant. This prevents accidental recombining of pure logic and JSX-heavy rendering.
 - Provider HTTP changes require gateway tests that cover default headers, HTTP failure behavior, and fallback-compatible status handling.
 - When a new architecture rule becomes release-critical, add or update a contract test in the same change as the documentation.
+
+## 7. Production Hardening Checklist
+
+Before a deploy candidate:
+
+- run `pnpm check:release`
+- run focused financial regressions for any touched calculation engine family
+- run manual smoke flows for single calculator, comparison, notebook, optimizer, sync-status display, and economic-data dashboard
+- verify generated/exported artifacts use the same display model as on-screen charts and tables
+- verify docs changed with any new architecture boundary or release-blocking rule

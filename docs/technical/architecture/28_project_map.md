@@ -21,10 +21,12 @@ Use it before adding files or moving logic.
 ## Domain Ownership
 
 - `features/bond-core/**`: calculation truth, schemas, scenario handlers, validation, domain errors, and financial regression tests.
+  Public calculation entrypoints are exported through `features/bond-core/utils/calculations.ts`, while implementation lives in `features/bond-core/utils/engine/**` by engine family (`single-bond-engine`, `reverse-bond-engine`, `regular-investment-engine`, and shared engine helpers).
 - `features/comparison-engine/**`: comparison workflows, comparison-specific display models, chart/table composition, and comparison persistence.
 - `features/single-calculator/**`: single-bond calculator UI, single scenario sharing, notebook save action wiring, single-route display, and pure single-calculator state models.
 - `features/economic-data/**`: economic reference charts and dashboard state models for CPI/NBP metadata display.
-- `features/notebook/**`: portfolio workspace UI, portfolio details, notebook commands through `portfolio-client`, and notebook-specific contracts.
+- `features/notebook/**`: portfolio workspace UI, portfolio details, notebook commands through `portfolio-client`, notebook-specific contracts, and pure workspace models in `features/notebook/lib/**`.
+- `features/optimizer/**`: optimizer UI sections, optimizer state models, and recommendation orchestration. Route/page code should consume `features/optimizer/lib/**` state helpers instead of recomputing readiness or default input rules inline.
 - `features/regular-investment/**`, `features/ladder-strategy/**`, `features/retirement/**`: retained strategy surfaces with feature-local hooks and components.
 
 ## Boundary Rules
@@ -35,6 +37,7 @@ Use it before adding files or moving logic.
 - Portfolio writes live in `lib/server/portfolio/commands.ts`; reads and simulations live in `lib/server/portfolio/queries.ts`; public shared-page reads live in `shared-page-service.ts`.
 - Pure display and state logic should sit in `shared/lib` when reused or in `features/**/lib` when feature-local.
 - Large components should be reduced by extracting pure models first, then extracting presentational subcomponents.
+- Shared market-assumption UI uses `shared/lib/market-assumptions-form-model.ts` for state/format decisions and `shared/components/market-assumptions/**` for render primitives. Calculator pages should not duplicate CPI/NBP setup-mode logic.
 - Shared chart components may have companion `*Parts.tsx` files for presentational sections, while pure chart decisions stay in model helpers.
 - Sync providers and API clients must not call raw `fetch`; use `lib/sync/http-gateway.ts`.
 
@@ -50,8 +53,10 @@ Use it before adding files or moving logic.
 ## Test Ownership
 
 - Domain math changes require focused `features/bond-core` regression tests.
+- Engine file moves require source-contract tests to follow the canonical implementation files, not only the public barrel exports.
 - API/controller boundary changes require architecture contract tests.
 - Display-model changes require pure model tests before UI assertions.
+- UI section splits require contract tests to assert the new component/model ownership when source-level contracts already exist.
 - Route boundary changes require contract coverage for body parsing and response envelopes.
 - Provider HTTP changes require gateway tests and sync boundary contracts.
 - Docs that define release, architecture, or support status should have a matching contract test when the rule is executable.

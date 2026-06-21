@@ -202,6 +202,14 @@ When touching a large component, extract in this order:
 
 This keeps behavior testable before markup is moved.
 
+For calculator-adjacent forms, setup and display decisions must be pure where possible. Example pattern:
+
+- `shared/lib/*-model.ts` owns mode transitions, derived labels, summaries, and other deterministic decisions
+- `shared/components/<subdomain>/**` owns presentational primitives
+- route or feature components own state wiring and user events only
+
+Do not leave deterministic mode-transition logic inside JSX-heavy components when it can be tested without React.
+
 For chart components, keep public chart props stable when possible. Move tooltip models, legend decisions, and toolbar rendering into narrow chart model or chart parts files before changing chart behavior.
 
 ## 6. Shared Logic Belongs in Shared Helpers
@@ -309,6 +317,7 @@ Specifically:
 - calculation truth belongs in engine/handler layers
 - display semantics belong in display/export adapters
 - UI components render prepared data and trigger actions
+- public barrels may preserve import stability, but implementation files should remain grouped by responsibility
 
 If product behavior differs by bond family, payout model, tax mode, or current-offer rule, that distinction must be represented in domain/display models, not improvised with page-local conditionals.
 
@@ -437,12 +446,14 @@ Single-letter or cryptic names are not acceptable for durable application struct
 
 Retained calculator surfaces must preserve these contracts:
 
+- `features/bond-core/utils/calculations.ts` is a stable public entrypoint, not the engine implementation. New engine logic belongs in `features/bond-core/utils/engine/**` with focused regression tests.
 - display settings such as chart granularity may change aggregation only; they must never change engine truth
 - chart, table, quick-audit, CSV, and PDF output for one calculator flow must derive from the same normalized display model
 - CPI and NBP chart overlays must be rendered from truthful reference-series display data; do not fabricate smooth transitions by interpolating reference values through bond checkpoints
 - single and comparison flows must reuse the same rollover inference rules where the product behavior is the same
 - current bond offer terms and NBP reference-rate assumptions must remain separate concepts in code, UI wording, and exported artifacts
 - simple-mode projected NBP defaults should be presented as a flat path from the latest synced rate until the user overrides it
+- CPI/NBP assumption setup modes should use the shared market-assumptions model and controls; do not reimplement fixed/simple/advanced semantics in feature-local forms.
 
 ### 11.4 Compatibility Wrappers
 
