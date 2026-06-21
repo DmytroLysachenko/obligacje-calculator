@@ -32,29 +32,18 @@ import {
   useCurrencyFormatter,
   usePercentFormatter,
 } from '@/shared/hooks/useLocalizedFormatters';
-import { toDateString } from '@/shared/lib/date-timing';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
-
-type OptimizerInputs = {
-  initialInvestment: number;
-  investmentHorizonMonths: number;
-  purchaseDate: string;
-  expectedInflation: number;
-  expectedNbpRate: number;
-  taxStrategy: TaxStrategy;
-  includeFamilyBonds: boolean;
-};
-
-const DEFAULT_INPUTS: OptimizerInputs = {
-  initialInvestment: 10000,
-  investmentHorizonMonths: 48,
-  purchaseDate: toDateString(new Date()),
-  expectedInflation: 3.5,
-  expectedNbpRate: 5.25,
-  taxStrategy: TaxStrategy.STANDARD,
-  includeFamilyBonds: false,
-};
+import {
+  applyOptimizerMacroDefaults,
+  buildDefaultOptimizerInputs,
+  buildOptimizerReadySteps,
+  formatOptimizerHorizonYears,
+  isOptimizerMacroKey,
+  type OptimizerInputKey,
+  type OptimizerInputs,
+  updateOptimizerInput,
+} from '@/features/optimizer/lib/optimizer-state';
 
 const SupportMetric = ({
   label,
@@ -77,7 +66,7 @@ const SupportMetric = ({
 export default function BondOptimizerClient() {
   const { t, locale: language } = useAppI18n();
   const { defaults: macroDefaults } = useMacroAssumptionDefaults();
-  const [inputs, setInputs] = useState<OptimizerInputs>(DEFAULT_INPUTS);
+  const [inputs, setInputs] = useState<OptimizerInputs>(() => buildDefaultOptimizerInputs());
   const [envelope, setEnvelope] =
     useState<BondOptimizerCalculationEnvelope | null>(null);
   const [isDirty, setIsDirty] = useState(true);
@@ -98,17 +87,17 @@ export default function BondOptimizerClient() {
       return;
     }
 
-    setInputs((previous) => ({
-      ...previous,
-      expectedInflation: macroDefaults.expectedInflation,
-      expectedNbpRate: macroDefaults.expectedNbpRate,
-    }));
+    setInputs((previous) => applyOptimizerMacroDefaults(
+      previous,
+      macroDefaults,
+      hasTouchedMacroAssumptions.current,
+    ));
   }, [macroDefaults]);
 
   const results = envelope?.result;
   const leadingScenario = results?.highestPayout;
   const horizonYears = useMemo(
-    () => (inputs.investmentHorizonMonths / 12).toFixed(1),
+    () => formatOptimizerHorizonYears(inputs.investmentHorizonMonths),
     [inputs.investmentHorizonMonths],
   );
   const formatCurrency = React.useCallback(
@@ -129,13 +118,13 @@ export default function BondOptimizerClient() {
   );
 
   const updateInput = (
-    key: keyof OptimizerInputs,
+    key: OptimizerInputKey,
     value: string | number | boolean,
   ) => {
-    if (key === 'expectedInflation' || key === 'expectedNbpRate') {
+    if (isOptimizerMacroKey(key)) {
       hasTouchedMacroAssumptions.current = true;
     }
-    setInputs((prev) => ({ ...prev, [key]: value as never }));
+    setInputs((prev) => updateOptimizerInput(prev, key, value));
     setIsDirty(true);
   };
 
@@ -523,27 +512,18 @@ export default function BondOptimizerClient() {
               badge={t('optimizer_page.ready_badge')}
               title={t('optimizer_page.ready_title')}
               description={t('optimizer_page.ready_description')}
-                steps={[
-                  {
-                    id: 'amount',
-                    title: t('optimizer_page.ready_steps.amount.title'),
-                    description: t('optimizer_page.ready_steps.amount.description', {
-                      amount: formatCurrency(inputs.initialInvestment),
-                    }),
-                  },
-                  {
-                    id: 'horizon',
-                    title: t('optimizer_page.ready_steps.horizon.title'),
-                    description: t('optimizer_page.ready_steps.horizon.description', {
-                      months: String(inputs.investmentHorizonMonths),
-                    }),
-                  },
-                  {
-                    id: 'narrow-scope',
-                    title: t('optimizer_page.ready_steps.scope.title'),
-                    description: t('optimizer_page.ready_steps.scope.description'),
-                  },
-              ]}
+              steps={buildOptimizerReadySteps({
+                amount: formatCurrency(inputs.initialInvestment),
+                months: inputs.investmentHorizonMonths,
+                labels: {
+                  amountTitle: t('optimizer_page.ready_steps.amount.title'),
+                  amountDescription: (amount) => t('optimizer_page.ready_steps.amount.description', {amount}),
+                  horizonTitle: t('optimizer_page.ready_steps.horizon.title'),
+                  horizonDescription: (months) => t('optimizer_page.ready_steps.horizon.description', {months}),
+                  scopeTitle: t('optimizer_page.ready_steps.scope.title'),
+                  scopeDescription: t('optimizer_page.ready_steps.scope.description'),
+                },
+              })}
               footerText={t('optimizer_page.ready_footer')}
             />
           )}
