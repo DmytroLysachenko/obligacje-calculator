@@ -46,15 +46,18 @@ const baseInputs = {
 
 describe('single-bond terminal result contract', () => {
   it('does not leave fake empty CalculationResult sentinels in the engine', () => {
-    const source = read('features/bond-core/utils/calculations.ts');
+    const singleBondSource = read('features/bond-core/utils/engine/single-bond-engine.ts');
+    const reverseBondSource = read('features/bond-core/utils/engine/reverse-bond-engine.ts');
 
-    expectContains(source, 'function assertSingleBondTerminalResult(');
-    expectContains(source, 'asserts result is CalculationResult');
-    expectContains(source, 'final timeline point is not a withdrawal checkpoint');
-    expectContains(source, 'Single-bond calculation exited without reaching the selected withdrawal date.');
-    expectContains(source, 'let result: CalculationResult | null = null;');
-    expectContains(source, "assertSingleBondTerminalResult(result, 'Reverse bond calculation');");
-    expectNoFragments(source, [
+    expectContains(singleBondSource, 'throw createNumericFaultError');
+    expectContains(singleBondSource, 'Single-bond calculation exited without reaching the selected withdrawal date.');
+    expectContains(singleBondSource, 'return createFinalSingleBondResult({');
+    expectContains(reverseBondSource, 'function assertSingleBondTerminalResult(');
+    expectContains(reverseBondSource, 'asserts result is CalculationResult');
+    expectContains(reverseBondSource, 'final timeline point is not a withdrawal checkpoint');
+    expectContains(reverseBondSource, 'let result: CalculationResult | null = null;');
+    expectContains(reverseBondSource, "assertSingleBondTerminalResult(result, 'Reverse bond calculation');");
+    expectNoFragments(`${singleBondSource}\n${reverseBondSource}`, [
       'return {} as CalculationResult',
       'let result: CalculationResult = {} as CalculationResult',
     ]);
@@ -126,10 +129,10 @@ describe('single-bond terminal result contract', () => {
   });
 
   it('keeps terminal result checks narrow to single-bond paths', () => {
-    const source = read('features/bond-core/utils/calculations.ts');
+    const regularSource = read('features/bond-core/utils/engine/regular-investment-engine.ts');
 
-    expectContains(source, 'export const calculateRegularInvestment = withMathGuard');
-    expectContains(source, 'return createRegularInvestmentResult(totalInvested, investmentHorizonMonths / 12, timeline, lots);');
-    expectNotContains(source, "assertSingleBondTerminalResult(result, 'Regular investment calculation')");
+    expectContains(regularSource, 'export const calculateRegularInvestment = withMathGuard');
+    expectContains(regularSource, 'return createRegularInvestmentResult(totalInvested, investmentHorizonMonths / 12, timeline, lots);');
+    expectNotContains(regularSource, "assertSingleBondTerminalResult(result, 'Regular investment calculation')");
   });
 });
