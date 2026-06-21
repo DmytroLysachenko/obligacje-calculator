@@ -27,36 +27,16 @@ import {ChartSection} from '@/shared/components/charts/ChartSection';
 import {SectionBlock} from '@/shared/components/page/SectionBlock';
 import {useChartData} from '@/shared/hooks/useChartData';
 import {
-  getReferenceAsOfLabel,
-  getReferenceCoverageLabel,
-  getReferenceScopeLabel,
-  getReferenceSourceLabel,
-  getReferenceState,
-} from '@/shared/lib/data-reference';
+  buildEconomicHealthItems,
+  ECONOMIC_RANGE_OPTIONS,
+  getEconomicReferenceState,
+  getEconomicStatusLabel,
+  type ChartSeriesEnvelope,
+  type EconomicSeriesPoint,
+  type PeriodValue,
+} from '@/features/economic-data/lib/economic-dashboard-model';
 import {getBondRateContextCopy} from '@/shared/lib/bond-rate-context';
 import {useBondDefinitions} from '@/shared/hooks/useBondDefinitions';
-
-interface EconomicSeriesPoint {
-  date: string;
-  rate: number;
-}
-
-interface ChartSeriesEnvelope<T> {
-  data: T[];
-  source: 'database' | 'fallback';
-  usedFallback: boolean;
-  asOf?: string;
-  lastCheck?: string;
-  coverageStart?: string;
-  coverageEnd?: string;
-  dataSource?: string;
-  seriesName?: string;
-  syncStatus?: 'success' | 'partial' | 'failed' | 'stale';
-  coverageNote?: string;
-  sourceUrl?: string;
-}
-
-type PeriodValue = '1Y' | '5Y' | '10Y' | '30Y' | 'ALL';
 
 function RangeActions({
   period,
@@ -69,14 +49,6 @@ function RangeActions({
   rangeLabel: string;
   hint: string;
 }) {
-  const periods: {label: string; value: PeriodValue}[] = [
-    {label: '1Y', value: '1Y'},
-    {label: '5Y', value: '5Y'},
-    {label: '10Y', value: '10Y'},
-    {label: '30Y', value: '30Y'},
-    {label: 'MAX', value: 'ALL'},
-  ];
-
   return (
     <div className="space-y-2 border-y border-border py-3">
       <div className="flex flex-wrap items-center gap-1">
@@ -84,7 +56,7 @@ function RangeActions({
           <CalendarRange className="h-3.5 w-3.5" />
           {rangeLabel}
         </span>
-        {periods.map((item) => (
+        {ECONOMIC_RANGE_OPTIONS.map((item) => (
           <button
             key={item.value}
             type="button"
@@ -125,40 +97,14 @@ function SeriesStatusCard({
     coverage: t('common.coverage'),
     asOf: t('common.as_of'),
     usage: t('common.usage'),
+    synced: t('economic.reference_state.synced'),
+    stale: t('economic.reference_state.needs_refresh'),
+    partial: t('economic.reference_state.partial'),
+    fallback: t('economic.reference_state.fallback'),
   } as const;
-  const state = getReferenceState(meta, language);
-  const statusLabel =
-    meta?.syncStatus === 'success'
-      ? t('economic.reference_state.synced')
-      : meta?.syncStatus === 'stale'
-        ? t('economic.reference_state.needs_refresh')
-        : meta?.syncStatus === 'partial'
-          ? t('economic.reference_state.partial')
-          : t('economic.reference_state.fallback');
-  const rows = [
-    {
-      label: labels.source,
-      value: isLoading ? '...' : getReferenceSourceLabel(meta, language),
-    },
-    {
-      label: labels.coverage,
-      value: isLoading ? '...' : getReferenceCoverageLabel(meta, language),
-    },
-    {
-      label: labels.asOf,
-      value: isLoading ? '...' : getReferenceAsOfLabel(meta, language),
-    },
-    {
-      label: labels.usage,
-      value: isLoading ? '...' : getReferenceScopeLabel(meta, language),
-    },
-  ];
-  const healthItems = [
-    rows[0],
-    rows[2],
-    rows[1],
-    rows[3],
-  ];
+  const state = getEconomicReferenceState(meta, language);
+  const statusLabel = getEconomicStatusLabel(meta, labels);
+  const healthItems = buildEconomicHealthItems({meta, isLoading, language, labels});
 
   return (
     <section
