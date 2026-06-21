@@ -51,6 +51,18 @@ describe('clean code architecture contract', () => {
     expect(matches).toEqual([]);
   });
 
+  it('keeps sync and provider http calls behind the sync gateway', () => {
+    const approvedServerFetchFiles = new Set([
+      'lib/sync/http-gateway.ts',
+    ]);
+    const matches = filesContaining(/\bfetch\(/)
+      .filter((file) => file.startsWith('lib/sync/') || file.startsWith('lib/api-clients/'))
+      .filter((file) => !file.endsWith('.test.ts'))
+      .filter((file) => !approvedServerFetchFiles.has(file));
+
+    expect(matches).toEqual([]);
+  });
+
   it('keeps app api route response envelopes on shared helpers', () => {
     const allowedRawJsonRoutes = new Set([
       'app/api/health/route.ts',

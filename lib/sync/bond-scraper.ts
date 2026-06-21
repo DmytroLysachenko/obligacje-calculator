@@ -3,6 +3,7 @@
  * Prefers the Ministry of Finance current offer page, then falls back to
  * obligacjeskarbowe.pl HTML, and only then to curated official constants.
  */
+import { fetchSyncText } from './http-gateway';
 
 export interface ScrapedBondRate {
   symbol: string;
@@ -26,18 +27,12 @@ const OFFICIAL_FALLBACK_RATES: ScrapedBondRate[] = [
 ];
 
 async function fetchHtml(url: string) {
-  const response = await fetch(url, {
+  return fetchSyncText(url, {
     headers: {
       'User-Agent':
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0 Safari/537.36',
     },
   });
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch ${url}: ${response.status}`);
-  }
-
-  return response.text();
 }
 
 function parsePercent(value: string | undefined, fallback: number) {

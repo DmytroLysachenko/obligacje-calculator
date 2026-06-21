@@ -3,6 +3,7 @@ import { dataSeries, dataPoints, investmentInstruments } from "@/db/schema";
 import { GusCpiApiClient } from "@/lib/api-clients/gus-cpi";
 import { eq, sql } from "drizzle-orm";
 import { YahooFinanceSyncProvider } from "./providers/yahoo-finance";
+import { fetchSyncResponse } from "./http-gateway";
 import "dotenv/config";
 
 interface NbpRateItem {
@@ -70,7 +71,7 @@ async function seedMacroAndMarket() {
   try {
     const rateSeries = await db.query.dataSeries.findFirst({ where: eq(dataSeries.slug, 'nbp-ref-rate') });
     if (rateSeries) {
-      const response = await fetch("https://api.nbp.pl/api/statystyka/stopy/ref?format=json");
+      const response = await fetchSyncResponse("https://api.nbp.pl/api/statystyka/stopy/ref?format=json", {throwOnHttpError: false});
       if (response.ok) {
         const data = await response.json() as NbpRateItem[];
         const points = data.map((item) => ({
