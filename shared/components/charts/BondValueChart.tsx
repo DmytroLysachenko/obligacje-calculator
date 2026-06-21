@@ -24,6 +24,10 @@ import {
   saveChartDisplayPreferences,
 } from "@/shared/lib/chart-display-preferences";
 import { formatMoneyAxisTick } from "@/shared/lib/chart-series";
+import {
+  buildBondValueTooltipModel,
+  type BondValueTooltipPayloadEntry,
+} from "./bond-value-tooltip-model";
 
 export interface BondValueChartSeries {
   key: string;
@@ -65,7 +69,7 @@ export interface BondValueChartTooltipGroup {
   metrics: BondValueChartTooltipMetric[];
 }
 
-interface PayloadEntry {
+interface PayloadEntry extends BondValueTooltipPayloadEntry {
   name: string;
   value: number;
   color: string;
@@ -237,12 +241,12 @@ function CustomTooltip({ active, payload, label, formatCurrency, t }: CustomTool
   }
 
   const data = payload[0].payload;
-  const scenarioGroups = data.scenarioGroups;
+  const model = buildBondValueTooltipModel(data, payload);
 
-  if (Array.isArray(scenarioGroups) && scenarioGroups.length > 0) {
+  if (model.kind === "scenario-groups") {
     return (
       <ScenarioGroupTooltip
-        groups={scenarioGroups}
+        groups={model.groups}
         data={data}
         label={label}
         formatCurrency={formatCurrency}
@@ -251,12 +255,6 @@ function CustomTooltip({ active, payload, label, formatCurrency, t }: CustomTool
     );
   }
 
-  const isProjected = Boolean(data.isProjected);
-  const inflation = data.inflation;
-  const nbp = data.nbp;
-  const interestRate = data.interestRate;
-  const eventLabels = data.eventLabels ?? [];
-
   return (
     <div className="min-w-[240px] rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-lg">
       <div className="mb-3 flex items-center justify-between border-b border-border/50 pb-2">
@@ -264,32 +262,30 @@ function CustomTooltip({ active, payload, label, formatCurrency, t }: CustomTool
         <span
           className={cn(
             "rounded px-1.5 py-0.5 text-[10px] font-semibold",
-            isProjected ? "bg-warning/10 text-warning" : "bg-muted text-muted-foreground",
+            model.isProjected ? "bg-warning/10 text-warning" : "bg-muted text-muted-foreground",
           )}
         >
-          {isProjected ? t("bonds.projected") : t("bonds.historical")}
+          {model.isProjected ? t("bonds.projected") : t("bonds.historical")}
         </span>
       </div>
 
       <div className="space-y-3">
-        {typeof interestRate === "number" ? (
+        {typeof model.interestRate === "number" ? (
           <div className="mb-2 rounded-md bg-muted/35 p-2">
             <div className="flex items-center justify-between">
               <span className="ui-meta font-semibold uppercase tracking-[0.08em]">
                 {t("bonds.interest_rate")}
               </span>
-              <span className="text-sm font-semibold text-foreground">{interestRate.toFixed(2)}%</span>
+              <span className="text-sm font-semibold text-foreground">{model.interestRate.toFixed(2)}%</span>
             </div>
-            {data.rateSource ? (
-              <p className="mt-1 text-[9px] italic text-muted-foreground">{data.rateSource}</p>
+            {model.rateSource ? (
+              <p className="mt-1 text-[9px] italic text-muted-foreground">{model.rateSource}</p>
             ) : null}
           </div>
         ) : null}
 
         <div className="space-y-1.5">
-          {payload
-            .filter((entry) => !["inflation", "nbp"].includes(String(entry.dataKey)))
-            .map((entry) => (
+          {model.metrics.map((entry) => (
               <TooltipMetricRow
                 key={String(entry.dataKey)}
                 label={entry.name}
@@ -300,23 +296,23 @@ function CustomTooltip({ active, payload, label, formatCurrency, t }: CustomTool
             ))}
         </div>
 
-        <TooltipEventList eventLabels={eventLabels} t={t} />
+        <TooltipEventList eventLabels={model.eventLabels} t={t} />
 
-        {typeof inflation === "number" || typeof nbp === "number" ? (
+        {typeof model.inflation === "number" || typeof model.nbp === "number" ? (
           <div className="mt-2 space-y-1.5 border-t border-dashed border-border/50 pt-2">
             <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
               {t("common.context_rates")}
             </p>
-            {typeof inflation === "number" ? (
+            {typeof model.inflation === "number" ? (
               <div className="flex items-center justify-between text-[10px]">
                 <span className="font-medium text-muted-foreground">{t("bonds.ref_inflation")}:</span>
-                <span className="font-semibold text-warning">{inflation.toFixed(2)}%</span>
+                <span className="font-semibold text-warning">{model.inflation.toFixed(2)}%</span>
               </div>
             ) : null}
-            {typeof nbp === "number" ? (
+            {typeof model.nbp === "number" ? (
               <div className="flex items-center justify-between text-[10px]">
                 <span className="font-medium text-muted-foreground">{t("bonds.nbp_rate_short")}:</span>
-                <span className="font-semibold text-muted-foreground">{nbp.toFixed(2)}%</span>
+                <span className="font-semibold text-muted-foreground">{model.nbp.toFixed(2)}%</span>
               </div>
             ) : null}
           </div>
