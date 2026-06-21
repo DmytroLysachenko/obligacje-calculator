@@ -6,6 +6,8 @@ const projectRoot = process.cwd();
 
 const files = {
   form: 'shared/components/MarketAssumptionsForm.tsx',
+  controls: 'shared/components/market-assumptions/AssumptionSectionControls.tsx',
+  model: 'shared/lib/market-assumptions-form-model.ts',
   segmented: 'shared/components/forms/SegmentedControl.tsx',
   history: 'shared/components/market-assumptions/AssumptionHistoryPopover.tsx',
   defaults: 'shared/components/market-assumptions/MacroDefaultsSummary.tsx',
@@ -32,23 +34,29 @@ function expectNoFragments(source: string, fragments: readonly string[]) {
 describe('market assumption control contracts', () => {
   it('routes assumption presets and projection modes through the shared segmented control', () => {
     const source = read(files.form);
+    const controls = read(files.controls);
+    const model = read(files.model);
 
     expectContains(source, "import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';");
-    expectContains(source, "type AssumptionSetupMode = 'fixed' | 'simple' | 'advanced';");
-    expectContains(source, 'function ProjectionModeButtons');
-    expectContains(source, 'value={value}');
-    expectContains(source, "{ value: 'fixed', label: t('bonds.market_assumptions.mode_fixed') }");
-    expectContains(source, "{ value: 'simple', label: t('bonds.market_assumptions.mode_simple') }");
-    expectContains(source, "{ value: 'advanced', label: t('bonds.market_assumptions.mode_advanced') }");
-    expectContains(source, "itemClassName=\"h-8 text-[11px] tracking-[0.06em]\"");
+    expectContains(source, 'AssumptionHeader,');
+    expectContains(source, 'CurrentAssumptionValue,');
+    expectContains(source, 'ProjectionModeButtons,');
+    expectContains(source, "from '@/shared/components/market-assumptions/AssumptionSectionControls';");
+    expectContains(model, "export type AssumptionSetupMode = 'fixed' | 'simple' | 'advanced';");
+    expectContains(controls, 'function ProjectionModeButtons');
+    expectContains(controls, 'value={value}');
+    expectContains(controls, "{ value: 'fixed', label: t('bonds.market_assumptions.mode_fixed') }");
+    expectContains(controls, "{ value: 'simple', label: t('bonds.market_assumptions.mode_simple') }");
+    expectContains(controls, "{ value: 'advanced', label: t('bonds.market_assumptions.mode_advanced') }");
+    expectContains(controls, 'itemClassName="h-8 text-[11px] tracking-[0.06em]"');
     expectContains(source, "const [inflationMode, setInflationMode]");
     expectContains(source, "const [nbpMode, setNbpMode]");
     expectContains(source, 'const activeInflationMode = inflationSetupMode ?? inflationMode;');
     expectContains(source, 'const activeNbpMode = nbpSetupMode ?? nbpMode;');
-    expectContains(source, 'function formatCompactPercent');
-    expectContains(source, 'function formatPathAverage');
-    expectContains(source, "return `Avg ${formatCompactPercent(average)}%`;");
-    expectNoFragments(source, [
+    expectContains(model, 'function formatCompactPercent');
+    expectContains(model, 'function formatPathAverage');
+    expectContains(model, 'return `Avg ${formatCompactPercent(average)}%`;');
+    expectNoFragments(model, [
       'fallback.toFixed(1)',
       'average.toFixed(1)',
     ]);
@@ -104,17 +112,18 @@ describe('market assumption control contracts', () => {
 
   it('keeps current assumption values as inline metrics instead of boxed pills', () => {
     const source = read(files.form);
+    const controls = read(files.controls);
 
-    expectContains(source, 'function CurrentAssumptionValue');
-    expectContains(source, 'border-l border-border pl-4 text-right');
-    expectContains(source, 'font-black tabular-nums text-foreground');
+    expectContains(controls, 'function CurrentAssumptionValue');
+    expectContains(controls, 'border-l border-border pl-4 text-right');
+    expectContains(controls, 'font-black tabular-nums text-foreground');
     expectContains(source, '<AssumptionHeader');
-    expectContains(source, 'space-y-3 border-y border-border py-3');
-    expectContains(source, 'sm:flex-row sm:items-center sm:justify-between');
+    expectContains(controls, 'space-y-3 border-y border-border py-3');
+    expectContains(controls, 'sm:flex-row sm:items-center sm:justify-between');
     expectContains(source, 'value={inflationHeaderValue}');
     expectContains(source, 'value={nbpHeaderValue}');
 
-    expectNoFragments(source, [
+    expectNoFragments(controls, [
       'rounded-lg bg-muted/35 px-3 py-1.5',
       "compact ? 'text-xl' : 'text-[32px]'",
       "font-black text-primary', compact ? 'text-xl' : 'text-2xl'",
