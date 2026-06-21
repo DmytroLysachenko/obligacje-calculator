@@ -7,6 +7,7 @@ const root = process.cwd();
 const files = {
   legend: 'shared/components/charts/ChartLegendStrip.tsx',
   sharedValue: 'shared/components/charts/BondValueChart.tsx',
+  sharedParts: 'shared/components/charts/BondValueChartParts.tsx',
   single: 'features/single-calculator/components/BondChart.tsx',
   regular: 'features/regular-investment/components/RegularInvestmentChart.tsx',
 } as const;
@@ -53,15 +54,16 @@ describe('chart legend contracts', () => {
   it('keeps single chart on custom legend instead of Recharts Legend', () => {
     const source = read(files.single);
     const shared = read(files.sharedValue);
+    const sharedParts = read(files.sharedParts);
 
     expectContains(source, 'BondValueChart');
-    expectContains(shared, 'ChartLegendStrip');
+    expectContains(sharedParts, 'ChartLegendStrip');
     expectContains(shared, 'const legendItems = React.useMemo(');
     expectContains(source, 't("common.nominal_value")');
     expectContains(source, 't("common.real_value")');
-    expectContains(shared, '<ChartLegendStrip items={legendItems} className="border-b-0 pb-0" />');
-    expectContains(shared, 'aria-pressed={showInflationOverlay}');
-    expectContains(shared, 'aria-pressed={showNbpOverlay}');
+    expectContains(sharedParts, '<ChartLegendStrip items={legendItems} className="border-b-0 pb-0" />');
+    expectContains(sharedParts, 'aria-pressed={showInflationOverlay}');
+    expectContains(sharedParts, 'aria-pressed={showNbpOverlay}');
     expectContains(shared, 'const showContextAxis = showInflationOverlay || showNbpOverlay;');
     expectContains(shared, 'margin={{ top: 12, right: 52, left: 40, bottom: 20 }}');
     expectContains(shared, 'orientation="right"');
@@ -83,6 +85,7 @@ describe('chart legend contracts', () => {
   it('keeps regular investment chart on custom legend instead of Recharts Legend', () => {
     const source = read(files.regular);
     const shared = read(files.sharedValue);
+    const sharedParts = read(files.sharedParts);
 
     expectContains(source, "import { BondValueChart, BondValueChartPoint } from '@/shared/components/charts/BondValueChart';");
     expectContains(source, '<BondValueChart');
@@ -91,7 +94,7 @@ describe('chart legend contracts', () => {
     expectContains(source, 'defaultGranularity={displayStep}');
     expectContains(source, 'onGranularityChange={setDisplayStep}');
     expectContains(source, 'showContextControls={false}');
-    expectContains(shared, '<ChartLegendStrip items={legendItems} className="border-b-0 pb-0" />');
+    expectContains(sharedParts, '<ChartLegendStrip items={legendItems} className="border-b-0 pb-0" />');
     expectContains(shared, 'showContextControls = true');
     expectContains(shared, 'showContextControls && showInflationOverlay');
     expectContains(shared, 'showContextControls && showNbpOverlay');
