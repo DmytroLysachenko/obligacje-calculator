@@ -24,7 +24,6 @@ import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/Advance
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
-import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
 import { MacroDefaultsSummary } from '@/shared/components/market-assumptions/MacroDefaultsSummary';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
@@ -44,24 +43,10 @@ import {
   type OptimizerInputs,
   updateOptimizerInput,
 } from '@/features/optimizer/lib/optimizer-state';
-
-const SupportMetric = ({
-  label,
-  value,
-  detail,
-}: {
-  label: string;
-  value: string;
-  detail: string;
-}) => (
-  <div className="border-t border-border py-5">
-      <p className="ui-metadata text-muted-foreground">
-        {label}
-      </p>
-      <p className="mt-2 text-[32px] font-semibold leading-none text-foreground">{value}</p>
-      <p className="mt-2 ui-metadata leading-5 text-muted-foreground">{detail}</p>
-  </div>
-);
+import {
+  OptimizerLeadingMetrics,
+  OptimizerReadyState,
+} from '@/features/optimizer/components/OptimizerSections';
 
 export default function BondOptimizerClient() {
   const { t, locale: language } = useAppI18n();
@@ -344,33 +329,23 @@ export default function BondOptimizerClient() {
                 </div>
               ) : null}
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-                <SupportMetric
-                  label={t('optimizer_page.metrics.leading_payout_label')}
-                  value={formatCurrency(leadingScenario.netPayoutValue)}
-                  detail={t('optimizer_page.metrics.leading_payout_detail', {
+              <OptimizerLeadingMetrics
+                labels={{
+                  leadingPayoutLabel: t('optimizer_page.metrics.leading_payout_label'),
+                  leadingPayoutDetail: t('optimizer_page.metrics.leading_payout_detail', {
                     years: horizonYears,
-                  })}
-                />
-                <SupportMetric
-                  label={t('optimizer_page.metrics.leading_bond_label')}
-                  value={`${leadingScenario.bondType}`}
-                  detail={leadingScenario.name}
-                />
-                <SupportMetric
-                  label={t('optimizer_page.metrics.net_profit_label')}
-                  value={`+${formatCurrency(leadingScenario.totalProfit)}`}
-                  detail={t('optimizer_page.metrics.net_profit_detail')}
-                />
-                <SupportMetric
-                  label={t('optimizer_page.metrics.roi_label')}
-                  value={formatPercentValue(
-                    (leadingScenario.totalProfit / inputs.initialInvestment) *
-                      100,
-                  )}
-                  detail={t('optimizer_page.metrics.roi_detail')}
-                />
-              </div>
+                  }),
+                  leadingBondLabel: t('optimizer_page.metrics.leading_bond_label'),
+                  netProfitLabel: t('optimizer_page.metrics.net_profit_label'),
+                  netProfitDetail: t('optimizer_page.metrics.net_profit_detail'),
+                  roiLabel: t('optimizer_page.metrics.roi_label'),
+                  roiDetail: t('optimizer_page.metrics.roi_detail'),
+                }}
+                leadingScenario={leadingScenario}
+                initialInvestment={inputs.initialInvestment}
+                formatCurrency={formatCurrency}
+                formatPercentValue={formatPercentValue}
+              />
 
               <section className="space-y-6 border-t border-border py-6">
                   <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
@@ -508,7 +483,7 @@ export default function BondOptimizerClient() {
               </SecondaryInsightAccordion>
             </>
           ) : (
-            <ScenarioReadyPanel
+            <OptimizerReadyState
               badge={t('optimizer_page.ready_badge')}
               title={t('optimizer_page.ready_title')}
               description={t('optimizer_page.ready_description')}
