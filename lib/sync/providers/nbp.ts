@@ -1,5 +1,6 @@
 import { SyncProvider, SyncRecord } from "../types";
 import { format, parseISO, addYears, min, isBefore } from "date-fns";
+import { fetchSyncResponse } from "../http-gateway";
 
 interface NbpGoldData {
   data: string;
@@ -42,7 +43,7 @@ export class NbpSyncProvider implements SyncProvider {
   }
 
   private async fetchNbpSeries<T>(url: string): Promise<T | []> {
-    const response = await fetch(`${url}?format=json`);
+    const response = await fetchSyncResponse(`${url}?format=json`, {throwOnHttpError: false});
     if (!response.ok) return [];
     return await response.json();
   }

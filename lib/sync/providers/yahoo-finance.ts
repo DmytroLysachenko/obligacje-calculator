@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
 
 import { SyncProvider, SyncRecord } from '../types';
+import { fetchSyncJson } from '../http-gateway';
 
 interface YahooChartResponse {
   chart?: {
@@ -46,18 +47,9 @@ export class YahooFinanceSyncProvider implements SyncProvider {
     const url = `${this.baseUrl}/${encodeURIComponent(this.symbol)}?period1=${period1}&period2=${period2}&interval=1d`;
 
     console.log(`[Yahoo Finance Provider] Fetching ${this.symbol} from ${url}`);
-    const response = await fetch(url, {
-      headers: {
-        Accept: 'application/json',
-        'User-Agent': 'Mozilla/5.0',
-      },
+    const payload = await fetchSyncJson<YahooChartResponse>(url, {
+      headers: {'User-Agent': 'Mozilla/5.0'},
     });
-
-    if (!response.ok) {
-      throw new Error(`Yahoo Finance fetch failed for ${this.symbol}: ${response.status} ${response.statusText}`);
-    }
-
-    const payload = await response.json() as YahooChartResponse;
     const error = payload.chart?.error;
     if (error) {
       throw new Error(`Yahoo Finance error for ${this.symbol}: ${error.description ?? error.code ?? 'unknown error'}`);

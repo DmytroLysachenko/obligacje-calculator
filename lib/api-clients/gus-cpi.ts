@@ -1,4 +1,5 @@
 import { parseISO, startOfMonth } from "date-fns";
+import { fetchSyncArrayBuffer, fetchSyncText } from "@/lib/sync/http-gateway";
 
 export interface GusCpiPoint {
   date: string;
@@ -71,18 +72,9 @@ export class GusCpiApiClient {
   static readonly archivePageUrl = GUS_CPI_ARCHIVE_PAGE_URL;
 
   async fetchHistoricalData(startDate?: string, endDate?: string): Promise<GusCpiPoint[]> {
-    const archiveResponse = await fetch(GUS_CPI_ARCHIVE_PAGE_URL, {
-      headers: {
-        "user-agent": "obligacje-calculator/1.0",
-      },
+    const archiveHtml = await fetchSyncText(GUS_CPI_ARCHIVE_PAGE_URL, {
       cache: "no-store",
     });
-
-    if (!archiveResponse.ok) {
-      throw new Error(`GUS CPI archive page error: ${archiveResponse.status} ${archiveResponse.statusText}`);
-    }
-
-    const archiveHtml = await archiveResponse.text();
     const csvPathMatch = archiveHtml.match(
       /\/download\/gfx\/[^"'<>]+miesieczne_wskazniki_cen_towarow_i_uslug_konsumpcyjnych_od_1982_roku[^"'<>]*\.csv/i,
     );
@@ -92,18 +84,9 @@ export class GusCpiApiClient {
     }
 
     const csvUrl = new URL(csvPathMatch[0], GUS_CPI_ARCHIVE_PAGE_URL).toString();
-    const csvResponse = await fetch(csvUrl, {
-      headers: {
-        "user-agent": "obligacje-calculator/1.0",
-      },
+    const buffer = await fetchSyncArrayBuffer(csvUrl, {
       cache: "no-store",
     });
-
-    if (!csvResponse.ok) {
-      throw new Error(`GUS CPI CSV error: ${csvResponse.status} ${csvResponse.statusText}`);
-    }
-
-    const buffer = await csvResponse.arrayBuffer();
     const decoder = new TextDecoder("windows-1250");
     const csvText = decoder.decode(buffer);
 

@@ -1,4 +1,5 @@
 import { SyncProvider, SyncRecord } from "../types";
+import { fetchSyncResponse } from "../http-gateway";
 
 interface WorldBankRecord {
   date: string;
@@ -14,7 +15,7 @@ export class WorldBankSyncProvider implements SyncProvider {
     const startYear = startDate.substring(0, 4);
     const endYear = endDate.substring(0, 4);
     
-    const response = await fetch(`${this.baseUrl}&date=${startYear}:${endYear}&per_page=100`);
+    const response = await fetchSyncResponse(`${this.baseUrl}&date=${startYear}:${endYear}&per_page=100`, {throwOnHttpError: false});
     if (!response.ok) return [];
     
     const json = await response.json();

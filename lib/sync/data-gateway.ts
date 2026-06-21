@@ -5,6 +5,7 @@ export interface FinancialDataResponse {
 }
 
 import { GusCpiApiClient } from "./../api-clients/gus-cpi";
+import { fetchSyncJson } from "./http-gateway";
 
 export class FinancialDataGateway {
   /**
@@ -27,9 +28,7 @@ export class FinancialDataGateway {
   static async fetchRatesFromNBP(): Promise<FinancialDataResponse> {
     const url = 'https://api.nbp.pl/api/exchangerates/tables/A/?format=json';
     try {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`NBP API Error: ${response.statusText}`);
-      const data = await response.json();
+      const data = await fetchSyncJson(url);
       return { source: 'NBP', data, timestamp: new Date().toISOString() };
     } catch (error) {
       console.error('Failed to fetch from NBP:', error);
@@ -43,9 +42,7 @@ export class FinancialDataGateway {
   static async fetchHICPFromEurostat(): Promise<FinancialDataResponse> {
     const url = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_manr?format=JSON&geo=PL&coicop=CP00';
     try {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error(`Eurostat API Error: ${response.statusText}`);
-      const data = await response.json();
+      const data = await fetchSyncJson(url);
       return { source: 'Eurostat', data, timestamp: new Date().toISOString() };
     } catch (error) {
       console.error('Failed to fetch from Eurostat:', error);
