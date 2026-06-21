@@ -12,6 +12,13 @@ import { AssumptionSemanticsNote } from '@/shared/components/market-assumptions/
 import { MacroDefaultsSummary } from '@/shared/components/market-assumptions/MacroDefaultsSummary';
 import { ProjectedRatePathEditor } from '@/shared/components/market-assumptions/ProjectedRatePathEditor';
 import { isFloatingNbpBondType, isInflationIndexedBondType } from '@/shared/lib/market-assumption-semantics';
+import {
+  getHeaderAssumptionValue,
+  resolveAssumptionModeUpdate,
+  type AssumptionSetupMode,
+} from '@/shared/lib/market-assumptions-form-model';
+
+export type { AssumptionSetupMode } from '@/shared/lib/market-assumptions-form-model';
 
 type UpdateHandler = {
   bivarianceHack: (key: keyof BondInputs | string, value: unknown) => void;
@@ -32,8 +39,6 @@ interface MarketAssumptionsFormProps {
     onInflationSetupModeChange?: (mode: AssumptionSetupMode) => void;
     onNbpSetupModeChange?: (mode: AssumptionSetupMode) => void;
 }
-
-export type AssumptionSetupMode = 'fixed' | 'simple' | 'advanced';
 
 function ProjectionModeButtons({
   value,
@@ -79,27 +84,6 @@ function CurrentAssumptionValue({
       {children}
     </div>
   );
-}
-
-function formatCompactPercent(value: number) {
-  if (!Number.isFinite(value)) {
-    return '0';
-  }
-
-  return value
-    .toFixed(2)
-    .replace(/\.?0+$/, '');
-}
-
-function formatPathAverage(values: number[] | undefined, fallback: number) {
-  const pathValues = values?.filter(Number.isFinite);
-
-  if (!pathValues?.length) {
-    return `Avg ${formatCompactPercent(fallback)}%`;
-  }
-
-  const average = pathValues.reduce((sum, value) => sum + value, 0) / pathValues.length;
-  return `Avg ${formatCompactPercent(average)}%`;
 }
 
 function AssumptionHeader({
@@ -169,14 +153,16 @@ export const MarketAssumptionsForm = ({
     );
     const activeInflationMode = inflationSetupMode ?? inflationMode;
     const activeNbpMode = nbpSetupMode ?? nbpMode;
-    const inflationHeaderValue =
-      activeInflationMode === 'advanced'
-        ? formatPathAverage(customInflation, expectedInflation)
-        : expectedInflation;
-    const nbpHeaderValue =
-      activeNbpMode === 'advanced'
-        ? formatPathAverage(customNbpRate, expectedNbpRate ?? 5.25)
-        : (expectedNbpRate ?? 5.25);
+    const inflationHeaderValue = getHeaderAssumptionValue({
+      mode: activeInflationMode,
+      customPath: customInflation,
+      fallback: expectedInflation,
+    });
+    const nbpHeaderValue = getHeaderAssumptionValue({
+      mode: activeNbpMode,
+      customPath: customNbpRate,
+      fallback: expectedNbpRate ?? 5.25,
+    });
     const horizonLength = Math.max(1, Math.round(inflationHorizonYears));
     const showInflationSection = section === 'all' || section === 'inflation';
     const showNbpSection = section === 'all' || section === 'nbp';
@@ -200,29 +186,41 @@ export const MarketAssumptionsForm = ({
     }, [customNbpRate, nbpSetupMode, onNbpSetupModeChange]);
 
     const updateInflationMode = (mode: AssumptionSetupMode) => {
+      const update = resolveAssumptionModeUpdate({
+        mode,
+        horizonLength,
+        currentValue: expectedInflation,
+        fixedFallback: 2.5,
+      });
       setInflationMode(mode);
       onInflationSetupModeChange?.(mode);
-      if (mode === 'advanced') {
-        onUpdate('customInflation', Array(horizonLength).fill(expectedInflation));
+      if (update.customPath) {
+        onUpdate('customInflation', update.customPath);
         return;
       }
       onUpdate('customInflation', undefined);
-      if (mode === 'fixed') {
-        onUpdate('expectedInflation', 2.5);
+      if (update.fixedValue !== undefined) {
+        onUpdate('expectedInflation', update.fixedValue);
       }
     };
 
     const updateNbpMode = (mode: AssumptionSetupMode) => {
       const baseNbp = expectedNbpRate ?? 5.25;
+      const update = resolveAssumptionModeUpdate({
+        mode,
+        horizonLength,
+        currentValue: baseNbp,
+        fixedFallback: 5.25,
+      });
       setNbpMode(mode);
       onNbpSetupModeChange?.(mode);
-      if (mode === 'advanced') {
-        onUpdate('customNbpRate', Array(horizonLength).fill(baseNbp));
+      if (update.customPath) {
+        onUpdate('customNbpRate', update.customPath);
         return;
       }
       onUpdate('customNbpRate', undefined);
-      if (mode === 'fixed') {
-              onUpdate('expectedNbpRate', 5.25);
+      if (update.fixedValue !== undefined) {
+        onUpdate('expectedNbpRate', update.fixedValue);
       }
     };
 
