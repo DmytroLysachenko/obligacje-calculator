@@ -21,11 +21,14 @@ import { PortfolioWorkspaceCard } from './PortfolioWorkspaceCard';
 import { WorkspaceActionStrip } from './WorkspaceActionStrip';
 import { WorkspaceStatusCard } from './WorkspaceStatusCard';
 import { MetricStrip, MetricStripItem } from '@/shared/components/results/MetricStrip';
-type NotebookStepItem = {
-    id: string;
-    title: string;
-    description: string;
-};
+import {
+    buildNotebookCapabilities,
+    buildNotebookStats,
+    getNotebookPortfolioCounts,
+    NOTEBOOK_DEMO_LOTS,
+    resolveNotebookPortfolioError,
+    type NotebookStepItem,
+} from '@/features/notebook/lib/notebook-workspace-model';
 const EmptyPortfolioState = ({ onCreate, onCreateDemo, onImport, badgeLabel, title, description, createLabel, demoLabel, importLabel, capabilitiesTitle, capabilities, canManageWorkspace, }: {
     onCreate: () => void;
     onCreateDemo: () => void;
@@ -121,12 +124,10 @@ export const NotebookContainer: React.FC = () => {
     const resolvePortfolioError = useCallback((payload?: {
         error?: string;
         code?: string;
-    } | null) => {
-        if (payload?.code === 'portfolio_storage_unavailable') {
-            return t('notebook.storage_unavailable');
-        }
-        return payload?.error || t('notebook.create_error');
-    }, [t]);
+    } | null) => resolveNotebookPortfolioError(payload, {
+        storageUnavailable: t('notebook.storage_unavailable'),
+        createError: t('notebook.create_error'),
+    }), [t]);
     const resolveCaughtPortfolioError = useCallback((caughtError: unknown) => {
         if (caughtError instanceof ApiClientError) {
             return resolvePortfolioError({
@@ -146,28 +147,7 @@ export const NotebookContainer: React.FC = () => {
         }
         setError(null);
     }, [requestError, resolvePortfolioError]);
-    const emptyStateSteps: NotebookStepItem[] = [
-        {
-            id: 'track',
-            title: t('notebook.capabilities.track.title'),
-            description: t('notebook.capabilities.track.desc'),
-        },
-        {
-            id: 'maturities',
-            title: t('notebook.capabilities.maturities.title'),
-            description: t('notebook.capabilities.maturities.desc'),
-        },
-        {
-            id: 'export',
-            title: t('notebook.capabilities.export.title'),
-            description: t('notebook.capabilities.export.desc'),
-        },
-        {
-            id: 'projection',
-            title: t('notebook.capabilities.projection.title'),
-            description: t('notebook.capabilities.projection.desc'),
-        },
-    ];
+    const emptyStateSteps: NotebookStepItem[] = buildNotebookCapabilities(t);
     const handleCreateDefault = async () => {
         setIsMutating(true);
         try {
@@ -205,12 +185,7 @@ export const NotebookContainer: React.FC = () => {
                 await fetchPortfolios();
                 return;
             }
-            const demoLots = [
-                { bondType: 'EDO', amount: 50, purchaseDate: '2023-01-01' },
-                { bondType: 'COI', amount: 100, purchaseDate: '2023-06-15' },
-                { bondType: 'TOS', amount: 200, purchaseDate: '2024-01-10' },
-            ];
-            for (const lot of demoLots) {
+            for (const lot of NOTEBOOK_DEMO_LOTS) {
                 await portfolioClient.createLot({ portfolioId, ...lot });
             }
             if (createdPortfolio?.id) {
@@ -289,24 +264,19 @@ export const NotebookContainer: React.FC = () => {
             }}/>) : (<NotebookLoadingState />);
     }
     const notebookIntro = t('notebook.workspace_intro');
-    const publicCount = portfolios.filter((portfolio) => portfolio.isPublic).length;
-    const privateCount = portfolios.length - publicCount;
+    const portfolioCounts = getNotebookPortfolioCounts(portfolios);
     const notebookStats: MetricStripItem[] = [
-        {
-            label: t('notebook.portfolios_label'),
-            value: String(portfolios.length),
-            description: t('notebook.portfolios_label_desc'),
-        },
-        {
-            label: t('notebook.public_links_label'),
-            value: String(publicCount),
-            description: t('notebook.public_links_label_desc'),
-        },
-        {
-            label: t('notebook.private_drafts_label'),
-            value: String(privateCount),
-            description: t('notebook.private_drafts_label_desc'),
-        },
+        ...buildNotebookStats({
+            counts: portfolioCounts,
+            labels: {
+                portfolios: t('notebook.portfolios_label'),
+                portfoliosDescription: t('notebook.portfolios_label_desc'),
+                publicLinks: t('notebook.public_links_label'),
+                publicLinksDescription: t('notebook.public_links_label_desc'),
+                privateDrafts: t('notebook.private_drafts_label'),
+                privateDraftsDescription: t('notebook.private_drafts_label_desc'),
+            },
+        }),
     ];
     return (<CalculatorPageShell title={t('notebook.title')} description={t('notebook.subtitle')} icon={<BookOpen className="h-8 w-8"/>} isCalculating={isLoading || isMutating} hasResults={portfolios.length > 0}>
       <input ref={importRef} type="file" accept="application/json" className="hidden" onChange={handleImportFile}/>
