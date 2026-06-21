@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect, useEffectEvent, useMemo, useRef } from 'react';
-import { BondInputs, BondType, TaxStrategy, InterestPayout } from '../../bond-core/types';
+import { BondInputs, BondType } from '../../bond-core/types';
 import { ScenarioKind, SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
-import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { MODEL_VERSION } from '../../bond-core/model-version';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
@@ -16,36 +15,15 @@ import {
   restoreVersionedEnvelope,
   stripDisplayOnlyInputs,
 } from '@/shared/lib/calculator-state';
+import {
+  applyDefinitionToInputs,
+  applyReverseSavingsGoal,
+  buildFallbackInputs,
+  getReverseCalculationTestInputs,
+  normalizeSingleCalculatorInputs,
+} from '../lib/single-calculator-state';
 
-const DEFAULT_BOND = BondType.EDO;
 const STORAGE_KEY = 'obligacje.single-calculator.v1';
-
-function buildFallbackInputs(): BondInputs {
-  const purchaseDate = toDateString(new Date());
-
-  return {
-    bondType: DEFAULT_BOND,
-    initialInvestment: 10000,
-    firstYearRate: 5.35,
-    expectedInflation: 3.5,
-    expectedNbpRate: 5.25,
-    margin: 2.0,
-    duration: 10,
-    earlyWithdrawalFee: 2.0,
-    taxRate: 19,
-    isCapitalized: true,
-    payoutFrequency: InterestPayout.MATURITY,
-    purchaseDate,
-    withdrawalDate: getWithdrawalDateFromMonths(purchaseDate, 120),
-    isRebought: false,
-    rebuyDiscount: 0,
-    taxStrategy: TaxStrategy.STANDARD,
-    showRealValue: false,
-    rollover: false,
-    timingMode: 'general',
-    investmentHorizonMonths: 120,
-  };
-}
 
 interface PersistedSingleCalculatorState {
   inputs: BondInputs;
@@ -53,27 +31,6 @@ interface PersistedSingleCalculatorState {
   selectedSeriesId: string | null;
   lastCommittedInputs: BondInputs | null;
   isDirty: boolean;
-}
-
-function applyDefinitionToInputs(
-  previous: BondInputs,
-  definition: typeof BOND_DEFINITIONS[BondType],
-  selectedSeriesId: string | null,
-): BondInputs {
-  const shouldUseCurrentOffer = !selectedSeriesId || selectedSeriesId === 'current';
-
-  return {
-    ...previous,
-    firstYearRate: shouldUseCurrentOffer ? definition.firstYearRate : previous.firstYearRate,
-    margin: shouldUseCurrentOffer ? definition.margin : previous.margin,
-    duration: definition.duration,
-    earlyWithdrawalFee: definition.earlyWithdrawalFee,
-    isCapitalized: definition.isCapitalized,
-    payoutFrequency: definition.payoutFrequency,
-    rebuyDiscount: definition.rebuyDiscount,
-    nominalValue: definition.nominalValue,
-    isInflationIndexed: definition.isInflationIndexed,
-  };
 }
 
 export function useBondCalculator(initialInputs?: BondInputs) {
@@ -185,23 +142,15 @@ export function useBondCalculator(initialInputs?: BondInputs) {
       await Promise.resolve(); // Defer state updates to avoid synchronous setState in effect
       setIsDirty(false);
       clearError();
-      const finalInputs = { ...currentInputs };
+      let finalInputs = { ...currentInputs };
 
       if (currentInputs.calculatorMode === 'reverse' && currentInputs.savingsGoal) {
-        const testBase = 10000;
         const simEnvelope = await post<SingleBondCalculationEnvelope>(
           getCalculationEndpoint(ScenarioKind.SINGLE_BOND),
-          {
-            ...currentInputs,
-            initialInvestment: testBase,
-          },
+          getReverseCalculationTestInputs(currentInputs),
           { preferWorker: true },
         );
-        const netMultiplier = simEnvelope.result.netPayoutValue / testBase;
-        const bondPrice = currentInputs.isRebought ? (100 - (currentInputs.rebuyDiscount || 0)) : 100;
-        const requiredInvestmentRaw = currentInputs.savingsGoal / netMultiplier;
-        const requiredBonds = Math.ceil(requiredInvestmentRaw / bondPrice);
-        finalInputs.initialInvestment = requiredBonds * bondPrice;
+        finalInputs = applyReverseSavingsGoal(currentInputs, simEnvelope.result.netPayoutValue);
       }
 
       const data = await post<SingleBondCalculationEnvelope>(
@@ -264,57 +213,7 @@ export function useBondCalculator(initialInputs?: BondInputs) {
 
   const results = envelope?.result || null;
 
-  const normalizeInputs = useCallback((base: BondInputs, nextPartial?: Partial<BondInputs>) => {
-    const merged = { ...base, ...nextPartial };
-
-    if (nextPartial?.purchaseDate) {
-      const horizonMonths = merged.investmentHorizonMonths ?? getHorizonMonths(base.purchaseDate, base.withdrawalDate);
-      merged.withdrawalDate = getWithdrawalDateFromMonths(String(nextPartial.purchaseDate), horizonMonths);
-    }
-
-    if (nextPartial?.investmentHorizonMonths !== undefined) {
-      merged.withdrawalDate = getWithdrawalDateFromMonths(merged.purchaseDate, Number(nextPartial.investmentHorizonMonths));
-      const years = Math.max(1, Math.ceil(Number(nextPartial.investmentHorizonMonths) / 12));
-      if (merged.customInflation) {
-        merged.customInflation = Array.from(
-          { length: years },
-          (_, index) => merged.customInflation?.[index] ?? merged.expectedInflation,
-        );
-      }
-      if (merged.customNbpRate) {
-        merged.customNbpRate = Array.from(
-          { length: years },
-          (_, index) => merged.customNbpRate?.[index] ?? (merged.expectedNbpRate ?? 5.25),
-        );
-      }
-    }
-
-    if (nextPartial?.withdrawalDate) {
-      merged.investmentHorizonMonths = getHorizonMonths(merged.purchaseDate, String(nextPartial.withdrawalDate));
-      merged.timingMode = 'exact';
-      const years = Math.max(1, Math.ceil(merged.investmentHorizonMonths / 12));
-      if (merged.customInflation) {
-        merged.customInflation = Array.from(
-          { length: years },
-          (_, index) => merged.customInflation?.[index] ?? merged.expectedInflation,
-        );
-      }
-      if (merged.customNbpRate) {
-        merged.customNbpRate = Array.from(
-          { length: years },
-          (_, index) => merged.customNbpRate?.[index] ?? (merged.expectedNbpRate ?? 5.25),
-        );
-      }
-    }
-
-    if (nextPartial?.timingMode === 'general') {
-      const horizonMonths = merged.investmentHorizonMonths ?? getHorizonMonths(merged.purchaseDate, merged.withdrawalDate);
-      merged.investmentHorizonMonths = horizonMonths;
-      merged.withdrawalDate = getWithdrawalDateFromMonths(merged.purchaseDate, horizonMonths);
-    }
-
-    return merged;
-  }, []);
+  const normalizeInputs = useCallback(normalizeSingleCalculatorInputs, []);
 
   const updateInput = (key: string, value: unknown) => {
     setIsDirty(true);
