@@ -1,60 +1,37 @@
 'use client';
 
 import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
-import { BondInputs, BondType, TaxStrategy } from '../../bond-core/types';
+import { BondInputs, BondType } from '../../bond-core/types';
 import {
   BondComparisonCalculationEnvelope,
-  IndependentBondComparisonPayload,
   ScenarioKind,
-  SingleBondCalculationEnvelope,
 } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
-import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/shared/lib/calculator-persistence';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
-import { areCalculatorStatesEqual, preserveStableState } from '@/shared/lib/calculator-state';
+import { preserveStableState } from '@/shared/lib/calculator-state';
 import {
   sanitizeScenarioOverride,
   setScenarioCustomHorizonMonths,
   toggleScenarioCustomHorizon,
 } from '../lib/comparison-scenario-state';
+import {
+  buildDefaultSharedConfig,
+  buildScenarioInputs,
+  DEFAULT_SCENARIO_A,
+  DEFAULT_SCENARIO_B,
+  getComparisonDirtyState,
+  splitComparisonEnvelope,
+  type ScenarioOverride,
+  type SharedComparisonConfig,
+  updateSharedComparisonConfig,
+} from '../lib/comparison-calculator-state';
 
-type SharedComparisonConfig = IndependentBondComparisonPayload['sharedConfig'];
-type ScenarioOverride = IndependentBondComparisonPayload['scenarioA'];
-
-const DEFAULT_HORIZON_MONTHS = 120;
 const STORAGE_KEY = 'obligacje.comparison-calculator.v3';
-
-function buildDefaultSharedConfig(): SharedComparisonConfig {
-  const today = toDateString(new Date());
-
-  return {
-    initialInvestment: 10000,
-    purchaseDate: today,
-    withdrawalDate: getWithdrawalDateFromMonths(today, DEFAULT_HORIZON_MONTHS),
-    expectedInflation: 3.5,
-    expectedNbpRate: 5.25,
-    inflationScenario: 'base',
-    taxStrategy: TaxStrategy.STANDARD,
-    timingMode: 'general',
-    investmentHorizonMonths: DEFAULT_HORIZON_MONTHS,
-    maturityMode: 'reinvest_until_horizon',
-  };
-}
-
-const DEFAULT_SCENARIO_A: ScenarioOverride = {
-  bondType: BondType.EDO,
-  isRebought: false,
-};
-
-const DEFAULT_SCENARIO_B: ScenarioOverride = {
-  bondType: BondType.EDO,
-  isRebought: false,
-};
 
 interface PersistedComparisonState {
   sharedConfig: SharedComparisonConfig;
@@ -64,48 +41,6 @@ interface PersistedComparisonState {
   committedInputsA: BondInputs | null;
   committedInputsB: BondInputs | null;
   isDirty: boolean;
-}
-
-function buildScenarioInputs(
-  sharedConfig: SharedComparisonConfig,
-  scenario: ScenarioOverride,
-  definitions: Record<BondType, typeof BOND_DEFINITIONS[BondType]> | null,
-): BondInputs {
-  const normalizedScenario = sanitizeScenarioOverride(sharedConfig, scenario);
-  const definition = definitions?.[normalizedScenario.bondType] ?? BOND_DEFINITIONS[normalizedScenario.bondType];
-  const purchaseDate = normalizedScenario.purchaseDate ?? sharedConfig.purchaseDate;
-  const timingMode = normalizedScenario.timingMode ?? sharedConfig.timingMode ?? 'general';
-  const horizonMonths = normalizedScenario.investmentHorizonMonths ?? sharedConfig.investmentHorizonMonths ?? DEFAULT_HORIZON_MONTHS;
-  const withdrawalDate =
-    normalizedScenario.withdrawalDate
-    ?? (timingMode === 'general'
-      ? getWithdrawalDateFromMonths(purchaseDate, horizonMonths)
-      : sharedConfig.withdrawalDate);
-
-  return {
-    bondType: normalizedScenario.bondType,
-    initialInvestment: sharedConfig.initialInvestment,
-    firstYearRate: definition.firstYearRate,
-    expectedInflation: sharedConfig.expectedInflation,
-    expectedNbpRate: sharedConfig.expectedNbpRate ?? 5.25,
-    customInflation: sharedConfig.customInflation,
-    customNbpRate: sharedConfig.customNbpRate,
-    inflationScenario: sharedConfig.inflationScenario,
-    margin: definition.margin,
-    duration: definition.duration,
-    earlyWithdrawalFee: definition.earlyWithdrawalFee,
-    taxRate: 19,
-    isCapitalized: definition.isCapitalized,
-    payoutFrequency: definition.payoutFrequency,
-    purchaseDate,
-    withdrawalDate,
-    isRebought: false,
-    rebuyDiscount: definition.rebuyDiscount,
-    taxStrategy: normalizedScenario.taxStrategy ?? sharedConfig.taxStrategy ?? TaxStrategy.STANDARD,
-    rollover: normalizedScenario.rollover ?? false,
-    timingMode,
-    investmentHorizonMonths: horizonMonths,
-  };
 }
 
 export function useComparison() {
@@ -154,50 +89,20 @@ export function useComparison() {
   const inputsA = useMemo(() => buildScenarioInputs(sharedConfig, scenarioA, definitions), [definitions, sharedConfig, scenarioA]);
   const inputsB = useMemo(() => buildScenarioInputs(sharedConfig, scenarioB, definitions), [definitions, sharedConfig, scenarioB]);
 
-  const scenarioAResult = comparisonEnvelope?.result.find((item) => item.scenarioKey === 'scenarioA');
-  const scenarioBResult = comparisonEnvelope?.result.find((item) => item.scenarioKey === 'scenarioB');
-  const resultsA = scenarioAResult?.result || null;
-  const resultsB = scenarioBResult?.result || null;
+  const { resultsA, resultsB, envelopeA, envelopeB } = useMemo(
+    () => splitComparisonEnvelope(comparisonEnvelope),
+    [comparisonEnvelope],
+  );
   const displayIsDirty = useMemo(() => {
-    if (!resultsA || !resultsB) {
-      return isDirty;
-    }
-
-    if (!committedInputsA || !committedInputsB) {
-      return true;
-    }
-
-    return !areCalculatorStatesEqual(inputsA, committedInputsA)
-      || !areCalculatorStatesEqual(inputsB, committedInputsB);
+    return getComparisonDirtyState({
+      inputsA,
+      inputsB,
+      committedInputsA,
+      committedInputsB,
+      isDirty,
+      hasResults: Boolean(resultsA && resultsB),
+    });
   }, [committedInputsA, committedInputsB, inputsA, inputsB, isDirty, resultsA, resultsB]);
-  const sharedWarnings = comparisonEnvelope?.warnings || [];
-  const sharedAssumptions = comparisonEnvelope?.assumptions || [];
-  const sharedNotes = comparisonEnvelope?.calculationNotes || [];
-  const sharedFlags = comparisonEnvelope?.dataQualityFlags || [];
-
-  const envelopeA: SingleBondCalculationEnvelope | null = resultsA
-    ? {
-        result: resultsA,
-        warnings: sharedWarnings,
-        assumptions: sharedAssumptions,
-        calculationNotes: sharedNotes,
-        dataQualityFlags: sharedFlags,
-        dataFreshness: comparisonEnvelope?.dataFreshness ?? { status: 'unknown', usedFallback: false },
-        calculationVersion: comparisonEnvelope?.calculationVersion ?? 'unknown',
-      }
-    : null;
-
-  const envelopeB: SingleBondCalculationEnvelope | null = resultsB
-    ? {
-        result: resultsB,
-        warnings: sharedWarnings,
-        assumptions: sharedAssumptions,
-        calculationNotes: sharedNotes,
-        dataQualityFlags: sharedFlags,
-        dataFreshness: comparisonEnvelope?.dataFreshness ?? { status: 'unknown', usedFallback: false },
-        calculationVersion: comparisonEnvelope?.calculationVersion ?? 'unknown',
-      }
-    : null;
 
   const calculate = useCallback(async () => {
     setIsDirty(false);
@@ -226,57 +131,7 @@ export function useComparison() {
       hasTouchedMacroAssumptions.current = true;
     }
     setSharedConfig((prev) => {
-      const next = { ...prev, [key]: value };
-
-      if (key === 'purchaseDate') {
-        const months = prev.investmentHorizonMonths ?? getHorizonMonths(prev.purchaseDate, prev.withdrawalDate);
-        next.withdrawalDate = getWithdrawalDateFromMonths(String(value), months);
-      }
-
-      if (key === 'investmentHorizonMonths') {
-        next.withdrawalDate = getWithdrawalDateFromMonths(prev.purchaseDate, Number(value));
-        if (prev.customInflation) {
-          const years = Math.max(1, Math.ceil(Number(value) / 12));
-          next.customInflation = Array.from(
-            { length: years },
-            (_, index) => prev.customInflation?.[index] ?? prev.expectedInflation,
-          );
-        }
-        if (prev.customNbpRate) {
-          const years = Math.max(1, Math.ceil(Number(value) / 12));
-          next.customNbpRate = Array.from(
-            { length: years },
-            (_, index) => prev.customNbpRate?.[index] ?? (prev.expectedNbpRate ?? 5.25),
-          );
-        }
-      }
-
-      if (key === 'withdrawalDate') {
-        next.investmentHorizonMonths = getHorizonMonths(prev.purchaseDate, String(value));
-        next.timingMode = 'exact';
-        if (prev.customInflation) {
-          const years = Math.max(1, Math.ceil(next.investmentHorizonMonths / 12));
-          next.customInflation = Array.from(
-            { length: years },
-            (_, index) => prev.customInflation?.[index] ?? prev.expectedInflation,
-          );
-        }
-        if (prev.customNbpRate) {
-          const years = Math.max(1, Math.ceil(next.investmentHorizonMonths / 12));
-          next.customNbpRate = Array.from(
-            { length: years },
-            (_, index) => prev.customNbpRate?.[index] ?? (prev.expectedNbpRate ?? 5.25),
-          );
-        }
-      }
-
-      if (key === 'timingMode' && value === 'general') {
-        const months = prev.investmentHorizonMonths ?? getHorizonMonths(prev.purchaseDate, prev.withdrawalDate);
-        next.investmentHorizonMonths = months;
-        next.withdrawalDate = getWithdrawalDateFromMonths(prev.purchaseDate, months);
-      }
-
-      return next;
+      return updateSharedComparisonConfig(prev, key, value);
     });
   };
 
