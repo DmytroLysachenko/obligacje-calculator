@@ -202,6 +202,8 @@ When touching a large component, extract in this order:
 
 This keeps behavior testable before markup is moved.
 
+For chart components, keep public chart props stable when possible. Move tooltip models, legend decisions, and toolbar rendering into narrow chart model or chart parts files before changing chart behavior.
+
 ## 6. Shared Logic Belongs in Shared Helpers
 
 If formatting, copy composition, event labeling, or display semantics are reused across multiple pages, move them into a shared helper or narrow shared primitive.
@@ -229,6 +231,9 @@ Formatting rules belong here too:
 - API route controllers should use shared response helpers for standard JSON
   envelopes and should keep ownership/auth checks, validation, and service calls
   visibly separate
+- sync providers and server API clients should use the sync HTTP gateway for
+  timeout, headers, status handling, and response parsing instead of raw
+  provider-local `fetch` calls
 
 ## 6.1 Calculator Shell Hierarchy
 
@@ -355,6 +360,8 @@ The default review posture for this repository is to reject these patterns rathe
 - no stale TODO/FIXME/debug markers in production paths
 - direct browser fetch only through approved client modules
 - API JSON responses through shared response helpers except documented platform endpoints
+- app API JSON body parsing through shared body-reader helpers
+- sync/provider HTTP calls through `lib/sync/http-gateway.ts`
 - lint-disable comments only in documented exceptions
 
 Update that contract when the architecture intentionally changes. Do not weaken it to land unrelated work.
@@ -386,6 +393,7 @@ Route helpers must be reused when a route family already has a shared contract.
 
 - calculation endpoints should use the shared calculation-route helper instead of hand-rolling request parsing and response envelopes per calculator
 - structured JSON endpoints should use shared validated-body helpers instead of ad hoc `await req.json()` parsing repeated in each route
+- route families with repeated auth, owner, or domain-error behavior should expose a narrow family HTTP helper instead of duplicating controller boilerplate
 - route-level validation belongs at the edge; business rules stay in `features/**` or `lib/server/**`
 
 ### 11.0.1 Client and Server Gateway Boundaries

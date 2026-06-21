@@ -3,7 +3,7 @@ import { BondInputs, BondType } from '../../bond-core/types';
 import { ScenarioKind, SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { MODEL_VERSION } from '../../bond-core/model-version';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
-import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
+import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/shared/lib/calculator-persistence';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
@@ -213,7 +213,9 @@ export function useBondCalculator(initialInputs?: BondInputs) {
 
   const results = envelope?.result || null;
 
-  const normalizeInputs = useCallback(normalizeSingleCalculatorInputs, []);
+  const normalizeInputs = useCallback((base: BondInputs, nextPartial?: Partial<BondInputs>) => (
+    normalizeSingleCalculatorInputs(base, nextPartial)
+  ), []);
 
   const updateInput = (key: string, value: unknown) => {
     setIsDirty(true);

@@ -38,5 +38,7 @@ Financial applications require a rigorous testing strategy to ensure mathematica
 
 ## 6. Release Contracts
 - `pnpm test:release` runs the calculation, worker, data freshness, API readiness, deployment, product readiness, script, and clean-code contract suites.
-- `docs/technical/architecture/clean-code-contract.test.ts` blocks broad code-smell regressions in production paths: stale TODO/FIXME/debug markers, unmanaged route responses, direct feature-layer fetch calls, and undocumented lint-disable comments.
+- `docs/technical/architecture/clean-code-contract.test.ts` blocks broad code-smell regressions in production paths: stale TODO/FIXME/debug markers, unmanaged route responses, direct feature-layer fetch calls, direct sync/provider fetch calls, unmanaged API body parsing, and undocumented lint-disable comments.
+- Feature-local state models require focused unit tests before hook/page rewrites. This applies to calculator state, dashboard metadata state, chart tooltip models, and similar non-React decision logic.
+- Provider HTTP changes require gateway tests that cover default headers, HTTP failure behavior, and fallback-compatible status handling.
 - When a new architecture rule becomes release-critical, add or update a contract test in the same change as the documentation.
