@@ -25,3 +25,19 @@ export async function readJsonBody<TSchema extends z.ZodTypeAny>(
     });
   }
 }
+
+export async function readOptionalJsonBody<TSchema extends z.ZodTypeAny>(
+  req: NextRequest,
+  schema: TSchema,
+  fallback: z.infer<TSchema>,
+): Promise<z.infer<TSchema>> {
+  try {
+    return await readJsonBody(req, schema);
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      return fallback;
+    }
+
+    throw error;
+  }
+}

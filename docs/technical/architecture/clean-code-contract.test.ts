@@ -64,6 +64,15 @@ describe('clean code architecture contract', () => {
     expect(matches).toEqual([]);
   });
 
+  it('keeps app api route body parsing on shared helpers', () => {
+    const allowedRawBodyReaders = new Set<string>();
+    const matches = filesContaining(/await req\.json\(/)
+      .filter((file) => file.startsWith('app/api/'))
+      .filter((file) => !allowedRawBodyReaders.has(file));
+
+    expect(matches).toEqual([]);
+  });
+
   it('keeps broad lint and comment escape hatches explicit', () => {
     const approvedDisableFiles = new Set([
       'shared/components/MacroAdjuster.tsx',

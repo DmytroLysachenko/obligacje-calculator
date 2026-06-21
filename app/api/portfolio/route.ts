@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { PortfolioSchema } from '@/features/bond-core/types/portfolio-schemas';
 import { apiHandler } from '@/lib/server/http/api-handler';
+import { readJsonBody } from '@/lib/server/http/read-json-body';
 import { createDomainErrorResponse, createValidationErrorResponse, okJson } from '@/lib/server/http/responses';
 import {
   getAuthenticatedPortfolioRouteContext,
@@ -23,8 +24,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
   if (!authContext.ok) return authContext.response;
 
   const { owner } = authContext.context;
-  const body = await req.json();
-  const validated = PortfolioSchema.parse(body);
+  const validated = await readJsonBody(req, PortfolioSchema);
   const newPortfolio = await createOwnerPortfolio(owner.ownerId, validated);
 
   return withPortfolioOwnerResponse(okJson(newPortfolio), owner);

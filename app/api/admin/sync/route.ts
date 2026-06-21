@@ -4,15 +4,21 @@ import {
   runAdminSync,
   type SyncMode,
 } from '@/lib/server/admin/service';
+import { readOptionalJsonBody } from '@/lib/server/http/read-json-body';
 import { createUnauthorizedResponse, errorJson, okJson } from '@/lib/server/http/responses';
+import { z } from 'zod';
+
+const AdminSyncPayloadSchema = z.object({
+  mode: z.enum(['full-sync', 'metadata-seed', 'market-history-seed', 'market-history-sync']).optional(),
+}).default({});
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
 
   try {
     assertAdminSyncAuthorization(authHeader);
-    const body = (await req.json().catch(() => ({}))) as { mode?: SyncMode };
-    const mode = body.mode ?? 'full-sync';
+    const body = await readOptionalJsonBody(req, AdminSyncPayloadSchema, {});
+    const mode: SyncMode = body.mode ?? 'full-sync';
     const results = await runAdminSync(mode);
 
     return okJson({

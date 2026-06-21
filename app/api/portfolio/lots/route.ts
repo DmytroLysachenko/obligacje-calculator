@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { InvestmentLotSchema } from '@/features/bond-core/types/portfolio-schemas';
 import { apiHandler } from '@/lib/server/http/api-handler';
+import { readJsonBody } from '@/lib/server/http/read-json-body';
 import { PortfolioServiceError } from '@/lib/server/portfolio/errors';
 import { listPortfolioLots } from '@/lib/server/portfolio/queries';
 import { createPortfolioLot, deleteOwnerLot } from '@/lib/server/portfolio/commands';
@@ -37,8 +38,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
   if (!authContext.ok) return authContext.response;
 
   const { owner } = authContext.context;
-  const body = await req.json();
-  const validated = InvestmentLotSchema.parse(body);
+  const validated = await readJsonBody(req, InvestmentLotSchema);
 
   try {
     const newLot = await createPortfolioLot(owner.ownerId, validated);
