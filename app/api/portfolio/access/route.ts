@@ -1,16 +1,10 @@
 import { apiHandler } from '@/lib/server/http/api-handler';
-import { NextResponse } from 'next/server';
+import { rawJson } from '@/lib/server/http/responses';
+import { createPortfolioAccessPayload } from '@/lib/server/portfolio/access-payload';
 import { getPortfolioRouteContext } from '@/lib/server/portfolio/http';
 
 export const GET = apiHandler(async () => {
   const { owner } = await getPortfolioRouteContext();
 
-  return NextResponse.json({
-    data: {
-      ownerId: owner.ownerId,
-      isGuest: owner.isGuest,
-      authMode: owner.authMode,
-      canManageWorkspace: !owner.isGuest && owner.authMode === 'authenticated',
-    },
-  });
+  return rawJson(createPortfolioAccessPayload(owner));
 });
