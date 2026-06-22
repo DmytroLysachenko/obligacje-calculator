@@ -49,10 +49,12 @@ describe('production readiness contract', () => {
 
   it('exposes liveness and readiness routes with safe checks', () => {
     const health = read('app/api/health/route.ts');
+    const healthService = read('lib/server/health/service.ts');
     const readiness = read('app/api/readiness/route.ts');
     const readinessService = read('lib/server/readiness/service.ts');
 
-    expect(health).toContain('MODEL_VERSION');
+    expect(health).toContain('createHealthPayload');
+    expect(healthService).toContain('MODEL_VERSION');
     expect(readiness).toContain('getReadinessSnapshot');
     expect(readinessService).toContain('DATABASE_URL');
     expect(readinessService).toContain('AUTH_SECRET');

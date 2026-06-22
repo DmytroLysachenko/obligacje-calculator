@@ -1,6 +1,10 @@
 import {NextResponse} from 'next/server';
 import {createErrorResponse, createSuccessResponse} from '@/shared/types/api';
 
+export function rawJson<T>(data: T, init?: ResponseInit) {
+  return NextResponse.json(data, init);
+}
+
 export function okJson<T>(data: T, init?: ResponseInit) {
   return NextResponse.json(createSuccessResponse(data), init);
 }

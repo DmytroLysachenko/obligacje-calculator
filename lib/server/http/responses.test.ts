@@ -6,9 +6,17 @@ import {
   createValidationErrorResponse,
   errorJson,
   okJson,
+  rawJson,
 } from '@/lib/server/http/responses';
 
 describe('http response helpers', () => {
+  it('supports raw operational payloads for platform endpoints', async () => {
+    const response = rawJson({ok: true, service: 'health'});
+
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ok: true, service: 'health'});
+  });
+
   it('wraps success payloads consistently', async () => {
     const response = okJson({value: 1});
 

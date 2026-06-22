@@ -44,10 +44,14 @@ describe('operational endpoint contracts', () => {
 
   it('keeps liveness and readiness as explicit operational endpoints', () => {
     const health = read('app/api/health/route.ts');
+    const healthService = read('lib/server/health/service.ts');
     const readiness = read('app/api/readiness/route.ts');
 
-    expect(health).toContain('MODEL_VERSION');
-    expect(health).toContain('obligacje-calculator');
+    expect(health).toContain('createHealthPayload');
+    expect(health).toContain('rawJson');
+    expect(health).not.toContain('NextResponse.json');
+    expect(healthService).toContain('MODEL_VERSION');
+    expect(healthService).toContain('obligacje-calculator');
     expect(readiness).toContain('snapshot.ok ? 200 : 503');
     expect(`${health}\n${readiness}`).not.toContain('String(error)');
   });
