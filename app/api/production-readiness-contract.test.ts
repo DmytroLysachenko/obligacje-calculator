@@ -50,13 +50,15 @@ describe('production readiness contract', () => {
   it('exposes liveness and readiness routes with safe checks', () => {
     const health = read('app/api/health/route.ts');
     const readiness = read('app/api/readiness/route.ts');
+    const readinessService = read('lib/server/readiness/service.ts');
 
     expect(health).toContain('MODEL_VERSION');
-    expect(readiness).toContain('DATABASE_URL');
-    expect(readiness).toContain('AUTH_SECRET');
-    expect(readiness).toContain('SYNC_SECRET');
-    expect(readiness).toContain('Missing required tables');
-    expect(readiness).not.toContain('String(error)');
+    expect(readiness).toContain('getReadinessSnapshot');
+    expect(readinessService).toContain('DATABASE_URL');
+    expect(readinessService).toContain('AUTH_SECRET');
+    expect(readinessService).toContain('SYNC_SECRET');
+    expect(readinessService).toContain('Missing required tables');
+    expect(`${readiness}\n${readinessService}`).not.toContain('String(error)');
   });
 
   it('keeps the Cloud Run release gate wired into package scripts', () => {
