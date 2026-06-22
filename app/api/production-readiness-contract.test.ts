@@ -86,10 +86,16 @@ describe('production readiness contract', () => {
     const packageJson = JSON.parse(read('package.json')) as {
       scripts: Record<string, string>;
     };
+    const prodConfigScript = read('scripts/check-production-config.ts');
 
     expect(packageJson.scripts['test:release']).toContain('app/api/production-readiness-contract.test.ts');
     expect(packageJson.scripts['check:release']).toBe(
       'pnpm check:types && pnpm lint && pnpm test:release && pnpm build',
     );
+    expect(packageJson.scripts['check:prod-config']).toBe('tsx scripts/check-production-config.ts');
+    expect(prodConfigScript).toContain('getConfiguredOAuthProviders');
+    expect(prodConfigScript).toContain('getDatabaseUrl');
+    expect(prodConfigScript).toContain('hasAuthSecret');
+    expect(prodConfigScript).toContain('getSyncSecret');
   });
 });

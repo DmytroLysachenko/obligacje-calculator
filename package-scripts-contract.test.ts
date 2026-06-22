@@ -17,5 +17,7 @@ describe('package scripts contract', () => {
     expect(pkg.scripts['check:release']).toContain('pnpm lint');
     expect(pkg.scripts['check:release']).toContain('pnpm test:release');
     expect(pkg.scripts['check:release']).toContain('pnpm build');
+    expect(pkg.scripts['check:prod-config']).toBe('tsx scripts/check-production-config.ts');
+    expect(pkg.scripts['check:release']).not.toContain('check:prod-config');
   });
 });

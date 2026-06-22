@@ -78,6 +78,18 @@ On Windows, Next standalone tracing may print a local copy warning for Node
 externals while still exiting successfully; treat Linux Cloud Build and Cloud Run
 health/readiness checks as the production signal.
 
+Validate the production environment from the shell or deployment secret source
+before applying migrations:
+
+```bash
+pnpm check:prod-config
+```
+
+This operator check validates `DATABASE_URL`, `AUTH_SECRET` or
+`NEXTAUTH_SECRET`, `NEXT_PUBLIC_APP_URL`, `SYNC_SECRET`, and at least one
+complete OAuth provider pair. It is intentionally not part of `check:release`
+because CI and local developer machines should not require production secrets.
+
 Apply migrations and seed/sync the target database before promoting traffic:
 
 ```bash
@@ -103,6 +115,8 @@ Secret Manager. Do not commit `.env` files.
 - Run `pnpm check:release` before promoting a build. This is the trusted-core
   Cloud Run gate; run `pnpm test:ci` separately when reconciling the broader
   legacy UI contract inventory.
+- Run `pnpm check:prod-config` against the environment that will back the Cloud
+  Run revision before applying migrations or promoting traffic.
 - Keep browser API calls behind shared clients (`admin-client`,
   `bond-series-client`, `portfolio-client`, `scenario-share-client`,
   `sync-client`) so UI code does not own request envelopes.

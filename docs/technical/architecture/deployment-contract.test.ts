@@ -17,6 +17,7 @@ describe('deployment documentation contract', () => {
     expect(source).toContain('Google Cloud Run');
     expect(source).toContain('Dockerfile');
     expect(source).toContain('cloudbuild.yaml');
+    expect(source).toContain('pnpm check:prod-config');
     expect(source).toContain('europe-central2');
     expect(source).toContain('standalone `server.js`');
   });
@@ -50,6 +51,8 @@ describe('deployment documentation contract', () => {
 
     expect(source).toContain('At least one OAuth provider pair must be configured');
     expect(source).toContain('login surface is intentionally OAuth-only');
+    expect(source).toContain('validates `DATABASE_URL`, `AUTH_SECRET` or');
+    expect(source).toContain('intentionally not part of `check:release`');
   });
 
   it('documents smoke checks for sync status and authenticated portfolio access', () => {
