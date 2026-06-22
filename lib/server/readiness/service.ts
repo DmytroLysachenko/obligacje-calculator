@@ -1,4 +1,13 @@
 import postgres from 'postgres';
+import {
+  getDatabaseUrl,
+  getPublicAppUrl,
+  getSyncSecret,
+  hasAuthSecret,
+  hasOAuthProvider,
+  readRuntimeEnv,
+  type RuntimeEnv,
+} from '@/lib/server/runtime/env';
 
 export type ReadinessCheckStatus = 'ok' | 'failed';
 
@@ -16,17 +25,7 @@ export interface ReadinessSnapshot {
   timestamp: string;
 }
 
-export interface ReadinessEnv {
-  DATABASE_URL?: string;
-  AUTH_SECRET?: string;
-  NEXTAUTH_SECRET?: string;
-  AUTH_GOOGLE_ID?: string;
-  AUTH_GOOGLE_SECRET?: string;
-  AUTH_FACEBOOK_ID?: string;
-  AUTH_FACEBOOK_SECRET?: string;
-  SYNC_SECRET?: string;
-  NEXT_PUBLIC_APP_URL?: string;
-}
+export type ReadinessEnv = RuntimeEnv;
 
 export type SqlClient = {
   <T = unknown>(strings: TemplateStringsArray, ...values: unknown[]): Promise<T>;
@@ -48,17 +47,12 @@ export const REQUIRED_READINESS_TABLES = [
 ];
 
 export function checkReadinessEnv(env: ReadinessEnv): ReadinessCheck {
-  const hasAuthSecret = Boolean(env.AUTH_SECRET || env.NEXTAUTH_SECRET);
-  const hasOAuthProvider = Boolean(
-    (env.AUTH_GOOGLE_ID && env.AUTH_GOOGLE_SECRET)
-      || (env.AUTH_FACEBOOK_ID && env.AUTH_FACEBOOK_SECRET),
-  );
   const missing = [
-    !env.DATABASE_URL ? 'DATABASE_URL' : null,
-    !hasAuthSecret ? 'AUTH_SECRET' : null,
-    !env.SYNC_SECRET ? 'SYNC_SECRET' : null,
-    !env.NEXT_PUBLIC_APP_URL ? 'NEXT_PUBLIC_APP_URL' : null,
-    !hasOAuthProvider ? 'OAUTH_PROVIDER' : null,
+    !getDatabaseUrl(env) ? 'DATABASE_URL' : null,
+    !hasAuthSecret(env) ? 'AUTH_SECRET' : null,
+    !getSyncSecret(env) ? 'SYNC_SECRET' : null,
+    !getPublicAppUrl(env) ? 'NEXT_PUBLIC_APP_URL' : null,
+    !hasOAuthProvider(env) ? 'OAUTH_PROVIDER' : null,
   ].filter((value): value is string => Boolean(value));
 
   return missing.length === 0
@@ -98,7 +92,7 @@ export async function checkReadinessDatabase(
 }
 
 export async function getReadinessSnapshot({
-  env = process.env as ReadinessEnv,
+  env = readRuntimeEnv(),
   createSqlClient,
   now = new Date(),
 }: {
@@ -108,7 +102,7 @@ export async function getReadinessSnapshot({
 } = {}): Promise<ReadinessSnapshot> {
   const checks = {
     env: checkReadinessEnv(env),
-    database: await checkReadinessDatabase(env.DATABASE_URL, createSqlClient),
+    database: await checkReadinessDatabase(getDatabaseUrl(env), createSqlClient),
   };
   const ok = Object.values(checks).every((check) => check.status === 'ok');
 
