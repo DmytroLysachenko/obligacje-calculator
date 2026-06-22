@@ -420,6 +420,14 @@ Server-facing route files should depend on application services, command/query f
 
 Portfolio route controllers must not import from `lib/server/portfolio/service.ts`. Use command/query facades for behavior and `lib/server/portfolio/errors.ts` for `PortfolioServiceError`.
 
+Operational endpoints follow the same rule:
+
+- `/api/health` builds payloads through `lib/server/health/**`
+- `/api/readiness` builds checks through `lib/server/readiness/**`
+- `/api/admin/status` reads typed snapshots through `lib/server/admin/**`
+- `/api/admin/sync` gets supported modes, default mode handling, and response payloads from `lib/server/admin/**`
+- chart API routes get fallback envelopes from `lib/data/**`, not route-local object literals
+
 ### 11.1 Workspace Boundaries
 
 Notebook and portfolio workspace state must follow these rules:

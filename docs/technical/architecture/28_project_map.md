@@ -13,7 +13,9 @@ Use it before adding files or moving logic.
 ## Server And Data Layers
 
 - `lib/server/**`: server-only application services, route helpers, auth helpers, commands, queries, sync orchestration, and page-read services.
+- `lib/server/readiness/**` and `lib/server/health/**`: operational endpoint services. Routes delegate payload and check construction here.
 - `lib/data/**`: read models, repositories, market-data caches, and source-neutral data access.
+- `lib/data/chart-reference-series.ts` and `lib/data/multi-asset-history.ts`: chart reference envelopes, fallback coverage, stale/partial status decisions, and data-layer fallback builders for chart APIs.
 - `lib/api-clients/**`: external provider adapters that convert public API responses into internal records. HTTP transport goes through `lib/sync/http-gateway.ts`.
 - `lib/sync/**`: CLI sync orchestration, seed scripts, provider sync services, sync history writing, and the shared sync HTTP gateway.
 - `db/**`: Drizzle schema, migrations, seed data, and low-level database connection code.
@@ -38,6 +40,8 @@ Use it before adding files or moving logic.
 - Pure display and state logic should sit in `shared/lib` when reused or in `features/**/lib` when feature-local.
 - Large components should be reduced by extracting pure models first, then extracting presentational subcomponents.
 - Shared market-assumption UI uses `shared/lib/market-assumptions-form-model.ts` for state/format decisions and `shared/components/market-assumptions/**` for render primitives. Calculator pages should not duplicate CPI/NBP setup-mode logic.
+- Operational API routes stay thin. Health, readiness, admin, and sync routes call server services for payloads, mode defaults, DB checks, and command responses.
+- Chart routes call data-layer envelope helpers for fallback behavior instead of constructing fallback payloads inside route handlers.
 - Shared chart components may have companion `*Parts.tsx` files for presentational sections, while pure chart decisions stay in model helpers.
 - Sync providers and API clients must not call raw `fetch`; use `lib/sync/http-gateway.ts`.
 
@@ -59,4 +63,6 @@ Use it before adding files or moving logic.
 - UI section splits require contract tests to assert the new component/model ownership when source-level contracts already exist.
 - Route boundary changes require contract coverage for body parsing and response envelopes.
 - Provider HTTP changes require gateway tests and sync boundary contracts.
+- Operational endpoint changes require `app/api/operational-endpoints-contract.test.ts` coverage and focused service tests.
+- Chart fallback/status changes require pure helper tests in `lib/data/**` plus route contract coverage when route ownership changes.
 - Docs that define release, architecture, or support status should have a matching contract test when the rule is executable.

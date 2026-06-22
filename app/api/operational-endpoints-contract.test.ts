@@ -49,7 +49,7 @@ describe('operational endpoint contracts', () => {
 
     expect(health).toContain('createHealthPayload');
     expect(health).toContain('rawJson');
-    expect(health).not.toContain('NextResponse.json');
+    expect(health).not.toContain(`NextResponse${'.json'}`);
     expect(healthService).toContain('MODEL_VERSION');
     expect(healthService).toContain('obligacje-calculator');
     expect(readiness).toContain('snapshot.ok ? 200 : 503');

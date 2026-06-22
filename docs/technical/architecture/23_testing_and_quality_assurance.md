@@ -43,6 +43,8 @@ Financial applications require a rigorous testing strategy to ensure mathematica
 - Shared form models require focused unit tests before component splits. Current examples include market assumption setup-mode transitions and header value formatting.
 - Source-contract tests must follow implementation ownership after refactors. If a public barrel re-exports a moved engine, contracts should inspect the concrete engine module where the invariant lives.
 - Component split tests should assert ownership across model, control, and container files when the split is architecture-relevant. This prevents accidental recombining of pure logic and JSX-heavy rendering.
+- Operational endpoints require service-level tests for payload/check construction and source contracts for route thinness.
+- Chart fallback behavior requires data-helper tests covering fallback source, coverage bounds, partial availability, stale status, and route reuse.
 - Provider HTTP changes require gateway tests that cover default headers, HTTP failure behavior, and fallback-compatible status handling.
 - When a new architecture rule becomes release-critical, add or update a contract test in the same change as the documentation.
 

@@ -112,6 +112,8 @@ Secret Manager. Do not commit `.env` files.
 - Verify `/api/health` returns `ok: true`.
 - Verify `/api/readiness` returns `ok: true` after production env and database
   setup are complete.
+- Verify `/api/health` and `/api/readiness` keep operational payloads delegated
+  to `lib/server/health` and `lib/server/readiness`.
 - Verify `/login` shows the configured OAuth providers.
 - Verify `/api/portfolio/access` reports `canManageWorkspace: true` after sign-in.
 - Verify `/admin/status` shows recent `sync_runs` rows after a manual sync.
