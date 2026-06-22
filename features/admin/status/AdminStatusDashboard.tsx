@@ -1,6 +1,6 @@
 'use client';
 
-import {differenceInMonths, formatDistanceToNow, parseISO} from 'date-fns';
+import {formatDistanceToNow, parseISO} from 'date-fns';
 import {
   Activity,
   AlertCircle,
@@ -19,6 +19,7 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/c
 import {AppToast} from '@/shared/components/feedback/AppToast';
 import {ConfirmActionDialog} from '@/shared/components/feedback/ConfirmActionDialog';
 import type {StatusData} from './useAdminStatusDashboard';
+import {createAdminStatusViewModel} from './admin-status-model';
 
 interface AdminStatusDashboardProps {
   data: StatusData | null;
@@ -50,20 +51,7 @@ export function AdminStatusDashboard({
   onConfirmSync,
 }: AdminStatusDashboardProps) {
   const {t} = useAppI18n();
-
-  const isDataGap = (lastDateStr: string | null) => {
-    if (!lastDateStr) {
-      return true;
-    }
-
-    try {
-      const lastDate = parseISO(lastDateStr);
-      const monthsDiff = differenceInMonths(new Date(), lastDate);
-      return monthsDiff >= 2;
-    } catch {
-      return true;
-    }
-  };
+  const viewModel = createAdminStatusViewModel(data);
 
   return (
     <>
@@ -128,7 +116,9 @@ export function AdminStatusDashboard({
                 <Activity className="h-4 w-4 text-primary" />
                 {t('admin.metrics.series_tracked')}
               </p>
-              <p className="mt-3 text-[40px] font-semibold leading-none text-foreground">{data?.series?.length || 0}</p>
+              <p className="mt-3 text-[40px] font-semibold leading-none text-foreground">
+                {viewModel.metrics.seriesCount}
+              </p>
               <p className="mt-2 ui-metadata text-muted-foreground">{t('admin.metrics.series_desc')}</p>
           </section>
           <section className="border-t border-border py-5">
@@ -137,7 +127,7 @@ export function AdminStatusDashboard({
                 {t('admin.metrics.data_points')}
               </p>
               <p className="mt-3 text-[40px] font-semibold leading-none text-foreground">
-                {data?.series?.reduce((acc, item) => acc + item.pointCount, 0).toLocaleString() || 0}
+                {viewModel.metrics.totalDataPoints.toLocaleString()}
               </p>
               <p className="mt-2 ui-metadata text-muted-foreground">{t('admin.metrics.points_desc')}</p>
           </section>
@@ -148,7 +138,7 @@ export function AdminStatusDashboard({
               </p>
               <div className="flex items-baseline gap-2">
                 <Badge variant="outline" className="mt-3 px-3 text-lg font-semibold uppercase">
-                  {data?.env || 'unknown'}
+                  {viewModel.metrics.environment}
                 </Badge>
               </div>
               <p className="mt-2 ui-metadata text-muted-foreground">{t('admin.metrics.env_desc')}</p>
@@ -188,8 +178,7 @@ export function AdminStatusDashboard({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {data?.series?.map((seriesItem) => {
-                    const hasGap = isDataGap(seriesItem.lastDataPointDate);
+                  {viewModel.rows.map((seriesItem) => {
                     return (
                       <TableRow key={seriesItem.id} className="border-border transition-colors hover:bg-muted/20">
                         <TableCell className="px-6 py-5">
@@ -208,7 +197,7 @@ export function AdminStatusDashboard({
                             <span className="font-mono text-xs font-bold">
                               {seriesItem.lastDataPointDate || 'N/A'}
                             </span>
-                            {hasGap && seriesItem.lastDataPointDate && (
+                            {seriesItem.hasDataGap && seriesItem.lastDataPointDate && (
                               <Badge
                                 variant="destructive"
                                 className="h-4 w-fit gap-1 px-1.5 py-0 text-[8px] font-semibold uppercase"
@@ -217,7 +206,7 @@ export function AdminStatusDashboard({
                                 {t('admin.inventory.health.gap')}
                               </Badge>
                             )}
-                            {!seriesItem.lastDataPointDate && (
+                            {seriesItem.isMissingData && (
                               <Badge
                                 variant="outline"
                                 className="h-4 w-fit border-warning/30 bg-warning/10 px-1.5 py-0 text-[8px] font-semibold uppercase text-warning"
@@ -248,12 +237,12 @@ export function AdminStatusDashboard({
                           </div>
                         </TableCell>
                         <TableCell className="px-6 py-5">
-                          {seriesItem.lastSyncStatus === 'success' ? (
+                          {seriesItem.health === 'healthy' ? (
                             <Badge className="gap-1 border-success/30 bg-success/10 font-semibold uppercase text-[10px] text-success hover:bg-success/10">
                               <CheckCircle2 className="h-3 w-3" />
                               {t('admin.inventory.health.healthy')}
                             </Badge>
-                          ) : seriesItem.lastSyncStatus === 'failed' ? (
+                          ) : seriesItem.health === 'failed' ? (
                             <Badge variant="destructive" className="gap-1 font-semibold uppercase text-[10px]">
                               <AlertCircle className="h-3 w-3" />
                               {t('admin.inventory.health.error')}
@@ -267,7 +256,7 @@ export function AdminStatusDashboard({
                       </TableRow>
                     );
                   })}
-                  {(!data?.series || data.series.length === 0) && !loading && (
+                  {viewModel.isEmpty && !loading && (
                     <TableRow>
                       <TableCell colSpan={6} className="h-32 text-center font-medium text-muted-foreground">
                         {t('admin.inventory.empty')}
