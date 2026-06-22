@@ -13,6 +13,12 @@ Use it before adding files or moving logic.
 ## Server And Data Layers
 
 - `lib/server/**`: server-only application services, route helpers, auth helpers, commands, queries, sync orchestration, and page-read services.
+- `lib/server/runtime/env.ts`: centralized runtime environment access. Server
+  services and scripts should depend on these helpers instead of reading
+  `process.env` directly in multiple places.
+- `lib/server/auth/provider-config.ts`: Auth.js runtime configuration boundary.
+  It owns OAuth provider discovery, compatibility fallback for `NEXTAUTH_SECRET`,
+  and the development-only auth secret fallback.
 - `lib/server/readiness/**` and `lib/server/health/**`: operational endpoint services. Routes delegate payload and check construction here.
 - `lib/data/**`: read models, repositories, market-data caches, and source-neutral data access.
 - `lib/data/chart-reference-series.ts` and `lib/data/multi-asset-history.ts`: chart reference envelopes, fallback coverage, stale/partial status decisions, and data-layer fallback builders for chart APIs.
@@ -24,11 +30,11 @@ Use it before adding files or moving logic.
 
 - `features/bond-core/**`: calculation truth, schemas, scenario handlers, validation, domain errors, and financial regression tests.
   Public calculation entrypoints are exported through `features/bond-core/utils/calculations.ts`, while implementation lives in `features/bond-core/utils/engine/**` by engine family (`single-bond-engine`, `reverse-bond-engine`, `regular-investment-engine`, and shared engine helpers).
-- `features/comparison-engine/**`: comparison workflows, comparison-specific display models, chart/table composition, and comparison persistence.
+- `features/comparison-engine/**`: comparison workflows, comparison-specific display models, chart/table composition, and comparison persistence. Results dashboard ranking and modeled-value decisions live in `features/comparison-engine/components/bond-comparison/results-dashboard-model.ts`.
 - `features/single-calculator/**`: single-bond calculator UI, single scenario sharing, notebook save action wiring, single-route display, and pure single-calculator state models.
-- `features/economic-data/**`: economic reference charts and dashboard state models for CPI/NBP metadata display.
+- `features/economic-data/**`: economic reference charts, dashboard state models for CPI/NBP metadata display, and dashboard section components in `features/economic-data/components/EconomicDashboardSections.tsx`.
 - `features/notebook/**`: portfolio workspace UI, portfolio details, notebook commands through `portfolio-client`, notebook-specific contracts, and pure workspace models in `features/notebook/lib/**`.
-- `features/optimizer/**`: optimizer UI sections, optimizer state models, and recommendation orchestration. Route/page code should consume `features/optimizer/lib/**` state helpers instead of recomputing readiness or default input rules inline.
+- `features/optimizer/**`: optimizer UI sections, optimizer state models, and recommendation orchestration. Route/page code should consume `features/optimizer/lib/**` state helpers instead of recomputing readiness or default input rules inline. Input controls belong in `features/optimizer/components/OptimizerInputPanel.tsx`, while the page client owns calculation requests and result state.
 - `features/regular-investment/**`, `features/ladder-strategy/**`, `features/retirement/**`: retained strategy surfaces with feature-local hooks and components.
 
 ## Boundary Rules
@@ -41,6 +47,9 @@ Use it before adding files or moving logic.
 - Large components should be reduced by extracting pure models first, then extracting presentational subcomponents.
 - Shared market-assumption UI uses `shared/lib/market-assumptions-form-model.ts` for state/format decisions and `shared/components/market-assumptions/**` for render primitives. Calculator pages should not duplicate CPI/NBP setup-mode logic.
 - Operational API routes stay thin. Health, readiness, admin, and sync routes call server services for payloads, mode defaults, DB checks, and command responses.
+- Production runtime checks use `scripts/check-production-config.ts` and
+  `lib/server/runtime/env.ts`; do not duplicate Cloud Run env validation in
+  ad hoc scripts or route modules.
 - Chart routes call data-layer envelope helpers for fallback behavior instead of constructing fallback payloads inside route handlers.
 - Shared chart components may have companion `*Parts.tsx` files for presentational sections, while pure chart decisions stay in model helpers.
 - Sync providers and API clients must not call raw `fetch`; use `lib/sync/http-gateway.ts`.

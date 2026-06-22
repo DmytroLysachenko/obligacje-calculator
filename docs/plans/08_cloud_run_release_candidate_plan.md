@@ -50,12 +50,18 @@ Before promotion:
 
 ```bash
 pnpm check:release
+pnpm check:prod-config
 ```
 
 Expanded, this runs typecheck, lint, the trusted-core release Vitest suite, and
 production build. The broader `pnpm test:ci` inventory still contains legacy UI
 contract tests that should be reconciled before treating the entire repository as
 fully production-certified.
+
+`pnpm check:prod-config` is the operator-side secret and environment check. Run
+it from the shell or deployment context that has production values for
+`DATABASE_URL`, `AUTH_SECRET` or `NEXTAUTH_SECRET`, `NEXT_PUBLIC_APP_URL`,
+`SYNC_SECRET`, and at least one complete OAuth provider pair.
 
 The release suite also locks Cloud Run artifacts and API/controller boundaries:
 browser surfaces route API calls through shared clients, and migrated API routes
@@ -70,8 +76,25 @@ Deployment checks:
 - `/login` shows configured OAuth providers
 - signed-in `/api/portfolio/access` reports `canManageWorkspace: true`
 - `/admin/status` is protected by `SYNC_SECRET`
+- Auth.js provider selection comes from `lib/server/auth/provider-config.ts`
+  rather than route/page-local environment branches
+- readiness and production config checks use `lib/server/runtime/env.ts`
 - single and comparison monthly/quarterly/yearly chart and table views are
   anchored to purchase date and preserve final withdrawal values
+
+## Current Refactor Boundaries
+
+The latest production-hardening tranche split several large UI and config
+areas into clearer layers:
+
+- optimizer page: `BondOptimizerClient` owns state and calculation requests;
+  `OptimizerInputPanel` owns form controls
+- economic-data page: the client owns data hooks and tab composition;
+  `EconomicDashboardSections` owns reference/status/guide sections
+- comparison results: UI rendering uses `results-dashboard-model.ts` for
+  modeled-value, ranking, runner-up, and spread decisions
+- server runtime: readiness, admin auth, Auth.js, and production config checks
+  read environment through centralized runtime helpers
 
 ## Manual QA Smoke
 

@@ -74,5 +74,11 @@ describe('deployment documentation contract', () => {
     expect(projectMap).toContain('Browser API calls belong behind `shared/lib/*-client.ts`');
     expect(projectMap).toContain('Portfolio writes live in `lib/server/portfolio/commands.ts`');
     expect(projectMap).toContain('Large components should be reduced by extracting pure models first');
+    expect(projectMap).toContain('lib/server/runtime/env.ts');
+    expect(projectMap).toContain('lib/server/auth/provider-config.ts');
+    expect(projectMap).toContain('scripts/check-production-config.ts');
+    expect(projectMap).toContain('OptimizerInputPanel.tsx');
+    expect(projectMap).toContain('EconomicDashboardSections.tsx');
+    expect(projectMap).toContain('results-dashboard-model.ts');
   });
 });

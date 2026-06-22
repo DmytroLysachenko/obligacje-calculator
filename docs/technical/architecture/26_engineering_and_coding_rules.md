@@ -428,6 +428,14 @@ Operational endpoints follow the same rule:
 - `/api/admin/sync` gets supported modes, default mode handling, and response payloads from `lib/server/admin/**`
 - chart API routes get fallback envelopes from `lib/data/**`, not route-local object literals
 
+Runtime environment access follows the same server boundary:
+
+- reusable env reads belong in `lib/server/runtime/env.ts`
+- Auth.js provider selection belongs in `lib/server/auth/provider-config.ts`
+- production deploy validation belongs in `scripts/check-production-config.ts`
+- route files, page clients, and feature components should not own production
+  env validation or OAuth provider discovery
+
 ### 11.1 Workspace Boundaries
 
 Notebook and portfolio workspace state must follow these rules:
