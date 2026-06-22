@@ -67,7 +67,6 @@ describe('clean code architecture contract', () => {
     const allowedRawJsonRoutes = new Set([
       'app/api/health/route.ts',
       'app/api/readiness/route.ts',
-      'app/api/portfolio/access/route.ts',
     ]);
     const matches = filesContaining(/NextResponse\.json/)
       .filter((file) => file.startsWith('app/api/'))

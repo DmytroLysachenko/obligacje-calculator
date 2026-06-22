@@ -56,6 +56,18 @@ describe('operational endpoint contracts', () => {
     expect(`${health}\n${readiness}`).not.toContain('String(error)');
   });
 
+  it('keeps portfolio access raw response delegated to a pure payload helper', () => {
+    const route = read('app/api/portfolio/access/route.ts');
+    const payload = read('lib/server/portfolio/access-payload.ts');
+
+    expect(route).toContain('rawJson(createPortfolioAccessPayload(owner))');
+    expect(route).toContain("from '@/lib/server/portfolio/access-payload'");
+    expect(route).not.toContain(`NextResponse${'.json'}`);
+    expect(route).not.toContain('canManageWorkspace:');
+    expect(payload).toContain('canManageWorkspace');
+    expect(payload).toContain("owner.authMode === 'authenticated'");
+  });
+
   it('keeps opportunistic sync fire-and-forget logic in the sync service boundary', () => {
     const route = read('app/api/sync/opportunistic/route.ts');
     const service = read('lib/server/sync/opportunistic-service.ts');
