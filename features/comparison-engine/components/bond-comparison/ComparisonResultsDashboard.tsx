@@ -22,22 +22,11 @@ import { ComparisonChartPoint } from './display-model';
 import { getBondColor } from '@/shared/lib/charts/get-bond-color';
 import { getBondSupportMeta } from '@/features/bond-core/support-matrix';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
-
-function getModeledValue(result: BondComparisonScenarioItem, showRealValue: boolean) {
-  return showRealValue
-    ? result.result.finalRealValue
-    : result.result.netPayoutValue;
-}
-
-function sortResultsByModeledValue(
-  results: BondComparisonScenarioItem[],
-  showRealValue: boolean,
-) {
-  return [...results].sort(
-    (left, right) =>
-      getModeledValue(right, showRealValue) - getModeledValue(left, showRealValue),
-  );
-}
+import {
+  buildComparisonVerdictModel,
+  getModeledValue,
+  sortResultsByModeledValue,
+} from './results-dashboard-model';
 
 function buildLeadDescription({
   bestResult,
@@ -93,15 +82,18 @@ function ComparisonVerdictPanel({
     return null;
   }
 
-  const rankedResults = sortResultsByModeledValue(results, showRealValue);
-  const runnerUp = rankedResults.find((result) => result.type !== bestResult.type);
+  const {
+    runnerUp,
+    bestValue,
+    runnerUpValue,
+  } = buildComparisonVerdictModel({
+    results,
+    bestResult,
+    showRealValue,
+  });
   const valueLabel = showRealValue
     ? t('bonds.real_value_inflation')
     : t('bonds.net_payout');
-  const bestValue = getModeledValue(bestResult, showRealValue);
-  const runnerUpValue = runnerUp
-    ? getModeledValue(runnerUp, showRealValue)
-    : undefined;
 
   return (
     <div className="space-y-4">
