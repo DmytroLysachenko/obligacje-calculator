@@ -5,34 +5,17 @@ import type { Provider } from "next-auth/providers";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "./db";
 import { accounts, sessions, users, verificationTokens } from "./db/schema";
+import { getAuthRuntimeConfig } from "./lib/server/auth/provider-config";
 
-const authSecret =
-  process.env.AUTH_SECRET
-  ?? process.env.NEXTAUTH_SECRET
-  ?? (process.env.NODE_ENV !== "production" ? "obligacje-calculator-dev-secret" : undefined);
-
-const providers: Provider[] = [];
-
-if (process.env.AUTH_FACEBOOK_ID && process.env.AUTH_FACEBOOK_SECRET) {
-  providers.push(
-    Facebook({
-      clientId: process.env.AUTH_FACEBOOK_ID,
-      clientSecret: process.env.AUTH_FACEBOOK_SECRET,
-    }),
-  );
-}
-
-if (process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET) {
-  providers.push(
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
-    }),
-  );
-}
+const authRuntimeConfig = getAuthRuntimeConfig();
+const providers: Provider[] = authRuntimeConfig.providers.map((provider) => (
+  provider.name === "facebook"
+    ? Facebook({ clientId: provider.clientId, clientSecret: provider.clientSecret })
+    : Google({ clientId: provider.clientId, clientSecret: provider.clientSecret })
+));
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  secret: authSecret,
+  secret: authRuntimeConfig.authSecret,
   adapter: DrizzleAdapter(db, {
     usersTable: users,
     accountsTable: accounts,

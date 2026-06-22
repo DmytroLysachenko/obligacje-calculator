@@ -7,6 +7,7 @@ const root = process.cwd();
 const files = {
   login: 'app/login/page.tsx',
   auth: 'auth.ts',
+  authProviderConfig: 'lib/server/auth/provider-config.ts',
   http: 'lib/server/portfolio/http.ts',
   portfolio: 'app/api/portfolio/route.ts',
   lots: 'app/api/portfolio/lots/route.ts',
@@ -35,13 +36,16 @@ function expectNotContains(source: string, fragment: string) {
 describe('portfolio auth boundary contracts', () => {
   it('keeps Auth.js configured as OAuth-only with Google and Facebook providers', () => {
     const source = read(files.auth);
+    const providerConfig = read(files.authProviderConfig);
 
     expectContains(source, 'import Facebook from "next-auth/providers/facebook";');
     expectContains(source, 'import Google from "next-auth/providers/google";');
+    expectContains(source, 'getAuthRuntimeConfig');
     expectContains(source, 'pages: {');
     expectContains(source, 'signIn: "/login"');
-    expectContains(source, 'if (process.env.AUTH_FACEBOOK_ID && process.env.AUTH_FACEBOOK_SECRET)');
-    expectContains(source, 'if (process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET)');
+    expectContains(providerConfig, 'getConfiguredOAuthProviders');
+    expectContains(providerConfig, 'AUTH_FACEBOOK_ID');
+    expectContains(providerConfig, 'AUTH_GOOGLE_ID');
     expectNotContains(source, 'next-auth/providers/github');
     expectNotContains(source, 'CredentialsProvider');
     expectNotContains(source, 'next-auth/providers/credentials');
@@ -88,9 +92,7 @@ describe('portfolio auth boundary contracts', () => {
     ]) {
       const source = read(relativePath);
 
-      expectContains(source, 'getAuthenticatedPortfolioRouteContext');
-      expectContains(source, 'if (!authContext.ok) return authContext.response;');
-      expectContains(source, 'const { owner } = authContext.context;');
+      expectContains(source, 'withAuthenticatedPortfolioOwner');
     }
   });
 });
