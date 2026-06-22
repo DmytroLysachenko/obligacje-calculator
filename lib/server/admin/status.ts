@@ -2,6 +2,7 @@ import {db} from '@/db';
 import {dataPoints} from '@/db/schema';
 import {sql} from 'drizzle-orm';
 import {listRecentSyncRuns} from '@/lib/server/sync/run-history';
+import {createAdminStatusSnapshot} from './status-read-model';
 
 export async function getAdminStatusSnapshot() {
   const series = await db.query.dataSeries.findMany({
@@ -19,17 +20,11 @@ export async function getAdminStatusSnapshot() {
 
   const recentSyncRuns = await listRecentSyncRuns(20);
 
-  return {
-    series: series.map((seriesItem) => {
-      const stat = stats.find((seriesStat) => seriesStat.seriesId === seriesItem.id);
-      return {
-        ...seriesItem,
-        pointCount: stat?.totalPoints || 0,
-        lastDataPointDate: seriesItem.lastDataPointDate || stat?.latestDate || null,
-      };
-    }),
+  return createAdminStatusSnapshot({
+    series,
+    pointStats: stats,
     systemTime: new Date().toISOString(),
     env: process.env.NODE_ENV,
     recentSyncRuns,
-  };
+  });
 }
