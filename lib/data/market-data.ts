@@ -15,6 +15,7 @@ export {
 } from './bond-definition-data';
 
 export {
+  createFallbackMultiAssetHistory,
   getMultiAssetHistory,
   getHistoricalAverages,
 } from './multi-asset-history';

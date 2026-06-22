@@ -6,6 +6,13 @@ import { HistoricalAverages } from '@/features/bond-core/types/scenarios';
 import { HISTORICAL_RETURNS, type MonthlyReturn } from '@/features/bond-core/constants/historical-data';
 import { CPI_SLUGS, getCached, GOLD_SLUGS, NBP_RATE_SLUGS, setCache, SP500_SLUGS } from './market-data-cache';
 
+interface MultiAssetSeriesAvailability {
+  sp500: boolean;
+  gold: boolean;
+  inflation: boolean;
+  nbpRate: boolean;
+}
+
 interface MultiAssetHistoryEnvelope {
   data: MonthlyReturn[];
   source: 'database' | 'fallback';
@@ -13,12 +20,7 @@ interface MultiAssetHistoryEnvelope {
   coverageStart: string;
   coverageEnd: string;
   lastSyncedAt?: string;
-  seriesAvailability?: {
-    sp500: boolean;
-    gold: boolean;
-    inflation: boolean;
-    nbpRate: boolean;
-  };
+  seriesAvailability?: MultiAssetSeriesAvailability;
 }
 
 const buildMonthlyPercentChangeMap = (series: { date: string; value: number }[]) => {
@@ -38,13 +40,37 @@ const buildMonthlyPercentChangeMap = (series: { date: string; value: number }[])
   return result;
 };
 
+const EMPTY_MULTI_ASSET_AVAILABILITY: MultiAssetSeriesAvailability = {
+  sp500: false,
+  gold: false,
+  inflation: false,
+  nbpRate: false,
+};
+
+function getFallbackCoverageBounds() {
+  return {
+    coverageStart: HISTORICAL_RETURNS[0]?.date ?? '2020-01',
+    coverageEnd: HISTORICAL_RETURNS[HISTORICAL_RETURNS.length - 1]?.date ?? '2024-06',
+  };
+}
+
+export function createFallbackMultiAssetHistory(
+  seriesAvailability: MultiAssetSeriesAvailability = EMPTY_MULTI_ASSET_AVAILABILITY,
+): MultiAssetHistoryEnvelope {
+  return {
+    data: HISTORICAL_RETURNS,
+    source: 'fallback',
+    usedFallback: true,
+    ...getFallbackCoverageBounds(),
+    seriesAvailability,
+  };
+}
+
 export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnvelope> => {
   const cacheKey = 'multi-asset-history';
   const cached = getCached<MultiAssetHistoryEnvelope>(cacheKey);
   if (cached) return cached;
 
-  const fallbackCoverageStart = HISTORICAL_RETURNS[0]?.date ?? '2020-01';
-  const fallbackCoverageEnd = HISTORICAL_RETURNS[HISTORICAL_RETURNS.length - 1]?.date ?? '2024-06';
   const fromDate = '1990-01-01';
   const toDate = new Date().toISOString().slice(0, 10);
 
@@ -95,14 +121,7 @@ export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnv
     };
 
     if (sp500Points.length < 2 || goldPoints.length < 2 || inflationPoints.length === 0) {
-      const fallbackResult: MultiAssetHistoryEnvelope = {
-        data: HISTORICAL_RETURNS,
-        source: 'fallback',
-        usedFallback: true,
-        coverageStart: fallbackCoverageStart,
-        coverageEnd: fallbackCoverageEnd,
-        seriesAvailability,
-      };
+      const fallbackResult = createFallbackMultiAssetHistory(seriesAvailability);
       setCache(cacheKey, fallbackResult);
       return fallbackResult;
     }
@@ -139,14 +158,7 @@ export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnv
       });
 
     if (data.length === 0) {
-      const fallbackResult: MultiAssetHistoryEnvelope = {
-        data: HISTORICAL_RETURNS,
-        source: 'fallback',
-        usedFallback: true,
-        coverageStart: fallbackCoverageStart,
-        coverageEnd: fallbackCoverageEnd,
-        seriesAvailability,
-      };
+      const fallbackResult = createFallbackMultiAssetHistory(seriesAvailability);
       setCache(cacheKey, fallbackResult);
       return fallbackResult;
     }
@@ -169,19 +181,7 @@ export const getMultiAssetHistory = cache(async (): Promise<MultiAssetHistoryEnv
     setCache(cacheKey, result);
     return result;
   } catch {
-    return {
-      data: HISTORICAL_RETURNS,
-      source: 'fallback',
-      usedFallback: true,
-      coverageStart: fallbackCoverageStart,
-      coverageEnd: fallbackCoverageEnd,
-      seriesAvailability: {
-        sp500: false,
-        gold: false,
-        inflation: false,
-        nbpRate: false,
-      },
-    };
+    return createFallbackMultiAssetHistory();
   }
 });
 
