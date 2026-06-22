@@ -52,15 +52,34 @@ describe('production readiness contract', () => {
     const healthService = read('lib/server/health/service.ts');
     const readiness = read('app/api/readiness/route.ts');
     const readinessService = read('lib/server/readiness/service.ts');
+    const runtimeEnv = read('lib/server/runtime/env.ts');
 
     expect(health).toContain('createHealthPayload');
     expect(healthService).toContain('MODEL_VERSION');
     expect(readiness).toContain('getReadinessSnapshot');
-    expect(readinessService).toContain('DATABASE_URL');
-    expect(readinessService).toContain('AUTH_SECRET');
-    expect(readinessService).toContain('SYNC_SECRET');
+    expect(readinessService).toContain('getDatabaseUrl');
+    expect(readinessService).toContain('hasAuthSecret');
+    expect(readinessService).toContain('getSyncSecret');
+    expect(runtimeEnv).toContain('DATABASE_URL');
+    expect(runtimeEnv).toContain('AUTH_SECRET');
+    expect(runtimeEnv).toContain('SYNC_SECRET');
     expect(readinessService).toContain('Missing required tables');
     expect(`${readiness}\n${readinessService}`).not.toContain('String(error)');
+  });
+
+  it('keeps production auth and env decisions centralized', () => {
+    const auth = read('auth.ts');
+    const runtimeEnv = read('lib/server/runtime/env.ts');
+    const providerConfig = read('lib/server/auth/provider-config.ts');
+
+    expect(auth).toContain('getAuthRuntimeConfig');
+    expect(auth).not.toContain('process.env.AUTH_SECRET');
+    expect(auth).not.toContain('process.env.AUTH_GOOGLE_ID');
+    expect(runtimeEnv).toContain('readRuntimeEnv');
+    expect(runtimeEnv).toContain('getConfiguredOAuthProviders');
+    expect(providerConfig).toContain('getAuthRuntimeSecret');
+    expect(providerConfig).toContain('getOAuthProviderCredentials');
+    expect(providerConfig).toContain('obligacje-calculator-dev-secret');
   });
 
   it('keeps the Cloud Run release gate wired into package scripts', () => {

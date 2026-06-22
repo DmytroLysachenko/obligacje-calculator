@@ -29,6 +29,7 @@ describe('operational endpoint contracts', () => {
   it('keeps readiness checks in the server readiness service', () => {
     const route = read('app/api/readiness/route.ts');
     const service = read('lib/server/readiness/service.ts');
+    const runtimeEnv = read('lib/server/runtime/env.ts');
 
     expect(route).toContain("from '@/lib/server/readiness/service'");
     expect(route).toContain('getReadinessSnapshot');
@@ -40,6 +41,26 @@ describe('operational endpoint contracts', () => {
     expect(service).toContain('AUTH_SECRET');
     expect(service).toContain('SYNC_SECRET');
     expect(service).toContain('Missing required tables');
+    expect(service).toContain('readRuntimeEnv');
+    expect(runtimeEnv).toContain('getDatabaseUrl');
+    expect(runtimeEnv).toContain('getAuthSecret');
+    expect(runtimeEnv).toContain('getConfiguredOAuthProviders');
+  });
+
+  it('keeps Auth.js provider runtime decisions behind server auth config', () => {
+    const auth = read('auth.ts');
+    const providerConfig = read('lib/server/auth/provider-config.ts');
+    const providerConfigTest = read('lib/server/auth/provider-config.test.ts');
+
+    expect(auth).toContain('getAuthRuntimeConfig');
+    expect(auth).not.toContain('process.env.AUTH_GOOGLE_ID');
+    expect(auth).not.toContain('process.env.AUTH_FACEBOOK_ID');
+    expect(providerConfig).toContain("from '@/lib/server/runtime/env'");
+    expect(providerConfig).toContain('getAuthRuntimeSecret');
+    expect(providerConfig).toContain('getOAuthProviderCredentials');
+    expect(providerConfig).toContain('getAuthRuntimeConfig');
+    expect(providerConfigTest).toContain('keeps NEXTAUTH_SECRET compatibility');
+    expect(providerConfigTest).toContain('returns both provider credentials in deterministic order');
   });
 
   it('keeps liveness and readiness as explicit operational endpoints', () => {
