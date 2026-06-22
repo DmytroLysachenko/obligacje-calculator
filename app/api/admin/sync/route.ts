@@ -1,16 +1,14 @@
 import { NextRequest } from 'next/server';
 import {
+  AdminSyncPayloadSchema,
   assertAdminSyncAuthorization,
+  createAdminSyncCommand,
+  createAdminSyncSuccessEnvelope,
+  getAdminSyncEndpointInfo,
   runAdminSync,
-  type SyncMode,
 } from '@/lib/server/admin/service';
 import { readOptionalJsonBody } from '@/lib/server/http/read-json-body';
 import { createUnauthorizedResponse, errorJson, okJson } from '@/lib/server/http/responses';
-import { z } from 'zod';
-
-const AdminSyncPayloadSchema = z.object({
-  mode: z.enum(['full-sync', 'metadata-seed', 'market-history-seed', 'market-history-sync']).optional(),
-}).default({});
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
@@ -18,15 +16,10 @@ export async function POST(req: NextRequest) {
   try {
     assertAdminSyncAuthorization(authHeader);
     const body = await readOptionalJsonBody(req, AdminSyncPayloadSchema, {});
-    const mode: SyncMode = body.mode ?? 'full-sync';
-    const results = await runAdminSync(mode);
+    const command = createAdminSyncCommand(body);
+    const results = await runAdminSync(command.mode);
 
-    return okJson({
-      message: 'Sync completed successfully',
-      timestamp: new Date().toISOString(),
-      mode,
-      results,
-    });
+    return okJson(createAdminSyncSuccessEnvelope(command, results));
   } catch (error) {
     if (error instanceof Error && error.message === 'UNAUTHORIZED_SYNC_REQUEST') {
       return createUnauthorizedResponse();
@@ -38,9 +31,5 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET() {
-  return okJson({
-    status: 'Sync endpoint ready',
-    instructions: 'POST to this endpoint to trigger a full financial data sync.',
-    modes: ['full-sync', 'metadata-seed', 'market-history-seed', 'market-history-sync'],
-  });
+  return okJson(getAdminSyncEndpointInfo());
 }

@@ -1,5 +1,10 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest';
-import {runAdminSync} from './sync';
+import {
+  createAdminSyncCommand,
+  createAdminSyncSuccessEnvelope,
+  getAdminSyncEndpointInfo,
+  runAdminSync,
+} from './sync';
 
 const mockedSyncModules = vi.hoisted(() => ({
   seedSeriesMetadata: vi.fn(),
@@ -77,5 +82,41 @@ describe('runAdminSync', () => {
 
     expect(mockedSyncModules.createDefaultSyncEngine).toHaveBeenCalledWith('AdminSync');
     expect(mockedSyncModules.runFullSync).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('admin sync command contract', () => {
+  it('defaults missing sync payloads to full sync', () => {
+    expect(createAdminSyncCommand(undefined)).toEqual({mode: 'full-sync'});
+    expect(createAdminSyncCommand({})).toEqual({mode: 'full-sync'});
+  });
+
+  it('keeps explicit sync modes in the command', () => {
+    expect(createAdminSyncCommand({mode: 'market-history-sync'})).toEqual({
+      mode: 'market-history-sync',
+    });
+  });
+
+  it('creates a stable success envelope for route responses', () => {
+    expect(
+      createAdminSyncSuccessEnvelope(
+        {mode: 'metadata-seed'},
+        {status: 'success'},
+        '2026-06-15T12:00:00.000Z',
+      ),
+    ).toEqual({
+      message: 'Sync completed successfully',
+      timestamp: '2026-06-15T12:00:00.000Z',
+      mode: 'metadata-seed',
+      results: {status: 'success'},
+    });
+  });
+
+  it('exposes endpoint information from the service contract', () => {
+    expect(getAdminSyncEndpointInfo()).toEqual({
+      status: 'Sync endpoint ready',
+      instructions: 'POST to this endpoint to trigger a full financial data sync.',
+      modes: ['full-sync', 'metadata-seed', 'market-history-seed', 'market-history-sync'],
+    });
   });
 });
