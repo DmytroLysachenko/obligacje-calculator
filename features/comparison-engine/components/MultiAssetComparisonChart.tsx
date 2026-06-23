@@ -24,6 +24,13 @@ import { MultiAssetComparisonChartProps } from "./types";
 import { ChartContainer } from "@/shared/components/charts/ChartContainer";
 import { ChartLegendStrip } from "@/shared/components/charts/ChartLegendStrip";
 import { useAppI18n } from "@/i18n/client";
+import {
+  createMultiAssetDrawdownLegendItems,
+  createMultiAssetDrawdownSummary,
+  createMultiAssetGrowthLegendItems,
+  createMultiAssetGrowthSummary,
+  thinMultiAssetGrowthData,
+} from "./multi-asset-chart-model";
 
 interface PayloadEntry {
   name: string;
@@ -159,61 +166,26 @@ export const MultiAssetComparisonChart: React.FC<MultiAssetComparisonChartProps>
   formatCurrency,
 }) => {
   const { t } = useAppI18n();
-  const chartSummary = React.useMemo(() => {
-    const lastPoint = chartData[chartData.length - 1];
-
-    if (!lastPoint || assets.length === 0) {
-      return t('comparison.chart_accessible_summary_empty');
-    }
-
-    const rankedValues = assets
-      .map((asset) => ({
-        name: asset.metadata.name,
-        value: Number(lastPoint[asset.metadata.id] ?? 0),
-      }))
-      .sort((left, right) => right.value - left.value);
-
-    const leading = rankedValues[0];
-    const trailing = rankedValues[rankedValues.length - 1];
-
-    return t('comparison.chart_accessible_summary', {
-      count: chartData.length,
-      leader: leading.name,
-      leaderValue: formatCurrency(leading.value),
-      trailing: trailing.name,
-      trailingValue: formatCurrency(trailing.value),
-    });
-  }, [assets, chartData, formatCurrency, t]);
-  const drawdownSummary = React.useMemo(() => {
-    const lastPoint = chartData[chartData.length - 1];
-
-    if (!lastPoint || assets.length === 0) {
-      return t('comparison.drawdown_accessible_summary_empty');
-    }
-
-    const drawdowns = assets.map((asset) => ({
-      name: asset.metadata.name,
-      value: Math.abs(Number(lastPoint[`${asset.metadata.id}_drawdown`] ?? 0)),
-    }));
-    const deepest = drawdowns.reduce((current, next) => (
-      next.value > current.value ? next : current
-    ), drawdowns[0]);
-
-    return t('comparison.drawdown_accessible_summary', {
-      count: chartData.length,
-      asset: deepest.name,
-      drawdown: deepest.value.toFixed(2),
-    });
-  }, [assets, chartData, t]);
-  const growthLegendItems = React.useMemo(() => assets.map((asset) => ({
-    label: asset.metadata.name,
-    color: asset.metadata.color,
-  })), [assets]);
-  const drawdownLegendItems = React.useMemo(() => assets.map((asset) => ({
-    label: asset.metadata.name,
-    color: asset.metadata.color,
-    style: 'dashed' as const,
-  })), [assets]);
+  const chartSummary = React.useMemo(() => createMultiAssetGrowthSummary({
+    chartData,
+    assets,
+    formatCurrency,
+    labels: {
+      empty: () => t('comparison.chart_accessible_summary_empty'),
+      populated: (values) => t('comparison.chart_accessible_summary', values),
+    },
+  }), [assets, chartData, formatCurrency, t]);
+  const drawdownSummary = React.useMemo(() => createMultiAssetDrawdownSummary({
+    chartData,
+    assets,
+    labels: {
+      empty: () => t('comparison.drawdown_accessible_summary_empty'),
+      populated: (values) => t('comparison.drawdown_accessible_summary', values),
+    },
+  }), [assets, chartData, t]);
+  const growthLegendItems = React.useMemo(() => createMultiAssetGrowthLegendItems(assets), [assets]);
+  const drawdownLegendItems = React.useMemo(() => createMultiAssetDrawdownLegendItems(assets), [assets]);
+  const thinnedGrowthData = React.useMemo(() => thinMultiAssetGrowthData(chartData), [chartData]);
 
   return (
     <Tabs defaultValue="growth" className="w-full flex flex-col gap-6">
@@ -252,7 +224,7 @@ export const MultiAssetComparisonChart: React.FC<MultiAssetComparisonChartProps>
             >
               <ResponsiveContainer width="100%" height={420}>
                 <ComposedChart
-                  data={chartData.length > 240 ? chartData.filter((_, i) => i % 2 === 0) : chartData}
+                  data={thinnedGrowthData}
                   margin={{ top: 12, right: 16, left: 0, bottom: 8 }}
                 >
                   <defs>

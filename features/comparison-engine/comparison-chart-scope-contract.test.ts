@@ -9,6 +9,7 @@ const paths = {
   comparisonResults: 'features/comparison-engine/components/ComparisonResultsPanel.tsx',
   multiAssetContainer: 'features/comparison-engine/components/MultiAssetComparisonContainer.tsx',
   multiAssetChart: 'features/comparison-engine/components/MultiAssetComparisonChart.tsx',
+  multiAssetChartModel: 'features/comparison-engine/components/multi-asset-chart-model.ts',
   chartTypes: 'features/comparison-engine/components/types.ts',
   sharedValueChart: 'shared/components/charts/BondValueChart.tsx',
   sharedValueChartParts: 'shared/components/charts/BondValueChartParts.tsx',
@@ -92,6 +93,7 @@ describe('comparison chart ownership contract', () => {
     const page = read(paths.multiAssetPage);
     const container = read(paths.multiAssetContainer);
     const chart = read(paths.multiAssetChart);
+    const chartModel = read(paths.multiAssetChartModel);
     const types = read(paths.chartTypes);
 
     expectContains(page, "import {MultiAssetComparisonContainer} from '@/features/comparison-engine/components/MultiAssetComparisonContainer';");
@@ -105,12 +107,16 @@ describe('comparison chart ownership contract', () => {
 
     expectContains(chart, 'export const MultiAssetComparisonChart');
     expectContains(chart, 'React.FC<MultiAssetComparisonChartProps>');
-    expectContains(chart, 'chartData.length > 240 ? chartData.filter');
+    expectContains(chart, 'thinMultiAssetGrowthData(chartData)');
     expectContains(chart, '<Brush dataKey="date"');
     expectContains(chart, 'const growthLegendItems = React.useMemo');
     expectContains(chart, 'const drawdownLegendItems = React.useMemo');
     expectContains(chart, 'ariaLabel={t(\'comparison.growth_chart_label\')}');
     expectContains(chart, 'ariaLabel={t(\'comparison.drawdown_chart_label\')}');
+    expectContains(chartModel, 'export function thinMultiAssetGrowthData');
+    expectContains(chartModel, 'chartData.length > 240');
+    expectContains(chartModel, 'createMultiAssetGrowthSummary');
+    expectContains(chartModel, 'createMultiAssetDrawdownSummary');
 
     expectContains(types, 'export interface MultiAssetComparisonChartProps');
     expectContains(types, 'assets: AssetPerformanceSeries[];');
