@@ -16,11 +16,11 @@ import { calculatePeriodAccrual } from './accrual';
 import { getHistoricalValue } from './historical-data';
 import { calculateCumulativeInflation, getExpectedInflationForYearIndex } from './inflation';
 import { normalizeBondInputs } from './input-normalization';
-import { determineInterestRate } from './rate-resolution';
 import { calculateRealValue } from './real-return';
 import { calculateEarlyWithdrawalFee } from './redemption';
 import { createFinalSingleBondResult, createInitialTimelinePoint } from './result-assembly';
 import { calculateRollover } from './rollover';
+import { resolveSingleBondRateContext } from './rate-context';
 import { calculateTaxAmount, shouldWithholdPeriodicTax } from './tax-settlement';
 import { generateCyclePeriods } from './timeline-builder';
 
@@ -146,7 +146,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
       const customInfValue = inputs.customInflation?.[inflationResetYearIndex];
       const customNbpVal = inputs.customNbpRate?.[periodYearIndex];
 
-      const currentInterestRate = determineInterestRate(
+      const rateContext = resolveSingleBondRateContext({
         bondType,
         monthsIntoCycle,
         firstYearRate,
@@ -156,58 +156,26 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
         isInflationIndexed,
         lagInflation,
         lagNbp,
-        customInfValue,
-        customNbpVal
-      );
-      
-      let rateSource: RateSource = 'fixed_rate';
-      let rateReferenceValue: number | undefined;
-      let rateMarginApplied = margin;
-      let usedProjectedRate = false;
+        customInflationValue: customInfValue,
+        customNbpValue: customNbpVal,
+        isInflationProjected,
+        isNbpProjected,
+      });
+      const {
+        currentInterestRate,
+        rateSource,
+        rateReferenceValue,
+        rateMarginApplied,
+        usedProjectedRate,
+      } = rateContext;
 
-      // Rate reset logic / events
-      if (bondType === BondType.ROR || bondType === BondType.DOR) {
-        const isFirstMonth = monthsIntoCycle === 0;
-        if (isFirstMonth) {
-          rateSource = 'first_year_fixed';
-          rateReferenceValue = firstYearRate;
-          rateMarginApplied = 0;
-        } else {
-          usedProjectedRate = customNbpVal !== undefined || isNbpProjected;
-          rateSource = customNbpVal !== undefined
-            ? 'projected_nbp'
-            : lagNbp !== undefined
-              ? 'historical_nbp'
-              : 'projected_nbp';
-          rateReferenceValue = customNbpVal ?? (lagNbp !== undefined ? lagNbp : expectedNbpRate);
-          events.push({
-            type: SimulationEventType.RATE_RESET,
-            date: period.startDate.toISOString(),
-            description: `Rate reset based on NBP: ${currentInterestRate.toFixed(2)}%`,
-            value: currentInterestRate.toNumber()
-          });
-        }
-      } else if (isInflationIndexed) {
-        const isFirstYear = monthsIntoCycle < 12;
-        if (isFirstYear) {
-          rateSource = 'first_year_fixed';
-          rateReferenceValue = firstYearRate;
-          rateMarginApplied = 0;
-        } else if (monthsIntoCycle % 12 === 0) {
-          usedProjectedRate = customInfValue !== undefined || isInflationProjected;
-          rateSource = customInfValue !== undefined
-            ? 'projected_cpi'
-            : lagInflation !== undefined
-              ? 'historical_cpi_lag'
-              : 'projected_cpi';
-          rateReferenceValue = customInfValue ?? (lagInflation !== undefined ? lagInflation : activeExpectedInflation);
-          events.push({
-            type: SimulationEventType.RATE_RESET,
-            date: period.startDate.toISOString(),
-            description: `Rate reset based on Inflation: ${currentInterestRate.toFixed(2)}%`,
-            value: currentInterestRate.toNumber()
-          });
-        }
+      if (rateContext.shouldRecordRateReset && rateContext.rateResetDescription) {
+        events.push({
+          type: SimulationEventType.RATE_RESET,
+          date: period.startDate.toISOString(),
+          description: rateContext.rateResetDescription,
+          value: currentInterestRate.toNumber()
+        });
       }
 
       if (usedProjectedRate) {
