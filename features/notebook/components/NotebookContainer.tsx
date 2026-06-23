@@ -1,5 +1,5 @@
 'use client';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAppI18n } from '@/i18n/client';
 import { BookOpen, FolderOpen, RefreshCcw } from 'lucide-react';
 import { UserPortfolio } from '@/db/schema';
@@ -12,8 +12,6 @@ import { SectionBlock } from '@/shared/components/page/SectionBlock';
 import { AppToast } from '@/shared/components/feedback/AppToast';
 import { ConfirmActionDialog } from '@/shared/components/feedback/ConfirmActionDialog';
 import { Notice } from '@/shared/components/feedback/Notice';
-import { ApiClientError } from '@/shared/lib/api-client';
-import { portfolioClient } from '@/shared/lib/portfolio-client';
 import { persistSelectedPortfolioId } from '@/shared/lib/workspace/notebook-state';
 import { PortfolioDetails } from './PortfolioDetails';
 import { PortfolioWorkspaceCard } from './PortfolioWorkspaceCard';
@@ -25,16 +23,12 @@ import {
     buildNotebookCapabilities,
     buildNotebookStats,
     getNotebookPortfolioCounts,
-    NOTEBOOK_DEMO_LOTS,
-    resolveNotebookPortfolioError,
     type NotebookStepItem,
 } from '@/features/notebook/lib/notebook-workspace-model';
+import { useNotebookWorkspaceActions } from '@/features/notebook/hooks/useNotebookWorkspaceActions';
 export const NotebookContainer: React.FC = () => {
     const { t, locale: language } = useAppI18n();
-    const [error, setError] = useState<string | null>(null);
-    const [statusMessage, setStatusMessage] = useState<string | null>(null);
     const [portfolioPendingDelete, setPortfolioPendingDelete] = useState<UserPortfolio | null>(null);
-    const [isMutating, setIsMutating] = useState(false);
     const [detailPortfolioId, setDetailPortfolioId] = useState<string | null>(null);
     const importRef = useRef<HTMLInputElement | null>(null);
     const { canManageWorkspace, isGuestWorkspace } = usePortfolioAccess();
@@ -49,22 +43,40 @@ export const NotebookContainer: React.FC = () => {
         upsertPortfolio: mergePortfolioIntoState,
         removePortfolio: removePortfolioFromState,
     } = useWorkspacePortfolios();
-    const resolvePortfolioError = useCallback((payload?: {
-        error?: string;
-        code?: string;
-    } | null) => resolveNotebookPortfolioError(payload, {
-        storageUnavailable: t('notebook.storage_unavailable'),
-        createError: t('notebook.create_error'),
-    }), [t]);
-    const resolveCaughtPortfolioError = useCallback((caughtError: unknown) => {
-        if (caughtError instanceof ApiClientError) {
-            return resolvePortfolioError({
-                error: caughtError.message,
-                code: caughtError.code,
-            });
-        }
-        return t('notebook.create_error');
-    }, [resolvePortfolioError, t]);
+    const {
+        error,
+        setError,
+        statusMessage,
+        setStatusMessage,
+        isMutating,
+        resolvePortfolioError,
+        handleCreateDefault,
+        handleCreateDemo,
+        handleImportFile,
+        handleDeletePortfolio,
+    } = useNotebookWorkspaceActions({
+        labels: {
+            myFirstPortfolio: t('notebook.my_first_portfolio'),
+            defaultDescription: t('notebook.default_description'),
+            demoName: t('notebook.demo_name'),
+            demoDescription: t('notebook.demo_description'),
+            createdSuccess: t('notebook.created_success'),
+            demoLoadedSuccess: t('notebook.demo_loaded_success'),
+            importCompleted: (count) => t('notebook.import_completed_added_lots', { count }),
+            importFailed: t('notebook.import_failed'),
+            deleteSuccess: t('notebook.delete_success'),
+            deleteFailed: t('notebook.delete_failed'),
+            storageUnavailable: t('notebook.storage_unavailable'),
+            createError: t('notebook.create_error'),
+        },
+        fetchPortfolios,
+        mergePortfolioIntoState,
+        removePortfolioFromState,
+        setSelectedPortfolioId,
+        clearDetailPortfolio: (portfolioId) => {
+            setDetailPortfolioId((current) => current === portfolioId ? null : current);
+        },
+    });
     useEffect(() => {
         if (requestError) {
             setError(resolvePortfolioError(requestError as {
@@ -76,113 +88,8 @@ export const NotebookContainer: React.FC = () => {
         setError(null);
     }, [requestError, resolvePortfolioError]);
     const emptyStateSteps: NotebookStepItem[] = buildNotebookCapabilities(t);
-    const handleCreateDefault = async () => {
-        setIsMutating(true);
-        try {
-            const created = await portfolioClient.createPortfolio({
-                name: t('notebook.my_first_portfolio'),
-                description: t('notebook.default_description'),
-            });
-            setError(null);
-            setStatusMessage(t('notebook.created_success'));
-            if (created?.id) {
-                mergePortfolioIntoState(created);
-                setSelectedPortfolioId(created.id);
-            }
-            else {
-                await fetchPortfolios();
-            }
-        }
-        catch (caughtError) {
-            console.error(caughtError);
-            setError(resolveCaughtPortfolioError(caughtError));
-        }
-        finally {
-            setIsMutating(false);
-        }
-    };
-    const handleCreateDemo = async () => {
-        setIsMutating(true);
-        try {
-            const createdPortfolio = await portfolioClient.createPortfolio({
-                name: t('notebook.demo_name'),
-                description: t('notebook.demo_description'),
-            });
-            const portfolioId = createdPortfolio?.id;
-            if (!portfolioId) {
-                await fetchPortfolios();
-                return;
-            }
-            for (const lot of NOTEBOOK_DEMO_LOTS) {
-                await portfolioClient.createLot({ portfolioId, ...lot });
-            }
-            if (createdPortfolio?.id) {
-                mergePortfolioIntoState(createdPortfolio);
-                setSelectedPortfolioId(createdPortfolio.id);
-                setStatusMessage(t('notebook.demo_loaded_success'));
-            }
-            else {
-                await fetchPortfolios();
-            }
-        }
-        catch (caughtError) {
-            console.error(caughtError);
-            setError(resolveCaughtPortfolioError(caughtError));
-        }
-        finally {
-            setIsMutating(false);
-        }
-    };
     const handleImportClick = () => {
         importRef.current?.click();
-    };
-    const handleImportFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) {
-            return;
-        }
-        try {
-            setIsMutating(true);
-            const text = await file.text();
-            const parsed = JSON.parse(text);
-            const importPayload = await portfolioClient.importPortfolio(parsed);
-            setError(null);
-            if (importPayload?.portfolio?.id) {
-                mergePortfolioIntoState(importPayload.portfolio);
-                setSelectedPortfolioId(importPayload.portfolio.id);
-                setStatusMessage(t('notebook.import_completed_added_lots', {
-                    count: String(importPayload.importedLots ?? 0),
-                }));
-            }
-            else {
-                await fetchPortfolios();
-            }
-        }
-        catch (caughtError) {
-            console.error(caughtError);
-            setError(t('notebook.import_failed'));
-        }
-        finally {
-            setIsMutating(false);
-            event.target.value = '';
-        }
-    };
-    const handleDeletePortfolio = async (portfolio: UserPortfolio) => {
-        setIsMutating(true);
-        try {
-            await portfolioClient.deletePortfolio(portfolio.id);
-            removePortfolioFromState(portfolio.id);
-            setDetailPortfolioId((current) => current === portfolio.id ? null : current);
-            setError(null);
-            setStatusMessage(t('notebook.delete_success'));
-        }
-        catch (caughtError) {
-            console.error(caughtError);
-            setError(caughtError instanceof ApiClientError ? resolveCaughtPortfolioError(caughtError) : t('notebook.delete_failed'));
-        }
-        finally {
-            setIsMutating(false);
-        }
     };
     if (detailPortfolioId && canManageWorkspace) {
         const portfolio = portfolios.find((item) => item.id === detailPortfolioId) ?? null;

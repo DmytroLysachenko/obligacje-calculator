@@ -10,7 +10,7 @@ function read(relativePath: string) {
 
 describe('notebook workflow action contract', () => {
   it('keeps notebook mutations behind portfolioClient and local workspace state updates', () => {
-    const source = read('features/notebook/components/NotebookContainer.tsx');
+    const source = read('features/notebook/hooks/useNotebookWorkspaceActions.ts');
 
     expect(source).toContain("from '@/shared/lib/portfolio-client'");
     expect(source).toContain('portfolioClient.createPortfolio');
@@ -24,12 +24,13 @@ describe('notebook workflow action contract', () => {
 
   it('keeps active portfolio selection separate from detail navigation', () => {
     const source = read('features/notebook/components/NotebookContainer.tsx');
+    const hook = read('features/notebook/hooks/useNotebookWorkspaceActions.ts');
 
     expect(source).toContain('const [detailPortfolioId, setDetailPortfolioId] = useState<string | null>(null);');
     expect(source).toContain('setSelectedPortfolioId(portfolio.id);');
     expect(source).toContain('persistSelectedPortfolioId(portfolio.id);');
     expect(source).toContain('setDetailPortfolioId(portfolio.id);');
-    expect(source).toContain('setDetailPortfolioId((current) => current === portfolio.id ? null : current);');
+    expect(hook).toContain('clearDetailPortfolio(portfolio.id);');
   });
 
   it('keeps workspace mutations gated by canManageWorkspace in rendered actions', () => {
