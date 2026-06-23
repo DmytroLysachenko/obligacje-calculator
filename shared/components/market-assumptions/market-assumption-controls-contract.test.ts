@@ -7,6 +7,7 @@ const projectRoot = process.cwd();
 const files = {
   form: 'shared/components/MarketAssumptionsForm.tsx',
   controls: 'shared/components/market-assumptions/AssumptionSectionControls.tsx',
+  presets: 'shared/components/market-assumptions/AssumptionPresetControls.tsx',
   model: 'shared/lib/market-assumptions-form-model.ts',
   segmented: 'shared/components/forms/SegmentedControl.tsx',
   history: 'shared/components/market-assumptions/AssumptionHistoryPopover.tsx',
@@ -35,9 +36,11 @@ describe('market assumption control contracts', () => {
   it('routes assumption presets and projection modes through the shared segmented control', () => {
     const source = read(files.form);
     const controls = read(files.controls);
+    const presets = read(files.presets);
     const model = read(files.model);
 
-    expectContains(source, "import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';");
+    expectContains(presets, "import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';");
+    expectContains(source, "from '@/shared/components/market-assumptions/AssumptionPresetControls';");
     expectContains(source, 'AssumptionHeader,');
     expectContains(source, 'CurrentAssumptionValue,');
     expectContains(source, 'ProjectionModeButtons,');
@@ -55,6 +58,10 @@ describe('market assumption control contracts', () => {
     expectContains(source, 'const activeNbpMode = nbpSetupMode ?? nbpMode;');
     expectContains(model, 'function formatCompactPercent');
     expectContains(model, 'function formatPathAverage');
+    expectContains(model, 'function getInflationPresetKey');
+    expectContains(model, 'function getInflationPresetValue');
+    expectContains(model, 'function getNbpPresetKey');
+    expectContains(model, 'function getNbpPresetValue');
     expectContains(model, 'return `Avg ${formatCompactPercent(average)}%`;');
     expectNoFragments(model, [
       'fallback.toFixed(1)',
@@ -72,14 +79,15 @@ describe('market assumption control contracts', () => {
     expectContains(source, "nbpSetupMode?: AssumptionSetupMode;");
     expectContains(source, 'showInflationSection');
     expectContains(source, 'showNbpSection');
-    expectContains(source, "value={");
-    expectContains(source, "? 'stable'");
-    expectContains(source, "{ value: 'stable', label: `${t('bonds.stable')} (2.5%)` }");
-    expectContains(source, "{ value: 'high', label: `${t('bonds.high')} (6%)` }");
-    expectContains(source, "{ value: 'deflation', label: `${t('bonds.deflation')} (-1%)` }");
-    expectContains(source, "{ value: 'current', label: `${t('bonds.market_assumptions.nbp_preset_current')} (5.25%)` }");
-    expectContains(source, "{ value: 'high', label: `${t('bonds.market_assumptions.nbp_preset_high')} (6.75%)` }");
-    expectContains(source, "{ value: 'low', label: `${t('bonds.market_assumptions.nbp_preset_low')} (3.75%)` }");
+    expectContains(source, '<InflationPresetControls');
+    expectContains(source, '<NbpPresetControls');
+    expectContains(presets, "value={getInflationPresetKey(value)}");
+    expectContains(presets, "{ value: 'stable', label: `${labels.stable} (2.5%)` }");
+    expectContains(presets, "{ value: 'high', label: `${labels.high} (6%)` }");
+    expectContains(presets, "{ value: 'deflation', label: `${labels.deflation} (-1%)` }");
+    expectContains(presets, "{ value: 'current', label: `${labels.current} (5.25%)` }");
+    expectContains(presets, "{ value: 'high', label: `${labels.high} (6.75%)` }");
+    expectContains(presets, "{ value: 'low', label: `${labels.low} (3.75%)` }");
     expectNoFragments(source, [
       "label: 'Fixed'",
       "label: 'Simple'",
@@ -88,7 +96,7 @@ describe('market assumption control contracts', () => {
       "label: 'High (6.75%)'",
       "label: 'Low (3.75%)'",
     ]);
-    expectContains(source, "className=\"grid-cols-3\"");
+    expectContains(presets, "className=\"grid-cols-3\"");
     expectContains(source, "onUpdate('customInflation', undefined)");
     expectContains(source, "onUpdate('expectedInflation', presetValue)");
     expectContains(source, "onUpdate('customNbpRate', undefined)");

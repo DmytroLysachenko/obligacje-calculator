@@ -5,7 +5,6 @@ import { cn } from '@/lib/utils';
 import { BondInputs, BondType } from '@/features/bond-core/types';
 import { Target, AlertTriangle } from 'lucide-react';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
-import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
 import {
   AssumptionHeader,
   CurrentAssumptionValue,
@@ -15,6 +14,10 @@ import { AssumptionHistoryPopover } from '@/shared/components/market-assumptions
 import { AssumptionSemanticsNote } from '@/shared/components/market-assumptions/AssumptionSemanticsNote';
 import { MacroDefaultsSummary } from '@/shared/components/market-assumptions/MacroDefaultsSummary';
 import { ProjectedRatePathEditor } from '@/shared/components/market-assumptions/ProjectedRatePathEditor';
+import {
+  InflationPresetControls,
+  NbpPresetControls,
+} from '@/shared/components/market-assumptions/AssumptionPresetControls';
 import { isFloatingNbpBondType, isInflationIndexedBondType } from '@/shared/lib/market-assumption-semantics';
 import {
   getHeaderAssumptionValue,
@@ -189,28 +192,17 @@ export const MarketAssumptionsForm = ({
         </AssumptionHeader>
 
         {activeInflationMode === 'fixed' ? (
-          <SegmentedControl
-            value={
-              expectedInflation === 2.5
-                ? 'stable'
-                : expectedInflation === 6
-                  ? 'high'
-                  : expectedInflation === -1
-                    ? 'deflation'
-                    : 'stable'
-            }
-            options={[
-              { value: 'stable', label: `${t('bonds.stable')} (2.5%)` },
-              { value: 'high', label: `${t('bonds.high')} (6%)` },
-              { value: 'deflation', label: `${t('bonds.deflation')} (-1%)` },
-            ]}
-            onValueChange={(value) => {
-              const presetValue = value === 'stable' ? 2.5 : value === 'high' ? 6 : -1;
+          <InflationPresetControls
+            value={expectedInflation}
+            labels={{
+              stable: t('bonds.stable'),
+              high: t('bonds.high'),
+              deflation: t('bonds.deflation'),
+            }}
+            onSelect={(presetValue) => {
               onUpdate('customInflation', undefined);
               onUpdate('expectedInflation', presetValue);
             }}
-            className="grid-cols-3"
-            itemClassName="text-[11px] tracking-[0.06em]"
           />
         ) : null}
 
@@ -282,28 +274,17 @@ export const MarketAssumptionsForm = ({
             <ProjectionModeButtons value={activeNbpMode} onChange={updateNbpMode} />
           </AssumptionHeader>
           {activeNbpMode === 'fixed' ? (
-            <SegmentedControl
-              value={
-                (expectedNbpRate ?? 5.25) === 5.25
-                  ? 'current'
-                  : (expectedNbpRate ?? 5.25) === 6.75
-                    ? 'high'
-                    : (expectedNbpRate ?? 5.25) === 3.75
-                      ? 'low'
-                      : 'current'
-              }
-            options={[
-                { value: 'current', label: `${t('bonds.market_assumptions.nbp_preset_current')} (5.25%)` },
-                { value: 'high', label: `${t('bonds.market_assumptions.nbp_preset_high')} (6.75%)` },
-                { value: 'low', label: `${t('bonds.market_assumptions.nbp_preset_low')} (3.75%)` },
-              ]}
-              onValueChange={(value) => {
-                const presetValue = value === 'current' ? 5.25 : value === 'high' ? 6.75 : 3.75;
+            <NbpPresetControls
+              value={expectedNbpRate}
+              labels={{
+                current: t('bonds.market_assumptions.nbp_preset_current'),
+                high: t('bonds.market_assumptions.nbp_preset_high'),
+                low: t('bonds.market_assumptions.nbp_preset_low'),
+              }}
+              onSelect={(presetValue) => {
                 onUpdate('customNbpRate', undefined);
                 onUpdate('expectedNbpRate', presetValue);
               }}
-              className="grid-cols-3"
-              itemClassName="text-[11px] tracking-[0.06em]"
             />
           ) : null}
           {activeNbpMode === 'simple' ? (
