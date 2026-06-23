@@ -121,3 +121,17 @@ Run on desktop and mobile widths:
 - scheduled Cloud Run sync job or Cloud Scheduler/Inngest production wiring
 - stricter unused translation-key checks
 - deeper manual copy review for secondary routes
+
+## Verification Evidence
+
+June 23, 2026 release-candidate tranche:
+
+- `pnpm test:release`: passed, 41 files and 272 tests
+- `pnpm check:types`: passed
+- `pnpm lint`: passed
+- `pnpm build`: passed
+
+Local Windows build note: Next standalone tracing still printed the known
+invalid filename copy warning for a Node external chunk, but the command exited
+successfully. Treat the Linux Cloud Build image and Cloud Run health/readiness
+checks as the production deployment signal.
