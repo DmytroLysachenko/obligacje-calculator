@@ -2,9 +2,6 @@
 
 import React, { useMemo, useState } from 'react';
 import {
-  ArrowDownUp,
-  Info,
-  ListOrdered,
   TrendingUp,
 } from 'lucide-react';
 import { BondOptimizerCalculationEnvelope, ScenarioKind } from '@/features/bond-core/types/scenarios';
@@ -33,7 +30,9 @@ import {
   updateOptimizerInput,
 } from '@/features/optimizer/lib/optimizer-state';
 import {
+  OptimizerLeadingDetailSection,
   OptimizerLeadingMetrics,
+  OptimizerRankedOutcomesSection,
   OptimizerReadyState,
 } from '@/features/optimizer/components/OptimizerSections';
 import { OptimizerInputPanel } from '@/features/optimizer/components/OptimizerInputPanel';
@@ -162,111 +161,35 @@ export default function BondOptimizerClient() {
                 formatPercentValue={formatPercentValue}
               />
 
-              <section className="space-y-6 border-t border-border py-6">
-                  <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                    <div className="space-y-2">
-                      <h2 className="flex items-center gap-2 ui-section-title">
-                        <ListOrdered className="h-5 w-5 text-primary" />
-                        {t('optimizer_page.leading_card_title')}
-                      </h2>
-                      <p className="ui-body text-muted-foreground">
-                        {t('optimizer_page.leading_card_description')}
-                      </p>
-                    </div>
-                    <div className="border-l-2 border-border px-4 py-3 text-right">
-                      <p className="ui-metadata text-muted-foreground">
-                        {t('optimizer_page.tax_wrapper_label')}
-                      </p>
-                      <p className="mt-1 text-sm font-semibold text-foreground">
-                        {taxStrategyLabels[inputs.taxStrategy]}
-                      </p>
-                    </div>
-                  </div>
-                  <FormInlineNotice
-                    title={`${leadingScenario.name} (${leadingScenario.bondType})`}
-                    description={leadingScenario.scenarioReason}
-                    action={<Info className="h-4 w-4 text-primary" />}
-                  />
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                    <div className="border-t border-border py-4">
-                      <p className="ui-metadata text-muted-foreground">
-                        {t('optimizer_page.tax_paid_label')}
-                      </p>
-                      <p className="mt-2 text-[32px] font-semibold leading-none text-warning">
-                        {formatCurrency(leadingScenario.result.totalTax)}
-                      </p>
-                    </div>
-                    <div className="border-t border-border py-4">
-                      <p className="ui-metadata text-muted-foreground">
-                        {t('optimizer_page.inflation_input_label')}
-                      </p>
-                      <p className="mt-2 text-[32px] font-semibold leading-none text-foreground">
-                        {inputs.expectedInflation.toFixed(1)}%
-                      </p>
-                    </div>
-                    <div className="border-t border-border py-4">
-                      <p className="ui-metadata text-muted-foreground">
-                        {t('optimizer_page.nbp_input_label')}
-                      </p>
-                      <p className="mt-2 text-[32px] font-semibold leading-none text-foreground">
-                        {inputs.expectedNbpRate.toFixed(2)}%
-                      </p>
-                    </div>
-                  </div>
-              </section>
+              <OptimizerLeadingDetailSection
+                title={t('optimizer_page.leading_card_title')}
+                description={t('optimizer_page.leading_card_description')}
+                taxWrapperLabel={t('optimizer_page.tax_wrapper_label')}
+                taxStrategyLabel={taxStrategyLabels[inputs.taxStrategy]}
+                leadingScenario={leadingScenario}
+                expectedInflation={inputs.expectedInflation}
+                expectedNbpRate={inputs.expectedNbpRate}
+                formatCurrency={formatCurrency}
+                labels={{
+                  taxPaid: t('optimizer_page.tax_paid_label'),
+                  inflationInput: t('optimizer_page.inflation_input_label'),
+                  nbpInput: t('optimizer_page.nbp_input_label'),
+                }}
+              />
 
-              <section className="space-y-6 border-t border-border py-6">
-                  <h2 className="flex items-center gap-2 ui-section-title">
-                    <ArrowDownUp className="h-5 w-5 text-primary" />
-                    {t('optimizer_page.ranked_outcomes_title')}
-                  </h2>
-                  <p className="ui-body text-muted-foreground">
-                    {t('optimizer_page.ranked_outcomes_description', {
-                      years: horizonYears,
-                    })}
-                  </p>
-                <div className="divide-y divide-border">
-                  {results.rankedBonds.map((item, index) => {
-                    const gapToLead =
-                      leadingScenario.netPayoutValue - item.netPayoutValue;
-
-                    return (
-                      <div
-                        key={item.bondType}
-                        className="py-4"
-                      >
-                        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                          <div className="flex items-start gap-4">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-sm font-semibold">
-                              {index + 1}
-                            </div>
-                            <div className="space-y-1">
-                              <p className="font-semibold text-foreground">
-                                {item.name} ({item.bondType})
-                              </p>
-                              <p className="text-sm leading-6 text-muted-foreground">
-                                {item.scenarioReason}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-lg font-semibold text-foreground">
-                              {formatCurrency(item.netPayoutValue)}
-                            </p>
-                            <p className="mt-1 text-sm text-muted-foreground">
-                              {index === 0
-                                ? t('optimizer_page.leading_gap_primary')
-                                : t('optimizer_page.leading_gap_secondary', {
-                                    gap: formatCurrency(gapToLead),
-                                  })}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
+              <OptimizerRankedOutcomesSection
+                title={t('optimizer_page.ranked_outcomes_title')}
+                description={t('optimizer_page.ranked_outcomes_description', {
+                  years: horizonYears,
+                })}
+                rankedBonds={results.rankedBonds}
+                leadingScenario={leadingScenario}
+                formatCurrency={formatCurrency}
+                labels={{
+                  leadingGapPrimary: t('optimizer_page.leading_gap_primary'),
+                  leadingGapSecondary: (gap) => t('optimizer_page.leading_gap_secondary', {gap}),
+                }}
+              />
 
               <SecondaryInsightAccordion
                 title={t('optimizer_page.guardrail_title')}

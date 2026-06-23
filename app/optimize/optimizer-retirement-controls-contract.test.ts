@@ -6,6 +6,8 @@ const root = process.cwd();
 
 const files = {
   optimizer: 'app/optimize/BondOptimizerClient.tsx',
+  optimizerInputPanel: 'features/optimizer/components/OptimizerInputPanel.tsx',
+  optimizerSections: 'features/optimizer/components/OptimizerSections.tsx',
   retirement: 'features/retirement/components/RetirementInputsPanel.tsx',
   advancedDisclosure: 'shared/components/forms/AdvancedAssumptionsDisclosure.tsx',
   formNotice: 'shared/components/forms/FormInlineNotice.tsx',
@@ -33,17 +35,20 @@ function expectNoFragments(source: string, fragments: readonly string[]) {
 describe('optimizer and retirement control surface contracts', () => {
   it('keeps optimizer advanced controls on shared disclosure and form notices', () => {
     const source = read(files.optimizer);
+    const inputPanel = read(files.optimizerInputPanel);
 
-    expectContains(source, "import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';");
+    expectContains(source, "import { OptimizerInputPanel } from '@/features/optimizer/components/OptimizerInputPanel';");
+    expectContains(source, '<OptimizerInputPanel');
+    expectContains(inputPanel, "import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';");
     expectContains(source, "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
-    expectContains(source, '<AdvancedAssumptionsDisclosure');
-    expectContains(source, "title={t('optimizer_page.advanced_title')}");
-    expectContains(source, "description={t('optimizer_page.advanced_description')}");
-    expectContains(source, '<MacroDefaultsSummary showNbp compact />');
-    expectContains(source, "title={t('optimizer_page.family_bonds_title')}");
-    expectContains(source, "description={`${t('optimizer_page.family_bonds_description')} ${t('optimizer_page.family_bonds_note'");
-    expectContains(source, "description={t('optimizer_page.macro_scope.indexed')}");
-    expectContains(source, "description={t('optimizer_page.macro_scope.floating')}");
+    expectContains(inputPanel, '<AdvancedAssumptionsDisclosure');
+    expectContains(inputPanel, "title={t('optimizer_page.advanced_title')}");
+    expectContains(inputPanel, "description={t('optimizer_page.advanced_description')}");
+    expectContains(inputPanel, '<MacroDefaultsSummary showNbp compact />');
+    expectContains(inputPanel, "title={t('optimizer_page.family_bonds_title')}");
+    expectContains(inputPanel, "description={`${t('optimizer_page.family_bonds_description')} ${t('optimizer_page.family_bonds_note'");
+    expectContains(inputPanel, "description={t('optimizer_page.macro_scope.indexed')}");
+    expectContains(inputPanel, "description={t('optimizer_page.macro_scope.floating')}");
 
     expectNoFragments(source, [
       "from '@/components/ui/accordion'",
@@ -58,10 +63,15 @@ describe('optimizer and retirement control surface contracts', () => {
 
   it('keeps optimizer result support cards flattened after the input pass', () => {
     const source = read(files.optimizer);
+    const sections = read(files.optimizerSections);
 
-    expectContains(source, 'border-l-2 border-border px-4 py-3 text-right');
-    expectContains(source, 'title={`${leadingScenario.name} (${leadingScenario.bondType})`}');
-    expectContains(source, 'description={leadingScenario.scenarioReason}');
+    expectContains(source, '<OptimizerLeadingDetailSection');
+    expectContains(source, '<OptimizerRankedOutcomesSection');
+    expectContains(sections, 'border-l-2 border-border px-4 py-3 text-right');
+    expectContains(sections, 'title={`${leadingScenario.name} (${leadingScenario.bondType})`}');
+    expectContains(sections, 'description={leadingScenario.scenarioReason}');
+    expectContains(sections, 'buildOptimizerLeadingDetailMetrics');
+    expectContains(sections, 'buildOptimizerRankedOutcomeRows');
     expectContains(source, "description={t('optimizer_page.guardrail_points.assumption_shift')}");
     expectContains(source, "description={t('optimizer_page.guardrail_points.suitability')}");
 
