@@ -122,4 +122,57 @@ describe('single bond cycle engine', () => {
     expect(result.timeline.some((point) => point.usedProjectedRate)).toBe(true);
     expect(eventTypes(result)).toContain(SimulationEventType.RATE_RESET);
   });
+
+  it('preserves floating-rate source fields and final tax checkpoint', () => {
+    const definition = BOND_DEFINITIONS[BondType.ROR];
+    const result = calculateBondInvestment(singlePayload({
+      bondType: BondType.ROR,
+      firstYearRate: definition.firstYearRate,
+      margin: definition.margin,
+      duration: definition.duration,
+      earlyWithdrawalFee: definition.earlyWithdrawalFee,
+      isCapitalized: definition.isCapitalized,
+      payoutFrequency: definition.payoutFrequency,
+      withdrawalDate: '2027-06-16',
+      investmentHorizonMonths: 12,
+      customNbpRate: [5.25],
+    }));
+    const resetPoint = result.timeline.find((point) => point.rateSource === 'projected_nbp');
+    const finalPoint = result.timeline.at(-1);
+
+    expect(resetPoint).toMatchObject({
+      rateReferenceValue: 5.25,
+      rateMarginApplied: definition.margin,
+      usedProjectedRate: true,
+    });
+    expect(finalPoint?.isWithdrawal).toBe(true);
+    expect(finalPoint?.taxDeducted).toBeGreaterThanOrEqual(0);
+    expect(finalPoint?.totalValue).toBeCloseTo(result.netPayoutValue, 8);
+  });
+
+  it('keeps early-exit checkpoint values below withdrawal value after fee', () => {
+    const definition = BOND_DEFINITIONS[BondType.EDO];
+    const result = calculateBondInvestment(singlePayload({
+      bondType: BondType.EDO,
+      firstYearRate: definition.firstYearRate,
+      margin: definition.margin,
+      duration: definition.duration,
+      earlyWithdrawalFee: definition.earlyWithdrawalFee,
+      isCapitalized: definition.isCapitalized,
+      payoutFrequency: definition.payoutFrequency,
+      withdrawalDate: '2028-06-16',
+      investmentHorizonMonths: 24,
+    }));
+    const finalPoint = result.timeline.at(-1);
+
+    expect(result.isEarlyWithdrawal).toBe(true);
+    expect(result.totalEarlyWithdrawalFee).toBeGreaterThan(0);
+    expect(finalPoint?.earlyWithdrawalValue).toBeLessThanOrEqual(finalPoint?.totalValue ?? 0);
+    expect(finalPoint?.events?.map((event) => event.type)).toEqual(
+      expect.arrayContaining([
+        SimulationEventType.EARLY_REDEMPTION_FEE,
+        SimulationEventType.WITHDRAWAL,
+      ]),
+    );
+  });
 });
