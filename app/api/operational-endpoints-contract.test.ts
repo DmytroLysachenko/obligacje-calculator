@@ -77,6 +77,18 @@ describe('operational endpoint contracts', () => {
     expect(`${health}\n${readiness}`).not.toContain('String(error)');
   });
 
+  it('keeps calculation route parsing and envelopes on shared HTTP helpers', () => {
+    const calculationRoute = read('lib/server/http/calculation-route.ts');
+
+    expect(calculationRoute).toContain("from './read-json-body'");
+    expect(calculationRoute).toContain("from './responses'");
+    expect(calculationRoute).toContain('readJsonBody(req, scenarioSchemas[kind])');
+    expect(calculationRoute).toContain('okJson(envelope)');
+    expect(calculationRoute).not.toContain('await req.json()');
+    expect(calculationRoute).not.toContain(`NextResponse${'.json'}`);
+    expect(calculationRoute).not.toContain('createSuccessResponse');
+  });
+
   it('keeps portfolio access raw response delegated to a pure payload helper', () => {
     const route = read('app/api/portfolio/access/route.ts');
     const payload = read('lib/server/portfolio/access-payload.ts');

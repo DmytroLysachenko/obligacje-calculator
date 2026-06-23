@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { calculationService } from '@/features/bond-core/application-service';
 import {
@@ -16,8 +16,9 @@ import {
   RetirementPlannerPayloadSchema,
 } from '@/features/bond-core/types/schemas';
 import { BondInputs, RegularInvestmentInputs } from '@/features/bond-core/types';
-import { createSuccessResponse } from '@/shared/types/api';
 import { apiHandler } from './api-handler';
+import { readJsonBody } from './read-json-body';
+import { okJson } from './responses';
 
 type PayloadByScenarioKind = {
   [ScenarioKind.SINGLE_BOND]: BondInputs;
@@ -39,12 +40,11 @@ export function createCalculationRoute<
   TKind extends keyof PayloadByScenarioKind & CalculationScenarioRequest['kind'],
 >(kind: TKind) {
   return apiHandler(async (req: NextRequest) => {
-    const body = await req.json();
-    const payload = scenarioSchemas[kind].parse(body) as PayloadByScenarioKind[TKind];
+    const payload = await readJsonBody(req, scenarioSchemas[kind]) as PayloadByScenarioKind[TKind];
     const request = parseCalculationScenarioRequest({ kind, payload });
 
     const envelope = await calculationService.calculate(request as CalculationScenarioRequest);
 
-    return NextResponse.json(createSuccessResponse(envelope));
+    return okJson(envelope);
   });
 }
