@@ -109,6 +109,46 @@ async function calculateSingle(
   return envelope.result as CalculationResult;
 }
 
+async function calculateComparisonScenarioA(
+  bondType: BondType,
+  sharedOverrides: Partial<{
+    initialInvestment: number;
+    purchaseDate: string;
+    withdrawalDate: string;
+    expectedInflation: number;
+    expectedNbpRate: number;
+    taxStrategy: TaxStrategy;
+    timingMode: 'exact';
+    investmentHorizonMonths: number;
+    customInflation: number[];
+    customNbpRate: number[];
+  }> = {},
+) {
+  const comparisonEnvelope = await calculationService.calculate({
+    kind: ScenarioKind.BOND_COMPARISON,
+    payload: {
+      mode: 'independent',
+      sharedConfig: {
+        initialInvestment,
+        purchaseDate,
+        withdrawalDate,
+        expectedInflation: 3,
+        expectedNbpRate: 5,
+        taxStrategy: TaxStrategy.STANDARD,
+        timingMode: 'exact',
+        investmentHorizonMonths: 120,
+        ...sharedOverrides,
+      },
+      scenarioA: { bondType },
+      scenarioB: { bondType: BondType.EDO },
+    },
+  });
+
+  return (comparisonEnvelope.result as BondComparisonScenarioItem[])
+    .find((item) => item.scenarioKey === 'scenarioA')
+    ?.result;
+}
+
 function expectCloseResult(left: CalculationResult, right: CalculationResult) {
   expect(left.netPayoutValue).toBeCloseTo(right.netPayoutValue, 8);
   expect(left.totalTax).toBeCloseTo(right.totalTax, 8);
@@ -187,6 +227,32 @@ describe('cross-calculator consistency', () => {
     expectCloseResult(single, comparison!);
     expect(comparison!.timeline.at(-1)?.cycleEndDate).toBe(single.timeline.at(-1)?.cycleEndDate);
   });
+
+  it.each([
+    [BondType.EDO, '2028-01-01', 24],
+    [BondType.ROR, '2026-07-01', 6],
+    [BondType.DOR, '2027-01-01', 12],
+  ] as const)(
+    'keeps early-withdrawal %s comparison output equal to matching single scenario',
+    async (bondType, withdrawalDateOverride, horizonMonths) => {
+      const single = await calculateSingle(bondType, {
+        withdrawalDate: withdrawalDateOverride,
+        investmentHorizonMonths: horizonMonths,
+        rollover: false,
+      });
+      const comparison = await calculateComparisonScenarioA(bondType, {
+        withdrawalDate: withdrawalDateOverride,
+        investmentHorizonMonths: horizonMonths,
+      });
+
+      expect(comparison).toBeDefined();
+      expectCloseResult(single, comparison!);
+      expect(comparison!.totalEarlyWithdrawalFee ?? 0).toBeCloseTo(
+        single.totalEarlyWithdrawalFee ?? 0,
+        8,
+      );
+    },
+  );
 
   it('keeps portfolio single-lot output equal to matching single ROR scenario', async () => {
     const single = await calculateSingle(BondType.ROR, {
