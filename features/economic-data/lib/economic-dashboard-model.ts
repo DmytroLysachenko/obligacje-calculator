@@ -4,6 +4,7 @@ import {
   getReferenceScopeLabel,
   getReferenceSourceLabel,
   getReferenceState,
+  getReferenceStatusKind,
 } from '@/shared/lib/data-reference';
 
 export interface EconomicSeriesPoint {
@@ -51,9 +52,11 @@ export function getEconomicStatusLabel(
   meta: ChartSeriesEnvelope<EconomicSeriesPoint> | undefined,
   labels: EconomicStatusLabels,
 ) {
-  if (meta?.syncStatus === 'success') return labels.synced;
-  if (meta?.syncStatus === 'stale') return labels.stale;
-  if (meta?.syncStatus === 'partial') return labels.partial;
+  const statusKind = getReferenceStatusKind(meta);
+
+  if (statusKind === 'synced') return labels.synced;
+  if (statusKind === 'stale') return labels.stale;
+  if (statusKind === 'partial') return labels.partial;
   return labels.fallback;
 }
 

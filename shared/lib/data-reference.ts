@@ -18,6 +18,7 @@ export type ReferenceMetaItem = {
   label: string;
   value: string;
 };
+export type ReferenceStatusKind = 'synced' | 'stale' | 'partial' | 'fallback';
 
 function ref(key: string, language: AppLanguage) {
   return translateMessage(language, `economic.reference_copy.${key}`);
@@ -165,6 +166,22 @@ export function getReferenceScopeLabel(
   }
 
   return ref('supports_context', language);
+}
+
+export function getReferenceStatusKind(meta?: DataReferenceMetaLike): ReferenceStatusKind {
+  if (meta?.syncStatus === 'success' && !meta.usedFallback && meta.source !== 'fallback') {
+    return 'synced';
+  }
+
+  if (meta?.syncStatus === 'stale') {
+    return 'stale';
+  }
+
+  if (meta?.syncStatus === 'partial') {
+    return 'partial';
+  }
+
+  return 'fallback';
 }
 
 export function getReferenceState(

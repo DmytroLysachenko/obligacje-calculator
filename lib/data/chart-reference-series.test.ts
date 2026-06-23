@@ -26,6 +26,8 @@ describe('chart reference series helpers', () => {
       usedFallback: true,
       syncStatus: 'failed',
       coverageNote: 'cpi-fallback-reference',
+      coverageStart: '2015-01',
+      coverageEnd: '2025-01',
     });
     expect(getFallbackNbpSeries()).toMatchObject({
       source: 'fallback',
@@ -33,6 +35,8 @@ describe('chart reference series helpers', () => {
       syncStatus: 'failed',
       coverageNote: 'nbp-fallback-reference',
     });
+    expect(getFallbackNbpSeries().coverageStart).toMatch(/^\d{4}-\d{2}$/);
+    expect(getFallbackNbpSeries().coverageEnd).toMatch(/^\d{4}-\d{2}$/);
   });
 
   it('marks stale CPI coverage as fallback-assisted database data', () => {
