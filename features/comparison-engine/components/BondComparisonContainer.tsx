@@ -150,7 +150,7 @@ export const BondComparisonContainer = () => {
     };
     const chartData = useMemo(() => buildComparisonChartData(results, showRealValue), [results, showRealValue]);
     const formatCurrency = (value: number) => currencyFormatter.format(value);
-    const bestResult = useMemo(() => getLeadingComparisonResult(results), [results]);
+    const leadingResult = useMemo(() => getLeadingComparisonResult(results), [results]);
     return (<div className="space-y-8 pb-20">
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-[360px_minmax(0,1fr)]">
         <ComparisonConfigurationPanel
@@ -185,7 +185,7 @@ export const BondComparisonContainer = () => {
             formatCurrency={formatCurrency}
             chartData={chartData}
             selectedBonds={selectedBonds}
-            bestResult={bestResult}
+            leadingResult={leadingResult}
             definitions={definitions}
             language={language}
             onRecalculate={calculateComparison}

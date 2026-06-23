@@ -83,11 +83,11 @@ describe('comparison results dashboard model', () => {
     ];
     const model = buildComparisonVerdictModel({
       results,
-      bestResult: results[2],
+      leadingResult: results[2],
       showRealValue: true,
     });
 
-    expect(model.bestValue).toBe(1000);
+    expect(model.leadingValue).toBe(1000);
     expect(model.runnerUp?.type).toBe(BondType.ROR);
     expect(model.runnerUpValue).toBe(950);
     expect(model.spread).toBe(50);

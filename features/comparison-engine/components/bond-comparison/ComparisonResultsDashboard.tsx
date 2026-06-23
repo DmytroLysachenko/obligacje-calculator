@@ -29,13 +29,13 @@ import {
 } from './results-dashboard-model';
 
 function buildLeadDescription({
-  bestResult,
+  leadingResult,
   runnerUp,
   showRealValue,
   formatCurrency,
   t,
 }: {
-  bestResult: BondComparisonScenarioItem;
+  leadingResult: BondComparisonScenarioItem;
   runnerUp?: BondComparisonScenarioItem;
   showRealValue: boolean;
   formatCurrency: (value: number) => string;
@@ -47,48 +47,48 @@ function buildLeadDescription({
 
   if (!runnerUp) {
     return t('comparison.page.verdict_single_description', {
-      bondType: bestResult.type,
+      bondType: leadingResult.type,
       valueLabel,
-      value: formatCurrency(getModeledValue(bestResult, showRealValue)),
+      value: formatCurrency(getModeledValue(leadingResult, showRealValue)),
     });
   }
 
-  const spread = getModeledValue(bestResult, showRealValue) -
+  const spread = getModeledValue(leadingResult, showRealValue) -
     getModeledValue(runnerUp, showRealValue);
 
   return t('comparison.page.verdict_description', {
-    bondType: bestResult.type,
+    bondType: leadingResult.type,
     runnerUp: runnerUp.type,
     valueLabel,
-    value: formatCurrency(getModeledValue(bestResult, showRealValue)),
+    value: formatCurrency(getModeledValue(leadingResult, showRealValue)),
     spread: formatCurrency(spread),
   });
 }
 
 function ComparisonVerdictPanel({
   results,
-  bestResult,
+  leadingResult,
   showRealValue,
   formatCurrency,
 }: {
   results: BondComparisonScenarioItem[];
-  bestResult: BondComparisonScenarioItem | null;
+  leadingResult: BondComparisonScenarioItem | null;
   showRealValue: boolean;
   formatCurrency: (value: number) => string;
 }) {
   const { t } = useAppI18n();
 
-  if (!bestResult) {
+  if (!leadingResult) {
     return null;
   }
 
   const {
     runnerUp,
-    bestValue,
+    leadingValue,
     runnerUpValue,
   } = buildComparisonVerdictModel({
     results,
-    bestResult,
+    leadingResult,
     showRealValue,
   });
   const valueLabel = showRealValue
@@ -99,9 +99,9 @@ function ComparisonVerdictPanel({
     <div className="space-y-4">
       <ResultSummaryHero
         eyebrow={t('comparison.page.verdict_eyebrow')}
-        value={bestResult.type}
+        value={leadingResult.type}
         description={buildLeadDescription({
-          bestResult,
+          leadingResult,
           runnerUp,
           showRealValue,
           formatCurrency,
@@ -114,7 +114,7 @@ function ComparisonVerdictPanel({
               {valueLabel}
             </p>
             <p className="mt-2 ui-large-metric text-success">
-              {formatCurrency(bestValue)}
+              {formatCurrency(leadingValue)}
             </p>
           </div>
         }
@@ -125,12 +125,12 @@ function ComparisonVerdictPanel({
         items={[
           {
             label: t('comparison.page.leading_result'),
-            value: bestResult.type,
+            value: leadingResult.type,
             description: t('comparison.page.leading_result_desc'),
           },
           {
             label: valueLabel,
-            value: formatCurrency(bestValue),
+            value: formatCurrency(leadingValue),
             description: t('comparison.page.modeled_value_desc'),
             tone: 'text-success',
           },
@@ -278,7 +278,7 @@ type ComparisonResultsDashboardProps = {
   formatCurrency: (value: number) => string;
   chartData: ComparisonChartPoint[];
   selectedBonds: BondType[];
-  bestResult: BondComparisonScenarioItem | null;
+  leadingResult: BondComparisonScenarioItem | null;
   definitions?: Partial<Record<BondType, BondDefinition>> | null;
   language: 'en' | 'pl';
   onRecalculate: () => void;
@@ -293,7 +293,7 @@ export function ComparisonResultsDashboard({
   formatCurrency,
   chartData,
   selectedBonds,
-  bestResult,
+  leadingResult,
   definitions,
   language,
   onRecalculate,
@@ -322,7 +322,7 @@ export function ComparisonResultsDashboard({
 
       <ComparisonVerdictPanel
         results={results}
-        bestResult={bestResult}
+        leadingResult={leadingResult}
         showRealValue={showRealValue}
         formatCurrency={formatCurrency}
       />

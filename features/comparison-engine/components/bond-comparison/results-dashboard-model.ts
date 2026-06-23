@@ -21,34 +21,34 @@ export function sortResultsByModeledValue(
 
 export function getRunnerUpResult(
   rankedResults: BondComparisonScenarioItem[],
-  bestResult: BondComparisonScenarioItem,
+  leadingResult: BondComparisonScenarioItem,
 ) {
-  return rankedResults.find((result) => result.type !== bestResult.type);
+  return rankedResults.find((result) => result.type !== leadingResult.type);
 }
 
 export function buildComparisonVerdictModel({
   results,
-  bestResult,
+  leadingResult,
   showRealValue,
 }: {
   results: BondComparisonScenarioItem[];
-  bestResult: BondComparisonScenarioItem;
+  leadingResult: BondComparisonScenarioItem;
   showRealValue: boolean;
 }) {
   const rankedResults = sortResultsByModeledValue(results, showRealValue);
-  const runnerUp = getRunnerUpResult(rankedResults, bestResult);
-  const bestValue = getModeledValue(bestResult, showRealValue);
+  const runnerUp = getRunnerUpResult(rankedResults, leadingResult);
+  const leadingValue = getModeledValue(leadingResult, showRealValue);
   const runnerUpValue = runnerUp
     ? getModeledValue(runnerUp, showRealValue)
     : undefined;
   const spread = runnerUpValue !== undefined
-    ? bestValue - runnerUpValue
+    ? leadingValue - runnerUpValue
     : undefined;
 
   return {
     rankedResults,
     runnerUp,
-    bestValue,
+    leadingValue,
     runnerUpValue,
     spread,
   };
