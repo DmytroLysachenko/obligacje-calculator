@@ -24,6 +24,10 @@ import { resolveSingleBondRateContext } from './rate-context';
 import { calculateTaxAmount, shouldWithholdPeriodicTax } from './tax-settlement';
 import { generateCyclePeriods } from './timeline-builder';
 import {
+  createSingleBondCheckpoint,
+  resolveSingleBondCycleSettlement,
+} from './single-bond-checkpoint';
+import {
   createCyclePurchaseEvent,
   createEarlyRedemptionFeeEvent,
   createFinalTaxSettlementEvent,
@@ -303,59 +307,59 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
       const realValue = calculateRealValue(totalValue, cumulativeInflation);
       const checkpointNetProfit = totalValue.minus(initialInvestment);
 
-      globalTimeline.push({
-        year: totalMonthsSoFar / 12,
+      globalTimeline.push(createSingleBondCheckpoint({
+        totalMonthsSoFar,
         periodLabel: period.periodLabel,
         cycleIndex,
-        cycleStartDate: currentPurchaseDate.toISOString(),
-        cycleEndDate: period.endDate.toISOString(),
-        interestRate: currentInterestRate.toNumber(),
+        cycleStartDate: currentPurchaseDate,
+        periodEndDate: period.endDate,
+        currentInterestRate,
         rateSource,
         rateReferenceValue,
         rateMarginApplied,
         usedProjectedRate,
-        nominalValueBeforeInterest: previousNominalValue.toNumber(),
-        interestEarned: interestEarned.toNumber(),
-        taxDeducted: taxDeducted.toNumber(),
-        netInterest: netInterest.toNumber(),
-        nominalValueAfterInterest: currentNominalPrincipal.toNumber(),
-        accumulatedNetInterest: globalAccumulatedNetInterest.toNumber(),
-        totalValue: totalValue.toNumber(),
-        realValue: realValue.toNumber(),
-        netProfit: checkpointNetProfit.toNumber(),
-        earlyWithdrawalValue: Decimal.max(hypotheticalEarlyExitValue, 0).toNumber(),
-        cumulativeInflation: cumulativeInflation.toNumber(),
+        previousNominalValue,
+        interestEarned,
+        taxDeducted,
+        netInterest,
+        currentNominalPrincipal,
+        globalAccumulatedNetInterest,
+        totalValue,
+        realValue,
+        checkpointNetProfit,
+        hypotheticalEarlyExitValue,
+        cumulativeInflation,
         isMaturity: period.isMaturity,
         isWithdrawal: period.endDate.getTime() === targetWithdrawalDate.getTime(),
-        isProjected: rateSource === 'projected_cpi' || rateSource === 'projected_nbp',
         inflationReference: customInfValue ?? (lagInflation !== undefined ? lagInflation : activeExpectedInflation),
         nbpReference: customNbpVal ?? (lagNbp !== undefined ? lagNbp : expectedNbpRate),
-        events: events.length > 0 ? events : undefined
-      });
+        events,
+      }));
 
       if (period.isWithdrawal) break;
     }
 
-    const cycleFee = isEarlyWithdrawal ? calculateEarlyWithdrawalFee(bondType, true, true, totalInterestEarnedSoFar, numberOfBonds, earlyWithdrawalFee) : new Decimal(0);
-    const cycleGrossValue = isCapitalized ? currentNominalValue : nominalStartingValue.plus(totalInterestEarnedSoFar);
-    const cycleTax = shouldWithholdPeriodicTax(taxStrategy, isCapitalized)
-      ? periodicTaxPaidSoFar
-      : calculateTaxAmount(
-          Decimal.max(
-            0,
-            taxStrategy === TaxStrategy.IKZE
-              ? cycleGrossValue.minus(cycleFee)
-              : totalInterestEarnedSoFar.minus(cycleFee),
-          ),
-          taxStrategy,
-          true,
-          taxRate,
-        );
+    const {
+      cycleFee,
+      cycleTax,
+      netProceeds,
+    } = resolveSingleBondCycleSettlement({
+      bondType,
+      isEarlyWithdrawal,
+      totalInterestEarnedSoFar,
+      numberOfBonds,
+      earlyWithdrawalFee,
+      isCapitalized,
+      currentNominalValue,
+      nominalStartingValue,
+      taxStrategy,
+      taxRate,
+      periodicTaxPaidSoFar,
+      leftoverCash,
+    });
     
     totalTaxAcc = totalTaxAcc.plus(cycleTax);
     totalFeeAcc = totalFeeAcc.plus(cycleFee);
-
-    const netProceeds = cycleGrossValue.minus(cycleFee).minus(cycleTax).plus(leftoverCash);
 
     if (!rollover || isEarlyWithdrawal || actualCycleEndDate.getTime() === targetWithdrawalDate.getTime()) {
       const totalHorizonYears = differenceInDays(actualCycleEndDate, startDate) / 365.25;
