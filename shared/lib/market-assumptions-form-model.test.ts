@@ -4,6 +4,10 @@ import {
   formatCompactPercent,
   formatPathAverage,
   getHeaderAssumptionValue,
+  getInflationPresetKey,
+  getInflationPresetValue,
+  getNbpPresetKey,
+  getNbpPresetValue,
   resolveAssumptionModeUpdate,
 } from './market-assumptions-form-model';
 
@@ -50,5 +54,28 @@ describe('market assumptions form model', () => {
   it('uses path average only in advanced mode header values', () => {
     expect(getHeaderAssumptionValue({ mode: 'advanced', customPath: [3, 5], fallback: 2 })).toBe('Avg 4%');
     expect(getHeaderAssumptionValue({ mode: 'fixed', customPath: [3, 5], fallback: 2 })).toBe(2);
+  });
+
+  it('keeps inflation preset keys and values centralized', () => {
+    expect(getInflationPresetKey(2.5)).toBe('stable');
+    expect(getInflationPresetKey(6)).toBe('high');
+    expect(getInflationPresetKey(-1)).toBe('deflation');
+    expect(getInflationPresetKey(4.2)).toBe('stable');
+
+    expect(getInflationPresetValue('stable')).toBe(2.5);
+    expect(getInflationPresetValue('high')).toBe(6);
+    expect(getInflationPresetValue('deflation')).toBe(-1);
+  });
+
+  it('keeps NBP preset keys and values centralized', () => {
+    expect(getNbpPresetKey(undefined)).toBe('current');
+    expect(getNbpPresetKey(5.25)).toBe('current');
+    expect(getNbpPresetKey(6.75)).toBe('high');
+    expect(getNbpPresetKey(3.75)).toBe('low');
+    expect(getNbpPresetKey(4.5)).toBe('current');
+
+    expect(getNbpPresetValue('current')).toBe(5.25);
+    expect(getNbpPresetValue('high')).toBe(6.75);
+    expect(getNbpPresetValue('low')).toBe(3.75);
   });
 });

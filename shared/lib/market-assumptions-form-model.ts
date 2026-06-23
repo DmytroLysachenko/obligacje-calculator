@@ -1,4 +1,6 @@
 export type AssumptionSetupMode = 'fixed' | 'simple' | 'advanced';
+export type InflationPresetKey = 'stable' | 'high' | 'deflation';
+export type NbpPresetKey = 'current' | 'high' | 'low';
 
 export interface AssumptionModeUpdate {
   nextMode: AssumptionSetupMode;
@@ -73,4 +75,54 @@ export function getHeaderAssumptionValue({
   return mode === 'advanced'
     ? formatPathAverage(customPath, fallback)
     : fallback;
+}
+
+export function getInflationPresetKey(value: number): InflationPresetKey {
+  if (value === 6) {
+    return 'high';
+  }
+
+  if (value === -1) {
+    return 'deflation';
+  }
+
+  return 'stable';
+}
+
+export function getInflationPresetValue(key: InflationPresetKey) {
+  if (key === 'high') {
+    return 6;
+  }
+
+  if (key === 'deflation') {
+    return -1;
+  }
+
+  return 2.5;
+}
+
+export function getNbpPresetKey(value: number | undefined): NbpPresetKey {
+  const resolvedValue = value ?? 5.25;
+
+  if (resolvedValue === 6.75) {
+    return 'high';
+  }
+
+  if (resolvedValue === 3.75) {
+    return 'low';
+  }
+
+  return 'current';
+}
+
+export function getNbpPresetValue(key: NbpPresetKey) {
+  if (key === 'high') {
+    return 6.75;
+  }
+
+  if (key === 'low') {
+    return 3.75;
+  }
+
+  return 5.25;
 }
