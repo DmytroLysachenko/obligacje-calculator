@@ -1,8 +1,10 @@
 import {db} from '@/db';
 import {sharedSingleScenarios} from '@/db/schema';
+import {eq} from 'drizzle-orm';
 import {BondInputsSchema} from '@/features/bond-core/types/schemas';
 import {
   buildSharedSingleScenarioPayload,
+  parseSharedSingleScenarioPayload,
   serializeSharedSingleScenario,
 } from '@/shared/lib/single-scenario-share';
 
@@ -35,5 +37,39 @@ export async function createSharedSingleScenario(
   return {
     shareId: created.shareId,
     shareUrl: `${body.origin}/shared-scenarios/${created.shareId}`,
+  };
+}
+
+async function findSharedSingleScenario(shareId: string) {
+  return db.query.sharedSingleScenarios.findFirst({
+    where: eq(sharedSingleScenarios.shareId, shareId),
+  });
+}
+
+export async function getSharedSingleScenarioMetadata(shareId: string) {
+  const scenario = await findSharedSingleScenario(shareId);
+
+  if (!scenario) {
+    return null;
+  }
+
+  return {
+    title: scenario.title,
+    description: scenario.description,
+  };
+}
+
+export async function getSharedSingleScenarioPageData(shareId: string) {
+  const scenario = await findSharedSingleScenario(shareId);
+
+  if (!scenario) {
+    return null;
+  }
+
+  const parsed = parseSharedSingleScenarioPayload(scenario.payloadJson);
+
+  return {
+    title: scenario.title,
+    inputs: parsed.inputs,
   };
 }
