@@ -10,6 +10,7 @@ import {
 import { ScenarioKind } from './types/scenarios';
 import { BOND_DEFINITIONS } from './constants/bond-definitions';
 import { getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
+import { differenceInMonths, parseISO } from 'date-fns';
 
 const today = new Date('2026-05-05T00:00:00.000Z');
 
@@ -212,6 +213,56 @@ describe('Regular investment golden regressions', () => {
     expect(general.totalProfit).toBeCloseTo(exact.totalProfit, 8);
     expect(general.totalTax).toBeCloseTo(exact.totalTax, 8);
     expect(general.lots).toHaveLength(48);
+  });
+
+  it('keeps contribution lots anchored to the purchase date cadence', async () => {
+    const monthly = await getRegularResult(BondType.TOS, {
+      frequency: InvestmentFrequency.MONTHLY,
+      investmentHorizonMonths: 12,
+      purchaseDate: '2026-05-05',
+      withdrawalDate: '2027-05-05',
+      timingMode: 'exact',
+    });
+    const quarterly = await getRegularResult(BondType.TOS, {
+      frequency: InvestmentFrequency.QUARTERLY,
+      investmentHorizonMonths: 24,
+      purchaseDate: '2026-05-05',
+      withdrawalDate: '2028-05-05',
+      timingMode: 'exact',
+    });
+
+    expect(monthly.lots).toHaveLength(12);
+    expect(monthly.lots[0].purchaseDate).toBe(monthly.timeline[0].date);
+    expect(monthly.lots.at(-1)?.purchaseDate).toBe(monthly.timeline[11].date);
+    expect(monthly.timeline.at(-1)?.month).toBe(12);
+
+    expect(quarterly.lots).toHaveLength(8);
+    expect(quarterly.lots.map((lot) => lot.purchaseDate)).toEqual(
+      [0, 3, 6, 9, 12, 15, 18, 21].map((month) => quarterly.timeline[month].date),
+    );
+  });
+
+  it('keeps ladder-style EDO maturities spaced by contribution month', async () => {
+    const ladder = await getRegularResult(BondType.EDO, {
+      frequency: InvestmentFrequency.MONTHLY,
+      investmentHorizonMonths: 120,
+      purchaseDate: '2026-05-05',
+      withdrawalDate: '2036-05-05',
+      timingMode: 'exact',
+      rollover: false,
+    });
+
+    expect(ladder.lots).toHaveLength(120);
+    for (const lot of ladder.lots.slice(0, 4)) {
+      expect(differenceInMonths(parseISO(lot.maturityDate), parseISO(lot.purchaseDate))).toBe(120);
+    }
+    expect(
+      differenceInMonths(
+        parseISO(ladder.lots[3].maturityDate),
+        parseISO(ladder.lots[0].maturityDate),
+      ),
+    ).toBe(3);
+    expect(ladder.timeline.at(-1)?.nominalValue).toBeCloseTo(ladder.finalNominalValue, 8);
   });
 
   it('keeps short-duration ROR rollover handling aligned', async () => {
