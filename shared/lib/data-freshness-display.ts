@@ -50,3 +50,21 @@ export function getFreshnessDisplayState(
     lastSyncLabel: getFreshnessLastSyncLabel(freshness),
   };
 }
+
+export function getCalculationFreshnessMetaState(freshness: CalculationDataFreshness) {
+  const isFresh = freshness.status === 'fresh';
+
+  return {
+    status: freshness.status,
+    isFresh,
+    coverageLabel: getFreshnessCoverageLabel(freshness),
+    lastSyncLabel: getFreshnessLastSyncLabel(freshness),
+    usedFallback: freshness.usedFallback,
+    toneClass: isFresh
+      ? 'border-[var(--finance-success)] text-foreground'
+      : 'border-[var(--finance-warning)] text-foreground',
+    dotClass: isFresh
+      ? 'bg-[var(--finance-success)]'
+      : 'bg-[var(--finance-warning)]',
+  };
+}

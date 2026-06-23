@@ -11,8 +11,7 @@ import {
 import { useAppI18n } from '@/i18n/client';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import {
-  getFreshnessCoverageLabel,
-  getFreshnessLastSyncLabel,
+  getCalculationFreshnessMetaState,
 } from '@/shared/lib/data-freshness-display';
 
 interface CalculationMetaPanelProps {
@@ -147,40 +146,33 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
     return null;
   }
 
-  const freshnessTone =
-    dataFreshness?.status === 'fresh'
-      ? 'border-[var(--finance-success)] text-foreground'
-      : 'border-[var(--finance-warning)] text-foreground';
-  const coverageLabel = getFreshnessCoverageLabel(dataFreshness);
-  const lastSyncedLabel = getFreshnessLastSyncLabel(dataFreshness);
+  const freshnessMeta = dataFreshness
+    ? getCalculationFreshnessMetaState(dataFreshness)
+    : null;
 
   return (
     <div className="space-y-5">
-      {dataFreshness ? (
-        <div className={`border-l-2 px-4 py-3 text-sm leading-6 ${freshnessTone}`}>
+      {freshnessMeta ? (
+        <div className={`border-l-2 px-4 py-3 text-sm leading-6 ${freshnessMeta?.toneClass}`}>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <div className="flex items-center gap-2 font-semibold">
               <span
-                className={`h-2.5 w-2.5 rounded-full ${
-                  dataFreshness.status === 'fresh'
-                    ? 'bg-[var(--finance-success)]'
-                    : 'bg-[var(--finance-warning)]'
-                }`}
+                className={`h-2.5 w-2.5 rounded-full ${freshnessMeta?.dotClass}`}
               />
               <span>{t('comparison.freshness_status')}:</span>
-              <span>{t(`comparison.status_${dataFreshness.status}`)}</span>
+              <span>{t(`comparison.status_${freshnessMeta.status}`)}</span>
             </div>
-            {coverageLabel ? (
+            {freshnessMeta?.coverageLabel ? (
               <div>
-                {t('common.coverage')}: <span className="font-semibold">{coverageLabel}</span>
+                {t('common.coverage')}: <span className="font-semibold">{freshnessMeta.coverageLabel}</span>
               </div>
             ) : null}
-            {lastSyncedLabel ? (
+            {freshnessMeta?.lastSyncLabel ? (
               <div>
-                {t('admin.inventory.cols.last_sync')}: <span className="font-semibold">{lastSyncedLabel}</span>
+                {t('admin.inventory.cols.last_sync')}: <span className="font-semibold">{freshnessMeta.lastSyncLabel}</span>
               </div>
             ) : null}
-            {dataFreshness.usedFallback ? (
+            {freshnessMeta?.usedFallback ? (
               <div className="font-semibold">{t('comparison.fallback_used')}</div>
             ) : null}
           </div>

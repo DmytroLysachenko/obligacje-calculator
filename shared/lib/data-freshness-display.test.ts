@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   formatFreshnessDate,
+  getCalculationFreshnessMetaState,
   getFreshnessCoverageLabel,
   getFreshnessDisplayState,
   getFreshnessLastSyncLabel,
@@ -56,5 +57,35 @@ describe('data freshness display helpers', () => {
     expect(formatFreshnessDate('2026-04')).toBe('2026-04');
     expect(formatFreshnessDate('manual-sync')).toBe('manual-sync');
     expect(formatFreshnessDate(undefined)).toBeNull();
+  });
+
+  it('builds calculation metadata display state from one freshness envelope', () => {
+    expect(getCalculationFreshnessMetaState(freshness({
+      status: 'fresh',
+      coverageAsOf: '2026-05',
+      lastSyncedAt: '2026-06-20T12:00:00.000Z',
+    }))).toMatchObject({
+      status: 'fresh',
+      isFresh: true,
+      coverageLabel: '2026-05',
+      lastSyncLabel: '2026-06-20',
+      usedFallback: false,
+      toneClass: 'border-[var(--finance-success)] text-foreground',
+      dotClass: 'bg-[var(--finance-success)]',
+    });
+
+    expect(getCalculationFreshnessMetaState(freshness({
+      status: 'fallback',
+      usedFallback: true,
+      asOf: 'fallback-reference',
+    }))).toMatchObject({
+      status: 'fallback',
+      isFresh: false,
+      coverageLabel: 'fallback-reference',
+      lastSyncLabel: null,
+      usedFallback: true,
+      toneClass: 'border-[var(--finance-warning)] text-foreground',
+      dotClass: 'bg-[var(--finance-warning)]',
+    });
   });
 });
