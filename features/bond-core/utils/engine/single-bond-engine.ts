@@ -23,6 +23,17 @@ import { calculateRollover } from './rollover';
 import { resolveSingleBondRateContext } from './rate-context';
 import { calculateTaxAmount, shouldWithholdPeriodicTax } from './tax-settlement';
 import { generateCyclePeriods } from './timeline-builder';
+import {
+  createCyclePurchaseEvent,
+  createEarlyRedemptionFeeEvent,
+  createFinalTaxSettlementEvent,
+  createInterestAccrualEvent,
+  createMaturityEvent,
+  createPayoutEvent,
+  createPeriodicTaxSettlementEvent,
+  createRateResetEvent,
+  createWithdrawalEvent,
+} from './single-bond-events';
 
 /**
  * Standard calculation for a single bond investment.
@@ -124,12 +135,12 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
       const monthsIntoCycle = differenceInMonths(period.startDate, currentPurchaseDate);
 
       if (i === 0) {
-        events.push({
-          type: cycleIndex === 1 ? SimulationEventType.PURCHASE : SimulationEventType.ROLLOVER_PURCHASE,
-          date: period.startDate.toISOString(),
-          description: `${cycleIndex === 1 ? 'Purchase' : 'Rollover purchase'} of ${numberOfBonds} bonds`,
-          value: nominalStartingValue.toNumber()
-        });
+        events.push(createCyclePurchaseEvent({
+          cycleIndex,
+          date: period.startDate,
+          numberOfBonds,
+          nominalStartingValue,
+        }));
       }
 
       const periodYearIndex = Math.floor(differenceInMonths(period.startDate, startDate) / 12);
@@ -170,12 +181,11 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
       } = rateContext;
 
       if (rateContext.shouldRecordRateReset && rateContext.rateResetDescription) {
-        events.push({
-          type: SimulationEventType.RATE_RESET,
-          date: period.startDate.toISOString(),
-          description: rateContext.rateResetDescription,
-          value: currentInterestRate.toNumber()
-        });
+        events.push(createRateResetEvent(
+          period.startDate,
+          rateContext.rateResetDescription,
+          currentInterestRate,
+        ));
       }
 
       if (usedProjectedRate) {
@@ -197,12 +207,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
       totalInterestEarnedSoFar = totalInterestEarnedSoFar.plus(interestEarned);
 
       if (interestEarned.gt(0)) {
-        events.push({
-          type: SimulationEventType.INTEREST_ACCRUAL,
-          date: period.endDate.toISOString(),
-          description: `Accrued interest: ${interestEarned.toFixed(2)} PLN`,
-          value: interestEarned.toNumber()
-        });
+        events.push(createInterestAccrualEvent(period.endDate, interestEarned));
       }
 
       let taxDeducted = new Decimal(0);
@@ -211,18 +216,8 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
           taxDeducted = calculateTaxAmount(interestEarned, taxStrategy, true, taxRate);
           periodicTaxPaidSoFar = periodicTaxPaidSoFar.plus(taxDeducted);
           if (taxDeducted.gt(0)) {
-            events.push({
-              type: SimulationEventType.TAX_SETTLEMENT,
-              date: period.endDate.toISOString(),
-              description: `Periodic tax withheld: ${taxDeducted.toFixed(2)} PLN`,
-              value: taxDeducted.toNumber()
-            });
-            events.push({
-              type: SimulationEventType.PAYOUT,
-              date: period.endDate.toISOString(),
-              description: `Periodic interest payout: ${interestEarned.minus(taxDeducted).toFixed(2)} PLN`,
-              value: interestEarned.minus(taxDeducted).toNumber()
-            });
+            events.push(createPeriodicTaxSettlementEvent(period.endDate, taxDeducted));
+            events.push(createPayoutEvent(period.endDate, interestEarned.minus(taxDeducted)));
           }
         }
       } else {
@@ -265,12 +260,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
           );
 
       if (period.isWithdrawal && isEarlyWithdrawal && currentWithdrawalFee.gt(0)) {
-        events.push({
-          type: SimulationEventType.EARLY_REDEMPTION_FEE,
-          date: period.endDate.toISOString(),
-          description: `Early redemption fee: ${currentWithdrawalFee.toFixed(2)} PLN`,
-          value: currentWithdrawalFee.toNumber()
-        });
+        events.push(createEarlyRedemptionFeeEvent(period.endDate, currentWithdrawalFee));
       }
 
       const useOfficialRounding = period.isWithdrawal;
@@ -291,29 +281,18 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
           );
       
       if (period.isWithdrawal && !shouldWithholdPeriodicTax(taxStrategy, isCapitalized) && currentTaxAtPoint.gt(0)) {
-        events.push({
-          type: SimulationEventType.TAX_SETTLEMENT,
-          date: period.endDate.toISOString(),
-          description: `Final tax settlement: ${currentTaxAtPoint.toFixed(2)} PLN`,
-          value: currentTaxAtPoint.toNumber()
-        });
+        events.push(createFinalTaxSettlementEvent(period.endDate, currentTaxAtPoint));
       }
 
       if (period.isMaturity) {
-        events.push({
-          type: SimulationEventType.MATURITY,
-          date: period.endDate.toISOString(),
-          description: `Bond maturity reached`,
-        });
+        events.push(createMaturityEvent(period.endDate));
       }
 
       if (period.isWithdrawal) {
-        events.push({
-          type: SimulationEventType.WITHDRAWAL,
-          date: period.endDate.toISOString(),
-          description: `Final withdrawal`,
-          value: currentGrossValue.minus(currentWithdrawalFee).minus(currentTaxAtPoint).toNumber()
-        });
+        events.push(createWithdrawalEvent(
+          period.endDate,
+          currentGrossValue.minus(currentWithdrawalFee).minus(currentTaxAtPoint),
+        ));
       }
 
       const liquidationValue = currentGrossValue.minus(currentWithdrawalFee).minus(currentTaxAtPoint);
