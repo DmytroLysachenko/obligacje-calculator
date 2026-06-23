@@ -3,8 +3,8 @@ import { createAdminSeriesStatus, createAdminStatusSnapshot } from './status-rea
 
 const series = {
   id: 'series-1',
-  name: 'Inflation',
   slug: 'pl-cpi',
+  name: 'Inflation',
   frequency: 'monthly',
   lastDataPointDate: null,
   updatedAt: new Date('2026-06-01T00:00:00.000Z'),
@@ -26,6 +26,8 @@ describe('admin status read model', () => {
       id: 'series-1',
       pointCount: 42,
       lastDataPointDate: '2026-05-01',
+      lastSyncAttemptAt: null,
+      lastSyncAttemptStatus: null,
     });
   });
 
@@ -47,6 +49,8 @@ describe('admin status read model', () => {
     ).toMatchObject({
       pointCount: 12,
       lastDataPointDate: '2026-06-01',
+      lastSyncAttemptAt: null,
+      lastSyncAttemptStatus: null,
     });
   });
 
@@ -54,6 +58,27 @@ describe('admin status read model', () => {
     expect(createAdminSeriesStatus(series, [])).toMatchObject({
       pointCount: 0,
       lastDataPointDate: null,
+      lastSyncAttemptAt: null,
+      lastSyncAttemptStatus: null,
+    });
+  });
+
+  it('keeps latest data point separate from latest sync attempt evidence', () => {
+    expect(createAdminSeriesStatus(
+      series,
+      [{ seriesId: 'series-1', totalPoints: 7, latestDate: '2026-05-01' }],
+      [
+        {
+          seriesSlug: 'pl-cpi',
+          status: 'partial',
+          startedAt: '2026-06-15T10:00:00.000Z',
+          finishedAt: '2026-06-15T10:05:00.000Z',
+        },
+      ],
+    )).toMatchObject({
+      lastDataPointDate: '2026-05-01',
+      lastSyncAttemptAt: '2026-06-15T10:05:00.000Z',
+      lastSyncAttemptStatus: 'partial',
     });
   });
 
@@ -61,7 +86,12 @@ describe('admin status read model', () => {
     const snapshot = createAdminStatusSnapshot({
       series: [series],
       pointStats: [{ seriesId: 'series-1', totalPoints: '7', latestDate: '2026-05-01' }],
-      recentSyncRuns: [{ id: 'sync-1', status: 'success' }],
+      recentSyncRuns: [{
+        id: 'sync-1',
+        seriesSlug: 'pl-cpi',
+        status: 'success',
+        startedAt: new Date('2026-06-15T11:00:00.000Z'),
+      }],
       systemTime: '2026-06-15T12:00:00.000Z',
     });
 
@@ -71,11 +101,18 @@ describe('admin status read model', () => {
           ...series,
           pointCount: 7,
           lastDataPointDate: '2026-05-01',
+          lastSyncAttemptAt: '2026-06-15T11:00:00.000Z',
+          lastSyncAttemptStatus: 'success',
         },
       ],
       systemTime: '2026-06-15T12:00:00.000Z',
       env: 'unknown',
-      recentSyncRuns: [{ id: 'sync-1', status: 'success' }],
+      recentSyncRuns: [{
+        id: 'sync-1',
+        seriesSlug: 'pl-cpi',
+        status: 'success',
+        startedAt: new Date('2026-06-15T11:00:00.000Z'),
+      }],
     });
   });
 });
