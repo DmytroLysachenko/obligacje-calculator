@@ -215,6 +215,9 @@ export type UserTransaction = typeof userTransactions.$inferSelect;
 export type NewSharedSingleScenario = typeof sharedSingleScenarios.$inferInsert;
 export type SharedSingleScenario = typeof sharedSingleScenarios.$inferSelect;
 
+export type NewCommunityInsight = typeof communityInsights.$inferInsert;
+export type CommunityInsight = typeof communityInsights.$inferSelect;
+
 export const userSettings = pgTable("user_settings", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }).unique(),

@@ -86,7 +86,7 @@ export const NotebookContainer: React.FC = () => {
             return;
         }
         setError(null);
-    }, [requestError, resolvePortfolioError]);
+    }, [requestError, resolvePortfolioError, setError]);
     const emptyStateSteps: NotebookStepItem[] = buildNotebookCapabilities(t);
     const handleImportClick = () => {
         importRef.current?.click();

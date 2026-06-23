@@ -1,8 +1,6 @@
 import {
   BondInputs,
-  BondType,
   CalculationResult,
-  RateSource,
   TaxStrategy,
   YearlyTimelinePoint,
 } from '../../types';

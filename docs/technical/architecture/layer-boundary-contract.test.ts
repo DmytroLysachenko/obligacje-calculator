@@ -70,7 +70,6 @@ describe('layer boundary contract', () => {
       'shared/hooks/useWorkspacePortfolios.ts',
       'shared/hooks/usePortfolioAccess.ts',
       'features/single-calculator/components/BondCalculatorContainer.tsx',
-      'features/notebook/components/NotebookContainer.tsx',
       'features/notebook/hooks/usePortfolioDetailsWorkspace.ts',
     ];
 
@@ -80,6 +79,12 @@ describe('layer boundary contract', () => {
       expect(source, client).toContain("from '@/shared/lib/portfolio-client'");
       expect(source, client).not.toMatch(/fetch\([^)]*\/api\/portfolio/);
     }
+
+    const notebookContainer = read('features/notebook/components/NotebookContainer.tsx');
+
+    expect(notebookContainer).toContain("from '@/shared/hooks/usePortfolioAccess'");
+    expect(notebookContainer).toContain("from '@/shared/hooks/useWorkspacePortfolios'");
+    expect(notebookContainer).not.toMatch(/fetch\([^)]*\/api\/portfolio/);
   });
 
   it('keeps portfolio route controllers on command and query facades', () => {
