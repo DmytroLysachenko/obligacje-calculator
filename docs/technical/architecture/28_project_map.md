@@ -20,6 +20,9 @@ Use it before adding files or moving logic.
   It owns OAuth provider discovery, compatibility fallback for `NEXTAUTH_SECRET`,
   and the development-only auth secret fallback.
 - `lib/server/readiness/**` and `lib/server/health/**`: operational endpoint services. Routes delegate payload and check construction here.
+- `lib/server/admin/status-read-model.ts`: admin status projection for data-series
+  point counts, latest data-point coverage, recent sync attempt evidence, and
+  environment snapshot fields.
 - `lib/data/**`: read models, repositories, market-data caches, and source-neutral data access.
 - `lib/data/chart-reference-series.ts` and `lib/data/multi-asset-history.ts`: chart reference envelopes, fallback coverage, stale/partial status decisions, and data-layer fallback builders for chart APIs.
 - `lib/api-clients/**`: external provider adapters that convert public API responses into internal records. HTTP transport goes through `lib/sync/http-gateway.ts`.
@@ -42,6 +45,8 @@ Use it before adding files or moving logic.
 - Browser API calls belong behind `shared/lib/*-client.ts`, `shared/hooks`, or approved workers.
 - Route controllers use `lib/server/http/responses.ts` unless they intentionally return non-envelope operational JSON.
 - Route JSON bodies use `lib/server/http/read-json-body.ts`; route families with repeated auth/owner behavior use their family controller helpers.
+- Calculation route handlers are created through `lib/server/http/calculation-route.ts`;
+  they parse with `readJsonBody` and return envelopes with `okJson`.
 - Portfolio writes live in `lib/server/portfolio/commands.ts`; reads and simulations live in `lib/server/portfolio/queries.ts`; public shared-page reads live in `shared-page-service.ts`.
 - Pure display and state logic should sit in `shared/lib` when reused or in `features/**/lib` when feature-local.
 - Large components should be reduced by extracting pure models first, then extracting presentational subcomponents.
@@ -73,5 +78,7 @@ Use it before adding files or moving logic.
 - Route boundary changes require contract coverage for body parsing and response envelopes.
 - Provider HTTP changes require gateway tests and sync boundary contracts.
 - Operational endpoint changes require `app/api/operational-endpoints-contract.test.ts` coverage and focused service tests.
+- Admin status changes require read-model tests proving latest data point and
+  latest sync attempt remain separate fields.
 - Chart fallback/status changes require pure helper tests in `lib/data/**` plus route contract coverage when route ownership changes.
 - Docs that define release, architecture, or support status should have a matching contract test when the rule is executable.

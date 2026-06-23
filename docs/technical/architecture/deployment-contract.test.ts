@@ -20,6 +20,8 @@ describe('deployment documentation contract', () => {
     expect(source).toContain('pnpm check:prod-config');
     expect(source).toContain('europe-central2');
     expect(source).toContain('standalone `server.js`');
+    expect(source).toContain('retained-route release scope');
+    expect(source).toContain('calculation route helpers');
   });
 
   it('documents the production migration order for portfolio auth and sync history', () => {
@@ -62,7 +64,9 @@ describe('deployment documentation contract', () => {
     expect(source).toContain('Verify `/api/readiness` returns `ok: true`');
     expect(source).toContain('Verify `/login` shows the configured OAuth providers.');
     expect(source).toContain('Verify `/api/portfolio/access` reports `canManageWorkspace: true` after sign-in.');
-    expect(source).toContain('Verify `/admin/status` shows recent `sync_runs` rows after a manual sync.');
+    expect(source).toContain('Verify `/admin/status` shows recent `sync_runs` rows after a manual sync');
+    expect(source).toContain('lastSyncAttemptAt');
+    expect(source).toContain('lastDataPointDate');
     expect(source).toContain('Verify calculation meta displays both data coverage and last sync attempt');
   });
 
@@ -77,6 +81,8 @@ describe('deployment documentation contract', () => {
     expect(projectMap).toContain('lib/server/runtime/env.ts');
     expect(projectMap).toContain('lib/server/auth/provider-config.ts');
     expect(projectMap).toContain('scripts/check-production-config.ts');
+    expect(projectMap).toContain('lib/server/http/calculation-route.ts');
+    expect(projectMap).toContain('lib/server/admin/status-read-model.ts');
     expect(projectMap).toContain('OptimizerInputPanel.tsx');
     expect(projectMap).toContain('EconomicDashboardSections.tsx');
     expect(projectMap).toContain('results-dashboard-model.ts');

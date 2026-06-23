@@ -73,7 +73,8 @@ pnpm check:release
 
 This gate runs typecheck, lint, the trusted release Vitest contracts, and the
 Next production build. It includes deterministic checks for `Dockerfile`,
-`cloudbuild.yaml`, health/readiness routes, and the package release script.
+`cloudbuild.yaml`, retained-route release scope, health/readiness routes,
+calculation route helpers, and the package release script.
 On Windows, Next standalone tracing may print a local copy warning for Node
 externals while still exiting successfully; treat Linux Cloud Build and Cloud Run
 health/readiness checks as the production signal.
@@ -123,6 +124,8 @@ Secret Manager. Do not commit `.env` files.
 - Keep route responses on `okJson`, `createdJson`, `errorJson`, or the existing
   domain response helpers unless a route intentionally streams or returns a
   non-envelope response.
+- Keep calculation route bodies on `readJsonBody` and calculation envelopes on
+  `okJson` through `lib/server/http/calculation-route.ts`.
 - Verify `/api/health` returns `ok: true`.
 - Verify `/api/readiness` returns `ok: true` after production env and database
   setup are complete.
@@ -130,7 +133,8 @@ Secret Manager. Do not commit `.env` files.
   to `lib/server/health` and `lib/server/readiness`.
 - Verify `/login` shows the configured OAuth providers.
 - Verify `/api/portfolio/access` reports `canManageWorkspace: true` after sign-in.
-- Verify `/admin/status` shows recent `sync_runs` rows after a manual sync.
+- Verify `/admin/status` shows recent `sync_runs` rows after a manual sync and
+  exposes per-series `lastSyncAttemptAt` separately from `lastDataPointDate`.
 - Verify calculation meta displays both data coverage and last sync attempt when
   sync history is present.
 - Verify single and comparison chart/table monthly, quarterly, and yearly views

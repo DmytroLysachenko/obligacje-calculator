@@ -40,6 +40,8 @@ Before release candidate signoff:
 
 - `pnpm run sync:full` completes without provider-blocking failures
 - admin status shows recent `sync_runs`
+- admin status exposes per-series `lastDataPointDate`, `lastSyncAttemptAt`, and
+  `lastSyncAttemptStatus`
 - sidebar and calculation metadata distinguish latest data point from latest sync attempt
 - economic data charts show source, coverage, fallback, and freshness state
 - no trusted calculator depends on hidden fallback data
@@ -65,7 +67,8 @@ it from the shell or deployment context that has production values for
 
 The release suite also locks Cloud Run artifacts and API/controller boundaries:
 browser surfaces route API calls through shared clients, and migrated API routes
-return through shared response helpers.
+return through shared response helpers. Calculation endpoints parse request
+bodies through `readJsonBody` and return calculation envelopes through `okJson`.
 
 Deployment checks:
 
@@ -76,6 +79,7 @@ Deployment checks:
 - `/login` shows configured OAuth providers
 - signed-in `/api/portfolio/access` reports `canManageWorkspace: true`
 - `/admin/status` is protected by `SYNC_SECRET`
+- `/admin/status` separates latest data-point coverage from latest sync attempt
 - Auth.js provider selection comes from `lib/server/auth/provider-config.ts`
   rather than route/page-local environment branches
 - readiness and production config checks use `lib/server/runtime/env.ts`
@@ -95,6 +99,9 @@ areas into clearer layers:
   modeled-value, ranking, runner-up, and spread decisions
 - server runtime: readiness, admin auth, Auth.js, and production config checks
   read environment through centralized runtime helpers
+- release contracts: retained-route scope, calculation route parsing, chart
+  terminal-value preservation, and economic reference status mapping are covered
+  by focused Vitest contracts inside `pnpm test:release`
 
 ## Manual QA Smoke
 
