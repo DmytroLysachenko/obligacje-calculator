@@ -12,6 +12,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  LADDER_CHART_MODES,
+  LADDER_TABLE_FILTERS,
+} from '@/features/ladder-strategy/constants/timeline';
+import {
+  LadderChartMode,
+  LadderTableFilter,
+  LadderTimelineProps,
+} from '@/features/ladder-strategy/types/timeline';
 import { useAppI18n } from '@/i18n/client';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
@@ -35,12 +44,8 @@ import {
   LadderYearBucket,
 } from '@/shared/lib/ladder-display';
 
-import { RegularInvestmentResult } from '../../bond-core/types';
-interface LadderTimelineProps {
-  results: RegularInvestmentResult;
-}
-type LadderChartMode = 'yearly' | 'monthly';
-type LadderTableFilter = 'all' | 'peak' | 'clustered';
+import { MobileLadderValue } from './MobileLadderValue';
+
 export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
   const { t, locale: language } = useAppI18n();
   const [rowLimit, setRowLimit] = useState<TableRowLimit>(12);
@@ -188,7 +193,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
         controls={
           <SegmentedControl
             value={chartMode}
-            options={(['yearly', 'monthly'] as const).map((mode) => ({
+            options={LADDER_CHART_MODES.map((mode) => ({
               value: mode,
               label: t(`ladder_page.timeline.chart_modes.${mode}`),
             }))}
@@ -269,7 +274,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-1 py-3 text-sm text-muted-foreground">
             <p>{t('ladder_page.timeline.table_summary')}</p>
             <div className="flex flex-wrap items-center gap-2">
-              {(['all', 'peak', 'clustered'] as const).map((filter) => (
+              {LADDER_TABLE_FILTERS.map((filter) => (
                 <Button
                   key={filter}
                   type="button"
@@ -382,11 +387,3 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
     </div>
   );
 };
-function MobileLadderValue({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="border-t border-border px-1 py-2 first:border-t-0">
-      <p className="text-xs font-semibold text-muted-foreground">{label}</p>
-      <p className="mt-1 text-sm font-semibold text-foreground">{value}</p>
-    </div>
-  );
-}
