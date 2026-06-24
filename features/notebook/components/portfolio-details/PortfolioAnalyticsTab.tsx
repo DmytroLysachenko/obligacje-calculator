@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
-import { Loader2, TrendingUp } from 'lucide-react';
 import { format } from 'date-fns';
+import { Loader2, TrendingUp } from 'lucide-react';
+import React from 'react';
 import {
   Area,
   AreaChart,
@@ -13,10 +13,11 @@ import {
   YAxis,
 } from 'recharts';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
+
+import { PortfolioSimulationResult } from '@/features/bond-core/types/scenarios';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
-import { PortfolioSimulationResult } from '@/features/bond-core/types/scenarios';
 
 type PortfolioAnalyticsTabProps = {
   simulation: PortfolioSimulationResult | null;

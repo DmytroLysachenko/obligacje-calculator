@@ -1,10 +1,13 @@
-import { db } from '@/db';
-import { dataSeries, dataPoints, investmentInstruments } from '@/db/schema';
-import { GusCpiApiClient } from '@/lib/api-clients/gus-cpi';
+import 'dotenv/config';
+
 import { eq, sql } from 'drizzle-orm';
+
+import { db } from '@/db';
+import { dataPoints, dataSeries, investmentInstruments } from '@/db/schema';
+import { GusCpiApiClient } from '@/lib/api-clients/gus-cpi';
+
 import { YahooFinanceSyncProvider } from './providers/yahoo-finance';
 import { fetchSyncResponse } from './http-gateway';
-import 'dotenv/config';
 
 interface NbpRateItem {
   obowiazuje_od: string;

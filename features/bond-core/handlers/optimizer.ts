@@ -1,15 +1,18 @@
+import { parseISO } from 'date-fns';
+
+import { differenceInMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
+
+import { BondInputs, BondType, TaxStrategy } from '../types';
 import {
-  ScenarioKind,
   BondOptimizerCalculationEnvelope,
   BondOptimizerPayload,
   BondOptimizerResult,
   BondOptimizerResultItem,
+  ScenarioKind,
 } from '../types/scenarios';
 import { calculateBondInvestment } from '../utils/calculations';
-import { BondType, TaxStrategy, BondInputs } from '../types';
-import { BaseHandler, ScenarioHandler, HandlerContext } from './base';
-import { getWithdrawalDateFromMonths, differenceInMonths } from '@/shared/lib/date-timing';
-import { parseISO } from 'date-fns';
+
+import { BaseHandler, HandlerContext, ScenarioHandler } from './base';
 import { resolveScenarioInputs } from './resolved-inputs';
 
 export class OptimizerHandler

@@ -1,16 +1,17 @@
 import React, { useMemo } from 'react';
+
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { TaxStrategy } from '@/features/bond-core/types';
 import { FAMILY_BOND_TYPES, getBondSupportMeta } from '@/features/bond-core/support-matrix';
+import { TaxStrategy } from '@/features/bond-core/types';
+import type { OptimizerInputKey, OptimizerInputs } from '@/features/optimizer/lib/optimizer-state';
 import { useAppI18n } from '@/i18n/client';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
 import { MacroDefaultsSummary } from '@/shared/components/market-assumptions/MacroDefaultsSummary';
-import type { OptimizerInputKey, OptimizerInputs } from '@/features/optimizer/lib/optimizer-state';
 
 interface OptimizerInputPanelProps {
   inputs: OptimizerInputs;

@@ -1,14 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { calculationService } from './application-service';
+
+import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
+
 import { BOND_DEFINITIONS } from './constants/bond-definitions';
 import { MonthlyReturn } from './constants/historical-data';
-import {
-  BondType,
-  CalculationResult,
-  InvestmentFrequency,
-  RegularInvestmentResult,
-  TaxStrategy,
-} from './types';
 import {
   BondComparisonScenarioItem,
   RetirementPlannerResult,
@@ -20,7 +15,14 @@ import {
   calculateSavingsPerformance,
 } from './utils/asset-calculations';
 import { calculationCache } from './utils/calculation-cache';
-import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
+import { calculationService } from './application-service';
+import {
+  BondType,
+  CalculationResult,
+  InvestmentFrequency,
+  RegularInvestmentResult,
+  TaxStrategy,
+} from './types';
 
 const PURCHASE_DATE = '2024-01-01';
 const INITIAL_INVESTMENT = 10000;

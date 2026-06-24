@@ -1,6 +1,8 @@
 import { format, parseISO } from 'date-fns';
-import { RegularInvestmentResult } from '@/features/bond-core/types';
 import { Locale } from 'date-fns';
+
+import { RegularInvestmentResult } from '@/features/bond-core/types';
+
 import { DisplayBucketMetricRow } from './display-model';
 
 export interface LadderMaturityBucket extends DisplayBucketMetricRow {

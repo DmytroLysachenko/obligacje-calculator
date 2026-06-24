@@ -1,10 +1,12 @@
 'use client';
 
-import { useMemo, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { Check, Share2 } from 'lucide-react';
+import { type KeyboardEvent, type ReactNode, useMemo, useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
+
 import { pageLayout } from './layout-system';
 import { PageHeader, PageHeaderStatus } from './PageHeader';
 

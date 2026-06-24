@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+
 import { syncClient } from '@/shared/lib/sync-client';
 
 export const OpportunisticSyncTrigger = () => {

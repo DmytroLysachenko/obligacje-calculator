@@ -1,4 +1,5 @@
 import { addMonths, differenceInDays, format, isBefore, parseISO } from 'date-fns';
+
 import { NBP_REFERENCE_FALLBACK_SERIES } from '@/shared/lib/nbp-reference-fallback';
 
 export interface ChartSeriesEnvelope<T> {

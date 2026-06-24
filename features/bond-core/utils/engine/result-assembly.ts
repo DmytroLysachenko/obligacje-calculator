@@ -1,11 +1,13 @@
 import { format } from 'date-fns';
 import { Decimal } from 'decimal.js';
+
 import {
   CalculationResult,
   RegularInvestmentResult,
   RegularTimelinePoint,
   YearlyTimelinePoint,
 } from '../../types';
+
 import { calculateCAGR } from './real-return';
 
 interface SingleBondResultParams {

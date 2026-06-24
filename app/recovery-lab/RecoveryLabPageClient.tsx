@@ -1,13 +1,14 @@
 'use client';
 
-import Link from 'next/link';
 import { BarChart2, Calendar, ShieldAlert, TrendingUp } from 'lucide-react';
+import Link from 'next/link';
+
+import { useAppI18n } from '@/i18n/client';
 import {
   FeatureStatusNotice,
   FeatureStatusPill,
 } from '@/shared/components/feedback/FeatureStatusNotice';
 import { SecondarySurfaceIntro } from '@/shared/components/page/SecondarySurfaceIntro';
-import { useAppI18n } from '@/i18n/client';
 
 const recoveryLabPages = [
   {

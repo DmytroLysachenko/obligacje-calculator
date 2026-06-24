@@ -1,12 +1,13 @@
 'use client';
 
-import { MultiAssetComparisonContainer } from '@/features/comparison-engine/components/MultiAssetComparisonContainer';
-import { PageTransition } from '@/shared/components/page/PageTransition';
-import { PageSuspenseFallback } from '@/shared/components/page/PageSuspenseFallback';
-import { FeatureStatusNotice } from '@/shared/components/feedback/FeatureStatusNotice';
-import { SecondarySurfaceIntro } from '@/shared/components/page/SecondarySurfaceIntro';
-import { useAppI18n } from '@/i18n/client';
 import { Suspense } from 'react';
+
+import { MultiAssetComparisonContainer } from '@/features/comparison-engine/components/MultiAssetComparisonContainer';
+import { useAppI18n } from '@/i18n/client';
+import { FeatureStatusNotice } from '@/shared/components/feedback/FeatureStatusNotice';
+import { PageSuspenseFallback } from '@/shared/components/page/PageSuspenseFallback';
+import { PageTransition } from '@/shared/components/page/PageTransition';
+import { SecondarySurfaceIntro } from '@/shared/components/page/SecondarySurfaceIntro';
 
 export function MultiAssetPageClient() {
   const { t } = useAppI18n();

@@ -1,5 +1,6 @@
-import postgres from 'postgres';
 import 'dotenv/config';
+
+import postgres from 'postgres';
 
 async function seed() {
   if (!process.env.DATABASE_URL) {

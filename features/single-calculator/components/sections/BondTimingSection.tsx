@@ -1,23 +1,24 @@
 'use client';
+import { format, isAfter, parseISO } from 'date-fns';
+import { AlertCircle, CalendarIcon } from 'lucide-react';
 import React from 'react';
-import { Label } from '@/components/ui/label';
+
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import { Label } from '@/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
-import { CalendarIcon, AlertCircle } from 'lucide-react';
-import { format, parseISO, isAfter } from 'date-fns';
-import { BondInputs, TaxStrategy } from '@/features/bond-core/types';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
+import { BondInputs, TaxStrategy } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
-import { toDateString } from '@/shared/lib/date-timing';
-import { formatHorizonMonths } from '@/shared/lib/format-horizon';
-import { cn } from '@/lib/utils';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
+import { cn } from '@/lib/utils';
+import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
 import { RangeField } from '@/shared/components/forms/RangeField';
 import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
-import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
+import { toDateString } from '@/shared/lib/date-timing';
+import { formatHorizonMonths } from '@/shared/lib/format-horizon';
 interface BondTimingSectionProps {
   inputs: BondInputs;
   onUpdate: (key: keyof BondInputs, value: string | number | boolean) => void;

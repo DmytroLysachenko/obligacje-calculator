@@ -1,12 +1,14 @@
 import { describe, expect, it } from 'vitest';
+
 import type { AssetPerformanceSeries } from '@/features/bond-core/types/assets';
+
 import {
   createMultiAssetDrawdownLegendItems,
   createMultiAssetDrawdownSummary,
   createMultiAssetGrowthLegendItems,
   createMultiAssetGrowthSummary,
-  thinMultiAssetGrowthData,
   type MultiAssetChartRow,
+  thinMultiAssetGrowthData,
 } from './multi-asset-chart-model';
 
 function asset(id: string, name: string, color: string): AssetPerformanceSeries {

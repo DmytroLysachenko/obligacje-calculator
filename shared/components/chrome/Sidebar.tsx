@@ -1,8 +1,5 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState } from 'react';
 import {
   BarChart2,
   BookOpen,
@@ -14,6 +11,10 @@ import {
   TrendingUp,
   Wallet,
 } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
@@ -21,10 +22,11 @@ import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
-import { SidebarUtilityGroup } from './SidebarUtilityGroup';
-import { SidebarWorkspaceUtility } from './SidebarWorkspaceUtility';
+
 import { SidebarSettingsUtility } from './SidebarSettingsUtility';
 import { SidebarSyncSummary } from './SidebarSyncSummary';
+import { SidebarUtilityGroup } from './SidebarUtilityGroup';
+import { SidebarWorkspaceUtility } from './SidebarWorkspaceUtility';
 
 interface SidebarContentProps {
   onItemClick?: () => void;

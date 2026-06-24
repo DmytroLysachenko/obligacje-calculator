@@ -1,4 +1,5 @@
 import { format, subMonths } from 'date-fns';
+
 import { HistoricalDataMap } from '../../types';
 
 export function getHistoricalValue(

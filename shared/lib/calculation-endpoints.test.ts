@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
+
 import { ScenarioKind } from '@/features/bond-core/types/scenarios';
+
 import { getCalculationEndpoint } from './calculation-endpoints';
 
 describe('calculation endpoints', () => {

@@ -1,7 +1,9 @@
-import { describe, it, expect } from 'vitest';
-import { calculateBondInvestment } from './calculations';
-import { BondType, InterestPayout, TaxStrategy } from '../types';
 import { addYears } from 'date-fns';
+import { describe, expect, it } from 'vitest';
+
+import { BondType, InterestPayout, TaxStrategy } from '../types';
+
+import { calculateBondInvestment } from './calculations';
 
 describe('Bond Calculation Edge Cases: Inflation Extremes', () => {
   const purchaseDate = '2024-01-01T00:00:00.000Z';

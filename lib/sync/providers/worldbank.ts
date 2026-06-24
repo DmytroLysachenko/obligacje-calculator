@@ -1,5 +1,5 @@
-import { SyncProvider, SyncRecord } from '../types';
 import { fetchSyncResponse } from '../http-gateway';
+import { SyncProvider, SyncRecord } from '../types';
 
 interface WorldBankRecord {
   date: string;

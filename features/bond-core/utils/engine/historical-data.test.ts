@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { getHistoricalValue } from './historical-data';
+
 import { HistoricalDataMap } from '../../types';
+
+import { getHistoricalValue } from './historical-data';
 
 describe('historical market data lookup', () => {
   const marketData: HistoricalDataMap = {

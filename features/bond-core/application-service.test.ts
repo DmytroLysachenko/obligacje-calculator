@@ -1,6 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { calculationService } from './application-service';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { ScenarioKind } from './types/scenarios';
+import { calculationService } from './application-service';
 import { BondType, InterestPayout, TaxStrategy } from './types';
 
 // Mock data-access to simulate DB interaction without a real DB

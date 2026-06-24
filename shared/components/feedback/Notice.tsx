@@ -1,5 +1,6 @@
-import React from 'react';
 import { AlertTriangle, CheckCircle2, Info, Lock } from 'lucide-react';
+import React from 'react';
+
 import { cn } from '@/lib/utils';
 
 export type NoticeTone = 'info' | 'warning' | 'success' | 'locked';

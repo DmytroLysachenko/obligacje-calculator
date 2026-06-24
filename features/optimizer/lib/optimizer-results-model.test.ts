@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
+
 import { BondType } from '@/features/bond-core/types';
 import type { BondOptimizerResultItem } from '@/features/bond-core/types/scenarios';
+
 import {
   buildOptimizerLeadingDetailMetrics,
   buildOptimizerRankedOutcomeRows,

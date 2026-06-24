@@ -1,9 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
+
+import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
+
 import {
   buildSharedPortfolioPageMetadata,
   getPublicSharedPortfolioPageData,
 } from './shared-page-service';
-import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
 
 vi.mock('@/lib/server/db/portfolio-schema-compat', () => ({
   ensurePortfolioSchemaCompat: vi.fn(),

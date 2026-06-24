@@ -1,8 +1,9 @@
 import { BookOpen, CheckCircle2, Plus, Upload } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Notice } from '@/shared/components/feedback/Notice';
 import { type NotebookStepItem } from '@/features/notebook/lib/notebook-workspace-model';
+import { Notice } from '@/shared/components/feedback/Notice';
 
 interface EmptyPortfolioStateProps {
   onCreate: () => void;

@@ -2,9 +2,10 @@
 
 import { act } from 'react';
 import { useEffect, useState } from 'react';
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { hydrateRoot } from 'react-dom/client';
 import { renderToString } from 'react-dom/server';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import {
   loadPersistedCalculatorState,
   savePersistedCalculatorState,

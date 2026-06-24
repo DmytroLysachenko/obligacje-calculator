@@ -2,6 +2,8 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
+
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -10,30 +12,30 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { RegularInvestmentResult } from '../../bond-core/types';
 import { useAppI18n } from '@/i18n/client';
+import { getDateFnsLocale } from '@/i18n/locale-utils';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ChartSection } from '@/shared/components/charts/ChartSection';
-import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
-import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
+import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
+import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
+import { SectionBlock } from '@/shared/components/page/SectionBlock';
 import { MetricStrip } from '@/shared/components/results/MetricStrip';
+import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
 import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
 import {
   applyTableRowLimit,
   TableDensityControls,
   TableRowLimit,
 } from '@/shared/components/results/TableDensityControls';
-import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
-import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
-import { SectionBlock } from '@/shared/components/page/SectionBlock';
-import { getDateFnsLocale } from '@/i18n/locale-utils';
+import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import {
   buildLadderMaturityBuckets,
   buildLadderYearBuckets,
   LadderMaturityBucket,
   LadderYearBucket,
 } from '@/shared/lib/ladder-display';
+
+import { RegularInvestmentResult } from '../../bond-core/types';
 interface LadderTimelineProps {
   results: RegularInvestmentResult;
 }

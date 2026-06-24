@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+
 import { ResultAction, ResultActionGrid } from './ResultActionGrid';
 
 interface ResultSummaryHeroProps {

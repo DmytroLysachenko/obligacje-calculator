@@ -1,4 +1,5 @@
 import { Skeleton } from '@/components/ui/skeleton';
+
 import { pageLayout } from './layout-system';
 
 export function PageSuspenseFallback({ showSidebar = true }: { showSidebar?: boolean }) {

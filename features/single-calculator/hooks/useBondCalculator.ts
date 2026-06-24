@@ -1,23 +1,25 @@
-import { useState, useCallback, useEffect, useEffectEvent, useMemo, useRef } from 'react';
-import { BondInputs, BondType } from '../../bond-core/types';
-import { ScenarioKind, SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
-import { MODEL_VERSION } from '../../bond-core/model-version';
-import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
-import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
+import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
+
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
+import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
+import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
+import { bondSeriesClient, BondSeriesMetadata } from '@/shared/lib/bond-series-client';
+import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 import {
   loadPersistedCalculatorState,
   savePersistedCalculatorState,
 } from '@/shared/lib/calculator-persistence';
-import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
-import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
-import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
-import { bondSeriesClient, BondSeriesMetadata } from '@/shared/lib/bond-series-client';
 import {
   preserveStableState,
   restoreVersionedEnvelope,
   stripDisplayOnlyInputs,
 } from '@/shared/lib/calculator-state';
+import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
+import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
+
+import { MODEL_VERSION } from '../../bond-core/model-version';
+import { BondInputs, BondType } from '../../bond-core/types';
+import { ScenarioKind, SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
 import {
   applyDefinitionToInputs,
   applyReverseSavingsGoal,

@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useCallback, useState } from 'react';
+
 import { UserPortfolio } from '@/db/schema';
-import { ApiClientError } from '@/shared/lib/api-client';
-import { portfolioClient } from '@/shared/lib/portfolio-client';
 import {
   NOTEBOOK_DEMO_LOTS,
   resolveNotebookPortfolioError,
 } from '@/features/notebook/lib/notebook-workspace-model';
+import { ApiClientError } from '@/shared/lib/api-client';
+import { portfolioClient } from '@/shared/lib/portfolio-client';
 
 interface NotebookWorkspaceActionLabels {
   myFirstPortfolio: string;

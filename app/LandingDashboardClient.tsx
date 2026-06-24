@@ -1,6 +1,4 @@
 'use client';
-import React from 'react';
-import Link from 'next/link';
 import {
   ArrowRight,
   BarChart2,
@@ -13,6 +11,9 @@ import {
   TrendingUp,
   Wallet,
 } from 'lucide-react';
+import Link from 'next/link';
+import React from 'react';
+
 import { Button } from '@/components/ui/button';
 import { useAppI18n } from '@/i18n/client';
 import { FeatureStatus } from '@/shared/components/feedback/FeatureStatusNotice';

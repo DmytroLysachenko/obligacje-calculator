@@ -1,6 +1,7 @@
 'use client';
-import React from 'react';
 import { AlertTriangle, CheckCircle2, FlaskConical, Info } from 'lucide-react';
+import React from 'react';
+
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 

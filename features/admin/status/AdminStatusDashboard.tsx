@@ -1,7 +1,7 @@
 'use client';
 
 import { useAppI18n } from '@/i18n/client';
-import type { StatusData } from './useAdminStatusDashboard';
+
 import { createAdminStatusViewModel } from './admin-status-model';
 import {
   AdminInventoryTable,
@@ -10,6 +10,7 @@ import {
   AdminStatusHeader,
   AdminStatusNotices,
 } from './AdminStatusSections';
+import type { StatusData } from './useAdminStatusDashboard';
 
 interface AdminStatusDashboardProps {
   data: StatusData | null;

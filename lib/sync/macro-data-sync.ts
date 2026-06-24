@@ -1,9 +1,11 @@
-import { db } from '@/db';
-import { dataSeries, dataPoints } from '@/db/schema';
 import { eq, sql } from 'drizzle-orm';
-import { NbpApiClient } from '../api-clients/nbp';
-import { GusCpiApiClient } from '../api-clients/gus-cpi';
+
+import { db } from '@/db';
+import { dataPoints, dataSeries } from '@/db/schema';
 import { recordSyncRun } from '@/lib/server/sync/run-history';
+
+import { GusCpiApiClient } from '../api-clients/gus-cpi';
+import { NbpApiClient } from '../api-clients/nbp';
 
 /**
  * Helper to retry a function with exponential backoff.

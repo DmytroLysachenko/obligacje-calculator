@@ -1,15 +1,17 @@
 'use client';
 import React, { useCallback, useState } from 'react';
-import { UserPortfolio } from '@/db/schema';
-import { useAppI18n } from '@/i18n/client';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
-import { ConfirmActionDialog } from '@/shared/components/feedback/ConfirmActionDialog';
-import { useCurrencyFormatter, useDateFormatter } from '@/shared/hooks/useLocalizedFormatters';
+import { UserPortfolio } from '@/db/schema';
 import { usePortfolioDetailsWorkspace } from '@/features/notebook/hooks/usePortfolioDetailsWorkspace';
-import { PortfolioOverviewHeader } from './portfolio-details/PortfolioOverviewHeader';
-import { PortfolioLotsTab } from './portfolio-details/PortfolioLotsTab';
+import { useAppI18n } from '@/i18n/client';
+import { ConfirmActionDialog } from '@/shared/components/feedback/ConfirmActionDialog';
+import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
+import { useCurrencyFormatter, useDateFormatter } from '@/shared/hooks/useLocalizedFormatters';
+
 import { PortfolioAnalyticsTab } from './portfolio-details/PortfolioAnalyticsTab';
+import { PortfolioLotsTab } from './portfolio-details/PortfolioLotsTab';
+import { PortfolioOverviewHeader } from './portfolio-details/PortfolioOverviewHeader';
 
 const detailTabTriggerClassName =
   'h-9 rounded-none border-b-2 border-transparent px-3.5 py-2 text-sm font-semibold data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none';

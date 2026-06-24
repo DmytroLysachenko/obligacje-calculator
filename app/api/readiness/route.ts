@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { getReadinessSnapshot } from '@/lib/server/readiness/service';
 
 export async function GET() {

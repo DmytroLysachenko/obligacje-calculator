@@ -1,9 +1,9 @@
-import { BondInputs, RegularInvestmentInputs } from '../types';
 import {
   createEngineFailureError,
   createNumericFaultError,
   isCalculationDomainError,
 } from '../errors';
+import { BondInputs, RegularInvestmentInputs } from '../types';
 
 type SanitizeTarget =
   | Partial<BondInputs>

@@ -1,8 +1,9 @@
 'use client';
 
+import { AlertTriangle, CheckCircle, Info } from 'lucide-react';
 import React from 'react';
+
 import { AdvisorTip } from '@/features/bond-core/utils/advisor-rules';
-import { AlertTriangle, Info, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const AdvisorTips: React.FC<{ tips: AdvisorTip[] }> = ({ tips }) => {

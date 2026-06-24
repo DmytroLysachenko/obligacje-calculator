@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
 import { AlertTriangle, DatabaseZap, FileText, ShieldAlert, Target } from 'lucide-react';
-import { useAppI18n } from '@/i18n/client';
+import React from 'react';
+
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
+import { useAppI18n } from '@/i18n/client';
 import { getCalculationFreshnessMetaState } from '@/shared/lib/data-freshness-display';
 
 interface CalculationMetaPanelProps {

@@ -1,3 +1,5 @@
+import { format, startOfMonth } from 'date-fns';
+
 import { BOND_DEFINITIONS } from '@/features/bond-core/constants/bond-definitions';
 import { BondType } from '@/features/bond-core/types';
 import { deriveSeriesCode, deriveSeriesWindow } from '@/lib/server/bonds/offer-terms';
@@ -6,10 +8,10 @@ import {
   updatePolishBondOfferTerms,
   upsertBondSeriesOffer,
 } from '@/lib/server/bonds/offer-terms-repository';
-import { format, startOfMonth } from 'date-fns';
 
 import { scrapeCurrentBondRates, type ScrapedBondRate } from '../bond-scraper';
 import type { SyncLogger } from '../sync-logger';
+
 import type { SyncRunRecorder } from './sync-run-recorder';
 
 export class BondOfferSyncService {

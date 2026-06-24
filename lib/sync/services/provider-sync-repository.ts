@@ -1,6 +1,7 @@
+import { desc, eq, sql } from 'drizzle-orm';
+
 import { db } from '@/db';
 import { dataPoints, dataSeries } from '@/db/schema';
-import { desc, eq, sql } from 'drizzle-orm';
 
 export interface ProviderSyncRepository {
   findSeriesBySlug(seriesSlug: string): Promise<{ id: string } | null>;

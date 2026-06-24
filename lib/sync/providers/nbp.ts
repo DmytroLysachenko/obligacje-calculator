@@ -1,6 +1,7 @@
-import { SyncProvider, SyncRecord } from '../types';
-import { format, parseISO, addYears, min, isBefore } from 'date-fns';
+import { addYears, format, isBefore, min, parseISO } from 'date-fns';
+
 import { fetchSyncResponse } from '../http-gateway';
+import { SyncProvider, SyncRecord } from '../types';
 
 interface NbpGoldData {
   data: string;

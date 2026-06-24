@@ -1,29 +1,32 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
 import { Link2, Target } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
-import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
-import { CalculatorSection } from '@/shared/components/page/CalculatorSection';
-import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
-import { CalculatorWorkspace } from '@/shared/components/page/CalculatorWorkspace';
-import { ReadingChecklist } from '@/shared/components/insights/ReadingChecklist';
+import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { AppToast } from '@/shared/components/feedback/AppToast';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
+import { ReadingChecklist } from '@/shared/components/insights/ReadingChecklist';
+import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
+import { CalculatorSection } from '@/shared/components/page/CalculatorSection';
+import { CalculatorWorkspace } from '@/shared/components/page/CalculatorWorkspace';
+import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
-import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
+import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 import { generateSingleBondReportPdf } from '@/shared/lib/pdf-utils';
-import { buildSharedSingleScenarioPayload } from '@/shared/lib/single-scenario-share';
-import { scenarioShareClient } from '@/shared/lib/scenario-share-client';
 import { portfolioClient } from '@/shared/lib/portfolio-client';
+import { scenarioShareClient } from '@/shared/lib/scenario-share-client';
+import { buildSharedSingleScenarioPayload } from '@/shared/lib/single-scenario-share';
 import {
   getStoredCurrentPortfolioId,
   setStoredCurrentPortfolioId,
 } from '@/shared/lib/workspace/current-portfolio';
 import { getWorkspaceSaveTarget } from '@/shared/lib/workspace/portfolio-selection';
+
 import { useBondCalculator } from '../hooks/useBondCalculator';
 import {
   applyGuardrailFix,
@@ -31,7 +34,7 @@ import {
   InputGuardrailIssue,
 } from '../lib/input-guardrails';
 import { createSavedScenario, saveScenarioRecord } from '../lib/scenario-storage';
-import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
+
 import { BondChart } from './BondChart';
 import { BondInputsForm } from './BondInputsForm';
 import { BondResultsSummary } from './BondResultsSummary';

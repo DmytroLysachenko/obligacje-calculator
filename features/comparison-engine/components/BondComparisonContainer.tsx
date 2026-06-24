@@ -1,23 +1,24 @@
 'use client';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { addYears } from 'date-fns';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import {
   BondComparisonCalculationEnvelope,
   ScenarioKind,
 } from '@/features/bond-core/types/scenarios';
-import { useAppI18n } from '@/i18n/client';
-import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
-import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
-import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
-import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
-import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
+import { ComparisonConfigurationPanel } from '@/features/comparison-engine/components/bond-comparison/ComparisonConfigurationPanel';
+import { ComparisonResultsDashboard } from '@/features/comparison-engine/components/bond-comparison/ComparisonResultsDashboard';
 import {
   buildComparisonChartData,
   getLeadingComparisonResult,
 } from '@/features/comparison-engine/components/bond-comparison/display-model';
-import { ComparisonConfigurationPanel } from '@/features/comparison-engine/components/bond-comparison/ComparisonConfigurationPanel';
-import { ComparisonResultsDashboard } from '@/features/comparison-engine/components/bond-comparison/ComparisonResultsDashboard';
+import { useAppI18n } from '@/i18n/client';
+import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
+import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
+import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
+import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
+import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 
 export const BondComparisonContainer = () => {
   const { locale: language } = useAppI18n();

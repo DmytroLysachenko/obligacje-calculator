@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
 import { LineChart } from 'lucide-react';
+import React from 'react';
 import {
   Area,
   AreaChart,
@@ -11,6 +11,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';

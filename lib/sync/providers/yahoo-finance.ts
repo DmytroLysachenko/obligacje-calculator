@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 
-import { SyncProvider, SyncRecord } from '../types';
 import { fetchSyncJson } from '../http-gateway';
+import { SyncProvider, SyncRecord } from '../types';
 
 interface YahooChartResponse {
   chart?: {

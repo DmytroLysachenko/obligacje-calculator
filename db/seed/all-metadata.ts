@@ -1,7 +1,8 @@
-import { db } from '../index';
-import { dataSeries, polishBonds } from '../schema';
 import { BOND_DEFINITIONS } from '../../features/bond-core/constants/bond-definitions';
 import { InterestPayout } from '../../features/bond-core/types';
+import { db } from '../index';
+import { dataSeries, polishBonds } from '../schema';
+
 import { seedTaxRules } from './tax-rules';
 
 const metadataSeries = [

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { createErrorResponse, createSuccessResponse } from '@/shared/types/api';
 
 export function rawJson<T>(data: T, init?: ResponseInit) {

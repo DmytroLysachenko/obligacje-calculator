@@ -1,5 +1,10 @@
 'use client';
+import { Filter, RotateCcw, Search } from 'lucide-react';
 import React, { useDeferredValue, useMemo, useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -8,14 +13,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { CalculationResult } from '../../bond-core/types';
-import { SimulationEventType } from '../../bond-core/types/simulation';
+import { ChartStep } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
-import { Badge } from '@/components/ui/badge';
+import { getIntlLocale } from '@/i18n/locale-utils';
 import { cn } from '@/lib/utils';
-import { Input } from '@/components/ui/input';
-import { Search, Filter, RotateCcw } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
 import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
 import {
@@ -29,8 +30,9 @@ import {
   buildBondTimelineDisplayRows,
   getSimulationEventDisplayLabel,
 } from '@/shared/lib/bond-display';
-import { getIntlLocale } from '@/i18n/locale-utils';
-import { ChartStep } from '@/features/bond-core/types';
+
+import { CalculationResult } from '../../bond-core/types';
+import { SimulationEventType } from '../../bond-core/types/simulation';
 interface BondTimelineProps {
   results: CalculationResult;
   chartStep?: ChartStep;

@@ -1,8 +1,10 @@
 import { NextRequest } from 'next/server';
+
 import { PortfolioSchema } from '@/features/bond-core/types/portfolio-schemas';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
 import { createValidationErrorResponse, okJson } from '@/lib/server/http/responses';
+import { createOwnerPortfolio, deleteOwnerPortfolio } from '@/lib/server/portfolio/commands';
 import {
   getPortfolioRouteContext,
   portfolioDomainErrorResponse,
@@ -10,7 +12,6 @@ import {
   withPortfolioOwnerResponse,
 } from '@/lib/server/portfolio/http';
 import { listOwnerPortfolios } from '@/lib/server/portfolio/queries';
-import { createOwnerPortfolio, deleteOwnerPortfolio } from '@/lib/server/portfolio/commands';
 
 export const GET = apiHandler(async () => {
   const { owner } = await getPortfolioRouteContext();

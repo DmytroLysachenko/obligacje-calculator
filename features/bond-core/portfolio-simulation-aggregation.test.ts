@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { calculationService } from './application-service';
-import { calculationCache } from './utils/calculation-cache';
-import { BondType, TaxStrategy } from './types';
+
 import { PortfolioSimulationResult, ScenarioKind } from './types/scenarios';
+import { calculationCache } from './utils/calculation-cache';
+import { calculationService } from './application-service';
+import { BondType, TaxStrategy } from './types';
 
 vi.mock('@/lib/data/market-data', async () => {
   const { BOND_DEFINITIONS: runtimeDefinitions } = await import('./constants/bond-definitions');

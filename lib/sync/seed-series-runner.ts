@@ -1,6 +1,7 @@
+import { eq } from 'drizzle-orm';
+
 import { db } from '@/db';
 import { dataSeries } from '@/db/schema';
-import { eq } from 'drizzle-orm';
 
 const SERIES = [
   {

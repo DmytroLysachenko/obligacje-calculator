@@ -1,12 +1,14 @@
-import { cache } from 'react';
 import { and, asc, gte, inArray, lte } from 'drizzle-orm';
+import { cache } from 'react';
+
 import { db } from '@/db';
 import { dataPoints, dataSeries } from '@/db/schema';
-import { HistoricalAverages } from '@/features/bond-core/types/scenarios';
 import {
   HISTORICAL_RETURNS,
   type MonthlyReturn,
 } from '@/features/bond-core/constants/historical-data';
+import { HistoricalAverages } from '@/features/bond-core/types/scenarios';
+
 import {
   CPI_SLUGS,
   getCached,

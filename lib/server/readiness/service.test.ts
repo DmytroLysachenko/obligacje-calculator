@@ -1,10 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import {
-  REQUIRED_READINESS_TABLES,
-  type SqlClient,
   checkReadinessDatabase,
   checkReadinessEnv,
   getReadinessSnapshot,
+  REQUIRED_READINESS_TABLES,
+  type SqlClient,
 } from './service';
 
 function completeEnv() {

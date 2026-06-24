@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
 import { Database, WifiOff } from 'lucide-react';
+import React from 'react';
+
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';

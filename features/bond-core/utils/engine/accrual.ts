@@ -1,6 +1,7 @@
-import { Decimal } from 'decimal.js';
-import { BondType, InterestPayout } from '../../types';
 import { getDaysInYear } from 'date-fns';
+import { Decimal } from 'decimal.js';
+
+import { BondType, InterestPayout } from '../../types';
 
 export interface AccrualResult {
   interestEarned: Decimal;

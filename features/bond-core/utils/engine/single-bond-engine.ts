@@ -1,21 +1,21 @@
-import { BondInputs, CalculationResult, TaxStrategy, YearlyTimelinePoint } from '../../types';
-import { SimulationEvent, SimulationEventType } from '../../types/simulation';
-import { BOND_DEFINITIONS } from '../../constants/bond-definitions';
 import { addMonths, differenceInDays, differenceInMonths, isBefore, min } from 'date-fns';
 import { Decimal } from 'decimal.js';
+
+import { BOND_DEFINITIONS } from '../../constants/bond-definitions';
 import { createNumericFaultError } from '../../errors';
+import { BondInputs, CalculationResult, TaxStrategy, YearlyTimelinePoint } from '../../types';
+import { SimulationEvent, SimulationEventType } from '../../types/simulation';
 import { withMathGuard } from '../engine-guards';
+
 import { calculatePeriodAccrual } from './accrual';
 import { getHistoricalValue } from './historical-data';
 import { calculateCumulativeInflation, getExpectedInflationForYearIndex } from './inflation';
 import { normalizeBondInputs } from './input-normalization';
+import { resolveSingleBondRateContext } from './rate-context';
 import { calculateRealValue } from './real-return';
 import { calculateEarlyWithdrawalFee } from './redemption';
 import { createFinalSingleBondResult, createInitialTimelinePoint } from './result-assembly';
 import { calculateRollover } from './rollover';
-import { resolveSingleBondRateContext } from './rate-context';
-import { calculateTaxAmount, shouldWithholdPeriodicTax } from './tax-settlement';
-import { generateCyclePeriods } from './timeline-builder';
 import {
   createSingleBondCheckpoint,
   resolveSingleBondCycleSettlement,
@@ -31,6 +31,8 @@ import {
   createRateResetEvent,
   createWithdrawalEvent,
 } from './single-bond-events';
+import { calculateTaxAmount, shouldWithholdPeriodicTax } from './tax-settlement';
+import { generateCyclePeriods } from './timeline-builder';
 
 /**
  * Standard calculation for a single bond investment.

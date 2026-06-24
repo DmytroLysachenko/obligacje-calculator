@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
 import { enUS } from 'date-fns/locale';
+import { describe, expect, it } from 'vitest';
+
 import { buildLadderMaturityBuckets, buildLadderYearBuckets } from './ladder-display';
 
 describe('ladder display helpers', () => {

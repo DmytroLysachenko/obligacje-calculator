@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
+
 import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
+import { createDomainErrorResponse, createUnauthorizedResponse } from '@/lib/server/http/responses';
+
 import {
   applyPortfolioOwnerCookie,
-  resolvePortfolioOwner,
   type PortfolioOwnerContext,
+  resolvePortfolioOwner,
 } from './access';
-import { createDomainErrorResponse, createUnauthorizedResponse } from '@/lib/server/http/responses';
 import { PortfolioServiceError } from './errors';
 
 export interface PortfolioRouteContext {

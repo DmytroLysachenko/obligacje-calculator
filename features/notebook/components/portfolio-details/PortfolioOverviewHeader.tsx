@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
 import { ArrowLeft, Check, Download, Loader2, Share2, ShieldCheck, Trash2 } from 'lucide-react';
-import { UserPortfolio } from '@/db/schema';
+import React from 'react';
+
 import { Button } from '@/components/ui/button';
+import { UserPortfolio } from '@/db/schema';
 
 function PortfolioMiniStat({
   label,

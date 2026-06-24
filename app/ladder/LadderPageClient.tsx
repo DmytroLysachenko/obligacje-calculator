@@ -1,11 +1,12 @@
 'use client';
 
+import { Suspense } from 'react';
+
 import { LadderContainer } from '@/features/ladder-strategy/components/LadderContainer';
 import { useAppI18n } from '@/i18n/client';
 import { FeatureStatusNotice } from '@/shared/components/feedback/FeatureStatusNotice';
-import { PageTransition } from '@/shared/components/page/PageTransition';
 import { PageSuspenseFallback } from '@/shared/components/page/PageSuspenseFallback';
-import { Suspense } from 'react';
+import { PageTransition } from '@/shared/components/page/PageTransition';
 
 export function LadderPageClient() {
   const { t } = useAppI18n();

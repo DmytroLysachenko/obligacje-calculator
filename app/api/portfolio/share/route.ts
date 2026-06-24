@@ -1,13 +1,14 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
+
 import { apiHandler } from '@/lib/server/http/api-handler';
-import { toggleOwnerPortfolioSharing } from '@/lib/server/portfolio/commands';
+import { readJsonBody } from '@/lib/server/http/read-json-body';
 import { okJson } from '@/lib/server/http/responses';
+import { toggleOwnerPortfolioSharing } from '@/lib/server/portfolio/commands';
 import {
   portfolioDomainErrorResponse,
   withAuthenticatedPortfolioOwner,
 } from '@/lib/server/portfolio/http';
-import { readJsonBody } from '@/lib/server/http/read-json-body';
 
 const PortfolioSharePayloadSchema = z.object({
   portfolioId: z.string().uuid(),

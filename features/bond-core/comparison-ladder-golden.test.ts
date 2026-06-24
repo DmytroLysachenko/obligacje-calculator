@@ -1,6 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { calculationService } from './application-service';
+
+import {
+  getHorizonMonths,
+  getWithdrawalDateFromMonths,
+  toDateString,
+} from '@/shared/lib/date-timing';
+
+import { BOND_DEFINITIONS } from './constants/bond-definitions';
+import { BondComparisonScenarioItem, ScenarioKind } from './types/scenarios';
 import { calculationCache } from './utils/calculation-cache';
+import { calculationService } from './application-service';
 import {
   BondType,
   CalculationResult,
@@ -8,13 +17,6 @@ import {
   RegularInvestmentResult,
   TaxStrategy,
 } from './types';
-import { BondComparisonScenarioItem, ScenarioKind } from './types/scenarios';
-import { BOND_DEFINITIONS } from './constants/bond-definitions';
-import {
-  getHorizonMonths,
-  getWithdrawalDateFromMonths,
-  toDateString,
-} from '@/shared/lib/date-timing';
 
 const today = new Date('2026-05-05T00:00:00.000Z');
 

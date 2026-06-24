@@ -1,5 +1,6 @@
-import { RecoveryLabPageClient } from './RecoveryLabPageClient';
 import { getLocalizedPageMetadata } from '@/lib/page-metadata';
+
+import { RecoveryLabPageClient } from './RecoveryLabPageClient';
 
 export async function generateMetadata() {
   return getLocalizedPageMetadata('recovery_lab');

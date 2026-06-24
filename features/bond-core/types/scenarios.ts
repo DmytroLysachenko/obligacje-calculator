@@ -1,4 +1,7 @@
 import { z } from 'zod';
+
+import { TimingMode } from '@/shared/lib/date-timing';
+
 import {
   BondInputs,
   BondType,
@@ -7,7 +10,6 @@ import {
   RegularInvestmentResult,
   TaxStrategy,
 } from './index';
-import { TimingMode } from '@/shared/lib/date-timing';
 
 export enum ScenarioKind {
   SINGLE_BOND = 'single-bond',

@@ -1,6 +1,7 @@
+import { eq } from 'drizzle-orm';
+
 import { db } from '@/db';
 import { userSettings } from '@/db/schema';
-import { eq } from 'drizzle-orm';
 
 export async function getOwnerSettings(ownerId: string) {
   const settings = await db.query.userSettings.findFirst({

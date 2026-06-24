@@ -1,4 +1,5 @@
 import { Decimal } from 'decimal.js';
+
 import { BondType } from '../../types';
 
 export function calculateEarlyWithdrawalFee(

@@ -1,4 +1,7 @@
 import { describe, expect, it } from 'vitest';
+
+import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
+
 import {
   formatFreshnessDate,
   getCalculationFreshnessMetaState,
@@ -7,7 +10,6 @@ import {
   getFreshnessLastSyncLabel,
   getFreshnessPrimaryDateLabel,
 } from './data-freshness-display';
-import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 
 function freshness(overrides: Partial<CalculationDataFreshness> = {}): CalculationDataFreshness {
   return {

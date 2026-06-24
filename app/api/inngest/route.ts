@@ -1,4 +1,5 @@
 import { serve } from 'inngest/next';
+
 import { inngest } from '@/lib/inngest';
 import { syncEconomicData } from '@/lib/inngest-functions';
 

@@ -1,4 +1,5 @@
-import { addMonths, addYears, differenceInDays, isBefore, min, format } from 'date-fns';
+import { addMonths, addYears, differenceInDays, format, isBefore, min } from 'date-fns';
+
 import { InterestPayout } from '../../types';
 
 export interface TimelinePeriod {

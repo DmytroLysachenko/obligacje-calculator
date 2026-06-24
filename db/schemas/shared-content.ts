@@ -1,6 +1,6 @@
 export {
   communityInsights,
-  sharedSingleScenarios,
   type NewSharedSingleScenario,
   type SharedSingleScenario,
+  sharedSingleScenarios,
 } from '../schema';

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { applyTableRowLimit, getVisibleRowLabel } from './TableDensityControls';
 
 describe('table density controls', () => {

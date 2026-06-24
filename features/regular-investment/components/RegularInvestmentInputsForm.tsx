@@ -1,17 +1,20 @@
 'use client';
 import React, { useState } from 'react';
-import { BondType, RegularInvestmentInputs } from '../../bond-core/types';
+
 import { useAppI18n } from '@/i18n/client';
-import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
-import { getHorizonMonths } from '@/shared/lib/date-timing';
-import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
 import { ScenarioFieldset } from '@/shared/components/forms/ScenarioFieldset';
 import { ParameterSummary } from '@/shared/components/results/ParameterSummary';
+import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
+import { getHorizonMonths } from '@/shared/lib/date-timing';
+import { formatBondDuration } from '@/shared/lib/format-bond-duration';
+
+import { BondType, RegularInvestmentInputs } from '../../bond-core/types';
+
+import { AdvancedSettingsSection } from './inputs/AdvancedSettingsSection';
 import { BondSelectionSection } from './inputs/BondSelectionSection';
 import { ContributionPlanSection } from './inputs/ContributionPlanSection';
 import { TimingSection } from './inputs/TimingSection';
-import { AdvancedSettingsSection } from './inputs/AdvancedSettingsSection';
 
 interface RegularInvestmentInputsFormProps {
   inputs: RegularInvestmentInputs;

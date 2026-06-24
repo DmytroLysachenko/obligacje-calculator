@@ -1,8 +1,10 @@
-import { describe, it, expect } from 'vitest';
 import { Decimal } from 'decimal.js';
+import { describe, expect, it } from 'vitest';
+
+import { BondType, InterestPayout, TaxStrategy } from '../../types';
+
 import { calculatePeriodAccrual } from './accrual';
 import { calculateTaxAmount } from './tax-settlement';
-import { BondType, InterestPayout, TaxStrategy } from '../../types';
 
 describe('Bond Engine - Production Accuracy', () => {
   describe('Interest Accrual', () => {

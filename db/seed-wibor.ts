@@ -1,4 +1,5 @@
 import 'dotenv/config';
+
 import { seedWiborSeriesMetadata } from './seed/index';
 
 async function main() {

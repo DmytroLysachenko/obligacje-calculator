@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
 import { Info } from 'lucide-react';
+import React from 'react';
+
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';

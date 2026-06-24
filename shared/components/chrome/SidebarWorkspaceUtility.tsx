@@ -1,13 +1,15 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import Link from 'next/link';
 import { FolderKanban, LayoutList } from 'lucide-react';
+import Link from 'next/link';
+import React, { useEffect } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { useAppI18n } from '@/i18n/client';
+import { FormSelect } from '@/shared/components/forms/FormSelect';
 import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 import { useWorkspacePortfolios } from '@/shared/hooks/useWorkspacePortfolios';
-import { FormSelect } from '@/shared/components/forms/FormSelect';
+
 import { SidebarUtilityPanel } from './SidebarUtilityGroup';
 
 export function SidebarWorkspaceUtility({ pathname }: { pathname: string }) {

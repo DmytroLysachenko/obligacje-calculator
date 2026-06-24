@@ -1,21 +1,19 @@
 export {
+  type BondDefinitionRepository,
+  bondDefinitionRepository,
+  getBondDefinitions,
+  getBondDefinitionsMap,
+  getTaxRulesForYear,
+  mergeBondDefinitionsWithSeries,
+} from './bond-definition-data';
+export {
   getGlobalDataFreshness,
   getHistoricalDataMap,
   getMacroAssumptionDefaults,
   type MacroAssumptionDefaults,
 } from './macro-market-data';
-
-export {
-  mergeBondDefinitionsWithSeries,
-  bondDefinitionRepository,
-  type BondDefinitionRepository,
-  getBondDefinitions,
-  getBondDefinitionsMap,
-  getTaxRulesForYear,
-} from './bond-definition-data';
-
 export {
   createFallbackMultiAssetHistory,
-  getMultiAssetHistory,
   getHistoricalAverages,
+  getMultiAssetHistory,
 } from './multi-asset-history';

@@ -1,13 +1,14 @@
 'use client';
 
-import React from 'react';
 import { AlertCircle } from 'lucide-react';
+import React from 'react';
+
 import { Badge } from '@/components/ui/badge';
+import { InvestmentFrequency, TaxStrategy } from '@/features/bond-core/types';
 import { FormField } from '@/shared/components/forms/FormField';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
 import { MoneyInput } from '@/shared/components/forms/MoneyInput';
 import { RangeField } from '@/shared/components/forms/RangeField';
-import { InvestmentFrequency, TaxStrategy } from '@/features/bond-core/types';
 
 type ContributionPlanSectionProps = {
   contributionAmount: number;

@@ -1,10 +1,12 @@
 'use client';
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Copy, FolderOpen, Save, Trash2 } from 'lucide-react';
+import React from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { useAppI18n } from '@/i18n/client';
 import { getIntlLocale } from '@/i18n/locale-utils';
+
 import { SavedScenarioRecord } from '../lib/scenario-storage';
 interface SavedScenariosPanelProps {
   scenarios: SavedScenarioRecord[];

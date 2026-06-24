@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
+
+import { RegularInvestmentResult } from '@/features/bond-core/types';
+
 import {
   buildRecentRegularInvestmentLots,
   buildRegularInvestmentChartPoints,
   buildRegularInvestmentYearBuckets,
 } from './regular-investment-display';
-import { RegularInvestmentResult } from '@/features/bond-core/types';
 
 const timeline: RegularInvestmentResult['timeline'] = [
   {

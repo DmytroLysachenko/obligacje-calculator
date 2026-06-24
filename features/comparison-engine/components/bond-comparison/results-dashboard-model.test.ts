@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
+
 import { BondType } from '@/features/bond-core/types';
 import type { BondComparisonScenarioItem } from '@/features/bond-core/types/scenarios';
+
 import {
   buildComparisonVerdictModel,
   getModeledValue,

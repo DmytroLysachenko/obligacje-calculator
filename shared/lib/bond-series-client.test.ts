@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import { BondType } from '@/features/bond-core/types';
-import { bondSeriesClient } from './bond-series-client';
+
 import { apiGet } from './api-client';
+import { bondSeriesClient } from './bond-series-client';
 
 vi.mock('./api-client', () => ({
   apiGet: vi.fn(),

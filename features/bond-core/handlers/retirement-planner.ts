@@ -1,14 +1,16 @@
+import { addMonths, format, parseISO } from 'date-fns';
+import Decimal from 'decimal.js';
+
+import { TaxStrategy } from '../types';
+import { BondType } from '../types';
 import {
-  ScenarioKind,
   RetirementPlannerCalculationEnvelope,
   RetirementPlannerPayload,
   RetirementPlannerResult,
+  ScenarioKind,
 } from '../types/scenarios';
-import { TaxStrategy } from '../types';
-import { BaseHandler, ScenarioHandler, HandlerContext } from './base';
-import { format, addMonths, parseISO } from 'date-fns';
-import Decimal from 'decimal.js';
-import { BondType } from '../types';
+
+import { BaseHandler, HandlerContext, ScenarioHandler } from './base';
 
 export class RetirementPlannerHandler
   extends BaseHandler

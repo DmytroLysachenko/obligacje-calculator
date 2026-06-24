@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import { apiGet, apiGetWithResponse, apiPost } from './api-client';
 
 describe('api client', () => {

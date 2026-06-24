@@ -1,11 +1,13 @@
 'use client';
 
 import React from 'react';
+
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
-import { SidebarUtilityPanel } from './SidebarUtilityGroup';
 import { getFreshnessDisplayState } from '@/shared/lib/data-freshness-display';
+
+import { SidebarUtilityPanel } from './SidebarUtilityGroup';
 
 function getFreshnessLabel(
   freshness: CalculationDataFreshness,

@@ -1,10 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { calculationService } from './application-service';
-import { calculationCache } from './utils/calculation-cache';
-import { BondType, CalculationResult, TaxStrategy } from './types';
-import { ScenarioKind } from './types/scenarios';
-import { BOND_DEFINITIONS } from './constants/bond-definitions';
+
 import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
+
+import { BOND_DEFINITIONS } from './constants/bond-definitions';
+import { ScenarioKind } from './types/scenarios';
+import { calculationCache } from './utils/calculation-cache';
+import { calculationService } from './application-service';
+import { BondType, CalculationResult, TaxStrategy } from './types';
 
 vi.mock('@/lib/data/market-data', async () => {
   const runtimeDefinitionsModule = await import('./constants/bond-definitions');

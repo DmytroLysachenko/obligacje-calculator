@@ -1,17 +1,18 @@
 'use client';
 
-import React from 'react';
-import { type Locale, format, parseISO } from 'date-fns';
+import { format, type Locale, parseISO } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
+import React from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { toDateString } from '@/shared/lib/date-timing';
 import { FormField } from '@/shared/components/forms/FormField';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 import { RangeField } from '@/shared/components/forms/RangeField';
 import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
+import { toDateString } from '@/shared/lib/date-timing';
 
 type TimingSectionProps = {
   timingMode?: 'general' | 'exact';

@@ -1,15 +1,4 @@
 import {
-  BondType,
-  InvestmentFrequency,
-  LotBreakdown,
-  RegularInvestmentInputs,
-  RegularInvestmentResult,
-  RegularTimelinePoint,
-  TaxStrategy,
-} from '../../types';
-import { SimulationEvent, SimulationEventType } from '../../types/simulation';
-import { BOND_DEFINITIONS } from '../../constants/bond-definitions';
-import {
   addMonths,
   differenceInDays,
   differenceInMonths,
@@ -19,7 +8,20 @@ import {
   parseISO,
 } from 'date-fns';
 import { Decimal } from 'decimal.js';
+
+import { BOND_DEFINITIONS } from '../../constants/bond-definitions';
+import {
+  BondType,
+  InvestmentFrequency,
+  LotBreakdown,
+  RegularInvestmentInputs,
+  RegularInvestmentResult,
+  RegularTimelinePoint,
+  TaxStrategy,
+} from '../../types';
+import { SimulationEvent, SimulationEventType } from '../../types/simulation';
 import { withMathGuard } from '../engine-guards';
+
 import { getHistoricalValue } from './historical-data';
 import { getExpectedInflationForYearIndex } from './inflation';
 import { normalizeRegularInvestmentInputs } from './input-normalization';

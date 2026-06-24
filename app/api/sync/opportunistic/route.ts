@@ -1,9 +1,10 @@
 import { cookies } from 'next/headers';
+
+import { okJson } from '@/lib/server/http/responses';
 import {
   getOpportunisticSyncStatus,
   triggerOpportunisticSync,
 } from '@/lib/server/sync/opportunistic-service';
-import { okJson } from '@/lib/server/http/responses';
 
 export async function GET() {
   const cookieStore = await cookies();

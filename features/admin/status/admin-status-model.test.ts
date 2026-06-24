@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest';
+
+import type { AdminSeriesStatus, AdminStatusData } from '@/shared/lib/admin-client';
+
 import {
   createAdminSeriesRowModel,
   createAdminStatusViewModel,
   hasSeriesDataGap,
   resolveSeriesHealth,
 } from './admin-status-model';
-import type { AdminSeriesStatus, AdminStatusData } from '@/shared/lib/admin-client';
 
 const now = new Date('2026-06-15T12:00:00.000Z');
 

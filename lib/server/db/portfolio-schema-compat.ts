@@ -1,4 +1,5 @@
 import 'dotenv/config';
+
 import { neon } from '@neondatabase/serverless';
 
 let portfolioSchemaCompatPromise: Promise<void> | null = null;

@@ -1,6 +1,8 @@
-import { describe, it, expect } from 'vitest';
-import { calculateBondInvestment, calculateRegularInvestment } from './calculations';
+import { describe, expect, it } from 'vitest';
+
 import { BondType, InterestPayout, InvestmentFrequency, TaxStrategy } from '../types';
+
+import { calculateBondInvestment, calculateRegularInvestment } from './calculations';
 
 describe('Bond Core Regression Tests', () => {
   const baseInputs = {

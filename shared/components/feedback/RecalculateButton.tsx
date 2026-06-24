@@ -1,9 +1,10 @@
 'use client';
-import React from 'react';
-import { Button } from '@/components/ui/button';
 import { Loader2, RotateCcw } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React from 'react';
+
+import { Button } from '@/components/ui/button';
 import { useAppI18n } from '@/i18n/client';
+import { cn } from '@/lib/utils';
 interface RecalculateButtonProps {
   isDirty: boolean;
   loading: boolean;

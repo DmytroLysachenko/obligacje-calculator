@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
-import { syncClient } from './sync-client';
+
 import { apiGet } from './api-client';
+import { syncClient } from './sync-client';
 
 vi.mock('./api-client', () => ({
   apiGet: vi.fn(),

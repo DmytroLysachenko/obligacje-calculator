@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { BondInputs, CalculationResult, ChartStep } from '../../bond-core/types';
+
 import { useAppI18n } from '@/i18n/client';
 import { getIntlLocale } from '@/i18n/locale-utils';
 import { BondValueChart, BondValueChartPoint } from '@/shared/components/charts/BondValueChart';
@@ -10,12 +10,14 @@ import {
   buildBondChartDisplayPoints,
   normalizeBondChartDisplayTimeline,
 } from '@/shared/lib/bond-display';
+import { applyChartContextRates } from '@/shared/lib/chart-context-rates';
 import {
   computeNumericDomain,
   computeRateDomain,
   sampleSeriesPoints,
 } from '@/shared/lib/chart-series';
-import { applyChartContextRates } from '@/shared/lib/chart-context-rates';
+
+import { BondInputs, CalculationResult, ChartStep } from '../../bond-core/types';
 
 interface BondChartProps {
   results: CalculationResult;

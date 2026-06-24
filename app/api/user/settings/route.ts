@@ -1,10 +1,11 @@
 import { NextRequest } from 'next/server';
-import { apiHandler } from '@/lib/server/http/api-handler';
 import { z } from 'zod';
-import { getOwnerSettings, updateOwnerSettings } from '@/lib/server/settings/service';
+
+import { apiHandler } from '@/lib/server/http/api-handler';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
-import { getPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
 import { okJson } from '@/lib/server/http/responses';
+import { getPortfolioRouteContext, withPortfolioOwnerResponse } from '@/lib/server/portfolio/http';
+import { getOwnerSettings, updateOwnerSettings } from '@/lib/server/settings/service';
 
 const UserSettingsUpdateSchema = z.object({
   currency: z.string().optional(),

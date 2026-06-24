@@ -1,11 +1,13 @@
 'use client';
 
-import Link from 'next/link';
 import { ArrowRight, Clock, Coins, ShieldCheck, TrendingUp } from 'lucide-react';
-import { BondDefinition } from '../../bond-core/constants/bond-definitions';
+import Link from 'next/link';
+
 import { useAppI18n } from '@/i18n/client';
-import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
+import { formatBondDuration } from '@/shared/lib/format-bond-duration';
+
+import { BondDefinition } from '../../bond-core/constants/bond-definitions';
 
 interface BondEducationCardProps {
   bond: BondDefinition;

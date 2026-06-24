@@ -1,9 +1,12 @@
-import { cache } from 'react';
 import { differenceInCalendarMonths, differenceInDays, format } from 'date-fns';
 import { and, asc, desc, eq, gte, inArray, lte } from 'drizzle-orm';
+import { cache } from 'react';
+
 import { db } from '@/db';
 import { dataPoints, dataSeries } from '@/db/schema';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
+import { listRecentSyncRuns } from '@/lib/server/sync/run-history';
+
 import {
   CPI_SLUGS,
   getCached,
@@ -11,7 +14,6 @@ import {
   NBP_RATE_SLUGS,
   setCache,
 } from './market-data-cache';
-import { listRecentSyncRuns } from '@/lib/server/sync/run-history';
 
 export interface MacroAssumptionDefaults {
   expectedInflation: number;

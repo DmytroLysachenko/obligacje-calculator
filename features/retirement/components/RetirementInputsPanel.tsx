@@ -1,21 +1,22 @@
 'use client';
 
 import React from 'react';
+
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
-import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
-import { FormSelect } from '@/shared/components/forms/FormSelect';
-import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import {
   getBondSupportMeta,
   getRetirementSupportNote,
   RETIREMENT_SUPPORTED_BOND_TYPES,
 } from '@/features/bond-core/support-matrix';
+import { BondType, TaxStrategy } from '@/features/bond-core/types';
+import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
+import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
+import { FormSelect } from '@/shared/components/forms/FormSelect';
 import { AssumptionSemanticsNote } from '@/shared/components/market-assumptions/AssumptionSemanticsNote';
 import { MacroDefaultsSummary } from '@/shared/components/market-assumptions/MacroDefaultsSummary';
-import { isFloatingNbpBondType } from '@/shared/lib/market-assumption-semantics';
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';
+import { isFloatingNbpBondType } from '@/shared/lib/market-assumption-semantics';
 
 export type RetirementInputs = {
   initialCapital: number;

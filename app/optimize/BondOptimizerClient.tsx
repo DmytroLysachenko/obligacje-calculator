@@ -1,22 +1,20 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
 import { TrendingUp } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+
+import { TaxStrategy } from '@/features/bond-core/types';
 import {
   BondOptimizerCalculationEnvelope,
   ScenarioKind,
 } from '@/features/bond-core/types/scenarios';
-import { TaxStrategy } from '@/features/bond-core/types';
-import { useAppI18n } from '@/i18n/client';
-import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
-import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
-import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
-import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
-import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
-import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
-import { useCurrencyFormatter, usePercentFormatter } from '@/shared/hooks/useLocalizedFormatters';
-import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
-import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
+import { OptimizerInputPanel } from '@/features/optimizer/components/OptimizerInputPanel';
+import {
+  OptimizerLeadingDetailSection,
+  OptimizerLeadingMetrics,
+  OptimizerRankedOutcomesSection,
+  OptimizerReadyState,
+} from '@/features/optimizer/components/OptimizerSections';
 import {
   applyOptimizerMacroDefaults,
   buildDefaultOptimizerInputs,
@@ -27,13 +25,16 @@ import {
   type OptimizerInputs,
   updateOptimizerInput,
 } from '@/features/optimizer/lib/optimizer-state';
-import {
-  OptimizerLeadingDetailSection,
-  OptimizerLeadingMetrics,
-  OptimizerRankedOutcomesSection,
-  OptimizerReadyState,
-} from '@/features/optimizer/components/OptimizerSections';
-import { OptimizerInputPanel } from '@/features/optimizer/components/OptimizerInputPanel';
+import { useAppI18n } from '@/i18n/client';
+import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
+import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
+import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
+import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
+import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
+import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
+import { useCurrencyFormatter, usePercentFormatter } from '@/shared/hooks/useLocalizedFormatters';
+import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
+import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 
 export default function BondOptimizerClient() {
   const { t, locale: language } = useAppI18n();

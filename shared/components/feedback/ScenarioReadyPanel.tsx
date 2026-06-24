@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
 import { TrendingUp } from 'lucide-react';
+import React from 'react';
+
 import { Button } from '@/components/ui/button';
 
 interface ReadyStepItem {

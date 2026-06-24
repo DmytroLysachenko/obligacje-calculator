@@ -1,7 +1,9 @@
 'use client';
 
 import React from 'react';
+
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
+
 import { FormField } from './FormField';
 
 interface RangeFieldProps {

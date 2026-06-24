@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
+
 import { BOND_DEFINITIONS } from '../../constants/bond-definitions';
 import { BondInputs, BondType, TaxStrategy } from '../../types';
 import { SimulationEventType } from '../../types/simulation';
+
 import { calculateBondInvestment } from './single-bond-engine';
 
 function singlePayload(overrides: Partial<BondInputs> = {}): BondInputs {

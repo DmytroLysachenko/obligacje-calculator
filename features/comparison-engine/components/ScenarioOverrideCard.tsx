@@ -1,20 +1,21 @@
 'use client';
 import React from 'react';
+
 import { Switch } from '@/components/ui/switch';
-import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
-import { useAppI18n } from '@/i18n/client';
-import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
-import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
-import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
+import { BondType, TaxStrategy } from '@/features/bond-core/types';
+import { useAppI18n } from '@/i18n/client';
+import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
+import { Notice } from '@/shared/components/feedback/Notice';
+import { FormField } from '@/shared/components/forms/FormField';
+import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
+import { FormSelect, FormSelectOption } from '@/shared/components/forms/FormSelect';
 import { RateContextNote } from '@/shared/components/results/RateContextNote';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
-import { formatBondDuration } from '@/shared/lib/format-bond-duration';
-import { FormSelect, FormSelectOption } from '@/shared/components/forms/FormSelect';
-import { FormField } from '@/shared/components/forms/FormField';
-import { Notice } from '@/shared/components/feedback/Notice';
 import { ScenarioSetupCard } from '@/shared/components/scenario/ScenarioSetupCard';
-import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
+import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
+import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
+import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 interface ScenarioOverrideCardProps {
   title: string;
   colorClass: 'scenario-a' | 'scenario-b';

@@ -1,11 +1,12 @@
-import { RetirementPlannerContainer } from '@/features/retirement/components/RetirementPlannerContainer';
+import { getTranslations } from 'next-intl/server';
+import { Suspense } from 'react';
+
 import { RETIREMENT_SUPPORTED_BOND_TYPES } from '@/features/bond-core/support-matrix';
-import { PageTransition } from '@/shared/components/page/PageTransition';
+import { RetirementPlannerContainer } from '@/features/retirement/components/RetirementPlannerContainer';
+import { getLocalizedPageMetadata } from '@/lib/page-metadata';
 import { FeatureStatusNotice } from '@/shared/components/feedback/FeatureStatusNotice';
 import { PageSuspenseFallback } from '@/shared/components/page/PageSuspenseFallback';
-import { Suspense } from 'react';
-import { getLocalizedPageMetadata } from '@/lib/page-metadata';
-import { getTranslations } from 'next-intl/server';
+import { PageTransition } from '@/shared/components/page/PageTransition';
 
 export async function generateMetadata() {
   return getLocalizedPageMetadata('retirement');

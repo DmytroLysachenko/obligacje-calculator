@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+
 import { MacroAssumptionDefaults } from '@/lib/data/market-data';
 import { apiGet } from '@/shared/lib/api-client';
 

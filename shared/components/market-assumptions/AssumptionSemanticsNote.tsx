@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
 import { Sparkles } from 'lucide-react';
+import React from 'react';
+
 import { BondType } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import {

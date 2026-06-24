@@ -1,7 +1,9 @@
 import 'dotenv/config';
+
 import { pathToFileURL } from 'node:url';
-import { seedSeriesMetadata } from './seed-series-runner';
+
 import { createDefaultSyncEngine } from './create-sync-engine';
+import { seedSeriesMetadata } from './seed-series-runner';
 
 export async function seedMarketHistory() {
   await seedSeriesMetadata();

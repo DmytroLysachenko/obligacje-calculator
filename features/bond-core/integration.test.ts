@@ -1,11 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { calculationService } from './application-service';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { ScenarioKind } from './types/scenarios';
+import { calculationService } from './application-service';
 import {
   BondType,
+  CalculationResult,
   InterestPayout,
   TaxStrategy,
-  CalculationResult,
   YearlyTimelinePoint,
 } from './types';
 

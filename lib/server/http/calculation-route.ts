@@ -1,6 +1,8 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
+
 import { calculationService } from '@/features/bond-core/application-service';
+import { BondInputs, RegularInvestmentInputs } from '@/features/bond-core/types';
 import {
   BondOptimizerPayload,
   CalculationScenarioRequest,
@@ -15,7 +17,7 @@ import {
   RegularInvestmentInputsSchema,
   RetirementPlannerPayloadSchema,
 } from '@/features/bond-core/types/schemas';
-import { BondInputs, RegularInvestmentInputs } from '@/features/bond-core/types';
+
 import { apiHandler } from './api-handler';
 import { readJsonBody } from './read-json-body';
 import { okJson } from './responses';

@@ -1,6 +1,24 @@
 'use client';
 
 import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
+
+import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
+import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
+import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
+import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
+import {
+  loadPersistedCalculatorState,
+  savePersistedCalculatorState,
+} from '@/shared/lib/calculator-persistence';
+import { preserveStableState } from '@/shared/lib/calculator-state';
+import {
+  getHorizonMonths,
+  getWithdrawalDateFromMonths,
+  toDateString,
+} from '@/shared/lib/date-timing';
+import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
+
+import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import {
   BondType,
   InvestmentFrequency,
@@ -11,22 +29,6 @@ import {
   RegularInvestmentCalculationEnvelope,
   ScenarioKind,
 } from '../../bond-core/types/scenarios';
-import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
-import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
-import {
-  getHorizonMonths,
-  getWithdrawalDateFromMonths,
-  toDateString,
-} from '@/shared/lib/date-timing';
-import {
-  loadPersistedCalculatorState,
-  savePersistedCalculatorState,
-} from '@/shared/lib/calculator-persistence';
-import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
-import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
-import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
-import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
-import { preserveStableState } from '@/shared/lib/calculator-state';
 
 const DEFAULT_BOND = BondType.EDO;
 const DEFAULT_DEFINITION = BOND_DEFINITIONS[DEFAULT_BOND];

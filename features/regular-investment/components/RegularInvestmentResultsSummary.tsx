@@ -1,5 +1,8 @@
 'use client';
+import { format, parseISO } from 'date-fns';
+import { FileSpreadsheet } from 'lucide-react';
 import React, { useCallback, useMemo, useState } from 'react';
+
 import {
   Table,
   TableBody,
@@ -8,32 +11,31 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { RegularInvestmentResult } from '../../bond-core/types';
 import { useAppI18n } from '@/i18n/client';
-import { FileSpreadsheet } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
-import { buildLotsExportHeaders } from '@/shared/lib/export-headers';
+import { getDateFnsLocale, getIntlLocale } from '@/i18n/locale-utils';
+import { SectionBlock } from '@/shared/components/page/SectionBlock';
+import {
+  FinancialInsightItem,
+  FinancialInsightStrip,
+} from '@/shared/components/results/FinancialInsightStrip';
 import { MetricStrip } from '@/shared/components/results/MetricStrip';
+import { RecentLotDisplayItem, RecentLotList } from '@/shared/components/results/RecentLotList';
 import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
 import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
-import {
-  FinancialInsightStrip,
-  FinancialInsightItem,
-} from '@/shared/components/results/FinancialInsightStrip';
 import {
   applyTableRowLimit,
   TableDensityControls,
   TableRowLimit,
 } from '@/shared/components/results/TableDensityControls';
-import { buildLotsCsvFilename, exportLotsCsv } from '@/shared/lib/retained-exports';
-import { getDateFnsLocale, getIntlLocale } from '@/i18n/locale-utils';
+import { buildLotsExportHeaders } from '@/shared/lib/export-headers';
 import {
   buildRecentRegularInvestmentLots,
   buildRegularInvestmentYearBuckets,
   RegularInvestmentYearBucket,
 } from '@/shared/lib/regular-investment-display';
-import { RecentLotList, RecentLotDisplayItem } from '@/shared/components/results/RecentLotList';
-import { SectionBlock } from '@/shared/components/page/SectionBlock';
+import { buildLotsCsvFilename, exportLotsCsv } from '@/shared/lib/retained-exports';
+
+import { RegularInvestmentResult } from '../../bond-core/types';
 interface RegularInvestmentResultsSummaryProps {
   results: RegularInvestmentResult;
   dataQualityFlags?: string[];

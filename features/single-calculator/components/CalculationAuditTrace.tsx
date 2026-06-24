@@ -1,8 +1,9 @@
 'use client';
-import React from 'react';
 import { ArrowRight, Scale } from 'lucide-react';
-import { useAppI18n } from '@/i18n/client';
+import React from 'react';
+
 import { YearlyTimelinePoint } from '@/features/bond-core/types';
+import { useAppI18n } from '@/i18n/client';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import {
   AppLanguage,

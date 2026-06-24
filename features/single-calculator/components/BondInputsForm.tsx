@@ -1,26 +1,29 @@
 'use client';
 
-import React, { useCallback, useMemo, useState } from 'react';
 import { parseISO } from 'date-fns';
 import { Target } from 'lucide-react';
+import React, { useCallback, useMemo, useState } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { BondType, BondInputs } from '../../bond-core/types';
 import { useAppI18n } from '@/i18n/client';
-import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
-import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
-import { useHasMounted } from '@/shared/hooks/useHasMounted';
+import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
+import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 import {
   AssumptionSetupMode,
   MarketAssumptionsForm,
 } from '@/shared/components/MarketAssumptionsForm';
-import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
+import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
+import { useHasMounted } from '@/shared/hooks/useHasMounted';
+import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
+
+import { BondInputs, BondType } from '../../bond-core/types';
 import { InputGuardrailIssue } from '../lib/input-guardrails';
+
 import { BondConfigSection } from './sections/BondConfigSection';
-import { BondTimingSection } from './sections/BondTimingSection';
 import { BondSummaryFooter } from './sections/BondSummaryFooter';
-import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
+import { BondTimingSection } from './sections/BondTimingSection';
 
 interface BondSeries {
   id: string;

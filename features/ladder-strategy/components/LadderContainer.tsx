@@ -1,18 +1,21 @@
 'use client';
-import React from 'react';
 import { ListTree, TrendingUp } from 'lucide-react';
+import React from 'react';
+
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
-import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
+import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
+import { ReadingChecklist } from '@/shared/components/insights/ReadingChecklist';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { CalculatorWorkspace } from '@/shared/components/page/CalculatorWorkspace';
-import { ReadingChecklist } from '@/shared/components/insights/ReadingChecklist';
-import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
+import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
+
 import { RegularInvestmentInputsForm } from '../../regular-investment/components/RegularInvestmentInputsForm';
 import { RegularInvestmentResultsSummary } from '../../regular-investment/components/RegularInvestmentResultsSummary';
 import { useLadder } from '../hooks/useLadder';
+
 import { LadderTimeline } from './LadderTimeline';
 const LadderEmptyState = () => {
   const { t } = useAppI18n();

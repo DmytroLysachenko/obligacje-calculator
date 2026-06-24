@@ -1,13 +1,15 @@
 import { describe, expect, it } from 'vitest';
+
+import type { LotBreakdown, YearlyTimelinePoint } from '@/features/bond-core/types';
+import { SimulationEventType } from '@/features/bond-core/types/simulation';
+import { translateMessage } from '@/i18n/translate';
+
 import { convertComparisonToCSV, convertLotsToCSV, convertTimelineToCSV } from './csv-utils';
 import {
   buildComparisonExportHeaders,
   buildLotsExportHeaders,
   buildTimelineExportHeaders,
 } from './export-headers';
-import { translateMessage } from '@/i18n/translate';
-import type { YearlyTimelinePoint, LotBreakdown } from '@/features/bond-core/types';
-import { SimulationEventType } from '@/features/bond-core/types/simulation';
 
 describe('csv-utils', () => {
   it('builds a normalized timeline csv with localized helper columns', () => {

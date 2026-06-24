@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+
 import { getAllBondSeries, getBondSeriesBySymbol } from '@/lib/data/bond-series';
 import { okJson } from '@/lib/server/http/responses';
 

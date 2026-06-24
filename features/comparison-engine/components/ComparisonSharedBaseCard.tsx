@@ -1,22 +1,23 @@
 'use client';
 
-import React from 'react';
 import { format, parseISO } from 'date-fns';
+import { History } from 'lucide-react';
+import React from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { History } from 'lucide-react';
-import { TaxStrategy, BondType } from '@/features/bond-core/types';
+import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import { IndependentBondComparisonPayload } from '@/features/bond-core/types/scenarios';
 import { useAppI18n } from '@/i18n/client';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
 import { cn } from '@/lib/utils';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
+import { FormSelect } from '@/shared/components/forms/FormSelect';
 import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 import { toDateString } from '@/shared/lib/date-timing';
-import { FormSelect } from '@/shared/components/forms/FormSelect';
 
 type SharedConfig = IndependentBondComparisonPayload['sharedConfig'];
 

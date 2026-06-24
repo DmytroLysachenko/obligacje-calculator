@@ -1,14 +1,16 @@
+import { addMonths, compareAsc, format, isBefore, parseISO } from 'date-fns';
+
+import { BondInputs, TaxStrategy } from '../types';
 import {
-  ScenarioKind,
   PortfolioSimulationCalculationEnvelope,
+  PortfolioSimulationItem,
   PortfolioSimulationPayload,
   PortfolioSimulationResult,
-  PortfolioSimulationItem,
+  ScenarioKind,
 } from '../types/scenarios';
 import { calculateBondInvestment } from '../utils/calculations';
-import { BondInputs, TaxStrategy } from '../types';
-import { BaseHandler, ScenarioHandler, HandlerContext } from './base';
-import { addMonths, compareAsc, format, isBefore, parseISO } from 'date-fns';
+
+import { BaseHandler, HandlerContext, ScenarioHandler } from './base';
 
 function getEarliestPurchaseDate(investments: PortfolioSimulationPayload['investments']) {
   return investments.reduce(

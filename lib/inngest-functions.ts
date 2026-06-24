@@ -1,5 +1,5 @@
-import { inngest } from './inngest';
 import { createDefaultSyncEngine } from './sync/create-sync-engine';
+import { inngest } from './inngest';
 
 export const syncEconomicData = inngest.createFunction(
   {

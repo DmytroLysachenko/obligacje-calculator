@@ -1,8 +1,9 @@
 import { getTranslations } from 'next-intl/server';
-import { getLocalizedPageMetadata } from '@/lib/page-metadata';
+
 import { signIn } from '@/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getLocalizedPageMetadata } from '@/lib/page-metadata';
 
 export async function generateMetadata() {
   return getLocalizedPageMetadata('login');

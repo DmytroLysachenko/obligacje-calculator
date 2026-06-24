@@ -1,5 +1,7 @@
 import { differenceInMonths, format, parseISO } from 'date-fns';
-import { RegularInvestmentResult, ChartStep } from '@/features/bond-core/types';
+
+import { ChartStep, RegularInvestmentResult } from '@/features/bond-core/types';
+
 import { DisplayBucketMetricRow, DisplayRecentItem } from './display-model';
 
 export function aggregateRegularTimelinePoints(

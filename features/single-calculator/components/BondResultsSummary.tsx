@@ -1,23 +1,26 @@
 'use client';
-import React from 'react';
 import { FileSpreadsheet, FileText, Info, Plus, Save } from 'lucide-react';
-import { BondInputs, CalculationResult } from '../../bond-core/types';
+import React from 'react';
+
 import { useAppI18n } from '@/i18n/client';
-import { buildTimelineExportHeaders } from '@/shared/lib/export-headers';
-import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
-import { MetricStrip } from '@/shared/components/results/MetricStrip';
+import { Notice } from '@/shared/components/feedback/Notice';
 import { MathDeepDive } from '@/shared/components/insights/MathDeepDive';
+import {
+  FinancialInsightItem,
+  FinancialInsightStrip,
+} from '@/shared/components/results/FinancialInsightStrip';
+import { MetricStrip } from '@/shared/components/results/MetricStrip';
 import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
 import { ScenarioFactsBlock } from '@/shared/components/results/ScenarioFactsBlock';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
-import {
-  FinancialInsightStrip,
-  FinancialInsightItem,
-} from '@/shared/components/results/FinancialInsightStrip';
-import { CalculationAuditTrace } from './CalculationAuditTrace';
+import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { getAuditTimelinePoint } from '@/shared/lib/bond-display';
+import { buildTimelineExportHeaders } from '@/shared/lib/export-headers';
 import { buildTimelineCsvFilename, exportTimelineCsv } from '@/shared/lib/retained-exports';
-import { Notice } from '@/shared/components/feedback/Notice';
+
+import { BondInputs, CalculationResult } from '../../bond-core/types';
+
+import { CalculationAuditTrace } from './CalculationAuditTrace';
 function getTaxStrategyDisplayLabel(
   strategy: BondInputs['taxStrategy'],
   t: (key: string) => string,

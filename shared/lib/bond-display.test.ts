@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
+
 import { type YearlyTimelinePoint } from '@/features/bond-core/types';
+
 import { buildBondChartDisplayPoints, buildBondTimelineDisplayRows } from './bond-display';
 
 function makeTimelinePoint(overrides: Partial<YearlyTimelinePoint>): YearlyTimelinePoint {

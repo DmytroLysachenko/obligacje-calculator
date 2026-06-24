@@ -1,6 +1,8 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+
 import { describe, expect, it } from 'vitest';
+
 import enMessages from './translations/en.json';
 import plMessages from './translations/pl.json';
 

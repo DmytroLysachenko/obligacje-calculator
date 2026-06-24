@@ -2,20 +2,22 @@
 
 import React from 'react';
 import {
-  AreaChart,
   Area,
+  AreaChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  TooltipProps,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-  TooltipProps,
 } from 'recharts';
-import { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent';
-import { ChartContainer } from './ChartContainer';
+import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
+
 import { useChartSync } from '@/shared/context/ChartSyncContext';
+
 import { ChartDatum, SyncedChartMouseState } from './chart-types';
+import { ChartContainer } from './ChartContainer';
 
 interface AreaConfig {
   key: string;

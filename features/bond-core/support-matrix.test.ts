@@ -1,13 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { calculationService } from './application-service';
-import { calculationCache } from './utils/calculation-cache';
-import {
-  BondType,
-  CalculationResult,
-  InvestmentFrequency,
-  RegularInvestmentResult,
-  TaxStrategy,
-} from './types';
+
+import { getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
+
+import { BOND_DEFINITIONS } from './constants/bond-definitions';
 import {
   BondComparisonScenarioItem,
   BondOptimizerResult,
@@ -15,7 +10,8 @@ import {
   RetirementPlannerResult,
   ScenarioKind,
 } from './types/scenarios';
-import { BOND_DEFINITIONS } from './constants/bond-definitions';
+import { calculationCache } from './utils/calculation-cache';
+import { calculationService } from './application-service';
 import {
   ALL_BOND_TYPES,
   FAMILY_BOND_TYPES,
@@ -24,7 +20,13 @@ import {
   RETIREMENT_SUPPORTED_BOND_TYPES,
   supportsRetirementBondType,
 } from './support-matrix';
-import { getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
+import {
+  BondType,
+  CalculationResult,
+  InvestmentFrequency,
+  RegularInvestmentResult,
+  TaxStrategy,
+} from './types';
 
 const today = new Date('2026-05-05T00:00:00.000Z');
 

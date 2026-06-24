@@ -1,35 +1,37 @@
 'use client';
 
 import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
-import { BondInputs, BondType } from '../../bond-core/types';
-import { BondComparisonCalculationEnvelope, ScenarioKind } from '../../bond-core/types/scenarios';
-import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
-import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
+
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
+import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
+import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
+import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 import {
   loadPersistedCalculatorState,
   savePersistedCalculatorState,
 } from '@/shared/lib/calculator-persistence';
-import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
-import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
-import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 import { preserveStableState } from '@/shared/lib/calculator-state';
-import {
-  sanitizeScenarioOverride,
-  setScenarioCustomHorizonMonths,
-  toggleScenarioCustomHorizon,
-} from '../lib/comparison-scenario-state';
+import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
+
+import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
+import { BondInputs, BondType } from '../../bond-core/types';
+import { BondComparisonCalculationEnvelope, ScenarioKind } from '../../bond-core/types/scenarios';
 import {
   buildDefaultSharedConfig,
   buildScenarioInputs,
   DEFAULT_SCENARIO_A,
   DEFAULT_SCENARIO_B,
   getComparisonDirtyState,
-  splitComparisonEnvelope,
   type ScenarioOverride,
   type SharedComparisonConfig,
+  splitComparisonEnvelope,
   updateSharedComparisonConfig,
 } from '../lib/comparison-calculator-state';
+import {
+  sanitizeScenarioOverride,
+  setScenarioCustomHorizonMonths,
+  toggleScenarioCustomHorizon,
+} from '../lib/comparison-scenario-state';
 
 const STORAGE_KEY = 'obligacje.comparison-calculator.v3';
 

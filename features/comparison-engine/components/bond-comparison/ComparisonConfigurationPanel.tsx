@@ -1,21 +1,22 @@
 'use client';
 
-import React from 'react';
 import { Scale } from 'lucide-react';
+import { AlertTriangle, CheckCircle2 } from 'lucide-react';
+import React from 'react';
+
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { getBondSupportMeta } from '@/features/bond-core/support-matrix';
 import { BondType } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
-import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
-import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
-import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
-import { ReadingChecklist } from '@/shared/components/insights/ReadingChecklist';
-import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getBondSupportMeta } from '@/features/bond-core/support-matrix';
-import { SectionBlock } from '@/shared/components/page/SectionBlock';
+import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
+import { ReadingChecklist } from '@/shared/components/insights/ReadingChecklist';
+import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
+import { SectionBlock } from '@/shared/components/page/SectionBlock';
+import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 
 function StepCard({ title, description }: { title: string; description: string }) {
   return (

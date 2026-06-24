@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
+
 import { UserPortfolio } from '@/db/schema';
+
 import {
   removePortfolioFromNotebookState,
   resolveSelectedPortfolioId,

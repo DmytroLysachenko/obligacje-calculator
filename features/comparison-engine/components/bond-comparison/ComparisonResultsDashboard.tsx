@@ -1,21 +1,7 @@
 'use client';
 
-import React from 'react';
 import { Loader2, TrendingUp } from 'lucide-react';
-import { BondType } from '@/features/bond-core/types';
-import {
-  BondComparisonCalculationEnvelope,
-  BondComparisonScenarioItem,
-} from '@/features/bond-core/types/scenarios';
-import { useAppI18n } from '@/i18n/client';
-import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
-import { MetricStrip } from '@/shared/components/results/MetricStrip';
-import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
-import { ChartContainer } from '@/shared/components/charts/ChartContainer';
-import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
-import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
-import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
-import { SectionBlock } from '@/shared/components/page/SectionBlock';
+import React from 'react';
 import {
   CartesianGrid,
   Legend,
@@ -27,10 +13,26 @@ import {
   YAxis,
 } from 'recharts';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
-import { ComparisonChartPoint } from './display-model';
-import { getBondColor } from '@/shared/lib/charts/get-bond-color';
-import { getBondSupportMeta } from '@/features/bond-core/support-matrix';
+
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
+import { getBondSupportMeta } from '@/features/bond-core/support-matrix';
+import { BondType } from '@/features/bond-core/types';
+import {
+  BondComparisonCalculationEnvelope,
+  BondComparisonScenarioItem,
+} from '@/features/bond-core/types/scenarios';
+import { useAppI18n } from '@/i18n/client';
+import { ChartContainer } from '@/shared/components/charts/ChartContainer';
+import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
+import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
+import { SectionBlock } from '@/shared/components/page/SectionBlock';
+import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
+import { MetricStrip } from '@/shared/components/results/MetricStrip';
+import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
+import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
+import { getBondColor } from '@/shared/lib/charts/get-bond-color';
+
+import { ComparisonChartPoint } from './display-model';
 import {
   buildComparisonVerdictModel,
   getModeledValue,

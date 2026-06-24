@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { BaseAreaChart } from './charts/BaseAreaChart';
+
 import { useChartSync } from '@/shared/context/ChartSyncContext';
+
+import { BaseAreaChart } from './charts/BaseAreaChart';
 import { ChartDatum } from './charts/chart-types';
 
 interface BondChartProps {

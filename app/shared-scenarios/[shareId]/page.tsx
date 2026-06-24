@@ -1,16 +1,17 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
+import { Suspense } from 'react';
+
 import { BondCalculatorContainer } from '@/features/single-calculator/components/BondCalculatorContainer';
 import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
 import {
   getSharedSingleScenarioMetadata,
   getSharedSingleScenarioPageData,
 } from '@/lib/server/shared-scenarios/service';
-import { BondDefinitionsProvider } from '@/shared/context/BondDefinitionsContext';
-import { PageTransition } from '@/shared/components/page/PageTransition';
 import { PageSuspenseFallback } from '@/shared/components/page/PageSuspenseFallback';
-import { Suspense } from 'react';
+import { PageTransition } from '@/shared/components/page/PageTransition';
+import { BondDefinitionsProvider } from '@/shared/context/BondDefinitionsContext';
 
 interface Props {
   params: Promise<{ shareId: string }>;

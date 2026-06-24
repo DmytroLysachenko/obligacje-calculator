@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
-import { portfolioClient } from './portfolio-client';
+
 import { apiDelete, apiGet, apiGetWithResponse, apiPatch, apiPost } from './api-client';
+import { portfolioClient } from './portfolio-client';
 
 vi.mock('./api-client', () => ({
   apiDelete: vi.fn(),

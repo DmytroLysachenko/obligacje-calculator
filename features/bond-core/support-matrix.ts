@@ -1,6 +1,7 @@
-import { BondType } from './types';
-import type { AppLanguage } from '@/shared/lib/bond-display';
 import { translateMessage } from '@/i18n/translate';
+import type { AppLanguage } from '@/shared/lib/bond-display';
+
+import { BondType } from './types';
 
 export const ALL_BOND_TYPES: BondType[] = [
   BondType.OTS,

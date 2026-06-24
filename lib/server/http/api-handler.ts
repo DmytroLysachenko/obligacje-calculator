@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
+import { NextRequest, NextResponse } from 'next/server';
+
 import { mapApiErrorToProblemDetails } from './problem-details';
 
 const rateLimitMap = new Map<string, { count: number; lastReset: number }>();

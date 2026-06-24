@@ -1,12 +1,15 @@
+import { getYear, parseISO } from 'date-fns';
+
+import { getHistoricalAverages, getTaxRulesForYear } from '@/lib/data/market-data';
+
+import { BondInputs, CalculationResult, TaxStrategy } from '../types';
 import { ScenarioKind, SingleBondCalculationEnvelope } from '../types/scenarios';
-import { BondInputs, TaxStrategy, CalculationResult } from '../types';
 import { BondInputsSchema } from '../types/schemas';
 import { calculateBondInvestment } from '../utils/calculations';
-import { getTaxRulesForYear, getHistoricalAverages } from '@/lib/data/market-data';
-import { BaseHandler, ScenarioHandler, HandlerContext } from './base';
-import { getYear, parseISO } from 'date-fns';
-import { shouldAutoRollover } from './rollover';
+
+import { BaseHandler, HandlerContext, ScenarioHandler } from './base';
 import { resolveScenarioInputs } from './resolved-inputs';
+import { shouldAutoRollover } from './rollover';
 
 export class SingleBondHandler
   extends BaseHandler

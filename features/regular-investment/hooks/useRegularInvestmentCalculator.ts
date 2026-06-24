@@ -1,31 +1,33 @@
-import { useState, useCallback, useEffect, useEffectEvent, useMemo, useRef } from 'react';
-import {
-  RegularInvestmentInputs,
-  BondType,
-  InvestmentFrequency,
-  TaxStrategy,
-  InterestPayout,
-} from '../../bond-core/types';
-import {
-  RegularInvestmentCalculationEnvelope,
-  ScenarioKind,
-} from '../../bond-core/types/scenarios';
-import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
+import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
+
+import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
+import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
+import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
+import {
+  loadPersistedCalculatorState,
+  savePersistedCalculatorState,
+} from '@/shared/lib/calculator-persistence';
+import { preserveStableState, stripDisplayOnlyInputs } from '@/shared/lib/calculator-state';
 import {
   getHorizonMonths,
   getWithdrawalDateFromMonths,
   toDateString,
 } from '@/shared/lib/date-timing';
-import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
-import {
-  loadPersistedCalculatorState,
-  savePersistedCalculatorState,
-} from '@/shared/lib/calculator-persistence';
-import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
-import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
-import { preserveStableState, stripDisplayOnlyInputs } from '@/shared/lib/calculator-state';
+
+import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
+import {
+  BondType,
+  InterestPayout,
+  InvestmentFrequency,
+  RegularInvestmentInputs,
+  TaxStrategy,
+} from '../../bond-core/types';
+import {
+  RegularInvestmentCalculationEnvelope,
+  ScenarioKind,
+} from '../../bond-core/types/scenarios';
 
 const DEFAULT_BOND = BondType.EDO;
 const STORAGE_KEY = 'obligacje.regular-calculator.v1';

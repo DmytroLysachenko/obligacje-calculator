@@ -1,5 +1,7 @@
 import 'dotenv/config';
+
 import { pathToFileURL } from 'node:url';
+
 import { createDefaultSyncEngine } from './create-sync-engine';
 
 export async function syncMarketHistory() {

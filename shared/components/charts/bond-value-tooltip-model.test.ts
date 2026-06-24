@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
+
 import {
+  type BondValueTooltipPayloadEntry,
   buildBondValueTooltipModel,
   filterTooltipMetrics,
-  type BondValueTooltipPayloadEntry,
 } from './bond-value-tooltip-model';
 
 const basePayload: BondValueTooltipPayloadEntry[] = [

@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { TaxStrategy, BondType } from '@/features/bond-core/types';
+
+import { BondType, TaxStrategy } from '@/features/bond-core/types';
+
 import {
   sanitizeScenarioOverride,
   setScenarioCustomHorizonMonths,

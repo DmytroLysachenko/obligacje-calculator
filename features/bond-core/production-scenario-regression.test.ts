@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
+
 import { BOND_DEFINITIONS } from './constants/bond-definitions';
-import { BondType, InterestPayout, InvestmentFrequency, TaxStrategy } from './types';
 import { calculateBondInvestment, calculateRegularInvestment } from './utils/calculations';
+import { BondType, InterestPayout, InvestmentFrequency, TaxStrategy } from './types';
 
 const purchaseDate = '2026-05-27T00:00:00.000Z';
 

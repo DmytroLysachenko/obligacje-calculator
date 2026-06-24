@@ -1,4 +1,5 @@
 import { z } from 'zod';
+
 import { BondType, InterestPayout, InvestmentFrequency, ScenarioKind, TaxStrategy } from './index';
 import { BaseInstrumentInputsSchema } from './instruments';
 

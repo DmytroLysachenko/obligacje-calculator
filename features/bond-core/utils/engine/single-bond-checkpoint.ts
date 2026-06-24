@@ -1,6 +1,8 @@
 import { Decimal } from 'decimal.js';
+
 import { BondType, RateSource, TaxStrategy, YearlyTimelinePoint } from '../../types';
 import { SimulationEvent } from '../../types/simulation';
+
 import { calculateEarlyWithdrawalFee } from './redemption';
 import { calculateTaxAmount, shouldWithholdPeriodicTax } from './tax-settlement';
 

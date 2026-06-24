@@ -1,4 +1,5 @@
 import { parseISO, startOfMonth } from 'date-fns';
+
 import { fetchSyncArrayBuffer, fetchSyncText } from '@/lib/sync/http-gateway';
 
 export interface GusCpiPoint {

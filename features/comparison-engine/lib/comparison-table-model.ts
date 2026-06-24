@@ -1,4 +1,5 @@
 import { addMonths, compareAsc, differenceInMonths, format, parseISO } from 'date-fns';
+
 import { CalculationResult, ChartStep } from '@/features/bond-core/types';
 import { SimulationEventType } from '@/features/bond-core/types/simulation';
 import { getDateFnsLocale } from '@/i18n/locale-utils';

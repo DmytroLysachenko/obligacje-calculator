@@ -1,9 +1,10 @@
 'use client';
+import { addMonths, differenceInMonths } from 'date-fns';
+
 import { RateSource, YearlyTimelinePoint } from '@/features/bond-core/types';
 import { SimulationEventType } from '@/features/bond-core/types/simulation';
 import { getIntlLocale } from '@/i18n/locale-utils';
 import { translateMessage } from '@/i18n/translate';
-import { addMonths, differenceInMonths } from 'date-fns';
 export type AppLanguage = 'pl' | 'en';
 export interface BondTimelineDisplayRow {
   key: string;

@@ -1,5 +1,5 @@
-import { Decimal } from 'decimal.js';
 import { addMonths, differenceInDays, getDaysInYear } from 'date-fns';
+import { Decimal } from 'decimal.js';
 
 /**
  * Returns the expected inflation for a specific year of the simulation.

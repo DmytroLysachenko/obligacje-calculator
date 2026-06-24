@@ -1,10 +1,12 @@
 'use client';
 
+import { Activity, Info, TrendingUp } from 'lucide-react';
 import React from 'react';
+
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { TrendingUp, Activity, Info } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { useAppI18n } from '@/i18n/client';
+import { cn } from '@/lib/utils';
+
 import { ComparisonAssetBreakdownProps } from './types';
 
 export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> = ({

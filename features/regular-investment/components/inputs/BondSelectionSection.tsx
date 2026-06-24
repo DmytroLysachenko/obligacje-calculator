@@ -1,15 +1,16 @@
 'use client';
 
-import React from 'react';
 import { Info } from 'lucide-react';
+import React from 'react';
+
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { BondType } from '@/features/bond-core/types';
-import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
-import { cn } from '@/lib/utils';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
-import { FormSelect } from '@/shared/components/forms/FormSelect';
+import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
+import { BondType } from '@/features/bond-core/types';
+import { cn } from '@/lib/utils';
 import { BondInfoPanel } from '@/shared/components/forms/BondInfoPanel';
+import { FormSelect } from '@/shared/components/forms/FormSelect';
 
 type BondSelectionSectionProps = {
   bondType: BondType;

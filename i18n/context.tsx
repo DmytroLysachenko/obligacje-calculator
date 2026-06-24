@@ -1,9 +1,10 @@
 'use client';
 
-import { createContext, useCallback, useContext, useMemo } from 'react';
-import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { defaultLocale, type Language, isSupportedLocale } from './config';
+import { useLocale, useTranslations } from 'next-intl';
+import { createContext, useCallback, useContext, useMemo } from 'react';
+
+import { defaultLocale, isSupportedLocale, type Language } from './config';
 
 type TranslationVariables = Record<string, string | number>;
 

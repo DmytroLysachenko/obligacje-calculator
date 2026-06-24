@@ -1,5 +1,7 @@
 'use client';
+import { History, Settings2, ShoppingCart } from 'lucide-react';
 import React from 'react';
+
 import {
   Accordion,
   AccordionContent,
@@ -9,11 +11,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { History, Settings2, ShoppingCart } from 'lucide-react';
 import { useAppI18n } from '@/i18n/client';
-import { ComparisonControlsProps } from './types';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
+
+import { ComparisonControlsProps } from './types';
 export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
   initialSum,
   updateInitialSum,

@@ -1,7 +1,9 @@
-import { describe, it, expect } from 'vitest';
-import { calculateBondInvestment } from './calculations';
-import { BondInputs } from '../types';
+import { describe, expect, it } from 'vitest';
+
 import scenarios from '../fixtures/regression-scenarios.json';
+import { BondInputs } from '../types';
+
+import { calculateBondInvestment } from './calculations';
 
 describe('Bond Engine Regression: Golden Results', () => {
   scenarios.forEach((scenario) => {

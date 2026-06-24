@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
 import { AlertTriangle, CheckCircle2, Info } from 'lucide-react';
+import React from 'react';
+
 import { cn } from '@/lib/utils';
-import { ReferenceMetaItem } from '@/shared/lib/data-reference';
 import { Notice } from '@/shared/components/feedback/Notice';
+import { ReferenceMetaItem } from '@/shared/lib/data-reference';
 
 interface ReferenceChartFrameProps {
   metaItems: ReferenceMetaItem[];

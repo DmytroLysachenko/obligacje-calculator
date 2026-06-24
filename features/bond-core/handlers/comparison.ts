@@ -1,17 +1,19 @@
+import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
+
+import { BondInputs, TaxStrategy } from '../types';
 import {
-  ScenarioKind,
   BondComparisonCalculationEnvelope,
-  NormalizedBondComparisonPayload,
-  IndependentBondComparisonPayload,
   BondComparisonScenarioItem,
+  IndependentBondComparisonPayload,
+  NormalizedBondComparisonPayload,
+  ScenarioKind,
 } from '../types/scenarios';
 import { BondComparisonScenarioRequestSchema } from '../types/schemas';
 import { calculateBondInvestment } from '../utils/calculations';
-import { BondInputs, TaxStrategy } from '../types';
-import { BaseHandler, ScenarioHandler, HandlerContext } from './base';
-import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
-import { shouldAutoRollover } from './rollover';
+
+import { BaseHandler, HandlerContext, ScenarioHandler } from './base';
 import { resolveScenarioInputs } from './resolved-inputs';
+import { shouldAutoRollover } from './rollover';
 
 export class ComparisonHandler
   extends BaseHandler

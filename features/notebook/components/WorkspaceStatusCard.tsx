@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
 import { FolderKanban, LockKeyhole } from 'lucide-react';
-import { useAppI18n } from '@/i18n/client';
+import React from 'react';
+
 import { UserPortfolio } from '@/db/schema';
+import { useAppI18n } from '@/i18n/client';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
 
 interface WorkspaceStatusCardProps {

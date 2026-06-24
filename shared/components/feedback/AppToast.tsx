@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect } from 'react';
 import { AlertCircle, CheckCircle2, X } from 'lucide-react';
+import React, { useEffect } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 

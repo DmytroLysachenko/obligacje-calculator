@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
+
 import { CalculationResult } from '@/features/bond-core/types';
+
 import {
   buildComparisonAlignedTableRows,
   getComparisonTablePageCount,

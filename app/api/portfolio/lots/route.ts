@@ -1,16 +1,17 @@
 import { NextRequest } from 'next/server';
+
 import { InvestmentLotSchema } from '@/features/bond-core/types/portfolio-schemas';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
-import { listPortfolioLots } from '@/lib/server/portfolio/queries';
-import { createPortfolioLot, deleteOwnerLot } from '@/lib/server/portfolio/commands';
 import { createValidationErrorResponse, okJson } from '@/lib/server/http/responses';
+import { createPortfolioLot, deleteOwnerLot } from '@/lib/server/portfolio/commands';
 import {
   getPortfolioRouteContext,
   portfolioDomainErrorResponse,
   withAuthenticatedPortfolioOwner,
   withPortfolioOwnerResponse,
 } from '@/lib/server/portfolio/http';
+import { listPortfolioLots } from '@/lib/server/portfolio/queries';
 
 export const GET = apiHandler(async (req: NextRequest) => {
   const { owner } = await getPortfolioRouteContext();

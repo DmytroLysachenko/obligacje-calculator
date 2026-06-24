@@ -1,5 +1,7 @@
 import { Decimal } from 'decimal.js';
+
 import { BondType, RateSource } from '../../types';
+
 import { determineInterestRate } from './rate-resolution';
 
 export interface SingleBondRateContextInput {

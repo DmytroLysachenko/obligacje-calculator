@@ -1,9 +1,11 @@
-import { ScenarioKind, RegularInvestmentCalculationEnvelope } from '../types/scenarios';
+import { resolveBondOfferTerms } from '@/lib/server/bonds/offer-terms';
+
 import { RegularInvestmentInputs, RegularInvestmentResult } from '../types';
+import { RegularInvestmentCalculationEnvelope, ScenarioKind } from '../types/scenarios';
 import { RegularInvestmentInputsSchema } from '../types/schemas';
 import { calculateRegularInvestment } from '../utils/calculations';
-import { BaseHandler, ScenarioHandler, HandlerContext } from './base';
-import { resolveBondOfferTerms } from '@/lib/server/bonds/offer-terms';
+
+import { BaseHandler, HandlerContext, ScenarioHandler } from './base';
 
 export class RegularInvestmentHandler
   extends BaseHandler

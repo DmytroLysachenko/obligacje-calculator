@@ -6,20 +6,21 @@ import {
   ShieldAlert,
   Sparkles,
 } from 'lucide-react';
+
 import { Accordion } from '@/components/ui/accordion';
+import {
+  buildEconomicHealthItems,
+  type ChartSeriesEnvelope,
+  ECONOMIC_RANGE_OPTIONS,
+  type EconomicSeriesPoint,
+  getEconomicReferenceState,
+  getEconomicStatusLabel,
+  type PeriodValue,
+} from '@/features/economic-data/lib/economic-dashboard-model';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { ReferenceGuideRail } from '@/shared/components/reference/ReferenceGuideRail';
 import { ReferenceNoteCard } from '@/shared/components/reference/ReferenceNoteCard';
-import {
-  buildEconomicHealthItems,
-  ECONOMIC_RANGE_OPTIONS,
-  getEconomicReferenceState,
-  getEconomicStatusLabel,
-  type ChartSeriesEnvelope,
-  type EconomicSeriesPoint,
-  type PeriodValue,
-} from '@/features/economic-data/lib/economic-dashboard-model';
 
 interface RangeActionsProps {
   period: PeriodValue;

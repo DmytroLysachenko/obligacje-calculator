@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { parseOfferFromGovPage } from './bond-scraper';
 
 describe('bond offer scraper', () => {

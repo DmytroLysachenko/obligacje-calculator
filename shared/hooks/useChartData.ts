@@ -1,4 +1,5 @@
 import useSWR from 'swr';
+
 import { apiGet } from '@/shared/lib/api-client';
 
 interface ErrorWithContext extends Error {

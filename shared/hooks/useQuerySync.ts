@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useRef } from 'react';
 
 type QuerySyncValue = string | number | boolean | undefined | null;
 

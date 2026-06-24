@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import { BondType, InterestPayout, TaxStrategy } from '@/features/bond-core/types';
-import { scenarioShareClient } from './scenario-share-client';
+
 import { apiPost } from './api-client';
+import { scenarioShareClient } from './scenario-share-client';
 import { SharedSingleScenarioPayload } from './single-scenario-share';
 
 vi.mock('./api-client', () => ({

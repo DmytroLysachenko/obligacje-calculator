@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
 import { fetchSyncJson, fetchSyncResponse, fetchSyncText } from './http-gateway';
 
 describe('sync http gateway', () => {

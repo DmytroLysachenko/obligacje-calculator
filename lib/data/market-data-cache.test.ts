@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
 import { format } from 'date-fns';
+import { describe, expect, it } from 'vitest';
+
 import { getSeriesReferenceDate } from './market-data-cache';
 
 describe('market data cache helpers', () => {

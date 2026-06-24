@@ -1,11 +1,13 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { calculationService } from './application-service';
-import { calculationCache } from './utils/calculation-cache';
-import { BondType, InvestmentFrequency, RegularInvestmentResult, TaxStrategy } from './types';
-import { ScenarioKind } from './types/scenarios';
-import { BOND_DEFINITIONS } from './constants/bond-definitions';
-import { getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
 import { differenceInMonths, parseISO } from 'date-fns';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
+
+import { BOND_DEFINITIONS } from './constants/bond-definitions';
+import { ScenarioKind } from './types/scenarios';
+import { calculationCache } from './utils/calculation-cache';
+import { calculationService } from './application-service';
+import { BondType, InvestmentFrequency, RegularInvestmentResult, TaxStrategy } from './types';
 
 const today = new Date('2026-05-05T00:00:00.000Z');
 

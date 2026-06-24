@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
+
 import { PortfolioDetails } from '@/features/notebook/components/PortfolioDetails';
 import {
   buildSharedPortfolioPageMetadata,

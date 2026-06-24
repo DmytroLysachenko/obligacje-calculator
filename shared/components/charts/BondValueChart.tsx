@@ -12,14 +12,16 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { ChartContainer } from '@/shared/components/charts/ChartContainer';
+
 import { ChartStep } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
+import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import {
   loadChartDisplayPreferences,
   saveChartDisplayPreferences,
 } from '@/shared/lib/chart-display-preferences';
 import { formatMoneyAxisTick } from '@/shared/lib/chart-series';
+
 import { BondValueChartToolbar, BondValueChartTooltip } from './BondValueChartParts';
 
 export interface BondValueChartSeries {

@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+
 import { getLocalizedPageMetadata } from '@/lib/page-metadata';
 
 vi.mock('next-intl/server', () => ({

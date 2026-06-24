@@ -1,8 +1,10 @@
-import BondOptimizerClient from './BondOptimizerClient';
+import { getTranslations } from 'next-intl/server';
+
+import { getLocalizedPageMetadata } from '@/lib/page-metadata';
 import { FeatureStatusNotice } from '@/shared/components/feedback/FeatureStatusNotice';
 import { PageTransition } from '@/shared/components/page/PageTransition';
-import { getLocalizedPageMetadata } from '@/lib/page-metadata';
-import { getTranslations } from 'next-intl/server';
+
+import BondOptimizerClient from './BondOptimizerClient';
 
 export async function generateMetadata() {
   return getLocalizedPageMetadata('optimize');

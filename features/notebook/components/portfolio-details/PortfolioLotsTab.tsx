@@ -1,10 +1,9 @@
 'use client';
 
-import React from 'react';
-import { ExternalLink, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
-import { UserInvestmentLot } from '@/db/schema';
-import { BondType } from '@/features/bond-core/types';
+import { ExternalLink, Loader2 } from 'lucide-react';
+import React from 'react';
+
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -14,10 +13,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { formatBondDuration } from '@/shared/lib/format-bond-duration';
+import { UserInvestmentLot } from '@/db/schema';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
-import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
+import { BondType } from '@/features/bond-core/types';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
+import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
+import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 
 type PortfolioMaturityItem = UserInvestmentLot & {
   maturityDate: Date;

@@ -1,16 +1,17 @@
 'use client';
 
-import React from 'react';
 import { Info } from 'lucide-react';
+import React from 'react';
+
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { RegularInvestmentInputs } from '@/features/bond-core/types';
-import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
-import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
+import { MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
 
 type AdvancedSettingsSectionProps = {
   inputs: RegularInvestmentInputs;

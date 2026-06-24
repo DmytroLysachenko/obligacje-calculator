@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { createPortfolioAccessPayload } from './access-payload';
+
 import type { PortfolioOwnerContext } from './access';
+import { createPortfolioAccessPayload } from './access-payload';
 
 function owner(overrides: Partial<PortfolioOwnerContext> = {}): PortfolioOwnerContext {
   return {

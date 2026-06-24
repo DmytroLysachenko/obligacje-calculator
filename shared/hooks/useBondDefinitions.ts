@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { BondType } from '@/features/bond-core/types';
+import { useEffect, useState } from 'react';
+
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
+import { BondType } from '@/features/bond-core/types';
 import { apiGet } from '@/shared/lib/api-client';
 
 let cachedDefinitions: Record<BondType, BondDefinition> | null = null;

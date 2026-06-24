@@ -1,31 +1,34 @@
 'use client';
-import React, { useMemo, useState } from 'react';
 import { Loader2, RotateCcw, Scale } from 'lucide-react';
-import { ChartStep } from '@/features/bond-core/types';
+import React, { useMemo, useState } from 'react';
+
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ChartStep } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
-import { useHasMounted } from '@/shared/hooks/useHasMounted';
-import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { cn } from '@/lib/utils';
+import { Notice } from '@/shared/components/feedback/Notice';
+import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
+import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
-import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
-import { Skeleton } from '@/components/ui/skeleton';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
-import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
-import { Notice } from '@/shared/components/feedback/Notice';
+import { useHasMounted } from '@/shared/hooks/useHasMounted';
+import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { getBondColor } from '@/shared/lib/charts/get-bond-color';
+
 import { useComparison } from '../hooks/useComparison';
-import { ComparisonTable } from './ComparisonTable';
-import { ComparisonVerdict } from './ComparisonVerdict';
-import { ComparisonResultsPanel } from './ComparisonResultsPanel';
-import { ComparisonSharedBaseCard } from './ComparisonSharedBaseCard';
-import { ScenarioOverrideCard } from './ScenarioOverrideCard';
 import {
   buildComparisonChartData,
   getComparisonAssumptionsBondType,
   usesMixedTimelineCadence,
 } from '../lib/comparison-display';
+
+import { ComparisonResultsPanel } from './ComparisonResultsPanel';
+import { ComparisonSharedBaseCard } from './ComparisonSharedBaseCard';
+import { ComparisonTable } from './ComparisonTable';
+import { ComparisonVerdict } from './ComparisonVerdict';
+import { ScenarioOverrideCard } from './ScenarioOverrideCard';
 export const ComparisonContainer: React.FC = () => {
   const {
     sharedConfig,

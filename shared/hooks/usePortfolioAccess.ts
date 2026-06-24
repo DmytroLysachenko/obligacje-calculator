@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { portfolioClient, PortfolioAccessResponse } from '@/shared/lib/portfolio-client';
+
+import { PortfolioAccessResponse, portfolioClient } from '@/shared/lib/portfolio-client';
 
 export function usePortfolioAccess() {
   const [access, setAccess] = useState<PortfolioAccessResponse | null>(null);

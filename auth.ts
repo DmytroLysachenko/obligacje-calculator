@@ -1,11 +1,12 @@
+import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import NextAuth from 'next-auth';
+import type { Provider } from 'next-auth/providers';
 import Facebook from 'next-auth/providers/facebook';
 import Google from 'next-auth/providers/google';
-import type { Provider } from 'next-auth/providers';
-import { DrizzleAdapter } from '@auth/drizzle-adapter';
-import { db } from './db';
+
 import { accounts, sessions, users, verificationTokens } from './db/schema';
 import { getAuthRuntimeConfig } from './lib/server/auth/provider-config';
+import { db } from './db';
 
 const authRuntimeConfig = getAuthRuntimeConfig();
 const providers: Provider[] = authRuntimeConfig.providers.map((provider) =>

@@ -1,26 +1,27 @@
 'use client';
 
+import { Activity, TrendingUp } from 'lucide-react';
 import React from 'react';
 import {
   Area,
   Brush,
+  CartesianGrid,
+  ComposedChart,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip as RechartsTooltip,
+  TooltipProps,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip as RechartsTooltip,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  ComposedChart,
-  TooltipProps,
 } from 'recharts';
-import { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { TrendingUp, Activity } from 'lucide-react';
-import { MultiAssetComparisonChartProps } from './types';
+import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAppI18n } from '@/i18n/client';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ChartLegendStrip } from '@/shared/components/charts/ChartLegendStrip';
-import { useAppI18n } from '@/i18n/client';
+
 import {
   createMultiAssetDrawdownLegendItems,
   createMultiAssetDrawdownSummary,
@@ -28,6 +29,7 @@ import {
   createMultiAssetGrowthSummary,
   thinMultiAssetGrowthData,
 } from './multi-asset-chart-model';
+import { MultiAssetComparisonChartProps } from './types';
 
 interface PayloadEntry {
   name: string;

@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { YearlyTimelinePoint } from './types';
-import { SimulationEventType } from './types/simulation';
+
 import {
   buildBondChartDisplayPoints,
   buildBondTimelineDisplayRows,
@@ -9,6 +8,9 @@ import {
   getSimulationEventDisplayLabel,
   normalizeBondChartDisplayTimeline,
 } from '@/shared/lib/bond-display';
+
+import { SimulationEventType } from './types/simulation';
+import { YearlyTimelinePoint } from './types';
 
 function makePoint(overrides: Partial<YearlyTimelinePoint> = {}): YearlyTimelinePoint {
   return {

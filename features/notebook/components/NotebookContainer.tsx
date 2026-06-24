@@ -1,31 +1,33 @@
 'use client';
-import React, { useEffect, useRef, useState } from 'react';
-import { useAppI18n } from '@/i18n/client';
 import { BookOpen, FolderOpen, RefreshCcw } from 'lucide-react';
-import { UserPortfolio } from '@/db/schema';
+import React, { useEffect, useRef, useState } from 'react';
+
 import { Button } from '@/components/ui/button';
-import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
-import { useDateFormatter } from '@/shared/hooks/useLocalizedFormatters';
-import { useWorkspacePortfolios } from '@/shared/hooks/useWorkspacePortfolios';
-import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
-import { SectionBlock } from '@/shared/components/page/SectionBlock';
-import { AppToast } from '@/shared/components/feedback/AppToast';
-import { ConfirmActionDialog } from '@/shared/components/feedback/ConfirmActionDialog';
-import { Notice } from '@/shared/components/feedback/Notice';
-import { persistSelectedPortfolioId } from '@/shared/lib/workspace/notebook-state';
-import { PortfolioDetails } from './PortfolioDetails';
-import { PortfolioWorkspaceCard } from './PortfolioWorkspaceCard';
-import { WorkspaceActionStrip } from './WorkspaceActionStrip';
-import { WorkspaceStatusCard } from './WorkspaceStatusCard';
-import { EmptyPortfolioState, NotebookLoadingState } from './NotebookStates';
-import { MetricStrip, MetricStripItem } from '@/shared/components/results/MetricStrip';
+import { UserPortfolio } from '@/db/schema';
+import { useNotebookWorkspaceActions } from '@/features/notebook/hooks/useNotebookWorkspaceActions';
 import {
   buildNotebookCapabilities,
   buildNotebookStats,
   getNotebookPortfolioCounts,
   type NotebookStepItem,
 } from '@/features/notebook/lib/notebook-workspace-model';
-import { useNotebookWorkspaceActions } from '@/features/notebook/hooks/useNotebookWorkspaceActions';
+import { useAppI18n } from '@/i18n/client';
+import { AppToast } from '@/shared/components/feedback/AppToast';
+import { ConfirmActionDialog } from '@/shared/components/feedback/ConfirmActionDialog';
+import { Notice } from '@/shared/components/feedback/Notice';
+import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
+import { SectionBlock } from '@/shared/components/page/SectionBlock';
+import { MetricStrip, MetricStripItem } from '@/shared/components/results/MetricStrip';
+import { useDateFormatter } from '@/shared/hooks/useLocalizedFormatters';
+import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
+import { useWorkspacePortfolios } from '@/shared/hooks/useWorkspacePortfolios';
+import { persistSelectedPortfolioId } from '@/shared/lib/workspace/notebook-state';
+
+import { EmptyPortfolioState, NotebookLoadingState } from './NotebookStates';
+import { PortfolioDetails } from './PortfolioDetails';
+import { PortfolioWorkspaceCard } from './PortfolioWorkspaceCard';
+import { WorkspaceActionStrip } from './WorkspaceActionStrip';
+import { WorkspaceStatusCard } from './WorkspaceStatusCard';
 export const NotebookContainer: React.FC = () => {
   const { t, locale: language } = useAppI18n();
   const [portfolioPendingDelete, setPortfolioPendingDelete] = useState<UserPortfolio | null>(null);

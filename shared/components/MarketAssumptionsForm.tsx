@@ -1,31 +1,32 @@
 'use client';
+import { AlertTriangle, Target } from 'lucide-react';
 import React from 'react';
+
+import { BondInputs, BondType } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
-import { BondInputs, BondType } from '@/features/bond-core/types';
-import { Target, AlertTriangle } from 'lucide-react';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
-import {
-  AssumptionHeader,
-  CurrentAssumptionValue,
-  ProjectionModeButtons,
-} from '@/shared/components/market-assumptions/AssumptionSectionControls';
 import { AssumptionHistoryPopover } from '@/shared/components/market-assumptions/AssumptionHistoryPopover';
-import { AssumptionSemanticsNote } from '@/shared/components/market-assumptions/AssumptionSemanticsNote';
-import { MacroDefaultsSummary } from '@/shared/components/market-assumptions/MacroDefaultsSummary';
-import { ProjectedRatePathEditor } from '@/shared/components/market-assumptions/ProjectedRatePathEditor';
 import {
   InflationPresetControls,
   NbpPresetControls,
 } from '@/shared/components/market-assumptions/AssumptionPresetControls';
 import {
+  AssumptionHeader,
+  CurrentAssumptionValue,
+  ProjectionModeButtons,
+} from '@/shared/components/market-assumptions/AssumptionSectionControls';
+import { AssumptionSemanticsNote } from '@/shared/components/market-assumptions/AssumptionSemanticsNote';
+import { MacroDefaultsSummary } from '@/shared/components/market-assumptions/MacroDefaultsSummary';
+import { ProjectedRatePathEditor } from '@/shared/components/market-assumptions/ProjectedRatePathEditor';
+import {
   isFloatingNbpBondType,
   isInflationIndexedBondType,
 } from '@/shared/lib/market-assumption-semantics';
 import {
+  type AssumptionSetupMode,
   getHeaderAssumptionValue,
   resolveAssumptionModeUpdate,
-  type AssumptionSetupMode,
 } from '@/shared/lib/market-assumptions-form-model';
 
 export type { AssumptionSetupMode } from '@/shared/lib/market-assumptions-form-model';

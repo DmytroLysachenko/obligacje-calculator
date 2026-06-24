@@ -1,7 +1,7 @@
-import { YearlyTimelinePoint, LotBreakdown } from '@/features/bond-core/types';
-import { AppLanguage, buildBondTimelineDisplayRows } from '@/shared/lib/bond-display';
+import { LotBreakdown, YearlyTimelinePoint } from '@/features/bond-core/types';
 import { getIntlLocale } from '@/i18n/locale-utils';
 import { translateMessage } from '@/i18n/translate';
+import { AppLanguage, buildBondTimelineDisplayRows } from '@/shared/lib/bond-display';
 /**
  * Downloads a string as a file in the browser.
  * Adds BOM for proper UTF-8 detection in Excel.

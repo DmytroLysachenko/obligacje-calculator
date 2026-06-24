@@ -1,12 +1,13 @@
 import { addMonths, format, isBefore, parseISO, startOfMonth } from 'date-fns';
 
-import type { SyncProvider } from '../types';
 import type { SyncLogger } from '../sync-logger';
-import type { SyncRunRecorder } from './sync-run-recorder';
+import type { SyncProvider } from '../types';
+
 import {
   createDefaultProviderSyncRepository,
   type ProviderSyncRepository,
 } from './provider-sync-repository';
+import type { SyncRunRecorder } from './sync-run-recorder';
 
 export type { ProviderSyncRepository } from './provider-sync-repository';
 

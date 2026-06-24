@@ -1,13 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { calculationService } from './application-service';
+
 import { BOND_DEFINITIONS } from './constants/bond-definitions';
-import {
-  BondInputs,
-  BondType,
-  InterestPayout,
-  RegularInvestmentInputs,
-  TaxStrategy,
-} from './types';
 import { ScenarioKind } from './types/scenarios';
 import {
   BondComparisonScenarioPayloadSchema,
@@ -19,6 +12,14 @@ import {
   RetirementPlannerPayloadSchema,
 } from './types/schemas';
 import { calculationCache } from './utils/calculation-cache';
+import { calculationService } from './application-service';
+import {
+  BondInputs,
+  BondType,
+  InterestPayout,
+  RegularInvestmentInputs,
+  TaxStrategy,
+} from './types';
 
 vi.mock('@/lib/data/market-data', async () => {
   const { BOND_DEFINITIONS: runtimeDefinitions } = await import('./constants/bond-definitions');

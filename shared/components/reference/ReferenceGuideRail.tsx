@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 interface ReferenceGuideRailProps {

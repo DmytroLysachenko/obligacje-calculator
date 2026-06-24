@@ -1,8 +1,9 @@
 'use client';
-import React from 'react';
 import { Scale, ShieldCheck, Zap } from 'lucide-react';
-import { useAppI18n } from '@/i18n/client';
+import React from 'react';
+
 import { BondInputs, CalculationResult, TaxStrategy } from '@/features/bond-core/types';
+import { useAppI18n } from '@/i18n/client';
 interface ComparisonVerdictProps {
   resultsA: CalculationResult;
   resultsB: CalculationResult;

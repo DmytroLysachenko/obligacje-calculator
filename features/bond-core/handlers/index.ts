@@ -1,19 +1,20 @@
 import { ScenarioKind } from '../types/scenarios';
+
 import { ScenarioHandler } from './base';
-import { SingleBondHandler } from './single-bond';
-import { RegularInvestmentHandler } from './regular-investment';
 import { ComparisonHandler } from './comparison';
-import { PortfolioSimulationHandler } from './portfolio-simulation';
 import { OptimizerHandler } from './optimizer';
+import { PortfolioSimulationHandler } from './portfolio-simulation';
+import { RegularInvestmentHandler } from './regular-investment';
 import { RetirementPlannerHandler } from './retirement-planner';
+import { SingleBondHandler } from './single-bond';
 
 export * from './base';
-export * from './single-bond';
-export * from './regular-investment';
 export * from './comparison';
-export * from './portfolio-simulation';
 export * from './optimizer';
+export * from './portfolio-simulation';
+export * from './regular-investment';
 export * from './retirement-planner';
+export * from './single-bond';
 
 export class HandlerFactory {
   private static handlers: Map<ScenarioKind, ScenarioHandler<unknown, unknown>> = new Map();

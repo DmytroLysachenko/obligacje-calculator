@@ -1,5 +1,6 @@
 import type { Locale } from 'date-fns';
 import { enGB, pl as plDateFns } from 'date-fns/locale';
+
 import type { Language } from './index';
 
 const intlLocaleByLanguage: Record<Language, string> = {

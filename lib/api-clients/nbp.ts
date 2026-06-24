@@ -1,5 +1,6 @@
-import { BaseApiClient, StandardizedIndicator, fetchWithTimeout } from './base';
 import { buildNbpReferenceFallbackIndicators } from '@/shared/lib/nbp-reference-fallback';
+
+import { BaseApiClient, fetchWithTimeout, StandardizedIndicator } from './base';
 
 interface NbpGoldPrice {
   data: string;

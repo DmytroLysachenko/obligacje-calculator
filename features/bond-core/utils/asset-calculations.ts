@@ -1,5 +1,5 @@
 import { HISTORICAL_RETURNS, MonthlyReturn } from '../constants/historical-data';
-import { AssetPerformanceSeries, DataPoint, AssetMetadata } from '../types/assets';
+import { AssetMetadata, AssetPerformanceSeries, DataPoint } from '../types/assets';
 
 function sanitizePercent(value: number): number {
   return Number.isFinite(value) ? value : 0;

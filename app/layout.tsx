@@ -1,20 +1,22 @@
 import type { Metadata } from 'next';
-import React from 'react';
-import Script from 'next/script';
 import { Geist, Geist_Mono, Inter } from 'next/font/google';
+import Script from 'next/script';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages, getTranslations } from 'next-intl/server';
-import './globals.css';
+import React from 'react';
+
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { AppLocaleProvider } from '@/i18n/client';
 import { defaultLocale, type Language } from '@/i18n/config';
 import { getMetadataLocale } from '@/i18n/locale-utils';
 import { getGlobalDataFreshness } from '@/lib/data/market-data';
-import { ErrorBoundary } from '@/shared/components/feedback/ErrorBoundary';
 import { OpportunisticSyncTrigger } from '@/shared/components/chrome/OpportunisticSyncTrigger';
 import { Sidebar } from '@/shared/components/chrome/Sidebar';
+import { ErrorBoundary } from '@/shared/components/feedback/ErrorBoundary';
 import { BondDefinitionsProvider } from '@/shared/context/BondDefinitionsContext';
 import { ChartSyncProvider } from '@/shared/context/ChartSyncContext';
+
+import './globals.css';
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });

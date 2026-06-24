@@ -1,29 +1,30 @@
 'use client';
 
-import React, { useState } from 'react';
 import { Activity, BarChart3, Database, Info, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useAppI18n } from '@/i18n/client';
-import { InflationChart } from '@/features/economic-data/components/InflationChart';
-import { NBPRateChart } from '@/features/economic-data/components/NBPRateChart';
 import { BondType } from '@/features/bond-core/types';
-import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
-import { ReferenceDashboardHero } from '@/shared/components/reference/ReferenceDashboardHero';
-import { ChartSection } from '@/shared/components/charts/ChartSection';
-import { SectionBlock } from '@/shared/components/page/SectionBlock';
-import { useChartData } from '@/shared/hooks/useChartData';
-import {
-  type ChartSeriesEnvelope,
-  type EconomicSeriesPoint,
-  type PeriodValue,
-} from '@/features/economic-data/lib/economic-dashboard-model';
-import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
-import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import {
   RangeActions,
   ReferenceStatusPanel,
   UsageGuidePanel,
 } from '@/features/economic-data/components/EconomicDashboardSections';
+import { InflationChart } from '@/features/economic-data/components/InflationChart';
+import { NBPRateChart } from '@/features/economic-data/components/NBPRateChart';
+import {
+  type ChartSeriesEnvelope,
+  type EconomicSeriesPoint,
+  type PeriodValue,
+} from '@/features/economic-data/lib/economic-dashboard-model';
+import { useAppI18n } from '@/i18n/client';
+import { ChartSection } from '@/shared/components/charts/ChartSection';
+import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
+import { SectionBlock } from '@/shared/components/page/SectionBlock';
+import { ReferenceDashboardHero } from '@/shared/components/reference/ReferenceDashboardHero';
+import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
+import { useChartData } from '@/shared/hooks/useChartData';
+import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
 
 export function EconomicDataPageClient() {
   const { t, locale: language } = useAppI18n();

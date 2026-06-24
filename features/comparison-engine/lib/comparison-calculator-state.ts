@@ -11,6 +11,7 @@ import {
   getWithdrawalDateFromMonths,
   toDateString,
 } from '@/shared/lib/date-timing';
+
 import { sanitizeScenarioOverride } from './comparison-scenario-state';
 
 export type SharedComparisonConfig = IndependentBondComparisonPayload['sharedConfig'];

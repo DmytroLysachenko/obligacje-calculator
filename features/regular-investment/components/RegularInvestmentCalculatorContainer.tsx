@@ -1,18 +1,21 @@
 'use client';
-import React from 'react';
 import { PiggyBank } from 'lucide-react';
+import React from 'react';
+
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
-import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
-import { CalculatorSection } from '@/shared/components/page/CalculatorSection';
-import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
-import { CalculatorWorkspace } from '@/shared/components/page/CalculatorWorkspace';
-import { ReadingChecklist } from '@/shared/components/insights/ReadingChecklist';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
+import { ReadingChecklist } from '@/shared/components/insights/ReadingChecklist';
+import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
+import { CalculatorSection } from '@/shared/components/page/CalculatorSection';
+import { CalculatorWorkspace } from '@/shared/components/page/CalculatorWorkspace';
+import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
+
 import { useRegularInvestmentCalculator } from '../hooks/useRegularInvestmentCalculator';
+
 import { RegularInvestmentChart } from './RegularInvestmentChart';
 import { RegularInvestmentInputsForm } from './RegularInvestmentInputsForm';
 import { RegularInvestmentResultsSummary } from './RegularInvestmentResultsSummary';

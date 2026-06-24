@@ -1,7 +1,9 @@
-import { db } from '@/db';
-import { polishBonds, bondSeries } from '@/db/schema';
-import { eq } from 'drizzle-orm';
 import 'dotenv/config';
+
+import { eq } from 'drizzle-orm';
+
+import { db } from '@/db';
+import { bondSeries, polishBonds } from '@/db/schema';
 
 async function seedHistorical() {
   console.log('[Seed] Seeding historical bond offers...');

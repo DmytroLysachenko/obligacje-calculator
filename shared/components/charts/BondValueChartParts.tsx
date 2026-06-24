@@ -3,12 +3,14 @@
 import React from 'react';
 import { TooltipProps } from 'recharts';
 import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
+
 import { ChartStep } from '@/features/bond-core/types';
 import { cn } from '@/lib/utils';
 import { ChartLegendStrip } from '@/shared/components/charts/ChartLegendStrip';
+
 import {
-  buildBondValueTooltipModel,
   type BondValueTooltipPayloadEntry,
+  buildBondValueTooltipModel,
 } from './bond-value-tooltip-model';
 import type {
   BondValueChartPoint,

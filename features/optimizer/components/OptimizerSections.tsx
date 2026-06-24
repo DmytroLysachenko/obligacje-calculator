@@ -1,11 +1,12 @@
-import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
-import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 import { ArrowDownUp, Info, ListOrdered } from 'lucide-react';
+
 import type { BondOptimizerResultItem } from '@/features/bond-core/types/scenarios';
 import {
   buildOptimizerLeadingDetailMetrics,
   buildOptimizerRankedOutcomeRows,
 } from '@/features/optimizer/lib/optimizer-results-model';
+import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
+import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 
 export interface OptimizerReadyStep {
   id: string;

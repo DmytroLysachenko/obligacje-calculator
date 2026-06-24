@@ -1,6 +1,8 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
+
+import { BondType, InterestPayout, InvestmentFrequency, TaxStrategy } from '../types';
+
 import { calculateBondInvestment, calculateRegularInvestment } from './calculations';
-import { BondType, InterestPayout, TaxStrategy, InvestmentFrequency } from '../types';
 
 describe('Bond Calculations Engine (Modular)', () => {
   const baseInputs = {

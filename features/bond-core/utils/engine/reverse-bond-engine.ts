@@ -1,5 +1,6 @@
-import { BondInputs, CalculationResult } from '../../types';
 import { createNumericFaultError } from '../../errors';
+import { BondInputs, CalculationResult } from '../../types';
+
 import { calculateBondInvestment } from './single-bond-engine';
 
 function assertSingleBondTerminalResult(

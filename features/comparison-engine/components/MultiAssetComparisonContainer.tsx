@@ -1,18 +1,21 @@
 'use client';
-import React, { useMemo, useState } from 'react';
-import { useMultiAssetComparison } from '../hooks/useMultiAssetComparison';
-import { useAppI18n } from '@/i18n/client';
 import { AlertTriangle, Database, LineChart } from 'lucide-react';
-import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
-import { ComparisonControls } from './ComparisonControls';
-import { MultiAssetComparisonChart } from './MultiAssetComparisonChart';
-import { ComparisonAssetBreakdown } from './ComparisonAssetBreakdown';
-import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
+import React, { useMemo, useState } from 'react';
+
 import { MonthlyReturn } from '@/features/bond-core/constants/historical-data';
+import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
+import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
+import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
+
+import { useMultiAssetComparison } from '../hooks/useMultiAssetComparison';
+
+import { ComparisonAssetBreakdown } from './ComparisonAssetBreakdown';
+import { ComparisonControls } from './ComparisonControls';
+import { MultiAssetComparisonChart } from './MultiAssetComparisonChart';
 function MetaCell({ label, value }: { label: string; value: string }) {
   return (
     <div className="border-b border-dashed border-border px-4 py-3 last:border-b-0 md:border-b-0 md:border-r last:md:border-r-0">

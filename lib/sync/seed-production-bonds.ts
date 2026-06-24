@@ -1,6 +1,7 @@
+import 'dotenv/config';
+
 import { db } from '@/db';
 import { polishBonds } from '@/db/schema';
-import 'dotenv/config';
 
 async function seedBonds() {
   const bonds = [

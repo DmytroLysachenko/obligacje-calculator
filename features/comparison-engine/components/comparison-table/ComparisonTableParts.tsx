@@ -2,12 +2,12 @@
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { ComparisonScenarioSnapshot } from '@/features/comparison-engine/lib/comparison-table-model';
 import { cn } from '@/lib/utils';
 import {
   TableRowLimit,
   tableRowLimitOptions,
 } from '@/shared/components/results/TableDensityControls';
-import { ComparisonScenarioSnapshot } from '@/features/comparison-engine/lib/comparison-table-model';
 
 export function ComparisonTableStat({ label, value }: { label: string; value: string }) {
   return (

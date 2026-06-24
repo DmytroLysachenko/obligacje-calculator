@@ -1,4 +1,5 @@
 import { compareAsc, format, parseISO } from 'date-fns';
+
 import { BondType } from '@/features/bond-core/types';
 import { BondComparisonScenarioItem } from '@/features/bond-core/types/scenarios';
 import { sampleSeriesPoints } from '@/shared/lib/chart-series';

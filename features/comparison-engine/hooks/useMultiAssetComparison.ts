@@ -1,18 +1,20 @@
 import { useCallback, useMemo, useState } from 'react';
-import {
-  calculateAssetPerformance,
-  calculateBondsPerformance,
-  calculateSavingsPerformance,
-} from '../../bond-core/utils/asset-calculations';
-import { AssetMetadata } from '../../bond-core/types/assets';
-import { HISTORICAL_RETURNS, type MonthlyReturn } from '../../bond-core/constants/historical-data';
-import { useQuerySync } from '@/shared/hooks/useQuerySync';
+
 import { useChartData } from '@/shared/hooks/useChartData';
+import { useQuerySync } from '@/shared/hooks/useQuerySync';
 import {
   getReferenceAsOfLabel,
   getReferenceCoverageLabel,
   getReferenceSourceLabel,
 } from '@/shared/lib/data-reference';
+
+import { HISTORICAL_RETURNS, type MonthlyReturn } from '../../bond-core/constants/historical-data';
+import { AssetMetadata } from '../../bond-core/types/assets';
+import {
+  calculateAssetPerformance,
+  calculateBondsPerformance,
+  calculateSavingsPerformance,
+} from '../../bond-core/utils/asset-calculations';
 
 interface MultiAssetHistoryResponse {
   data: MonthlyReturn[];

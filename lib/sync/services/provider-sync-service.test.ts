@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { ProviderSyncService, type ProviderSyncRepository } from './provider-sync-service';
+
 import type { SyncProvider } from '../types';
+
+import { type ProviderSyncRepository, ProviderSyncService } from './provider-sync-service';
 
 const logger = {
   info: vi.fn(),

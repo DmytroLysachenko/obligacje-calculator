@@ -1,7 +1,7 @@
 import { BondType } from '@/features/bond-core/types';
 import {
-  SavedScenarioRecord,
   loadSavedScenarios,
+  SavedScenarioRecord,
 } from '@/features/single-calculator/lib/scenario-storage';
 
 const STORAGE_KEY = 'obligacje.user-experience.v1';

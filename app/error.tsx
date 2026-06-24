@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { AlertTriangle, RefreshCcw, Home } from 'lucide-react';
+import { AlertTriangle, Home, RefreshCcw } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect } from 'react';
+
+import { Button } from '@/components/ui/button';
 
 export default function GlobalError({
   error,

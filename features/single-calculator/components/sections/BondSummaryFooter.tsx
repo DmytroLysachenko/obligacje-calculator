@@ -1,15 +1,16 @@
 'use client';
-import React from 'react';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { HelpCircle } from 'lucide-react';
 import { format } from 'date-fns';
-import { BondInputs } from '@/features/bond-core/types';
+import { HelpCircle } from 'lucide-react';
+import React from 'react';
+
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
+import { BondInputs } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
-import { formatBondDuration } from '@/shared/lib/format-bond-duration';
-import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
 import { ParameterSummary } from '@/shared/components/results/ParameterSummary';
+import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
+import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 
 interface BondSummaryFooterProps {
   inputs: BondInputs;

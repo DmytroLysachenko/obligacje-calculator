@@ -1,18 +1,19 @@
 'use client';
-import React from 'react';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { HelpCircle } from 'lucide-react';
-import { BondType, BondInputs } from '@/features/bond-core/types';
-import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
+import React from 'react';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
+import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
+import { BondInputs, BondType } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
-import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
 import { getIntlLocale } from '@/i18n/locale-utils';
-import { FormSelect } from '@/shared/components/forms/FormSelect';
 import { BondInfoPanel } from '@/shared/components/forms/BondInfoPanel';
+import { FormSelect } from '@/shared/components/forms/FormSelect';
+import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
 interface BondSeries {
   id: string;
   seriesCode: string;

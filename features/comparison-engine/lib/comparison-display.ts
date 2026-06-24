@@ -1,8 +1,9 @@
 import { addMonths, compareAsc, differenceInMonths, format, parseISO } from 'date-fns';
+
 import { BondType, CalculationResult, ChartStep } from '@/features/bond-core/types';
 import { BondInputs } from '@/features/bond-core/types';
-import { sampleSeriesPoints } from '@/shared/lib/chart-series';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
+import { sampleSeriesPoints } from '@/shared/lib/chart-series';
 
 type Translator = (key: string, params?: Record<string, string | number>) => string;
 

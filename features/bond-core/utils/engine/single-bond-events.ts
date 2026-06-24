@@ -1,4 +1,5 @@
 import { Decimal } from 'decimal.js';
+
 import { SimulationEvent, SimulationEventType } from '../../types/simulation';
 
 export function createCyclePurchaseEvent({

@@ -1,1 +1,1 @@
-export { userSettings, type NewUserSettings, type UserSettings } from '../schema';
+export { type NewUserSettings, type UserSettings, userSettings } from '../schema';

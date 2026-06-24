@@ -1,9 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+
 import {
-  postCalculation,
   type CalculationClientErrorPayload,
+  postCalculation,
 } from '@/shared/lib/calculation-client';
 import { postCalculationInWorker } from '@/shared/lib/calculation-worker-client';
 

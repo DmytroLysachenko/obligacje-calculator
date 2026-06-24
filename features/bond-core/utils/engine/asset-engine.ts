@@ -1,5 +1,6 @@
-import { differenceInMonths, parseISO, addMonths } from 'date-fns';
+import { addMonths, differenceInMonths, parseISO } from 'date-fns';
 import { Decimal } from 'decimal.js';
+
 import { BaseInstrumentInputs } from '../../types/instruments';
 
 export interface SimpleAssetInputs extends BaseInstrumentInputs {

@@ -1,7 +1,7 @@
+import { BOND_DEFINITIONS } from '../../features/bond-core/constants/bond-definitions';
+import { BondType } from '../../features/bond-core/types';
 import { db } from '../index';
 import { polishBonds } from '../schema';
-import { BondType } from '../../features/bond-core/types';
-import { BOND_DEFINITIONS } from '../../features/bond-core/constants/bond-definitions';
 
 export async function seedBondMetadata() {
   let bondCount = 0;

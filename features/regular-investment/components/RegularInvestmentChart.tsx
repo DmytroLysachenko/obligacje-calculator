@@ -1,16 +1,17 @@
 'use client';
 
-import React from 'react';
 import { format } from 'date-fns';
+import React from 'react';
+
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChartStep, RegularInvestmentResult } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
-import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
-import { getBondColor } from '@/shared/lib/charts/get-bond-color';
-import { computeNumericDomain } from '@/shared/lib/chart-series';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
-import { buildRegularInvestmentChartPoints } from '@/shared/lib/regular-investment-display';
 import { BondValueChart, BondValueChartPoint } from '@/shared/components/charts/BondValueChart';
+import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
+import { computeNumericDomain } from '@/shared/lib/chart-series';
+import { getBondColor } from '@/shared/lib/charts/get-bond-color';
+import { buildRegularInvestmentChartPoints } from '@/shared/lib/regular-investment-display';
 
 interface RegularInvestmentChartProps {
   results: RegularInvestmentResult;

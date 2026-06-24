@@ -1,4 +1,5 @@
 import { desc, eq, inArray } from 'drizzle-orm';
+
 import { db } from '@/db';
 import { dataPoints, dataSeries } from '@/db/schema';
 import { GusCpiApiClient } from '@/lib/api-clients/gus-cpi';
@@ -10,12 +11,12 @@ export {
   getFallbackNbpSeries,
 } from './chart-reference-series';
 import {
+  type ChartRatePoint,
+  type ChartSeriesEnvelope,
   createInflationSeriesEnvelope,
   createNbpSeriesEnvelope,
   getFallbackInflationSeries,
   getFallbackNbpSeries,
-  type ChartRatePoint,
-  type ChartSeriesEnvelope,
 } from './chart-reference-series';
 
 export async function getInflationChartSeries(): Promise<ChartSeriesEnvelope<ChartRatePoint>> {

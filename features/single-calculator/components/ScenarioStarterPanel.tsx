@@ -1,9 +1,11 @@
 'use client';
 
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Rocket, Sparkles } from 'lucide-react';
+import React from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+
 import { StarterScenarioDefinition } from '../lib/scenario-storage';
 
 interface ScenarioStarterPanelProps {

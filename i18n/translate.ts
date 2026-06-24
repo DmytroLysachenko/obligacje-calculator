@@ -1,7 +1,8 @@
 import { createTranslator } from 'next-intl';
-import { defaultLocale, type Language } from './config';
+
 import en from './translations/en.json';
 import pl from './translations/pl.json';
+import { defaultLocale, type Language } from './config';
 
 export type TranslationVariables = Record<string, string | number>;
 

@@ -1,6 +1,7 @@
-import { auth } from '@/auth';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+
+import { auth } from '@/auth';
 import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
 import {
   ensureGuestPortfolioOwner,

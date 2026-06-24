@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+
 import { Label } from '@/components/ui/label';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';

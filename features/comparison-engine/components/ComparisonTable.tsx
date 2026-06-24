@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
 import { Scale } from 'lucide-react';
+import React from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import {
   Table,
@@ -11,18 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useAppI18n } from '@/i18n/client';
-import { cn } from '@/lib/utils';
 import { CalculationResult } from '@/features/bond-core/types';
-import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
-import { TableRowLimit } from '@/shared/components/results/TableDensityControls';
-import {
-  buildComparisonAlignedTableRows,
-  ComparisonTableGranularity,
-  getComparisonTablePageCount,
-  getComparisonTablePageRows,
-  getComparisonVisibleRangeLabel,
-} from '@/features/comparison-engine/lib/comparison-table-model';
 import {
   ComparisonScenarioCell,
   ComparisonTablePaginationControls,
@@ -30,6 +20,17 @@ import {
   MobileComparisonScenario,
   MobileComparisonValue,
 } from '@/features/comparison-engine/components/comparison-table/ComparisonTableParts';
+import {
+  buildComparisonAlignedTableRows,
+  ComparisonTableGranularity,
+  getComparisonTablePageCount,
+  getComparisonTablePageRows,
+  getComparisonVisibleRangeLabel,
+} from '@/features/comparison-engine/lib/comparison-table-model';
+import { useAppI18n } from '@/i18n/client';
+import { cn } from '@/lib/utils';
+import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
+import { TableRowLimit } from '@/shared/components/results/TableDensityControls';
 
 interface ComparisonTableProps {
   resultsA: CalculationResult;

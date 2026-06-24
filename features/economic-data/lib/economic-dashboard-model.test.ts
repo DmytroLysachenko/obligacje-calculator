@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
+
 import {
   buildEconomicHealthItems,
   ECONOMIC_RANGE_OPTIONS,
-  getEconomicStatusLabel,
   type EconomicStatusLabels,
+  getEconomicStatusLabel,
 } from './economic-dashboard-model';
 
 const labels: EconomicStatusLabels = {

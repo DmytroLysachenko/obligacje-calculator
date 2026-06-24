@@ -1,8 +1,11 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+
 import { describe, expect, it } from 'vitest';
+
 import { CalculationDomainError } from '../errors';
 import { BondType, InterestPayout, TaxStrategy } from '../types';
+
 import { calculateBondInvestment, calculateReverseBondInvestment } from './calculations';
 
 const root = process.cwd();

@@ -1,4 +1,5 @@
-import { parseISO, isBefore } from 'date-fns';
+import { isBefore, parseISO } from 'date-fns';
+
 import { BondInputs, RegularInvestmentInputs } from '../../types';
 
 export interface NormalizedBondInputs extends Omit<BondInputs, 'purchaseDate' | 'withdrawalDate'> {

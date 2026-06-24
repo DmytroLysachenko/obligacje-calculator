@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
 import { LineChart } from 'lucide-react';
+import React from 'react';
+
 import {
   BondInputs,
   CalculationResult,
@@ -15,17 +16,18 @@ import {
   BondValueChartTooltipGroup,
 } from '@/shared/components/charts/BondValueChart';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
-import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { MetricStrip, MetricStripItem } from '@/shared/components/results/MetricStrip';
+import { ResultActionGrid } from '@/shared/components/results/ResultActionGrid';
+import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
+import { applyChartContextRates } from '@/shared/lib/chart-context-rates';
+import { computeNumericDomain, computeRateDomain } from '@/shared/lib/chart-series';
 import { buildComparisonExportHeaders } from '@/shared/lib/export-headers';
 import {
   buildCombinedComparisonCsvFilename,
   exportComparisonCsv,
 } from '@/shared/lib/retained-exports';
+
 import { ComparisonChartPoint } from '../lib/comparison-display';
-import { ResultActionGrid } from '@/shared/components/results/ResultActionGrid';
-import { computeNumericDomain, computeRateDomain } from '@/shared/lib/chart-series';
-import { applyChartContextRates } from '@/shared/lib/chart-context-rates';
 
 interface ComparisonResultsPanelProps {
   chartData: ComparisonChartPoint[];

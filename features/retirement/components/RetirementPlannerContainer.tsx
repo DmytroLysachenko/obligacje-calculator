@@ -1,28 +1,30 @@
 'use client';
-import React, { useMemo, useState } from 'react';
 import { Calendar, Wallet } from 'lucide-react';
-import { BondType, TaxStrategy } from '@/features/bond-core/types';
+import React, { useMemo, useState } from 'react';
+
 import {
   RETIREMENT_SUPPORTED_BOND_TYPES,
   supportsRetirementBondType,
 } from '@/features/bond-core/support-matrix';
+import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import {
   RetirementPlannerCalculationEnvelope,
   ScenarioKind,
 } from '@/features/bond-core/types/scenarios';
-import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
+import { useAppI18n } from '@/i18n/client';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
+import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
-import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
+import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
+import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';
-import { useAppI18n } from '@/i18n/client';
+
 import { RetirementInputs, RetirementInputsPanel } from './RetirementInputsPanel';
 import { RetirementResultsOverview } from './RetirementResultsOverview';
 import { RetirementSupportList } from './RetirementSupportList';
-import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 
 function formatRate(value: number) {
   return `${value.toFixed(2)}%`;

@@ -12,13 +12,14 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent';
-import { useAppI18n } from '@/i18n/client';
-import { useChartData } from '@/shared/hooks/useChartData';
-import { ChartContainer } from '@/shared/components/charts/ChartContainer';
-import { ReferenceChartFrame } from '@/shared/components/charts/ReferenceChartFrame';
+import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
+
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useAppI18n } from '@/i18n/client';
+import { ChartContainer } from '@/shared/components/charts/ChartContainer';
+import { ReferenceChartFrame } from '@/shared/components/charts/ReferenceChartFrame';
+import { useChartData } from '@/shared/hooks/useChartData';
 import { sampleSeriesPoints, sliceSeriesByPeriod } from '@/shared/lib/chart-series';
 import { getReferenceMetaItems } from '@/shared/lib/data-reference';
 interface InflationDataPoint {

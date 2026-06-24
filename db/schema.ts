@@ -1,17 +1,17 @@
 import {
+  boolean,
+  date,
+  index,
+  integer,
+  numeric,
+  pgEnum,
   pgTable,
+  primaryKey,
+  serial,
   text,
   timestamp,
-  uuid,
-  numeric,
-  integer,
-  boolean,
-  pgEnum,
-  serial,
-  date,
   uniqueIndex,
-  primaryKey,
-  index,
+  uuid,
 } from 'drizzle-orm/pg-core';
 import { type AdapterAccountType } from 'next-auth/adapters';
 

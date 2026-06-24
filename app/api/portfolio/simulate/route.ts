@@ -1,13 +1,14 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
+
 import { apiHandler } from '@/lib/server/http/api-handler';
-import { simulateOwnerPortfolio } from '@/lib/server/portfolio/queries';
+import { readJsonBody } from '@/lib/server/http/read-json-body';
 import { okJson } from '@/lib/server/http/responses';
 import {
   portfolioDomainErrorResponse,
   withAuthenticatedPortfolioOwner,
 } from '@/lib/server/portfolio/http';
-import { readJsonBody } from '@/lib/server/http/read-json-body';
+import { simulateOwnerPortfolio } from '@/lib/server/portfolio/queries';
 
 const PortfolioSimulationPayloadSchema = z.object({
   portfolioId: z.string().uuid(),

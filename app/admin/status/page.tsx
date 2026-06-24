@@ -1,10 +1,11 @@
 'use client';
 
+import { AlertCircle } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
-import { useAppI18n } from '@/i18n/client';
 import { AdminStatusDashboard } from '@/features/admin/status/AdminStatusDashboard';
 import { useAdminStatusDashboard } from '@/features/admin/status/useAdminStatusDashboard';
-import { AlertCircle } from 'lucide-react';
+import { useAppI18n } from '@/i18n/client';
 
 export default function AdminStatusPage() {
   const { t } = useAppI18n();

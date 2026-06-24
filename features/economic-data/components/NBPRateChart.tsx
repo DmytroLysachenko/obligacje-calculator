@@ -11,11 +11,12 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAppI18n } from '@/i18n/client';
-import { useChartData } from '@/shared/hooks/useChartData';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ReferenceChartFrame } from '@/shared/components/charts/ReferenceChartFrame';
-import { Skeleton } from '@/components/ui/skeleton';
+import { useChartData } from '@/shared/hooks/useChartData';
 import { sampleSeriesPoints, sliceSeriesByPeriod } from '@/shared/lib/chart-series';
 import { getReferenceMetaItems } from '@/shared/lib/data-reference';
 interface NBPRateDataPoint {

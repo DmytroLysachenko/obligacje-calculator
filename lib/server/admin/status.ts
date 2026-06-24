@@ -1,7 +1,9 @@
+import { sql } from 'drizzle-orm';
+
 import { db } from '@/db';
 import { dataPoints } from '@/db/schema';
-import { sql } from 'drizzle-orm';
 import { listRecentSyncRuns } from '@/lib/server/sync/run-history';
+
 import { createAdminStatusSnapshot } from './status-read-model';
 
 export async function getAdminStatusSnapshot() {

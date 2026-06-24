@@ -1,6 +1,8 @@
-import { describe, expect, it } from 'vitest';
 import { parseISO } from 'date-fns';
+import { describe, expect, it } from 'vitest';
+
 import { CalculationResult, ChartStep } from '@/features/bond-core/types';
+
 import { buildComparisonChartData } from './lib/comparison-display';
 
 function point(date: string, totalValue: number, realValue = totalValue) {

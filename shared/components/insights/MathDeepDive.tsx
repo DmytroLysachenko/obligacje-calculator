@@ -1,5 +1,10 @@
 'use client';
+import { ArrowRight, Calculator, ExternalLink, Info, Landmark, ShieldCheck } from 'lucide-react';
+import Link from 'next/link';
 import React from 'react';
+
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import {
   Sheet,
   SheetContent,
@@ -8,12 +13,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { useAppI18n } from '@/i18n/client';
 import { CalculationResult } from '@/features/bond-core/types';
-import { Info, ArrowRight, Calculator, Landmark, ShieldCheck, ExternalLink } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { Separator } from '@/components/ui/separator';
+import { useAppI18n } from '@/i18n/client';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 interface MathDeepDiveProps {
   results: CalculationResult;

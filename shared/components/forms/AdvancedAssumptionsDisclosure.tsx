@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
 import { Settings2 } from 'lucide-react';
+import React from 'react';
+
 import {
   Accordion,
   AccordionContent,

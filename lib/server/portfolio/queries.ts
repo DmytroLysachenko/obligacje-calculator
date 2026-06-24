@@ -2,8 +2,8 @@ import { calculationService } from '@/features/bond-core/application-service';
 import { TaxStrategy } from '@/features/bond-core/types';
 import {
   PortfolioSimulationCalculationEnvelope,
-  ScenarioKind,
   type PortfolioSimulationResult,
+  ScenarioKind,
 } from '@/features/bond-core/types/scenarios';
 import { getMacroAssumptionDefaults } from '@/lib/data/market-data';
 import { getOwnedPortfolio } from '@/lib/server/portfolio/access';

@@ -1,7 +1,9 @@
-import { BondInputs } from '../types';
-import { BOND_DEFINITIONS } from '../constants/bond-definitions';
-import { HandlerContext } from './base';
 import { resolveBondOfferTerms } from '@/lib/server/bonds/offer-terms';
+
+import { BOND_DEFINITIONS } from '../constants/bond-definitions';
+import { BondInputs } from '../types';
+
+import { HandlerContext } from './base';
 
 interface ResolveScenarioInputsArgs {
   inputs: Partial<BondInputs> & Pick<BondInputs, 'bondType' | 'purchaseDate'>;

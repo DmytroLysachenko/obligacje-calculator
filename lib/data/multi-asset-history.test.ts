@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
+
 import { HISTORICAL_RETURNS } from '@/features/bond-core/constants/historical-data';
+
 import { createFallbackMultiAssetHistory } from './multi-asset-history';
 
 describe('multi asset history data helpers', () => {

@@ -1,27 +1,25 @@
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
-import { useAppI18n } from '@/i18n/client';
-import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
-import { BondEducationCard } from '@/features/education/components/BondEducationCard';
 import {
-  ArrowRight,
-  Clock,
-  Info,
-  HelpCircle,
   AlertTriangle,
-  TrendingDown,
-  Scale,
+  ArrowRight,
   Briefcase,
-  Zap,
-  Target,
+  Clock,
+  HelpCircle,
+  Info,
   Layers,
-  Percent,
   LogOut,
+  Percent,
+  Scale,
   ShieldCheck,
+  Target,
+  TrendingDown,
   Users,
+  Zap,
 } from 'lucide-react';
+import Link from 'next/link';
+import React from 'react';
+
 import {
   Accordion,
   AccordionContent,
@@ -29,8 +27,11 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Skeleton } from '@/components/ui/skeleton';
+import { BondEducationCard } from '@/features/education/components/BondEducationCard';
+import { useAppI18n } from '@/i18n/client';
 import { PageTransition } from '@/shared/components/page/PageTransition';
 import { SectionBlock } from '@/shared/components/page/SectionBlock';
+import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 
 export default function EducationClient() {
   const { t } = useAppI18n();
