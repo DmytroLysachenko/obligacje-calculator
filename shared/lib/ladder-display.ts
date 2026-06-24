@@ -55,9 +55,7 @@ export function buildLadderMaturityBuckets(
     }));
 }
 
-export function buildLadderYearBuckets(
-  monthlyBuckets: LadderMaturityBucket[],
-): LadderYearBucket[] {
+export function buildLadderYearBuckets(monthlyBuckets: LadderMaturityBucket[]): LadderYearBucket[] {
   const grouped = monthlyBuckets.reduce<Record<string, LadderYearBucket>>((accumulator, bucket) => {
     const year = bucket.date.slice(0, 4);
 

@@ -15,10 +15,7 @@ export function sortPortfoliosByFreshness(portfolios: UserPortfolio[]) {
   );
 }
 
-export function upsertPortfolioInNotebookState(
-  current: UserPortfolio[],
-  portfolio: UserPortfolio,
-) {
+export function upsertPortfolioInNotebookState(current: UserPortfolio[], portfolio: UserPortfolio) {
   const existingIndex = current.findIndex((item) => item.id === portfolio.id);
 
   if (existingIndex === -1) {
@@ -30,10 +27,7 @@ export function upsertPortfolioInNotebookState(
   return sortPortfoliosByFreshness(next);
 }
 
-export function removePortfolioFromNotebookState(
-  current: UserPortfolio[],
-  portfolioId: string,
-) {
+export function removePortfolioFromNotebookState(current: UserPortfolio[], portfolioId: string) {
   return current.filter((item) => item.id !== portfolioId);
 }
 

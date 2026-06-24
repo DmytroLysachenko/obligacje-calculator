@@ -20,9 +20,7 @@ export function ResultMetricCard({
 }: ResultMetricCardProps) {
   return (
     <div className={cn('surface-panel px-4 py-4', className)}>
-      <p className="text-xs font-semibold text-muted-foreground">
-        {label}
-      </p>
+      <p className="text-xs font-semibold text-muted-foreground">{label}</p>
       <p className={cn('mt-2 text-xl font-semibold tracking-tight', tone)}>{value}</p>
       <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>
     </div>

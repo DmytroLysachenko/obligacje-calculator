@@ -1,6 +1,6 @@
 import { BOND_DEFINITIONS } from '@/features/bond-core/constants/bond-definitions';
 import { BondType } from '@/features/bond-core/types';
-import {deriveSeriesCode, deriveSeriesWindow} from '@/lib/server/bonds/offer-terms';
+import { deriveSeriesCode, deriveSeriesWindow } from '@/lib/server/bonds/offer-terms';
 import {
   findBondDefinitionBySymbol,
   updatePolishBondOfferTerms,

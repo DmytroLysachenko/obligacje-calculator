@@ -24,17 +24,8 @@ const flowClass = {
   none: '',
 } as const;
 
-export function PageFrame({
-  children,
-  width = 'wide',
-  flow = 'page',
-  className,
-}: PageFrameProps) {
-  return (
-    <div className={cn(widthClass[width], flowClass[flow], className)}>
-      {children}
-    </div>
-  );
+export function PageFrame({ children, width = 'wide', flow = 'page', className }: PageFrameProps) {
+  return <div className={cn(widthClass[width], flowClass[flow], className)}>{children}</div>;
 }
 
 interface SectionBlockProps {
@@ -73,7 +64,13 @@ export function SectionBlock({
       )}
     >
       {title || description ? (
-        <div className={cn('space-y-2', (isSurface || isCard) && 'border-b border-border pb-4', headerClassName)}>
+        <div
+          className={cn(
+            'space-y-2',
+            (isSurface || isCard) && 'border-b border-border pb-4',
+            headerClassName,
+          )}
+        >
           {title ? <h2 className="ui-section-title">{title}</h2> : null}
           {description ? (
             <p className="ui-body max-w-[var(--layout-reading-max)] text-muted-foreground">

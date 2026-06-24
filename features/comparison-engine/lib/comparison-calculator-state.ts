@@ -6,7 +6,11 @@ import {
   SingleBondCalculationEnvelope,
 } from '@/features/bond-core/types/scenarios';
 import { areCalculatorStatesEqual } from '@/shared/lib/calculator-state';
-import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
+import {
+  getHorizonMonths,
+  getWithdrawalDateFromMonths,
+  toDateString,
+} from '@/shared/lib/date-timing';
 import { sanitizeScenarioOverride } from './comparison-scenario-state';
 
 export type SharedComparisonConfig = IndependentBondComparisonPayload['sharedConfig'];
@@ -42,16 +46,20 @@ export function buildDefaultSharedConfig(now = new Date()): SharedComparisonConf
 export function buildScenarioInputs(
   sharedConfig: SharedComparisonConfig,
   scenario: ScenarioOverride,
-  definitions: Record<BondType, typeof BOND_DEFINITIONS[BondType]> | null,
+  definitions: Record<BondType, (typeof BOND_DEFINITIONS)[BondType]> | null,
 ): BondInputs {
   const normalizedScenario = sanitizeScenarioOverride(sharedConfig, scenario);
-  const definition = definitions?.[normalizedScenario.bondType] ?? BOND_DEFINITIONS[normalizedScenario.bondType];
+  const definition =
+    definitions?.[normalizedScenario.bondType] ?? BOND_DEFINITIONS[normalizedScenario.bondType];
   const purchaseDate = normalizedScenario.purchaseDate ?? sharedConfig.purchaseDate;
   const timingMode = normalizedScenario.timingMode ?? sharedConfig.timingMode ?? 'general';
-  const horizonMonths = normalizedScenario.investmentHorizonMonths ?? sharedConfig.investmentHorizonMonths ?? DEFAULT_HORIZON_MONTHS;
+  const horizonMonths =
+    normalizedScenario.investmentHorizonMonths ??
+    sharedConfig.investmentHorizonMonths ??
+    DEFAULT_HORIZON_MONTHS;
   const withdrawalDate =
-    normalizedScenario.withdrawalDate
-    ?? (timingMode === 'general'
+    normalizedScenario.withdrawalDate ??
+    (timingMode === 'general'
       ? getWithdrawalDateFromMonths(purchaseDate, horizonMonths)
       : sharedConfig.withdrawalDate);
 
@@ -89,7 +97,9 @@ export function updateSharedComparisonConfig(
   const next = { ...previous, [key]: value };
 
   if (key === 'purchaseDate') {
-    const months = previous.investmentHorizonMonths ?? getHorizonMonths(previous.purchaseDate, previous.withdrawalDate);
+    const months =
+      previous.investmentHorizonMonths ??
+      getHorizonMonths(previous.purchaseDate, previous.withdrawalDate);
     next.withdrawalDate = getWithdrawalDateFromMonths(String(value), months);
   }
 
@@ -105,7 +115,9 @@ export function updateSharedComparisonConfig(
   }
 
   if (key === 'timingMode' && value === 'general') {
-    const months = previous.investmentHorizonMonths ?? getHorizonMonths(previous.purchaseDate, previous.withdrawalDate);
+    const months =
+      previous.investmentHorizonMonths ??
+      getHorizonMonths(previous.purchaseDate, previous.withdrawalDate);
     next.investmentHorizonMonths = months;
     next.withdrawalDate = getWithdrawalDateFromMonths(previous.purchaseDate, months);
   }
@@ -113,9 +125,7 @@ export function updateSharedComparisonConfig(
   return next;
 }
 
-export function splitComparisonEnvelope(
-  envelope: BondComparisonCalculationEnvelope | null,
-) {
+export function splitComparisonEnvelope(envelope: BondComparisonCalculationEnvelope | null) {
   const resultA = envelope?.result.find((item) => item.scenarioKey === 'scenarioA')?.result ?? null;
   const resultB = envelope?.result.find((item) => item.scenarioKey === 'scenarioB')?.result ?? null;
 
@@ -145,8 +155,10 @@ export function getComparisonDirtyState({
   if (!hasResults) return isDirty;
   if (!committedInputsA || !committedInputsB) return true;
 
-  return !areCalculatorStatesEqual(inputsA, committedInputsA)
-    || !areCalculatorStatesEqual(inputsB, committedInputsB);
+  return (
+    !areCalculatorStatesEqual(inputsA, committedInputsA) ||
+    !areCalculatorStatesEqual(inputsB, committedInputsB)
+  );
 }
 
 function buildSingleEnvelope(
@@ -183,7 +195,7 @@ function extendSharedRatePaths(
   if (previous.customNbpRate) {
     next.customNbpRate = Array.from(
       { length: years },
-      (_, index) => previous.customNbpRate?.[index] ?? (previous.expectedNbpRate ?? 5.25),
+      (_, index) => previous.customNbpRate?.[index] ?? previous.expectedNbpRate ?? 5.25,
     );
   }
 }

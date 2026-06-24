@@ -35,10 +35,13 @@ describe('sidebar utility spacing contracts', () => {
     const source = read(files.sidebar);
 
     expectContains(source, 'space-y-4 border-t border-border bg-muted/20 px-3 py-4');
-    expectContains(source, '<SidebarUtilityGroup title={t(\'common.settings\')}>');
+    expectContains(source, "<SidebarUtilityGroup title={t('common.settings')}>");
     expectContains(source, '<SidebarSettingsUtility />');
     expectContains(source, '<SidebarSyncSummary dataFreshness={dataFreshness} />');
-    expectContains(source, 'border-t border-border px-0.5 pt-3 text-xs leading-5 text-muted-foreground');
+    expectContains(
+      source,
+      'border-t border-border px-0.5 pt-3 text-xs leading-5 text-muted-foreground',
+    );
 
     expectNoFragments(source, [
       'space-y-3 border-t border-border bg-muted/25 p-2.5',
@@ -76,11 +79,11 @@ describe('sidebar utility spacing contracts', () => {
 
     expectContains(source, '<SidebarUtilityStack>');
     expectContains(source, '<SidebarUtilityPanel flush>');
-    expectContains(source, 'title={t(\'common.language\')}');
+    expectContains(source, "title={t('common.language')}");
     expectContains(source, 'action={<LanguageSwitcher />}');
     expectNotContains(source, 'description="PL / EN"');
     expectNotContains(source, 'ThemeToggle');
-    expectNotContains(source, 'title={t(\'common.theme\')}');
+    expectNotContains(source, "title={t('common.theme')}");
 
     expectNoFragments(source, [
       'mt-3.5 border-t border-border pt-3.5',
@@ -98,7 +101,10 @@ describe('sidebar utility spacing contracts', () => {
     expectContains(source, 'mt-1 text-sm font-semibold text-foreground');
     expectContains(source, 'mt-0.5 text-[11px] leading-4 text-muted-foreground');
     expectContains(source, 'getFreshnessDisplayState(');
-    expectContains(source, 'dataFreshness ? t(\'sidebar.freshness.no_date\') : t(\'sidebar.freshness.no_metadata\')');
+    expectContains(
+      source,
+      "dataFreshness ? t('sidebar.freshness.no_date') : t('sidebar.freshness.no_metadata')",
+    );
     expectContains(source, 'max-w-[14rem] text-[11px] leading-5 text-muted-foreground');
 
     expectNoFragments(source, [
@@ -106,7 +112,7 @@ describe('sidebar utility spacing contracts', () => {
       'flex items-start justify-between gap-3',
       'mt-0.5 text-sm font-semibold text-foreground',
       'line-clamp-2 text-[11px] leading-4 text-muted-foreground',
-      'dataFreshness.asOf ?? t(\'sidebar.freshness.no_date\')',
+      "dataFreshness.asOf ?? t('sidebar.freshness.no_date')",
     ]);
   });
 

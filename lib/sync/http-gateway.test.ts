@@ -10,7 +10,9 @@ describe('sync http gateway', () => {
     const fetchMock = vi.fn().mockResolvedValue(Response.json({ ok: true }));
     vi.stubGlobal('fetch', fetchMock);
 
-    await expect(fetchSyncJson<{ ok: boolean }>('https://example.com/data')).resolves.toEqual({ ok: true });
+    await expect(fetchSyncJson<{ ok: boolean }>('https://example.com/data')).resolves.toEqual({
+      ok: true,
+    });
     expect(fetchMock).toHaveBeenCalledWith(
       'https://example.com/data',
       expect.objectContaining({
@@ -23,10 +25,15 @@ describe('sync http gateway', () => {
   });
 
   it('throws classified http errors by default', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('nope', {
-      status: 503,
-      statusText: 'Service Unavailable',
-    })));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response('nope', {
+          status: 503,
+          statusText: 'Service Unavailable',
+        }),
+      ),
+    );
 
     await expect(fetchSyncText('https://example.com/down')).rejects.toThrow(
       'External fetch failed: 503 Service Unavailable',

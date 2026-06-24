@@ -10,9 +10,7 @@ export const AdvisorTips: React.FC<{ tips: AdvisorTip[] }> = ({ tips }) => {
 
   return (
     <div className="mt-6 space-y-4 border-t border-border py-4">
-      <h3 className="flex items-center gap-2 ui-section-title">
-        Smart Advisor
-      </h3>
+      <h3 className="flex items-center gap-2 ui-section-title">Smart Advisor</h3>
       {tips.map((tip) => (
         <div
           key={tip.id}

@@ -31,9 +31,7 @@ function listCodeFiles(directory: string): string[] {
 }
 
 function filesContaining(pattern: RegExp) {
-  return codeRoots
-    .flatMap(listCodeFiles)
-    .filter((file) => pattern.test(read(file)));
+  return codeRoots.flatMap(listCodeFiles).filter((file) => pattern.test(read(file)));
 }
 
 describe('clean code architecture contract', () => {
@@ -44,7 +42,10 @@ describe('clean code architecture contract', () => {
       'shared/workers/calculation.worker.ts',
     ]);
     const matches = filesContaining(/\bfetch\(/)
-      .filter((file) => file.startsWith('app/') || file.startsWith('features/') || file.startsWith('shared/'))
+      .filter(
+        (file) =>
+          file.startsWith('app/') || file.startsWith('features/') || file.startsWith('shared/'),
+      )
       .filter((file) => !file.endsWith('.test.ts') && !file.endsWith('.test.tsx'))
       .filter((file) => !approvedFetchFiles.has(file));
 
@@ -52,9 +53,7 @@ describe('clean code architecture contract', () => {
   });
 
   it('keeps sync and provider http calls behind the sync gateway', () => {
-    const approvedServerFetchFiles = new Set([
-      'lib/sync/http-gateway.ts',
-    ]);
+    const approvedServerFetchFiles = new Set(['lib/sync/http-gateway.ts']);
     const matches = filesContaining(/\bfetch\(/)
       .filter((file) => file.startsWith('lib/sync/') || file.startsWith('lib/api-clients/'))
       .filter((file) => !file.endsWith('.test.ts'))
@@ -64,10 +63,7 @@ describe('clean code architecture contract', () => {
   });
 
   it('keeps app api route response envelopes on shared helpers', () => {
-    const allowedRawJsonRoutes = new Set([
-      'app/api/health/route.ts',
-      'app/api/readiness/route.ts',
-    ]);
+    const allowedRawJsonRoutes = new Set(['app/api/health/route.ts', 'app/api/readiness/route.ts']);
     const matches = filesContaining(/NextResponse\.json/)
       .filter((file) => file.startsWith('app/api/'))
       .filter((file) => !allowedRawJsonRoutes.has(file));
@@ -89,10 +85,12 @@ describe('clean code architecture contract', () => {
       'shared/hooks/useQuerySync.ts',
       'lib/sync/seed-series.ts',
     ]);
-    const disallowedMarkers = filesContaining(/TODO|FIXME|debugger|@ts-ignore/)
-      .filter((file) => !file.endsWith('clean-code-contract.test.ts'));
-    const unapprovedLintDisables = filesContaining(/eslint-disable/)
-      .filter((file) => !approvedDisableFiles.has(file));
+    const disallowedMarkers = filesContaining(/TODO|FIXME|debugger|@ts-ignore/).filter(
+      (file) => !file.endsWith('clean-code-contract.test.ts'),
+    );
+    const unapprovedLintDisables = filesContaining(/eslint-disable/).filter(
+      (file) => !approvedDisableFiles.has(file),
+    );
 
     expect(disallowedMarkers).toEqual([]);
     expect(unapprovedLintDisables).toEqual([]);

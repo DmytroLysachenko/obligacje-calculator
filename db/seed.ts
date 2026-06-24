@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import {seedBondMetadata, seedSeriesMetadata} from './seed/index';
+import { seedBondMetadata, seedSeriesMetadata } from './seed/index';
 
 async function seed() {
   console.log('--- Database Seeding Started ---');

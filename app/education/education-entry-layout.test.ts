@@ -1,6 +1,6 @@
-import {describe, expect, it} from 'vitest';
-import {readFileSync} from 'node:fs';
-import {join} from 'node:path';
+import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 const root = process.cwd();
 
@@ -43,11 +43,7 @@ describe('education entry layout contracts', () => {
     expectContains(source, "t('education.starter_cta')");
     expectContains(source, "t('education.bond_types_subtitle')");
 
-    expectNoFragments(source, [
-      'shadow-xl',
-      'bg-gradient',
-      'hero',
-    ]);
+    expectNoFragments(source, ['shadow-xl', 'bg-gradient', 'hero']);
   });
 
   it('keeps starter guidance section grouped and dense', () => {
@@ -83,8 +79,14 @@ describe('education entry layout contracts', () => {
     expectContains(source, 'border-t border-border py-6');
     expectContains(source, 'flex flex-1 flex-col space-y-5 pt-5');
     expectContains(source, 'mt-auto space-y-5 pt-6');
-    expectContains(source, '<dl className="grid min-h-[132px] grid-cols-1 gap-x-4 divide-y divide-border border-y border-border');
-    expectContains(source, "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
+    expectContains(
+      source,
+      '<dl className="grid min-h-[132px] grid-cols-1 gap-x-4 divide-y divide-border border-y border-border',
+    );
+    expectContains(
+      source,
+      "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';",
+    );
     expectContains(source, '<FormInlineNotice');
     expectContains(source, "t('education.calculate_this_bond')");
     expectContains(source, '<ArrowRight className="h-4 w-4" />');

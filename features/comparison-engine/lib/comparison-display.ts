@@ -45,11 +45,7 @@ export function buildComparisonChartData({
 
   dateMap.set(startDate.getTime(), startDate);
 
-  for (
-    let cursor = startDate;
-    compareAsc(cursor, maxEndDate) < 0;
-    cursor = addMonths(cursor, 1)
-  ) {
+  for (let cursor = startDate; compareAsc(cursor, maxEndDate) < 0; cursor = addMonths(cursor, 1)) {
     const next = addMonths(cursor, 1);
     dateMap.set(next.getTime(), next);
   }
@@ -71,8 +67,8 @@ export function buildComparisonChartData({
 
     return dates.map((date) => {
       while (
-        index < timeline.length
-        && compareAsc(parseISO(timeline[index].cycleEndDate), date) <= 0
+        index < timeline.length &&
+        compareAsc(parseISO(timeline[index].cycleEndDate), date) <= 0
       ) {
         currentNominalValue = timeline[index].totalValue;
         currentRealValue = timeline[index].realValue;
@@ -91,8 +87,16 @@ export function buildComparisonChartData({
 
         if (nextTime > previousTime && currentTime > previousTime && currentTime < nextTime) {
           const progress = (currentTime - previousTime) / (nextTime - previousTime);
-          currentNominalValue = interpolateValue(previousPoint.totalValue, nextPoint.totalValue, progress);
-          currentRealValue = interpolateValue(previousPoint.realValue, nextPoint.realValue, progress);
+          currentNominalValue = interpolateValue(
+            previousPoint.totalValue,
+            nextPoint.totalValue,
+            progress,
+          );
+          currentRealValue = interpolateValue(
+            previousPoint.realValue,
+            nextPoint.realValue,
+            progress,
+          );
         }
       }
 
@@ -103,10 +107,7 @@ export function buildComparisonChartData({
     });
   };
 
-  const projectContext = (
-    timeline: CalculationResult['timeline'],
-    dates: Date[],
-  ) => {
+  const projectContext = (timeline: CalculationResult['timeline'], dates: Date[]) => {
     let index = 0;
     let inflation: number | undefined = timeline[0]?.inflationReference;
     let nbp: number | undefined = timeline[0]?.nbpReference;
@@ -114,8 +115,8 @@ export function buildComparisonChartData({
 
     return dates.map((date) => {
       while (
-        index < timeline.length
-        && compareAsc(parseISO(timeline[index].cycleEndDate), date) <= 0
+        index < timeline.length &&
+        compareAsc(parseISO(timeline[index].cycleEndDate), date) <= 0
       ) {
         inflation = timeline[index].inflationReference ?? inflation;
         nbp = timeline[index].nbpReference ?? nbp;
@@ -133,21 +134,21 @@ export function buildComparisonChartData({
   const contextB = projectContext(resultsB.timeline, anchorDates);
 
   const rawPoints = anchorDates.map((date, index) => ({
-      dateKey: date.toISOString(),
-      label:
-        index === 0
-          ? t('comparison.start')
-          : format(date, 'MMM yyyy', {
+    dateKey: date.toISOString(),
+    label:
+      index === 0
+        ? t('comparison.start')
+        : format(date, 'MMM yyyy', {
             locale: getDateFnsLocale(language),
           }),
-      nominalA: seriesA[index].nominal,
-      realA: seriesA[index].real,
-      nominalB: seriesB[index].nominal,
-      realB: seriesB[index].real,
-      inflation: contextA[index].inflation ?? contextB[index].inflation,
-      nbp: contextA[index].nbp ?? contextB[index].nbp,
-      isProjected: contextA[index].isProjected || contextB[index].isProjected,
-    }));
+    nominalA: seriesA[index].nominal,
+    realA: seriesA[index].real,
+    nominalB: seriesB[index].nominal,
+    realB: seriesB[index].real,
+    inflation: contextA[index].inflation ?? contextB[index].inflation,
+    nbp: contextA[index].nbp ?? contextB[index].nbp,
+    isProjected: contextA[index].isProjected || contextB[index].isProjected,
+  }));
 
   const displayPoints = aggregateComparisonChartPoints(rawPoints, chartStep);
 
@@ -171,12 +172,11 @@ function aggregateComparisonChartPoints(
 
   for (const point of points) {
     const date = parseISO(point.dateKey);
-    const monthsFromStart = firstDate
-      ? Math.max(0, differenceInMonths(date, firstDate))
-      : 0;
-    const groupKey = chartStep === 'quarterly'
-      ? `q-${Math.floor(monthsFromStart / 3)}`
-      : `y-${Math.floor(monthsFromStart / 12)}`;
+    const monthsFromStart = firstDate ? Math.max(0, differenceInMonths(date, firstDate)) : 0;
+    const groupKey =
+      chartStep === 'quarterly'
+        ? `q-${Math.floor(monthsFromStart / 3)}`
+        : `y-${Math.floor(monthsFromStart / 12)}`;
     const bucket = groups.get(groupKey) ?? [];
     bucket.push(point);
     groups.set(groupKey, bucket);
@@ -199,10 +199,7 @@ function aggregateComparisonChartPoints(
   return aggregated;
 }
 
-export function getComparisonAssumptionsBondType(
-  bondTypeA: BondType,
-  bondTypeB: BondType,
-) {
+export function getComparisonAssumptionsBondType(bondTypeA: BondType, bondTypeB: BondType) {
   const comparedTypes = [bondTypeA, bondTypeB];
   const hasIndexedBond = comparedTypes.some((bondType) =>
     [BondType.COI, BondType.EDO, BondType.ROS, BondType.ROD].includes(bondType),

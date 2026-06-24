@@ -72,8 +72,7 @@ describe('calculator persistence', () => {
     expect(
       errorSpy.mock.calls.some((call) =>
         call.some(
-          (argument) =>
-            typeof argument === 'string' && argument.includes('Hydration failed'),
+          (argument) => typeof argument === 'string' && argument.includes('Hydration failed'),
         ),
       ),
     ).toBe(false);

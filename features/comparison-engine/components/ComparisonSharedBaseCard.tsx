@@ -38,12 +38,8 @@ export function ComparisonSharedBaseCard({
   return (
     <section className="space-y-6">
       <div className="space-y-2 border-b border-border pb-4">
-        <h2 className="ui-section-title">
-          {t('comparison.shared_base_title')}
-        </h2>
-        <p className="ui-body text-muted-foreground">
-          {t('comparison.shared_base_desc')}
-        </p>
+        <h2 className="ui-section-title">{t('comparison.shared_base_title')}</h2>
+        <p className="ui-body text-muted-foreground">{t('comparison.shared_base_desc')}</p>
         <p className="ui-metadata leading-5 text-muted-foreground">
           {t('comparison.shared_base_scope')}
         </p>
@@ -56,7 +52,11 @@ export function ComparisonSharedBaseCard({
           <div className="flex gap-2">
             <Button
               type="button"
-              variant={!sharedConfig.timingMode || sharedConfig.timingMode === 'general' ? 'default' : 'outline'}
+              variant={
+                !sharedConfig.timingMode || sharedConfig.timingMode === 'general'
+                  ? 'default'
+                  : 'outline'
+              }
               className="h-10 flex-1 text-xs font-semibold"
               onClick={() => onUpdateSharedConfig('timingMode', 'general')}
             >
@@ -74,15 +74,15 @@ export function ComparisonSharedBaseCard({
         </div>
 
         <div className="space-y-2">
-          <Label className="ui-metadata text-muted-foreground">
-            {t('comparison.initial_sum')}
-          </Label>
+          <Label className="ui-metadata text-muted-foreground">{t('comparison.initial_sum')}</Label>
           <div className="relative">
             <Input
               type="number"
               className="h-11 rounded-lg pr-12 text-lg font-semibold"
               value={sharedConfig.initialInvestment}
-              onChange={(event) => onUpdateSharedConfig('initialInvestment', Number(event.target.value))}
+              onChange={(event) =>
+                onUpdateSharedConfig('initialInvestment', Number(event.target.value))
+              }
             />
             <div className="absolute right-4 top-1/2 -translate-y-1/2 ui-metadata text-muted-foreground">
               PLN
@@ -92,9 +92,7 @@ export function ComparisonSharedBaseCard({
 
         <div className="grid grid-cols-1 gap-4 border-t border-dashed pt-4">
           <div className="space-y-2">
-            <Label className="ui-metadata text-muted-foreground">
-              {t('bonds.purchase_date')}
-            </Label>
+            <Label className="ui-metadata text-muted-foreground">{t('bonds.purchase_date')}</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -121,7 +119,9 @@ export function ComparisonSharedBaseCard({
                   fromYear={2010}
                   toYear={2050}
                   selected={parseISO(sharedConfig.purchaseDate)}
-                  onSelect={(date) => date && onUpdateSharedConfig('purchaseDate', toDateString(date))}
+                  onSelect={(date) =>
+                    date && onUpdateSharedConfig('purchaseDate', toDateString(date))
+                  }
                   initialFocus
                 />
               </PopoverContent>
@@ -159,7 +159,9 @@ export function ComparisonSharedBaseCard({
                     fromYear={2010}
                     toYear={2050}
                     selected={parseISO(sharedConfig.withdrawalDate)}
-                    onSelect={(date) => date && onUpdateSharedConfig('withdrawalDate', toDateString(date))}
+                    onSelect={(date) =>
+                      date && onUpdateSharedConfig('withdrawalDate', toDateString(date))
+                    }
                     initialFocus
                   />
                 </PopoverContent>
@@ -192,16 +194,17 @@ export function ComparisonSharedBaseCard({
             customInflation={sharedConfig.customInflation}
             customNbpRate={sharedConfig.customNbpRate}
             bondType={assumptionsBondType}
-            inflationHorizonYears={Math.max(1, Math.ceil((sharedConfig.investmentHorizonMonths ?? 120) / 12))}
+            inflationHorizonYears={Math.max(
+              1,
+              Math.ceil((sharedConfig.investmentHorizonMonths ?? 120) / 12),
+            )}
             onUpdate={onUpdateSharedConfig}
             compact
           />
         </div>
 
         <div className="space-y-2 border-t border-dashed pt-4">
-          <Label className="ui-metadata text-muted-foreground">
-            {t('bonds.tax_strategy')}
-          </Label>
+          <Label className="ui-metadata text-muted-foreground">{t('bonds.tax_strategy')}</Label>
           <FormSelect
             value={sharedConfig.taxStrategy ?? TaxStrategy.STANDARD}
             onValueChange={(value) => onUpdateSharedConfig('taxStrategy', value as TaxStrategy)}
@@ -215,7 +218,6 @@ export function ComparisonSharedBaseCard({
             {t('comparison.shared_tax_desc')}
           </p>
         </div>
-
       </div>
     </section>
   );

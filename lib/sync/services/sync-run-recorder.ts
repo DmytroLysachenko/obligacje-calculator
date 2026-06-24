@@ -1,7 +1,4 @@
-import {
-  recordSyncRun,
-  type RecordSyncRunInput,
-} from '@/lib/server/sync/run-history';
+import { recordSyncRun, type RecordSyncRunInput } from '@/lib/server/sync/run-history';
 
 import type { SyncLogger } from '../sync-logger';
 

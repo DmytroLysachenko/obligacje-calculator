@@ -1,4 +1,4 @@
-import type {AssetPerformanceSeries} from '@/features/bond-core/types/assets';
+import type { AssetPerformanceSeries } from '@/features/bond-core/types/assets';
 
 export type MultiAssetChartRow = Record<string, string | number>;
 
@@ -15,11 +15,7 @@ interface GrowthSummaryLabels {
 
 interface DrawdownSummaryLabels {
   empty: () => string;
-  populated: (values: {
-    count: number;
-    asset: string;
-    drawdown: string;
-  }) => string;
+  populated: (values: { count: number; asset: string; drawdown: string }) => string;
 }
 
 export function createMultiAssetGrowthSummary({
@@ -77,9 +73,10 @@ export function createMultiAssetDrawdownSummary({
     name: asset.metadata.name,
     value: Math.abs(Number(lastPoint[`${asset.metadata.id}_drawdown`] ?? 0)),
   }));
-  const deepest = drawdowns.reduce((current, next) => (
-    next.value > current.value ? next : current
-  ), drawdowns[0]);
+  const deepest = drawdowns.reduce(
+    (current, next) => (next.value > current.value ? next : current),
+    drawdowns[0],
+  );
 
   return labels.populated({
     count: chartData.length,
@@ -104,7 +101,5 @@ export function createMultiAssetDrawdownLegendItems(assets: AssetPerformanceSeri
 }
 
 export function thinMultiAssetGrowthData(chartData: MultiAssetChartRow[]) {
-  return chartData.length > 240
-    ? chartData.filter((_, index) => index % 2 === 0)
-    : chartData;
+  return chartData.length > 240 ? chartData.filter((_, index) => index % 2 === 0) : chartData;
 }

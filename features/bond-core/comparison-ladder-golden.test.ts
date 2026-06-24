@@ -1,10 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { calculationService } from './application-service';
 import { calculationCache } from './utils/calculation-cache';
-import { BondType, CalculationResult, InvestmentFrequency, RegularInvestmentResult, TaxStrategy } from './types';
+import {
+  BondType,
+  CalculationResult,
+  InvestmentFrequency,
+  RegularInvestmentResult,
+  TaxStrategy,
+} from './types';
 import { BondComparisonScenarioItem, ScenarioKind } from './types/scenarios';
 import { BOND_DEFINITIONS } from './constants/bond-definitions';
-import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
+import {
+  getHorizonMonths,
+  getWithdrawalDateFromMonths,
+  toDateString,
+} from '@/shared/lib/date-timing';
 
 const today = new Date('2026-05-05T00:00:00.000Z');
 
@@ -217,10 +227,16 @@ describe('Comparison and ladder golden regressions', () => {
     const result = envelope.result as BondComparisonScenarioItem[];
 
     expect(
-      getHorizonMonths(purchaseDate, result[0].result.timeline.at(-1)?.cycleEndDate ?? purchaseDate),
+      getHorizonMonths(
+        purchaseDate,
+        result[0].result.timeline.at(-1)?.cycleEndDate ?? purchaseDate,
+      ),
     ).toBeGreaterThanOrEqual(239);
     expect(
-      getHorizonMonths(purchaseDate, result[1].result.timeline.at(-1)?.cycleEndDate ?? purchaseDate),
+      getHorizonMonths(
+        purchaseDate,
+        result[1].result.timeline.at(-1)?.cycleEndDate ?? purchaseDate,
+      ),
     ).toBeGreaterThanOrEqual(239);
     expect(result[0].result.timeline.length).toBeGreaterThan(10);
     expect(result[1].result.timeline.length).toBeGreaterThan(20);
@@ -261,7 +277,9 @@ describe('Comparison and ladder golden regressions', () => {
     expect(edo?.timeline.at(-1)?.cycleEndDate.slice(0, 7)).toBe(withdrawalDate.slice(0, 7));
     expect(ror?.timeline.some((point) => point.cycleIndex > 1)).toBe(true);
     expect(edo?.timeline.some((point) => point.cycleIndex > 1)).toBe(false);
-    expect(envelope.assumptions).toContain('Maturity handling: automatic rollover to the selected shared horizon.');
+    expect(envelope.assumptions).toContain(
+      'Maturity handling: automatic rollover to the selected shared horizon.',
+    );
     expect(envelope.assumptions.join('\n')).not.toContain('reinvest_until_horizon');
   });
 
@@ -297,11 +315,17 @@ describe('Comparison and ladder golden regressions', () => {
     const ror = result.find((item) => item.scenarioKey === 'scenarioA')?.result;
     const edo = result.find((item) => item.scenarioKey === 'scenarioB')?.result;
 
-    expect(getHorizonMonths(purchaseDate, ror?.timeline.at(-1)?.cycleEndDate ?? purchaseDate)).toBeGreaterThanOrEqual(119);
-    expect(getHorizonMonths(purchaseDate, edo?.timeline.at(-1)?.cycleEndDate ?? purchaseDate)).toBeGreaterThanOrEqual(119);
+    expect(
+      getHorizonMonths(purchaseDate, ror?.timeline.at(-1)?.cycleEndDate ?? purchaseDate),
+    ).toBeGreaterThanOrEqual(119);
+    expect(
+      getHorizonMonths(purchaseDate, edo?.timeline.at(-1)?.cycleEndDate ?? purchaseDate),
+    ).toBeGreaterThanOrEqual(119);
     expect(ror?.timeline.some((point) => point.cycleIndex > 1)).toBe(true);
     expect(edo?.timeline.some((point) => point.cycleIndex > 1)).toBe(false);
-    expect(envelope.assumptions).toContain('Maturity handling: automatic rollover to the selected shared horizon.');
+    expect(envelope.assumptions).toContain(
+      'Maturity handling: automatic rollover to the selected shared horizon.',
+    );
     expect(envelope.assumptions.join('\n')).not.toContain('hold_to_maturity');
   });
 
@@ -376,10 +400,16 @@ describe('Comparison and ladder golden regressions', () => {
     const ror = result.find((item) => item.scenarioKey === 'scenarioA')?.result;
     const edo = result.find((item) => item.scenarioKey === 'scenarioB')?.result;
 
-    expect(getHorizonMonths(purchaseDate, ror?.timeline.at(-1)?.cycleEndDate ?? purchaseDate)).toBeGreaterThanOrEqual(119);
-    expect(getHorizonMonths(purchaseDate, edo?.timeline.at(-1)?.cycleEndDate ?? purchaseDate)).toBeGreaterThanOrEqual(119);
+    expect(
+      getHorizonMonths(purchaseDate, ror?.timeline.at(-1)?.cycleEndDate ?? purchaseDate),
+    ).toBeGreaterThanOrEqual(119);
+    expect(
+      getHorizonMonths(purchaseDate, edo?.timeline.at(-1)?.cycleEndDate ?? purchaseDate),
+    ).toBeGreaterThanOrEqual(119);
     expect(edo?.isEarlyWithdrawal).toBe(false);
-    expect(envelope.assumptions).toContain('Maturity handling: automatic rollover to the selected shared horizon.');
+    expect(envelope.assumptions).toContain(
+      'Maturity handling: automatic rollover to the selected shared horizon.',
+    );
     expect(envelope.assumptions.join('\n')).not.toContain('align_to_shorter_duration');
   });
 
@@ -433,8 +463,14 @@ describe('Comparison and ladder golden regressions', () => {
     }) => {
       const purchaseDate = toDateString(today);
       const withdrawalDate = getWithdrawalDateFromMonths(purchaseDate, 120);
-      const expectedRorFinalMonth = getWithdrawalDateFromMonths(purchaseDate, rorFinalHorizonMonths);
-      const expectedEdoFinalMonth = getWithdrawalDateFromMonths(purchaseDate, edoFinalHorizonMonths);
+      const expectedRorFinalMonth = getWithdrawalDateFromMonths(
+        purchaseDate,
+        rorFinalHorizonMonths,
+      );
+      const expectedEdoFinalMonth = getWithdrawalDateFromMonths(
+        purchaseDate,
+        edoFinalHorizonMonths,
+      );
 
       const envelope = await calculationService.calculate({
         kind: ScenarioKind.BOND_COMPARISON,
@@ -467,8 +503,12 @@ describe('Comparison and ladder golden regressions', () => {
 
       expect(envelope.assumptions).toContain(`Maturity handling: ${label}.`);
       expect(allAssumptions).not.toContain(forbidden);
-      expect(ror?.timeline.at(-1)?.cycleEndDate.slice(0, 7)).toBe(expectedRorFinalMonth.slice(0, 7));
-      expect(edo?.timeline.at(-1)?.cycleEndDate.slice(0, 7)).toBe(expectedEdoFinalMonth.slice(0, 7));
+      expect(ror?.timeline.at(-1)?.cycleEndDate.slice(0, 7)).toBe(
+        expectedRorFinalMonth.slice(0, 7),
+      );
+      expect(edo?.timeline.at(-1)?.cycleEndDate.slice(0, 7)).toBe(
+        expectedEdoFinalMonth.slice(0, 7),
+      );
       expect(ror?.timeline.some((point) => point.cycleIndex > 1)).toBe(rorRolls);
       expect(edo?.timeline.some((point) => point.cycleIndex > 1)).toBe(edoRolls);
     },
@@ -550,50 +590,51 @@ describe('Comparison and ladder golden regressions', () => {
     expect(scenarioB?.timeline.some((point) => point.cycleIndex > 1)).toBe(true);
   });
 
-  it.each([
-    BondType.EDO,
-    BondType.ROR,
-  ])('matches single-bond outputs for the same independent comparison scenario on %s', async (bondType) => {
-    const investmentHorizonMonths = bondType === BondType.EDO ? 240 : 120;
-    const singleEnvelope = await calculationService.calculate({
-      kind: ScenarioKind.SINGLE_BOND,
-      payload: buildSinglePayload(bondType, investmentHorizonMonths),
-    });
+  it.each([BondType.EDO, BondType.ROR])(
+    'matches single-bond outputs for the same independent comparison scenario on %s',
+    async (bondType) => {
+      const investmentHorizonMonths = bondType === BondType.EDO ? 240 : 120;
+      const singleEnvelope = await calculationService.calculate({
+        kind: ScenarioKind.SINGLE_BOND,
+        payload: buildSinglePayload(bondType, investmentHorizonMonths),
+      });
 
-    const purchaseDate = toDateString(today);
-    const withdrawalDate = getWithdrawalDateFromMonths(purchaseDate, investmentHorizonMonths);
-    const comparisonEnvelope = await calculationService.calculate({
-      kind: ScenarioKind.BOND_COMPARISON,
-      payload: {
-        mode: 'independent',
-        sharedConfig: {
-          initialInvestment: 10000,
-          purchaseDate,
-          withdrawalDate,
-          expectedInflation: 2.5,
-          expectedNbpRate: 3.75,
-          taxStrategy: TaxStrategy.STANDARD,
-          timingMode: 'exact',
-          investmentHorizonMonths,
+      const purchaseDate = toDateString(today);
+      const withdrawalDate = getWithdrawalDateFromMonths(purchaseDate, investmentHorizonMonths);
+      const comparisonEnvelope = await calculationService.calculate({
+        kind: ScenarioKind.BOND_COMPARISON,
+        payload: {
+          mode: 'independent',
+          sharedConfig: {
+            initialInvestment: 10000,
+            purchaseDate,
+            withdrawalDate,
+            expectedInflation: 2.5,
+            expectedNbpRate: 3.75,
+            taxStrategy: TaxStrategy.STANDARD,
+            timingMode: 'exact',
+            investmentHorizonMonths,
+          },
+          scenarioA: {
+            bondType,
+          },
+          scenarioB: {
+            bondType: bondType === BondType.EDO ? BondType.ROR : BondType.EDO,
+          },
         },
-        scenarioA: {
-          bondType,
-        },
-        scenarioB: {
-          bondType: bondType === BondType.EDO ? BondType.ROR : BondType.EDO,
-        },
-      },
-    });
+      });
 
-    const comparisonResult = (comparisonEnvelope.result as BondComparisonScenarioItem[])
-      .find((item) => item.scenarioKey === 'scenarioA')
-      ?.result;
-    const singleResult = singleEnvelope.result as CalculationResult;
+      const comparisonResult = (comparisonEnvelope.result as BondComparisonScenarioItem[]).find(
+        (item) => item.scenarioKey === 'scenarioA',
+      )?.result;
+      const singleResult = singleEnvelope.result as CalculationResult;
 
-    expect(comparisonResult?.netPayoutValue).toBeCloseTo(singleResult.netPayoutValue, 8);
-    expect(comparisonResult?.finalRealValue).toBeCloseTo(singleResult.finalRealValue, 8);
-    expect(comparisonResult?.totalTax).toBeCloseTo(singleResult.totalTax, 8);
-    expect(comparisonResult?.timeline.at(-1)?.cycleEndDate).toBe(singleResult.timeline.at(-1)?.cycleEndDate);
-  });
+      expect(comparisonResult?.netPayoutValue).toBeCloseTo(singleResult.netPayoutValue, 8);
+      expect(comparisonResult?.finalRealValue).toBeCloseTo(singleResult.finalRealValue, 8);
+      expect(comparisonResult?.totalTax).toBeCloseTo(singleResult.totalTax, 8);
+      expect(comparisonResult?.timeline.at(-1)?.cycleEndDate).toBe(
+        singleResult.timeline.at(-1)?.cycleEndDate,
+      );
+    },
+  );
 });
-

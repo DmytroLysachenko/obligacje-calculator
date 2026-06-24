@@ -1,4 +1,4 @@
-import { BondType } from "@/features/bond-core/types";
+import { BondType } from '@/features/bond-core/types';
 
 export const BOND_COLORS: Record<BondType, string> = {
   [BondType.OTS]: '#64748b', // Slate

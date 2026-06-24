@@ -31,7 +31,7 @@ export const BondChart: React.FC<BondChartProps> = ({
   const processedData = useMemo(() => {
     const MAX_POINTS = 180;
     if (data.length <= MAX_POINTS) return data;
-    
+
     const step = Math.ceil(data.length / MAX_POINTS);
     return data.filter((_, i) => i % step === 0 || i === data.length - 1);
   }, [data]);

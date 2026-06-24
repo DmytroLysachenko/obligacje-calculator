@@ -1,9 +1,9 @@
-import { 
-  ScenarioKind, 
-  PortfolioSimulationCalculationEnvelope, 
+import {
+  ScenarioKind,
+  PortfolioSimulationCalculationEnvelope,
   PortfolioSimulationPayload,
   PortfolioSimulationResult,
-  PortfolioSimulationItem
+  PortfolioSimulationItem,
 } from '../types/scenarios';
 import { calculateBondInvestment } from '../utils/calculations';
 import { BondInputs, TaxStrategy } from '../types';
@@ -13,9 +13,7 @@ import { addMonths, compareAsc, format, isBefore, parseISO } from 'date-fns';
 function getEarliestPurchaseDate(investments: PortfolioSimulationPayload['investments']) {
   return investments.reduce(
     (min, investment) =>
-      isBefore(parseISO(investment.purchaseDate), parseISO(min))
-        ? investment.purchaseDate
-        : min,
+      isBefore(parseISO(investment.purchaseDate), parseISO(min)) ? investment.purchaseDate : min,
     investments[0].purchaseDate,
   );
 }
@@ -24,10 +22,7 @@ function getPointDate(point: PortfolioSimulationItem['result']['timeline'][numbe
   return parseISO(point.cycleEndDate);
 }
 
-function getLatestPointAtOrBefore(
-  item: PortfolioSimulationItem,
-  currentDate: Date,
-) {
+function getLatestPointAtOrBefore(item: PortfolioSimulationItem, currentDate: Date) {
   if (isBefore(currentDate, parseISO(item.purchaseDate))) {
     return null;
   }
@@ -48,11 +43,7 @@ function getLatestPointAtOrBefore(
   return latestPoint;
 }
 
-function getProRatedFinalFee(
-  item: PortfolioSimulationItem,
-  currentDate: Date,
-  maxDate: Date,
-) {
+function getProRatedFinalFee(item: PortfolioSimulationItem, currentDate: Date, maxDate: Date) {
   const result = item.result;
 
   if (result.totalEarlyWithdrawalFee <= 0) {
@@ -62,14 +53,20 @@ function getProRatedFinalFee(
   return compareAsc(currentDate, maxDate) === 0 ? result.totalEarlyWithdrawalFee : 0;
 }
 
-export class PortfolioSimulationHandler extends BaseHandler implements ScenarioHandler<PortfolioSimulationPayload, PortfolioSimulationResult> {
+export class PortfolioSimulationHandler
+  extends BaseHandler
+  implements ScenarioHandler<PortfolioSimulationPayload, PortfolioSimulationResult>
+{
   kind = ScenarioKind.PORTFOLIO_SIMULATION;
 
-  async handle(payload: PortfolioSimulationPayload, context: HandlerContext): Promise<PortfolioSimulationCalculationEnvelope> {
+  async handle(
+    payload: PortfolioSimulationPayload,
+    context: HandlerContext,
+  ): Promise<PortfolioSimulationCalculationEnvelope> {
     const items: PortfolioSimulationItem[] = [];
     const allHistoricalData = await this.withHistoricalData({
       purchaseDate: getEarliestPurchaseDate(payload.investments),
-      withdrawalDate: payload.withdrawalDate
+      withdrawalDate: payload.withdrawalDate,
     });
 
     for (const inv of payload.investments) {
@@ -92,13 +89,16 @@ export class PortfolioSimulationHandler extends BaseHandler implements ScenarioH
         rebuyDiscount: def.rebuyDiscount,
         taxStrategy: inv.taxStrategy ?? TaxStrategy.STANDARD,
         rollover: inv.rollover ?? false,
-        historicalData: allHistoricalData.historicalData as Record<string, import('@/features/bond-core/types').HistoricalEntry>,
+        historicalData: allHistoricalData.historicalData as Record<
+          string,
+          import('@/features/bond-core/types').HistoricalEntry
+        >,
       } as BondInputs & { rollover: boolean });
       items.push({
         bondType: inv.bondType,
         amount: inv.amount,
         purchaseDate: inv.purchaseDate,
-        result
+        result,
       });
     }
 
@@ -119,7 +119,7 @@ export class PortfolioSimulationHandler extends BaseHandler implements ScenarioH
         if (point) {
           totalNominalValue += point.nominalValueAfterInterest;
           totalNetValue += point.totalValue;
-          totalProfit += point.netProfit; 
+          totalProfit += point.netProfit;
           totalTax += point.taxDeducted;
           totalFees += getProRatedFinalFee(item, curr, maxDate);
         }
@@ -131,7 +131,7 @@ export class PortfolioSimulationHandler extends BaseHandler implements ScenarioH
         totalNetValue,
         totalProfit,
         totalTax,
-        totalFees
+        totalFees,
       });
       curr = addMonths(curr, 1);
     }
@@ -142,8 +142,8 @@ export class PortfolioSimulationHandler extends BaseHandler implements ScenarioH
       summary: {
         totalInvested: items.reduce((sum, item) => sum + item.amount, 0),
         totalNetValue: aggregatedTimeline[aggregatedTimeline.length - 1]?.totalNetValue || 0,
-        totalProfit: aggregatedTimeline[aggregatedTimeline.length - 1]?.totalProfit || 0
-      }
+        totalProfit: aggregatedTimeline[aggregatedTimeline.length - 1]?.totalProfit || 0,
+      },
     };
 
     return this.createEnvelope(

@@ -8,10 +8,7 @@ function getPeriodPointCount(period: ChartRangePeriod) {
   return Number.POSITIVE_INFINITY;
 }
 
-export function sliceSeriesByPeriod<T>(
-  data: T[],
-  period: ChartRangePeriod,
-) {
+export function sliceSeriesByPeriod<T>(data: T[], period: ChartRangePeriod) {
   if (period === 'ALL') {
     return data;
   }
@@ -20,10 +17,7 @@ export function sliceSeriesByPeriod<T>(
   return data.slice(-pointCount);
 }
 
-export function sampleSeriesPoints<T>(
-  data: T[],
-  maxPoints: number,
-) {
+export function sampleSeriesPoints<T>(data: T[], maxPoints: number) {
   if (data.length <= maxPoints || maxPoints <= 2) {
     return data;
   }
@@ -66,10 +60,7 @@ export function computeNumericDomain(
   const padding = Math.max(minPadding, Math.round(span * paddingRatio));
   const lowerBound = seriesMin - padding;
 
-  return [
-    minFloor === null ? lowerBound : Math.max(minFloor, lowerBound),
-    seriesMax + padding,
-  ];
+  return [minFloor === null ? lowerBound : Math.max(minFloor, lowerBound), seriesMax + padding];
 }
 
 export function computeRateDomain(values: number[]) {
@@ -80,10 +71,10 @@ export function computeRateDomain(values: number[]) {
   const seriesMin = Math.min(...values, 0);
   const seriesMax = Math.max(...values, 1);
 
-  return [
-    Math.min(-1, Math.floor(seriesMin - 0.5)),
-    Math.ceil(seriesMax + 0.5),
-  ] as [number, number];
+  return [Math.min(-1, Math.floor(seriesMin - 0.5)), Math.ceil(seriesMax + 0.5)] as [
+    number,
+    number,
+  ];
 }
 
 export function formatMoneyAxisTick(value: number) {

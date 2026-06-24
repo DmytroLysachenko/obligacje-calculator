@@ -1,4 +1,4 @@
-import {NewSyncRun} from '@/db/schema';
+import { NewSyncRun } from '@/db/schema';
 import {
   ensureSyncRunsSchemaRepository,
   findLatestSyncRunForSeries,

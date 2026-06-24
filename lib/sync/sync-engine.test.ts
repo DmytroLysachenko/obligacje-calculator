@@ -20,7 +20,7 @@ vi.mock('./macro-data-sync', () => ({
 vi.mock('./services/provider-sync-service', () => ({
   ProviderSyncService: vi.fn().mockImplementation(function ProviderSyncService() {
     return {
-    syncAll: mocks.providerSyncAll,
+      syncAll: mocks.providerSyncAll,
     };
   }),
 }));
@@ -44,7 +44,12 @@ vi.mock('./services/sync-run-recorder', () => ({
 describe('SyncEngine', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.syncMacroData.mockResolvedValue({ inflation: 2.5, nbp: 3.75, wibor3m: null, wibor6m: null });
+    mocks.syncMacroData.mockResolvedValue({
+      inflation: 2.5,
+      nbp: 3.75,
+      wibor3m: null,
+      wibor6m: null,
+    });
     mocks.bondOfferSyncCurrentOffers.mockResolvedValue([{ symbol: 'EDO' }]);
     mocks.providerSyncAll.mockResolvedValue([
       {
@@ -81,14 +86,16 @@ describe('SyncEngine', () => {
     expect(mocks.syncMacroData).toHaveBeenCalledTimes(1);
     expect(mocks.bondOfferSyncCurrentOffers).toHaveBeenCalledTimes(1);
     expect(mocks.providerSyncAll).toHaveBeenCalledWith(2020);
-    expect(mocks.record).toHaveBeenCalledWith(expect.objectContaining({
-      scope: 'full-sync',
-      mode: 'full-sync',
-      status: 'success',
-      inserted: 1,
-      updated: 1,
-      skipped: 0,
-    }));
+    expect(mocks.record).toHaveBeenCalledWith(
+      expect.objectContaining({
+        scope: 'full-sync',
+        mode: 'full-sync',
+        status: 'success',
+        inserted: 1,
+        updated: 1,
+        skipped: 0,
+      }),
+    );
   });
 
   it('marks full sync partial when macro or provider sync fails', async () => {
@@ -105,11 +112,13 @@ describe('SyncEngine', () => {
     const engine = new SyncEngine([], mocks.logger);
     await engine.runFullSync();
 
-    expect(mocks.record).toHaveBeenCalledWith(expect.objectContaining({
-      scope: 'full-sync',
-      status: 'partial',
-      message: expect.stringContaining('Macro sync failed'),
-    }));
+    expect(mocks.record).toHaveBeenCalledWith(
+      expect.objectContaining({
+        scope: 'full-sync',
+        status: 'partial',
+        message: expect.stringContaining('Macro sync failed'),
+      }),
+    );
   });
 
   it('keeps incremental market history sync delegated to provider service', async () => {

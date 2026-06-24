@@ -31,14 +31,13 @@ function listCodeFiles(directory: string): string[] {
 }
 
 function listMatchingFiles(pattern: RegExp) {
-  return codeRoots
-    .flatMap(listCodeFiles)
-    .filter((file) => pattern.test(read(file)));
+  return codeRoots.flatMap(listCodeFiles).filter((file) => pattern.test(read(file)));
 }
 
 describe('layer boundary contract', () => {
   it('keeps calculation endpoint literals centralized in the shared endpoint registry', () => {
-    const endpointLiteral = /['"`]\/api\/calculate\/(?:single|regular|compare|optimize|retirement)['"`]/;
+    const endpointLiteral =
+      /['"`]\/api\/calculate\/(?:single|regular|compare|optimize|retirement)['"`]/;
     const matches = listMatchingFiles(endpointLiteral)
       .filter((file) => file !== 'shared/lib/calculation-endpoints.ts')
       .filter((file) => file !== 'shared/lib/calculation-endpoints.test.ts');
@@ -61,7 +60,9 @@ describe('layer boundary contract', () => {
       const source = read(client);
 
       expect(source, client).toContain("from '@/shared/lib/calculation-endpoints'");
-      expect(source, client).not.toMatch(/\/api\/calculate\/(?:single|regular|compare|optimize|retirement)/);
+      expect(source, client).not.toMatch(
+        /\/api\/calculate\/(?:single|regular|compare|optimize|retirement)/,
+      );
     }
   });
 
@@ -104,7 +105,9 @@ describe('layer boundary contract', () => {
       const source = read(routeFile);
 
       expect(source, routeFile).not.toMatch(/from ['"]@\/lib\/server\/portfolio\/service['"]/);
-      expect(source, routeFile).toMatch(/from ['"]@\/lib\/server\/portfolio\/(?:commands|queries)['"]/);
+      expect(source, routeFile).toMatch(
+        /from ['"]@\/lib\/server\/portfolio\/(?:commands|queries)['"]/,
+      );
     }
   });
 

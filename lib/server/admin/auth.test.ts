@@ -1,5 +1,5 @@
-import {afterEach, describe, expect, it, vi} from 'vitest';
-import {assertAdminSyncAuthorization, assertAdminSyncAuthorizationForEnv} from './auth';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { assertAdminSyncAuthorization, assertAdminSyncAuthorizationForEnv } from './auth';
 
 describe('assertAdminSyncAuthorization', () => {
   const originalNodeEnv = process.env.NODE_ENV;
@@ -24,18 +24,24 @@ describe('assertAdminSyncAuthorization', () => {
   });
 
   it('supports explicit runtime env injection for authorization checks', () => {
-    expect(() => assertAdminSyncAuthorizationForEnv(null, {
-      NODE_ENV: 'development',
-      SYNC_SECRET: 'top-secret',
-    })).not.toThrow();
-    expect(() => assertAdminSyncAuthorizationForEnv('Bearer top-secret', {
-      NODE_ENV: 'production',
-      SYNC_SECRET: 'top-secret',
-    })).not.toThrow();
-    expect(() => assertAdminSyncAuthorizationForEnv('Bearer wrong-secret', {
-      NODE_ENV: 'production',
-      SYNC_SECRET: 'top-secret',
-    })).toThrow('UNAUTHORIZED_SYNC_REQUEST');
+    expect(() =>
+      assertAdminSyncAuthorizationForEnv(null, {
+        NODE_ENV: 'development',
+        SYNC_SECRET: 'top-secret',
+      }),
+    ).not.toThrow();
+    expect(() =>
+      assertAdminSyncAuthorizationForEnv('Bearer top-secret', {
+        NODE_ENV: 'production',
+        SYNC_SECRET: 'top-secret',
+      }),
+    ).not.toThrow();
+    expect(() =>
+      assertAdminSyncAuthorizationForEnv('Bearer wrong-secret', {
+        NODE_ENV: 'production',
+        SYNC_SECRET: 'top-secret',
+      }),
+    ).toThrow('UNAUTHORIZED_SYNC_REQUEST');
   });
 
   it('allows production requests with the configured bearer token', () => {

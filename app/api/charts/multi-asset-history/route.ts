@@ -1,5 +1,5 @@
 import { getMultiAssetHistory } from '@/lib/data/market-data';
-import {createFallbackMultiAssetHistory} from '@/lib/data/multi-asset-history';
+import { createFallbackMultiAssetHistory } from '@/lib/data/multi-asset-history';
 import { okJson } from '@/lib/server/http/responses';
 
 export async function GET() {
@@ -11,4 +11,3 @@ export async function GET() {
     return okJson(createFallbackMultiAssetHistory(), { status: 200 });
   }
 }
-

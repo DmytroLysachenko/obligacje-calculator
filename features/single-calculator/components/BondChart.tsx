@@ -1,34 +1,41 @@
-"use client";
+'use client';
 
-import React from "react";
-import { BondInputs, CalculationResult, ChartStep } from "../../bond-core/types";
-import { useAppI18n } from "@/i18n/client";
-import { getIntlLocale } from "@/i18n/locale-utils";
-import { BondValueChart, BondValueChartPoint } from "@/shared/components/charts/BondValueChart";
-import { AppLanguage, buildBondChartDisplayPoints, normalizeBondChartDisplayTimeline } from "@/shared/lib/bond-display";
-import { computeNumericDomain, computeRateDomain, sampleSeriesPoints } from "@/shared/lib/chart-series";
-import { applyChartContextRates } from "@/shared/lib/chart-context-rates";
+import React from 'react';
+import { BondInputs, CalculationResult, ChartStep } from '../../bond-core/types';
+import { useAppI18n } from '@/i18n/client';
+import { getIntlLocale } from '@/i18n/locale-utils';
+import { BondValueChart, BondValueChartPoint } from '@/shared/components/charts/BondValueChart';
+import {
+  AppLanguage,
+  buildBondChartDisplayPoints,
+  normalizeBondChartDisplayTimeline,
+} from '@/shared/lib/bond-display';
+import {
+  computeNumericDomain,
+  computeRateDomain,
+  sampleSeriesPoints,
+} from '@/shared/lib/chart-series';
+import { applyChartContextRates } from '@/shared/lib/chart-context-rates';
 
 interface BondChartProps {
   results: CalculationResult;
   initialInvestment: number;
-  inputs: Pick<BondInputs, "purchaseDate" | "expectedInflation" | "expectedNbpRate" | "customInflation" | "customNbpRate">;
+  inputs: Pick<
+    BondInputs,
+    'purchaseDate' | 'expectedInflation' | 'expectedNbpRate' | 'customInflation' | 'customNbpRate'
+  >;
   showRealValue?: boolean;
 }
 
-export const BondChart: React.FC<BondChartProps> = ({
-  results,
-  inputs,
-  showRealValue = false,
-}) => {
+export const BondChart: React.FC<BondChartProps> = ({ results, inputs, showRealValue = false }) => {
   const { t, locale: language } = useAppI18n();
-  const [displayStep, setDisplayStep] = React.useState<ChartStep>("yearly");
+  const [displayStep, setDisplayStep] = React.useState<ChartStep>('yearly');
 
   const formatCurrency = React.useMemo(
     () => (value: number) =>
       new Intl.NumberFormat(getIntlLocale(language), {
-        style: "currency",
-        currency: "PLN",
+        style: 'currency',
+        currency: 'PLN',
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       }).format(value),
@@ -85,10 +92,9 @@ export const BondChart: React.FC<BondChartProps> = ({
   const leftDomain = React.useMemo(
     () =>
       computeNumericDomain(
-        chartData.flatMap((point) => [
-          Number(point.primary),
-          Number(point.secondary),
-        ]).filter((value) => Number.isFinite(value)),
+        chartData
+          .flatMap((point) => [Number(point.primary), Number(point.secondary)])
+          .filter((value) => Number.isFinite(value)),
         {
           minFloor: null,
           minPadding: 250,
@@ -103,7 +109,7 @@ export const BondChart: React.FC<BondChartProps> = ({
       computeRateDomain(
         chartData
           .flatMap((point) => [point.inflation, point.nbp])
-          .filter((value): value is number => typeof value === "number"),
+          .filter((value): value is number => typeof value === 'number'),
       ),
     [chartData],
   );
@@ -113,10 +119,10 @@ export const BondChart: React.FC<BondChartProps> = ({
     const lastPoint = chartData[chartData.length - 1];
 
     if (!firstPoint || !lastPoint) {
-      return t("bonds.chart_accessible_summary_empty");
+      return t('bonds.chart_accessible_summary_empty');
     }
 
-    return t("bonds.chart_accessible_summary", {
+    return t('bonds.chart_accessible_summary', {
       count: chartData.length,
       start: formatCurrency(Number(firstPoint.primary)),
       end: formatCurrency(Number(lastPoint.primary)),
@@ -127,14 +133,14 @@ export const BondChart: React.FC<BondChartProps> = ({
   const series = React.useMemo(
     () => [
       {
-        key: "primary",
-        label: showRealValue ? t("common.real_value") : t("common.nominal_value"),
-        color: showRealValue ? "#4E8F71" : "#111111",
+        key: 'primary',
+        label: showRealValue ? t('common.real_value') : t('common.nominal_value'),
+        color: showRealValue ? '#4E8F71' : '#111111',
       },
       {
-        key: "secondary",
-        label: showRealValue ? t("common.nominal_value") : t("common.real_value"),
-        color: showRealValue ? "#111111" : "#4E8F71",
+        key: 'secondary',
+        label: showRealValue ? t('common.nominal_value') : t('common.real_value'),
+        color: showRealValue ? '#111111' : '#4E8F71',
         secondary: true,
       },
     ],
@@ -151,7 +157,7 @@ export const BondChart: React.FC<BondChartProps> = ({
       summary={chartSummary}
       defaultGranularity={displayStep}
       onGranularityChange={setDisplayStep}
-      ariaLabel={t("bonds.value_chart_label")}
+      ariaLabel={t('bonds.value_chart_label')}
     />
   );
 };

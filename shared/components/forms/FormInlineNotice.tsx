@@ -33,9 +33,7 @@ export function FormInlineNotice({
       )}
     >
       <div className="min-w-0 space-y-0.5">
-        {title ? (
-          <p className="text-sm font-semibold text-foreground">{title}</p>
-        ) : null}
+        {title ? <p className="text-sm font-semibold text-foreground">{title}</p> : null}
         <p className="ui-safe-text text-xs leading-5">{description}</p>
       </div>
       {action ? <div className="shrink-0">{action}</div> : null}

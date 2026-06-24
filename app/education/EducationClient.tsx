@@ -88,12 +88,8 @@ export default function EducationClient() {
     <PageTransition>
       <div className="space-y-14 pb-12 md:space-y-16">
         <header className="space-y-4">
-          <h2 className="ui-page-title">
-            {t('nav.education')}
-          </h2>
-          <p className="ui-body max-w-3xl">
-            {t('education.subtitle')}
-          </p>
+          <h2 className="ui-page-title">{t('nav.education')}</h2>
+          <p className="ui-body max-w-3xl">{t('education.subtitle')}</p>
         </header>
 
         <SectionBlock
@@ -118,9 +114,7 @@ export default function EducationClient() {
                   </div>
                 </div>
                 <div className="space-y-3">
-                  <p className="ui-body">
-                    {t(`education.concepts.${concept.key}.desc`)}
-                  </p>
+                  <p className="ui-body">{t(`education.concepts.${concept.key}.desc`)}</p>
                   <div className="border-t border-border pt-3 font-mono text-[11px] leading-5 text-muted-foreground">
                     {t(`education.concepts.${concept.key}.formula`)}
                   </div>
@@ -149,9 +143,7 @@ export default function EducationClient() {
               <article key={guide.key} className="border-t border-border py-5">
                 <div className="flex items-center gap-2">
                   <guide.icon className="h-4 w-4 text-foreground" />
-                  <p className="ui-card-title">
-                    {t(`education.starter.${guide.key}.label`)}
-                  </p>
+                  <p className="ui-card-title">{t(`education.starter.${guide.key}.label`)}</p>
                 </div>
                 <p className="mt-2 text-[32px] font-semibold leading-none text-foreground">
                   {guide.bonds}
@@ -181,10 +173,7 @@ export default function EducationClient() {
           </div>
         </SectionBlock>
 
-        <SectionBlock
-          icon={<HelpCircle className="h-5 w-5" />}
-          title={t('education.faq')}
-        >
+        <SectionBlock icon={<HelpCircle className="h-5 w-5" />} title={t('education.faq')}>
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="item-1" className="border-b-border">
               <AccordionTrigger className="text-left text-base font-semibold transition-colors hover:text-foreground">
@@ -239,7 +228,3 @@ export default function EducationClient() {
     </PageTransition>
   );
 }
-
-
-
-

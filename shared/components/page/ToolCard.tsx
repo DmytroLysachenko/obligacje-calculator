@@ -46,14 +46,7 @@ export function ToolCard({
         )}
       >
         <div className="flex items-start gap-4">
-          <div
-            className={cn(
-              'border-l-2 pl-3 pt-0.5',
-              iconAccentClass[emphasis],
-            )}
-          >
-            {icon}
-          </div>
+          <div className={cn('border-l-2 pl-3 pt-0.5', iconAccentClass[emphasis])}>{icon}</div>
         </div>
         <div className="space-y-3">
           <h3 className="ui-section-title ui-safe-text">{title}</h3>

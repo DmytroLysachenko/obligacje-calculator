@@ -50,13 +50,19 @@ describe('single-bond terminal result contract', () => {
     const reverseBondSource = read('features/bond-core/utils/engine/reverse-bond-engine.ts');
 
     expectContains(singleBondSource, 'throw createNumericFaultError');
-    expectContains(singleBondSource, 'Single-bond calculation exited without reaching the selected withdrawal date.');
+    expectContains(
+      singleBondSource,
+      'Single-bond calculation exited without reaching the selected withdrawal date.',
+    );
     expectContains(singleBondSource, 'return createFinalSingleBondResult({');
     expectContains(reverseBondSource, 'function assertSingleBondTerminalResult(');
     expectContains(reverseBondSource, 'asserts result is CalculationResult');
     expectContains(reverseBondSource, 'final timeline point is not a withdrawal checkpoint');
     expectContains(reverseBondSource, 'let result: CalculationResult | null = null;');
-    expectContains(reverseBondSource, "assertSingleBondTerminalResult(result, 'Reverse bond calculation');");
+    expectContains(
+      reverseBondSource,
+      "assertSingleBondTerminalResult(result, 'Reverse bond calculation');",
+    );
     expectNoFragments(`${singleBondSource}\n${reverseBondSource}`, [
       'return {} as CalculationResult',
       'let result: CalculationResult = {} as CalculationResult',
@@ -80,7 +86,9 @@ describe('single-bond terminal result contract', () => {
     } catch (error) {
       expect(error).toBeInstanceOf(CalculationDomainError);
       expect((error as CalculationDomainError).code).toBe('CALCULATION_NUMERIC_FAULT');
-      expect((error as CalculationDomainError).message).toContain('without reaching the selected withdrawal date');
+      expect((error as CalculationDomainError).message).toContain(
+        'without reaching the selected withdrawal date',
+      );
       expect((error as CalculationDomainError).details).toMatchObject({
         purchaseDate: baseInputs.purchaseDate,
         withdrawalDate: baseInputs.purchaseDate,
@@ -124,7 +132,9 @@ describe('single-bond terminal result contract', () => {
     } catch (error) {
       expect(error).toBeInstanceOf(CalculationDomainError);
       expect((error as CalculationDomainError).code).toBe('CALCULATION_NUMERIC_FAULT');
-      expect((error as CalculationDomainError).message).toContain('without reaching the selected withdrawal date');
+      expect((error as CalculationDomainError).message).toContain(
+        'without reaching the selected withdrawal date',
+      );
     }
   });
 
@@ -132,7 +142,13 @@ describe('single-bond terminal result contract', () => {
     const regularSource = read('features/bond-core/utils/engine/regular-investment-engine.ts');
 
     expectContains(regularSource, 'export const calculateRegularInvestment = withMathGuard');
-    expectContains(regularSource, 'return createRegularInvestmentResult(totalInvested, investmentHorizonMonths / 12, timeline, lots);');
-    expectNotContains(regularSource, "assertSingleBondTerminalResult(result, 'Regular investment calculation')");
+    expectContains(
+      regularSource,
+      'return createRegularInvestmentResult(totalInvested, investmentHorizonMonths / 12, timeline, lots);',
+    );
+    expectNotContains(
+      regularSource,
+      "assertSingleBondTerminalResult(result, 'Regular investment calculation')",
+    );
   });
 });

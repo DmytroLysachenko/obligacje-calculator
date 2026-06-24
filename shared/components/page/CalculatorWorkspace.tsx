@@ -24,15 +24,13 @@ export function CalculatorWorkspace({
   return (
     <div className={cn(pageLayout.compactFlow, className)}>
       <div className={pageLayout.calculatorGrid}>
-        <aside className={cn(pageLayout.stickyScenario, controlsClassName)}>
-          {controls}
-        </aside>
-        <section className={cn(pageLayout.sectionFlow, resultsClassName)}>
-          {results}
-        </section>
+        <aside className={cn(pageLayout.stickyScenario, controlsClassName)}>{controls}</aside>
+        <section className={cn(pageLayout.sectionFlow, resultsClassName)}>{results}</section>
       </div>
       {details ? (
-        <section className={cn(pageLayout.sectionFlow, pageLayout.sectionDivider, detailsClassName)}>
+        <section
+          className={cn(pageLayout.sectionFlow, pageLayout.sectionDivider, detailsClassName)}
+        >
           {details}
         </section>
       ) : null}

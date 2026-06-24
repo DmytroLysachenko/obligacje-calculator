@@ -25,17 +25,29 @@ describe('optimizer state model', () => {
   it('applies macro defaults only before the user touches macro assumptions', () => {
     const inputs = buildDefaultOptimizerInputs(new Date('2026-06-16T00:00:00.000Z'));
 
-    expect(applyOptimizerMacroDefaults(inputs, {
-      expectedInflation: 3.2,
-      expectedNbpRate: 3.75,
-    }, false)).toMatchObject({
+    expect(
+      applyOptimizerMacroDefaults(
+        inputs,
+        {
+          expectedInflation: 3.2,
+          expectedNbpRate: 3.75,
+        },
+        false,
+      ),
+    ).toMatchObject({
       expectedInflation: 3.2,
       expectedNbpRate: 3.75,
     });
-    expect(applyOptimizerMacroDefaults(inputs, {
-      expectedInflation: 3.2,
-      expectedNbpRate: 3.75,
-    }, true)).toBe(inputs);
+    expect(
+      applyOptimizerMacroDefaults(
+        inputs,
+        {
+          expectedInflation: 3.2,
+          expectedNbpRate: 3.75,
+        },
+        true,
+      ),
+    ).toBe(inputs);
   });
 
   it('identifies macro updates and formats horizons', () => {
@@ -55,18 +67,20 @@ describe('optimizer state model', () => {
   });
 
   it('builds ready-state steps from caller-provided labels', () => {
-    expect(buildOptimizerReadySteps({
-      amount: 'PLN 10,000',
-      months: 48,
-      labels: {
-        amountTitle: 'Amount',
-        amountDescription: (amount) => `Invest ${amount}`,
-        horizonTitle: 'Horizon',
-        horizonDescription: (months) => `${months} months`,
-        scopeTitle: 'Scope',
-        scopeDescription: 'Standard bonds',
-      },
-    })).toEqual([
+    expect(
+      buildOptimizerReadySteps({
+        amount: 'PLN 10,000',
+        months: 48,
+        labels: {
+          amountTitle: 'Amount',
+          amountDescription: (amount) => `Invest ${amount}`,
+          horizonTitle: 'Horizon',
+          horizonDescription: (months) => `${months} months`,
+          scopeTitle: 'Scope',
+          scopeDescription: 'Standard bonds',
+        },
+      }),
+    ).toEqual([
       { id: 'amount', title: 'Amount', description: 'Invest PLN 10,000' },
       { id: 'horizon', title: 'Horizon', description: '48 months' },
       { id: 'narrow-scope', title: 'Scope', description: 'Standard bonds' },

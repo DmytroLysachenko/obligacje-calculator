@@ -89,7 +89,9 @@ describe('data-reference localization', () => {
       coverageNote: 'cpi-stale-coverage',
     };
 
-    expect(getReferenceState(partialMeta, 'pl').description).toContain('czesciowy zakres referencyjny');
+    expect(getReferenceState(partialMeta, 'pl').description).toContain(
+      'czesciowy zakres referencyjny',
+    );
     expect(getReferenceState(staleMeta, 'pl').title).toBe('Zakres wymaga odswiezenia');
     expect(getReferenceState(staleMeta, 'en').description).toContain('too old');
   });
@@ -108,31 +110,39 @@ describe('data-reference localization', () => {
           coverageNote: 'cpi-fallback-reference',
         },
         'en',
-    ).description,
+      ).description,
     ).toContain('fallback coverage');
   });
 
   it('maps reference envelopes to one status kind for dashboard labels', () => {
-    expect(getReferenceStatusKind({
-      source: 'database',
-      usedFallback: false,
-      syncStatus: 'success',
-    })).toBe('synced');
-    expect(getReferenceStatusKind({
-      source: 'database',
-      usedFallback: true,
-      syncStatus: 'success',
-    })).toBe('fallback');
-    expect(getReferenceStatusKind({
-      source: 'database',
-      usedFallback: true,
-      syncStatus: 'stale',
-    })).toBe('stale');
-    expect(getReferenceStatusKind({
-      source: 'database',
-      usedFallback: true,
-      syncStatus: 'partial',
-    })).toBe('partial');
+    expect(
+      getReferenceStatusKind({
+        source: 'database',
+        usedFallback: false,
+        syncStatus: 'success',
+      }),
+    ).toBe('synced');
+    expect(
+      getReferenceStatusKind({
+        source: 'database',
+        usedFallback: true,
+        syncStatus: 'success',
+      }),
+    ).toBe('fallback');
+    expect(
+      getReferenceStatusKind({
+        source: 'database',
+        usedFallback: true,
+        syncStatus: 'stale',
+      }),
+    ).toBe('stale');
+    expect(
+      getReferenceStatusKind({
+        source: 'database',
+        usedFallback: true,
+        syncStatus: 'partial',
+      }),
+    ).toBe('partial');
     expect(getReferenceStatusKind(undefined)).toBe('fallback');
   });
 });

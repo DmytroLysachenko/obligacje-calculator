@@ -27,4 +27,3 @@ export const PATCH = apiHandler(async (req: NextRequest) => {
 
   return withPortfolioOwnerResponse(okJson(updated), owner);
 });
-

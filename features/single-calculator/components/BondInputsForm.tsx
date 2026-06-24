@@ -11,7 +11,10 @@ import { useAppI18n } from '@/i18n/client';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
-import { AssumptionSetupMode, MarketAssumptionsForm } from '@/shared/components/MarketAssumptionsForm';
+import {
+  AssumptionSetupMode,
+  MarketAssumptionsForm,
+} from '@/shared/components/MarketAssumptionsForm';
 import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
 import { InputGuardrailIssue } from '../lib/input-guardrails';
 import { BondConfigSection } from './sections/BondConfigSection';
@@ -61,17 +64,11 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
   const currentDef = definitions?.[inputs.bondType];
   const investmentHorizonMonths =
-    inputs.investmentHorizonMonths ??
-    getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);
+    inputs.investmentHorizonMonths ?? getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);
   const investmentHorizonYears = Math.max(1 / 12, investmentHorizonMonths / 12);
   const maturityDate = useMemo(
     () =>
-      parseISO(
-        getWithdrawalDateFromMonths(
-          inputs.purchaseDate,
-          Math.round(inputs.duration * 12),
-        ),
-      ),
+      parseISO(getWithdrawalDateFromMonths(inputs.purchaseDate, Math.round(inputs.duration * 12))),
     [inputs.duration, inputs.purchaseDate],
   );
 
@@ -219,7 +216,3 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
     </TooltipProvider>
   );
 };
-
-
-
-

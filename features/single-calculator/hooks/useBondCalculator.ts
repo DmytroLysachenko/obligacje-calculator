@@ -5,7 +5,10 @@ import { MODEL_VERSION } from '../../bond-core/model-version';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
-import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/shared/lib/calculator-persistence';
+import {
+  loadPersistedCalculatorState,
+  savePersistedCalculatorState,
+} from '@/shared/lib/calculator-persistence';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
@@ -37,15 +40,9 @@ export function useBondCalculator(initialInputs?: BondInputs) {
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
   const { defaults: macroDefaults } = useMacroAssumptionDefaults();
   const fallbackInputs = useMemo(() => buildFallbackInputs(), []);
-  const [inputs, setInputs] = useState<BondInputs>(
-    initialInputs ?? fallbackInputs,
-  );
-  const [envelope, setEnvelope] = useState<SingleBondCalculationEnvelope | null>(
-    null,
-  );
-  const [isDirty, setIsDirty] = useState(
-    initialInputs ? false : true,
-  );
+  const [inputs, setInputs] = useState<BondInputs>(initialInputs ?? fallbackInputs);
+  const [envelope, setEnvelope] = useState<SingleBondCalculationEnvelope | null>(null);
+  const [isDirty, setIsDirty] = useState(initialInputs ? false : true);
   const [availableSeries, setAvailableSeries] = useState<BondSeriesMetadata[]>([]);
   const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(
     initialInputs?.selectedSeriesId ?? null,
@@ -58,27 +55,31 @@ export function useBondCalculator(initialInputs?: BondInputs) {
   const hasAutoCalculatedSharedScenario = useRef(false);
   const restoredFromPersistence = useRef(false);
   const hasTouchedMacroAssumptions = useRef(false);
-  
+
   const { isCalculating, isError, clearError, post } = useCalculationRequest();
 
-  const applyMacroDefaults = useEffectEvent((defaults: { expectedInflation: number; expectedNbpRate: number }) => {
-    setInputs((previous) => {
-      const next = {
-        ...previous,
-        expectedInflation: defaults.expectedInflation,
-        expectedNbpRate: defaults.expectedNbpRate,
-      };
+  const applyMacroDefaults = useEffectEvent(
+    (defaults: { expectedInflation: number; expectedNbpRate: number }) => {
+      setInputs((previous) => {
+        const next = {
+          ...previous,
+          expectedInflation: defaults.expectedInflation,
+          expectedNbpRate: defaults.expectedNbpRate,
+        };
 
-      return preserveStableState(previous, next);
-    });
-  });
+        return preserveStableState(previous, next);
+      });
+    },
+  );
 
-  const reconcilePersistedMacroDefaults = useEffectEvent((defaults: { expectedInflation: number; expectedNbpRate: number }) => {
-    setInputs((previous) => {
-      const next = applyMacroDefaultsToBaseline(previous, defaults);
-      return preserveStableState(previous, next);
-    });
-  });
+  const reconcilePersistedMacroDefaults = useEffectEvent(
+    (defaults: { expectedInflation: number; expectedNbpRate: number }) => {
+      setInputs((previous) => {
+        const next = applyMacroDefaultsToBaseline(previous, defaults);
+        return preserveStableState(previous, next);
+      });
+    },
+  );
 
   useEffect(() => {
     if (!definitions || !definitions[inputs.bondType]) {
@@ -112,7 +113,11 @@ export function useBondCalculator(initialInputs?: BondInputs) {
         setInputs(stripDisplayOnlyInputs(restoredState.inputs) ?? fallbackInputs);
         setEnvelope(restoredEnvelope);
         setSelectedSeriesId(restoredState.selectedSeriesId ?? null);
-        setLastCommittedInputs(restoredEnvelope ? stripDisplayOnlyInputs(restoredState.lastCommittedInputs ?? null) : null);
+        setLastCommittedInputs(
+          restoredEnvelope
+            ? stripDisplayOnlyInputs(restoredState.lastCommittedInputs ?? null)
+            : null,
+        );
         setIsDirty(restoredEnvelope ? (restoredState.isDirty ?? true) : true);
       }
 
@@ -123,7 +128,12 @@ export function useBondCalculator(initialInputs?: BondInputs) {
   }, [fallbackInputs, initialInputs]);
 
   useEffect(() => {
-    if (!macroDefaults || initialInputs || !isPersistenceReady || hasTouchedMacroAssumptions.current) {
+    if (
+      !macroDefaults ||
+      initialInputs ||
+      !isPersistenceReady ||
+      hasTouchedMacroAssumptions.current
+    ) {
       return;
     }
 
@@ -137,36 +147,42 @@ export function useBondCalculator(initialInputs?: BondInputs) {
     applyMacroDefaults(macroDefaults);
   }, [initialInputs, isPersistenceReady, macroDefaults]);
 
-  const calculate = useCallback(async (currentInputs: BondInputs) => {
-    try {
-      await Promise.resolve(); // Defer state updates to avoid synchronous setState in effect
-      setIsDirty(false);
-      clearError();
-      let finalInputs = { ...currentInputs };
+  const calculate = useCallback(
+    async (currentInputs: BondInputs) => {
+      try {
+        await Promise.resolve(); // Defer state updates to avoid synchronous setState in effect
+        setIsDirty(false);
+        clearError();
+        let finalInputs = { ...currentInputs };
 
-      if (currentInputs.calculatorMode === 'reverse' && currentInputs.savingsGoal) {
-        const simEnvelope = await post<SingleBondCalculationEnvelope>(
+        if (currentInputs.calculatorMode === 'reverse' && currentInputs.savingsGoal) {
+          const simEnvelope = await post<SingleBondCalculationEnvelope>(
+            getCalculationEndpoint(ScenarioKind.SINGLE_BOND),
+            getReverseCalculationTestInputs(currentInputs),
+            { preferWorker: true },
+          );
+          finalInputs = applyReverseSavingsGoal(currentInputs, simEnvelope.result.netPayoutValue);
+        }
+
+        const data = await post<SingleBondCalculationEnvelope>(
           getCalculationEndpoint(ScenarioKind.SINGLE_BOND),
-          getReverseCalculationTestInputs(currentInputs),
+          finalInputs,
           { preferWorker: true },
         );
-        finalInputs = applyReverseSavingsGoal(currentInputs, simEnvelope.result.netPayoutValue);
+        setEnvelope(data);
+        setLastCommittedInputs(finalInputs);
+      } catch (error) {
+        if (
+          error instanceof Error &&
+          (error.name === 'AbortError' || error.message === 'Calculation aborted')
+        ) {
+          return;
+        }
+        console.error('Calculation error:', error);
       }
-
-      const data = await post<SingleBondCalculationEnvelope>(
-        getCalculationEndpoint(ScenarioKind.SINGLE_BOND),
-        finalInputs,
-        { preferWorker: true },
-      );
-      setEnvelope(data);
-      setLastCommittedInputs(finalInputs);
-    } catch (error) {
-      if (error instanceof Error && (error.name === 'AbortError' || error.message === 'Calculation aborted')) {
-        return;
-      }
-      console.error('Calculation error:', error);
-    }
-  }, [clearError, post]);
+    },
+    [clearError, post],
+  );
 
   const fetchSeries = useCallback(async (symbol: BondType) => {
     try {
@@ -209,17 +225,33 @@ export function useBondCalculator(initialInputs?: BondInputs) {
       lastCommittedInputs,
       isDirty,
     });
-  }, [envelope, initialInputs, inputs, isDirty, isPersistenceReady, lastCommittedInputs, selectedSeriesId]);
+  }, [
+    envelope,
+    initialInputs,
+    inputs,
+    isDirty,
+    isPersistenceReady,
+    lastCommittedInputs,
+    selectedSeriesId,
+  ]);
 
   const results = envelope?.result || null;
 
-  const normalizeInputs = useCallback((base: BondInputs, nextPartial?: Partial<BondInputs>) => (
-    normalizeSingleCalculatorInputs(base, nextPartial)
-  ), []);
+  const normalizeInputs = useCallback(
+    (base: BondInputs, nextPartial?: Partial<BondInputs>) =>
+      normalizeSingleCalculatorInputs(base, nextPartial),
+    [],
+  );
 
   const updateInput = (key: string, value: unknown) => {
     setIsDirty(true);
-    if (key === 'expectedInflation' || key === 'expectedNbpRate' || key === 'customInflation' || key === 'customNbpRate' || key === 'inflationScenario') {
+    if (
+      key === 'expectedInflation' ||
+      key === 'expectedNbpRate' ||
+      key === 'customInflation' ||
+      key === 'customNbpRate' ||
+      key === 'inflationScenario'
+    ) {
       hasTouchedMacroAssumptions.current = true;
     }
     if (key === 'selectedSeriesId') {
@@ -227,34 +259,42 @@ export function useBondCalculator(initialInputs?: BondInputs) {
       setSelectedSeriesId(seriesId);
       if (seriesId === 'current' && definitions) {
         const def = definitions[inputs.bondType];
-        setInputs(prev => ({
+        setInputs((prev) => ({
           ...prev,
           firstYearRate: def.firstYearRate,
           margin: def.margin,
         }));
         return;
       }
-      const series = availableSeries.find(s => s.id === seriesId);
+      const series = availableSeries.find((s) => s.id === seriesId);
       if (series) {
-        setInputs(prev => ({
+        setInputs((prev) => ({
           ...prev,
           firstYearRate: Number(series.firstYearRate),
           margin: Number(series.baseMargin),
           purchaseDate: series.emissionMonth,
-          withdrawalDate: getWithdrawalDateFromMonths(series.emissionMonth, prev.investmentHorizonMonths ?? Math.round(prev.duration * 12)),
+          withdrawalDate: getWithdrawalDateFromMonths(
+            series.emissionMonth,
+            prev.investmentHorizonMonths ?? Math.round(prev.duration * 12),
+          ),
         }));
       }
       return;
     }
 
-    setInputs((prev) => normalizeInputs(prev, { [key as keyof BondInputs]: value } as Partial<BondInputs>));
+    setInputs((prev) =>
+      normalizeInputs(prev, { [key as keyof BondInputs]: value } as Partial<BondInputs>),
+    );
   };
 
-  const replaceInputs = useCallback((nextInputs: BondInputs) => {
-    setIsDirty(true);
-    setSelectedSeriesId(nextInputs.selectedSeriesId ?? 'current');
-    setInputs(normalizeInputs(nextInputs, nextInputs));
-  }, [normalizeInputs]);
+  const replaceInputs = useCallback(
+    (nextInputs: BondInputs) => {
+      setIsDirty(true);
+      setSelectedSeriesId(nextInputs.selectedSeriesId ?? 'current');
+      setInputs(normalizeInputs(nextInputs, nextInputs));
+    },
+    [normalizeInputs],
+  );
 
   const setBondType = (type: BondType) => {
     if (!definitions) return;
@@ -264,7 +304,7 @@ export function useBondCalculator(initialInputs?: BondInputs) {
     const previousHorizonMonths = getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);
     const fallbackHorizonMonths = Math.round(def.duration * 12);
     const nextHorizonMonths = Math.max(previousHorizonMonths, fallbackHorizonMonths);
-    
+
     setInputs((prev) => ({
       ...prev,
       bondType: type,

@@ -7,8 +7,12 @@ export interface StandardizedIndicator {
   metadata?: Record<string, unknown>;
 }
 
-export async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs = 5000): Promise<Response> {
-  return fetchSyncResponse(url, {...options, timeoutMs});
+export async function fetchWithTimeout(
+  url: string,
+  options: RequestInit = {},
+  timeoutMs = 5000,
+): Promise<Response> {
+  return fetchSyncResponse(url, { ...options, timeoutMs });
 }
 
 export abstract class BaseApiClient {

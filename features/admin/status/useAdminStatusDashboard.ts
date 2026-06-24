@@ -1,15 +1,20 @@
 'use client';
 
-import {useCallback, useEffect, useState} from 'react';
-import {useAppI18n} from '@/i18n/client';
+import { useCallback, useEffect, useState } from 'react';
+import { useAppI18n } from '@/i18n/client';
 import { ApiClientError } from '@/shared/lib/api-client';
-import { adminClient, AdminSeriesStatus, AdminStatusData, AdminSyncMode } from '@/shared/lib/admin-client';
+import {
+  adminClient,
+  AdminSeriesStatus,
+  AdminStatusData,
+  AdminSyncMode,
+} from '@/shared/lib/admin-client';
 
 export type SeriesStatus = AdminSeriesStatus;
 export type StatusData = AdminStatusData;
 
 export function useAdminStatusDashboard() {
-  const {t} = useAppI18n();
+  const { t } = useAppI18n();
   const [data, setData] = useState<StatusData | null>(null);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);

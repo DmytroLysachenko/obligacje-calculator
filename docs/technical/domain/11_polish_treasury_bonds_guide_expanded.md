@@ -1,8 +1,8 @@
-
 # 11. Polish Treasury Bonds Guide Expanded
 
 **Version:** based on the retail savings-bond offer available in **March 2026**.  
 **Scope:** this file covers the **current retail bond types in the official Polish savings-bond offer**:
+
 - OTS — 3-month
 - ROR — 1-year
 - DOR — 2-year
@@ -41,6 +41,7 @@ N_total = 100 × n
 ```
 
 where:
+
 - `n` = number of bonds,
 - `N_total` = total nominal amount invested.
 
@@ -50,23 +51,23 @@ where:
 
 ## 2.1 Standard retail bonds
 
-| Symbol | Name | Term | Rate type | Interest payment style | Exchange purchase price |
-|---|---:|---:|---|---|---:|
-| OTS | 3-month | 3 months | fixed | paid at maturity | 100.00 PLN |
-| ROR | 1-year | 12 months | variable | paid every month | 99.90 PLN |
-| DOR | 2-year | 24 months | variable | paid every month | 99.90 PLN |
-| TOS | 3-year | 3 years | fixed | annual compounding, paid at maturity | 99.90 PLN |
-| COI | 4-year | 4 years | year 1 fixed, then inflation + margin | paid every year | 99.90 PLN |
-| EDO | 10-year | 10 years | year 1 fixed, then inflation + margin | annual compounding, paid at maturity | 99.90 PLN |
+| Symbol |    Name |      Term | Rate type                             | Interest payment style               | Exchange purchase price |
+| ------ | ------: | --------: | ------------------------------------- | ------------------------------------ | ----------------------: |
+| OTS    | 3-month |  3 months | fixed                                 | paid at maturity                     |              100.00 PLN |
+| ROR    |  1-year | 12 months | variable                              | paid every month                     |               99.90 PLN |
+| DOR    |  2-year | 24 months | variable                              | paid every month                     |               99.90 PLN |
+| TOS    |  3-year |   3 years | fixed                                 | annual compounding, paid at maturity |               99.90 PLN |
+| COI    |  4-year |   4 years | year 1 fixed, then inflation + margin | paid every year                      |               99.90 PLN |
+| EDO    | 10-year |  10 years | year 1 fixed, then inflation + margin | annual compounding, paid at maturity |               99.90 PLN |
 
 ## 2.2 Family bonds
 
 These are available only for beneficiaries of the **Rodzina 800+** program.
 
-| Symbol | Name | Term | Rate type | Interest payment style | Exchange available? |
-|---|---:|---:|---|---|---|
-| ROS | family 6-year | 6 years | year 1 fixed, then inflation + margin | annual compounding, paid at maturity | no |
-| ROD | family 12-year | 12 years | year 1 fixed, then inflation + margin | annual compounding, paid at maturity | no |
+| Symbol |           Name |     Term | Rate type                             | Interest payment style               | Exchange available? |
+| ------ | -------------: | -------: | ------------------------------------- | ------------------------------------ | ------------------- |
+| ROS    |  family 6-year |  6 years | year 1 fixed, then inflation + margin | annual compounding, paid at maturity | no                  |
+| ROD    | family 12-year | 12 years | year 1 fixed, then inflation + margin | annual compounding, paid at maturity | no                  |
 
 ---
 
@@ -74,27 +75,27 @@ These are available only for beneficiaries of the **Rodzina 800+** program.
 
 ## 3.1 Rates for the first interest period
 
-| Symbol | First-period rate |
-|---|---:|
-| OTS0626 | 2.50% p.a. |
+| Symbol  |                      First-period rate |
+| ------- | -------------------------------------: |
+| OTS0626 |                             2.50% p.a. |
 | ROR0327 | 4.25% p.a. in the first monthly period |
 | DOR0328 | 4.40% p.a. in the first monthly period |
-| TOS0329 | 4.65% p.a. fixed for all 3 years |
-| COI0330 | 5.00% p.a. in year 1 |
-| EDO0336 | 5.60% p.a. in year 1 |
-| ROS0332 | 5.20% p.a. in year 1 |
-| ROD0338 | 5.85% p.a. in year 1 |
+| TOS0329 |       4.65% p.a. fixed for all 3 years |
+| COI0330 |                   5.00% p.a. in year 1 |
+| EDO0336 |                   5.60% p.a. in year 1 |
+| ROS0332 |                   5.20% p.a. in year 1 |
+| ROD0338 |                   5.85% p.a. in year 1 |
 
 ## 3.2 Margins used later
 
 | Symbol | Formula after the first period | Margin |
-|---|---|---:|
-| ROR | NBP reference rate + margin | 0.00% |
-| DOR | NBP reference rate + margin | 0.15% |
-| COI | inflation + margin | 1.50% |
-| EDO | inflation + margin | 2.00% |
-| ROS | inflation + margin | 2.00% |
-| ROD | inflation + margin | 2.50% |
+| ------ | ------------------------------ | -----: |
+| ROR    | NBP reference rate + margin    |  0.00% |
+| DOR    | NBP reference rate + margin    |  0.15% |
+| COI    | inflation + margin             |  1.50% |
+| EDO    | inflation + margin             |  2.00% |
+| ROS    | inflation + margin             |  2.00% |
+| ROD    | inflation + margin             |  2.50% |
 
 ---
 
@@ -102,22 +103,22 @@ These are available only for beneficiaries of the **Rodzina 800+** program.
 
 We will use the following symbols.
 
-| Symbol | Meaning |
-|---|---|
-| `N` | nominal value of one bond = 100 PLN |
-| `n` | number of bonds |
-| `P` | purchase outlay |
-| `r` | annual interest rate written as a decimal |
-| `r%` | annual interest rate written as a percent |
-| `O` | interest amount |
-| `W` | final redemption value |
-| `WP` | amount received in early redemption |
-| `a` | number of actual days accrued in the current period |
-| `ACT` or `D` | actual number of days in the interest period |
-| `F` | coupon frequency per year |
-| `b` | early-redemption fee deducted per bond |
-| `i` | inflation rate used for indexed bonds |
-| `m` | margin |
+| Symbol       | Meaning                                             |
+| ------------ | --------------------------------------------------- |
+| `N`          | nominal value of one bond = 100 PLN                 |
+| `n`          | number of bonds                                     |
+| `P`          | purchase outlay                                     |
+| `r`          | annual interest rate written as a decimal           |
+| `r%`         | annual interest rate written as a percent           |
+| `O`          | interest amount                                     |
+| `W`          | final redemption value                              |
+| `WP`         | amount received in early redemption                 |
+| `a`          | number of actual days accrued in the current period |
+| `ACT` or `D` | actual number of days in the interest period        |
+| `F`          | coupon frequency per year                           |
+| `b`          | early-redemption fee deducted per bond              |
+| `i`          | inflation rate used for indexed bonds               |
+| `m`          | margin                                              |
 
 ### Important percent conversion rule
 
@@ -185,14 +186,17 @@ In practical work:
 There are three large families:
 
 ## 6.1 Fixed-rate, short/simple
+
 - OTS
 - TOS
 
 ## 6.2 Variable-rate based on the NBP reference rate
+
 - ROR
 - DOR
 
 ## 6.3 Inflation-indexed
+
 - COI
 - EDO
 - ROS
@@ -243,6 +247,7 @@ W = N × (1 + r × a / 365)
 ```
 
 where:
+
 - `W` = redemption value,
 - `N` = nominal value,
 - `r` = annual rate as decimal,
@@ -251,6 +256,7 @@ where:
 ## 7.3 Example — one OTS bond
 
 Take:
+
 - `N = 100`
 - `r = 0.025`
 - `a ≈ 92`
@@ -310,6 +316,7 @@ So mathematically, OTS is the cleanest case among early-redemption scenarios.
 ## 8.1 What ROR does
 
 ROR is a one-year bond with:
+
 - interest periods every month,
 - monthly cash payouts,
 - no capitalization,
@@ -347,6 +354,7 @@ O = N × r × a / (D × F)
 ```
 
 where:
+
 - `N = 100`,
 - `r` = annual rate in decimal,
 - `a` = actual accrued days up to date `d`,
@@ -362,6 +370,7 @@ O = N × r / 12
 ## 8.4 Example — first monthly payout for one bond
 
 Take:
+
 - `N = 100`
 - `r = 0.0425`
 - `F = 12`
@@ -387,20 +396,24 @@ Net monthly payout:
 Suppose the NBP reference rate stayed constant at `5.25%` after month 1.
 
 Then:
+
 - month 1 annual rate = `4.25%`
 - months 2–12 annual rate = `5.25%`
 
 ### Month 1
+
 ```text
 O_1 = 100 × 0.0425 / 12 = 0.354166... ≈ 0.35
 ```
 
 ### Month 2 to Month 12
+
 ```text
 O_k = 100 × 0.0525 / 12 = 0.4375 ≈ 0.44
 ```
 
 ### Total gross for one bond
+
 ```text
 gross = 0.35 + 11 × 0.44
       = 0.35 + 4.84
@@ -408,6 +421,7 @@ gross = 0.35 + 11 × 0.44
 ```
 
 ### For 100 bonds
+
 ```text
 gross = 100 × 5.19 = 519.00 PLN
 net = 519.00 × 0.81 = 420.39 PLN
@@ -418,10 +432,12 @@ Because ROR pays monthly, there is **no annual compounding inside the bond**.
 ## 8.6 Edge case — reference rate falls sharply
 
 Suppose:
+
 - month 1: 4.25%
 - later NBP reference rate = 1.00%
 
 Then:
+
 ```text
 O_k = 100 × 0.01 / 12 = 0.083333... ≈ 0.08 PLN gross per month
 ```
@@ -467,6 +483,7 @@ with protection in the first period so the payable amount is not below `100 PLN`
 ### Example — early redemption after 10 days in a 30-day first month
 
 Take:
+
 - `N = 100`
 - `r = 0.0425`
 - `a = 10`
@@ -498,6 +515,7 @@ This is an important beginner edge case:
 ## 9.1 What DOR does
 
 DOR is mathematically similar to ROR, but:
+
 - lasts 24 months,
 - pays monthly,
 - margin is positive:
@@ -557,6 +575,7 @@ O = 100 × 0.054 / 12 = 0.45 PLN
 ```
 
 ### Gross over 24 months for one bond
+
 - month 1: `0.37`
 - months 2–24: `23 × 0.45 = 10.35`
 
@@ -573,6 +592,7 @@ Net:
 ```
 
 ### For 200 bonds
+
 ```text
 gross = 200 × 10.72 = 2,144.00 PLN
 net = 2,144.00 × 0.81 = 1,736.64 PLN
@@ -607,6 +627,7 @@ b = 0.70 PLN
 ```
 
 The same practical lesson applies as for ROR:
+
 - if you redeem early, the fee may eat a large part of the accrued interest,
 - especially near the beginning of a period.
 
@@ -617,6 +638,7 @@ The same practical lesson applies as for ROR:
 ## 10.1 What TOS does
 
 TOS is a 3-year bond with:
+
 - one fixed annual rate for all 3 years,
 - annual capitalization,
 - no yearly payout to your bank account,
@@ -637,6 +659,7 @@ W = N × (1 + r)^3
 ```
 
 where:
+
 - `N = 100`,
 - `r = 0.0465`.
 
@@ -684,12 +707,14 @@ net redemption ≈ 16,775.12 PLN
 Compare simple interest and compound interest.
 
 ### If it were simple interest only:
+
 ```text
 simple = 100 × (1 + 3 × 0.0465)
        = 113.95 PLN
 ```
 
 ### Actual TOS with annual compounding:
+
 ```text
 compound = 114.61 PLN
 ```
@@ -715,6 +740,7 @@ WP_k = N_{k-1} × (1 + r × a / ACT) - b
 ```
 
 where:
+
 - `N_{k-1}` = capital already grown up to the start of year `k`,
 - `a / ACT` = fraction of the current year already accrued,
 - `b = 1.00 PLN`.
@@ -722,6 +748,7 @@ where:
 ### Example — midway through year 2
 
 Take:
+
 - one bond,
 - end of year 1 value:
 
@@ -730,6 +757,7 @@ N_1 = 100 × 1.0465 = 104.65
 ```
 
 If redeemed halfway through year 2:
+
 - `a / ACT ≈ 0.5`
 
 Then accrued partial value before fee:
@@ -754,6 +782,7 @@ After fee:
 ## 11.1 What COI does
 
 COI works like this:
+
 - year 1 has a fixed rate,
 - years 2–4 use:
 
@@ -778,6 +807,7 @@ r_k = i_k + m
 ```
 
 where:
+
 - `i_k` = inflation rate used for that annual period,
 - `m = 1.50% = 0.015`.
 
@@ -806,6 +836,7 @@ Since `N = 100`, calculation is especially simple.
 ## 11.4 Example — one bond with hypothetical inflation path
 
 Assume:
+
 - year 1: fixed `5.00%`
 - year 2 inflation = `3.20%`
 - year 3 inflation = `2.40%`
@@ -814,30 +845,35 @@ Assume:
 Then:
 
 ### Year 1
+
 ```text
 r_1 = 5.00% = 0.05
 O_1 = 100 × 0.05 = 5.00 PLN
 ```
 
 ### Year 2
+
 ```text
 r_2 = 3.20% + 1.50% = 4.70% = 0.047
 O_2 = 100 × 0.047 = 4.70 PLN
 ```
 
 ### Year 3
+
 ```text
 r_3 = 2.40% + 1.50% = 3.90% = 0.039
 O_3 = 100 × 0.039 = 3.90 PLN
 ```
 
 ### Year 4
+
 ```text
 r_4 = 1.80% + 1.50% = 3.30% = 0.033
 O_4 = 100 × 0.033 = 3.30 PLN
 ```
 
 ### Total gross interest over 4 years
+
 ```text
 gross_total = 5.00 + 4.70 + 3.90 + 3.30 = 16.90 PLN
 ```
@@ -904,6 +940,7 @@ with first-period protection so the amount does not go below nominal in the rele
 ### Example — after 200 days in year 1
 
 Take:
+
 - `N = 100`
 - `r = 0.05`
 - `a = 200`
@@ -929,6 +966,7 @@ So even though the annual rate is decent, the `2 PLN` fee matters a lot if you e
 ## 12.1 What EDO does
 
 EDO is a long-term inflation-indexed bond:
+
 - year 1 rate is fixed,
 - years 2–10 use:
 
@@ -975,6 +1013,7 @@ It says:
 ## 12.4 Example — one bond with hypothetical inflation path
 
 Assume:
+
 - year 1: `5.60%`
 - years 2–10: inflation = `3.00%` every year
 - therefore years 2–10 rate = `3.00% + 2.00% = 5.00%`
@@ -1015,10 +1054,12 @@ Net redemption:
 ## 12.5 Why EDO is mathematically stronger than COI for long horizons
 
 COI:
+
 - pays out yearly,
 - no automatic reinvestment inside the bond.
 
 EDO:
+
 - capitalizes yearly,
 - automatically compounds.
 
@@ -1058,6 +1099,7 @@ WP_k = N × (1+r_1) × ... × (1+r_{k-1}) × (1 + r_k × a/ACT) - b
 ### Example — halfway through year 3
 
 Assume:
+
 - year 1: `5.60%`
 - year 2: `5.00%`
 - year 3 current annual rate: `5.00%`
@@ -1122,6 +1164,7 @@ W = N × (1 + r_1) × (1 + r_2) × ... × (1 + r_6)
 ## 13.4 Example — one bond
 
 Assume:
+
 - year 1 = `5.20%`
 - years 2–6 inflation = `3.00%`
 - so years 2–6 rate = `5.00%`
@@ -1164,6 +1207,7 @@ b = 2.00 PLN
 ### Example — after year 1 and 100 days into year 2
 
 Assume:
+
 - year 1 rate `5.20%`
 - year 2 rate `5.00%`
 - `a = 100`, `ACT = 365`
@@ -1225,6 +1269,7 @@ W = N × (1 + r_1) × (1 + r_2) × ... × (1 + r_12)
 ## 14.4 Example — one bond with constant inflation assumption
 
 Assume:
+
 - year 1 = `5.85%`
 - years 2–12 inflation = `3.00%`
 - so years 2–12 rate = `5.50%`
@@ -1269,11 +1314,13 @@ Long compounding makes ROD very sensitive to long-run inflation assumptions.
 Compare 11 later years at:
 
 ### 4.50% later rate
+
 ```text
 W_low = 100 × 1.0585 × (1.045)^11
 ```
 
 ### 6.50% later rate
+
 ```text
 W_high = 100 × 1.0585 × (1.065)^11
 ```
@@ -1313,6 +1360,7 @@ That means an effective discount of:
 ```
 
 Important exceptions in the current offer:
+
 - OTS exchange price: `100.00 PLN`
 - ROS and ROD: no exchange purchase
 
@@ -1337,11 +1385,13 @@ Suppose 100 old bonds matured, giving enough redemption cash.
 Buying 100 new TOS bonds in exchange:
 
 ### Without exchange discount
+
 ```text
 cost = 100 × 100.00 = 10,000.00 PLN
 ```
 
 ### With exchange discount
+
 ```text
 cost = 100 × 99.90 = 9,990.00 PLN
 ```
@@ -1357,6 +1407,7 @@ So `10.00 PLN` remains in cash or reduces the amount of extra money needed.
 ## 15.4 Test case — rolling TOS into TOS again
 
 Let:
+
 - first TOS cycle grows one bond to `114.61 PLN` gross,
 - then you buy a new TOS in exchange at `99.90 PLN`.
 
@@ -1407,12 +1458,14 @@ This is **separate from interest**. It is an extra mechanical benefit from repea
 Suppose each time you buy 100 eligible bonds.
 
 ### With discount
+
 ```text
 cycle_cost = 100 × 99.90 = 9,990 PLN
 3 cycles total purchase outlay = 29,970 PLN
 ```
 
 ### Without discount
+
 ```text
 cycle_cost = 100 × 100.00 = 10,000 PLN
 3 cycles total purchase outlay = 30,000 PLN
@@ -1431,27 +1484,32 @@ That is the pure exchange benefit.
 # 16. Comparing payout mechanics: the most important beginner distinction
 
 ## 16.1 Monthly payout bonds
+
 - ROR
 - DOR
 
 You **receive interest during the life of the bond**.
 
 Mathematically:
+
 ```text
 total_return = sum of monthly payouts + returned nominal at final maturity
 ```
 
 ## 16.2 Annual payout without compounding inside the bond
+
 - COI
 
 You **receive one annual coupon every year**.
 
 Mathematically:
+
 ```text
 total_return = O_1 + O_2 + O_3 + O_4 + nominal
 ```
 
 ## 16.3 Annual capitalization, payout only at the end
+
 - TOS
 - EDO
 - ROS
@@ -1461,6 +1519,7 @@ You do **not** receive cash during the life of the bond.
 Interest is added to the bond value.
 
 Mathematically:
+
 ```text
 final_value = nominal × product of yearly growth factors
 ```
@@ -1476,6 +1535,7 @@ There are several “yield” ideas. Do not confuse them.
 This is just the stated annual rate.
 
 Example:
+
 ```text
 5.60%
 ```
@@ -1514,6 +1574,7 @@ annualized_return = (W / N)^(1/T) - 1
 ```
 
 ### Example — TOS
+
 ```text
 W = 114.61
 N = 100
@@ -1525,6 +1586,7 @@ annualized_return = (114.61 / 100)^(1/3) - 1
 ```
 
 ### Example — EDO hypothetical case
+
 ```text
 W = 163.82
 N = 100
@@ -1545,6 +1607,7 @@ This section gives several strict test cases.
 ## Test Case A — 100 TOS bonds held to maturity
 
 Input:
+
 ```text
 n = 100
 N = 100
@@ -1553,11 +1616,13 @@ T = 3
 ```
 
 Per bond:
+
 ```text
 W = 100 × (1.0465)^3 = 114.61
 ```
 
 Portfolio:
+
 ```text
 initial = 100 × 100 = 10,000
 final_gross = 100 × 114.61 = 11,461.00
@@ -1569,6 +1634,7 @@ final_net = 11,183.41
 ## Test Case B — 100 COI bonds with annual coupons, no reinvestment
 
 Assume annual rates:
+
 ```text
 r1 = 5.00%
 r2 = 4.70%
@@ -1577,11 +1643,13 @@ r4 = 3.30%
 ```
 
 Per bond coupons:
+
 ```text
 5.00 + 4.70 + 3.90 + 3.30 = 16.90
 ```
 
 For 100 bonds:
+
 ```text
 gross coupons = 1,690.00
 net coupons = 1,690.00 × 0.81 = 1,368.90
@@ -1592,17 +1660,20 @@ total cash received net = 11,368.90
 ## Test Case C — 100 EDO bonds with compounding
 
 Assume:
+
 ```text
 r1 = 5.60%
 r2 = ... = r10 = 5.00%
 ```
 
 Per bond:
+
 ```text
 W = 100 × 1.056 × (1.05)^9 = 163.82
 ```
 
 For 100 bonds:
+
 ```text
 final_gross = 16,382.00
 gross_interest = 6,382.00
@@ -1613,33 +1684,40 @@ final_net = 15,169.42
 ## Test Case D — two consecutive TOS cycles with exchange discount
 
 ### Cycle 1
+
 ```text
 buy 100 bonds at 100 = 10,000 PLN
 maturity gross = 11,461.00 PLN
 ```
 
 ### Cycle 2 purchase in exchange
+
 ```text
 100 new bonds × 99.90 = 9,990 PLN
 ```
 
 Residual cash after repurchase:
+
 ```text
 11,461.00 - 9,990.00 = 1,471.00 PLN
 ```
 
 Without discount:
+
 ```text
 11,461.00 - 10,000.00 = 1,461.00 PLN
 ```
 
 Difference:
+
 ```text
 10.00 PLN
 ```
 
 ### Cycle 2 maturity value of the repurchased 100 bonds
+
 Again:
+
 ```text
 100 × 114.61 = 11,461.00 PLN gross
 ```
@@ -1658,12 +1736,14 @@ Compare one COI bond and one EDO bond under a stylized path:
   - EDO = 5.00%
 
 ### COI after 4 years, no reinvestment
+
 ```text
 coupons = 5.00 + 4.50 + 4.50 + 4.50 = 18.50
 final_cash = 118.50 gross
 ```
 
 ### EDO after 4 years, compounded
+
 ```text
 W = 100 × 1.056 × 1.05 × 1.05 × 1.05
   = 122.27 gross
@@ -1676,26 +1756,36 @@ This shows the mechanical power of capitalization.
 # 19. Practical beginner rules distilled from the mathematics
 
 ## 19.1 If you want monthly cash flow
+
 Choose:
+
 - ROR
 - DOR
 
 ## 19.2 If you want a known fixed final result over a few years
+
 Choose:
+
 - TOS
 
 ## 19.3 If you want inflation linkage but yearly cash access
+
 Choose:
+
 - COI
 
 ## 19.4 If you want inflation linkage and maximum compounding
+
 Choose:
+
 - EDO
 - ROS
 - ROD
 
 ## 19.5 If you may need the money very soon
+
 Be careful:
+
 - early-redemption fees can consume much of the accrued interest.
 
 ---
@@ -1703,83 +1793,101 @@ Be careful:
 # 20. The most useful formula summary sheet
 
 ## 20.1 Purchase amount
+
 ```text
 P = 100 × n
 ```
 
 ## 20.2 OTS short-period payout
+
 ```text
 W = N × (1 + r × a / 365)
 ```
 
 ## 20.3 ROR / DOR monthly coupon
+
 ```text
 O = N × r × a / (D × 12)
 ```
 
 For a full monthly period:
+
 ```text
 O = N × r / 12
 ```
 
 ## 20.4 COI annual coupon
+
 ```text
 O_k = N × r_k
 ```
 
 ## 20.5 TOS final value
+
 ```text
 W = N × (1 + r)^3
 ```
 
 ## 20.6 EDO / ROS / ROD final value
+
 ```text
 W = N × Π(1 + r_k)
 ```
 
 That means:
+
 ```text
 W = N × (1 + r_1)(1 + r_2)...(1 + r_T)
 ```
 
 ## 20.7 Variable-rate formulas
+
 ### ROR
+
 ```text
 r_k = max(NBP_reference_k, 0) + 0.00%
 ```
 
 ### DOR
+
 ```text
 r_k = max(NBP_reference_k, 0) + 0.15%
 ```
 
 ### COI
+
 ```text
 r_k = max(inflation_k, 0) + 1.50%
 ```
 
 ### EDO
+
 ```text
 r_k = max(inflation_k, 0) + 2.00%
 ```
 
 ### ROS
+
 ```text
 r_k = max(inflation_k, 0) + 2.00%
 ```
 
 ### ROD
+
 ```text
 r_k = max(inflation_k, 0) + 2.50%
 ```
 
 ## 20.8 Net interest approximation for taxable investing
+
 ```text
 net = gross × 0.81
 ```
 
 ## 20.9 Exchange discount
+
 For eligible standard bonds:
+
 ```text
 discount_per_bond = 100.00 - 99.90 = 0.10 PLN
 total_discount = 0.10 × n

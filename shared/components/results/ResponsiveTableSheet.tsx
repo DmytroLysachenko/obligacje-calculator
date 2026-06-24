@@ -69,7 +69,10 @@ export function ResponsiveTableSheet({
             <SheetTitle id={titleId} className="text-left text-lg font-semibold text-foreground">
               {title}
             </SheetTitle>
-            <SheetDescription id={descriptionId} className="text-left text-sm leading-6 text-muted-foreground">
+            <SheetDescription
+              id={descriptionId}
+              className="text-left text-sm leading-6 text-muted-foreground"
+            >
               {description}
             </SheetDescription>
           </SheetHeader>

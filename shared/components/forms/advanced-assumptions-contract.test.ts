@@ -1,6 +1,6 @@
-import {describe, expect, it} from 'vitest';
-import {readFileSync} from 'node:fs';
-import {join} from 'node:path';
+import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 const root = process.cwd();
 
@@ -52,7 +52,10 @@ describe('advanced assumptions disclosure contracts', () => {
   it('keeps single calculator sidebar groups on the shared disclosure primitive', () => {
     const source = read(files.single);
 
-    expectContains(source, "import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';");
+    expectContains(
+      source,
+      "import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';",
+    );
     expectContains(source, '<AdvancedAssumptionsDisclosure');
     expectContains(source, "title={t('bonds.step_core')}");
     expectContains(source, "title={t('bonds.step_timing')}");
@@ -83,7 +86,10 @@ describe('advanced assumptions disclosure contracts', () => {
   it('keeps regular investment advanced controls on the shared disclosure', () => {
     const source = read(files.regular);
 
-    expectContains(source, "import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';");
+    expectContains(
+      source,
+      "import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';",
+    );
     expectContains(source, '<AdvancedAssumptionsDisclosure');
     expectContains(source, "description={t('bonds.form.advanced_desc')}");
     expectContains(source, '<MarketAssumptionsForm');

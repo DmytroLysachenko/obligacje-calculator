@@ -17,7 +17,7 @@ interface State {
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
-    error: null
+    error: null,
   };
 
   public static getDerivedStateFromError(error: Error): State {
@@ -43,15 +43,15 @@ export class ErrorBoundary extends Component<Props, State> {
             </div>
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                An unexpected error occurred in the application logic. 
-                This might be due to invalid calculation parameters or a connection issue.
+                An unexpected error occurred in the application logic. This might be due to invalid
+                calculation parameters or a connection issue.
               </p>
               {this.state.error && (
                 <div className="bg-muted p-3 rounded text-[10px] font-mono overflow-auto max-h-32">
                   {this.state.error.message}
                 </div>
               )}
-              <Button 
+              <Button
                 onClick={() => this.setState({ hasError: false, error: null })}
                 className="w-full gap-2"
               >

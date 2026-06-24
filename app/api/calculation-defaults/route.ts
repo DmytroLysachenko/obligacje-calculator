@@ -7,6 +7,8 @@ export async function GET() {
     return okJson(defaults);
   } catch (error) {
     console.error('Failed to fetch calculation defaults:', error);
-    return errorJson('Failed to fetch calculation defaults', 'INTERNAL_ERROR', undefined, {status: 500});
+    return errorJson('Failed to fetch calculation defaults', 'INTERNAL_ERROR', undefined, {
+      status: 500,
+    });
   }
 }

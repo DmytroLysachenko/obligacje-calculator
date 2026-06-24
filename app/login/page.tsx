@@ -28,22 +28,14 @@ export default async function LoginPage() {
     <main className="mx-auto flex min-h-[70vh] w-full max-w-3xl flex-col justify-center px-6 py-16">
       <section className="space-y-8">
         <div className="space-y-3 border-b border-border pb-6">
-          <p className="ui-meta font-semibold text-muted-foreground">
-            {t('login.eyebrow')}
-          </p>
-          <h1 className="ui-page-title text-foreground">
-            {t('login.title')}
-          </h1>
-          <p className="ui-body max-w-2xl text-muted-foreground">
-            {t('login.description')}
-          </p>
+          <p className="ui-meta font-semibold text-muted-foreground">{t('login.eyebrow')}</p>
+          <h1 className="ui-page-title text-foreground">{t('login.title')}</h1>
+          <p className="ui-body max-w-2xl text-muted-foreground">{t('login.description')}</p>
         </div>
 
         <Card className="rounded-md border-border shadow-none">
           <CardHeader className="border-b border-border">
-            <CardTitle className="text-base">
-              {t('login.provider_title')}
-            </CardTitle>
+            <CardTitle className="text-base">{t('login.provider_title')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 pt-5">
             {providers.map((provider) => {
@@ -68,9 +60,7 @@ export default async function LoginPage() {
                 </form>
               );
             })}
-            <p className="ui-caption text-muted-foreground">
-              {t('login.oauth_only_note')}
-            </p>
+            <p className="ui-caption text-muted-foreground">{t('login.oauth_only_note')}</p>
           </CardContent>
         </Card>
       </section>

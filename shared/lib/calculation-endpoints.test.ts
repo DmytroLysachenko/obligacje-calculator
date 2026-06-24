@@ -8,7 +8,11 @@ describe('calculation endpoints', () => {
     expect(getCalculationEndpoint(ScenarioKind.REGULAR_INVESTMENT)).toBe('/api/calculate/regular');
     expect(getCalculationEndpoint(ScenarioKind.BOND_COMPARISON)).toBe('/api/calculate/compare');
     expect(getCalculationEndpoint(ScenarioKind.BOND_OPTIMIZER)).toBe('/api/calculate/optimize');
-    expect(getCalculationEndpoint(ScenarioKind.RETIREMENT_PLANNER)).toBe('/api/calculate/retirement');
-    expect(getCalculationEndpoint(ScenarioKind.PORTFOLIO_SIMULATION)).toBe('/api/portfolio/simulate');
+    expect(getCalculationEndpoint(ScenarioKind.RETIREMENT_PLANNER)).toBe(
+      '/api/calculate/retirement',
+    );
+    expect(getCalculationEndpoint(ScenarioKind.PORTFOLIO_SIMULATION)).toBe(
+      '/api/portfolio/simulate',
+    );
   });
 });

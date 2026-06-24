@@ -78,16 +78,10 @@ interface OptimizerRankedOutcomesSectionProps {
   };
 }
 
-export function OptimizerSupportMetric({
-  label,
-  value,
-  detail,
-}: OptimizerSupportMetricProps) {
+export function OptimizerSupportMetric({ label, value, detail }: OptimizerSupportMetricProps) {
   return (
     <div className="border-t border-border py-5">
-      <p className="ui-metadata text-muted-foreground">
-        {label}
-      </p>
+      <p className="ui-metadata text-muted-foreground">{label}</p>
       <p className="mt-2 text-[32px] font-semibold leading-none text-foreground">{value}</p>
       <p className="mt-2 ui-metadata leading-5 text-muted-foreground">{detail}</p>
     </div>
@@ -172,17 +166,11 @@ export function OptimizerLeadingDetailSection({
             <ListOrdered className="h-5 w-5 text-primary" />
             {title}
           </h2>
-          <p className="ui-body text-muted-foreground">
-            {description}
-          </p>
+          <p className="ui-body text-muted-foreground">{description}</p>
         </div>
         <div className="border-l-2 border-border px-4 py-3 text-right">
-          <p className="ui-metadata text-muted-foreground">
-            {taxWrapperLabel}
-          </p>
-          <p className="mt-1 text-sm font-semibold text-foreground">
-            {taxStrategyLabel}
-          </p>
+          <p className="ui-metadata text-muted-foreground">{taxWrapperLabel}</p>
+          <p className="mt-1 text-sm font-semibold text-foreground">{taxStrategyLabel}</p>
         </div>
       </div>
       <FormInlineNotice
@@ -193,10 +181,10 @@ export function OptimizerLeadingDetailSection({
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {metrics.map((metric) => (
           <div key={metric.id} className="border-t border-border py-4">
-            <p className="ui-metadata text-muted-foreground">
-              {metric.label}
-            </p>
-            <p className={`mt-2 text-[32px] font-semibold leading-none ${metric.id === 'tax-paid' ? 'text-warning' : 'text-foreground'}`}>
+            <p className="ui-metadata text-muted-foreground">{metric.label}</p>
+            <p
+              className={`mt-2 text-[32px] font-semibold leading-none ${metric.id === 'tax-paid' ? 'text-warning' : 'text-foreground'}`}
+            >
               {metric.value}
             </p>
           </div>
@@ -227,9 +215,7 @@ export function OptimizerRankedOutcomesSection({
         <ArrowDownUp className="h-5 w-5 text-primary" />
         {title}
       </h2>
-      <p className="ui-body text-muted-foreground">
-        {description}
-      </p>
+      <p className="ui-body text-muted-foreground">{description}</p>
       <div className="divide-y divide-border">
         {rows.map((item, index) => (
           <div key={item.bondType} className="py-4">
@@ -242,18 +228,12 @@ export function OptimizerRankedOutcomesSection({
                   <p className="font-semibold text-foreground">
                     {item.name} ({item.bondType})
                   </p>
-                  <p className="text-sm leading-6 text-muted-foreground">
-                    {item.scenarioReason}
-                  </p>
+                  <p className="text-sm leading-6 text-muted-foreground">{item.scenarioReason}</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-lg font-semibold text-foreground">
-                  {item.netPayoutLabel}
-                </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {item.gapLabel}
-                </p>
+                <p className="text-lg font-semibold text-foreground">{item.netPayoutLabel}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{item.gapLabel}</p>
               </div>
             </div>
           </div>

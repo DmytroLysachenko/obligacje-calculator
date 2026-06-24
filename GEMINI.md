@@ -3,6 +3,7 @@
 This file provides the necessary architectural and operational context for Gemini CLI to assist effectively in this repository.
 
 ## Project Overview
+
 **Obligacje Calculator** is a production-grade investment simulation platform focused on Polish Treasury Bonds (EBI, COI, EDO, etc.) and multi-asset portfolio management. It provides precise financial modeling, historical backtesting, and tax optimization (IKE/IKZE).
 
 - **Primary Domain:** Polish Treasury Bonds, Inflation-linked assets, NBP rates, and Belka tax logic.
@@ -11,6 +12,7 @@ This file provides the necessary architectural and operational context for Gemin
 - **Product Direction:** Flagship surfaces are single-calculator, comparison, regular investment, ladder, notebook/workspace, and economic-data. Secondary tools such as multi-asset and recovery-lab should stay explicitly demoted.
 
 ## Technical Stack
+
 - **Framework:** Next.js 16 (App Router) + React 19
 - **Language:** TypeScript
 - **Database:** PostgreSQL with Drizzle ORM
@@ -22,6 +24,7 @@ This file provides the necessary architectural and operational context for Gemin
 - **Authentication:** Auth.js (NextAuth) v5.
 
 ## Directory Structure
+
 - `app/`: Next.js pages, layouts, and API routes.
 - `features/`: Core domain logic organized by feature (e.g., `bond-core`, `portfolio`, `comparison-engine`).
 - `lib/data/`: Cached read models and shared data retrieval helpers.
@@ -37,12 +40,14 @@ This file provides the necessary architectural and operational context for Gemin
 ## Building and Running
 
 ### Development
+
 ```bash
 pnpm install
 pnpm dev
 ```
 
 ### Database & Data
+
 ```bash
 # Generate migrations
 npx drizzle-kit generate
@@ -55,6 +60,7 @@ pnpm run sync:full
 ```
 
 ### Testing & Quality
+
 ```bash
 pnpm run test        # Run all tests
 pnpm run test:core   # Run core bond math tests
@@ -64,25 +70,32 @@ pnpm run lint        # Linting
 ## Development Conventions
 
 ### 1. Financial Precision
+
 **NEVER** use floating-point math (`number`) for currency or interest calculations. Always use `Decimal.js`.
+
 ```typescript
 import Decimal from 'decimal.js';
 const result = new Decimal(principal).times(rate).dividedBy(100);
 ```
 
 ### 2. Feature-First Organization
+
 Place domain-specific logic, types, and components within `features/[feature-name]`. Only move items to `shared/` or `lib/` if they are truly generic or needed by multiple unrelated features.
 
 ### 3. Data Access
+
 Use `lib/data/market-data.ts` for shared cached market-data reads and `lib/server/**` services for server-side orchestration. Do not query the database directly from page components or API routes when an existing service/repository boundary fits.
 
 ### 4. Documentation First
+
 Before implementing large changes, refer to the `docs/` directory. The project maintains a strict "Next 15/10 Commits" execution plan strategy (see `docs/plans/`).
 
 ### 5. Testing
+
 All core calculation logic MUST have accompanying tests in its respective feature folder (e.g., `features/bond-core/*.test.ts`).
 
 ### 6. Coding Rules
+
 Repository-wide coding rules are strict, not advisory. See:
 
 - `docs/technical/architecture/26_engineering_and_coding_rules.md`
@@ -106,6 +119,7 @@ Key requirements:
 - simple-mode projected NBP defaults should be explained and modeled as a flat path from the latest synced rate until overridden
 
 ## Key Symbols & Files
+
 - `features/bond-core/application-service.ts`: Central orchestration for all calculation scenarios.
 - `features/bond-core/utils/calculations.ts`: The low-level math engine for interest accrual.
 - `db/schemas/**`: Grouped schema entrypoints for the database model.

@@ -14,8 +14,7 @@ export async function resolveScenarioInputs({
   context,
   selectedSeriesId,
 }: ResolveScenarioInputsArgs) {
-  const definition =
-    context.dbDefinitions[inputs.bondType] ?? BOND_DEFINITIONS[inputs.bondType];
+  const definition = context.dbDefinitions[inputs.bondType] ?? BOND_DEFINITIONS[inputs.bondType];
   const resolvedOffer = await resolveBondOfferTerms(
     inputs.bondType,
     inputs.purchaseDate,
@@ -32,8 +31,7 @@ export async function resolveScenarioInputs({
         resolvedOffer.firstYearRate ?? inputs.firstYearRate ?? definition.firstYearRate,
       margin: resolvedOffer.margin ?? inputs.margin ?? definition.margin,
       duration: inputs.duration ?? definition.duration,
-      earlyWithdrawalFee:
-        inputs.earlyWithdrawalFee ?? definition.earlyWithdrawalFee,
+      earlyWithdrawalFee: inputs.earlyWithdrawalFee ?? definition.earlyWithdrawalFee,
       isCapitalized: inputs.isCapitalized ?? definition.isCapitalized,
       payoutFrequency: inputs.payoutFrequency ?? definition.payoutFrequency,
       rebuyDiscount: inputs.rebuyDiscount ?? definition.rebuyDiscount,

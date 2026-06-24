@@ -1,6 +1,6 @@
-import {describe, expect, it} from 'vitest';
-import {readFileSync} from 'node:fs';
-import {join} from 'node:path';
+import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 const projectRoot = process.cwd();
 
@@ -36,7 +36,10 @@ describe('single calculator result layout contracts', () => {
 
     expectContains(source, '<ResultSummaryHero');
     expectContains(source, '<MetricStrip items={metricItems}/>');
-    expectContains(source, '<SecondaryInsightAccordion title={t(\'bonds.results.scenario_facts_title\')}');
+    expectContains(
+      source,
+      "<SecondaryInsightAccordion title={t('bonds.results.scenario_facts_title')}",
+    );
     expectContains(source, '<CalculationAuditTrace point={auditPoint}/>');
     expectContains(source, '<ScenarioFactsBlock');
     expectContains(source, "import { Notice } from '@/shared/components/feedback/Notice';");
@@ -72,7 +75,10 @@ describe('single calculator result layout contracts', () => {
 
     expectContains(source, "cn('border-y border-border', className)");
     expectContains(source, 'grid divide-y divide-border md:divide-y-0');
-    expectContains(source, 'min-w-0 space-y-2 py-4 md:border-l md:border-border md:px-4 md:first:border-l-0 md:first:pl-0');
+    expectContains(
+      source,
+      'min-w-0 space-y-2 py-4 md:border-l md:border-border md:px-4 md:first:border-l-0 md:first:pl-0',
+    );
     expectContains(source, 'financial-number ui-large-metric min-w-0 break-words text-foreground');
     expectContains(source, 'ui-body text-muted-foreground');
 
@@ -89,15 +95,18 @@ describe('single calculator result layout contracts', () => {
     const source = readSource(paths.facts);
 
     expectContains(source, '<section className="space-y-4 border-t border-border py-5">');
-    expectContains(source, '<dl className="grid gap-x-6 gap-y-4 border-y border-border py-4 sm:grid-cols-2">');
+    expectContains(
+      source,
+      '<dl className="grid gap-x-6 gap-y-4 border-y border-border py-4 sm:grid-cols-2">',
+    );
     expectContains(source, '<dt className="ui-meta font-semibold">{fact.label}</dt>');
     expectContains(source, 'break-words text-sm font-semibold text-foreground');
 
     expectNoFragments(source, [
       'rounded-lg border border-border bg-card p-5 shadow-sm',
       'overflow-hidden rounded-md border border-border',
-      'index >= 2 ? \'border-t\'',
-      'index % 2 === 1 ? \'sm:border-l\'',
+      "index >= 2 ? 'border-t'",
+      "index % 2 === 1 ? 'sm:border-l'",
     ]);
   });
 
@@ -109,7 +118,10 @@ describe('single calculator result layout contracts', () => {
     expectContains(source, 'space-y-3 border-t border-border py-4 text-foreground');
     expectContains(source, 'space-y-3 border-t border-warning/40 py-4 text-foreground');
     expectContains(source, 'border-y border-border py-3 text-sm leading-6');
-    expectContains(source, "import {\n  getFreshnessCoverageLabel,\n  getFreshnessLastSyncLabel,\n} from '@/shared/lib/data-freshness-display';");
+    expectContains(
+      source,
+      "import {\n  getFreshnessCoverageLabel,\n  getFreshnessLastSyncLabel,\n} from '@/shared/lib/data-freshness-display';",
+    );
     expectContains(source, 'const coverageLabel = getFreshnessCoverageLabel(dataFreshness);');
     expectContains(source, 'const lastSyncedLabel = getFreshnessLastSyncLabel(dataFreshness);');
     expectContains(source, "{t('common.coverage')}:");
@@ -119,7 +131,7 @@ describe('single calculator result layout contracts', () => {
       'rounded-md border bg-card px-4 py-3 text-sm leading-6',
       'rounded-md border border-border bg-card p-4 text-foreground',
       'rounded-md border border-border bg-muted/25 px-4 py-3 text-sm leading-6',
-      "{t('economic.as_of')}: <span className=\"font-semibold\">{dataFreshness.asOf}</span>",
+      '{t(\'economic.as_of\')}: <span className="font-semibold">{dataFreshness.asOf}</span>',
     ]);
   });
 });

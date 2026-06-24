@@ -56,23 +56,24 @@ export function checkReadinessEnv(env: ReadinessEnv): ReadinessCheck {
   ].filter((value): value is string => Boolean(value));
 
   return missing.length === 0
-    ? {status: 'ok'}
-    : {status: 'failed', detail: `Missing required runtime configuration: ${missing.join(', ')}`};
+    ? { status: 'ok' }
+    : { status: 'failed', detail: `Missing required runtime configuration: ${missing.join(', ')}` };
 }
 
 export async function checkReadinessDatabase(
   databaseUrl: string | undefined,
-  createSqlClient: SqlFactory = (url) => postgres(url, {max: 1, idle_timeout: 3, connect_timeout: 5}) as SqlClient,
+  createSqlClient: SqlFactory = (url) =>
+    postgres(url, { max: 1, idle_timeout: 3, connect_timeout: 5 }) as SqlClient,
 ): Promise<ReadinessCheck> {
   if (!databaseUrl) {
-    return {status: 'failed', detail: 'DATABASE_URL is not configured'};
+    return { status: 'failed', detail: 'DATABASE_URL is not configured' };
   }
 
   const sql = createSqlClient(databaseUrl);
 
   try {
     await sql`select 1`;
-    const rows = await sql<{table_name: string}[]>`
+    const rows = await sql<{ table_name: string }[]>`
       select table_name
       from information_schema.tables
       where table_schema = 'public'
@@ -82,12 +83,12 @@ export async function checkReadinessDatabase(
     const missingTables = REQUIRED_READINESS_TABLES.filter((table) => !existingTables.has(table));
 
     return missingTables.length === 0
-      ? {status: 'ok'}
-      : {status: 'failed', detail: `Missing required tables: ${missingTables.join(', ')}`};
+      ? { status: 'ok' }
+      : { status: 'failed', detail: `Missing required tables: ${missingTables.join(', ')}` };
   } catch {
-    return {status: 'failed', detail: 'Database readiness check failed'};
+    return { status: 'failed', detail: 'Database readiness check failed' };
   } finally {
-    await sql.end({timeout: 1});
+    await sql.end({ timeout: 1 });
   }
 }
 

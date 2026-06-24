@@ -1,6 +1,6 @@
-import {readFileSync} from 'node:fs';
-import {join} from 'node:path';
-import {describe, expect, it} from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
 
 const projectRoot = process.cwd();
 
@@ -43,7 +43,10 @@ describe('layout system contracts', () => {
     expectContains(globals, '.ui-section-divider');
 
     expectContains(tokens, "pageFlow: 'space-y-10 pb-16 md:space-y-14'");
-    expectContains(tokens, "calculatorGrid: 'grid grid-cols-1 gap-8 xl:grid-cols-[420px_minmax(0,1fr)] xl:items-start xl:gap-10'");
+    expectContains(
+      tokens,
+      "calculatorGrid: 'grid grid-cols-1 gap-8 xl:grid-cols-[420px_minmax(0,1fr)] xl:items-start xl:gap-10'",
+    );
     expectContains(tokens, "stickyScenario: 'space-y-5 xl:sticky xl:top-8 xl:h-fit'");
   });
 
@@ -89,7 +92,7 @@ describe('layout system contracts', () => {
     expectContains(header, 'export function PageHeader');
     expectContains(header, 'export function StatusLine');
     expectContains(header, "state?: 'idle' | 'loading' | 'complete';");
-    expectContains(header, "tone?: PageHeaderStatusTone;");
+    expectContains(header, 'tone?: PageHeaderStatusTone;');
     expectContains(workspace, 'export function CalculatorWorkspace');
     expectContains(workspace, 'controls: React.ReactNode;');
     expectContains(workspace, 'results: React.ReactNode;');

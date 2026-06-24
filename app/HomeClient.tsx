@@ -13,10 +13,12 @@ export default function HomeClient() {
     <PageTransition>
       <div className="space-y-6">
         <header className="mb-8">
-          <h2 className="text-3xl font-black tracking-tight text-primary uppercase">{t('bonds.single_calculator')}</h2>
+          <h2 className="text-3xl font-black tracking-tight text-primary uppercase">
+            {t('bonds.single_calculator')}
+          </h2>
           <p className="text-muted-foreground mt-2 font-medium">{t('common.description')}</p>
         </header>
-        
+
         <Suspense fallback={<PageSuspenseFallback />}>
           <BondCalculatorContainer />
         </Suspense>
@@ -24,7 +26,3 @@ export default function HomeClient() {
     </PageTransition>
   );
 }
-
-
-
-

@@ -21,10 +21,7 @@ export interface AdminStatusViewModel {
   isEmpty: boolean;
 }
 
-export function hasSeriesDataGap(
-  lastDataPointDate: string | null,
-  now: Date = new Date(),
-) {
+export function hasSeriesDataGap(lastDataPointDate: string | null, now: Date = new Date()) {
   if (!lastDataPointDate) {
     return true;
   }

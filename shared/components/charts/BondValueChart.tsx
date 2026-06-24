@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React from "react";
+import React from 'react';
 import {
   Area,
   CartesianGrid,
@@ -11,19 +11,16 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
-import { ChartContainer } from "@/shared/components/charts/ChartContainer";
-import { ChartStep } from "@/features/bond-core/types";
-import { useAppI18n } from "@/i18n/client";
+} from 'recharts';
+import { ChartContainer } from '@/shared/components/charts/ChartContainer';
+import { ChartStep } from '@/features/bond-core/types';
+import { useAppI18n } from '@/i18n/client';
 import {
   loadChartDisplayPreferences,
   saveChartDisplayPreferences,
-} from "@/shared/lib/chart-display-preferences";
-import { formatMoneyAxisTick } from "@/shared/lib/chart-series";
-import {
-  BondValueChartToolbar,
-  BondValueChartTooltip,
-} from "./BondValueChartParts";
+} from '@/shared/lib/chart-display-preferences';
+import { formatMoneyAxisTick } from '@/shared/lib/chart-series';
+import { BondValueChartToolbar, BondValueChartTooltip } from './BondValueChartParts';
 
 export interface BondValueChartSeries {
   key: string;
@@ -86,11 +83,11 @@ export function BondValueChart({
   leftDomain,
   rightDomain,
   summary,
-  defaultGranularity = "yearly",
+  defaultGranularity = 'yearly',
   onGranularityChange,
   showContextControls = true,
   ariaLabel,
-  heightClassName = "h-[360px] md:h-[460px] xl:h-[520px]",
+  heightClassName = 'h-[360px] md:h-[460px] xl:h-[520px]',
 }: BondValueChartProps) {
   const { t } = useAppI18n();
   const [preferences, setPreferences] = React.useState(() =>
@@ -100,7 +97,10 @@ export function BondValueChart({
   const showNbpOverlay = preferences.showNbpOverlay;
   const granularity = preferences.granularity;
   const showContextAxis = showInflationOverlay || showNbpOverlay;
-  const firstProjectedIndex = React.useMemo(() => data.findIndex((point) => point.isProjected), [data]);
+  const firstProjectedIndex = React.useMemo(
+    () => data.findIndex((point) => point.isProjected),
+    [data],
+  );
 
   React.useEffect(() => {
     if (granularity !== defaultGranularity) {
@@ -113,13 +113,13 @@ export function BondValueChart({
       ...series.map((item) => ({
         label: item.label,
         color: item.color,
-        style: item.dashed ? ("dashed" as const) : undefined,
+        style: item.dashed ? ('dashed' as const) : undefined,
       })),
       ...(showContextControls && showInflationOverlay
-        ? [{ label: t("bonds.ref_inflation"), color: "#C89D4F", style: "dashed" as const }]
+        ? [{ label: t('bonds.ref_inflation'), color: '#C89D4F', style: 'dashed' as const }]
         : []),
       ...(showContextControls && showNbpOverlay
-        ? [{ label: t("bonds.nbp_rate_short"), color: "#6F7782", style: "dashed" as const }]
+        ? [{ label: t('bonds.nbp_rate_short'), color: '#6F7782', style: 'dashed' as const }]
         : []),
     ],
     [series, showContextControls, showInflationOverlay, showNbpOverlay, t],
@@ -138,7 +138,7 @@ export function BondValueChart({
   };
 
   const updateOverlayPreference = (
-    key: "showInflationOverlay" | "showNbpOverlay",
+    key: 'showInflationOverlay' | 'showNbpOverlay',
     value: boolean,
   ) => {
     setPreferences((current) => {
@@ -174,7 +174,11 @@ export function BondValueChart({
             <defs>
               {series.map((item) => (
                 <linearGradient key={item.key} id={`value-${item.key}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={item.color} stopOpacity={item.secondary ? 0.06 : 0.12} />
+                  <stop
+                    offset="5%"
+                    stopColor={item.color}
+                    stopOpacity={item.secondary ? 0.06 : 0.12}
+                  />
                   <stop offset="95%" stopColor={item.color} stopOpacity={0} />
                 </linearGradient>
               ))}
@@ -182,7 +186,7 @@ export function BondValueChart({
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
             <XAxis
               dataKey="label"
-              tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))", fontWeight: "bold" }}
+              tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))', fontWeight: 'bold' }}
               tickLine={false}
               axisLine={false}
               dy={10}
@@ -191,7 +195,7 @@ export function BondValueChart({
             />
             <YAxis
               yAxisId="left"
-              tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))", fontWeight: "bold" }}
+              tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))', fontWeight: 'bold' }}
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => formatMoneyAxisTick(Number(value))}
@@ -201,7 +205,11 @@ export function BondValueChart({
               yAxisId="right"
               orientation="right"
               width={44}
-              tick={showContextAxis ? { fontSize: 10, fill: "hsl(var(--muted-foreground))", fontWeight: "bold" } : false}
+              tick={
+                showContextAxis
+                  ? { fontSize: 10, fill: 'hsl(var(--muted-foreground))', fontWeight: 'bold' }
+                  : false
+              }
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => `${Number(value).toFixed(0)}%`}
@@ -214,11 +222,11 @@ export function BondValueChart({
                 stroke="#C89D4F"
                 strokeDasharray="3 3"
                 label={{
-                  value: t("bonds.projection_start"),
-                  position: "top",
-                  fill: "#C89D4F",
+                  value: t('bonds.projection_start'),
+                  position: 'top',
+                  fill: '#C89D4F',
                   fontSize: 10,
-                  fontWeight: "bold",
+                  fontWeight: 'bold',
                 }}
               />
             ) : null}
@@ -234,8 +242,8 @@ export function BondValueChart({
                   stroke={item.color}
                   strokeWidth={item.secondary ? 2 : 2.25}
                   strokeOpacity={item.secondary ? 0.65 : 1}
-                  strokeDasharray={item.dashed ? "4 4" : undefined}
-                  fill={index === 0 ? `url(#value-${item.key})` : "transparent"}
+                  strokeDasharray={item.dashed ? '4 4' : undefined}
+                  fill={index === 0 ? `url(#value-${item.key})` : 'transparent'}
                   fillOpacity={index === 0 ? 1 : 0}
                   dot={false}
                   connectNulls
@@ -248,7 +256,7 @@ export function BondValueChart({
                 yAxisId="right"
                 type="stepAfter"
                 dataKey="inflation"
-                name={t("bonds.ref_inflation")}
+                name={t('bonds.ref_inflation')}
                 stroke="#C89D4F"
                 strokeWidth={1.5}
                 strokeDasharray="4 4"
@@ -262,7 +270,7 @@ export function BondValueChart({
                 yAxisId="right"
                 type="stepAfter"
                 dataKey="nbp"
-                name={t("bonds.nbp_rate_short")}
+                name={t('bonds.nbp_rate_short')}
                 stroke="#6F7782"
                 strokeWidth={1.5}
                 strokeDasharray="4 4"

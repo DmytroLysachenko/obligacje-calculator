@@ -48,7 +48,7 @@ There must be no hardcoded translated values in application code.
 The following pattern is not acceptable for UI text:
 
 ```ts
-language === 'pl' ? '...' : '...'
+language === 'pl' ? '...' : '...';
 ```
 
 This is not a preferred shortcut. It is a repo violation for normal UI copy.
@@ -59,7 +59,7 @@ The following pattern is also not acceptable for translated content:
 pickLanguageValue(language, {
   pl: '...',
   en: '...',
-})
+});
 ```
 
 Inline bilingual objects, arrays, labels, and content fragments in code are also repo violations when they represent translated product/UI content.
@@ -69,8 +69,8 @@ Inline bilingual objects, arrays, labels, and content fragments in code are also
 Use locale-backed translation keys and locale-backed structured content only:
 
 ```ts
-t('some.key')
-t('some.key', { value })
+t('some.key');
+t('some.key', { value });
 ```
 
 If a feature needs structured internationalized content, keep that structure in locale resources, not in code. This includes:
@@ -85,11 +85,11 @@ If a feature needs structured internationalized content, keep that structure in 
 Examples of acceptable patterns:
 
 ```ts
-t('some.key')
-t('some.key', { value })
-const items = t('landing.cards')
-const steps = t('comparison.steps')
-const hero = t('education.hero')
+t('some.key');
+t('some.key', { value });
+const items = t('landing.cards');
+const steps = t('comparison.steps');
+const hero = t('education.hero');
 ```
 
 The exact translation API may resolve strings, objects, or arrays. The architectural rule is that translated content lives in locale files and is consumed from there.
@@ -445,6 +445,7 @@ Notebook and portfolio workspace state must follow these rules:
 - notebook workspace API access belongs behind `shared/lib/portfolio-client.ts`
 - portfolio and notebook API routes must stay thin and delegate ownership and mutation rules to `lib/server/portfolio/**`
 - notebook pages should read as a records workspace, not a pseudo-advisory dashboard
+
 ### 11.2 Naming
 
 Use full, meaningful names for:

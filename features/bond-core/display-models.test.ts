@@ -115,12 +115,10 @@ describe('bond display models', () => {
   it('builds chart display points from the first real checkpoint and preserves scenario bounds', () => {
     const lowPoint = makePoint({ nominalValueAfterInterest: 9900, totalValue: 9900 });
     const highPoint = makePoint({ nominalValueAfterInterest: 10100, totalValue: 10100 });
-    const points = buildBondChartDisplayPoints(
-      10000,
-      [makePoint()],
-      'pl',
-      { low: [lowPoint], high: [highPoint] },
-    );
+    const points = buildBondChartDisplayPoints(10000, [makePoint()], 'pl', {
+      low: [lowPoint],
+      high: [highPoint],
+    });
 
     expect(points).toHaveLength(1);
     expect(points[0].xLabel).toContain('2026');

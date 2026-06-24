@@ -58,21 +58,18 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
   const resultAValue = resultsA.netPayoutValue;
   const resultBValue = resultsB.netPayoutValue;
   const firstLead =
-    resultAValue === resultBValue
-      ? tieLabel
-      : resultAValue > resultBValue
-        ? bondTypeA
-        : bondTypeB;
+    resultAValue === resultBValue ? tieLabel : resultAValue > resultBValue ? bondTypeA : bondTypeB;
 
   const tableRows = React.useMemo(
-    () => buildComparisonAlignedTableRows({
-      resultsA,
-      resultsB,
-      purchaseDate,
-      granularity,
-      language,
-      startLabel: t('comparison.start'),
-    }),
+    () =>
+      buildComparisonAlignedTableRows({
+        resultsA,
+        resultsB,
+        purchaseDate,
+        granularity,
+        language,
+        startLabel: t('comparison.start'),
+      }),
     [granularity, language, purchaseDate, resultsA, resultsB, t],
   );
 
@@ -86,11 +83,15 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
     setCurrentPage((page) => Math.min(page, totalPages));
   }, [totalPages]);
 
-  const displayedRows = React.useMemo(() => getComparisonTablePageRows({
-    rows: tableRows,
-    rowLimit,
-    page: currentPage,
-  }), [currentPage, rowLimit, tableRows]);
+  const displayedRows = React.useMemo(
+    () =>
+      getComparisonTablePageRows({
+        rows: tableRows,
+        rowLimit,
+        page: currentPage,
+      }),
+    [currentPage, rowLimit, tableRows],
+  );
   const visibleRangeLabel = getComparisonVisibleRangeLabel({
     page: currentPage,
     rowLimit,
@@ -127,9 +128,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
           <Scale className="h-5 w-5 text-foreground" />
           {t('comparison.table_title')}
         </h2>
-        <p className="ui-body max-w-3xl text-muted-foreground">
-          {t('comparison.table_desc')}
-        </p>
+        <p className="ui-body max-w-3xl text-muted-foreground">{t('comparison.table_desc')}</p>
       </div>
       <div className="space-y-6">
         <div className="grid grid-cols-1 gap-0 border-b border-dashed px-2 py-3 md:grid-cols-3 md:px-6">
@@ -137,10 +136,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
             label={t('comparison.table_timeline_rows')}
             value={visibleRangeLabel}
           />
-          <ComparisonTableStat
-            label={t('comparison.table_higher_payout')}
-            value={firstLead}
-          />
+          <ComparisonTableStat label={t('comparison.table_higher_payout')} value={firstLead} />
           <ComparisonTableStat
             label={t('comparison.table_compared_pair')}
             value={`${bondTypeA} / ${bondTypeB}`}
@@ -153,9 +149,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
 
             return (
               <div key={row.label} className="bg-muted/30 px-4 py-3">
-                <p className="text-sm font-semibold text-muted-foreground">
-                  {row.label}
-                </p>
+                <p className="text-sm font-semibold text-muted-foreground">{row.label}</p>
                 <div className="mt-2 flex items-center justify-between gap-3">
                   <div className="space-y-1 text-sm">
                     <p className="font-semibold text-foreground">
@@ -227,12 +221,8 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                 <div key={`mobile-compare-${row.key}`} className="rounded-lg bg-muted/30 p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-sm font-semibold text-foreground">
-                        {row.label}
-                      </p>
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {row.dateLabel}
-                      </p>
+                      <p className="text-sm font-semibold text-foreground">{row.label}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">{row.dateLabel}</p>
                     </div>
                   </div>
                   <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -259,9 +249,11 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                   </div>
                   <MobileComparisonValue
                     label={higherColumnLabel}
-                    value={row.leader === 'tie'
-                      ? tieLabel
-                      : `${row.leader === 'A' ? bondTypeA : bondTypeB} ${formatCurrency(Math.abs(row.gap))}`}
+                    value={
+                      row.leader === 'tie'
+                        ? tieLabel
+                        : `${row.leader === 'A' ? bondTypeA : bondTypeB} ${formatCurrency(Math.abs(row.gap))}`
+                    }
                   />
                 </div>
               );
@@ -270,9 +262,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
 
           <div className="hidden rounded-lg bg-card lg:block">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-dashed border-border px-4 py-3 text-sm text-muted-foreground">
-              <p>
-                {t('comparison.table_desktop_note')}
-              </p>
+              <p>{t('comparison.table_desktop_note')}</p>
               <p className="text-sm font-semibold text-muted-foreground">
                 {t('comparison.table_mobile_count', { count: tableRows.length })}
               </p>
@@ -301,7 +291,10 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                     const higherScenario = row.leader === 'tie' ? null : row.leader;
 
                     return (
-                      <TableRow key={row.key} className="border-b border-border transition-colors odd:bg-muted/20 hover:bg-muted/35">
+                      <TableRow
+                        key={row.key}
+                        className="border-b border-border transition-colors odd:bg-muted/20 hover:bg-muted/35"
+                      >
                         <TableCell className="sticky left-0 z-10 bg-inherit px-4 py-5 font-semibold text-foreground">
                           <div className="space-y-1">
                             <p>{row.label}</p>
@@ -313,9 +306,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                         <TableCell
                           className={cn(
                             'px-4 py-4',
-                            higherScenario === 'A'
-                              ? 'text-foreground'
-                              : 'text-muted-foreground',
+                            higherScenario === 'A' ? 'text-foreground' : 'text-muted-foreground',
                           )}
                         >
                           <ComparisonScenarioCell
@@ -331,9 +322,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                         <TableCell
                           className={cn(
                             'px-4 py-4',
-                            higherScenario === 'B'
-                              ? 'text-foreground'
-                              : 'text-muted-foreground',
+                            higherScenario === 'B' ? 'text-foreground' : 'text-muted-foreground',
                           )}
                         >
                           <ComparisonScenarioCell
@@ -365,7 +354,9 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                               </p>
                             </div>
                           ) : (
-                            <span className="text-xs font-semibold text-muted-foreground">{tieLabel}</span>
+                            <span className="text-xs font-semibold text-muted-foreground">
+                              {tieLabel}
+                            </span>
                           )}
                         </TableCell>
                       </TableRow>
@@ -402,7 +393,3 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
     </section>
   );
 };
-
-
-
-

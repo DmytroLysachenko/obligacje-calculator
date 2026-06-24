@@ -26,7 +26,9 @@ describe('notebook workflow action contract', () => {
     const source = read('features/notebook/components/NotebookContainer.tsx');
     const hook = read('features/notebook/hooks/useNotebookWorkspaceActions.ts');
 
-    expect(source).toContain('const [detailPortfolioId, setDetailPortfolioId] = useState<string | null>(null);');
+    expect(source).toContain(
+      'const [detailPortfolioId, setDetailPortfolioId] = useState<string | null>(null);',
+    );
     expect(source).toContain('setSelectedPortfolioId(portfolio.id);');
     expect(source).toContain('persistSelectedPortfolioId(portfolio.id);');
     expect(source).toContain('setDetailPortfolioId(portfolio.id);');

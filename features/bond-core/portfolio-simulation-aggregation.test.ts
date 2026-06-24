@@ -41,17 +41,19 @@ vi.mock('@/lib/data/market-data', async () => {
   };
 });
 
-function portfolioPayload(overrides: {
-  investments?: Array<{
-    bondType: BondType;
-    amount: number;
-    purchaseDate: string;
-    isRebought?: boolean;
-    taxStrategy?: TaxStrategy;
-    rollover?: boolean;
-  }>;
-  withdrawalDate?: string;
-} = {}) {
+function portfolioPayload(
+  overrides: {
+    investments?: Array<{
+      bondType: BondType;
+      amount: number;
+      purchaseDate: string;
+      isRebought?: boolean;
+      taxStrategy?: TaxStrategy;
+      rollover?: boolean;
+    }>;
+    withdrawalDate?: string;
+  } = {},
+) {
   return {
     investments: overrides.investments ?? [
       {
@@ -77,9 +79,7 @@ function portfolioPayload(overrides: {
   };
 }
 
-async function calculatePortfolio(
-  overrides?: Parameters<typeof portfolioPayload>[0],
-) {
+async function calculatePortfolio(overrides?: Parameters<typeof portfolioPayload>[0]) {
   const envelope = await calculationService.calculate({
     kind: ScenarioKind.PORTFOLIO_SIMULATION,
     payload: portfolioPayload(overrides),

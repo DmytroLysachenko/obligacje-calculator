@@ -13,15 +13,10 @@ import { SidebarUtilityPanel } from './SidebarUtilityGroup';
 export function SidebarWorkspaceUtility({ pathname }: { pathname: string }) {
   const { t } = useAppI18n();
   const { canManageWorkspace } = usePortfolioAccess();
-  const {
-    portfolios,
-    selectedPortfolioId,
-    selectedPortfolio,
-    setSelectedPortfolioId,
-    refetch,
-  } = useWorkspacePortfolios({
-    enabled: canManageWorkspace,
-  });
+  const { portfolios, selectedPortfolioId, selectedPortfolio, setSelectedPortfolioId, refetch } =
+    useWorkspacePortfolios({
+      enabled: canManageWorkspace,
+    });
 
   useEffect(() => {
     void refetch();
@@ -39,9 +34,7 @@ export function SidebarWorkspaceUtility({ pathname }: { pathname: string }) {
             <FolderKanban className="h-4 w-4" />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-semibold text-foreground">
-              {t('sidebar.workspace_title')}
-            </p>
+            <p className="text-xs font-semibold text-foreground">{t('sidebar.workspace_title')}</p>
             <p className="mt-0.5 text-[11px] leading-5 text-muted-foreground">
               {t('sidebar.workspace_desc')}
             </p>
@@ -72,7 +65,11 @@ export function SidebarWorkspaceUtility({ pathname }: { pathname: string }) {
           }))}
         />
 
-        <Button asChild variant="outline" className="h-9 w-full rounded-md border-border bg-card text-sm">
+        <Button
+          asChild
+          variant="outline"
+          className="h-9 w-full rounded-md border-border bg-card text-sm"
+        >
           <Link href="/notebook" className="gap-2">
             <LayoutList className="h-4 w-4" />
             {t('sidebar.workspace_manage')}

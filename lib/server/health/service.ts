@@ -1,4 +1,4 @@
-import {MODEL_VERSION} from '@/features/bond-core/model-version';
+import { MODEL_VERSION } from '@/features/bond-core/model-version';
 
 export interface HealthPayload {
   ok: true;

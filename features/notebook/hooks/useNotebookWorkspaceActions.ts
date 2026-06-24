@@ -45,23 +45,32 @@ export function useNotebookWorkspaceActions({
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [isMutating, setIsMutating] = useState(false);
 
-  const resolvePortfolioError = useCallback((payload?: {
-    error?: string;
-    code?: string;
-  } | null) => resolveNotebookPortfolioError(payload, {
-    storageUnavailable: labels.storageUnavailable,
-    createError: labels.createError,
-  }), [labels.createError, labels.storageUnavailable]);
+  const resolvePortfolioError = useCallback(
+    (
+      payload?: {
+        error?: string;
+        code?: string;
+      } | null,
+    ) =>
+      resolveNotebookPortfolioError(payload, {
+        storageUnavailable: labels.storageUnavailable,
+        createError: labels.createError,
+      }),
+    [labels.createError, labels.storageUnavailable],
+  );
 
-  const resolveCaughtPortfolioError = useCallback((caughtError: unknown) => {
-    if (caughtError instanceof ApiClientError) {
-      return resolvePortfolioError({
-        error: caughtError.message,
-        code: caughtError.code,
-      });
-    }
-    return labels.createError;
-  }, [labels.createError, resolvePortfolioError]);
+  const resolveCaughtPortfolioError = useCallback(
+    (caughtError: unknown) => {
+      if (caughtError instanceof ApiClientError) {
+        return resolvePortfolioError({
+          error: caughtError.message,
+          code: caughtError.code,
+        });
+      }
+      return labels.createError;
+    },
+    [labels.createError, resolvePortfolioError],
+  );
 
   const handleCreateDefault = async () => {
     setIsMutating(true);
@@ -149,9 +158,11 @@ export function useNotebookWorkspaceActions({
       setStatusMessage(labels.deleteSuccess);
     } catch (caughtError) {
       console.error(caughtError);
-      setError(caughtError instanceof ApiClientError
-        ? resolveCaughtPortfolioError(caughtError)
-        : labels.deleteFailed);
+      setError(
+        caughtError instanceof ApiClientError
+          ? resolveCaughtPortfolioError(caughtError)
+          : labels.deleteFailed,
+      );
     } finally {
       setIsMutating(false);
     }

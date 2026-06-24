@@ -30,7 +30,9 @@ describe('deployment documentation contract', () => {
     expect(source).toContain('0000_unified_schema.sql');
     expect(source).toContain('0001_sync_runs.sql');
     expect(source).toContain('0002_auth_tables.sql');
-    expect(source).toContain('Do not deploy portfolio-auth changes until `0002_auth_tables.sql` is applied.');
+    expect(source).toContain(
+      'Do not deploy portfolio-auth changes until `0002_auth_tables.sql` is applied.',
+    );
     expect(source).toContain('Auth.js cannot persist OAuth users, accounts, sessions, or');
   });
 
@@ -63,21 +65,32 @@ describe('deployment documentation contract', () => {
     expect(source).toContain('Verify `/api/health` returns `ok: true`.');
     expect(source).toContain('Verify `/api/readiness` returns `ok: true`');
     expect(source).toContain('Verify `/login` shows the configured OAuth providers.');
-    expect(source).toContain('Verify `/api/portfolio/access` reports `canManageWorkspace: true` after sign-in.');
-    expect(source).toContain('Verify `/admin/status` shows recent `sync_runs` rows after a manual sync');
+    expect(source).toContain(
+      'Verify `/api/portfolio/access` reports `canManageWorkspace: true` after sign-in.',
+    );
+    expect(source).toContain(
+      'Verify `/admin/status` shows recent `sync_runs` rows after a manual sync',
+    );
     expect(source).toContain('lastSyncAttemptAt');
     expect(source).toContain('lastDataPointDate');
-    expect(source).toContain('Verify calculation meta displays both data coverage and last sync attempt');
+    expect(source).toContain(
+      'Verify calculation meta displays both data coverage and last sync attempt',
+    );
   });
 
   it('keeps the project map discoverable from the documentation index', () => {
     const source = readFileSync(join(root, docsIndex), 'utf8');
-    const projectMap = readFileSync(join(root, 'docs/technical/architecture/28_project_map.md'), 'utf8');
+    const projectMap = readFileSync(
+      join(root, 'docs/technical/architecture/28_project_map.md'),
+      'utf8',
+    );
 
     expect(source).toContain('./technical/architecture/28_project_map.md');
     expect(projectMap).toContain('Browser API calls belong behind `shared/lib/*-client.ts`');
     expect(projectMap).toContain('Portfolio writes live in `lib/server/portfolio/commands.ts`');
-    expect(projectMap).toContain('Large components should be reduced by extracting pure models first');
+    expect(projectMap).toContain(
+      'Large components should be reduced by extracting pure models first',
+    );
     expect(projectMap).toContain('lib/server/runtime/env.ts');
     expect(projectMap).toContain('lib/server/auth/provider-config.ts');
     expect(projectMap).toContain('scripts/check-production-config.ts');

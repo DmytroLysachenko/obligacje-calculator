@@ -21,9 +21,13 @@ describe('chart section contract', () => {
   it('keeps ladder maturity charts on the shared chart section', () => {
     const source = read('features/ladder-strategy/components/LadderTimeline.tsx');
 
-    expect(source).toContain("import { ChartSection } from '@/shared/components/charts/ChartSection';");
+    expect(source).toContain(
+      "import { ChartSection } from '@/shared/components/charts/ChartSection';",
+    );
     expect(source).toContain('<ChartSection');
-    expect(source).not.toContain("import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';");
+    expect(source).not.toContain(
+      "import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';",
+    );
     expect(source).not.toContain('<section className="surface-shell space-y-7 p-5">');
   });
 });

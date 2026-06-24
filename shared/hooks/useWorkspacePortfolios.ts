@@ -94,7 +94,7 @@ export function useWorkspacePortfolios({ enabled = true }: UseWorkspacePortfolio
   }, []);
 
   const selectedPortfolio = selectedPortfolioId
-    ? portfolios.find((portfolio) => portfolio.id === selectedPortfolioId) ?? null
+    ? (portfolios.find((portfolio) => portfolio.id === selectedPortfolioId) ?? null)
     : null;
 
   return {

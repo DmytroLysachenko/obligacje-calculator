@@ -19,15 +19,21 @@ describe('form inline notice contract', () => {
   });
 
   it('keeps timing and advanced calculator helper boxes on the shared notice', () => {
-    const singleTiming = read('features/single-calculator/components/sections/BondTimingSection.tsx');
+    const singleTiming = read(
+      'features/single-calculator/components/sections/BondTimingSection.tsx',
+    );
     const regularTiming = read('features/regular-investment/components/inputs/TimingSection.tsx');
-    const regularAdvanced = read('features/regular-investment/components/inputs/AdvancedSettingsSection.tsx');
+    const regularAdvanced = read(
+      'features/regular-investment/components/inputs/AdvancedSettingsSection.tsx',
+    );
 
     for (const source of [singleTiming, regularTiming, regularAdvanced]) {
       expect(source).toContain('FormInlineNotice');
     }
 
     expect(singleTiming).not.toContain('rounded-lg border border-border bg-muted/25 px-4 py-3');
-    expect(regularTiming).not.toContain('rounded-lg border border-border bg-muted/25 px-4 py-3 text-sm text-muted-foreground');
+    expect(regularTiming).not.toContain(
+      'rounded-lg border border-border bg-muted/25 px-4 py-3 text-sm text-muted-foreground',
+    );
   });
 });

@@ -1,17 +1,20 @@
-import { 
-  ScenarioKind, 
-  RegularInvestmentCalculationEnvelope 
-} from '../types/scenarios';
+import { ScenarioKind, RegularInvestmentCalculationEnvelope } from '../types/scenarios';
 import { RegularInvestmentInputs, RegularInvestmentResult } from '../types';
 import { RegularInvestmentInputsSchema } from '../types/schemas';
 import { calculateRegularInvestment } from '../utils/calculations';
 import { BaseHandler, ScenarioHandler, HandlerContext } from './base';
 import { resolveBondOfferTerms } from '@/lib/server/bonds/offer-terms';
 
-export class RegularInvestmentHandler extends BaseHandler implements ScenarioHandler<RegularInvestmentInputs, RegularInvestmentResult> {
+export class RegularInvestmentHandler
+  extends BaseHandler
+  implements ScenarioHandler<RegularInvestmentInputs, RegularInvestmentResult>
+{
   kind = ScenarioKind.REGULAR_INVESTMENT;
 
-  async handle(payload: RegularInvestmentInputs, context: HandlerContext): Promise<RegularInvestmentCalculationEnvelope> {
+  async handle(
+    payload: RegularInvestmentInputs,
+    context: HandlerContext,
+  ): Promise<RegularInvestmentCalculationEnvelope> {
     const validatedInputs = RegularInvestmentInputsSchema.parse(payload);
     const def = context.dbDefinitions[validatedInputs.bondType];
     const resolvedOffer = await resolveBondOfferTerms(
@@ -22,7 +25,8 @@ export class RegularInvestmentHandler extends BaseHandler implements ScenarioHan
 
     const inputsWithDefaults = {
       ...validatedInputs,
-      firstYearRate: resolvedOffer.firstYearRate ?? validatedInputs.firstYearRate ?? def.firstYearRate,
+      firstYearRate:
+        resolvedOffer.firstYearRate ?? validatedInputs.firstYearRate ?? def.firstYearRate,
       margin: resolvedOffer.margin ?? validatedInputs.margin ?? def.margin,
     };
 
@@ -39,7 +43,9 @@ export class RegularInvestmentHandler extends BaseHandler implements ScenarioHan
     if (resolvedOffer.source === 'series' && resolvedOffer.seriesCode) {
       assumptions.push(`Issued series resolved: ${resolvedOffer.seriesCode}`);
     } else {
-      assumptions.push('Using the current generic bond definition because no issued series was resolved.');
+      assumptions.push(
+        'Using the current generic bond definition because no issued series was resolved.',
+      );
     }
 
     const result = calculateRegularInvestment(inputsToCalculate);
@@ -47,4 +53,3 @@ export class RegularInvestmentHandler extends BaseHandler implements ScenarioHan
     return this.createEnvelope(result, warnings, assumptions, context.dataFreshness);
   }
 }
-

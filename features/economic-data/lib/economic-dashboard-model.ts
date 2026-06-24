@@ -30,11 +30,11 @@ export interface ChartSeriesEnvelope<T> {
 export type PeriodValue = '1Y' | '5Y' | '10Y' | '30Y' | 'ALL';
 
 export const ECONOMIC_RANGE_OPTIONS: { label: string; value: PeriodValue }[] = [
-  {label: '1Y', value: '1Y'},
-  {label: '5Y', value: '5Y'},
-  {label: '10Y', value: '10Y'},
-  {label: '30Y', value: '30Y'},
-  {label: 'MAX', value: 'ALL'},
+  { label: '1Y', value: '1Y' },
+  { label: '5Y', value: '5Y' },
+  { label: '10Y', value: '10Y' },
+  { label: '30Y', value: '30Y' },
+  { label: 'MAX', value: 'ALL' },
 ];
 
 export interface EconomicStatusLabels {

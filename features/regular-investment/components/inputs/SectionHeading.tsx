@@ -2,13 +2,7 @@
 
 import React from 'react';
 
-export function SectionHeading({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
+export function SectionHeading({ title, description }: { title: string; description: string }) {
   return (
     <div className="space-y-1">
       <h3 className="ui-card-title">{title}</h3>

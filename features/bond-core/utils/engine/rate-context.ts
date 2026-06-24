@@ -72,11 +72,12 @@ export function resolveSingleBondRateContext({
       rateMarginApplied = 0;
     } else {
       usedProjectedRate = customNbpValue !== undefined || isNbpProjected;
-      rateSource = customNbpValue !== undefined
-        ? 'projected_nbp'
-        : lagNbp !== undefined
-          ? 'historical_nbp'
-          : 'projected_nbp';
+      rateSource =
+        customNbpValue !== undefined
+          ? 'projected_nbp'
+          : lagNbp !== undefined
+            ? 'historical_nbp'
+            : 'projected_nbp';
       rateReferenceValue = customNbpValue ?? (lagNbp !== undefined ? lagNbp : expectedNbpRate);
       shouldRecordRateReset = true;
       rateResetDescription = `Rate reset based on NBP: ${currentInterestRate.toFixed(2)}%`;
@@ -90,14 +91,15 @@ export function resolveSingleBondRateContext({
       rateMarginApplied = 0;
     } else if (monthsIntoCycle % 12 === 0) {
       usedProjectedRate = customInflationValue !== undefined || isInflationProjected;
-      rateSource = customInflationValue !== undefined
-        ? 'projected_cpi'
-        : lagInflation !== undefined
-          ? 'historical_cpi_lag'
-          : 'projected_cpi';
-      rateReferenceValue = customInflationValue ?? (
-        lagInflation !== undefined ? lagInflation : activeExpectedInflation
-      );
+      rateSource =
+        customInflationValue !== undefined
+          ? 'projected_cpi'
+          : lagInflation !== undefined
+            ? 'historical_cpi_lag'
+            : 'projected_cpi';
+      rateReferenceValue =
+        customInflationValue ??
+        (lagInflation !== undefined ? lagInflation : activeExpectedInflation);
       shouldRecordRateReset = true;
       rateResetDescription = `Rate reset based on Inflation: ${currentInterestRate.toFixed(2)}%`;
     }

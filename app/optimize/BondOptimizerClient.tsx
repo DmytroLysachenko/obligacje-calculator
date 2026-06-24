@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
+import { TrendingUp } from 'lucide-react';
 import {
-  TrendingUp,
-} from 'lucide-react';
-import { BondOptimizerCalculationEnvelope, ScenarioKind } from '@/features/bond-core/types/scenarios';
+  BondOptimizerCalculationEnvelope,
+  ScenarioKind,
+} from '@/features/bond-core/types/scenarios';
 import { TaxStrategy } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
@@ -13,10 +14,7 @@ import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
-import {
-  useCurrencyFormatter,
-  usePercentFormatter,
-} from '@/shared/hooks/useLocalizedFormatters';
+import { useCurrencyFormatter, usePercentFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 import {
@@ -41,8 +39,7 @@ export default function BondOptimizerClient() {
   const { t, locale: language } = useAppI18n();
   const { defaults: macroDefaults } = useMacroAssumptionDefaults();
   const [inputs, setInputs] = useState<OptimizerInputs>(() => buildDefaultOptimizerInputs());
-  const [envelope, setEnvelope] =
-    useState<BondOptimizerCalculationEnvelope | null>(null);
+  const [envelope, setEnvelope] = useState<BondOptimizerCalculationEnvelope | null>(null);
   const [isDirty, setIsDirty] = useState(true);
   const { isCalculating, post } = useCalculationRequest();
   const hasTouchedMacroAssumptions = React.useRef(false);
@@ -61,11 +58,9 @@ export default function BondOptimizerClient() {
       return;
     }
 
-    setInputs((previous) => applyOptimizerMacroDefaults(
-      previous,
-      macroDefaults,
-      hasTouchedMacroAssumptions.current,
-    ));
+    setInputs((previous) =>
+      applyOptimizerMacroDefaults(previous, macroDefaults, hasTouchedMacroAssumptions.current),
+    );
   }, [macroDefaults]);
 
   const results = envelope?.result;
@@ -91,10 +86,7 @@ export default function BondOptimizerClient() {
     [t],
   );
 
-  const updateInput = (
-    key: OptimizerInputKey,
-    value: string | number | boolean,
-  ) => {
+  const updateInput = (key: OptimizerInputKey, value: string | number | boolean) => {
     if (isOptimizerMacroKey(key)) {
       hasTouchedMacroAssumptions.current = true;
     }
@@ -187,7 +179,7 @@ export default function BondOptimizerClient() {
                 formatCurrency={formatCurrency}
                 labels={{
                   leadingGapPrimary: t('optimizer_page.leading_gap_primary'),
-                  leadingGapSecondary: (gap) => t('optimizer_page.leading_gap_secondary', {gap}),
+                  leadingGapSecondary: (gap) => t('optimizer_page.leading_gap_secondary', { gap }),
                 }}
               />
 
@@ -230,9 +222,11 @@ export default function BondOptimizerClient() {
                 months: inputs.investmentHorizonMonths,
                 labels: {
                   amountTitle: t('optimizer_page.ready_steps.amount.title'),
-                  amountDescription: (amount) => t('optimizer_page.ready_steps.amount.description', {amount}),
+                  amountDescription: (amount) =>
+                    t('optimizer_page.ready_steps.amount.description', { amount }),
                   horizonTitle: t('optimizer_page.ready_steps.horizon.title'),
-                  horizonDescription: (months) => t('optimizer_page.ready_steps.horizon.description', {months}),
+                  horizonDescription: (months) =>
+                    t('optimizer_page.ready_steps.horizon.description', { months }),
                   scopeTitle: t('optimizer_page.ready_steps.scope.title'),
                   scopeDescription: t('optimizer_page.ready_steps.scope.description'),
                 },

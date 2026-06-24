@@ -175,4 +175,3 @@ describe('mergeBondDefinitionsWithSeries', () => {
     expect(defs[0].margin).toBe(0);
   });
 });
-

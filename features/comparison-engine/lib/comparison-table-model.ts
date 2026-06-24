@@ -42,10 +42,10 @@ function interpolateTimelineNumber(
   progress: number,
 ) {
   if (
-    typeof previousValue !== 'number'
-    || typeof nextValue !== 'number'
-    || !Number.isFinite(previousValue)
-    || !Number.isFinite(nextValue)
+    typeof previousValue !== 'number' ||
+    typeof nextValue !== 'number' ||
+    !Number.isFinite(previousValue) ||
+    !Number.isFinite(nextValue)
   ) {
     return fallback;
   }
@@ -99,7 +99,7 @@ export function getComparisonVisibleRangeLabel({
     return `${totalRows} / ${totalRows}`;
   }
 
-  const start = ((page - 1) * rowLimit) + 1;
+  const start = (page - 1) * rowLimit + 1;
   const end = Math.min(start + visibleRows - 1, totalRows);
 
   return `${start}-${end} / ${totalRows}`;
@@ -120,10 +120,7 @@ function projectTimelineSnapshot(
   };
   let index = 0;
 
-  while (
-    index < timeline.length
-    && compareAsc(parseISO(timeline[index].cycleEndDate), date) <= 0
-  ) {
+  while (index < timeline.length && compareAsc(parseISO(timeline[index].cycleEndDate), date) <= 0) {
     const point = timeline[index];
     currentSnapshot = {
       nominalValue: point.totalValue,
@@ -134,9 +131,10 @@ function projectTimelineSnapshot(
       rateSourceLabel: point.rateSource
         ? getRateSourceDisplayLabel(point.rateSource, language)
         : undefined,
-      eventLabels: point.events?.map((event) =>
-        getSimulationEventDisplayLabel(event.type as SimulationEventType, language),
-      ) ?? [],
+      eventLabels:
+        point.events?.map((event) =>
+          getSimulationEventDisplayLabel(event.type as SimulationEventType, language),
+        ) ?? [],
     };
     index += 1;
   }
@@ -216,16 +214,13 @@ export function buildComparisonAlignedTableRows({
   }
 
   const startDate = parseISO(purchaseDate);
-  const endDate = compareAsc(parseISO(lastA.cycleEndDate), parseISO(lastB.cycleEndDate)) >= 0
-    ? parseISO(lastA.cycleEndDate)
-    : parseISO(lastB.cycleEndDate);
+  const endDate =
+    compareAsc(parseISO(lastA.cycleEndDate), parseISO(lastB.cycleEndDate)) >= 0
+      ? parseISO(lastA.cycleEndDate)
+      : parseISO(lastB.cycleEndDate);
   const dates: Date[] = [];
 
-  for (
-    let cursor = startDate;
-    compareAsc(cursor, endDate) <= 0;
-    cursor = addMonths(cursor, 1)
-  ) {
+  for (let cursor = startDate; compareAsc(cursor, endDate) <= 0; cursor = addMonths(cursor, 1)) {
     dates.push(cursor);
   }
 
@@ -234,15 +229,24 @@ export function buildComparisonAlignedTableRows({
   }
 
   const rawRows = dates.map((date, index) => {
-    const scenarioA = projectTimelineSnapshot(resultsA.timeline, date, resultsA.initialInvestment, language);
-    const scenarioB = projectTimelineSnapshot(resultsB.timeline, date, resultsB.initialInvestment, language);
+    const scenarioA = projectTimelineSnapshot(
+      resultsA.timeline,
+      date,
+      resultsA.initialInvestment,
+      language,
+    );
+    const scenarioB = projectTimelineSnapshot(
+      resultsB.timeline,
+      date,
+      resultsB.initialInvestment,
+      language,
+    );
     const gap = scenarioB.nominalValue - scenarioA.nominalValue;
 
     return {
       key: date.toISOString(),
-      label: index === 0
-        ? startLabel
-        : format(date, 'MMM yyyy', { locale: getDateFnsLocale(language) }),
+      label:
+        index === 0 ? startLabel : format(date, 'MMM yyyy', { locale: getDateFnsLocale(language) }),
       dateLabel: format(date, 'yyyy-MM-dd'),
       scenarioA,
       scenarioB,
@@ -260,9 +264,10 @@ export function buildComparisonAlignedTableRows({
   for (const row of rawRows) {
     const date = parseISO(row.key);
     const monthsFromStart = Math.max(0, differenceInMonths(date, startDate));
-    const groupKey = granularity === 'quarterly'
-      ? `q-${Math.floor(monthsFromStart / 3)}`
-      : `y-${Math.floor(monthsFromStart / 12)}`;
+    const groupKey =
+      granularity === 'quarterly'
+        ? `q-${Math.floor(monthsFromStart / 3)}`
+        : `y-${Math.floor(monthsFromStart / 12)}`;
     const bucket = groups.get(groupKey) ?? [];
     bucket.push(row);
     groups.set(groupKey, bucket);

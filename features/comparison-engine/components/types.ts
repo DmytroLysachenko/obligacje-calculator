@@ -1,4 +1,4 @@
-import { AssetPerformanceSeries } from "../../bond-core/types/assets";
+import { AssetPerformanceSeries } from '../../bond-core/types/assets';
 
 export interface ComparisonControlsProps {
   initialSum: number;

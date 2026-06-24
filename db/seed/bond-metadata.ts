@@ -1,7 +1,7 @@
-import {db} from '../index';
-import {polishBonds} from '../schema';
-import {BondType} from '../../features/bond-core/types';
-import {BOND_DEFINITIONS} from '../../features/bond-core/constants/bond-definitions';
+import { db } from '../index';
+import { polishBonds } from '../schema';
+import { BondType } from '../../features/bond-core/types';
+import { BOND_DEFINITIONS } from '../../features/bond-core/constants/bond-definitions';
 
 export async function seedBondMetadata() {
   let bondCount = 0;
@@ -14,25 +14,28 @@ export async function seedBondMetadata() {
         ? 'floating_nbp'
         : 'fixed';
 
-    await db.insert(polishBonds).values({
-      symbol: bondType,
-      fullName: definition.fullName.pl,
-      durationDays: Math.round(definition.duration * 365),
-      nominalValue: '100.00',
-      interestType: interestType as 'fixed' | 'floating_nbp' | 'inflation_linked',
-      firstYearRate: definition.firstYearRate.toString(),
-      baseMargin: definition.margin.toString(),
-      withdrawalFee: definition.earlyWithdrawalFee.toString(),
-      isFamilyOnly: bondType === BondType.ROS || bondType === BondType.ROD,
-    }).onConflictDoUpdate({
-      target: polishBonds.symbol,
-      set: {
+    await db
+      .insert(polishBonds)
+      .values({
+        symbol: bondType,
         fullName: definition.fullName.pl,
+        durationDays: Math.round(definition.duration * 365),
+        nominalValue: '100.00',
+        interestType: interestType as 'fixed' | 'floating_nbp' | 'inflation_linked',
         firstYearRate: definition.firstYearRate.toString(),
         baseMargin: definition.margin.toString(),
-        updatedAt: new Date(),
-      },
-    });
+        withdrawalFee: definition.earlyWithdrawalFee.toString(),
+        isFamilyOnly: bondType === BondType.ROS || bondType === BondType.ROD,
+      })
+      .onConflictDoUpdate({
+        target: polishBonds.symbol,
+        set: {
+          fullName: definition.fullName.pl,
+          firstYearRate: definition.firstYearRate.toString(),
+          baseMargin: definition.margin.toString(),
+          updatedAt: new Date(),
+        },
+      });
     bondCount++;
   }
 

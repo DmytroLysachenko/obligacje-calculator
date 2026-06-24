@@ -1,7 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { calculationService } from './application-service';
 import { BOND_DEFINITIONS } from './constants/bond-definitions';
-import { BondInputs, BondType, InterestPayout, RegularInvestmentInputs, TaxStrategy } from './types';
+import {
+  BondInputs,
+  BondType,
+  InterestPayout,
+  RegularInvestmentInputs,
+  TaxStrategy,
+} from './types';
 import { ScenarioKind } from './types/scenarios';
 import {
   BondComparisonScenarioPayloadSchema,
@@ -108,18 +114,22 @@ describe('calculation request validation hardening', () => {
       BondInputsSchema.parse(singlePayload({ expectedInflation: Number.NaN })),
     );
     expectInvalid('nan path', () =>
-      BondInputsSchema.parse(singlePayload({
-        customInflation: [3, Number.NaN, 3, 3, 3, 3, 3, 3, 3, 3],
-      })),
+      BondInputsSchema.parse(
+        singlePayload({
+          customInflation: [3, Number.NaN, 3, 3, 3, 3, 3, 3, 3, 3],
+        }),
+      ),
     );
   });
 
   it('rejects date order and impossible horizon combinations', () => {
     expectInvalid('reversed dates', () =>
-      BondInputsSchema.parse(singlePayload({
-        purchaseDate: '2030-01-01',
-        withdrawalDate: '2029-01-01',
-      })),
+      BondInputsSchema.parse(
+        singlePayload({
+          purchaseDate: '2030-01-01',
+          withdrawalDate: '2029-01-01',
+        }),
+      ),
     );
     expectInvalid('fractional horizon', () =>
       BondInputsSchema.parse(singlePayload({ investmentHorizonMonths: 12.5 })),
@@ -156,16 +166,20 @@ describe('calculation request validation hardening', () => {
 
   it('accepts exact custom paths that match the scenario horizon', () => {
     expect(
-      BondInputsSchema.parse(singlePayload({
-        customInflation: Array.from({ length: 10 }, () => 3),
-        customNbpRate: Array.from({ length: 10 }, () => 5),
-      })).customInflation,
+      BondInputsSchema.parse(
+        singlePayload({
+          customInflation: Array.from({ length: 10 }, () => 3),
+          customNbpRate: Array.from({ length: 10 }, () => 5),
+        }),
+      ).customInflation,
     ).toHaveLength(10);
 
     expect(
-      RegularInvestmentInputsSchema.parse(regularPayload({
-        customInflation: Array.from({ length: 4 }, () => 3),
-      })).customInflation,
+      RegularInvestmentInputsSchema.parse(
+        regularPayload({
+          customInflation: Array.from({ length: 4 }, () => 3),
+        }),
+      ).customInflation,
     ).toHaveLength(4);
   });
 

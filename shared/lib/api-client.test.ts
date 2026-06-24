@@ -3,9 +3,11 @@ import { apiGet, apiGetWithResponse, apiPost } from './api-client';
 
 describe('api client', () => {
   it('unwraps typed success payloads', async () => {
-    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
-      new Response(JSON.stringify({ data: { value: 42 } }), { status: 200 }),
-    );
+    const fetchMock = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ data: { value: 42 } }), { status: 200 }),
+      );
 
     await expect(apiGet<{ value: number }>('/api/example')).resolves.toEqual({ value: 42 });
     expect(fetchMock).toHaveBeenCalledWith('/api/example', {

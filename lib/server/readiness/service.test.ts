@@ -1,4 +1,4 @@
-import {describe, expect, it, vi} from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   REQUIRED_READINESS_TABLES,
   type SqlClient,
@@ -18,7 +18,7 @@ function completeEnv() {
   };
 }
 
-function createSqlClient(rows: Array<{table_name: string}>, fail = false) {
+function createSqlClient(rows: Array<{ table_name: string }>, fail = false) {
   const end = vi.fn().mockResolvedValue(undefined);
   const sql = vi.fn(async (strings: TemplateStringsArray | readonly string[]) => {
     if (fail) {
@@ -34,13 +34,14 @@ function createSqlClient(rows: Array<{table_name: string}>, fail = false) {
 
 describe('readiness service', () => {
   it('passes environment checks when database auth sync app url and oauth are configured', () => {
-    expect(checkReadinessEnv(completeEnv())).toEqual({status: 'ok'});
+    expect(checkReadinessEnv(completeEnv())).toEqual({ status: 'ok' });
   });
 
   it('reports all missing environment requirements', () => {
     expect(checkReadinessEnv({})).toEqual({
       status: 'failed',
-      detail: 'Missing required runtime configuration: DATABASE_URL, AUTH_SECRET, SYNC_SECRET, NEXT_PUBLIC_APP_URL, OAUTH_PROVIDER',
+      detail:
+        'Missing required runtime configuration: DATABASE_URL, AUTH_SECRET, SYNC_SECRET, NEXT_PUBLIC_APP_URL, OAUTH_PROVIDER',
     });
   });
 
@@ -52,23 +53,26 @@ describe('readiness service', () => {
   });
 
   it('passes database checks when all required tables exist', async () => {
-    const sql = createSqlClient(REQUIRED_READINESS_TABLES.map((table_name) => ({table_name})));
+    const sql = createSqlClient(REQUIRED_READINESS_TABLES.map((table_name) => ({ table_name })));
 
-    await expect(checkReadinessDatabase('postgres://example', () => sql)).resolves.toEqual({status: 'ok'});
-    expect(sql.end).toHaveBeenCalledWith({timeout: 1});
+    await expect(checkReadinessDatabase('postgres://example', () => sql)).resolves.toEqual({
+      status: 'ok',
+    });
+    expect(sql.end).toHaveBeenCalledWith({ timeout: 1 });
   });
 
   it('reports missing required tables', async () => {
-    const sql = createSqlClient([{table_name: 'data_series'}]);
+    const sql = createSqlClient([{ table_name: 'data_series' }]);
 
     await expect(checkReadinessDatabase('postgres://example', () => sql)).resolves.toEqual({
       status: 'failed',
-      detail: 'Missing required tables: data_points, polish_bonds, sync_runs, user, account, session, verification_token',
+      detail:
+        'Missing required tables: data_points, polish_bonds, sync_runs, user, account, session, verification_token',
     });
   });
 
   it('returns a snapshot with service status and timestamp', async () => {
-    const sql = createSqlClient(REQUIRED_READINESS_TABLES.map((table_name) => ({table_name})));
+    const sql = createSqlClient(REQUIRED_READINESS_TABLES.map((table_name) => ({ table_name })));
 
     await expect(
       getReadinessSnapshot({
@@ -79,8 +83,8 @@ describe('readiness service', () => {
     ).resolves.toEqual({
       ok: true,
       checks: {
-        env: {status: 'ok'},
-        database: {status: 'ok'},
+        env: { status: 'ok' },
+        database: { status: 'ok' },
       },
       timestamp: '2026-06-15T12:00:00.000Z',
     });

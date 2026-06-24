@@ -1,5 +1,5 @@
-import {addMonths, differenceInDays, format, isBefore, parseISO} from 'date-fns';
-import {NBP_REFERENCE_FALLBACK_SERIES} from '@/shared/lib/nbp-reference-fallback';
+import { addMonths, differenceInDays, format, isBefore, parseISO } from 'date-fns';
+import { NBP_REFERENCE_FALLBACK_SERIES } from '@/shared/lib/nbp-reference-fallback';
 
 export interface ChartSeriesEnvelope<T> {
   data: T[];
@@ -30,17 +30,17 @@ interface ReferenceSeriesMetadata {
 }
 
 export const FALLBACK_INFLATION: ChartRatePoint[] = [
-  {date: '2015-01', rate: -0.9},
-  {date: '2016-01', rate: -0.6},
-  {date: '2017-01', rate: 2.0},
-  {date: '2018-01', rate: 1.6},
-  {date: '2019-01', rate: 2.3},
-  {date: '2020-01', rate: 3.4},
-  {date: '2021-01', rate: 5.1},
-  {date: '2022-01', rate: 14.4},
-  {date: '2023-01', rate: 11.4},
-  {date: '2024-01', rate: 3.7},
-  {date: '2025-01', rate: 4.2},
+  { date: '2015-01', rate: -0.9 },
+  { date: '2016-01', rate: -0.6 },
+  { date: '2017-01', rate: 2.0 },
+  { date: '2018-01', rate: 1.6 },
+  { date: '2019-01', rate: 2.3 },
+  { date: '2020-01', rate: 3.4 },
+  { date: '2021-01', rate: 5.1 },
+  { date: '2022-01', rate: 14.4 },
+  { date: '2023-01', rate: 11.4 },
+  { date: '2024-01', rate: 3.7 },
+  { date: '2025-01', rate: 4.2 },
 ];
 
 export const FALLBACK_NBP: ChartRatePoint[] = NBP_REFERENCE_FALLBACK_SERIES.map((point) => ({
@@ -127,14 +127,13 @@ export function createInflationSeriesEnvelope({
     !!latestPointDate &&
     differenceInDays(now, parseISO(latestPointDate)) > CPI_STALE_THRESHOLD_DAYS;
   const hasSyncFailure = lastSyncStatus === 'failed';
-  const syncStatus =
-    hasSyncFailure
-      ? 'failed'
-      : lastSyncStatus === 'partial'
-        ? 'partial'
-        : isStaleCoverage
-          ? 'stale'
-          : 'success';
+  const syncStatus = hasSyncFailure
+    ? 'failed'
+    : lastSyncStatus === 'partial'
+      ? 'partial'
+      : isStaleCoverage
+        ? 'stale'
+        : 'success';
   const coverageNote =
     syncStatus === 'success'
       ? 'reference-synced-context'
@@ -165,8 +164,9 @@ export function createNbpSeriesEnvelope({
 }): ChartSeriesEnvelope<ChartRatePoint> {
   const sparseCoverage = data.length < 8;
   const mergedFallbackCoverage = sparseCoverage
-    ? Array.from(new Map([...FALLBACK_NBP, ...data].map((point) => [point.date, point])).values())
-      .sort((left, right) => left.date.localeCompare(right.date))
+    ? Array.from(
+        new Map([...FALLBACK_NBP, ...data].map((point) => [point.date, point])).values(),
+      ).sort((left, right) => left.date.localeCompare(right.date))
     : data;
   const expandedCoverage = expandMonthlyStepSeries(mergedFallbackCoverage);
 
@@ -180,11 +180,7 @@ export function createNbpSeriesEnvelope({
     ...metadata,
     coverageStart: expandedCoverage[0]?.date,
     coverageEnd: expandedCoverage[expandedCoverage.length - 1]?.date,
-    syncStatus: sourceIsFallbackOnly
-      ? 'failed'
-      : sourceUsesPartialCoverage
-        ? 'partial'
-        : 'success',
+    syncStatus: sourceIsFallbackOnly ? 'failed' : sourceUsesPartialCoverage ? 'partial' : 'success',
     coverageNote: sourceIsFallbackOnly
       ? 'nbp-fallback-reference'
       : sourceUsesPartialCoverage

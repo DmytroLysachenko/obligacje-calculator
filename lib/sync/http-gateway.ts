@@ -9,10 +9,7 @@ const DEFAULT_HEADERS = {
   Accept: 'application/json',
 };
 
-export async function fetchSyncResponse(
-  url: string,
-  options: SyncHttpRequestOptions = {},
-) {
+export async function fetchSyncResponse(url: string, options: SyncHttpRequestOptions = {}) {
   const {
     timeoutMs = DEFAULT_TIMEOUT_MS,
     throwOnHttpError = true,
@@ -33,7 +30,9 @@ export async function fetchSyncResponse(
     });
 
     if (throwOnHttpError && !response.ok) {
-      throw new Error(`External fetch failed: ${response.status} ${response.statusText} for ${url}`);
+      throw new Error(
+        `External fetch failed: ${response.status} ${response.statusText} for ${url}`,
+      );
     }
 
     return response;
@@ -42,26 +41,17 @@ export async function fetchSyncResponse(
   }
 }
 
-export async function fetchSyncJson<T>(
-  url: string,
-  options?: SyncHttpRequestOptions,
-): Promise<T> {
+export async function fetchSyncJson<T>(url: string, options?: SyncHttpRequestOptions): Promise<T> {
   const response = await fetchSyncResponse(url, options);
-  return await response.json() as T;
+  return (await response.json()) as T;
 }
 
-export async function fetchSyncText(
-  url: string,
-  options?: SyncHttpRequestOptions,
-) {
+export async function fetchSyncText(url: string, options?: SyncHttpRequestOptions) {
   const response = await fetchSyncResponse(url, options);
   return await response.text();
 }
 
-export async function fetchSyncArrayBuffer(
-  url: string,
-  options?: SyncHttpRequestOptions,
-) {
+export async function fetchSyncArrayBuffer(url: string, options?: SyncHttpRequestOptions) {
   const response = await fetchSyncResponse(url, options);
   return await response.arrayBuffer();
 }

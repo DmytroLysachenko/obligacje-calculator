@@ -1,6 +1,6 @@
-import {readFileSync} from 'node:fs';
-import {join} from 'node:path';
-import {describe, expect, it} from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
 
 const projectRoot = process.cwd();
 
@@ -27,7 +27,10 @@ describe('ladder summary contracts', () => {
   it('keeps ladder page on the shared calculator rhythm', () => {
     const source = readSource(paths.container);
 
-    expectContains(source, "import { CalculatorWorkspace } from '@/shared/components/page/CalculatorWorkspace';");
+    expectContains(
+      source,
+      "import { CalculatorWorkspace } from '@/shared/components/page/CalculatorWorkspace';",
+    );
     expectContains(source, '<CalculatorWorkspace');
     expectContains(source, 'controls={');
     expectContains(source, 'results={');
@@ -39,7 +42,10 @@ describe('ladder summary contracts', () => {
   it('shows yearly ladder summary before monthly detail', () => {
     const source = readSource(paths.timeline);
 
-    expectContains(source, 'const yearlySummaryItems = useMemo(() => yearlyBuckets.slice(0, 4).map');
+    expectContains(
+      source,
+      'const yearlySummaryItems = useMemo(() => yearlyBuckets.slice(0, 4).map',
+    );
     expectContains(source, "t('ladder_page.timeline.year_summary_title')");
     expectContains(source, "t('ladder_page.timeline.year_summary_intro')");
     expectContains(source, "t('ladder_page.timeline.strongest_year')");
@@ -50,13 +56,16 @@ describe('ladder summary contracts', () => {
     const source = readSource(paths.timeline);
 
     expectContains(source, "type LadderTableFilter = 'all' | 'peak' | 'clustered';");
-    expectContains(source, "const [tableFilter, setTableFilter] = useState<LadderTableFilter>('all');");
+    expectContains(
+      source,
+      "const [tableFilter, setTableFilter] = useState<LadderTableFilter>('all');",
+    );
     expectContains(source, 'const filteredMonthlyBuckets = useMemo(() => {');
     expectContains(source, "if (tableFilter === 'peak')");
     expectContains(source, "if (tableFilter === 'clustered')");
     expectContains(source, 'applyTableRowLimit(filteredMonthlyBuckets, rowLimit)');
     expectContains(source, 'aria-pressed={tableFilter === filter}');
-    expectContains(source, "t(`ladder_page.timeline.table_filters.${filter}`)");
+    expectContains(source, 't(`ladder_page.timeline.table_filters.${filter}`)');
   });
 
   it('keeps ladder summary translations in both locales', () => {

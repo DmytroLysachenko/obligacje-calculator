@@ -1,6 +1,1 @@
-export {
-  accounts,
-  sessions,
-  users,
-  verificationTokens,
-} from '../schema';
+export { accounts, sessions, users, verificationTokens } from '../schema';

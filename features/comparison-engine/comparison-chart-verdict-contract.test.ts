@@ -37,9 +37,18 @@ describe('comparison chart and verdict contracts', () => {
 
     expectContains(source, 'export const MultiAssetComparisonChart');
     expectContains(source, 'MultiAssetComparisonChartProps');
-    expectContains(source, "import { ChartLegendStrip } from \"@/shared/components/charts/ChartLegendStrip\";");
-    expectContains(source, 'const growthLegendItems = React.useMemo(() => assets.map((asset) => ({');
-    expectContains(source, 'const drawdownLegendItems = React.useMemo(() => assets.map((asset) => ({');
+    expectContains(
+      source,
+      'import { ChartLegendStrip } from "@/shared/components/charts/ChartLegendStrip";',
+    );
+    expectContains(
+      source,
+      'const growthLegendItems = React.useMemo(() => assets.map((asset) => ({',
+    );
+    expectContains(
+      source,
+      'const drawdownLegendItems = React.useMemo(() => assets.map((asset) => ({',
+    );
     expectContains(source, '<ChartLegendStrip items={growthLegendItems} />');
     expectContains(source, '<ChartLegendStrip items={drawdownLegendItems} />');
     expectContains(source, 'const inflation = data.inflation;');
@@ -95,8 +104,14 @@ describe('comparison chart and verdict contracts', () => {
     const source = read(files.verdict);
 
     expectContains(source, 'flex flex-wrap gap-x-4 gap-y-2 border-t border-border pt-4');
-    expectContains(source, 'inline-flex items-center gap-2 border-l-2 border-border pl-3 text-xs font-semibold text-muted-foreground');
-    expectContains(source, 'inline-flex items-center gap-2 border-l-2 border-warning pl-3 text-xs font-semibold text-warning');
+    expectContains(
+      source,
+      'inline-flex items-center gap-2 border-l-2 border-border pl-3 text-xs font-semibold text-muted-foreground',
+    );
+    expectContains(
+      source,
+      'inline-flex items-center gap-2 border-l-2 border-warning pl-3 text-xs font-semibold text-warning',
+    );
     expectContains(source, 'border-l-2 border-border px-4 py-4 text-center');
     expectContains(source, '<Scale className="h-3 w-3"/>');
     expectContains(source, '<ShieldCheck className="h-3 w-3"/>');

@@ -31,11 +31,11 @@ function getCalculationWorker(): Worker | null {
 }
 
 export async function postCalculationInWorker<TResponse>(
-  url: string, 
-  payload: unknown, 
+  url: string,
+  payload: unknown,
   signal?: AbortSignal,
   type: 'local' | 'remote' = 'remote',
-  kind?: string
+  kind?: string,
 ): Promise<TResponse> {
   const worker = getCalculationWorker();
 

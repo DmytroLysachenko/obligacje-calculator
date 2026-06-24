@@ -1,12 +1,8 @@
 const CACHE_NAME = 'bond-calculator-static-v2';
-const STATIC_ASSETS = [
-  '/manifest.json',
-];
+const STATIC_ASSETS = ['/manifest.json'];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS)),
-  );
+  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS)));
   self.skipWaiting();
 });
 
@@ -44,15 +40,11 @@ self.addEventListener('fetch', (event) => {
 
   // Always prefer fresh HTML so route UI cannot drift across deployments.
   if (isNavigationRequest) {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match('/')),
-    );
+    event.respondWith(fetch(event.request).catch(() => caches.match('/')));
     return;
   }
 
   if (STATIC_ASSETS.includes(url.pathname)) {
-    event.respondWith(
-      caches.match(event.request).then((cached) => cached ?? fetch(event.request)),
-    );
+    event.respondWith(caches.match(event.request).then((cached) => cached ?? fetch(event.request)));
   }
 });

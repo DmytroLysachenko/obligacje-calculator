@@ -48,18 +48,19 @@ export class YahooFinanceSyncProvider implements SyncProvider {
 
     console.log(`[Yahoo Finance Provider] Fetching ${this.symbol} from ${url}`);
     const payload = await fetchSyncJson<YahooChartResponse>(url, {
-      headers: {'User-Agent': 'Mozilla/5.0'},
+      headers: { 'User-Agent': 'Mozilla/5.0' },
     });
     const error = payload.chart?.error;
     if (error) {
-      throw new Error(`Yahoo Finance error for ${this.symbol}: ${error.description ?? error.code ?? 'unknown error'}`);
+      throw new Error(
+        `Yahoo Finance error for ${this.symbol}: ${error.description ?? error.code ?? 'unknown error'}`,
+      );
     }
 
     const result = payload.chart?.result?.[0];
     const timestamps = result?.timestamp ?? [];
-    const values = result?.indicators?.adjclose?.[0]?.adjclose
-      ?? result?.indicators?.quote?.[0]?.close
-      ?? [];
+    const values =
+      result?.indicators?.adjclose?.[0]?.adjclose ?? result?.indicators?.quote?.[0]?.close ?? [];
 
     if (timestamps.length === 0 || values.length === 0) {
       throw new Error(`Yahoo Finance returned no chart data for ${this.symbol}`);

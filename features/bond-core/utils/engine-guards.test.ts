@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CalculationDomainError } from '../errors';
-import {
-  assertCalculationResultIntegrity,
-  sanitizeInputs,
-  withMathGuard,
-} from './engine-guards';
+import { assertCalculationResultIntegrity, sanitizeInputs, withMathGuard } from './engine-guards';
 
 function validSingleResult(overrides: Record<string, unknown> = {}) {
   return {
@@ -89,15 +85,13 @@ describe('engine math guard', () => {
       ],
     });
 
-    expect(() => assertCalculationResultIntegrity(result)).toThrow(
-      /Unsafe numeric value detected/,
-    );
+    expect(() => assertCalculationResultIntegrity(result)).toThrow(/Unsafe numeric value detected/);
   });
 
   it('rejects empty timelines instead of allowing fake success payloads', () => {
-    expect(() =>
-      assertCalculationResultIntegrity(validSingleResult({ timeline: [] })),
-    ).toThrow(/empty timeline/);
+    expect(() => assertCalculationResultIntegrity(validSingleResult({ timeline: [] }))).toThrow(
+      /empty timeline/,
+    );
   });
 
   it('wraps engine exceptions as calculation domain errors', () => {

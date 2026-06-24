@@ -65,12 +65,14 @@ export function ContributionPlanSection({
               label={t('bonds.monthly_investment')}
               htmlFor="contributionAmount"
               tooltip={t('regular_form.contribution_help')}
-              error={!isDivisibleBy100 && contributionAmount > 0 ? (
-                <span className="inline-flex items-center gap-2">
-                  <AlertCircle className="h-3 w-3" />
-                  {t('bonds.error_100_pln')}
-                </span>
-              ) : null}
+              error={
+                !isDivisibleBy100 && contributionAmount > 0 ? (
+                  <span className="inline-flex items-center gap-2">
+                    <AlertCircle className="h-3 w-3" />
+                    {t('bonds.error_100_pln')}
+                  </span>
+                ) : null
+              }
             >
               <MoneyInput
                 id="contributionAmount"

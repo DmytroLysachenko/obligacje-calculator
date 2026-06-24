@@ -31,44 +31,22 @@ export function ScenarioSetupCard({
   return (
     <section
       data-tone={tone}
-      className={cn(
-        'border-l-2 border-t px-4 py-4 sm:px-5',
-        toneClass[tone],
-        className,
-      )}
+      className={cn('border-l-2 border-t px-4 py-4 sm:px-5', toneClass[tone], className)}
     >
       <div className="flex flex-col gap-3 border-b border-border pb-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 space-y-1">
-          {eyebrow ? (
-            <p className="ui-metadata text-muted-foreground">
-              {eyebrow}
-            </p>
-          ) : null}
-          <h3 className="ui-card-title">
-            {title}
-          </h3>
+          {eyebrow ? <p className="ui-metadata text-muted-foreground">{eyebrow}</p> : null}
+          <h3 className="ui-card-title">{title}</h3>
           {description ? (
-            <p className="max-w-prose text-xs leading-5 text-muted-foreground">
-              {description}
-            </p>
+            <p className="max-w-prose text-xs leading-5 text-muted-foreground">{description}</p>
           ) : null}
         </div>
-        {meta ? (
-          <div className="shrink-0 text-left sm:text-right">
-            {meta}
-          </div>
-        ) : null}
+        {meta ? <div className="shrink-0 text-left sm:text-right">{meta}</div> : null}
       </div>
 
-      <div className="space-y-5 py-5">
-        {children}
-      </div>
+      <div className="space-y-5 py-5">{children}</div>
 
-      {footer ? (
-        <div className="border-t border-border pt-4">
-          {footer}
-        </div>
-      ) : null}
+      {footer ? <div className="border-t border-border pt-4">{footer}</div> : null}
     </section>
   );
 }

@@ -25,7 +25,11 @@ import {
 } from '@/shared/lib/workspace/current-portfolio';
 import { getWorkspaceSaveTarget } from '@/shared/lib/workspace/portfolio-selection';
 import { useBondCalculator } from '../hooks/useBondCalculator';
-import { applyGuardrailFix, getInputGuardrails, InputGuardrailIssue } from '../lib/input-guardrails';
+import {
+  applyGuardrailFix,
+  getInputGuardrails,
+  InputGuardrailIssue,
+} from '../lib/input-guardrails';
 import { createSavedScenario, saveScenarioRecord } from '../lib/scenario-storage';
 import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 import { BondChart } from './BondChart';
@@ -114,7 +118,8 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
       await portfolioClient.createLot({
         portfolioId,
         bondType: inputs.bondType,
-        selectedSeriesId: selectedSeriesId && selectedSeriesId !== 'current' ? selectedSeriesId : null,
+        selectedSeriesId:
+          selectedSeriesId && selectedSeriesId !== 'current' ? selectedSeriesId : null,
         purchaseDate: inputs.purchaseDate,
         amount: Math.floor(inputs.initialInvestment / 100),
         isRebought: inputs.isRebought,
@@ -140,9 +145,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     saveScenarioRecord(
       createSavedScenario(inputs, {
         name: label,
-        description: `Net payout ${
-          results ? results.netPayoutValue.toFixed(2) : 'pending'
-        } PLN`,
+        description: `Net payout ${results ? results.netPayoutValue.toFixed(2) : 'pending'} PLN`,
       }),
     );
   };
@@ -207,7 +210,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
         ) : null}
 
         <CalculatorWorkspace
-          controls={(
+          controls={
             <BondInputsForm
               inputs={inputs}
               onUpdate={updateInput}
@@ -217,127 +220,129 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
               guardrails={guardrails}
               onApplyGuardrailFix={handleApplyGuardrailFix}
             />
-          )}
-          results={(
-          <div id="bond-report-content">
-            {!results && !isCalculating ? (
-              <ScenarioReadyPanel
-                badge={t('bonds.simulation.ready')}
-                title={t('bonds.simulation.ready_title')}
-                description={t('bonds.simulation.ready_desc')}
-                steps={[
-                  {
-                    id: 'primary',
-                    title: t('bonds.simulation.ready_steps.primary.title'),
-                    description: t('bonds.simulation.ready_steps.primary.desc'),
-                  },
-                  {
-                    id: 'timing',
-                    title: t('bonds.simulation.ready_steps.timing.title'),
-                    description: t('bonds.simulation.ready_steps.timing.desc'),
-                  },
-                  {
-                    id: 'advanced',
-                    title: t('bonds.simulation.ready_steps.advanced.title'),
-                    description: t('bonds.simulation.ready_steps.advanced.desc'),
-                  },
-                ]}
-                footerText={
-                  blockingGuardrails.length > 0
-                    ? t('bonds.simulation.fix_blocking')
-                    : t('bonds.simulation.results_stable')
-                }
-              />
-            ) : null}
+          }
+          results={
+            <div id="bond-report-content">
+              {!results && !isCalculating ? (
+                <ScenarioReadyPanel
+                  badge={t('bonds.simulation.ready')}
+                  title={t('bonds.simulation.ready_title')}
+                  description={t('bonds.simulation.ready_desc')}
+                  steps={[
+                    {
+                      id: 'primary',
+                      title: t('bonds.simulation.ready_steps.primary.title'),
+                      description: t('bonds.simulation.ready_steps.primary.desc'),
+                    },
+                    {
+                      id: 'timing',
+                      title: t('bonds.simulation.ready_steps.timing.title'),
+                      description: t('bonds.simulation.ready_steps.timing.desc'),
+                    },
+                    {
+                      id: 'advanced',
+                      title: t('bonds.simulation.ready_steps.advanced.title'),
+                      description: t('bonds.simulation.ready_steps.advanced.desc'),
+                    },
+                  ]}
+                  footerText={
+                    blockingGuardrails.length > 0
+                      ? t('bonds.simulation.fix_blocking')
+                      : t('bonds.simulation.results_stable')
+                  }
+                />
+              ) : null}
 
-            {isCalculating && !results ? (
-              <div className="space-y-4">
-                <Skeleton className="h-28 w-full rounded-lg md:h-32" />
-                <Skeleton className="h-52 w-full rounded-lg md:h-60" />
-                <Skeleton className="h-[320px] w-full rounded-lg md:h-[420px]" />
-              </div>
-            ) : null}
+              {isCalculating && !results ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-28 w-full rounded-lg md:h-32" />
+                  <Skeleton className="h-52 w-full rounded-lg md:h-60" />
+                  <Skeleton className="h-[320px] w-full rounded-lg md:h-[420px]" />
+                </div>
+              ) : null}
 
-            {results ? (
+              {results ? (
+                <div
+                  className={cn(
+                    'space-y-8 transition-opacity duration-300',
+                    isCalculating && 'pointer-events-none opacity-50',
+                  )}
+                >
+                  {isDirty ? (
+                    <div className="ui-inline-notice border-warning/30 bg-warning/5 text-foreground">
+                      {t('bonds.simulation.stale_results')}{' '}
+                      <span className="font-semibold">{t('common.recalculate')}</span>.
+                    </div>
+                  ) : null}
+
+                  <BondResultsSummary
+                    results={results}
+                    inputs={inputs}
+                    onSaveScenario={handleSaveScenario}
+                    onAddToNotebook={handleAddToNotebook}
+                    onExportPDF={handleExportPDF}
+                    canManageWorkspace={canManageWorkspace}
+                    dataQualityFlags={envelope?.dataQualityFlags}
+                  />
+                </div>
+              ) : null}
+            </div>
+          }
+          details={
+            results ? (
               <div
                 className={cn(
                   'space-y-8 transition-opacity duration-300',
                   isCalculating && 'pointer-events-none opacity-50',
                 )}
               >
-                {isDirty ? (
-                  <div className="ui-inline-notice border-warning/30 bg-warning/5 text-foreground">
-                    {t('bonds.simulation.stale_results')}{' '}
-                    <span className="font-semibold">{t('common.recalculate')}</span>.
-                  </div>
-                ) : null}
+                <CalculatorSection
+                  title={t('bonds.evolution')}
+                  description={t('bonds.simulation.chart_section_desc')}
+                >
+                  <ChartSupportNote
+                    title={t('bonds.simulation.chart_help_title')}
+                    description={t('bonds.simulation.chart_help_desc')}
+                  />
+                  <BondChart
+                    results={results}
+                    initialInvestment={results.initialInvestment}
+                    inputs={inputs}
+                    showRealValue={inputs.showRealValue}
+                  />
+                </CalculatorSection>
 
-                <BondResultsSummary
-                  results={results}
-                  inputs={inputs}
-                  onSaveScenario={handleSaveScenario}
-                  onAddToNotebook={handleAddToNotebook}
-                  onExportPDF={handleExportPDF}
-                  canManageWorkspace={canManageWorkspace}
-                  dataQualityFlags={envelope?.dataQualityFlags}
-                />
+                <SecondaryInsightAccordion
+                  title={t('bonds.simulation.how_to_read_title')}
+                  description={t('bonds.simulation.how_to_read_desc')}
+                  badge={t('bonds.simulation.secondary_badge')}
+                >
+                  <ReadingChecklist items={readingGuide} />
+                </SecondaryInsightAccordion>
+
+                <CalculatorSection
+                  title={t('bonds.timeline')}
+                  description={t('bonds.simulation.timeline_section_desc')}
+                >
+                  <BondTimeline results={results} />
+                </CalculatorSection>
+
+                <SecondaryInsightAccordion
+                  title={t('bonds.simulation.calculation_context')}
+                  description={t('bonds.simulation.meta_desc')}
+                  badge={t('bonds.simulation.meta_badge')}
+                >
+                  <CalculationMetaPanel
+                    warnings={envelope?.warnings}
+                    assumptions={envelope?.assumptions}
+                    calculationNotes={envelope?.calculationNotes}
+                    dataQualityFlags={envelope?.dataQualityFlags}
+                    dataFreshness={envelope?.dataFreshness}
+                  />
+                </SecondaryInsightAccordion>
               </div>
-            ) : null}
-          </div>
-          )}
-          details={results ? (
-          <div
-            className={cn(
-              'space-y-8 transition-opacity duration-300',
-              isCalculating && 'pointer-events-none opacity-50',
-            )}
-          >
-            <CalculatorSection
-              title={t('bonds.evolution')}
-              description={t('bonds.simulation.chart_section_desc')}
-            >
-              <ChartSupportNote
-                title={t('bonds.simulation.chart_help_title')}
-                description={t('bonds.simulation.chart_help_desc')}
-              />
-              <BondChart
-                results={results}
-                initialInvestment={results.initialInvestment}
-                inputs={inputs}
-                showRealValue={inputs.showRealValue}
-              />
-            </CalculatorSection>
-
-            <SecondaryInsightAccordion
-              title={t('bonds.simulation.how_to_read_title')}
-              description={t('bonds.simulation.how_to_read_desc')}
-              badge={t('bonds.simulation.secondary_badge')}
-            >
-              <ReadingChecklist items={readingGuide} />
-            </SecondaryInsightAccordion>
-
-            <CalculatorSection
-              title={t('bonds.timeline')}
-              description={t('bonds.simulation.timeline_section_desc')}
-            >
-              <BondTimeline results={results} />
-            </CalculatorSection>
-
-            <SecondaryInsightAccordion
-              title={t('bonds.simulation.calculation_context')}
-              description={t('bonds.simulation.meta_desc')}
-              badge={t('bonds.simulation.meta_badge')}
-            >
-              <CalculationMetaPanel
-                warnings={envelope?.warnings}
-                assumptions={envelope?.assumptions}
-                calculationNotes={envelope?.calculationNotes}
-                dataQualityFlags={envelope?.dataQualityFlags}
-                dataFreshness={envelope?.dataFreshness}
-              />
-            </SecondaryInsightAccordion>
-          </div>
-        ) : null}
+            ) : null
+          }
         />
       </div>
 
@@ -357,7 +362,3 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     </CalculatorPageShell>
   );
 };
-
-
-
-

@@ -2,7 +2,10 @@ import { NextRequest } from 'next/server';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { exportOwnerPortfolio } from '@/lib/server/portfolio/queries';
 import { createValidationErrorResponse, okJson } from '@/lib/server/http/responses';
-import { portfolioDomainErrorResponse, withAuthenticatedPortfolioOwner } from '@/lib/server/portfolio/http';
+import {
+  portfolioDomainErrorResponse,
+  withAuthenticatedPortfolioOwner,
+} from '@/lib/server/portfolio/http';
 
 export const GET = apiHandler(async (req: NextRequest) => {
   return withAuthenticatedPortfolioOwner(async (owner) => {
@@ -36,4 +39,3 @@ export const GET = apiHandler(async (req: NextRequest) => {
     }
   });
 });
-

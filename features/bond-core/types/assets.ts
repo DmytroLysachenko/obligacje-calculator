@@ -1,8 +1,8 @@
 export interface DataPoint {
-  date: string;      // YYYY-MM
-  value: number;     // The growth value
+  date: string; // YYYY-MM
+  value: number; // The growth value
   percentChange: number; // Monthly return in %
-  drawdown: number;  // % drop from the all-time high
+  drawdown: number; // % drop from the all-time high
   realValue?: number; // Inflation adjusted value
 }
 

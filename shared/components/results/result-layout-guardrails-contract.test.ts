@@ -38,9 +38,15 @@ describe('result layout guardrails', () => {
     const source = read(files.actions);
 
     expectContains(source, 'export const ResultActionGrid = React.memo(function ResultActionGrid');
-    expectContains(source, 'grid min-w-0 grid-cols-1 gap-2 border-t border-border bg-muted/30 p-4 sm:grid-cols-2');
+    expectContains(
+      source,
+      'grid min-w-0 grid-cols-1 gap-2 border-t border-border bg-muted/30 p-4 sm:grid-cols-2',
+    );
     expectContains(source, 'aria-label="Result actions"');
-    expectContains(source, 'h-10 min-w-0 justify-center gap-2 px-3 text-xs font-semibold ui-focus-ring');
+    expectContains(
+      source,
+      'h-10 min-w-0 justify-center gap-2 px-3 text-xs font-semibold ui-focus-ring',
+    );
     expectContains(source, '<span className="shrink-0" aria-hidden={!action.icon}>');
     expectContains(source, '<span className="ui-truncate-flex">{action.label}</span>');
     expectContains(source, 'csv:');
@@ -58,8 +64,14 @@ describe('result layout guardrails', () => {
 
     expectContains(source, 'export const MetricStrip = React.memo(function MetricStrip');
     expectContains(source, "columns = 'grid-cols-1 md:grid-cols-2 xl:grid-cols-4'");
-    expectContains(source, 'className="min-w-0 space-y-2 py-4 md:border-l md:border-border md:px-4 md:first:border-l-0 md:first:pl-0"');
-    expectContains(source, "cn('financial-number ui-large-metric min-w-0 break-words text-foreground', item.tone)");
+    expectContains(
+      source,
+      'className="min-w-0 space-y-2 py-4 md:border-l md:border-border md:px-4 md:first:border-l-0 md:first:pl-0"',
+    );
+    expectContains(
+      source,
+      "cn('financial-number ui-large-metric min-w-0 break-words text-foreground', item.tone)",
+    );
     expectContains(source, '<p className="ui-body text-muted-foreground">{item.description}</p>');
 
     expectNoFragments(source, [
@@ -75,7 +87,10 @@ describe('result layout guardrails', () => {
 
     expectContains(source, 'sheetLabel?: string;');
     expectContains(source, 'aria-label={sheetLabel ?? triggerLabel}');
-    expectContains(source, 'className="h-auto w-full justify-between border-border bg-card px-4 py-4 text-left shadow-none"');
+    expectContains(
+      source,
+      'className="h-auto w-full justify-between border-border bg-card px-4 py-4 text-left shadow-none"',
+    );
     expectContains(source, '<span className="flex min-w-0 items-center gap-3">');
     expectContains(source, '<span className="min-w-0 space-y-1">');
     expectContains(source, 'block ui-truncate-flex text-sm font-semibold text-foreground');
@@ -96,8 +111,14 @@ describe('result layout guardrails', () => {
   it('keeps result summary heroes from squeezing actions or large financial values', () => {
     const source = read(files.hero);
 
-    expectContains(source, 'export const ResultSummaryHero = React.memo(function ResultSummaryHero');
-    expectContains(source, 'className="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between"');
+    expectContains(
+      source,
+      'export const ResultSummaryHero = React.memo(function ResultSummaryHero',
+    );
+    expectContains(
+      source,
+      'className="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between"',
+    );
     expectContains(source, 'className="min-w-0 max-w-4xl space-y-4 p-5 md:p-6"');
     expectContains(source, 'className="financial-number ui-primary-metric min-w-0 break-words"');
     expectContains(source, '<ResultActionGrid actions={actions} />');

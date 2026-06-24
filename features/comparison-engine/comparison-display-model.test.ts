@@ -1,7 +1,7 @@
-import {describe, expect, it} from 'vitest';
-import {parseISO} from 'date-fns';
-import {CalculationResult, ChartStep} from '@/features/bond-core/types';
-import {buildComparisonChartData} from './lib/comparison-display';
+import { describe, expect, it } from 'vitest';
+import { parseISO } from 'date-fns';
+import { CalculationResult, ChartStep } from '@/features/bond-core/types';
+import { buildComparisonChartData } from './lib/comparison-display';
 
 function point(date: string, totalValue: number, realValue = totalValue) {
   return {
@@ -32,10 +32,7 @@ function build(step: ChartStep) {
       point('2026-07-22', 10040),
       point('2027-05-22', 10300),
     ]),
-    resultsB: result([
-      point('2026-05-22', 10000),
-      point('2027-05-22', 11000),
-    ]),
+    resultsB: result([point('2026-05-22', 10000), point('2027-05-22', 11000)]),
     language: 'en',
     t: (key) => key,
     chartStep: step,
@@ -68,14 +65,8 @@ describe('comparison display model', () => {
       purchaseDate: '2026-06-12',
       withdrawalDateA: '2027-06-12',
       withdrawalDateB: '2027-06-12',
-      resultsA: result([
-        point('2026-08-12', 10072.42),
-        point('2027-06-12', 10535),
-      ]),
-      resultsB: result([
-        point('2026-08-12', 10052.58),
-        point('2027-06-12', 10375),
-      ]),
+      resultsA: result([point('2026-08-12', 10072.42), point('2027-06-12', 10535)]),
+      resultsB: result([point('2026-08-12', 10052.58), point('2027-06-12', 10375)]),
       language: 'en',
       t: (key) => key,
       chartStep: 'quarterly',

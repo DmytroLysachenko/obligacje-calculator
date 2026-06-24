@@ -1,20 +1,18 @@
-import {db} from '@/db';
-import {sharedSingleScenarios} from '@/db/schema';
-import {eq} from 'drizzle-orm';
-import {BondInputsSchema} from '@/features/bond-core/types/schemas';
+import { db } from '@/db';
+import { sharedSingleScenarios } from '@/db/schema';
+import { eq } from 'drizzle-orm';
+import { BondInputsSchema } from '@/features/bond-core/types/schemas';
 import {
   buildSharedSingleScenarioPayload,
   parseSharedSingleScenarioPayload,
   serializeSharedSingleScenario,
 } from '@/shared/lib/single-scenario-share';
 
-export async function createSharedSingleScenario(
-  body: {
-    inputs: unknown;
-    description?: unknown;
-    origin: string;
-  },
-) {
+export async function createSharedSingleScenario(body: {
+  inputs: unknown;
+  description?: unknown;
+  origin: string;
+}) {
   const validatedInputs = BondInputsSchema.parse(body.inputs);
   const normalizedPayload = buildSharedSingleScenarioPayload(
     validatedInputs,

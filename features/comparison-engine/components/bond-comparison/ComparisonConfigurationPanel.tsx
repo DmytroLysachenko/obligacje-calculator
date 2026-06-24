@@ -17,24 +17,14 @@ import { getBondSupportMeta } from '@/features/bond-core/support-matrix';
 import { SectionBlock } from '@/shared/components/page/SectionBlock';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 
-function StepCard({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
+function StepCard({ title, description }: { title: string; description: string }) {
   return (
     <div className="border-t border-border py-4">
       <div className="flex items-start gap-3">
         <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[var(--finance-success)]" />
         <div className="space-y-2">
-          <p className="ui-metadata font-semibold text-muted-foreground">
-            {title}
-          </p>
-          <p className="ui-body text-muted-foreground">
-            {description}
-          </p>
+          <p className="ui-metadata font-semibold text-muted-foreground">{title}</p>
+          <p className="ui-body text-muted-foreground">{description}</p>
         </div>
       </div>
     </div>
@@ -121,20 +111,17 @@ export function ComparisonConfigurationPanel({
 
           <div className="space-y-4 border-t border-border pt-5">
             <MarketAssumptionsForm
-            expectedInflation={expectedInflation}
-            expectedNbpRate={expectedNbpRate}
-            customInflation={customInflation}
-            customNbpRate={customNbpRate}
-            bondType={
-                selectedBonds.includes(BondType.ROR) ||
-                selectedBonds.includes(BondType.DOR)
+              expectedInflation={expectedInflation}
+              expectedNbpRate={expectedNbpRate}
+              customInflation={customInflation}
+              customNbpRate={customNbpRate}
+              bondType={
+                selectedBonds.includes(BondType.ROR) || selectedBonds.includes(BondType.DOR)
                   ? BondType.ROR
                   : BondType.EDO
               }
               inflationHorizonYears={duration}
-              onUpdate={(key, value) =>
-                onUpdateAssumption(String(key), value)
-              }
+              onUpdate={(key, value) => onUpdateAssumption(String(key), value)}
               compact
             />
           </div>
@@ -149,10 +136,7 @@ export function ComparisonConfigurationPanel({
                   {t('comparison.page.real_value_toggle_description')}
                 </p>
               </div>
-              <Switch
-                checked={showRealValue}
-                onCheckedChange={onShowRealValueChange}
-              />
+              <Switch checked={showRealValue} onCheckedChange={onShowRealValueChange} />
             </div>
             <FormInlineNotice
               title={t('comparison.page.rollover_title')}
@@ -181,9 +165,7 @@ export function ComparisonConfigurationPanel({
               onClick={() => onToggleBond(type)}
             >
               <div className="flex flex-col items-start leading-tight">
-                <span className="text-xs font-semibold uppercase tracking-wide">
-                  {type}
-                </span>
+                <span className="text-xs font-semibold uppercase tracking-wide">{type}</span>
                 <span
                   className={cn(
                     'mt-1 text-[10px] font-medium normal-case opacity-80',

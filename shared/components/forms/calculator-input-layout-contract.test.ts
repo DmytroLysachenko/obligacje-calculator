@@ -1,13 +1,14 @@
-import {readFileSync} from 'node:fs';
-import {join} from 'node:path';
-import {describe, expect, it} from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
 
 const projectRoot = process.cwd();
 
 const paths = {
   fieldset: 'shared/components/forms/ScenarioFieldset.tsx',
   singleContainer: 'features/single-calculator/components/BondCalculatorContainer.tsx',
-  regularContainer: 'features/regular-investment/components/RegularInvestmentCalculatorContainer.tsx',
+  regularContainer:
+    'features/regular-investment/components/RegularInvestmentCalculatorContainer.tsx',
   singleForm: 'features/single-calculator/components/BondInputsForm.tsx',
   regularForm: 'features/regular-investment/components/RegularInvestmentInputsForm.tsx',
   singleConfig: 'features/single-calculator/components/sections/BondConfigSection.tsx',
@@ -52,7 +53,10 @@ describe('calculator input layout contracts', () => {
     const regular = readSource(paths.regularContainer);
 
     for (const source of [single, regular]) {
-      expectContains(source, "import { CalculatorWorkspace } from '@/shared/components/page/CalculatorWorkspace';");
+      expectContains(
+        source,
+        "import { CalculatorWorkspace } from '@/shared/components/page/CalculatorWorkspace';",
+      );
       expectContains(source, '<CalculatorWorkspace');
       expectContains(source, 'controls={');
       expectContains(source, 'results={');
@@ -71,13 +75,16 @@ describe('calculator input layout contracts', () => {
   it('groups single calculator inputs into setup, timing, and advanced fieldsets', () => {
     const source = readSource(paths.singleForm);
 
-    expectContains(source, "import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';");
-    expectContains(source, 'title={t(\'bonds.step_core\')}');
-    expectContains(source, 'title={t(\'bonds.step_timing\')}');
+    expectContains(
+      source,
+      "import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';",
+    );
+    expectContains(source, "title={t('bonds.step_core')}");
+    expectContains(source, "title={t('bonds.step_timing')}");
     expectContains(source, 'title="3. Inflation setup"');
     expectContains(source, 'title="4. NBP rate setup"');
-    expectContains(source, 'description={t(\'bonds.form.step_core_desc\')}');
-    expectContains(source, 'description={t(\'bonds.form.step_timing_desc\')}');
+    expectContains(source, "description={t('bonds.form.step_core_desc')}");
+    expectContains(source, "description={t('bonds.form.step_timing_desc')}");
     expectContains(source, 'section="inflation"');
     expectContains(source, 'section="nbp"');
     expectContains(source, 'showIntro={false}');
@@ -86,7 +93,10 @@ describe('calculator input layout contracts', () => {
     expectContains(source, '<BondSummaryFooter');
     expectNotContains(source, 'showCustomTax={showCustomTax}');
     expectNotContains(source, 'setShowCustomTax={setShowCustomTax}');
-    expectContains(source, "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
+    expectContains(
+      source,
+      "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';",
+    );
     expectContains(source, '<FormInlineNotice');
     expectContains(source, 'tone="warning"');
     expectContains(source, 'title={`${issue.severity}: ${issue.title}`}');
@@ -100,11 +110,14 @@ describe('calculator input layout contracts', () => {
   it('groups regular investment inputs into shared fieldsets without separator-only rhythm', () => {
     const source = readSource(paths.regularForm);
 
-    expectContains(source, "import { ScenarioFieldset } from '@/shared/components/forms/ScenarioFieldset';");
-    expectContains(source, 'title={t(\'regular_investment_page.core_plan_title\')}');
-    expectContains(source, 'title={t(\'comparison.configuration\')}');
-    expectContains(source, 'title={t(\'bonds.step_timing\')}');
-    expectContains(source, 'title={t(\'common.advanced\')}');
+    expectContains(
+      source,
+      "import { ScenarioFieldset } from '@/shared/components/forms/ScenarioFieldset';",
+    );
+    expectContains(source, "title={t('regular_investment_page.core_plan_title')}");
+    expectContains(source, "title={t('comparison.configuration')}");
+    expectContains(source, "title={t('bonds.step_timing')}");
+    expectContains(source, "title={t('common.advanced')}");
     expectNoFragments(source, [
       "import { Separator } from '@/components/ui/separator';",
       '<Separator />',
@@ -124,7 +137,10 @@ describe('calculator input layout contracts', () => {
 
     expectContains(sources, 'FormInlineNotice');
     expectContains(sources, '<SegmentedControl');
-    expectContains(readSource('shared/components/forms/FormInlineNotice.tsx'), 'border-l-2 px-4 py-3 text-sm leading-6');
+    expectContains(
+      readSource('shared/components/forms/FormInlineNotice.tsx'),
+      'border-l-2 px-4 py-3 text-sm leading-6',
+    );
     expectNoFragments(sources, [
       'rounded-lg bg-muted/35 p-4',
       'rounded-md border border-border bg-muted/35 p-4',

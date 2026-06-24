@@ -18,9 +18,9 @@ export class CalculationClientError extends Error {
 }
 
 export async function postCalculation<TResponse>(
-  url: string, 
-  payload: unknown, 
-  signal?: AbortSignal
+  url: string,
+  payload: unknown,
+  signal?: AbortSignal,
 ): Promise<TResponse> {
   const response = await fetch(url, {
     method: 'POST',
@@ -33,9 +33,9 @@ export async function postCalculation<TResponse>(
 
   if (!response.ok || result.error) {
     throw new CalculationClientError(
-      result.error?.message ?? 'Calculation failed', 
+      result.error?.message ?? 'Calculation failed',
       result.error?.code,
-      result.error?.details
+      result.error?.details,
     );
   }
 

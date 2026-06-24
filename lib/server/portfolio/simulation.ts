@@ -19,8 +19,7 @@ export function buildPortfolioSimulationPayload(
     taxStrategy?: TaxStrategy;
   },
 ): PortfolioSimulationPayload {
-  const withdrawalDate =
-    options?.withdrawalDate ?? format(addYears(new Date(), 10), 'yyyy-MM-dd');
+  const withdrawalDate = options?.withdrawalDate ?? format(addYears(new Date(), 10), 'yyyy-MM-dd');
 
   return {
     investments: lots.map((lot) => ({

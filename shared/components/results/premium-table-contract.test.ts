@@ -1,6 +1,6 @@
-import {describe, expect, it} from 'vitest';
-import {readFileSync} from 'node:fs';
-import {join} from 'node:path';
+import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 const root = process.cwd();
 
@@ -42,7 +42,10 @@ describe('premium financial table contracts', () => {
 
     expectContains(source, '<div className="hidden w-full border-y border-border lg:block">');
     expectContains(source, 'className="border-t border-border py-4 first:border-t-0"');
-    expectContains(source, 'className="mt-3 border-l-2 border-border px-3 text-xs leading-5 text-muted-foreground"');
+    expectContains(
+      source,
+      'className="mt-3 border-l-2 border-border px-3 text-xs leading-5 text-muted-foreground"',
+    );
     expectContains(source, '<Table className="w-full table-fixed text-sm tabular-nums">');
     expectContains(source, '<TableRow className="h-12 hover:bg-transparent">');
     expectContains(source, 'sticky top-0 z-10 h-12 w-[11%] bg-background');
@@ -95,18 +98,27 @@ describe('premium financial table contracts', () => {
     const recentList = read('shared/components/results/RecentLotList.tsx');
 
     expectContains(regular, 'const MAX_RECENT_LOTS = 12;');
-    expectContains(regular, 'const recentLots = useMemo(() => buildRecentRegularInvestmentLots(results.lots, MAX_RECENT_LOTS), [results.lots]);');
-    expectContains(regular, 'grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.75fr)] xl:items-start');
+    expectContains(
+      regular,
+      'const recentLots = useMemo(() => buildRecentRegularInvestmentLots(results.lots, MAX_RECENT_LOTS), [results.lots]);',
+    );
+    expectContains(
+      regular,
+      'grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.75fr)] xl:items-start',
+    );
     expectContains(regular, 'className="xl:max-h-[42rem] xl:overflow-y-auto xl:pr-2"');
     expectContains(regular, 'compact');
     expectContains(recentList, 'compact?: boolean;');
     expectContains(recentList, 'compact = false');
-    expectContains(recentList, "compact ? 'py-3 first:pt-0 last:pb-0' : 'py-4 first:pt-0 last:pb-0'");
+    expectContains(
+      recentList,
+      "compact ? 'py-3 first:pt-0 last:pb-0' : 'py-4 first:pt-0 last:pb-0'",
+    );
 
     expectNoFragments(regular, [
       'grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]',
       'xl:items-stretch',
-      '<RecentLotList\n          title={t(\'regular_summary.recent_title\')}\n          description={t(\'regular_summary.recent_description\')}\n          note={t(\'regular_summary.recent_note\')}\n          items={recentLotItems}\n        />',
+      "<RecentLotList\n          title={t('regular_summary.recent_title')}\n          description={t('regular_summary.recent_description')}\n          note={t('regular_summary.recent_note')}\n          items={recentLotItems}\n        />",
     ]);
     expectNoFragments(recentList, [
       '<section className="space-y-5 border-y border-border py-6">',
@@ -117,8 +129,14 @@ describe('premium financial table contracts', () => {
   it('keeps ladder maturity table sticky and numerically aligned', () => {
     const source = read(files.ladder);
 
-    expectContains(source, "import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';");
-    expectContains(source, "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
+    expectContains(
+      source,
+      "import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';",
+    );
+    expectContains(
+      source,
+      "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';",
+    );
     expectContains(source, '<SegmentedControl');
     expectContains(source, "import { SectionBlock } from '@/shared/components/page/SectionBlock';");
     expectContains(source, 'className="border-y border-border py-6"');

@@ -1,9 +1,9 @@
-import { GusCpiApiClient, type GusCpiPoint } from "../../api-clients/gus-cpi";
-import { SyncProvider, SyncRecord } from "../types";
+import { GusCpiApiClient, type GusCpiPoint } from '../../api-clients/gus-cpi';
+import { SyncProvider, SyncRecord } from '../types';
 
 export class GusSyncProvider implements SyncProvider {
-  name = "GUS CPI Archive";
-  seriesSlug = "pl-cpi";
+  name = 'GUS CPI Archive';
+  seriesSlug = 'pl-cpi';
   private client = new GusCpiApiClient();
 
   async fetchData(startDate: string, endDate: string): Promise<SyncRecord[]> {

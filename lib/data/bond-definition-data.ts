@@ -32,8 +32,9 @@ function buildActiveSeriesMap(series: BondSeries[], asOfDate: string) {
 }
 
 function shouldPreferBootstrapFirstPeriodRate(bond: PolishBond, symbol: BondType) {
-  return bond.interestType === 'floating_nbp' &&
-    (symbol === BondType.ROR || symbol === BondType.DOR);
+  return (
+    bond.interestType === 'floating_nbp' && (symbol === BondType.ROR || symbol === BondType.DOR)
+  );
 }
 
 function isBondOfferFresh(updatedAt?: Date | null) {
@@ -141,10 +142,13 @@ export const getBondDefinitions = cache(async (): Promise<BondDefinition[]> => {
 
 export const getBondDefinitionsMap = cache(async (): Promise<Record<BondType, BondDefinition>> => {
   const defs = await getBondDefinitions();
-  return defs.reduce((acc, def) => {
-    acc[def.type] = def;
-    return acc;
-  }, {} as Record<BondType, BondDefinition>);
+  return defs.reduce(
+    (acc, def) => {
+      acc[def.type] = def;
+      return acc;
+    },
+    {} as Record<BondType, BondDefinition>,
+  );
 });
 
 export interface BondDefinitionRepository {

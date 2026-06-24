@@ -32,9 +32,8 @@ export function ReferenceChartFrame({
   children,
 }: ReferenceChartFrameProps) {
   const primaryMeta = metaItems.slice(0, 4);
-  const healthToneClass = fallbackTone === 'warning'
-    ? 'border-warning text-warning'
-    : 'border-success text-success';
+  const healthToneClass =
+    fallbackTone === 'warning' ? 'border-warning text-warning' : 'border-success text-success';
 
   return (
     <div className="w-full min-w-0 space-y-4">
@@ -47,10 +46,11 @@ export function ReferenceChartFrame({
             </div>
             <dl className="grid gap-x-8 gap-y-2.5 sm:grid-cols-2 xl:grid-cols-4">
               {primaryMeta.map((item) => (
-                <div key={item.label} className="min-w-0 border-l border-border/70 pl-3 first:border-l-0 first:pl-0">
-                  <dt className="text-xs font-semibold text-muted-foreground">
-                    {item.label}
-                  </dt>
+                <div
+                  key={item.label}
+                  className="min-w-0 border-l border-border/70 pl-3 first:border-l-0 first:pl-0"
+                >
+                  <dt className="text-xs font-semibold text-muted-foreground">{item.label}</dt>
                   <dd className="mt-1 break-words text-sm font-medium leading-5 text-foreground">
                     {item.value}
                   </dd>
@@ -62,9 +62,18 @@ export function ReferenceChartFrame({
         </div>
 
         {fallbackNotice ? (
-          <Notice tone={fallbackTone === 'warning' ? 'warning' : 'success'} compact className="border-0 bg-transparent px-0">
+          <Notice
+            tone={fallbackTone === 'warning' ? 'warning' : 'success'}
+            compact
+            className="border-0 bg-transparent px-0"
+          >
             <div className="flex flex-wrap items-start gap-x-4 gap-y-1.5">
-              <div className={cn('inline-flex items-center gap-2 border-l-2 pl-3 text-xs font-semibold', healthToneClass)}>
+              <div
+                className={cn(
+                  'inline-flex items-center gap-2 border-l-2 pl-3 text-xs font-semibold',
+                  healthToneClass,
+                )}
+              >
                 {fallbackTone === 'warning' ? (
                   <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
                 ) : (
@@ -84,9 +93,7 @@ export function ReferenceChartFrame({
         </Notice>
       ) : null}
 
-      <div className="border-t border-border pt-3">
-        {children}
-      </div>
+      <div className="border-t border-border pt-3">{children}</div>
     </div>
   );
 }

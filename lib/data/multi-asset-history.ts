@@ -3,8 +3,18 @@ import { and, asc, gte, inArray, lte } from 'drizzle-orm';
 import { db } from '@/db';
 import { dataPoints, dataSeries } from '@/db/schema';
 import { HistoricalAverages } from '@/features/bond-core/types/scenarios';
-import { HISTORICAL_RETURNS, type MonthlyReturn } from '@/features/bond-core/constants/historical-data';
-import { CPI_SLUGS, getCached, GOLD_SLUGS, NBP_RATE_SLUGS, setCache, SP500_SLUGS } from './market-data-cache';
+import {
+  HISTORICAL_RETURNS,
+  type MonthlyReturn,
+} from '@/features/bond-core/constants/historical-data';
+import {
+  CPI_SLUGS,
+  getCached,
+  GOLD_SLUGS,
+  NBP_RATE_SLUGS,
+  setCache,
+  SP500_SLUGS,
+} from './market-data-cache';
 
 interface MultiAssetSeriesAvailability {
   sp500: boolean;

@@ -1,6 +1,11 @@
 import { format } from 'date-fns';
 import { Decimal } from 'decimal.js';
-import { CalculationResult, RegularInvestmentResult, RegularTimelinePoint, YearlyTimelinePoint } from '../../types';
+import {
+  CalculationResult,
+  RegularInvestmentResult,
+  RegularTimelinePoint,
+  YearlyTimelinePoint,
+} from '../../types';
 import { calculateCAGR } from './real-return';
 
 interface SingleBondResultParams {
@@ -79,13 +84,13 @@ export function createFinalSingleBondResult({
   const nominalAnnualizedReturn = calculateCAGR(
     new Decimal(initialInvestment),
     cycleNetProceeds,
-    totalHorizonYears
+    totalHorizonYears,
   ).toNumber();
 
   const realAnnualizedReturn = calculateCAGR(
     new Decimal(initialInvestment),
     new Decimal(lastPoint.realValue),
-    totalHorizonYears
+    totalHorizonYears,
   ).toNumber();
 
   return {

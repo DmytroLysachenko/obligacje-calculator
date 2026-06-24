@@ -16,7 +16,7 @@ export function normalizeBondInputs(inputs: BondInputs): NormalizedBondInputs {
   }
 
   const nominalDuration = inputs.duration;
-  
+
   // Ensure we don't exceed a reasonable max duration if not specified
   // (though typically duration is fixed by bond type)
 
@@ -28,12 +28,17 @@ export function normalizeBondInputs(inputs: BondInputs): NormalizedBondInputs {
   };
 }
 
-export interface NormalizedRegularInvestmentInputs extends Omit<RegularInvestmentInputs, 'purchaseDate' | 'withdrawalDate'> {
+export interface NormalizedRegularInvestmentInputs extends Omit<
+  RegularInvestmentInputs,
+  'purchaseDate' | 'withdrawalDate'
+> {
   purchaseDate: Date;
   withdrawalDate: Date;
 }
 
-export function normalizeRegularInvestmentInputs(inputs: RegularInvestmentInputs): NormalizedRegularInvestmentInputs {
+export function normalizeRegularInvestmentInputs(
+  inputs: RegularInvestmentInputs,
+): NormalizedRegularInvestmentInputs {
   const purchaseDate = parseISO(inputs.purchaseDate);
   let withdrawalDate = parseISO(inputs.withdrawalDate);
 

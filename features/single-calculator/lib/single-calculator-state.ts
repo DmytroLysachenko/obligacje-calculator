@@ -1,6 +1,10 @@
 import { BOND_DEFINITIONS } from '@/features/bond-core/constants/bond-definitions';
 import { BondInputs, BondType, InterestPayout, TaxStrategy } from '@/features/bond-core/types';
-import { getHorizonMonths, getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
+import {
+  getHorizonMonths,
+  getWithdrawalDateFromMonths,
+  toDateString,
+} from '@/shared/lib/date-timing';
 
 const DEFAULT_BOND = BondType.EDO;
 const REVERSE_CALCULATION_TEST_BASE = 10000;
@@ -34,7 +38,7 @@ export function buildFallbackInputs(now = new Date()): BondInputs {
 
 export function applyDefinitionToInputs(
   previous: BondInputs,
-  definition: typeof BOND_DEFINITIONS[BondType],
+  definition: (typeof BOND_DEFINITIONS)[BondType],
   selectedSeriesId: string | null,
 ): BondInputs {
   const shouldUseCurrentOffer = !selectedSeriesId || selectedSeriesId === 'current';
@@ -60,23 +64,35 @@ export function normalizeSingleCalculatorInputs(
   const merged = { ...base, ...nextPartial };
 
   if (nextPartial?.purchaseDate) {
-    const horizonMonths = merged.investmentHorizonMonths ?? getHorizonMonths(base.purchaseDate, base.withdrawalDate);
-    merged.withdrawalDate = getWithdrawalDateFromMonths(String(nextPartial.purchaseDate), horizonMonths);
+    const horizonMonths =
+      merged.investmentHorizonMonths ?? getHorizonMonths(base.purchaseDate, base.withdrawalDate);
+    merged.withdrawalDate = getWithdrawalDateFromMonths(
+      String(nextPartial.purchaseDate),
+      horizonMonths,
+    );
   }
 
   if (nextPartial?.investmentHorizonMonths !== undefined) {
-    merged.withdrawalDate = getWithdrawalDateFromMonths(merged.purchaseDate, Number(nextPartial.investmentHorizonMonths));
+    merged.withdrawalDate = getWithdrawalDateFromMonths(
+      merged.purchaseDate,
+      Number(nextPartial.investmentHorizonMonths),
+    );
     extendCustomRatePaths(merged);
   }
 
   if (nextPartial?.withdrawalDate) {
-    merged.investmentHorizonMonths = getHorizonMonths(merged.purchaseDate, String(nextPartial.withdrawalDate));
+    merged.investmentHorizonMonths = getHorizonMonths(
+      merged.purchaseDate,
+      String(nextPartial.withdrawalDate),
+    );
     merged.timingMode = 'exact';
     extendCustomRatePaths(merged);
   }
 
   if (nextPartial?.timingMode === 'general') {
-    const horizonMonths = merged.investmentHorizonMonths ?? getHorizonMonths(merged.purchaseDate, merged.withdrawalDate);
+    const horizonMonths =
+      merged.investmentHorizonMonths ??
+      getHorizonMonths(merged.purchaseDate, merged.withdrawalDate);
     merged.investmentHorizonMonths = horizonMonths;
     merged.withdrawalDate = getWithdrawalDateFromMonths(merged.purchaseDate, horizonMonths);
   }
@@ -91,16 +107,13 @@ export function getReverseCalculationTestInputs(inputs: BondInputs) {
   };
 }
 
-export function applyReverseSavingsGoal(
-  inputs: BondInputs,
-  simulatedNetPayoutValue: number,
-) {
+export function applyReverseSavingsGoal(inputs: BondInputs, simulatedNetPayoutValue: number) {
   if (inputs.calculatorMode !== 'reverse' || !inputs.savingsGoal) {
     return { ...inputs };
   }
 
   const netMultiplier = simulatedNetPayoutValue / REVERSE_CALCULATION_TEST_BASE;
-  const bondPrice = inputs.isRebought ? (100 - (inputs.rebuyDiscount || 0)) : 100;
+  const bondPrice = inputs.isRebought ? 100 - (inputs.rebuyDiscount || 0) : 100;
   const requiredInvestmentRaw = inputs.savingsGoal / netMultiplier;
   const requiredBonds = Math.ceil(requiredInvestmentRaw / bondPrice);
 
@@ -123,7 +136,7 @@ function extendCustomRatePaths(inputs: BondInputs) {
   if (inputs.customNbpRate) {
     inputs.customNbpRate = Array.from(
       { length: years },
-      (_, index) => inputs.customNbpRate?.[index] ?? (inputs.expectedNbpRate ?? 5.25),
+      (_, index) => inputs.customNbpRate?.[index] ?? inputs.expectedNbpRate ?? 5.25,
     );
   }
 }

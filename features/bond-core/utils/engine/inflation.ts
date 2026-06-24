@@ -18,7 +18,7 @@ export function getExpectedInflationForYearIndex(
 
 /**
  * Calculates cumulative inflation over a period of months with daily precision.
- * 
+ *
  * @param totalMonths Total months since the start of simulation
  * @param expectedInflation Base annual inflation rate
  * @param customInflation Optional array of annual rates per year
@@ -28,7 +28,7 @@ export function calculateCumulativeInflation(
   totalMonths: number,
   expectedInflation: number,
   customInflation?: number[],
-  startPurchaseDate?: Date
+  startPurchaseDate?: Date,
 ): Decimal {
   let cumulativeInflation = new Decimal(1);
 
@@ -36,7 +36,11 @@ export function calculateCumulativeInflation(
     // Fallback to simplified monthly compounding if date is missing
     for (let month = 1; month <= totalMonths; month++) {
       const yearIndex = Math.floor((month - 1) / 12);
-      const annualInflation = getExpectedInflationForYearIndex(expectedInflation, customInflation, yearIndex);
+      const annualInflation = getExpectedInflationForYearIndex(
+        expectedInflation,
+        customInflation,
+        yearIndex,
+      );
       cumulativeInflation = cumulativeInflation.times(
         new Decimal(1).plus(new Decimal(annualInflation).dividedBy(12).dividedBy(100)),
       );
@@ -50,17 +54,21 @@ export function calculateCumulativeInflation(
     const monthEnd = addMonths(startPurchaseDate, m + 1);
     const daysInMonth = differenceInDays(monthEnd, monthStart);
     const daysInYear = getDaysInYear(monthStart);
-    
+
     const yearIndex = Math.floor(m / 12);
-    const annualInflation = getExpectedInflationForYearIndex(expectedInflation, customInflation, yearIndex);
-    
+    const annualInflation = getExpectedInflationForYearIndex(
+      expectedInflation,
+      customInflation,
+      yearIndex,
+    );
+
     // monthlyRate = (1 + annualRate)^(daysInMonth / daysInYear) - 1
     // For simplicity and matching common retail models, we use: annualRate * (daysInMonth / daysInYear)
     const monthlyFactor = new Decimal(annualInflation)
       .dividedBy(100)
       .times(daysInMonth)
       .dividedBy(daysInYear);
-      
+
     cumulativeInflation = cumulativeInflation.times(new Decimal(1).plus(monthlyFactor));
   }
 

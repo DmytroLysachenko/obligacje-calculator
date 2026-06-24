@@ -3,6 +3,7 @@
 Production-focused simulation platform for Polish treasury bonds, recurring bond plans, comparison scenarios, and reference macro-data.
 
 The current product direction is conservative and trust-first:
+
 - flagship surfaces: `single-calculator`, `compare`, `regular-investment`, `ladder`, `notebook`, `economic-data`
 - secondary/reference tools: `multi-asset`, `recovery-lab`, `optimize`, `retirement`
 - calculation truth and display consistency take priority over broad feature sprawl
@@ -29,6 +30,7 @@ The current product direction is conservative and trust-first:
 - **i18n:** `next-intl`
 
 Important code boundaries:
+
 - `app/`: routes, layouts, metadata, thin route/page orchestration
 - `features/`: domain-specific UI, calculation handlers, adapters, and product flows
 - `shared/components/`: reusable UI grouped by subdomain
@@ -39,6 +41,7 @@ Important code boundaries:
 - `db/seed/`: seed modules split by concern
 
 Current product-quality tranche notes:
+
 - [Product Quality Verification Tranche](./docs/plans/07_product_quality_verification_tranche.md)
 
 ## Local Development
@@ -79,6 +82,7 @@ pnpm sync:full
 ```
 
 The underlying workflow refreshes:
+
 - current bond offers and issued series
 - CPI / macro reference data
 - market-history series used by supporting dashboards and secondary tools
@@ -95,9 +99,11 @@ Use `INNGEST_DEV=1` locally. Production/cloud signing keys are only needed for d
 ## Documentation
 
 Start from the central index:
+
 - [Documentation Index](./docs/index.md)
 
 High-value entry docs:
+
 - [Product Vision & Purpose](./docs/product/01_product_vision_and_purpose.md)
 - [System Architecture](./docs/technical/architecture/19_system_architecture.md)
 - [Database & Data Modeling](./docs/technical/architecture/20_database_and_data_modeling.md)

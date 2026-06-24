@@ -39,7 +39,10 @@ export const FinancialInsightStrip = React.memo(function FinancialInsightStrip({
         {items.map((item) => (
           <div
             key={item.label}
-            className={cn('border-l-2 px-4 py-3 text-sm leading-6', toneClass[item.tone ?? 'default'])}
+            className={cn(
+              'border-l-2 px-4 py-3 text-sm leading-6',
+              toneClass[item.tone ?? 'default'],
+            )}
           >
             <p className="ui-meta font-semibold">{item.label}</p>
             <p className="financial-number mt-1 text-lg font-semibold text-foreground">

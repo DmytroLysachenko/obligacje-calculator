@@ -40,8 +40,12 @@ describe('production readiness contract', () => {
       expect(cloudbuild).toContain(substitution);
     }
 
-    expect(cloudbuild).toContain('${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/${_SERVICE}:$SHORT_SHA');
-    expect(cloudbuild).toContain('${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/${_SERVICE}:latest');
+    expect(cloudbuild).toContain(
+      '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/${_SERVICE}:$SHORT_SHA',
+    );
+    expect(cloudbuild).toContain(
+      '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/${_SERVICE}:latest',
+    );
     expect(cloudbuild).toContain('--allow-unauthenticated');
     expect(cloudbuild).toContain('--platform');
     expect(cloudbuild).toContain('managed');
@@ -88,7 +92,9 @@ describe('production readiness contract', () => {
     };
     const prodConfigScript = read('scripts/check-production-config.ts');
 
-    expect(packageJson.scripts['test:release']).toContain('app/api/production-readiness-contract.test.ts');
+    expect(packageJson.scripts['test:release']).toContain(
+      'app/api/production-readiness-contract.test.ts',
+    );
     expect(packageJson.scripts['check:release']).toBe(
       'pnpm check:types && pnpm lint && pnpm test:release && pnpm build',
     );

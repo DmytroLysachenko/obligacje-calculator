@@ -1,10 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import {BarChart2, Calendar, ShieldAlert, TrendingUp} from 'lucide-react';
-import {FeatureStatusNotice, FeatureStatusPill} from '@/shared/components/feedback/FeatureStatusNotice';
-import {SecondarySurfaceIntro} from '@/shared/components/page/SecondarySurfaceIntro';
-import {useAppI18n} from '@/i18n/client';
+import { BarChart2, Calendar, ShieldAlert, TrendingUp } from 'lucide-react';
+import {
+  FeatureStatusNotice,
+  FeatureStatusPill,
+} from '@/shared/components/feedback/FeatureStatusNotice';
+import { SecondarySurfaceIntro } from '@/shared/components/page/SecondarySurfaceIntro';
+import { useAppI18n } from '@/i18n/client';
 
 const recoveryLabPages = [
   {
@@ -28,7 +31,7 @@ const recoveryLabPages = [
 ];
 
 export function RecoveryLabPageClient() {
-  const {t} = useAppI18n();
+  const { t } = useAppI18n();
   const intro = t('recovery_lab_page.description_long');
 
   return (
@@ -89,9 +92,7 @@ export function RecoveryLabPageClient() {
       <section className="space-y-4 border-t border-border py-6">
         <div className="flex items-center gap-2 text-foreground">
           <ShieldAlert className="h-5 w-5 text-primary" />
-          <p className="ui-section-title">
-            {t('recovery_lab_page.what_stays_core')}
-          </p>
+          <p className="ui-section-title">{t('recovery_lab_page.what_stays_core')}</p>
         </div>
         <div className="space-y-2 border-t border-dashed border-border pt-4 text-sm leading-7 text-muted-foreground">
           <p>{t('recovery_lab_page.what_stays_core_desc')}</p>

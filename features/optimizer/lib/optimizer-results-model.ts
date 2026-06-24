@@ -1,4 +1,4 @@
-import type {BondOptimizerResultItem} from '@/features/bond-core/types/scenarios';
+import type { BondOptimizerResultItem } from '@/features/bond-core/types/scenarios';
 
 export interface OptimizerRankedOutcomeRow {
   bondType: string;
@@ -36,9 +36,10 @@ export function buildOptimizerRankedOutcomeRows({
       name: item.name,
       scenarioReason: item.scenarioReason,
       netPayoutLabel: formatCurrency(item.netPayoutValue),
-      gapLabel: index === 0
-        ? labels.leadingGapPrimary
-        : labels.leadingGapSecondary(formatCurrency(gapToLead)),
+      gapLabel:
+        index === 0
+          ? labels.leadingGapPrimary
+          : labels.leadingGapSecondary(formatCurrency(gapToLead)),
     };
   });
 }

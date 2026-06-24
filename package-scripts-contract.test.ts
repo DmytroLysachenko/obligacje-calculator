@@ -12,7 +12,9 @@ describe('package scripts contract', () => {
     expect(pkg.scripts['test:release']).toContain('features/bond-core');
     expect(pkg.scripts['test:release']).toContain('app/api/production-readiness-contract.test.ts');
     expect(pkg.scripts['test:release']).toContain('app/api/operational-endpoints-contract.test.ts');
-    expect(pkg.scripts['test:release']).toContain('docs/technical/architecture/clean-code-contract.test.ts');
+    expect(pkg.scripts['test:release']).toContain(
+      'docs/technical/architecture/clean-code-contract.test.ts',
+    );
     expect(pkg.scripts['check:release']).toContain('pnpm check:types');
     expect(pkg.scripts['check:release']).toContain('pnpm lint');
     expect(pkg.scripts['check:release']).toContain('pnpm test:release');

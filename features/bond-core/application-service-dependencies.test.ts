@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
-import { CalculationApplicationService, CalculationServiceDependencies } from './application-service';
+import {
+  CalculationApplicationService,
+  CalculationServiceDependencies,
+} from './application-service';
 import { BondType, InterestPayout, TaxStrategy } from './types';
 import { CalculationDataFreshness, CalculationEnvelope, ScenarioKind } from './types/scenarios';
 import { BOND_DEFINITIONS } from './constants/bond-definitions';

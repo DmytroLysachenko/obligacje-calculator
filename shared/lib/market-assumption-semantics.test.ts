@@ -12,9 +12,7 @@ import {
 describe('market assumption semantics', () => {
   it('marks indexed bonds as coupon-driven by inflation', () => {
     expect(isInflationIndexedBondType(BondType.EDO)).toBe(true);
-    expect(getInflationAssumptionEffect(BondType.EDO)).toBe(
-      'coupon-and-real-value',
-    );
+    expect(getInflationAssumptionEffect(BondType.EDO)).toBe('coupon-and-real-value');
     expect(getInflationEffectMessageKey(BondType.EDO)).toBe(
       'bonds.market_assumptions.indexed_context',
     );
@@ -22,12 +20,8 @@ describe('market assumption semantics', () => {
 
   it('marks floating bonds as NBP-driven after the opening period', () => {
     expect(isFloatingNbpBondType(BondType.ROR)).toBe(true);
-    expect(getNbpAssumptionEffect(BondType.ROR)).toBe(
-      'coupon-after-opening-period',
-    );
-    expect(getNbpEffectMessageKey(BondType.ROR)).toBe(
-      'bonds.market_assumptions.nbp_note',
-    );
+    expect(getNbpAssumptionEffect(BondType.ROR)).toBe('coupon-after-opening-period');
+    expect(getNbpEffectMessageKey(BondType.ROR)).toBe('bonds.market_assumptions.nbp_note');
     expect(getInflationEffectMessageKey(BondType.ROR)).toBe(
       'bonds.market_assumptions.floating_inflation_context',
     );
@@ -41,8 +35,6 @@ describe('market assumption semantics', () => {
     expect(getInflationEffectMessageKey(BondType.TOS)).toBe(
       'bonds.market_assumptions.real_value_context',
     );
-    expect(getNbpEffectMessageKey(BondType.TOS)).toBe(
-      'bonds.market_assumptions.nbp_context_only',
-    );
+    expect(getNbpEffectMessageKey(BondType.TOS)).toBe('bonds.market_assumptions.nbp_context_only');
   });
 });

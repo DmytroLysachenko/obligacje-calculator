@@ -1,6 +1,6 @@
-import {readFileSync} from 'node:fs';
-import {join} from 'node:path';
-import {describe, expect, it} from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
 
 const projectRoot = process.cwd();
 
@@ -27,7 +27,10 @@ describe('control hierarchy contracts', () => {
     const source = readSource(paths.button);
 
     expectContains(source, 'text-sm font-medium');
-    expectContains(source, 'focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2');
+    expectContains(
+      source,
+      'focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2',
+    );
     expectContains(source, 'default:\n          "h-9 gap-2 px-3');
     expectContains(source, 'sm: "h-8 gap-1.5 rounded-md px-3 text-xs');
     expectContains(source, 'lg: "h-10 gap-2 px-4');
@@ -42,8 +45,14 @@ describe('control hierarchy contracts', () => {
 
     expectContains(source, 'group-data-[orientation=horizontal]/tabs:h-10');
     expectContains(source, 'px-4 py-2 text-xs font-semibold');
-    expectContains(source, 'focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2');
-    expectContains(source, 'data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none');
+    expectContains(
+      source,
+      'focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2',
+    );
+    expectContains(
+      source,
+      'data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=active]:shadow-none',
+    );
   });
 
   it('shows slider context with current value, bounds, and accessible labels', () => {

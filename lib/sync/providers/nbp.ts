@@ -1,6 +1,6 @@
-import { SyncProvider, SyncRecord } from "../types";
-import { format, parseISO, addYears, min, isBefore } from "date-fns";
-import { fetchSyncResponse } from "../http-gateway";
+import { SyncProvider, SyncRecord } from '../types';
+import { format, parseISO, addYears, min, isBefore } from 'date-fns';
+import { fetchSyncResponse } from '../http-gateway';
 
 interface NbpGoldData {
   data: string;
@@ -8,9 +8,9 @@ interface NbpGoldData {
 }
 
 export class NbpSyncProvider implements SyncProvider {
-  name = "NBP Gold API";
-  seriesSlug = "gold-usd";
-  private baseUrl = "https://api.nbp.pl/api";
+  name = 'NBP Gold API';
+  seriesSlug = 'gold-usd';
+  private baseUrl = 'https://api.nbp.pl/api';
 
   async fetchData(startDate: string, endDate: string): Promise<SyncRecord[]> {
     const results: SyncRecord[] = [];
@@ -23,27 +23,31 @@ export class NbpSyncProvider implements SyncProvider {
       const endStr = format(currentEnd, 'yyyy-MM-dd');
 
       try {
-        const goldData = await this.fetchNbpSeries<NbpGoldData[]>(`${this.baseUrl}/cenyzlota/${startStr}/${endStr}`);
+        const goldData = await this.fetchNbpSeries<NbpGoldData[]>(
+          `${this.baseUrl}/cenyzlota/${startStr}/${endStr}`,
+        );
         if (goldData && goldData.length > 0) {
-          results.push(...goldData.map((d: NbpGoldData) => ({
-            seriesSlug: 'gold-usd',
-            date: d.data,
-            value: d.cena
-          })));
+          results.push(
+            ...goldData.map((d: NbpGoldData) => ({
+              seriesSlug: 'gold-usd',
+              date: d.data,
+              value: d.cena,
+            })),
+          );
         }
       } catch (error) {
         console.warn(`[NBP Provider] Failed gold chunk ${startStr}-${endStr}:`, error);
       }
-      
+
       currentStart = addYears(currentStart, 1);
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
     }
 
     return results;
   }
 
   private async fetchNbpSeries<T>(url: string): Promise<T | []> {
-    const response = await fetchSyncResponse(`${url}?format=json`, {throwOnHttpError: false});
+    const response = await fetchSyncResponse(`${url}?format=json`, { throwOnHttpError: false });
     if (!response.ok) return [];
     return await response.json();
   }

@@ -45,7 +45,9 @@ export default function AdminStatusPage() {
               onChange={(e) => setSecret(e.target.value)}
               placeholder="Secret"
             />
-            <Button className="w-full rounded-lg font-semibold" onClick={handleSaveSecret}>{t('admin.unlock')}</Button>
+            <Button className="w-full rounded-lg font-semibold" onClick={handleSaveSecret}>
+              {t('admin.unlock')}
+            </Button>
           </div>
         </section>
       </div>
@@ -69,4 +71,3 @@ export default function AdminStatusPage() {
     />
   );
 }
-

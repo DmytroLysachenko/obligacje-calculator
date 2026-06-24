@@ -1,6 +1,6 @@
-import {readFileSync} from 'node:fs';
-import {join} from 'node:path';
-import {describe, expect, it} from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
 
 const projectRoot = process.cwd();
 
@@ -32,7 +32,10 @@ describe('economic data health contracts', () => {
     expectContains(source, 'function RangeActions');
     expectContains(source, 'hint: string;');
     expectContains(source, 'aria-pressed={period === item.value}');
-    expectContains(source, 'focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2');
+    expectContains(
+      source,
+      'focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2',
+    );
     expectContains(source, "hint={t('economic.range_hint')}");
   });
 
@@ -42,7 +45,7 @@ describe('economic data health contracts', () => {
     expectContains(source, "const healthToneClass = fallbackTone === 'warning'");
     expectContains(source, 'fallbackStatusLabel?: string;');
     expectContains(source, 'syncedStatusLabel?: string;');
-    expectContains(source, 'fallbackTone === \'warning\' ? fallbackStatusLabel : syncedStatusLabel');
+    expectContains(source, "fallbackTone === 'warning' ? fallbackStatusLabel : syncedStatusLabel");
     expectContains(source, "import { Notice } from '@/shared/components/feedback/Notice';");
     expectContains(source, "tone={fallbackTone === 'warning' ? 'warning' : 'success'}");
     expectContains(source, 'className="border-0 bg-transparent px-0"');
@@ -70,7 +73,13 @@ describe('economic data health contracts', () => {
     const en = readSource(paths.en);
     const pl = readSource(paths.pl);
 
-    expectContains(en, '"range_hint": "This range applies to both CPI and NBP charts so the macro context stays aligned."');
-    expectContains(pl, '"range_hint": "Ten zakres dziala na wykres CPI i NBP, aby kontekst makro pozostal spojny."');
+    expectContains(
+      en,
+      '"range_hint": "This range applies to both CPI and NBP charts so the macro context stays aligned."',
+    );
+    expectContains(
+      pl,
+      '"range_hint": "Ten zakres dziala na wykres CPI i NBP, aby kontekst makro pozostal spojny."',
+    );
   });
 });

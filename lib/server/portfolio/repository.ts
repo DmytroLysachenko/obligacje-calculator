@@ -1,20 +1,23 @@
-import {db} from '@/db';
-import {userInvestmentLots, userPortfolios, userTransactions, users} from '@/db/schema';
-import {and, eq, inArray} from 'drizzle-orm';
+import { db } from '@/db';
+import { userInvestmentLots, userPortfolios, userTransactions, users } from '@/db/schema';
+import { and, eq, inArray } from 'drizzle-orm';
 
 export function listPortfoliosByOwner(ownerId: string) {
   return db.query.userPortfolios.findMany({
     where: eq(userPortfolios.userId, ownerId),
-    orderBy: (portfolio, {desc}) => [desc(portfolio.updatedAt)],
+    orderBy: (portfolio, { desc }) => [desc(portfolio.updatedAt)],
   });
 }
 
 export function createPortfolio(ownerId: string, name: string, description?: string) {
-  return db.insert(userPortfolios).values({
-    userId: ownerId,
-    name,
-    description,
-  }).returning();
+  return db
+    .insert(userPortfolios)
+    .values({
+      userId: ownerId,
+      name,
+      description,
+    })
+    .returning();
 }
 
 export function findPortfolioByOwner(ownerId: string, portfolioId: string) {
@@ -52,14 +55,14 @@ export function deletePortfolioById(portfolioId: string) {
 export function updatePortfolioVisibility(ownerId: string, portfolioId: string, isPublic: boolean) {
   return db
     .update(userPortfolios)
-    .set({isPublic, updatedAt: new Date()})
+    .set({ isPublic, updatedAt: new Date() })
     .where(and(eq(userPortfolios.id, portfolioId), eq(userPortfolios.userId, ownerId)));
 }
 
 export function listLotsByPortfolio(portfolioId: string) {
   return db.query.userInvestmentLots.findMany({
     where: eq(userInvestmentLots.portfolioId, portfolioId),
-    orderBy: (lot, {desc}) => [desc(lot.purchaseDate)],
+    orderBy: (lot, { desc }) => [desc(lot.purchaseDate)],
   });
 }
 

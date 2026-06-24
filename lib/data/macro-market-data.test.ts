@@ -24,7 +24,9 @@ vi.mock('@/lib/server/sync/run-history', () => ({
 type FreshnessSeriesInput = Parameters<typeof resolveGlobalDataFreshness>[0][number];
 type FreshnessRunInput = Parameters<typeof resolveGlobalDataFreshness>[1][number];
 
-function series(input: Partial<FreshnessSeriesInput> & Pick<FreshnessSeriesInput, 'slug'>): FreshnessSeriesInput {
+function series(
+  input: Partial<FreshnessSeriesInput> & Pick<FreshnessSeriesInput, 'slug'>,
+): FreshnessSeriesInput {
   const { slug, ...overrides } = input;
 
   return {
@@ -49,7 +51,9 @@ function series(input: Partial<FreshnessSeriesInput> & Pick<FreshnessSeriesInput
   };
 }
 
-function syncRun(input: Partial<FreshnessRunInput> & Pick<FreshnessRunInput, 'seriesSlug'>): FreshnessRunInput {
+function syncRun(
+  input: Partial<FreshnessRunInput> & Pick<FreshnessRunInput, 'seriesSlug'>,
+): FreshnessRunInput {
   const { seriesSlug, ...overrides } = input;
   const finishedAt = input.finishedAt ?? new Date('2026-06-15T09:00:00.000Z');
 

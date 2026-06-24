@@ -4,8 +4,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { postCalculationInWorker } from '@/shared/lib/calculation-worker-client';
 
 function isCalculationAbort(error: unknown) {
-  return error instanceof Error
-    && (error.name === 'AbortError' || error.message === 'Calculation aborted');
+  return (
+    error instanceof Error &&
+    (error.name === 'AbortError' || error.message === 'Calculation aborted')
+  );
 }
 
 export function useCalculationWorker<TResponse>() {

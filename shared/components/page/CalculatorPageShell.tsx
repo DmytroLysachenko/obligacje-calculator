@@ -80,8 +80,8 @@ export function CalculatorPageShell({
     return null;
   }, [hasResults, isCalculating, isDirty, t]);
 
-  const headerAction = extraHeaderActions || hasShareAction
-    ? (
+  const headerAction =
+    extraHeaderActions || hasShareAction ? (
       <>
         {extraHeaderActions}
         {hasShareAction ? (
@@ -99,8 +99,7 @@ export function CalculatorPageShell({
           </Button>
         ) : null}
       </>
-    )
-    : null;
+    ) : null;
 
   return (
     <div className={pageLayout.pageFlow} onKeyDown={onKeyDown}>

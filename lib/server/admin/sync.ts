@@ -1,10 +1,14 @@
-import {seedMarketHistory} from '@/lib/sync/seed-market-history';
-import {seedSeriesMetadata} from '@/lib/sync/seed-series-runner';
-import {syncMarketHistory} from '@/lib/sync/sync-market-history';
-import {createDefaultSyncEngine} from '@/lib/sync/create-sync-engine';
-import {z} from 'zod';
+import { seedMarketHistory } from '@/lib/sync/seed-market-history';
+import { seedSeriesMetadata } from '@/lib/sync/seed-series-runner';
+import { syncMarketHistory } from '@/lib/sync/sync-market-history';
+import { createDefaultSyncEngine } from '@/lib/sync/create-sync-engine';
+import { z } from 'zod';
 
-export type SyncMode = 'full-sync' | 'market-history-seed' | 'market-history-sync' | 'metadata-seed';
+export type SyncMode =
+  | 'full-sync'
+  | 'market-history-seed'
+  | 'market-history-sync'
+  | 'metadata-seed';
 
 export const ADMIN_SYNC_MODES = [
   'full-sync',
@@ -13,9 +17,11 @@ export const ADMIN_SYNC_MODES = [
   'market-history-sync',
 ] as const satisfies readonly SyncMode[];
 
-export const AdminSyncPayloadSchema = z.object({
-  mode: z.enum(ADMIN_SYNC_MODES).optional(),
-}).default({});
+export const AdminSyncPayloadSchema = z
+  .object({
+    mode: z.enum(ADMIN_SYNC_MODES).optional(),
+  })
+  .default({});
 
 export interface AdminSyncPayload {
   mode?: SyncMode;
@@ -32,7 +38,9 @@ export interface AdminSyncSuccessEnvelope<TResult> {
   results: TResult;
 }
 
-export function createAdminSyncCommand(payload: AdminSyncPayload | null | undefined): AdminSyncCommand {
+export function createAdminSyncCommand(
+  payload: AdminSyncPayload | null | undefined,
+): AdminSyncCommand {
   return {
     mode: payload?.mode ?? 'full-sync',
   };
@@ -62,7 +70,7 @@ export function getAdminSyncEndpointInfo() {
 export async function runAdminSync(mode: SyncMode) {
   if (mode === 'metadata-seed') {
     await seedSeriesMetadata();
-    return {mode, status: 'success'};
+    return { mode, status: 'success' };
   }
 
   if (mode === 'market-history-seed') {

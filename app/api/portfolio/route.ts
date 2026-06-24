@@ -49,4 +49,3 @@ export const DELETE = apiHandler(async (req: NextRequest) => {
     }
   });
 });
-

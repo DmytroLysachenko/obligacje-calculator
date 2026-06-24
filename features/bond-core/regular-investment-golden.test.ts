@@ -1,12 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { calculationService } from './application-service';
 import { calculationCache } from './utils/calculation-cache';
-import {
-  BondType,
-  InvestmentFrequency,
-  RegularInvestmentResult,
-  TaxStrategy,
-} from './types';
+import { BondType, InvestmentFrequency, RegularInvestmentResult, TaxStrategy } from './types';
 import { ScenarioKind } from './types/scenarios';
 import { BOND_DEFINITIONS } from './constants/bond-definitions';
 import { getWithdrawalDateFromMonths, toDateString } from '@/shared/lib/date-timing';
@@ -287,4 +282,3 @@ describe('Regular investment golden regressions', () => {
     );
   });
 });
-

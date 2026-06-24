@@ -37,7 +37,7 @@ steps:
       - managed
       - --allow-unauthenticated
       - --port
-      - "8080"
+      - '8080'
 
 images:
   - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/${_SERVICE}:$SHORT_SHA

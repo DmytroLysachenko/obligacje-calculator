@@ -1,11 +1,4 @@
-import { 
-  addMonths, 
-  addYears, 
-  differenceInDays, 
-  isBefore,
-  min, 
-  format 
-} from 'date-fns';
+import { addMonths, addYears, differenceInDays, isBefore, min, format } from 'date-fns';
 import { InterestPayout } from '../../types';
 
 export interface TimelinePeriod {
@@ -30,7 +23,7 @@ export function generateCyclePeriods(
   payoutFrequency: InterestPayout,
 ): TimelinePeriod[] {
   const isMonthlyPayout = payoutFrequency === InterestPayout.MONTHLY;
-  
+
   // Determine the natural step for the bond (payout based)
   const stepFn = isMonthlyPayout ? addMonths : addYears;
 
@@ -42,7 +35,7 @@ export function generateCyclePeriods(
   while (isBefore(currentPeriodStart, actualCycleEndDate) && safety < 1000) {
     safety++;
     const nextStepDate = stepFn(currentPeriodStart, 1);
-    
+
     const periodEndDate = min([nextStepDate, actualCycleEndDate]);
     const isMaturity = periodEndDate.getTime() === cycleMaturityDate.getTime();
     const isWithdrawal = periodEndDate.getTime() === actualCycleEndDate.getTime();
@@ -54,7 +47,7 @@ export function generateCyclePeriods(
       daysHeld: differenceInDays(periodEndDate, currentPeriodStart),
       isMaturity,
       isWithdrawal,
-      periodLabel: format(periodEndDate, 'MMM yyyy')
+      periodLabel: format(periodEndDate, 'MMM yyyy'),
     });
 
     if (isWithdrawal) break;

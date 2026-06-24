@@ -1,9 +1,9 @@
-import { db } from "@/db";
-import { dataSeries, dataPoints } from "@/db/schema";
-import { eq, sql } from "drizzle-orm";
-import { NbpApiClient } from "../api-clients/nbp";
-import { GusCpiApiClient } from "../api-clients/gus-cpi";
-import { recordSyncRun } from "@/lib/server/sync/run-history";
+import { db } from '@/db';
+import { dataSeries, dataPoints } from '@/db/schema';
+import { eq, sql } from 'drizzle-orm';
+import { NbpApiClient } from '../api-clients/nbp';
+import { GusCpiApiClient } from '../api-clients/gus-cpi';
+import { recordSyncRun } from '@/lib/server/sync/run-history';
 
 /**
  * Helper to retry a function with exponential backoff.
@@ -13,7 +13,7 @@ async function retry<T>(fn: () => Promise<T>, retries = 3, delay = 1000): Promis
     return await fn();
   } catch (error) {
     if (retries === 0) throw error;
-    await new Promise(resolve => setTimeout(resolve, delay));
+    await new Promise((resolve) => setTimeout(resolve, delay));
     return retry(fn, retries - 1, delay * 2);
   }
 }
@@ -38,21 +38,21 @@ export async function syncMacroData() {
     );
 
     let cpiSeries = await db.query.dataSeries.findFirst({
-      where: eq(dataSeries.slug, "pl-cpi"),
+      where: eq(dataSeries.slug, 'pl-cpi'),
     });
 
     if (!cpiSeries) {
       [cpiSeries] = await db
         .insert(dataSeries)
         .values({
-          slug: "pl-cpi",
-          name: "Poland Inflation (CPI)",
-          category: "macro",
-          unit: "%",
-          frequency: "monthly",
-          dataSource: "GUS official CPI monthly archive CSV",
-          freshnessPolicy: "check-daily",
-          lastSyncStatus: "success",
+          slug: 'pl-cpi',
+          name: 'Poland Inflation (CPI)',
+          category: 'macro',
+          unit: '%',
+          frequency: 'monthly',
+          dataSource: 'GUS official CPI monthly archive CSV',
+          freshnessPolicy: 'check-daily',
+          lastSyncStatus: 'success',
         })
         .returning();
     }
@@ -139,7 +139,7 @@ export async function syncMacroData() {
             seriesId: cpiSeries.id,
             date: indicator.date,
             value: indicator.value.toString(),
-            qualityFlag: "verified",
+            qualityFlag: 'verified',
             sourceMetadata: GusCpiApiClient.archivePageUrl,
           })),
         )
@@ -147,7 +147,7 @@ export async function syncMacroData() {
           target: [dataPoints.seriesId, dataPoints.date],
           set: {
             value: sql`EXCLUDED.value`,
-            qualityFlag: "verified",
+            qualityFlag: 'verified',
             sourceMetadata: GusCpiApiClient.archivePageUrl,
           },
         });
@@ -155,9 +155,9 @@ export async function syncMacroData() {
       await db
         .update(dataSeries)
         .set({
-          dataSource: "GUS official CPI monthly archive CSV",
+          dataSource: 'GUS official CPI monthly archive CSV',
           lastDataPointDate: latestCpiRate?.date,
-          lastSyncStatus: "success",
+          lastSyncStatus: 'success',
           lastSyncError: null,
           updatedAt: new Date(),
         })
@@ -189,7 +189,7 @@ export async function syncMacroData() {
   } catch (error) {
     console.error('Macro sync failed:', error);
     const cpiSeries = await db.query.dataSeries.findFirst({
-      where: eq(dataSeries.slug, "pl-cpi"),
+      where: eq(dataSeries.slug, 'pl-cpi'),
     });
     const nbpSeries = await db.query.dataSeries.findFirst({
       where: eq(dataSeries.slug, 'nbp-ref-rate'),
@@ -199,7 +199,7 @@ export async function syncMacroData() {
       await db
         .update(dataSeries)
         .set({
-          lastSyncStatus: "failed",
+          lastSyncStatus: 'failed',
           lastSyncError: String(error),
           updatedAt: new Date(),
         })

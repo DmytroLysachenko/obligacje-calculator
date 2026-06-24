@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @plugin "tailwindcss-animate";
 
@@ -46,12 +46,23 @@
   --radius-sm: calc(var(--radius) - 4px);
 
   @keyframes subtle-pulse {
-    0%, 100% { transform: scale(1); box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
-    50% { transform: scale(1.03); box-shadow: 0 30px 60px rgba(0,0,0,0.15); }
+    0%,
+    100% {
+      transform: scale(1);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+    }
+    50% {
+      transform: scale(1.03);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+    }
   }
 
   @keyframes ping-slow {
-    75%, 100% { transform: scale(1.5); opacity: 0; }
+    75%,
+    100% {
+      transform: scale(1.5);
+      opacity: 0;
+    }
   }
 
   --animate-subtle-pulse: subtle-pulse 2s ease-in-out infinite;
@@ -138,13 +149,13 @@
   }
   a[href],
   button,
-  [role="button"],
+  [role='button'],
   summary,
-  input[type="button"],
-  input[type="submit"],
-  input[type="reset"],
+  input[type='button'],
+  input[type='submit'],
+  input[type='reset'],
   label[for],
-  [data-slot="accordion-trigger"],
+  [data-slot='accordion-trigger'],
   [data-radix-collection-item] {
     cursor: pointer;
   }
@@ -152,15 +163,15 @@
   input:disabled,
   textarea:disabled,
   select:disabled,
-  [aria-disabled="true"] {
+  [aria-disabled='true'] {
     cursor: not-allowed;
   }
-  input[type="number"] {
+  input[type='number'] {
     appearance: textfield;
     -moz-appearance: textfield;
   }
-  input[type="number"]::-webkit-outer-spin-button,
-  input[type="number"]::-webkit-inner-spin-button {
+  input[type='number']::-webkit-outer-spin-button,
+  input[type='number']::-webkit-inner-spin-button {
     appearance: none;
     margin: 0;
   }
@@ -172,7 +183,12 @@
     background-image: none;
     background-attachment: initial;
   }
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-heading);
     font-weight: 700;
   }
@@ -183,13 +199,13 @@
   input,
   select,
   textarea,
-  [data-slot="select-trigger"],
-  [data-slot="button"] {
+  [data-slot='select-trigger'],
+  [data-slot='button'] {
     min-width: 0;
   }
   button,
-  [data-slot="button"],
-  [data-slot="select-trigger"] {
+  [data-slot='button'],
+  [data-slot='select-trigger'] {
     text-wrap: balance;
   }
 }
@@ -344,10 +360,10 @@
 }
 
 @media print {
-  aside, 
-  button, 
+  aside,
+  button,
   .no-print,
-  [role="tablist"],
+  [role='tablist'],
   header {
     display: none !important;
   }

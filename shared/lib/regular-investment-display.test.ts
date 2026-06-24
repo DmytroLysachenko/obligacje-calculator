@@ -123,18 +123,21 @@ describe('regular investment display helpers', () => {
   });
 
   it('returns recent lots ordered by newest purchase date first', () => {
-    const recent = buildRecentRegularInvestmentLots([
-      {
-        purchaseDate: '2026-01-01T00:00:00.000Z',
-        maturityDate: '2027-01-01T00:00:00.000Z',
-        investedAmount: 1000,
-      },
-      {
-        purchaseDate: '2026-03-01T00:00:00.000Z',
-        maturityDate: '2027-03-01T00:00:00.000Z',
-        investedAmount: 1000,
-      },
-    ] as never, 1);
+    const recent = buildRecentRegularInvestmentLots(
+      [
+        {
+          purchaseDate: '2026-01-01T00:00:00.000Z',
+          maturityDate: '2027-01-01T00:00:00.000Z',
+          investedAmount: 1000,
+        },
+        {
+          purchaseDate: '2026-03-01T00:00:00.000Z',
+          maturityDate: '2027-03-01T00:00:00.000Z',
+          investedAmount: 1000,
+        },
+      ] as never,
+      1,
+    );
 
     expect(recent).toHaveLength(1);
     expect(recent[0]?.value.purchaseDate).toBe('2026-03-01T00:00:00.000Z');

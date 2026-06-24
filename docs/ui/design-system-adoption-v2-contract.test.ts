@@ -18,11 +18,17 @@ function expectAvoidsLocalPattern(source: string, pattern: string) {
 
 describe('design system adoption v2 contract', () => {
   it('keeps selector usage centralized for calculator input surfaces', () => {
-    const singleConfig = read('features/single-calculator/components/sections/BondConfigSection.tsx');
+    const singleConfig = read(
+      'features/single-calculator/components/sections/BondConfigSection.tsx',
+    );
     const singleTimeline = read('features/single-calculator/components/BondTimeline.tsx');
-    const regularBond = read('features/regular-investment/components/inputs/BondSelectionSection.tsx');
+    const regularBond = read(
+      'features/regular-investment/components/inputs/BondSelectionSection.tsx',
+    );
     const comparisonControls = read('features/comparison-engine/components/ComparisonControls.tsx');
-    const comparisonShared = read('features/comparison-engine/components/ComparisonSharedBaseCard.tsx');
+    const comparisonShared = read(
+      'features/comparison-engine/components/ComparisonSharedBaseCard.tsx',
+    );
     const notebookStatus = read('features/notebook/components/WorkspaceStatusCard.tsx');
     const sidebarWorkspace = read('shared/components/chrome/SidebarWorkspaceUtility.tsx');
     const retirementInputs = read('features/retirement/components/RetirementInputsPanel.tsx');
@@ -58,24 +64,46 @@ describe('design system adoption v2 contract', () => {
     expectUsesShared(toolCard, 'ui-safe-text');
     expectUsesShared(toolCard, 'iconAccentClass');
     expectUsesShared(toolCard, 'border-l-2 pl-3 pt-0.5');
-    expectUsesShared(sectionBlock, "variant?: SectionBlockVariant");
+    expectUsesShared(sectionBlock, 'variant?: SectionBlockVariant');
     expectAvoidsLocalPattern(landing, 'rounded-lg border border-border bg-card p-5 shadow-sm');
-    expect(landing).toContain('grid border-y border-border py-2 md:grid-cols-3 md:divide-x md:divide-border');
+    expect(landing).toContain(
+      'grid border-y border-border py-2 md:grid-cols-3 md:divide-x md:divide-border',
+    );
     expect(landing).toContain('inline-flex items-center gap-2 border-l-2 border-border px-3 py-1');
     expect(landing).toContain('border-l-2 border-border py-1 pl-4');
-    expectAvoidsLocalPattern(landing, 'grid gap-px overflow-hidden rounded-lg border border-border bg-border');
-    expectAvoidsLocalPattern(landing, 'bg-card px-4 py-3 text-xs font-semibold text-muted-foreground');
+    expectAvoidsLocalPattern(
+      landing,
+      'grid gap-px overflow-hidden rounded-lg border border-border bg-border',
+    );
+    expectAvoidsLocalPattern(
+      landing,
+      'bg-card px-4 py-3 text-xs font-semibold text-muted-foreground',
+    );
     expectAvoidsLocalPattern(landing, 'surface-chip text-xs font-semibold text-muted-foreground');
     expect(education).toContain('space-y-14 pb-12 md:space-y-16');
     expect(education).toContain('grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3');
     expect(education).toContain('grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3');
-    expect(education).toContain('border-t border-border py-5 transition-colors hover:border-foreground/30');
+    expect(education).toContain(
+      'border-t border-border py-5 transition-colors hover:border-foreground/30',
+    );
     expect(education).toContain('border-l-2 border-border pl-3 text-foreground');
     expectAvoidsLocalPattern(education, 'space-y-12 pb-12 md:space-y-14');
-    expectAvoidsLocalPattern(education, 'grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 lg:grid-cols-3');
-    expectAvoidsLocalPattern(education, 'grid grid-cols-1 gap-x-6 gap-y-10 md:grid-cols-2 xl:grid-cols-3');
-    expectAvoidsLocalPattern(education, 'border-t border-border py-4 transition-colors hover:border-foreground/30');
-    expectAvoidsLocalPattern(education, 'grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border');
+    expectAvoidsLocalPattern(
+      education,
+      'grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 lg:grid-cols-3',
+    );
+    expectAvoidsLocalPattern(
+      education,
+      'grid grid-cols-1 gap-x-6 gap-y-10 md:grid-cols-2 xl:grid-cols-3',
+    );
+    expectAvoidsLocalPattern(
+      education,
+      'border-t border-border py-4 transition-colors hover:border-foreground/30',
+    );
+    expectAvoidsLocalPattern(
+      education,
+      'grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-border bg-border',
+    );
     expectAvoidsLocalPattern(education, 'grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3');
     expectAvoidsLocalPattern(education, 'grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3');
     expectAvoidsLocalPattern(education, 'bg-card p-4 transition-colors hover:bg-muted/25');
@@ -88,8 +116,12 @@ describe('design system adoption v2 contract', () => {
   it('keeps result actions and long result lists on shared components', () => {
     const resultHero = read('shared/components/results/ResultSummaryHero.tsx');
     const singleSummary = read('features/single-calculator/components/BondResultsSummary.tsx');
-    const regularSummary = read('features/regular-investment/components/RegularInvestmentResultsSummary.tsx');
-    const comparisonPanel = read('features/comparison-engine/components/ComparisonResultsPanel.tsx');
+    const regularSummary = read(
+      'features/regular-investment/components/RegularInvestmentResultsSummary.tsx',
+    );
+    const comparisonPanel = read(
+      'features/comparison-engine/components/ComparisonResultsPanel.tsx',
+    );
 
     expectUsesShared(resultHero, 'ResultActionGrid');
     expectUsesShared(singleSummary, "kind: 'pdf' as const");

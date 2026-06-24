@@ -14,10 +14,7 @@ export function createDateFormatter(language: Language, options?: Intl.DateTimeF
   return new Intl.DateTimeFormat(getIntlLocale(language), options);
 }
 
-export function createPercentageFormatter(
-  language: Language,
-  options?: Intl.NumberFormatOptions,
-) {
+export function createPercentageFormatter(language: Language, options?: Intl.NumberFormatOptions) {
   return new Intl.NumberFormat(getIntlLocale(language), {
     style: 'percent',
     minimumFractionDigits: 0,

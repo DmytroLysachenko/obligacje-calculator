@@ -56,12 +56,7 @@ interface ReferenceStatusPanelProps {
   language: 'pl' | 'en';
 }
 
-export function RangeActions({
-  period,
-  setPeriod,
-  rangeLabel,
-  hint,
-}: RangeActionsProps) {
+export function RangeActions({ period, setPeriod, rangeLabel, hint }: RangeActionsProps) {
   return (
     <div className="space-y-2 border-y border-border py-3">
       <div className="flex flex-wrap items-center gap-1">
@@ -86,19 +81,12 @@ export function RangeActions({
           </button>
         ))}
       </div>
-      <p className="px-3 text-xs leading-5 text-muted-foreground">
-        {hint}
-      </p>
+      <p className="px-3 text-xs leading-5 text-muted-foreground">{hint}</p>
     </div>
   );
 }
 
-export function SeriesStatusCard({
-  title,
-  meta,
-  isLoading,
-  language,
-}: SeriesStatusCardProps) {
+export function SeriesStatusCard({ title, meta, isLoading, language }: SeriesStatusCardProps) {
   const { t } = useAppI18n();
   const labels = {
     source: t('common.source'),
@@ -172,10 +160,7 @@ export function SeriesStatusCard({
   );
 }
 
-export function UsageGuidePanel({
-  usageGuide,
-  labels,
-}: UsageGuidePanelProps) {
+export function UsageGuidePanel({ usageGuide, labels }: UsageGuidePanelProps) {
   const { t } = useAppI18n();
 
   return (
@@ -183,9 +168,7 @@ export function UsageGuidePanel({
       <section className="space-y-5 border-t border-border py-5 md:py-6">
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-primary" />
-          <h3 className="ui-section-title">
-            {labels.howToUse}
-          </h3>
+          <h3 className="ui-section-title">{labels.howToUse}</h3>
         </div>
         <div className="grid gap-x-6 gap-y-4 border-y border-border py-4 md:grid-cols-2">
           {usageGuide.map((item) => (

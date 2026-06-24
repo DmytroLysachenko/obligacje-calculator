@@ -14,7 +14,7 @@ export function calculateAssetPerformance(
   monthlyContribution: number,
   returnKey: keyof Omit<MonthlyReturn, 'date'>,
   metadata: AssetMetadata,
-  data: MonthlyReturn[] = HISTORICAL_RETURNS
+  data: MonthlyReturn[] = HISTORICAL_RETURNS,
 ): AssetPerformanceSeries {
   const series: DataPoint[] = [];
   let currentValue = initialSum;
@@ -38,10 +38,10 @@ export function calculateAssetPerformance(
     currentValue += monthlyContribution;
 
     // 2. Calculate Nominal Growth
-    currentValue *= (1 + monthlyReturn / 100);
-    
+    currentValue *= 1 + monthlyReturn / 100;
+
     // 3. Track Cumulative Inflation
-    cumulativeInflation *= (1 + monthlyInflation / 100);
+    cumulativeInflation *= 1 + monthlyInflation / 100;
 
     // 4. Calculate Drawdown
     if (currentValue > peakValue) {
@@ -72,7 +72,7 @@ export function calculateBondsPerformance(
   monthlyContribution: number,
   metadata: AssetMetadata,
   data: MonthlyReturn[] = HISTORICAL_RETURNS,
-  config = { firstYearRate: 6.8, margin: 2.0 }
+  config = { firstYearRate: 6.8, margin: 2.0 },
 ): AssetPerformanceSeries {
   const series: DataPoint[] = [];
   let currentValue = initialSum;
@@ -93,7 +93,7 @@ export function calculateBondsPerformance(
 
   for (const row of data) {
     const monthlyInflation = sanitizePercent(row.inflation);
-    cumulativeInflation *= (1 + monthlyInflation / 100);
+    cumulativeInflation *= 1 + monthlyInflation / 100;
 
     // Add new monthly contribution as a new lot
     if (monthlyContribution > 0) {
@@ -103,12 +103,13 @@ export function calculateBondsPerformance(
     let totalMonthValue = 0;
     for (const lot of lots) {
       const year = Math.floor(lot.monthsHeld / 12) + 1;
-      const annualRate = year === 1 ? config.firstYearRate : (sanitizePercent(row.inflation) + config.margin);
-      
+      const annualRate =
+        year === 1 ? config.firstYearRate : sanitizePercent(row.inflation) + config.margin;
+
       // Interpolate to monthly rate
       const monthlyRate = (Math.pow(1 + annualRate / 100, 1 / 12) - 1) * 100;
-      
-      lot.value *= (1 + monthlyRate / 100);
+
+      lot.value *= 1 + monthlyRate / 100;
       lot.monthsHeld += 1;
       totalMonthValue += lot.value;
     }
@@ -144,7 +145,7 @@ export function calculateSavingsPerformance(
   monthlyContribution: number,
   metadata: AssetMetadata,
   data: MonthlyReturn[] = HISTORICAL_RETURNS,
-  config = { nbpMargin: 1.0, taxRate: 19 }
+  config = { nbpMargin: 1.0, taxRate: 19 },
 ): AssetPerformanceSeries {
   const series: DataPoint[] = [];
   let currentValue = initialSum;
@@ -162,7 +163,7 @@ export function calculateSavingsPerformance(
 
   for (const row of data) {
     const monthlyInflation = sanitizePercent(row.inflation);
-    cumulativeInflation *= (1 + monthlyInflation / 100);
+    cumulativeInflation *= 1 + monthlyInflation / 100;
 
     // 1. Add contribution
     currentValue += monthlyContribution;
@@ -170,11 +171,11 @@ export function calculateSavingsPerformance(
     // 2. Calculate Interest based on NBP rate
     const annualRate = Math.max(0, sanitizePercent(row.nbpRate) + config.nbpMargin);
     const monthlyRate = (Math.pow(1 + annualRate / 100, 1 / 12) - 1) * 100;
-    
+
     const grossInterest = currentValue * (monthlyRate / 100);
     const tax = grossInterest * (config.taxRate / 100);
     const netInterest = grossInterest - tax;
-    
+
     currentValue += netInterest;
 
     // 3. Track Drawdown

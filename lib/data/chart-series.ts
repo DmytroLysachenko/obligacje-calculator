@@ -2,7 +2,7 @@ import { desc, eq, inArray } from 'drizzle-orm';
 import { db } from '@/db';
 import { dataPoints, dataSeries } from '@/db/schema';
 import { GusCpiApiClient } from '@/lib/api-clients/gus-cpi';
-export type {ChartRatePoint, ChartSeriesEnvelope} from './chart-reference-series';
+export type { ChartRatePoint, ChartSeriesEnvelope } from './chart-reference-series';
 export {
   createInflationSeriesEnvelope,
   createNbpSeriesEnvelope,

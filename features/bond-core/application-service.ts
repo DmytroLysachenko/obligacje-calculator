@@ -1,15 +1,12 @@
-import { 
+import {
   CalculationDataFreshness,
-  CalculationScenarioRequest, 
-  CalculationEnvelope, 
+  CalculationScenarioRequest,
+  CalculationEnvelope,
   ScenarioKind,
 } from './types/scenarios';
 import { BondDefinition } from './constants/bond-definitions';
 import { BondType } from './types';
-import {
-  getGlobalDataFreshness,
-  getBondDefinitionsMap,
-} from '@/lib/data/market-data';
+import { getGlobalDataFreshness, getBondDefinitionsMap } from '@/lib/data/market-data';
 import { calculationCache } from './utils/calculation-cache';
 import { sanitizeInputs } from './utils/engine-guards';
 import { HandlerFactory, MODEL_VERSION, ScenarioHandler } from './handlers';
@@ -32,7 +29,9 @@ const defaultDependencies: CalculationServiceDependencies = {
 };
 
 export class CalculationApplicationService {
-  constructor(private readonly dependencies: CalculationServiceDependencies = defaultDependencies) {}
+  constructor(
+    private readonly dependencies: CalculationServiceDependencies = defaultDependencies,
+  ) {}
 
   /**
    * Main entry point for all calculation requests.
@@ -41,10 +40,12 @@ export class CalculationApplicationService {
     // 1. Validate before any normalization so invalid scenarios are rejected,
     // not silently clamped into a different calculation.
     const validatedRequest = parseCalculationScenarioRequest(request) as CalculationScenarioRequest;
-    const sanitizedPayload = sanitizeInputs(validatedRequest.payload as unknown as Record<string, unknown>);
+    const sanitizedPayload = sanitizeInputs(
+      validatedRequest.payload as unknown as Record<string, unknown>,
+    );
     const sanitizedRequest = {
       ...validatedRequest,
-      payload: sanitizedPayload
+      payload: sanitizedPayload,
     } as unknown as CalculationScenarioRequest;
 
     // 2. Check cache with sanitized inputs
@@ -59,12 +60,12 @@ export class CalculationApplicationService {
 
     const dataFreshness = await this.dependencies.getDataFreshness();
     const dbDefinitions = await this.dependencies.getDefinitions();
-    
+
     try {
       const handler = this.dependencies.getHandler(sanitizedRequest.kind);
       const response = await handler.handle(sanitizedRequest.payload, {
         dataFreshness,
-        dbDefinitions
+        dbDefinitions,
       });
 
       this.dependencies.cache.set(cacheKey, response);
@@ -77,4 +78,3 @@ export class CalculationApplicationService {
 }
 
 export const calculationService = new CalculationApplicationService();
-

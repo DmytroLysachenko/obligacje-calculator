@@ -1,4 +1,9 @@
-import { CalculationEnvelope, ScenarioKind, CalculationDataFreshness, HistoricalAverages } from '../types/scenarios';
+import {
+  CalculationEnvelope,
+  ScenarioKind,
+  CalculationDataFreshness,
+  HistoricalAverages,
+} from '../types/scenarios';
 import { BondDefinition } from '../constants/bond-definitions';
 import { BondType, BondInputs } from '../types';
 import { getHistoricalDataMap, getHistoricalAverages } from '@/lib/data/market-data';
@@ -52,7 +57,9 @@ export abstract class BaseHandler {
       return ['Historical data was unavailable; projected assumptions may be used.'];
     }
 
-    const hasInflation = Object.values(historicalData).some((entry) => entry.inflation !== undefined);
+    const hasInflation = Object.values(historicalData).some(
+      (entry) => entry.inflation !== undefined,
+    );
     const hasNbpRate = Object.values(historicalData).some((entry) => entry.nbpRate !== undefined);
     const warnings: string[] = [];
 
@@ -66,18 +73,26 @@ export abstract class BaseHandler {
     return warnings;
   }
 
-  protected collectHistoricalWarnings(historicalSets: Array<BondInputs['historicalData'] | undefined>): string[] {
+  protected collectHistoricalWarnings(
+    historicalSets: Array<BondInputs['historicalData'] | undefined>,
+  ): string[] {
     return Array.from(
-      new Set(historicalSets.flatMap((historicalData) => this.buildHistoricalDataWarnings(historicalData))),
+      new Set(
+        historicalSets.flatMap((historicalData) =>
+          this.buildHistoricalDataWarnings(historicalData),
+        ),
+      ),
     );
   }
 
-  protected generateAssumptions(inputs: Partial<BondInputs> & {
-    expectedInflation?: number;
-    expectedNbpRate?: number;
-    customInflation?: number[];
-    customNbpRate?: number[];
-  }): string[] {
+  protected generateAssumptions(
+    inputs: Partial<BondInputs> & {
+      expectedInflation?: number;
+      expectedNbpRate?: number;
+      customInflation?: number[];
+      customNbpRate?: number[];
+    },
+  ): string[] {
     const assumptions: string[] = [];
     if (inputs.expectedInflation !== undefined) {
       assumptions.push(`Expected annual inflation: ${inputs.expectedInflation}%`);
@@ -99,21 +114,24 @@ export abstract class BaseHandler {
     warnings: string[],
     assumptions: string[],
     dataFreshness: CalculationDataFreshness,
-    historicalAverages?: HistoricalAverages
+    historicalAverages?: HistoricalAverages,
   ): Promise<CalculationEnvelope<T>> {
     const resultAsRecord = result as Record<string, unknown>;
-    const averages = historicalAverages || await getHistoricalAverages();
+    const averages = historicalAverages || (await getHistoricalAverages());
 
     return {
       result,
       warnings,
       assumptions,
-      calculationNotes: Array.isArray(resultAsRecord?.calculationNotes) ? (resultAsRecord.calculationNotes as string[]) : [],
-      dataQualityFlags: Array.isArray(resultAsRecord?.dataQualityFlags) ? (resultAsRecord.dataQualityFlags as string[]) : [],
+      calculationNotes: Array.isArray(resultAsRecord?.calculationNotes)
+        ? (resultAsRecord.calculationNotes as string[])
+        : [],
+      dataQualityFlags: Array.isArray(resultAsRecord?.dataQualityFlags)
+        ? (resultAsRecord.dataQualityFlags as string[])
+        : [],
       dataFreshness,
       calculationVersion: MODEL_VERSION,
       historicalAverages: averages,
     };
   }
 }
-

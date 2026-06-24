@@ -18,7 +18,9 @@ function isChartStep(value: unknown): value is ChartStep {
   return value === 'monthly' || value === 'quarterly' || value === 'yearly' || value === 'daily';
 }
 
-export function loadChartDisplayPreferences(defaultGranularity: ChartStep = 'yearly'): ChartDisplayPreferences {
+export function loadChartDisplayPreferences(
+  defaultGranularity: ChartStep = 'yearly',
+): ChartDisplayPreferences {
   if (typeof window === 'undefined') {
     return {
       ...defaultPreferences,

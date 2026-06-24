@@ -1,5 +1,5 @@
-export {assertAdminSyncAuthorization} from './auth';
-export {getAdminStatusSnapshot} from './status';
+export { assertAdminSyncAuthorization } from './auth';
+export { getAdminStatusSnapshot } from './status';
 export {
   AdminSyncPayloadSchema,
   createAdminSyncCommand,

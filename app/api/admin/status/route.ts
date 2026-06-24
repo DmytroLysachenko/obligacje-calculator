@@ -1,8 +1,5 @@
 import { NextRequest } from 'next/server';
-import {
-  assertAdminSyncAuthorization,
-  getAdminStatusSnapshot,
-} from '@/lib/server/admin/service';
+import { assertAdminSyncAuthorization, getAdminStatusSnapshot } from '@/lib/server/admin/service';
 import { createUnauthorizedResponse, errorJson, okJson } from '@/lib/server/http/responses';
 
 export async function GET(req: NextRequest) {

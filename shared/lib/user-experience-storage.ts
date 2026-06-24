@@ -1,5 +1,8 @@
 import { BondType } from '@/features/bond-core/types';
-import { SavedScenarioRecord, loadSavedScenarios } from '@/features/single-calculator/lib/scenario-storage';
+import {
+  SavedScenarioRecord,
+  loadSavedScenarios,
+} from '@/features/single-calculator/lib/scenario-storage';
 
 const STORAGE_KEY = 'obligacje.user-experience.v1';
 
@@ -145,10 +148,7 @@ export function toggleFavoriteBond(bondType: BondType) {
   });
 }
 
-export function updateNotificationPreference(
-  key: keyof NotificationPreferences,
-  value: boolean,
-) {
+export function updateNotificationPreference(key: keyof NotificationPreferences, value: boolean) {
   return updateUserExperienceState((current) => ({
     ...current,
     notificationPreferences: {
@@ -230,5 +230,7 @@ export function buildDashboardNotifications(
     });
   }
 
-  return notifications.filter((notification) => !experience.readNotificationIds.includes(notification.id));
+  return notifications.filter(
+    (notification) => !experience.readNotificationIds.includes(notification.id),
+  );
 }

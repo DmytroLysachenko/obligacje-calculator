@@ -5,7 +5,7 @@ import { createDefaultSyncEngine } from './create-sync-engine';
 export async function main() {
   const startYear = process.argv[2] ? parseInt(process.argv[2]) : 1910;
   console.log(`[RunFullSync] Starting full sync from year ${startYear}...`);
-  
+
   const engine = createDefaultSyncEngine('RunFullSync');
 
   const results = await engine.runFullSync(startYear);

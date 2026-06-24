@@ -7,17 +7,17 @@ portfolios**.
 
 The goal is to help developers and users understand:
 
--   inflation and purchasing power
--   compounding and capitalization
--   interest rate dynamics
--   unemployment and macroeconomic influence
--   portfolio growth modeling
--   regular vs irregular investing
--   real vs nominal returns
+- inflation and purchasing power
+- compounding and capitalization
+- interest rate dynamics
+- unemployment and macroeconomic influence
+- portfolio growth modeling
+- regular vs irregular investing
+- real vs nominal returns
 
 These principles can be used to design **financial simulation engines**.
 
-------------------------------------------------------------------------
+---
 
 # 1. Nominal vs Real Values
 
@@ -35,7 +35,7 @@ Nominal profit:
 
     120 − 100 = 20 PLN
 
-------------------------------------------------------------------------
+---
 
 ## Real Value
 
@@ -65,7 +65,7 @@ Real profit:
 
 This means the investment **lost purchasing power**.
 
-------------------------------------------------------------------------
+---
 
 # 2. Inflation
 
@@ -81,7 +81,7 @@ If CPI increases from 100 to 105:
 
     (105 − 100) / 100 = 5%
 
-------------------------------------------------------------------------
+---
 
 ## Cumulative Inflation
 
@@ -103,7 +103,7 @@ Total inflation:
 
     12.48%
 
-------------------------------------------------------------------------
+---
 
 # 3. Compound Interest
 
@@ -115,8 +115,8 @@ Formula:
 
 Where:
 
--   r = interest rate
--   t = number of years
+- r = interest rate
+- t = number of years
 
 Example:
 
@@ -126,7 +126,7 @@ Profit:
 
     62.89 PLN
 
-------------------------------------------------------------------------
+---
 
 ## Continuous Compounding
 
@@ -141,7 +141,7 @@ Example:
     100 × e^(0.05×10)
     ≈ 164.87
 
-------------------------------------------------------------------------
+---
 
 # 4. Real Interest Rate
 
@@ -169,7 +169,7 @@ Real rate:
 
     (1.06 / 1.04) − 1 = 1.92%
 
-------------------------------------------------------------------------
+---
 
 # 5. Time Value of Money
 
@@ -194,7 +194,7 @@ Discount rate:
     PV = 1000 / (1.05)^10
     PV ≈ 613.91 PLN
 
-------------------------------------------------------------------------
+---
 
 # 6. Regular Investing (Dollar Cost Averaging)
 
@@ -204,9 +204,9 @@ For regular monthly investments:
 
 Where:
 
--   P = periodic investment
--   r = periodic interest
--   n = number of periods
+- P = periodic investment
+- r = periodic interest
+- n = number of periods
 
 Example:
 
@@ -222,7 +222,7 @@ Periods:
 
     240
 
-------------------------------------------------------------------------
+---
 
 # 7. Portfolio Value
 
@@ -239,7 +239,7 @@ Then:
 
     PortfolioReturn = 0.6 × ReturnBonds + 0.4 × ReturnStocks
 
-------------------------------------------------------------------------
+---
 
 # 8. Risk and Volatility
 
@@ -255,7 +255,7 @@ Standard deviation:
 
 Higher volatility means higher uncertainty.
 
-------------------------------------------------------------------------
+---
 
 # 9. Unemployment and Economic Growth
 
@@ -285,7 +285,7 @@ GDP impact:
 
     −4%
 
-------------------------------------------------------------------------
+---
 
 # 10. Interest Rates and Monetary Policy
 
@@ -297,11 +297,11 @@ In Poland the main benchmark is:
 
 Interest rate models influence:
 
--   government bonds
--   mortgage rates
--   inflation expectations
+- government bonds
+- mortgage rates
+- inflation expectations
 
-------------------------------------------------------------------------
+---
 
 # 11. Bond Pricing Concept
 
@@ -311,13 +311,13 @@ General bond price formula:
 
 Where:
 
--   r = market interest rate
+- r = market interest rate
 
 If interest rates increase:
 
     bond prices decrease
 
-------------------------------------------------------------------------
+---
 
 # 12. Long-Term Portfolio Simulation
 
@@ -343,7 +343,7 @@ Steps:
 
     RealValue = Nominal / InflationFactor
 
-------------------------------------------------------------------------
+---
 
 # 13. Monte Carlo Simulation
 
@@ -358,7 +358,7 @@ Output:
 
     distribution of outcomes
 
-------------------------------------------------------------------------
+---
 
 # 14. Example Portfolio Model
 
@@ -370,18 +370,20 @@ Example portfolio:
 
 Assumed returns:
 
-  Asset    Return
-  -------- --------
-  bonds    4%
-  stocks   7%
-  cash     2%
+Asset Return
+
+---
+
+bonds 4%
+stocks 7%
+cash 2%
 
 Portfolio return:
 
     0.6×4% + 0.2×2% + 0.2×7%
     = 4.2%
 
-------------------------------------------------------------------------
+---
 
 # 15. Long-Term Example
 
@@ -407,23 +409,25 @@ Real value:
 
     ≈ 142,000 PLN
 
-------------------------------------------------------------------------
+---
 
 # 16. Economic Indicators Useful for Simulation
 
 Important variables:
 
-  Indicator         Meaning
-  ----------------- ---------------------
-  Inflation         price growth
-  Interest rates    cost of money
-  GDP growth        economic expansion
-  Unemployment      labor market health
-  Government debt   fiscal stability
+Indicator Meaning
+
+---
+
+Inflation price growth
+Interest rates cost of money
+GDP growth economic expansion
+Unemployment labor market health
+Government debt fiscal stability
 
 These indicators influence bond markets.
 
-------------------------------------------------------------------------
+---
 
 # 17. Modeling Economic Scenarios
 
@@ -449,7 +453,7 @@ Example economic regimes:
 
 Simulations should test multiple regimes.
 
-------------------------------------------------------------------------
+---
 
 # 18. Application Architecture Suggestion
 
@@ -462,7 +466,7 @@ Suggested modules:
     tax_engine
     scenario_simulator
 
-------------------------------------------------------------------------
+---
 
 # 19. Core Functions Needed
 
@@ -475,7 +479,7 @@ Examples:
     calculateInflationAdjustment()
     simulateEconomicScenario()
 
-------------------------------------------------------------------------
+---
 
 # 20. Final Insight
 

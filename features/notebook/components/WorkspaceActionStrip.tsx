@@ -42,9 +42,7 @@ export function WorkspaceActionStrip({
           disabled={!canManageWorkspace}
         >
           <Plus className="h-4 w-4" />
-          {canManageWorkspace
-            ? t('notebook.new_portfolio')
-            : t('workspace.sign_in_required_short')}
+          {canManageWorkspace ? t('notebook.new_portfolio') : t('workspace.sign_in_required_short')}
         </Button>
         <Button
           variant="outline"

@@ -39,7 +39,10 @@ export class CalculationCache {
     try {
       return JSON.stringify(sortObject(request));
     } catch (e) {
-      console.warn('[CalculationCache] Failed to generate stable key, falling back to basic stringify', e);
+      console.warn(
+        '[CalculationCache] Failed to generate stable key, falling back to basic stringify',
+        e,
+      );
       return JSON.stringify(request);
     }
   }

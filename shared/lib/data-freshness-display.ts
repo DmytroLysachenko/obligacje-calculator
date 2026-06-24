@@ -63,8 +63,6 @@ export function getCalculationFreshnessMetaState(freshness: CalculationDataFresh
     toneClass: isFresh
       ? 'border-[var(--finance-success)] text-foreground'
       : 'border-[var(--finance-warning)] text-foreground',
-    dotClass: isFresh
-      ? 'bg-[var(--finance-success)]'
-      : 'bg-[var(--finance-warning)]',
+    dotClass: isFresh ? 'bg-[var(--finance-success)]' : 'bg-[var(--finance-warning)]',
   };
 }

@@ -13,10 +13,7 @@ function portfolio(id: string, name = `Portfolio ${id}`): WorkspacePortfolioOpti
 
 describe('workspace portfolio selection model', () => {
   it('uses an explicitly selected portfolio when it exists', () => {
-    const selection = resolveWorkspacePortfolioSelection('b', [
-      portfolio('a'),
-      portfolio('b'),
-    ]);
+    const selection = resolveWorkspacePortfolioSelection('b', [portfolio('a'), portfolio('b')]);
 
     expect(selection).toEqual({
       portfolio: portfolio('b'),
@@ -39,9 +36,7 @@ describe('workspace portfolio selection model', () => {
   });
 
   it('falls back when a stored portfolio id no longer exists', () => {
-    const selection = resolveWorkspacePortfolioSelection('deleted', [
-      portfolio('remaining'),
-    ]);
+    const selection = resolveWorkspacePortfolioSelection('deleted', [portfolio('remaining')]);
 
     expect(selection.portfolioId).toBe('remaining');
     expect(selection.source).toBe('fallback');

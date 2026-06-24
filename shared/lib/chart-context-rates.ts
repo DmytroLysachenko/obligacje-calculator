@@ -31,7 +31,10 @@ function getYearIndex(dateKey: string | undefined, purchaseDate: string | undefi
 }
 
 export function getChartContextRatesForDate(
-  inputs: Pick<BondInputs, 'purchaseDate' | 'expectedInflation' | 'expectedNbpRate' | 'customInflation' | 'customNbpRate'>,
+  inputs: Pick<
+    BondInputs,
+    'purchaseDate' | 'expectedInflation' | 'expectedNbpRate' | 'customInflation' | 'customNbpRate'
+  >,
   dateKey: string | undefined,
 ): ChartContextRateOverrides {
   const yearIndex = getYearIndex(dateKey, inputs.purchaseDate);
@@ -42,9 +45,14 @@ export function getChartContextRatesForDate(
   };
 }
 
-export function applyChartContextRates<T extends { dateKey?: string; inflation?: number; nbp?: number }>(
+export function applyChartContextRates<
+  T extends { dateKey?: string; inflation?: number; nbp?: number },
+>(
   points: T[],
-  inputs: Pick<BondInputs, 'purchaseDate' | 'expectedInflation' | 'expectedNbpRate' | 'customInflation' | 'customNbpRate'>,
+  inputs: Pick<
+    BondInputs,
+    'purchaseDate' | 'expectedInflation' | 'expectedNbpRate' | 'customInflation' | 'customNbpRate'
+  >,
 ): T[] {
   return points.map((point) => {
     const contextRates = getChartContextRatesForDate(inputs, point.dateKey);

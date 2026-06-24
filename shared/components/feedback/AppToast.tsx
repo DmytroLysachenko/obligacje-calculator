@@ -51,7 +51,9 @@ export function AppToast({
             : 'border-border border-l-destructive text-foreground',
         )}
       >
-        <Icon className={cn('mt-0.5 h-5 w-5 shrink-0', isSuccess ? 'text-success' : 'text-destructive')} />
+        <Icon
+          className={cn('mt-0.5 h-5 w-5 shrink-0', isSuccess ? 'text-success' : 'text-destructive')}
+        />
         <p className="flex-1 text-sm leading-6">{message}</p>
         <Button
           variant="ghost"

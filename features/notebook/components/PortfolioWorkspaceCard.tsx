@@ -51,9 +51,7 @@ export function PortfolioWorkspaceCard({
                 {statusLabel}
               </span>
             </div>
-            <p className="ui-body">
-              {portfolio.description || fallbackDescription}
-            </p>
+            <p className="ui-body">{portfolio.description || fallbackDescription}</p>
           </div>
         </div>
         <Button
@@ -71,26 +69,18 @@ export function PortfolioWorkspaceCard({
 
       <div className="grid gap-0 divide-y divide-dashed divide-border border-y border-border md:grid-cols-2 md:divide-x md:divide-y-0">
         <div className="py-3 md:pr-4">
-          <p className="ui-metadata text-muted-foreground">
-            {createdAtLabel}
-          </p>
+          <p className="ui-metadata text-muted-foreground">{createdAtLabel}</p>
           <p className="mt-1 text-sm font-medium text-foreground">
             {portfolio.createdAtLabelValue}
           </p>
         </div>
         <div className="py-3 md:pl-4">
-          <p className="ui-metadata text-muted-foreground">
-            {usageLabel}
-          </p>
+          <p className="ui-metadata text-muted-foreground">{usageLabel}</p>
           <p className="mt-1 text-sm font-medium text-foreground">{usageDescription}</p>
         </div>
       </div>
 
-      <Button
-        className="w-full rounded-md"
-        disabled={!canManageWorkspace}
-        onClick={onOpen}
-      >
+      <Button className="w-full rounded-md" disabled={!canManageWorkspace} onClick={onOpen}>
         {actionLabel}
       </Button>
     </article>

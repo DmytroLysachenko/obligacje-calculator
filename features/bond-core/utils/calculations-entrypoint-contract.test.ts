@@ -11,9 +11,15 @@ describe('bond calculations entrypoint contract', () => {
     const source = read('features/bond-core/utils/calculations.ts');
 
     expect(source.split('\n').length).toBeLessThanOrEqual(12);
-    expect(source).toContain("export { calculateBondInvestment } from './engine/single-bond-engine';");
-    expect(source).toContain("export { calculateReverseBondInvestment } from './engine/reverse-bond-engine';");
-    expect(source).toContain("export { calculateRegularInvestment } from './engine/regular-investment-engine';");
+    expect(source).toContain(
+      "export { calculateBondInvestment } from './engine/single-bond-engine';",
+    );
+    expect(source).toContain(
+      "export { calculateReverseBondInvestment } from './engine/reverse-bond-engine';",
+    );
+    expect(source).toContain(
+      "export { calculateRegularInvestment } from './engine/regular-investment-engine';",
+    );
     expect(source).not.toContain('for (let');
     expect(source).not.toContain('while (');
   });

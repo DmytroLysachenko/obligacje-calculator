@@ -23,12 +23,8 @@ export function ScenarioFactsBlock({
     <section className="space-y-4 border-t border-border py-5">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h3 className="ui-section-title">
-            {title}
-          </h3>
-          <p className="ui-body mt-1 max-w-3xl text-muted-foreground">
-            {description}
-          </p>
+          <h3 className="ui-section-title">{title}</h3>
+          <p className="ui-body mt-1 max-w-3xl text-muted-foreground">{description}</p>
         </div>
         {actions}
       </div>

@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
-import { applyPortfolioOwnerCookie, resolvePortfolioOwner, type PortfolioOwnerContext } from './access';
+import {
+  applyPortfolioOwnerCookie,
+  resolvePortfolioOwner,
+  type PortfolioOwnerContext,
+} from './access';
 import { createDomainErrorResponse, createUnauthorizedResponse } from '@/lib/server/http/responses';
 import { PortfolioServiceError } from './errors';
 
@@ -17,8 +21,7 @@ export async function getPortfolioRouteContext(): Promise<PortfolioRouteContext>
 }
 
 export async function getAuthenticatedPortfolioRouteContext(): Promise<
-  | { ok: true; context: PortfolioRouteContext }
-  | { ok: false; response: NextResponse }
+  { ok: true; context: PortfolioRouteContext } | { ok: false; response: NextResponse }
 > {
   const context = await getPortfolioRouteContext();
 
@@ -51,10 +54,7 @@ export async function withAuthenticatedPortfolioOwner(
   return withPortfolioOwnerResponse(response, owner);
 }
 
-export function portfolioDomainErrorResponse(
-  error: unknown,
-  owner?: PortfolioOwnerContext,
-) {
+export function portfolioDomainErrorResponse(error: unknown, owner?: PortfolioOwnerContext) {
   if (!(error instanceof PortfolioServiceError)) {
     return null;
   }

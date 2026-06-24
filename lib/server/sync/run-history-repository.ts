@@ -1,6 +1,6 @@
-import {desc, eq, sql} from 'drizzle-orm';
-import {db} from '@/db';
-import {NewSyncRun, syncRuns} from '@/db/schema';
+import { desc, eq, sql } from 'drizzle-orm';
+import { db } from '@/db';
+import { NewSyncRun, syncRuns } from '@/db/schema';
 
 let ensureSyncRunsSchemaPromise: Promise<void> | null = null;
 
@@ -27,9 +27,15 @@ export async function ensureSyncRunsSchemaRepository() {
           "finished_at" timestamp
         )
       `);
-      await db.execute(sql`CREATE INDEX IF NOT EXISTS "sync_runs_scope_idx" ON "sync_runs" ("scope")`);
-      await db.execute(sql`CREATE INDEX IF NOT EXISTS "sync_runs_series_slug_idx" ON "sync_runs" ("series_slug")`);
-      await db.execute(sql`CREATE INDEX IF NOT EXISTS "sync_runs_started_at_idx" ON "sync_runs" ("started_at")`);
+      await db.execute(
+        sql`CREATE INDEX IF NOT EXISTS "sync_runs_scope_idx" ON "sync_runs" ("scope")`,
+      );
+      await db.execute(
+        sql`CREATE INDEX IF NOT EXISTS "sync_runs_series_slug_idx" ON "sync_runs" ("series_slug")`,
+      );
+      await db.execute(
+        sql`CREATE INDEX IF NOT EXISTS "sync_runs_started_at_idx" ON "sync_runs" ("started_at")`,
+      );
     })();
   }
 

@@ -20,17 +20,17 @@ export function CalculatorSection({
   className,
 }: CalculatorSectionProps) {
   return (
-    <section className={cn(pageLayout.sectionFlow, divided && pageLayout.sectionDivider, className)}>
+    <section
+      className={cn(pageLayout.sectionFlow, divided && pageLayout.sectionDivider, className)}
+    >
       <div className="flex flex-col gap-2 border-b border-border pb-4 md:flex-row md:items-end md:justify-between">
         <div className="space-y-2">
-        <h3 className="ui-section-title">
-          {title}
-        </h3>
-        {description ? (
-          <p className="ui-body max-w-[var(--layout-reading-max)] text-muted-foreground">
-            {description}
-          </p>
-        ) : null}
+          <h3 className="ui-section-title">{title}</h3>
+          {description ? (
+            <p className="ui-body max-w-[var(--layout-reading-max)] text-muted-foreground">
+              {description}
+            </p>
+          ) : null}
         </div>
       </div>
       {children}

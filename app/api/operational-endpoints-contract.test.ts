@@ -60,7 +60,9 @@ describe('operational endpoint contracts', () => {
     expect(providerConfig).toContain('getOAuthProviderCredentials');
     expect(providerConfig).toContain('getAuthRuntimeConfig');
     expect(providerConfigTest).toContain('keeps NEXTAUTH_SECRET compatibility');
-    expect(providerConfigTest).toContain('returns both provider credentials in deterministic order');
+    expect(providerConfigTest).toContain(
+      'returns both provider credentials in deterministic order',
+    );
   });
 
   it('keeps liveness and readiness as explicit operational endpoints', () => {
@@ -112,5 +114,4 @@ describe('operational endpoint contracts', () => {
     expect(service).toContain('OPPORTUNISTIC_SYNC_COOLDOWN_HOURS');
     expect(service).toContain('createDefaultSyncEngine');
   });
-
 });

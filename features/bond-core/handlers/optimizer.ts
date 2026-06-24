@@ -12,19 +12,31 @@ import { getWithdrawalDateFromMonths, differenceInMonths } from '@/shared/lib/da
 import { parseISO } from 'date-fns';
 import { resolveScenarioInputs } from './resolved-inputs';
 
-export class OptimizerHandler extends BaseHandler implements ScenarioHandler<BondOptimizerPayload, BondOptimizerResult> {
+export class OptimizerHandler
+  extends BaseHandler
+  implements ScenarioHandler<BondOptimizerPayload, BondOptimizerResult>
+{
   kind = ScenarioKind.BOND_OPTIMIZER;
 
-  async handle(payload: BondOptimizerPayload, context: HandlerContext): Promise<BondOptimizerCalculationEnvelope> {
+  async handle(
+    payload: BondOptimizerPayload,
+    context: HandlerContext,
+  ): Promise<BondOptimizerCalculationEnvelope> {
     const allBondTypes = Object.keys(context.dbDefinitions) as BondType[];
-    const withdrawalDate = payload.withdrawalDate
-      ?? (payload.investmentHorizonMonths ? getWithdrawalDateFromMonths(payload.purchaseDate, payload.investmentHorizonMonths) : undefined);
+    const withdrawalDate =
+      payload.withdrawalDate ??
+      (payload.investmentHorizonMonths
+        ? getWithdrawalDateFromMonths(payload.purchaseDate, payload.investmentHorizonMonths)
+        : undefined);
 
     if (!withdrawalDate) {
       throw new Error('Withdrawal date or investment horizon is required for optimization');
     }
 
-    const horizonMonths = differenceInMonths(parseISO(payload.purchaseDate), parseISO(withdrawalDate));
+    const horizonMonths = differenceInMonths(
+      parseISO(payload.purchaseDate),
+      parseISO(withdrawalDate),
+    );
     const horizonYears = horizonMonths / 12;
 
     const rankedBonds: BondOptimizerResultItem[] = [];
@@ -89,11 +101,18 @@ export class OptimizerHandler extends BaseHandler implements ScenarioHandler<Bon
     }
 
     const assumptions = this.generateAssumptions(payload);
-    assumptions.push(`Ranking metric: Highest projected net payout after ${horizonYears.toFixed(1)} years in this scenario.`);
+    assumptions.push(
+      `Ranking metric: Highest projected net payout after ${horizonYears.toFixed(1)} years in this scenario.`,
+    );
 
-    return this.createEnvelope({
-      rankedBonds,
-      highestPayout: rankedBonds[0],
-    }, [], assumptions, context.dataFreshness);
+    return this.createEnvelope(
+      {
+        rankedBonds,
+        highestPayout: rankedBonds[0],
+      },
+      [],
+      assumptions,
+      context.dataFreshness,
+    );
   }
 }

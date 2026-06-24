@@ -13,9 +13,7 @@ export function formatCompactPercent(value: number) {
     return '0';
   }
 
-  return value
-    .toFixed(2)
-    .replace(/\.?0+$/, '');
+  return value.toFixed(2).replace(/\.?0+$/, '');
 }
 
 export function formatPathAverage(values: number[] | undefined, fallback: number) {
@@ -72,9 +70,7 @@ export function getHeaderAssumptionValue({
   customPath?: number[];
   fallback: number;
 }) {
-  return mode === 'advanced'
-    ? formatPathAverage(customPath, fallback)
-    : fallback;
+  return mode === 'advanced' ? formatPathAverage(customPath, fallback) : fallback;
 }
 
 export function getInflationPresetKey(value: number): InflationPresetKey {

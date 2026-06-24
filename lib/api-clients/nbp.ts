@@ -19,7 +19,14 @@ export class NbpApiClient extends BaseApiClient {
       this.fetchGoldPrice(),
       this.fetchReferenceRateHistory(),
     ]);
-    return [gold, rateHistory[0] ?? { name: 'nbp_reference_rate', value: 3.75, date: new Date().toISOString().split('T')[0] }];
+    return [
+      gold,
+      rateHistory[0] ?? {
+        name: 'nbp_reference_rate',
+        value: 3.75,
+        date: new Date().toISOString().split('T')[0],
+      },
+    ];
   }
 
   async fetchHistoricalData(startDate: string): Promise<StandardizedIndicator[]> {
@@ -51,7 +58,9 @@ export class NbpApiClient extends BaseApiClient {
 
   async fetchReferenceRateHistory(): Promise<StandardizedIndicator[]> {
     try {
-      const response = await fetchWithTimeout('https://api.nbp.pl/api/statystyka/stopy/ref?format=json');
+      const response = await fetchWithTimeout(
+        'https://api.nbp.pl/api/statystyka/stopy/ref?format=json',
+      );
       if (!response.ok) {
         return buildNbpReferenceFallbackIndicators();
       }

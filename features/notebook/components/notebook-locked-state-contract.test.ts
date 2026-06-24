@@ -1,6 +1,6 @@
-import {describe, expect, it} from 'vitest';
-import {readFileSync} from 'node:fs';
-import {join} from 'node:path';
+import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 const root = process.cwd();
 
@@ -44,7 +44,10 @@ describe('notebook locked and empty state contracts', () => {
     expectContains(source, "import { Notice } from '@/shared/components/feedback/Notice';");
     expectContains(source, 'space-y-4');
     expectContains(source, 'grid gap-x-6 gap-y-4 border-y border-border py-4 md:grid-cols-2');
-    expectContains(source, 'border-t border-border pt-4 first:border-t-0 first:pt-0 md:border-t-0 md:pt-0');
+    expectContains(
+      source,
+      'border-t border-border pt-4 first:border-t-0 first:pt-0 md:border-t-0 md:pt-0',
+    );
 
     expectNoFragments(source, [
       'function SectionBlock(',
@@ -65,7 +68,10 @@ describe('notebook locked and empty state contracts', () => {
 
     expectContains(source, 'isGuestWorkspace ? (');
     expectContains(source, "t('workspace.locked_notebook_notice')");
-    expectContains(source, '<Notice tone="locked" title={t(\'workspace.sign_in_required_short\')}>');
+    expectContains(
+      source,
+      '<Notice tone="locked" title={t(\'workspace.sign_in_required_short\')}>',
+    );
     expectContains(source, '<Notice tone="locked" title={createLabel} compact>');
     expectContains(source, 'disabled={!canManageWorkspace}');
 

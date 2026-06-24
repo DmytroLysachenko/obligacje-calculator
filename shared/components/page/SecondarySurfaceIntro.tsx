@@ -30,21 +30,13 @@ export function SecondarySurfaceIntro({
     <section
       className={cn(
         'space-y-4 border-y py-5 md:py-6',
-        tone === 'amber'
-          ? 'border-warning/40 bg-warning/5'
-          : 'border-border',
+        tone === 'amber' ? 'border-warning/40 bg-warning/5' : 'border-border',
       )}
     >
-      <div className="ui-meta font-semibold">
-        {eyebrow}
-      </div>
+      <div className="ui-meta font-semibold">{eyebrow}</div>
       <div className="space-y-3">
-        <h1 className="ui-section-title">
-          {title}
-        </h1>
-        <p className="ui-body max-w-4xl">
-          {description}
-        </p>
+        <h1 className="ui-section-title">{title}</h1>
+        <p className="ui-body max-w-4xl">{description}</p>
       </div>
       {actions.length > 0 ? (
         <div className="flex flex-wrap gap-3 border-t border-border pt-4">
@@ -55,9 +47,7 @@ export function SecondarySurfaceIntro({
               variant={action.variant ?? 'default'}
               className={cn(
                 'rounded-md',
-                action.variant === 'outline'
-                  ? 'border-border'
-                  : undefined,
+                action.variant === 'outline' ? 'border-border' : undefined,
               )}
             >
               <Link href={action.href}>{action.label}</Link>

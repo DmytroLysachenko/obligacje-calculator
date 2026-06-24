@@ -1,6 +1,6 @@
-import {readFileSync} from 'node:fs';
-import {join} from 'node:path';
-import {describe, expect, it} from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
 
 const root = process.cwd();
 
@@ -30,7 +30,9 @@ describe('comparison layout contract', () => {
     expect(source).not.toContain('max-w-7xl');
     expect(styles).toContain('.comparison-wide-frame');
     expect(styles).toContain('width: calc(100vw - var(--sidebar-width) - 5rem);');
-    expect(styles).toContain('margin-left: calc((100% - (100vw - var(--sidebar-width) - 5rem)) / 2);');
+    expect(styles).toContain(
+      'margin-left: calc((100% - (100vw - var(--sidebar-width) - 5rem)) / 2);',
+    );
   });
 
   it('keeps the A/B comparison workspace wide enough for result-heavy content', () => {

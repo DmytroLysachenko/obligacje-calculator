@@ -1,6 +1,6 @@
-import {readFileSync} from 'node:fs';
-import {join} from 'node:path';
-import {describe, expect, it} from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
 
 const projectRoot = process.cwd();
 
@@ -38,7 +38,9 @@ describe('comparison fairness contracts', () => {
     expectContains(source, "t('comparison.auto_rollover_fairness_desc')");
     expectContains(source, "t('comparison.auto_rollover_mode_label')");
     expectContains(source, '<Notice tone="info"');
-    expect(source).not.toContain('<Notice tone="warning" title={t(\'comparison.duration_mismatch.title\')}>');
+    expect(source).not.toContain(
+      '<Notice tone="warning" title={t(\'comparison.duration_mismatch.title\')}>',
+    );
     expect(source).not.toContain('maturityMode={maturityMode}');
   });
 

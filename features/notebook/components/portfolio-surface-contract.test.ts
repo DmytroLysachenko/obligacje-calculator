@@ -1,6 +1,6 @@
-import {readFileSync} from 'node:fs';
-import {join} from 'node:path';
-import {describe, expect, it} from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
 
 const root = process.cwd();
 
@@ -36,7 +36,10 @@ describe('portfolio notebook surface contract', () => {
     expectContains(source, 'border-l-2 border-border pl-3 pt-0.5 text-foreground');
     expectContains(source, 'text-[10px] font-semibold tracking-[0.08em] text-muted-foreground');
     expectContains(source, 'h-9 w-9 rounded-md text-muted-foreground hover:text-destructive');
-    expectContains(source, 'grid gap-0 divide-y divide-dashed divide-border border-y border-border');
+    expectContains(
+      source,
+      'grid gap-0 divide-y divide-dashed divide-border border-y border-border',
+    );
 
     expectNoFragments(source, [
       'rounded-md bg-muted p-2.5',
@@ -67,8 +70,14 @@ describe('portfolio notebook surface contract', () => {
 
     expectContains(source, 'const detailTabTriggerClassName =');
     expectContains(source, 'rounded-none border-b-2 border-transparent px-3.5 py-2');
-    expectContains(source, 'data-[state=active]:border-foreground data-[state=active]:bg-transparent');
-    expectContains(source, '<TabsList className="mb-5 h-auto w-full justify-start gap-3 border-b border-border bg-transparent p-0 md:w-fit">');
+    expectContains(
+      source,
+      'data-[state=active]:border-foreground data-[state=active]:bg-transparent',
+    );
+    expectContains(
+      source,
+      '<TabsList className="mb-5 h-auto w-full justify-start gap-3 border-b border-border bg-transparent p-0 md:w-fit">',
+    );
     expectContains(source, 'className={detailTabTriggerClassName}');
 
     expectNoFragments(source, [
@@ -81,12 +90,21 @@ describe('portfolio notebook surface contract', () => {
   it('keeps portfolio lots and liquidity windows row-based', () => {
     const source = read(files.lotsTab);
 
-    expectContains(source, "import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';");
-    expectContains(source, "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
+    expectContains(
+      source,
+      "import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';",
+    );
+    expectContains(
+      source,
+      "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';",
+    );
     expectContains(source, 'const maturityWindowOptions = [30, 90, 180] as const;');
     expectContains(source, '<Table className="w-full table-fixed text-sm tabular-nums">');
     expectContains(source, 'sticky top-0 z-10 h-12 w-[14%] bg-background');
-    expectContains(source, 'className="h-14 border-b border-border transition-colors hover:bg-muted/25"');
+    expectContains(
+      source,
+      'className="h-14 border-b border-border transition-colors hover:bg-muted/25"',
+    );
     expectContains(source, '<SegmentedControl');
     expectContains(source, 'className="grid-cols-3"');
     expectContains(source, '<div className="border-y border-border py-4">');
@@ -106,7 +124,10 @@ describe('portfolio notebook surface contract', () => {
   it('keeps portfolio analytics explanatory copy inline', () => {
     const source = read(files.analyticsTab);
 
-    expectContains(source, "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
+    expectContains(
+      source,
+      "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';",
+    );
     expectContains(source, '<section className="border-t border-border py-5">');
     expectContains(source, '<FormInlineNotice');
     expectContains(source, 'tone="success"');
@@ -125,8 +146,14 @@ describe('portfolio notebook surface contract', () => {
 
     expectContains(source, 'getPublicSharedPortfolioPageData');
     expectContains(source, 'buildSharedPortfolioPageMetadata');
-    expectContains(source, 'mb-8 flex items-center justify-between gap-4 border-y border-border py-4');
-    expectContains(source, 'border-l-2 border-border pl-3 text-[10px] font-semibold uppercase tracking-widest text-foreground');
+    expectContains(
+      source,
+      'mb-8 flex items-center justify-between gap-4 border-y border-border py-4',
+    );
+    expectContains(
+      source,
+      'border-l-2 border-border pl-3 text-[10px] font-semibold uppercase tracking-widest text-foreground',
+    );
     expectContains(source, '<PortfolioDetails portfolio={portfolio} onBack={() => {}} />');
     expectContains(service, 'export async function getPublicSharedPortfolioPageData');
     expectContains(service, 'await ensurePortfolioSchemaCompat();');

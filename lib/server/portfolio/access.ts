@@ -37,10 +37,10 @@ function isMissingAuthTableError(error: unknown) {
   }
 
   return (
-    error.message.includes('relation "user" does not exist')
-    || error.message.includes('relation "session" does not exist')
-    || error.message.includes('relation "account" does not exist')
-    || error.message.includes('relation "verificationToken" does not exist')
+    error.message.includes('relation "user" does not exist') ||
+    error.message.includes('relation "session" does not exist') ||
+    error.message.includes('relation "account" does not exist') ||
+    error.message.includes('relation "verificationToken" does not exist')
   );
 }
 
@@ -76,7 +76,9 @@ async function ensureGuestOwner(ownerId: string) {
     await ensureGuestPortfolioOwner(ownerId);
   } catch (error) {
     if (isMissingAuthTableError(error)) {
-      console.warn('[PortfolioAccess] Auth user table missing, using detached guest notebook owner.');
+      console.warn(
+        '[PortfolioAccess] Auth user table missing, using detached guest notebook owner.',
+      );
       return;
     }
 

@@ -1,8 +1,6 @@
 type TranslateFn = (key: string) => string;
 
-export function buildTimelineExportHeaders(
-  t: TranslateFn,
-) {
+export function buildTimelineExportHeaders(t: TranslateFn) {
   return {
     date: t('common.as_of'),
     period: t('bonds.calculation_trace.header_year'),
@@ -27,9 +25,7 @@ export function buildTimelineExportHeaders(
   } as const;
 }
 
-export function buildLotsExportHeaders(
-  t: TranslateFn,
-) {
+export function buildLotsExportHeaders(t: TranslateFn) {
   return {
     purchaseDate: t('bonds.purchase_date'),
     maturityDate: t('bonds.maturity_date'),
@@ -41,9 +37,7 @@ export function buildLotsExportHeaders(
   } as const;
 }
 
-export function buildComparisonExportHeaders(
-  t: TranslateFn,
-) {
+export function buildComparisonExportHeaders(t: TranslateFn) {
   return {
     date: t('common.as_of'),
     period: t('common.period'),

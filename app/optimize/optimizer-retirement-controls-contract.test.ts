@@ -37,16 +37,28 @@ describe('optimizer and retirement control surface contracts', () => {
     const source = read(files.optimizer);
     const inputPanel = read(files.optimizerInputPanel);
 
-    expectContains(source, "import { OptimizerInputPanel } from '@/features/optimizer/components/OptimizerInputPanel';");
+    expectContains(
+      source,
+      "import { OptimizerInputPanel } from '@/features/optimizer/components/OptimizerInputPanel';",
+    );
     expectContains(source, '<OptimizerInputPanel');
-    expectContains(inputPanel, "import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';");
-    expectContains(source, "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
+    expectContains(
+      inputPanel,
+      "import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';",
+    );
+    expectContains(
+      source,
+      "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';",
+    );
     expectContains(inputPanel, '<AdvancedAssumptionsDisclosure');
     expectContains(inputPanel, "title={t('optimizer_page.advanced_title')}");
     expectContains(inputPanel, "description={t('optimizer_page.advanced_description')}");
     expectContains(inputPanel, '<MacroDefaultsSummary showNbp compact />');
     expectContains(inputPanel, "title={t('optimizer_page.family_bonds_title')}");
-    expectContains(inputPanel, "description={`${t('optimizer_page.family_bonds_description')} ${t('optimizer_page.family_bonds_note'");
+    expectContains(
+      inputPanel,
+      "description={`${t('optimizer_page.family_bonds_description')} ${t('optimizer_page.family_bonds_note'",
+    );
     expectContains(inputPanel, "description={t('optimizer_page.macro_scope.indexed')}");
     expectContains(inputPanel, "description={t('optimizer_page.macro_scope.floating')}");
 
@@ -87,7 +99,10 @@ describe('optimizer and retirement control surface contracts', () => {
   it('keeps retirement advanced controls on the same shared disclosure language', () => {
     const source = read(files.retirement);
 
-    expectContains(source, "import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';");
+    expectContains(
+      source,
+      "import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';",
+    );
     expectContains(source, '<AdvancedAssumptionsDisclosure');
     expectContains(source, 'title={labels.advancedAssumptions}');
     expectContains(source, 'description={labels.advancedAssumptionsDesc}');
@@ -117,6 +132,6 @@ describe('optimizer and retirement control surface contracts', () => {
     expectContains(notice, 'border-l-2 px-4 py-3 text-sm leading-6');
     expectContains(notice, 'title?: React.ReactNode;');
     expectContains(designSystem, "const optimizer = read('app/optimize/BondOptimizerClient.tsx');");
-    expectContains(designSystem, 'expectUsesShared(source, \'FormSelect\');');
+    expectContains(designSystem, "expectUsesShared(source, 'FormSelect');");
   });
 });

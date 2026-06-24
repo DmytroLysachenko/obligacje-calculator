@@ -1,6 +1,6 @@
-import {cookies} from 'next/headers';
-import {getRequestConfig} from 'next-intl/server';
-import {defaultLocale, isSupportedLocale} from './config';
+import { cookies } from 'next/headers';
+import { getRequestConfig } from 'next-intl/server';
+import { defaultLocale, isSupportedLocale } from './config';
 
 export default getRequestConfig(async () => {
   const cookieStore = await cookies();
@@ -9,6 +9,6 @@ export default getRequestConfig(async () => {
 
   return {
     locale,
-    messages: (await import(`./translations/${locale}.json`)).default
+    messages: (await import(`./translations/${locale}.json`)).default,
   };
 });

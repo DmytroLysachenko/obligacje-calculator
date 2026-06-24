@@ -7,18 +7,11 @@ const INDEXED_BOND_TYPES = new Set<BondType>([
   BondType.ROD,
 ]);
 
-const FLOATING_NBP_BOND_TYPES = new Set<BondType>([
-  BondType.ROR,
-  BondType.DOR,
-]);
+const FLOATING_NBP_BOND_TYPES = new Set<BondType>([BondType.ROR, BondType.DOR]);
 
-export type InflationAssumptionEffect =
-  | 'coupon-and-real-value'
-  | 'real-value-only';
+export type InflationAssumptionEffect = 'coupon-and-real-value' | 'real-value-only';
 
-export type NbpAssumptionEffect =
-  | 'coupon-after-opening-period'
-  | 'context-only';
+export type NbpAssumptionEffect = 'coupon-after-opening-period' | 'context-only';
 
 export function isInflationIndexedBondType(bondType: BondType) {
   return INDEXED_BOND_TYPES.has(bondType);
@@ -28,9 +21,7 @@ export function isFloatingNbpBondType(bondType: BondType) {
   return FLOATING_NBP_BOND_TYPES.has(bondType);
 }
 
-export function getInflationAssumptionEffect(
-  bondType: BondType,
-): InflationAssumptionEffect {
+export function getInflationAssumptionEffect(bondType: BondType): InflationAssumptionEffect {
   if (isInflationIndexedBondType(bondType)) {
     return 'coupon-and-real-value';
   }

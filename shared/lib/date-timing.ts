@@ -17,7 +17,10 @@ export function ensureDateOrder(purchaseDate: string, withdrawalDate: string): s
 }
 
 export function getHorizonMonths(purchaseDate: string, withdrawalDate: string): number {
-  return Math.max(1, differenceInCalendarMonths(parseDateString(withdrawalDate), parseDateString(purchaseDate)));
+  return Math.max(
+    1,
+    differenceInCalendarMonths(parseDateString(withdrawalDate), parseDateString(purchaseDate)),
+  );
 }
 
 export function getWithdrawalDateFromMonths(purchaseDate: string, months: number): string {

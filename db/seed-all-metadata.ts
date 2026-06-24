@@ -1,4 +1,4 @@
-import {seedAllMetadata} from './seed/index';
+import { seedAllMetadata } from './seed/index';
 
 async function seed() {
   await seedAllMetadata();

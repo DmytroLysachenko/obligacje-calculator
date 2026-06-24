@@ -130,11 +130,7 @@ describe('ui primitive visual contracts', () => {
       'shadow-sm',
     ]);
 
-    expectSource('components/ui/tooltip.tsx', [
-      'rounded-md',
-      'shadow-sm',
-      'text-xs',
-    ]);
+    expectSource('components/ui/tooltip.tsx', ['rounded-md', 'shadow-sm', 'text-xs']);
   });
 
   it('prevents old decorative primitive styles from coming back', () => {

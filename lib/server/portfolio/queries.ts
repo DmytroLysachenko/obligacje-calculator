@@ -95,12 +95,13 @@ export async function exportOwnerPortfolio(
     expectedNbpRate: macroDefaults.expectedNbpRate,
   });
 
-  const simulation = lots.length > 0
-    ? await calculationService.calculate({
-        kind: ScenarioKind.PORTFOLIO_SIMULATION,
-        payload,
-      }) as PortfolioSimulationCalculationEnvelope
-    : null;
+  const simulation =
+    lots.length > 0
+      ? ((await calculationService.calculate({
+          kind: ScenarioKind.PORTFOLIO_SIMULATION,
+          payload,
+        })) as PortfolioSimulationCalculationEnvelope)
+      : null;
 
   const exportData = {
     version: '1.0',

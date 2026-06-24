@@ -33,15 +33,19 @@ describe('runtime env helpers', () => {
   });
 
   it('detects configured OAuth providers only from complete id and secret pairs', () => {
-    expect(getConfiguredOAuthProviders({
-      AUTH_GOOGLE_ID: 'google-id',
-      AUTH_GOOGLE_SECRET: 'google-secret',
-      AUTH_FACEBOOK_ID: 'facebook-id',
-    })).toEqual(['google']);
-    expect(hasOAuthProvider({
-      AUTH_FACEBOOK_ID: 'facebook-id',
-      AUTH_FACEBOOK_SECRET: 'facebook-secret',
-    })).toBe(true);
+    expect(
+      getConfiguredOAuthProviders({
+        AUTH_GOOGLE_ID: 'google-id',
+        AUTH_GOOGLE_SECRET: 'google-secret',
+        AUTH_FACEBOOK_ID: 'facebook-id',
+      }),
+    ).toEqual(['google']);
+    expect(
+      hasOAuthProvider({
+        AUTH_FACEBOOK_ID: 'facebook-id',
+        AUTH_FACEBOOK_SECRET: 'facebook-secret',
+      }),
+    ).toBe(true);
     expect(hasOAuthProvider({ AUTH_GOOGLE_ID: 'google-id' })).toBe(false);
   });
 });

@@ -18,6 +18,6 @@ export function useChartData<T>(endpoint: string) {
     data,
     isLoading,
     isError: !!error,
-    errorDetails: error as ErrorWithContext | undefined
+    errorDetails: error as ErrorWithContext | undefined,
   };
 }

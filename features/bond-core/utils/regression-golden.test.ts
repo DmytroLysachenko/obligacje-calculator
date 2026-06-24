@@ -7,18 +7,18 @@ describe('Bond Engine Regression: Golden Results', () => {
   scenarios.forEach((scenario) => {
     it(`matches golden result for: ${scenario.name}`, () => {
       const result = calculateBondInvestment(scenario.inputs as unknown as BondInputs);
-      
+
       const expected = scenario.expected;
-      
+
       if (expected.totalProfit !== undefined) {
         expect(result.totalProfit).toBeCloseTo(expected.totalProfit, 1);
       }
-      
+
       if (expected.totalTax !== undefined) {
         // Tax rounding can be tricky, allow small margin of 2 PLN
         expect(Math.abs(result.totalTax - expected.totalTax)).toBeLessThanOrEqual(2);
       }
-      
+
       if (expected.netPayoutValue !== undefined) {
         expect(result.netPayoutValue).toBeCloseTo(expected.netPayoutValue, 1);
       }

@@ -11,23 +11,13 @@ interface MacroDefaultsSummaryProps {
   compact?: boolean;
 }
 
-function MacroDefaultRow({
-  label,
-  value,
-  asOf,
-}: {
-  label: string;
-  value: number;
-  asOf?: string;
-}) {
+function MacroDefaultRow({ label, value, asOf }: { label: string; value: number; asOf?: string }) {
   const { t } = useAppI18n();
 
   return (
     <div className="flex items-start justify-between gap-3 border-b border-dashed border-border py-2.5 last:border-b-0">
       <div className="space-y-1">
-        <p className="ui-metadata text-muted-foreground">
-          {label}
-        </p>
+        <p className="ui-metadata text-muted-foreground">{label}</p>
         <p className="text-[11px] leading-5 text-muted-foreground">
           {asOf
             ? t('bonds.market_assumptions.source_up_to_date')

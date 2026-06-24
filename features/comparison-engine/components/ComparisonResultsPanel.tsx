@@ -2,7 +2,12 @@
 
 import React from 'react';
 import { LineChart } from 'lucide-react';
-import { BondInputs, CalculationResult, ChartStep, InterestPayout } from '@/features/bond-core/types';
+import {
+  BondInputs,
+  CalculationResult,
+  ChartStep,
+  InterestPayout,
+} from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import {
   BondValueChart,
@@ -59,144 +64,150 @@ export function ComparisonResultsPanel({
   const absoluteGap = Math.abs(valueA - valueB);
   const lowerValue = Math.min(valueA, valueB);
   const relativeGap = lowerValue > 0 ? (absoluteGap / lowerValue) * 100 : 0;
-  const comparisonMetrics = React.useMemo<MetricStripItem[]>(() => [
-    {
-      label: t('comparison.scenario_a'),
-      value: formatCurrency(valueA),
-      tone: 'text-primary',
-    },
-    {
-      label: t('comparison.scenario_b'),
-      value: formatCurrency(valueB),
-      tone: 'text-success',
-    },
-    {
-      label: `${t('comparison.scenario_a')} ${t('common.real_value')}`,
-      value: formatCurrency(resultsA.finalRealValue),
-      tone: 'text-foreground',
-    },
-    {
-      label: `${t('comparison.scenario_b')} ${t('common.real_value')}`,
-      value: formatCurrency(resultsB.finalRealValue),
-      tone: 'text-foreground',
-    },
-  ], [formatCurrency, resultsA.finalRealValue, resultsB.finalRealValue, t, valueA, valueB]);
-  const differenceMetrics = React.useMemo<MetricStripItem[]>(() => [
-    {
-      label: t('comparison.summary_leading_bond'),
-      value: winnerInput ? `${winnerInput.bondType} (${winner})` : t('comparison.tie'),
-      description: winnerInput
-        ? `${winner === 'A' ? t('comparison.scenario_a') : t('comparison.scenario_b')} ${t('comparison.summary_higher_payout')}`
-        : t('comparison.summary_equal_outcome'),
-      tone: winner === 'B' ? 'text-success' : 'text-primary',
-    },
-    {
-      label: t('comparison.summary_absolute_gap'),
-      value: formatCurrency(absoluteGap),
-      description: t('comparison.summary_net_payout'),
-      tone: 'text-foreground',
-    },
-    {
-      label: t('comparison.summary_relative_gap'),
-      value: `${relativeGap.toFixed(1)}%`,
-      description: t('comparison.summary_compared_to_lower'),
-      tone: 'text-foreground',
-    },
-  ], [absoluteGap, formatCurrency, relativeGap, t, winner, winnerInput]);
-  const exportActions = React.useMemo(() => [
-    {
-      label: t('comparison.export_comparison_csv'),
-      kind: 'csv' as const,
-      onClick: () =>
-        exportComparisonCsv({
-          timelineA: resultsA.timeline,
-          timelineB: resultsB.timeline,
-          headers: buildComparisonExportHeaders(t),
-          language,
-          fileName: buildCombinedComparisonCsvFilename(inputsA.bondType, inputsB.bondType),
-        }),
-    },
-  ], [inputsA.bondType, inputsB.bondType, language, resultsA.timeline, resultsB.timeline, t]);
-  const valueChartData = React.useMemo<BondValueChartPoint[]>(
-    () => {
-      const mappedPoints = chartData.map((point) => {
-        const scenarioGroups: BondValueChartTooltipGroup[] = [
-          {
-            id: 'scenario-a',
-            title: `${inputsA.bondType} (${t('comparison.scenario_a')})`,
-            color: scenarioAColor,
-            projected: point.isProjected,
-            metrics: [
-              {
-                label: t('common.nominal_value'),
-                value: point.nominalA,
-                color: scenarioAColor,
-              },
-              {
-                label: t('common.real_value'),
-                value: point.realA,
-                color: scenarioAColor,
-              },
-              {
-                label: t('common.net_profit'),
-                value: point.nominalA - resultsA.initialInvestment,
-                color: scenarioAColor,
-              },
-            ],
-          },
-          {
-            id: 'scenario-b',
-            title: `${inputsB.bondType} (${t('comparison.scenario_b')})`,
-            color: scenarioBColor,
-            projected: point.isProjected,
-            metrics: [
-              {
-                label: t('common.nominal_value'),
-                value: point.nominalB,
-                color: scenarioBColor,
-              },
-              {
-                label: t('common.real_value'),
-                value: point.realB,
-                color: scenarioBColor,
-              },
-              {
-                label: t('common.net_profit'),
-                value: point.nominalB - resultsB.initialInvestment,
-                color: scenarioBColor,
-              },
-            ],
-          },
-        ];
-
-        return {
-          label: point.label,
-          date: point.label,
-          dateKey: point.dateKey,
-          nominalA: point.nominalA,
-          realA: point.realA,
-          nominalB: point.nominalB,
-          realB: point.realB,
-          inflation: point.inflation,
-          nbp: point.nbp,
-          isProjected: point.isProjected,
-          scenarioGroups,
-        };
-      });
-
-      return applyChartContextRates(mappedPoints, inputsA);
-    },
-    [
-      chartData,
-      inputsA,
-      inputsB.bondType,
-      resultsA.initialInvestment,
-      resultsB.initialInvestment,
-      scenarioAColor,
-      scenarioBColor,
-      t,
+  const comparisonMetrics = React.useMemo<MetricStripItem[]>(
+    () => [
+      {
+        label: t('comparison.scenario_a'),
+        value: formatCurrency(valueA),
+        tone: 'text-primary',
+      },
+      {
+        label: t('comparison.scenario_b'),
+        value: formatCurrency(valueB),
+        tone: 'text-success',
+      },
+      {
+        label: `${t('comparison.scenario_a')} ${t('common.real_value')}`,
+        value: formatCurrency(resultsA.finalRealValue),
+        tone: 'text-foreground',
+      },
+      {
+        label: `${t('comparison.scenario_b')} ${t('common.real_value')}`,
+        value: formatCurrency(resultsB.finalRealValue),
+        tone: 'text-foreground',
+      },
     ],
+    [formatCurrency, resultsA.finalRealValue, resultsB.finalRealValue, t, valueA, valueB],
   );
+  const differenceMetrics = React.useMemo<MetricStripItem[]>(
+    () => [
+      {
+        label: t('comparison.summary_leading_bond'),
+        value: winnerInput ? `${winnerInput.bondType} (${winner})` : t('comparison.tie'),
+        description: winnerInput
+          ? `${winner === 'A' ? t('comparison.scenario_a') : t('comparison.scenario_b')} ${t('comparison.summary_higher_payout')}`
+          : t('comparison.summary_equal_outcome'),
+        tone: winner === 'B' ? 'text-success' : 'text-primary',
+      },
+      {
+        label: t('comparison.summary_absolute_gap'),
+        value: formatCurrency(absoluteGap),
+        description: t('comparison.summary_net_payout'),
+        tone: 'text-foreground',
+      },
+      {
+        label: t('comparison.summary_relative_gap'),
+        value: `${relativeGap.toFixed(1)}%`,
+        description: t('comparison.summary_compared_to_lower'),
+        tone: 'text-foreground',
+      },
+    ],
+    [absoluteGap, formatCurrency, relativeGap, t, winner, winnerInput],
+  );
+  const exportActions = React.useMemo(
+    () => [
+      {
+        label: t('comparison.export_comparison_csv'),
+        kind: 'csv' as const,
+        onClick: () =>
+          exportComparisonCsv({
+            timelineA: resultsA.timeline,
+            timelineB: resultsB.timeline,
+            headers: buildComparisonExportHeaders(t),
+            language,
+            fileName: buildCombinedComparisonCsvFilename(inputsA.bondType, inputsB.bondType),
+          }),
+      },
+    ],
+    [inputsA.bondType, inputsB.bondType, language, resultsA.timeline, resultsB.timeline, t],
+  );
+  const valueChartData = React.useMemo<BondValueChartPoint[]>(() => {
+    const mappedPoints = chartData.map((point) => {
+      const scenarioGroups: BondValueChartTooltipGroup[] = [
+        {
+          id: 'scenario-a',
+          title: `${inputsA.bondType} (${t('comparison.scenario_a')})`,
+          color: scenarioAColor,
+          projected: point.isProjected,
+          metrics: [
+            {
+              label: t('common.nominal_value'),
+              value: point.nominalA,
+              color: scenarioAColor,
+            },
+            {
+              label: t('common.real_value'),
+              value: point.realA,
+              color: scenarioAColor,
+            },
+            {
+              label: t('common.net_profit'),
+              value: point.nominalA - resultsA.initialInvestment,
+              color: scenarioAColor,
+            },
+          ],
+        },
+        {
+          id: 'scenario-b',
+          title: `${inputsB.bondType} (${t('comparison.scenario_b')})`,
+          color: scenarioBColor,
+          projected: point.isProjected,
+          metrics: [
+            {
+              label: t('common.nominal_value'),
+              value: point.nominalB,
+              color: scenarioBColor,
+            },
+            {
+              label: t('common.real_value'),
+              value: point.realB,
+              color: scenarioBColor,
+            },
+            {
+              label: t('common.net_profit'),
+              value: point.nominalB - resultsB.initialInvestment,
+              color: scenarioBColor,
+            },
+          ],
+        },
+      ];
+
+      return {
+        label: point.label,
+        date: point.label,
+        dateKey: point.dateKey,
+        nominalA: point.nominalA,
+        realA: point.realA,
+        nominalB: point.nominalB,
+        realB: point.realB,
+        inflation: point.inflation,
+        nbp: point.nbp,
+        isProjected: point.isProjected,
+        scenarioGroups,
+      };
+    });
+
+    return applyChartContextRates(mappedPoints, inputsA);
+  }, [
+    chartData,
+    inputsA,
+    inputsB.bondType,
+    resultsA.initialInvestment,
+    resultsB.initialInvestment,
+    scenarioAColor,
+    scenarioBColor,
+    t,
+  ]);
   const leftDomain = React.useMemo(
     () =>
       computeNumericDomain(
@@ -276,15 +287,21 @@ export function ComparisonResultsPanel({
           <LineChart className="h-5 w-5 text-primary" />
           {t('comparison.performance_over_time')}
         </h2>
-        <p className="ui-body text-muted-foreground">
-          {t('comparison.chart_header_desc')}
-        </p>
+        <p className="ui-body text-muted-foreground">{t('comparison.chart_header_desc')}</p>
       </div>
       <div>
         <div className="mb-5 space-y-3">
-          <MetricStrip items={differenceMetrics} columns="grid-cols-1 md:grid-cols-3" className="shadow-none" />
+          <MetricStrip
+            items={differenceMetrics}
+            columns="grid-cols-1 md:grid-cols-3"
+            className="shadow-none"
+          />
           <div className="grid gap-3 2xl:grid-cols-[minmax(0,1fr)_280px]">
-            <MetricStrip items={comparisonMetrics} columns="grid-cols-1 md:grid-cols-2" className="shadow-none" />
+            <MetricStrip
+              items={comparisonMetrics}
+              columns="grid-cols-1 md:grid-cols-2"
+              className="shadow-none"
+            />
             <ResultActionGrid
               actions={exportActions}
               className="border-0 bg-transparent px-0 py-3 lg:w-auto"
@@ -341,17 +358,13 @@ export function ComparisonResultsPanel({
               ) : null}
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="border-t border-border py-4">
-                  <p className="ui-card-title">
-                    {t('comparison.end_level')}
-                  </p>
+                  <p className="ui-card-title">{t('comparison.end_level')}</p>
                   <p className="mt-1 text-xs leading-6 text-muted-foreground">
                     {t('comparison.end_level_desc')}
                   </p>
                 </div>
                 <div className="border-t border-border py-4">
-                  <p className="ui-card-title">
-                    {t('comparison.update_rhythm')}
-                  </p>
+                  <p className="ui-card-title">{t('comparison.update_rhythm')}</p>
                   <p className="mt-1 text-xs leading-6 text-muted-foreground">
                     {t('comparison.update_rhythm_desc')}
                   </p>

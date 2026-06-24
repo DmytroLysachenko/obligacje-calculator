@@ -4,11 +4,7 @@ import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 const STORAGE_KEY = 'obligacje.saved-single-scenarios.v1';
 const MAX_SCENARIOS = 12;
 
-export type StarterScenarioId =
-  | 'inflation-protection'
-  | 'child-fund'
-  | 'cash-parking'
-  | 'ike-ikze';
+export type StarterScenarioId = 'inflation-protection' | 'child-fund' | 'cash-parking' | 'ike-ikze';
 
 export interface SavedScenarioRecord {
   id: string;
@@ -33,9 +29,7 @@ const createId = () =>
     : `scenario-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
 const sortScenarios = (scenarios: SavedScenarioRecord[]) =>
-  [...scenarios].sort(
-    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-  );
+  [...scenarios].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
 
 export function getStarterScenarios(): StarterScenarioDefinition[] {
   return [
@@ -137,7 +131,9 @@ export function createSavedScenario(
   const now = new Date().toISOString();
   return {
     id: createId(),
-    name: overrides?.name ?? `${inputs.bondType} ${inputs.investmentHorizonMonths ?? Math.round(inputs.duration * 12)}M`,
+    name:
+      overrides?.name ??
+      `${inputs.bondType} ${inputs.investmentHorizonMonths ?? Math.round(inputs.duration * 12)}M`,
     description:
       overrides?.description ??
       `Saved ${inputs.bondType} scenario for ${inputs.initialInvestment.toLocaleString('en-US')} PLN.`,
@@ -175,7 +171,10 @@ function persistSavedScenarios(scenarios: SavedScenarioRecord[]) {
     return;
   }
 
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(sortScenarios(scenarios).slice(0, MAX_SCENARIOS)));
+  window.localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(sortScenarios(scenarios).slice(0, MAX_SCENARIOS)),
+  );
 }
 
 export function saveScenarioRecord(record: SavedScenarioRecord): SavedScenarioRecord[] {

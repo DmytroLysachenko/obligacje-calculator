@@ -35,10 +35,7 @@ export function deriveSeriesCode(
   return `${symbol}${format(maturityDate, 'MMyy')}`;
 }
 
-export function deriveSeriesWindow(
-  emissionMonth: string,
-  definition: BondDefinition,
-) {
+export function deriveSeriesWindow(emissionMonth: string, definition: BondDefinition) {
   const emissionStart = startOfMonth(parseISO(emissionMonth));
   const sellStartDate = format(emissionStart, 'yyyy-MM-dd');
   const sellEndDate = format(endOfMonth(emissionStart), 'yyyy-MM-dd');

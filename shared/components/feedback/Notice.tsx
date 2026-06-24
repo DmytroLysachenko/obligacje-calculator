@@ -47,14 +47,8 @@ export function Notice({
       <div className="flex items-start gap-3">
         <Icon className="mt-0.5 h-4 w-4 shrink-0" />
         <div className="min-w-0">
-          {title ? (
-            <p className="font-semibold text-foreground">
-              {title}
-            </p>
-          ) : null}
-          <div className={cn(title && 'mt-1')}>
-            {children}
-          </div>
+          {title ? <p className="font-semibold text-foreground">{title}</p> : null}
+          <div className={cn(title && 'mt-1')}>{children}</div>
         </div>
       </div>
     </div>

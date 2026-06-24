@@ -7,7 +7,8 @@ const root = process.cwd();
 const files = {
   singleChart: 'features/single-calculator/components/BondChart.tsx',
   chartLegend: 'shared/components/charts/chart-legend-contract.test.ts',
-  overlayContract: 'features/single-calculator/components/bond-chart-context-overlay-contract.test.ts',
+  overlayContract:
+    'features/single-calculator/components/bond-chart-context-overlay-contract.test.ts',
   disclosure: 'shared/components/forms/AdvancedAssumptionsDisclosure.tsx',
   disclosureContract: 'shared/components/forms/advanced-assumptions-contract.test.ts',
 } as const;
@@ -34,7 +35,10 @@ describe('chart and disclosure regression contracts', () => {
   it('keeps the single calculator chart focused on PLN values', () => {
     const source = read(files.singleChart);
 
-    expectContains(source, 'import { computeNumericDomain, computeRateDomain, sampleSeriesPoints } from "@/shared/lib/chart-series";');
+    expectContains(
+      source,
+      'import { computeNumericDomain, computeRateDomain, sampleSeriesPoints } from "@/shared/lib/chart-series";',
+    );
     expectContains(source, 'const leftDomain = React.useMemo(');
     expectContains(source, 'const rightDomain = React.useMemo(');
     expectContains(source, 'computeRateDomain(');
@@ -76,7 +80,10 @@ describe('chart and disclosure regression contracts', () => {
 
     expectContains(source, '<Accordion type="single" collapsible defaultValue="">');
     expectContains(source, '<AccordionItem value="advanced-assumptions" className="border-0">');
-    expectContains(source, '<AccordionTrigger className="border-0 border-b border-border px-0 py-4 hover:no-underline">');
+    expectContains(
+      source,
+      '<AccordionTrigger className="border-0 border-b border-border px-0 py-4 hover:no-underline">',
+    );
     expectContains(source, 'border-l-2 border-border pl-3 pt-0.5 text-muted-foreground');
     expectContains(source, 'max-w-2xl text-xs font-medium leading-5 text-muted-foreground');
 
@@ -96,7 +103,10 @@ describe('chart and disclosure regression contracts', () => {
 
     expectContains(chartLegend, 'const showContextAxis = showInflationOverlay || showNbpOverlay;');
     expectContains(chartLegend, 'dataKey="inflation"');
-    expectContains(overlayContract, 'keeps macro context rates optional through chart toolbar controls');
+    expectContains(
+      overlayContract,
+      'keeps macro context rates optional through chart toolbar controls',
+    );
     expectContains(overlayContract, 'expectContains(shared, \'yAxisId="right"\')');
     expectContains(disclosureContract, 'border-0 border-b border-border px-0 py-4');
     expectContains(disclosureContract, 'className="border-b border-border px-0 py-4');

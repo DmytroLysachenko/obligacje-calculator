@@ -24,13 +24,14 @@ export default function GlobalError({
             <AlertTriangle className="h-12 w-12 text-destructive" />
           </div>
         </div>
-        
+
         <div className="space-y-2">
           <h1 className="text-[32px] font-semibold leading-tight text-foreground">
             Engine Stall Detected
           </h1>
           <p className="ui-body text-muted-foreground">
-            The calculation engine encountered an unexpected exception. Your data is safe, but we need to reset the current state.
+            The calculation engine encountered an unexpected exception. Your data is safe, but we
+            need to reset the current state.
           </p>
         </div>
 
@@ -43,19 +44,15 @@ export default function GlobalError({
         )}
 
         <div className="flex flex-col gap-3 pt-4">
-          <Button 
+          <Button
             onClick={() => reset()}
             className="h-12 gap-2 rounded-lg font-semibold transition-all active:scale-95"
           >
             <RefreshCcw className="h-4 w-4" />
             RESTART ENGINE
           </Button>
-          
-          <Button 
-            variant="outline"
-            asChild
-            className="h-12 rounded-lg font-semibold"
-          >
+
+          <Button variant="outline" asChild className="h-12 rounded-lg font-semibold">
             <Link href="/">
               <Home className="h-4 w-4 mr-2" />
               BACK TO BASE

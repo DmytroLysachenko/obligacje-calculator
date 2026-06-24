@@ -1,5 +1,5 @@
-import { SyncProvider, SyncRecord } from "../types";
-import { fetchSyncResponse } from "../http-gateway";
+import { SyncProvider, SyncRecord } from '../types';
+import { fetchSyncResponse } from '../http-gateway';
 
 interface WorldBankRecord {
   date: string;
@@ -7,17 +7,20 @@ interface WorldBankRecord {
 }
 
 export class WorldBankSyncProvider implements SyncProvider {
-  name = "World Bank (Inflation)";
-  seriesSlug = "pl-cpi";
-  private baseUrl = "https://api.worldbank.org/v2/country/POL/indicator/FP.CPI.TOTL.ZG?format=json";
+  name = 'World Bank (Inflation)';
+  seriesSlug = 'pl-cpi';
+  private baseUrl = 'https://api.worldbank.org/v2/country/POL/indicator/FP.CPI.TOTL.ZG?format=json';
 
   async fetchData(startDate: string, endDate: string): Promise<SyncRecord[]> {
     const startYear = startDate.substring(0, 4);
     const endYear = endDate.substring(0, 4);
-    
-    const response = await fetchSyncResponse(`${this.baseUrl}&date=${startYear}:${endYear}&per_page=100`, {throwOnHttpError: false});
+
+    const response = await fetchSyncResponse(
+      `${this.baseUrl}&date=${startYear}:${endYear}&per_page=100`,
+      { throwOnHttpError: false },
+    );
     if (!response.ok) return [];
-    
+
     const json = await response.json();
     const data = json[1] as WorldBankRecord[];
     if (!data) return [];
@@ -27,8 +30,8 @@ export class WorldBankSyncProvider implements SyncProvider {
         if (item.value === null) return null;
         return {
           seriesSlug: 'pl-cpi',
-          date: `${item.date}-01-01`, 
-          value: typeof item.value === 'string' ? parseFloat(item.value) : item.value
+          date: `${item.date}-01-01`,
+          value: typeof item.value === 'string' ? parseFloat(item.value) : item.value,
         };
       })
       .filter((r): r is SyncRecord => r !== null);

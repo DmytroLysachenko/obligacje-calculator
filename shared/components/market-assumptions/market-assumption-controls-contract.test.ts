@@ -39,21 +39,36 @@ describe('market assumption control contracts', () => {
     const presets = read(files.presets);
     const model = read(files.model);
 
-    expectContains(presets, "import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';");
-    expectContains(source, "from '@/shared/components/market-assumptions/AssumptionPresetControls';");
+    expectContains(
+      presets,
+      "import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';",
+    );
+    expectContains(
+      source,
+      "from '@/shared/components/market-assumptions/AssumptionPresetControls';",
+    );
     expectContains(source, 'AssumptionHeader,');
     expectContains(source, 'CurrentAssumptionValue,');
     expectContains(source, 'ProjectionModeButtons,');
-    expectContains(source, "from '@/shared/components/market-assumptions/AssumptionSectionControls';");
+    expectContains(
+      source,
+      "from '@/shared/components/market-assumptions/AssumptionSectionControls';",
+    );
     expectContains(model, "export type AssumptionSetupMode = 'fixed' | 'simple' | 'advanced';");
     expectContains(controls, 'function ProjectionModeButtons');
     expectContains(controls, 'value={value}');
     expectContains(controls, "{ value: 'fixed', label: t('bonds.market_assumptions.mode_fixed') }");
-    expectContains(controls, "{ value: 'simple', label: t('bonds.market_assumptions.mode_simple') }");
-    expectContains(controls, "{ value: 'advanced', label: t('bonds.market_assumptions.mode_advanced') }");
+    expectContains(
+      controls,
+      "{ value: 'simple', label: t('bonds.market_assumptions.mode_simple') }",
+    );
+    expectContains(
+      controls,
+      "{ value: 'advanced', label: t('bonds.market_assumptions.mode_advanced') }",
+    );
     expectContains(controls, 'itemClassName="h-8 text-[11px] tracking-[0.06em]"');
-    expectContains(source, "const [inflationMode, setInflationMode]");
-    expectContains(source, "const [nbpMode, setNbpMode]");
+    expectContains(source, 'const [inflationMode, setInflationMode]');
+    expectContains(source, 'const [nbpMode, setNbpMode]');
     expectContains(source, 'const activeInflationMode = inflationSetupMode ?? inflationMode;');
     expectContains(source, 'const activeNbpMode = nbpSetupMode ?? nbpMode;');
     expectContains(model, 'function formatCompactPercent');
@@ -63,10 +78,7 @@ describe('market assumption control contracts', () => {
     expectContains(model, 'function getNbpPresetKey');
     expectContains(model, 'function getNbpPresetValue');
     expectContains(model, 'return `Avg ${formatCompactPercent(average)}%`;');
-    expectNoFragments(model, [
-      'fallback.toFixed(1)',
-      'average.toFixed(1)',
-    ]);
+    expectNoFragments(model, ['fallback.toFixed(1)', 'average.toFixed(1)']);
     expectContains(source, 'const inflationHeaderValue =');
     expectContains(source, 'const nbpHeaderValue =');
     expectContains(source, "unit={activeInflationMode === 'advanced' ? '' : '%'}");
@@ -74,14 +86,14 @@ describe('market assumption control contracts', () => {
     expectContains(source, 'onInflationSetupModeChange?.(mode);');
     expectContains(source, 'onNbpSetupModeChange?.(mode);');
     expectContains(source, "section?: 'all' | 'inflation' | 'nbp';");
-    expectContains(source, "showIntro?: boolean;");
-    expectContains(source, "inflationSetupMode?: AssumptionSetupMode;");
-    expectContains(source, "nbpSetupMode?: AssumptionSetupMode;");
+    expectContains(source, 'showIntro?: boolean;');
+    expectContains(source, 'inflationSetupMode?: AssumptionSetupMode;');
+    expectContains(source, 'nbpSetupMode?: AssumptionSetupMode;');
     expectContains(source, 'showInflationSection');
     expectContains(source, 'showNbpSection');
     expectContains(source, '<InflationPresetControls');
     expectContains(source, '<NbpPresetControls');
-    expectContains(presets, "value={getInflationPresetKey(value)}");
+    expectContains(presets, 'value={getInflationPresetKey(value)}');
     expectContains(presets, "{ value: 'stable', label: `${labels.stable} (2.5%)` }");
     expectContains(presets, "{ value: 'high', label: `${labels.high} (6%)` }");
     expectContains(presets, "{ value: 'deflation', label: `${labels.deflation} (-1%)` }");
@@ -96,7 +108,7 @@ describe('market assumption control contracts', () => {
       "label: 'High (6.75%)'",
       "label: 'Low (3.75%)'",
     ]);
-    expectContains(presets, "className=\"grid-cols-3\"");
+    expectContains(presets, 'className="grid-cols-3"');
     expectContains(source, "onUpdate('customInflation', undefined)");
     expectContains(source, "onUpdate('expectedInflation', presetValue)");
     expectContains(source, "onUpdate('customNbpRate', undefined)");
@@ -112,7 +124,7 @@ describe('market assumption control contracts', () => {
       "import { Button } from '@/components/ui/button';",
       'inline-flex rounded-lg bg-muted/35 p-1',
       'grid grid-cols-3 gap-2',
-      "variant=\"outline\"",
+      'variant="outline"',
       "'border-primary bg-primary text-primary-foreground'",
       "value={advancedActive ? 'advanced' : 'simple'}",
     ]);
@@ -135,7 +147,7 @@ describe('market assumption control contracts', () => {
       'rounded-lg bg-muted/35 px-3 py-1.5',
       "compact ? 'text-xl' : 'text-[32px]'",
       "font-black text-primary', compact ? 'text-xl' : 'text-2xl'",
-      '<span className={cn(\'font-black text-primary\'',
+      "<span className={cn('font-black text-primary'",
     ]);
   });
 

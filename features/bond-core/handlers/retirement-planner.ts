@@ -1,8 +1,8 @@
-import { 
-  ScenarioKind, 
-  RetirementPlannerCalculationEnvelope, 
+import {
+  ScenarioKind,
+  RetirementPlannerCalculationEnvelope,
   RetirementPlannerPayload,
-  RetirementPlannerResult
+  RetirementPlannerResult,
 } from '../types/scenarios';
 import { TaxStrategy } from '../types';
 import { BaseHandler, ScenarioHandler, HandlerContext } from './base';
@@ -10,7 +10,10 @@ import { format, addMonths, parseISO } from 'date-fns';
 import Decimal from 'decimal.js';
 import { BondType } from '../types';
 
-export class RetirementPlannerHandler extends BaseHandler implements ScenarioHandler<RetirementPlannerPayload, RetirementPlannerResult> {
+export class RetirementPlannerHandler
+  extends BaseHandler
+  implements ScenarioHandler<RetirementPlannerPayload, RetirementPlannerResult>
+{
   kind = ScenarioKind.RETIREMENT_PLANNER;
 
   private resolveModeledAnnualRate(payload: RetirementPlannerPayload, context: HandlerContext) {
@@ -32,7 +35,10 @@ export class RetirementPlannerHandler extends BaseHandler implements ScenarioHan
     return bondDef.firstYearRate;
   }
 
-  async handle(payload: RetirementPlannerPayload, context: HandlerContext): Promise<RetirementPlannerCalculationEnvelope> {
+  async handle(
+    payload: RetirementPlannerPayload,
+    context: HandlerContext,
+  ): Promise<RetirementPlannerCalculationEnvelope> {
     const horizonMonths = payload.horizonYears * 12;
     const purchaseDate = format(new Date(), 'yyyy-MM-dd');
     const modeledAnnualRate = this.resolveModeledAnnualRate(payload, context);
@@ -50,7 +56,7 @@ export class RetirementPlannerHandler extends BaseHandler implements ScenarioHan
     for (let m = 0; m <= horizonMonths; m++) {
       const currentDate = addMonths(start, m);
       const dateStr = format(currentDate, 'yyyy-MM-dd');
-      
+
       if (m > 0) {
         const withdrawalAmount = Math.min(currentBalance, monthlyWithdrawal);
         currentBalance -= withdrawalAmount;
@@ -63,12 +69,11 @@ export class RetirementPlannerHandler extends BaseHandler implements ScenarioHan
 
       const monthlyRate = new Decimal(modeledAnnualRate).dividedBy(12).dividedBy(100);
       const interest = new Decimal(currentBalance).times(monthlyRate);
-      
-      const tax = payload.taxStrategy === TaxStrategy.STANDARD 
-        ? interest.times(0.19)
-        : new Decimal(0);
+
+      const tax =
+        payload.taxStrategy === TaxStrategy.STANDARD ? interest.times(0.19) : new Decimal(0);
       totalTaxPaid += tax.toNumber();
-      
+
       currentBalance += interest.minus(tax).toNumber();
 
       timeline.push({
@@ -76,8 +81,11 @@ export class RetirementPlannerHandler extends BaseHandler implements ScenarioHan
         month: m % 12,
         date: dateStr,
         balance: Math.max(0, currentBalance),
-        withdrawal: m > 0 ? Math.min(payload.monthlyWithdrawal, currentBalance + (m > 0 ? monthlyWithdrawal : 0)) : 0,
-        isProjected: true
+        withdrawal:
+          m > 0
+            ? Math.min(payload.monthlyWithdrawal, currentBalance + (m > 0 ? monthlyWithdrawal : 0))
+            : 0,
+        isProjected: true,
       });
 
       if (currentBalance <= 0 && m > 0) {
@@ -87,7 +95,8 @@ export class RetirementPlannerHandler extends BaseHandler implements ScenarioHan
     }
 
     const result: RetirementPlannerResult = {
-      isSustainable: currentBalance > 0 && (exhaustionMonth === undefined || exhaustionMonth >= horizonMonths),
+      isSustainable:
+        currentBalance > 0 && (exhaustionMonth === undefined || exhaustionMonth >= horizonMonths),
       exhaustionYear: exhaustionMonth ? Math.floor(exhaustionMonth / 12) : undefined,
       exhaustionMonth: exhaustionMonth ? exhaustionMonth % 12 : undefined,
       exhaustionDate,
@@ -95,12 +104,13 @@ export class RetirementPlannerHandler extends BaseHandler implements ScenarioHan
       totalWithdrawn,
       totalTaxPaid,
       modeledAnnualRate,
-      modeledMonthlyNetRate: payload.taxStrategy === TaxStrategy.STANDARD
-        ? modeledAnnualRate / 12 * 0.81
-        : modeledAnnualRate / 12,
+      modeledMonthlyNetRate:
+        payload.taxStrategy === TaxStrategy.STANDARD
+          ? (modeledAnnualRate / 12) * 0.81
+          : modeledAnnualRate / 12,
       modeledBondType: payload.bondType,
       modelType: 'steady-rate',
-      timeline
+      timeline,
     };
 
     const assumptions = this.generateAssumptions(payload);

@@ -46,7 +46,12 @@ export function TimingSection({
         />
       </div>
 
-      <div className={cn('grid gap-4', timingMode === 'exact' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1')}>
+      <div
+        className={cn(
+          'grid gap-4',
+          timingMode === 'exact' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1',
+        )}
+      >
         <FormField
           label={t('bonds.purchase_date')}
           tooltip={t('regular_form.start_date_help')}
@@ -125,9 +130,11 @@ export function TimingSection({
       {timingMode === 'exact' ? (
         <FormField label={t('bonds.investment_horizon')} tooltip={t('regular_form.horizon_help')}>
           <FormInlineNotice
-            title={`${investmentHorizonYears % 1 === 0
-              ? investmentHorizonYears.toFixed(0)
-              : investmentHorizonYears.toFixed(2)} ${t('common.years')}`}
+            title={`${
+              investmentHorizonYears % 1 === 0
+                ? investmentHorizonYears.toFixed(0)
+                : investmentHorizonYears.toFixed(2)
+            } ${t('common.years')}`}
             description={t('regular_form.horizon_help')}
           />
         </FormField>

@@ -1,6 +1,11 @@
 import { LotBreakdown, YearlyTimelinePoint } from '@/features/bond-core/types';
 import { AppLanguage } from './bond-display';
-import { convertComparisonToCSV, convertLotsToCSV, convertTimelineToCSV, downloadFile } from './csv-utils';
+import {
+  convertComparisonToCSV,
+  convertLotsToCSV,
+  convertTimelineToCSV,
+  downloadFile,
+} from './csv-utils';
 
 function todayStamp() {
   return new Date().toISOString().split('T')[0];
@@ -13,10 +18,7 @@ export function buildTimelineCsvFilename(
   return `${scope}_${bondType}_${todayStamp()}.csv`;
 }
 
-export function buildCombinedComparisonCsvFilename(
-  bondTypeA: string,
-  bondTypeB: string,
-) {
+export function buildCombinedComparisonCsvFilename(bondTypeA: string, bondTypeB: string) {
   return `bond_comparison_${bondTypeA}_vs_${bondTypeB}_${todayStamp()}.csv`;
 }
 
@@ -31,11 +33,7 @@ export function exportTimelineCsv(options: {
   fileName: string;
 }) {
   const csv = convertTimelineToCSV(options.timeline, options.headers, options.language);
-  downloadFile(
-    csv,
-    options.fileName,
-    'text/csv;charset=utf-8',
-  );
+  downloadFile(csv, options.fileName, 'text/csv;charset=utf-8');
 }
 
 export function exportLotsCsv(options: {
@@ -45,11 +43,7 @@ export function exportLotsCsv(options: {
   fileName: string;
 }) {
   const csv = convertLotsToCSV(options.lots, options.headers, options.language);
-  downloadFile(
-    csv,
-    options.fileName,
-    'text/csv;charset=utf-8',
-  );
+  downloadFile(csv, options.fileName, 'text/csv;charset=utf-8');
 }
 
 export function exportComparisonCsv(options: {

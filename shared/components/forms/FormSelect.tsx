@@ -81,9 +81,7 @@ export function FormSelect({
                 <span className="flex min-w-0 flex-col gap-1">
                   <span className="flex min-w-0 items-center gap-2">
                     <span className="ui-truncate-flex font-semibold">{option.label}</span>
-                    {option.badge ? (
-                      <span className="shrink-0">{option.badge}</span>
-                    ) : null}
+                    {option.badge ? <span className="shrink-0">{option.badge}</span> : null}
                     {option.meta ? (
                       <span className="shrink-0 text-xs font-semibold text-muted-foreground">
                         {option.meta}

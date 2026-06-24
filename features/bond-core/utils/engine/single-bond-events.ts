@@ -20,7 +20,11 @@ export function createCyclePurchaseEvent({
   };
 }
 
-export function createRateResetEvent(date: Date, description: string, value: Decimal): SimulationEvent {
+export function createRateResetEvent(
+  date: Date,
+  description: string,
+  value: Decimal,
+): SimulationEvent {
   return {
     type: SimulationEventType.RATE_RESET,
     date: date.toISOString(),
@@ -38,7 +42,10 @@ export function createInterestAccrualEvent(date: Date, interestEarned: Decimal):
   };
 }
 
-export function createPeriodicTaxSettlementEvent(date: Date, taxDeducted: Decimal): SimulationEvent {
+export function createPeriodicTaxSettlementEvent(
+  date: Date,
+  taxDeducted: Decimal,
+): SimulationEvent {
   return {
     type: SimulationEventType.TAX_SETTLEMENT,
     date: date.toISOString(),

@@ -3,28 +3,27 @@ import { TaxStrategy } from '../../types';
 
 /**
  * Calculates the tax based on the selected strategy.
- * 
+ *
  * STANDARD: 19% Belka tax on interest.
  * IKE: 0% tax.
  * IKZE: 10% flat tax on the WHOLE withdrawal amount (principal + interest) at retirement.
  */
 export function calculateTaxAmount(
-  amount: Decimal, 
+  amount: Decimal,
   strategy: TaxStrategy,
   useOfficialRounding: boolean = false,
   standardTaxRate = 19,
 ): Decimal {
   if (amount.lte(0)) return new Decimal(0);
-  
+
   if (strategy === TaxStrategy.IKE) return new Decimal(0);
 
   // IKZE is 10% flat tax on the total payout in the target scenario (retirement)
-  const rate = strategy === TaxStrategy.IKZE
-    ? new Decimal(0.10)
-    : new Decimal(standardTaxRate).dividedBy(100);
+  const rate =
+    strategy === TaxStrategy.IKZE ? new Decimal(0.1) : new Decimal(standardTaxRate).dividedBy(100);
 
   if (useOfficialRounding) {
-    // Article 63 § 1 Tax Ordinance: Tax base is rounded to full PLN. 
+    // Article 63 § 1 Tax Ordinance: Tax base is rounded to full PLN.
     // Article 63 § 1 Tax Ordinance: Tax amount is rounded to full PLN.
     // .toDecimalPlaces(0) in Decimal.js with default ROUND_HALF_UP is exactly what's needed for Polish Tax.
     const taxableBase = amount.toDecimalPlaces(0, Decimal.ROUND_HALF_UP);
@@ -36,9 +35,6 @@ export function calculateTaxAmount(
   return amount.times(rate);
 }
 
-export function shouldWithholdPeriodicTax(
-  strategy: TaxStrategy,
-  isCapitalized: boolean,
-): boolean {
+export function shouldWithholdPeriodicTax(strategy: TaxStrategy, isCapitalized: boolean): boolean {
   return strategy === TaxStrategy.STANDARD && !isCapitalized;
 }

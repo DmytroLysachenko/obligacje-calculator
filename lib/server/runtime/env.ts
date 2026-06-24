@@ -41,7 +41,9 @@ export function getPublicAppUrl(env: RuntimeEnv = readRuntimeEnv()) {
   return env.NEXT_PUBLIC_APP_URL;
 }
 
-export function getConfiguredOAuthProviders(env: RuntimeEnv = readRuntimeEnv()): OAuthProviderName[] {
+export function getConfiguredOAuthProviders(
+  env: RuntimeEnv = readRuntimeEnv(),
+): OAuthProviderName[] {
   const providers: OAuthProviderName[] = [];
 
   if (env.AUTH_GOOGLE_ID && env.AUTH_GOOGLE_SECRET) {

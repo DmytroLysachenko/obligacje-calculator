@@ -47,33 +47,37 @@ describe('shared portfolio page service', () => {
   });
 
   it('builds fallback metadata when the public portfolio is missing', () => {
-    expect(buildSharedPortfolioPageMetadata({
-      portfolio: null,
-      pageTitle: 'Shared Portfolio',
-      pageDescription: 'Shared description',
-      appTitle: 'Bonds Calculator',
-    })).toEqual({
+    expect(
+      buildSharedPortfolioPageMetadata({
+        portfolio: null,
+        pageTitle: 'Shared Portfolio',
+        pageDescription: 'Shared description',
+        appTitle: 'Bonds Calculator',
+      }),
+    ).toEqual({
       title: 'Shared Portfolio | Bonds Calculator',
       description: 'Shared description',
     });
   });
 
   it('builds portfolio-specific metadata when a public portfolio exists', () => {
-    expect(buildSharedPortfolioPageMetadata({
-      portfolio: {
-        id: 'portfolio-public',
-        userId: 'user-1',
-        name: 'Long Term Bonds',
-        description: 'Real EDO lots',
-        isPublic: true,
-        shareId: 'share-1',
-        createdAt: new Date('2026-01-01T00:00:00.000Z'),
-        updatedAt: new Date('2026-01-01T00:00:00.000Z'),
-      },
-      pageTitle: 'Shared Portfolio',
-      pageDescription: 'Shared description',
-      appTitle: 'Bonds Calculator',
-    })).toEqual({
+    expect(
+      buildSharedPortfolioPageMetadata({
+        portfolio: {
+          id: 'portfolio-public',
+          userId: 'user-1',
+          name: 'Long Term Bonds',
+          description: 'Real EDO lots',
+          isPublic: true,
+          shareId: 'share-1',
+          createdAt: new Date('2026-01-01T00:00:00.000Z'),
+          updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+        },
+        pageTitle: 'Shared Portfolio',
+        pageDescription: 'Shared description',
+        appTitle: 'Bonds Calculator',
+      }),
+    ).toEqual({
       title: 'Long Term Bonds | Shared Portfolio',
       description: 'Real EDO lots',
     });

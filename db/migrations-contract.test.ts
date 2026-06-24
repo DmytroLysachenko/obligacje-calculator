@@ -17,10 +17,9 @@ function migrationNames() {
 
 describe('database migration contracts', () => {
   it('keeps additive production migrations for sync history and Auth.js tables', () => {
-    expect(migrationNames()).toEqual(expect.arrayContaining([
-      '0001_sync_runs.sql',
-      '0002_auth_tables.sql',
-    ]));
+    expect(migrationNames()).toEqual(
+      expect.arrayContaining(['0001_sync_runs.sql', '0002_auth_tables.sql']),
+    );
   });
 
   it('keeps sync run history table available for freshness reporting', () => {

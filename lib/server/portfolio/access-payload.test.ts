@@ -25,11 +25,15 @@ describe('portfolio access payload', () => {
   });
 
   it('keeps guest owners read-only for workspace management', () => {
-    expect(createPortfolioAccessPayload(owner({
-      isGuest: true,
-      authMode: 'guest',
-      shouldPersistGuestCookie: true,
-    }))).toEqual({
+    expect(
+      createPortfolioAccessPayload(
+        owner({
+          isGuest: true,
+          authMode: 'guest',
+          shouldPersistGuestCookie: true,
+        }),
+      ),
+    ).toEqual({
       data: {
         ownerId: 'owner-1',
         isGuest: true,

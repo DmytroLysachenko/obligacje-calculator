@@ -226,7 +226,9 @@ describe('Display-facing single-bond invariants', () => {
 
     for (const point of result.timeline) {
       expect(point.interestRate).toBeGreaterThanOrEqual(0);
-      expect(point.nominalValueAfterInterest).toBeGreaterThanOrEqual(point.nominalValueBeforeInterest);
+      expect(point.nominalValueAfterInterest).toBeGreaterThanOrEqual(
+        point.nominalValueBeforeInterest,
+      );
       expect(point.totalValue).toBeLessThanOrEqual(result.netPayoutValue);
     }
   });
@@ -239,23 +241,13 @@ describe('Display-facing single-bond invariants', () => {
       const nonInitialPoints = result.timeline.slice(1);
       expect(nonInitialPoints.length).toBeGreaterThan(0);
 
-      expect(
-        nonInitialPoints.some((point) => point.accumulatedNetInterest > 0),
-      ).toBe(true);
-      expect(
-        nonInitialPoints.some((point) => point.netProfit !== 0),
-      ).toBe(true);
-      expect(
-        nonInitialPoints.some((point) => point.earlyWithdrawalValue > 0),
-      ).toBe(true);
+      expect(nonInitialPoints.some((point) => point.accumulatedNetInterest > 0)).toBe(true);
+      expect(nonInitialPoints.some((point) => point.netProfit !== 0)).toBe(true);
+      expect(nonInitialPoints.some((point) => point.earlyWithdrawalValue > 0)).toBe(true);
 
       const displayRows = buildBondTimelineDisplayRows(result.timeline, 'en');
-      expect(
-        displayRows.some((row) => row.paidOutCash > 0),
-      ).toBe(true);
-      expect(
-        displayRows.some((row) => row.totalWealth >= row.principalValue),
-      ).toBe(true);
+      expect(displayRows.some((row) => row.paidOutCash > 0)).toBe(true);
+      expect(displayRows.some((row) => row.totalWealth >= row.principalValue)).toBe(true);
 
       for (let index = 1; index < displayRows.length; index += 1) {
         expect(displayRows[index].paidOutCash).toBeGreaterThanOrEqual(
@@ -310,7 +302,9 @@ describe('Display-facing single-bond invariants', () => {
     const ror = await getSingleBondResult(BondType.ROR, 48);
 
     expect(ror.timeline.some((point) => point.cycleIndex > 1)).toBe(true);
-    expect((ror.calculationNotes ?? []).some((note) => note.includes('Simulation covered'))).toBe(true);
+    expect((ror.calculationNotes ?? []).some((note) => note.includes('Simulation covered'))).toBe(
+      true,
+    );
     expect(ror.isEarlyWithdrawal).toBe(false);
   });
 
@@ -346,7 +340,9 @@ describe('Display-facing single-bond invariants', () => {
       historicalData: {},
     });
 
-    expect(highResult.timeline[2]?.interestRate).toBeGreaterThan(lowResult.timeline[2]?.interestRate ?? 0);
+    expect(highResult.timeline[2]?.interestRate).toBeGreaterThan(
+      lowResult.timeline[2]?.interestRate ?? 0,
+    );
     expect(highResult.netPayoutValue).toBeGreaterThan(lowResult.netPayoutValue);
   });
 });
@@ -505,4 +501,3 @@ describe('Comparison override invariants', () => {
     expect(scenarioB?.isEarlyWithdrawal).toBe(false);
   });
 });
-

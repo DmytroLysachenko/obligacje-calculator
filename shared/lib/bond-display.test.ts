@@ -2,9 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { type YearlyTimelinePoint } from '@/features/bond-core/types';
 import { buildBondChartDisplayPoints, buildBondTimelineDisplayRows } from './bond-display';
 
-function makeTimelinePoint(
-  overrides: Partial<YearlyTimelinePoint>,
-): YearlyTimelinePoint {
+function makeTimelinePoint(overrides: Partial<YearlyTimelinePoint>): YearlyTimelinePoint {
   return {
     year: 1,
     periodLabel: 'Purchase',
@@ -216,11 +214,7 @@ describe('buildBondChartDisplayPoints', () => {
 
     const rows = buildBondTimelineDisplayRows(timeline, 'en', 'yearly');
 
-    expect(rows.map((row) => row.periodLabel)).toEqual([
-      'Jun 2026',
-      'Jun 2027',
-      'Sept 2027',
-    ]);
+    expect(rows.map((row) => row.periodLabel)).toEqual(['Jun 2026', 'Jun 2027', 'Sept 2027']);
     expect(rows.at(-1)?.totalWealth).toBe(10450);
   });
 });

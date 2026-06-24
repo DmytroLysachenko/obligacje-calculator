@@ -5,6 +5,7 @@ To ensure the calculation engine remains maintainable, scalable, and follows SOL
 ## 1. Architectural Motivation
 
 Originally, the `CalculationApplicationService` was a monolithic class responsible for:
+
 - Data enrichment (Historical CPI/NBP)
 - Database lookups for bond series
 - Scenario-specific logic (Single Bond, Portfolio, Optimizer, etc.)
@@ -19,7 +20,9 @@ The logic is now decomposed into individual `ScenarioHandler` implementations, e
 ### Core Components
 
 #### A. `ScenarioHandler<TRequest, TResponse>` Interface
+
 Defines the contract for any calculation scenario.
+
 ```typescript
 export interface ScenarioHandler<TRequest, TResponse> {
   kind: ScenarioKind;
@@ -28,12 +31,15 @@ export interface ScenarioHandler<TRequest, TResponse> {
 ```
 
 #### B. `BaseHandler` Abstract Class
+
 Provides shared utilities used across all handlers:
+
 - `withHistoricalData()`: Enriches inputs with market data.
 - `createEnvelope()`: Wraps raw results into a standardized `CalculationEnvelope`.
 - `buildHistoricalDataWarnings()`: Checks for data gaps.
 
 #### C. `HandlerFactory`
+
 A centralized registry that maps `ScenarioKind` to the corresponding handler. This allows the `CalculationApplicationService` to remain agnostic of the specific calculation details.
 
 #### D. `CalculationApplicationService` Dependencies
@@ -60,14 +66,14 @@ Handlers should receive context; they should not fetch global application state 
 
 ## 4. Implementation Map
 
-| Scenario Kind | Handler Class | Responsibility |
-|---------------|---------------|----------------|
-| `SINGLE_BOND` | `SingleBondHandler` | Individual bond math, historical series lookup, tax-wrapper split. |
-| `PORTFOLIO_SIMULATION` | `PortfolioSimulationHandler` | Aggregated timeline generation for multiple bond lots. |
-| `BOND_OPTIMIZER` | `OptimizerHandler` | Ranking all bond types based on horizon and inflation. |
-| `REGULAR_INVESTMENT` | `RegularInvestmentHandler` | Recurring contribution modeling. |
-| `BOND_COMPARISON` | `ComparisonHandler` | Normalized or independent side-by-side simulations. |
-| `RETIREMENT_PLANNER` | `RetirementPlannerHandler` | Sustainable withdrawal modeling. |
+| Scenario Kind          | Handler Class                | Responsibility                                                     |
+| ---------------------- | ---------------------------- | ------------------------------------------------------------------ |
+| `SINGLE_BOND`          | `SingleBondHandler`          | Individual bond math, historical series lookup, tax-wrapper split. |
+| `PORTFOLIO_SIMULATION` | `PortfolioSimulationHandler` | Aggregated timeline generation for multiple bond lots.             |
+| `BOND_OPTIMIZER`       | `OptimizerHandler`           | Ranking all bond types based on horizon and inflation.             |
+| `REGULAR_INVESTMENT`   | `RegularInvestmentHandler`   | Recurring contribution modeling.                                   |
+| `BOND_COMPARISON`      | `ComparisonHandler`          | Normalized or independent side-by-side simulations.                |
+| `RETIREMENT_PLANNER`   | `RetirementPlannerHandler`   | Sustainable withdrawal modeling.                                   |
 
 ## 5. Benefits
 

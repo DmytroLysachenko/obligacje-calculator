@@ -1,18 +1,10 @@
 'use client';
 
 import React from 'react';
-import {
-  AlertTriangle,
-  DatabaseZap,
-  FileText,
-  ShieldAlert,
-  Target,
-} from 'lucide-react';
+import { AlertTriangle, DatabaseZap, FileText, ShieldAlert, Target } from 'lucide-react';
 import { useAppI18n } from '@/i18n/client';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
-import {
-  getCalculationFreshnessMetaState,
-} from '@/shared/lib/data-freshness-display';
+import { getCalculationFreshnessMetaState } from '@/shared/lib/data-freshness-display';
 
 interface CalculationMetaPanelProps {
   warnings?: string[];
@@ -45,9 +37,7 @@ const MetaSection = ({
     <section className={className}>
       <div className="flex items-center gap-2">
         {icon}
-        <p className="ui-meta font-semibold">
-          {title}
-        </p>
+        <p className="ui-meta font-semibold">{title}</p>
       </div>
       <ul className="divide-y divide-dashed divide-current/15 text-sm leading-6">
         {items.map((item, index) => (
@@ -60,7 +50,10 @@ const MetaSection = ({
   );
 };
 
-function humanizeFlag(value: string, t: (key: string, params?: Record<string, string | number>) => string) {
+function humanizeFlag(
+  value: string,
+  t: (key: string, params?: Record<string, string | number>) => string,
+) {
   const knownFlag = t(`bonds.data_quality_flags.${value}`);
 
   if (knownFlag && knownFlag !== `bonds.data_quality_flags.${value}`) {
@@ -108,7 +101,10 @@ function translateEngineMessage(
     return t('bonds.engine_messages.missing_history');
   }
 
-  if (value === 'Rollover is disabled; the simulation stops at the first bond cycle or selected withdrawal date.') {
+  if (
+    value ===
+    'Rollover is disabled; the simulation stops at the first bond cycle or selected withdrawal date.'
+  ) {
     return t('bonds.engine_messages.rollover_disabled');
   }
 
@@ -116,7 +112,9 @@ function translateEngineMessage(
     return t('bonds.engine_messages.early_redemption_applied');
   }
 
-  const cycleMatch = value.match(/^Simulation covered (\d+) bond cycles? across the selected horizon\.$/);
+  const cycleMatch = value.match(
+    /^Simulation covered (\d+) bond cycles? across the selected horizon\.$/,
+  );
   if (cycleMatch) {
     return t('bonds.engine_messages.rollover_cycles', { count: cycleMatch[1] });
   }
@@ -146,9 +144,7 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
     return null;
   }
 
-  const freshnessMeta = dataFreshness
-    ? getCalculationFreshnessMetaState(dataFreshness)
-    : null;
+  const freshnessMeta = dataFreshness ? getCalculationFreshnessMetaState(dataFreshness) : null;
 
   return (
     <div className="space-y-5">
@@ -156,20 +152,20 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
         <div className={`border-l-2 px-4 py-3 text-sm leading-6 ${freshnessMeta?.toneClass}`}>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <div className="flex items-center gap-2 font-semibold">
-              <span
-                className={`h-2.5 w-2.5 rounded-full ${freshnessMeta?.dotClass}`}
-              />
+              <span className={`h-2.5 w-2.5 rounded-full ${freshnessMeta?.dotClass}`} />
               <span>{t('comparison.freshness_status')}:</span>
               <span>{t(`comparison.status_${freshnessMeta.status}`)}</span>
             </div>
             {freshnessMeta?.coverageLabel ? (
               <div>
-                {t('common.coverage')}: <span className="font-semibold">{freshnessMeta.coverageLabel}</span>
+                {t('common.coverage')}:{' '}
+                <span className="font-semibold">{freshnessMeta.coverageLabel}</span>
               </div>
             ) : null}
             {freshnessMeta?.lastSyncLabel ? (
               <div>
-                {t('admin.inventory.cols.last_sync')}: <span className="font-semibold">{freshnessMeta.lastSyncLabel}</span>
+                {t('admin.inventory.cols.last_sync')}:{' '}
+                <span className="font-semibold">{freshnessMeta.lastSyncLabel}</span>
               </div>
             ) : null}
             {freshnessMeta?.usedFallback ? (
@@ -214,21 +210,16 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
       <div className="flex flex-col gap-3 border-y border-border py-3 text-sm leading-6 text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           <DatabaseZap className="h-4 w-4 text-primary" />
-          <span className="font-semibold text-foreground">
-            {t('common.calculation_audit')}
-          </span>
+          <span className="font-semibold text-foreground">{t('common.calculation_audit')}</span>
         </div>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
           <span>{t('comparison.live_calculation')}</span>
           <span>
-            {t('common.engine_version')}: <span className="font-semibold text-foreground">{calculationVersion}</span>
+            {t('common.engine_version')}:{' '}
+            <span className="font-semibold text-foreground">{calculationVersion}</span>
           </span>
         </div>
       </div>
     </div>
   );
 };
-
-
-
-

@@ -62,7 +62,10 @@ export function getInputGuardrails(
       autoFixLabel: 'Align withdrawal date',
       applyAutoFix: (current) => ({
         ...current,
-        withdrawalDate: getWithdrawalDateFromMonths(current.purchaseDate, current.investmentHorizonMonths ?? 1),
+        withdrawalDate: getWithdrawalDateFromMonths(
+          current.purchaseDate,
+          current.investmentHorizonMonths ?? 1,
+        ),
       }),
     });
   }
@@ -73,7 +76,8 @@ export function getInputGuardrails(
       severity: 'caution',
       field: 'purchaseDate',
       title: 'Purchase date is in future',
-      description: 'Forward-dated assumptions are allowed, but they stop being historical validation scenarios.',
+      description:
+        'Forward-dated assumptions are allowed, but they stop being historical validation scenarios.',
     });
   }
 
@@ -99,7 +103,8 @@ export function getInputGuardrails(
       severity: 'caution',
       field: 'investmentHorizonMonths',
       title: 'Very long horizon',
-      description: '30+ year projections amplify macro assumption error. Treat as directional, not precise.',
+      description:
+        '30+ year projections amplify macro assumption error. Treat as directional, not precise.',
     });
   }
 
@@ -109,7 +114,8 @@ export function getInputGuardrails(
       severity: 'caution',
       field: 'expectedInflation',
       title: 'Extreme inflation assumption',
-      description: 'Scenario is mathematically allowed, but interpretation becomes much less stable.',
+      description:
+        'Scenario is mathematically allowed, but interpretation becomes much less stable.',
     });
   }
 
@@ -139,11 +145,16 @@ export function getInputGuardrails(
       severity: 'info',
       field: 'bondType',
       title: 'Family bond selected',
-      description: 'ROS and ROD are family-targeted products. Keep assumptions realistic for household planning use.',
+      description:
+        'ROS and ROD are family-targeted products. Keep assumptions realistic for household planning use.',
     });
   }
 
-  if (inputs.savingsGoal && inputs.calculatorMode === 'reverse' && inputs.initialInvestment > inputs.savingsGoal) {
+  if (
+    inputs.savingsGoal &&
+    inputs.calculatorMode === 'reverse' &&
+    inputs.initialInvestment > inputs.savingsGoal
+  ) {
     issues.push({
       id: 'goal-smaller-than-capital',
       severity: 'info',
@@ -156,9 +167,6 @@ export function getInputGuardrails(
   return issues;
 }
 
-export function applyGuardrailFix(
-  issue: InputGuardrailIssue,
-  inputs: BondInputs,
-): BondInputs {
+export function applyGuardrailFix(issue: InputGuardrailIssue, inputs: BondInputs): BondInputs {
   return issue.applyAutoFix ? issue.applyAutoFix(inputs) : inputs;
 }

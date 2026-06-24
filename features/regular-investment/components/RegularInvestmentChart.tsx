@@ -99,7 +99,11 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({
   return (
     <div className="space-y-4">
       <div className="flex justify-center">
-        <Tabs value={view} onValueChange={(v) => setView(v as 'nominal' | 'real')} className="w-fit rounded-lg bg-muted/50 p-1">
+        <Tabs
+          value={view}
+          onValueChange={(v) => setView(v as 'nominal' | 'real')}
+          className="w-fit rounded-lg bg-muted/50 p-1"
+        >
           <TabsList className="grid h-10 w-full grid-cols-2">
             <TabsTrigger value="nominal" className="px-6 text-xs font-semibold">
               {t('common.nominal_value')}

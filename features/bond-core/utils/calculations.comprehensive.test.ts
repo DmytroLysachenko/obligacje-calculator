@@ -31,7 +31,7 @@ describe('Comprehensive Bond Calculations', () => {
       withdrawalDate: '2026-06-01T00:00:00.000Z',
     };
     const results = calculateBondInvestment(inputs);
-    
+
     // 100 bonds * 100 PLN = 10000
     // interest = 10000 * 2.5% * (3/12) = 62.5 PLN gross
     // tax = 62.5 * 19% = 11.875 -> 12 PLN (rounded to full PLN)
@@ -83,7 +83,9 @@ describe('Comprehensive Bond Calculations', () => {
 
     const firstCheckpoint = new Date(results.timeline[1].cycleEndDate).getTime();
     const secondCheckpoint = new Date(results.timeline[2].cycleEndDate).getTime();
-    const finalCheckpoint = new Date(results.timeline[results.timeline.length - 1].cycleEndDate).getTime();
+    const finalCheckpoint = new Date(
+      results.timeline[results.timeline.length - 1].cycleEndDate,
+    ).getTime();
 
     expect(secondCheckpoint).toBeGreaterThan(firstCheckpoint);
     expect(finalCheckpoint).toBeGreaterThan(secondCheckpoint);
@@ -164,7 +166,9 @@ describe('Comprehensive Bond Calculations', () => {
     expect(results.timeline.length).toBeGreaterThan(40);
     expect(results.maturityDate).toBe('2031-03-01T00:00:00.000Z');
     expect(results.netPayoutValue).toBeGreaterThan(results.initialInvestment);
-    expect(new Set(results.timeline.slice(1).map((point) => point.cycleIndex)).size).toBeGreaterThan(1);
+    expect(
+      new Set(results.timeline.slice(1).map((point) => point.cycleIndex)).size,
+    ).toBeGreaterThan(1);
   });
 
   it('adds calculation audit metadata to timeline points', () => {
@@ -253,14 +257,14 @@ describe('Comprehensive Bond Calculations', () => {
       withdrawalDate: '2036-03-01T00:00:00.000Z',
     };
     const results = calculateBondInvestment(inputs);
-    
+
     // timeline[0] = initial
     // timeline[1] = Year 1: 10000 * 1.056 = 10560
     // timeline[2] = Year 2: 10560 * (1 + (4+2)%) = 10560 * 1.06 = 11193.6
     expect(results.timeline[1].nominalValueAfterInterest).toBeCloseTo(10560, 1);
     expect(results.timeline[2].nominalValueBeforeInterest).toBeCloseTo(10560, 1);
     expect(results.timeline[2].nominalValueAfterInterest).toBeCloseTo(11193.6, 1);
-    
+
     // Final tax should be 19% of total earned interest (rounded to full PLN)
     const totalEarned = results.grossValue - 10000;
     expect(results.totalTax).toBe(Math.round(totalEarned * 0.19));
@@ -275,7 +279,7 @@ describe('Comprehensive Bond Calculations', () => {
       withdrawalDate: '2026-04-01T00:00:00.000Z', // Withdraw very soon (1 month)
     };
     const results = calculateBondInvestment(inputs);
-    
+
     // 1 month interest: 10000 * 5.0% * (31 / 365) = 42.4657... PLN
     // Max fee: 100 bonds * 3.0 = 300 PLN
     // Fee should be capped at interest earned (42.47)
@@ -337,7 +341,7 @@ describe('Comprehensive Bond Calculations', () => {
       withdrawalDate: '2030-03-01T00:00:00.000Z',
     };
     const results = calculateBondInvestment(inputs);
-    
+
     // timeline[0] = initial
     // timeline[1] = Year 1: 5%
     // timeline[2] = Year 2+: max(0, -2) + 1.5 = 1.5%
@@ -449,7 +453,9 @@ describe('Comprehensive Bond Calculations', () => {
       historicalData: {},
     });
 
-    const firstMaturity = results.timeline.find((point) => point.cycleIndex === 1 && point.isMaturity);
+    const firstMaturity = results.timeline.find(
+      (point) => point.cycleIndex === 1 && point.isMaturity,
+    );
     const secondCycleFirstPoint = results.timeline.find((point) => point.cycleIndex === 2);
 
     expect(firstMaturity?.totalValue).toBeGreaterThan(100);
@@ -522,12 +528,7 @@ describe('Comprehensive Bond Calculations', () => {
       investmentHorizonMonths: 240,
       rollover: true,
       historicalData: {},
-      customInflation: [
-        1, 1, 1, 1, 1,
-        1, 1, 1, 1, 1,
-        8, 8, 8, 8, 8,
-        8, 8, 8, 8, 8,
-      ],
+      customInflation: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8],
     });
 
     const secondCycleIndexedPoint = results.timeline.find(
@@ -554,12 +555,7 @@ describe('Comprehensive Bond Calculations', () => {
       investmentHorizonMonths: 240,
       rollover: true,
       historicalData: {},
-      customInflation: [
-        1, 3, 4, 5, 5,
-        4, 3, 2, 1, 2,
-        3, 4, 5, 6, 7,
-        7, 6, 5, 4, 3,
-      ],
+      customInflation: [1, 3, 4, 5, 5, 4, 3, 2, 1, 2, 3, 4, 5, 6, 7, 7, 6, 5, 4, 3],
     });
 
     expect(results.netPayoutValue).toBeGreaterThan(results.initialInvestment);

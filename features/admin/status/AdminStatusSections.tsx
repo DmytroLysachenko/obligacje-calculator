@@ -14,7 +14,14 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { AppToast } from '@/shared/components/feedback/AppToast';
 import { ConfirmActionDialog } from '@/shared/components/feedback/ConfirmActionDialog';
 import type { AdminSeriesRowModel, AdminStatusMetrics } from './admin-status-model';
@@ -157,7 +164,9 @@ export function AdminMetricsStrip({
           <Activity className="h-4 w-4 text-primary" />
           {copy.seriesTracked}
         </p>
-        <p className="mt-3 text-[40px] font-semibold leading-none text-foreground">{metrics.seriesCount}</p>
+        <p className="mt-3 text-[40px] font-semibold leading-none text-foreground">
+          {metrics.seriesCount}
+        </p>
         <p className="mt-2 ui-metadata text-muted-foreground">{copy.seriesDesc}</p>
       </section>
       <section className="border-t border-border py-5">
@@ -213,7 +222,9 @@ export function AdminInventoryTable({
               <TableHead className="w-[250px] px-6 py-4 ui-metadata">{copy.cols.name}</TableHead>
               <TableHead className="px-6 py-4 ui-metadata">{copy.cols.frequency}</TableHead>
               <TableHead className="px-6 py-4 ui-metadata">{copy.cols.lastPoint}</TableHead>
-              <TableHead className="px-6 py-4 text-right ui-metadata">{copy.cols.records}</TableHead>
+              <TableHead className="px-6 py-4 text-right ui-metadata">
+                {copy.cols.records}
+              </TableHead>
               <TableHead className="px-6 py-4 ui-metadata">{copy.cols.lastSync}</TableHead>
               <TableHead className="px-6 py-4 ui-metadata">{copy.cols.health}</TableHead>
             </TableRow>
@@ -224,7 +235,10 @@ export function AdminInventoryTable({
             ))}
             {isEmpty && !loading && (
               <TableRow>
-                <TableCell colSpan={6} className="h-32 text-center font-medium text-muted-foreground">
+                <TableCell
+                  colSpan={6}
+                  className="h-32 text-center font-medium text-muted-foreground"
+                >
                   {copy.empty}
                 </TableCell>
               </TableRow>
@@ -258,9 +272,14 @@ function AdminInventoryRow({
       </TableCell>
       <TableCell className="px-6 py-5">
         <div className="flex flex-col gap-1">
-          <span className="font-mono text-xs font-bold">{seriesItem.lastDataPointDate || 'N/A'}</span>
+          <span className="font-mono text-xs font-bold">
+            {seriesItem.lastDataPointDate || 'N/A'}
+          </span>
           {seriesItem.hasDataGap && seriesItem.lastDataPointDate && (
-            <Badge variant="destructive" className="h-4 w-fit gap-1 px-1.5 py-0 text-[8px] font-semibold uppercase">
+            <Badge
+              variant="destructive"
+              className="h-4 w-fit gap-1 px-1.5 py-0 text-[8px] font-semibold uppercase"
+            >
               <AlertTriangle className="h-2 w-2" />
               {copy.health.gap}
             </Badge>
@@ -286,7 +305,10 @@ function AdminInventoryRow({
               : copy.neverSynced}
           </span>
           {seriesItem.lastSyncError && (
-            <span className="line-clamp-1 text-[9px] font-medium text-destructive" title={seriesItem.lastSyncError}>
+            <span
+              className="line-clamp-1 text-[9px] font-medium text-destructive"
+              title={seriesItem.lastSyncError}
+            >
               {copy.health.error}: {seriesItem.lastSyncError}
             </span>
           )}
@@ -323,7 +345,10 @@ export function AdminStatusFeedback({
   onDismissToast,
 }: {
   pendingMode: 'full-sync' | null;
-  copy: Pick<AdminDashboardCopy, 'confirmSyncTitle' | 'confirmSyncDescription' | 'manualSync' | 'cancel'>;
+  copy: Pick<
+    AdminDashboardCopy,
+    'confirmSyncTitle' | 'confirmSyncDescription' | 'manualSync' | 'cancel'
+  >;
   onCancelSync: () => void;
   onConfirmSync: () => void | Promise<void>;
   toastMessage: string | null;
@@ -346,4 +371,3 @@ export function AdminStatusFeedback({
     </>
   );
 }
-

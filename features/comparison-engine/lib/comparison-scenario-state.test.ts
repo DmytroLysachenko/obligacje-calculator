@@ -34,10 +34,14 @@ describe('comparison scenario state', () => {
   });
 
   it('rebuilds scenario withdrawal dates from custom horizon months', () => {
-    const sanitized = setScenarioCustomHorizonMonths(sharedConfig, {
-      bondType: BondType.ROR,
-      isRebought: true,
-    }, 24);
+    const sanitized = setScenarioCustomHorizonMonths(
+      sharedConfig,
+      {
+        bondType: BondType.ROR,
+        isRebought: true,
+      },
+      24,
+    );
 
     expect(sanitized.investmentHorizonMonths).toBe(24);
     expect(sanitized.timingMode).toBe('general');
@@ -45,12 +49,16 @@ describe('comparison scenario state', () => {
   });
 
   it('disables custom horizon cleanly after it was enabled', () => {
-    const withCustom = toggleScenarioCustomHorizon(sharedConfig, {
-      bondType: BondType.DOR,
-      investmentHorizonMonths: 48,
-      withdrawalDate: '2030-05-05',
-      timingMode: 'general',
-    }, false);
+    const withCustom = toggleScenarioCustomHorizon(
+      sharedConfig,
+      {
+        bondType: BondType.DOR,
+        investmentHorizonMonths: 48,
+        withdrawalDate: '2030-05-05',
+        timingMode: 'general',
+      },
+      false,
+    );
 
     expect(withCustom.investmentHorizonMonths).toBeUndefined();
     expect(withCustom.withdrawalDate).toBeUndefined();

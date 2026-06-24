@@ -20,5 +20,5 @@ export const syncEconomicData = inngest.createFunction(
     });
 
     return { status: 'completed', results };
-  }
+  },
 );

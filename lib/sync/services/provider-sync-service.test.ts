@@ -1,9 +1,6 @@
-import {beforeEach, describe, expect, it, vi} from 'vitest';
-import {
-  ProviderSyncService,
-  type ProviderSyncRepository,
-} from './provider-sync-service';
-import type {SyncProvider} from '../types';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { ProviderSyncService, type ProviderSyncRepository } from './provider-sync-service';
+import type { SyncProvider } from '../types';
 
 const logger = {
   info: vi.fn(),
@@ -16,9 +13,9 @@ const recorder = {
 
 function createRepository(overrides: Partial<ProviderSyncRepository> = {}): ProviderSyncRepository {
   return {
-    findSeriesBySlug: vi.fn(async (seriesSlug: string) => (
-      seriesSlug === 'pl-cpi' ? {id: 'series-1'} : null
-    )),
+    findSeriesBySlug: vi.fn(async (seriesSlug: string) =>
+      seriesSlug === 'pl-cpi' ? { id: 'series-1' } : null,
+    ),
     findLatestPointForSeries: vi.fn(async () => null),
     upsertDataPoints: vi.fn(async () => undefined),
     markSeriesSyncSuccess: vi.fn(async () => undefined),
@@ -52,15 +49,17 @@ describe('ProviderSyncService repository boundary', () => {
         seriesSlug: 'pl-cpi',
       }),
     ]);
-    expect(recorder.record).toHaveBeenCalledWith(expect.objectContaining({
-      status: 'failed',
-      mode: 'provider-sync',
-    }));
+    expect(recorder.record).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 'failed',
+        mode: 'provider-sync',
+      }),
+    );
   });
 
   it('records up-to-date when the latest point is ahead of the current month', async () => {
     const repository = createRepository({
-      findLatestPointForSeries: vi.fn(async () => ({date: '2999-01-01'})),
+      findLatestPointForSeries: vi.fn(async () => ({ date: '2999-01-01' })),
     });
     const provider = createProvider([]);
     const service = new ProviderSyncService([provider], logger, recorder, repository);
@@ -92,8 +91,8 @@ describe('ProviderSyncService repository boundary', () => {
   it('upserts known records and skips records without series metadata', async () => {
     const repository = createRepository();
     const provider = createProvider([
-      {seriesSlug: 'pl-cpi', date: '2024-01-01', value: 3.2},
-      {seriesSlug: 'unknown-series', date: '2024-01-01', value: 9.9},
+      { seriesSlug: 'pl-cpi', date: '2024-01-01', value: 3.2 },
+      { seriesSlug: 'unknown-series', date: '2024-01-01', value: 9.9 },
     ]);
     const service = new ProviderSyncService([provider], logger, recorder, repository);
 
@@ -107,7 +106,7 @@ describe('ProviderSyncService repository boundary', () => {
       }),
     ]);
     expect(repository.upsertDataPoints).toHaveBeenCalledWith([
-      {seriesId: 'series-1', date: '2024-01-01', value: '3.2'},
+      { seriesId: 'series-1', date: '2024-01-01', value: '3.2' },
     ]);
     expect(repository.markSeriesSyncSuccess).toHaveBeenCalledWith('series-1', {
       latestDate: '2024-01-01',

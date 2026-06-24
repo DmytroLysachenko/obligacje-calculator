@@ -1,30 +1,24 @@
 'use client';
 
-import React, {useState} from 'react';
-import {
-  Activity,
-  BarChart3,
-  Database,
-  Info,
-  Sparkles,
-} from 'lucide-react';
-import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
-import {useAppI18n} from '@/i18n/client';
-import {InflationChart} from '@/features/economic-data/components/InflationChart';
-import {NBPRateChart} from '@/features/economic-data/components/NBPRateChart';
-import {BondType} from '@/features/bond-core/types';
-import {CalculatorPageShell} from '@/shared/components/page/CalculatorPageShell';
-import {ReferenceDashboardHero} from '@/shared/components/reference/ReferenceDashboardHero';
-import {ChartSection} from '@/shared/components/charts/ChartSection';
-import {SectionBlock} from '@/shared/components/page/SectionBlock';
-import {useChartData} from '@/shared/hooks/useChartData';
+import React, { useState } from 'react';
+import { Activity, BarChart3, Database, Info, Sparkles } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAppI18n } from '@/i18n/client';
+import { InflationChart } from '@/features/economic-data/components/InflationChart';
+import { NBPRateChart } from '@/features/economic-data/components/NBPRateChart';
+import { BondType } from '@/features/bond-core/types';
+import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
+import { ReferenceDashboardHero } from '@/shared/components/reference/ReferenceDashboardHero';
+import { ChartSection } from '@/shared/components/charts/ChartSection';
+import { SectionBlock } from '@/shared/components/page/SectionBlock';
+import { useChartData } from '@/shared/hooks/useChartData';
 import {
   type ChartSeriesEnvelope,
   type EconomicSeriesPoint,
   type PeriodValue,
 } from '@/features/economic-data/lib/economic-dashboard-model';
-import {getBondRateContextCopy} from '@/shared/lib/bond-rate-context';
-import {useBondDefinitions} from '@/shared/hooks/useBondDefinitions';
+import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
+import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import {
   RangeActions,
   ReferenceStatusPanel,
@@ -32,12 +26,12 @@ import {
 } from '@/features/economic-data/components/EconomicDashboardSections';
 
 export function EconomicDataPageClient() {
-  const {t, locale: language} = useAppI18n();
-  const {definitions} = useBondDefinitions();
+  const { t, locale: language } = useAppI18n();
+  const { definitions } = useBondDefinitions();
   const [period, setPeriod] = useState<PeriodValue>('10Y');
-  const {data: inflationMeta, isLoading: isLoadingInflation} =
+  const { data: inflationMeta, isLoading: isLoadingInflation } =
     useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/inflation');
-  const {data: nbpMeta, isLoading: isLoadingNbp} =
+  const { data: nbpMeta, isLoading: isLoadingNbp } =
     useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/nbp-rate');
   const labels = {
     panel: t('economic.reference_panel'),
@@ -73,10 +67,10 @@ export function EconomicDataPageClient() {
     t('economic.usage_guide_4'),
   ];
   const heroMetrics = [
-    {label: labels.series, value: '2'},
-    {label: labels.purpose, value: labels.context},
-    {label: labels.mode, value: labels.reference},
-    {label: labels.goal, value: labels.readableContext},
+    { label: labels.series, value: '2' },
+    { label: labels.purpose, value: labels.context },
+    { label: labels.mode, value: labels.reference },
+    { label: labels.goal, value: labels.readableContext },
   ];
 
   return (

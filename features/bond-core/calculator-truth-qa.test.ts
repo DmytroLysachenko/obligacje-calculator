@@ -2,8 +2,18 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { calculationService } from './application-service';
 import { BOND_DEFINITIONS } from './constants/bond-definitions';
 import { MonthlyReturn } from './constants/historical-data';
-import { BondType, CalculationResult, InvestmentFrequency, RegularInvestmentResult, TaxStrategy } from './types';
-import { BondComparisonScenarioItem, RetirementPlannerResult, ScenarioKind } from './types/scenarios';
+import {
+  BondType,
+  CalculationResult,
+  InvestmentFrequency,
+  RegularInvestmentResult,
+  TaxStrategy,
+} from './types';
+import {
+  BondComparisonScenarioItem,
+  RetirementPlannerResult,
+  ScenarioKind,
+} from './types/scenarios';
 import {
   calculateAssetPerformance,
   calculateBondsPerformance,
@@ -321,9 +331,9 @@ describe('calculator truth QA scenarios', () => {
         scenarioB: { bondType: BondType.EDO },
       },
     });
-    const comparison = (envelope.result as BondComparisonScenarioItem[])
-      .find((item) => item.scenarioKey === 'scenarioA')
-      ?.result;
+    const comparison = (envelope.result as BondComparisonScenarioItem[]).find(
+      (item) => item.scenarioKey === 'scenarioA',
+    )?.result;
 
     expect(comparison?.netPayoutValue).toBeCloseTo(single.netPayoutValue, 8);
     expect(comparison?.totalTax).toBeCloseTo(single.totalTax, 8);

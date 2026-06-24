@@ -66,7 +66,9 @@ export function WorkspaceStatusCard({
                   <FormSelect
                     label={t('common.portfolio_selector_label')}
                     value={selectedPortfolio?.id ?? 'none'}
-                    onValueChange={(value) => onActivePortfolioChange(value === 'none' ? null : value)}
+                    onValueChange={(value) =>
+                      onActivePortfolioChange(value === 'none' ? null : value)
+                    }
                     options={[
                       {
                         value: 'none',

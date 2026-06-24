@@ -29,7 +29,7 @@ describe('single calculator chart display-only contract', () => {
   it('keeps chart granularity out of single calculator calculation state defaults', () => {
     const source = read(files.hook);
 
-    expectContains(source, "stripDisplayOnlyInputs,");
+    expectContains(source, 'stripDisplayOnlyInputs,');
     expectNotContains(source, 'function withoutDisplayOnlyInputs');
     expectNotContains(source, 'function getDefaultChartStep');
     expectNotContains(source, 'nextChartStep');
@@ -40,15 +40,24 @@ describe('single calculator chart display-only contract', () => {
   it('normalizes restored persistence before it re-enters single calculator state', () => {
     const source = read(files.hook);
 
-    expectContains(source, 'setInputs(stripDisplayOnlyInputs(restoredState.inputs) ?? fallbackInputs);');
-    expectContains(source, 'setLastCommittedInputs(restoredEnvelope ? stripDisplayOnlyInputs(restoredState.lastCommittedInputs ?? null) : null);');
+    expectContains(
+      source,
+      'setInputs(stripDisplayOnlyInputs(restoredState.inputs) ?? fallbackInputs);',
+    );
+    expectContains(
+      source,
+      'setLastCommittedInputs(restoredEnvelope ? stripDisplayOnlyInputs(restoredState.lastCommittedInputs ?? null) : null);',
+    );
     expectContains(source, 'savePersistedCalculatorState(STORAGE_KEY');
   });
 
   it('keeps chart granularity local to the single value chart toolbar', () => {
     const source = read(files.chart);
 
-    expectContains(source, 'const [displayStep, setDisplayStep] = React.useState<ChartStep>("yearly");');
+    expectContains(
+      source,
+      'const [displayStep, setDisplayStep] = React.useState<ChartStep>("yearly");',
+    );
     expectContains(source, 'defaultGranularity={displayStep}');
     expectContains(source, 'onGranularityChange={setDisplayStep}');
     expectNotContains(source, 'chartStep =');
@@ -89,8 +98,8 @@ describe('single calculator chart display-only contract', () => {
     expectContains(chart, 'buildBondChartDisplayPoints(');
     expectContains(chart, 'displayStep,');
     expectContains(chart, 'onGranularityChange={setDisplayStep}');
-    expectNotContains(container, 'onUpdate(\'chartStep\'');
-    expectNotContains(container, 'updateInput(\'chartStep\'');
+    expectNotContains(container, "onUpdate('chartStep'");
+    expectNotContains(container, "updateInput('chartStep'");
     expectNotContains(hook, "key === 'chartStep'");
   });
 

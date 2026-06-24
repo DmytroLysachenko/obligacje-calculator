@@ -1,5 +1,12 @@
 import { z } from 'zod';
-import { BondInputs, BondType, CalculationResult, RegularInvestmentInputs, RegularInvestmentResult, TaxStrategy } from './index';
+import {
+  BondInputs,
+  BondType,
+  CalculationResult,
+  RegularInvestmentInputs,
+  RegularInvestmentResult,
+  TaxStrategy,
+} from './index';
 import { TimingMode } from '@/shared/lib/date-timing';
 
 export enum ScenarioKind {
@@ -29,14 +36,14 @@ export interface CalculationDataFreshness {
 
 export interface HistoricalAverages {
   inflation: {
-    "1y": number;
-    "5y": number;
-    "10y": number;
+    '1y': number;
+    '5y': number;
+    '10y': number;
   };
   nbpRate: {
-    "1y": number;
-    "5y": number;
-    "10y": number;
+    '1y': number;
+    '5y': number;
+    '10y': number;
   };
 }
 

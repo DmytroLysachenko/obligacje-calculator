@@ -53,12 +53,15 @@ export function CommittedSliderInput({
     setDraftText(String(value));
   }, [value]);
 
-  const commitValue = React.useCallback((nextValue: number) => {
-    const normalized = toPrecision(clamp(nextValue, min, max), step);
-    setDraftValue(normalized);
-    setDraftText(String(normalized));
-    onCommit(normalized);
-  }, [max, min, onCommit, step]);
+  const commitValue = React.useCallback(
+    (nextValue: number) => {
+      const normalized = toPrecision(clamp(nextValue, min, max), step);
+      setDraftValue(normalized);
+      setDraftText(String(normalized));
+      onCommit(normalized);
+    },
+    [max, min, onCommit, step],
+  );
 
   const handleInputBlur = React.useCallback(() => {
     const parsed = Number(draftText.replace(',', '.'));
@@ -80,22 +83,23 @@ export function CommittedSliderInput({
     [max, min, step],
   );
 
-  const formatDisplayValue = React.useCallback((nextValue: number) => {
-    if (valueFormatter) {
-      return valueFormatter(nextValue);
-    }
+  const formatDisplayValue = React.useCallback(
+    (nextValue: number) => {
+      if (valueFormatter) {
+        return valueFormatter(nextValue);
+      }
 
-    return unit ? `${nextValue} ${unit}` : String(nextValue);
-  }, [unit, valueFormatter]);
+      return unit ? `${nextValue} ${unit}` : String(nextValue);
+    },
+    [unit, valueFormatter],
+  );
 
   return (
     <div className="space-y-2">
       {label || showBounds ? (
         <div className="flex flex-wrap items-center justify-between gap-3 text-xs leading-5">
           <div className="min-w-0">
-            {label ? (
-              <p className="font-semibold text-foreground">{label}</p>
-            ) : null}
+            {label ? <p className="font-semibold text-foreground">{label}</p> : null}
             {showBounds ? (
               <p className="text-muted-foreground">
                 {formatDisplayValue(min)} - {formatDisplayValue(max)}
@@ -130,10 +134,7 @@ export function CommittedSliderInput({
               max={max}
               disabled={disabled}
               aria-label={label ?? unit ?? 'Slider value'}
-              className={cn(
-                'h-10 w-28 pr-10 text-right text-sm font-semibold',
-                inputClassName,
-              )}
+              className={cn('h-10 w-28 pr-10 text-right text-sm font-semibold', inputClassName)}
               value={draftText}
               onChange={(event) => setDraftText(event.target.value)}
               onBlur={handleInputBlur}

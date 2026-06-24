@@ -24,7 +24,11 @@ export function createSuccessResponse<T>(data: T): ApiResponse<T> {
   };
 }
 
-export function createErrorResponse(message: string, code?: string, details?: unknown): ApiResponse<null> {
+export function createErrorResponse(
+  message: string,
+  code?: string,
+  details?: unknown,
+): ApiResponse<null> {
   return {
     error: {
       message,

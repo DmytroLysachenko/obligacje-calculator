@@ -1,6 +1,6 @@
-import {describe, expect, it} from 'vitest';
-import {MODEL_VERSION} from '@/features/bond-core/model-version';
-import {createHealthPayload} from './service';
+import { describe, expect, it } from 'vitest';
+import { MODEL_VERSION } from '@/features/bond-core/model-version';
+import { createHealthPayload } from './service';
 
 describe('health service', () => {
   it('creates the raw liveness payload used by platform checks', () => {

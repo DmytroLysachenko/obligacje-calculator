@@ -1,6 +1,6 @@
-import {readFileSync} from 'node:fs';
-import {join} from 'node:path';
-import {describe, expect, it} from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
 
 const projectRoot = process.cwd();
 
@@ -40,9 +40,15 @@ describe('result render performance contracts', () => {
     const chartLegend = readSource(paths.chartLegend);
 
     expectContains(metricStrip, 'export const MetricStrip = React.memo(function MetricStrip');
-    expectContains(resultHero, 'export const ResultSummaryHero = React.memo(function ResultSummaryHero');
+    expectContains(
+      resultHero,
+      'export const ResultSummaryHero = React.memo(function ResultSummaryHero',
+    );
     expectContains(recentLotList, 'export const RecentLotList = React.memo(function RecentLotList');
-    expectContains(chartLegend, 'export const ChartLegendStrip = React.memo(function ChartLegendStrip');
+    expectContains(
+      chartLegend,
+      'export const ChartLegendStrip = React.memo(function ChartLegendStrip',
+    );
 
     expectNoFragments(metricStrip, [
       'export function MetricStrip',

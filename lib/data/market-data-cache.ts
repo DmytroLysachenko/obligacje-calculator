@@ -26,5 +26,7 @@ export function getSeriesReferenceDate(series: {
   lastDataPointDate?: string | null;
   updatedAt?: Date | null;
 }) {
-  return series.lastDataPointDate ? parseISO(series.lastDataPointDate) : series.updatedAt ?? undefined;
+  return series.lastDataPointDate
+    ? parseISO(series.lastDataPointDate)
+    : (series.updatedAt ?? undefined);
 }

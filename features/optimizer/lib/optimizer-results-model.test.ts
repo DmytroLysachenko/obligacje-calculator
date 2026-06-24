@@ -1,6 +1,6 @@
-import {describe, expect, it} from 'vitest';
-import {BondType} from '@/features/bond-core/types';
-import type {BondOptimizerResultItem} from '@/features/bond-core/types/scenarios';
+import { describe, expect, it } from 'vitest';
+import { BondType } from '@/features/bond-core/types';
+import type { BondOptimizerResultItem } from '@/features/bond-core/types/scenarios';
 import {
   buildOptimizerLeadingDetailMetrics,
   buildOptimizerRankedOutcomeRows,
@@ -49,15 +49,17 @@ describe('optimizer results model', () => {
       scenarioReason: 'Fixed rate',
     });
 
-    expect(buildOptimizerRankedOutcomeRows({
-      rankedBonds: [leading, trailing],
-      leadingScenario: leading,
-      formatCurrency: (value) => `PLN ${value}`,
-      labels: {
-        leadingGapPrimary: 'Leader',
-        leadingGapSecondary: (gap) => `Gap ${gap}`,
-      },
-    })).toEqual([
+    expect(
+      buildOptimizerRankedOutcomeRows({
+        rankedBonds: [leading, trailing],
+        leadingScenario: leading,
+        formatCurrency: (value) => `PLN ${value}`,
+        labels: {
+          leadingGapPrimary: 'Leader',
+          leadingGapSecondary: (gap) => `Gap ${gap}`,
+        },
+      }),
+    ).toEqual([
       {
         bondType: BondType.EDO,
         name: 'EDO',
@@ -76,20 +78,22 @@ describe('optimizer results model', () => {
   });
 
   it('builds leading detail metrics with display-ready values', () => {
-    expect(buildOptimizerLeadingDetailMetrics({
-      leadingScenario: rankedItem({}),
-      expectedInflation: 3.456,
-      expectedNbpRate: 5.257,
-      formatCurrency: (value) => `PLN ${value.toFixed(2)}`,
-      labels: {
-        taxPaid: 'Tax paid',
-        inflationInput: 'Inflation',
-        nbpInput: 'NBP',
-      },
-    })).toEqual([
-      {id: 'tax-paid', label: 'Tax paid', value: 'PLN 123.45'},
-      {id: 'inflation-input', label: 'Inflation', value: '3.5%'},
-      {id: 'nbp-input', label: 'NBP', value: '5.26%'},
+    expect(
+      buildOptimizerLeadingDetailMetrics({
+        leadingScenario: rankedItem({}),
+        expectedInflation: 3.456,
+        expectedNbpRate: 5.257,
+        formatCurrency: (value) => `PLN ${value.toFixed(2)}`,
+        labels: {
+          taxPaid: 'Tax paid',
+          inflationInput: 'Inflation',
+          nbpInput: 'NBP',
+        },
+      }),
+    ).toEqual([
+      { id: 'tax-paid', label: 'Tax paid', value: 'PLN 123.45' },
+      { id: 'inflation-input', label: 'Inflation', value: '3.5%' },
+      { id: 'nbp-input', label: 'NBP', value: '5.26%' },
     ]);
   });
 });

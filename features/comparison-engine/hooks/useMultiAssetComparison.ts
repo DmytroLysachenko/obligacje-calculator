@@ -90,8 +90,9 @@ function getDefaultDraftState(history: MonthlyReturn[]): DraftState {
 }
 
 export function useMultiAssetComparison() {
-  const { data: historyResponse, isLoading } =
-    useChartData<MultiAssetHistoryResponse>('/api/charts/multi-asset-history');
+  const { data: historyResponse, isLoading } = useChartData<MultiAssetHistoryResponse>(
+    '/api/charts/multi-asset-history',
+  );
 
   const sourceData = historyResponse?.data?.length ? historyResponse.data : HISTORICAL_RETURNS;
   const effectiveCoverageStart =
@@ -158,8 +159,7 @@ export function useMultiAssetComparison() {
     },
     (initial) => {
       const nextDraft: DraftState = {
-        initialSum:
-          initial.sum !== undefined ? Number(initial.sum) : defaultState.initialSum,
+        initialSum: initial.sum !== undefined ? Number(initial.sum) : defaultState.initialSum,
         monthlyContribution:
           initial.monthly !== undefined
             ? Number(initial.monthly)
@@ -167,9 +167,7 @@ export function useMultiAssetComparison() {
         startYear: initial.year ? String(initial.year) : defaultState.startYear,
         startMonth: initial.month ? String(initial.month) : defaultState.startMonth,
         showRealValue:
-          initial.real !== undefined
-            ? String(initial.real) === 'true'
-            : defaultState.showRealValue,
+          initial.real !== undefined ? String(initial.real) === 'true' : defaultState.showRealValue,
       };
 
       setDraft(nextDraft);

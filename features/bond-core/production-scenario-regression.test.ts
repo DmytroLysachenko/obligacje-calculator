@@ -1,11 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { BOND_DEFINITIONS } from './constants/bond-definitions';
-import {
-  BondType,
-  InterestPayout,
-  InvestmentFrequency,
-  TaxStrategy,
-} from './types';
+import { BondType, InterestPayout, InvestmentFrequency, TaxStrategy } from './types';
 import { calculateBondInvestment, calculateRegularInvestment } from './utils/calculations';
 
 const purchaseDate = '2026-05-27T00:00:00.000Z';
@@ -80,10 +75,7 @@ function expectSingleBondAccountingIdentity(result: ReturnType<typeof calculateB
     result.grossValue - result.totalTax - result.totalEarlyWithdrawalFee,
     2,
   );
-  expect(result.totalProfit).toBeCloseTo(
-    result.netPayoutValue - result.initialInvestment,
-    2,
-  );
+  expect(result.totalProfit).toBeCloseTo(result.netPayoutValue - result.initialInvestment, 2);
   expect(result.totalProfit + result.totalTax + result.totalEarlyWithdrawalFee).toBeCloseTo(
     result.grossValue - result.initialInvestment,
     2,
@@ -94,15 +86,12 @@ function expectSingleBondAccountingIdentity(result: ReturnType<typeof calculateB
 
 describe('production scenario calculation regressions', () => {
   it('keeps a 20-year EDO rollover nominally profitable while real value reflects purchasing power', () => {
-    const result = calculateBondInvestment(singleInputs(BondType.EDO, {
-      rollover: true,
-      customInflation: [
-        1, 3, 4, 5, 5,
-        4, 3, 2, 1, 2,
-        3, 4, 5, 6, 7,
-        7, 6, 5, 4, 3,
-      ],
-    }));
+    const result = calculateBondInvestment(
+      singleInputs(BondType.EDO, {
+        rollover: true,
+        customInflation: [1, 3, 4, 5, 5, 4, 3, 2, 1, 2, 3, 4, 5, 6, 7, 7, 6, 5, 4, 3],
+      }),
+    );
     const finalPoint = result.timeline.at(-1);
 
     expect(finalPoint?.isWithdrawal).toBe(true);
@@ -118,12 +107,14 @@ describe('production scenario calculation regressions', () => {
   });
 
   it('uses the previous projected CPI year for indexed annual reset rates', () => {
-    const result = calculateBondInvestment(singleInputs(BondType.EDO, {
-      rollover: false,
-      withdrawalDate: '2036-05-27T00:00:00.000Z',
-      investmentHorizonMonths: 120,
-      customInflation: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-    }));
+    const result = calculateBondInvestment(
+      singleInputs(BondType.EDO, {
+        rollover: false,
+        withdrawalDate: '2036-05-27T00:00:00.000Z',
+        investmentHorizonMonths: 120,
+        customInflation: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+      }),
+    );
     const firstFixedPoint = result.timeline[1];
     const secondYearPoint = result.timeline[2];
     const thirdYearPoint = result.timeline[3];
@@ -138,18 +129,20 @@ describe('production scenario calculation regressions', () => {
   });
 
   it('keeps ROR rollover on global yearly NBP path indexes instead of restarting per cycle', () => {
-    const result = calculateBondInvestment(singleInputs(BondType.ROR, {
-      duration: 1,
-      firstYearRate: 4,
-      expectedNbpRate: 3.75,
-      margin: 0,
-      isCapitalized: false,
-      payoutFrequency: InterestPayout.MONTHLY,
-      withdrawalDate: '2030-05-27T00:00:00.000Z',
-      investmentHorizonMonths: 48,
-      rollover: true,
-      customNbpRate: [3, 4, 5, 6],
-    }));
+    const result = calculateBondInvestment(
+      singleInputs(BondType.ROR, {
+        duration: 1,
+        firstYearRate: 4,
+        expectedNbpRate: 3.75,
+        margin: 0,
+        isCapitalized: false,
+        payoutFrequency: InterestPayout.MONTHLY,
+        withdrawalDate: '2030-05-27T00:00:00.000Z',
+        investmentHorizonMonths: 48,
+        rollover: true,
+        customNbpRate: [3, 4, 5, 6],
+      }),
+    );
     const cycleTwoProjectedNbp = result.timeline.find(
       (point) => point.cycleIndex === 2 && point.rateSource === 'projected_nbp',
     );
@@ -166,24 +159,29 @@ describe('production scenario calculation regressions', () => {
   });
 
   it('keeps ROR rollover wealth cumulative while per-cycle retained interest resets', () => {
-    const result = calculateBondInvestment(singleInputs(BondType.ROR, {
-      initialInvestment: 100,
-      duration: 1,
-      firstYearRate: 4,
-      expectedInflation: 3.8,
-      expectedNbpRate: 3.75,
-      margin: 0,
-      isCapitalized: false,
-      payoutFrequency: InterestPayout.MONTHLY,
-      withdrawalDate: '2036-05-27T00:00:00.000Z',
-      investmentHorizonMonths: 120,
-      rollover: true,
-      isRebought: true,
-      rebuyDiscount: 0.1,
-    }));
-    const firstMaturity = result.timeline.find((point) => point.cycleIndex === 1 && point.isMaturity);
+    const result = calculateBondInvestment(
+      singleInputs(BondType.ROR, {
+        initialInvestment: 100,
+        duration: 1,
+        firstYearRate: 4,
+        expectedInflation: 3.8,
+        expectedNbpRate: 3.75,
+        margin: 0,
+        isCapitalized: false,
+        payoutFrequency: InterestPayout.MONTHLY,
+        withdrawalDate: '2036-05-27T00:00:00.000Z',
+        investmentHorizonMonths: 120,
+        rollover: true,
+        isRebought: true,
+        rebuyDiscount: 0.1,
+      }),
+    );
+    const firstMaturity = result.timeline.find(
+      (point) => point.cycleIndex === 1 && point.isMaturity,
+    );
     const firstRolloverMonth = result.timeline.find(
-      (point) => point.cycleIndex === 2 && point.events?.some((event) => event.type === 'ROLLOVER_PURCHASE'),
+      (point) =>
+        point.cycleIndex === 2 && point.events?.some((event) => event.type === 'ROLLOVER_PURCHASE'),
     );
     const finalPoint = result.timeline.at(-1);
 
@@ -197,19 +195,21 @@ describe('production scenario calculation regressions', () => {
   });
 
   it('shows low-value ROR nominal gain can still lose real purchasing power', () => {
-    const result = calculateBondInvestment(singleInputs(BondType.ROR, {
-      initialInvestment: 100,
-      duration: 1,
-      firstYearRate: 4,
-      expectedInflation: 3.8,
-      expectedNbpRate: 3.75,
-      margin: 0,
-      isCapitalized: false,
-      payoutFrequency: InterestPayout.MONTHLY,
-      withdrawalDate: '2036-05-27T00:00:00.000Z',
-      investmentHorizonMonths: 120,
-      rollover: true,
-    }));
+    const result = calculateBondInvestment(
+      singleInputs(BondType.ROR, {
+        initialInvestment: 100,
+        duration: 1,
+        firstYearRate: 4,
+        expectedInflation: 3.8,
+        expectedNbpRate: 3.75,
+        margin: 0,
+        isCapitalized: false,
+        payoutFrequency: InterestPayout.MONTHLY,
+        withdrawalDate: '2036-05-27T00:00:00.000Z',
+        investmentHorizonMonths: 120,
+        rollover: true,
+      }),
+    );
 
     expect(result.netPayoutValue).toBeGreaterThan(result.initialInvestment);
     expect(result.finalRealValue).toBeLessThan(result.initialInvestment);
@@ -218,12 +218,14 @@ describe('production scenario calculation regressions', () => {
   });
 
   it('keeps early-exit payout value at or above principal when official fee is capped by earned interest', () => {
-    const result = calculateBondInvestment(singleInputs(BondType.EDO, {
-      initialInvestment: 10000,
-      withdrawalDate: '2026-06-27T00:00:00.000Z',
-      investmentHorizonMonths: 1,
-      rollover: false,
-    }));
+    const result = calculateBondInvestment(
+      singleInputs(BondType.EDO, {
+        initialInvestment: 10000,
+        withdrawalDate: '2026-06-27T00:00:00.000Z',
+        investmentHorizonMonths: 1,
+        rollover: false,
+      }),
+    );
     const finalPoint = result.timeline.at(-1);
 
     expect(result.isEarlyWithdrawal).toBe(true);
@@ -254,20 +256,28 @@ describe('production scenario calculation regressions', () => {
   });
 
   it('keeps chart granularity display-only for single and regular calculations', () => {
-    const singleYearly = calculateBondInvestment(singleInputs(BondType.EDO, {
-      chartStep: 'yearly',
-      rollover: true,
-    }));
-    const singleMonthly = calculateBondInvestment(singleInputs(BondType.EDO, {
-      chartStep: 'monthly',
-      rollover: true,
-    }));
-    const regularYearly = calculateRegularInvestment(regularInputs(BondType.EDO, {
-      chartStep: 'yearly',
-    }));
-    const regularMonthly = calculateRegularInvestment(regularInputs(BondType.EDO, {
-      chartStep: 'monthly',
-    }));
+    const singleYearly = calculateBondInvestment(
+      singleInputs(BondType.EDO, {
+        chartStep: 'yearly',
+        rollover: true,
+      }),
+    );
+    const singleMonthly = calculateBondInvestment(
+      singleInputs(BondType.EDO, {
+        chartStep: 'monthly',
+        rollover: true,
+      }),
+    );
+    const regularYearly = calculateRegularInvestment(
+      regularInputs(BondType.EDO, {
+        chartStep: 'yearly',
+      }),
+    );
+    const regularMonthly = calculateRegularInvestment(
+      regularInputs(BondType.EDO, {
+        chartStep: 'monthly',
+      }),
+    );
 
     expect(singleMonthly.netPayoutValue).toBeCloseTo(singleYearly.netPayoutValue, 8);
     expect(singleMonthly.totalTax).toBeCloseTo(singleYearly.totalTax, 8);

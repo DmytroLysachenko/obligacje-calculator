@@ -37,7 +37,9 @@ export function ReferenceDashboardHero({
               <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
                 {metric.label}
               </p>
-              <p className="mt-1.5 text-base font-semibold leading-6 tracking-tight text-foreground">{metric.value}</p>
+              <p className="mt-1.5 text-base font-semibold leading-6 tracking-tight text-foreground">
+                {metric.value}
+              </p>
             </div>
           ))}
         </div>

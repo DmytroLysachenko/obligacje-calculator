@@ -144,23 +144,20 @@ describe('Feature support matrix regression suite', () => {
   });
 
   describe('trusted core: single bond calculator', () => {
-    it.each(ALL_BOND_TYPES)(
-      'calculates a stable single-bond scenario for %s',
-      async (bondType) => {
-        const envelope = await calculationService.calculate({
-          kind: ScenarioKind.SINGLE_BOND,
-          payload: buildSingleBondPayload(bondType),
-        });
+    it.each(ALL_BOND_TYPES)('calculates a stable single-bond scenario for %s', async (bondType) => {
+      const envelope = await calculationService.calculate({
+        kind: ScenarioKind.SINGLE_BOND,
+        payload: buildSingleBondPayload(bondType),
+      });
 
-        const result = envelope.result as CalculationResult;
+      const result = envelope.result as CalculationResult;
 
-        expect(envelope.dataFreshness.status).toBe('fresh');
-        expect(envelope.assumptions.length).toBeGreaterThan(0);
-        expect(result.timeline.length).toBeGreaterThan(1);
-        expect(result.netPayoutValue).toBeGreaterThan(0);
-        expect(result.maturityDate >= buildSingleBondPayload(bondType).purchaseDate).toBe(true);
-      },
-    );
+      expect(envelope.dataFreshness.status).toBe('fresh');
+      expect(envelope.assumptions.length).toBeGreaterThan(0);
+      expect(result.timeline.length).toBeGreaterThan(1);
+      expect(result.netPayoutValue).toBeGreaterThan(0);
+      expect(result.maturityDate >= buildSingleBondPayload(bondType).purchaseDate).toBe(true);
+    });
   });
 
   describe('conditional flows: comparison, regular investment, notebook simulation', () => {
@@ -344,7 +341,9 @@ describe('Feature support matrix regression suite', () => {
         BondType.COI,
         BondType.EDO,
       ]);
-      expect(RETIREMENT_SUPPORTED_BOND_TYPES.every((type) => supportsRetirementBondType(type))).toBe(true);
+      expect(
+        RETIREMENT_SUPPORTED_BOND_TYPES.every((type) => supportsRetirementBondType(type)),
+      ).toBe(true);
       expect(supportsRetirementBondType(BondType.OTS)).toBe(false);
       expect(supportsRetirementBondType(BondType.ROS)).toBe(false);
       expect(supportsRetirementBondType(BondType.ROD)).toBe(false);
@@ -390,4 +389,3 @@ describe('Feature support matrix regression suite', () => {
     });
   });
 });
-

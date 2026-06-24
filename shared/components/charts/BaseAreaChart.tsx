@@ -12,10 +12,7 @@ import {
   Legend,
   TooltipProps,
 } from 'recharts';
-import {
-  ValueType,
-  NameType,
-} from 'recharts/types/component/DefaultTooltipContent';
+import { ValueType, NameType } from 'recharts/types/component/DefaultTooltipContent';
 import { ChartContainer } from './ChartContainer';
 import { useChartSync } from '@/shared/context/ChartSyncContext';
 import { ChartDatum, SyncedChartMouseState } from './chart-types';
@@ -43,8 +40,7 @@ type SyncedAreaChartProps = React.ComponentProps<typeof AreaChart> & {
   onMouseMove?: (state: SyncedChartMouseState) => void;
 };
 
-const AreaChartWithTooltipIndex =
-  AreaChart as unknown as React.ComponentType<SyncedAreaChartProps>;
+const AreaChartWithTooltipIndex = AreaChart as unknown as React.ComponentType<SyncedAreaChartProps>;
 
 export const BaseAreaChart: React.FC<BaseAreaChartProps> = ({
   data,
@@ -60,8 +56,8 @@ export const BaseAreaChart: React.FC<BaseAreaChartProps> = ({
   return (
     <ChartContainer height={height}>
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChartWithTooltipIndex 
-          data={data} 
+        <AreaChartWithTooltipIndex
+          data={data}
           margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
           onMouseMove={(state) => {
             if (state.activeTooltipIndex !== undefined) {
@@ -80,23 +76,12 @@ export const BaseAreaChart: React.FC<BaseAreaChartProps> = ({
             ))}
           </defs>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
-          <XAxis 
-            dataKey={xAxisKey} 
-            fontSize={10} 
-            tickLine={false} 
-            axisLine={false}
-            dy={10}
-          />
-          <YAxis 
-            fontSize={10} 
-            tickLine={false} 
-            axisLine={false}
-            tickFormatter={yAxisFormatter}
-          />
+          <XAxis dataKey={xAxisKey} fontSize={10} tickLine={false} axisLine={false} dy={10} />
+          <YAxis fontSize={10} tickLine={false} axisLine={false} tickFormatter={yAxisFormatter} />
           {CustomTooltipComponent ? <Tooltip content={<CustomTooltipComponent />} /> : <Tooltip />}
-          <Legend 
-            verticalAlign="top" 
-            align="right" 
+          <Legend
+            verticalAlign="top"
+            align="right"
             height={36}
             iconType="circle"
             wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase' }}

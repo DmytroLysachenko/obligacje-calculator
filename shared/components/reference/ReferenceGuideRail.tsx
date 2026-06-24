@@ -10,12 +10,7 @@ interface ReferenceGuideRailProps {
   children: React.ReactNode;
 }
 
-export function ReferenceGuideRail({
-  value,
-  icon,
-  title,
-  children,
-}: ReferenceGuideRailProps) {
+export function ReferenceGuideRail({ value, icon, title, children }: ReferenceGuideRailProps) {
   return (
     <AccordionItem value={value} className="border-b border-border px-0 last:border-b-0">
       <AccordionTrigger className="py-4 text-left hover:no-underline">

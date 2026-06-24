@@ -53,9 +53,10 @@ export function TableDensityControls({
   labels,
   className,
 }: TableDensityControlsProps) {
-  const smallestLimit = tableRowLimitOptions.find(
-    (option): option is Exclude<TableRowLimit, 'all'> => option !== 'all',
-  ) ?? 12;
+  const smallestLimit =
+    tableRowLimitOptions.find(
+      (option): option is Exclude<TableRowLimit, 'all'> => option !== 'all',
+    ) ?? 12;
   const needsDensityControls = totalRows > smallestLimit;
 
   return (
@@ -70,9 +71,7 @@ export function TableDensityControls({
       </p>
       {needsDensityControls ? (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold text-muted-foreground">
-            {labels.rowsPerPage}
-          </span>
+          <span className="text-xs font-semibold text-muted-foreground">{labels.rowsPerPage}</span>
           {tableRowLimitOptions.map((option) => (
             <Button
               key={String(option)}

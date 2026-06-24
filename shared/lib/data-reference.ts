@@ -24,10 +24,7 @@ function ref(key: string, language: AppLanguage) {
   return translateMessage(language, `economic.reference_copy.${key}`);
 }
 
-function getKnownDataSourceLabel(
-  value: string,
-  language: AppLanguage,
-) {
+function getKnownDataSourceLabel(value: string, language: AppLanguage) {
   const normalized = value.trim().toLowerCase();
 
   if (normalized === 'static fallback dataset') {
@@ -43,16 +40,16 @@ function getKnownDataSourceLabel(
   }
 
   if (
-    normalized === 'nbp official publications fallback dataset'
-    || normalized === 'curated nbp reference-rate history from official policy publications'
+    normalized === 'nbp official publications fallback dataset' ||
+    normalized === 'curated nbp reference-rate history from official policy publications'
   ) {
     return ref('official_nbp_fallback', language);
   }
 
   if (
-    normalized === 'gus / partial seeded coverage'
-    || normalized === 'gus/partial seeded coverage'
-    || normalized === 'gus / partial reference coverage'
+    normalized === 'gus / partial seeded coverage' ||
+    normalized === 'gus/partial seeded coverage' ||
+    normalized === 'gus / partial reference coverage'
   ) {
     return ref('official_gus_partial', language);
   }
@@ -62,8 +59,8 @@ function getKnownDataSourceLabel(
   }
 
   if (
-    normalized === 'official bond offer page'
-    || normalized === 'official bond offer communication'
+    normalized === 'official bond offer page' ||
+    normalized === 'official bond offer communication'
   ) {
     return ref('official_bond_site', language);
   }
@@ -71,10 +68,7 @@ function getKnownDataSourceLabel(
   return value;
 }
 
-function getCoverageNoteLabel(
-  value: string,
-  language: AppLanguage,
-) {
+function getCoverageNoteLabel(value: string, language: AppLanguage) {
   const normalized = value.trim().toLowerCase();
 
   if (normalized === 'cpi-partial-reference') {
@@ -142,17 +136,11 @@ export function getReferenceCoverageLabel(
   return `${meta.coverageStart} - ${meta.coverageEnd}`;
 }
 
-export function getReferenceAsOfLabel(
-  meta?: DataReferenceMetaLike,
-  language: AppLanguage = 'en',
-) {
+export function getReferenceAsOfLabel(meta?: DataReferenceMetaLike, language: AppLanguage = 'en') {
   return meta?.asOf ?? meta?.lastCheck ?? translateMessage(language, 'common.unavailable');
 }
 
-export function getReferenceScopeLabel(
-  meta?: DataReferenceMetaLike,
-  language: AppLanguage = 'en',
-) {
+export function getReferenceScopeLabel(meta?: DataReferenceMetaLike, language: AppLanguage = 'en') {
   if (!meta) {
     return ref('scope_unknown', language);
   }
@@ -184,10 +172,7 @@ export function getReferenceStatusKind(meta?: DataReferenceMetaLike): ReferenceS
   return 'fallback';
 }
 
-export function getReferenceState(
-  meta?: DataReferenceMetaLike,
-  language: AppLanguage = 'en',
-) {
+export function getReferenceState(meta?: DataReferenceMetaLike, language: AppLanguage = 'en') {
   if (!meta) {
     return {
       title: ref('unavailable_title', language),
@@ -206,7 +191,12 @@ export function getReferenceState(
     };
   }
 
-  if (meta.usedFallback || meta.source === 'fallback' || meta.syncStatus === 'failed' || meta.syncStatus === 'partial') {
+  if (
+    meta.usedFallback ||
+    meta.source === 'fallback' ||
+    meta.syncStatus === 'failed' ||
+    meta.syncStatus === 'partial'
+  ) {
     return {
       title: ref('fallback_title', language),
       description: meta.coverageNote
@@ -246,4 +236,3 @@ export function getReferenceMetaItems(
     },
   ];
 }
-

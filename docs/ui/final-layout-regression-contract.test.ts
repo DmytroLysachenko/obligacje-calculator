@@ -42,8 +42,14 @@ describe('final layout regression contracts', () => {
     expectContains(page, 'grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3');
     expectContains(page, 'grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 xl:grid-cols-4');
     expectContains(page, 'grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3');
-    expectContains(page, 'border-t border-border py-5 transition-colors hover:border-foreground/30');
-    expectContains(card, 'flex h-full min-h-[440px] flex-col border-t border-border py-6 transition-colors hover:bg-muted/20');
+    expectContains(
+      page,
+      'border-t border-border py-5 transition-colors hover:border-foreground/30',
+    );
+    expectContains(
+      card,
+      'flex h-full min-h-[440px] flex-col border-t border-border py-6 transition-colors hover:bg-muted/20',
+    );
     expectContains(card, 'flex flex-1 flex-col space-y-5 pt-5');
     expectContains(card, 'mt-auto space-y-5 pt-6');
 
@@ -61,7 +67,10 @@ describe('final layout regression contracts', () => {
   it('keeps shared controls unified instead of page-local selector variants', () => {
     const source = read(files.marketAssumptions);
 
-    expectContains(source, "import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';");
+    expectContains(
+      source,
+      "import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';",
+    );
     expectContains(source, 'function ProjectionModeButtons');
     expectContains(source, 'function AssumptionHeader');
     expectContains(source, 'function CurrentAssumptionValue');
@@ -81,7 +90,10 @@ describe('final layout regression contracts', () => {
     const utilities = read(files.sidebarUtilities);
     const settings = read(files.sidebarSettings);
 
-    expectContains(utilities, 'grid min-h-12 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-1');
+    expectContains(
+      utilities,
+      'grid min-h-12 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-1',
+    );
     expectContains(utilities, 'export function SidebarUtilityStack');
     expectContains(utilities, 'divide-y divide-border');
     expectContains(settings, '<SidebarUtilityStack>');
@@ -100,7 +112,10 @@ describe('final layout regression contracts', () => {
     const regular = read(files.regularSummary);
     const lots = read(files.recentLots);
 
-    expectContains(regular, 'grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.75fr)] xl:items-start');
+    expectContains(
+      regular,
+      'grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.75fr)] xl:items-start',
+    );
     expectContains(regular, 'className="xl:max-h-[42rem] xl:overflow-y-auto xl:pr-2"');
     expectContains(regular, 'compact');
     expectContains(lots, 'compact?: boolean;');

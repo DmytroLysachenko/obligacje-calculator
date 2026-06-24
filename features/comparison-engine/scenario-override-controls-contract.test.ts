@@ -1,6 +1,6 @@
-import {readFileSync} from 'node:fs';
-import {join} from 'node:path';
-import {describe, expect, it} from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
 
 const root = process.cwd();
 
@@ -22,8 +22,14 @@ describe('scenario override controls contract', () => {
   it('keeps override controls aligned with shared form surfaces', () => {
     const source = read('features/comparison-engine/components/ScenarioOverrideCard.tsx');
 
-    expectContains(source, "import { FormSelect, FormSelectOption } from '@/shared/components/forms/FormSelect';");
-    expectContains(source, "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
+    expectContains(
+      source,
+      "import { FormSelect, FormSelectOption } from '@/shared/components/forms/FormSelect';",
+    );
+    expectContains(
+      source,
+      "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';",
+    );
     expectContains(source, '<ScenarioSetupCard');
     expectContains(source, 'triggerClassName="font-semibold"');
     expectContains(source, '<FormInlineNotice');

@@ -20,12 +20,15 @@ function assertSingleBondTerminalResult(
 
   const finalPoint = result.timeline[result.timeline.length - 1];
   if (!finalPoint?.isWithdrawal) {
-    throw createNumericFaultError(`${context}: final timeline point is not a withdrawal checkpoint.`, {
-      details: {
-        finalPeriodLabel: finalPoint?.periodLabel,
-        finalCycleEndDate: finalPoint?.cycleEndDate,
+    throw createNumericFaultError(
+      `${context}: final timeline point is not a withdrawal checkpoint.`,
+      {
+        details: {
+          finalPeriodLabel: finalPoint?.periodLabel,
+          finalCycleEndDate: finalPoint?.cycleEndDate,
+        },
       },
-    });
+    );
   }
 
   if (!Number.isFinite(result.netPayoutValue) || !Number.isFinite(result.finalRealValue)) {
@@ -42,19 +45,21 @@ function assertSingleBondTerminalResult(
  * Reverse calculation to find the required initial investment to reach a target net sum.
  * Uses a binary search approach.
  */
-export function calculateReverseBondInvestment(inputs: BondInputs & { targetNetSum: number }): CalculationResult {
+export function calculateReverseBondInvestment(
+  inputs: BondInputs & { targetNetSum: number },
+): CalculationResult {
   let low = 100;
   let high = 10_000_000;
   let result: CalculationResult | null = null;
-  
+
   // 30 iterations give very high precision
   for (let i = 0; i < 30; i++) {
     const mid = (low + high) / 2;
     // Round mid to nearest 100 as bonds are usually bought in units of 100 PLN
     const roundedMid = Math.ceil(mid / 100) * 100;
-    
+
     result = calculateBondInvestment({ ...inputs, initialInvestment: roundedMid });
-    
+
     if (result.netPayoutValue < inputs.targetNetSum) {
       low = mid;
     } else {
@@ -75,8 +80,8 @@ export function calculateReverseBondInvestment(inputs: BondInputs & { targetNetS
   // Ensure notes reflect reverse mode
   result.calculationNotes = [
     ...(result.calculationNotes || []),
-    `Target net sum: ${inputs.targetNetSum} PLN. Required initial investment: ${result.initialInvestment} PLN.`
+    `Target net sum: ${inputs.targetNetSum} PLN. Required initial investment: ${result.initialInvestment} PLN.`,
   ];
-  
+
   return result;
 }

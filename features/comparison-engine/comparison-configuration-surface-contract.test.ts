@@ -1,6 +1,6 @@
-import {readFileSync} from 'node:fs';
-import {join} from 'node:path';
-import {describe, expect, it} from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
 
 const root = process.cwd();
 
@@ -20,10 +20,15 @@ function expectNoFragments(source: string, fragments: readonly string[]) {
 
 describe('comparison configuration surface contract', () => {
   it('keeps bond comparison configuration divider-led', () => {
-    const source = read('features/comparison-engine/components/bond-comparison/ComparisonConfigurationPanel.tsx');
+    const source = read(
+      'features/comparison-engine/components/bond-comparison/ComparisonConfigurationPanel.tsx',
+    );
 
     expectContains(source, "import { SectionBlock } from '@/shared/components/page/SectionBlock';");
-    expectContains(source, "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
+    expectContains(
+      source,
+      "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';",
+    );
     expectContains(source, '<SectionBlock');
     expectContains(source, 'variant="divided"');
     expectContains(source, 'contentClassName="space-y-5"');

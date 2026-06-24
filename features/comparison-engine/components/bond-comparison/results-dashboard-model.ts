@@ -1,12 +1,7 @@
 import type { BondComparisonScenarioItem } from '@/features/bond-core/types/scenarios';
 
-export function getModeledValue(
-  result: BondComparisonScenarioItem,
-  showRealValue: boolean,
-) {
-  return showRealValue
-    ? result.result.finalRealValue
-    : result.result.netPayoutValue;
+export function getModeledValue(result: BondComparisonScenarioItem, showRealValue: boolean) {
+  return showRealValue ? result.result.finalRealValue : result.result.netPayoutValue;
 }
 
 export function sortResultsByModeledValue(
@@ -14,8 +9,7 @@ export function sortResultsByModeledValue(
   showRealValue: boolean,
 ) {
   return [...results].sort(
-    (left, right) =>
-      getModeledValue(right, showRealValue) - getModeledValue(left, showRealValue),
+    (left, right) => getModeledValue(right, showRealValue) - getModeledValue(left, showRealValue),
   );
 }
 
@@ -38,12 +32,8 @@ export function buildComparisonVerdictModel({
   const rankedResults = sortResultsByModeledValue(results, showRealValue);
   const runnerUp = getRunnerUpResult(rankedResults, leadingResult);
   const leadingValue = getModeledValue(leadingResult, showRealValue);
-  const runnerUpValue = runnerUp
-    ? getModeledValue(runnerUp, showRealValue)
-    : undefined;
-  const spread = runnerUpValue !== undefined
-    ? leadingValue - runnerUpValue
-    : undefined;
+  const runnerUpValue = runnerUp ? getModeledValue(runnerUp, showRealValue) : undefined;
+  const spread = runnerUpValue !== undefined ? leadingValue - runnerUpValue : undefined;
 
   return {
     rankedResults,

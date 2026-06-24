@@ -1,4 +1,4 @@
-import {describe, expect, it} from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
   createInflationSeriesEnvelope,
   createNbpSeriesEnvelope,
@@ -9,14 +9,16 @@ import {
 
 describe('chart reference series helpers', () => {
   it('expands sparse step series month by month', () => {
-    expect(expandMonthlyStepSeries([
-      {date: '2026-01', rate: 3},
-      {date: '2026-04', rate: 4},
-    ])).toEqual([
-      {date: '2026-01', rate: 3},
-      {date: '2026-02', rate: 3},
-      {date: '2026-03', rate: 3},
-      {date: '2026-04', rate: 4},
+    expect(
+      expandMonthlyStepSeries([
+        { date: '2026-01', rate: 3 },
+        { date: '2026-04', rate: 4 },
+      ]),
+    ).toEqual([
+      { date: '2026-01', rate: 3 },
+      { date: '2026-02', rate: 3 },
+      { date: '2026-03', rate: 3 },
+      { date: '2026-04', rate: 4 },
     ]);
   });
 
@@ -41,10 +43,10 @@ describe('chart reference series helpers', () => {
 
   it('marks stale CPI coverage as fallback-assisted database data', () => {
     const envelope = createInflationSeriesEnvelope({
-      data: [{date: '2026-01', rate: 3.2}],
+      data: [{ date: '2026-01', rate: 3.2 }],
       latestPointDate: '2026-01-01',
       lastSyncStatus: 'success',
-      metadata: {seriesName: 'CPI'},
+      metadata: { seriesName: 'CPI' },
       now: new Date('2026-06-15T00:00:00.000Z'),
     });
 
@@ -59,13 +61,15 @@ describe('chart reference series helpers', () => {
   });
 
   it('keeps fresh CPI coverage as synced context', () => {
-    expect(createInflationSeriesEnvelope({
-      data: [{date: '2026-05', rate: 3.2}],
-      latestPointDate: '2026-05-01',
-      lastSyncStatus: 'success',
-      metadata: {seriesName: 'CPI'},
-      now: new Date('2026-06-15T00:00:00.000Z'),
-    })).toMatchObject({
+    expect(
+      createInflationSeriesEnvelope({
+        data: [{ date: '2026-05', rate: 3.2 }],
+        latestPointDate: '2026-05-01',
+        lastSyncStatus: 'success',
+        metadata: { seriesName: 'CPI' },
+        now: new Date('2026-06-15T00:00:00.000Z'),
+      }),
+    ).toMatchObject({
       usedFallback: false,
       syncStatus: 'success',
       coverageNote: 'reference-synced-context',
@@ -74,14 +78,16 @@ describe('chart reference series helpers', () => {
 
   it('merges sparse NBP coverage with fallback history', () => {
     const envelope = createNbpSeriesEnvelope({
-      data: [{date: '2026-05', rate: 3.75}],
+      data: [{ date: '2026-05', rate: 3.75 }],
       lastSyncStatus: 'success',
-      metadata: {seriesName: 'NBP'},
+      metadata: { seriesName: 'NBP' },
     });
 
     expect(envelope.usedFallback).toBe(true);
     expect(envelope.syncStatus).toBe('partial');
     expect(envelope.coverageNote).toBe('nbp-partial-reference');
-    expect(envelope.data.some((point) => point.date === '2026-05' && point.rate === 3.75)).toBe(true);
+    expect(envelope.data.some((point) => point.date === '2026-05' && point.rate === 3.75)).toBe(
+      true,
+    );
   });
 });

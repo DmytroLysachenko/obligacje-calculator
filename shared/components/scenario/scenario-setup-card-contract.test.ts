@@ -1,6 +1,6 @@
-import {readFileSync} from 'node:fs';
-import {join} from 'node:path';
-import {describe, expect, it} from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
 
 const root = process.cwd();
 
@@ -24,8 +24,14 @@ describe('scenario setup card surface contract', () => {
 
     expectContains(source, 'data-tone={tone}');
     expectContains(source, "'border-l-2 border-t px-4 py-4 sm:px-5'");
-    expectContains(source, "'scenario-a': 'border-border data-[tone=scenario-a]:border-l-primary/60'");
-    expectContains(source, "'scenario-b': 'border-border data-[tone=scenario-b]:border-l-success/60'");
+    expectContains(
+      source,
+      "'scenario-a': 'border-border data-[tone=scenario-a]:border-l-primary/60'",
+    );
+    expectContains(
+      source,
+      "'scenario-b': 'border-border data-[tone=scenario-b]:border-l-success/60'",
+    );
     expectContains(source, 'border-b border-border pb-4');
     expectContains(source, 'border-t border-border pt-4');
 

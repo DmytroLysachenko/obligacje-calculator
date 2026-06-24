@@ -32,7 +32,10 @@ describe('strategy result flow contracts', () => {
   it('keeps the regular investment summary grid from creating a full-height right rail', () => {
     const source = read(files.regularSummary);
 
-    expectContains(source, 'grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.75fr)] xl:items-start');
+    expectContains(
+      source,
+      'grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.75fr)] xl:items-start',
+    );
     expectContains(source, '<RecentLotList');
     expectContains(source, 'compact');
     expectContains(source, 'className="xl:max-h-[42rem] xl:overflow-y-auto xl:pr-2"');
@@ -43,7 +46,7 @@ describe('strategy result flow contracts', () => {
     expectNoFragments(source, [
       'grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]',
       'grid grid-cols-1 gap-5 xl:grid-cols-[1.1fr_0.9fr]',
-      '<RecentLotList\n          title={t(\'regular_summary.recent_title\')}\n          description={t(\'regular_summary.recent_description\')}\n          note={t(\'regular_summary.recent_note\')}\n          items={recentLotItems}\n        />',
+      "<RecentLotList\n          title={t('regular_summary.recent_title')}\n          description={t('regular_summary.recent_description')}\n          note={t('regular_summary.recent_note')}\n          items={recentLotItems}\n        />",
       'xl:items-stretch',
       'xl:grid-cols-[1fr_1fr]',
     ]);
@@ -61,7 +64,10 @@ describe('strategy result flow contracts', () => {
     expectContains(source, "compact ? 'px-3 py-2' : 'px-4 py-3'");
     expectContains(source, "compact ? 'py-3 first:pt-0 last:pb-0' : 'py-4 first:pt-0 last:pb-0'");
     expectContains(source, "compact ? 'mt-3 gap-y-2.5' : 'mt-4 gap-y-3'");
-    expectContains(source, 'grid grid-cols-2 gap-x-6 text-sm md:grid-cols-4 xl:grid-cols-2 2xl:grid-cols-4');
+    expectContains(
+      source,
+      'grid grid-cols-2 gap-x-6 text-sm md:grid-cols-4 xl:grid-cols-2 2xl:grid-cols-4',
+    );
 
     expectNoFragments(source, [
       '<section className="space-y-5 border-y border-border py-6">',

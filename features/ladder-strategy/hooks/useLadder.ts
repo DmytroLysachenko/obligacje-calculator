@@ -7,7 +7,10 @@ import {
   RegularInvestmentInputs,
   TaxStrategy,
 } from '../../bond-core/types';
-import { RegularInvestmentCalculationEnvelope, ScenarioKind } from '../../bond-core/types/scenarios';
+import {
+  RegularInvestmentCalculationEnvelope,
+  ScenarioKind,
+} from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import {
@@ -15,7 +18,10 @@ import {
   getWithdrawalDateFromMonths,
   toDateString,
 } from '@/shared/lib/date-timing';
-import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/shared/lib/calculator-persistence';
+import {
+  loadPersistedCalculatorState,
+  savePersistedCalculatorState,
+} from '@/shared/lib/calculator-persistence';
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
@@ -52,10 +58,7 @@ function buildDefaultInputs(): RegularInvestmentInputs {
     isCapitalized: DEFAULT_DEFINITION.isCapitalized,
     payoutFrequency: DEFAULT_DEFINITION.payoutFrequency,
     purchaseDate,
-    withdrawalDate: getWithdrawalDateFromMonths(
-      purchaseDate,
-      DEFAULT_HORIZON_MONTHS,
-    ),
+    withdrawalDate: getWithdrawalDateFromMonths(purchaseDate, DEFAULT_HORIZON_MONTHS),
     isRebought: false,
     rebuyDiscount: DEFAULT_DEFINITION.rebuyDiscount,
     taxStrategy: TaxStrategy.STANDARD,
@@ -83,7 +86,7 @@ function withDerivedDates(
     if (previous.customNbpRate) {
       next.customNbpRate = Array.from(
         { length: years },
-        (_, index) => previous.customNbpRate?.[index] ?? (previous.expectedNbpRate ?? 5.25),
+        (_, index) => previous.customNbpRate?.[index] ?? previous.expectedNbpRate ?? 5.25,
       );
     }
   }
@@ -109,7 +112,7 @@ function withDerivedDates(
     if (previous.customNbpRate) {
       next.customNbpRate = Array.from(
         { length: years },
-        (_, index) => previous.customNbpRate?.[index] ?? (previous.expectedNbpRate ?? 5.25),
+        (_, index) => previous.customNbpRate?.[index] ?? previous.expectedNbpRate ?? 5.25,
       );
     }
   }
@@ -128,7 +131,7 @@ function withDerivedDates(
 function withBondDefinition(
   previous: RegularInvestmentInputs,
   type: BondType,
-  definitions?: Record<BondType, typeof BOND_DEFINITIONS[BondType]> | null,
+  definitions?: Record<BondType, (typeof BOND_DEFINITIONS)[BondType]> | null,
 ): RegularInvestmentInputs {
   const definition = definitions?.[type] ?? BOND_DEFINITIONS[type];
 
@@ -148,11 +151,8 @@ function withBondDefinition(
 export function useLadder() {
   const { definitions } = useBondDefinitions();
   const { defaults: macroDefaults } = useMacroAssumptionDefaults();
-  const [inputs, setInputs] = useState<RegularInvestmentInputs>(
-    buildDefaultInputs,
-  );
-  const [envelope, setEnvelope] =
-    useState<RegularInvestmentCalculationEnvelope | null>(null);
+  const [inputs, setInputs] = useState<RegularInvestmentInputs>(buildDefaultInputs);
+  const [envelope, setEnvelope] = useState<RegularInvestmentCalculationEnvelope | null>(null);
   const [isDirty, setIsDirty] = useState(true);
   const [isPersistenceReady, setIsPersistenceReady] = useState(false);
   const { isCalculating, post } = useCalculationRequest();
@@ -162,7 +162,7 @@ export function useLadder() {
 
   const results = envelope?.result || null;
   const applyDefinitionUpdate = useEffectEvent(
-    (definition: typeof BOND_DEFINITIONS[BondType]) => {
+    (definition: (typeof BOND_DEFINITIONS)[BondType]) => {
       setInputs((previous) => ({
         ...previous,
         firstYearRate: definition.firstYearRate,
@@ -178,24 +178,28 @@ export function useLadder() {
     },
   );
 
-  const applyMacroDefaults = useEffectEvent((defaults: { expectedInflation: number; expectedNbpRate: number }) => {
-    setInputs((previous) => {
-      const next = {
-        ...previous,
-        expectedInflation: defaults.expectedInflation,
-        expectedNbpRate: defaults.expectedNbpRate,
-      };
+  const applyMacroDefaults = useEffectEvent(
+    (defaults: { expectedInflation: number; expectedNbpRate: number }) => {
+      setInputs((previous) => {
+        const next = {
+          ...previous,
+          expectedInflation: defaults.expectedInflation,
+          expectedNbpRate: defaults.expectedNbpRate,
+        };
 
-      return preserveStableState(previous, next);
-    });
-  });
+        return preserveStableState(previous, next);
+      });
+    },
+  );
 
-  const reconcilePersistedMacroDefaults = useEffectEvent((defaults: { expectedInflation: number; expectedNbpRate: number }) => {
-    setInputs((previous) => {
-      const next = applyMacroDefaultsToBaseline(previous, defaults);
-      return preserveStableState(previous, next);
-    });
-  });
+  const reconcilePersistedMacroDefaults = useEffectEvent(
+    (defaults: { expectedInflation: number; expectedNbpRate: number }) => {
+      setInputs((previous) => {
+        const next = applyMacroDefaultsToBaseline(previous, defaults);
+        return preserveStableState(previous, next);
+      });
+    },
+  );
 
   useEffect(() => {
     if (!definitions || !definitions[inputs.bondType]) {
@@ -258,12 +262,15 @@ export function useLadder() {
   }, [inputs, post]);
 
   const updateInput = useCallback(
-    (
-      key: keyof RegularInvestmentInputs,
-      value: string | number | boolean | undefined,
-    ) => {
+    (key: keyof RegularInvestmentInputs, value: string | number | boolean | undefined) => {
       setIsDirty(true);
-      if (key === 'expectedInflation' || key === 'expectedNbpRate' || key === 'customInflation' || key === 'customNbpRate' || key === 'inflationScenario') {
+      if (
+        key === 'expectedInflation' ||
+        key === 'expectedNbpRate' ||
+        key === 'customInflation' ||
+        key === 'customNbpRate' ||
+        key === 'inflationScenario'
+      ) {
         hasTouchedMacroAssumptions.current = true;
       }
       setInputs((previous) =>
@@ -273,10 +280,13 @@ export function useLadder() {
     [],
   );
 
-  const setBondType = useCallback((type: BondType) => {
-    setIsDirty(true);
-    setInputs((previous) => withBondDefinition(previous, type, definitions));
-  }, [definitions]);
+  const setBondType = useCallback(
+    (type: BondType) => {
+      setIsDirty(true);
+      setInputs((previous) => withBondDefinition(previous, type, definitions));
+    },
+    [definitions],
+  );
 
   useEffect(() => {
     if (!isPersistenceReady) {

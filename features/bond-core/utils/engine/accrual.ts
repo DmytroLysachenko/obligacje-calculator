@@ -9,7 +9,7 @@ export interface AccrualResult {
 
 /**
  * Calculates interest earned for a single period with leap-year awareness.
- * 
+ *
  * @param principal The current value to calculate interest on
  * @param annualRate The nominal annual interest rate (as a percentage, e.g., 5.25 for 5.25%)
  * @param daysHeldInPeriod Days the bond was actually held during this period
@@ -25,7 +25,7 @@ export function calculatePeriodAccrual(
   daysInFullPeriod: number,
   bondType: BondType,
   payoutFrequency: InterestPayout,
-  startDate?: Date
+  startDate?: Date,
 ): AccrualResult {
   const isMonthly = payoutFrequency === InterestPayout.MONTHLY;
   const rate = annualRate.dividedBy(100);
@@ -38,7 +38,7 @@ export function calculatePeriodAccrual(
   }
 
   // Determine the denominator based on the start date of the period
-  // Polish treasury bonds typically use Act/Act or Act/365. 
+  // Polish treasury bonds typically use Act/Act or Act/365.
   // Most retail prospectuses imply that for a full year we get the full rate,
   // and for partial periods we use the actual number of days in that specific year.
   const daysInYear = startDate ? getDaysInYear(startDate) : 365;

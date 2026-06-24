@@ -8,4 +8,3 @@ export const GET = apiHandler(async () => {
   const summary = await summarizeOwnerPortfolios(owner.ownerId);
   return withPortfolioOwnerResponse(okJson(summary), owner);
 });
-

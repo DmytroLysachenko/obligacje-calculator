@@ -21,7 +21,9 @@ export function createProblemDetails(
   problem: Omit<ProblemDetails, 'type'> & { type?: string },
 ): ProblemDetails {
   return {
-    type: problem.type ?? `https://api.obligacje.pl/errors/${problem.title.toLowerCase().replaceAll(' ', '-')}`,
+    type:
+      problem.type ??
+      `https://api.obligacje.pl/errors/${problem.title.toLowerCase().replaceAll(' ', '-')}`,
     title: problem.title,
     status: problem.status,
     detail: problem.detail,

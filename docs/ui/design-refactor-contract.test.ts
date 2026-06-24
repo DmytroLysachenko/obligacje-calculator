@@ -176,9 +176,7 @@ const filesWithAllowedSlateUtilities = new Set([
   'components/ui/tooltip.tsx',
 ]);
 
-const filesWithAllowedLargeRadius = new Set([
-  'components/ui/tooltip.tsx',
-]);
+const filesWithAllowedLargeRadius = new Set(['components/ui/tooltip.tsx']);
 
 const excessiveFragmentationFragments = [
   'rounded-[1.4rem]',
@@ -237,11 +235,7 @@ const shadcnCardWrapperFragments = [
   '<CardDescription',
 ] as const;
 
-const translucentDecorativeFragments = [
-  'bg-white/',
-  'backdrop-blur',
-  'blur-3xl',
-] as const;
+const translucentDecorativeFragments = ['bg-white/', 'backdrop-blur', 'blur-3xl'] as const;
 
 const compactRadiusFragments = [
   'rounded-[1.35rem]',
@@ -276,16 +270,9 @@ function readMany(relativePaths: readonly string[]) {
   }));
 }
 
-function expectNoFragments(
-  relativePath: string,
-  source: string,
-  fragments: readonly string[],
-) {
+function expectNoFragments(relativePath: string, source: string, fragments: readonly string[]) {
   for (const fragment of fragments) {
-    expect(
-      source,
-      `${relativePath} should not contain ${fragment}`,
-    ).not.toContain(fragment);
+    expect(source, `${relativePath} should not contain ${fragment}`).not.toContain(fragment);
   }
 }
 

@@ -3,7 +3,7 @@ import 'dotenv/config';
 
 async function seed() {
   if (!process.env.DATABASE_URL) {
-    console.error("DATABASE_URL is not defined");
+    console.error('DATABASE_URL is not defined');
     process.exit(1);
   }
   const sql = postgres(process.env.DATABASE_URL);
@@ -16,7 +16,7 @@ async function seed() {
       category: 'macro',
       unit: '%',
       frequency: 'monthly',
-      data_source: 'GUS official CPI monthly archive CSV'
+      data_source: 'GUS official CPI monthly archive CSV',
     },
     {
       slug: 'nbp-ref-rate',
@@ -25,16 +25,16 @@ async function seed() {
       category: 'macro',
       unit: '%',
       frequency: 'irregular',
-      data_source: 'NBP'
+      data_source: 'NBP',
     },
     {
       slug: 'sp500',
       name: 'S&P 500 Index',
-      description: 'Standard & Poor\'s 500 stock market index.',
+      description: "Standard & Poor's 500 stock market index.",
       category: 'index',
       unit: 'USD',
       frequency: 'monthly',
-      data_source: 'Yahoo Finance'
+      data_source: 'Yahoo Finance',
     },
     {
       slug: 'gold-usd',
@@ -43,7 +43,7 @@ async function seed() {
       category: 'instrument',
       unit: 'USD',
       frequency: 'daily',
-      data_source: 'Yahoo Finance'
+      data_source: 'Yahoo Finance',
     },
     {
       slug: 'pl-unemployment',
@@ -52,11 +52,11 @@ async function seed() {
       category: 'macro',
       unit: '%',
       frequency: 'monthly',
-      data_source: 'GUS'
-    }
+      data_source: 'GUS',
+    },
   ];
 
-  console.log("[Seed] Seeding data series metadata...");
+  console.log('[Seed] Seeding data series metadata...');
 
   for (const s of series) {
     try {
@@ -95,7 +95,7 @@ async function seed() {
     }
   }
 
-  console.log("[Seed] Series metadata seeding completed.");
+  console.log('[Seed] Series metadata seeding completed.');
   process.exit(0);
 }
 

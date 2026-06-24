@@ -1,12 +1,12 @@
-import {db} from '@/db';
-import {dataPoints} from '@/db/schema';
-import {sql} from 'drizzle-orm';
-import {listRecentSyncRuns} from '@/lib/server/sync/run-history';
-import {createAdminStatusSnapshot} from './status-read-model';
+import { db } from '@/db';
+import { dataPoints } from '@/db/schema';
+import { sql } from 'drizzle-orm';
+import { listRecentSyncRuns } from '@/lib/server/sync/run-history';
+import { createAdminStatusSnapshot } from './status-read-model';
 
 export async function getAdminStatusSnapshot() {
   const series = await db.query.dataSeries.findMany({
-    orderBy: (dataSeries, {desc}) => [desc(dataSeries.updatedAt)],
+    orderBy: (dataSeries, { desc }) => [desc(dataSeries.updatedAt)],
   });
 
   const stats = await db

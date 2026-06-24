@@ -1,5 +1,5 @@
-import {db} from '../index';
-import {dataSeries} from '../schema';
+import { db } from '../index';
+import { dataSeries } from '../schema';
 
 const baseSeries = [
   {
@@ -48,10 +48,13 @@ export async function seedSeriesMetadata() {
   let seriesCount = 0;
 
   for (const series of baseSeries) {
-    await db.insert(dataSeries).values(series).onConflictDoUpdate({
-      target: dataSeries.slug,
-      set: {...series, updatedAt: new Date()},
-    });
+    await db
+      .insert(dataSeries)
+      .values(series)
+      .onConflictDoUpdate({
+        target: dataSeries.slug,
+        set: { ...series, updatedAt: new Date() },
+      });
     seriesCount++;
   }
 

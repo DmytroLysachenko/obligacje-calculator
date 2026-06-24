@@ -1,6 +1,6 @@
-import {describe, expect, it} from 'vitest';
-import {readFileSync} from 'node:fs';
-import {join} from 'node:path';
+import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 const root = process.cwd();
 
@@ -36,10 +36,16 @@ describe('sidebar refactor contracts', () => {
     expectContains(source, 'group relative block rounded-md px-3 py-2.5');
     expectContains(source, 'bg-card text-foreground shadow-sm');
     expectContains(source, 'before:absolute before:left-0 before:top-1/2 before:h-6 before:w-0.5');
-    expectContains(source, 'bg-transparent text-muted-foreground hover:bg-card/70 hover:text-foreground');
-    expectContains(source, 'isActive ? \'bg-primary text-primary-foreground\' : \'bg-muted text-muted-foreground\'');
+    expectContains(
+      source,
+      'bg-transparent text-muted-foreground hover:bg-card/70 hover:text-foreground',
+    );
+    expectContains(
+      source,
+      "isActive ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'",
+    );
     expectContains(source, 'isActive');
-    expectContains(source, '? \'text-foreground\'');
+    expectContains(source, "? 'text-foreground'");
 
     expectNoFragments(source, [
       'rounded-md border px-3 py-2.5',
@@ -58,7 +64,10 @@ describe('sidebar refactor contracts', () => {
     expectContains(source, 'border-b border-border px-4 py-4');
     expectContains(source, 'w-[var(--sidebar-width)]');
     expectContains(source, 'bg-secondary/70');
-    expectContains(source, 'border-t border-border px-0.5 pt-3 text-xs leading-5 text-muted-foreground');
+    expectContains(
+      source,
+      'border-t border-border px-0.5 pt-3 text-xs leading-5 text-muted-foreground',
+    );
 
     expectNoFragments(source, [
       'custom-scrollbar flex-1 space-y-5 overflow-y-auto px-3 py-4',
@@ -97,7 +106,10 @@ describe('sidebar refactor contracts', () => {
   it('keeps settings utilities as one grouped stack', () => {
     const source = read(files.settings);
 
-    expectContains(source, "import { SidebarUtilityPanel, SidebarUtilityRow, SidebarUtilityStack } from './SidebarUtilityGroup';");
+    expectContains(
+      source,
+      "import { SidebarUtilityPanel, SidebarUtilityRow, SidebarUtilityStack } from './SidebarUtilityGroup';",
+    );
     expectContains(source, '<SidebarUtilityStack>');
     expectContains(source, '<SidebarUtilityPanel flush>');
     expectContains(source, '<SidebarUtilityRow');
@@ -112,7 +124,7 @@ describe('sidebar refactor contracts', () => {
       'mt-2.5 border-t border-border pt-2.5',
       '<>',
       '</>',
-      '<SidebarUtilityPanel>\n        <SidebarUtilityRow\n          title={t(\'common.theme\')}',
+      "<SidebarUtilityPanel>\n        <SidebarUtilityRow\n          title={t('common.theme')}",
     ]);
   });
 
@@ -122,12 +134,15 @@ describe('sidebar refactor contracts', () => {
     expectContains(source, "return 'text-[var(--finance-success)]';");
     expectContains(source, "return 'text-[var(--finance-warning)]';");
     expectContains(source, 'inline-flex text-xs font-semibold');
-    expectContains(source, 'aria-label={`${t(\'common.sync_data\')}: ${freshnessLabel}`}');
+    expectContains(source, "aria-label={`${t('common.sync_data')}: ${freshnessLabel}`}");
     expectContains(source, 'text-sm font-semibold text-foreground');
     expectContains(source, 'max-w-[14rem] text-[11px] leading-5 text-muted-foreground');
     expectContains(source, 'flex items-start justify-between gap-4');
     expectContains(source, '<div className="space-y-2">');
-    expectContains(source, "import { getFreshnessDisplayState } from '@/shared/lib/data-freshness-display';");
+    expectContains(
+      source,
+      "import { getFreshnessDisplayState } from '@/shared/lib/data-freshness-display';",
+    );
     expectContains(source, 'const { lastSyncLabel } = getFreshnessDisplayState(');
     expectContains(source, "{t('sidebar.freshness.reference_label')}");
     expectContains(source, "{freshnessLabel ?? t('sidebar.freshness.no_metadata')}");
@@ -140,7 +155,7 @@ describe('sidebar refactor contracts', () => {
       'text-xs leading-5 text-muted-foreground',
       'line-clamp-2 text-[11px] leading-4 text-muted-foreground',
       'flex items-start justify-between gap-3',
-      'dataFreshness.asOf ?? t(\'sidebar.freshness.no_date\')',
+      "dataFreshness.asOf ?? t('sidebar.freshness.no_date')",
       'dataFreshness?.lastSyncedAt ?? dataFreshness?.lastCheck',
       'bg-emerald-50',
       'bg-orange-50',

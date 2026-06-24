@@ -72,7 +72,9 @@ describe('direct database boundary contract', () => {
     expect(cleanCodeContract).toContain("'lib/sync/seed-series.ts'");
     expect(projectMap).toContain('Direct database reads are intentional in this layer');
     expect(projectMap).toContain('Seed scripts may use direct database access');
-    expect(projectMap).toContain('/api/health` and `/api/readiness` intentionally return raw operational JSON');
+    expect(projectMap).toContain(
+      '/api/health` and `/api/readiness` intentionally return raw operational JSON',
+    );
     expect(projectMap).toContain('Broad lint-disable comments are only allowed');
     expect(serviceBoundaries).toContain('approved read-model and repository layer');
     expect(serviceBoundaries).toContain('Sync seed scripts may write directly to the database');

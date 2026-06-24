@@ -52,7 +52,9 @@ function SidebarBrand() {
           <TrendingUp className="h-3 w-3" />
         </div>
         <div className="min-w-0 space-y-1">
-          <p className="text-sm font-semibold tracking-tight text-foreground">{t('common.title')}</p>
+          <p className="text-sm font-semibold tracking-tight text-foreground">
+            {t('common.title')}
+          </p>
           <p className="max-w-[11rem] text-xs leading-5 text-muted-foreground">
             {t('sidebar.brand_tagline')}
           </p>
@@ -103,15 +105,11 @@ function NavLinkItem({
         </div>
 
         <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
-          <p className="min-w-0 text-sm font-medium leading-5">
-            {item.label}
-          </p>
+          <p className="min-w-0 text-sm font-medium leading-5">{item.label}</p>
           <ChevronRight
             className={cn(
               'h-4 w-4 shrink-0 transition-transform',
-              isActive
-                ? 'text-foreground'
-                : 'text-muted-foreground group-hover:translate-x-0.5',
+              isActive ? 'text-foreground' : 'text-muted-foreground group-hover:translate-x-0.5',
             )}
           />
         </div>
@@ -250,11 +248,7 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
   );
 }
 
-export function Sidebar({
-  dataFreshness,
-}: {
-  dataFreshness?: CalculationDataFreshness;
-}) {
+export function Sidebar({ dataFreshness }: { dataFreshness?: CalculationDataFreshness }) {
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useAppI18n();
 
@@ -275,10 +269,7 @@ export function Sidebar({
           </SheetTrigger>
           <SheetContent side="left" className="w-[min(22rem,100vw)] border-none p-0">
             <SheetTitle className="sr-only">{t('common.navigation_menu')}</SheetTitle>
-            <SidebarContent
-              onItemClick={() => setIsOpen(false)}
-              dataFreshness={dataFreshness}
-            />
+            <SidebarContent onItemClick={() => setIsOpen(false)} dataFreshness={dataFreshness} />
           </SheetContent>
         </Sheet>
       </div>
@@ -289,7 +280,3 @@ export function Sidebar({
     </>
   );
 }
-
-
-
-

@@ -8,18 +8,16 @@ export interface MacroAssumptionBaseline {
 export const LEGACY_EXPECTED_INFLATION = 3.5;
 export const LEGACY_EXPECTED_NBP_RATE = 5.25;
 
-export function shouldRefreshPersistedMacroDefaults(
-  baseline: MacroAssumptionBaseline,
-) {
+export function shouldRefreshPersistedMacroDefaults(baseline: MacroAssumptionBaseline) {
   if (baseline.customInflation?.length || baseline.customNbpRate?.length) {
     return false;
   }
 
   return (
-    baseline.expectedInflation === undefined
-    || baseline.expectedInflation === LEGACY_EXPECTED_INFLATION
-    || baseline.expectedNbpRate === undefined
-    || baseline.expectedNbpRate === LEGACY_EXPECTED_NBP_RATE
+    baseline.expectedInflation === undefined ||
+    baseline.expectedInflation === LEGACY_EXPECTED_INFLATION ||
+    baseline.expectedNbpRate === undefined ||
+    baseline.expectedNbpRate === LEGACY_EXPECTED_NBP_RATE
   );
 }
 

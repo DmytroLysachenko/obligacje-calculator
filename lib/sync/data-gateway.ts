@@ -4,8 +4,8 @@ export interface FinancialDataResponse {
   timestamp: string;
 }
 
-import { GusCpiApiClient } from "./../api-clients/gus-cpi";
-import { fetchSyncJson } from "./http-gateway";
+import { GusCpiApiClient } from './../api-clients/gus-cpi';
+import { fetchSyncJson } from './http-gateway';
 
 export class FinancialDataGateway {
   /**
@@ -40,7 +40,8 @@ export class FinancialDataGateway {
    * Fetches EU-harmonized inflation (HICP) from Eurostat.
    */
   static async fetchHICPFromEurostat(): Promise<FinancialDataResponse> {
-    const url = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_manr?format=JSON&geo=PL&coicop=CP00';
+    const url =
+      'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_manr?format=JSON&geo=PL&coicop=CP00';
     try {
       const data = await fetchSyncJson(url);
       return { source: 'Eurostat', data, timestamp: new Date().toISOString() };

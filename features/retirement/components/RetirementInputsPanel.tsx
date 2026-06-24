@@ -34,10 +34,7 @@ interface RetirementInputsPanelProps {
   taxStrategyLabels: Record<TaxStrategy, string>;
   formatCurrency: (value: number) => string;
   formatRate: (value: number) => string;
-  onUpdateInput: <K extends keyof RetirementInputs>(
-    key: K,
-    value: RetirementInputs[K],
-  ) => void;
+  onUpdateInput: <K extends keyof RetirementInputs>(key: K, value: RetirementInputs[K]) => void;
 }
 
 export function RetirementInputsPanel({
@@ -54,9 +51,7 @@ export function RetirementInputsPanel({
   return (
     <section className="space-y-6">
       <div className="space-y-2">
-        <h2 className="ui-section-title">
-          {labels.primaryInputs}
-        </h2>
+        <h2 className="ui-section-title">{labels.primaryInputs}</h2>
         <p className="ui-body text-muted-foreground">{labels.primaryInputsDesc}</p>
       </div>
       <div className="space-y-6">
@@ -77,7 +72,9 @@ export function RetirementInputsPanel({
             <Label className="text-xs font-bold uppercase text-muted-foreground">
               {labels.monthlyWithdrawal}
             </Label>
-            <span className="text-xs font-semibold text-foreground">{formatCurrency(inputs.monthlyWithdrawal)}</span>
+            <span className="text-xs font-semibold text-foreground">
+              {formatCurrency(inputs.monthlyWithdrawal)}
+            </span>
           </div>
           <CommittedSliderInput
             value={inputs.monthlyWithdrawal}
@@ -131,79 +128,75 @@ export function RetirementInputsPanel({
           title={labels.advancedAssumptions}
           description={labels.advancedAssumptionsDesc}
         >
-              <MacroDefaultsSummary
-                showNbp={showNbpNote}
-                compact
-              />
+          <MacroDefaultsSummary showNbp={showNbpNote} compact />
 
-              <AssumptionSemanticsNote
-                bondType={inputs.bondType}
-                showNbpNote={showNbpNote}
-              />
+          <AssumptionSemanticsNote bondType={inputs.bondType} showNbpNote={showNbpNote} />
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-xs font-bold uppercase text-muted-foreground">
-                    {labels.expectedInflation}
-                  </Label>
-                  <span className="text-xs font-semibold text-foreground">{formatRate(inputs.expectedInflation)}</span>
-                </div>
-                <CommittedSliderInput
-                  value={inputs.expectedInflation}
-                  min={-2}
-                  max={15}
-                  step={0.1}
-                  unit="%"
-                  onCommit={(value) => onUpdateInput('expectedInflation', value)}
-                />
-              </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-bold uppercase text-muted-foreground">
+                {labels.expectedInflation}
+              </Label>
+              <span className="text-xs font-semibold text-foreground">
+                {formatRate(inputs.expectedInflation)}
+              </span>
+            </div>
+            <CommittedSliderInput
+              value={inputs.expectedInflation}
+              min={-2}
+              max={15}
+              step={0.1}
+              unit="%"
+              onCommit={(value) => onUpdateInput('expectedInflation', value)}
+            />
+          </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-xs font-bold uppercase text-muted-foreground">
-                    {labels.expectedNbpRate}
-                  </Label>
-                  <span className="text-xs font-semibold text-foreground">{formatRate(inputs.expectedNbpRate)}</span>
-                </div>
-                <CommittedSliderInput
-                  value={inputs.expectedNbpRate}
-                  min={0}
-                  max={15}
-                  step={0.05}
-                  unit="%"
-                  onCommit={(value) => onUpdateInput('expectedNbpRate', value)}
-                />
-              </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-bold uppercase text-muted-foreground">
+                {labels.expectedNbpRate}
+              </Label>
+              <span className="text-xs font-semibold text-foreground">
+                {formatRate(inputs.expectedNbpRate)}
+              </span>
+            </div>
+            <CommittedSliderInput
+              value={inputs.expectedNbpRate}
+              min={0}
+              max={15}
+              step={0.05}
+              unit="%"
+              onCommit={(value) => onUpdateInput('expectedNbpRate', value)}
+            />
+          </div>
 
-              <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase text-muted-foreground">
-                  {labels.taxWrapper}
-                </Label>
-                <FormSelect
-                  value={inputs.taxStrategy}
-                  onValueChange={(value) => onUpdateInput('taxStrategy', value as TaxStrategy)}
-                  triggerClassName="font-semibold"
-                  options={[
-                    {
-                      value: TaxStrategy.STANDARD,
-                      label: taxStrategyLabels[TaxStrategy.STANDARD],
-                    },
-                    {
-                      value: TaxStrategy.IKE,
-                      label: taxStrategyLabels[TaxStrategy.IKE],
-                    },
-                    {
-                      value: TaxStrategy.IKZE,
-                      label: taxStrategyLabels[TaxStrategy.IKZE],
-                    },
-                  ]}
-                />
-              </div>
+          <div className="space-y-2">
+            <Label className="text-xs font-bold uppercase text-muted-foreground">
+              {labels.taxWrapper}
+            </Label>
+            <FormSelect
+              value={inputs.taxStrategy}
+              onValueChange={(value) => onUpdateInput('taxStrategy', value as TaxStrategy)}
+              triggerClassName="font-semibold"
+              options={[
+                {
+                  value: TaxStrategy.STANDARD,
+                  label: taxStrategyLabels[TaxStrategy.STANDARD],
+                },
+                {
+                  value: TaxStrategy.IKE,
+                  label: taxStrategyLabels[TaxStrategy.IKE],
+                },
+                {
+                  value: TaxStrategy.IKZE,
+                  label: taxStrategyLabels[TaxStrategy.IKZE],
+                },
+              ]}
+            />
+          </div>
         </AdvancedAssumptionsDisclosure>
 
-        <div className="ui-inline-notice">
-          {labels.floatingActionNote}
-        </div>
+        <div className="ui-inline-notice">{labels.floatingActionNote}</div>
       </div>
     </section>
   );

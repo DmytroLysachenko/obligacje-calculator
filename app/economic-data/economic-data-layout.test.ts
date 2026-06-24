@@ -24,9 +24,7 @@ function expectNotContains(source: string, fragment: string) {
 }
 
 function getClassLine(source: string, anchor: string) {
-  const line = source
-    .split('\n')
-    .find((candidate) => candidate.includes(anchor));
+  const line = source.split('\n').find((candidate) => candidate.includes(anchor));
 
   expect(line, `Missing source line containing ${anchor}`).toBeTruthy();
 
@@ -41,10 +39,7 @@ function getJsxClass(source: string, component: string, value?: string) {
   );
   const match = source.match(pattern);
 
-  expect(
-    match,
-    `Missing ${component}${value ? ` value="${value}"` : ''} className`,
-  ).toBeTruthy();
+  expect(match, `Missing ${component}${value ? ` value="${value}"` : ''} className`).toBeTruthy();
 
   return match?.[1] ?? '';
 }
@@ -113,17 +108,15 @@ describe('economic data layout source contracts', () => {
     expectContains(source, '<ChartSection');
     expectContains(source, '<InflationChart period={period} />');
     expectContains(source, '<NBPRateChart period={period} />');
-    expectNoFragments(source, [
-      '<div className="space-y-8 md:space-y-10">',
-    ]);
+    expectNoFragments(source, ['<div className="space-y-8 md:space-y-10">']);
   });
 
   it('keeps chart sections shared and divider-led', () => {
     const source = readSource(chartSectionPath);
 
-    expectContains(source, "export function ChartSection");
-    expectContains(source, "space-y-5 border-t border-border py-5");
-    expectContains(source, "controls?: React.ReactNode");
+    expectContains(source, 'export function ChartSection');
+    expectContains(source, 'space-y-5 border-t border-border py-5');
+    expectContains(source, 'controls?: React.ReactNode');
     expectContains(source, '<BarChart3 className="h-4 w-4" />');
     expectContains(source, '<div className="shrink-0 lg:max-w-[520px]">');
     expectContains(source, 'border-l-2 border-border pl-3');
@@ -204,9 +197,12 @@ describe('economic data layout source contracts', () => {
     expectContains(source, '<SectionBlock');
     expectContains(source, 'contentClassName="space-y-5"');
     expectContains(source, 'space-y-2 border-y border-border py-3');
-    expectContains(source, 'hint={t(\'economic.range_hint\')}');
+    expectContains(source, "hint={t('economic.range_hint')}");
     expectContains(source, 'aria-pressed={period === item.value}');
-    expectContains(source, 'focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2');
+    expectContains(
+      source,
+      'focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2',
+    );
     expectContains(source, 'grid gap-x-6 gap-y-4 border-y border-border py-4 md:grid-cols-2');
     expectContains(source, '<RangeActions');
     expectNotContains(source, 'extraHeaderActions={');
@@ -233,7 +229,7 @@ describe('economic data layout source contracts', () => {
     expectContains(source, "const healthToneClass = fallbackTone === 'warning'");
     expectContains(source, 'fallbackStatusLabel?: string;');
     expectContains(source, 'syncedStatusLabel?: string;');
-    expectContains(source, "inline-flex items-center gap-2 border-l-2 pl-3 text-xs font-semibold");
+    expectContains(source, 'inline-flex items-center gap-2 border-l-2 pl-3 text-xs font-semibold');
     expectContains(source, 'max-w-4xl text-sm leading-6 text-muted-foreground');
     expectContains(source, 'border-0 bg-transparent px-0');
     expectContains(source, 'border-t border-border pt-3');

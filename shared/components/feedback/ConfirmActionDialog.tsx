@@ -41,8 +41,12 @@ export function ConfirmActionDialog({
             <AlertTriangle className="h-5 w-5" />
           </div>
           <div className="space-y-2">
-            <h3 id="confirm-action-dialog-title" className="ui-card-title">{title}</h3>
-            <p id="confirm-action-dialog-description" className="ui-body text-muted-foreground">{description}</p>
+            <h3 id="confirm-action-dialog-title" className="ui-card-title">
+              {title}
+            </h3>
+            <p id="confirm-action-dialog-description" className="ui-body text-muted-foreground">
+              {description}
+            </p>
           </div>
         </div>
 

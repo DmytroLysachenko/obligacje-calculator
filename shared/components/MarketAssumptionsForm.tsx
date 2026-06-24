@@ -18,7 +18,10 @@ import {
   InflationPresetControls,
   NbpPresetControls,
 } from '@/shared/components/market-assumptions/AssumptionPresetControls';
-import { isFloatingNbpBondType, isInflationIndexedBondType } from '@/shared/lib/market-assumption-semantics';
+import {
+  isFloatingNbpBondType,
+  isInflationIndexedBondType,
+} from '@/shared/lib/market-assumption-semantics';
 import {
   getHeaderAssumptionValue,
   resolveAssumptionModeUpdate,
@@ -31,20 +34,20 @@ type UpdateHandler = {
   bivarianceHack: (key: keyof BondInputs | string, value: unknown) => void;
 }['bivarianceHack'];
 interface MarketAssumptionsFormProps {
-    expectedInflation: number;
-    expectedNbpRate?: number;
-    bondType: BondType;
-    customInflation?: number[];
-    customNbpRate?: number[];
-    onUpdate: UpdateHandler;
-    compact?: boolean;
-    inflationHorizonYears?: number;
-    section?: 'all' | 'inflation' | 'nbp';
-    showIntro?: boolean;
-    inflationSetupMode?: AssumptionSetupMode;
-    nbpSetupMode?: AssumptionSetupMode;
-    onInflationSetupModeChange?: (mode: AssumptionSetupMode) => void;
-    onNbpSetupModeChange?: (mode: AssumptionSetupMode) => void;
+  expectedInflation: number;
+  expectedNbpRate?: number;
+  bondType: BondType;
+  customInflation?: number[];
+  customNbpRate?: number[];
+  onUpdate: UpdateHandler;
+  compact?: boolean;
+  inflationHorizonYears?: number;
+  section?: 'all' | 'inflation' | 'nbp';
+  showIntro?: boolean;
+  inflationSetupMode?: AssumptionSetupMode;
+  nbpSetupMode?: AssumptionSetupMode;
+  onInflationSetupModeChange?: (mode: AssumptionSetupMode) => void;
+  onNbpSetupModeChange?: (mode: AssumptionSetupMode) => void;
 }
 
 export const MarketAssumptionsForm = ({
@@ -63,213 +66,228 @@ export const MarketAssumptionsForm = ({
   onInflationSetupModeChange,
   onNbpSetupModeChange,
 }: MarketAssumptionsFormProps) => {
-    const { t } = useAppI18n();
-    const isInflationIndexedBond = isInflationIndexedBondType(bondType);
-    const isNbpRelevant = isFloatingNbpBondType(bondType);
-    const [inflationMode, setInflationMode] = React.useState<AssumptionSetupMode>(
-      customInflation ? 'advanced' : 'fixed',
-    );
-    const [nbpMode, setNbpMode] = React.useState<AssumptionSetupMode>(
-      customNbpRate ? 'advanced' : 'fixed',
-    );
-    const activeInflationMode = inflationSetupMode ?? inflationMode;
-    const activeNbpMode = nbpSetupMode ?? nbpMode;
-    const inflationHeaderValue = getHeaderAssumptionValue({
-      mode: activeInflationMode,
-      customPath: customInflation,
-      fallback: expectedInflation,
+  const { t } = useAppI18n();
+  const isInflationIndexedBond = isInflationIndexedBondType(bondType);
+  const isNbpRelevant = isFloatingNbpBondType(bondType);
+  const [inflationMode, setInflationMode] = React.useState<AssumptionSetupMode>(
+    customInflation ? 'advanced' : 'fixed',
+  );
+  const [nbpMode, setNbpMode] = React.useState<AssumptionSetupMode>(
+    customNbpRate ? 'advanced' : 'fixed',
+  );
+  const activeInflationMode = inflationSetupMode ?? inflationMode;
+  const activeNbpMode = nbpSetupMode ?? nbpMode;
+  const inflationHeaderValue = getHeaderAssumptionValue({
+    mode: activeInflationMode,
+    customPath: customInflation,
+    fallback: expectedInflation,
+  });
+  const nbpHeaderValue = getHeaderAssumptionValue({
+    mode: activeNbpMode,
+    customPath: customNbpRate,
+    fallback: expectedNbpRate ?? 5.25,
+  });
+  const horizonLength = Math.max(1, Math.round(inflationHorizonYears));
+  const showInflationSection = section === 'all' || section === 'inflation';
+  const showNbpSection = section === 'all' || section === 'nbp';
+
+  React.useEffect(() => {
+    if (customInflation) {
+      if (inflationSetupMode === undefined) {
+        setInflationMode('advanced');
+      }
+      onInflationSetupModeChange?.('advanced');
+    }
+  }, [customInflation, inflationSetupMode, onInflationSetupModeChange]);
+
+  React.useEffect(() => {
+    if (customNbpRate) {
+      if (nbpSetupMode === undefined) {
+        setNbpMode('advanced');
+      }
+      onNbpSetupModeChange?.('advanced');
+    }
+  }, [customNbpRate, nbpSetupMode, onNbpSetupModeChange]);
+
+  const updateInflationMode = (mode: AssumptionSetupMode) => {
+    const update = resolveAssumptionModeUpdate({
+      mode,
+      horizonLength,
+      currentValue: expectedInflation,
+      fixedFallback: 2.5,
     });
-    const nbpHeaderValue = getHeaderAssumptionValue({
-      mode: activeNbpMode,
-      customPath: customNbpRate,
-      fallback: expectedNbpRate ?? 5.25,
+    setInflationMode(mode);
+    onInflationSetupModeChange?.(mode);
+    if (update.customPath) {
+      onUpdate('customInflation', update.customPath);
+      return;
+    }
+    onUpdate('customInflation', undefined);
+    if (update.fixedValue !== undefined) {
+      onUpdate('expectedInflation', update.fixedValue);
+    }
+  };
+
+  const updateNbpMode = (mode: AssumptionSetupMode) => {
+    const baseNbp = expectedNbpRate ?? 5.25;
+    const update = resolveAssumptionModeUpdate({
+      mode,
+      horizonLength,
+      currentValue: baseNbp,
+      fixedFallback: 5.25,
     });
-    const horizonLength = Math.max(1, Math.round(inflationHorizonYears));
-    const showInflationSection = section === 'all' || section === 'inflation';
-    const showNbpSection = section === 'all' || section === 'nbp';
+    setNbpMode(mode);
+    onNbpSetupModeChange?.(mode);
+    if (update.customPath) {
+      onUpdate('customNbpRate', update.customPath);
+      return;
+    }
+    onUpdate('customNbpRate', undefined);
+    if (update.fixedValue !== undefined) {
+      onUpdate('expectedNbpRate', update.fixedValue);
+    }
+  };
 
-    React.useEffect(() => {
-      if (customInflation) {
-        if (inflationSetupMode === undefined) {
-          setInflationMode('advanced');
-        }
-        onInflationSetupModeChange?.('advanced');
-      }
-    }, [customInflation, inflationSetupMode, onInflationSetupModeChange]);
-
-    React.useEffect(() => {
-      if (customNbpRate) {
-        if (nbpSetupMode === undefined) {
-          setNbpMode('advanced');
-        }
-        onNbpSetupModeChange?.('advanced');
-      }
-    }, [customNbpRate, nbpSetupMode, onNbpSetupModeChange]);
-
-    const updateInflationMode = (mode: AssumptionSetupMode) => {
-      const update = resolveAssumptionModeUpdate({
-        mode,
-        horizonLength,
-        currentValue: expectedInflation,
-        fixedFallback: 2.5,
-      });
-      setInflationMode(mode);
-      onInflationSetupModeChange?.(mode);
-      if (update.customPath) {
-        onUpdate('customInflation', update.customPath);
-        return;
-      }
-      onUpdate('customInflation', undefined);
-      if (update.fixedValue !== undefined) {
-        onUpdate('expectedInflation', update.fixedValue);
-      }
-    };
-
-    const updateNbpMode = (mode: AssumptionSetupMode) => {
-      const baseNbp = expectedNbpRate ?? 5.25;
-      const update = resolveAssumptionModeUpdate({
-        mode,
-        horizonLength,
-        currentValue: baseNbp,
-        fixedFallback: 5.25,
-      });
-      setNbpMode(mode);
-      onNbpSetupModeChange?.(mode);
-      if (update.customPath) {
-        onUpdate('customNbpRate', update.customPath);
-        return;
-      }
-      onUpdate('customNbpRate', undefined);
-      if (update.fixedValue !== undefined) {
-        onUpdate('expectedNbpRate', update.fixedValue);
-      }
-    };
-
-    return (<div className="space-y-6">
-      {showIntro ? (<div className="space-y-3">
-        <p className={cn('font-semibold tracking-[0.08em] text-foreground', compact ? 'text-xs uppercase' : 'text-sm')}>
-          {t('bonds.market_assumptions.simple_title')}
-        </p>
-        <p className="text-[11px] leading-5 text-muted-foreground">
-          {t('bonds.market_assumptions.advanced_desc')}
-        </p>
-        <MacroDefaultsSummary
-          showNbp={isNbpRelevant || section === 'nbp'}
-          compact={compact}
-        />
-      </div>) : null}
+  return (
+    <div className="space-y-6">
+      {showIntro ? (
+        <div className="space-y-3">
+          <p
+            className={cn(
+              'font-semibold tracking-[0.08em] text-foreground',
+              compact ? 'text-xs uppercase' : 'text-sm',
+            )}
+          >
+            {t('bonds.market_assumptions.simple_title')}
+          </p>
+          <p className="text-[11px] leading-5 text-muted-foreground">
+            {t('bonds.market_assumptions.advanced_desc')}
+          </p>
+          <MacroDefaultsSummary showNbp={isNbpRelevant || section === 'nbp'} compact={compact} />
+        </div>
+      ) : null}
 
       <div className="space-y-4">
         {section === 'all' ? (
           <AssumptionSemanticsNote bondType={bondType} showNbpNote={isNbpRelevant} />
         ) : null}
 
-        {showInflationSection ? (<>
-          <AssumptionHeader
-          htmlFor="expectedInflation"
-          compact={compact}
-          label={`${t('bonds.inflation.rate')} (%)`}
-          history={(
-            <AssumptionHistoryPopover
-              endpoint="/api/charts/inflation"
-              title={t('bonds.historical_context')}
-              latestLabel={t('bonds.latest_official')}
-              footerNote={t('bonds.nbp_target_hint', { target: '2.5%' })}
-            />
-          )}
-          value={(
-            <CurrentAssumptionValue
-              value={inflationHeaderValue}
-              unit={activeInflationMode === 'advanced' ? '' : '%'}
+        {showInflationSection ? (
+          <>
+            <AssumptionHeader
+              htmlFor="expectedInflation"
               compact={compact}
+              label={`${t('bonds.inflation.rate')} (%)`}
+              history={
+                <AssumptionHistoryPopover
+                  endpoint="/api/charts/inflation"
+                  title={t('bonds.historical_context')}
+                  latestLabel={t('bonds.latest_official')}
+                  footerNote={t('bonds.nbp_target_hint', { target: '2.5%' })}
+                />
+              }
+              value={
+                <CurrentAssumptionValue
+                  value={inflationHeaderValue}
+                  unit={activeInflationMode === 'advanced' ? '' : '%'}
+                  compact={compact}
+                >
+                  {activeInflationMode !== 'advanced' && expectedInflation <= 0 && (
+                    <AlertTriangle className="h-4 w-4 text-warning" />
+                  )}
+                  {activeInflationMode !== 'advanced' && Math.abs(expectedInflation - 2.5) <= 1 && (
+                    <Target className="h-4 w-4 text-success" />
+                  )}
+                </CurrentAssumptionValue>
+              }
             >
-              {activeInflationMode !== 'advanced' && expectedInflation <= 0 && <AlertTriangle className="h-4 w-4 text-warning"/>}
-              {activeInflationMode !== 'advanced' && Math.abs(expectedInflation - 2.5) <= 1 && <Target className="h-4 w-4 text-success"/>}
-            </CurrentAssumptionValue>
-          )}
-        >
-          <ProjectionModeButtons value={activeInflationMode} onChange={updateInflationMode} />
-        </AssumptionHeader>
+              <ProjectionModeButtons value={activeInflationMode} onChange={updateInflationMode} />
+            </AssumptionHeader>
 
-        {activeInflationMode === 'fixed' ? (
-          <InflationPresetControls
-            value={expectedInflation}
-            labels={{
-              stable: t('bonds.stable'),
-              high: t('bonds.high'),
-              deflation: t('bonds.deflation'),
-            }}
-            onSelect={(presetValue) => {
-              onUpdate('customInflation', undefined);
-              onUpdate('expectedInflation', presetValue);
-            }}
-          />
-        ) : null}
-
-        {activeInflationMode === 'simple' ? (
-          <CommittedSliderInput
-            value={Number.isFinite(expectedInflation) ? expectedInflation : 0}
-            min={-2}
-            max={15}
-            step={0.1}
-            unit="%"
-            onCommit={(value) => onUpdate('expectedInflation', value)}
-          />
-        ) : null}
-
-        {isInflationIndexedBond ? null : (<div className="ui-inline-notice text-muted-foreground">
-            {t('bonds.market_assumptions.non_indexed_note')}
-          </div>)}
-
-        {isInflationIndexedBond && activeInflationMode === 'advanced' ? (
-          <div className="space-y-3 border-t border-dashed pt-4">
-            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-              <div className="space-y-1">
-                <p className="ui-card-title">
-                  {t('bonds.market_assumptions.inflation_path_title')}
-                </p>
-                <p className="text-xs leading-5 text-muted-foreground">
-                  {t('bonds.market_assumptions.inflation_path_desc')}
-                </p>
-              </div>
-            </div>
-            {customInflation ? (
-              <ProjectedRatePathEditor
-                values={customInflation}
-                prefix="Y"
-                step={0.1}
-                onChange={(values) => onUpdate('customInflation', values)}
+            {activeInflationMode === 'fixed' ? (
+              <InflationPresetControls
+                value={expectedInflation}
+                labels={{
+                  stable: t('bonds.stable'),
+                  high: t('bonds.high'),
+                  deflation: t('bonds.deflation'),
+                }}
+                onSelect={(presetValue) => {
+                  onUpdate('customInflation', undefined);
+                  onUpdate('expectedInflation', presetValue);
+                }}
               />
-            ) : (
-              <p className="text-[11px] leading-5 text-muted-foreground">
-                {t('bonds.market_assumptions.inflation_simple_mode_note')}
-              </p>
+            ) : null}
+
+            {activeInflationMode === 'simple' ? (
+              <CommittedSliderInput
+                value={Number.isFinite(expectedInflation) ? expectedInflation : 0}
+                min={-2}
+                max={15}
+                step={0.1}
+                unit="%"
+                onCommit={(value) => onUpdate('expectedInflation', value)}
+              />
+            ) : null}
+
+            {isInflationIndexedBond ? null : (
+              <div className="ui-inline-notice text-muted-foreground">
+                {t('bonds.market_assumptions.non_indexed_note')}
+              </div>
             )}
-          </div>
-        ) : null}</>) : null}
+
+            {isInflationIndexedBond && activeInflationMode === 'advanced' ? (
+              <div className="space-y-3 border-t border-dashed pt-4">
+                <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                  <div className="space-y-1">
+                    <p className="ui-card-title">
+                      {t('bonds.market_assumptions.inflation_path_title')}
+                    </p>
+                    <p className="text-xs leading-5 text-muted-foreground">
+                      {t('bonds.market_assumptions.inflation_path_desc')}
+                    </p>
+                  </div>
+                </div>
+                {customInflation ? (
+                  <ProjectedRatePathEditor
+                    values={customInflation}
+                    prefix="Y"
+                    step={0.1}
+                    onChange={(values) => onUpdate('customInflation', values)}
+                  />
+                ) : (
+                  <p className="text-[11px] leading-5 text-muted-foreground">
+                    {t('bonds.market_assumptions.inflation_simple_mode_note')}
+                  </p>
+                )}
+              </div>
+            ) : null}
+          </>
+        ) : null}
       </div>
 
-      {showNbpSection ? (<div className={cn('space-y-4', section === 'all' && 'border-t border-dashed pt-4')}>
+      {showNbpSection ? (
+        <div className={cn('space-y-4', section === 'all' && 'border-t border-dashed pt-4')}>
           <AssumptionHeader
             htmlFor="expectedNbpRate"
             muted
             compact={compact}
             label={t('bonds.nbp_rate_label')}
-            history={(
+            history={
               <AssumptionHistoryPopover
                 endpoint="/api/charts/nbp-rate"
                 title={t('bonds.market_assumptions.nbp_history_title')}
                 latestLabel={t('bonds.market_assumptions.latest_nbp_label')}
                 footerNote={t('bonds.market_assumptions.nbp_flat_default_note')}
               />
-            )}
-            value={(
+            }
+            value={
               <CurrentAssumptionValue
                 value={nbpHeaderValue}
                 unit={activeNbpMode === 'advanced' ? '' : '%'}
                 compact={compact}
               />
-            )}
+            }
           >
             <ProjectionModeButtons value={activeNbpMode} onChange={updateNbpMode} />
           </AssumptionHeader>
@@ -289,9 +307,7 @@ export const MarketAssumptionsForm = ({
           ) : null}
           {activeNbpMode === 'simple' ? (
             <CommittedSliderInput
-              value={Number.isFinite(expectedNbpRate ?? 5.25)
-                ? (expectedNbpRate ?? 5.25)
-                : 5.25}
+              value={Number.isFinite(expectedNbpRate ?? 5.25) ? (expectedNbpRate ?? 5.25) : 5.25}
               min={0}
               max={15}
               step={0.05}
@@ -300,37 +316,36 @@ export const MarketAssumptionsForm = ({
             />
           ) : null}
           <p className="text-[11px] leading-5 text-muted-foreground">
-            {isNbpRelevant ? t('bonds.market_assumptions.nbp_note') : t('bonds.market_assumptions.nbp_flat_default_note')}
+            {isNbpRelevant
+              ? t('bonds.market_assumptions.nbp_note')
+              : t('bonds.market_assumptions.nbp_flat_default_note')}
           </p>
-          {activeNbpMode === 'advanced' ? (<div className="space-y-3 border-t border-dashed pt-4">
-            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-              <div className="space-y-1">
-                <p className="ui-card-title">
-                  {t('bonds.market_assumptions.nbp_path_title')}
-                </p>
-                <p className="text-xs leading-5 text-muted-foreground">
-                  {t('bonds.market_assumptions.nbp_path_desc')}
-                </p>
+          {activeNbpMode === 'advanced' ? (
+            <div className="space-y-3 border-t border-dashed pt-4">
+              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                <div className="space-y-1">
+                  <p className="ui-card-title">{t('bonds.market_assumptions.nbp_path_title')}</p>
+                  <p className="text-xs leading-5 text-muted-foreground">
+                    {t('bonds.market_assumptions.nbp_path_desc')}
+                  </p>
+                </div>
               </div>
+              {customNbpRate ? (
+                <ProjectedRatePathEditor
+                  values={customNbpRate}
+                  prefix="Y"
+                  step={0.05}
+                  onChange={(values) => onUpdate('customNbpRate', values)}
+                />
+              ) : (
+                <p className="text-[11px] leading-5 text-muted-foreground">
+                  {t('bonds.market_assumptions.nbp_simple_mode_note')}
+                </p>
+              )}
             </div>
-            {customNbpRate ? (
-              <ProjectedRatePathEditor
-                values={customNbpRate}
-                prefix="Y"
-                step={0.05}
-                onChange={(values) => onUpdate('customNbpRate', values)}
-              />
-            ) : (
-              <p className="text-[11px] leading-5 text-muted-foreground">
-                {t('bonds.market_assumptions.nbp_simple_mode_note')}
-              </p>
-            )}
-          </div>) : null}
-        </div>) : null}
-    </div>);
+          ) : null}
+        </div>
+      ) : null}
+    </div>
+  );
 };
-
-
-
-
-

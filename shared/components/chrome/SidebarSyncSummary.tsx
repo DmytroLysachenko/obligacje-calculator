@@ -56,7 +56,9 @@ export function SidebarSyncSummary({
 }) {
   const { t } = useAppI18n();
   const freshnessLabel = dataFreshness ? getFreshnessLabel(dataFreshness, t) : null;
-  const freshnessText = dataFreshness ? getFreshnessText(dataFreshness, t) : t('sidebar.sync_unavailable');
+  const freshnessText = dataFreshness
+    ? getFreshnessText(dataFreshness, t)
+    : t('sidebar.sync_unavailable');
   const { lastSyncLabel } = getFreshnessDisplayState(
     dataFreshness,
     dataFreshness ? t('sidebar.freshness.no_date') : t('sidebar.freshness.no_metadata'),
@@ -67,7 +69,9 @@ export function SidebarSyncSummary({
       <div className="space-y-2">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <p className="text-xs font-semibold text-muted-foreground">{t('sidebar.freshness.reference_label')}</p>
+            <p className="text-xs font-semibold text-muted-foreground">
+              {t('sidebar.freshness.reference_label')}
+            </p>
             <p className="mt-1 text-sm font-semibold text-foreground">
               {freshnessLabel ?? t('sidebar.freshness.no_metadata')}
             </p>
@@ -80,19 +84,14 @@ export function SidebarSyncSummary({
           {dataFreshness ? (
             <span
               aria-label={`${t('common.sync_data')}: ${freshnessLabel}`}
-              className={cn(
-                'inline-flex text-xs font-semibold',
-                getFreshnessClass(dataFreshness),
-              )}
+              className={cn('inline-flex text-xs font-semibold', getFreshnessClass(dataFreshness))}
             >
               {freshnessLabel}
             </span>
           ) : null}
         </div>
 
-        <p className="max-w-[14rem] text-[11px] leading-5 text-muted-foreground">
-          {freshnessText}
-        </p>
+        <p className="max-w-[14rem] text-[11px] leading-5 text-muted-foreground">{freshnessText}</p>
       </div>
     </SidebarUtilityPanel>
   );

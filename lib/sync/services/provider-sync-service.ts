@@ -8,13 +8,9 @@ import {
   type ProviderSyncRepository,
 } from './provider-sync-repository';
 
-export type {ProviderSyncRepository} from './provider-sync-repository';
+export type { ProviderSyncRepository } from './provider-sync-repository';
 
-export type ProviderSyncStatus =
-  | 'success'
-  | 'up-to-date'
-  | 'no-new-data'
-  | 'failed';
+export type ProviderSyncStatus = 'success' | 'up-to-date' | 'no-new-data' | 'failed';
 
 export interface ProviderSyncResult {
   provider: string;
@@ -69,11 +65,16 @@ export class ProviderSyncService {
     return results;
   }
 
-  private async syncProvider(provider: SyncProvider, startYear: number): Promise<ProviderSyncResult> {
+  private async syncProvider(
+    provider: SyncProvider,
+    startYear: number,
+  ): Promise<ProviderSyncResult> {
     const series = await this.repository.findSeriesBySlug(provider.seriesSlug);
 
     if (!series) {
-      throw new Error(`Base series metadata for ${provider.seriesSlug} not found. Run seed-series first.`);
+      throw new Error(
+        `Base series metadata for ${provider.seriesSlug} not found. Run seed-series first.`,
+      );
     }
 
     const lastPoint = await this.repository.findLatestPointForSeries(series.id);
@@ -156,7 +157,10 @@ export class ProviderSyncService {
     if (recordsToInsert.length > 0) {
       await this.repository.upsertDataPoints(recordsToInsert);
 
-      const latestDate = recordsToInsert.map((record) => record.date).sort().at(-1);
+      const latestDate = recordsToInsert
+        .map((record) => record.date)
+        .sort()
+        .at(-1);
       if (latestDate) {
         await this.repository.markSeriesSyncSuccess(series.id, {
           latestDate,
@@ -174,7 +178,10 @@ export class ProviderSyncService {
       inserted: recordsToInsert.length,
       updated: recordsToInsert.length,
       skipped: Math.max(0, data.length - recordsToInsert.length),
-      latestDataPointDate: recordsToInsert.map((record) => record.date).sort().at(-1),
+      latestDataPointDate: recordsToInsert
+        .map((record) => record.date)
+        .sort()
+        .at(-1),
     };
     await this.recordProviderResult(result, startedAt);
     return result;

@@ -1,7 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { calculationService } from './application-service';
 import { ScenarioKind } from './types/scenarios';
-import { BondType, InterestPayout, TaxStrategy, CalculationResult, YearlyTimelinePoint } from './types';
+import {
+  BondType,
+  InterestPayout,
+  TaxStrategy,
+  CalculationResult,
+  YearlyTimelinePoint,
+} from './types';
 
 // Mock data-access to simulate DB interaction
 vi.mock('@/lib/data/market-data', () => ({
@@ -77,20 +83,20 @@ describe('Bond Core Integration Tests', () => {
     const result = envelope.result as CalculationResult;
     // IKZE in this app applies 10% tax on the TOTAL payout (principal + interest)
     expect(result.totalTax).toBeGreaterThan(0);
-    const expectedTax = result.grossValue * 0.10;
+    const expectedTax = result.grossValue * 0.1;
     expect(result.totalTax).toBeCloseTo(expectedTax, 0);
   });
 
   it('should handle inflation-indexed bonds (COI) correctly', async () => {
     const envelope = await calculationService.calculate({
       kind: ScenarioKind.SINGLE_BOND,
-      payload: { 
-        ...basePayload, 
-        bondType: BondType.COI, 
-        duration: 4, 
+      payload: {
+        ...basePayload,
+        bondType: BondType.COI,
+        duration: 4,
         withdrawalDate: '2028-01-01',
         isCapitalized: false,
-        payoutFrequency: InterestPayout.YEARLY 
+        payoutFrequency: InterestPayout.YEARLY,
       },
     });
 
@@ -100,4 +106,3 @@ describe('Bond Core Integration Tests', () => {
     expect(result.timeline.filter((p: YearlyTimelinePoint) => p.year > 0).length).toBe(4);
   });
 });
-

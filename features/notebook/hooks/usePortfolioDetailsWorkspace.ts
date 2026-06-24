@@ -24,15 +24,12 @@ export function usePortfolioDetailsWorkspace({
 }: UsePortfolioDetailsWorkspaceOptions) {
   const [lots, setLots] = useState<UserInvestmentLot[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [simulation, setSimulation] = useState<PortfolioSimulationResult | null>(
-    null,
-  );
+  const [simulation, setSimulation] = useState<PortfolioSimulationResult | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
   const [isPublic, setIsPublic] = useState(portfolio.isPublic || false);
   const [isSharing, setIsSharing] = useState(false);
   const [justCopied, setJustCopied] = useState(false);
-  const [maturityWindowDays, setMaturityWindowDays] =
-    useState<MaturityWindow>(90);
+  const [maturityWindowDays, setMaturityWindowDays] = useState<MaturityWindow>(90);
 
   const shareUrl =
     typeof window !== 'undefined'

@@ -38,7 +38,9 @@ export function StatusLine({ status }: { status?: PageHeaderStatus | null }) {
 
   return (
     <div className="flex flex-wrap items-center gap-2 text-xs leading-5 text-muted-foreground">
-      <span className={cn('inline-flex items-center gap-2', statusToneClass[status.tone ?? 'neutral'])}>
+      <span
+        className={cn('inline-flex items-center gap-2', statusToneClass[status.tone ?? 'neutral'])}
+      >
         {Icon ? (
           <Icon className={cn('h-4 w-4', status.state === 'loading' && 'animate-spin')} />
         ) : null}
@@ -62,32 +64,18 @@ export function PageHeader({
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-[var(--layout-reading-max)] space-y-2">
           <div className="flex items-start gap-3 md:items-center">
-            <div className="rounded-md bg-muted p-2 text-foreground">
-              {icon}
-            </div>
+            <div className="rounded-md bg-muted p-2 text-foreground">{icon}</div>
             <div className="space-y-1">
-              {eyebrow ? (
-                <p className="ui-metadata text-muted-foreground">
-                  {eyebrow}
-                </p>
-              ) : null}
-              <h2 className="ui-page-title">
-                {title}
-              </h2>
-              {description ? (
-                <p className="ui-body text-muted-foreground">
-                  {description}
-                </p>
-              ) : null}
+              {eyebrow ? <p className="ui-metadata text-muted-foreground">{eyebrow}</p> : null}
+              <h2 className="ui-page-title">{title}</h2>
+              {description ? <p className="ui-body text-muted-foreground">{description}</p> : null}
             </div>
           </div>
           <StatusLine status={status} />
         </div>
 
         {action ? (
-          <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-            {action}
-          </div>
+          <div className="flex flex-wrap items-center gap-2 lg:justify-end">{action}</div>
         ) : null}
       </div>
     </header>

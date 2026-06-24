@@ -50,13 +50,18 @@ describe('portfolio client', () => {
     await portfolioClient.simulatePortfolio('p1');
     await portfolioClient.toggleSharing('p1', true);
 
-    expect(apiPost).toHaveBeenCalledWith('/api/portfolio/import', { portfolio: { name: 'Import', lots: [] } });
+    expect(apiPost).toHaveBeenCalledWith('/api/portfolio/import', {
+      portfolio: { name: 'Import', lots: [] },
+    });
     expect(apiDelete).toHaveBeenCalledWith('/api/portfolio?id=p1');
     expect(apiGet).toHaveBeenCalledWith('/api/portfolio/lots?portfolioId=p1');
     expect(apiPatch).toHaveBeenCalledWith('/api/portfolio/lots/lot1', { amount: 12 });
     expect(apiDelete).toHaveBeenCalledWith('/api/portfolio/lots/lot1');
     expect(apiPost).toHaveBeenCalledWith('/api/portfolio/simulate', { portfolioId: 'p1' });
-    expect(apiPost).toHaveBeenCalledWith('/api/portfolio/share', { portfolioId: 'p1', isPublic: true });
+    expect(apiPost).toHaveBeenCalledWith('/api/portfolio/share', {
+      portfolioId: 'p1',
+      isPublic: true,
+    });
   });
 
   it('preserves export response filename metadata', async () => {
@@ -76,6 +81,8 @@ describe('portfolio client', () => {
       fileName: 'demo_export.json',
     });
 
-    expect(apiGetWithResponse).toHaveBeenCalledWith('/api/portfolio/export?portfolioId=p1&format=package');
+    expect(apiGetWithResponse).toHaveBeenCalledWith(
+      '/api/portfolio/export?portfolioId=p1&format=package',
+    );
   });
 });

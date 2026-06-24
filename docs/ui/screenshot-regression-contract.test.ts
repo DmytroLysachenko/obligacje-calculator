@@ -1,6 +1,6 @@
-import {readFileSync} from 'node:fs';
-import {join} from 'node:path';
-import {describe, expect, it} from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
 
 const root = process.cwd();
 
@@ -41,7 +41,10 @@ describe('screenshot regression contracts', () => {
     expectContains(source, 'grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3');
     expectContains(source, 'grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 xl:grid-cols-4');
     expectContains(source, 'grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3');
-    expectContains(source, 'border-t border-border py-5 transition-colors hover:border-foreground/30');
+    expectContains(
+      source,
+      'border-t border-border py-5 transition-colors hover:border-foreground/30',
+    );
     expectContains(source, 'border-l-2 border-border pl-3 text-foreground');
 
     expectNoFragments(source, [
@@ -79,10 +82,19 @@ describe('screenshot regression contracts', () => {
   it('keeps economic reference metrics spaced instead of cell-like', () => {
     const source = read(files.economicHero);
 
-    expectContains(source, 'grid gap-x-8 gap-y-5 border-y border-border py-4 sm:grid-cols-2 sm:border-y-0 sm:py-1');
+    expectContains(
+      source,
+      'grid gap-x-8 gap-y-5 border-y border-border py-4 sm:grid-cols-2 sm:border-y-0 sm:py-1',
+    );
     expectContains(source, 'border-l border-border/70 pl-4 first:border-l-0 first:pl-0');
-    expectContains(source, 'text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground');
-    expectContains(source, 'mt-1.5 text-base font-semibold leading-6 tracking-tight text-foreground');
+    expectContains(
+      source,
+      'text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground',
+    );
+    expectContains(
+      source,
+      'mt-1.5 text-base font-semibold leading-6 tracking-tight text-foreground',
+    );
 
     expectNoFragments(source, [
       'grid gap-x-6 gap-y-4 border-y border-border py-3',

@@ -17,9 +17,7 @@ function PortfolioMiniStat({
   return (
     <div className="border-t border-border py-4">
       <p className="text-sm font-semibold text-muted-foreground">{label}</p>
-      <p className="mt-2 text-xl font-semibold tracking-tight text-foreground">
-        {value}
-      </p>
+      <p className="mt-2 text-xl font-semibold tracking-tight text-foreground">{value}</p>
       <p className="mt-1 text-[13px] leading-6 text-muted-foreground">{description}</p>
     </div>
   );
@@ -65,57 +63,49 @@ export function PortfolioOverviewHeader({
   return (
     <>
       <section className="space-y-6 border-t border-border py-6">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-            <div className="max-w-2xl space-y-3">
-              <p className="ui-meta font-semibold">
-                {t('notebook.record_view')}
-              </p>
-              <h3 className="ui-section-title">
-                {t('notebook.record_intro_title')}
-              </h3>
-              <p className="ui-body">
-                {t('notebook.record_intro_desc')}
-              </p>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:w-[360px]">
-              <PortfolioMiniStat
-                label={t('notebook.stored_lots_label')}
-                value={String(lotsCount)}
-                description={t('notebook.stored_lots_card_desc')}
-              />
-              <PortfolioMiniStat
-                label={t('notebook.next_maturity_label')}
-                value={nextMaturityDate ? formatDate(nextMaturityDate) : '-'}
-                description={t('notebook.next_maturity_card_desc')}
-              />
-            </div>
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-2xl space-y-3">
+            <p className="ui-meta font-semibold">{t('notebook.record_view')}</p>
+            <h3 className="ui-section-title">{t('notebook.record_intro_title')}</h3>
+            <p className="ui-body">{t('notebook.record_intro_desc')}</p>
           </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:w-[360px]">
+            <PortfolioMiniStat
+              label={t('notebook.stored_lots_label')}
+              value={String(lotsCount)}
+              description={t('notebook.stored_lots_card_desc')}
+            />
+            <PortfolioMiniStat
+              label={t('notebook.next_maturity_label')}
+              value={nextMaturityDate ? formatDate(nextMaturityDate) : '-'}
+              description={t('notebook.next_maturity_card_desc')}
+            />
+          </div>
+        </div>
 
-          <div className="grid gap-4 md:grid-cols-3">
-            <PortfolioMiniStat
-              label={t('notebook.total_invested')}
-              value={totalInvestedValue}
-              description={t('notebook.total_invested_desc')}
-            />
-            <PortfolioMiniStat
-              label={t('notebook.next_maturity')}
-              value={nextMaturityType ?? '-'}
-              description={
-                nextMaturityDate
-                  ? `${formatDate(nextMaturityDate)} ${t('notebook.next_maturity_suffix')}`
-                  : t('notebook.no_upcoming_maturity')
-              }
-            />
-            <PortfolioMiniStat
-              label={t('notebook.sharing_mode')}
-              value={isPublic ? t('notebook.public') : t('notebook.private')}
-              description={
-                isPublic
-                  ? t('notebook.public_share_desc')
-                  : t('notebook.private_share_desc')
-              }
-            />
-          </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          <PortfolioMiniStat
+            label={t('notebook.total_invested')}
+            value={totalInvestedValue}
+            description={t('notebook.total_invested_desc')}
+          />
+          <PortfolioMiniStat
+            label={t('notebook.next_maturity')}
+            value={nextMaturityType ?? '-'}
+            description={
+              nextMaturityDate
+                ? `${formatDate(nextMaturityDate)} ${t('notebook.next_maturity_suffix')}`
+                : t('notebook.no_upcoming_maturity')
+            }
+          />
+          <PortfolioMiniStat
+            label={t('notebook.sharing_mode')}
+            value={isPublic ? t('notebook.public') : t('notebook.private')}
+            description={
+              isPublic ? t('notebook.public_share_desc') : t('notebook.private_share_desc')
+            }
+          />
+        </div>
       </section>
 
       <div className="flex flex-col gap-4 border-t border-border py-5 md:flex-row md:items-start md:justify-between">

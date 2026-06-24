@@ -1,5 +1,5 @@
-import {ComparePageClient} from './ComparePageClient';
-import {getLocalizedPageMetadata} from '@/lib/page-metadata';
+import { ComparePageClient } from './ComparePageClient';
+import { getLocalizedPageMetadata } from '@/lib/page-metadata';
 
 export async function generateMetadata() {
   return getLocalizedPageMetadata('comparison');
@@ -8,6 +8,3 @@ export async function generateMetadata() {
 export default function ComparisonPage() {
   return <ComparePageClient />;
 }
-
-
-

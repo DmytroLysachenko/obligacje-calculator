@@ -67,12 +67,8 @@ function collectDirectCommonTranslationKeys() {
 
 describe('locale parity for touched bond and economic helper namespaces', () => {
   it('keeps full English key coverage available in Polish', () => {
-    const englishKeys = flattenMessageKeys(enMessages)
-      .map(normalizeArrayIndexes)
-      .sort();
-    const polishKeys = new Set(
-      flattenMessageKeys(plMessages).map(normalizeArrayIndexes),
-    );
+    const englishKeys = flattenMessageKeys(enMessages).map(normalizeArrayIndexes).sort();
+    const polishKeys = new Set(flattenMessageKeys(plMessages).map(normalizeArrayIndexes));
 
     expect(englishKeys.filter((key) => !polishKeys.has(key))).toEqual([]);
   });

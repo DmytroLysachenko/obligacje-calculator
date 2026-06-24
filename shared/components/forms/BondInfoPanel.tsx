@@ -36,10 +36,7 @@ export function BondInfoPanel({
 }: BondInfoPanelProps) {
   return (
     <div
-      className={cn(
-        'space-y-3 border-l-2 border-border bg-muted/20 px-4 py-3 text-sm',
-        className,
-      )}
+      className={cn('space-y-3 border-l-2 border-border bg-muted/20 px-4 py-3 text-sm', className)}
     >
       <div className="flex items-center gap-2 font-semibold text-foreground">
         <Info className="h-3.5 w-3.5 shrink-0" />
@@ -65,9 +62,7 @@ export function BondInfoPanel({
         {narrative ? <p>{narrative}</p> : null}
         {supportDescription ? <p>{supportDescription}</p> : null}
       </div>
-      {notice ? (
-        <p className="font-semibold text-warning">{notice}</p>
-      ) : null}
+      {notice ? <p className="font-semibold text-warning">{notice}</p> : null}
     </div>
   );
 }

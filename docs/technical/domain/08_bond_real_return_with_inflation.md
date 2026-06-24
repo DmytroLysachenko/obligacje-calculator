@@ -5,32 +5,34 @@ Treasury bonds after taxes, early redemption fees, and inflation**.
 
 The goal is to compute:
 
--   **Gross nominal profit**
--   **Net nominal profit (after tax and fees)**
--   **Real profit after inflation**
--   **Real annualized yield**
+- **Gross nominal profit**
+- **Net nominal profit (after tax and fees)**
+- **Real profit after inflation**
+- **Real annualized yield**
 
 This guide focuses especially on **10‑year inflation‑indexed bonds
 (EDO)** and cases where the bond is **sold before maturity**.
 
-------------------------------------------------------------------------
+---
 
 # 1. Key Variables
 
-  Symbol   Meaning
-  -------- ----------------------------------
-  N        nominal value per bond (100 PLN)
-  n        number of bonds
-  P        purchase value
-  r_k      interest rate in year k
-  i_k      inflation rate in year k
-  m        inflation margin (for EDO = 2%)
-  T        total years invested
-  b        early redemption fee per bond
-  tax      capital gains tax (19%)
-  W        nominal bond value at sale
-  W_net    value after taxes and fees
-  R_real   real value after inflation
+Symbol Meaning
+
+---
+
+N nominal value per bond (100 PLN)
+n number of bonds
+P purchase value
+r_k interest rate in year k
+i_k inflation rate in year k
+m inflation margin (for EDO = 2%)
+T total years invested
+b early redemption fee per bond
+tax capital gains tax (19%)
+W nominal bond value at sale
+W_net value after taxes and fees
+R_real real value after inflation
 
 Nominal bond price:
 
@@ -40,7 +42,7 @@ Investment:
 
     P = N × n
 
-------------------------------------------------------------------------
+---
 
 # 2. Nominal Value Growth for Inflation‑Indexed Bonds
 
@@ -64,7 +66,7 @@ Expanded:
 
     W = N × (1+r₁)(1+r₂)...(1+r_T)
 
-------------------------------------------------------------------------
+---
 
 # 3. Early Redemption Calculation
 
@@ -83,7 +85,7 @@ If holding n bonds:
 
     W_fee_total = n × (W − b)
 
-------------------------------------------------------------------------
+---
 
 # 4. Capital Gains Tax
 
@@ -103,7 +105,7 @@ Net value after tax:
 
     W_net = W_fee − tax_amount
 
-------------------------------------------------------------------------
+---
 
 # 5. Inflation Adjustment
 
@@ -124,7 +126,7 @@ Real profit:
 
     profit_real = R_real − N
 
-------------------------------------------------------------------------
+---
 
 # 6. Real Annualized Return
 
@@ -134,7 +136,7 @@ Real annual yield:
 
 This is the **true annual return after inflation**.
 
-------------------------------------------------------------------------
+---
 
 # 7. Complete Example
 
@@ -147,17 +149,19 @@ Example investment:
 
 Inflation scenario:
 
-  Year   Inflation
-  ------ -----------
-  1      ---
-  2      4%
-  3      5%
-  4      3%
-  5      3%
-  6      4%
-  7      2%
-  8      2%
-  9      2%
+Year Inflation
+
+---
+
+1 ---
+2 4%
+3 5%
+4 3%
+5 3%
+6 4%
+7 2%
+8 2%
+9 2%
 
 Interest rates:
 
@@ -179,7 +183,7 @@ Result:
 
     W ≈ 155.72 PLN
 
-------------------------------------------------------------------------
+---
 
 # 8. Early Redemption
 
@@ -191,7 +195,7 @@ Value after fee:
 
     W_fee = 155.72 − 3 = 152.72 PLN
 
-------------------------------------------------------------------------
+---
 
 # 9. Tax Calculation
 
@@ -214,7 +218,7 @@ Net nominal profit:
 
     42.70 PLN
 
-------------------------------------------------------------------------
+---
 
 # 10. Inflation Adjustment
 
@@ -236,7 +240,7 @@ Real profit:
     112.55 −100
     = 12.55 PLN
 
-------------------------------------------------------------------------
+---
 
 # 11. Real Annual Yield
 
@@ -248,13 +252,15 @@ Result:
 
 So:
 
-  Metric               Value
-  -------------------- -----------
-  Nominal net profit   42.7 PLN
-  Real profit          12.55 PLN
-  Real annual return   1.31%
+Metric Value
 
-------------------------------------------------------------------------
+---
+
+Nominal net profit 42.7 PLN
+Real profit 12.55 PLN
+Real annual return 1.31%
+
+---
 
 # 12. Simplified Universal Formula
 
@@ -280,7 +286,7 @@ Step 5 --- real annual return
 
     r_real = (R_real/N)^(1/T) −1
 
-------------------------------------------------------------------------
+---
 
 # 13. Key Insight
 
@@ -288,9 +294,9 @@ Inflation‑indexed bonds protect capital **only partially**.
 
 Even with inflation linkage:
 
--   taxes reduce returns
--   early redemption fees reduce returns
--   compounding of inflation reduces purchasing power
+- taxes reduce returns
+- early redemption fees reduce returns
+- compounding of inflation reduces purchasing power
 
 Therefore the **real return is usually much lower than the nominal
 return**.

@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { convertComparisonToCSV, convertLotsToCSV, convertTimelineToCSV } from './csv-utils';
-import { buildComparisonExportHeaders, buildLotsExportHeaders, buildTimelineExportHeaders } from './export-headers';
+import {
+  buildComparisonExportHeaders,
+  buildLotsExportHeaders,
+  buildTimelineExportHeaders,
+} from './export-headers';
 import { translateMessage } from '@/i18n/translate';
 import type { YearlyTimelinePoint, LotBreakdown } from '@/features/bond-core/types';
 import { SimulationEventType } from '@/features/bond-core/types/simulation';
@@ -188,7 +192,9 @@ describe('csv-utils', () => {
         isMaturity: false,
         isWithdrawal: false,
         cumulativeInflation: 1.02,
-        events: [{ type: SimulationEventType.PAYOUT, date: '2026-06-30', description: 'Monthly payout' }],
+        events: [
+          { type: SimulationEventType.PAYOUT, date: '2026-06-30', description: 'Monthly payout' },
+        ],
       },
     ] as unknown as YearlyTimelinePoint[];
     const timelineB = [
@@ -212,7 +218,13 @@ describe('csv-utils', () => {
         isMaturity: false,
         isWithdrawal: false,
         cumulativeInflation: 1.01,
-        events: [{ type: SimulationEventType.INTEREST_ACCRUAL, date: '2026-07-31', description: 'Accrual' }],
+        events: [
+          {
+            type: SimulationEventType.INTEREST_ACCRUAL,
+            date: '2026-07-31',
+            description: 'Accrual',
+          },
+        ],
       },
     ] as unknown as YearlyTimelinePoint[];
 
@@ -255,7 +267,9 @@ describe('csv-utils', () => {
         isMaturity: false,
         isWithdrawal: false,
         cumulativeInflation: 1,
-        events: [{ type: SimulationEventType.PURCHASE, date: '2026-06-01', description: 'Purchase' }],
+        events: [
+          { type: SimulationEventType.PURCHASE, date: '2026-06-01', description: 'Purchase' },
+        ],
       },
     ] as unknown as YearlyTimelinePoint[];
     const timelineB = [] as unknown as YearlyTimelinePoint[];

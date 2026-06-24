@@ -8,7 +8,9 @@ import { apiGet } from '@/shared/lib/api-client';
 let cachedDefinitions: Record<BondType, BondDefinition> | null = null;
 
 export function useBondDefinitions() {
-  const [definitions, setDefinitions] = useState<Record<BondType, BondDefinition> | null>(cachedDefinitions);
+  const [definitions, setDefinitions] = useState<Record<BondType, BondDefinition> | null>(
+    cachedDefinitions,
+  );
   const [isLoading, setIsLoading] = useState(!cachedDefinitions);
   const [error, setError] = useState<Error | null>(null);
 

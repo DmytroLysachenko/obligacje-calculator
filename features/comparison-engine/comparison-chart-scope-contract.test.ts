@@ -46,9 +46,9 @@ describe('comparison chart ownership contract', () => {
     expectContains(container, 'chartData={chartData}');
     expectContains(container, 'chartStep={chartStep}');
     expectContains(container, 'onChartStepChange={setChartStep}');
-    expectContains(container, 'const [chartStep, setChartStep] = useState<ChartStep>(\'yearly\');');
+    expectContains(container, "const [chartStep, setChartStep] = useState<ChartStep>('yearly');");
 
-    expectContains(results, "BondValueChartPoint");
+    expectContains(results, 'BondValueChartPoint');
     expectContains(results, "from '@/shared/components/charts/BondValueChart';");
     expectContains(results, '<BondValueChart');
     expectContains(results, 'defaultGranularity={chartStep}');
@@ -96,9 +96,15 @@ describe('comparison chart ownership contract', () => {
     const chartModel = read(paths.multiAssetChartModel);
     const types = read(paths.chartTypes);
 
-    expectContains(page, "import {MultiAssetComparisonContainer} from '@/features/comparison-engine/components/MultiAssetComparisonContainer';");
+    expectContains(
+      page,
+      "import {MultiAssetComparisonContainer} from '@/features/comparison-engine/components/MultiAssetComparisonContainer';",
+    );
     expectContains(page, '<MultiAssetComparisonContainer />');
-    expectContains(container, "import { MultiAssetComparisonChart } from './MultiAssetComparisonChart';");
+    expectContains(
+      container,
+      "import { MultiAssetComparisonChart } from './MultiAssetComparisonChart';",
+    );
     expectContains(container, '<MultiAssetComparisonChart');
     expectContains(container, 'chartData={chartData}');
     expectContains(container, 'assets={assets}');
@@ -111,8 +117,8 @@ describe('comparison chart ownership contract', () => {
     expectContains(chart, '<Brush dataKey="date"');
     expectContains(chart, 'const growthLegendItems = React.useMemo');
     expectContains(chart, 'const drawdownLegendItems = React.useMemo');
-    expectContains(chart, 'ariaLabel={t(\'comparison.growth_chart_label\')}');
-    expectContains(chart, 'ariaLabel={t(\'comparison.drawdown_chart_label\')}');
+    expectContains(chart, "ariaLabel={t('comparison.growth_chart_label')}");
+    expectContains(chart, "ariaLabel={t('comparison.drawdown_chart_label')}");
     expectContains(chartModel, 'export function thinMultiAssetGrowthData');
     expectContains(chartModel, 'chartData.length > 240');
     expectContains(chartModel, 'createMultiAssetGrowthSummary');
@@ -123,10 +129,7 @@ describe('comparison chart ownership contract', () => {
     expectContains(types, 'showRealValue: boolean;');
     expectContains(types, 'formatCurrency: (val: number) => string;');
 
-    expectNoFragments(container, [
-      './ComparisonChart',
-      '<ComparisonChart',
-    ]);
+    expectNoFragments(container, ['./ComparisonChart', '<ComparisonChart']);
     expectNoFragments(chart, [
       'import { ComparisonChartProps',
       'React.FC<ComparisonChartProps>',
@@ -139,12 +142,7 @@ describe('comparison chart ownership contract', () => {
     const results = read(paths.comparisonResults);
     const multiAssetContainer = read(paths.multiAssetContainer);
     const multiAssetChart = read(paths.multiAssetChart);
-    const combinedSources = [
-      container,
-      results,
-      multiAssetContainer,
-      multiAssetChart,
-    ].join('\n');
+    const combinedSources = [container, results, multiAssetContainer, multiAssetChart].join('\n');
 
     expectNoFragments(combinedSources, [
       'components/ComparisonChart',

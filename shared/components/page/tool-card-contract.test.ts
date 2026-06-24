@@ -22,7 +22,9 @@ describe('tool card page primitive', () => {
   it('routes the landing dashboard through the shared tool card', () => {
     const source = read('app/LandingDashboardClient.tsx');
 
-    expect(source).toContain("import { SectionHeading, ToolCard } from '@/shared/components/page/ToolCard';");
+    expect(source).toContain(
+      "import { SectionHeading, ToolCard } from '@/shared/components/page/ToolCard';",
+    );
     expect(source).toContain('<ToolCard');
     expect(source).not.toContain('rounded-lg border border-border bg-card p-5 shadow-sm');
   });

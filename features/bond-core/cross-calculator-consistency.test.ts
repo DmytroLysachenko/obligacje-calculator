@@ -67,10 +67,7 @@ const purchaseDate = '2026-01-01';
 const withdrawalDate = '2036-01-01';
 const initialInvestment = 10000;
 
-function singlePayload(
-  bondType: BondType,
-  overrides: Partial<BondInputs> = {},
-) {
+function singlePayload(bondType: BondType, overrides: Partial<BondInputs> = {}) {
   const definition = BOND_DEFINITIONS[bondType];
 
   return {
@@ -144,9 +141,9 @@ async function calculateComparisonScenarioA(
     },
   });
 
-  return (comparisonEnvelope.result as BondComparisonScenarioItem[])
-    .find((item) => item.scenarioKey === 'scenarioA')
-    ?.result;
+  return (comparisonEnvelope.result as BondComparisonScenarioItem[]).find(
+    (item) => item.scenarioKey === 'scenarioA',
+  )?.result;
 }
 
 function expectCloseResult(left: CalculationResult, right: CalculationResult) {
@@ -182,9 +179,9 @@ describe('cross-calculator consistency', () => {
         scenarioB: { bondType: BondType.ROR },
       },
     });
-    const comparison = (comparisonEnvelope.result as BondComparisonScenarioItem[])
-      .find((item) => item.scenarioKey === 'scenarioA')
-      ?.result;
+    const comparison = (comparisonEnvelope.result as BondComparisonScenarioItem[]).find(
+      (item) => item.scenarioKey === 'scenarioA',
+    )?.result;
 
     expect(comparison).toBeDefined();
     expectCloseResult(single, comparison!);
@@ -199,34 +196,37 @@ describe('cross-calculator consistency', () => {
     BondType.EDO,
     BondType.ROS,
     BondType.ROD,
-  ])('keeps independent comparison output equal to matching single %s scenario', async (bondType) => {
-    const single = await calculateSingle(bondType);
-    const comparisonEnvelope = await calculationService.calculate({
-      kind: ScenarioKind.BOND_COMPARISON,
-      payload: {
-        mode: 'independent',
-        sharedConfig: {
-          initialInvestment,
-          purchaseDate,
-          withdrawalDate,
-          expectedInflation: 3,
-          expectedNbpRate: 5,
-          taxStrategy: TaxStrategy.STANDARD,
-          timingMode: 'exact',
-          investmentHorizonMonths: 120,
+  ])(
+    'keeps independent comparison output equal to matching single %s scenario',
+    async (bondType) => {
+      const single = await calculateSingle(bondType);
+      const comparisonEnvelope = await calculationService.calculate({
+        kind: ScenarioKind.BOND_COMPARISON,
+        payload: {
+          mode: 'independent',
+          sharedConfig: {
+            initialInvestment,
+            purchaseDate,
+            withdrawalDate,
+            expectedInflation: 3,
+            expectedNbpRate: 5,
+            taxStrategy: TaxStrategy.STANDARD,
+            timingMode: 'exact',
+            investmentHorizonMonths: 120,
+          },
+          scenarioA: { bondType },
+          scenarioB: { bondType: BondType.EDO },
         },
-        scenarioA: { bondType },
-        scenarioB: { bondType: BondType.EDO },
-      },
-    });
-    const comparison = (comparisonEnvelope.result as BondComparisonScenarioItem[])
-      .find((item) => item.scenarioKey === 'scenarioA')
-      ?.result;
+      });
+      const comparison = (comparisonEnvelope.result as BondComparisonScenarioItem[]).find(
+        (item) => item.scenarioKey === 'scenarioA',
+      )?.result;
 
-    expect(comparison).toBeDefined();
-    expectCloseResult(single, comparison!);
-    expect(comparison!.timeline.at(-1)?.cycleEndDate).toBe(single.timeline.at(-1)?.cycleEndDate);
-  });
+      expect(comparison).toBeDefined();
+      expectCloseResult(single, comparison!);
+      expect(comparison!.timeline.at(-1)?.cycleEndDate).toBe(single.timeline.at(-1)?.cycleEndDate);
+    },
+  );
 
   it.each([
     [BondType.EDO, '2028-01-01', 24],
@@ -384,9 +384,9 @@ describe('cross-calculator consistency', () => {
         scenarioB: { bondType: BondType.ROR },
       },
     });
-    const highComparison = (comparisonEnvelope.result as BondComparisonScenarioItem[])
-      .find((item) => item.scenarioKey === 'scenarioA')
-      ?.result;
+    const highComparison = (comparisonEnvelope.result as BondComparisonScenarioItem[]).find(
+      (item) => item.scenarioKey === 'scenarioA',
+    )?.result;
 
     expect(highSingle.netPayoutValue).toBeGreaterThan(lowSingle.netPayoutValue);
     expect(highComparison).toBeDefined();

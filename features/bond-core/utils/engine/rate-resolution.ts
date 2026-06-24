@@ -4,7 +4,7 @@ import { BondType } from '../../types';
 /**
  * Determines the interest rate for a specific period.
  * Implements the "inflation lag" rule: most indexed bonds use inflation from 2 months prior.
- * 
+ *
  * @param bondType Type of the bond (EDO, COI, etc.)
  * @param monthsIntoCycle The current number of months since the bond was purchased (0-based)
  * @param firstYearRate The fixed rate for the first bond year (or first month for some types)
@@ -25,7 +25,7 @@ export function determineInterestRate(
   inflationLagValue?: number,
   nbpLagValue?: number,
   customInflationValue?: number,
-  customNbpValue?: number
+  customNbpValue?: number,
 ): Decimal {
   if (bondType === BondType.OTS || bondType === BondType.TOS) {
     return new Decimal(firstYearRate);
@@ -37,11 +37,12 @@ export function determineInterestRate(
     const isFirstMonth = monthsIntoCycle === 0;
     if (isFirstMonth) return new Decimal(firstYearRate);
 
-    const baseNbp = customNbpValue !== undefined
-      ? customNbpValue
-      : nbpLagValue !== undefined
-        ? nbpLagValue
-        : expectedNbpRate;
+    const baseNbp =
+      customNbpValue !== undefined
+        ? customNbpValue
+        : nbpLagValue !== undefined
+          ? nbpLagValue
+          : expectedNbpRate;
     return Decimal.max(0, baseNbp).plus(margin);
   }
 

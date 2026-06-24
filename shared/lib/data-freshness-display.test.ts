@@ -9,9 +9,7 @@ import {
 } from './data-freshness-display';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 
-function freshness(
-  overrides: Partial<CalculationDataFreshness> = {},
-): CalculationDataFreshness {
+function freshness(overrides: Partial<CalculationDataFreshness> = {}): CalculationDataFreshness {
   return {
     status: 'stale',
     usedFallback: false,
@@ -60,11 +58,15 @@ describe('data freshness display helpers', () => {
   });
 
   it('builds calculation metadata display state from one freshness envelope', () => {
-    expect(getCalculationFreshnessMetaState(freshness({
-      status: 'fresh',
-      coverageAsOf: '2026-05',
-      lastSyncedAt: '2026-06-20T12:00:00.000Z',
-    }))).toMatchObject({
+    expect(
+      getCalculationFreshnessMetaState(
+        freshness({
+          status: 'fresh',
+          coverageAsOf: '2026-05',
+          lastSyncedAt: '2026-06-20T12:00:00.000Z',
+        }),
+      ),
+    ).toMatchObject({
       status: 'fresh',
       isFresh: true,
       coverageLabel: '2026-05',
@@ -74,11 +76,15 @@ describe('data freshness display helpers', () => {
       dotClass: 'bg-[var(--finance-success)]',
     });
 
-    expect(getCalculationFreshnessMetaState(freshness({
-      status: 'fallback',
-      usedFallback: true,
-      asOf: 'fallback-reference',
-    }))).toMatchObject({
+    expect(
+      getCalculationFreshnessMetaState(
+        freshness({
+          status: 'fallback',
+          usedFallback: true,
+          asOf: 'fallback-reference',
+        }),
+      ),
+    ).toMatchObject({
       status: 'fallback',
       isFresh: false,
       coverageLabel: 'fallback-reference',

@@ -9,12 +9,7 @@ interface RateContextNoteProps {
   className?: string;
 }
 
-export function RateContextNote({
-  title,
-  badges,
-  narrative,
-  className,
-}: RateContextNoteProps) {
+export function RateContextNote({ title, badges, narrative, className }: RateContextNoteProps) {
   return (
     <div className={className ?? 'space-y-2 border-t border-dashed border-border pt-3'}>
       {title ? (

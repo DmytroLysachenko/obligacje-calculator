@@ -68,12 +68,8 @@
           "name": "data_points_series_id_data_series_id_fk",
           "tableFrom": "data_points",
           "tableTo": "data_series",
-          "columnsFrom": [
-            "series_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["series_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -155,9 +151,7 @@
         "data_series_slug_unique": {
           "name": "data_series_slug_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "slug"
-          ]
+          "columns": ["slug"]
         }
       },
       "policies": {},
@@ -264,12 +258,8 @@
           "name": "investment_instruments_series_id_data_series_id_fk",
           "tableFrom": "investment_instruments",
           "tableTo": "data_series",
-          "columnsFrom": [
-            "series_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["series_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -279,9 +269,7 @@
         "investment_instruments_ticker_unique": {
           "name": "investment_instruments_ticker_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "ticker"
-          ]
+          "columns": ["ticker"]
         }
       },
       "policies": {},
@@ -392,9 +380,7 @@
         "polish_bonds_symbol_unique": {
           "name": "polish_bonds_symbol_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "symbol"
-          ]
+          "columns": ["symbol"]
         }
       },
       "policies": {},
@@ -463,12 +449,8 @@
           "name": "user_investment_lots_portfolio_id_user_portfolios_id_fk",
           "tableFrom": "user_investment_lots",
           "tableTo": "user_portfolios",
-          "columnsFrom": [
-            "portfolio_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["portfolio_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -536,31 +518,17 @@
     "public.instrument_type": {
       "name": "instrument_type",
       "schema": "public",
-      "values": [
-        "bond",
-        "equity",
-        "commodity",
-        "crypto"
-      ]
+      "values": ["bond", "equity", "commodity", "crypto"]
     },
     "public.interest_type": {
       "name": "interest_type",
       "schema": "public",
-      "values": [
-        "fixed",
-        "floating_nbp",
-        "inflation_linked"
-      ]
+      "values": ["fixed", "floating_nbp", "inflation_linked"]
     },
     "public.series_category": {
       "name": "series_category",
       "schema": "public",
-      "values": [
-        "macro",
-        "instrument",
-        "index",
-        "currency"
-      ]
+      "values": ["macro", "instrument", "index", "currency"]
     }
   },
   "schemas": {},

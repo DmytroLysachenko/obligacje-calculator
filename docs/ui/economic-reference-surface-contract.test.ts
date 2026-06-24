@@ -1,6 +1,6 @@
-import {readFileSync} from 'node:fs';
-import {join} from 'node:path';
-import {describe, expect, it} from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
 
 const root = process.cwd();
 
@@ -34,10 +34,16 @@ describe('economic reference surface contracts', () => {
   it('keeps reference hero metrics spaced without cell-table density', () => {
     const source = read(files.hero);
 
-    expectContains(source, 'grid gap-x-8 gap-y-5 border-y border-border py-4 sm:grid-cols-2 sm:border-y-0 sm:py-1');
+    expectContains(
+      source,
+      'grid gap-x-8 gap-y-5 border-y border-border py-4 sm:grid-cols-2 sm:border-y-0 sm:py-1',
+    );
     expectContains(source, 'border-l border-border/70 pl-4 first:border-l-0 first:pl-0');
     expectContains(source, 'sm:[&:nth-child(odd)]:border-l-0 sm:[&:nth-child(odd)]:pl-0');
-    expectContains(source, 'mt-1.5 text-base font-semibold leading-6 tracking-tight text-foreground');
+    expectContains(
+      source,
+      'mt-1.5 text-base font-semibold leading-6 tracking-tight text-foreground',
+    );
 
     expectNoFragments(source, [
       'grid gap-x-6 gap-y-4 border-y border-border py-3',

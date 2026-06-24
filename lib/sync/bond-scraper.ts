@@ -77,7 +77,10 @@ function extractSection(html: string, symbol: string) {
     html.indexOf('</tr>', index + match[0].length),
     html.indexOf('</li>', index + match[0].length),
   ].filter((value) => value >= 0);
-  const end = nextSectionStarts.length > 0 ? Math.min(...nextSectionStarts) : Math.min(html.length, index + 2200);
+  const end =
+    nextSectionStarts.length > 0
+      ? Math.min(...nextSectionStarts)
+      : Math.min(html.length, index + 2200);
 
   return html.slice(start, end);
 }
@@ -118,7 +121,10 @@ function parseMargin(section: string, fallback: ScrapedBondRate) {
   return fallback.margin;
 }
 
-export function parseOfferFromGovPage(html: string, fallback: ScrapedBondRate): ScrapedBondRate | null {
+export function parseOfferFromGovPage(
+  html: string,
+  fallback: ScrapedBondRate,
+): ScrapedBondRate | null {
   const section = extractSection(html, fallback.symbol);
   if (!section) {
     return null;
@@ -160,11 +166,12 @@ export async function scrapeCurrentBondRates(): Promise<ScrapedBondRate[]> {
       fetchHtml(OBLIGACJE_OFFER_URL).catch(() => ''),
     ]);
 
-    return OFFICIAL_FALLBACK_RATES.map((fallback) => (
-      parseOfferFromGovPage(govOfferHtml, fallback)
-      ?? parseOfferFromObligacjePage(obligacjeOfferHtml, fallback)
-      ?? fallback
-    ));
+    return OFFICIAL_FALLBACK_RATES.map(
+      (fallback) =>
+        parseOfferFromGovPage(govOfferHtml, fallback) ??
+        parseOfferFromObligacjePage(obligacjeOfferHtml, fallback) ??
+        fallback,
+    );
   } catch (error) {
     console.error('Error scraping bonds:', error);
     return OFFICIAL_FALLBACK_RATES;

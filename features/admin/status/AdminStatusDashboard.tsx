@@ -1,8 +1,8 @@
 'use client';
 
-import {useAppI18n} from '@/i18n/client';
-import type {StatusData} from './useAdminStatusDashboard';
-import {createAdminStatusViewModel} from './admin-status-model';
+import { useAppI18n } from '@/i18n/client';
+import type { StatusData } from './useAdminStatusDashboard';
+import { createAdminStatusViewModel } from './admin-status-model';
 import {
   AdminInventoryTable,
   AdminMetricsStrip,
@@ -40,7 +40,7 @@ export function AdminStatusDashboard({
   onCancelSync,
   onConfirmSync,
 }: AdminStatusDashboardProps) {
-  const {t} = useAppI18n();
+  const { t } = useAppI18n();
   const viewModel = createAdminStatusViewModel(data);
   const copy = {
     title: t('admin.title'),
@@ -94,7 +94,12 @@ export function AdminStatusDashboard({
         />
         <AdminStatusNotices error={error} syncing={syncing} syncProgressLabel={copy.syncProgress} />
         <AdminMetricsStrip metrics={viewModel.metrics} copy={copy.metrics} />
-        <AdminInventoryTable rows={viewModel.rows} loading={loading} isEmpty={viewModel.isEmpty} copy={copy.inventory} />
+        <AdminInventoryTable
+          rows={viewModel.rows}
+          loading={loading}
+          isEmpty={viewModel.isEmpty}
+          copy={copy.inventory}
+        />
       </div>
 
       <AdminStatusFeedback

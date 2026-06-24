@@ -1,10 +1,10 @@
-import { db } from "@/db";
-import { dataSeries, dataPoints, investmentInstruments } from "@/db/schema";
-import { GusCpiApiClient } from "@/lib/api-clients/gus-cpi";
-import { eq, sql } from "drizzle-orm";
-import { YahooFinanceSyncProvider } from "./providers/yahoo-finance";
-import { fetchSyncResponse } from "./http-gateway";
-import "dotenv/config";
+import { db } from '@/db';
+import { dataSeries, dataPoints, investmentInstruments } from '@/db/schema';
+import { GusCpiApiClient } from '@/lib/api-clients/gus-cpi';
+import { eq, sql } from 'drizzle-orm';
+import { YahooFinanceSyncProvider } from './providers/yahoo-finance';
+import { fetchSyncResponse } from './http-gateway';
+import 'dotenv/config';
 
 interface NbpRateItem {
   obowiazuje_od: string;
@@ -26,7 +26,7 @@ async function seedMacroAndMarket() {
       category: 'macro' as const,
       unit: '%',
       frequency: 'monthly',
-      dataSource: 'GUS official CPI monthly archive CSV'
+      dataSource: 'GUS official CPI monthly archive CSV',
     },
     {
       slug: 'nbp-ref-rate',
@@ -34,7 +34,7 @@ async function seedMacroAndMarket() {
       category: 'macro' as const,
       unit: '%',
       frequency: 'irregular',
-      dataSource: 'NBP'
+      dataSource: 'NBP',
     },
     {
       slug: 'sp500',
@@ -42,7 +42,7 @@ async function seedMacroAndMarket() {
       category: 'index' as const,
       unit: 'USD',
       frequency: 'monthly',
-      dataSource: 'Yahoo Finance'
+      dataSource: 'Yahoo Finance',
     },
     {
       slug: 'gold-usd',
@@ -50,103 +50,123 @@ async function seedMacroAndMarket() {
       category: 'instrument' as const,
       unit: 'USD',
       frequency: 'daily',
-      dataSource: 'Yahoo Finance'
-    }
+      dataSource: 'Yahoo Finance',
+    },
   ];
 
-  console.log("[Seed] Seeding metadata series...");
+  console.log('[Seed] Seeding metadata series...');
 
   for (const s of seriesMetadata) {
-    await db.insert(dataSeries).values({
-      ...s,
-      updatedAt: new Date()
-    }).onConflictDoUpdate({
-      target: dataSeries.slug,
-      set: { ...s, updatedAt: new Date() }
-    });
+    await db
+      .insert(dataSeries)
+      .values({
+        ...s,
+        updatedAt: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: dataSeries.slug,
+        set: { ...s, updatedAt: new Date() },
+      });
   }
 
   // 1. Fetch and seed NBP Rate
-  console.log("[Seed] Fetching NBP Reference Rate...");
+  console.log('[Seed] Fetching NBP Reference Rate...');
   try {
-    const rateSeries = await db.query.dataSeries.findFirst({ where: eq(dataSeries.slug, 'nbp-ref-rate') });
+    const rateSeries = await db.query.dataSeries.findFirst({
+      where: eq(dataSeries.slug, 'nbp-ref-rate'),
+    });
     if (rateSeries) {
-      const response = await fetchSyncResponse("https://api.nbp.pl/api/statystyka/stopy/ref?format=json", {throwOnHttpError: false});
+      const response = await fetchSyncResponse(
+        'https://api.nbp.pl/api/statystyka/stopy/ref?format=json',
+        { throwOnHttpError: false },
+      );
       if (response.ok) {
-        const data = await response.json() as NbpRateItem[];
+        const data = (await response.json()) as NbpRateItem[];
         const points = data.map((item) => ({
           seriesId: rateSeries.id,
           date: item.obowiazuje_od,
-          value: parseFloat(item.oprocentowanie.replace(',', '.')).toString()
+          value: parseFloat(item.oprocentowanie.replace(',', '.')).toString(),
         }));
-        
+
         await db.insert(dataPoints).values(points).onConflictDoNothing();
         console.log(`[Seed] Seeded ${points.length} NBP rate points.`);
       }
     }
   } catch (e) {
-    console.error("[Seed] Failed to fetch NBP rates:", e);
+    console.error('[Seed] Failed to fetch NBP rates:', e);
   }
 
   // 2. Fetch and seed S&P 500 (Yahoo Finance)
-  console.log("[Seed] Fetching S&P 500 data...");
+  console.log('[Seed] Fetching S&P 500 data...');
   try {
     const spxSeries = await db.query.dataSeries.findFirst({ where: eq(dataSeries.slug, 'sp500') });
     if (spxSeries) {
-      const spxData = await sp500Provider.fetchData('2000-01-01', new Date().toISOString().slice(0, 10));
-      const points = spxData.map(d => ({
+      const spxData = await sp500Provider.fetchData(
+        '2000-01-01',
+        new Date().toISOString().slice(0, 10),
+      );
+      const points = spxData.map((d) => ({
         seriesId: spxSeries.id,
         date: d.date,
-        value: d.value.toString()
+        value: d.value.toString(),
       }));
-      
+
       for (let i = 0; i < points.length; i += 100) {
-        await db.insert(dataPoints).values(points.slice(i, i + 100)).onConflictDoNothing();
+        await db
+          .insert(dataPoints)
+          .values(points.slice(i, i + 100))
+          .onConflictDoNothing();
       }
       console.log(`[Seed] Seeded ${points.length} S&P 500 points.`);
 
-      await db.insert(investmentInstruments).values({
-        seriesId: spxSeries.id,
-        ticker: '^GSPC',
-        displayName: 'S&P 500 Index',
-        riskScore: 4,
-        currency: 'USD',
-        updatedAt: new Date()
-      }).onConflictDoUpdate({
-        target: investmentInstruments.ticker,
-        set: { seriesId: spxSeries.id, updatedAt: new Date() }
-      });
+      await db
+        .insert(investmentInstruments)
+        .values({
+          seriesId: spxSeries.id,
+          ticker: '^GSPC',
+          displayName: 'S&P 500 Index',
+          riskScore: 4,
+          currency: 'USD',
+          updatedAt: new Date(),
+        })
+        .onConflictDoUpdate({
+          target: investmentInstruments.ticker,
+          set: { seriesId: spxSeries.id, updatedAt: new Date() },
+        });
     }
   } catch (e) {
-    console.error("[Seed] Failed to fetch S&P 500 data:", e);
+    console.error('[Seed] Failed to fetch S&P 500 data:', e);
   }
 
   // 3. Seed official CPI history from the GUS monthly archive CSV.
-  console.log("[Seed] Fetching official GUS CPI history...");
+  console.log('[Seed] Fetching official GUS CPI history...');
   const cpiSeries = await db.query.dataSeries.findFirst({ where: eq(dataSeries.slug, 'pl-cpi') });
   if (cpiSeries) {
     const inflationPoints = await gusCpiClient.fetchHistoricalData();
 
-    await db.insert(dataPoints).values(
-      inflationPoints.map(p => ({
-        seriesId: cpiSeries.id,
-        date: p.date,
-        value: p.value.toString(),
-        qualityFlag: 'verified',
-        sourceMetadata: GusCpiApiClient.archivePageUrl,
-      }))
-    ).onConflictDoUpdate({
-      target: [dataPoints.seriesId, dataPoints.date],
-      set: {
-        value: sql`EXCLUDED.value`,
-        qualityFlag: 'verified',
-        sourceMetadata: GusCpiApiClient.archivePageUrl,
-      }
-    });
+    await db
+      .insert(dataPoints)
+      .values(
+        inflationPoints.map((p) => ({
+          seriesId: cpiSeries.id,
+          date: p.date,
+          value: p.value.toString(),
+          qualityFlag: 'verified',
+          sourceMetadata: GusCpiApiClient.archivePageUrl,
+        })),
+      )
+      .onConflictDoUpdate({
+        target: [dataPoints.seriesId, dataPoints.date],
+        set: {
+          value: sql`EXCLUDED.value`,
+          qualityFlag: 'verified',
+          sourceMetadata: GusCpiApiClient.archivePageUrl,
+        },
+      });
     console.log(`[Seed] Seeded ${inflationPoints.length} historical CPI points from GUS.`);
   }
 
-  console.log("[Seed] Data seeding completed.");
+  console.log('[Seed] Data seeding completed.');
 }
 
 seedMacroAndMarket().then(() => process.exit(0));

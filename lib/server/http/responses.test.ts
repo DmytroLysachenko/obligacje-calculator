@@ -1,4 +1,4 @@
-import {describe, expect, it} from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
   createdJson,
   createDomainErrorResponse,
@@ -11,40 +11,40 @@ import {
 
 describe('http response helpers', () => {
   it('supports raw operational payloads for platform endpoints', async () => {
-    const response = rawJson({ok: true, service: 'health'});
+    const response = rawJson({ ok: true, service: 'health' });
 
     expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toEqual({ok: true, service: 'health'});
+    await expect(response.json()).resolves.toEqual({ ok: true, service: 'health' });
   });
 
   it('wraps success payloads consistently', async () => {
-    const response = okJson({value: 1});
+    const response = okJson({ value: 1 });
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toMatchObject({
-      data: {value: 1},
-      meta: {version: '1.2.0'},
+      data: { value: 1 },
+      meta: { version: '1.2.0' },
     });
   });
 
   it('supports created success responses', async () => {
-    const response = createdJson({id: 'new'});
+    const response = createdJson({ id: 'new' });
 
     expect(response.status).toBe(201);
     await expect(response.json()).resolves.toMatchObject({
-      data: {id: 'new'},
+      data: { id: 'new' },
     });
   });
 
   it('wraps generic API errors consistently', async () => {
-    const response = errorJson('Nope', 'NOPE', {field: 'x'}, {status: 409});
+    const response = errorJson('Nope', 'NOPE', { field: 'x' }, { status: 409 });
 
     expect(response.status).toBe(409);
     await expect(response.json()).resolves.toMatchObject({
       error: {
         message: 'Nope',
         code: 'NOPE',
-        details: {field: 'x'},
+        details: { field: 'x' },
       },
     });
   });
@@ -53,7 +53,7 @@ describe('http response helpers', () => {
     const response = createUnauthorizedResponse();
 
     expect(response.status).toBe(401);
-    await expect(response.json()).resolves.toEqual({error: 'Unauthorized'});
+    await expect(response.json()).resolves.toEqual({ error: 'Unauthorized' });
   });
 
   it('creates validation problem responses', async () => {

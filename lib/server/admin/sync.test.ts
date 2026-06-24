@@ -1,4 +1,4 @@
-import {beforeEach, describe, expect, it, vi} from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   createAdminSyncCommand,
   createAdminSyncSuccessEnvelope,
@@ -53,7 +53,7 @@ describe('runAdminSync', () => {
   });
 
   it('delegates to seedMarketHistory for market-history-seed mode', async () => {
-    const result = {mode: 'market-history-seed', startedFromYear: 1990, results: []};
+    const result = { mode: 'market-history-seed', startedFromYear: 1990, results: [] };
     mockedSyncModules.seedMarketHistory.mockResolvedValue(result);
 
     await expect(runAdminSync('market-history-seed')).resolves.toEqual(result);
@@ -64,7 +64,7 @@ describe('runAdminSync', () => {
   });
 
   it('delegates to syncMarketHistory for market-history-sync mode', async () => {
-    const result = {mode: 'market-history-sync', startedFromYear: 2023, results: []};
+    const result = { mode: 'market-history-sync', startedFromYear: 2023, results: [] };
     mockedSyncModules.syncMarketHistory.mockResolvedValue(result);
 
     await expect(runAdminSync('market-history-sync')).resolves.toEqual(result);
@@ -75,7 +75,7 @@ describe('runAdminSync', () => {
   });
 
   it('uses the shared sync engine factory for full-sync mode', async () => {
-    const result = {mode: 'full-sync', bondOffers: 8, historical: []};
+    const result = { mode: 'full-sync', bondOffers: 8, historical: [] };
     mockedSyncModules.runFullSync.mockResolvedValue(result);
 
     await expect(runAdminSync('full-sync')).resolves.toEqual(result);
@@ -87,12 +87,12 @@ describe('runAdminSync', () => {
 
 describe('admin sync command contract', () => {
   it('defaults missing sync payloads to full sync', () => {
-    expect(createAdminSyncCommand(undefined)).toEqual({mode: 'full-sync'});
-    expect(createAdminSyncCommand({})).toEqual({mode: 'full-sync'});
+    expect(createAdminSyncCommand(undefined)).toEqual({ mode: 'full-sync' });
+    expect(createAdminSyncCommand({})).toEqual({ mode: 'full-sync' });
   });
 
   it('keeps explicit sync modes in the command', () => {
-    expect(createAdminSyncCommand({mode: 'market-history-sync'})).toEqual({
+    expect(createAdminSyncCommand({ mode: 'market-history-sync' })).toEqual({
       mode: 'market-history-sync',
     });
   });
@@ -100,15 +100,15 @@ describe('admin sync command contract', () => {
   it('creates a stable success envelope for route responses', () => {
     expect(
       createAdminSyncSuccessEnvelope(
-        {mode: 'metadata-seed'},
-        {status: 'success'},
+        { mode: 'metadata-seed' },
+        { status: 'success' },
         '2026-06-15T12:00:00.000Z',
       ),
     ).toEqual({
       message: 'Sync completed successfully',
       timestamp: '2026-06-15T12:00:00.000Z',
       mode: 'metadata-seed',
-      results: {status: 'success'},
+      results: { status: 'success' },
     });
   });
 

@@ -1,5 +1,5 @@
-import type {Metadata} from 'next';
-import {getTranslations} from 'next-intl/server';
+import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 
 export async function getLocalizedPageMetadata(pageKey: string): Promise<Metadata> {
   const common = await getTranslations('common');

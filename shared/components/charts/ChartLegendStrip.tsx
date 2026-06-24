@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import {cn} from '@/lib/utils';
+import { cn } from '@/lib/utils';
 
 export interface ChartLegendItem {
   label: string;
@@ -14,11 +14,22 @@ interface ChartLegendStripProps {
   className?: string;
 }
 
-export const ChartLegendStrip = React.memo(function ChartLegendStrip({items, className}: ChartLegendStripProps) {
+export const ChartLegendStrip = React.memo(function ChartLegendStrip({
+  items,
+  className,
+}: ChartLegendStripProps) {
   return (
-    <div className={cn('flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-border pb-3', className)}>
+    <div
+      className={cn(
+        'flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-border pb-3',
+        className,
+      )}
+    >
       {items.map((item) => (
-        <div key={item.label} className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+        <div
+          key={item.label}
+          className="flex items-center gap-2 text-xs font-semibold text-muted-foreground"
+        >
           <span
             className={cn(
               'h-0.5 w-6 rounded-full',

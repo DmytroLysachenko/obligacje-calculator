@@ -1,16 +1,11 @@
-"use client";
+'use client';
 
-import React from "react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { TrendingUp, Activity, Info } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useAppI18n } from "@/i18n/client";
-import { ComparisonAssetBreakdownProps } from "./types";
+import React from 'react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { TrendingUp, Activity, Info } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useAppI18n } from '@/i18n/client';
+import { ComparisonAssetBreakdownProps } from './types';
 
 export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> = ({
   assets,
@@ -24,14 +19,17 @@ export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> =
       {assets.map((asset) => {
         const last = asset.series[asset.series.length - 1];
         const maxDrawdown = Math.max(
-          ...asset.series.map((s) => (Number.isFinite(s.drawdown) ? s.drawdown : 0))
+          ...asset.series.map((s) => (Number.isFinite(s.drawdown) ? s.drawdown : 0)),
         );
         const finalValue = showRealValue ? last.realValue! : last.value;
         const netProfit = finalValue - totalInvested;
         const isProfit = netProfit >= 0;
 
         return (
-          <article key={asset.metadata.id} className="flex h-full flex-col justify-between gap-5 border-t border-border py-5">
+          <article
+            key={asset.metadata.id}
+            className="flex h-full flex-col justify-between gap-5 border-t border-border py-5"
+          >
             <div className="space-y-5">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
@@ -49,9 +47,7 @@ export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> =
                       <Info className="h-3 w-3 cursor-help text-muted-foreground" />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p className="text-xs">
-                        {asset.metadata.description[language]}
-                      </p>
+                      <p className="text-xs">{asset.metadata.description[language]}</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -63,16 +59,12 @@ export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> =
                 </p>
                 <div
                   className={cn(
-                    "flex items-center gap-1.5 text-sm font-semibold",
-                    isProfit ? "text-success" : "text-destructive"
+                    'flex items-center gap-1.5 text-sm font-semibold',
+                    isProfit ? 'text-success' : 'text-destructive',
                   )}
                 >
-                  {isProfit ? (
-                    <TrendingUp className="h-4 w-4" />
-                  ) : (
-                    <Activity className="h-4 w-4" />
-                  )}
-                  {isProfit ? "+" : ""}
+                  {isProfit ? <TrendingUp className="h-4 w-4" /> : <Activity className="h-4 w-4" />}
+                  {isProfit ? '+' : ''}
                   {formatCurrency(netProfit)}
                 </div>
               </div>
@@ -83,18 +75,14 @@ export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> =
                 <span className="font-medium text-muted-foreground">
                   {t('comparison.max_drawdown')}
                 </span>
-                <span className="font-semibold text-destructive">
-                  -{maxDrawdown.toFixed(1)}%
-                </span>
+                <span className="font-semibold text-destructive">-{maxDrawdown.toFixed(1)}%</span>
               </div>
               <div className="flex items-center justify-between gap-4 py-3 text-xs">
                 <span className="font-medium text-muted-foreground">
                   {t('comparison.total_return')}
                 </span>
                 <span className="font-semibold text-success">
-                  +
-                  {((finalValue / totalInvested - 1) * 100).toFixed(1)}
-                  %
+                  +{((finalValue / totalInvested - 1) * 100).toFixed(1)}%
                 </span>
               </div>
             </div>
@@ -104,7 +92,3 @@ export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> =
     </div>
   );
 };
-
-
-
-

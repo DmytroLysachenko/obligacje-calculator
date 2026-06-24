@@ -51,13 +51,9 @@ export function SectionBlock({
                 <h3 className="ui-section-title">{title}</h3>
               </div>
             ) : null}
-            {description ? (
-              <p className="ui-body text-muted-foreground">{description}</p>
-            ) : null}
+            {description ? <p className="ui-body text-muted-foreground">{description}</p> : null}
           </div>
-          {action ? (
-            <div className="shrink-0">{action}</div>
-          ) : null}
+          {action ? <div className="shrink-0">{action}</div> : null}
         </div>
       ) : null}
       <div className={contentClassName}>{children}</div>

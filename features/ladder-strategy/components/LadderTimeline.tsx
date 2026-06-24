@@ -1,8 +1,15 @@
 'use client';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, } from 'recharts';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { RegularInvestmentResult } from '../../bond-core/types';
 import { useAppI18n } from '@/i18n/client';
@@ -12,7 +19,11 @@ import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
 import { MetricStrip } from '@/shared/components/results/MetricStrip';
 import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
-import { applyTableRowLimit, TableDensityControls, TableRowLimit } from '@/shared/components/results/TableDensityControls';
+import {
+  applyTableRowLimit,
+  TableDensityControls,
+  TableRowLimit,
+} from '@/shared/components/results/TableDensityControls';
 import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 import { SectionBlock } from '@/shared/components/page/SectionBlock';
@@ -24,110 +35,139 @@ import {
   LadderYearBucket,
 } from '@/shared/lib/ladder-display';
 interface LadderTimelineProps {
-    results: RegularInvestmentResult;
+  results: RegularInvestmentResult;
 }
 type LadderChartMode = 'yearly' | 'monthly';
 type LadderTableFilter = 'all' | 'peak' | 'clustered';
 export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
-    const { t, locale: language } = useAppI18n();
-    const [rowLimit, setRowLimit] = useState<TableRowLimit>(12);
-    const [chartMode, setChartMode] = useState<LadderChartMode>('yearly');
-    const [tableFilter, setTableFilter] = useState<LadderTableFilter>('all');
-    const dateLocale = getDateFnsLocale(language);
-    const currencyFormatter = useCurrencyFormatter(language, {
-        style: 'currency',
-        currency: 'PLN',
-        maximumFractionDigits: 0,
-    });
-    const formatCurrency = useCallback((value: number) => currencyFormatter.format(value), [currencyFormatter]);
-    const monthlyBuckets = useMemo<LadderMaturityBucket[]>(() => buildLadderMaturityBuckets(results.lots, dateLocale), [dateLocale, results.lots]);
-    const yearlyBuckets = useMemo<LadderYearBucket[]>(() => buildLadderYearBuckets(monthlyBuckets), [monthlyBuckets]);
-    const chartData = useMemo(
-        () => chartMode === 'yearly' ? yearlyBuckets : monthlyBuckets,
-        [chartMode, monthlyBuckets, yearlyBuckets],
-    );
-    const averageMaturityValue = monthlyBuckets.length > 0
-        ? monthlyBuckets.reduce((accumulator, item) => accumulator + item.amount, 0) / monthlyBuckets.length
-        : 0;
-    const monthlyContribution = results.lots.length > 0 ? results.totalInvested / results.lots.length : 0;
-    const monthlySpreadGap = averageMaturityValue - monthlyContribution;
-    const peakMonth = monthlyBuckets.reduce<LadderMaturityBucket | null>((currentPeak, item) => (!currentPeak || item.amount > currentPeak.amount ? item : currentPeak), null);
-    const earliestMonth = monthlyBuckets[0] ?? null;
-    const latestMonth = monthlyBuckets[monthlyBuckets.length - 1] ?? null;
-    const peakShare = peakMonth && results.lots.length > 0 ? (peakMonth.count / results.lots.length) * 100 : 0;
-    const clusteredThreshold = Math.max(2, Math.ceil(results.lots.length * 0.08));
-    const filteredMonthlyBuckets = useMemo(() => {
-        if (tableFilter === 'peak') {
-            return peakMonth ? monthlyBuckets.filter((item) => item.date === peakMonth.date) : [];
-        }
-        if (tableFilter === 'clustered') {
-            return monthlyBuckets.filter((item) => item.count >= clusteredThreshold);
-        }
-        return monthlyBuckets;
-    }, [clusteredThreshold, monthlyBuckets, peakMonth, tableFilter]);
-    const displayedRows = useMemo(() => applyTableRowLimit(filteredMonthlyBuckets, rowLimit), [filteredMonthlyBuckets, rowLimit]);
-    const strongestYear = yearlyBuckets.reduce<LadderYearBucket | null>((currentPeak, item) => (!currentPeak || item.amount > currentPeak.amount ? item : currentPeak), null);
-    const metricItems = useMemo(() => [
-        {
-            label: t('ladder_page.timeline.average_maturity_value'),
-            value: formatCurrency(averageMaturityValue),
-            description: t('ladder_page.timeline.average_maturity_value_description'),
-        },
-        {
-            label: t('ladder_page.timeline.spread_gap'),
-            value: formatCurrency(monthlySpreadGap),
-            description: t('ladder_page.timeline.spread_gap_description'),
-        },
-        {
-            label: t('ladder_page.timeline.active_window'),
-            value: `${earliestMonth ? earliestMonth.displayDate : '-'} ${latestMonth ? `- ${latestMonth.displayDate}` : ''}`,
-            description: t('ladder_page.timeline.active_window_description'),
-        },
-    ], [averageMaturityValue, earliestMonth, formatCurrency, latestMonth, monthlySpreadGap, t]);
-    const yearlySummaryItems = useMemo(() => yearlyBuckets.slice(0, 4).map((bucket) => ({
+  const { t, locale: language } = useAppI18n();
+  const [rowLimit, setRowLimit] = useState<TableRowLimit>(12);
+  const [chartMode, setChartMode] = useState<LadderChartMode>('yearly');
+  const [tableFilter, setTableFilter] = useState<LadderTableFilter>('all');
+  const dateLocale = getDateFnsLocale(language);
+  const currencyFormatter = useCurrencyFormatter(language, {
+    style: 'currency',
+    currency: 'PLN',
+    maximumFractionDigits: 0,
+  });
+  const formatCurrency = useCallback(
+    (value: number) => currencyFormatter.format(value),
+    [currencyFormatter],
+  );
+  const monthlyBuckets = useMemo<LadderMaturityBucket[]>(
+    () => buildLadderMaturityBuckets(results.lots, dateLocale),
+    [dateLocale, results.lots],
+  );
+  const yearlyBuckets = useMemo<LadderYearBucket[]>(
+    () => buildLadderYearBuckets(monthlyBuckets),
+    [monthlyBuckets],
+  );
+  const chartData = useMemo(
+    () => (chartMode === 'yearly' ? yearlyBuckets : monthlyBuckets),
+    [chartMode, monthlyBuckets, yearlyBuckets],
+  );
+  const averageMaturityValue =
+    monthlyBuckets.length > 0
+      ? monthlyBuckets.reduce((accumulator, item) => accumulator + item.amount, 0) /
+        monthlyBuckets.length
+      : 0;
+  const monthlyContribution =
+    results.lots.length > 0 ? results.totalInvested / results.lots.length : 0;
+  const monthlySpreadGap = averageMaturityValue - monthlyContribution;
+  const peakMonth = monthlyBuckets.reduce<LadderMaturityBucket | null>(
+    (currentPeak, item) => (!currentPeak || item.amount > currentPeak.amount ? item : currentPeak),
+    null,
+  );
+  const earliestMonth = monthlyBuckets[0] ?? null;
+  const latestMonth = monthlyBuckets[monthlyBuckets.length - 1] ?? null;
+  const peakShare =
+    peakMonth && results.lots.length > 0 ? (peakMonth.count / results.lots.length) * 100 : 0;
+  const clusteredThreshold = Math.max(2, Math.ceil(results.lots.length * 0.08));
+  const filteredMonthlyBuckets = useMemo(() => {
+    if (tableFilter === 'peak') {
+      return peakMonth ? monthlyBuckets.filter((item) => item.date === peakMonth.date) : [];
+    }
+    if (tableFilter === 'clustered') {
+      return monthlyBuckets.filter((item) => item.count >= clusteredThreshold);
+    }
+    return monthlyBuckets;
+  }, [clusteredThreshold, monthlyBuckets, peakMonth, tableFilter]);
+  const displayedRows = useMemo(
+    () => applyTableRowLimit(filteredMonthlyBuckets, rowLimit),
+    [filteredMonthlyBuckets, rowLimit],
+  );
+  const strongestYear = yearlyBuckets.reduce<LadderYearBucket | null>(
+    (currentPeak, item) => (!currentPeak || item.amount > currentPeak.amount ? item : currentPeak),
+    null,
+  );
+  const metricItems = useMemo(
+    () => [
+      {
+        label: t('ladder_page.timeline.average_maturity_value'),
+        value: formatCurrency(averageMaturityValue),
+        description: t('ladder_page.timeline.average_maturity_value_description'),
+      },
+      {
+        label: t('ladder_page.timeline.spread_gap'),
+        value: formatCurrency(monthlySpreadGap),
+        description: t('ladder_page.timeline.spread_gap_description'),
+      },
+      {
+        label: t('ladder_page.timeline.active_window'),
+        value: `${earliestMonth ? earliestMonth.displayDate : '-'} ${latestMonth ? `- ${latestMonth.displayDate}` : ''}`,
+        description: t('ladder_page.timeline.active_window_description'),
+      },
+    ],
+    [averageMaturityValue, earliestMonth, formatCurrency, latestMonth, monthlySpreadGap, t],
+  );
+  const yearlySummaryItems = useMemo(
+    () =>
+      yearlyBuckets.slice(0, 4).map((bucket) => ({
         label: bucket.year,
         value: formatCurrency(bucket.amount),
         description: t('ladder_page.timeline.year_summary_description', {
-            count: bucket.count,
-            firstMonth: bucket.firstMonth,
-            lastMonth: bucket.lastMonth,
+          count: bucket.count,
+          firstMonth: bucket.firstMonth,
+          lastMonth: bucket.lastMonth,
         }),
-    })), [formatCurrency, t, yearlyBuckets]);
-    return (<div className="space-y-8">
+      })),
+    [formatCurrency, t, yearlyBuckets],
+  );
+  return (
+    <div className="space-y-8">
       <ResultSummaryHero
         eyebrow={t('ladder_page.timeline.eyebrow')}
-        value={peakMonth
-            ? peakMonth.displayDate
-            : t('ladder_page.timeline.no_peak_month')}
+        value={peakMonth ? peakMonth.displayDate : t('ladder_page.timeline.no_peak_month')}
         description={t('ladder_page.timeline.description')}
         narrative={t('ladder_page.timeline.narrative')}
-        aside={<div className="border-l-2 border-border px-4 py-3 text-sm text-foreground">
+        aside={
+          <div className="border-l-2 border-border px-4 py-3 text-sm text-foreground">
             <p className="text-xs font-semibold text-muted-foreground">
               {t('ladder_page.timeline.month_count')}
             </p>
             <p className="mt-2 text-lg font-semibold text-foreground">{monthlyBuckets.length}</p>
-          </div>}
+          </div>
+        }
       />
 
-      <MetricStrip
-        columns="grid-cols-1 md:grid-cols-3"
-        items={metricItems}
-      />
+      <MetricStrip columns="grid-cols-1 md:grid-cols-3" items={metricItems} />
 
       <SectionBlock
         title={t('ladder_page.timeline.year_summary_title')}
         description={t('ladder_page.timeline.year_summary_intro')}
         className="border-y border-border py-6"
-        action={(
+        action={
           <div className="border-l-2 border-border px-4 py-3 text-sm leading-6 text-muted-foreground">
             <p className="text-xs font-semibold text-muted-foreground">
               {t('ladder_page.timeline.strongest_year')}
             </p>
             <p className="mt-1 font-semibold text-foreground">
-              {strongestYear ? `${strongestYear.year} - ${formatCurrency(strongestYear.amount)}` : '-'}
+              {strongestYear
+                ? `${strongestYear.year} - ${formatCurrency(strongestYear.amount)}`
+                : '-'}
             </p>
           </div>
-        )}
+        }
       >
         <MetricStrip
           columns="grid-cols-1 md:grid-cols-2 xl:grid-cols-4"
@@ -143,7 +183,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
             : t('ladder_page.timeline.monthly_chart_description')
         }
         className="border-y border-border py-6"
-        controls={(
+        controls={
           <SegmentedControl
             value={chartMode}
             options={(['yearly', 'monthly'] as const).map((mode) => ({
@@ -154,166 +194,197 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
             className="w-full md:w-64"
             itemClassName="h-8"
           />
-        )}
+        }
       >
-          <p className="border-l-2 border-border bg-muted/20 px-4 py-3 text-sm leading-6 text-muted-foreground">
-            <span className="font-semibold text-foreground">
-              {t('ladder_page.timeline.chart_note_title')}
-            </span>{' '}
-            {t('ladder_page.timeline.chart_note_description')}
-          </p>
-          <ChartContainer responsiveHeightClassName="h-[320px] md:h-[360px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
-                <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)"/>
-                <XAxis dataKey="displayDate" tickLine={false} axisLine={false} fontSize={11}/>
-                <YAxis tickLine={false} axisLine={false} fontSize={11} tickFormatter={(value: number) => `${Math.round(value / 1000)}k`}/>
-                <Tooltip cursor={{ fill: 'rgba(15, 23, 42, 0.05)' }} formatter={(value: ValueType | undefined) => [
-            formatCurrency(Number(value ?? 0)),
-            t('ladder_page.timeline.tooltip_amount_label'),
-        ]} labelFormatter={(label) => `${label}`}/>
-                <Bar dataKey="amount" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]}/>
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartContainer>
+        <p className="border-l-2 border-border bg-muted/20 px-4 py-3 text-sm leading-6 text-muted-foreground">
+          <span className="font-semibold text-foreground">
+            {t('ladder_page.timeline.chart_note_title')}
+          </span>{' '}
+          {t('ladder_page.timeline.chart_note_description')}
+        </p>
+        <ChartContainer responsiveHeightClassName="h-[320px] md:h-[360px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
+              <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+              <XAxis dataKey="displayDate" tickLine={false} axisLine={false} fontSize={11} />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                fontSize={11}
+                tickFormatter={(value: number) => `${Math.round(value / 1000)}k`}
+              />
+              <Tooltip
+                cursor={{ fill: 'rgba(15, 23, 42, 0.05)' }}
+                formatter={(value: ValueType | undefined) => [
+                  formatCurrency(Number(value ?? 0)),
+                  t('ladder_page.timeline.tooltip_amount_label'),
+                ]}
+                labelFormatter={(label) => `${label}`}
+              />
+              <Bar dataKey="amount" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartContainer>
 
-          <ResponsiveTableSheet
-            title={t('ladder_page.timeline.mobile_sheet_title')}
-            description={t('ladder_page.timeline.mobile_sheet_description')}
-            triggerLabel={t('ladder_page.timeline.mobile_sheet_trigger')}
-            triggerCount={`${monthlyBuckets.length} ${t('ladder_page.timeline.mobile_sheet_count_suffix')}`}
-          >
-            {displayedRows.map((item) => (<div key={`mobile-${item.date}`} className="border-t border-border py-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">{item.displayDate}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {t('ladder_page.timeline.lots_count')}: {item.count}
-                    </p>
-                  </div>
-                  <p className="text-sm font-semibold text-foreground">{formatCurrency(item.amount)}</p>
+        <ResponsiveTableSheet
+          title={t('ladder_page.timeline.mobile_sheet_title')}
+          description={t('ladder_page.timeline.mobile_sheet_description')}
+          triggerLabel={t('ladder_page.timeline.mobile_sheet_trigger')}
+          triggerCount={`${monthlyBuckets.length} ${t('ladder_page.timeline.mobile_sheet_count_suffix')}`}
+        >
+          {displayedRows.map((item) => (
+            <div key={`mobile-${item.date}`} className="border-t border-border py-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{item.displayDate}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {t('ladder_page.timeline.lots_count')}: {item.count}
+                  </p>
                 </div>
-                <div className="mt-4 grid grid-cols-2 gap-3">
-                  <MobileLadderValue
-                    label={t('ladder_page.timeline.mobile_share_of_lots')}
-                    value={monthlyBuckets.length > 0 ? `${((item.count / results.lots.length) * 100).toFixed(1)}%` : '-'}
-                  />
-                  <MobileLadderValue
-                    label={t('ladder_page.timeline.mobile_amount')}
-                    value={formatCurrency(item.amount)}
-                  />
-                </div>
-              </div>))}
-          </ResponsiveTableSheet>
-
-          <div className="hidden border-y border-border lg:block">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-1 py-3 text-sm text-muted-foreground">
-              <p>
-                {t('ladder_page.timeline.table_summary')}
-              </p>
-              <div className="flex flex-wrap items-center gap-2">
-                {(['all', 'peak', 'clustered'] as const).map((filter) => (
-                  <Button
-                    key={filter}
-                    type="button"
-                    size="sm"
-                    variant={tableFilter === filter ? 'default' : 'outline'}
-                    aria-pressed={tableFilter === filter}
-                    onClick={() => setTableFilter(filter)}
-                  >
-                    {t(`ladder_page.timeline.table_filters.${filter}`)}
-                  </Button>
-                ))}
-                <p className="text-xs font-semibold text-muted-foreground">
-                  {filteredMonthlyBuckets.length} {t('ladder_page.timeline.table_count_suffix')}
+                <p className="text-sm font-semibold text-foreground">
+                  {formatCurrency(item.amount)}
                 </p>
               </div>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <MobileLadderValue
+                  label={t('ladder_page.timeline.mobile_share_of_lots')}
+                  value={
+                    monthlyBuckets.length > 0
+                      ? `${((item.count / results.lots.length) * 100).toFixed(1)}%`
+                      : '-'
+                  }
+                />
+                <MobileLadderValue
+                  label={t('ladder_page.timeline.mobile_amount')}
+                  value={formatCurrency(item.amount)}
+                />
+              </div>
             </div>
-            <Table className="w-full table-fixed text-sm tabular-nums">
-              <TableHeader>
-                <TableRow className="h-12 hover:bg-transparent">
-                  <TableHead className="sticky top-0 z-10 w-[34%] bg-background">{t('ladder_page.timeline.table_month')}</TableHead>
-                  <TableHead className="sticky top-0 z-10 w-[18%] bg-background text-right">{t('ladder_page.timeline.table_lots')}</TableHead>
-                  <TableHead className="sticky top-0 z-10 w-[24%] bg-background text-right">{t('ladder_page.timeline.table_amount')}</TableHead>
-                  <TableHead className="sticky top-0 z-10 w-[24%] bg-background text-right">{t('ladder_page.timeline.table_share')}</TableHead>
+          ))}
+        </ResponsiveTableSheet>
+
+        <div className="hidden border-y border-border lg:block">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-1 py-3 text-sm text-muted-foreground">
+            <p>{t('ladder_page.timeline.table_summary')}</p>
+            <div className="flex flex-wrap items-center gap-2">
+              {(['all', 'peak', 'clustered'] as const).map((filter) => (
+                <Button
+                  key={filter}
+                  type="button"
+                  size="sm"
+                  variant={tableFilter === filter ? 'default' : 'outline'}
+                  aria-pressed={tableFilter === filter}
+                  onClick={() => setTableFilter(filter)}
+                >
+                  {t(`ladder_page.timeline.table_filters.${filter}`)}
+                </Button>
+              ))}
+              <p className="text-xs font-semibold text-muted-foreground">
+                {filteredMonthlyBuckets.length} {t('ladder_page.timeline.table_count_suffix')}
+              </p>
+            </div>
+          </div>
+          <Table className="w-full table-fixed text-sm tabular-nums">
+            <TableHeader>
+              <TableRow className="h-12 hover:bg-transparent">
+                <TableHead className="sticky top-0 z-10 w-[34%] bg-background">
+                  {t('ladder_page.timeline.table_month')}
+                </TableHead>
+                <TableHead className="sticky top-0 z-10 w-[18%] bg-background text-right">
+                  {t('ladder_page.timeline.table_lots')}
+                </TableHead>
+                <TableHead className="sticky top-0 z-10 w-[24%] bg-background text-right">
+                  {t('ladder_page.timeline.table_amount')}
+                </TableHead>
+                <TableHead className="sticky top-0 z-10 w-[24%] bg-background text-right">
+                  {t('ladder_page.timeline.table_share')}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {displayedRows.map((item) => (
+                <TableRow
+                  key={item.date}
+                  className="h-14 border-b border-border transition-colors hover:bg-muted/25"
+                >
+                  <TableCell className="font-medium text-foreground">{item.displayDate}</TableCell>
+                  <TableCell className="financial-number text-right text-foreground">
+                    {item.count}
+                  </TableCell>
+                  <TableCell className="financial-number text-right font-semibold text-foreground">
+                    {formatCurrency(item.amount)}
+                  </TableCell>
+                  <TableCell className="financial-number text-right text-muted-foreground">
+                    {monthlyBuckets.length > 0
+                      ? `${((item.count / results.lots.length) * 100).toFixed(1)}%`
+                      : '-'}
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {displayedRows.map((item) => (<TableRow key={item.date} className="h-14 border-b border-border transition-colors hover:bg-muted/25">
-                    <TableCell className="font-medium text-foreground">{item.displayDate}</TableCell>
-                    <TableCell className="financial-number text-right text-foreground">{item.count}</TableCell>
-                    <TableCell className="financial-number text-right font-semibold text-foreground">
-                      {formatCurrency(item.amount)}
-                    </TableCell>
-                    <TableCell className="financial-number text-right text-muted-foreground">
-                      {monthlyBuckets.length > 0 ? `${((item.count / results.lots.length) * 100).toFixed(1)}%` : '-'}
-                    </TableCell>
-                  </TableRow>))}
-              </TableBody>
-            </Table>
-            <TableDensityControls
-              value={rowLimit}
-              totalRows={monthlyBuckets.length}
-              visibleRows={displayedRows.length}
-              onChange={setRowLimit}
-              labels={{
-                rowsShown: t('common.rows_shown'),
-                rowsPerPage: t('common.rows_per_page'),
-                all: t('common.all'),
-              }}
-            />
-          </div>
+              ))}
+            </TableBody>
+          </Table>
+          <TableDensityControls
+            value={rowLimit}
+            totalRows={monthlyBuckets.length}
+            visibleRows={displayedRows.length}
+            onChange={setRowLimit}
+            labels={{
+              rowsShown: t('common.rows_shown'),
+              rowsPerPage: t('common.rows_per_page'),
+              all: t('common.all'),
+            }}
+          />
+        </div>
 
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <FormInlineNotice
-              title={t('ladder_page.timeline.peak_month_title')}
-              description={(
-                <>
-                  <span className="font-semibold text-foreground">
-                    {peakMonth ? `${peakMonth.displayDate} (${formatCurrency(peakMonth.amount)})` : '-'}
-                  </span>{' '}
-                  {t('ladder_page.timeline.peak_month_description')}
-                </>
-              )}
-            />
-
-            <FormInlineNotice
-              tone={peakShare >= 25 ? 'warning' : 'success'}
-              title={t('ladder_page.timeline.cluster_title')}
-              description={(
-                <>
-                  <span className="font-semibold">
-                    {peakMonth
-                      ? t('ladder_page.timeline.cluster_value', { percent: peakShare.toFixed(1), month: peakMonth.displayDate })
-                      : t('ladder_page.timeline.cluster_none')}
-                  </span>{' '}
-                  {peakShare >= 25
-                    ? t('ladder_page.timeline.cluster_warning') : t('ladder_page.timeline.cluster_ok')}
-                </>
-              )}
-            />
-          </div>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <FormInlineNotice
+            title={t('ladder_page.timeline.peak_month_title')}
+            description={
+              <>
+                <span className="font-semibold text-foreground">
+                  {peakMonth
+                    ? `${peakMonth.displayDate} (${formatCurrency(peakMonth.amount)})`
+                    : '-'}
+                </span>{' '}
+                {t('ladder_page.timeline.peak_month_description')}
+              </>
+            }
+          />
 
           <FormInlineNotice
-            title={t('ladder_page.timeline.interpretation_title')}
-            description={t('ladder_page.timeline.interpretation_description')}
+            tone={peakShare >= 25 ? 'warning' : 'success'}
+            title={t('ladder_page.timeline.cluster_title')}
+            description={
+              <>
+                <span className="font-semibold">
+                  {peakMonth
+                    ? t('ladder_page.timeline.cluster_value', {
+                        percent: peakShare.toFixed(1),
+                        month: peakMonth.displayDate,
+                      })
+                    : t('ladder_page.timeline.cluster_none')}
+                </span>{' '}
+                {peakShare >= 25
+                  ? t('ladder_page.timeline.cluster_warning')
+                  : t('ladder_page.timeline.cluster_ok')}
+              </>
+            }
           />
+        </div>
+
+        <FormInlineNotice
+          title={t('ladder_page.timeline.interpretation_title')}
+          description={t('ladder_page.timeline.interpretation_description')}
+        />
       </ChartSection>
-    </div>);
+    </div>
+  );
 };
-function MobileLadderValue({ label, value, }: {
-    label: string;
-    value: string;
-}) {
-    return (<div className="border-t border-border px-1 py-2 first:border-t-0">
-      <p className="text-xs font-semibold text-muted-foreground">
-        {label}
-      </p>
+function MobileLadderValue({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="border-t border-border px-1 py-2 first:border-t-0">
+      <p className="text-xs font-semibold text-muted-foreground">{label}</p>
       <p className="mt-1 text-sm font-semibold text-foreground">{value}</p>
-    </div>);
+    </div>
+  );
 }
-
-
-
-
-

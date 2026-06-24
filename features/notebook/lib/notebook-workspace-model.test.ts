@@ -14,7 +14,9 @@ describe('notebook workspace model', () => {
       createError: 'Create failed',
     };
 
-    expect(resolveNotebookPortfolioError({ code: 'portfolio_storage_unavailable' }, labels)).toBe('Storage unavailable');
+    expect(resolveNotebookPortfolioError({ code: 'portfolio_storage_unavailable' }, labels)).toBe(
+      'Storage unavailable',
+    );
     expect(resolveNotebookPortfolioError({ error: 'API failed' }, labels)).toBe('API failed');
     expect(resolveNotebookPortfolioError(null, labels)).toBe('Create failed');
   });
@@ -30,7 +32,12 @@ describe('notebook workspace model', () => {
   it('builds capability descriptors through the caller translation function', () => {
     const capabilities = buildNotebookCapabilities((key) => key);
 
-    expect(capabilities.map((item) => item.id)).toEqual(['track', 'maturities', 'export', 'projection']);
+    expect(capabilities.map((item) => item.id)).toEqual([
+      'track',
+      'maturities',
+      'export',
+      'projection',
+    ]);
     expect(capabilities[0].title).toBe('notebook.capabilities.track.title');
   });
 
@@ -42,16 +49,18 @@ describe('notebook workspace model', () => {
     ] as never);
 
     expect(counts).toEqual({ totalCount: 3, publicCount: 1, privateCount: 2 });
-    expect(buildNotebookStats({
-      counts,
-      labels: {
-        portfolios: 'Portfolios',
-        portfoliosDescription: 'All',
-        publicLinks: 'Public',
-        publicLinksDescription: 'Shared',
-        privateDrafts: 'Private',
-        privateDraftsDescription: 'Drafts',
-      },
-    }).map((item) => item.value)).toEqual(['3', '1', '2']);
+    expect(
+      buildNotebookStats({
+        counts,
+        labels: {
+          portfolios: 'Portfolios',
+          portfoliosDescription: 'All',
+          publicLinks: 'Public',
+          publicLinksDescription: 'Shared',
+          privateDrafts: 'Private',
+          privateDraftsDescription: 'Drafts',
+        },
+      }).map((item) => item.value),
+    ).toEqual(['3', '1', '2']);
   });
 });

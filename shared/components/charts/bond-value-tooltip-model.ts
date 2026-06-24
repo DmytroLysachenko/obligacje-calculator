@@ -1,7 +1,4 @@
-import type {
-  BondValueChartPoint,
-  BondValueChartTooltipGroup,
-} from './BondValueChart';
+import type { BondValueChartPoint, BondValueChartTooltipGroup } from './BondValueChart';
 
 export interface BondValueTooltipPayloadEntry {
   name: string;
@@ -30,9 +27,7 @@ export interface ScenarioBondValueTooltipModel extends BondValueTooltipContext {
   groups: BondValueChartTooltipGroup[];
 }
 
-export type BondValueTooltipModel =
-  | StandardBondValueTooltipModel
-  | ScenarioBondValueTooltipModel;
+export type BondValueTooltipModel = StandardBondValueTooltipModel | ScenarioBondValueTooltipModel;
 
 export function buildBondValueTooltipModel(
   data: BondValueChartPoint,
@@ -62,8 +57,6 @@ export function buildBondValueTooltipModel(
   };
 }
 
-export function filterTooltipMetrics(
-  payload: BondValueTooltipPayloadEntry[],
-) {
+export function filterTooltipMetrics(payload: BondValueTooltipPayloadEntry[]) {
   return payload.filter((entry) => !['inflation', 'nbp'].includes(String(entry.dataKey)));
 }

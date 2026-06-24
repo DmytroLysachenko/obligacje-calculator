@@ -27,7 +27,9 @@ export function InflationPresetControls({
         { value: 'high', label: `${labels.high} (6%)` },
         { value: 'deflation', label: `${labels.deflation} (-1%)` },
       ]}
-      onValueChange={(nextValue) => onSelect(getInflationPresetValue(nextValue as InflationPresetKey))}
+      onValueChange={(nextValue) =>
+        onSelect(getInflationPresetValue(nextValue as InflationPresetKey))
+      }
       className="grid-cols-3"
       itemClassName="text-[11px] tracking-[0.06em]"
     />

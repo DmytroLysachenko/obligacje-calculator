@@ -40,7 +40,7 @@ describe('CalculationApplicationService - Integration', () => {
       purchaseDate: '2023-03-01',
       withdrawalDate: '2024-03-01',
       isRebought: false,
-      rebuyDiscount: 0.10,
+      rebuyDiscount: 0.1,
       taxStrategy: TaxStrategy.STANDARD,
     };
 
@@ -51,10 +51,13 @@ describe('CalculationApplicationService - Integration', () => {
 
     expect(envelope.calculationVersion).toContain('2.8.0');
     expect(envelope.result).toBeDefined();
-    
+
     // Verify calculation notes reflect the simulation state
-    expect(envelope.calculationNotes).toContain('Rollover is disabled; the simulation stops at the first bond cycle or selected withdrawal date.');
-    expect(envelope.calculationNotes).toContain('Early redemption fee logic was applied before the native maturity date.');
+    expect(envelope.calculationNotes).toContain(
+      'Rollover is disabled; the simulation stops at the first bond cycle or selected withdrawal date.',
+    );
+    expect(envelope.calculationNotes).toContain(
+      'Early redemption fee logic was applied before the native maturity date.',
+    );
   });
 });
-

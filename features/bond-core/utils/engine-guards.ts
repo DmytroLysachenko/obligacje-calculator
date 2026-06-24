@@ -5,10 +5,13 @@ import {
   isCalculationDomainError,
 } from '../errors';
 
-type SanitizeTarget = Partial<BondInputs> | Partial<RegularInvestmentInputs> | Record<string, unknown>;
+type SanitizeTarget =
+  | Partial<BondInputs>
+  | Partial<RegularInvestmentInputs>
+  | Record<string, unknown>;
 
 /**
- * Sanitizes calculation inputs to prevent edge cases or malicious values 
+ * Sanitizes calculation inputs to prevent edge cases or malicious values
  * that could lead to NaN, Infinity, or memory exhaustion.
  */
 export const sanitizeInputs = <T extends SanitizeTarget>(inputs: T): T => {
@@ -29,7 +32,7 @@ export const sanitizeInputs = <T extends SanitizeTarget>(inputs: T): T => {
     sanitized.initialInvestment = clamp(sanitized.initialInvestment as number, 0, 100_000_000_000); // 100 Billion limit
   }
   if (sanitized.contributionAmount !== undefined) {
-    sanitized.contributionAmount = clamp(sanitized.contributionAmount as number, 0, 10_000_000); 
+    sanitized.contributionAmount = clamp(sanitized.contributionAmount as number, 0, 10_000_000);
   }
   if (sanitized.expectedInflation !== undefined) {
     sanitized.expectedInflation = clamp(sanitized.expectedInflation as number, -20, 500);
@@ -40,7 +43,7 @@ export const sanitizeInputs = <T extends SanitizeTarget>(inputs: T): T => {
   if (sanitized.taxRate !== undefined) {
     sanitized.taxRate = clamp(sanitized.taxRate as number, 0, 100, 19);
   }
-  
+
   // Paths for custom scenarios
   if (Array.isArray(sanitized.inflationPath)) {
     sanitized.inflationPath = (sanitized.inflationPath as number[]).map((v: number) => clamp(v));

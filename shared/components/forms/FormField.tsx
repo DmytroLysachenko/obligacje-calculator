@@ -32,7 +32,10 @@ export function FormField({
       {label || tooltip ? (
         <div className="flex items-center gap-2">
           {label ? (
-            <Label htmlFor={htmlFor} className={cn('text-sm font-semibold text-foreground', labelClassName)}>
+            <Label
+              htmlFor={htmlFor}
+              className={cn('text-sm font-semibold text-foreground', labelClassName)}
+            >
               {label}
             </Label>
           ) : null}
@@ -43,9 +46,7 @@ export function FormField({
                   <Info className="h-3.5 w-3.5 cursor-help text-muted-foreground" />
                 </TooltipTrigger>
                 <TooltipContent>
-                  <div className="max-w-xs text-xs leading-5">
-                    {tooltip}
-                  </div>
+                  <div className="max-w-xs text-xs leading-5">{tooltip}</div>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

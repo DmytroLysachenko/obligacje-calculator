@@ -163,4 +163,3 @@ describe('Single-bond edge golden regressions', () => {
     expect(rodMaturity.totalEarlyWithdrawalFee).toBe(0);
   });
 });
-

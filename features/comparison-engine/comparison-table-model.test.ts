@@ -1,5 +1,5 @@
-import {describe, expect, it} from 'vitest';
-import {CalculationResult} from '@/features/bond-core/types';
+import { describe, expect, it } from 'vitest';
+import { CalculationResult } from '@/features/bond-core/types';
 import {
   buildComparisonAlignedTableRows,
   getComparisonTablePageCount,
@@ -35,10 +35,7 @@ describe('comparison aligned table model', () => {
         point('2026-07-22', 10050),
         point('2027-05-22', 10300),
       ]),
-      resultsB: result([
-        point('2026-05-22', 10000),
-        point('2027-05-22', 11200),
-      ]),
+      resultsB: result([point('2026-05-22', 10000), point('2027-05-22', 11200)]),
       purchaseDate: '2026-05-22',
       granularity: 'monthly',
       language: 'en',
@@ -62,10 +59,7 @@ describe('comparison aligned table model', () => {
         point('2026-07-22', 10050),
         point('2027-05-22', 10300),
       ]),
-      resultsB: result([
-        point('2026-05-22', 10000),
-        point('2027-05-22', 11200),
-      ]),
+      resultsB: result([point('2026-05-22', 10000), point('2027-05-22', 11200)]),
       purchaseDate: '2026-05-22',
       granularity: 'yearly',
       language: 'en',
@@ -79,14 +73,8 @@ describe('comparison aligned table model', () => {
 
   it('keeps aggregated table rows anchored to the purchase date', () => {
     const rows = buildComparisonAlignedTableRows({
-      resultsA: result([
-        point('2026-08-12', 10072.42),
-        point('2027-06-12', 10535),
-      ]),
-      resultsB: result([
-        point('2026-08-12', 10052.58),
-        point('2027-06-12', 10375),
-      ]),
+      resultsA: result([point('2026-08-12', 10072.42), point('2027-06-12', 10535)]),
+      resultsB: result([point('2026-08-12', 10052.58), point('2027-06-12', 10375)]),
       purchaseDate: '2026-06-12',
       granularity: 'quarterly',
       language: 'en',
@@ -132,9 +120,9 @@ describe('comparison aligned table model', () => {
     const rows = Array.from({ length: 30 }, (_, index) => ({ index }));
 
     expect(getComparisonTablePageCount(rows.length, 12)).toBe(3);
-    expect(getComparisonTablePageRows({ rows, rowLimit: 12, page: 2 }).map((row) => row.index)).toEqual([
-      12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
-    ]);
+    expect(
+      getComparisonTablePageRows({ rows, rowLimit: 12, page: 2 }).map((row) => row.index),
+    ).toEqual([12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]);
     expect(getComparisonTablePageRows({ rows, rowLimit: 'all', page: 3 })).toHaveLength(30);
   });
 });

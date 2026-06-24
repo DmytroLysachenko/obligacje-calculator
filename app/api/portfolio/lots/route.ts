@@ -59,7 +59,7 @@ export const DELETE = apiHandler(async (req: NextRequest) => {
 
     try {
       await deleteOwnerLot(owner.ownerId, id);
-      return okJson({success: true});
+      return okJson({ success: true });
     } catch (error) {
       const response = portfolioDomainErrorResponse(error);
       if (response) return response;
@@ -68,4 +68,3 @@ export const DELETE = apiHandler(async (req: NextRequest) => {
     }
   });
 });
-

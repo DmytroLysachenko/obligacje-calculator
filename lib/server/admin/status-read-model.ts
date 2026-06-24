@@ -33,7 +33,10 @@ export type AdminStatusSeries<TSeries extends AdminDataSeriesRecord> = TSeries &
   lastSyncAttemptStatus: string | null;
 };
 
-export interface AdminStatusSnapshot<TSeries extends AdminDataSeriesRecord, TSyncRun extends AdminSyncRunRecord> {
+export interface AdminStatusSnapshot<
+  TSeries extends AdminDataSeriesRecord,
+  TSyncRun extends AdminSyncRunRecord,
+> {
   series: Array<AdminStatusSeries<TSeries>>;
   systemTime: string;
   env: string;
@@ -60,14 +63,15 @@ export function createAdminSeriesStatus<TSeries extends AdminDataSeriesRecord>(
     ...seriesItem,
     pointCount: Number(stat?.totalPoints ?? 0),
     lastDataPointDate: seriesItem.lastDataPointDate || stat?.latestDate || null,
-    lastSyncAttemptAt: formatSyncAttemptDate(
-      latestSyncRun?.finishedAt ?? latestSyncRun?.startedAt,
-    ),
+    lastSyncAttemptAt: formatSyncAttemptDate(latestSyncRun?.finishedAt ?? latestSyncRun?.startedAt),
     lastSyncAttemptStatus: latestSyncRun?.status ?? null,
   };
 }
 
-export function createAdminStatusSnapshot<TSeries extends AdminDataSeriesRecord, TSyncRun extends AdminSyncRunRecord>({
+export function createAdminStatusSnapshot<
+  TSeries extends AdminDataSeriesRecord,
+  TSyncRun extends AdminSyncRunRecord,
+>({
   series,
   pointStats,
   recentSyncRuns,
@@ -75,7 +79,9 @@ export function createAdminStatusSnapshot<TSeries extends AdminDataSeriesRecord,
   env,
 }: AdminStatusSnapshotInput<TSeries, TSyncRun>): AdminStatusSnapshot<TSeries, TSyncRun> {
   return {
-    series: series.map((seriesItem) => createAdminSeriesStatus(seriesItem, pointStats, recentSyncRuns)),
+    series: series.map((seriesItem) =>
+      createAdminSeriesStatus(seriesItem, pointStats, recentSyncRuns),
+    ),
     systemTime,
     env: env ?? 'unknown',
     recentSyncRuns,

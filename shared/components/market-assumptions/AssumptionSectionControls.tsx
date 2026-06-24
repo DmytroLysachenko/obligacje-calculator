@@ -44,7 +44,9 @@ export function CurrentAssumptionValue({
 }) {
   return (
     <div className="flex items-center gap-2 border-l border-border pl-4 text-right">
-      <span className={cn('font-black tabular-nums text-foreground', compact ? 'text-xl' : 'text-2xl')}>
+      <span
+        className={cn('font-black tabular-nums text-foreground', compact ? 'text-xl' : 'text-2xl')}
+      >
         {value}
         {unit}
       </span>

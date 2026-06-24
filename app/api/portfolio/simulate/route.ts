@@ -3,7 +3,10 @@ import { z } from 'zod';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { simulateOwnerPortfolio } from '@/lib/server/portfolio/queries';
 import { okJson } from '@/lib/server/http/responses';
-import { portfolioDomainErrorResponse, withAuthenticatedPortfolioOwner } from '@/lib/server/portfolio/http';
+import {
+  portfolioDomainErrorResponse,
+  withAuthenticatedPortfolioOwner,
+} from '@/lib/server/portfolio/http';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
 
 const PortfolioSimulationPayloadSchema = z.object({
@@ -19,7 +22,9 @@ export const POST = apiHandler(async (req: NextRequest) => {
     );
 
     try {
-      const result = await simulateOwnerPortfolio(owner.ownerId, portfolioId, {expectedInflation});
+      const result = await simulateOwnerPortfolio(owner.ownerId, portfolioId, {
+        expectedInflation,
+      });
       return okJson(result);
     } catch (error) {
       const response = portfolioDomainErrorResponse(error);
@@ -29,4 +34,3 @@ export const POST = apiHandler(async (req: NextRequest) => {
     }
   });
 });
-

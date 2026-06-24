@@ -48,9 +48,7 @@ export function toggleScenarioCustomHorizon(
   return sanitizeScenarioOverride(sharedConfig, {
     ...scenario,
     investmentHorizonMonths:
-      scenario.investmentHorizonMonths
-      ?? sharedConfig.investmentHorizonMonths
-      ?? 120,
+      scenario.investmentHorizonMonths ?? sharedConfig.investmentHorizonMonths ?? 120,
   });
 }
 

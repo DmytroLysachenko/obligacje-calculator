@@ -1,6 +1,6 @@
-import {readFileSync} from 'node:fs';
-import {join} from 'node:path';
-import {describe, expect, it} from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
 
 const root = process.cwd();
 
@@ -35,8 +35,14 @@ describe('entry surface contracts', () => {
     const source = read(files.landing);
 
     expectContains(source, 'function HeroTrustStrip()');
-    expectContains(source, 'grid border-y border-border py-2 md:grid-cols-3 md:divide-x md:divide-border');
-    expectContains(source, 'px-1 py-2 text-xs font-semibold leading-5 text-muted-foreground md:px-4');
+    expectContains(
+      source,
+      'grid border-y border-border py-2 md:grid-cols-3 md:divide-x md:divide-border',
+    );
+    expectContains(
+      source,
+      'px-1 py-2 text-xs font-semibold leading-5 text-muted-foreground md:px-4',
+    );
     expectContains(source, 'inline-flex items-center gap-2 border-l-2 border-border px-3 py-1');
     expectContains(source, 'border-l-2 border-border py-1 pl-4');
     expectContains(source, 'grid gap-5 lg:grid-cols-3');
@@ -56,7 +62,10 @@ describe('entry surface contracts', () => {
     expectContains(source, "primary: 'border-foreground text-foreground'");
     expectContains(source, "secondary: 'border-border text-foreground'");
     expectContains(source, "reference: 'border-primary/50 text-foreground'");
-    expectContains(source, 'group flex h-full flex-col gap-5 border-t border-border py-5 transition-colors');
+    expectContains(
+      source,
+      'group flex h-full flex-col gap-5 border-t border-border py-5 transition-colors',
+    );
     expectContains(source, 'border-l-2 pl-3 pt-0.5');
     expectContains(source, 'iconAccentClass[emphasis]');
     expectContains(source, 'ui-section-title ui-safe-text');
@@ -77,7 +86,10 @@ describe('entry surface contracts', () => {
     expectContains(source, 'grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3');
     expectContains(source, 'grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 xl:grid-cols-4');
     expectContains(source, 'grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3');
-    expectContains(source, 'border-t border-border py-5 transition-colors hover:border-foreground/30');
+    expectContains(
+      source,
+      'border-t border-border py-5 transition-colors hover:border-foreground/30',
+    );
     expectContains(source, 'border-l-2 border-border pl-3 text-foreground');
     expectContains(source, 'border-t border-border pt-3 font-mono text-[11px]');
 
@@ -100,13 +112,22 @@ describe('entry surface contracts', () => {
   it('keeps education bond offer cards row-based and calculator-linked', () => {
     const source = read(files.educationCard);
 
-    expectContains(source, 'flex h-full min-h-[440px] flex-col border-t border-border py-6 transition-colors');
+    expectContains(
+      source,
+      'flex h-full min-h-[440px] flex-col border-t border-border py-6 transition-colors',
+    );
     expectContains(source, 'flex flex-1 flex-col space-y-5 pt-5');
     expectContains(source, 'mt-auto space-y-5 pt-6');
     expectContains(source, 'surface-chip border-foreground text-foreground');
     expectContains(source, 'surface-chip text-foreground');
-    expectContains(source, '<dl className="grid min-h-[132px] grid-cols-1 gap-x-4 divide-y divide-border border-y border-border');
-    expectContains(source, "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
+    expectContains(
+      source,
+      '<dl className="grid min-h-[132px] grid-cols-1 gap-x-4 divide-y divide-border border-y border-border',
+    );
+    expectContains(
+      source,
+      "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';",
+    );
     expectContains(source, '<FormInlineNotice');
     expectContains(source, 'inline-flex h-9 items-center gap-2 border-b border-foreground');
     expectContains(source, 'href="/single-calculator"');
@@ -126,7 +147,10 @@ describe('entry surface contracts', () => {
   it('keeps the entry-surface rules wired into the broader design contract', () => {
     const source = read(files.designSystem);
 
-    expectContains(source, 'grid border-y border-border py-2 md:grid-cols-3 md:divide-x md:divide-border');
+    expectContains(
+      source,
+      'grid border-y border-border py-2 md:grid-cols-3 md:divide-x md:divide-border',
+    );
     expectContains(source, 'border-l-2 border-border py-1 pl-4');
     expectContains(source, 'grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3');
     expectContains(source, 'rounded-md bg-muted p-2 text-foreground');

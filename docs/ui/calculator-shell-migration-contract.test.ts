@@ -61,7 +61,10 @@ describe('calculator shell migration contract', () => {
   it('keeps recurring investment inputs aligned with the same flat form shell', () => {
     const source = read(migratedCalculatorShells.recurringInputs);
 
-    expectContains(source, 'flex h-[600px] w-full items-center justify-center border-y border-border bg-background p-6');
+    expectContains(
+      source,
+      'flex h-[600px] w-full items-center justify-center border-y border-border bg-background p-6',
+    );
     expectContains(source, 'w-full space-y-8 border-y border-border bg-background p-5 md:p-6');
     expectContains(source, '<ScenarioFieldset');
     expectContains(source, '<BondSelectionSection');
@@ -78,14 +81,20 @@ describe('calculator shell migration contract', () => {
     const source = read(migratedCalculatorShells.resultHero);
 
     expectContains(source, 'overflow-hidden border-y border-border bg-background');
-    expectContains(source, 'flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between');
+    expectContains(
+      source,
+      'flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between',
+    );
     expectContains(source, 'min-w-0 max-w-4xl space-y-4 p-5 md:p-6');
     expectContains(source, 'financial-number ui-primary-metric');
     expectContains(source, 'ui-body max-w-4xl text-muted-foreground');
     expectContains(source, '<ResultActionGrid actions={actions} />');
     expectContains(source, 'border-t border-border bg-muted/20 p-5');
     expectContains(source, 'lg:w-[280px] lg:shrink-0 lg:border-l lg:border-t-0');
-    expectContains(source, 'max-w-4xl space-y-3 border-t border-border bg-background px-5 py-4 md:px-6');
+    expectContains(
+      source,
+      'max-w-4xl space-y-3 border-t border-border bg-background px-5 py-4 md:px-6',
+    );
 
     expectNoFragments(source, genericShellFragments);
   });
@@ -98,14 +107,12 @@ describe('calculator shell migration contract', () => {
         source,
         `${label} should not depend on the generic surface-shell helper`,
       ).not.toContain('surface-shell');
-      expect(
-        source,
-        `${label} should use explicit border and background tokens`,
-      ).toMatch(/border-y border-border bg-background/);
-      expect(
-        source,
-        `${label} should avoid decorative shadow language`,
-      ).not.toMatch(/shadow-(lg|xl|2xl|\[)/);
+      expect(source, `${label} should use explicit border and background tokens`).toMatch(
+        /border-y border-border bg-background/,
+      );
+      expect(source, `${label} should avoid decorative shadow language`).not.toMatch(
+        /shadow-(lg|xl|2xl|\[)/,
+      );
     }
   });
 
@@ -117,7 +124,10 @@ describe('calculator shell migration contract', () => {
       expectContains(source, 'p-5 md:p-6');
       expectContains(source, 'space-y-8');
       expectContains(source, 'border-b border-border');
-      expectContains(source, source === singleInputs ? 'AdvancedAssumptionsDisclosure' : 'ScenarioFieldset');
+      expectContains(
+        source,
+        source === singleInputs ? 'AdvancedAssumptionsDisclosure' : 'ScenarioFieldset',
+      );
       expectNoFragments(source, [
         'bg-card p-5',
         'bg-card p-6',

@@ -178,6 +178,7 @@ Purpose:
 - add a lot to a portfolio
 
 ### 5.5 `PATCH /api/portfolio/lots/[id]`
+
 ### 5.6 `DELETE /api/portfolio/lots/[id]`
 
 Purpose:

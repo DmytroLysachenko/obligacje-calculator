@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import {Settings2} from 'lucide-react';
+import { Settings2 } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -29,9 +29,7 @@ export function AdvancedAssumptionsDisclosure({
               <Settings2 className="h-4 w-4" />
             </div>
             <div className="space-y-1">
-              <h3 className="text-sm font-semibold text-foreground">
-                {title}
-              </h3>
+              <h3 className="text-sm font-semibold text-foreground">{title}</h3>
               <p className="max-w-2xl text-xs font-medium leading-5 text-muted-foreground">
                 {description}
               </p>

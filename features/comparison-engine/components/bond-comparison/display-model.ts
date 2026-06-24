@@ -17,11 +17,7 @@ export function buildComparisonChartData(
   }
 
   const allDates = Array.from(
-    new Set(
-      results.flatMap((result) =>
-        result.result.timeline.map((point) => point.cycleEndDate),
-      ),
-    ),
+    new Set(results.flatMap((result) => result.result.timeline.map((point) => point.cycleEndDate))),
   )
     .map((date) => parseISO(date))
     .sort(compareAsc);
@@ -52,9 +48,7 @@ export function buildComparisonChartData(
   return sampleSeriesPoints(projected, 180);
 }
 
-export function getLeadingComparisonResult(
-  results: BondComparisonScenarioItem[],
-) {
+export function getLeadingComparisonResult(results: BondComparisonScenarioItem[]) {
   if (results.length === 0) {
     return null;
   }

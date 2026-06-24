@@ -16,37 +16,59 @@ import { Notice } from '@/shared/components/feedback/Notice';
 import { ScenarioSetupCard } from '@/shared/components/scenario/ScenarioSetupCard';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 interface ScenarioOverrideCardProps {
-    title: string;
-    colorClass: 'scenario-a' | 'scenario-b';
-    bondType: BondType;
-    onBondTypeChange: (value: BondType) => void;
-    taxStrategy?: TaxStrategy;
-    onTaxStrategyChange: (value: TaxStrategy | undefined) => void;
-    customHorizonEnabled: boolean;
-    onCustomHorizonEnabledChange: (value: boolean) => void;
-    customHorizonMonths?: number;
-    onCustomHorizonMonthsChange: (value: number | undefined) => void;
+  title: string;
+  colorClass: 'scenario-a' | 'scenario-b';
+  bondType: BondType;
+  onBondTypeChange: (value: BondType) => void;
+  taxStrategy?: TaxStrategy;
+  onTaxStrategyChange: (value: TaxStrategy | undefined) => void;
+  customHorizonEnabled: boolean;
+  onCustomHorizonEnabledChange: (value: boolean) => void;
+  customHorizonMonths?: number;
+  onCustomHorizonMonthsChange: (value: number | undefined) => void;
 }
-export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ title, colorClass, bondType, onBondTypeChange, taxStrategy, onTaxStrategyChange, customHorizonEnabled, onCustomHorizonEnabledChange, customHorizonMonths, onCustomHorizonMonthsChange, }) => {
-    const { t, locale: language } = useAppI18n();
-    const { definitions } = useBondDefinitions();
-    const activeDefinition = definitions?.[bondType];
-    const activeRateContext = activeDefinition
-        ? getBondRateContextCopy(bondType, Number(activeDefinition.firstYearRate), Number(activeDefinition.margin), t)
-        : null;
-    const formatBondLabel = React.useCallback(
-      (type: BondType) => formatBondDuration(definitions?.[type]?.duration ?? 1, language),
-      [definitions, language],
-    );
-    const formatRateStyle = (type: BondType) => {
-        const definition = definitions?.[type];
-        if (!definition) {
-            return null;
-        }
-        return getBondRateContextCopy(type, Number(definition.firstYearRate), Number(definition.margin), t).styleLabel;
-    };
-    const bondOptions = React.useMemo<FormSelectOption[]>(
-      () => Object.values(BondType).map((type) => ({
+export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
+  title,
+  colorClass,
+  bondType,
+  onBondTypeChange,
+  taxStrategy,
+  onTaxStrategyChange,
+  customHorizonEnabled,
+  onCustomHorizonEnabledChange,
+  customHorizonMonths,
+  onCustomHorizonMonthsChange,
+}) => {
+  const { t, locale: language } = useAppI18n();
+  const { definitions } = useBondDefinitions();
+  const activeDefinition = definitions?.[bondType];
+  const activeRateContext = activeDefinition
+    ? getBondRateContextCopy(
+        bondType,
+        Number(activeDefinition.firstYearRate),
+        Number(activeDefinition.margin),
+        t,
+      )
+    : null;
+  const formatBondLabel = React.useCallback(
+    (type: BondType) => formatBondDuration(definitions?.[type]?.duration ?? 1, language),
+    [definitions, language],
+  );
+  const formatRateStyle = (type: BondType) => {
+    const definition = definitions?.[type];
+    if (!definition) {
+      return null;
+    }
+    return getBondRateContextCopy(
+      type,
+      Number(definition.firstYearRate),
+      Number(definition.margin),
+      t,
+    ).styleLabel;
+  };
+  const bondOptions = React.useMemo<FormSelectOption[]>(
+    () =>
+      Object.values(BondType).map((type) => ({
         value: type,
         label: (
           <div className="flex min-w-0 flex-col gap-1">
@@ -68,82 +90,106 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({ titl
         ),
         itemClassName: 'py-2.5',
       })),
-      [definitions, formatBondLabel, language, t],
-    );
-    const taxOptions = React.useMemo<FormSelectOption[]>(() => [
+    [definitions, formatBondLabel, language, t],
+  );
+  const taxOptions = React.useMemo<FormSelectOption[]>(
+    () => [
       { value: 'shared', label: t('comparison.use_shared_tax') },
       { value: TaxStrategy.STANDARD, label: t('bonds.tax_standard') },
       { value: TaxStrategy.IKE, label: t('bonds.tax_ike') },
       { value: TaxStrategy.IKZE, label: t('bonds.tax_ikze') },
-    ], [t]);
-    return (
-      <ScenarioSetupCard
-        title={title}
+    ],
+    [t],
+  );
+  return (
+    <ScenarioSetupCard
+      title={title}
+      description={t('comparison.base_follows_shared_desc')}
+      tone={colorClass}
+      meta={
+        <span className="text-[11px] font-semibold text-muted-foreground">
+          {formatBondLabel(bondType)}
+        </span>
+      }
+    >
+      <FormSelect
+        label={t('bonds.bond.type')}
+        value={bondType}
+        onValueChange={(value) => onBondTypeChange(value as BondType)}
+        options={bondOptions}
+        triggerClassName="font-semibold"
+      />
+      <RateContextNote
+        className="space-y-2 border-t border-border pt-4"
+        title={t('comparison.override_scope_title')}
+        badges={[
+          formatBondLabel(bondType),
+          ...(formatRateStyle(bondType) ? [formatRateStyle(bondType) as string] : []),
+        ]}
+        narrative={
+          activeRateContext?.narrative ?? getBondSupportMeta(bondType, language).description
+        }
+      />
+      {isFamilyBondType(bondType) ? (
+        <Notice tone="warning" compact>
+          {t('comparison.family_override_note')}
+        </Notice>
+      ) : null}
+      <p className="text-xs leading-5 text-muted-foreground">
+        {getBondSupportMeta(bondType, language).description}
+      </p>
+
+      <FormInlineNotice
+        title={t('comparison.base_follows_shared_title')}
         description={t('comparison.base_follows_shared_desc')}
-        tone={colorClass}
-        meta={(
-          <span className="text-[11px] font-semibold text-muted-foreground">
-            {formatBondLabel(bondType)}
-          </span>
-        )}
+      />
+
+      <SecondaryInsightAccordion
+        title={t('comparison.optional_overrides_title')}
+        description={t('comparison.optional_overrides_desc')}
+        badge={t('comparison.helper_secondary')}
+        className="mt-0"
       >
-        <FormSelect
-          label={t('bonds.bond.type')}
-          value={bondType}
-          onValueChange={(value) => onBondTypeChange(value as BondType)}
-          options={bondOptions}
-          triggerClassName="font-semibold"
-        />
-        <RateContextNote className="space-y-2 border-t border-border pt-4" title={t('comparison.override_scope_title')} badges={[
-            formatBondLabel(bondType),
-            ...(formatRateStyle(bondType) ? [formatRateStyle(bondType) as string] : []),
-        ]} narrative={activeRateContext?.narrative ?? getBondSupportMeta(bondType, language).description}/>
-        {isFamilyBondType(bondType) ? (
-          <Notice tone="warning" compact>
-            {t('comparison.family_override_note')}
-          </Notice>
-        ) : null}
-        <p className="text-xs leading-5 text-muted-foreground">
-            {getBondSupportMeta(bondType, language).description}
-        </p>
+        <div className="space-y-5">
+          <FormSelect
+            label={t('bonds.tax_strategy')}
+            value={taxStrategy ?? 'shared'}
+            onValueChange={(value) =>
+              onTaxStrategyChange(value === 'shared' ? undefined : (value as TaxStrategy))
+            }
+            options={taxOptions}
+            description={t('comparison.tax_override_desc')}
+          />
 
-        <FormInlineNotice
-          title={t('comparison.base_follows_shared_title')}
-          description={t('comparison.base_follows_shared_desc')}
-        />
-
-        <SecondaryInsightAccordion title={t('comparison.optional_overrides_title')} description={t('comparison.optional_overrides_desc')} badge={t('comparison.helper_secondary')} className="mt-0">
-          <div className="space-y-5">
-            <FormSelect
-              label={t('bonds.tax_strategy')}
-              value={taxStrategy ?? 'shared'}
-              onValueChange={(value) => onTaxStrategyChange(value === 'shared' ? undefined : (value as TaxStrategy))}
-              options={taxOptions}
-              description={t('comparison.tax_override_desc')}
-            />
-
-            <div className="flex items-center justify-between gap-4 border-l-2 border-border bg-muted/20 px-4 py-3">
-              <div className="min-w-0">
-                <p className="text-sm font-semibold">{t('comparison.custom_horizon')}</p>
-                <p className="text-xs leading-5 text-muted-foreground">
-                  {t('comparison.custom_horizon_desc')}
-                </p>
-              </div>
-              <Switch checked={customHorizonEnabled} onCheckedChange={onCustomHorizonEnabledChange}/>
+          <div className="flex items-center justify-between gap-4 border-l-2 border-border bg-muted/20 px-4 py-3">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold">{t('comparison.custom_horizon')}</p>
+              <p className="text-xs leading-5 text-muted-foreground">
+                {t('comparison.custom_horizon_desc')}
+              </p>
             </div>
-
-            {customHorizonEnabled ? (<div className="space-y-3">
-                <FormField label={t('comparison.scenario_horizon')} description={t('comparison.horizon_override_desc')}>
-                  <CommittedSliderInput value={customHorizonMonths ?? 12} min={12} max={360} step={1} unit={t('common.month_compact')} onCommit={(value) => onCustomHorizonMonthsChange(value)}/>
-                </FormField>
-              </div>) : null}
+            <Switch checked={customHorizonEnabled} onCheckedChange={onCustomHorizonEnabledChange} />
           </div>
-        </SecondaryInsightAccordion>
-      </ScenarioSetupCard>
-    );
+
+          {customHorizonEnabled ? (
+            <div className="space-y-3">
+              <FormField
+                label={t('comparison.scenario_horizon')}
+                description={t('comparison.horizon_override_desc')}
+              >
+                <CommittedSliderInput
+                  value={customHorizonMonths ?? 12}
+                  min={12}
+                  max={360}
+                  step={1}
+                  unit={t('common.month_compact')}
+                  onCommit={(value) => onCustomHorizonMonthsChange(value)}
+                />
+              </FormField>
+            </div>
+          ) : null}
+        </div>
+      </SecondaryInsightAccordion>
+    </ScenarioSetupCard>
+  );
 };
-
-
-
-
-

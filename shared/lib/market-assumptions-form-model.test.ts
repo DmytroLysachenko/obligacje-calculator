@@ -31,28 +31,36 @@ describe('market assumptions form model', () => {
   });
 
   it('resolves mode transitions for fixed simple and advanced modes', () => {
-    expect(resolveAssumptionModeUpdate({
-      mode: 'advanced',
-      horizonLength: 2,
-      currentValue: 4,
-      fixedFallback: 2.5,
-    })).toEqual({ nextMode: 'advanced', customPath: [4, 4] });
-    expect(resolveAssumptionModeUpdate({
-      mode: 'fixed',
-      horizonLength: 2,
-      currentValue: 4,
-      fixedFallback: 2.5,
-    })).toEqual({ nextMode: 'fixed', fixedValue: 2.5 });
-    expect(resolveAssumptionModeUpdate({
-      mode: 'simple',
-      horizonLength: 2,
-      currentValue: 4,
-      fixedFallback: 2.5,
-    })).toEqual({ nextMode: 'simple' });
+    expect(
+      resolveAssumptionModeUpdate({
+        mode: 'advanced',
+        horizonLength: 2,
+        currentValue: 4,
+        fixedFallback: 2.5,
+      }),
+    ).toEqual({ nextMode: 'advanced', customPath: [4, 4] });
+    expect(
+      resolveAssumptionModeUpdate({
+        mode: 'fixed',
+        horizonLength: 2,
+        currentValue: 4,
+        fixedFallback: 2.5,
+      }),
+    ).toEqual({ nextMode: 'fixed', fixedValue: 2.5 });
+    expect(
+      resolveAssumptionModeUpdate({
+        mode: 'simple',
+        horizonLength: 2,
+        currentValue: 4,
+        fixedFallback: 2.5,
+      }),
+    ).toEqual({ nextMode: 'simple' });
   });
 
   it('uses path average only in advanced mode header values', () => {
-    expect(getHeaderAssumptionValue({ mode: 'advanced', customPath: [3, 5], fallback: 2 })).toBe('Avg 4%');
+    expect(getHeaderAssumptionValue({ mode: 'advanced', customPath: [3, 5], fallback: 2 })).toBe(
+      'Avg 4%',
+    );
     expect(getHeaderAssumptionValue({ mode: 'fixed', customPath: [3, 5], fallback: 2 })).toBe(2);
   });
 

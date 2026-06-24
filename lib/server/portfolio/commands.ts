@@ -15,7 +15,7 @@ import {
 
 export async function createOwnerPortfolio(
   ownerId: string,
-  input: {name: string; description?: string},
+  input: { name: string; description?: string },
 ) {
   const [portfolio] = await createPortfolio(ownerId, input.name, input.description);
   return portfolio;
@@ -123,7 +123,7 @@ export async function updateOwnerLot(
     }
   }
 
-  const updateData: Record<string, unknown> = {...input};
+  const updateData: Record<string, unknown> = { ...input };
 
   if (input.amount !== undefined) {
     updateData.amount = input.amount.toString();

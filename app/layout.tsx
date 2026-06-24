@@ -1,24 +1,24 @@
-import type {Metadata} from 'next';
+import type { Metadata } from 'next';
 import React from 'react';
 import Script from 'next/script';
-import {Geist, Geist_Mono, Inter} from 'next/font/google';
-import {NextIntlClientProvider} from 'next-intl';
-import {getLocale, getMessages, getTranslations} from 'next-intl/server';
+import { Geist, Geist_Mono, Inter } from 'next/font/google';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import './globals.css';
-import {TooltipProvider} from '@/components/ui/tooltip';
-import {AppLocaleProvider} from '@/i18n/client';
-import {defaultLocale, type Language} from '@/i18n/config';
-import {getMetadataLocale} from '@/i18n/locale-utils';
-import {getGlobalDataFreshness} from '@/lib/data/market-data';
-import {ErrorBoundary} from '@/shared/components/feedback/ErrorBoundary';
-import {OpportunisticSyncTrigger} from '@/shared/components/chrome/OpportunisticSyncTrigger';
-import {Sidebar} from '@/shared/components/chrome/Sidebar';
-import {BondDefinitionsProvider} from '@/shared/context/BondDefinitionsContext';
-import {ChartSyncProvider} from '@/shared/context/ChartSyncContext';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { AppLocaleProvider } from '@/i18n/client';
+import { defaultLocale, type Language } from '@/i18n/config';
+import { getMetadataLocale } from '@/i18n/locale-utils';
+import { getGlobalDataFreshness } from '@/lib/data/market-data';
+import { ErrorBoundary } from '@/shared/components/feedback/ErrorBoundary';
+import { OpportunisticSyncTrigger } from '@/shared/components/chrome/OpportunisticSyncTrigger';
+import { Sidebar } from '@/shared/components/chrome/Sidebar';
+import { BondDefinitionsProvider } from '@/shared/context/BondDefinitionsContext';
+import { ChartSyncProvider } from '@/shared/context/ChartSyncContext';
 
-const geistSans = Geist({variable: '--font-geist-sans', subsets: ['latin']});
-const geistMono = Geist_Mono({variable: '--font-geist-mono', subsets: ['latin']});
-const inter = Inter({variable: '--font-inter', subsets: ['latin']});
+const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
+const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
+const inter = Inter({ variable: '--font-inter', subsets: ['latin'] });
 
 export const dynamic = 'force-dynamic';
 
@@ -31,7 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
     title: {
       default: `${t('common.title')} - ${t('site.default_title_suffix')}`,
-      template: `%s | ${t('common.title')}`
+      template: `%s | ${t('common.title')}`,
     },
     description: t('common.description'),
     manifest: '/manifest.json',
@@ -39,18 +39,18 @@ export async function generateMetadata(): Promise<Metadata> {
       type: 'website',
       locale: getMetadataLocale(language),
       url: 'https://obligacje-calculator.vercel.app',
-      siteName: t('common.title')
+      siteName: t('common.title'),
     },
     twitter: {
       card: 'summary_large_image',
       title: t('common.title'),
-      description: t('site.twitter_description')
-    }
+      description: t('site.twitter_description'),
+    },
   };
 }
 
 export default async function RootLayout({
-  children
+  children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
@@ -73,13 +73,13 @@ export default async function RootLayout({
         offers: {
           '@type': 'Offer',
           price: '0',
-          priceCurrency: 'PLN'
+          priceCurrency: 'PLN',
         },
         potentialAction: {
           '@type': 'CalculateAction',
           name: 'Calculate Bond Profit',
-          target: 'https://obligacje-calculator.vercel.app/single-calculator'
-        }
+          target: 'https://obligacje-calculator.vercel.app/single-calculator',
+        },
       },
       {
         '@type': 'FinancialProduct',
@@ -87,16 +87,21 @@ export default async function RootLayout({
         description: 'EDO, COI, ROR, DOR, TOS, OTS bond calculations.',
         provider: {
           '@type': 'GovernmentOrganization',
-          name: 'Ministerstwo Finansow'
-        }
-      }
-    ]
+          name: 'Ministerstwo Finansow',
+        },
+      },
+    ],
   };
 
   return (
     <html lang={language} suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} bg-background text-foreground antialiased`}>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}} />
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} bg-background text-foreground antialiased`}
+      >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <NextIntlClientProvider locale={language} messages={messages}>
           <AppLocaleProvider>
             <BondDefinitionsProvider>
@@ -118,7 +123,9 @@ export default async function RootLayout({
                         className="flex min-h-screen flex-1 flex-col overflow-x-hidden bg-background outline-none lg:pl-[var(--sidebar-width)]"
                       >
                         <div className="flex-1 px-4 py-6 md:px-8 md:py-8 xl:px-10">
-                          <div className="mx-auto w-full max-w-[var(--layout-app-max)]">{children}</div>
+                          <div className="mx-auto w-full max-w-[var(--layout-app-max)]">
+                            {children}
+                          </div>
                         </div>
 
                         <footer className="mt-auto border-t border-border bg-card py-6">
@@ -180,4 +187,3 @@ export default async function RootLayout({
     </html>
   );
 }
-

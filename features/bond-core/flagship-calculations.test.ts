@@ -178,34 +178,43 @@ describe('Flagship calculation regressions', () => {
       BondType.EDO,
       BondType.ROS,
       BondType.ROD,
-    ])('keeps %s native-term rate semantics aligned with official bond family rules', async (bondType) => {
-      const definition = BOND_DEFINITIONS[bondType];
-      const result = await getSingleBondResult(bondType);
-      const nonInitialPoints = result.timeline.filter((point) => point.cycleIndex > 0);
-      const firstAccrual = nonInitialPoints[0];
-      const firstReset = nonInitialPoints.find((point) => point.rateSource !== 'first_year_fixed');
+    ])(
+      'keeps %s native-term rate semantics aligned with official bond family rules',
+      async (bondType) => {
+        const definition = BOND_DEFINITIONS[bondType];
+        const result = await getSingleBondResult(bondType);
+        const nonInitialPoints = result.timeline.filter((point) => point.cycleIndex > 0);
+        const firstAccrual = nonInitialPoints[0];
+        const firstReset = nonInitialPoints.find(
+          (point) => point.rateSource !== 'first_year_fixed',
+        );
 
-      expect(result.netPayoutValue).toBeGreaterThan(result.initialInvestment);
-      expect(result.timeline.at(-1)?.isWithdrawal).toBe(true);
-      expect(firstAccrual?.interestRate).toBeCloseTo(definition.firstYearRate, 6);
+        expect(result.netPayoutValue).toBeGreaterThan(result.initialInvestment);
+        expect(result.timeline.at(-1)?.isWithdrawal).toBe(true);
+        expect(firstAccrual?.interestRate).toBeCloseTo(definition.firstYearRate, 6);
 
-      if (bondType === BondType.OTS || bondType === BondType.TOS) {
-        expect(new Set(nonInitialPoints.map((point) => point.rateSource))).toEqual(new Set(['fixed_rate']));
-        expect(new Set(nonInitialPoints.map((point) => point.interestRate))).toEqual(new Set([definition.firstYearRate]));
-        return;
-      }
+        if (bondType === BondType.OTS || bondType === BondType.TOS) {
+          expect(new Set(nonInitialPoints.map((point) => point.rateSource))).toEqual(
+            new Set(['fixed_rate']),
+          );
+          expect(new Set(nonInitialPoints.map((point) => point.interestRate))).toEqual(
+            new Set([definition.firstYearRate]),
+          );
+          return;
+        }
 
-      expect(firstAccrual?.rateSource).toBe('first_year_fixed');
+        expect(firstAccrual?.rateSource).toBe('first_year_fixed');
 
-      if (bondType === BondType.ROR || bondType === BondType.DOR) {
-        expect(firstReset?.rateSource).toMatch(/nbp/);
+        if (bondType === BondType.ROR || bondType === BondType.DOR) {
+          expect(firstReset?.rateSource).toMatch(/nbp/);
+          expect(firstReset?.rateMarginApplied).toBeCloseTo(definition.margin, 6);
+          return;
+        }
+
+        expect(firstReset?.rateSource).toMatch(/cpi/);
         expect(firstReset?.rateMarginApplied).toBeCloseTo(definition.margin, 6);
-        return;
-      }
-
-      expect(firstReset?.rateSource).toMatch(/cpi/);
-      expect(firstReset?.rateMarginApplied).toBeCloseTo(definition.margin, 6);
-    });
+      },
+    );
 
     it('keeps the EDO tax-wrapper ordering stable', async () => {
       const standard = await getSingleBondResult(BondType.EDO, TaxStrategy.STANDARD);
@@ -279,11 +288,7 @@ describe('Flagship calculation regressions', () => {
       const result = envelope.result as BondComparisonScenarioItem[];
 
       expect(result).toHaveLength(3);
-      expect(result.map((item) => item.type)).toEqual([
-        BondType.TOS,
-        BondType.COI,
-        BondType.EDO,
-      ]);
+      expect(result.map((item) => item.type)).toEqual([BondType.TOS, BondType.COI, BondType.EDO]);
       expect(result[0].result.netPayoutValue).toBeLessThan(result[1].result.netPayoutValue);
       expect(result[2].result.netPayoutValue).toBeGreaterThan(result[0].result.netPayoutValue);
       expect(result[0].result.nominalAnnualizedReturn).toBeLessThan(

@@ -10,14 +10,12 @@ export function aggregateRegularTimelinePoints(
     return timeline;
   }
 
-  const grouped = new Map<string, RegularInvestmentResult['timeline']>;
+  const grouped = new Map<string, RegularInvestmentResult['timeline']>();
   const firstDate = timeline[0] ? parseISO(timeline[0].date) : null;
 
   for (const point of timeline) {
     const date = parseISO(point.date);
-    const monthsFromStart = firstDate
-      ? Math.max(0, differenceInMonths(date, firstDate))
-      : 0;
+    const monthsFromStart = firstDate ? Math.max(0, differenceInMonths(date, firstDate)) : 0;
     const key =
       chartStep === 'quarterly'
         ? `q-${Math.floor(monthsFromStart / 3)}`

@@ -2,14 +2,14 @@
 
 import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
 import { BondInputs, BondType } from '../../bond-core/types';
-import {
-  BondComparisonCalculationEnvelope,
-  ScenarioKind,
-} from '../../bond-core/types/scenarios';
+import { BondComparisonCalculationEnvelope, ScenarioKind } from '../../bond-core/types/scenarios';
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
-import { loadPersistedCalculatorState, savePersistedCalculatorState } from '@/shared/lib/calculator-persistence';
+import {
+  loadPersistedCalculatorState,
+  savePersistedCalculatorState,
+} from '@/shared/lib/calculator-persistence';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
@@ -46,18 +46,12 @@ interface PersistedComparisonState {
 export function useComparison() {
   const { definitions } = useBondDefinitions();
   const { defaults: macroDefaults } = useMacroAssumptionDefaults();
-  const [sharedConfig, setSharedConfig] = useState<SharedComparisonConfig>(
-    buildDefaultSharedConfig,
-  );
-  const [scenarioA, setScenarioA] = useState<ScenarioOverride>(
-    DEFAULT_SCENARIO_A,
-  );
-  const [scenarioB, setScenarioB] = useState<ScenarioOverride>(
-    DEFAULT_SCENARIO_B,
-  );
-  const [comparisonEnvelope, setComparisonEnvelope] = useState<BondComparisonCalculationEnvelope | null>(
-    null,
-  );
+  const [sharedConfig, setSharedConfig] =
+    useState<SharedComparisonConfig>(buildDefaultSharedConfig);
+  const [scenarioA, setScenarioA] = useState<ScenarioOverride>(DEFAULT_SCENARIO_A);
+  const [scenarioB, setScenarioB] = useState<ScenarioOverride>(DEFAULT_SCENARIO_B);
+  const [comparisonEnvelope, setComparisonEnvelope] =
+    useState<BondComparisonCalculationEnvelope | null>(null);
   const [committedInputsA, setCommittedInputsA] = useState<BondInputs | null>(null);
   const [committedInputsB, setCommittedInputsB] = useState<BondInputs | null>(null);
   const [isDirty, setIsDirty] = useState(true);
@@ -67,27 +61,37 @@ export function useComparison() {
   const hasTouchedMacroAssumptions = useRef(false);
   const { isCalculating, post } = useCalculationRequest();
 
-  const applyMacroDefaults = useEffectEvent((defaults: { expectedInflation: number; expectedNbpRate: number }) => {
-    setSharedConfig((previous) => {
-      const next = {
-        ...previous,
-        expectedInflation: defaults.expectedInflation,
-        expectedNbpRate: defaults.expectedNbpRate,
-      };
+  const applyMacroDefaults = useEffectEvent(
+    (defaults: { expectedInflation: number; expectedNbpRate: number }) => {
+      setSharedConfig((previous) => {
+        const next = {
+          ...previous,
+          expectedInflation: defaults.expectedInflation,
+          expectedNbpRate: defaults.expectedNbpRate,
+        };
 
-      return preserveStableState(previous, next);
-    });
-  });
+        return preserveStableState(previous, next);
+      });
+    },
+  );
 
-  const reconcilePersistedMacroDefaults = useEffectEvent((defaults: { expectedInflation: number; expectedNbpRate: number }) => {
-    setSharedConfig((previous) => {
-      const next = applyMacroDefaultsToBaseline(previous, defaults);
-      return preserveStableState(previous, next);
-    });
-  });
+  const reconcilePersistedMacroDefaults = useEffectEvent(
+    (defaults: { expectedInflation: number; expectedNbpRate: number }) => {
+      setSharedConfig((previous) => {
+        const next = applyMacroDefaultsToBaseline(previous, defaults);
+        return preserveStableState(previous, next);
+      });
+    },
+  );
 
-  const inputsA = useMemo(() => buildScenarioInputs(sharedConfig, scenarioA, definitions), [definitions, sharedConfig, scenarioA]);
-  const inputsB = useMemo(() => buildScenarioInputs(sharedConfig, scenarioB, definitions), [definitions, sharedConfig, scenarioB]);
+  const inputsA = useMemo(
+    () => buildScenarioInputs(sharedConfig, scenarioA, definitions),
+    [definitions, sharedConfig, scenarioA],
+  );
+  const inputsB = useMemo(
+    () => buildScenarioInputs(sharedConfig, scenarioB, definitions),
+    [definitions, sharedConfig, scenarioB],
+  );
 
   const { resultsA, resultsB, envelopeA, envelopeB } = useMemo(
     () => splitComparisonEnvelope(comparisonEnvelope),
@@ -125,9 +129,18 @@ export function useComparison() {
     }
   }, [inputsA, inputsB, post, scenarioA, scenarioB, sharedConfig]);
 
-  const updateSharedConfig = (key: keyof SharedComparisonConfig, value: string | number | boolean | undefined) => {
+  const updateSharedConfig = (
+    key: keyof SharedComparisonConfig,
+    value: string | number | boolean | undefined,
+  ) => {
     setIsDirty(true);
-    if (key === 'expectedInflation' || key === 'expectedNbpRate' || key === 'customInflation' || key === 'customNbpRate' || key === 'inflationScenario') {
+    if (
+      key === 'expectedInflation' ||
+      key === 'expectedNbpRate' ||
+      key === 'customInflation' ||
+      key === 'customNbpRate' ||
+      key === 'inflationScenario'
+    ) {
       hasTouchedMacroAssumptions.current = true;
     }
     setSharedConfig((prev) => {
@@ -135,12 +148,18 @@ export function useComparison() {
     });
   };
 
-  const updateScenarioA = (key: keyof ScenarioOverride, value: string | number | boolean | undefined) => {
+  const updateScenarioA = (
+    key: keyof ScenarioOverride,
+    value: string | number | boolean | undefined,
+  ) => {
     setIsDirty(true);
     setScenarioA((prev) => ({ ...prev, [key]: value }));
   };
 
-  const updateScenarioB = (key: keyof ScenarioOverride, value: string | number | boolean | undefined) => {
+  const updateScenarioB = (
+    key: keyof ScenarioOverride,
+    value: string | number | boolean | undefined,
+  ) => {
     setIsDirty(true);
     setScenarioB((prev) => ({ ...prev, [key]: value }));
   };
@@ -219,27 +238,48 @@ export function useComparison() {
       committedInputsB,
       isDirty: displayIsDirty,
     });
-  }, [committedInputsA, committedInputsB, comparisonEnvelope, displayIsDirty, isPersistenceReady, scenarioA, scenarioB, sharedConfig]);
+  }, [
+    committedInputsA,
+    committedInputsB,
+    comparisonEnvelope,
+    displayIsDirty,
+    isPersistenceReady,
+    scenarioA,
+    scenarioB,
+    sharedConfig,
+  ]);
 
-  const setScenarioACustomHorizonEnabled = useCallback((enabled: boolean) => {
-    setIsDirty(true);
-    setScenarioA((previous) => toggleScenarioCustomHorizon(sharedConfig, previous, enabled));
-  }, [sharedConfig]);
+  const setScenarioACustomHorizonEnabled = useCallback(
+    (enabled: boolean) => {
+      setIsDirty(true);
+      setScenarioA((previous) => toggleScenarioCustomHorizon(sharedConfig, previous, enabled));
+    },
+    [sharedConfig],
+  );
 
-  const setScenarioBCustomHorizonEnabled = useCallback((enabled: boolean) => {
-    setIsDirty(true);
-    setScenarioB((previous) => toggleScenarioCustomHorizon(sharedConfig, previous, enabled));
-  }, [sharedConfig]);
+  const setScenarioBCustomHorizonEnabled = useCallback(
+    (enabled: boolean) => {
+      setIsDirty(true);
+      setScenarioB((previous) => toggleScenarioCustomHorizon(sharedConfig, previous, enabled));
+    },
+    [sharedConfig],
+  );
 
-  const setScenarioACustomHorizonMonths = useCallback((value: number | undefined) => {
-    setIsDirty(true);
-    setScenarioA((previous) => setScenarioCustomHorizonMonths(sharedConfig, previous, value));
-  }, [sharedConfig]);
+  const setScenarioACustomHorizonMonths = useCallback(
+    (value: number | undefined) => {
+      setIsDirty(true);
+      setScenarioA((previous) => setScenarioCustomHorizonMonths(sharedConfig, previous, value));
+    },
+    [sharedConfig],
+  );
 
-  const setScenarioBCustomHorizonMonths = useCallback((value: number | undefined) => {
-    setIsDirty(true);
-    setScenarioB((previous) => setScenarioCustomHorizonMonths(sharedConfig, previous, value));
-  }, [sharedConfig]);
+  const setScenarioBCustomHorizonMonths = useCallback(
+    (value: number | undefined) => {
+      setIsDirty(true);
+      setScenarioB((previous) => setScenarioCustomHorizonMonths(sharedConfig, previous, value));
+    },
+    [sharedConfig],
+  );
 
   return {
     sharedConfig,

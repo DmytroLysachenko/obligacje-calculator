@@ -27,17 +27,11 @@ export function ChartSection({
           <div className="space-y-2">
             <h3 className="ui-section-title">{title}</h3>
             {description ? (
-              <p className="ui-body max-w-4xl text-muted-foreground">
-                {description}
-              </p>
+              <p className="ui-body max-w-4xl text-muted-foreground">{description}</p>
             ) : null}
           </div>
         </div>
-        {controls ? (
-          <div className="shrink-0 lg:max-w-[520px]">
-            {controls}
-          </div>
-        ) : null}
+        {controls ? <div className="shrink-0 lg:max-w-[520px]">{controls}</div> : null}
       </div>
 
       {children}

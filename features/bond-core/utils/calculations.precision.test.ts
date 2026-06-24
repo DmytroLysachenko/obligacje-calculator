@@ -24,19 +24,19 @@ describe('Bond Calculation Precision & Edge Cases', () => {
       withdrawalDate: tenYearsLater,
       isRebought: false,
       rebuyDiscount: 0,
-      taxStrategy: TaxStrategy.STANDARD
+      taxStrategy: TaxStrategy.STANDARD,
     });
 
     // Check if results are finite and realistic
     expect(results.netPayoutValue).toBeGreaterThan(10000);
     expect(results.totalTax).toBeGreaterThan(0);
-    
+
     // In standard EDO, tax should be exactly 19% of profit
     const grossProfit = results.grossValue - results.initialInvestment;
     const expectedTax = Math.round(grossProfit * 0.19);
-    // Official rounding for Belka tax is usually per-bond and rounded to nearest grosz then totaled, 
+    // Official rounding for Belka tax is usually per-bond and rounded to nearest grosz then totaled,
     // or rounded at the end. Our engine rounds the base then the tax.
-    expect(Math.abs(results.totalTax - expectedTax)).toBeLessThan(5); 
+    expect(Math.abs(results.totalTax - expectedTax)).toBeLessThan(5);
   });
 
   it('calculates 0% tax for IKE strategy', () => {
@@ -55,7 +55,7 @@ describe('Bond Calculation Precision & Edge Cases', () => {
       withdrawalDate: tenYearsLater,
       isRebought: false,
       rebuyDiscount: 0,
-      taxStrategy: TaxStrategy.IKE
+      taxStrategy: TaxStrategy.IKE,
     });
 
     expect(results.totalTax).toBe(0);
@@ -79,11 +79,11 @@ describe('Bond Calculation Precision & Edge Cases', () => {
       withdrawalDate: addYears(new Date(purchaseDate), 4).toISOString(),
       isRebought: false,
       rebuyDiscount: 0,
-      taxStrategy: TaxStrategy.IKZE
+      taxStrategy: TaxStrategy.IKZE,
     });
 
     // IKZE Tax = 10% of (Principal + Total Interest)
-    const expectedTax = Math.round(results.grossValue * 0.10);
+    const expectedTax = Math.round(results.grossValue * 0.1);
     expect(results.totalTax).toBe(expectedTax);
     expect(results.netPayoutValue).toBe(results.grossValue - expectedTax);
   });
@@ -105,14 +105,14 @@ describe('Bond Calculation Precision & Edge Cases', () => {
       withdrawalDate: addMonths(new Date(purchaseDate), 1).toISOString(), // Withdraw after 1 month
       isRebought: false,
       rebuyDiscount: 0,
-      taxStrategy: TaxStrategy.STANDARD
+      taxStrategy: TaxStrategy.STANDARD,
     });
 
     // Interest on 100 PLN at 1% for 1 month is ~0.08 PLN
     // Fee is 3.00 PLN. Official rule: fee cannot exceed interest earned.
     const interestEarned = results.grossValue - 100;
     expect(results.totalEarlyWithdrawalFee).toBeCloseTo(interestEarned, 10);
-    expect(results.netPayoutValue).toBeGreaterThanOrEqual(100); 
+    expect(results.netPayoutValue).toBeGreaterThanOrEqual(100);
   });
 });
 

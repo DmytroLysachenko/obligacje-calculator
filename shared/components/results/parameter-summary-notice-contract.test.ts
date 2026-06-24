@@ -37,13 +37,21 @@ describe('parameter summary and notice contracts', () => {
     const singleSummary = read(paths.singleSummary);
     const referenceFrame = read(paths.referenceFrame);
 
-    expect(singleFooter).toContain("import { ParameterSummary } from '@/shared/components/results/ParameterSummary';");
+    expect(singleFooter).toContain(
+      "import { ParameterSummary } from '@/shared/components/results/ParameterSummary';",
+    );
     expect(singleFooter).toContain('<ParameterSummary items={summaryItems} variant="compact" />');
-    expect(regularForm).toContain("import { ParameterSummary } from '@/shared/components/results/ParameterSummary';");
+    expect(regularForm).toContain(
+      "import { ParameterSummary } from '@/shared/components/results/ParameterSummary';",
+    );
     expect(regularForm).toContain('<ParameterSummary');
-    expect(singleSummary).toContain("import { Notice } from '@/shared/components/feedback/Notice';");
+    expect(singleSummary).toContain(
+      "import { Notice } from '@/shared/components/feedback/Notice';",
+    );
     expect(singleSummary).toContain('<Notice tone="locked" compact>');
-    expect(referenceFrame).toContain("import { Notice } from '@/shared/components/feedback/Notice';");
+    expect(referenceFrame).toContain(
+      "import { Notice } from '@/shared/components/feedback/Notice';",
+    );
     expect(referenceFrame).toContain("tone={fallbackTone === 'warning' ? 'warning' : 'success'}");
   });
 });

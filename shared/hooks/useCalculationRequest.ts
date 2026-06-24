@@ -1,7 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { postCalculation, type CalculationClientErrorPayload } from '@/shared/lib/calculation-client';
+import {
+  postCalculation,
+  type CalculationClientErrorPayload,
+} from '@/shared/lib/calculation-client';
 import { postCalculationInWorker } from '@/shared/lib/calculation-worker-client';
 
 interface CalculationRequestOptions {
@@ -24,31 +27,34 @@ export function useCalculationRequest() {
     return () => clearCurrentRequest();
   }, [clearCurrentRequest]);
 
-  const run = useCallback(async <T>(request: (signal: AbortSignal) => Promise<T>): Promise<T> => {
-    clearCurrentRequest();
-    
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
+  const run = useCallback(
+    async <T>(request: (signal: AbortSignal) => Promise<T>): Promise<T> => {
+      clearCurrentRequest();
 
-    setIsCalculating(true);
-    setIsError(false);
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
 
-    try {
-      const result = await request(controller.signal);
-      return result;
-    } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
-        // Silently ignore abort errors for the status state
-        return null as unknown as T;
+      setIsCalculating(true);
+      setIsError(false);
+
+      try {
+        const result = await request(controller.signal);
+        return result;
+      } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') {
+          // Silently ignore abort errors for the status state
+          return null as unknown as T;
+        }
+        setIsError(true);
+        throw error;
+      } finally {
+        if (abortControllerRef.current === controller) {
+          setIsCalculating(false);
+        }
       }
-      setIsError(true);
-      throw error;
-    } finally {
-      if (abortControllerRef.current === controller) {
-        setIsCalculating(false);
-      }
-    }
-  }, [clearCurrentRequest]);
+    },
+    [clearCurrentRequest],
+  );
 
   const clearError = useCallback(() => {
     setIsError(false);
@@ -60,7 +66,11 @@ export function useCalculationRequest() {
     run,
     clearError,
     post: useCallback(
-      async <T>(url: string, payload: unknown, options: CalculationRequestOptions = {}): Promise<T> => {
+      async <T>(
+        url: string,
+        payload: unknown,
+        options: CalculationRequestOptions = {},
+      ): Promise<T> => {
         return run(async (signal) => {
           if (options.preferWorker) {
             try {

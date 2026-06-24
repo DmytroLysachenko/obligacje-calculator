@@ -18,7 +18,7 @@ describe('Bond Core Regression Tests', () => {
     withdrawalDate: '2033-01-01',
     isRebought: false,
     rebuyDiscount: 0,
-    taxStrategy: TaxStrategy.STANDARD
+    taxStrategy: TaxStrategy.STANDARD,
   };
 
   describe('Edge Cases: Early Withdrawal Fee Caps', () => {
@@ -81,7 +81,7 @@ describe('Bond Core Regression Tests', () => {
         withdrawalDate: '2024-02-01',
         isRebought: false,
         rebuyDiscount: 0,
-        taxStrategy: TaxStrategy.IKE
+        taxStrategy: TaxStrategy.IKE,
       };
       const result = calculateRegularInvestment(inputs);
       // Fee should cap interest to 0 profit
@@ -108,7 +108,7 @@ describe('Bond Core Regression Tests', () => {
         withdrawalDate: '2034-01-01',
         isRebought: false,
         rebuyDiscount: 0,
-        taxStrategy: TaxStrategy.STANDARD
+        taxStrategy: TaxStrategy.STANDARD,
       };
       const result = calculateRegularInvestment(inputs);
       expect(result.lots.length).toBe(120);
@@ -121,7 +121,7 @@ describe('Bond Core Regression Tests', () => {
     it('applies 0% tax for IKE strategy', () => {
       const inputs = {
         ...baseInputs,
-        taxStrategy: TaxStrategy.IKE
+        taxStrategy: TaxStrategy.IKE,
       };
       const result = calculateBondInvestment(inputs);
       expect(result.totalTax).toBe(0);
@@ -130,7 +130,7 @@ describe('Bond Core Regression Tests', () => {
     it('applies standard tax for STANDARD strategy', () => {
       const inputs = {
         ...baseInputs,
-        taxStrategy: TaxStrategy.STANDARD
+        taxStrategy: TaxStrategy.STANDARD,
       };
       const result = calculateBondInvestment(inputs);
       expect(result.totalTax).toBeGreaterThan(0);

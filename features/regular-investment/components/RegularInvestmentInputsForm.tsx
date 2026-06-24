@@ -30,9 +30,7 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
     if (isLoadingDefs || !definitions) {
       return (
         <section className="flex h-[600px] w-full items-center justify-center border-y border-border bg-background p-6">
-            <p className="text-sm font-semibold text-muted-foreground">
-              {t('common.loading')}
-            </p>
+          <p className="text-sm font-semibold text-muted-foreground">{t('common.loading')}</p>
         </section>
       );
     }
@@ -43,15 +41,12 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
       inputs.investmentHorizonMonths ??
       getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);
     const investmentHorizonYears = Math.max(1 / 12, investmentHorizonMonths / 12);
-    const isDivisibleBy100 =
-      inputs.contributionAmount % 100 === 0 && inputs.contributionAmount > 0;
+    const isDivisibleBy100 = inputs.contributionAmount % 100 === 0 && inputs.contributionAmount > 0;
 
     return (
       <section className="w-full space-y-8 border-y border-border bg-background p-5 md:p-6">
         <div className="space-y-2 border-b border-border pb-4">
-          <h2 className="ui-section-title">
-            {t('bonds.regular_calculator')}
-          </h2>
+          <h2 className="ui-section-title">{t('bonds.regular_calculator')}</h2>
           <p className="ui-body text-muted-foreground">
             {t('regular_investment_page.form_description')}
           </p>
@@ -112,17 +107,22 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
                 value: formatBondDuration(inputs.duration, language),
               },
               {
-                label: inputs.bondType === 'OTS'
-                  ? t('bonds.yield_three_months')
-                  : inputs.bondType === 'ROR' || inputs.bondType === 'DOR'
-                    ? t('bonds.first_month_rate')
-                    : t('bonds.first_year_rate'),
+                label:
+                  inputs.bondType === 'OTS'
+                    ? t('bonds.yield_three_months')
+                    : inputs.bondType === 'ROR' || inputs.bondType === 'DOR'
+                      ? t('bonds.first_month_rate')
+                      : t('bonds.first_year_rate'),
                 value: `${inputs.firstYearRate}%`,
               },
-              ...(currentDef.margin > 0 ? [{
-                label: t('bonds.margin'),
-                value: `${inputs.margin}%`,
-              }] : []),
+              ...(currentDef.margin > 0
+                ? [
+                    {
+                      label: t('bonds.margin'),
+                      value: `${inputs.margin}%`,
+                    },
+                  ]
+                : []),
               {
                 label: t('bonds.payout_type'),
                 value: inputs.isCapitalized ? t('bonds.capitalization') : t('bonds.payout'),

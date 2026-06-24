@@ -1,11 +1,7 @@
 import { Skeleton } from '@/components/ui/skeleton';
 import { pageLayout } from './layout-system';
 
-export function PageSuspenseFallback({
-  showSidebar = true,
-}: {
-  showSidebar?: boolean;
-}) {
+export function PageSuspenseFallback({ showSidebar = true }: { showSidebar?: boolean }) {
   return (
     <div className="grid grid-cols-1 gap-8 xl:grid-cols-12 xl:gap-10">
       {showSidebar ? (

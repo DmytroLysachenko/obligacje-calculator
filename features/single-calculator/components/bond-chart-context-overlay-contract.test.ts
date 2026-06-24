@@ -19,7 +19,10 @@ describe('single calculator chart context overlay contract', () => {
     const source = read(chartPath);
     const shared = read(sharedChartPath);
 
-    expectContains(source, "import { BondValueChart, BondValueChartPoint } from \"@/shared/components/charts/BondValueChart\";");
+    expectContains(
+      source,
+      'import { BondValueChart, BondValueChartPoint } from "@/shared/components/charts/BondValueChart";',
+    );
     expectContains(source, 'inflation: point.inflation');
     expectContains(source, 'nbp: point.nbp');
     expectContains(source, 't("common.nominal_value")');
@@ -36,8 +39,14 @@ describe('single calculator chart context overlay contract', () => {
     expectContains(shared, 'width={44}');
     expectContains(shared, 'aria-pressed={showInflationOverlay}');
     expectContains(shared, 'aria-pressed={showNbpOverlay}');
-    expectContains(shared, 'onClick={() => updateOverlayPreference("showInflationOverlay", !showInflationOverlay)}');
-    expectContains(shared, 'onClick={() => updateOverlayPreference("showNbpOverlay", !showNbpOverlay)}');
+    expectContains(
+      shared,
+      'onClick={() => updateOverlayPreference("showInflationOverlay", !showInflationOverlay)}',
+    );
+    expectContains(
+      shared,
+      'onClick={() => updateOverlayPreference("showNbpOverlay", !showNbpOverlay)}',
+    );
     expectContains(shared, 'showInflationOverlay ? (');
     expectContains(shared, 'dataKey="inflation"');
     expectContains(shared, 'showNbpOverlay ? (');

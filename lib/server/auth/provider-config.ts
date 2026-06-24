@@ -1,5 +1,10 @@
 import type { OAuthProviderName, RuntimeEnv } from '@/lib/server/runtime/env';
-import { getAuthSecret, getConfiguredOAuthProviders, isProductionRuntime, readRuntimeEnv } from '@/lib/server/runtime/env';
+import {
+  getAuthSecret,
+  getConfiguredOAuthProviders,
+  isProductionRuntime,
+  readRuntimeEnv,
+} from '@/lib/server/runtime/env';
 
 export interface OAuthProviderCredentials {
   name: OAuthProviderName;
@@ -13,11 +18,15 @@ export interface AuthRuntimeConfig {
 }
 
 export function getAuthRuntimeSecret(env: RuntimeEnv = readRuntimeEnv()) {
-  return getAuthSecret(env)
-    ?? (!isProductionRuntime(env) ? 'obligacje-calculator-dev-secret' : undefined);
+  return (
+    getAuthSecret(env) ??
+    (!isProductionRuntime(env) ? 'obligacje-calculator-dev-secret' : undefined)
+  );
 }
 
-export function getOAuthProviderCredentials(env: RuntimeEnv = readRuntimeEnv()): OAuthProviderCredentials[] {
+export function getOAuthProviderCredentials(
+  env: RuntimeEnv = readRuntimeEnv(),
+): OAuthProviderCredentials[] {
   return getConfiguredOAuthProviders(env).map((name) => {
     if (name === 'google') {
       return {

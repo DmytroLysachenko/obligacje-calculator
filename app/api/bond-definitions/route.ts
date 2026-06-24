@@ -7,7 +7,6 @@ export async function GET() {
     return okJson(definitions);
   } catch (error) {
     console.error('Failed to fetch bond definitions:', error);
-    return errorJson('Failed to fetch definitions', 'INTERNAL_ERROR', undefined, {status: 500});
+    return errorJson('Failed to fetch definitions', 'INTERNAL_ERROR', undefined, { status: 500 });
   }
 }
-

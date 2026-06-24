@@ -1,7 +1,7 @@
-import {GusSyncProvider} from './providers/gus';
-import {YahooFinanceSyncProvider} from './providers/yahoo-finance';
-import {createSyncLogger} from './sync-logger';
-import {SyncEngine} from './sync-engine';
+import { GusSyncProvider } from './providers/gus';
+import { YahooFinanceSyncProvider } from './providers/yahoo-finance';
+import { createSyncLogger } from './sync-logger';
+import { SyncEngine } from './sync-engine';
 
 export function createDefaultSyncEngine(scope = 'SyncEngine') {
   return new SyncEngine(

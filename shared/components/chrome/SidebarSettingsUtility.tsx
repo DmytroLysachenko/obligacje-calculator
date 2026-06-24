@@ -11,10 +11,7 @@ export function SidebarSettingsUtility() {
   return (
     <SidebarUtilityStack>
       <SidebarUtilityPanel flush>
-        <SidebarUtilityRow
-          title={t('common.language')}
-          action={<LanguageSwitcher />}
-        />
+        <SidebarUtilityRow title={t('common.language')} action={<LanguageSwitcher />} />
       </SidebarUtilityPanel>
     </SidebarUtilityStack>
   );

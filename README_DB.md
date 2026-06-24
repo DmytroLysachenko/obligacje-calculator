@@ -23,6 +23,7 @@ INNGEST_SIGNING_KEY=...
 The repo no longer treats `db/schema.ts` as the canonical long-term structure.
 
 Current layout:
+
 - `db/schemas/**`: grouped schema entrypoints by connected model domains
 - `db/seed/**`: seed modules split by concern
 - `db/schema.ts`: compatibility aggregate export surface where still needed by current imports
@@ -51,6 +52,7 @@ pnpm sync:full
 ```
 
 Both commands currently run the same underlying workflow, which covers:
+
 - current bond offers
 - issued monthly bond series
 - macro reference data
@@ -66,6 +68,7 @@ npx inngest-cli@latest dev -u http://localhost:3000/api/inngest
 ```
 
 Important local behavior:
+
 - use `INNGEST_DEV=1`
 - local dev typically does **not** require manual signing-key setup
 - the local app endpoint is `http://localhost:3000/api/inngest`

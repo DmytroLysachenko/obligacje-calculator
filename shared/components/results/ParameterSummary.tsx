@@ -41,14 +41,10 @@ export function ParameterSummary({
             key={index}
             className={cn(
               'min-w-0 gap-3',
-              inline
-                ? 'space-y-1'
-                : 'flex items-start justify-between py-2 first:pt-0 last:pb-0',
+              inline ? 'space-y-1' : 'flex items-start justify-between py-2 first:pt-0 last:pb-0',
             )}
           >
-            <dt className="min-w-0 text-xs leading-5 text-muted-foreground">
-              {item.label}
-            </dt>
+            <dt className="min-w-0 text-xs leading-5 text-muted-foreground">{item.label}</dt>
             <dd
               className={cn(
                 'financial-number min-w-0 text-sm font-semibold text-foreground',

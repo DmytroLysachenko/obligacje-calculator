@@ -45,18 +45,22 @@ describe('sync run history repository', () => {
   it('ensures the sync_runs schema before recording history', async () => {
     const { recordSyncRun } = await import('./run-history');
 
-    await expect(recordSyncRun({
-      scope: 'macro-sync',
-      mode: 'macro-sync',
-      status: 'success',
-    })).resolves.toEqual({ id: 'run-1' });
+    await expect(
+      recordSyncRun({
+        scope: 'macro-sync',
+        mode: 'macro-sync',
+        status: 'success',
+      }),
+    ).resolves.toEqual({ id: 'run-1' });
 
     expect(dbMocks.execute).toHaveBeenCalledTimes(4);
-    expect(dbMocks.insertValues).toHaveBeenCalledWith(expect.objectContaining({
-      scope: 'macro-sync',
-      mode: 'macro-sync',
-      status: 'success',
-    }));
+    expect(dbMocks.insertValues).toHaveBeenCalledWith(
+      expect.objectContaining({
+        scope: 'macro-sync',
+        mode: 'macro-sync',
+        status: 'success',
+      }),
+    );
   });
 
   it('ensures the sync_runs schema before list reads used by app freshness', async () => {
@@ -65,36 +69,39 @@ describe('sync run history repository', () => {
     await expect(listRecentSyncRuns(20)).resolves.toEqual([]);
 
     expect(dbMocks.execute).toHaveBeenCalledTimes(4);
-    expect(dbMocks.findMany).toHaveBeenCalledWith(expect.objectContaining({
-      limit: 20,
-    }));
+    expect(dbMocks.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        limit: 20,
+      }),
+    );
   });
 
   it('ensures the sync_runs schema before reading the latest run for a series', async () => {
-    dbMocks.findFirst.mockResolvedValue({id: 'latest-run'});
+    dbMocks.findFirst.mockResolvedValue({ id: 'latest-run' });
     const { getLatestSyncRunForSeries } = await import('./run-history');
 
-    await expect(getLatestSyncRunForSeries('pl-cpi')).resolves.toEqual({id: 'latest-run'});
+    await expect(getLatestSyncRunForSeries('pl-cpi')).resolves.toEqual({ id: 'latest-run' });
 
     expect(dbMocks.execute).toHaveBeenCalledTimes(4);
-    expect(dbMocks.findFirst).toHaveBeenCalledWith(expect.objectContaining({
-      where: expect.anything(),
-    }));
+    expect(dbMocks.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.anything(),
+      }),
+    );
   });
 
   it('keeps missing sync_runs table fallbacks safe for freshness reads and writes', async () => {
     dbMocks.execute.mockRejectedValue(new Error('relation "sync_runs" does not exist'));
-    const {
-      getLatestSyncRunForSeries,
-      listRecentSyncRuns,
-      recordSyncRun,
-    } = await import('./run-history');
+    const { getLatestSyncRunForSeries, listRecentSyncRuns, recordSyncRun } =
+      await import('./run-history');
 
-    await expect(recordSyncRun({
-      scope: 'macro-sync',
-      mode: 'macro-sync',
-      status: 'success',
-    })).resolves.toBeNull();
+    await expect(
+      recordSyncRun({
+        scope: 'macro-sync',
+        mode: 'macro-sync',
+        status: 'success',
+      }),
+    ).resolves.toBeNull();
     await expect(listRecentSyncRuns()).resolves.toEqual([]);
     await expect(getLatestSyncRunForSeries('pl-cpi')).resolves.toBeNull();
   });

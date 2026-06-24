@@ -1,4 +1,9 @@
-import { getSyncSecret, isProductionRuntime, readRuntimeEnv, type RuntimeEnv } from '@/lib/server/runtime/env';
+import {
+  getSyncSecret,
+  isProductionRuntime,
+  readRuntimeEnv,
+  type RuntimeEnv,
+} from '@/lib/server/runtime/env';
 
 export function assertAdminSyncAuthorization(authorizationHeader: string | null) {
   const env = readRuntimeEnv();

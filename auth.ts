@@ -1,18 +1,18 @@
-import NextAuth from "next-auth";
-import Facebook from "next-auth/providers/facebook";
-import Google from "next-auth/providers/google";
-import type { Provider } from "next-auth/providers";
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
-import { db } from "./db";
-import { accounts, sessions, users, verificationTokens } from "./db/schema";
-import { getAuthRuntimeConfig } from "./lib/server/auth/provider-config";
+import NextAuth from 'next-auth';
+import Facebook from 'next-auth/providers/facebook';
+import Google from 'next-auth/providers/google';
+import type { Provider } from 'next-auth/providers';
+import { DrizzleAdapter } from '@auth/drizzle-adapter';
+import { db } from './db';
+import { accounts, sessions, users, verificationTokens } from './db/schema';
+import { getAuthRuntimeConfig } from './lib/server/auth/provider-config';
 
 const authRuntimeConfig = getAuthRuntimeConfig();
-const providers: Provider[] = authRuntimeConfig.providers.map((provider) => (
-  provider.name === "facebook"
+const providers: Provider[] = authRuntimeConfig.providers.map((provider) =>
+  provider.name === 'facebook'
     ? Facebook({ clientId: provider.clientId, clientSecret: provider.clientSecret })
-    : Google({ clientId: provider.clientId, clientSecret: provider.clientSecret })
-));
+    : Google({ clientId: provider.clientId, clientSecret: provider.clientSecret }),
+);
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   secret: authRuntimeConfig.authSecret,
@@ -24,7 +24,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   }),
   providers,
   pages: {
-    signIn: "/login",
+    signIn: '/login',
   },
   callbacks: {
     session({ session, user }) {

@@ -50,7 +50,7 @@ export function AdvancedSettingsSection({
           <div className="space-y-4 border-t border-border pt-6">
             <FormInlineNotice
               tone="success"
-              title={(
+              title={
                 <span className="inline-flex items-center gap-2">
                   {t('bonds.is_rebought')}
                   <TooltipProvider>
@@ -64,14 +64,14 @@ export function AdvancedSettingsSection({
                     </Tooltip>
                   </TooltipProvider>
                 </span>
-              )}
+              }
               description={`${t('bonds.is_rebought_desc')} (-${currentDef.rebuyDiscount.toFixed(2)} PLN/szt)`}
-              action={(
+              action={
                 <Switch
                   checked={inputs.isRebought}
                   onCheckedChange={(checked) => onUpdate('isRebought', checked)}
                 />
-              )}
+              }
             />
           </div>
         ) : null}
@@ -80,20 +80,18 @@ export function AdvancedSettingsSection({
           <FormInlineNotice
             title={t('bonds.reinvest')}
             description={t('bonds.rollover_desc')}
-            action={(
+            action={
               <Switch
                 checked={!!inputs.rollover}
                 onCheckedChange={(checked) => onUpdate('rollover', checked)}
               />
-            )}
+            }
           />
 
           <div className="flex items-center justify-between border-t border-border pt-4">
             <div className="space-y-0.5">
               <div className="flex items-center gap-2">
-                <Label className="text-sm font-semibold">
-                  {t('bonds.custom_tax_rate')}
-                </Label>
+                <Label className="text-sm font-semibold">{t('bonds.custom_tax_rate')}</Label>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -125,7 +123,6 @@ export function AdvancedSettingsSection({
             </div>
           ) : null}
         </div>
-
       </AdvancedAssumptionsDisclosure>
     </section>
   );

@@ -9,13 +9,7 @@ import {
 } from '@/shared/components/results/TableDensityControls';
 import { ComparisonScenarioSnapshot } from '@/features/comparison-engine/lib/comparison-table-model';
 
-export function ComparisonTableStat({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
+export function ComparisonTableStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="px-4 py-3 md:border-r md:border-border last:md:border-r-0">
       <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
@@ -52,9 +46,10 @@ export function ComparisonTablePaginationControls({
     page: string;
   };
 }) {
-  const smallestLimit = tableRowLimitOptions.find(
-    (option): option is Exclude<TableRowLimit, 'all'> => option !== 'all',
-  ) ?? 12;
+  const smallestLimit =
+    tableRowLimitOptions.find(
+      (option): option is Exclude<TableRowLimit, 'all'> => option !== 'all',
+    ) ?? 12;
   const needsDensityControls = totalRows > smallestLimit;
   const needsPageControls = rowLimit !== 'all' && totalPages > 1;
 
@@ -65,9 +60,7 @@ export function ComparisonTablePaginationControls({
       </p>
       {needsDensityControls ? (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold text-muted-foreground">
-            {labels.rowsPerPage}
-          </span>
+          <span className="text-xs font-semibold text-muted-foreground">{labels.rowsPerPage}</span>
           {tableRowLimitOptions.map((option) => (
             <Button
               key={String(option)}
@@ -113,13 +106,7 @@ export function ComparisonTablePaginationControls({
   );
 }
 
-export function MobileComparisonValue({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
+export function MobileComparisonValue({ label, value }: { label: string; value: string }) {
   return (
     <div className="border-t border-dashed border-border px-1 py-2 first:border-t-0">
       <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
@@ -160,10 +147,7 @@ export function ComparisonScenarioCell({
           value={formatCurrency(snapshot.nominalValue)}
           strong
         />
-        <ScenarioSnapshotMetric
-          label={labels.real}
-          value={formatCurrency(snapshot.realValue)}
-        />
+        <ScenarioSnapshotMetric label={labels.real} value={formatCurrency(snapshot.realValue)} />
         <ScenarioSnapshotMetric
           label={labels.profit}
           value={formatCurrency(snapshot.netProfit)}
@@ -173,7 +157,9 @@ export function ComparisonScenarioCell({
       {snapshot.interestRate !== undefined || snapshot.rateSourceLabel ? (
         <div className="border-t border-dashed border-border pt-2 text-[11px] leading-5 text-muted-foreground">
           {snapshot.interestRate !== undefined ? (
-            <span className="font-semibold text-foreground">{snapshot.interestRate.toFixed(2)}%</span>
+            <span className="font-semibold text-foreground">
+              {snapshot.interestRate.toFixed(2)}%
+            </span>
           ) : null}
           {snapshot.rateSourceLabel ? (
             <span className="ml-2">{snapshot.rateSourceLabel}</span>
@@ -207,7 +193,11 @@ export function MobileComparisonScenario({
       {snapshot.eventLabels.length > 0 ? (
         <div className="mt-2 flex flex-wrap gap-1">
           {snapshot.eventLabels.map((eventLabel) => (
-            <Badge key={eventLabel} variant="secondary" className="h-5 px-2 text-[10px] font-semibold">
+            <Badge
+              key={eventLabel}
+              variant="secondary"
+              className="h-5 px-2 text-[10px] font-semibold"
+            >
               {eventLabel}
             </Badge>
           ))}
@@ -219,10 +209,7 @@ export function MobileComparisonScenario({
           value={formatCurrency(snapshot.nominalValue)}
           strong
         />
-        <ScenarioSnapshotMetric
-          label={labels.real}
-          value={formatCurrency(snapshot.realValue)}
-        />
+        <ScenarioSnapshotMetric label={labels.real} value={formatCurrency(snapshot.realValue)} />
         <ScenarioSnapshotMetric
           label={labels.profit}
           value={formatCurrency(snapshot.netProfit)}
@@ -232,7 +219,9 @@ export function MobileComparisonScenario({
       {snapshot.interestRate !== undefined || snapshot.rateSourceLabel ? (
         <p className="mt-2 border-t border-dashed border-border pt-2 text-[11px] leading-5 text-muted-foreground">
           {snapshot.interestRate !== undefined ? (
-            <span className="font-semibold text-foreground">{snapshot.interestRate.toFixed(2)}%</span>
+            <span className="font-semibold text-foreground">
+              {snapshot.interestRate.toFixed(2)}%
+            </span>
           ) : null}
           {snapshot.rateSourceLabel ? (
             <span className="ml-2">{snapshot.rateSourceLabel}</span>

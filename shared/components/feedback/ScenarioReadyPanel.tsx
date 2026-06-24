@@ -20,15 +20,10 @@ interface ScenarioReadyPanelProps {
   footerText?: string;
 }
 
-function ReadyStepCard({
-  title,
-  description,
-}: Pick<ReadyStepItem, 'title' | 'description'>) {
+function ReadyStepCard({ title, description }: Pick<ReadyStepItem, 'title' | 'description'>) {
   return (
     <div className="space-y-2 border-t border-border py-4">
-      <p className="ui-card-title">
-        {title}
-      </p>
+      <p className="ui-card-title">{title}</p>
       <p className="ui-body text-muted-foreground">{description}</p>
     </div>
   );
@@ -50,21 +45,13 @@ export function ScenarioReadyPanel({
           <TrendingUp className="h-3.5 w-3.5 text-primary" />
           {badge}
         </div>
-        <h3 className="ui-section-title">
-          {title}
-        </h3>
-        <p className="ui-body max-w-3xl text-muted-foreground">
-          {description}
-        </p>
+        <h3 className="ui-section-title">{title}</h3>
+        <p className="ui-body max-w-3xl text-muted-foreground">{description}</p>
       </div>
 
       <div className="grid gap-3 md:grid-cols-3">
         {steps.map((step) => (
-          <ReadyStepCard
-            key={step.id}
-            title={step.title}
-            description={step.description}
-          />
+          <ReadyStepCard key={step.id} title={step.title} description={step.description} />
         ))}
       </div>
 

@@ -54,7 +54,10 @@ export function EmptyPortfolioState({
         <p className="ui-card-title">{capabilitiesTitle}</p>
         <div className="grid gap-x-6 gap-y-4 border-y border-border py-4 md:grid-cols-2">
           {capabilities.map((capability) => (
-            <div key={capability.id} className="border-t border-border pt-4 first:border-t-0 first:pt-0 md:border-t-0 md:pt-0">
+            <div
+              key={capability.id}
+              className="border-t border-border pt-4 first:border-t-0 first:pt-0 md:border-t-0 md:pt-0"
+            >
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
                 <div className="space-y-1">
@@ -72,10 +75,20 @@ export function EmptyPortfolioState({
           <Plus className="h-4 w-4" />
           {createLabel}
         </Button>
-        <Button variant="outline" onClick={onCreateDemo} className="gap-2 rounded-md border-border" disabled={!canManageWorkspace}>
+        <Button
+          variant="outline"
+          onClick={onCreateDemo}
+          className="gap-2 rounded-md border-border"
+          disabled={!canManageWorkspace}
+        >
           {demoLabel}
         </Button>
-        <Button variant="ghost" onClick={onImport} className="gap-2 rounded-md" disabled={!canManageWorkspace}>
+        <Button
+          variant="ghost"
+          onClick={onImport}
+          className="gap-2 rounded-md"
+          disabled={!canManageWorkspace}
+        >
           <Upload className="h-4 w-4" />
           {importLabel}
         </Button>

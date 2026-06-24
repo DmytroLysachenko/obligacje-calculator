@@ -3,20 +3,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { TaxStrategy } from '@/features/bond-core/types';
-import {
-  FAMILY_BOND_TYPES,
-  getBondSupportMeta,
-} from '@/features/bond-core/support-matrix';
+import { FAMILY_BOND_TYPES, getBondSupportMeta } from '@/features/bond-core/support-matrix';
 import { useAppI18n } from '@/i18n/client';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
 import { MacroDefaultsSummary } from '@/shared/components/market-assumptions/MacroDefaultsSummary';
-import type {
-  OptimizerInputKey,
-  OptimizerInputs,
-} from '@/features/optimizer/lib/optimizer-state';
+import type { OptimizerInputKey, OptimizerInputs } from '@/features/optimizer/lib/optimizer-state';
 
 interface OptimizerInputPanelProps {
   inputs: OptimizerInputs;
@@ -44,12 +38,8 @@ export function OptimizerInputPanel({
   return (
     <section className="space-y-6">
       <div className="space-y-2 border-b border-border pb-4">
-        <h2 className="ui-section-title">
-          {t('optimizer_page.input_title')}
-        </h2>
-        <p className="ui-body text-muted-foreground">
-          {t('optimizer_page.input_description')}
-        </p>
+        <h2 className="ui-section-title">{t('optimizer_page.input_title')}</h2>
+        <p className="ui-body text-muted-foreground">{t('optimizer_page.input_description')}</p>
       </div>
       <div className="space-y-6">
         <div className="space-y-3">
@@ -143,17 +133,20 @@ export function OptimizerInputPanel({
           <FormInlineNotice
             tone="warning"
             title={t('optimizer_page.family_bonds_title')}
-            description={`${t('optimizer_page.family_bonds_description')} ${t('optimizer_page.family_bonds_note', {
-              bonds: FAMILY_BOND_TYPES.join(' / '),
-              support: getBondSupportMeta(FAMILY_BOND_TYPES[0]).shortLabel.toLowerCase(),
-            })}`}
-            action={(
+            description={`${t('optimizer_page.family_bonds_description')} ${t(
+              'optimizer_page.family_bonds_note',
+              {
+                bonds: FAMILY_BOND_TYPES.join(' / '),
+                support: getBondSupportMeta(FAMILY_BOND_TYPES[0]).shortLabel.toLowerCase(),
+              },
+            )}`}
+            action={
               <Switch
                 id="includeFamilyBonds"
                 checked={inputs.includeFamilyBonds}
                 onCheckedChange={(value) => updateInput('includeFamilyBonds', value)}
               />
-            )}
+            }
           />
 
           <div className="space-y-3">
@@ -195,12 +188,8 @@ export function OptimizerInputPanel({
           </div>
 
           <div className="grid gap-3 md:grid-cols-2">
-            <FormInlineNotice
-              description={t('optimizer_page.macro_scope.indexed')}
-            />
-            <FormInlineNotice
-              description={t('optimizer_page.macro_scope.floating')}
-            />
+            <FormInlineNotice description={t('optimizer_page.macro_scope.indexed')} />
+            <FormInlineNotice description={t('optimizer_page.macro_scope.floating')} />
           </div>
         </AdvancedAssumptionsDisclosure>
 

@@ -23,21 +23,18 @@ export function buildSharedSingleScenarioPayload(
 ): SharedSingleScenarioPayload {
   const normalizedInputs = normalizeSharedSingleScenarioInputs(inputs);
   const horizonMonths =
-    normalizedInputs.investmentHorizonMonths
-    ?? Math.round(normalizedInputs.duration * 12);
+    normalizedInputs.investmentHorizonMonths ?? Math.round(normalizedInputs.duration * 12);
 
   return {
     title: `Single ${normalizedInputs.bondType} ${horizonMonths}M`,
     description:
-      description
-      ?? `Committed single-bond scenario for ${normalizedInputs.bondType} over ${horizonMonths} months.`,
+      description ??
+      `Committed single-bond scenario for ${normalizedInputs.bondType} over ${horizonMonths} months.`,
     inputs: normalizedInputs,
   };
 }
 
-export function serializeSharedSingleScenario(
-  payload: SharedSingleScenarioPayload,
-) {
+export function serializeSharedSingleScenario(payload: SharedSingleScenarioPayload) {
   return JSON.stringify(payload);
 }
 

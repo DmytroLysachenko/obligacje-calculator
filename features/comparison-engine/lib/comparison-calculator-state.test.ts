@@ -56,14 +56,16 @@ describe('comparison calculator state model', () => {
     const shared = buildDefaultSharedConfig(new Date('2026-06-16T00:00:00.000Z'));
     const inputs = buildScenarioInputs(shared, DEFAULT_SCENARIO_A, null);
 
-    expect(getComparisonDirtyState({
-      inputsA: inputs,
-      inputsB: inputs,
-      committedInputsA: inputs,
-      committedInputsB: inputs,
-      isDirty: true,
-      hasResults: true,
-    })).toBe(false);
+    expect(
+      getComparisonDirtyState({
+        inputsA: inputs,
+        inputsB: inputs,
+        committedInputsA: inputs,
+        committedInputsB: inputs,
+        isDirty: true,
+        hasResults: true,
+      }),
+    ).toBe(false);
   });
 
   it('returns empty split envelopes when no comparison envelope is available', () => {

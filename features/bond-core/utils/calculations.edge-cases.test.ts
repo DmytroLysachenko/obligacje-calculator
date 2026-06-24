@@ -23,11 +23,11 @@ describe('Bond Calculation Edge Cases: Inflation Extremes', () => {
       withdrawalDate: tenYearsLater,
       isRebought: false,
       rebuyDiscount: 0,
-      taxStrategy: TaxStrategy.STANDARD
+      taxStrategy: TaxStrategy.STANDARD,
     });
 
     // Nominal value should explode
-    expect(results.grossValue).toBeGreaterThan(1000000); 
+    expect(results.grossValue).toBeGreaterThan(1000000);
     // Real value should drop because firstYearRate (7.5%) is much lower than inflation (100%)
     expect(results.finalRealValue).toBeLessThan(10000);
     expect(results.finalRealValue).toBeGreaterThan(100);
@@ -49,16 +49,16 @@ describe('Bond Calculation Edge Cases: Inflation Extremes', () => {
       withdrawalDate: tenYearsLater,
       isRebought: false,
       rebuyDiscount: 0,
-      taxStrategy: TaxStrategy.STANDARD
+      taxStrategy: TaxStrategy.STANDARD,
     });
 
     // In Polish bonds, if inflation + margin < 0, interest rate is usually capped at 0 or margin.
     // Official rule for COI/EDO: interest rate = inflation + margin, but not less than 0?
     // Actually, usually it's just inflation + margin. If it's negative, nominal value could decrease?
     // NO, nominal value of treasury bonds cannot decrease. Interest rate is floored at 0%.
-    
+
     // Check if interest rate in year 2+ is at least 0
-    results.timeline.slice(1).forEach(point => {
+    results.timeline.slice(1).forEach((point) => {
       expect(point.interestRate).toBeGreaterThanOrEqual(0);
     });
 
@@ -81,7 +81,7 @@ describe('Bond Calculation Edge Cases: Inflation Extremes', () => {
       withdrawalDate: tenYearsLater,
       isRebought: false,
       rebuyDiscount: 0,
-      taxStrategy: TaxStrategy.STANDARD
+      taxStrategy: TaxStrategy.STANDARD,
     });
 
     expect(results.grossValue).toBe(10000);

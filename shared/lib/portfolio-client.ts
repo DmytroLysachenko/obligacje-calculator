@@ -72,7 +72,10 @@ export const portfolioClient = {
       isPublic,
     });
   },
-  async exportPortfolio(portfolio: Pick<UserPortfolio, 'id' | 'name'>, format: PortfolioExportFormat) {
+  async exportPortfolio(
+    portfolio: Pick<UserPortfolio, 'id' | 'name'>,
+    format: PortfolioExportFormat,
+  ) {
     const { data, response } = await apiGetWithResponse<Record<string, unknown>>(
       `/api/portfolio/export?portfolioId=${portfolio.id}&format=${format}`,
     );

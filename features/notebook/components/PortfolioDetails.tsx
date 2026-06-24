@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React, { useCallback, useState } from 'react';
 import { UserPortfolio } from '@/db/schema';
 import { useAppI18n } from '@/i18n/client';
@@ -15,72 +15,121 @@ const detailTabTriggerClassName =
   'h-9 rounded-none border-b-2 border-transparent px-3.5 py-2 text-sm font-semibold data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none';
 
 interface PortfolioDetailsProps {
-    portfolio: UserPortfolio;
-    onBack: () => void;
-    onDelete?: (portfolio: UserPortfolio) => Promise<void> | void;
-    onPortfolioUpdate?: (portfolio: UserPortfolio) => void;
+  portfolio: UserPortfolio;
+  onBack: () => void;
+  onDelete?: (portfolio: UserPortfolio) => Promise<void> | void;
+  onPortfolioUpdate?: (portfolio: UserPortfolio) => void;
 }
-export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, onBack, onDelete, onPortfolioUpdate, }) => {
-    const { t, locale: language } = useAppI18n();
-    const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-    const currencyFormatter = useCurrencyFormatter(language, {
-        style: 'currency',
-        currency: 'PLN',
-        maximumFractionDigits: 0,
-    });
-    const dateFormatter = useDateFormatter(language);
-    const formatCurrency = useCallback((value: number) => currencyFormatter.format(value), [currencyFormatter]);
-    const {
-        lots,
-        isLoading,
-        simulation,
-        isSimulating,
-        isPublic,
-        isSharing,
-        justCopied,
-        maturityWindowDays,
-        setMaturityWindowDays,
-        totalValue,
-        filteredMaturities,
-        upcomingCashflow,
-        nextMaturity,
-        handleToggleShare,
-        copyToClipboard,
-        handleExport,
-    } = usePortfolioDetailsWorkspace({
-        portfolio,
-        definitions,
-        onPortfolioUpdate,
-    });
-    const maturityWindowLabel = t('notebook.next_days_window', {
-        days: String(maturityWindowDays),
-    });
-    if (isLoadingDefs || !definitions) {
-        return (<div className="space-y-4">
-        <div className="h-10 w-40 rounded bg-muted"/>
+export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({
+  portfolio,
+  onBack,
+  onDelete,
+  onPortfolioUpdate,
+}) => {
+  const { t, locale: language } = useAppI18n();
+  const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const currencyFormatter = useCurrencyFormatter(language, {
+    style: 'currency',
+    currency: 'PLN',
+    maximumFractionDigits: 0,
+  });
+  const dateFormatter = useDateFormatter(language);
+  const formatCurrency = useCallback(
+    (value: number) => currencyFormatter.format(value),
+    [currencyFormatter],
+  );
+  const {
+    lots,
+    isLoading,
+    simulation,
+    isSimulating,
+    isPublic,
+    isSharing,
+    justCopied,
+    maturityWindowDays,
+    setMaturityWindowDays,
+    totalValue,
+    filteredMaturities,
+    upcomingCashflow,
+    nextMaturity,
+    handleToggleShare,
+    copyToClipboard,
+    handleExport,
+  } = usePortfolioDetailsWorkspace({
+    portfolio,
+    definitions,
+    onPortfolioUpdate,
+  });
+  const maturityWindowLabel = t('notebook.next_days_window', {
+    days: String(maturityWindowDays),
+  });
+  if (isLoadingDefs || !definitions) {
+    return (
+      <div className="space-y-4">
+        <div className="h-10 w-40 rounded bg-muted" />
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <div className="h-32 rounded bg-muted"/>
-          <div className="h-32 rounded bg-muted"/>
-          <div className="h-32 rounded bg-muted"/>
+          <div className="h-32 rounded bg-muted" />
+          <div className="h-32 rounded bg-muted" />
+          <div className="h-32 rounded bg-muted" />
         </div>
-      </div>);
-    }
-    return (<div className="space-y-6 pb-16">
-      <PortfolioOverviewHeader portfolio={portfolio} lotsCount={lots.length} nextMaturityDate={nextMaturity?.maturityDate ?? null} nextMaturityType={nextMaturity?.bondType ?? null} totalInvestedValue={formatCurrency(totalValue)} isPublic={isPublic} isSharing={isSharing} justCopied={justCopied} formatDate={(value) => dateFormatter.format(value)} onBack={onBack} onExport={handleExport} onToggleShare={handleToggleShare} onCopyLink={copyToClipboard} onDeleteRequest={() => setIsDeleteDialogOpen(true)} canDelete={Boolean(onDelete)} t={t}/>
+      </div>
+    );
+  }
+  return (
+    <div className="space-y-6 pb-16">
+      <PortfolioOverviewHeader
+        portfolio={portfolio}
+        lotsCount={lots.length}
+        nextMaturityDate={nextMaturity?.maturityDate ?? null}
+        nextMaturityType={nextMaturity?.bondType ?? null}
+        totalInvestedValue={formatCurrency(totalValue)}
+        isPublic={isPublic}
+        isSharing={isSharing}
+        justCopied={justCopied}
+        formatDate={(value) => dateFormatter.format(value)}
+        onBack={onBack}
+        onExport={handleExport}
+        onToggleShare={handleToggleShare}
+        onCopyLink={copyToClipboard}
+        onDeleteRequest={() => setIsDeleteDialogOpen(true)}
+        canDelete={Boolean(onDelete)}
+        t={t}
+      />
 
       <Tabs defaultValue="lots" className="w-full">
         <TabsList className="mb-5 h-auto w-full justify-start gap-3 border-b border-border bg-transparent p-0 md:w-fit">
-          <TabsTrigger value="lots" className={detailTabTriggerClassName}>{t('notebook.lots_tab')}</TabsTrigger>
-          <TabsTrigger value="analytics" className={detailTabTriggerClassName}>{t('notebook.analytics_tab_short')}</TabsTrigger>
+          <TabsTrigger value="lots" className={detailTabTriggerClassName}>
+            {t('notebook.lots_tab')}
+          </TabsTrigger>
+          <TabsTrigger value="analytics" className={detailTabTriggerClassName}>
+            {t('notebook.analytics_tab_short')}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="lots" className="space-y-6">
-          <PortfolioLotsTab isLoading={isLoading} lots={lots} definitions={definitions} language={language} formatCurrency={formatCurrency} maturityWindowDays={maturityWindowDays} onWindowChange={setMaturityWindowDays} filteredMaturities={filteredMaturities} upcomingCashflow={upcomingCashflow} maturityWindowLabel={maturityWindowLabel} t={t}/>
+          <PortfolioLotsTab
+            isLoading={isLoading}
+            lots={lots}
+            definitions={definitions}
+            language={language}
+            formatCurrency={formatCurrency}
+            maturityWindowDays={maturityWindowDays}
+            onWindowChange={setMaturityWindowDays}
+            filteredMaturities={filteredMaturities}
+            upcomingCashflow={upcomingCashflow}
+            maturityWindowLabel={maturityWindowLabel}
+            t={t}
+          />
         </TabsContent>
 
         <TabsContent value="analytics">
-          <PortfolioAnalyticsTab simulation={simulation} isSimulating={isSimulating} formatCurrency={formatCurrency} t={t}/>
+          <PortfolioAnalyticsTab
+            simulation={simulation}
+            isSimulating={isSimulating}
+            formatCurrency={formatCurrency}
+            t={t}
+          />
         </TabsContent>
       </Tabs>
 
@@ -101,9 +150,6 @@ export const PortfolioDetails: React.FC<PortfolioDetailsProps> = ({ portfolio, o
           }
         }}
       />
-    </div>);
+    </div>
+  );
 };
-
-
-
-

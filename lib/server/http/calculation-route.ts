@@ -40,7 +40,10 @@ export function createCalculationRoute<
   TKind extends keyof PayloadByScenarioKind & CalculationScenarioRequest['kind'],
 >(kind: TKind) {
   return apiHandler(async (req: NextRequest) => {
-    const payload = await readJsonBody(req, scenarioSchemas[kind]) as PayloadByScenarioKind[TKind];
+    const payload = (await readJsonBody(
+      req,
+      scenarioSchemas[kind],
+    )) as PayloadByScenarioKind[TKind];
     const request = parseCalculationScenarioRequest({ kind, payload });
 
     const envelope = await calculationService.calculate(request as CalculationScenarioRequest);

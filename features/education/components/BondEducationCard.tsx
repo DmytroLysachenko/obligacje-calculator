@@ -18,17 +18,23 @@ export function BondEducationCard({ bond }: BondEducationCardProps) {
     <article className="flex h-full min-h-[440px] flex-col border-t border-border py-6 transition-colors hover:bg-muted/20">
       <div className="min-h-[150px]">
         <div className="mb-3 flex items-start justify-between gap-4">
-          <span className={bond.isInflationIndexed ? 'surface-chip border-foreground text-foreground' : 'surface-chip'}>
+          <span
+            className={
+              bond.isInflationIndexed
+                ? 'surface-chip border-foreground text-foreground'
+                : 'surface-chip'
+            }
+          >
             {bond.isInflationIndexed ? t('bonds.inflation.indexed') : t('bonds.fixed_rate')}
           </span>
           {bond.isFamilyOnly ? (
-            <span className="surface-chip text-foreground">
-              {t('bonds.family_only')}
-            </span>
+            <span className="surface-chip text-foreground">{t('bonds.family_only')}</span>
           ) : null}
         </div>
         <h4 className="flex items-baseline gap-3">
-          <span className="text-[32px] font-semibold leading-none text-foreground">{bond.name}</span>
+          <span className="text-[32px] font-semibold leading-none text-foreground">
+            {bond.name}
+          </span>
           <span className="text-sm font-medium text-muted-foreground">
             {formatBondDuration(bond.duration, language)}
           </span>
@@ -47,7 +53,9 @@ export function BondEducationCard({ bond }: BondEducationCardProps) {
               <Clock className="h-3.5 w-3.5 text-foreground" />
               {t('bonds.duration')}
             </dt>
-            <dd className="font-semibold text-foreground">{formatBondDuration(bond.duration, language)}</dd>
+            <dd className="font-semibold text-foreground">
+              {formatBondDuration(bond.duration, language)}
+            </dd>
           </div>
 
           <div className="flex items-center justify-between gap-3 py-3 sm:border-b sm:border-border">

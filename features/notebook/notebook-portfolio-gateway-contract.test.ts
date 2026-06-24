@@ -38,7 +38,9 @@ describe('notebook portfolio gateway contract', () => {
     expect(source).toContain("apiGet<UserPortfolio[]>('/api/portfolio')");
     expect(source).toContain("apiPost<UserPortfolio>('/api/portfolio', input)");
     expect(source).toContain("apiPost<ImportPortfolioResult>('/api/portfolio/import', input)");
-    expect(source).toContain("apiPost<PortfolioSimulationResult>('/api/portfolio/simulate', { portfolioId })");
+    expect(source).toContain(
+      "apiPost<PortfolioSimulationResult>('/api/portfolio/simulate', { portfolioId })",
+    );
     expect(source).not.toContain('window.fetch');
   });
 });

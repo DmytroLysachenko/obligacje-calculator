@@ -106,11 +106,11 @@ describe('sidebar production navigation contract', () => {
     const source = read('shared/components/chrome/SidebarSettingsUtility.tsx');
 
     expectContains(source, '<SidebarUtilityStack>');
-    expectContains(source, 'title={t(\'common.language\')}');
+    expectContains(source, "title={t('common.language')}");
     expectContains(source, 'action={<LanguageSwitcher />}');
     expectNotContains(source, 'ThemeToggle');
     expectNotContains(source, 'theme_toggle_hint');
-    expectNotContains(source, 'title={t(\'common.theme\')}');
+    expectNotContains(source, "title={t('common.theme')}");
   });
 
   it('does not duplicate the language selector with helper copy', () => {

@@ -1,6 +1,6 @@
-import {describe, expect, it} from 'vitest';
-import {HISTORICAL_RETURNS} from '@/features/bond-core/constants/historical-data';
-import {createFallbackMultiAssetHistory} from './multi-asset-history';
+import { describe, expect, it } from 'vitest';
+import { HISTORICAL_RETURNS } from '@/features/bond-core/constants/historical-data';
+import { createFallbackMultiAssetHistory } from './multi-asset-history';
 
 describe('multi asset history data helpers', () => {
   it('creates a stable fallback envelope with default unavailable series flags', () => {
@@ -20,12 +20,14 @@ describe('multi asset history data helpers', () => {
   });
 
   it('preserves known partial series availability in fallback mode', () => {
-    expect(createFallbackMultiAssetHistory({
-      sp500: true,
-      gold: false,
-      inflation: true,
-      nbpRate: false,
-    })).toMatchObject({
+    expect(
+      createFallbackMultiAssetHistory({
+        sp500: true,
+        gold: false,
+        inflation: true,
+        nbpRate: false,
+      }),
+    ).toMatchObject({
       source: 'fallback',
       usedFallback: true,
       seriesAvailability: {

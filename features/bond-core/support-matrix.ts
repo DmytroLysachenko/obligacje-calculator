@@ -45,21 +45,24 @@ const SUPPORT_META: Partial<Record<BondType, BondSupportMeta>> = {
   [BondType.OTS]: {
     shortLabel: 'Short-term',
     tone: 'limited',
-    description: 'Very short duration. Fine for simple payout tests, weak fit for long-horizon withdrawal modeling.',
+    description:
+      'Very short duration. Fine for simple payout tests, weak fit for long-horizon withdrawal modeling.',
     shortLabelKey: 'bonds.support.short_term_label',
     descriptionKey: 'bonds.support.short_term_description',
   },
   [BondType.ROS]: {
     shortLabel: 'Family-only',
     tone: 'caution',
-    description: 'Family-targeted bond. Only use when household eligibility assumptions actually apply.',
+    description:
+      'Family-targeted bond. Only use when household eligibility assumptions actually apply.',
     shortLabelKey: 'bonds.support.family_label',
     descriptionKey: 'bonds.support.family_description',
   },
   [BondType.ROD]: {
     shortLabel: 'Family-only',
     tone: 'caution',
-    description: 'Family-targeted bond. Only use when household eligibility assumptions actually apply.',
+    description:
+      'Family-targeted bond. Only use when household eligibility assumptions actually apply.',
     shortLabelKey: 'bonds.support.family_label',
     descriptionKey: 'bonds.support.family_description',
   },
@@ -82,8 +85,12 @@ export function getBondSupportMeta(type: BondType, language?: AppLanguage): Bond
 
   return {
     ...meta,
-    shortLabel: meta.shortLabelKey ? translateMessage(language, meta.shortLabelKey) : meta.shortLabel,
-    description: meta.descriptionKey ? translateMessage(language, meta.descriptionKey) : meta.description,
+    shortLabel: meta.shortLabelKey
+      ? translateMessage(language, meta.shortLabelKey)
+      : meta.shortLabel,
+    description: meta.descriptionKey
+      ? translateMessage(language, meta.descriptionKey)
+      : meta.description,
   };
 }
 

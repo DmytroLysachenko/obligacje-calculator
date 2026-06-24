@@ -3,7 +3,10 @@ import { z } from 'zod';
 import { createPortfolioLotWithBuyTransaction } from '@/lib/server/portfolio/commands';
 import { errorJson, okJson } from '@/lib/server/http/responses';
 import { apiHandler } from '@/lib/server/http/api-handler';
-import { portfolioDomainErrorResponse, withAuthenticatedPortfolioOwner } from '@/lib/server/portfolio/http';
+import {
+  portfolioDomainErrorResponse,
+  withAuthenticatedPortfolioOwner,
+} from '@/lib/server/portfolio/http';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
 
 const SavePortfolioLotPayloadSchema = z.object({
@@ -18,8 +21,10 @@ const SavePortfolioLotPayloadSchema = z.object({
 export const POST = apiHandler(async (req: NextRequest) => {
   return withAuthenticatedPortfolioOwner(async (owner) => {
     try {
-      const { portfolioId, bondType, purchaseDate, amount, isRebought, notes } =
-        await readJsonBody(req, SavePortfolioLotPayloadSchema);
+      const { portfolioId, bondType, purchaseDate, amount, isRebought, notes } = await readJsonBody(
+        req,
+        SavePortfolioLotPayloadSchema,
+      );
 
       const result = await createPortfolioLotWithBuyTransaction(owner.ownerId, {
         portfolioId,
@@ -40,4 +45,3 @@ export const POST = apiHandler(async (req: NextRequest) => {
     }
   });
 });
-
