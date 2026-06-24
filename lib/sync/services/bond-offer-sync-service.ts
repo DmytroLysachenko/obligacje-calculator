@@ -1,9 +1,11 @@
-import { db } from '@/db';
-import { bondSeries, polishBonds } from '@/db/schema';
 import { BOND_DEFINITIONS } from '@/features/bond-core/constants/bond-definitions';
 import { BondType } from '@/features/bond-core/types';
-import { deriveSeriesCode, deriveSeriesWindow } from '@/lib/server/bonds/offer-terms';
-import { eq } from 'drizzle-orm';
+import {deriveSeriesCode, deriveSeriesWindow} from '@/lib/server/bonds/offer-terms';
+import {
+  findBondDefinitionBySymbol,
+  updatePolishBondOfferTerms,
+  upsertBondSeriesOffer,
+} from '@/lib/server/bonds/offer-terms-repository';
 import { format, startOfMonth } from 'date-fns';
 
 import { scrapeCurrentBondRates, type ScrapedBondRate } from '../bond-scraper';
@@ -55,18 +57,9 @@ export class BondOfferSyncService {
       seriesCode?: string;
     },
   ) {
-    await db
-      .update(polishBonds)
-      .set({
-        firstYearRate: offer.firstYearRate,
-        baseMargin: offer.margin,
-        updatedAt: new Date(),
-      })
-      .where(eq(polishBonds.symbol, bondType));
+    await updatePolishBondOfferTerms(bondType, offer);
 
-    const bond = await db.query.polishBonds.findFirst({
-      where: eq(polishBonds.symbol, bondType),
-    });
+    const bond = await findBondDefinitionBySymbol(bondType);
 
     if (!bond) {
       this.logger.error(`Bond definition missing for ${bondType} during offer sync`);
@@ -78,28 +71,16 @@ export class BondOfferSyncService {
       offer.seriesCode ?? deriveSeriesCode(bondType, offer.currentEmissionMonth, definition);
     const seriesWindow = deriveSeriesWindow(offer.currentEmissionMonth, definition);
 
-    await db
-      .insert(bondSeries)
-      .values({
-        bondTypeId: bond.id,
-        seriesCode,
-        emissionMonth: offer.currentEmissionMonth,
-        sellStartDate: seriesWindow.sellStartDate,
-        sellEndDate: seriesWindow.sellEndDate,
-        maturityDate: seriesWindow.maturityDate,
-        firstYearRate: offer.firstYearRate,
-        baseMargin: offer.margin,
-      })
-      .onConflictDoUpdate({
-        target: bondSeries.seriesCode,
-        set: {
-          firstYearRate: offer.firstYearRate,
-          baseMargin: offer.margin,
-          sellStartDate: seriesWindow.sellStartDate,
-          sellEndDate: seriesWindow.sellEndDate,
-          maturityDate: seriesWindow.maturityDate,
-        },
-      });
+    await upsertBondSeriesOffer({
+      bondTypeId: bond.id,
+      seriesCode,
+      emissionMonth: offer.currentEmissionMonth,
+      sellStartDate: seriesWindow.sellStartDate,
+      sellEndDate: seriesWindow.sellEndDate,
+      maturityDate: seriesWindow.maturityDate,
+      firstYearRate: offer.firstYearRate,
+      margin: offer.margin,
+    });
   }
 }
 
