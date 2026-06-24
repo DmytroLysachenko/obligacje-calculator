@@ -9,8 +9,12 @@ direct database queries.
 - `app/**/page.tsx` calls a server service.
 - `lib/server/**/service.ts` owns business rules, access checks, and orchestration.
 - `lib/server/**/repository.ts` owns Drizzle queries and mutations.
+- `lib/data/**` is also an approved read-model and repository layer for shared
+  source-neutral data access.
 - Feature components receive already-shaped data through props or client hooks.
 - Sync jobs use `lib/sync/**` orchestration and `lib/server/sync/**` persistence helpers.
+- Sync seed scripts may write directly to the database; production sync services
+  should keep reusable table access behind repositories or persistence helpers.
 
 ## Page Boundary Rules
 
@@ -74,3 +78,6 @@ fallback. The page owns only translations, `notFound()`, and rendering.
 - Sync run persistence and schema compatibility belong in
   `lib/server/sync/run-history.ts`; callers should not write directly to the
   `sync_runs` table.
+- Local Windows builds may print the documented Next standalone tracing warning
+  for the Inngest route while still exiting successfully. Treat it as an
+  operational note unless the build exits non-zero.

@@ -24,9 +24,13 @@ Use it before adding files or moving logic.
   point counts, latest data-point coverage, recent sync attempt evidence, and
   environment snapshot fields.
 - `lib/data/**`: read models, repositories, market-data caches, and source-neutral data access.
+  Direct database reads are intentional in this layer because it is the shared
+  data retrieval boundary for routes, layouts, and calculation services.
 - `lib/data/chart-reference-series.ts` and `lib/data/multi-asset-history.ts`: chart reference envelopes, fallback coverage, stale/partial status decisions, and data-layer fallback builders for chart APIs.
 - `lib/api-clients/**`: external provider adapters that convert public API responses into internal records. HTTP transport goes through `lib/sync/http-gateway.ts`.
 - `lib/sync/**`: CLI sync orchestration, seed scripts, provider sync services, sync history writing, and the shared sync HTTP gateway.
+  Seed scripts may use direct database access; long-lived sync services should
+  keep table access behind focused repository or persistence helpers.
 - `db/**`: Drizzle schema, migrations, seed data, and low-level database connection code.
 
 ## Domain Ownership
@@ -44,6 +48,8 @@ Use it before adding files or moving logic.
 
 - Browser API calls belong behind `shared/lib/*-client.ts`, `shared/hooks`, or approved workers.
 - Route controllers use `lib/server/http/responses.ts` unless they intentionally return non-envelope operational JSON.
+- `/api/health` and `/api/readiness` intentionally return raw operational JSON
+  rather than the app success-envelope shape.
 - Route JSON bodies use `lib/server/http/read-json-body.ts`; route families with repeated auth/owner behavior use their family controller helpers.
 - Calculation route handlers are created through `lib/server/http/calculation-route.ts`;
   they parse with `readJsonBody` and return envelopes with `okJson`.
@@ -58,6 +64,9 @@ Use it before adding files or moving logic.
 - Chart routes call data-layer envelope helpers for fallback behavior instead of constructing fallback payloads inside route handlers.
 - Shared chart components may have companion `*Parts.tsx` files for presentational sections, while pure chart decisions stay in model helpers.
 - Sync providers and API clients must not call raw `fetch`; use `lib/sync/http-gateway.ts`.
+- Broad lint-disable comments are only allowed in the explicit clean-code
+  contract allowlist. Additions require updating the contract and documenting
+  why the local escape hatch is safer than changing the shared rule.
 
 ## Documentation Ownership
 

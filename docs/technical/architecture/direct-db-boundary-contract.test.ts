@@ -66,12 +66,21 @@ describe('direct database boundary contract', () => {
   it('documents operational and local-build exceptions as intentional', () => {
     const cleanCodeContract = read('docs/technical/architecture/clean-code-contract.test.ts');
     const deploymentDocs = read('docs/technical/architecture/24_deployment_and_devops.md');
+    const projectMap = read('docs/technical/architecture/28_project_map.md');
+    const serviceBoundaries = read('docs/architecture/service-boundaries.md');
 
     expect(cleanCodeContract).toContain("'app/api/readiness/route.ts'");
     expect(cleanCodeContract).toContain("'shared/components/MacroAdjuster.tsx'");
     expect(cleanCodeContract).toContain("'shared/hooks/useQuerySync.ts'");
     expect(cleanCodeContract).toContain("'shared/workers/data-processor.worker.ts'");
     expect(cleanCodeContract).toContain("'lib/sync/seed-series.ts'");
+    expect(projectMap).toContain('Direct database reads are intentional in this layer');
+    expect(projectMap).toContain('Seed scripts may use direct database access');
+    expect(projectMap).toContain('/api/health` and `/api/readiness` intentionally return raw operational JSON');
+    expect(projectMap).toContain('Broad lint-disable comments are only allowed');
+    expect(serviceBoundaries).toContain('approved read-model and repository layer');
+    expect(serviceBoundaries).toContain('Sync seed scripts may write directly to the database');
     expect(deploymentDocs).toContain('Next standalone tracing may print a local copy warning');
+    expect(serviceBoundaries).toContain('Next standalone tracing warning');
   });
 });
