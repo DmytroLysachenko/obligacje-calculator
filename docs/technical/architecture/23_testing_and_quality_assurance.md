@@ -7,10 +7,10 @@ Financial applications require a rigorous testing strategy to ensure mathematica
 ### A. Unit Tests (Engine Level)
 
 - **Tool:** Vitest.
-- **Target:** The `finance-core` library.
+- **Target:** `features/bond-core/**`, especially calculation handlers, schemas, and engine modules.
 - **Scope:** Every bond type, tax rounding, inflation lag logic, and early redemption fee.
-- **Requirement:** 100% code coverage.
-- **Data-Driven Testing:** Use "Golden Files" (pre-calculated results from official bank tools) to compare against our engine.
+- **Requirement:** touched engine behavior must have focused regression coverage before release.
+- **Data-Driven Testing:** use golden scenario tests and production-scenario regressions to protect modeled financial outputs.
 
 ### B. Integration Tests
 
@@ -25,8 +25,9 @@ Financial applications require a rigorous testing strategy to ensure mathematica
 
 ## 2. Calculation Verification (Audit)
 
-- We maintain a dedicated `audit.ts` file that contains the results of official PKO BP calculations for various scenarios.
-- The CI/CD pipeline runs these audits on every commit. If our engine deviates by even 0.01 PLN, the build fails.
+- Calculation truth is protected by focused Vitest suites under `features/bond-core/tests/**`.
+- Golden and production-scenario tests compare known outputs across supported bond families and retained calculator flows.
+- If an engine change intentionally changes output, update the matching regression expectation and document the reason in the same change.
 
 ## 3. Performance Testing
 
@@ -46,6 +47,7 @@ Financial applications require a rigorous testing strategy to ensure mathematica
 ## 6. Release Contracts
 
 - `pnpm test:release` runs the calculation, worker, data freshness, API readiness, deployment, product readiness, script, and clean-code contract suites.
+- Feature-owned tests live under `features/<feature>/tests/**`. Subfolders mirror the tested ownership when useful, for example `tests/lib/**`, `tests/components/**`, and `tests/utils/**`.
 - `docs/technical/architecture/clean-code-contract.test.ts` blocks broad code-smell regressions in production paths: stale TODO/FIXME/debug markers, unmanaged route responses, direct feature-layer fetch calls, direct sync/provider fetch calls, unmanaged API body parsing, and undocumented lint-disable comments.
 - Feature-local state models require focused unit tests before hook/page rewrites. This applies to calculator state, optimizer readiness/default models, notebook workspace models, dashboard metadata state, chart tooltip models, and similar non-React decision logic.
 - Shared form models require focused unit tests before component splits. Current examples include market assumption setup-mode transitions and header value formatting.

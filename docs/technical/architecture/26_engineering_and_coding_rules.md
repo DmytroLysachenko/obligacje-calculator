@@ -148,6 +148,29 @@ Short explanatory comments are allowed only when they clarify non-obvious intent
 
 Do not commit TODO, FIXME, `debugger`, or `@ts-ignore` markers. If a known defect must remain, capture it in docs or a tracked issue with enough context to reproduce it.
 
+## 3.1 Formatting and Import Order
+
+Formatting is owned by Prettier. Do not hand-format files to a competing style.
+
+Required commands:
+
+- `pnpm format` writes repository formatting
+- `pnpm format:check` verifies repository formatting
+- `pnpm lint --fix` applies ESLint-safe fixes, including import sorting
+- `pnpm lint` reports import sorting drift as warnings
+
+Imports should be grouped consistently:
+
+- side-effect imports
+- Node built-ins
+- external packages
+- `@/` application imports
+- parent relative imports
+- sibling relative imports
+- stylesheet imports
+
+Do not add file-local import ordering conventions. If the global grouping needs to change, update `eslint.config.mjs` and this document together.
+
 ## 4. No Dead Legacy Paths
 
 Do not preserve old code “just in case.”
@@ -385,7 +408,7 @@ Required boundaries:
 
 - `app/`: routes, layouts, metadata, and thin HTTP/page orchestration only
 - `app/api/**/route.ts`: request parsing, auth/ownership resolution, validation, and HTTP response shaping only
-- `features/`: domain-specific UI, handlers, adapters, and calculation orchestration by product area
+- `features/`: domain-specific UI, handlers, adapters, tests, and calculation orchestration by product area
 - `shared/components/`: reusable UI primitives grouped by subdomain such as `page/`, `feedback/`, `results/`, `chrome/`, `insights/`, and `charts/`
 - `shared/hooks/`: isomorphic or UI-facing hooks only
 - `shared/lib/`: reusable display/export/presentation helpers and shared client-workspace state that are not server infrastructure
@@ -395,6 +418,20 @@ Required boundaries:
 - `db/seed/`: seed modules split by concern with explicit top-level orchestrators
 
 Do not flatten new files into old catch-all directories when a bounded subdomain already exists.
+
+Feature folders should use the same vocabulary across product areas:
+
+- `components/` for React presentation and feature containers
+- `hooks/` for feature-local React state and orchestration hooks
+- `lib/` for feature-local pure models, adapters, and display/state helpers
+- `utils/` for low-level feature utilities that are not UI models
+- `types/` for feature-local durable type exports
+- `constants/` for durable static values owned by the feature
+- `tests/` for feature-owned test files, preserving subfolder context when helpful, such as `tests/lib/**` or `tests/components/**`
+
+Do not put new feature tests beside production files unless there is a narrow tool constraint that requires colocation. The default is `features/<feature>/tests/**`.
+
+Avoid creating empty taxonomy folders just to satisfy the vocabulary. Add `types/`, `constants/`, or `utils/` only when the feature actually owns code in that category.
 
 ### 11.0 HTTP Route Helpers
 

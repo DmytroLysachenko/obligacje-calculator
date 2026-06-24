@@ -7,7 +7,7 @@ Use it before adding files or moving logic.
 
 - `app/`: Next.js route segments, layouts, metadata, API controllers, and thin page clients.
 - `app/api/**/route.ts`: HTTP controllers only. They parse input, resolve auth/ownership, call server services, and return shared response helpers.
-- `features/**`: product workflows grouped by domain surface. Components render workflows; hooks own UI state; `lib` folders own feature-local pure models such as calculator state and dashboard state.
+- `features/**`: product workflows grouped by domain surface. Components render workflows; hooks own UI state; `lib` folders own feature-local pure models such as calculator state and dashboard state; `tests` folders own feature-local test files.
 - `shared/**`: browser-safe primitives reused by multiple features: components, hooks, clients, display helpers, formatters, workers, and persistence helpers.
 
 ## Server And Data Layers
@@ -44,6 +44,20 @@ Use it before adding files or moving logic.
 - `features/optimizer/**`: optimizer UI sections, optimizer state models, and recommendation orchestration. Route/page code should consume `features/optimizer/lib/**` state helpers instead of recomputing readiness or default input rules inline. Input controls belong in `features/optimizer/components/OptimizerInputPanel.tsx`, while the page client owns calculation requests and result state.
 - `features/regular-investment/**`, `features/ladder-strategy/**`, `features/retirement/**`: retained strategy surfaces with feature-local hooks and components.
 
+## Feature Folder Vocabulary
+
+Feature folders should use the same structural vocabulary when the category exists:
+
+- `components/`: React containers, sections, controls, and presentational parts for that feature
+- `hooks/`: feature-local React hooks and UI orchestration
+- `lib/`: pure state, display, dashboard, and adapter models owned by one feature
+- `utils/`: low-level feature utilities that are not UI models
+- `types/`: durable type exports and schema-adjacent feature types
+- `constants/`: durable static values owned by the feature
+- `tests/`: feature-owned tests, with optional subfolders mirroring the tested ownership such as `tests/lib/**`, `tests/components/**`, or `tests/utils/**`
+
+Do not add empty folders as placeholders. Use the vocabulary when a feature actually has that responsibility.
+
 ## Boundary Rules
 
 - Browser API calls belong behind `shared/lib/*-client.ts`, `shared/hooks`, or approved workers.
@@ -79,7 +93,7 @@ Use it before adding files or moving logic.
 
 ## Test Ownership
 
-- Domain math changes require focused `features/bond-core` regression tests.
+- Domain math changes require focused `features/bond-core/tests/**` regression tests.
 - Engine file moves require source-contract tests to follow the canonical implementation files, not only the public barrel exports.
 - API/controller boundary changes require architecture contract tests.
 - Display-model changes require pure model tests before UI assertions.
