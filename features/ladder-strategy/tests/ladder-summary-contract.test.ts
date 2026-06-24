@@ -8,6 +8,7 @@ const projectRoot = process.cwd();
 const paths = {
   container: 'features/ladder-strategy/components/LadderContainer.tsx',
   timeline: 'features/ladder-strategy/components/LadderTimeline.tsx',
+  timelineTable: 'features/ladder-strategy/components/LadderTimelineTable.tsx',
   timelineConstants: 'features/ladder-strategy/constants/timeline.ts',
   timelineTypes: 'features/ladder-strategy/types/timeline.ts',
   en: 'i18n/translations/en.json',
@@ -56,6 +57,7 @@ describe('ladder summary contracts', () => {
 
   it('filters detailed monthly rows without changing underlying calculation data', () => {
     const source = readSource(paths.timeline);
+    const table = readSource(paths.timelineTable);
     const constants = readSource(paths.timelineConstants);
     const types = readSource(paths.timelineTypes);
 
@@ -72,9 +74,9 @@ describe('ladder summary contracts', () => {
     expectContains(source, "if (tableFilter === 'peak')");
     expectContains(source, "if (tableFilter === 'clustered')");
     expectContains(source, 'applyTableRowLimit(filteredMonthlyBuckets, rowLimit)');
-    expectContains(source, 'aria-pressed={tableFilter === filter}');
-    expectContains(source, 'LADDER_TABLE_FILTERS.map((filter) =>');
-    expectContains(source, 't(`ladder_page.timeline.table_filters.${filter}`)');
+    expectContains(table, 'aria-pressed={tableFilter === filter}');
+    expectContains(table, 'LADDER_TABLE_FILTERS.map((filter) =>');
+    expectContains(table, 't(`ladder_page.timeline.table_filters.${filter}`)');
   });
 
   it('keeps ladder summary translations in both locales', () => {
