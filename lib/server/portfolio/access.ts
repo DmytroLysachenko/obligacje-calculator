@@ -1,10 +1,13 @@
 import { auth } from '@/auth';
-import { db } from '@/db';
-import { userInvestmentLots, userPortfolios, users } from '@/db/schema';
-import { and, eq } from 'drizzle-orm';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
+import {
+  ensureGuestPortfolioOwner,
+  findOwnedLotByOwner,
+  findPortfolioByOwner,
+  findPortfolioSummaryByOwner,
+} from '@/lib/server/portfolio/repository';
 
 const GUEST_PORTFOLIO_COOKIE = 'guest_portfolio_owner_id';
 const GUEST_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
@@ -70,13 +73,7 @@ async function resolveAuthenticatedOwner() {
 
 async function ensureGuestOwner(ownerId: string) {
   try {
-    await db
-      .insert(users)
-      .values({
-        id: ownerId,
-        name: 'Guest Notebook User',
-      })
-      .onConflictDoNothing();
+    await ensureGuestPortfolioOwner(ownerId);
   } catch (error) {
     if (isMissingAuthTableError(error)) {
       console.warn('[PortfolioAccess] Auth user table missing, using detached guest notebook owner.');
@@ -129,33 +126,15 @@ export function applyPortfolioOwnerCookie(response: NextResponse, owner: Portfol
 
 export async function getOwnedPortfolio(ownerId: string, portfolioId: string) {
   await ensurePortfolioSchemaCompat();
-  return db.query.userPortfolios.findFirst({
-    where: and(eq(userPortfolios.id, portfolioId), eq(userPortfolios.userId, ownerId)),
-  });
+  return findPortfolioByOwner(ownerId, portfolioId);
 }
 
 export async function getOwnedLot(ownerId: string, lotId: string) {
   await ensurePortfolioSchemaCompat();
-  const [lot] = await db
-    .select({
-      id: userInvestmentLots.id,
-      portfolioId: userInvestmentLots.portfolioId,
-    })
-    .from(userInvestmentLots)
-    .innerJoin(userPortfolios, eq(userInvestmentLots.portfolioId, userPortfolios.id))
-    .where(and(eq(userInvestmentLots.id, lotId), eq(userPortfolios.userId, ownerId)))
-    .limit(1);
-
-  return lot;
+  return findOwnedLotByOwner(ownerId, lotId);
 }
 
 export async function getPortfolioSummary(ownerId: string, portfolioId: string) {
   await ensurePortfolioSchemaCompat();
-  const result = await db.query.userPortfolios.findFirst({
-    where: and(eq(userPortfolios.id, portfolioId), eq(userPortfolios.userId, ownerId)),
-    with: {
-      lots: true,
-    }
-  });
-  return result;
+  return findPortfolioSummaryByOwner(ownerId, portfolioId);
 }

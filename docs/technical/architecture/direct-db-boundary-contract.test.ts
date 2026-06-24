@@ -16,7 +16,6 @@ const approvedDirectDbFiles = new Set([
   'lib/server/admin/status.ts',
   'lib/server/bonds/offer-terms-repository.ts',
   'lib/server/community/insights.ts',
-  'lib/server/portfolio/access.ts',
   'lib/server/portfolio/repository.ts',
   'lib/server/settings/service.ts',
   'lib/server/shared-scenarios/service.ts',

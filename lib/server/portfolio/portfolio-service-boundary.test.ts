@@ -25,7 +25,14 @@ describe('portfolio service boundary', () => {
 
   it('keeps portfolio ownership reads available through the repository boundary', () => {
     const repository = read('lib/server/portfolio/repository.ts');
+    const access = read('lib/server/portfolio/access.ts');
 
+    expect(access).not.toContain("from '@/db'");
+    expect(access).toContain("from '@/lib/server/portfolio/repository'");
+    expect(access).toContain('findPortfolioByOwner(ownerId, portfolioId)');
+    expect(access).toContain('findOwnedLotByOwner(ownerId, lotId)');
+    expect(access).toContain('findPortfolioSummaryByOwner(ownerId, portfolioId)');
+    expect(access).toContain('ensureGuestPortfolioOwner(ownerId)');
     expect(repository).toContain('export function findPortfolioByOwner');
     expect(repository).toContain('export async function findOwnedLotByOwner');
     expect(repository).toContain('export function findPortfolioSummaryByOwner');
