@@ -1,18 +1,13 @@
 'use client';
-import { Loader2, RotateCcw, Scale } from 'lucide-react';
+import { Scale } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 import { ChartStep } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { Notice } from '@/shared/components/feedback/Notice';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
-import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
-import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
-import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { getBondColor } from '@/shared/lib/charts/get-bond-color';
@@ -24,6 +19,11 @@ import {
   usesMixedTimelineCadence,
 } from '../lib/comparison-display';
 
+import {
+  ComparisonAssumptionsMetaPanel,
+  ComparisonFairnessPanel,
+  ComparisonSetupStatePanel,
+} from './ComparisonContainerPanels';
 import { ComparisonResultsPanel } from './ComparisonResultsPanel';
 import { ComparisonSharedBaseCard } from './ComparisonSharedBaseCard';
 import { ComparisonTable } from './ComparisonTable';
@@ -171,73 +171,14 @@ export const ComparisonContainer: React.FC = () => {
               />
             </div>
 
-            <section className="space-y-3 border-y border-border py-4">
-              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                <div className="space-y-1">
-                  <h2 className="ui-card-title">{t('comparison.fairness.title')}</h2>
-                  <p className="text-sm leading-6 text-muted-foreground">
-                    {t('comparison.auto_rollover_fairness_desc')}
-                  </p>
-                </div>
-                <div className="ui-metadata text-muted-foreground">
-                  {t('comparison.fairness.mode_label')}: {t('comparison.auto_rollover_mode_label')}
-                </div>
-              </div>
-              {durationMismatchText ? (
-                <Notice tone="info" title={t('comparison.auto_rollover_notice_title')}>
-                  {durationMismatchText}
-                </Notice>
-              ) : null}
-              <Button
-                type="button"
-                className="h-11 w-full gap-2 text-sm font-semibold md:w-auto"
-                onClick={() => calculate()}
-                disabled={isCalculating}
-              >
-                {isCalculating ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <RotateCcw className="h-4 w-4" />
-                )}
-                {resultsA && resultsB ? t('common.recalculate') : t('common.calculate')}
-              </Button>
-            </section>
+            <ComparisonFairnessPanel
+              durationMismatchText={durationMismatchText}
+              hasResults={!!resultsA && !!resultsB}
+              isCalculating={isCalculating}
+              onCalculate={() => calculate()}
+            />
 
-            {!resultsA && !isCalculating ? (
-              <ScenarioReadyPanel
-                badge={t('comparison.ready_to_compare')}
-                title={t('comparison.ready_title')}
-                description={t('comparison.ready_desc')}
-                steps={[
-                  {
-                    id: 'shared-base',
-                    title: t('comparison.ready_shared_base'),
-                    description: t('comparison.ready_shared_base_desc'),
-                  },
-                  {
-                    id: 'scenario-overrides',
-                    title: t('comparison.ready_overrides'),
-                    description: t('comparison.ready_overrides_desc'),
-                  },
-                  {
-                    id: 'committed-result',
-                    title: t('comparison.ready_committed'),
-                    description: t('comparison.ready_committed_desc'),
-                  },
-                ]}
-                footerText={t('comparison.ready_footer')}
-              />
-            ) : null}
-
-            {isCalculating && !resultsA ? (
-              <div className="space-y-6">
-                <Skeleton className="h-[300px] w-full rounded-lg md:h-[360px]" />
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                  <Skeleton className="h-[180px] rounded-lg md:h-[220px]" />
-                  <Skeleton className="h-[180px] rounded-lg md:h-[220px]" />
-                </div>
-              </div>
-            ) : null}
+            <ComparisonSetupStatePanel hasResults={!!resultsA} isCalculating={isCalculating} />
           </div>
         </div>
 
@@ -285,40 +226,14 @@ export const ComparisonContainer: React.FC = () => {
               formatCurrency={formatCurrency}
             />
 
-            <SecondaryInsightAccordion
-              title={t('comparison.assumptions_meta')}
-              description={t('comparison.assumptions_meta_desc')}
-              badge={t('comparison.helper_secondary')}
-            >
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                {[
-                  {
-                    label: t('comparison.scenario_a'),
-                    envelope: envelopeA,
-                    warnings: warningsA,
-                  },
-                  {
-                    label: t('comparison.scenario_b'),
-                    envelope: envelopeB,
-                    warnings: warningsB,
-                  },
-                ].map((entry) => (
-                  <section key={entry.label} className="space-y-4 border-t border-border py-4">
-                    <h3 className="ui-card-title">
-                      {entry.label} {t('comparison.notes_suffix')}
-                    </h3>
-                    <CalculationMetaPanel
-                      warnings={entry.warnings}
-                      assumptions={entry.envelope?.assumptions}
-                      calculationNotes={entry.envelope?.calculationNotes}
-                      dataQualityFlags={entry.envelope?.dataQualityFlags}
-                      dataFreshness={entry.envelope?.dataFreshness}
-                      compact
-                    />
-                  </section>
-                ))}
-              </div>
-            </SecondaryInsightAccordion>
+            <ComparisonAssumptionsMetaPanel
+              envelopeA={envelopeA}
+              envelopeB={envelopeB}
+              warningsA={warningsA}
+              warningsB={warningsB}
+              inputsA={resultInputsA}
+              inputsB={resultInputsB}
+            />
           </div>
         ) : null}
       </div>
