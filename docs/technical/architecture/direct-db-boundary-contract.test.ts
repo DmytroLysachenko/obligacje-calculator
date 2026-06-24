@@ -19,7 +19,7 @@ const approvedDirectDbFiles = new Set([
   'lib/server/portfolio/repository.ts',
   'lib/server/settings/service.ts',
   'lib/server/shared-scenarios/service.ts',
-  'lib/server/sync/run-history.ts',
+  'lib/server/sync/run-history-repository.ts',
   'lib/sync/macro-data-sync.ts',
   'lib/sync/seed-historical-offers.ts',
   'lib/sync/seed-production-bonds.ts',
