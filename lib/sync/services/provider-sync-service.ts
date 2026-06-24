@@ -26,11 +26,59 @@ export interface ProviderSyncResult {
   error?: string;
 }
 
+export interface ProviderSyncRepository {
+  findSeriesBySlug(seriesSlug: string): Promise<{id: string} | null>;
+  findLatestPointForSeries(seriesId: string): Promise<{date: string} | null>;
+  upsertDataPoints(records: Array<{
+    seriesId: string;
+    date: string;
+    value: string;
+  }>): Promise<void>;
+  markSeriesSyncSuccess(seriesId: string, values: {
+    latestDate: string;
+    status: 'success';
+  }): Promise<void>;
+}
+
+function createDefaultProviderSyncRepository(): ProviderSyncRepository {
+  return {
+    async findSeriesBySlug(seriesSlug) {
+      return (await db.query.dataSeries.findFirst({
+        where: eq(dataSeries.slug, seriesSlug),
+      })) ?? null;
+    },
+    async findLatestPointForSeries(seriesId) {
+      return (await db.query.dataPoints.findFirst({
+        where: eq(dataPoints.seriesId, seriesId),
+        orderBy: [desc(dataPoints.date)],
+      })) ?? null;
+    },
+    async upsertDataPoints(records) {
+      await db.insert(dataPoints).values(records).onConflictDoUpdate({
+        target: [dataPoints.seriesId, dataPoints.date],
+        set: { value: sql`EXCLUDED.value` },
+      });
+    },
+    async markSeriesSyncSuccess(seriesId, values) {
+      await db
+        .update(dataSeries)
+        .set({
+          lastDataPointDate: values.latestDate,
+          lastSyncStatus: values.status,
+          lastSyncError: null,
+          updatedAt: new Date(),
+        })
+        .where(eq(dataSeries.id, seriesId));
+    },
+  };
+}
+
 export class ProviderSyncService {
   constructor(
     private readonly providers: SyncProvider[],
     private readonly logger: SyncLogger,
-    private readonly recorder: SyncRunRecorder,
+    private readonly recorder: Pick<SyncRunRecorder, 'record'>,
+    private readonly repository: ProviderSyncRepository = createDefaultProviderSyncRepository(),
   ) {}
 
   async syncAll(startYear = 1910): Promise<ProviderSyncResult[]> {
@@ -66,18 +114,13 @@ export class ProviderSyncService {
   }
 
   private async syncProvider(provider: SyncProvider, startYear: number): Promise<ProviderSyncResult> {
-    const series = await db.query.dataSeries.findFirst({
-      where: eq(dataSeries.slug, provider.seriesSlug),
-    });
+    const series = await this.repository.findSeriesBySlug(provider.seriesSlug);
 
     if (!series) {
       throw new Error(`Base series metadata for ${provider.seriesSlug} not found. Run seed-series first.`);
     }
 
-    const lastPoint = await db.query.dataPoints.findFirst({
-      where: eq(dataPoints.seriesId, series.id),
-      orderBy: [desc(dataPoints.date)],
-    });
+    const lastPoint = await this.repository.findLatestPointForSeries(series.id);
 
     let currentStartDate = lastPoint
       ? addMonths(parseISO(lastPoint.date), 1)
@@ -136,9 +179,7 @@ export class ProviderSyncService {
     const recordsToInsert = [];
     for (const record of data) {
       if (!slugToId[record.seriesSlug]) {
-        const matchingSeries = await db.query.dataSeries.findFirst({
-          where: eq(dataSeries.slug, record.seriesSlug),
-        });
+        const matchingSeries = await this.repository.findSeriesBySlug(record.seriesSlug);
         if (matchingSeries) {
           slugToId[record.seriesSlug] = matchingSeries.id;
         }
@@ -157,22 +198,14 @@ export class ProviderSyncService {
     }
 
     if (recordsToInsert.length > 0) {
-      await db.insert(dataPoints).values(recordsToInsert).onConflictDoUpdate({
-        target: [dataPoints.seriesId, dataPoints.date],
-        set: { value: sql`EXCLUDED.value` },
-      });
+      await this.repository.upsertDataPoints(recordsToInsert);
 
       const latestDate = recordsToInsert.map((record) => record.date).sort().at(-1);
       if (latestDate) {
-        await db
-          .update(dataSeries)
-          .set({
-            lastDataPointDate: latestDate,
-            lastSyncStatus: 'success',
-            lastSyncError: null,
-            updatedAt: new Date(),
-          })
-          .where(eq(dataSeries.id, series.id));
+        await this.repository.markSeriesSyncSuccess(series.id, {
+          latestDate,
+          status: 'success',
+        });
       }
     }
 
