@@ -1,6 +1,6 @@
 # Platform Documentation Index
 
-Welcome to the official documentation for **Obligacje Calculator**. This documentation is the master reference for product boundaries, real requirements, technical design, and active recovery/refactor work.
+Welcome to the official documentation for **Obligacje Calculator**. This documentation is the master reference for product boundaries, real requirements, technical design, and the current production-readiness path.
 
 ## Table of Contents
 
@@ -47,17 +47,12 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [User Notebook & Tracking](./technical/features/11_user_notebook_and_tracking.md) - Personal investments.
 
 ### 5. Current Plans & Roadmap
-- [00. Current Product Roadmap](./plans/00_roadmap.md) - Honest current-state roadmap centered on recovery and simplification.
+- [00. Current Product Roadmap](./plans/00_roadmap.md) - Current roadmap centered on the trusted-core production scope.
 - [01. Long-Term Product Foundation Plan](./plans/01_longterm_product_foundation_plan.md) - Long-term direction after scope narrowing.
-- [02. Full App Refactor and Recovery Plan](./plans/02_full_app_refactor_and_recovery_plan.md) - Active refactor plan for stability, calculation trust, UX simplification, and documentation reset.
-- [03. Manual Regression and Release Candidate Checklist](./plans/03_manual_regression_and_release_candidate_checklist.md) - Route-by-route validation checklist for finishing the recovery refactor responsibly.
-- [04. Post-Refactor Polish and Hardening Plan](./plans/04_post_refactor_polish_and_hardening_plan.md) - Separate plan for i18n cleanup, UI/UX polish, edge-case handling, accessibility, and finish-quality hardening.
-- [05. Retained Route Regression Execution Log](./plans/05_retained_route_regression_execution_log.md) - Current retained-route evidence snapshot, trust limits, and release-position log.
-- [06. Future Backend Migration to .NET Plan](./plans/06_future_backend_migration_to_dotnet_plan.md) - Deferred architecture sketch for keeping Next.js as frontend-only and moving backend logic to a dedicated .NET platform later.
 - [08. Cloud Run Release Candidate Plan](./plans/08_cloud_run_release_candidate_plan.md) - First Cloud Run deploy checklist for the trusted-core production scope.
 
 ### 6. Archived Plans
 - [Archived Plans Index](./archive/plans/index.md) - Historical and completed execution plans preserved for reference.
 
 ---
-*Last Updated: May 26, 2026 - App remains in active refactor/recovery, with comparison and workspace surfaces split into smaller sections, chart and route data boundaries tightened, current `lib/data/**`, `lib/server/**`, and `db/schemas/**` structure reflected in top-level docs, and secondary tools intentionally demoted behind the flagship calculator flows.*
+*Last Updated: June 24, 2026 - App is in production-readiness cleanup for the trusted-core Cloud Run scope. Active docs now distinguish current release work from archived recovery/refactor history, and known architecture exceptions are documented in the technical contracts.*
