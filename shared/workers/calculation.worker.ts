@@ -22,7 +22,6 @@ type WorkerErrorMessage = {
   details?: unknown;
 };
 
-// Map of active AbortControllers to cancel ongoing fetches
 const activeControllers = new Map<string, AbortController>();
 
 self.onmessage = async (event: MessageEvent<WorkerRequestMessage>) => {
@@ -70,7 +69,6 @@ self.onmessage = async (event: MessageEvent<WorkerRequestMessage>) => {
     self.postMessage(successMessage);
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
-      // Aborted, no need to send message back
       return;
     }
 
