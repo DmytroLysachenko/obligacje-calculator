@@ -85,7 +85,9 @@ describe('operational endpoint contracts', () => {
 
     expect(calculationRoute).toContain("from './read-json-body'");
     expect(calculationRoute).toContain("from './responses'");
-    expect(calculationRoute).toContain('readJsonBody(req, scenarioSchemas[kind])');
+    expect(calculationRoute.replace(/\s+/g, ' ')).toContain(
+      'readJsonBody( req, scenarioSchemas[kind], )',
+    );
     expect(calculationRoute).toContain('okJson(envelope)');
     expect(calculationRoute).not.toContain(`await req${'.json()'}`);
     expect(calculationRoute).not.toContain(`NextResponse${'.json'}`);

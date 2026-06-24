@@ -26,7 +26,7 @@ describe('production readiness contract', () => {
     expect(cloudbuild).toContain('run');
     expect(cloudbuild).toContain('deploy');
     expect(cloudbuild).toContain('--port');
-    expect(cloudbuild).toContain('"8080"');
+    expect(cloudbuild).toMatch(/['"]8080['"]/);
     expect(read('next.config.ts')).toContain("output: 'standalone'");
   });
 
