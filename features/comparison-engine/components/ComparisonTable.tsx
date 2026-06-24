@@ -3,22 +3,12 @@
 import { Scale } from 'lucide-react';
 import React from 'react';
 
-import { Badge } from '@/components/ui/badge';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  ComparisonScenarioCell,
   ComparisonTablePaginationControls,
   ComparisonTableStat,
-  MobileComparisonScenario,
-  MobileComparisonValue,
 } from '@/features/comparison-engine/components/comparison-table/ComparisonTableParts';
+import { ComparisonTableSummaryGrid } from '@/features/comparison-engine/components/comparison-table/ComparisonTableSummaryGrid';
+import { ComparisonTableTimelineRows } from '@/features/comparison-engine/components/comparison-table/ComparisonTableTimelineRows';
 import { COMPARISON_TABLE_GRANULARITY_OPTIONS } from '@/features/comparison-engine/constants/comparison-table';
 import {
   buildComparisonAlignedTableRows,
@@ -31,7 +21,6 @@ import {
 import { ComparisonTableProps } from '@/features/comparison-engine/types/comparison-table';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
-import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
 import { TableRowLimit } from '@/shared/components/results/TableDensityControls';
 
 export const ComparisonTable: React.FC<ComparisonTableProps> = ({
@@ -125,47 +114,13 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
           />
         </div>
 
-        <div className="grid grid-cols-1 gap-3 border-b border-dashed px-6 py-5 md:grid-cols-3">
-          {summaryRows.map((row) => {
-            const higherScenario = row.a === row.b ? null : row.a > row.b ? 'A' : 'B';
-
-            return (
-              <div key={row.label} className="bg-muted/30 px-4 py-3">
-                <p className="text-sm font-semibold text-muted-foreground">{row.label}</p>
-                <div className="mt-2 flex items-center justify-between gap-3">
-                  <div className="space-y-1 text-sm">
-                    <p className="font-semibold text-foreground">
-                      {bondTypeA}: <span className="font-mono">{formatCurrency(row.a)}</span>
-                    </p>
-                    <p className="font-semibold text-foreground">
-                      {bondTypeB}: <span className="font-mono">{formatCurrency(row.b)}</span>
-                    </p>
-                  </div>
-                  {higherScenario ? (
-                    <Badge
-                      variant="outline"
-                      className={cn(
-                        'border px-3 py-1 text-xs font-semibold',
-                        higherScenario === 'A'
-                          ? 'border-border bg-card text-foreground'
-                          : 'border-success/30 bg-success/10 text-success',
-                      )}
-                    >
-                      {higherScenario === 'A' ? bondTypeA : bondTypeB}
-                    </Badge>
-                  ) : (
-                    <Badge
-                      variant="outline"
-                      className="border-border bg-muted text-xs font-semibold text-muted-foreground"
-                    >
-                      {tieLabel}
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <ComparisonTableSummaryGrid
+          rows={summaryRows}
+          bondTypeA={bondTypeA}
+          bondTypeB={bondTypeB}
+          tieLabel={tieLabel}
+          formatCurrency={formatCurrency}
+        />
 
         <div className="flex flex-col gap-3 border-b border-dashed px-6 pb-4 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-wrap items-center gap-2">
@@ -192,162 +147,26 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
         </div>
 
         <div className="px-6">
-          <ResponsiveTableSheet
-            title={t('comparison.table_mobile_title')}
-            description={t('comparison.table_mobile_desc')}
-            triggerLabel={t('comparison.table_mobile_trigger')}
-            triggerCount={t('comparison.table_mobile_count', { count: tableRows.length })}
-          >
-            {displayedRows.map((row) => {
-              return (
-                <div key={`mobile-compare-${row.key}`} className="rounded-lg bg-muted/30 p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-semibold text-foreground">{row.label}</p>
-                      <p className="mt-1 text-xs text-muted-foreground">{row.dateLabel}</p>
-                    </div>
-                  </div>
-                  <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <MobileComparisonScenario
-                      label={`${bondTypeA} (A)`}
-                      snapshot={row.scenarioA}
-                      formatCurrency={formatCurrency}
-                      labels={{
-                        nominal: t('common.nominal_value'),
-                        real: t('common.real_value'),
-                        profit: t('common.net_profit'),
-                      }}
-                    />
-                    <MobileComparisonScenario
-                      label={`${bondTypeB} (B)`}
-                      snapshot={row.scenarioB}
-                      formatCurrency={formatCurrency}
-                      labels={{
-                        nominal: t('common.nominal_value'),
-                        real: t('common.real_value'),
-                        profit: t('common.net_profit'),
-                      }}
-                    />
-                  </div>
-                  <MobileComparisonValue
-                    label={higherColumnLabel}
-                    value={
-                      row.leader === 'tie'
-                        ? tieLabel
-                        : `${row.leader === 'A' ? bondTypeA : bondTypeB} ${formatCurrency(Math.abs(row.gap))}`
-                    }
-                  />
-                </div>
-              );
-            })}
-          </ResponsiveTableSheet>
-
-          <div className="hidden rounded-lg bg-card lg:block">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-dashed border-border px-4 py-3 text-sm text-muted-foreground">
-              <p>{t('comparison.table_desktop_note')}</p>
-              <p className="text-sm font-semibold text-muted-foreground">
-                {t('comparison.table_mobile_count', { count: tableRows.length })}
-              </p>
-            </div>
-
-            <div>
-              <Table className="w-full table-fixed tabular-nums">
-                <TableHeader className="bg-white">
-                  <TableRow className="border-b hover:bg-transparent">
-                    <TableHead className="sticky left-0 top-0 z-10 h-12 w-[22%] bg-card px-4 text-xs font-semibold text-muted-foreground">
-                      {t('common.year')}
-                    </TableHead>
-                    <TableHead className="sticky top-0 z-10 h-12 w-[28%] bg-card px-4 text-xs font-semibold text-foreground">
-                      {bondTypeA} (A)
-                    </TableHead>
-                    <TableHead className="sticky top-0 z-10 h-12 w-[28%] bg-card px-4 text-xs font-semibold text-foreground">
-                      {bondTypeB} (B)
-                    </TableHead>
-                    <TableHead className="sticky top-0 z-10 h-12 w-[22%] bg-card px-4 text-right text-xs font-semibold text-muted-foreground">
-                      {higherColumnLabel}
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {displayedRows.map((row) => {
-                    const higherScenario = row.leader === 'tie' ? null : row.leader;
-
-                    return (
-                      <TableRow
-                        key={row.key}
-                        className="border-b border-border transition-colors odd:bg-muted/20 hover:bg-muted/35"
-                      >
-                        <TableCell className="sticky left-0 z-10 bg-inherit px-4 py-5 font-semibold text-foreground">
-                          <div className="space-y-1">
-                            <p>{row.label}</p>
-                            <p className="text-[11px] font-medium text-muted-foreground">
-                              {row.dateLabel}
-                            </p>
-                          </div>
-                        </TableCell>
-                        <TableCell
-                          className={cn(
-                            'px-4 py-4',
-                            higherScenario === 'A' ? 'text-foreground' : 'text-muted-foreground',
-                          )}
-                        >
-                          <ComparisonScenarioCell
-                            snapshot={row.scenarioA}
-                            formatCurrency={formatCurrency}
-                            labels={{
-                              nominal: t('common.nominal_value'),
-                              real: t('common.real_value'),
-                              profit: t('common.net_profit'),
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell
-                          className={cn(
-                            'px-4 py-4',
-                            higherScenario === 'B' ? 'text-foreground' : 'text-muted-foreground',
-                          )}
-                        >
-                          <ComparisonScenarioCell
-                            snapshot={row.scenarioB}
-                            formatCurrency={formatCurrency}
-                            labels={{
-                              nominal: t('common.nominal_value'),
-                              real: t('common.real_value'),
-                              profit: t('common.net_profit'),
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell className="px-4 py-4 text-right">
-                          {higherScenario ? (
-                            <div className="space-y-2">
-                              <Badge
-                                variant="outline"
-                                className={cn(
-                                  'border px-3 py-0.5 text-xs font-semibold',
-                                  higherScenario === 'A'
-                                    ? 'border-border bg-card text-foreground'
-                                    : 'border-success/30 bg-success/10 text-success',
-                                )}
-                              >
-                                {higherScenario === 'A' ? bondTypeA : bondTypeB} {higherBadgeSuffix}
-                              </Badge>
-                              <p className="font-mono text-xs font-semibold text-foreground">
-                                {formatCurrency(Math.abs(row.gap))}
-                              </p>
-                            </div>
-                          ) : (
-                            <span className="text-xs font-semibold text-muted-foreground">
-                              {tieLabel}
-                            </span>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
+          <ComparisonTableTimelineRows
+            rows={displayedRows}
+            bondTypeA={bondTypeA}
+            bondTypeB={bondTypeB}
+            higherColumnLabel={higherColumnLabel}
+            higherBadgeSuffix={higherBadgeSuffix}
+            tieLabel={tieLabel}
+            formatCurrency={formatCurrency}
+            labels={{
+              mobileTitle: t('comparison.table_mobile_title'),
+              mobileDescription: t('comparison.table_mobile_desc'),
+              mobileTrigger: t('comparison.table_mobile_trigger'),
+              mobileCount: t('comparison.table_mobile_count', { count: tableRows.length }),
+              desktopNote: t('comparison.table_desktop_note'),
+              year: t('common.year'),
+              nominal: t('common.nominal_value'),
+              real: t('common.real_value'),
+              profit: t('common.net_profit'),
+            }}
+          />
 
           <ComparisonTablePaginationControls
             page={currentPage}

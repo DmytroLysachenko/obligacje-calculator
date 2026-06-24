@@ -1,4 +1,5 @@
 import { CalculationResult } from '@/features/bond-core/types';
+import { ComparisonAlignedTableRow } from '@/features/comparison-engine/lib/comparison-table-model';
 
 export interface ComparisonTableProps {
   resultsA: CalculationResult;
@@ -14,3 +15,32 @@ export type ComparisonSummaryRow = {
   a: number;
   b: number;
 };
+
+export interface ComparisonTableSummaryGridProps {
+  rows: ComparisonSummaryRow[];
+  bondTypeA: string;
+  bondTypeB: string;
+  tieLabel: string;
+  formatCurrency: (val: number) => string;
+}
+
+export interface ComparisonTableTimelineRowsProps {
+  rows: ComparisonAlignedTableRow[];
+  bondTypeA: string;
+  bondTypeB: string;
+  higherColumnLabel: string;
+  higherBadgeSuffix: string;
+  tieLabel: string;
+  formatCurrency: (val: number) => string;
+  labels: {
+    mobileTitle: string;
+    mobileDescription: string;
+    mobileTrigger: string;
+    mobileCount: string;
+    desktopNote: string;
+    year: string;
+    nominal: string;
+    real: string;
+    profit: string;
+  };
+}
