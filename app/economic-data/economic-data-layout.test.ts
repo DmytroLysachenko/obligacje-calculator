@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 const repoRoot = process.cwd();
 
 const economicPagePath = 'app/economic-data/EconomicDataPageClient.tsx';
+const economicSectionsPath = 'features/economic-data/components/EconomicDashboardSections.tsx';
 const referenceHeroPath = 'shared/components/reference/ReferenceDashboardHero.tsx';
 const referenceRailPath = 'shared/components/reference/ReferenceGuideRail.tsx';
 const referenceNotePath = 'shared/components/reference/ReferenceNoteCard.tsx';
@@ -49,6 +50,10 @@ function expectNoFragments(source: string, fragments: readonly string[]) {
   for (const fragment of fragments) {
     expect(source).not.toContain(fragment);
   }
+}
+
+function expectContainsNormalized(source: string, fragment: string) {
+  expect(source.replace(/\s+/g, ' ')).toContain(fragment);
 }
 
 describe('economic data layout source contracts', () => {
@@ -105,7 +110,10 @@ describe('economic data layout source contracts', () => {
     expectContains(source, '<TabsTrigger value="nbp" className="h-8 px-3 text-xs font-semibold">');
     expectContains(source, '<TabsContent value="cpi">');
     expectContains(source, '<TabsContent value="nbp">');
-    expectContains(source, "import {ChartSection} from '@/shared/components/charts/ChartSection';");
+    expectContains(
+      source,
+      "import { ChartSection } from '@/shared/components/charts/ChartSection';",
+    );
     expectContains(source, '<ChartSection');
     expectContains(source, '<InflationChart period={period} />');
     expectContains(source, '<NBPRateChart period={period} />');
@@ -188,13 +196,13 @@ describe('economic data layout source contracts', () => {
   });
 
   it('keeps economic status and usage panels flattened', () => {
-    const source = readSource(economicPagePath);
+    const source = `${readSource(economicPagePath)}\n${readSource(economicSectionsPath)}`;
 
     expectContains(source, "'border-t py-5'");
     expectContains(source, 'space-y-3 border-y border-border py-3');
     expectContains(source, "t('economic.data_health')");
     expectContains(source, '<dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2">');
-    expectContains(source, "import {SectionBlock} from '@/shared/components/page/SectionBlock';");
+    expectContains(source, "import { SectionBlock } from '@/shared/components/page/SectionBlock';");
     expectContains(source, '<SectionBlock');
     expectContains(source, 'contentClassName="space-y-5"');
     expectContains(source, 'space-y-2 border-y border-border py-3');
@@ -227,7 +235,7 @@ describe('economic data layout source contracts', () => {
     expectContains(source, 'sourceLabel');
     expectContains(source, '<dl className="grid gap-x-8 gap-y-2.5');
     expectContains(source, 'space-y-3 border-y border-border py-3');
-    expectContains(source, "const healthToneClass = fallbackTone === 'warning'");
+    expectContainsNormalized(source, "const healthToneClass = fallbackTone === 'warning'");
     expectContains(source, 'fallbackStatusLabel?: string;');
     expectContains(source, 'syncedStatusLabel?: string;');
     expectContains(source, 'inline-flex items-center gap-2 border-l-2 pl-3 text-xs font-semibold');

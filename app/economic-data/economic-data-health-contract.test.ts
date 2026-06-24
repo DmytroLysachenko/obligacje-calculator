@@ -7,6 +7,7 @@ const projectRoot = process.cwd();
 
 const paths = {
   page: 'app/economic-data/EconomicDataPageClient.tsx',
+  sections: 'features/economic-data/components/EconomicDashboardSections.tsx',
   frame: 'shared/components/charts/ReferenceChartFrame.tsx',
   inflation: 'features/economic-data/components/InflationChart.tsx',
   nbp: 'features/economic-data/components/NBPRateChart.tsx',
@@ -26,9 +27,13 @@ function expectNotContains(source: string, fragment: string) {
   expect(source).not.toContain(fragment);
 }
 
+function expectContainsNormalized(source: string, fragment: string) {
+  expect(source.replace(/\s+/g, ' ')).toContain(fragment);
+}
+
 describe('economic data health contracts', () => {
   it('keeps range controls chart-local and accessible', () => {
-    const source = readSource(paths.page);
+    const source = `${readSource(paths.page)}\n${readSource(paths.sections)}`;
 
     expectContains(source, 'function RangeActions');
     expectContains(source, 'hint: string;');
@@ -43,7 +48,7 @@ describe('economic data health contracts', () => {
   it('uses compact health rows instead of warning boxes inside chart frames', () => {
     const source = readSource(paths.frame);
 
-    expectContains(source, "const healthToneClass = fallbackTone === 'warning'");
+    expectContainsNormalized(source, "const healthToneClass = fallbackTone === 'warning'");
     expectContains(source, 'fallbackStatusLabel?: string;');
     expectContains(source, 'syncedStatusLabel?: string;');
     expectContains(source, "fallbackTone === 'warning' ? fallbackStatusLabel : syncedStatusLabel");

@@ -19,69 +19,22 @@ import { ReferenceChartFrame } from '@/shared/components/charts/ReferenceChartFr
 import { useChartData } from '@/shared/hooks/useChartData';
 import { sampleSeriesPoints, sliceSeriesByPeriod } from '@/shared/lib/chart-series';
 import { getReferenceMetaItems } from '@/shared/lib/data-reference';
-interface NBPRateDataPoint {
-  date: string;
-  rate: number;
-}
-interface ChartSeriesEnvelope<T> {
-  data: T[];
-  source: 'database' | 'fallback';
-  usedFallback: boolean;
-  asOf?: string;
-  lastCheck?: string;
-  coverageStart?: string;
-  coverageEnd?: string;
-  dataSource?: string;
-  seriesName?: string;
-  syncStatus?: 'success' | 'partial' | 'failed' | 'stale';
-  coverageNote?: string;
-  sourceUrl?: string;
-}
-interface PayloadEntry {
-  name: string;
-  value: number;
-  color: string;
-}
-const CustomTooltip = ({
-  active,
-  payload,
-  label,
-  t,
-}: {
-  active?: boolean;
-  payload?: PayloadEntry[];
-  label?: string;
-  t: (key: string) => string;
-}) => {
-  if (!active || !payload || !payload.length) return null;
-  return (
-    <div className="min-w-[120px] rounded-md border border-border bg-popover p-3 text-popover-foreground shadow-lg">
-      <p className="mb-2 border-b border-border/50 pb-1 text-sm font-semibold">{label}</p>
-      <div className="space-y-1.5">
-        {payload.map((entry, index) => (
-          <div key={index} className="flex items-center justify-between gap-4 text-sm">
-            <span className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
-              {t('bonds.nbp_rate_short')}:
-            </span>
-            <span className="font-mono font-bold">{entry.value}%</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-export const NBPRateChart = ({
-  period = 'ALL',
-}: {
-  period?: '1Y' | '5Y' | '10Y' | '30Y' | 'ALL';
-}) => {
+
+import {
+  ChartSeriesEnvelope,
+  EconomicSeriesPoint,
+  PeriodValue,
+} from '../lib/economic-dashboard-model';
+
+import { EconomicChartTooltip } from './EconomicChartTooltip';
+
+export const NBPRateChart = ({ period = 'ALL' }: { period?: PeriodValue }) => {
   const { t, locale: language } = useAppI18n();
   const {
     data: response,
     isLoading,
     isError,
-  } = useChartData<ChartSeriesEnvelope<NBPRateDataPoint>>('/api/charts/nbp-rate');
+  } = useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/nbp-rate');
   const chartData = React.useMemo(() => {
     const rawData = response?.data ?? [];
     return sampleSeriesPoints(sliceSeriesByPeriod(rawData, period), 160);
@@ -126,7 +79,7 @@ export const NBPRateChart = ({
               tickLine={false}
               axisLine={false}
             />
-            <Tooltip content={<CustomTooltip t={t} />} />
+            <Tooltip content={<EconomicChartTooltip metricLabel={t('bonds.nbp_rate_short')} />} />
             <ReferenceLine y={0} stroke="#000" strokeWidth={1} />
             {chartData.length > 24 ? (
               <Brush dataKey="date" height={22} stroke="#5C5C5C" travellerWidth={8} />
