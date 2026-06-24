@@ -18,15 +18,7 @@ import { MacroDefaultsSummary } from '@/shared/components/market-assumptions/Mac
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';
 import { isFloatingNbpBondType } from '@/shared/lib/market-assumption-semantics';
 
-export type RetirementInputs = {
-  initialCapital: number;
-  monthlyWithdrawal: number;
-  expectedInflation: number;
-  expectedNbpRate: number;
-  bondType: BondType;
-  taxStrategy: TaxStrategy;
-  horizonYears: number;
-};
+import { RetirementInputs } from '../types/retirement';
 
 interface RetirementInputsPanelProps {
   inputs: RetirementInputs;

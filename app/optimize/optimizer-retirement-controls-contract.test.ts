@@ -23,6 +23,12 @@ function expectContains(source: string, fragment: string) {
   expect(source).toContain(fragment);
 }
 
+function expectContainsNormalized(source: string, fragment: string) {
+  const normalize = (value: string) => value.replace(/\s+/g, ' ').trim();
+
+  expect(normalize(source)).toContain(normalize(fragment));
+}
+
 function expectNotContains(source: string, fragment: string) {
   expect(source).not.toContain(fragment);
 }
@@ -56,9 +62,9 @@ describe('optimizer and retirement control surface contracts', () => {
     expectContains(inputPanel, "description={t('optimizer_page.advanced_description')}");
     expectContains(inputPanel, '<MacroDefaultsSummary showNbp compact />');
     expectContains(inputPanel, "title={t('optimizer_page.family_bonds_title')}");
-    expectContains(
+    expectContainsNormalized(
       inputPanel,
-      "description={`${t('optimizer_page.family_bonds_description')} ${t('optimizer_page.family_bonds_note'",
+      "description={`${t('optimizer_page.family_bonds_description')} ${t( 'optimizer_page.family_bonds_note'",
     );
     expectContains(inputPanel, "description={t('optimizer_page.macro_scope.indexed')}");
     expectContains(inputPanel, "description={t('optimizer_page.macro_scope.floating')}");

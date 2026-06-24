@@ -11,6 +11,9 @@ import {
   RetirementPlannerCalculationEnvelope,
   ScenarioKind,
 } from '@/features/bond-core/types/scenarios';
+import { DEFAULT_RETIREMENT_INPUTS } from '@/features/retirement/constants/default-inputs';
+import { formatRetirementRate } from '@/features/retirement/lib/retirement-format';
+import { RetirementInputs } from '@/features/retirement/types/retirement';
 import { useAppI18n } from '@/i18n/client';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
@@ -22,66 +25,11 @@ import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDef
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';
 
-import { RetirementInputs, RetirementInputsPanel } from './RetirementInputsPanel';
+import { RetirementInputsPanel } from './RetirementInputsPanel';
 import { RetirementResultsOverview } from './RetirementResultsOverview';
+import { RetirementSection, RetirementSummaryMetric } from './RetirementSummarySections';
 import { RetirementSupportList } from './RetirementSupportList';
 
-function formatRate(value: number) {
-  return `${value.toFixed(2)}%`;
-}
-const DEFAULT_INPUTS: RetirementInputs = {
-  initialCapital: 500000,
-  monthlyWithdrawal: 3000,
-  expectedInflation: 2.5,
-  expectedNbpRate: 5.25,
-  bondType: BondType.EDO,
-  taxStrategy: TaxStrategy.STANDARD,
-  horizonYears: 25,
-};
-const SummaryMetric = ({
-  label,
-  value,
-  detail,
-  tone = 'default',
-}: {
-  label: string;
-  value: string;
-  detail: string;
-  tone?: 'default' | 'success' | 'warning';
-}) => {
-  const toneClass =
-    tone === 'success' ? 'text-success' : tone === 'warning' ? 'text-warning' : 'text-foreground';
-  return (
-    <div className="space-y-2 border-b border-dashed border-border px-4 py-4 last:border-b-0 md:border-b-0 md:border-r last:md:border-r-0">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-        {label}
-      </p>
-      <p className={`text-xl font-semibold ${toneClass}`}>{value}</p>
-      <p className="text-xs leading-5 text-muted-foreground">{detail}</p>
-    </div>
-  );
-};
-function RetirementSection({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="space-y-4 bg-transparent">
-      <div className="space-y-2">
-        <h3 className="ui-section-title">{title}</h3>
-        {description ? (
-          <p className="ui-body max-w-3xl text-muted-foreground">{description}</p>
-        ) : null}
-      </div>
-      {children}
-    </section>
-  );
-}
 export const RetirementPlannerContainer: React.FC = () => {
   const { t, locale: language } = useAppI18n();
   const { defaults: macroDefaults } = useMacroAssumptionDefaults();
@@ -91,7 +39,7 @@ export const RetirementPlannerContainer: React.FC = () => {
     currency: 'PLN',
     maximumFractionDigits: 0,
   });
-  const [inputs, setInputs] = useState<RetirementInputs>(DEFAULT_INPUTS);
+  const [inputs, setInputs] = useState<RetirementInputs>(DEFAULT_RETIREMENT_INPUTS);
   const [isDirty, setIsDirty] = useState(true);
   const [results, setResults] = useState<RetirementPlannerCalculationEnvelope | null>(null);
   const hasTouchedMacroAssumptions = React.useRef(false);
@@ -234,7 +182,7 @@ export const RetirementPlannerContainer: React.FC = () => {
             labels={labels}
             taxStrategyLabels={taxStrategyLabels}
             formatCurrency={formatCurrency}
-            formatRate={formatRate}
+            formatRate={formatRetirementRate}
             onUpdateInput={updateInput}
           />
         </aside>
@@ -249,7 +197,7 @@ export const RetirementPlannerContainer: React.FC = () => {
               ) : null}
 
               <div className="grid gap-0 rounded-lg bg-card md:grid-cols-2 xl:grid-cols-4">
-                <SummaryMetric
+                <RetirementSummaryMetric
                   label={labels.scenarioStatus}
                   value={
                     results.result.isSustainable ? labels.balancePositive : labels.balanceDepletes
@@ -261,19 +209,19 @@ export const RetirementPlannerContainer: React.FC = () => {
                   }
                   tone={results.result.isSustainable ? 'success' : 'warning'}
                 />
-                <SummaryMetric
+                <RetirementSummaryMetric
                   label={labels.finalBalance}
                   value={formatCurrency(results.result.finalBalance)}
                   detail={labels.finalBalanceDetail}
                 />
-                <SummaryMetric
+                <RetirementSummaryMetric
                   label={labels.totalWithdrawn}
                   value={formatCurrency(results.result.totalWithdrawn)}
                   detail={labels.totalWithdrawnDetail}
                 />
-                <SummaryMetric
+                <RetirementSummaryMetric
                   label={labels.modeledAnnualRate}
-                  value={formatRate(results.result.modeledAnnualRate)}
+                  value={formatRetirementRate(results.result.modeledAnnualRate)}
                   detail={labels.modeledAnnualRateDetail.replace(
                     '{{bond}}',
                     results.result.modeledBondType,
