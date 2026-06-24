@@ -1,5 +1,5 @@
 import {db} from '@/db';
-import {userInvestmentLots, userPortfolios, userTransactions} from '@/db/schema';
+import {userInvestmentLots, userPortfolios, userTransactions, users} from '@/db/schema';
 import {and, eq, inArray} from 'drizzle-orm';
 
 export function listPortfoliosByOwner(ownerId: string) {
@@ -21,6 +21,16 @@ export function findPortfolioByOwner(ownerId: string, portfolioId: string) {
   return db.query.userPortfolios.findFirst({
     where: and(eq(userPortfolios.id, portfolioId), eq(userPortfolios.userId, ownerId)),
   });
+}
+
+export function ensureGuestPortfolioOwner(ownerId: string) {
+  return db
+    .insert(users)
+    .values({
+      id: ownerId,
+      name: 'Guest Notebook User',
+    })
+    .onConflictDoNothing();
 }
 
 export function findPortfolioById(portfolioId: string) {
@@ -60,6 +70,29 @@ export function listLotsByPortfolioIds(portfolioIds: string[]) {
 
   return db.query.userInvestmentLots.findMany({
     where: inArray(userInvestmentLots.portfolioId, portfolioIds),
+  });
+}
+
+export async function findOwnedLotByOwner(ownerId: string, lotId: string) {
+  const [lot] = await db
+    .select({
+      id: userInvestmentLots.id,
+      portfolioId: userInvestmentLots.portfolioId,
+    })
+    .from(userInvestmentLots)
+    .innerJoin(userPortfolios, eq(userInvestmentLots.portfolioId, userPortfolios.id))
+    .where(and(eq(userInvestmentLots.id, lotId), eq(userPortfolios.userId, ownerId)))
+    .limit(1);
+
+  return lot;
+}
+
+export function findPortfolioSummaryByOwner(ownerId: string, portfolioId: string) {
+  return db.query.userPortfolios.findFirst({
+    where: and(eq(userPortfolios.id, portfolioId), eq(userPortfolios.userId, ownerId)),
+    with: {
+      lots: true,
+    },
   });
 }
 

@@ -22,4 +22,14 @@ describe('portfolio service boundary', () => {
     expect(shareRoute).toContain("from '@/lib/server/portfolio/commands'");
     expect(simulateRoute).toContain("from '@/lib/server/portfolio/queries'");
   });
+
+  it('keeps portfolio ownership reads available through the repository boundary', () => {
+    const repository = read('lib/server/portfolio/repository.ts');
+
+    expect(repository).toContain('export function findPortfolioByOwner');
+    expect(repository).toContain('export async function findOwnedLotByOwner');
+    expect(repository).toContain('export function findPortfolioSummaryByOwner');
+    expect(repository).toContain('export function ensureGuestPortfolioOwner');
+    expect(repository).toContain('innerJoin(userPortfolios');
+  });
 });
