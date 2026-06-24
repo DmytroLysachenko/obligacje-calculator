@@ -11,7 +11,8 @@ const files = {
   sharedValueChart: 'shared/components/charts/BondValueChart.tsx',
   verdict: 'features/comparison-engine/components/ComparisonVerdict.tsx',
   chartLegendContract: 'shared/components/charts/chart-legend-contract.test.ts',
-  resultsContract: 'features/comparison-engine/comparison-results-surface-contract.test.ts',
+  resultsContract: 'features/comparison-engine/tests/comparison-results-surface-contract.test.ts',
+  resultsPanelTypes: 'features/comparison-engine/types/comparison-results-panel.ts',
 } as const;
 
 function read(relativePath: string) {
@@ -40,22 +41,18 @@ describe('comparison chart and verdict contracts', () => {
     expectContains(source, 'MultiAssetComparisonChartProps');
     expectContains(
       source,
-      'import { ChartLegendStrip } from "@/shared/components/charts/ChartLegendStrip";',
+      "import { ChartLegendStrip } from '@/shared/components/charts/ChartLegendStrip';",
     );
-    expectContains(
-      source,
-      'const growthLegendItems = React.useMemo(() => assets.map((asset) => ({',
-    );
-    expectContains(
-      source,
-      'const drawdownLegendItems = React.useMemo(() => assets.map((asset) => ({',
-    );
+    expectContains(source, 'const growthLegendItems = React.useMemo(');
+    expectContains(source, '() => createMultiAssetGrowthLegendItems(assets),');
+    expectContains(source, 'const drawdownLegendItems = React.useMemo(');
+    expectContains(source, '() => createMultiAssetDrawdownLegendItems(assets),');
     expectContains(source, '<ChartLegendStrip items={growthLegendItems} />');
     expectContains(source, '<ChartLegendStrip items={drawdownLegendItems} />');
     expectContains(source, 'const inflation = data.inflation;');
     expectContains(source, 'const nbp = data.nbp;');
-    expectContains(source, '{t("bonds.ref_inflation")}:');
-    expectContains(source, '{t("bonds.nbp_rate_short")}:');
+    expectContains(source, "{t('bonds.ref_inflation')}:");
+    expectContains(source, "{t('bonds.nbp_rate_short')}:");
 
     expectNoFragments(source, [
       'Legend,',
@@ -72,6 +69,7 @@ describe('comparison chart and verdict contracts', () => {
 
   it('keeps bond comparison on the shared value chart renderer', () => {
     const source = read(files.resultsPanel);
+    const types = read(files.resultsPanelTypes);
     const sharedChart = read(files.sharedValueChart);
 
     expectContains(source, "from '@/shared/components/charts/BondValueChart';");
@@ -80,8 +78,8 @@ describe('comparison chart and verdict contracts', () => {
     expectContains(source, '<BondValueChart');
     expectContains(source, 'defaultGranularity={chartStep}');
     expectContains(source, 'onGranularityChange={onChartStepChange}');
-    expectContains(source, 'scenarioAColor: string;');
-    expectContains(source, 'scenarioBColor: string;');
+    expectContains(types, 'scenarioAColor: string;');
+    expectContains(types, 'scenarioBColor: string;');
     expectContains(source, 'color: scenarioAColor');
     expectContains(source, 'color: scenarioBColor');
     expectContains(source, 'rightDomain={rightDomain}');
@@ -95,7 +93,7 @@ describe('comparison chart and verdict contracts', () => {
       '<Legend',
       'Brush',
       './ComparisonChart',
-      '<ComparisonChart',
+      '<ComparisonChart ',
       './MultiAssetComparisonChart',
       '<MultiAssetComparisonChart',
     ]);
@@ -114,9 +112,9 @@ describe('comparison chart and verdict contracts', () => {
       'inline-flex items-center gap-2 border-l-2 border-warning pl-3 text-xs font-semibold text-warning',
     );
     expectContains(source, 'border-l-2 border-border px-4 py-4 text-center');
-    expectContains(source, '<Scale className="h-3 w-3"/>');
-    expectContains(source, '<ShieldCheck className="h-3 w-3"/>');
-    expectContains(source, '<Zap className="h-3 w-3"/>');
+    expectContains(source, '<Scale className="h-3 w-3" />');
+    expectContains(source, '<ShieldCheck className="h-3 w-3" />');
+    expectContains(source, '<Zap className="h-3 w-3" />');
 
     expectNoFragments(source, [
       "import { Badge } from '@/components/ui/badge';",

@@ -3,12 +3,7 @@
 import { LineChart } from 'lucide-react';
 import React from 'react';
 
-import {
-  BondInputs,
-  CalculationResult,
-  ChartStep,
-  InterestPayout,
-} from '@/features/bond-core/types';
+import { ComparisonResultsPanelProps } from '@/features/comparison-engine/types/comparison-results-panel';
 import { useAppI18n } from '@/i18n/client';
 import {
   BondValueChart,
@@ -18,7 +13,6 @@ import {
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
 import { MetricStrip, MetricStripItem } from '@/shared/components/results/MetricStrip';
 import { ResultActionGrid } from '@/shared/components/results/ResultActionGrid';
-import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { applyChartContextRates } from '@/shared/lib/chart-context-rates';
 import { computeNumericDomain, computeRateDomain } from '@/shared/lib/chart-series';
 import { buildComparisonExportHeaders } from '@/shared/lib/export-headers';
@@ -27,22 +21,7 @@ import {
   exportComparisonCsv,
 } from '@/shared/lib/retained-exports';
 
-import { ComparisonChartPoint } from '../lib/comparison-display';
-
-interface ComparisonResultsPanelProps {
-  chartData: ComparisonChartPoint[];
-  usesMixedTimelineCadence: boolean;
-  resultsA: CalculationResult;
-  resultsB: CalculationResult;
-  inputsA: BondInputs;
-  inputsB: BondInputs;
-  formatCurrency: (value: number) => string;
-  language: 'pl' | 'en';
-  chartStep: ChartStep;
-  onChartStepChange: (step: ChartStep) => void;
-  scenarioAColor: string;
-  scenarioBColor: string;
-}
+import { ComparisonChartHelpSection } from './ComparisonResultsPanelParts';
 
 export function ComparisonResultsPanel({
   chartData,
@@ -330,50 +309,11 @@ export function ComparisonResultsPanel({
         />
 
         <div className="mt-6">
-          <SecondaryInsightAccordion
-            title={t('comparison.comparison_chart_help_title')}
-            description={t('comparison.comparison_chart_help_desc')}
-            badge={usesMixedTimelineCadence ? t('comparison.mixed_cadence') : undefined}
-            className="mt-0"
-          >
-            <div className="space-y-4 text-sm leading-7 text-muted-foreground">
-              <div className="border-t border-border py-4">
-                <p>{t('comparison.comparison_chart_help_note')}</p>
-              </div>
-              {usesMixedTimelineCadence ? (
-                <div className="ui-inline-notice border-l-2 border-warning text-warning">
-                  <p className="font-semibold">
-                    {t('comparison.mixed_cadence_notice', {
-                      bondTypeA: inputsA.bondType,
-                      cadenceA:
-                        inputsA.payoutFrequency === InterestPayout.MONTHLY
-                          ? t('comparison.cadence_monthly')
-                          : t('comparison.cadence_longer'),
-                      bondTypeB: inputsB.bondType,
-                      cadenceB:
-                        inputsB.payoutFrequency === InterestPayout.MONTHLY
-                          ? t('comparison.cadence_monthly')
-                          : t('comparison.cadence_longer'),
-                    })}
-                  </p>
-                </div>
-              ) : null}
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="border-t border-border py-4">
-                  <p className="ui-card-title">{t('comparison.end_level')}</p>
-                  <p className="mt-1 text-xs leading-6 text-muted-foreground">
-                    {t('comparison.end_level_desc')}
-                  </p>
-                </div>
-                <div className="border-t border-border py-4">
-                  <p className="ui-card-title">{t('comparison.update_rhythm')}</p>
-                  <p className="mt-1 text-xs leading-6 text-muted-foreground">
-                    {t('comparison.update_rhythm_desc')}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </SecondaryInsightAccordion>
+          <ComparisonChartHelpSection
+            inputsA={inputsA}
+            inputsB={inputsB}
+            usesMixedTimelineCadence={usesMixedTimelineCadence}
+          />
         </div>
       </div>
     </section>

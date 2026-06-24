@@ -42,10 +42,7 @@ describe('comparison chart ownership contract', () => {
     const shared = read(paths.sharedValueChart);
     const sharedParts = read(paths.sharedValueChartParts);
 
-    expectContains(
-      container,
-      "import { ComparisonResultsPanel } from '../ComparisonResultsPanel';",
-    );
+    expectContains(container, "import { ComparisonResultsPanel } from './ComparisonResultsPanel';");
     expectContains(container, '<ComparisonResultsPanel');
     expectContains(container, 'chartData={chartData}');
     expectContains(container, 'chartStep={chartStep}');
@@ -102,12 +99,12 @@ describe('comparison chart ownership contract', () => {
 
     expectContains(
       page,
-      "import {MultiAssetComparisonContainer} from '@/features/comparison-engine/components/MultiAssetComparisonContainer';",
+      "import { MultiAssetComparisonContainer } from '@/features/comparison-engine/components/MultiAssetComparisonContainer';",
     );
     expectContains(page, '<MultiAssetComparisonContainer />');
     expectContains(
       container,
-      "import { MultiAssetComparisonChart } from '../MultiAssetComparisonChart';",
+      "import { MultiAssetComparisonChart } from './MultiAssetComparisonChart';",
     );
     expectContains(container, '<MultiAssetComparisonChart');
     expectContains(container, 'chartData={chartData}');
