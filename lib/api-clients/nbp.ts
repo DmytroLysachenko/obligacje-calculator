@@ -1,5 +1,5 @@
-import { BaseApiClient, StandardizedIndicator, fetchWithTimeout } from "./base";
-import { buildNbpReferenceFallbackIndicators } from "@/shared/lib/nbp-reference-fallback";
+import { BaseApiClient, StandardizedIndicator, fetchWithTimeout } from './base';
+import { buildNbpReferenceFallbackIndicators } from '@/shared/lib/nbp-reference-fallback';
 
 interface NbpGoldPrice {
   data: string;
@@ -12,28 +12,27 @@ interface NbpRateItem {
 }
 
 export class NbpApiClient extends BaseApiClient {
-  private baseUrl = "https://api.nbp.pl/api";
+  private baseUrl = 'https://api.nbp.pl/api';
 
   async fetchLatestData(): Promise<StandardizedIndicator[]> {
     const [gold, rateHistory] = await Promise.all([
       this.fetchGoldPrice(),
-      this.fetchReferenceRateHistory()
+      this.fetchReferenceRateHistory(),
     ]);
-    return [gold, rateHistory[0] ?? { name: "nbp_reference_rate", value: 3.75, date: new Date().toISOString().split('T')[0] }];
+    return [gold, rateHistory[0] ?? { name: 'nbp_reference_rate', value: 3.75, date: new Date().toISOString().split('T')[0] }];
   }
 
   async fetchHistoricalData(startDate: string): Promise<StandardizedIndicator[]> {
-    // Note: NBP API has limitations on range size, usually handled by caller or multiple requests
-    // For gold, we fetch last 100 points as per original, but filtering by startDate if needed
+    // NBP gold history is intentionally bounded here; broader paging belongs in the sync layer.
     const response = await fetchWithTimeout(`${this.baseUrl}/cenyzlota/last/100?format=json`);
     if (!response.ok) throw new Error(`NBP API error: ${response.statusText}`);
-    
+
     const data: NbpGoldPrice[] = await response.json();
-    
+
     return data
-      .filter(item => item.data >= startDate)
+      .filter((item) => item.data >= startDate)
       .map((item) => ({
-        name: "gold_price",
+        name: 'gold_price',
         value: item.cena,
         date: item.data,
       }));
@@ -44,7 +43,7 @@ export class NbpApiClient extends BaseApiClient {
     if (!response.ok) throw new Error(`NBP API error: ${response.statusText}`);
     const data: NbpGoldPrice[] = await response.json();
     return {
-      name: "gold_price",
+      name: 'gold_price',
       value: data[0].cena,
       date: data[0].data,
     };
@@ -52,14 +51,14 @@ export class NbpApiClient extends BaseApiClient {
 
   async fetchReferenceRateHistory(): Promise<StandardizedIndicator[]> {
     try {
-      const response = await fetchWithTimeout("https://api.nbp.pl/api/statystyka/stopy/ref?format=json");
+      const response = await fetchWithTimeout('https://api.nbp.pl/api/statystyka/stopy/ref?format=json');
       if (!response.ok) {
         return buildNbpReferenceFallbackIndicators();
       }
 
       const data = (await response.json()) as NbpRateItem[];
       return data.map((item) => ({
-        name: "nbp_reference_rate",
+        name: 'nbp_reference_rate',
         value: parseFloat(item.oprocentowanie.replace(',', '.')),
         date: item.obowiazuje_od,
         metadata: {
