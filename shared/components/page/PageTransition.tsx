@@ -1,11 +1,11 @@
 'use client';
 
-import React, { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 interface PageTransitionProps {
   children: ReactNode;
 }
 
-export const PageTransition: React.FC<PageTransitionProps> = ({ children }) => {
+export function PageTransition({ children }: PageTransitionProps) {
   return <div>{children}</div>;
-};
+}
