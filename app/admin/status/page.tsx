@@ -1,13 +1,13 @@
 'use client';
 
-import {Button} from '@/components/ui/button';
-import {useAppI18n} from '@/i18n/client';
-import {AdminStatusDashboard} from '@/features/admin/status/AdminStatusDashboard';
-import {useAdminStatusDashboard} from '@/features/admin/status/useAdminStatusDashboard';
-import {AlertCircle} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useAppI18n } from '@/i18n/client';
+import { AdminStatusDashboard } from '@/features/admin/status/AdminStatusDashboard';
+import { useAdminStatusDashboard } from '@/features/admin/status/useAdminStatusDashboard';
+import { AlertCircle } from 'lucide-react';
 
 export default function AdminStatusPage() {
-  const {t} = useAppI18n();
+  const { t } = useAppI18n();
   const {
     data,
     error,
@@ -38,11 +38,11 @@ export default function AdminStatusPage() {
             <p className="ui-body text-muted-foreground">{t('admin.enter_secret')}</p>
           </div>
           <div className="space-y-4">
-            <input 
-              type="password" 
-              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-primary" 
-              value={secret} 
-              onChange={(e) => setSecret(e.target.value)} 
+            <input
+              type="password"
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-primary"
+              value={secret}
+              onChange={(e) => setSecret(e.target.value)}
               placeholder="Secret"
             />
             <Button className="w-full rounded-lg font-semibold" onClick={handleSaveSecret}>{t('admin.unlock')}</Button>
