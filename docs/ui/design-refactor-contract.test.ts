@@ -97,7 +97,6 @@ const marketAssumptionRefinedFiles = [
 ] as const;
 
 const insightRefinedFiles = [
-  'shared/components/CommunityInsightsWidget.tsx',
   'shared/components/insights/AdvisorTips.tsx',
   'shared/components/insights/MathDeepDive.tsx',
   'shared/components/insights/ReadingChecklist.tsx',

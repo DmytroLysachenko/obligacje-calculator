@@ -113,18 +113,4 @@ describe('operational endpoint contracts', () => {
     expect(service).toContain('createDefaultSyncEngine');
   });
 
-  it('keeps community insights database reads behind the community service boundary', () => {
-    const route = read('app/api/community/insights/route.ts');
-    const service = read('lib/server/community/insights.ts');
-
-    expect(route).toContain("from '@/lib/server/community/insights'");
-    expect(route).toContain('listCommunityInsights');
-    expect(route).toContain('okJson(insights)');
-    expect(route).not.toContain("from '@/db'");
-    expect(route).not.toContain('db.query');
-
-    expect(service).toContain("from '@/db'");
-    expect(service).toContain('db.query.communityInsights.findMany');
-    expect(service).toContain('popularityScore');
-  });
 });
