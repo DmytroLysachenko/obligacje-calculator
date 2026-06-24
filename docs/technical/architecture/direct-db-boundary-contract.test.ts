@@ -70,9 +70,7 @@ describe('direct database boundary contract', () => {
     const serviceBoundaries = read('docs/architecture/service-boundaries.md');
 
     expect(cleanCodeContract).toContain("'app/api/readiness/route.ts'");
-    expect(cleanCodeContract).toContain("'shared/components/MacroAdjuster.tsx'");
     expect(cleanCodeContract).toContain("'shared/hooks/useQuerySync.ts'");
-    expect(cleanCodeContract).toContain("'shared/workers/data-processor.worker.ts'");
     expect(cleanCodeContract).toContain("'lib/sync/seed-series.ts'");
     expect(projectMap).toContain('Direct database reads are intentional in this layer');
     expect(projectMap).toContain('Seed scripts may use direct database access');

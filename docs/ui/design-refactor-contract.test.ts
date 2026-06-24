@@ -89,7 +89,6 @@ const notebookRefinedFiles = [
 ] as const;
 
 const marketAssumptionRefinedFiles = [
-  'shared/components/MacroAdjuster.tsx',
   'shared/components/MarketAssumptionsForm.tsx',
   'shared/components/market-assumptions/AssumptionHistoryPopover.tsx',
   'shared/components/market-assumptions/AssumptionSemanticsNote.tsx',
@@ -99,10 +98,7 @@ const marketAssumptionRefinedFiles = [
 
 const insightRefinedFiles = [
   'shared/components/CommunityInsightsWidget.tsx',
-  'shared/components/TaxLeakChart.tsx',
   'shared/components/insights/AdvisorTips.tsx',
-  'shared/components/insights/CalculationExplainer.tsx',
-  'shared/components/insights/CalculationTrace.tsx',
   'shared/components/insights/MathDeepDive.tsx',
   'shared/components/insights/ReadingChecklist.tsx',
 ] as const;

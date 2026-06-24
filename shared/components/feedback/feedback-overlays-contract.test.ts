@@ -8,7 +8,6 @@ const files = {
   recalculate: 'shared/components/feedback/RecalculateButton.tsx',
   confirm: 'shared/components/feedback/ConfirmActionDialog.tsx',
   toast: 'shared/components/feedback/AppToast.tsx',
-  taxLeakChart: 'shared/components/TaxLeakChart.tsx',
   designRefactor: 'docs/ui/design-refactor-contract.test.ts',
   accessibility: 'shared/components/accessibility/responsive-accessibility-contract.test.ts',
 } as const;
@@ -94,25 +93,6 @@ describe('feedback overlay surface contracts', () => {
       'border-success/30 bg-card text-foreground',
       'border-destructive/30 bg-card text-foreground',
       'shadow-lg',
-    ]);
-  });
-
-  it('keeps chart tooltip shells from using heavy shadows', () => {
-    const source = read(files.taxLeakChart);
-
-    expectContains(source, 'border border-border bg-popover p-3 text-popover-foreground shadow-none');
-    expectContains(source, '<Tooltip');
-    expectContains(source, '<AreaChartWithTooltipIndex');
-    expectContains(source, 'ChartContainer height={height}');
-    expectContains(source, 'ResponsiveContainer width="100%" height="100%"');
-    expectContains(source, 'activeTooltipIndex={hoverIndex !== null ? hoverIndex : undefined}');
-    expectContains(source, 'onMouseLeave={() => setHoverIndex(null)}');
-    expectContains(source, 'legendType="none"');
-
-    expectNoFragments(source, [
-      'rounded-lg border border-border bg-popover p-3 text-popover-foreground shadow-lg',
-      'shadow-lg',
-      'rounded-lg border',
     ]);
   });
 

@@ -86,9 +86,7 @@ describe('clean code architecture contract', () => {
 
   it('keeps broad lint and comment escape hatches explicit', () => {
     const approvedDisableFiles = new Set([
-      'shared/components/MacroAdjuster.tsx',
       'shared/hooks/useQuerySync.ts',
-      'shared/workers/data-processor.worker.ts',
       'lib/sync/seed-series.ts',
     ]);
     const disallowedMarkers = filesContaining(/TODO|FIXME|debugger|@ts-ignore/)
