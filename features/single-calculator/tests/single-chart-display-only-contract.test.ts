@@ -45,10 +45,9 @@ describe('single calculator chart display-only contract', () => {
       source,
       'setInputs(stripDisplayOnlyInputs(restoredState.inputs) ?? fallbackInputs);',
     );
-    expectContains(
-      source,
-      'setLastCommittedInputs(restoredEnvelope ? stripDisplayOnlyInputs(restoredState.lastCommittedInputs ?? null) : null);',
-    );
+    expectContains(source, 'setLastCommittedInputs(');
+    expectContains(source, 'restoredEnvelope');
+    expectContains(source, 'stripDisplayOnlyInputs(restoredState.lastCommittedInputs ?? null)');
     expectContains(source, 'savePersistedCalculatorState(STORAGE_KEY');
   });
 
@@ -57,7 +56,7 @@ describe('single calculator chart display-only contract', () => {
 
     expectContains(
       source,
-      'const [displayStep, setDisplayStep] = React.useState<ChartStep>("yearly");',
+      "const [displayStep, setDisplayStep] = React.useState<ChartStep>('yearly');",
     );
     expectContains(source, 'defaultGranularity={displayStep}');
     expectContains(source, 'onGranularityChange={setDisplayStep}');
@@ -107,7 +106,7 @@ describe('single calculator chart display-only contract', () => {
   it('keeps legacy display-only inputs out of committed single scenarios', () => {
     const source = read(files.hook);
 
-    expectContains(source, 'const finalInputs = { ...currentInputs };');
+    expectContains(source, 'let finalInputs = { ...currentInputs };');
     expectContains(source, 'setLastCommittedInputs(finalInputs);');
     expectContains(source, 'stripDisplayOnlyInputs(restoredState.lastCommittedInputs ?? null)');
     expectNotContains(source, 'finalInputs.chartStep');

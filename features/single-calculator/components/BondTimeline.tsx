@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ChartStep } from '@/features/bond-core/types';
+import { BondTimelineProps } from '@/features/single-calculator/types/timeline';
 import { useAppI18n } from '@/i18n/client';
 import { getIntlLocale } from '@/i18n/locale-utils';
 import { cn } from '@/lib/utils';
@@ -31,20 +31,10 @@ import {
   getSimulationEventDisplayLabel,
 } from '@/shared/lib/bond-display';
 
-import { CalculationResult } from '../../bond-core/types';
 import { SimulationEventType } from '../../bond-core/types/simulation';
-interface BondTimelineProps {
-  results: CalculationResult;
-  chartStep?: ChartStep;
-}
-function TimelineStat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="border-b border-border px-1 py-2.5 md:border-b-0 md:px-0">
-      <p className="text-xs font-semibold text-muted-foreground">{label}</p>
-      <p className="mt-1 text-sm font-semibold text-foreground">{value}</p>
-    </div>
-  );
-}
+
+import { MobileValue, TimelineStat } from './BondTimelineValues';
+
 export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep = 'yearly' }) => {
   const { t, locale: language } = useAppI18n();
   const [hasMounted, setHasMounted] = React.useState(false);
@@ -415,11 +405,3 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
     </div>
   );
 };
-function MobileValue({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="border-t border-border px-1 py-2 first:border-t-0">
-      <p className="text-xs font-semibold text-muted-foreground">{label}</p>
-      <p className="mt-1 text-sm font-semibold text-foreground">{value}</p>
-    </div>
-  );
-}

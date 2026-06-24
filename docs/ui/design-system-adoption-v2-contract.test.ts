@@ -33,7 +33,7 @@ describe('design system adoption v2 contract', () => {
     const notebookStatus = read('features/notebook/components/WorkspaceStatusCard.tsx');
     const sidebarWorkspace = read('shared/components/chrome/SidebarWorkspaceUtility.tsx');
     const retirementInputs = read('features/retirement/components/RetirementInputsPanel.tsx');
-    const optimizer = read('app/optimize/BondOptimizerClient.tsx');
+    const optimizerInputPanel = read('features/optimizer/components/OptimizerInputPanel.tsx');
 
     for (const source of [
       singleConfig,
@@ -44,7 +44,7 @@ describe('design system adoption v2 contract', () => {
       notebookStatus,
       sidebarWorkspace,
       retirementInputs,
-      optimizer,
+      optimizerInputPanel,
     ]) {
       expectUsesShared(source, 'FormSelect');
       expectAvoidsLocalPattern(source, "from '@/components/ui/select'");
