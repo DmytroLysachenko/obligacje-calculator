@@ -69,4 +69,33 @@ describe('sync run history repository', () => {
       limit: 20,
     }));
   });
+
+  it('ensures the sync_runs schema before reading the latest run for a series', async () => {
+    dbMocks.findFirst.mockResolvedValue({id: 'latest-run'});
+    const { getLatestSyncRunForSeries } = await import('./run-history');
+
+    await expect(getLatestSyncRunForSeries('pl-cpi')).resolves.toEqual({id: 'latest-run'});
+
+    expect(dbMocks.execute).toHaveBeenCalledTimes(4);
+    expect(dbMocks.findFirst).toHaveBeenCalledWith(expect.objectContaining({
+      where: expect.anything(),
+    }));
+  });
+
+  it('keeps missing sync_runs table fallbacks safe for freshness reads and writes', async () => {
+    dbMocks.execute.mockRejectedValue(new Error('relation "sync_runs" does not exist'));
+    const {
+      getLatestSyncRunForSeries,
+      listRecentSyncRuns,
+      recordSyncRun,
+    } = await import('./run-history');
+
+    await expect(recordSyncRun({
+      scope: 'macro-sync',
+      mode: 'macro-sync',
+      status: 'success',
+    })).resolves.toBeNull();
+    await expect(listRecentSyncRuns()).resolves.toEqual([]);
+    await expect(getLatestSyncRunForSeries('pl-cpi')).resolves.toBeNull();
+  });
 });
