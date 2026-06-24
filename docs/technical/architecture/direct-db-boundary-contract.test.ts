@@ -25,7 +25,7 @@ const approvedDirectDbFiles = new Set([
   'lib/sync/seed-production-bonds.ts',
   'lib/sync/seed-production-data.ts',
   'lib/sync/seed-series-runner.ts',
-  'lib/sync/services/provider-sync-service.ts',
+  'lib/sync/services/provider-sync-repository.ts',
 ]);
 
 function read(relativePath: string) {
