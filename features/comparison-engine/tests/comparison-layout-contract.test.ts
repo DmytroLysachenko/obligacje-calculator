@@ -12,6 +12,7 @@ const files = {
   table: 'features/comparison-engine/components/ComparisonTable.tsx',
   tableParts: 'features/comparison-engine/components/comparison-table/ComparisonTableParts.tsx',
   tableModel: 'features/comparison-engine/lib/comparison-table-model.ts',
+  calculatorState: 'features/comparison-engine/lib/comparison-calculator-state.ts',
   hook: 'features/comparison-engine/hooks/useComparison.ts',
 } as const;
 
@@ -74,10 +75,12 @@ describe('comparison layout contract', () => {
 
   it('derives comparison dirty state from committed result inputs', () => {
     const hook = read(files.hook);
+    const calculatorState = read(files.calculatorState);
 
     expect(hook).toContain('const displayIsDirty = useMemo(() => {');
-    expect(hook).toContain('areCalculatorStatesEqual(inputsA, committedInputsA)');
-    expect(hook).toContain('areCalculatorStatesEqual(inputsB, committedInputsB)');
+    expect(hook).toContain('getComparisonDirtyState({');
+    expect(calculatorState).toContain('areCalculatorStatesEqual(inputsA, committedInputsA)');
+    expect(calculatorState).toContain('areCalculatorStatesEqual(inputsB, committedInputsB)');
     expect(hook).toContain('preserveStableState(previous, next)');
     expect(hook).toContain('isDirty: displayIsDirty');
   });
@@ -101,7 +104,11 @@ describe('comparison layout contract', () => {
     expect(table).toContain('<ComparisonTablePaginationControls');
     expect(tableParts).toContain('disabled={page <= 1}');
     expect(tableParts).toContain('disabled={page >= totalPages}');
-    expect(table).toContain("(['monthly', 'quarterly', 'yearly'] as ComparisonTableGranularity[])");
+    expect(table).toContain('COMPARISON_TABLE_GRANULARITY_OPTIONS.map');
+    const tableConstants = read('features/comparison-engine/constants/comparison-table.ts');
+    expect(tableConstants).toContain("'monthly'");
+    expect(tableConstants).toContain("'quarterly'");
+    expect(tableConstants).toContain("'yearly'");
     expect(table).not.toContain('resultsA.timeline[i]');
     expect(table).not.toContain('resultsB.timeline[i]');
     expect(table).not.toContain('Array.from({ length: maxLen })');

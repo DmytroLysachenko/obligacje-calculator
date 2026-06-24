@@ -12,7 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { CalculationResult } from '@/features/bond-core/types';
 import {
   ComparisonScenarioCell,
   ComparisonTablePaginationControls,
@@ -20,26 +19,20 @@ import {
   MobileComparisonScenario,
   MobileComparisonValue,
 } from '@/features/comparison-engine/components/comparison-table/ComparisonTableParts';
+import { COMPARISON_TABLE_GRANULARITY_OPTIONS } from '@/features/comparison-engine/constants/comparison-table';
 import {
   buildComparisonAlignedTableRows,
+  buildComparisonSummaryRows,
   ComparisonTableGranularity,
   getComparisonTablePageCount,
   getComparisonTablePageRows,
   getComparisonVisibleRangeLabel,
 } from '@/features/comparison-engine/lib/comparison-table-model';
+import { ComparisonTableProps } from '@/features/comparison-engine/types/comparison-table';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
 import { TableRowLimit } from '@/shared/components/results/TableDensityControls';
-
-interface ComparisonTableProps {
-  resultsA: CalculationResult;
-  resultsB: CalculationResult;
-  purchaseDate: string;
-  bondTypeA: string;
-  bondTypeB: string;
-  formatCurrency: (val: number) => string;
-}
 
 export const ComparisonTable: React.FC<ComparisonTableProps> = ({
   resultsA,
@@ -99,28 +92,16 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
     visibleRows: displayedRows.length,
     totalRows: tableRows.length,
   });
-  const summaryRows = [
-    {
-      label: t('bonds.net_payout'),
-      a: resultAValue,
-      b: resultBValue,
+  const summaryRows = buildComparisonSummaryRows({
+    resultsA,
+    resultsB,
+    labels: {
+      netPayout: t('bonds.net_payout'),
+      realValue: t('bonds.real_value_inflation'),
+      netProfit: t('common.net_profit'),
+      taxPaid: t('comparison.table_tax_paid'),
     },
-    {
-      label: t('bonds.real_value_inflation'),
-      a: resultsA.finalRealValue,
-      b: resultsB.finalRealValue,
-    },
-    {
-      label: t('common.net_profit'),
-      a: resultsA.totalProfit,
-      b: resultsB.totalProfit,
-    },
-    {
-      label: t('comparison.table_tax_paid'),
-      a: resultsA.totalTax,
-      b: resultsB.totalTax,
-    },
-  ];
+  });
 
   return (
     <section className="space-y-6">
@@ -188,7 +169,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
 
         <div className="flex flex-col gap-3 border-b border-dashed px-6 pb-4 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-wrap items-center gap-2">
-            {(['monthly', 'quarterly', 'yearly'] as ComparisonTableGranularity[]).map((step) => (
+            {COMPARISON_TABLE_GRANULARITY_OPTIONS.map((step) => (
               <button
                 key={step}
                 type="button"

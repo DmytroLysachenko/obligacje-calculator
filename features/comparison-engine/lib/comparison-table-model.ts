@@ -10,6 +10,8 @@ import {
   getSimulationEventDisplayLabel,
 } from '@/shared/lib/bond-display';
 
+import { ComparisonSummaryRow } from '../types/comparison-table';
+
 export type ComparisonTableGranularity = Exclude<ChartStep, 'daily'>;
 
 export type ComparisonScenarioSnapshot = {
@@ -31,6 +33,44 @@ export type ComparisonAlignedTableRow = {
   gap: number;
   leader: 'A' | 'B' | 'tie';
 };
+
+export function buildComparisonSummaryRows({
+  resultsA,
+  resultsB,
+  labels,
+}: {
+  resultsA: CalculationResult;
+  resultsB: CalculationResult;
+  labels: {
+    netPayout: string;
+    realValue: string;
+    netProfit: string;
+    taxPaid: string;
+  };
+}): ComparisonSummaryRow[] {
+  return [
+    {
+      label: labels.netPayout,
+      a: resultsA.netPayoutValue,
+      b: resultsB.netPayoutValue,
+    },
+    {
+      label: labels.realValue,
+      a: resultsA.finalRealValue,
+      b: resultsB.finalRealValue,
+    },
+    {
+      label: labels.netProfit,
+      a: resultsA.totalProfit,
+      b: resultsB.totalProfit,
+    },
+    {
+      label: labels.taxPaid,
+      a: resultsA.totalTax,
+      b: resultsB.totalTax,
+    },
+  ];
+}
 
 function interpolateValue(start: number, end: number, progress: number) {
   return start + (end - start) * progress;
