@@ -74,7 +74,7 @@ Use it before adding files or moving logic.
 - `docs/technical/domain/**`: financial and domain rules.
 - `docs/technical/architecture/**`: code architecture, quality gates, deployment, testing, and engineering rules.
 - `docs/technical/features/**`: feature behavior and implementation notes.
-- `docs/plans/**`: active or recently executed plans. Completed historical plans move to archive only when they no longer guide current work.
+- `docs/plans/**`: active roadmap and release plans only. Completed historical plans live under `docs/archive/plans/**`.
 - `docs/ui/**`: UI system rules, visual regression contracts, and design migration notes.
 
 ## Test Ownership

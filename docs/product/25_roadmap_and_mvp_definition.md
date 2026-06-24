@@ -1,6 +1,6 @@
 # 25. Roadmap & MVP Definition
 
-This document defines the **reset MVP** after the current product correction.
+This document defines the **reset MVP** after the product correction and recovery refactor.
 
 The previous roadmap assumed broader platform maturity than the application currently supports. The reset MVP narrows the product back to a smaller and more believable release target.
 
@@ -21,7 +21,7 @@ Ship a **clear, reliable Polish treasury bond calculator** with supporting educa
 
 ## Conditional
 
-These stay in MVP only if validated during refactor:
+These stay in MVP only if they remain validated during production-readiness review:
 
 - comparison calculator
 - regular investment calculator
@@ -75,6 +75,13 @@ Short summary:
 - mobile interaction pass
 - performance pass
 - documentation pass
+
+## Stage 5. Production Cleanup
+
+- archive or remove stale docs from previous app versions
+- delete unused shared components, workers, and one-off scripts
+- normalize code style in touched production surfaces
+- preserve the Cloud Run trusted-core scope until release evidence is complete
 
 ## Reset MVP Success Criteria
 

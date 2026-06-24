@@ -1,12 +1,12 @@
 # 00. Current Product Roadmap
 
-This roadmap reflects the real state of the application as of May 8, 2026.
+This roadmap reflects the real state of the application as of June 24, 2026.
 
 The app is **not production-ready**.
 
-Several calculators exist, but calculation trust, data freshness, UX consistency, and final release validation are still below acceptable release quality. The current priority is not feature expansion. The current priority remains **refactor, simplification, correctness, and evidence gathering**.
+Several calculators exist, and the broad recovery/refactor work has been moved to historical documentation. The current priority is not feature expansion. The current priority is **production-readiness cleanup, final trust validation, documentation truthfulness, and release evidence** for the trusted-core Cloud Run scope.
 
-## Current Recovery Snapshot
+## Current Production-Readiness Snapshot
 
 The recovery work already completed has materially changed the product:
 
@@ -23,14 +23,14 @@ The recovery work already completed has materially changed the product:
 - retained-core comparison and ladder paths now also have dedicated baseline regression coverage
 
 This is real progress, but it is **not** the same as production readiness.
-The next step after this refactor stage is broader regression/debugging from real usage, not another feature wave.
+The next step is narrower: remove stale inventory, keep docs aligned with the implemented app, and collect final release-gate evidence.
 
 ## Current Product Position
 
 - core bond calculation logic exists and can be evolved
-- the UI surface area is too large relative to current quality
-- some features overshoot the product goal and create confusion
-- some pages expose unstable or incomplete behavior
+- the UI surface area is still larger than the trusted release scope
+- some secondary features remain intentionally conditional, experimental, or limited
+- some stale docs, scripts, and unused shared components still need cleanup
 - some live surfaces should still be treated as experimental until proven stable
 - documentation previously overstated maturity and completion
 
@@ -50,7 +50,7 @@ The app should **not** behave like a recommendation engine, robo-advisor, or wea
 
 ### Phase 1. Recovery Refactor
 
-Status: `Mostly completed`
+Status: `Archived as historical execution work`
 
 Goals:
 
@@ -76,11 +76,7 @@ Primary outputs:
 - stricter recovery-lab treatment for optimizer, multi-asset, and limited retirement flows
 - golden regression baselines for flagship calculator scenarios
 
-Remaining work inside this phase:
-
-- final manual regression sweep across retained routes
-- cleanup of any residual route/component inconsistencies found during real usage
-- final documentation reconciliation where active docs still lag behind the implemented recovery state
+Remaining work from this phase now belongs to production-readiness cleanup rather than a broad recovery plan.
 
 ### Phase 2. Calculation Trust
 
@@ -102,7 +98,7 @@ Primary outputs:
 
 ### Phase 3. Data Reliability
 
-Status: `Next`
+Status: `Current release-readiness work`
 
 Goals:
 
@@ -157,7 +153,7 @@ Primary outputs:
 
 Important rule:
 
-- this phase should not begin until retained-core correctness, trust validation, and production narrowing are much further along
+- this phase should not begin until the first trusted-core production release has shipped and parity requirements are explicit
 
 ## In-Scope Product Surfaces
 
@@ -203,16 +199,17 @@ A feature is done only when:
 - source/freshness state is clear
 - docs describe reality
 
-## Immediate Exit Criteria For This Refactor Stage
+## Immediate Production-Readiness Exit Criteria
 
-Before this recovery-refactor stage can be considered functionally complete, all should be true:
+Before the first trusted-core production release, all should be true:
 
 - retained routes can be opened and used without obvious UI mismatch or stale-shell behavior
 - loading, recalculation, and warning states follow the shared calmer recovery framing
 - experimental and limited pages do not visually overclaim their role
 - sidebar/navigation trust labels match the actual current product stance
 - active docs describe the current retained core and recovery-lab split truthfully
-- remaining open work is mostly validation and release-gate evidence, not structural UI rescue
+- stale docs, unused code, and obsolete local scripts are removed or archived
+- remaining open work is validation and release-gate evidence, not structural rescue
 
 ## What Should Not Happen Next
 
