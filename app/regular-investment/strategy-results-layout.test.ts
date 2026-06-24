@@ -7,6 +7,7 @@ const projectRoot = process.cwd();
 
 const paths = {
   regular: 'features/regular-investment/components/RegularInvestmentResultsSummary.tsx',
+  regularYearly: 'features/regular-investment/components/RegularInvestmentYearlyBucketsSection.tsx',
   ladder: 'features/ladder-strategy/components/LadderTimeline.tsx',
   density: 'shared/components/results/TableDensityControls.tsx',
 } as const;
@@ -32,18 +33,20 @@ function expectNoFragments(source: string, fragments: readonly string[]) {
 describe('strategy result layout contracts', () => {
   it('keeps regular investment results on a spacious verdict-to-data rhythm', () => {
     const source = readSource(paths.regular);
+    const yearly = readSource(paths.regularYearly);
 
-    expectContains(source, 'return (<div className="space-y-8">');
+    expectContains(source, '<div className="space-y-8">');
     expectContains(source, '<ResultSummaryHero');
     expectContains(source, '<MetricStrip');
     expectContains(
       source,
       'grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.75fr)] xl:items-start',
     );
-    expectContains(source, '<SectionBlock');
-    expectContains(source, 'className="border-y border-border py-6"');
+    expectContains(source, '<RegularInvestmentYearlyBucketsSection');
+    expectContains(yearly, '<SectionBlock');
+    expectContains(yearly, 'className="border-y border-border py-6"');
     expectContains(
-      source,
+      yearly,
       '<span className="ui-meta shrink-0 border-l-2 border-border px-3 py-1 font-semibold">',
     );
     expectContains(source, 'compact');
@@ -61,7 +64,7 @@ describe('strategy result layout contracts', () => {
   });
 
   it('keeps regular investment desktop tables premium and readable', () => {
-    const source = readSource(paths.regular);
+    const source = readSource(paths.regularYearly);
 
     expectContains(source, '<div className="hidden border-y border-border lg:block">');
     expectContains(source, '<Table className="w-full table-fixed text-sm tabular-nums">');
@@ -89,9 +92,9 @@ describe('strategy result layout contracts', () => {
 
     expectContains(
       source,
-      "import { RecentLotList, RecentLotDisplayItem } from '@/shared/components/results/RecentLotList';",
+      "import { RecentLotDisplayItem, RecentLotList } from '@/shared/components/results/RecentLotList';",
     );
-    expectContains(source, 'const recentLotItems = useMemo<RecentLotDisplayItem[]>(() =>');
+    expectContains(source, 'const recentLotItems = useMemo<RecentLotDisplayItem[]>(');
     expectContains(source, '<RecentLotList');
     expectContains(recentList, 'space-y-5 border-y border-border py-6');
     expectContains(recentList, 'className?: string;');
@@ -132,7 +135,7 @@ describe('strategy result layout contracts', () => {
     );
     expectContains(source, '<MetricStrip');
     expectContains(source, 'columns="grid-cols-1 md:grid-cols-3"');
-    expectContains(source, 'return (<div className="space-y-8">');
+    expectContains(source, '<div className="space-y-8">');
 
     expectNoFragments(source, [
       "import { ResultMetricCard } from '@/shared/components/results/ResultMetricCard';",
@@ -152,10 +155,8 @@ describe('strategy result layout contracts', () => {
       source,
       "const [chartMode, setChartMode] = useState<LadderChartMode>('yearly');",
     );
-    expectContains(
-      source,
-      'const yearlyBuckets = useMemo<LadderYearBucket[]>(() => buildLadderYearBuckets(monthlyBuckets), [monthlyBuckets]);',
-    );
+    expectContains(source, 'const yearlyBuckets = useMemo<LadderYearBucket[]>(');
+    expectContains(source, 'buildLadderYearBuckets(monthlyBuckets)');
     expectContains(source, 'const chartData = useMemo(');
     expectContains(source, 't(`ladder_page.timeline.chart_modes.${mode}`)');
     expectContains(source, '<div className="hidden border-y border-border lg:block">');

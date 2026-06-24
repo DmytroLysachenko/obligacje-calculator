@@ -7,6 +7,7 @@ const root = process.cwd();
 
 const files = {
   regularSummary: 'features/regular-investment/components/RegularInvestmentResultsSummary.tsx',
+  regularYearly: 'features/regular-investment/components/RegularInvestmentYearlyBucketsSection.tsx',
   recentLots: 'shared/components/results/RecentLotList.tsx',
   ladder: 'features/ladder-strategy/components/LadderTimeline.tsx',
 } as const;
@@ -32,6 +33,7 @@ function expectNoFragments(source: string, fragments: readonly string[]) {
 describe('strategy result flow contracts', () => {
   it('keeps the regular investment summary grid from creating a full-height right rail', () => {
     const source = read(files.regularSummary);
+    const yearly = read(files.regularYearly);
 
     expectContains(
       source,
@@ -40,9 +42,10 @@ describe('strategy result flow contracts', () => {
     expectContains(source, '<RecentLotList');
     expectContains(source, 'compact');
     expectContains(source, 'className="xl:max-h-[42rem] xl:overflow-y-auto xl:pr-2"');
-    expectContains(source, '<SectionBlock');
-    expectContains(source, '<ResponsiveTableSheet');
-    expectContains(source, '<TableDensityControls');
+    expectContains(source, '<RegularInvestmentYearlyBucketsSection');
+    expectContains(yearly, '<SectionBlock');
+    expectContains(yearly, '<ResponsiveTableSheet');
+    expectContains(yearly, '<TableDensityControls');
 
     expectNoFragments(source, [
       'grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]',
@@ -83,7 +86,7 @@ describe('strategy result flow contracts', () => {
   it('keeps ladder timeline below the shared recurring summary instead of adding another top rail', () => {
     const source = read(files.ladder);
 
-    expectContains(source, 'return (<div className="space-y-8">');
+    expectContains(source, '<div className="space-y-8">');
     expectContains(source, '<ResultSummaryHero');
     expectContains(source, '<MetricStrip');
     expectContains(source, '<ChartSection');
