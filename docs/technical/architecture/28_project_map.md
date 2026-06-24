@@ -42,7 +42,16 @@ Use it before adding files or moving logic.
 - `features/economic-data/**`: economic reference charts, dashboard state models for CPI/NBP metadata display, and dashboard section components in `features/economic-data/components/EconomicDashboardSections.tsx`.
 - `features/notebook/**`: portfolio workspace UI, portfolio details, notebook commands through `portfolio-client`, notebook-specific contracts, and pure workspace models in `features/notebook/lib/**`.
 - `features/optimizer/**`: optimizer UI sections, optimizer state models, and recommendation orchestration. Route/page code should consume `features/optimizer/lib/**` state helpers instead of recomputing readiness or default input rules inline. Input controls belong in `features/optimizer/components/OptimizerInputPanel.tsx`, while the page client owns calculation requests and result state.
-- `features/regular-investment/**`, `features/ladder-strategy/**`, `features/retirement/**`: retained strategy surfaces with feature-local hooks and components.
+- `features/regular-investment/**`: retained recurring-investment surface.
+  The calculator hook owns persisted input state, result summary constants/types
+  live in `constants/` and `types/`, and the yearly bucket table is owned by
+  `components/RegularInvestmentYearlyBucketsSection.tsx`.
+- `features/ladder-strategy/**`: retained ladder surface built on the regular
+  investment model. Timeline mode/filter vocabulary lives in `types/` and
+  `constants/`; `LadderTimeline.tsx` owns the composed chart/table flow.
+- `features/retirement/**`: retained retirement planner surface. Durable
+  planner inputs live in `types/`, default inputs in `constants/`, display
+  formatting in `lib/`, and summary section primitives in feature components.
 
 ## Feature Folder Vocabulary
 
