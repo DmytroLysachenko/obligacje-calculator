@@ -23,6 +23,7 @@ const flattenedSurfaceFiles = [
   'features/regular-investment/components/RegularInvestmentInputsForm.tsx',
   'features/regular-investment/components/inputs/AdvancedSettingsSection.tsx',
   'features/regular-investment/components/RegularInvestmentResultsSummary.tsx',
+  'features/regular-investment/components/RegularInvestmentYearlyBucketsSection.tsx',
   'shared/components/results/ResultSummaryHero.tsx',
   'features/ladder-strategy/components/LadderTimeline.tsx',
   'shared/components/results/RecentLotList.tsx',
@@ -37,6 +38,7 @@ const flattenedSurfaceFiles = [
   'features/comparison-engine/components/ScenarioOverrideCard.tsx',
   'features/comparison-engine/components/bond-comparison/ComparisonConfigurationPanel.tsx',
   'features/comparison-engine/components/bond-comparison/ComparisonResultsDashboard.tsx',
+  'features/comparison-engine/components/bond-comparison/ComparisonResultsDashboardParts.tsx',
 ] as const;
 
 const oldSurfaceFragments = [
@@ -138,12 +140,12 @@ describe('flattened shared surface system contract', () => {
     ).toContain('w-full space-y-8 border-y border-border bg-background p-5 md:p-6');
     expect(
       sourceByPath.get(
-        'features/regular-investment/components/RegularInvestmentResultsSummary.tsx',
+        'features/regular-investment/components/RegularInvestmentYearlyBucketsSection.tsx',
       ),
     ).toContain("import { SectionBlock } from '@/shared/components/page/SectionBlock';");
     expect(
       sourceByPath.get(
-        'features/regular-investment/components/RegularInvestmentResultsSummary.tsx',
+        'features/regular-investment/components/RegularInvestmentYearlyBucketsSection.tsx',
       ),
     ).toContain('<div className="hidden border-y border-border lg:block">');
     expect(sourceByPath.get('shared/components/results/ResultSummaryHero.tsx')).toContain(

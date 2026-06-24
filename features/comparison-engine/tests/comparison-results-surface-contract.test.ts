@@ -7,6 +7,8 @@ const root = process.cwd();
 
 const files = {
   dashboard: 'features/comparison-engine/components/bond-comparison/ComparisonResultsDashboard.tsx',
+  dashboardParts:
+    'features/comparison-engine/components/bond-comparison/ComparisonResultsDashboardParts.tsx',
   panel: 'features/comparison-engine/components/ComparisonResultsPanel.tsx',
 } as const;
 
@@ -42,7 +44,7 @@ describe('comparison results surface contracts', () => {
   });
 
   it('keeps comparison cards and empty steps divider-led', () => {
-    const source = read(files.dashboard);
+    const source = read(files.dashboardParts);
 
     expectContains(source, '<article className="space-y-5 border-t border-border py-5">');
     expectContains(source, '<section className="space-y-6 border-t border-border py-6">');
