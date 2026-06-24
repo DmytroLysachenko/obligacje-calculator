@@ -9,6 +9,7 @@ const files = {
   hook: 'features/single-calculator/hooks/useBondCalculator.ts',
   chart: 'features/single-calculator/components/BondChart.tsx',
   container: 'features/single-calculator/components/BondCalculatorContainer.tsx',
+  panels: 'features/single-calculator/components/BondCalculatorPanels.tsx',
   schemas: 'features/bond-core/types/schemas.ts',
   optimizer: 'features/bond-core/handlers/optimizer.ts',
   portfolio: 'features/bond-core/handlers/portfolio-simulation.ts',
@@ -64,7 +65,7 @@ describe('single calculator chart display-only contract', () => {
   });
 
   it('does not feed single calculator chart granularity into the timeline or chart props', () => {
-    const source = read(files.container);
+    const source = read(files.panels);
 
     expectContains(source, '<BondTimeline results={results} />');
     expectNotContains(source, 'chartStep={inputs.chartStep}');
