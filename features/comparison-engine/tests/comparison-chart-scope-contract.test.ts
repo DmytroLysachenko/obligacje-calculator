@@ -11,7 +11,7 @@ const paths = {
   multiAssetContainer: 'features/comparison-engine/components/MultiAssetComparisonContainer.tsx',
   multiAssetChart: 'features/comparison-engine/components/MultiAssetComparisonChart.tsx',
   multiAssetChartModel: 'features/comparison-engine/components/multi-asset-chart-model.ts',
-  chartTypes: 'features/comparison-engine/components/types.ts',
+  chartTypes: 'features/comparison-engine/types/multi-asset.ts',
   sharedValueChart: 'shared/components/charts/BondValueChart.tsx',
   sharedValueChartParts: 'shared/components/charts/BondValueChartParts.tsx',
   multiAssetPage: 'app/multi-asset/MultiAssetPageClient.tsx',

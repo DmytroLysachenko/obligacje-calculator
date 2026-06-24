@@ -11,16 +11,16 @@ import {
   LineChart,
   ResponsiveContainer,
   Tooltip as RechartsTooltip,
-  TooltipProps,
   XAxis,
   YAxis,
 } from 'recharts';
-import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAppI18n } from '@/i18n/client';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ChartLegendStrip } from '@/shared/components/charts/ChartLegendStrip';
+
+import { MultiAssetComparisonChartProps } from '../types/multi-asset';
 
 import {
   createMultiAssetDrawdownLegendItems,
@@ -29,124 +29,7 @@ import {
   createMultiAssetGrowthSummary,
   thinMultiAssetGrowthData,
 } from './multi-asset-chart-model';
-import { MultiAssetComparisonChartProps } from './types';
-
-interface PayloadEntry {
-  name: string;
-  value: number;
-  color: string;
-  dataKey?: string | number;
-  payload: {
-    inflation?: number;
-    nbp?: number;
-    [key: string]: string | number | undefined;
-  };
-}
-
-interface CustomTooltipProps extends TooltipProps<ValueType, NameType> {
-  active?: boolean;
-  payload?: PayloadEntry[];
-  label?: NameType;
-  formatCurrency: (value: number) => string;
-}
-
-const CustomTooltip = ({ active, payload, label, formatCurrency }: CustomTooltipProps) => {
-  const { t } = useAppI18n();
-  if (!active || !payload || !payload.length) return null;
-
-  const data = payload[0].payload;
-  const inflation = data.inflation;
-  const nbp = data.nbp;
-
-  return (
-    <div className="min-w-[220px] rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-lg">
-      <p className="ui-metadata mb-3 border-b border-border/50 pb-2 font-semibold">{label}</p>
-      <div className="space-y-3">
-        <div className="space-y-1.5">
-          {payload
-            .filter(
-              (p) =>
-                p.dataKey &&
-                !String(p.dataKey).includes('_drawdown') &&
-                !['inflation', 'nbp'].includes(String(p.dataKey)),
-            )
-            .map((entry, index: number) => (
-              <div key={index} className="flex justify-between items-center gap-4 text-xs">
-                <span className="flex items-center gap-1.5 font-medium">
-                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
-                  {entry.name}:
-                </span>
-                <span className="font-mono font-semibold text-primary">
-                  {formatCurrency(Number(entry.value))}
-                </span>
-              </div>
-            ))}
-        </div>
-
-        {(inflation !== undefined || nbp !== undefined) && (
-          <div className="pt-2 mt-2 border-t border-dashed border-border/50 space-y-1.5">
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
-              {t('common.context_rates')}
-            </p>
-            {inflation !== undefined && (
-              <div className="flex justify-between items-center text-[10px]">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-warning" />
-                  <span className="text-muted-foreground font-medium">
-                    {t('bonds.ref_inflation')}:
-                  </span>
-                </span>
-                <span className="font-semibold text-warning">{Number(inflation).toFixed(2)}%</span>
-              </div>
-            )}
-            {nbp !== undefined && (
-              <div className="flex justify-between items-center text-[10px]">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
-                  <span className="text-muted-foreground font-medium">
-                    {t('bonds.nbp_rate_short')}:
-                  </span>
-                </span>
-                <span className="font-semibold text-primary">{Number(nbp).toFixed(2)}%</span>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const DrawdownTooltip = ({
-  active,
-  payload,
-  label,
-}: {
-  active?: boolean;
-  payload?: PayloadEntry[];
-  label?: NameType;
-}) => {
-  if (!active || !payload || !payload.length) return null;
-
-  return (
-    <div className="min-w-[180px] rounded-lg border border-border bg-popover p-3 text-popover-foreground shadow-lg">
-      <p className="ui-metadata mb-2 border-b border-border/50 pb-1 font-semibold">{label}</p>
-      <div className="space-y-1.5">
-        {payload.map((entry, index) => (
-          <div key={index} className="flex justify-between items-center gap-4 text-xs">
-            <span className="flex items-center gap-1.5 font-medium">
-              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
-              {entry.name}:
-            </span>
-            <span className="font-mono font-bold text-destructive">
-              -{Number(entry.value).toFixed(2)}%
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
+import { MultiAssetDrawdownTooltip, MultiAssetGrowthTooltip } from './MultiAssetChartTooltips';
 
 export const MultiAssetComparisonChart: React.FC<MultiAssetComparisonChartProps> = ({
   chartData,
@@ -258,7 +141,9 @@ export const MultiAssetComparisonChart: React.FC<MultiAssetComparisonChartProps>
                   axisLine={false}
                   tickFormatter={(v: number) => `${v / 1000}k`}
                 />
-                <RechartsTooltip content={<CustomTooltip formatCurrency={formatCurrency} />} />
+                <RechartsTooltip
+                  content={<MultiAssetGrowthTooltip formatCurrency={formatCurrency} />}
+                />
                 {chartData.length > 24 ? (
                   <Brush dataKey="date" height={22} stroke="#cbd5e1" travellerWidth={8} />
                 ) : null}
@@ -321,7 +206,7 @@ export const MultiAssetComparisonChart: React.FC<MultiAssetComparisonChartProps>
                   tickFormatter={(v: number) => `${v}%`}
                   reversed
                 />
-                <RechartsTooltip content={<DrawdownTooltip />} />
+                <RechartsTooltip content={<MultiAssetDrawdownTooltip />} />
                 {chartData.length > 24 ? (
                   <Brush dataKey="date" height={22} stroke="#cbd5e1" travellerWidth={8} />
                 ) : null}

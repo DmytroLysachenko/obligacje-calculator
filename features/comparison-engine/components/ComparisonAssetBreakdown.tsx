@@ -7,7 +7,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 
-import { ComparisonAssetBreakdownProps } from './types';
+import { ComparisonAssetBreakdownProps } from '../types/multi-asset';
 
 export const ComparisonAssetBreakdown: React.FC<ComparisonAssetBreakdownProps> = ({
   assets,

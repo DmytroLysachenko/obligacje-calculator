@@ -15,7 +15,7 @@ import { useAppI18n } from '@/i18n/client';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
 
-import { ComparisonControlsProps } from './types';
+import { ComparisonControlsProps } from '../types/multi-asset';
 export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
   initialSum,
   updateInitialSum,

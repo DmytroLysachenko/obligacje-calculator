@@ -7,6 +7,7 @@ const root = process.cwd();
 
 const files = {
   chart: 'features/comparison-engine/components/MultiAssetComparisonChart.tsx',
+  chartTooltips: 'features/comparison-engine/components/MultiAssetChartTooltips.tsx',
   resultsPanel: 'features/comparison-engine/components/ComparisonResultsPanel.tsx',
   sharedValueChart: 'shared/components/charts/BondValueChart.tsx',
   verdict: 'features/comparison-engine/components/ComparisonVerdict.tsx',
@@ -36,6 +37,7 @@ function expectNoFragments(source: string, fragments: readonly string[]) {
 describe('comparison chart and verdict contracts', () => {
   it('keeps multi-asset charts scoped away from bond comparison charts', () => {
     const source = read(files.chart);
+    const tooltips = read(files.chartTooltips);
 
     expectContains(source, 'export const MultiAssetComparisonChart');
     expectContains(source, 'MultiAssetComparisonChartProps');
@@ -49,10 +51,12 @@ describe('comparison chart and verdict contracts', () => {
     expectContains(source, '() => createMultiAssetDrawdownLegendItems(assets),');
     expectContains(source, '<ChartLegendStrip items={growthLegendItems} />');
     expectContains(source, '<ChartLegendStrip items={drawdownLegendItems} />');
-    expectContains(source, 'const inflation = data.inflation;');
-    expectContains(source, 'const nbp = data.nbp;');
-    expectContains(source, "{t('bonds.ref_inflation')}:");
-    expectContains(source, "{t('bonds.nbp_rate_short')}:");
+    expectContains(source, '<MultiAssetGrowthTooltip formatCurrency={formatCurrency} />');
+    expectContains(source, '<MultiAssetDrawdownTooltip />');
+    expectContains(tooltips, 'const inflation = data.inflation;');
+    expectContains(tooltips, 'const nbp = data.nbp;');
+    expectContains(tooltips, "{t('bonds.ref_inflation')}:");
+    expectContains(tooltips, "{t('bonds.nbp_rate_short')}:");
 
     expectNoFragments(source, [
       'Legend,',

@@ -1,4 +1,7 @@
-import { AssetPerformanceSeries } from '../../bond-core/types/assets';
+import { TooltipProps } from 'recharts';
+import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
+
+import { AssetPerformanceSeries } from '@/features/bond-core/types/assets';
 
 export interface ComparisonControlsProps {
   initialSum: number;
@@ -40,4 +43,29 @@ export interface ComparisonAssetBreakdownProps {
   showRealValue: boolean;
   formatCurrency: (val: number) => string;
   language: 'en' | 'pl';
+}
+
+export interface MultiAssetTooltipPayloadEntry {
+  name: string;
+  value: number;
+  color: string;
+  dataKey?: string | number;
+  payload: {
+    inflation?: number;
+    nbp?: number;
+    [key: string]: string | number | undefined;
+  };
+}
+
+export interface MultiAssetGrowthTooltipProps extends TooltipProps<ValueType, NameType> {
+  active?: boolean;
+  payload?: MultiAssetTooltipPayloadEntry[];
+  label?: NameType;
+  formatCurrency: (value: number) => string;
+}
+
+export interface MultiAssetDrawdownTooltipProps {
+  active?: boolean;
+  payload?: MultiAssetTooltipPayloadEntry[];
+  label?: NameType;
 }
