@@ -14,7 +14,7 @@ const approvedDirectDbFiles = new Set([
   'lib/data/multi-asset-history.ts',
   'lib/inngest-functions.ts',
   'lib/server/admin/status.ts',
-  'lib/server/bonds/offer-terms.ts',
+  'lib/server/bonds/offer-terms-repository.ts',
   'lib/server/community/insights.ts',
   'lib/server/portfolio/access.ts',
   'lib/server/portfolio/repository.ts',

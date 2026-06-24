@@ -1,10 +1,12 @@
-import { db } from '@/db';
-import { bondSeries, polishBonds } from '@/db/schema';
 import { BOND_DEFINITIONS } from '@/features/bond-core/constants/bond-definitions';
 import { BondType } from '@/features/bond-core/types';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { addMonths, endOfMonth, format, parseISO, startOfMonth } from 'date-fns';
-import { and, desc, eq, lte } from 'drizzle-orm';
+import {
+  findActiveBondSeriesForDate,
+  findBondDefinitionBySymbol,
+  findBondSeriesByIdForBond,
+} from '@/lib/server/bonds/offer-terms-repository';
 
 export interface ResolvedBondOfferTerms {
   firstYearRate: number;
@@ -66,21 +68,14 @@ export async function resolveBondOfferTerms(
   };
 
   try {
-    const bond = await db.query.polishBonds.findFirst({
-      where: eq(polishBonds.symbol, bondType),
-    });
+    const bond = await findBondDefinitionBySymbol(bondType);
 
     if (!bond) {
       return fallback;
     }
 
     if (selectedSeriesId && selectedSeriesId !== 'current') {
-      const exactSeries = await db.query.bondSeries.findFirst({
-        where: and(
-          eq(bondSeries.id, selectedSeriesId),
-          eq(bondSeries.bondTypeId, bond.id),
-        ),
-      });
+      const exactSeries = await findBondSeriesByIdForBond(selectedSeriesId, bond.id);
 
       if (exactSeries) {
         return {
@@ -93,13 +88,7 @@ export async function resolveBondOfferTerms(
       }
     }
 
-    const activeSeries = await db.query.bondSeries.findFirst({
-      where: and(
-        eq(bondSeries.bondTypeId, bond.id),
-        lte(bondSeries.emissionMonth, purchaseDate),
-      ),
-      orderBy: [desc(bondSeries.emissionMonth)],
-    });
+    const activeSeries = await findActiveBondSeriesForDate(bond.id, purchaseDate);
 
     if (!activeSeries) {
       return fallback;
@@ -124,21 +113,14 @@ export async function resolveStoredBondLotContext(
   selectedSeriesId?: string | null,
 ): Promise<ResolvedStoredBondLotContext> {
   try {
-    const bond = await db.query.polishBonds.findFirst({
-      where: eq(polishBonds.symbol, bondType),
-    });
+    const bond = await findBondDefinitionBySymbol(bondType);
 
     if (!bond) {
       return { bondTypeId: null, bondSeriesId: null };
     }
 
     if (selectedSeriesId && selectedSeriesId !== 'current') {
-      const exactSeries = await db.query.bondSeries.findFirst({
-        where: and(
-          eq(bondSeries.id, selectedSeriesId),
-          eq(bondSeries.bondTypeId, bond.id),
-        ),
-      });
+      const exactSeries = await findBondSeriesByIdForBond(selectedSeriesId, bond.id);
 
       return {
         bondTypeId: bond.id,
@@ -147,13 +129,7 @@ export async function resolveStoredBondLotContext(
       };
     }
 
-    const activeSeries = await db.query.bondSeries.findFirst({
-      where: and(
-        eq(bondSeries.bondTypeId, bond.id),
-        lte(bondSeries.emissionMonth, purchaseDate),
-      ),
-      orderBy: [desc(bondSeries.emissionMonth)],
-    });
+    const activeSeries = await findActiveBondSeriesForDate(bond.id, purchaseDate);
 
     return {
       bondTypeId: bond.id,
