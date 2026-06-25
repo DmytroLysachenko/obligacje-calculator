@@ -2,7 +2,6 @@
 import { LineChart } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 
-import { MonthlyReturn } from '@/features/bond-core/constants/historical-data';
 import { useAppI18n } from '@/i18n/client';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
@@ -13,6 +12,12 @@ import { useMultiAssetComparison } from '../hooks/useMultiAssetComparison';
 
 import { ComparisonAssetBreakdown } from './ComparisonAssetBreakdown';
 import { ComparisonControls } from './ComparisonControls';
+import {
+  computeMultiAssetTotalInvested,
+  createMultiAssetAvailabilitySummary,
+  createMultiAssetChartData,
+  createMultiAssetEndingSnapshot,
+} from './multi-asset-chart-model';
 import { MultiAssetComparisonChart } from './MultiAssetComparisonChart';
 import {
   MultiAssetHistoryStatePanel,
@@ -20,12 +25,6 @@ import {
   MultiAssetReadyStatePanel,
 } from './MultiAssetComparisonPanels';
 
-interface ChartDataRow {
-  date: string;
-  inflation: number;
-  nbp: number;
-  [key: string]: string | number;
-}
 export const MultiAssetComparisonContainer = () => {
   const {
     initialSum,
@@ -72,57 +71,26 @@ export const MultiAssetComparisonContainer = () => {
   const formatCurrency = (value: number) => currencyFormatter.format(value);
   const totalInvested = useMemo(
     () =>
-      committedScenario.initialSum +
-      committedScenario.monthlyContribution * Math.max(assets[0]?.series.length - 1, 0),
+      computeMultiAssetTotalInvested({
+        initialSum: committedScenario.initialSum,
+        monthlyContribution: committedScenario.monthlyContribution,
+        periods: assets[0]?.series.length ?? 0,
+      }),
     [assets, committedScenario.initialSum, committedScenario.monthlyContribution],
   );
-  const chartData: ChartDataRow[] = useMemo(() => {
-    if (!assets.length || !assets[0]?.series) {
-      return [];
-    }
-    return assets[0].series.map((point, index) => {
-      const historyPoint = historyData.find((row: MonthlyReturn) => row.date === point.date);
-      const row: ChartDataRow = {
-        date: point.date,
-        inflation: historyPoint?.inflation ?? 0,
-        nbp: historyPoint?.nbpRate ?? 0,
-      };
-      assets.forEach((asset) => {
-        const seriesPoint = asset.series[index];
-        if (seriesPoint) {
-          row[asset.metadata.id] = showRealValue
-            ? (seriesPoint.realValue ?? seriesPoint.value)
-            : seriesPoint.value;
-          row[`${asset.metadata.id}_drawdown`] = seriesPoint.drawdown;
-        }
-      });
-      return row;
-    });
-  }, [assets, historyData, showRealValue]);
-  const availabilitySummary = [
-    historySeriesAvailability?.sp500 ? 'S&P 500' : null,
-    historySeriesAvailability?.gold ? t('multi_asset_page.series.gold') : null,
-    historySeriesAvailability?.inflation ? t('multi_asset_page.series.inflation') : null,
-    historySeriesAvailability?.nbpRate ? 'NBP' : null,
-  ]
-    .filter(Boolean)
-    .join(', ');
+  const chartData = useMemo(
+    () => createMultiAssetChartData({ assets, historyData, showRealValue }),
+    [assets, historyData, showRealValue],
+  );
+  const availabilitySummary = createMultiAssetAvailabilitySummary({
+    availability: historySeriesAvailability,
+    labels: {
+      gold: t('multi_asset_page.series.gold'),
+      inflation: t('multi_asset_page.series.inflation'),
+    },
+  });
   const endingSnapshot = useMemo(
-    () =>
-      assets
-        .map((asset) => {
-          const lastPoint = asset.series[asset.series.length - 1];
-          const currentValue = showRealValue
-            ? (lastPoint?.realValue ?? lastPoint?.value ?? 0)
-            : (lastPoint?.value ?? 0);
-          return {
-            id: asset.metadata.id,
-            name: asset.metadata.name,
-            value: currentValue,
-          };
-        })
-        .filter((asset) => asset.value > 0)
-        .sort((left, right) => right.value - left.value),
+    () => createMultiAssetEndingSnapshot({ assets, showRealValue }),
     [assets, showRealValue],
   );
   const leadingAsset = endingSnapshot[0];
