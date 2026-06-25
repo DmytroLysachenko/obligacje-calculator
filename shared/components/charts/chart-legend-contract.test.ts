@@ -42,10 +42,8 @@ describe('chart legend contracts', () => {
       source,
       'flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-border pb-3',
     );
-    expectContains(
-      source,
-      "cn('flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-border pb-3', className)",
-    );
+    expectContains(source, 'className={cn(');
+    expectContains(source, 'className,');
     expectContains(source, 'h-0.5 w-6 rounded-full');
     expectContains(source, "item.style === 'dashed'");
     expectContains(source, "item.style === 'muted'");
@@ -61,8 +59,8 @@ describe('chart legend contracts', () => {
     expectContains(source, 'BondValueChart');
     expectContains(sharedParts, 'ChartLegendStrip');
     expectContains(shared, 'const legendItems = React.useMemo(');
-    expectContains(source, 't("common.nominal_value")');
-    expectContains(source, 't("common.real_value")');
+    expectContains(source, "t('common.nominal_value')");
+    expectContains(source, "t('common.real_value')");
     expectContains(
       sharedParts,
       '<ChartLegendStrip items={legendItems} className="border-b-0 pb-0" />',
@@ -74,9 +72,9 @@ describe('chart legend contracts', () => {
     expectContains(shared, 'orientation="right"');
     expectContains(shared, 'width={44}');
     expectContains(shared, 'dataKey="inflation"');
-    expectContains(shared, 'name={t("bonds.ref_inflation")}');
+    expectContains(shared, "name={t('bonds.ref_inflation')}");
     expectContains(shared, 'dataKey="nbp"');
-    expectContains(shared, 'name={t("bonds.nbp_rate_short")}');
+    expectContains(shared, "name={t('bonds.nbp_rate_short')}");
 
     expectNoFragments(shared, [
       'Legend, ResponsiveContainer',

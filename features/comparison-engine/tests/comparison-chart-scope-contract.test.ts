@@ -14,6 +14,7 @@ const paths = {
   chartTypes: 'features/comparison-engine/types/multi-asset.ts',
   sharedValueChart: 'shared/components/charts/BondValueChart.tsx',
   sharedValueChartParts: 'shared/components/charts/BondValueChartParts.tsx',
+  sharedValueChartTooltipParts: 'shared/components/charts/BondValueChartTooltipParts.tsx',
   multiAssetPage: 'app/multi-asset/MultiAssetPageClient.tsx',
 } as const;
 
@@ -41,6 +42,7 @@ describe('comparison chart ownership contract', () => {
     const results = read(paths.comparisonResults);
     const shared = read(paths.sharedValueChart);
     const sharedParts = read(paths.sharedValueChartParts);
+    const sharedTooltipParts = read(paths.sharedValueChartTooltipParts);
 
     expectContains(container, "import { ComparisonResultsPanel } from './ComparisonResultsPanel';");
     expectContains(container, '<ComparisonResultsPanel');
@@ -70,7 +72,7 @@ describe('comparison chart ownership contract', () => {
     expectContains(shared, '<BondValueChartToolbar');
     expectContains(shared, '<BondValueChartTooltip');
     expectContains(sharedParts, 'export function BondValueChartToolbar');
-    expectContains(sharedParts, 'export function BondValueChartTooltip');
+    expectContains(sharedTooltipParts, 'export function BondValueChartTooltip');
     expectContains(sharedParts, 'aria-pressed={showInflationOverlay}');
     expectContains(sharedParts, 'aria-pressed={showNbpOverlay}');
 

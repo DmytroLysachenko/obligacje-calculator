@@ -20,7 +20,7 @@ describe('bond value chart tooltip contract', () => {
     expect(modelSource).toContain('Array.isArray(data.scenarioGroups)');
     expect(modelSource).toContain("!['inflation', 'nbp'].includes(String(entry.dataKey))");
 
-    const viewSource = read('shared/components/charts/BondValueChartParts.tsx');
+    const viewSource = read('shared/components/charts/BondValueChartTooltipParts.tsx');
     expect(viewSource).toContain('buildBondValueTooltipModel');
     expect(viewSource).toContain('function ScenarioGroupTooltip');
     expect(viewSource).toContain('<ScenarioGroupTooltip');
