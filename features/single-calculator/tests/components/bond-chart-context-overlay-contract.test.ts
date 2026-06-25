@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 const root = process.cwd();
 const chartPath = 'features/single-calculator/components/BondChart.tsx';
 const sharedChartPath = 'shared/components/charts/BondValueChart.tsx';
-const sharedChartPartsPath = 'shared/components/charts/BondValueChartParts.tsx';
+const sharedChartToolbarPath = 'shared/components/charts/BondValueChartToolbar.tsx';
 
 function read(relativePath: string) {
   return readFileSync(join(root, relativePath), 'utf8');
@@ -20,7 +20,7 @@ describe('single calculator chart context overlay contract', () => {
   it('keeps macro context rates optional through chart toolbar controls', () => {
     const source = read(chartPath);
     const shared = read(sharedChartPath);
-    const sharedParts = read(sharedChartPartsPath);
+    const sharedToolbar = read(sharedChartToolbarPath);
 
     expectContains(
       source,
@@ -40,14 +40,14 @@ describe('single calculator chart context overlay contract', () => {
     expectContains(shared, 'yAxisId="right"');
     expectContains(shared, 'orientation="right"');
     expectContains(shared, 'width={44}');
-    expectContains(sharedParts, 'aria-pressed={showInflationOverlay}');
-    expectContains(sharedParts, 'aria-pressed={showNbpOverlay}');
+    expectContains(sharedToolbar, 'aria-pressed={showInflationOverlay}');
+    expectContains(sharedToolbar, 'aria-pressed={showNbpOverlay}');
     expectContains(
-      sharedParts,
+      sharedToolbar,
       "onClick={() => onOverlayChange('showInflationOverlay', !showInflationOverlay)}",
     );
     expectContains(
-      sharedParts,
+      sharedToolbar,
       "onClick={() => onOverlayChange('showNbpOverlay', !showNbpOverlay)}",
     );
     expectContains(shared, 'showInflationOverlay ? (');
