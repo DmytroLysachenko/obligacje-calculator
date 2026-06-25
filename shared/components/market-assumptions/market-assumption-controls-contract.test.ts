@@ -7,6 +7,7 @@ const projectRoot = process.cwd();
 
 const files = {
   form: 'shared/components/MarketAssumptionsForm.tsx',
+  sections: 'shared/components/market-assumptions/MarketAssumptionSections.tsx',
   controls: 'shared/components/market-assumptions/AssumptionSectionControls.tsx',
   presets: 'shared/components/market-assumptions/AssumptionPresetControls.tsx',
   model: 'shared/lib/market-assumptions-form-model.ts',
@@ -35,7 +36,7 @@ function expectNoFragments(source: string, fragments: readonly string[]) {
 
 describe('market assumption control contracts', () => {
   it('routes assumption presets and projection modes through the shared segmented control', () => {
-    const source = read(files.form);
+    const source = `${read(files.form)}\n${read(files.sections)}`;
     const controls = read(files.controls);
     const presets = read(files.presets);
     const model = read(files.model);
@@ -132,7 +133,7 @@ describe('market assumption control contracts', () => {
   });
 
   it('keeps current assumption values as inline metrics instead of boxed pills', () => {
-    const source = read(files.form);
+    const source = `${read(files.form)}\n${read(files.sections)}`;
     const controls = read(files.controls);
 
     expectContains(controls, 'function CurrentAssumptionValue');
