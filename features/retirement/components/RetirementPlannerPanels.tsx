@@ -2,7 +2,6 @@
 
 import { Calendar } from 'lucide-react';
 
-import { TaxStrategy } from '@/features/bond-core/types';
 import { RetirementPlannerCalculationEnvelope } from '@/features/bond-core/types/scenarios';
 import { formatRetirementRate } from '@/features/retirement/lib/retirement-format';
 import { RetirementInputs } from '@/features/retirement/types/retirement';
@@ -200,11 +199,4 @@ export function RetirementDepletionWarning({
       <p>{labels.depletionWarning.replace('{{date}}', exhaustionDate)}</p>
     </div>
   );
-}
-
-export function getRetirementTaxStrategyLabel(
-  taxStrategyLabels: Record<TaxStrategy, string>,
-  taxStrategy: TaxStrategy,
-) {
-  return taxStrategyLabels[taxStrategy];
 }
