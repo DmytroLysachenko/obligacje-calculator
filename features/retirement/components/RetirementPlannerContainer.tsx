@@ -1,5 +1,5 @@
 'use client';
-import { Calendar, Wallet } from 'lucide-react';
+import { Wallet } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 
 import {
@@ -16,9 +16,7 @@ import { formatRetirementRate } from '@/features/retirement/lib/retirement-forma
 import { RetirementInputs } from '@/features/retirement/types/retirement';
 import { useAppI18n } from '@/i18n/client';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
-import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
-import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
@@ -26,9 +24,13 @@ import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 import { formatHorizonMonths } from '@/shared/lib/format-horizon';
 
 import { RetirementInputsPanel } from './RetirementInputsPanel';
-import { RetirementResultsOverview } from './RetirementResultsOverview';
-import { RetirementSection, RetirementSummaryMetric } from './RetirementSummarySections';
-import { RetirementSupportList } from './RetirementSupportList';
+import {
+  getRetirementTaxStrategyLabel,
+  RetirementDepletionWarning,
+  RetirementLimitsPanel,
+  RetirementReadyStatePanel,
+  RetirementResultsPanel,
+} from './RetirementPlannerPanels';
 
 export const RetirementPlannerContainer: React.FC = () => {
   const { t, locale: language } = useAppI18n();
@@ -189,126 +191,36 @@ export const RetirementPlannerContainer: React.FC = () => {
 
         <div className="space-y-8 xl:col-span-8">
           {results ? (
-            <>
-              {isDirty ? (
-                <div className="ui-inline-notice border-l-2 border-warning text-foreground">
-                  {labels.staleResults}
-                </div>
-              ) : null}
-
-              <div className="grid gap-0 rounded-lg bg-card md:grid-cols-2 xl:grid-cols-4">
-                <RetirementSummaryMetric
-                  label={labels.scenarioStatus}
-                  value={
-                    results.result.isSustainable ? labels.balancePositive : labels.balanceDepletes
-                  }
-                  detail={
-                    results.result.exhaustionDate
-                      ? `${labels.projectedExhaustion}: ${results.result.exhaustionDate}`
-                      : labels.noProjectedDepletion
-                  }
-                  tone={results.result.isSustainable ? 'success' : 'warning'}
-                />
-                <RetirementSummaryMetric
-                  label={labels.finalBalance}
-                  value={formatCurrency(results.result.finalBalance)}
-                  detail={labels.finalBalanceDetail}
-                />
-                <RetirementSummaryMetric
-                  label={labels.totalWithdrawn}
-                  value={formatCurrency(results.result.totalWithdrawn)}
-                  detail={labels.totalWithdrawnDetail}
-                />
-                <RetirementSummaryMetric
-                  label={labels.modeledAnnualRate}
-                  value={formatRetirementRate(results.result.modeledAnnualRate)}
-                  detail={labels.modeledAnnualRateDetail.replace(
-                    '{{bond}}',
-                    results.result.modeledBondType,
-                  )}
-                />
-              </div>
-
-              <RetirementResultsOverview
-                chartData={chartData}
-                scenarioCoverage={scenarioCoverage}
-                labels={labels}
-                language={language}
-                inputsHorizonYears={inputs.horizonYears}
-                taxStrategyLabel={taxStrategyLabels[inputs.taxStrategy]}
-                totalTaxPaid={results.result.totalTaxPaid}
-                formatCurrency={formatCurrency}
-              />
-
-              <SecondaryInsightAccordion
-                title={labels.assumptionsAndWarnings}
-                description={labels.assumptionsAndWarningsDesc}
-                badge={labels.audit}
-              >
-                <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-                  <RetirementSupportList
-                    title={labels.assumptions}
-                    items={results.assumptions}
-                    emptyLabel={labels.noExtraAssumptions}
-                  />
-                  <RetirementSupportList
-                    title={labels.warningsAndNotes}
-                    items={[
-                      ...results.warnings,
-                      ...results.calculationNotes,
-                      ...results.dataQualityFlags,
-                    ]}
-                    emptyLabel={labels.noExtraWarnings}
-                  />
-                </div>
-              </SecondaryInsightAccordion>
-            </>
+            <RetirementResultsPanel
+              results={results}
+              isDirty={isDirty}
+              labels={labels}
+              chartData={chartData}
+              scenarioCoverage={scenarioCoverage}
+              language={language}
+              inputsHorizonYears={inputs.horizonYears}
+              taxStrategyLabel={getRetirementTaxStrategyLabel(
+                taxStrategyLabels,
+                inputs.taxStrategy,
+              )}
+              formatCurrency={formatCurrency}
+            />
           ) : (
-            <ScenarioReadyPanel
-              badge={labels.readyBadge}
-              title={labels.readyTitle}
-              description={labels.readyDesc}
-              steps={[
-                {
-                  id: 'balance-path',
-                  title: labels.readyStepBalance,
-                  description: t('retirement.ready_step_balance_desc', {
-                    initialCapital: formatCurrency(inputs.initialCapital),
-                  }),
-                },
-                {
-                  id: 'horizon',
-                  title: labels.readyStepHorizon,
-                  description: t('retirement.ready_step_horizon_desc', {
-                    horizon: formatHorizonMonths(inputs.horizonYears * 12, language),
-                  }),
-                },
-                {
-                  id: 'narrow-read',
-                  title: labels.readyStepRead,
-                  description: labels.readyStepReadDesc,
-                },
-              ]}
-              footerText={labels.readyFooter}
+            <RetirementReadyStatePanel
+              inputs={inputs}
+              labels={labels}
+              language={language}
+              formatCurrency={formatCurrency}
+              t={t}
             />
           )}
 
-          <RetirementSection title={labels.limitsTitle} description={labels.limitsDesc}>
-            <div className="divide-y divide-dashed divide-border">
-              {modelLimits.map((item) => (
-                <div key={item} className="px-4 py-3 text-sm leading-6 text-muted-foreground">
-                  {item}
-                </div>
-              ))}
-            </div>
-          </RetirementSection>
+          <RetirementLimitsPanel labels={labels} modelLimits={modelLimits} />
 
-          {results?.result.exhaustionDate ? (
-            <div className="ui-inline-notice flex items-start gap-3 border-l-2 border-warning text-foreground">
-              <Calendar className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
-              <p>{labels.depletionWarning.replace('{{date}}', results.result.exhaustionDate)}</p>
-            </div>
-          ) : null}
+          <RetirementDepletionWarning
+            exhaustionDate={results?.result.exhaustionDate}
+            labels={labels}
+          />
         </div>
       </div>
 
