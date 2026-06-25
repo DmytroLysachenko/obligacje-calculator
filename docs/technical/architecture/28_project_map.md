@@ -37,10 +37,10 @@ Use it before adding files or moving logic.
 
 - `features/bond-core/**`: calculation truth, schemas, scenario handlers, validation, domain errors, and financial regression tests.
   Public calculation entrypoints are exported through `features/bond-core/utils/calculations.ts`, while implementation lives in `features/bond-core/utils/engine/**` by engine family (`single-bond-engine`, `reverse-bond-engine`, `regular-investment-engine`, and shared engine helpers).
-- `features/comparison-engine/**`: comparison workflows, comparison-specific display models, chart/table composition, and comparison persistence. Results dashboard ranking and modeled-value decisions live in `features/comparison-engine/components/bond-comparison/results-dashboard-model.ts`.
+- `features/comparison-engine/**`: comparison workflows, comparison-specific display models, chart/table composition, and comparison persistence. Results dashboard ranking and modeled-value decisions live in `features/comparison-engine/components/bond-comparison/results-dashboard-model.ts`. Multi-asset chart rows, ending snapshots, availability summaries, and chart legends live in `features/comparison-engine/components/multi-asset-chart-model.ts`; the multi-asset container delegates history and metrics sections to `MultiAssetComparisonPanels.tsx`.
 - `features/single-calculator/**`: single-bond calculator UI, single scenario sharing, notebook save action wiring, single-route display, and pure single-calculator state models.
 - `features/economic-data/**`: economic reference charts, dashboard state models for CPI/NBP metadata display, and dashboard section components in `features/economic-data/components/EconomicDashboardSections.tsx`.
-- `features/notebook/**`: portfolio workspace UI, portfolio details, notebook commands through `portfolio-client`, notebook-specific contracts, and pure workspace models in `features/notebook/lib/**`.
+- `features/notebook/**`: portfolio workspace UI, portfolio details, notebook commands through `portfolio-client`, notebook-specific contracts, and pure workspace models in `features/notebook/lib/**`. `NotebookContainer.tsx` owns workspace orchestration; stored-portfolio and scope-note rendering lives in `NotebookContainerPanels.tsx`.
 - `features/optimizer/**`: optimizer UI sections, optimizer state models, and recommendation orchestration. Route/page code should consume `features/optimizer/lib/**` state helpers instead of recomputing readiness or default input rules inline. Input controls belong in `features/optimizer/components/OptimizerInputPanel.tsx`, while the page client owns calculation requests and result state.
 - `features/regular-investment/**`: retained recurring-investment surface.
   The calculator hook owns persisted input state, result summary constants/types
@@ -51,7 +51,8 @@ Use it before adding files or moving logic.
   `constants/`; `LadderTimeline.tsx` owns the composed chart/table flow.
 - `features/retirement/**`: retained retirement planner surface. Durable
   planner inputs live in `types/`, default inputs in `constants/`, display
-  formatting in `lib/`, and summary section primitives in feature components.
+  formatting and planner view models live in `lib/`, and summary/result panel
+  rendering lives in feature components such as `RetirementPlannerPanels.tsx`.
 
 ## Feature Folder Vocabulary
 
@@ -85,7 +86,8 @@ Do not add empty folders as placeholders. Use the vocabulary when a feature actu
   `lib/server/runtime/env.ts`; do not duplicate Cloud Run env validation in
   ad hoc scripts or route modules.
 - Chart routes call data-layer envelope helpers for fallback behavior instead of constructing fallback payloads inside route handlers.
-- Shared chart components may have companion `*Parts.tsx` files for presentational sections, while pure chart decisions stay in model helpers.
+- Shared chart components may have companion `*Parts.tsx`, `*Toolbar.tsx`, `*TooltipParts.tsx`, or `*Plot.tsx` files for presentational sections, while pure chart decisions stay in model helpers.
+- Shared chrome may split route shell, navigation models, and utility panels. `Sidebar.tsx` owns the responsive shell; `SidebarNavigation.tsx` owns navigation section construction and item rendering.
 - Sync providers and API clients must not call raw `fetch`; use `lib/sync/http-gateway.ts`.
 - Broad lint-disable comments are only allowed in the explicit clean-code
   contract allowlist. Additions require updating the contract and documenting

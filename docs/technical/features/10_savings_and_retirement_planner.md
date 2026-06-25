@@ -1,49 +1,41 @@
-# 10. Savings & Retirement Planner
+# 10. Retirement Planner
 
-The Retirement Planner is a high-level module that uses the Bond and Market engines to help users achieve specific life goals.
+The retained retirement surface is a limited withdrawal planner. It is not a full goal-planning or portfolio-allocation recommendation engine.
 
-## 1. The Planning Workflow
+## 1. Current Scope
 
-Instead of starting with an instrument, the user starts with a **Goal**:
+The user provides:
 
-1.  **Objective:** "I want to retire in 20 years" or "I need 200k for a house."
-2.  **Target Amount:** Defined in "Today's Purchasing Power" (to account for inflation).
-3.  **Monthly Contribution:** How much the user can realistically save.
-4.  **Risk Profile:** How much volatility the user can stomach.
+- initial capital
+- monthly withdrawal
+- scenario horizon
+- supported bond type
+- tax wrapper
+- expected CPI and NBP assumptions
 
-## 2. The Recommendation Engine
+The UI calls the retirement calculation endpoint and renders a single modeled withdrawal path. The planner explains whether the balance remains positive, the final balance, total withdrawn, modeled annual rate, tax paid, and assumptions/warnings returned by the engine.
 
-The system suggests a "Portfolio Mix" based on the horizon:
+## 2. Current Ownership
 
-- **Horizon < 3 years:** 100% Short-term Bonds (OTS/ROR).
-- **Horizon 3-10 years:** Mix of EDO Bonds and Gold.
-- **Horizon > 10 years:** Core EDO Bonds + S&P 500 for growth.
+- `features/retirement/components/RetirementPlannerContainer.tsx` owns client state, macro-default adoption, calculation submission, and component wiring.
+- `features/retirement/components/RetirementInputsPanel.tsx` owns input controls.
+- `features/retirement/components/RetirementPlannerPanels.tsx` owns result summary, ready state, limits, depletion warning, and support panels.
+- `features/retirement/components/RetirementResultsOverview.tsx` owns the balance chart and chart support metadata.
+- `features/retirement/lib/retirement-planner-model.ts` owns supported-bond fallback, chart point projection, scenario coverage, translated label maps, tax labels, and model-limit text.
+- `features/retirement/lib/retirement-format.ts` owns retirement-specific rate formatting.
+- `features/retirement/constants/default-inputs.ts` owns default planner inputs.
+- `features/retirement/types/retirement.ts` owns durable planner input types.
 
-## 3. Dealing with Inflation in Planning
+## 3. Limits
 
-The most important feature of the planner is the **Inflation Toggle**:
+The current planner uses a steady-rate model and supported retail bond families only. It does not model a full retirement portfolio, stochastic market paths, equity allocation, or contribution-gap optimization.
 
-- **Nominal View:** Shows the huge numbers (e.g., "You will have 2,000,000 PLN").
-- **Real View:** Shows what that money can actually buy in today's terms (e.g., "This is worth 800,000 PLN today").
-- This prevents the "Inflation Illusion" that leads to under-saving.
+The UI must keep those limits visible through the limits section and returned calculation assumptions/warnings.
 
-## 4. Scenario Analysis
+## 4. Testing
 
-The planner generates three paths:
+Current focused tests include:
 
-- **Conservative:** High bond allocation, low expected equity growth.
-- **Moderate:** Balanced allocation.
-- **Optimistic:** Higher equity allocation, historical best-case growth.
-
-## 5. Required Contribution Calculator
-
-If the user's current savings rate is insufficient to reach the goal, the system calculates the **Gap**:
-
-- "To reach your goal, you need to increase your monthly contribution by **450 PLN** or extend your horizon by **4 years**."
-
-## 6. Retirement Withdrawal Simulation
-
-Once the target is reached, the planner simulates the "Withdrawal Phase":
-
-- Using the **4% Rule** or specific Bond Payouts (COI coupons).
-- Showing how long the capital will last under different market conditions.
+- `features/retirement/lib/retirement-planner-model.test.ts` for pure model behavior
+- `docs/ui/design-refactor-contract.test.ts` for UI token and surface boundaries
+- shared calculation and handler tests under `features/bond-core/tests/**` for engine truth

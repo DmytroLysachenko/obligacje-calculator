@@ -1,50 +1,50 @@
 # 09. Comparative Simulations
 
-The comparison engine is designed to help users understand the trade-offs between safety and potential return.
+This document describes the current comparison surfaces in the app.
 
-## 1. The Comparison Framework
+The comparison area is intentionally split into two different products:
 
-Comparing a Bond to Bitcoin is like comparing an "Escalator" to a "Rollercoaster." We use specific metrics to make the comparison meaningful:
+- bond-vs-bond comparison for two treasury-bond scenarios
+- multi-asset reference comparison for historical market context
 
-- **Max Drawdown:** The largest peak-to-trough drop. (Bonds = 0% nominal, Equity = -20% to -50%).
-- **Time to Recovery:** How long it takes to return to the previous peak.
-- **Real Return:** Profitability after subtracting inflation.
-- **Liquidity:** How fast can you get your cash out?
+Neither surface is a recommendation engine. Both are explanatory tools that show modeled assumptions, limits, and trade-offs.
 
-## 2. Simulation Modes
+## 1. Bond Comparison
 
-### A. Static Comparison (Historical)
+Bond comparison uses the shared bond-value chart renderer instead of a feature-local chart stack.
 
-- "Show me 10,000 PLN in EDO vs. S&P 500 between 2015 and 2025."
-- Uses actual historical prices and CPI.
+Current ownership:
 
-### C. Smart Bond Finder (Optimizer)
+- `features/comparison-engine/components/ComparisonContainer.tsx` owns two-scenario state and chart step selection.
+- `features/comparison-engine/components/ComparisonResultsPanel.tsx` adapts comparison results into `BondValueChartPoint[]`.
+- `shared/components/charts/BondValueChart.tsx` owns chart state, context overlay preferences, and toolbar/plot wiring.
+- `shared/components/charts/BondValueChartPlot.tsx` owns the Recharts plot.
+- `shared/components/charts/BondValueChartToolbar.tsx` owns legend and overlay controls.
+- `shared/components/charts/BondValueChartTooltipParts.tsx` owns grouped tooltip rendering.
+- `shared/components/charts/bond-value-tooltip-model.ts` owns tooltip payload decisions.
 
-- "I want to invest 50,000 PLN for exactly 4.5 years. Which bond is best?"
-- **Parallel Simulation:** The engine runs all 8+ bond types simultaneously for the exact requested duration.
-- **Duration Normalization:** It accounts for early redemption fees if the horizon doesn't match maturity.
-- **Ranked Recommendations:** Returns a ranked list based on `netPayoutValue` with a clear "Winner" reason.
+The chart can show nominal, real, and net-profit metrics plus CPI/NBP context overlays. Comparison scenario groups are passed through the shared tooltip payload model rather than rendered by a separate comparison chart.
 
-### D. Inflation Scenario Volatility
+## 2. Multi-Asset Reference Comparison
 
-- Users can toggle between **Low / Base / High** inflation paths.
-- **Visual Range:** Charts display dotted lines for alternative scenarios, showing how indexed bonds (EDO/COI) respond to macro changes compared to fixed-rate bonds.
+The multi-asset page is a secondary reference surface. It compares S&P 500, gold, EDO bonds, and savings-account paths using available historical/reference data.
 
-## 3. Visualization Strategy
+Current ownership:
 
-- **Overlay Chart:** Multiple lines on one time-axis.
-- **"The Wall of Worry":** Highlighting periods where the risky asset was in the red while the bond was steadily climbing.
-- **Summary Cards:**
-  - "The Bond path gave you **certainty** of X."
-  - "The Equity path gave you **potential** for Y, but with Z months of stress."
+- `features/comparison-engine/components/MultiAssetComparisonContainer.tsx` owns hook wiring, user controls, and page orchestration.
+- `features/comparison-engine/components/MultiAssetComparisonPanels.tsx` owns history-state, metric snapshot, and ready-state panels.
+- `features/comparison-engine/components/MultiAssetComparisonChart.tsx` owns growth and drawdown charts.
+- `features/comparison-engine/components/MultiAssetChartTooltips.tsx` owns chart tooltip rendering.
+- `features/comparison-engine/components/multi-asset-chart-model.ts` owns chart rows, thinning, legends, accessibility summaries, total-invested calculation, ending snapshots, and availability summaries.
+- `features/comparison-engine/types/multi-asset.ts` owns durable chart and tooltip props.
 
-## 4. Handling Taxes in Comparison
+The page must keep its reference-only framing. If historical coverage is partial or fallback-backed, the UI must show that state through the history panel instead of implying full research-grade completeness.
 
-- **Bonds:** 19% deducted at the end.
-- **Stocks:** 19% on capital gains (and potentially on dividends).
-- The engine must account for the **Dividend Tax** (usually 19%) for S&P 500 simulations to be fair.
+## 3. Testing
 
-## 5. The "Comfort Zone" Metric
+Source contracts intentionally follow concrete ownership after refactors:
 
-A unique UI element that asks: "Can you handle a 20% drop in your portfolio?"
-If the user says "No," the simulator highlights the Bond path as the "Recommended Foundation."
+- chart ownership: `features/comparison-engine/tests/comparison-chart-scope-contract.test.ts`
+- chart verdict and tooltip separation: `features/comparison-engine/tests/comparison-chart-verdict-contract.test.ts`
+- multi-asset chart model behavior: `features/comparison-engine/tests/components/multi-asset-chart-model.test.ts`
+- design/token boundaries: `docs/ui/design-refactor-contract.test.ts`
