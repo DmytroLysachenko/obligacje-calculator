@@ -10,6 +10,7 @@ const files = {
   chartTooltips: 'features/comparison-engine/components/MultiAssetChartTooltips.tsx',
   resultsPanel: 'features/comparison-engine/components/ComparisonResultsPanel.tsx',
   sharedValueChart: 'shared/components/charts/BondValueChart.tsx',
+  sharedValueChartPlot: 'shared/components/charts/BondValueChartPlot.tsx',
   verdict: 'features/comparison-engine/components/ComparisonVerdict.tsx',
   chartLegendContract: 'shared/components/charts/chart-legend-contract.test.ts',
   resultsContract: 'features/comparison-engine/tests/comparison-results-surface-contract.test.ts',
@@ -75,6 +76,7 @@ describe('comparison chart and verdict contracts', () => {
     const source = read(files.resultsPanel);
     const types = read(files.resultsPanelTypes);
     const sharedChart = read(files.sharedValueChart);
+    const sharedChartPlot = read(files.sharedValueChartPlot);
 
     expectContains(source, "from '@/shared/components/charts/BondValueChart';");
     expectContains(source, 'BondValueChart,');
@@ -88,8 +90,8 @@ describe('comparison chart and verdict contracts', () => {
     expectContains(source, 'color: scenarioBColor');
     expectContains(source, 'rightDomain={rightDomain}');
     expectContains(sharedChart, 'showContextControls = true');
-    expectContains(sharedChart, 'dataKey="inflation"');
-    expectContains(sharedChart, 'dataKey="nbp"');
+    expectContains(sharedChartPlot, 'dataKey="inflation"');
+    expectContains(sharedChartPlot, 'dataKey="nbp"');
 
     expectNoFragments(source, [
       'AreaChart',

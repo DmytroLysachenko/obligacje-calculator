@@ -56,6 +56,7 @@ const comparisonRefinedFiles = [
   'features/comparison-engine/components/ComparisonTable.tsx',
   'features/comparison-engine/components/ComparisonVerdict.tsx',
   'features/comparison-engine/components/MultiAssetComparisonContainer.tsx',
+  'features/comparison-engine/components/MultiAssetComparisonPanels.tsx',
   'features/comparison-engine/components/ScenarioOverrideCard.tsx',
   'features/comparison-engine/components/bond-comparison/ComparisonConfigurationPanel.tsx',
   'features/comparison-engine/components/bond-comparison/ComparisonResultsDashboard.tsx',
