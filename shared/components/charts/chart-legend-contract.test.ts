@@ -8,6 +8,7 @@ const root = process.cwd();
 const files = {
   legend: 'shared/components/charts/ChartLegendStrip.tsx',
   sharedValue: 'shared/components/charts/BondValueChart.tsx',
+  sharedPlot: 'shared/components/charts/BondValueChartPlot.tsx',
   sharedToolbar: 'shared/components/charts/BondValueChartToolbar.tsx',
   single: 'features/single-calculator/components/BondChart.tsx',
   regular: 'features/regular-investment/components/RegularInvestmentChart.tsx',
@@ -54,6 +55,7 @@ describe('chart legend contracts', () => {
   it('keeps single chart on custom legend instead of Recharts Legend', () => {
     const source = read(files.single);
     const shared = read(files.sharedValue);
+    const sharedPlot = read(files.sharedPlot);
     const sharedToolbar = read(files.sharedToolbar);
 
     expectContains(source, 'BondValueChart');
@@ -68,13 +70,13 @@ describe('chart legend contracts', () => {
     expectContains(sharedToolbar, 'aria-pressed={showInflationOverlay}');
     expectContains(sharedToolbar, 'aria-pressed={showNbpOverlay}');
     expectContains(shared, 'const showContextAxis = showInflationOverlay || showNbpOverlay;');
-    expectContains(shared, 'margin={{ top: 12, right: 52, left: 40, bottom: 20 }}');
-    expectContains(shared, 'orientation="right"');
-    expectContains(shared, 'width={44}');
-    expectContains(shared, 'dataKey="inflation"');
-    expectContains(shared, "name={t('bonds.ref_inflation')}");
-    expectContains(shared, 'dataKey="nbp"');
-    expectContains(shared, "name={t('bonds.nbp_rate_short')}");
+    expectContains(sharedPlot, 'margin={{ top: 12, right: 52, left: 40, bottom: 20 }}');
+    expectContains(sharedPlot, 'orientation="right"');
+    expectContains(sharedPlot, 'width={44}');
+    expectContains(sharedPlot, 'dataKey="inflation"');
+    expectContains(sharedPlot, "name={t('bonds.ref_inflation')}");
+    expectContains(sharedPlot, 'dataKey="nbp"');
+    expectContains(sharedPlot, "name={t('bonds.nbp_rate_short')}");
 
     expectNoFragments(shared, [
       'Legend, ResponsiveContainer',
@@ -88,6 +90,7 @@ describe('chart legend contracts', () => {
   it('keeps regular investment chart on custom legend instead of Recharts Legend', () => {
     const source = read(files.regular);
     const shared = read(files.sharedValue);
+    const sharedPlot = read(files.sharedPlot);
     const sharedToolbar = read(files.sharedToolbar);
 
     expectContains(
@@ -110,7 +113,7 @@ describe('chart legend contracts', () => {
     expectContains(shared, 'showContextControls = true');
     expectContains(shared, 'showContextControls && showInflationOverlay');
     expectContains(shared, 'showContextControls && showNbpOverlay');
-    expectContains(shared, 'margin={{ top: 12, right: 52, left: 40, bottom: 20 }}');
+    expectContains(sharedPlot, 'margin={{ top: 12, right: 52, left: 40, bottom: 20 }}');
 
     expectNoFragments(source, [
       'ChartLegendStrip',

@@ -13,6 +13,7 @@ const paths = {
   multiAssetChartModel: 'features/comparison-engine/components/multi-asset-chart-model.ts',
   chartTypes: 'features/comparison-engine/types/multi-asset.ts',
   sharedValueChart: 'shared/components/charts/BondValueChart.tsx',
+  sharedValueChartPlot: 'shared/components/charts/BondValueChartPlot.tsx',
   sharedValueChartParts: 'shared/components/charts/BondValueChartParts.tsx',
   sharedValueChartToolbar: 'shared/components/charts/BondValueChartToolbar.tsx',
   sharedValueChartTooltipParts: 'shared/components/charts/BondValueChartTooltipParts.tsx',
@@ -42,6 +43,7 @@ describe('comparison chart ownership contract', () => {
     const container = read(paths.comparisonContainer);
     const results = read(paths.comparisonResults);
     const shared = read(paths.sharedValueChart);
+    const sharedPlot = read(paths.sharedValueChartPlot);
     const sharedParts = read(paths.sharedValueChartParts);
     const sharedToolbar = read(paths.sharedValueChartToolbar);
     const sharedTooltipParts = read(paths.sharedValueChartTooltipParts);
@@ -69,10 +71,10 @@ describe('comparison chart ownership contract', () => {
     expectContains(results, 'nbp: point.nbp');
 
     expectContains(shared, 'showContextControls = true');
-    expectContains(shared, 'orientation="right"');
-    expectContains(shared, 'width={44}');
+    expectContains(sharedPlot, 'orientation="right"');
+    expectContains(sharedPlot, 'width={44}');
     expectContains(shared, '<BondValueChartToolbar');
-    expectContains(shared, '<BondValueChartTooltip');
+    expectContains(sharedPlot, '<BondValueChartTooltip');
     expectContains(sharedParts, "export { BondValueChartToolbar } from './BondValueChartToolbar';");
     expectContains(sharedToolbar, 'export function BondValueChartToolbar');
     expectContains(sharedTooltipParts, 'export function BondValueChartTooltip');

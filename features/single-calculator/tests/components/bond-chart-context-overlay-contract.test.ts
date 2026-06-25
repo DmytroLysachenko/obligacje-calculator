@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 const root = process.cwd();
 const chartPath = 'features/single-calculator/components/BondChart.tsx';
 const sharedChartPath = 'shared/components/charts/BondValueChart.tsx';
+const sharedChartPlotPath = 'shared/components/charts/BondValueChartPlot.tsx';
 const sharedChartToolbarPath = 'shared/components/charts/BondValueChartToolbar.tsx';
 
 function read(relativePath: string) {
@@ -20,6 +21,7 @@ describe('single calculator chart context overlay contract', () => {
   it('keeps macro context rates optional through chart toolbar controls', () => {
     const source = read(chartPath);
     const shared = read(sharedChartPath);
+    const sharedPlot = read(sharedChartPlotPath);
     const sharedToolbar = read(sharedChartToolbarPath);
 
     expectContains(
@@ -36,10 +38,10 @@ describe('single calculator chart context overlay contract', () => {
     expectContains(shared, 'const showInflationOverlay = preferences.showInflationOverlay;');
     expectContains(shared, 'const showNbpOverlay = preferences.showNbpOverlay;');
     expectContains(shared, 'const showContextAxis = showInflationOverlay || showNbpOverlay;');
-    expectContains(shared, 'margin={{ top: 12, right: 52, left: 40, bottom: 20 }}');
-    expectContains(shared, 'yAxisId="right"');
-    expectContains(shared, 'orientation="right"');
-    expectContains(shared, 'width={44}');
+    expectContains(sharedPlot, 'margin={{ top: 12, right: 52, left: 40, bottom: 20 }}');
+    expectContains(sharedPlot, 'yAxisId="right"');
+    expectContains(sharedPlot, 'orientation="right"');
+    expectContains(sharedPlot, 'width={44}');
     expectContains(sharedToolbar, 'aria-pressed={showInflationOverlay}');
     expectContains(sharedToolbar, 'aria-pressed={showNbpOverlay}');
     expectContains(
@@ -50,10 +52,10 @@ describe('single calculator chart context overlay contract', () => {
       sharedToolbar,
       "onClick={() => onOverlayChange('showNbpOverlay', !showNbpOverlay)}",
     );
-    expectContains(shared, 'showInflationOverlay ? (');
-    expectContains(shared, 'dataKey="inflation"');
-    expectContains(shared, 'showNbpOverlay ? (');
-    expectContains(shared, 'dataKey="nbp"');
+    expectContains(sharedPlot, 'showInflationOverlay ? (');
+    expectContains(sharedPlot, 'dataKey="inflation"');
+    expectContains(sharedPlot, 'showNbpOverlay ? (');
+    expectContains(sharedPlot, 'dataKey="nbp"');
 
     expectContains(shared, "label: t('bonds.ref_inflation')");
     expectContains(shared, "label: t('bonds.nbp_rate_short')");

@@ -9,7 +9,7 @@ const files = {
   singleChart: 'features/single-calculator/components/BondChart.tsx',
   chartLegend: 'shared/components/charts/chart-legend-contract.test.ts',
   overlayContract:
-    'features/single-calculator/components/bond-chart-context-overlay-contract.test.ts',
+    'features/single-calculator/tests/components/bond-chart-context-overlay-contract.test.ts',
   disclosure: 'shared/components/forms/AdvancedAssumptionsDisclosure.tsx',
   disclosureContract: 'shared/components/forms/advanced-assumptions-contract.test.ts',
 } as const;
@@ -36,10 +36,10 @@ describe('chart and disclosure regression contracts', () => {
   it('keeps the single calculator chart focused on PLN values', () => {
     const source = read(files.singleChart);
 
-    expectContains(
-      source,
-      'import { computeNumericDomain, computeRateDomain, sampleSeriesPoints } from "@/shared/lib/chart-series";',
-    );
+    expectContains(source, "from '@/shared/lib/chart-series';");
+    expectContains(source, 'computeNumericDomain,');
+    expectContains(source, 'computeRateDomain,');
+    expectContains(source, 'sampleSeriesPoints,');
     expectContains(source, 'const leftDomain = React.useMemo(');
     expectContains(source, 'const rightDomain = React.useMemo(');
     expectContains(source, 'computeRateDomain(');
@@ -64,8 +64,8 @@ describe('chart and disclosure regression contracts', () => {
     const source = read(files.singleChart);
 
     expectContains(source, 'const series = React.useMemo(');
-    expectContains(source, 't("common.nominal_value")');
-    expectContains(source, 't("common.real_value")');
+    expectContains(source, "t('common.nominal_value')");
+    expectContains(source, "t('common.real_value')");
     expectContains(source, 'series={series}');
 
     expectNoFragments(source, [
@@ -108,7 +108,7 @@ describe('chart and disclosure regression contracts', () => {
       overlayContract,
       'keeps macro context rates optional through chart toolbar controls',
     );
-    expectContains(overlayContract, 'expectContains(shared, \'yAxisId="right"\')');
+    expectContains(overlayContract, 'expectContains(sharedPlot, \'yAxisId="right"\')');
     expectContains(disclosureContract, 'border-0 border-b border-border px-0 py-4');
     expectContains(disclosureContract, 'className="border-b border-border px-0 py-4');
   });
