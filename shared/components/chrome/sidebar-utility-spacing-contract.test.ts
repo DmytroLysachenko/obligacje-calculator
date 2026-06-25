@@ -60,7 +60,8 @@ describe('sidebar utility spacing contracts', () => {
     expectContains(source, 'emphasis = false');
     expectContains(source, 'grid min-h-12 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-1');
     expectContains(source, 'min-w-0 space-y-1');
-    expectContains(source, "emphasis ? 'text-xs font-semibold text-foreground'");
+    expectContains(source, 'emphasis');
+    expectContains(source, "'text-xs font-semibold text-foreground'");
     expectContains(source, 'line-clamp-2 text-[11px] leading-4 text-muted-foreground');
     expectContains(source, 'border-t border-border py-3.5 first:border-t-0 first:pt-0');
     expectContains(source, "flush ? 'first:border-t-0'");

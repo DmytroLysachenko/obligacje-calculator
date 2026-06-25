@@ -57,18 +57,22 @@ describe('app shell visual contracts', () => {
     const source = expectHas('shared/components/chrome/Sidebar.tsx', [
       'bg-secondary/70',
       'border-r border-border',
-      'rounded-md px-3 py-2.5',
-      'bg-transparent text-muted-foreground hover:bg-card/70 hover:text-foreground',
-      'bg-card text-foreground shadow-sm',
       'space-y-7 overflow-y-auto px-3 py-5',
       'space-y-4 border-t border-border bg-muted/20 px-3 py-4',
     ]);
+    const navigation = expectHas('shared/components/chrome/SidebarNavigation.tsx', [
+      'rounded-md px-3 py-2.5',
+      'bg-transparent text-muted-foreground hover:bg-card/70 hover:text-foreground',
+      'bg-card text-foreground shadow-sm',
+    ]);
 
-    expect(source).not.toContain('linear-gradient');
-    expect(source).not.toContain('rounded-[1.35rem]');
-    expect(source).not.toContain('shadow-sky');
-    expect(source).not.toContain('border-sky');
-    expect(source).not.toContain('text-slate-');
+    for (const checkedSource of [source, navigation]) {
+      expect(checkedSource).not.toContain('linear-gradient');
+      expect(checkedSource).not.toContain('rounded-[1.35rem]');
+      expect(checkedSource).not.toContain('shadow-sky');
+      expect(checkedSource).not.toContain('border-sky');
+      expect(checkedSource).not.toContain('text-slate-');
+    }
   });
 
   it('keeps sidebar utility groups simple and compact', () => {

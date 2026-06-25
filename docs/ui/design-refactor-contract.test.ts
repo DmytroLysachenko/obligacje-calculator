@@ -151,6 +151,7 @@ const sharedShellFiles = [
   'components/ui/tooltip.tsx',
   'shared/components/chrome/LanguageSwitcher.tsx',
   'shared/components/chrome/Sidebar.tsx',
+  'shared/components/chrome/SidebarNavigation.tsx',
   'shared/components/chrome/SidebarSyncSummary.tsx',
   'shared/components/chrome/SidebarUtilityGroup.tsx',
   'shared/components/chrome/SidebarWorkspaceUtility.tsx',

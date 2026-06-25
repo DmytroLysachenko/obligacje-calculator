@@ -34,7 +34,7 @@ describe('sidebar production navigation contract', () => {
   }
 
   it('keeps comparison beside the primary calculator in core tools', () => {
-    const source = read('shared/components/chrome/Sidebar.tsx');
+    const source = read('shared/components/chrome/SidebarNavigation.tsx');
     const coreStart = source.indexOf("label: t('sidebar.sections.core')");
     const conditionalStart = source.indexOf("label: t('sidebar.sections.conditional')");
     const singleIndex = source.indexOf("href: '/single-calculator'");
@@ -50,7 +50,7 @@ describe('sidebar production navigation contract', () => {
   });
 
   it('keeps the core tools ordered as education, single calculator, comparison, and data', () => {
-    const source = read('shared/components/chrome/Sidebar.tsx');
+    const source = read('shared/components/chrome/SidebarNavigation.tsx');
     const coreSection = extractNavSection(source, 'sidebar.sections.core');
     const expectedOrder = [
       "href: '/education'",
@@ -70,7 +70,7 @@ describe('sidebar production navigation contract', () => {
   });
 
   it('keeps secondary strategy pages out of the core group', () => {
-    const source = read('shared/components/chrome/Sidebar.tsx');
+    const source = read('shared/components/chrome/SidebarNavigation.tsx');
     const conditionalStart = source.indexOf("label: t('sidebar.sections.conditional')");
     const regularIndex = source.indexOf("href: '/regular-investment'");
     const ladderIndex = source.indexOf("href: '/ladder'");
@@ -83,7 +83,7 @@ describe('sidebar production navigation contract', () => {
   });
 
   it('does not duplicate comparison inside the secondary strategy group', () => {
-    const source = read('shared/components/chrome/Sidebar.tsx');
+    const source = read('shared/components/chrome/SidebarNavigation.tsx');
     const coreSection = extractNavSection(source, 'sidebar.sections.core');
     const strategySection = extractNavSection(source, 'sidebar.sections.conditional');
     const comparisonOccurrences = source.match(/href: '\/compare'/g) ?? [];
@@ -94,7 +94,7 @@ describe('sidebar production navigation contract', () => {
   });
 
   it('keeps every core navigation item icon-backed after regrouping', () => {
-    const source = read('shared/components/chrome/Sidebar.tsx');
+    const source = read('shared/components/chrome/SidebarNavigation.tsx');
     const coreSection = extractNavSection(source, 'sidebar.sections.core');
 
     expectContains(coreSection, 'icon: BookOpen');

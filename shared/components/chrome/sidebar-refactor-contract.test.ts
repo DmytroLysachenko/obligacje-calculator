@@ -7,6 +7,7 @@ const root = process.cwd();
 
 const files = {
   sidebar: 'shared/components/chrome/Sidebar.tsx',
+  navigation: 'shared/components/chrome/SidebarNavigation.tsx',
   utilities: 'shared/components/chrome/SidebarUtilityGroup.tsx',
   settings: 'shared/components/chrome/SidebarSettingsUtility.tsx',
   sync: 'shared/components/chrome/SidebarSyncSummary.tsx',
@@ -32,7 +33,7 @@ function expectNoFragments(source: string, fragments: readonly string[]) {
 
 describe('sidebar refactor contracts', () => {
   it('keeps active navigation subtle with a left-border cue', () => {
-    const source = read(files.sidebar);
+    const source = read(files.navigation);
 
     expectContains(source, 'group relative block rounded-md px-3 py-2.5');
     expectContains(source, 'bg-card text-foreground shadow-sm');
@@ -58,8 +59,9 @@ describe('sidebar refactor contracts', () => {
 
   it('keeps sidebar sections spaced enough to scan', () => {
     const source = read(files.sidebar);
+    const navigation = read(files.navigation);
 
-    expectContains(source, 'px-2 text-xs font-semibold uppercase tracking-[0.08em]');
+    expectContains(navigation, 'px-2 text-xs font-semibold uppercase tracking-[0.08em]');
     expectContains(source, 'custom-scrollbar flex-1 space-y-7 overflow-y-auto px-3 py-5');
     expectContains(source, 'space-y-4 border-t border-border bg-muted/20 px-3 py-4');
     expectContains(source, 'border-b border-border px-4 py-4');
