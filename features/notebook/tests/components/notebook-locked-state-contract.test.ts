@@ -7,6 +7,8 @@ const root = process.cwd();
 
 const files = {
   notebook: 'features/notebook/components/NotebookContainer.tsx',
+  states: 'features/notebook/components/NotebookStates.tsx',
+  model: 'features/notebook/lib/notebook-workspace-model.ts',
   actions: 'features/notebook/components/WorkspaceActionStrip.tsx',
   status: 'features/notebook/components/WorkspaceStatusCard.tsx',
   en: 'i18n/translations/en.json',
@@ -34,19 +36,21 @@ function expectNoFragments(source: string, fragments: readonly string[]) {
 describe('notebook locked and empty state contracts', () => {
   it('keeps the empty notebook state focused on capability preview', () => {
     const source = read(files.notebook);
+    const states = read(files.states);
+    const model = read(files.model);
 
     expectContains(source, 'capabilitiesTitle');
-    expectContains(source, 'capabilities.map((capability)');
-    expectContains(source, "t('notebook.capabilities.track.title')");
-    expectContains(source, "t('notebook.capabilities.maturities.title')");
-    expectContains(source, "t('notebook.capabilities.export.title')");
-    expectContains(source, "t('notebook.capabilities.projection.title')");
+    expectContains(states, 'capabilities.map((capability)');
+    expectContains(model, "t('notebook.capabilities.track.title')");
+    expectContains(model, "t('notebook.capabilities.maturities.title')");
+    expectContains(model, "t('notebook.capabilities.export.title')");
+    expectContains(model, "t('notebook.capabilities.projection.title')");
     expectContains(source, "import { SectionBlock } from '@/shared/components/page/SectionBlock';");
     expectContains(source, "import { Notice } from '@/shared/components/feedback/Notice';");
     expectContains(source, 'space-y-4');
-    expectContains(source, 'grid gap-x-6 gap-y-4 border-y border-border py-4 md:grid-cols-2');
+    expectContains(states, 'grid gap-x-6 gap-y-4 border-y border-border py-4 md:grid-cols-2');
     expectContains(
-      source,
+      states,
       'border-t border-border pt-4 first:border-t-0 first:pt-0 md:border-t-0 md:pt-0',
     );
 
@@ -66,6 +70,7 @@ describe('notebook locked and empty state contracts', () => {
 
   it('keeps guest notebook lock as one clear notice', () => {
     const source = read(files.notebook);
+    const states = read(files.states);
 
     expectContains(source, 'isGuestWorkspace ? (');
     expectContains(source, "t('workspace.locked_notebook_notice')");
@@ -73,8 +78,8 @@ describe('notebook locked and empty state contracts', () => {
       source,
       '<Notice tone="locked" title={t(\'workspace.sign_in_required_short\')}>',
     );
-    expectContains(source, '<Notice tone="locked" title={createLabel} compact>');
-    expectContains(source, 'disabled={!canManageWorkspace}');
+    expectContains(states, '<Notice tone="locked" title={createLabel} compact>');
+    expectContains(states, 'disabled={!canManageWorkspace}');
 
     expectNoFragments(source, [
       'Workspace storage is reserved',

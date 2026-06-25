@@ -1,5 +1,5 @@
 'use client';
-import { BookOpen, FolderOpen, RefreshCcw } from 'lucide-react';
+import { BookOpen, RefreshCcw } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -23,9 +23,9 @@ import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 import { useWorkspacePortfolios } from '@/shared/hooks/useWorkspacePortfolios';
 import { persistSelectedPortfolioId } from '@/shared/lib/workspace/notebook-state';
 
+import { NotebookPortfolioListSection, NotebookScopeNote } from './NotebookContainerPanels';
 import { EmptyPortfolioState, NotebookLoadingState } from './NotebookStates';
 import { PortfolioDetails } from './PortfolioDetails';
-import { PortfolioWorkspaceCard } from './PortfolioWorkspaceCard';
 import { WorkspaceActionStrip } from './WorkspaceActionStrip';
 import { WorkspaceStatusCard } from './WorkspaceStatusCard';
 export const NotebookContainer: React.FC = () => {
@@ -96,6 +96,11 @@ export const NotebookContainer: React.FC = () => {
   const emptyStateSteps: NotebookStepItem[] = buildNotebookCapabilities(t);
   const handleImportClick = () => {
     importRef.current?.click();
+  };
+  const handleOpenPortfolio = (portfolio: UserPortfolio) => {
+    setSelectedPortfolioId(portfolio.id);
+    persistSelectedPortfolioId(portfolio.id);
+    setDetailPortfolioId(portfolio.id);
   };
   if (detailPortfolioId && canManageWorkspace) {
     const portfolio = portfolios.find((item) => item.id === detailPortfolioId) ?? null;
@@ -206,58 +211,31 @@ export const NotebookContainer: React.FC = () => {
         />
       ) : (
         <div className="space-y-8">
-          <SectionBlock
-            title={t('notebook.stored_portfolios')}
-            description={t('notebook.stored_portfolios_desc')}
-          >
-            <div className="border-t border-border pt-4 text-sm leading-6 text-muted-foreground">
-              {t('notebook.stored_portfolios_note')}
-            </div>
+          <NotebookPortfolioListSection
+            portfolios={portfolios}
+            canManageWorkspace={canManageWorkspace}
+            formatDate={(date) => dateFormatter.format(date)}
+            labels={{
+              title: t('notebook.stored_portfolios'),
+              description: t('notebook.stored_portfolios_desc'),
+              note: t('notebook.stored_portfolios_note'),
+              created: t('common.created'),
+              usage: t('notebook.usage_label'),
+              usageDescription: t('notebook.usage_desc'),
+              statusPublic: t('notebook.status_public'),
+              statusPrivate: t('notebook.status_private'),
+              fallbackDescription: t('notebook.portfolio_details'),
+              openPortfolio: t('notebook.open_portfolio'),
+              signInRequired: t('workspace.sign_in_required_short'),
+            }}
+            onOpenPortfolio={handleOpenPortfolio}
+            onRequestDelete={setPortfolioPendingDelete}
+          />
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {portfolios.map((portfolio) => (
-                <PortfolioWorkspaceCard
-                  key={portfolio.id}
-                  portfolio={{
-                    id: portfolio.id,
-                    name: portfolio.name,
-                    description: portfolio.description,
-                    isPublic: portfolio.isPublic,
-                    createdAtLabelValue: dateFormatter.format(new Date(portfolio.createdAt!)),
-                  }}
-                  createdAtLabel={t('common.created')}
-                  usageLabel={t('notebook.usage_label')}
-                  usageDescription={t('notebook.usage_desc')}
-                  statusLabel={
-                    portfolio.isPublic ? t('notebook.status_public') : t('notebook.status_private')
-                  }
-                  fallbackDescription={t('notebook.portfolio_details')}
-                  actionLabel={
-                    canManageWorkspace
-                      ? t('notebook.open_portfolio')
-                      : t('workspace.sign_in_required_short')
-                  }
-                  canManageWorkspace={canManageWorkspace}
-                  onOpen={() => {
-                    setSelectedPortfolioId(portfolio.id);
-                    persistSelectedPortfolioId(portfolio.id);
-                    setDetailPortfolioId(portfolio.id);
-                  }}
-                  onRequestDelete={() => {
-                    setPortfolioPendingDelete(portfolio);
-                  }}
-                />
-              ))}
-            </div>
-          </SectionBlock>
-
-          <section className="surface-shell flex items-start gap-3 p-5">
-            <FolderOpen className="mt-0.5 h-5 w-5 text-foreground" />
-            <div className="space-y-2">
-              <p className="ui-card-title">{t('notebook.scope_title')}</p>
-              <p className="ui-body">{t('notebook.scope_desc')}</p>
-            </div>
-          </section>
+          <NotebookScopeNote
+            title={t('notebook.scope_title')}
+            description={t('notebook.scope_desc')}
+          />
         </div>
       )}
 

@@ -84,6 +84,7 @@ const ladderRefinedFiles = [
 
 const notebookRefinedFiles = [
   'features/notebook/components/NotebookContainer.tsx',
+  'features/notebook/components/NotebookContainerPanels.tsx',
   'features/notebook/components/PortfolioWorkspaceCard.tsx',
   'features/notebook/components/WorkspaceStatusCard.tsx',
   'features/notebook/components/portfolio-details/PortfolioAnalyticsTab.tsx',
