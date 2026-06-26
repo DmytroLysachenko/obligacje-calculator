@@ -5,21 +5,25 @@ import React from 'react';
 
 import { ComparisonResultsPanelProps } from '@/features/comparison-engine/types/comparison-results-panel';
 import { useAppI18n } from '@/i18n/client';
-import {
-  BondValueChart,
-  BondValueChartPoint,
-  BondValueChartTooltipGroup,
-} from '@/shared/components/charts/BondValueChart';
+import { BondValueChart } from '@/shared/components/charts/BondValueChart';
 import { ChartSupportNote } from '@/shared/components/charts/ChartSupportNote';
-import { MetricStrip, MetricStripItem } from '@/shared/components/results/MetricStrip';
+import { MetricStrip } from '@/shared/components/results/MetricStrip';
 import { ResultActionGrid } from '@/shared/components/results/ResultActionGrid';
-import { applyChartContextRates } from '@/shared/lib/chart-context-rates';
-import { computeNumericDomain, computeRateDomain } from '@/shared/lib/chart-series';
 import { buildComparisonExportHeaders } from '@/shared/lib/export-headers';
 import {
   buildCombinedComparisonCsvFilename,
   exportComparisonCsv,
 } from '@/shared/lib/retained-exports';
+
+import {
+  buildComparisonChartDomains,
+  buildComparisonChartSeries,
+  buildComparisonChartSummary,
+  buildComparisonMetricItems,
+  buildComparisonValueChartData,
+  buildDifferenceMetricItems,
+  getComparisonResultsSummary,
+} from '../lib/comparison-results-panel-model';
 
 import { ComparisonChartHelpSection } from './ComparisonResultsPanelParts';
 
@@ -38,62 +42,25 @@ export function ComparisonResultsPanel({
   scenarioBColor,
 }: ComparisonResultsPanelProps) {
   const { t } = useAppI18n();
-  const valueA = resultsA.netPayoutValue;
-  const valueB = resultsB.netPayoutValue;
-  const winner = valueA === valueB ? null : valueA > valueB ? 'A' : 'B';
-  const winnerInput = winner === 'A' ? inputsA : winner === 'B' ? inputsB : null;
-  const absoluteGap = Math.abs(valueA - valueB);
-  const lowerValue = Math.min(valueA, valueB);
-  const relativeGap = lowerValue > 0 ? (absoluteGap / lowerValue) * 100 : 0;
-  const comparisonMetrics = React.useMemo<MetricStripItem[]>(
-    () => [
-      {
-        label: t('comparison.scenario_a'),
-        value: formatCurrency(valueA),
-        tone: 'text-primary',
-      },
-      {
-        label: t('comparison.scenario_b'),
-        value: formatCurrency(valueB),
-        tone: 'text-success',
-      },
-      {
-        label: `${t('comparison.scenario_a')} ${t('common.real_value')}`,
-        value: formatCurrency(resultsA.finalRealValue),
-        tone: 'text-foreground',
-      },
-      {
-        label: `${t('comparison.scenario_b')} ${t('common.real_value')}`,
-        value: formatCurrency(resultsB.finalRealValue),
-        tone: 'text-foreground',
-      },
-    ],
-    [formatCurrency, resultsA.finalRealValue, resultsB.finalRealValue, t, valueA, valueB],
+  const summary = React.useMemo(
+    () => getComparisonResultsSummary({ resultsA, resultsB, inputsA, inputsB }),
+    [inputsA, inputsB, resultsA, resultsB],
   );
-  const differenceMetrics = React.useMemo<MetricStripItem[]>(
-    () => [
-      {
-        label: t('comparison.summary_leading_bond'),
-        value: winnerInput ? `${winnerInput.bondType} (${winner})` : t('comparison.tie'),
-        description: winnerInput
-          ? `${winner === 'A' ? t('comparison.scenario_a') : t('comparison.scenario_b')} ${t('comparison.summary_higher_payout')}`
-          : t('comparison.summary_equal_outcome'),
-        tone: winner === 'B' ? 'text-success' : 'text-primary',
-      },
-      {
-        label: t('comparison.summary_absolute_gap'),
-        value: formatCurrency(absoluteGap),
-        description: t('comparison.summary_net_payout'),
-        tone: 'text-foreground',
-      },
-      {
-        label: t('comparison.summary_relative_gap'),
-        value: `${relativeGap.toFixed(1)}%`,
-        description: t('comparison.summary_compared_to_lower'),
-        tone: 'text-foreground',
-      },
-    ],
-    [absoluteGap, formatCurrency, relativeGap, t, winner, winnerInput],
+  const comparisonMetrics = React.useMemo(
+    () =>
+      buildComparisonMetricItems({
+        resultsA,
+        resultsB,
+        valueA: summary.valueA,
+        valueB: summary.valueB,
+        formatCurrency,
+        t,
+      }),
+    [formatCurrency, resultsA, resultsB, summary.valueA, summary.valueB, t],
+  );
+  const differenceMetrics = React.useMemo(
+    () => buildDifferenceMetricItems({ summary, formatCurrency, t }),
+    [formatCurrency, summary, t],
   );
   const exportActions = React.useMemo(
     () => [
@@ -112,153 +79,31 @@ export function ComparisonResultsPanel({
     ],
     [inputsA.bondType, inputsB.bondType, language, resultsA.timeline, resultsB.timeline, t],
   );
-  const valueChartData = React.useMemo<BondValueChartPoint[]>(() => {
-    const mappedPoints = chartData.map((point) => {
-      const scenarioGroups: BondValueChartTooltipGroup[] = [
-        {
-          id: 'scenario-a',
-          title: `${inputsA.bondType} (${t('comparison.scenario_a')})`,
-          color: scenarioAColor,
-          projected: point.isProjected,
-          metrics: [
-            {
-              label: t('common.nominal_value'),
-              value: point.nominalA,
-              color: scenarioAColor,
-            },
-            {
-              label: t('common.real_value'),
-              value: point.realA,
-              color: scenarioAColor,
-            },
-            {
-              label: t('common.net_profit'),
-              value: point.nominalA - resultsA.initialInvestment,
-              color: scenarioAColor,
-            },
-          ],
-        },
-        {
-          id: 'scenario-b',
-          title: `${inputsB.bondType} (${t('comparison.scenario_b')})`,
-          color: scenarioBColor,
-          projected: point.isProjected,
-          metrics: [
-            {
-              label: t('common.nominal_value'),
-              value: point.nominalB,
-              color: scenarioBColor,
-            },
-            {
-              label: t('common.real_value'),
-              value: point.realB,
-              color: scenarioBColor,
-            },
-            {
-              label: t('common.net_profit'),
-              value: point.nominalB - resultsB.initialInvestment,
-              color: scenarioBColor,
-            },
-          ],
-        },
-      ];
-
-      return {
-        label: point.label,
-        date: point.label,
-        dateKey: point.dateKey,
-        nominalA: point.nominalA,
-        realA: point.realA,
-        nominalB: point.nominalB,
-        realB: point.realB,
-        inflation: point.inflation,
-        nbp: point.nbp,
-        isProjected: point.isProjected,
-        scenarioGroups,
-      };
-    });
-
-    return applyChartContextRates(mappedPoints, inputsA);
-  }, [
-    chartData,
-    inputsA,
-    inputsB.bondType,
-    resultsA.initialInvestment,
-    resultsB.initialInvestment,
-    scenarioAColor,
-    scenarioBColor,
-    t,
-  ]);
-  const leftDomain = React.useMemo(
+  const valueChartData = React.useMemo(
     () =>
-      computeNumericDomain(
-        valueChartData
-          .flatMap((point) => [
-            Number(point.nominalA),
-            Number(point.realA),
-            Number(point.nominalB),
-            Number(point.realB),
-          ])
-          .filter((value) => Number.isFinite(value)),
-        {
-          minFloor: null,
-          minPadding: 250,
-          paddingRatio: 0.08,
-        },
-      ),
+      buildComparisonValueChartData({
+        chartData,
+        inputsA,
+        inputsB,
+        resultsA,
+        resultsB,
+        scenarioAColor,
+        scenarioBColor,
+        t,
+      }),
+    [chartData, inputsA, inputsB, resultsA, resultsB, scenarioAColor, scenarioBColor, t],
+  );
+  const { leftDomain, rightDomain } = React.useMemo(
+    () => buildComparisonChartDomains(valueChartData),
     [valueChartData],
   );
-  const rightDomain = React.useMemo(
-    () =>
-      computeRateDomain(
-        valueChartData
-          .flatMap((point) => [point.inflation, point.nbp])
-          .filter((value): value is number => typeof value === 'number'),
-      ),
-    [valueChartData],
+  const chartSummary = React.useMemo(
+    () => buildComparisonChartSummary(valueChartData, formatCurrency, t),
+    [formatCurrency, t, valueChartData],
   );
-  const chartSummary = React.useMemo(() => {
-    const firstPoint = valueChartData[0];
-    const lastPoint = valueChartData[valueChartData.length - 1];
-
-    if (!firstPoint || !lastPoint) {
-      return t('bonds.chart_accessible_summary_empty');
-    }
-
-    return t('comparison.chart_accessible_summary', {
-      count: valueChartData.length,
-      startA: formatCurrency(Number(firstPoint.nominalA)),
-      endA: formatCurrency(Number(lastPoint.nominalA)),
-      startB: formatCurrency(Number(firstPoint.nominalB)),
-      endB: formatCurrency(Number(lastPoint.nominalB)),
-    });
-  }, [formatCurrency, t, valueChartData]);
   const chartSeries = React.useMemo(
-    () => [
-      {
-        key: 'nominalA',
-        label: `${inputsA.bondType} (A)`,
-        color: scenarioAColor,
-      },
-      {
-        key: 'realA',
-        label: `${inputsA.bondType} (A) ${t('common.real_value')}`,
-        color: scenarioAColor,
-        secondary: true,
-      },
-      {
-        key: 'nominalB',
-        label: `${inputsB.bondType} (B)`,
-        color: scenarioBColor,
-      },
-      {
-        key: 'realB',
-        label: `${inputsB.bondType} (B) ${t('common.real_value')}`,
-        color: scenarioBColor,
-        secondary: true,
-      },
-    ],
-    [inputsA.bondType, inputsB.bondType, scenarioAColor, scenarioBColor, t],
+    () => buildComparisonChartSeries(inputsA, inputsB, scenarioAColor, scenarioBColor, t),
+    [inputsA, inputsB, scenarioAColor, scenarioBColor, t],
   );
 
   return (
