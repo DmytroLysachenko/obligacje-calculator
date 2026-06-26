@@ -36,12 +36,10 @@ describe('single calculator result layout contracts', () => {
     const source = readSource(paths.summary);
 
     expectContains(source, '<ResultSummaryHero');
-    expectContains(source, '<MetricStrip items={metricItems}/>');
-    expectContains(
-      source,
-      "<SecondaryInsightAccordion title={t('bonds.results.scenario_facts_title')}",
-    );
-    expectContains(source, '<CalculationAuditTrace point={auditPoint}/>');
+    expectContains(source, '<MetricStrip items={metricItems} />');
+    expectContains(source, '<SecondaryInsightAccordion');
+    expectContains(source, "title={t('bonds.results.scenario_facts_title')}");
+    expectContains(source, '<CalculationAuditTrace point={auditPoint} />');
     expectContains(source, '<ScenarioFactsBlock');
     expectContains(source, "import { Notice } from '@/shared/components/feedback/Notice';");
     expectContains(source, '<Notice tone="locked" compact>');
@@ -121,10 +119,14 @@ describe('single calculator result layout contracts', () => {
     expectContains(source, 'border-y border-border py-3 text-sm leading-6');
     expectContains(
       source,
-      "import {\n  getFreshnessCoverageLabel,\n  getFreshnessLastSyncLabel,\n} from '@/shared/lib/data-freshness-display';",
+      "import { getCalculationFreshnessMetaState } from '@/shared/lib/data-freshness-display';",
     );
-    expectContains(source, 'const coverageLabel = getFreshnessCoverageLabel(dataFreshness);');
-    expectContains(source, 'const lastSyncedLabel = getFreshnessLastSyncLabel(dataFreshness);');
+    expectContains(
+      source,
+      'const freshnessMeta = dataFreshness ? getCalculationFreshnessMetaState',
+    );
+    expectContains(source, 'freshnessMeta.coverageLabel');
+    expectContains(source, 'freshnessMeta.lastSyncLabel');
     expectContains(source, "{t('common.coverage')}:");
     expectContains(source, "{t('admin.inventory.cols.last_sync')}:");
 

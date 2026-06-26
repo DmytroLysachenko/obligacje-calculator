@@ -8,8 +8,10 @@ const projectRoot = process.cwd();
 const paths = {
   strip: 'shared/components/results/FinancialInsightStrip.tsx',
   single: 'features/single-calculator/components/BondResultsSummary.tsx',
-  singleContainer: 'features/single-calculator/components/BondCalculatorContainer.tsx',
+  singleModel: 'features/single-calculator/lib/bond-results-summary-model.ts',
+  singlePanels: 'features/single-calculator/components/BondCalculatorPanels.tsx',
   regular: 'features/regular-investment/components/RegularInvestmentResultsSummary.tsx',
+  regularTypes: 'features/regular-investment/types/results.ts',
   regularContainer:
     'features/regular-investment/components/RegularInvestmentCalculatorContainer.tsx',
   ladderContainer: 'features/ladder-strategy/components/LadderContainer.tsx',
@@ -44,18 +46,16 @@ describe('financial insight contracts', () => {
   });
 
   it('adds tax, real value, and data quality interpretation to single calculator results', () => {
-    const source = readSource(paths.single);
-    const container = readSource(paths.singleContainer);
+    const source = `${readSource(paths.single)}\n${readSource(paths.singleModel)}`;
+    const panels = readSource(paths.singlePanels);
 
     expectContains(
       source,
-      "import { FinancialInsightStrip, FinancialInsightItem } from '@/shared/components/results/FinancialInsightStrip';",
+      "import { FinancialInsightStrip } from '@/shared/components/results/FinancialInsightStrip';",
     );
     expectContains(source, 'dataQualityFlags?: string[];');
-    expectContains(
-      source,
-      'const financialInsightItems = React.useMemo<FinancialInsightItem[]>(() => {',
-    );
+    expectContains(source, 'const financialInsightItems = React.useMemo(');
+    expectContains(source, 'buildBondFinancialInsightItems({');
     expectContains(source, 'const grossProfitBeforeDeductions = Math.max(');
     expectContains(
       source,
@@ -69,11 +69,11 @@ describe('financial insight contracts', () => {
     expectContains(source, "t('financial_insights.real_value_label')");
     expectContains(source, "t('financial_insights.data_quality_label')");
     expectContains(source, '<FinancialInsightStrip');
-    expectContains(container, 'dataQualityFlags={envelope?.dataQualityFlags}');
+    expectContains(panels, 'dataQualityFlags={envelope?.dataQualityFlags}');
   });
 
   it('adds the same interpretation layer to regular and ladder strategy results', () => {
-    const regular = readSource(paths.regular);
+    const regular = `${readSource(paths.regular)}\n${readSource(paths.regularTypes)}`;
     const regularContainer = readSource(paths.regularContainer);
     const ladderContainer = readSource(paths.ladderContainer);
 

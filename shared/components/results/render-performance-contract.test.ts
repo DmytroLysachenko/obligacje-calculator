@@ -11,6 +11,7 @@ const paths = {
   recentLotList: 'shared/components/results/RecentLotList.tsx',
   chartLegend: 'shared/components/charts/ChartLegendStrip.tsx',
   singleSummary: 'features/single-calculator/components/BondResultsSummary.tsx',
+  singleSummaryModel: 'features/single-calculator/lib/bond-results-summary-model.ts',
   regularSummary: 'features/regular-investment/components/RegularInvestmentResultsSummary.tsx',
   ladderTimeline: 'features/ladder-strategy/components/LadderTimeline.tsx',
 } as const;
@@ -70,20 +71,20 @@ describe('result render performance contracts', () => {
   });
 
   it('keeps single calculator summary arrays and actions stable between renders', () => {
-    const source = readSource(paths.singleSummary);
+    const source = `${readSource(paths.singleSummary)}\n${readSource(paths.singleSummaryModel)}`;
 
     expectContains(source, 'const formatCurrency = React.useCallback(');
     expectContains(source, 'const handleExportCSV = React.useCallback(');
-    expectContains(source, 'const primarySummaryCards = React.useMemo(() => [');
-    expectContains(source, 'const secondarySummaryCards = React.useMemo(() => [');
     expectContains(source, 'const metricItems = React.useMemo(');
-    expectContains(source, 'const scenarioFacts = React.useMemo(() => [');
-    expectContains(source, 'const summaryActions = React.useMemo(() => [');
-    expectContains(source, '<MetricStrip items={metricItems}/>');
+    expectContains(source, 'buildBondResultsMetricItems({');
+    expectContains(source, 'const scenarioFacts = React.useMemo(');
+    expectContains(source, 'buildBondScenarioFacts(');
+    expectContains(source, 'const summaryActions = React.useMemo(');
+    expectContains(source, '<MetricStrip items={metricItems} />');
     expectContains(source, 'actions={summaryActions}');
 
     expectNoFragments(source, [
-      '<MetricStrip items={[...primarySummaryCards, ...secondarySummaryCards]}/>',
+      '<MetricStrip items={[...primarySummaryCards, ...secondarySummaryCards]} />',
       'actions={[',
       'const handleExportCSV = () => {',
       'const formatCurrency = (value: number) => currencyFormatter.format(value);',
@@ -93,14 +94,15 @@ describe('result render performance contracts', () => {
   it('keeps regular investment result metrics and export action stable', () => {
     const source = readSource(paths.regularSummary);
 
-    expectContains(source, 'const currencyFormatter = useMemo(() => new Intl.NumberFormat');
+    expectContains(source, 'const currencyFormatter = useMemo(');
+    expectContains(source, 'new Intl.NumberFormat');
     expectContains(source, 'const formatCurrency = useCallback(');
-    expectContains(source, 'const primaryStats = useMemo<SummaryStat[]>(() => [');
-    expectContains(source, 'const supportingStats = useMemo<SummaryStat[]>(() => [');
+    expectContains(source, 'const primaryStats = useMemo<RegularInvestmentSummaryStat[]>(');
+    expectContains(source, 'const supportingStats = useMemo<RegularInvestmentSummaryStat[]>(');
     expectContains(source, 'const handleExport = useCallback(() => {');
-    expectContains(source, 'const recentLotItems = useMemo<RecentLotDisplayItem[]>(() =>');
+    expectContains(source, 'const recentLotItems = useMemo<RecentLotDisplayItem[]>(');
     expectContains(source, '<RecentLotList');
-    expectContains(source, 'const summaryActions = useMemo(() => [');
+    expectContains(source, 'const summaryActions = useMemo(');
     expectContains(source, 'actions={summaryActions}');
 
     expectNoFragments(source, [
@@ -116,7 +118,8 @@ describe('result render performance contracts', () => {
 
     expectContains(source, 'const formatCurrency = useCallback(');
     expectContains(source, 'const chartData = useMemo(');
-    expectContains(source, 'const metricItems = useMemo(() => [');
+    expectContains(source, 'const metricItems = useMemo(');
+    expectContains(source, 'buildLadderMetricItems({');
     expectContains(source, 'items={metricItems}');
 
     expectNoFragments(source, [

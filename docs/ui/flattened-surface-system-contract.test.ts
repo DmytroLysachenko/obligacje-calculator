@@ -26,6 +26,8 @@ const flattenedSurfaceFiles = [
   'features/regular-investment/components/RegularInvestmentYearlyBucketsSection.tsx',
   'shared/components/results/ResultSummaryHero.tsx',
   'features/ladder-strategy/components/LadderTimeline.tsx',
+  'features/ladder-strategy/components/LadderTimelineSections.tsx',
+  'features/ladder-strategy/components/LadderTimelineTable.tsx',
   'shared/components/results/RecentLotList.tsx',
   'shared/components/page/ToolCard.tsx',
   'app/LandingDashboardClient.tsx',
@@ -151,15 +153,15 @@ describe('flattened shared surface system contract', () => {
     expect(sourceByPath.get('shared/components/results/ResultSummaryHero.tsx')).toContain(
       'overflow-hidden border-y border-border bg-background',
     );
-    expect(sourceByPath.get('features/ladder-strategy/components/LadderTimeline.tsx')).toContain(
-      "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';",
-    );
-    expect(sourceByPath.get('features/ladder-strategy/components/LadderTimeline.tsx')).toContain(
-      "import { SectionBlock } from '@/shared/components/page/SectionBlock';",
-    );
-    expect(sourceByPath.get('features/ladder-strategy/components/LadderTimeline.tsx')).toContain(
-      '<div className="hidden border-y border-border lg:block">',
-    );
+    expect(
+      sourceByPath.get('features/ladder-strategy/components/LadderTimelineSections.tsx'),
+    ).toContain("import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
+    expect(
+      sourceByPath.get('features/ladder-strategy/components/LadderTimelineSections.tsx'),
+    ).toContain("import { SectionBlock } from '@/shared/components/page/SectionBlock';");
+    expect(
+      sourceByPath.get('features/ladder-strategy/components/LadderTimelineTable.tsx'),
+    ).toContain('<div className="hidden border-y border-border lg:block">');
     expect(sourceByPath.get('shared/components/results/RecentLotList.tsx')).toContain(
       'space-y-5 border-y border-border py-6',
     );
