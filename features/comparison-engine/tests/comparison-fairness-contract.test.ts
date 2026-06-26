@@ -9,6 +9,7 @@ const paths = {
   sharedBase: 'features/comparison-engine/components/ComparisonSharedBaseCard.tsx',
   verdict: 'features/comparison-engine/components/ComparisonVerdict.tsx',
   container: 'features/comparison-engine/components/ComparisonContainer.tsx',
+  containerPanels: 'features/comparison-engine/components/ComparisonContainerPanels.tsx',
   en: 'i18n/translations/en.json',
   pl: 'i18n/translations/pl.json',
 } as const;
@@ -32,7 +33,7 @@ describe('comparison fairness contracts', () => {
   });
 
   it('passes automatic rollover fairness copy into the comparison surface', () => {
-    const source = readSource(paths.container);
+    const source = `${readSource(paths.container)}\n${readSource(paths.containerPanels)}`;
 
     expectContains(source, "t('comparison.auto_rollover_notice')");
     expectContains(source, "t('comparison.auto_rollover_notice_title')");

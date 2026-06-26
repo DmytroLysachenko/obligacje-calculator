@@ -26,6 +26,13 @@ export const DEFAULT_SCENARIO_B: ScenarioOverride = {
   bondType: BondType.EDO,
   isRebought: false,
 };
+const MACRO_ASSUMPTION_CONFIG_KEYS = new Set([
+  'expectedInflation',
+  'expectedNbpRate',
+  'customInflation',
+  'customNbpRate',
+  'inflationScenario',
+]);
 
 export function buildDefaultSharedConfig(now = new Date()): SharedComparisonConfig {
   const today = toDateString(now);
@@ -124,6 +131,22 @@ export function updateSharedComparisonConfig(
   }
 
   return next;
+}
+
+export function isComparisonMacroConfigKey(key: keyof SharedComparisonConfig) {
+  return MACRO_ASSUMPTION_CONFIG_KEYS.has(key);
+}
+
+export function updateScenarioBondType(
+  scenario: ScenarioOverride,
+  type: BondType,
+): ScenarioOverride {
+  return {
+    ...scenario,
+    bondType: type,
+    isRebought: false,
+    investmentHorizonMonths: scenario.investmentHorizonMonths,
+  };
 }
 
 export function splitComparisonEnvelope(envelope: BondComparisonCalculationEnvelope | null) {

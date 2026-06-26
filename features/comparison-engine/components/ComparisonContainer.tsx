@@ -172,6 +172,7 @@ export const ComparisonContainer: React.FC = () => {
             </div>
 
             <ComparisonFairnessPanel
+              durationMismatchTitle={t('comparison.auto_rollover_notice_title')}
               durationMismatchText={durationMismatchText}
               hasResults={!!resultsA && !!resultsB}
               isCalculating={isCalculating}

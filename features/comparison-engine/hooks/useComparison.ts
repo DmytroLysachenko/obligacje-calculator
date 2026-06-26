@@ -22,9 +22,11 @@ import {
   DEFAULT_SCENARIO_A,
   DEFAULT_SCENARIO_B,
   getComparisonDirtyState,
+  isComparisonMacroConfigKey,
   type ScenarioOverride,
   type SharedComparisonConfig,
   splitComparisonEnvelope,
+  updateScenarioBondType,
   updateSharedComparisonConfig,
 } from '../lib/comparison-calculator-state';
 import {
@@ -136,13 +138,7 @@ export function useComparison() {
     value: string | number | boolean | undefined,
   ) => {
     setIsDirty(true);
-    if (
-      key === 'expectedInflation' ||
-      key === 'expectedNbpRate' ||
-      key === 'customInflation' ||
-      key === 'customNbpRate' ||
-      key === 'inflationScenario'
-    ) {
+    if (isComparisonMacroConfigKey(key)) {
       hasTouchedMacroAssumptions.current = true;
     }
     setSharedConfig((prev) => {
@@ -168,22 +164,12 @@ export function useComparison() {
 
   const setBondTypeA = (type: BondType) => {
     setIsDirty(true);
-    setScenarioA((prev) => ({
-      ...prev,
-      bondType: type,
-      isRebought: false,
-      investmentHorizonMonths: prev.investmentHorizonMonths,
-    }));
+    setScenarioA((prev) => updateScenarioBondType(prev, type));
   };
 
   const setBondTypeB = (type: BondType) => {
     setIsDirty(true);
-    setScenarioB((prev) => ({
-      ...prev,
-      bondType: type,
-      isRebought: false,
-      investmentHorizonMonths: prev.investmentHorizonMonths,
-    }));
+    setScenarioB((prev) => updateScenarioBondType(prev, type));
   };
 
   useEffect(() => {

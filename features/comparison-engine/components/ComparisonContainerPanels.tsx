@@ -12,6 +12,7 @@ import { CalculationMetaPanel } from '@/shared/components/results/CalculationMet
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 
 interface ComparisonFairnessPanelProps {
+  durationMismatchTitle: string;
   durationMismatchText: string | null;
   hasResults: boolean;
   isCalculating: boolean;
@@ -33,6 +34,7 @@ interface ComparisonAssumptionsMetaPanelProps {
 }
 
 export function ComparisonFairnessPanel({
+  durationMismatchTitle,
   durationMismatchText,
   hasResults,
   isCalculating,
@@ -54,7 +56,7 @@ export function ComparisonFairnessPanel({
         </div>
       </div>
       {durationMismatchText ? (
-        <Notice tone="info" title={t('comparison.auto_rollover_notice_title')}>
+        <Notice tone="info" title={durationMismatchTitle}>
           {durationMismatchText}
         </Notice>
       ) : null}
