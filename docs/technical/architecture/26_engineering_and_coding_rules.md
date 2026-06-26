@@ -232,6 +232,9 @@ Current calculator and comparison surfaces should follow this pattern:
 - `features/<feature>/lib/*-model.ts` owns metric arrays, chart rows, summaries, scenario facts, and other render-ready data
 - `features/<feature>/constants/**` owns durable static metadata such as comparison asset definitions
 - components consume prepared model output and render sections; they should not rebuild domain summaries inline when a feature model exists
+- large render surfaces may split into focused section components after pure
+  model extraction; source-shape contracts should follow the new section/model
+  files instead of pinning behavior to the old parent file
 
 For calculator-adjacent forms, setup and display decisions must be pure where possible. Example pattern:
 
@@ -267,6 +270,10 @@ Formatting rules belong here too:
 - browser API calls belong behind narrow shared clients; feature components and
   hooks should not parse API envelopes, compose auth headers, or hardcode
   endpoint request details when a client gateway exists
+- browser-facing code should import DB row shapes through app-facing type
+  barrels such as `shared/types/portfolio.ts`; direct `db/schema` imports belong
+  in repositories, data layers, server services, schema tests, or the type barrel
+  itself
 - API route controllers should use shared response helpers for standard JSON
   envelopes and should keep ownership/auth checks, validation, and service calls
   visibly separate
