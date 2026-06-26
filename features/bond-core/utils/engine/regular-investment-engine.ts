@@ -1,18 +1,9 @@
-import {
-  addMonths,
-  differenceInDays,
-  differenceInMonths,
-  getDaysInYear,
-  isAfter,
-  isBefore,
-  parseISO,
-} from 'date-fns';
+import { addMonths, differenceInMonths, isAfter, isBefore, parseISO } from 'date-fns';
 import { Decimal } from 'decimal.js';
 
 import { BOND_DEFINITIONS } from '../../constants/bond-definitions';
 import {
   BondType,
-  InvestmentFrequency,
   LotBreakdown,
   RegularInvestmentInputs,
   RegularInvestmentResult,
@@ -28,6 +19,12 @@ import { normalizeRegularInvestmentInputs } from './input-normalization';
 import { determineInterestRate } from './rate-resolution';
 import { calculateRealValue } from './real-return';
 import { calculateEarlyWithdrawalFee } from './redemption';
+import {
+  advanceRegularInvestmentInflation,
+  createRegularInvestmentLot,
+  getRegularInvestmentInterval,
+  settleMaturedLots,
+} from './regular-investment-schedule';
 import { createRegularInvestmentResult } from './result-assembly';
 import { calculateTaxAmount, shouldWithholdPeriodicTax } from './tax-settlement';
 
@@ -60,14 +57,10 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
 
   const bondDef = BOND_DEFINITIONS[bondType];
   const nominalValue = bondDef?.nominalValue ?? 100;
+  const bondDuration = bondType === BondType.OTS ? 0.25 : inputs.duration || bondDef.duration;
 
   const totalMonths = investmentHorizonMonths;
-  const interval =
-    frequency === InvestmentFrequency.MONTHLY
-      ? 1
-      : frequency === InvestmentFrequency.QUARTERLY
-        ? 3
-        : 12;
+  const interval = getRegularInvestmentInterval(frequency);
 
   const lots: LotBreakdown[] = [];
   const timeline: RegularTimelinePoint[] = [];
@@ -84,48 +77,18 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
     if (isAfter(currentMonthDate, targetWithdrawalDate)) break;
     const events: SimulationEvent[] = [];
 
-    // Accurate inflation compounding for THIS month
-    if (m > 0) {
-      const prevMonthDate = addMonths(startPurchaseDate, m - 1);
-      const daysInMonth = differenceInDays(currentMonthDate, prevMonthDate);
-      const daysInYear = getDaysInYear(prevMonthDate);
-
-      const yearIndex = Math.floor((m - 1) / 12);
-      const annualInflation = getExpectedInflationForYearIndex(
-        expectedInflation,
-        inputs.customInflation,
-        yearIndex,
-      );
-
-      const monthlyFactor = new Decimal(annualInflation)
-        .dividedBy(100)
-        .times(daysInMonth)
-        .dividedBy(daysInYear);
-
-      cumulativeInflation = cumulativeInflation.times(new Decimal(1).plus(monthlyFactor));
-    }
+    cumulativeInflation = advanceRegularInvestmentInflation({
+      currentInflation: cumulativeInflation,
+      monthIndex: m,
+      purchaseDate: startPurchaseDate,
+      expectedInflation,
+      customInflation: inputs.customInflation,
+    });
 
     const isWithdrawalStep = currentMonthDate.getTime() === targetWithdrawalDate.getTime();
 
     // 1. Handle matured lots and rollover capital
-    let maturedLiquidity = new Decimal(0);
-    lots.forEach((lot) => {
-      const lotMaturityDate = parseISO(lot.maturityDate);
-      if (
-        !lot.isMatured &&
-        (currentMonthDate.getTime() === lotMaturityDate.getTime() ||
-          isAfter(currentMonthDate, lotMaturityDate))
-      ) {
-        lot.isMatured = true;
-        maturedLiquidity = maturedLiquidity.plus(lot.netValue);
-        events.push({
-          type: SimulationEventType.MATURITY,
-          date: currentMonthDate.toISOString(),
-          description: `Lot from ${lot.purchaseDate} matured`,
-          value: lot.netValue,
-        });
-      }
-    });
+    const maturedLiquidity = settleMaturedLots(lots, currentMonthDate, events);
 
     // 2. Add new lot (Standard contribution + Matured liquidity if rollover enabled)
     if (m % interval === 0 && m < totalMonths) {
@@ -134,24 +97,17 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
         ? new Decimal(contributionAmount).plus(maturedLiquidity)
         : new Decimal(contributionAmount);
 
-      const units = totalAvailableForPurchase.dividedBy(bondPrice).floor();
-      const investedAmount = units.times(bondPrice);
-      const nominalAmount = units.times(nominalValue);
+      const { lot, investedAmount, units } = createRegularInvestmentLot({
+        currentMonthDate,
+        bondType,
+        bondDuration,
+        nominalValue,
+        bondPrice,
+        availableCash: totalAvailableForPurchase,
+      });
 
-      if (units.gt(0)) {
-        const lotDuration = bondType === BondType.OTS ? 0.25 : inputs.duration || bondDef.duration;
-        const lotMaturityDate = addMonths(currentMonthDate, Math.round(lotDuration * 12));
-        lots.push({
-          purchaseDate: currentMonthDate.toISOString(),
-          maturityDate: lotMaturityDate.toISOString(),
-          isMatured: false,
-          investedAmount: investedAmount.toNumber(),
-          accumulatedInterest: 0,
-          tax: 0,
-          earlyWithdrawalFee: 0,
-          grossValue: nominalAmount.toNumber(),
-          netValue: nominalAmount.toNumber(),
-        });
+      if (lot) {
+        lots.push(lot);
         totalInvested = totalInvested.plus(contributionAmount);
         events.push({
           type: SimulationEventType.PURCHASE,
@@ -183,8 +139,7 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
 
       if (isAfter(currentMonthDate, lotPurchaseDate)) {
         const monthsHeld = differenceInMonths(currentMonthDate, lotPurchaseDate);
-        const lotDuration = bondType === BondType.OTS ? 0.25 : inputs.duration || bondDef.duration;
-        const bondDurationMonths = Math.round(lotDuration * 12);
+        const bondDurationMonths = Math.round(bondDuration * 12);
 
         const dLotGrossValue = new Decimal(lot.grossValue);
         const dLotAccumulatedInterest = new Decimal(lot.accumulatedInterest);
