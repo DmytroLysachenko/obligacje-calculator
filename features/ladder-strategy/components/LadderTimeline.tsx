@@ -18,17 +18,18 @@ import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
 import { SectionBlock } from '@/shared/components/page/SectionBlock';
 import { MetricStrip } from '@/shared/components/results/MetricStrip';
 import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
-import {
-  applyTableRowLimit,
-  TableRowLimit,
-} from '@/shared/components/results/TableDensityControls';
+import { TableRowLimit } from '@/shared/components/results/TableDensityControls';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
+
 import {
-  buildLadderMaturityBuckets,
-  buildLadderYearBuckets,
-  LadderMaturityBucket,
-  LadderYearBucket,
-} from '@/shared/lib/ladder-display';
+  buildLadderMetricItems,
+  buildLadderTimelineBuckets,
+  buildLadderYearlySummaryItems,
+  getDisplayedLadderTimelineRows,
+  getFilteredLadderTimelineRows,
+  getLadderChartData,
+  getLadderTimelineStats,
+} from '../lib/ladder-timeline-model';
 
 import { LadderTimelineTable } from './LadderTimelineTable';
 
@@ -47,90 +48,55 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
     (value: number) => currencyFormatter.format(value),
     [currencyFormatter],
   );
-  const monthlyBuckets = useMemo<LadderMaturityBucket[]>(
-    () => buildLadderMaturityBuckets(results.lots, dateLocale),
-    [dateLocale, results.lots],
-  );
-  const yearlyBuckets = useMemo<LadderYearBucket[]>(
-    () => buildLadderYearBuckets(monthlyBuckets),
-    [monthlyBuckets],
+  const { monthlyBuckets, yearlyBuckets } = useMemo(
+    () => buildLadderTimelineBuckets(results, dateLocale),
+    [dateLocale, results],
   );
   const chartData = useMemo(
-    () => (chartMode === 'yearly' ? yearlyBuckets : monthlyBuckets),
+    () => getLadderChartData(chartMode, monthlyBuckets, yearlyBuckets),
     [chartMode, monthlyBuckets, yearlyBuckets],
   );
-  const averageMaturityValue =
-    monthlyBuckets.length > 0
-      ? monthlyBuckets.reduce((accumulator, item) => accumulator + item.amount, 0) /
-        monthlyBuckets.length
-      : 0;
-  const monthlyContribution =
-    results.lots.length > 0 ? results.totalInvested / results.lots.length : 0;
-  const monthlySpreadGap = averageMaturityValue - monthlyContribution;
-  const peakMonth = monthlyBuckets.reduce<LadderMaturityBucket | null>(
-    (currentPeak, item) => (!currentPeak || item.amount > currentPeak.amount ? item : currentPeak),
-    null,
+  const timelineStats = useMemo(
+    () => getLadderTimelineStats(results, monthlyBuckets, yearlyBuckets),
+    [monthlyBuckets, results, yearlyBuckets],
   );
-  const earliestMonth = monthlyBuckets[0] ?? null;
-  const latestMonth = monthlyBuckets[monthlyBuckets.length - 1] ?? null;
-  const peakShare =
-    peakMonth && results.lots.length > 0 ? (peakMonth.count / results.lots.length) * 100 : 0;
-  const clusteredThreshold = Math.max(2, Math.ceil(results.lots.length * 0.08));
   const filteredMonthlyBuckets = useMemo(() => {
-    if (tableFilter === 'peak') {
-      return peakMonth ? monthlyBuckets.filter((item) => item.date === peakMonth.date) : [];
-    }
-    if (tableFilter === 'clustered') {
-      return monthlyBuckets.filter((item) => item.count >= clusteredThreshold);
-    }
-    return monthlyBuckets;
-  }, [clusteredThreshold, monthlyBuckets, peakMonth, tableFilter]);
+    return getFilteredLadderTimelineRows({
+      monthlyBuckets,
+      tableFilter,
+      peakMonth: timelineStats.peakMonth,
+      clusteredThreshold: timelineStats.clusteredThreshold,
+    });
+  }, [monthlyBuckets, tableFilter, timelineStats.clusteredThreshold, timelineStats.peakMonth]);
   const displayedRows = useMemo(
-    () => applyTableRowLimit(filteredMonthlyBuckets, rowLimit),
+    () => getDisplayedLadderTimelineRows(filteredMonthlyBuckets, rowLimit),
     [filteredMonthlyBuckets, rowLimit],
   );
-  const strongestYear = yearlyBuckets.reduce<LadderYearBucket | null>(
-    (currentPeak, item) => (!currentPeak || item.amount > currentPeak.amount ? item : currentPeak),
-    null,
-  );
   const metricItems = useMemo(
-    () => [
-      {
-        label: t('ladder_page.timeline.average_maturity_value'),
-        value: formatCurrency(averageMaturityValue),
-        description: t('ladder_page.timeline.average_maturity_value_description'),
-      },
-      {
-        label: t('ladder_page.timeline.spread_gap'),
-        value: formatCurrency(monthlySpreadGap),
-        description: t('ladder_page.timeline.spread_gap_description'),
-      },
-      {
-        label: t('ladder_page.timeline.active_window'),
-        value: `${earliestMonth ? earliestMonth.displayDate : '-'} ${latestMonth ? `- ${latestMonth.displayDate}` : ''}`,
-        description: t('ladder_page.timeline.active_window_description'),
-      },
-    ],
-    [averageMaturityValue, earliestMonth, formatCurrency, latestMonth, monthlySpreadGap, t],
+    () =>
+      buildLadderMetricItems({
+        averageMaturityValue: timelineStats.averageMaturityValue,
+        monthlySpreadGap: timelineStats.monthlySpreadGap,
+        earliestMonth: timelineStats.earliestMonth,
+        latestMonth: timelineStats.latestMonth,
+        formatCurrency,
+        t,
+      }),
+    [formatCurrency, t, timelineStats],
   );
   const yearlySummaryItems = useMemo(
-    () =>
-      yearlyBuckets.slice(0, 4).map((bucket) => ({
-        label: bucket.year,
-        value: formatCurrency(bucket.amount),
-        description: t('ladder_page.timeline.year_summary_description', {
-          count: bucket.count,
-          firstMonth: bucket.firstMonth,
-          lastMonth: bucket.lastMonth,
-        }),
-      })),
+    () => buildLadderYearlySummaryItems(yearlyBuckets, formatCurrency, t),
     [formatCurrency, t, yearlyBuckets],
   );
   return (
     <div className="space-y-8">
       <ResultSummaryHero
         eyebrow={t('ladder_page.timeline.eyebrow')}
-        value={peakMonth ? peakMonth.displayDate : t('ladder_page.timeline.no_peak_month')}
+        value={
+          timelineStats.peakMonth
+            ? timelineStats.peakMonth.displayDate
+            : t('ladder_page.timeline.no_peak_month')
+        }
         description={t('ladder_page.timeline.description')}
         narrative={t('ladder_page.timeline.narrative')}
         aside={
@@ -155,8 +121,8 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
               {t('ladder_page.timeline.strongest_year')}
             </p>
             <p className="mt-1 font-semibold text-foreground">
-              {strongestYear
-                ? `${strongestYear.year} - ${formatCurrency(strongestYear.amount)}`
+              {timelineStats.strongestYear
+                ? `${timelineStats.strongestYear.year} - ${formatCurrency(timelineStats.strongestYear.amount)}`
                 : '-'}
             </p>
           </div>
@@ -237,8 +203,8 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
             description={
               <>
                 <span className="font-semibold text-foreground">
-                  {peakMonth
-                    ? `${peakMonth.displayDate} (${formatCurrency(peakMonth.amount)})`
+                  {timelineStats.peakMonth
+                    ? `${timelineStats.peakMonth.displayDate} (${formatCurrency(timelineStats.peakMonth.amount)})`
                     : '-'}
                 </span>{' '}
                 {t('ladder_page.timeline.peak_month_description')}
@@ -247,19 +213,19 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
           />
 
           <FormInlineNotice
-            tone={peakShare >= 25 ? 'warning' : 'success'}
+            tone={timelineStats.peakShare >= 25 ? 'warning' : 'success'}
             title={t('ladder_page.timeline.cluster_title')}
             description={
               <>
                 <span className="font-semibold">
-                  {peakMonth
+                  {timelineStats.peakMonth
                     ? t('ladder_page.timeline.cluster_value', {
-                        percent: peakShare.toFixed(1),
-                        month: peakMonth.displayDate,
+                        percent: timelineStats.peakShare.toFixed(1),
+                        month: timelineStats.peakMonth.displayDate,
                       })
                     : t('ladder_page.timeline.cluster_none')}
                 </span>{' '}
-                {peakShare >= 25
+                {timelineStats.peakShare >= 25
                   ? t('ladder_page.timeline.cluster_warning')
                   : t('ladder_page.timeline.cluster_ok')}
               </>

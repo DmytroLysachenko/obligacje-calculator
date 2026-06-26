@@ -8,6 +8,7 @@ const projectRoot = process.cwd();
 const paths = {
   container: 'features/ladder-strategy/components/LadderContainer.tsx',
   timeline: 'features/ladder-strategy/components/LadderTimeline.tsx',
+  timelineModel: 'features/ladder-strategy/lib/ladder-timeline-model.ts',
   timelineTable: 'features/ladder-strategy/components/LadderTimelineTable.tsx',
   timelineConstants: 'features/ladder-strategy/constants/timeline.ts',
   timelineTypes: 'features/ladder-strategy/types/timeline.ts',
@@ -45,7 +46,7 @@ describe('ladder summary contracts', () => {
   });
 
   it('shows yearly ladder summary before monthly detail', () => {
-    const source = readSource(paths.timeline);
+    const source = `${readSource(paths.timeline)}\n${readSource(paths.timelineModel)}`;
 
     expectContains(source, 'const yearlySummaryItems = useMemo(');
     expectContains(source, 'yearlyBuckets.slice(0, 4).map');
@@ -56,7 +57,7 @@ describe('ladder summary contracts', () => {
   });
 
   it('filters detailed monthly rows without changing underlying calculation data', () => {
-    const source = readSource(paths.timeline);
+    const source = `${readSource(paths.timeline)}\n${readSource(paths.timelineModel)}`;
     const table = readSource(paths.timelineTable);
     const constants = readSource(paths.timelineConstants);
     const types = readSource(paths.timelineTypes);
@@ -73,7 +74,7 @@ describe('ladder summary contracts', () => {
     expectContains(source, 'const filteredMonthlyBuckets = useMemo(() => {');
     expectContains(source, "if (tableFilter === 'peak')");
     expectContains(source, "if (tableFilter === 'clustered')");
-    expectContains(source, 'applyTableRowLimit(filteredMonthlyBuckets, rowLimit)');
+    expectContains(source, 'getDisplayedLadderTimelineRows(filteredMonthlyBuckets, rowLimit)');
     expectContains(table, 'aria-pressed={tableFilter === filter}');
     expectContains(table, 'LADDER_TABLE_FILTERS.map((filter) =>');
     expectContains(table, 't(`ladder_page.timeline.table_filters.${filter}`)');
