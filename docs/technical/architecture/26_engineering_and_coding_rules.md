@@ -225,6 +225,14 @@ When touching a large component, extract in this order:
 
 This keeps behavior testable before markup is moved.
 
+Current calculator and comparison surfaces should follow this pattern:
+
+- feature hooks keep React state, effects, persistence restoration, and user actions
+- `features/<feature>/lib/*-state.ts` owns deterministic input normalization and bond-type/series updates
+- `features/<feature>/lib/*-model.ts` owns metric arrays, chart rows, summaries, scenario facts, and other render-ready data
+- `features/<feature>/constants/**` owns durable static metadata such as comparison asset definitions
+- components consume prepared model output and render sections; they should not rebuild domain summaries inline when a feature model exists
+
 For calculator-adjacent forms, setup and display decisions must be pure where possible. Example pattern:
 
 - `shared/lib/*-model.ts` owns mode transitions, derived labels, summaries, and other deterministic decisions
@@ -501,6 +509,7 @@ Single-letter or cryptic names are not acceptable for durable application struct
 Retained calculator surfaces must preserve these contracts:
 
 - `features/bond-core/utils/calculations.ts` is a stable public entrypoint, not the engine implementation. New engine logic belongs in `features/bond-core/utils/engine/**` with focused regression tests.
+- single-bond and regular-investment engines should read as orchestration files; cycle setup, schedule handling, accounting, and lot/contribution helpers belong in focused sibling modules under `features/bond-core/utils/engine/**`
 - display settings such as chart granularity may change aggregation only; they must never change engine truth
 - chart, table, quick-audit, CSV, and PDF output for one calculator flow must derive from the same normalized display model
 - CPI and NBP chart overlays must be rendered from truthful reference-series display data; do not fabricate smooth transitions by interpolating reference values through bond checkpoints

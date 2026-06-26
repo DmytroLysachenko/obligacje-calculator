@@ -9,6 +9,8 @@ The application is a layered Next.js product. UI code asks for work through shar
 - `app/` contains route segments, layouts, metadata, and thin page orchestration.
 - `features/**/components` renders workflows and prepared display models.
 - `features/**/hooks` owns UI state transitions, persistence restoration, and user-triggered actions.
+- `features/**/lib` owns feature-local pure models: input normalization, query/draft state, summary metrics, chart rows, and scenario facts.
+- `features/**/constants` owns durable static metadata when a feature has its own stable option set.
 
 Shared browser-facing gateways live under `shared/lib`:
 
@@ -32,6 +34,7 @@ Core financial behavior lives in `features/bond-core`:
 
 - `CalculationApplicationService` sanitizes requests, checks cache, gathers shared context, and dispatches by scenario kind.
 - `features/bond-core/handlers/**` contains scenario handlers for each calculator flow.
+- `features/bond-core/utils/engine/**` contains scenario engine orchestration plus focused helper modules for schedule, cycle, accounting, rate, tax, and result assembly logic.
 - The calculation service accepts dependencies for cache, data freshness, bond definitions, and handler lookup so tests can inject narrow fakes.
 
 - `lib/server/**` owns server services, commands, queries, HTTP helpers, auth/ownership helpers, and sync/admin orchestration.
@@ -49,7 +52,8 @@ Core financial behavior lives in `features/bond-core`:
 4. `useCalculationRequest` or the shared worker posts the scenario payload.
 5. The API route delegates to `CalculationApplicationService`.
 6. The service gathers shared context, selects the scenario handler, and returns a `CalculationEnvelope`.
-7. The UI renders results through display adapters, chart models, and table models.
+7. Feature-local `lib` models shape render-ready metrics, chart rows, scenario facts, and persistence-safe state.
+8. The UI renders results through display adapters, chart models, and table models.
 
 Chart granularity is a display setting. It must never become engine input or change calculation truth.
 Quarterly and yearly chart or table views are anchored to the purchase-date
