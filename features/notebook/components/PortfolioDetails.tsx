@@ -2,12 +2,12 @@
 import React, { useCallback, useState } from 'react';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { UserPortfolio } from '@/db/schema';
 import { usePortfolioDetailsWorkspace } from '@/features/notebook/hooks/usePortfolioDetailsWorkspace';
 import { useAppI18n } from '@/i18n/client';
 import { ConfirmActionDialog } from '@/shared/components/feedback/ConfirmActionDialog';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { useCurrencyFormatter, useDateFormatter } from '@/shared/hooks/useLocalizedFormatters';
+import { UserPortfolio } from '@/shared/types/portfolio';
 
 import { PortfolioAnalyticsTab } from './portfolio-details/PortfolioAnalyticsTab';
 import { PortfolioLotsTab } from './portfolio-details/PortfolioLotsTab';

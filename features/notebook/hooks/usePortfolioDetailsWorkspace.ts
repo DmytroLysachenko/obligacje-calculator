@@ -3,12 +3,12 @@
 import { addDays, isAfter, parseISO } from 'date-fns';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { UserInvestmentLot, UserPortfolio } from '@/db/schema';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { BondType } from '@/features/bond-core/types';
 import { PortfolioSimulationResult } from '@/features/bond-core/types/scenarios';
 import { downloadJsonFile } from '@/shared/lib/csv-utils';
 import { portfolioClient } from '@/shared/lib/portfolio-client';
+import { UserInvestmentLot, UserPortfolio } from '@/shared/types/portfolio';
 
 export type MaturityWindow = 30 | 90 | 180;
 

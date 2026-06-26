@@ -1,6 +1,6 @@
-import { UserInvestmentLot, UserPortfolio } from '@/db/schema';
 import { PortfolioSimulationResult } from '@/features/bond-core/types/scenarios';
 import { apiDelete, apiGet, apiGetWithResponse, apiPatch, apiPost } from '@/shared/lib/api-client';
+import { UserInvestmentLot, UserPortfolio } from '@/shared/types/portfolio';
 
 export interface PortfolioAccessResponse {
   ownerId: string;

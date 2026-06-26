@@ -3,9 +3,9 @@
 import { FolderKanban, LockKeyhole } from 'lucide-react';
 import React from 'react';
 
-import { UserPortfolio } from '@/db/schema';
 import { useAppI18n } from '@/i18n/client';
 import { FormSelect } from '@/shared/components/forms/FormSelect';
+import { UserPortfolio } from '@/shared/types/portfolio';
 
 interface WorkspaceStatusCardProps {
   isGuestWorkspace: boolean;

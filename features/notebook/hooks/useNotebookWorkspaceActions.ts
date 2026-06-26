@@ -2,13 +2,13 @@
 
 import React, { useCallback, useState } from 'react';
 
-import { UserPortfolio } from '@/db/schema';
 import {
   NOTEBOOK_DEMO_LOTS,
   resolveNotebookPortfolioError,
 } from '@/features/notebook/lib/notebook-workspace-model';
 import { ApiClientError } from '@/shared/lib/api-client';
 import { portfolioClient } from '@/shared/lib/portfolio-client';
+import { UserPortfolio } from '@/shared/types/portfolio';
 
 interface NotebookWorkspaceActionLabels {
   myFirstPortfolio: string;

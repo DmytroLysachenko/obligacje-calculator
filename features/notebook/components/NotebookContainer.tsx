@@ -3,7 +3,6 @@ import { BookOpen, RefreshCcw } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { UserPortfolio } from '@/db/schema';
 import { useNotebookWorkspaceActions } from '@/features/notebook/hooks/useNotebookWorkspaceActions';
 import {
   buildNotebookCapabilities,
@@ -22,6 +21,7 @@ import { useDateFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 import { useWorkspacePortfolios } from '@/shared/hooks/useWorkspacePortfolios';
 import { persistSelectedPortfolioId } from '@/shared/lib/workspace/notebook-state';
+import { UserPortfolio } from '@/shared/types/portfolio';
 
 import { NotebookPortfolioListSection, NotebookScopeNote } from './NotebookContainerPanels';
 import { EmptyPortfolioState, NotebookLoadingState } from './NotebookStates';

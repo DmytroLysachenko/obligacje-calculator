@@ -13,12 +13,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { UserInvestmentLot } from '@/db/schema';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { BondType } from '@/features/bond-core/types';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
+import { UserInvestmentLot } from '@/shared/types/portfolio';
 
 type PortfolioMaturityItem = UserInvestmentLot & {
   maturityDate: Date;

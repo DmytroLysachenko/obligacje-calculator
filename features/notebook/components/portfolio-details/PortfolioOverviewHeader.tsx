@@ -4,7 +4,7 @@ import { ArrowLeft, Check, Download, Loader2, Share2, ShieldCheck, Trash2 } from
 import React from 'react';
 
 import { Button } from '@/components/ui/button';
-import { UserPortfolio } from '@/db/schema';
+import { UserPortfolio } from '@/shared/types/portfolio';
 
 function PortfolioMiniStat({
   label,

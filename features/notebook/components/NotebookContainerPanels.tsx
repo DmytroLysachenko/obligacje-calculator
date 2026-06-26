@@ -2,8 +2,8 @@
 
 import { FolderOpen } from 'lucide-react';
 
-import { UserPortfolio } from '@/db/schema';
 import { SectionBlock } from '@/shared/components/page/SectionBlock';
+import { UserPortfolio } from '@/shared/types/portfolio';
 
 import { PortfolioWorkspaceCard } from './PortfolioWorkspaceCard';
 

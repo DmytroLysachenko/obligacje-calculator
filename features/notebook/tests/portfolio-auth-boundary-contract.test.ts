@@ -39,11 +39,11 @@ describe('portfolio auth boundary contracts', () => {
     const source = read(files.auth);
     const providerConfig = read(files.authProviderConfig);
 
-    expectContains(source, 'import Facebook from "next-auth/providers/facebook";');
-    expectContains(source, 'import Google from "next-auth/providers/google";');
+    expectContains(source, "import Facebook from 'next-auth/providers/facebook';");
+    expectContains(source, "import Google from 'next-auth/providers/google';");
     expectContains(source, 'getAuthRuntimeConfig');
     expectContains(source, 'pages: {');
-    expectContains(source, 'signIn: "/login"');
+    expectContains(source, "signIn: '/login'");
     expectContains(providerConfig, 'getConfiguredOAuthProviders');
     expectContains(providerConfig, 'AUTH_FACEBOOK_ID');
     expectContains(providerConfig, 'AUTH_GOOGLE_ID');

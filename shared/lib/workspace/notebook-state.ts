@@ -1,4 +1,4 @@
-import { UserPortfolio } from '@/db/schema';
+import { UserPortfolio } from '@/shared/types/portfolio';
 
 import {
   getStoredCurrentPortfolioId,

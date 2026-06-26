@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-import { UserPortfolio } from '@/db/schema';
 import { portfolioClient } from '@/shared/lib/portfolio-client';
 import {
   persistSelectedPortfolioId,
@@ -10,6 +9,7 @@ import {
   upsertPortfolioInNotebookState,
 } from '@/shared/lib/workspace/notebook-state';
 import { resolveWorkspacePortfolioSelection } from '@/shared/lib/workspace/portfolio-selection';
+import { UserPortfolio } from '@/shared/types/portfolio';
 
 interface UseWorkspacePortfoliosOptions {
   enabled?: boolean;

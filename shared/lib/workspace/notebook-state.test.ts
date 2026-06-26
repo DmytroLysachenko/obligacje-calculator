@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { UserPortfolio } from '@/db/schema';
+import { UserPortfolio } from '@/shared/types/portfolio';
 
 import {
   removePortfolioFromNotebookState,
