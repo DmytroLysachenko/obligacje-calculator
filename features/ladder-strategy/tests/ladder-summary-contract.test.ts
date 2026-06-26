@@ -8,6 +8,7 @@ const projectRoot = process.cwd();
 const paths = {
   container: 'features/ladder-strategy/components/LadderContainer.tsx',
   timeline: 'features/ladder-strategy/components/LadderTimeline.tsx',
+  timelineSections: 'features/ladder-strategy/components/LadderTimelineSections.tsx',
   timelineModel: 'features/ladder-strategy/lib/ladder-timeline-model.ts',
   timelineTable: 'features/ladder-strategy/components/LadderTimelineTable.tsx',
   timelineConstants: 'features/ladder-strategy/constants/timeline.ts',
@@ -46,7 +47,7 @@ describe('ladder summary contracts', () => {
   });
 
   it('shows yearly ladder summary before monthly detail', () => {
-    const source = `${readSource(paths.timeline)}\n${readSource(paths.timelineModel)}`;
+    const source = `${readSource(paths.timeline)}\n${readSource(paths.timelineSections)}\n${readSource(paths.timelineModel)}`;
 
     expectContains(source, 'const yearlySummaryItems = useMemo(');
     expectContains(source, 'yearlyBuckets.slice(0, 4).map');
