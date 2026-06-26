@@ -1,50 +1,9 @@
 import { LotBreakdown, YearlyTimelinePoint } from '@/features/bond-core/types';
-import { getIntlLocale } from '@/i18n/locale-utils';
 import { translateMessage } from '@/i18n/translate';
 import { AppLanguage, buildBondTimelineDisplayRows } from '@/shared/lib/bond-display';
-/**
- * Downloads a string as a file in the browser.
- * Adds BOM for proper UTF-8 detection in Excel.
- */
-export function downloadFile(content: string, fileName: string, contentType: string) {
-  const anchor = document.createElement('a');
-  const file = new Blob([`\ufeff${content}`], { type: contentType });
-  anchor.href = URL.createObjectURL(file);
-  anchor.download = fileName;
-  anchor.click();
-  URL.revokeObjectURL(anchor.href);
-}
-export function downloadJsonFile(payload: unknown, fileName: string) {
-  const anchor = document.createElement('a');
-  const file = new Blob([JSON.stringify(payload, null, 2)], {
-    type: 'application/json;charset=utf-8',
-  });
-  anchor.href = URL.createObjectURL(file);
-  anchor.download = fileName;
-  anchor.click();
-  URL.revokeObjectURL(anchor.href);
-}
-const SEPARATOR = ';';
-function formatExportDate(value: string | undefined) {
-  if (!value) {
-    return '';
-  }
-  return value.includes('T') ? value.split('T')[0] : value;
-}
-function formatCsvValue(value: unknown, language: AppLanguage) {
-  if (typeof value === 'number') {
-    return value.toLocaleString(getIntlLocale(language), {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-      useGrouping: false,
-    });
-  }
-  if (Array.isArray(value)) {
-    const joined = value.map((item) => String(item).replace(/"/g, '""')).join(', ');
-    return `"${joined}"`;
-  }
-  return `"${String(value ?? '').replace(/"/g, '""')}"`;
-}
+
+export { downloadFile, downloadJsonFile } from './csv-download';
+import { CSV_SEPARATOR, formatCsvValue, formatExportDate } from './csv-format';
 /**
  * Converts a timeline to a CSV string.
  * Uses display rows instead of raw engine rows so exports match the UI.
@@ -88,7 +47,7 @@ export function convertTimelineToCSV(
     },
     { key: 'eventLabels', header: headers.events || translateMessage(language, 'common.events') },
   ];
-  csvRows.push(columns.map((column) => column.header).join(SEPARATOR));
+  csvRows.push(columns.map((column) => column.header).join(CSV_SEPARATOR));
   for (const [index, point] of displayRows.entries()) {
     const exportRow = {
       date: formatExportDate(timeline[index]?.cycleEndDate),
@@ -97,7 +56,7 @@ export function convertTimelineToCSV(
     const row = columns.map((column) =>
       formatCsvValue((exportRow as unknown as Record<string, unknown>)[column.key], language),
     );
-    csvRows.push(row.join(SEPARATOR));
+    csvRows.push(row.join(CSV_SEPARATOR));
   }
   return csvRows.join('\r\n');
 }
@@ -119,7 +78,7 @@ export function convertLotsToCSV(
     { key: 'earlyWithdrawalFee', header: headers.fee || 'Fee' },
     { key: 'netValue', header: headers.netValue || 'Net Value' },
   ];
-  csvRows.push(columns.map((column) => column.header).join(SEPARATOR));
+  csvRows.push(columns.map((column) => column.header).join(CSV_SEPARATOR));
   for (const lot of lots) {
     const row = columns.map((column) => {
       const value = (lot as unknown as Record<string, unknown>)[column.key];
@@ -128,7 +87,7 @@ export function convertLotsToCSV(
       }
       return formatCsvValue(value, language);
     });
-    csvRows.push(row.join(SEPARATOR));
+    csvRows.push(row.join(CSV_SEPARATOR));
   }
   return csvRows.join('\r\n');
 }
@@ -172,7 +131,7 @@ export function convertComparisonToCSV(
     { key: 'eventsA', header: headers.eventsA || 'Scenario A events' },
     { key: 'eventsB', header: headers.eventsB || 'Scenario B events' },
   ];
-  csvRows.push(columns.map((column) => column.header).join(SEPARATOR));
+  csvRows.push(columns.map((column) => column.header).join(CSV_SEPARATOR));
   const rowMap = new Map<
     string,
     {
@@ -253,7 +212,7 @@ export function convertComparisonToCSV(
       formatCsvValue(rowA?.eventLabels ?? [], language),
       formatCsvValue(rowB?.eventLabels ?? [], language),
     ];
-    csvRows.push(row.join(SEPARATOR));
+    csvRows.push(row.join(CSV_SEPARATOR));
   }
   return csvRows.join('\r\n');
 }
