@@ -1,5 +1,6 @@
 export interface SyncLogger {
   info(message: string, details?: unknown): void;
+  warn(message: string, details?: unknown): void;
   error(message: string, details?: unknown): void;
 }
 
@@ -13,6 +14,15 @@ class ConsoleSyncLogger implements SyncLogger {
     }
 
     console.log(`[${this.scope}] ${message}`, details);
+  }
+
+  warn(message: string, details?: unknown) {
+    if (details === undefined) {
+      console.warn(`[${this.scope}] ${message}`);
+      return;
+    }
+
+    console.warn(`[${this.scope}] ${message}`, details);
   }
 
   error(message: string, details?: unknown) {

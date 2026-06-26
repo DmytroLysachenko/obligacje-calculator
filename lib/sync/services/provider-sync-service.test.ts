@@ -6,6 +6,7 @@ import { type ProviderSyncRepository, ProviderSyncService } from './provider-syn
 
 const logger = {
   info: vi.fn(),
+  warn: vi.fn(),
   error: vi.fn(),
 };
 

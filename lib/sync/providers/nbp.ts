@@ -1,6 +1,7 @@
 import { addYears, format, isBefore, min, parseISO } from 'date-fns';
 
 import { fetchSyncResponse } from '../http-gateway';
+import { createSyncLogger } from '../sync-logger';
 import { SyncProvider, SyncRecord } from '../types';
 
 interface NbpGoldData {
@@ -12,6 +13,7 @@ export class NbpSyncProvider implements SyncProvider {
   name = 'NBP Gold API';
   seriesSlug = 'gold-usd';
   private baseUrl = 'https://api.nbp.pl/api';
+  private readonly logger = createSyncLogger('NbpProvider');
 
   async fetchData(startDate: string, endDate: string): Promise<SyncRecord[]> {
     const results: SyncRecord[] = [];
@@ -37,7 +39,7 @@ export class NbpSyncProvider implements SyncProvider {
           );
         }
       } catch (error) {
-        console.warn(`[NBP Provider] Failed gold chunk ${startStr}-${endStr}:`, error);
+        this.logger.warn(`Failed gold chunk ${startStr}-${endStr}`, error);
       }
 
       currentStart = addYears(currentStart, 1);

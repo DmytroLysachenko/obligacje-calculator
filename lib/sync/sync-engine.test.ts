@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   record: vi.fn(),
   logger: {
     info: vi.fn(),
+    warn: vi.fn(),
     error: vi.fn(),
   },
 }));

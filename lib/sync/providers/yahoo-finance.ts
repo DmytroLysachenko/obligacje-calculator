@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
 
 import { fetchSyncJson } from '../http-gateway';
+import { createSyncLogger } from '../sync-logger';
 import { SyncProvider, SyncRecord } from '../types';
 
 interface YahooChartResponse {
@@ -34,6 +35,7 @@ export class YahooFinanceSyncProvider implements SyncProvider {
   seriesSlug: string;
   private readonly symbol: string;
   private readonly baseUrl = 'https://query1.finance.yahoo.com/v8/finance/chart';
+  private readonly logger = createSyncLogger('YahooFinanceProvider');
 
   constructor(options: YahooFinanceProviderOptions) {
     this.name = options.name;
@@ -46,7 +48,7 @@ export class YahooFinanceSyncProvider implements SyncProvider {
     const period2 = this.toUnixSeconds(endDate) + 24 * 60 * 60;
     const url = `${this.baseUrl}/${encodeURIComponent(this.symbol)}?period1=${period1}&period2=${period2}&interval=1d`;
 
-    console.log(`[Yahoo Finance Provider] Fetching ${this.symbol} from ${url}`);
+    this.logger.info(`Fetching ${this.symbol}`, { url });
     const payload = await fetchSyncJson<YahooChartResponse>(url, {
       headers: { 'User-Agent': 'Mozilla/5.0' },
     });
@@ -88,7 +90,7 @@ export class YahooFinanceSyncProvider implements SyncProvider {
 
     const records = [...recordsByMonth.values()];
 
-    console.log(`[Yahoo Finance Provider] Parsed ${records.length} records for ${this.symbol}`);
+    this.logger.info(`Parsed ${records.length} records for ${this.symbol}`);
     return records;
   }
 
