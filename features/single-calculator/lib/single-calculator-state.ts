@@ -1,5 +1,6 @@
 import { BOND_DEFINITIONS } from '@/features/bond-core/constants/bond-definitions';
 import { BondInputs, BondType, InterestPayout, TaxStrategy } from '@/features/bond-core/types';
+import { BondSeriesMetadata } from '@/shared/lib/bond-series-client';
 import {
   getHorizonMonths,
   getWithdrawalDateFromMonths,
@@ -8,6 +9,13 @@ import {
 
 const DEFAULT_BOND = BondType.EDO;
 const REVERSE_CALCULATION_TEST_BASE = 10000;
+const MACRO_ASSUMPTION_INPUT_KEYS = new Set([
+  'expectedInflation',
+  'expectedNbpRate',
+  'customInflation',
+  'customNbpRate',
+  'inflationScenario',
+]);
 
 export function buildFallbackInputs(now = new Date()): BondInputs {
   const purchaseDate = toDateString(now);
@@ -120,6 +128,76 @@ export function applyReverseSavingsGoal(inputs: BondInputs, simulatedNetPayoutVa
   return {
     ...inputs,
     initialInvestment: requiredBonds * bondPrice,
+  };
+}
+
+export function isMacroAssumptionInputKey(key: string) {
+  return MACRO_ASSUMPTION_INPUT_KEYS.has(key);
+}
+
+interface SelectedSeriesInputUpdate {
+  seriesId: string | null;
+  inputs: BondInputs;
+  definitions: typeof BOND_DEFINITIONS;
+  availableSeries: BondSeriesMetadata[];
+}
+
+export function resolveSelectedSeriesInputUpdate({
+  seriesId,
+  inputs,
+  definitions,
+  availableSeries,
+}: SelectedSeriesInputUpdate): BondInputs | null {
+  if (seriesId === 'current') {
+    const definition = definitions[inputs.bondType];
+    return {
+      ...inputs,
+      firstYearRate: definition.firstYearRate,
+      margin: definition.margin,
+    };
+  }
+
+  const series = availableSeries.find((item) => item.id === seriesId);
+  if (!series) {
+    return null;
+  }
+
+  return {
+    ...inputs,
+    firstYearRate: Number(series.firstYearRate),
+    margin: Number(series.baseMargin),
+    purchaseDate: series.emissionMonth,
+    withdrawalDate: getWithdrawalDateFromMonths(
+      series.emissionMonth,
+      inputs.investmentHorizonMonths ?? Math.round(inputs.duration * 12),
+    ),
+  };
+}
+
+export function resolveBondTypeInputUpdate(
+  previous: BondInputs,
+  type: BondType,
+  definition: (typeof BOND_DEFINITIONS)[BondType],
+) {
+  const previousHorizonMonths = getHorizonMonths(previous.purchaseDate, previous.withdrawalDate);
+  const fallbackHorizonMonths = Math.round(definition.duration * 12);
+  const nextHorizonMonths = Math.max(previousHorizonMonths, fallbackHorizonMonths);
+
+  return {
+    ...previous,
+    bondType: type,
+    duration: definition.duration,
+    firstYearRate: definition.firstYearRate,
+    margin: definition.margin,
+    earlyWithdrawalFee: definition.earlyWithdrawalFee,
+    isCapitalized: definition.isCapitalized,
+    payoutFrequency: definition.payoutFrequency,
+    withdrawalDate: getWithdrawalDateFromMonths(previous.purchaseDate, nextHorizonMonths),
+    rebuyDiscount: definition.rebuyDiscount,
+    isRebought: false,
+    investmentHorizonMonths: nextHorizonMonths,
+    nominalValue: definition.nominalValue,
+    isInflationIndexed: definition.isInflationIndexed,
   };
 }
 

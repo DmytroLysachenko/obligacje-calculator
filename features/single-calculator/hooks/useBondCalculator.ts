@@ -14,7 +14,6 @@ import {
   restoreVersionedEnvelope,
   stripDisplayOnlyInputs,
 } from '@/shared/lib/calculator-state';
-import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
 
 import { MODEL_VERSION } from '../../bond-core/model-version';
@@ -25,7 +24,10 @@ import {
   applyReverseSavingsGoal,
   buildFallbackInputs,
   getReverseCalculationTestInputs,
+  isMacroAssumptionInputKey,
   normalizeSingleCalculatorInputs,
+  resolveBondTypeInputUpdate,
+  resolveSelectedSeriesInputUpdate,
 } from '../lib/single-calculator-state';
 
 const STORAGE_KEY = 'obligacje.single-calculator.v1';
@@ -247,39 +249,22 @@ export function useBondCalculator(initialInputs?: BondInputs) {
 
   const updateInput = (key: string, value: unknown) => {
     setIsDirty(true);
-    if (
-      key === 'expectedInflation' ||
-      key === 'expectedNbpRate' ||
-      key === 'customInflation' ||
-      key === 'customNbpRate' ||
-      key === 'inflationScenario'
-    ) {
+    if (isMacroAssumptionInputKey(key)) {
       hasTouchedMacroAssumptions.current = true;
     }
     if (key === 'selectedSeriesId') {
       const seriesId = value as string | null;
       setSelectedSeriesId(seriesId);
-      if (seriesId === 'current' && definitions) {
-        const def = definitions[inputs.bondType];
-        setInputs((prev) => ({
-          ...prev,
-          firstYearRate: def.firstYearRate,
-          margin: def.margin,
-        }));
-        return;
-      }
-      const series = availableSeries.find((s) => s.id === seriesId);
-      if (series) {
-        setInputs((prev) => ({
-          ...prev,
-          firstYearRate: Number(series.firstYearRate),
-          margin: Number(series.baseMargin),
-          purchaseDate: series.emissionMonth,
-          withdrawalDate: getWithdrawalDateFromMonths(
-            series.emissionMonth,
-            prev.investmentHorizonMonths ?? Math.round(prev.duration * 12),
-          ),
-        }));
+      if (definitions) {
+        setInputs((prev) => {
+          const next = resolveSelectedSeriesInputUpdate({
+            seriesId,
+            inputs: prev,
+            definitions,
+            availableSeries,
+          });
+          return next ?? prev;
+        });
       }
       return;
     }
@@ -302,27 +287,7 @@ export function useBondCalculator(initialInputs?: BondInputs) {
     if (!definitions) return;
     setIsDirty(true);
     setSelectedSeriesId('current');
-    const def = definitions[type];
-    const previousHorizonMonths = getHorizonMonths(inputs.purchaseDate, inputs.withdrawalDate);
-    const fallbackHorizonMonths = Math.round(def.duration * 12);
-    const nextHorizonMonths = Math.max(previousHorizonMonths, fallbackHorizonMonths);
-
-    setInputs((prev) => ({
-      ...prev,
-      bondType: type,
-      duration: def.duration,
-      firstYearRate: def.firstYearRate,
-      margin: def.margin,
-      earlyWithdrawalFee: def.earlyWithdrawalFee,
-      isCapitalized: def.isCapitalized,
-      payoutFrequency: def.payoutFrequency,
-      withdrawalDate: getWithdrawalDateFromMonths(prev.purchaseDate, nextHorizonMonths),
-      rebuyDiscount: def.rebuyDiscount,
-      isRebought: false,
-      investmentHorizonMonths: nextHorizonMonths,
-      nominalValue: def.nominalValue,
-      isInflationIndexed: def.isInflationIndexed,
-    }));
+    setInputs((prev) => resolveBondTypeInputUpdate(prev, type, definitions[type]));
   };
 
   return {
