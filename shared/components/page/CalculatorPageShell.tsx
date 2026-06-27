@@ -6,6 +6,7 @@ import { type KeyboardEvent, type ReactNode, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
+import { logClientError } from '@/shared/lib/client-logger';
 
 import { pageLayout } from './layout-system';
 import { PageHeader, PageHeaderStatus } from './PageHeader';
@@ -48,7 +49,7 @@ export function CalculatorPageShell({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error('Scenario share failed:', error);
+      logClientError('Scenario share failed:', error);
     }
   };
 

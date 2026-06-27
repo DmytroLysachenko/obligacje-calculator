@@ -19,6 +19,7 @@ import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
+import { logClientError } from '@/shared/lib/client-logger';
 
 export const BondComparisonContainer = () => {
   const { locale: language } = useAppI18n();
@@ -122,7 +123,7 @@ export const BondComparisonContainer = () => {
       );
       setEnvelope(nextEnvelope);
     } catch (error) {
-      console.error('Comparison failed:', error);
+      logClientError('Comparison failed:', error);
     }
   }, [
     customInflation,

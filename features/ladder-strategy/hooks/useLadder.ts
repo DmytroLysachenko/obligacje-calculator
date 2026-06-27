@@ -11,6 +11,7 @@ import {
   savePersistedCalculatorState,
 } from '@/shared/lib/calculator-persistence';
 import { preserveStableState } from '@/shared/lib/calculator-state';
+import { logClientError } from '@/shared/lib/client-logger';
 import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
 
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
@@ -133,7 +134,7 @@ export function useLadder() {
       setEnvelope(data);
       setIsDirty(false);
     } catch (error) {
-      console.error('Ladder calculation error:', error);
+      logClientError('Ladder calculation error:', error);
     }
   }, [inputs, post]);
 

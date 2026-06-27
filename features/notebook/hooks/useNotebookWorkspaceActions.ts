@@ -7,6 +7,7 @@ import {
   resolveNotebookPortfolioError,
 } from '@/features/notebook/lib/notebook-workspace-model';
 import { ApiClientError } from '@/shared/lib/api-client';
+import { logClientError } from '@/shared/lib/client-logger';
 import { portfolioClient } from '@/shared/lib/portfolio-client';
 import { UserPortfolio } from '@/shared/types/portfolio';
 
@@ -89,7 +90,7 @@ export function useNotebookWorkspaceActions({
         await fetchPortfolios();
       }
     } catch (caughtError) {
-      console.error(caughtError);
+      logClientError('Notebook portfolio creation failed:', caughtError);
       setError(resolveCaughtPortfolioError(caughtError));
     } finally {
       setIsMutating(false);
@@ -115,7 +116,7 @@ export function useNotebookWorkspaceActions({
       setSelectedPortfolioId(createdPortfolio.id);
       setStatusMessage(labels.demoLoadedSuccess);
     } catch (caughtError) {
-      console.error(caughtError);
+      logClientError('Notebook demo portfolio creation failed:', caughtError);
       setError(resolveCaughtPortfolioError(caughtError));
     } finally {
       setIsMutating(false);
@@ -141,7 +142,7 @@ export function useNotebookWorkspaceActions({
         await fetchPortfolios();
       }
     } catch (caughtError) {
-      console.error(caughtError);
+      logClientError('Notebook portfolio import failed:', caughtError);
       setError(labels.importFailed);
     } finally {
       setIsMutating(false);
@@ -158,7 +159,7 @@ export function useNotebookWorkspaceActions({
       setError(null);
       setStatusMessage(labels.deleteSuccess);
     } catch (caughtError) {
-      console.error(caughtError);
+      logClientError('Notebook portfolio deletion failed:', caughtError);
       setError(
         caughtError instanceof ApiClientError
           ? resolveCaughtPortfolioError(caughtError)

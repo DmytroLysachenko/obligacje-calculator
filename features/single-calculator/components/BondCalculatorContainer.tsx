@@ -9,6 +9,7 @@ import { RecalculateButton } from '@/shared/components/feedback/RecalculateButto
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { CalculatorWorkspace } from '@/shared/components/page/CalculatorWorkspace';
 import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
+import { logClientError } from '@/shared/lib/client-logger';
 import { generateSingleBondReportPdf } from '@/shared/lib/pdf-utils';
 import { portfolioClient } from '@/shared/lib/portfolio-client';
 import { scenarioShareClient } from '@/shared/lib/scenario-share-client';
@@ -124,7 +125,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
           : t('notebook.current_lot_added'),
       );
     } catch (error) {
-      console.error(error);
+      logClientError('Notebook lot save failed:', error);
       setStatusTone('error');
       setStatusMessage(t('notebook.create_error'));
     }

@@ -35,6 +35,7 @@ import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { useCurrencyFormatter, usePercentFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
+import { logClientError } from '@/shared/lib/client-logger';
 
 export default function BondOptimizerClient() {
   const { t, locale: language } = useAppI18n();
@@ -104,7 +105,7 @@ export default function BondOptimizerClient() {
       setEnvelope(data);
       setIsDirty(false);
     } catch (error) {
-      console.error('Scenario ranking error:', error);
+      logClientError('Scenario ranking error:', error);
     }
   };
 

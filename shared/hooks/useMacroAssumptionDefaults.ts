@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { MacroAssumptionDefaults } from '@/lib/data/market-data';
 import { apiGet } from '@/shared/lib/api-client';
+import { logClientError } from '@/shared/lib/client-logger';
 
 let cachedDefaults: MacroAssumptionDefaults | null = null;
 
@@ -35,7 +36,7 @@ export function useMacroAssumptionDefaults() {
         }
       } catch (error) {
         if (!isCancelled) {
-          console.error(error);
+          logClientError('Failed to fetch macro assumption defaults:', error);
         }
       } finally {
         if (!isCancelled) {

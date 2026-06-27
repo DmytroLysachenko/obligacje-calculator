@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { BondType } from '@/features/bond-core/types';
 import { PortfolioSimulationResult } from '@/features/bond-core/types/scenarios';
+import { logClientError } from '@/shared/lib/client-logger';
 import { downloadJsonFile } from '@/shared/lib/csv-utils';
 import { portfolioClient } from '@/shared/lib/portfolio-client';
 import { UserInvestmentLot, UserPortfolio } from '@/shared/types/portfolio';
@@ -43,7 +44,7 @@ export function usePortfolioDetailsWorkspace({
       const nextLots = await portfolioClient.listLots(portfolio.id);
       setLots(Array.isArray(nextLots) ? nextLots : []);
     } catch (caughtError) {
-      console.error('Failed to fetch lots:', caughtError);
+      logClientError('Failed to fetch lots:', caughtError);
       setLots([]);
     } finally {
       setIsLoading(false);
@@ -61,7 +62,7 @@ export function usePortfolioDetailsWorkspace({
       const nextSimulation = await portfolioClient.simulatePortfolio(portfolio.id);
       setSimulation(nextSimulation ?? null);
     } catch (caughtError) {
-      console.error('Simulation failed:', caughtError);
+      logClientError('Simulation failed:', caughtError);
       setSimulation(null);
     } finally {
       setIsSimulating(false);
@@ -139,7 +140,7 @@ export function usePortfolioDetailsWorkspace({
         updatedAt: new Date(),
       });
     } catch (caughtError) {
-      console.error('Failed to update sharing:', caughtError);
+      logClientError('Failed to update sharing:', caughtError);
     } finally {
       setIsSharing(false);
     }
@@ -151,7 +152,7 @@ export function usePortfolioDetailsWorkspace({
       setJustCopied(true);
       setTimeout(() => setJustCopied(false), 2000);
     } catch (caughtError) {
-      console.error('Copy failed:', caughtError);
+      logClientError('Copy failed:', caughtError);
     }
   }, [shareUrl]);
 
@@ -162,7 +163,7 @@ export function usePortfolioDetailsWorkspace({
 
         downloadJsonFile(data, fileName);
       } catch (caughtError) {
-        console.error('Export failed:', caughtError);
+        logClientError('Export failed:', caughtError);
       }
     },
     [portfolio],

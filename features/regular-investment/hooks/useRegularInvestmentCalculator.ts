@@ -9,6 +9,7 @@ import {
   savePersistedCalculatorState,
 } from '@/shared/lib/calculator-persistence';
 import { preserveStableState, stripDisplayOnlyInputs } from '@/shared/lib/calculator-state';
+import { logClientError } from '@/shared/lib/client-logger';
 import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
 
 import { BondType, RegularInvestmentInputs } from '../../bond-core/types';
@@ -136,7 +137,7 @@ export function useRegularInvestmentCalculator() {
         );
         setEnvelope(data);
       } catch (error) {
-        console.error('Calculation error:', error);
+        logClientError('Calculation error:', error);
       }
     },
     [clearError, inputs, post],

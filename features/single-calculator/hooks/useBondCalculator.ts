@@ -13,6 +13,7 @@ import {
   restoreVersionedEnvelope,
   stripDisplayOnlyInputs,
 } from '@/shared/lib/calculator-state';
+import { logClientError } from '@/shared/lib/client-logger';
 import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
 
 import { MODEL_VERSION } from '../../bond-core/model-version';
@@ -169,7 +170,7 @@ export function useBondCalculator(initialInputs?: BondInputs) {
         if (isCalculationAbort(error)) {
           return;
         }
-        console.error('Calculation error:', error);
+        logClientError('Calculation error:', error);
       }
     },
     [clearError, post],
@@ -180,7 +181,7 @@ export function useBondCalculator(initialInputs?: BondInputs) {
       await Promise.resolve();
       setAvailableSeries(await fetchBondSeriesForSymbol(symbol));
     } catch (error) {
-      console.error('Failed to fetch series:', error);
+      logClientError('Failed to fetch series:', error);
     }
   }, []);
 
