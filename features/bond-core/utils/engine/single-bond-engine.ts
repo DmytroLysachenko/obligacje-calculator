@@ -30,6 +30,11 @@ import {
   createRateResetEvent,
   createWithdrawalEvent,
 } from './single-bond-events';
+import { applySingleBondTaxRelief } from './single-bond-tax-relief';
+import {
+  buildSingleBondTerminalNotes,
+  shouldStopSingleBondSimulation,
+} from './single-bond-terminal';
 import { calculateTaxAmount, shouldWithholdPeriodicTax } from './tax-settlement';
 import { generateCyclePeriods } from './timeline-builder';
 
@@ -63,17 +68,13 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
     ikzeTaxBracket,
   } = normalizedInputs;
 
-  let currentInitialInvestment = new Decimal(initialInvestment);
-  const calculationNotes: string[] = [];
-
-  // IKZE Tax Relief (Refund) modeling
-  if (taxStrategy === TaxStrategy.IKZE && ikzeTaxBracket) {
-    const refund = currentInitialInvestment.times(ikzeTaxBracket);
-    currentInitialInvestment = currentInitialInvestment.plus(refund);
-    calculationNotes.push(
-      `IKZE Tax Relief applied: +${refund.toFixed(2)} PLN (${ikzeTaxBracket * 100}% bracket) reinvested upfront.`,
-    );
-  }
+  const taxRelief = applySingleBondTaxRelief({
+    initialInvestment,
+    taxStrategy,
+    ikzeTaxBracket,
+  });
+  let currentInitialInvestment = taxRelief.currentInitialInvestment;
+  const calculationNotes: string[] = [...taxRelief.calculationNotes];
 
   let leftoverCash = new Decimal(0);
   const globalTimeline: YearlyTimelinePoint[] = [];
@@ -365,23 +366,21 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
     totalFeeAcc = totalFeeAcc.plus(cycleFee);
 
     if (
-      !rollover ||
-      isEarlyWithdrawal ||
-      actualCycleEndDate.getTime() === targetWithdrawalDate.getTime()
+      shouldStopSingleBondSimulation({
+        rollover,
+        isEarlyWithdrawal,
+        actualCycleEndDate,
+        targetWithdrawalDate,
+      })
     ) {
       const totalHorizonYears = differenceInDays(actualCycleEndDate, startDate) / 365.25;
-      if (rollover)
-        calculationNotes.push(
-          `Simulation covered ${cycleIndex} bond cycle${cycleIndex === 1 ? '' : 's'} across the selected horizon.`,
-        );
-      else
-        calculationNotes.push(
-          'Rollover is disabled; the simulation stops at the first bond cycle or selected withdrawal date.',
-        );
-      if (isEarlyWithdrawal)
-        calculationNotes.push(
-          'Early redemption fee logic was applied before the native maturity date.',
-        );
+      calculationNotes.push(
+        ...buildSingleBondTerminalNotes({
+          rollover,
+          cycleIndex,
+          isEarlyWithdrawal,
+        }),
+      );
 
       return createFinalSingleBondResult({
         initialInvestment,
