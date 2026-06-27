@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildNotebookCapabilities,
   buildNotebookStats,
+  buildNotebookWorkspaceViewModel,
   getNotebookPortfolioCounts,
   NOTEBOOK_DEMO_LOTS,
   resolveNotebookPortfolioError,
@@ -63,5 +64,28 @@ describe('notebook workspace model', () => {
         },
       }).map((item) => item.value),
     ).toEqual(['3', '1', '2']);
+  });
+
+  it('builds notebook workspace view state from portfolios and translations', () => {
+    const portfolios = [
+      { id: 'public', isPublic: true },
+      { id: 'private', isPublic: false },
+    ] as never;
+
+    const viewModel = buildNotebookWorkspaceViewModel({
+      portfolios,
+      detailPortfolioId: 'private',
+      t: (key) => key,
+    });
+
+    expect(viewModel.detailPortfolio).toEqual({ id: 'private', isPublic: false });
+    expect(viewModel.emptyStateSteps).toHaveLength(4);
+    expect(viewModel.notebookIntro).toBe('notebook.workspace_intro');
+    expect(viewModel.portfolioCounts).toEqual({ totalCount: 2, publicCount: 1, privateCount: 1 });
+    expect(viewModel.notebookStats.map((item) => item.label)).toEqual([
+      'notebook.portfolios_label',
+      'notebook.public_links_label',
+      'notebook.private_drafts_label',
+    ]);
   });
 });

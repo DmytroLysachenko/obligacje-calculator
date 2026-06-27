@@ -1,5 +1,7 @@
 import { UserPortfolio } from '@/shared/types/portfolio';
 
+type Translate = (key: string) => string;
+
 export type NotebookStepItem = {
   id: string;
   title: string;
@@ -99,4 +101,36 @@ export function buildNotebookStats({
       description: labels.privateDraftsDescription,
     },
   ];
+}
+
+export function buildNotebookWorkspaceViewModel({
+  portfolios,
+  detailPortfolioId,
+  t,
+}: {
+  portfolios: UserPortfolio[];
+  detailPortfolioId: string | null;
+  t: Translate;
+}) {
+  const portfolioCounts = getNotebookPortfolioCounts(portfolios);
+
+  return {
+    detailPortfolio: detailPortfolioId
+      ? (portfolios.find((portfolio) => portfolio.id === detailPortfolioId) ?? null)
+      : null,
+    emptyStateSteps: buildNotebookCapabilities(t),
+    notebookIntro: t('notebook.workspace_intro'),
+    notebookStats: buildNotebookStats({
+      counts: portfolioCounts,
+      labels: {
+        portfolios: t('notebook.portfolios_label'),
+        portfoliosDescription: t('notebook.portfolios_label_desc'),
+        publicLinks: t('notebook.public_links_label'),
+        publicLinksDescription: t('notebook.public_links_label_desc'),
+        privateDrafts: t('notebook.private_drafts_label'),
+        privateDraftsDescription: t('notebook.private_drafts_label_desc'),
+      },
+    }),
+    portfolioCounts,
+  };
 }

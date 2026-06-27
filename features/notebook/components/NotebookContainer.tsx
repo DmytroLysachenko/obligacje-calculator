@@ -4,19 +4,14 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { useNotebookWorkspaceActions } from '@/features/notebook/hooks/useNotebookWorkspaceActions';
-import {
-  buildNotebookCapabilities,
-  buildNotebookStats,
-  getNotebookPortfolioCounts,
-  type NotebookStepItem,
-} from '@/features/notebook/lib/notebook-workspace-model';
+import { buildNotebookWorkspaceViewModel } from '@/features/notebook/lib/notebook-workspace-model';
 import { useAppI18n } from '@/i18n/client';
 import { AppToast } from '@/shared/components/feedback/AppToast';
 import { ConfirmActionDialog } from '@/shared/components/feedback/ConfirmActionDialog';
 import { Notice } from '@/shared/components/feedback/Notice';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { SectionBlock } from '@/shared/components/page/SectionBlock';
-import { MetricStrip, MetricStripItem } from '@/shared/components/results/MetricStrip';
+import { MetricStrip } from '@/shared/components/results/MetricStrip';
 import { useDateFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 import { useWorkspacePortfolios } from '@/shared/hooks/useWorkspacePortfolios';
@@ -93,7 +88,13 @@ export const NotebookContainer: React.FC = () => {
     }
     setError(null);
   }, [requestError, resolvePortfolioError, setError]);
-  const emptyStateSteps: NotebookStepItem[] = buildNotebookCapabilities(t);
+  const { detailPortfolio, emptyStateSteps, notebookIntro, notebookStats } =
+    buildNotebookWorkspaceViewModel({
+      portfolios,
+      detailPortfolioId,
+      t,
+    });
+
   const handleImportClick = () => {
     importRef.current?.click();
   };
@@ -103,10 +104,9 @@ export const NotebookContainer: React.FC = () => {
     setDetailPortfolioId(portfolio.id);
   };
   if (detailPortfolioId && canManageWorkspace) {
-    const portfolio = portfolios.find((item) => item.id === detailPortfolioId) ?? null;
-    return portfolio ? (
+    return detailPortfolio ? (
       <PortfolioDetails
-        portfolio={portfolio}
+        portfolio={detailPortfolio}
         onDelete={handleDeletePortfolio}
         onPortfolioUpdate={mergePortfolioIntoState}
         onBack={() => {
@@ -118,21 +118,7 @@ export const NotebookContainer: React.FC = () => {
       <NotebookLoadingState />
     );
   }
-  const notebookIntro = t('notebook.workspace_intro');
-  const portfolioCounts = getNotebookPortfolioCounts(portfolios);
-  const notebookStats: MetricStripItem[] = [
-    ...buildNotebookStats({
-      counts: portfolioCounts,
-      labels: {
-        portfolios: t('notebook.portfolios_label'),
-        portfoliosDescription: t('notebook.portfolios_label_desc'),
-        publicLinks: t('notebook.public_links_label'),
-        publicLinksDescription: t('notebook.public_links_label_desc'),
-        privateDrafts: t('notebook.private_drafts_label'),
-        privateDraftsDescription: t('notebook.private_drafts_label_desc'),
-      },
-    }),
-  ];
+
   return (
     <CalculatorPageShell
       title={t('notebook.title')}
