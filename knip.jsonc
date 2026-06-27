@@ -1,0 +1,23 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "project": [
+    "app/**/*.{ts,tsx}",
+    "components/**/*.{ts,tsx}",
+    "config/**/*.{ts,tsx}",
+    "db/**/*.ts",
+    "docs/**/*.ts",
+    "features/**/*.{ts,tsx}",
+    "i18n/**/*.{ts,tsx}",
+    "lib/**/*.ts",
+    "scripts/**/*.ts",
+    "shared/**/*.{ts,tsx}",
+    "*.config.{ts,js,mjs}",
+    "*.config.ts",
+    "*.test.{ts,tsx}",
+    "auth.ts",
+    "middleware.ts",
+  ],
+  "ignore": [".next/**", "coverage/**", "node_modules/**", "next-env.d.ts", "tsconfig.tsbuildinfo"],
+  "ignoreBinaries": ["bash"],
+  "ignoreDependencies": ["shadcn", "tailwindcss-animate", "tw-animate-css"],
+}
