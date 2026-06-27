@@ -10,6 +10,7 @@ const files = {
   chartTooltips: 'features/comparison-engine/components/MultiAssetChartTooltips.tsx',
   resultsPanel: 'features/comparison-engine/components/ComparisonResultsPanel.tsx',
   resultsPanelModel: 'features/comparison-engine/lib/comparison-results-panel-model.ts',
+  resultsChartModel: 'features/comparison-engine/lib/comparison-results-chart-model.ts',
   sharedValueChart: 'shared/components/charts/BondValueChart.tsx',
   sharedValueChartPlot: 'shared/components/charts/BondValueChartPlot.tsx',
   verdict: 'features/comparison-engine/components/ComparisonVerdict.tsx',
@@ -74,7 +75,11 @@ describe('comparison chart and verdict contracts', () => {
   });
 
   it('keeps bond comparison on the shared value chart renderer', () => {
-    const source = `${read(files.resultsPanel)}\n${read(files.resultsPanelModel)}`;
+    const source = [
+      read(files.resultsPanel),
+      read(files.resultsPanelModel),
+      read(files.resultsChartModel),
+    ].join('\n');
     const types = read(files.resultsPanelTypes);
     const sharedChart = read(files.sharedValueChart);
     const sharedChartPlot = read(files.sharedValueChartPlot);

@@ -9,6 +9,7 @@ const paths = {
   comparisonContainer: 'features/comparison-engine/components/ComparisonContainer.tsx',
   comparisonResults: 'features/comparison-engine/components/ComparisonResultsPanel.tsx',
   comparisonResultsModel: 'features/comparison-engine/lib/comparison-results-panel-model.ts',
+  comparisonResultsChartModel: 'features/comparison-engine/lib/comparison-results-chart-model.ts',
   multiAssetContainer: 'features/comparison-engine/components/MultiAssetComparisonContainer.tsx',
   multiAssetChart: 'features/comparison-engine/components/MultiAssetComparisonChart.tsx',
   multiAssetChartModel: 'features/comparison-engine/components/multi-asset-chart-model.ts',
@@ -42,7 +43,11 @@ function expectNoFragments(source: string, fragments: readonly string[]) {
 describe('comparison chart ownership contract', () => {
   it('keeps bond comparison routed through the results panel and shared bond value chart', () => {
     const container = read(paths.comparisonContainer);
-    const results = `${read(paths.comparisonResults)}\n${read(paths.comparisonResultsModel)}`;
+    const results = [
+      read(paths.comparisonResults),
+      read(paths.comparisonResultsModel),
+      read(paths.comparisonResultsChartModel),
+    ].join('\n');
     const shared = read(paths.sharedValueChart);
     const sharedPlot = read(paths.sharedValueChartPlot);
     const sharedParts = read(paths.sharedValueChartParts);
