@@ -5,7 +5,6 @@ import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } fro
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
-import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
 import {
   loadPersistedCalculatorState,
   savePersistedCalculatorState,
@@ -15,7 +14,8 @@ import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defa
 
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { BondInputs, BondType } from '../../bond-core/types';
-import { BondComparisonCalculationEnvelope, ScenarioKind } from '../../bond-core/types/scenarios';
+import { BondComparisonCalculationEnvelope } from '../../bond-core/types/scenarios';
+import { runComparisonCalculation } from '../lib/comparison-actions';
 import {
   buildDefaultSharedConfig,
   buildScenarioInputs,
@@ -115,16 +115,7 @@ export function useComparison() {
   const calculate = useCallback(async () => {
     setIsDirty(false);
     try {
-      const envelope = await post<BondComparisonCalculationEnvelope>(
-        getCalculationEndpoint(ScenarioKind.BOND_COMPARISON),
-        {
-          mode: 'independent',
-          sharedConfig,
-          scenarioA,
-          scenarioB,
-        },
-        { preferWorker: true },
-      );
+      const envelope = await runComparisonCalculation({ sharedConfig, scenarioA, scenarioB, post });
       setComparisonEnvelope(envelope);
       setCommittedInputsA(inputsA);
       setCommittedInputsB(inputsB);
