@@ -3,7 +3,7 @@ import { Decimal } from 'decimal.js';
 
 import { BOND_DEFINITIONS } from '../../constants/bond-definitions';
 import { createNumericFaultError } from '../../errors';
-import { BondInputs, CalculationResult, TaxStrategy, YearlyTimelinePoint } from '../../types';
+import { BondInputs, CalculationResult, YearlyTimelinePoint } from '../../types';
 import { SimulationEvent, SimulationEventType } from '../../types/simulation';
 import { withMathGuard } from '../engine-guards';
 

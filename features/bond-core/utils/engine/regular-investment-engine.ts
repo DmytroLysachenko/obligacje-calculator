@@ -2,7 +2,6 @@ import { addMonths, differenceInMonths, isAfter, isBefore, parseISO } from 'date
 import { Decimal } from 'decimal.js';
 
 import {
-  BondType,
   LotBreakdown,
   RegularInvestmentInputs,
   RegularInvestmentResult,
