@@ -158,6 +158,8 @@ Required commands:
 - `pnpm format:check` verifies repository formatting
 - `pnpm lint --fix` applies ESLint-safe fixes, including import sorting
 - `pnpm lint` reports import sorting drift as warnings
+- `pnpm scan:unused` runs the Knip unused-code inventory with a local
+  placeholder database URL so Drizzle config remains strict in production
 
 Imports should be grouped consistently:
 
@@ -184,6 +186,12 @@ When a path is replaced:
 - delete pass-through facade files after their responsibilities move into commands, queries, clients, models, or services
 
 Leaving old code beside new code is treated as unfinished work unless there is an explicit migration boundary documented in the architecture docs.
+
+Unused-code scan findings are candidates, not automatic deletions. Review route
+entrypoints, schema files, seed scripts, generated/framework-facing exports, and
+operator scripts before removal. Confirmed dead code should be deleted; intended
+dynamic entrypoints should be documented or added to the scan config with a
+specific reason.
 
 ## 5. Components Must Stay Small and Focused
 
@@ -270,6 +278,8 @@ Formatting rules belong here too:
 - browser API calls belong behind narrow shared clients; feature components and
   hooks should not parse API envelopes, compose auth headers, or hardcode
   endpoint request details when a client gateway exists
+- browser feature logging belongs behind `shared/lib/client-logger.ts`; feature
+  hooks and client components should not add direct `console.error` calls
 - browser-facing code should import DB row shapes through app-facing type
   barrels such as `shared/types/portfolio.ts`; direct `db/schema` imports belong
   in repositories, data layers, server services, schema tests, or the type barrel

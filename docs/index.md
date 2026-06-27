@@ -63,4 +63,4 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 
 ---
 
-_Last Updated: June 24, 2026 - App is in production-readiness cleanup for the trusted-core Cloud Run scope. Active docs now distinguish current release work from archived recovery/refactor history, and known architecture exceptions are documented in the technical contracts._
+_Last Updated: June 27, 2026 - App is in production-readiness cleanup for the trusted-core Cloud Run scope. Active docs distinguish current release work from archived recovery/refactor history, document the current feature folder vocabulary, and track unused-code cleanup through `pnpm scan:unused`._

@@ -81,6 +81,25 @@ describe('clean code architecture contract', () => {
     expect(matches).toEqual([]);
   });
 
+  it('keeps feature client logging behind the shared client logger', () => {
+    const approvedClientConsoleFiles = new Set([
+      'app/error.tsx',
+      'shared/components/feedback/ErrorBoundary.tsx',
+      'shared/lib/client-logger.ts',
+    ]);
+    const matches = filesContaining(/console\.(error|warn|log|info)\(/)
+      .filter(
+        (file) =>
+          file.startsWith('app/') || file.startsWith('features/') || file.startsWith('shared/'),
+      )
+      .filter((file) => !file.startsWith('app/api/'))
+      .filter((file) => !file.startsWith('features/bond-core/'))
+      .filter((file) => !file.endsWith('.test.ts') && !file.endsWith('.test.tsx'))
+      .filter((file) => !approvedClientConsoleFiles.has(file));
+
+    expect(matches).toEqual([]);
+  });
+
   it('keeps broad lint and comment escape hatches explicit', () => {
     const approvedDisableFiles = new Set([
       'shared/hooks/useQuerySync.ts',

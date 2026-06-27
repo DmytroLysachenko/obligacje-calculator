@@ -9,6 +9,10 @@ Use it before adding files or moving logic.
 - `app/api/**/route.ts`: HTTP controllers only. They parse input, resolve auth/ownership, call server services, and return shared response helpers.
 - `features/**`: product workflows grouped by domain surface. Components render workflows; hooks own UI state; `lib` folders own feature-local pure models such as calculator state and dashboard state; `tests` folders own feature-local test files.
 - `shared/**`: browser-safe primitives reused by multiple features: components, hooks, clients, display helpers, formatters, workers, and persistence helpers.
+- `shared/lib/client-logger.ts`: browser-facing error/warning logging helper.
+  Feature hooks and client components should use it instead of direct
+  `console.error` calls. Server, sync, API routes, and global error boundaries
+  keep their own logging boundaries.
 
 ## Server And Data Layers
 
@@ -37,14 +41,14 @@ Use it before adding files or moving logic.
 ## Domain Ownership
 
 - `features/bond-core/**`: calculation truth, schemas, scenario handlers, validation, domain errors, and financial regression tests.
-  Public calculation entrypoints are exported through `features/bond-core/utils/calculations.ts`, while implementation lives in `features/bond-core/utils/engine/**` by engine family (`single-bond-engine`, `reverse-bond-engine`, `regular-investment-engine`, and shared engine helpers). Large engines should delegate schedule, cycle, accounting, and lot/contribution details to focused sibling helpers such as `single-bond-cycle.ts`, `single-bond-accounting.ts`, and `regular-investment-schedule.ts`.
+  Public calculation entrypoints are exported through `features/bond-core/utils/calculations.ts`, while implementation lives in `features/bond-core/utils/engine/**` by engine family (`single-bond-engine`, `reverse-bond-engine`, `regular-investment-engine`, and shared engine helpers). Large engines should delegate schedule, cycle, accounting, terminal notes, tax-relief setup, and lot/contribution details to focused sibling helpers such as `single-bond-cycle.ts`, `single-bond-accounting.ts`, `single-bond-terminal.ts`, `single-bond-tax-relief.ts`, `regular-investment-schedule.ts`, and `regular-investment-orchestration.ts`.
   Zod schema primitives live in `features/bond-core/types/schema-primitives.ts`;
   `features/bond-core/types/schemas.ts` remains the public scenario schema
   entrypoint.
-- `features/comparison-engine/**`: comparison workflows, comparison-specific display models, chart/table composition, and comparison persistence. Results dashboard ranking and modeled-value decisions live in `features/comparison-engine/components/bond-comparison/results-dashboard-model.ts`. Multi-asset metadata lives in `constants/multi-asset.ts`; multi-asset draft/query state lives in `lib/multi-asset-state.ts`; chart rows, ending snapshots, availability summaries, and chart legends live in `components/multi-asset-chart-model.ts`; comparison results metric/chart preparation lives in `lib/comparison-results-panel-model.ts`; aligned table interpolation and scenario snapshots live in `lib/comparison-table-projection.ts`.
-- `features/single-calculator/**`: single-bond calculator UI, single scenario sharing, notebook save action wiring, single-route display, and pure single-calculator state/result models. Input and series normalization live in `lib/single-calculator-state.ts`; result summary metrics, financial insights, and scenario facts live in `lib/bond-results-summary-model.ts`.
+- `features/comparison-engine/**`: comparison workflows, comparison-specific display models, chart/table composition, and comparison persistence. Results dashboard ranking and modeled-value decisions live in `features/comparison-engine/components/bond-comparison/results-dashboard-model.ts`. Multi-asset metadata lives in `constants/multi-asset.ts`; multi-asset draft/query state lives in `lib/multi-asset-state.ts`; chart rows, ending snapshots, availability summaries, and chart legends live in `components/multi-asset-chart-model.ts`; comparison results metrics live in `lib/comparison-results-panel-model.ts`; comparison value-chart rows, domains, summaries, and series live in `lib/comparison-results-chart-model.ts`; aligned table interpolation and scenario snapshots live in `lib/comparison-table-projection.ts`.
+- `features/single-calculator/**`: single-bond calculator UI, single scenario sharing, notebook save action wiring, single-route display, and pure single-calculator state/result models. Input and series normalization live in `lib/single-calculator-state.ts`; async calculation/series actions live in `lib/single-calculator-actions.ts`; result summary metrics, financial insights, and scenario facts live in `lib/bond-results-summary-model.ts`; timeline rows compose focused mobile and desktop renderers rather than owning all markup in one file.
 - `features/economic-data/**`: economic reference charts, dashboard state models for CPI/NBP metadata display, and dashboard section components in `features/economic-data/components/EconomicDashboardSections.tsx`.
-- `features/notebook/**`: portfolio workspace UI, portfolio details, notebook commands through `portfolio-client`, notebook-specific contracts, and pure workspace models in `features/notebook/lib/**`. `NotebookContainer.tsx` owns workspace orchestration; stored-portfolio and scope-note rendering lives in `NotebookContainerPanels.tsx`. UI-facing portfolio row types are imported from `shared/types/portfolio.ts`, not directly from `db/schema`.
+- `features/notebook/**`: portfolio workspace UI, portfolio details, notebook commands through `portfolio-client`, notebook-specific contracts, and pure workspace models in `features/notebook/lib/**`. `NotebookContainer.tsx` owns workspace wiring; derived workspace view state lives in `buildNotebookWorkspaceViewModel`; stored-portfolio and scope-note rendering lives in `NotebookContainerPanels.tsx`. UI-facing portfolio row types are imported from `shared/types/portfolio.ts`, not directly from `db/schema`.
 - `features/optimizer/**`: optimizer UI sections, optimizer state models, and recommendation orchestration. Route/page code should consume `features/optimizer/lib/**` state helpers instead of recomputing readiness or default input rules inline. Input controls belong in `features/optimizer/components/OptimizerInputPanel.tsx`, while the page client owns calculation requests and result state.
 - `features/regular-investment/**`: retained recurring-investment surface.
   The calculator hook owns persisted input state and delegates deterministic input normalization to `lib/regular-investment-state.ts`; result summary constants/types
@@ -79,6 +83,8 @@ Do not add empty folders as placeholders. Use the vocabulary when a feature actu
 ## Boundary Rules
 
 - Browser API calls belong behind `shared/lib/*-client.ts`, `shared/hooks`, or approved workers.
+- Browser feature logging belongs behind `shared/lib/client-logger.ts`; do not
+  add feature-local direct `console.error` calls in client components/hooks.
 - Browser-facing DB row types belong behind app-facing type barrels such as
   `shared/types/portfolio.ts`; feature components should not import
   `db/schema` directly.
@@ -107,6 +113,9 @@ Do not add empty folders as placeholders. Use the vocabulary when a feature actu
 - Broad lint-disable comments are only allowed in the explicit clean-code
   contract allowlist. Additions require updating the contract and documenting
   why the local escape hatch is safer than changing the shared rule.
+- Unused-code inventory is collected with `pnpm scan:unused`. Treat findings as
+  candidates: remove confirmed dead code, but document or ignore framework,
+  route, schema, seed, or operator entrypoints that Knip cannot infer safely.
 
 ## Documentation Ownership
 

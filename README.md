@@ -40,9 +40,10 @@ Important code boundaries:
 - `db/schemas/`: grouped schema entrypoints
 - `db/seed/`: seed modules split by concern
 
-Current product-quality tranche notes:
+Current production-readiness notes:
 
-- [Product Quality Verification Tranche](./docs/plans/07_product_quality_verification_tranche.md)
+- [Current Product Roadmap](./docs/plans/00_roadmap.md)
+- [Cloud Run Release Candidate Plan](./docs/plans/08_cloud_run_release_candidate_plan.md)
 
 ## Local Development
 
@@ -52,7 +53,7 @@ Current product-quality tranche notes:
    ```bash
    pnpm install
    ```
-2. Set environment variables in `.env.local` using `.env.example` and project-specific secrets.
+2. Set environment variables in `.env.local` using the deployment documentation and project-specific secrets.
 3. Prepare the database if needed:
    ```bash
    npx drizzle-kit generate
@@ -70,6 +71,7 @@ pnpm test
 pnpm test:core
 pnpm lint
 pnpm exec tsc --noEmit
+pnpm scan:unused
 ```
 
 ### Data Sync

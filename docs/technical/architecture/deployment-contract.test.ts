@@ -97,6 +97,11 @@ describe('deployment documentation contract', () => {
     expect(projectMap).toContain('scripts/check-production-config.ts');
     expect(projectMap).toContain('lib/server/http/calculation-route.ts');
     expect(projectMap).toContain('lib/server/admin/status-read-model.ts');
+    expect(projectMap).toContain('shared/lib/client-logger.ts');
+    expect(projectMap).toContain('pnpm scan:unused');
+    expect(projectMap).toContain('comparison-results-chart-model.ts');
+    expect(projectMap).toContain('single-bond-terminal.ts');
+    expect(projectMap).toContain('regular-investment-orchestration.ts');
     expect(projectMap).toContain('OptimizerInputPanel.tsx');
     expect(projectMap).toContain('EconomicDashboardSections.tsx');
     expect(projectMap).toContain('results-dashboard-model.ts');

@@ -1,6 +1,6 @@
 # 00. Current Product Roadmap
 
-This roadmap reflects the real state of the application as of June 24, 2026.
+This roadmap reflects the real state of the application as of June 27, 2026.
 
 The app is **not production-ready**.
 
@@ -21,16 +21,30 @@ The recovery work already completed has materially changed the product:
 - data/source/freshness context is surfaced more honestly on reference pages
 - flagship calculation paths now have exact-value golden regression tests
 - retained-core comparison and ladder paths now also have dedicated baseline regression coverage
+- feature folders now consistently use the active vocabulary where useful:
+  `components`, `hooks`, `lib`, `types`, `constants`, and `tests`
+- large calculator surfaces have been split further: single timeline rows now
+  have mobile/desktop render components, comparison chart modeling is separate
+  from result metrics, and notebook workspace view state is pure model output
+- single-bond and regular-investment engines now delegate more orchestration
+  setup to focused helpers while keeping calculation truth covered by engine
+  and golden tests
+- feature/client error logging goes through `shared/lib/client-logger.ts`;
+  server, sync, API, and global error-boundary logging remain separate
 
 This is real progress, but it is **not** the same as production readiness.
-The next step is narrower: remove stale inventory, keep docs aligned with the implemented app, and collect final release-gate evidence.
+The next step is narrower: review the unused-code scan baseline, remove or
+document confirmed stale inventory, keep docs aligned with the implemented app,
+and collect final release-gate evidence.
 
 ## Current Product Position
 
 - core bond calculation logic exists and can be evolved
 - the UI surface area is still larger than the trusted release scope
 - some secondary features remain intentionally conditional, experimental, or limited
-- some stale docs, scripts, and unused shared components still need cleanup
+- unused-code inventory is now scanable with `pnpm scan:unused`; the first
+  baseline still reports unused files, exports, and candidate dependencies that
+  need human review before removal
 - some live surfaces should still be treated as experimental until proven stable
 - documentation previously overstated maturity and completion
 
@@ -209,6 +223,8 @@ Before the first trusted-core production release, all should be true:
 - sidebar/navigation trust labels match the actual current product stance
 - active docs describe the current retained core and recovery-lab split truthfully
 - stale docs, unused code, and obsolete local scripts are removed or archived
+- `pnpm scan:unused` findings are triaged: confirmed dead code is removed,
+  intentional dynamic/framework/operator entrypoints are documented or ignored
 - remaining open work is validation and release-gate evidence, not structural rescue
 
 ## What Should Not Happen Next
