@@ -7,6 +7,7 @@ const root = process.cwd();
 
 const files = {
   hook: 'features/single-calculator/hooks/useBondCalculator.ts',
+  actions: 'features/single-calculator/lib/single-calculator-actions.ts',
   chart: 'features/single-calculator/components/BondChart.tsx',
   container: 'features/single-calculator/components/BondCalculatorContainer.tsx',
   panels: 'features/single-calculator/components/BondCalculatorPanels.tsx',
@@ -105,9 +106,9 @@ describe('single calculator chart display-only contract', () => {
   });
 
   it('keeps legacy display-only inputs out of committed single scenarios', () => {
-    const source = read(files.hook);
+    const source = `${read(files.hook)}\n${read(files.actions)}`;
 
-    expectContains(source, 'let finalInputs = { ...currentInputs };');
+    expectContains(source, 'let finalInputs = { ...inputs };');
     expectContains(source, 'setLastCommittedInputs(finalInputs);');
     expectContains(source, 'stripDisplayOnlyInputs(restoredState.lastCommittedInputs ?? null)');
     expectNotContains(source, 'finalInputs.chartStep');

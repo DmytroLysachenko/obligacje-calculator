@@ -3,8 +3,7 @@ import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } fro
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
-import { bondSeriesClient, BondSeriesMetadata } from '@/shared/lib/bond-series-client';
-import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
+import { BondSeriesMetadata } from '@/shared/lib/bond-series-client';
 import {
   loadPersistedCalculatorState,
   savePersistedCalculatorState,
@@ -18,12 +17,15 @@ import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defa
 
 import { MODEL_VERSION } from '../../bond-core/model-version';
 import { BondInputs, BondType } from '../../bond-core/types';
-import { ScenarioKind, SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
+import { SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
+import {
+  fetchBondSeriesForSymbol,
+  isCalculationAbort,
+  runSingleBondCalculation,
+} from '../lib/single-calculator-actions';
 import {
   applyDefinitionToInputs,
-  applyReverseSavingsGoal,
   buildFallbackInputs,
-  getReverseCalculationTestInputs,
   isMacroAssumptionInputKey,
   normalizeSingleCalculatorInputs,
   resolveBondTypeInputUpdate,
@@ -157,29 +159,14 @@ export function useBondCalculator(initialInputs?: BondInputs) {
         await Promise.resolve(); // Defer state updates to avoid synchronous setState in effect
         setIsDirty(false);
         clearError();
-        let finalInputs = { ...currentInputs };
-
-        if (currentInputs.calculatorMode === 'reverse' && currentInputs.savingsGoal) {
-          const simEnvelope = await post<SingleBondCalculationEnvelope>(
-            getCalculationEndpoint(ScenarioKind.SINGLE_BOND),
-            getReverseCalculationTestInputs(currentInputs),
-            { preferWorker: true },
-          );
-          finalInputs = applyReverseSavingsGoal(currentInputs, simEnvelope.result.netPayoutValue);
-        }
-
-        const data = await post<SingleBondCalculationEnvelope>(
-          getCalculationEndpoint(ScenarioKind.SINGLE_BOND),
-          finalInputs,
-          { preferWorker: true },
-        );
-        setEnvelope(data);
+        const { envelope: nextEnvelope, finalInputs } = await runSingleBondCalculation({
+          inputs: currentInputs,
+          post,
+        });
+        setEnvelope(nextEnvelope);
         setLastCommittedInputs(finalInputs);
       } catch (error) {
-        if (
-          error instanceof Error &&
-          (error.name === 'AbortError' || error.message === 'Calculation aborted')
-        ) {
+        if (isCalculationAbort(error)) {
           return;
         }
         console.error('Calculation error:', error);
@@ -191,7 +178,7 @@ export function useBondCalculator(initialInputs?: BondInputs) {
   const fetchSeries = useCallback(async (symbol: BondType) => {
     try {
       await Promise.resolve();
-      setAvailableSeries(await bondSeriesClient.listBySymbol(symbol));
+      setAvailableSeries(await fetchBondSeriesForSymbol(symbol));
     } catch (error) {
       console.error('Failed to fetch series:', error);
     }
