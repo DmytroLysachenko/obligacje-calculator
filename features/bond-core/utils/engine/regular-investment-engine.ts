@@ -1,7 +1,6 @@
 import { addMonths, differenceInMonths, isAfter, isBefore, parseISO } from 'date-fns';
 import { Decimal } from 'decimal.js';
 
-import { BOND_DEFINITIONS } from '../../constants/bond-definitions';
 import {
   BondType,
   LotBreakdown,
@@ -20,9 +19,13 @@ import { determineInterestRate } from './rate-resolution';
 import { calculateRealValue } from './real-return';
 import { calculateEarlyWithdrawalFee } from './redemption';
 import {
+  resolveRegularInvestmentBondSetup,
+  resolveRegularInvestmentPurchaseCash,
+  shouldCreateRegularInvestmentLot,
+} from './regular-investment-orchestration';
+import {
   advanceRegularInvestmentInflation,
   createRegularInvestmentLot,
-  getRegularInvestmentInterval,
   settleMaturedLots,
 } from './regular-investment-schedule';
 import { createRegularInvestmentResult } from './result-assembly';
@@ -55,21 +58,22 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
     taxRate,
   } = normalizedInputs;
 
-  const bondDef = BOND_DEFINITIONS[bondType];
-  const nominalValue = bondDef?.nominalValue ?? 100;
-  const bondDuration = bondType === BondType.OTS ? 0.25 : inputs.duration || bondDef.duration;
+  const { bondDef, nominalValue, bondDuration, interval, bondPrice } =
+    resolveRegularInvestmentBondSetup({
+      bondType,
+      duration: inputs.duration,
+      frequency,
+      isRebought,
+      rebuyDiscount,
+    });
 
   const totalMonths = investmentHorizonMonths;
-  const interval = getRegularInvestmentInterval(frequency);
 
   const lots: LotBreakdown[] = [];
   const timeline: RegularTimelinePoint[] = [];
 
   let totalInvested = new Decimal(0);
   let cumulativeInflation = new Decimal(1);
-  const bondPrice = isRebought
-    ? new Decimal(nominalValue).minus(rebuyDiscount)
-    : new Decimal(nominalValue);
 
   // We loop month-by-month for simplicity in regular investment
   for (let m = 0; m <= totalMonths; m++) {
@@ -91,11 +95,13 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
     const maturedLiquidity = settleMaturedLots(lots, currentMonthDate, events);
 
     // 2. Add new lot (Standard contribution + Matured liquidity if rollover enabled)
-    if (m % interval === 0 && m < totalMonths) {
+    if (shouldCreateRegularInvestmentLot({ monthIndex: m, interval, totalMonths })) {
       const rolloverEnabled = inputs.rollover ?? true; // Default to true for regular investment
-      const totalAvailableForPurchase = rolloverEnabled
-        ? new Decimal(contributionAmount).plus(maturedLiquidity)
-        : new Decimal(contributionAmount);
+      const totalAvailableForPurchase = resolveRegularInvestmentPurchaseCash({
+        contributionAmount,
+        maturedLiquidity,
+        rolloverEnabled,
+      });
 
       const { lot, investedAmount, units } = createRegularInvestmentLot({
         currentMonthDate,
