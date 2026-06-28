@@ -165,7 +165,6 @@ const sharedShellFiles = [
   'shared/components/results/MetricStrip.tsx',
   'shared/components/results/RateContextNote.tsx',
   'shared/components/results/ResponsiveTableSheet.tsx',
-  'shared/components/results/ResultMetricCard.tsx',
   'shared/components/results/ResultSummaryHero.tsx',
   'shared/components/results/ScenarioFactsBlock.tsx',
   'shared/components/results/SecondaryInsightAccordion.tsx',

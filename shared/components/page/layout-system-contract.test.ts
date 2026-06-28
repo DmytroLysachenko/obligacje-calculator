@@ -10,7 +10,7 @@ const paths = {
   layout: 'app/layout.tsx',
   shell: 'shared/components/page/CalculatorPageShell.tsx',
   section: 'shared/components/page/CalculatorSection.tsx',
-  frame: 'shared/components/page/PageFrame.tsx',
+  sectionBlock: 'shared/components/page/SectionBlock.tsx',
   header: 'shared/components/page/PageHeader.tsx',
   workspace: 'shared/components/page/CalculatorWorkspace.tsx',
   tokens: 'shared/components/page/layout-system.ts',
@@ -44,9 +44,10 @@ describe('layout system contracts', () => {
     expectContains(globals, '.ui-section-divider');
 
     expectContains(tokens, "pageFlow: 'space-y-10 pb-16 md:space-y-14'");
+    expectContains(tokens, 'calculatorGrid:');
     expectContains(
       tokens,
-      "calculatorGrid: 'grid grid-cols-1 gap-8 xl:grid-cols-[420px_minmax(0,1fr)] xl:items-start xl:gap-10'",
+      "'grid grid-cols-1 gap-8 xl:grid-cols-[420px_minmax(0,1fr)] xl:items-start xl:gap-10'",
     );
     expectContains(tokens, "stickyScenario: 'space-y-5 xl:sticky xl:top-8 xl:h-fit'");
   });
@@ -77,13 +78,13 @@ describe('layout system contracts', () => {
   });
 
   it('provides reusable frame primitives for report-driven page work', () => {
-    const source = readSource(paths.frame);
+    const source = readSource(paths.sectionBlock);
 
-    expectContains(source, 'export function PageFrame');
     expectContains(source, 'export function SectionBlock');
-    expectContains(source, "width?: 'wide' | 'content' | 'reading';");
-    expectContains(source, "flow?: 'page' | 'compact' | 'section' | 'none';");
-    expectContains(source, "variant?: 'plain' | 'divided' | 'surface' | 'card';");
+    expectContains(source, "type SectionBlockVariant = 'plain' | 'divided' | 'surface' | 'card';");
+    expectContains(source, 'variant?: SectionBlockVariant;');
+    expectContains(source, 'title?: React.ReactNode;');
+    expectContains(source, 'description?: React.ReactNode;');
   });
 
   it('provides shared page header status and calculator workspace primitives', () => {

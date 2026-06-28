@@ -12,12 +12,12 @@ function read(path: string) {
 describe('calculation worker contract', () => {
   it('keeps the browser worker as a remote transport instead of a parallel calculation engine', () => {
     const worker = read('shared/workers/calculation.worker.ts');
-    const throttledHook = read('shared/hooks/useCalculationWorker.ts');
+    const workerClient = read('shared/lib/calculation-worker-client.ts');
 
     expect(worker).not.toContain("from '@/features/bond-core/utils/calculations'");
     expect(worker).not.toContain("type === 'local'");
     expect(worker).not.toContain('isLocal: true');
-    expect(throttledHook).not.toContain('canCalculateLocally');
-    expect(throttledHook).toContain("'remote'");
+    expect(workerClient).not.toContain('canCalculateLocally');
+    expect(workerClient).toContain("'remote'");
   });
 });

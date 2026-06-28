@@ -9,6 +9,8 @@ const paths = {
   regular: 'features/regular-investment/components/RegularInvestmentResultsSummary.tsx',
   regularYearly: 'features/regular-investment/components/RegularInvestmentYearlyBucketsSection.tsx',
   ladder: 'features/ladder-strategy/components/LadderTimeline.tsx',
+  ladderSections: 'features/ladder-strategy/components/LadderTimelineSections.tsx',
+  ladderTable: 'features/ladder-strategy/components/LadderTimelineTable.tsx',
   density: 'shared/components/results/TableDensityControls.tsx',
 } as const;
 
@@ -147,28 +149,32 @@ describe('strategy result layout contracts', () => {
 
   it('keeps ladder chart and maturity table separated by stronger surface rhythm', () => {
     const source = readSource(paths.ladder);
+    const sections = readSource(paths.ladderSections);
+    const table = readSource(paths.ladderTable);
 
-    expectContains(source, '<ChartSection');
-    expectContains(source, 'className="border-y border-border py-6"');
-    expectContains(source, '<SectionBlock');
+    expectContains(source, '<LadderTimelineChartSection');
+    expectContains(source, '<LadderYearSummarySection');
+    expectContains(sections, '<ChartSection');
+    expectContains(sections, 'className="border-y border-border py-6"');
+    expectContains(sections, '<SectionBlock');
     expectContains(
       source,
       "const [chartMode, setChartMode] = useState<LadderChartMode>('yearly');",
     );
-    expectContains(source, 'const yearlyBuckets = useMemo<LadderYearBucket[]>(');
-    expectContains(source, 'buildLadderYearBuckets(monthlyBuckets)');
+    expectContains(source, 'const { monthlyBuckets, yearlyBuckets } = useMemo(');
+    expectContains(source, 'buildLadderTimelineBuckets(results, dateLocale)');
     expectContains(source, 'const chartData = useMemo(');
-    expectContains(source, 't(`ladder_page.timeline.chart_modes.${mode}`)');
-    expectContains(source, '<div className="hidden border-y border-border lg:block">');
-    expectContains(source, '<Table className="w-full table-fixed text-sm tabular-nums">');
-    expectContains(source, '<TableRow className="h-12 hover:bg-transparent">');
+    expectContains(sections, 't(`ladder_page.timeline.chart_modes.${mode}`)');
+    expectContains(table, '<div className="hidden border-y border-border lg:block">');
+    expectContains(table, '<Table className="w-full table-fixed text-sm tabular-nums">');
+    expectContains(table, '<TableRow className="h-12 hover:bg-transparent">');
     expectContains(
-      source,
+      table,
       'className="h-14 border-b border-border transition-colors hover:bg-muted/25"',
     );
-    expectContains(source, '<TableDensityControls');
+    expectContains(table, '<TableDensityControls');
 
-    expectNoFragments(source, [
+    expectNoFragments(`${source}\n${sections}\n${table}`, [
       '<div className="hidden overflow-hidden rounded-lg border border-border bg-card lg:block">',
       'surface-shell space-y-5 p-5',
       'surface-shell border-t-0 p-5',
