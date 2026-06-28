@@ -4,7 +4,7 @@ import { ChartStep, RegularInvestmentResult } from '@/features/bond-core/types';
 
 import { DisplayBucketMetricRow, DisplayRecentItem } from './display-model';
 
-export function aggregateRegularTimelinePoints(
+function aggregateRegularTimelinePoints(
   timeline: RegularInvestmentResult['timeline'],
   chartStep: ChartStep,
 ) {

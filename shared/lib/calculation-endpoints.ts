@@ -1,6 +1,6 @@
 import { ScenarioKind } from '@/features/bond-core/types/scenarios';
 
-export const calculationEndpoints = {
+const calculationEndpoints = {
   [ScenarioKind.SINGLE_BOND]: '/api/calculate/single',
   [ScenarioKind.REGULAR_INVESTMENT]: '/api/calculate/regular',
   [ScenarioKind.BOND_COMPARISON]: '/api/calculate/compare',

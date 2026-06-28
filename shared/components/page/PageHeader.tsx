@@ -5,7 +5,7 @@ import React from 'react';
 
 import { cn } from '@/lib/utils';
 
-export type PageHeaderStatusTone = 'neutral' | 'success' | 'warning' | 'danger';
+type PageHeaderStatusTone = 'neutral' | 'success' | 'warning' | 'danger';
 
 export interface PageHeaderStatus {
   label: string;
@@ -30,7 +30,7 @@ const statusToneClass: Record<PageHeaderStatusTone, string> = {
   danger: 'text-destructive',
 };
 
-export function StatusLine({ status }: { status?: PageHeaderStatus | null }) {
+function StatusLine({ status }: { status?: PageHeaderStatus | null }) {
   if (!status) {
     return null;
   }

@@ -7,7 +7,7 @@ export interface SharedSingleScenarioPayload {
   inputs: BondInputs;
 }
 
-export function normalizeSharedSingleScenarioInputs(inputs: BondInputs): BondInputs {
+function normalizeSharedSingleScenarioInputs(inputs: BondInputs): BondInputs {
   const rest = { ...inputs };
   delete rest.historicalData;
 

@@ -1,6 +1,6 @@
 import { BondType } from '@/features/bond-core/types';
 
-export const BOND_COLORS: Record<BondType, string> = {
+const BOND_COLORS: Record<BondType, string> = {
   [BondType.OTS]: '#64748b', // Slate
   [BondType.ROR]: '#16a34a', // Green
   [BondType.DOR]: '#0ea5e9', // Sky

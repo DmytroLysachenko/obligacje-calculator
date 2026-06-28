@@ -92,7 +92,7 @@ describe('layout system contracts', () => {
     const workspace = readSource(paths.workspace);
 
     expectContains(header, 'export function PageHeader');
-    expectContains(header, 'export function StatusLine');
+    expectContains(header, 'function StatusLine');
     expectContains(header, "state?: 'idle' | 'loading' | 'complete';");
     expectContains(header, 'tone?: PageHeaderStatusTone;');
     expectContains(workspace, 'export function CalculatorWorkspace');

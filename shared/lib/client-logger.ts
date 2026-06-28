@@ -10,12 +10,3 @@ export function logClientError(message: string, error: unknown, details?: Client
 
   console.error(message, error);
 }
-
-export function logClientWarning(message: string, details?: ClientLogDetails) {
-  if (details) {
-    console.warn(message, details);
-    return;
-  }
-
-  console.warn(message);
-}
