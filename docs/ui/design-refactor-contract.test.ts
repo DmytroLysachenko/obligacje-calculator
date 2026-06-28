@@ -64,7 +64,6 @@ const recurringAndRetirementRefinedFiles = [
   'features/regular-investment/components/RegularInvestmentResultsSummary.tsx',
   'features/regular-investment/components/inputs/AdvancedSettingsSection.tsx',
   'features/regular-investment/components/inputs/BondSelectionSection.tsx',
-  'features/regular-investment/components/inputs/SectionHeading.tsx',
   'features/retirement/components/RetirementInputsPanel.tsx',
   'features/retirement/components/RetirementPlannerContainer.tsx',
   'features/retirement/components/RetirementPlannerPanels.tsx',
