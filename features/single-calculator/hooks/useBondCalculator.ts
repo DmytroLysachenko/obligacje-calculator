@@ -8,15 +8,10 @@ import {
   loadPersistedCalculatorState,
   savePersistedCalculatorState,
 } from '@/shared/lib/calculator-persistence';
-import {
-  preserveStableState,
-  restoreVersionedEnvelope,
-  stripDisplayOnlyInputs,
-} from '@/shared/lib/calculator-state';
+import { preserveStableState } from '@/shared/lib/calculator-state';
 import { logClientError } from '@/shared/lib/client-logger';
 import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
 
-import { MODEL_VERSION } from '../../bond-core/model-version';
 import { BondInputs, BondType } from '../../bond-core/types';
 import { SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
 import {
@@ -25,6 +20,12 @@ import {
   runSingleBondCalculation,
 } from '../lib/single-calculator-actions';
 import {
+  buildPersistedSingleCalculatorState,
+  PersistedSingleCalculatorState,
+  restoreSingleCalculatorState,
+  SINGLE_CALCULATOR_STORAGE_KEY,
+} from '../lib/single-calculator-persistence';
+import {
   applyDefinitionToInputs,
   buildFallbackInputs,
   isMacroAssumptionInputKey,
@@ -32,16 +33,6 @@ import {
   resolveBondTypeInputUpdate,
   resolveSelectedSeriesInputUpdate,
 } from '../lib/single-calculator-state';
-
-const STORAGE_KEY = 'obligacje.single-calculator.v1';
-
-interface PersistedSingleCalculatorState {
-  inputs: BondInputs;
-  envelope: SingleBondCalculationEnvelope | null;
-  selectedSeriesId: string | null;
-  lastCommittedInputs: BondInputs | null;
-  isDirty: boolean;
-}
 
 export function useBondCalculator(initialInputs?: BondInputs) {
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
@@ -110,22 +101,19 @@ export function useBondCalculator(initialInputs?: BondInputs) {
     }
 
     const timer = window.setTimeout(() => {
-      const restoredState =
-        loadPersistedCalculatorState<PersistedSingleCalculatorState>(STORAGE_KEY);
+      const restoredState = loadPersistedCalculatorState<PersistedSingleCalculatorState>(
+        SINGLE_CALCULATOR_STORAGE_KEY,
+      );
       hasRestoredState.current = true;
 
-      if (restoredState) {
-        const restoredEnvelope = restoreVersionedEnvelope(restoredState.envelope, MODEL_VERSION);
-        restoredFromPersistence.current = true;
-        setInputs(stripDisplayOnlyInputs(restoredState.inputs) ?? fallbackInputs);
-        setEnvelope(restoredEnvelope);
-        setSelectedSeriesId(restoredState.selectedSeriesId ?? null);
-        setLastCommittedInputs(
-          restoredEnvelope
-            ? stripDisplayOnlyInputs(restoredState.lastCommittedInputs ?? null)
-            : null,
-        );
-        setIsDirty(restoredEnvelope ? (restoredState.isDirty ?? true) : true);
+      const restored = restoreSingleCalculatorState(restoredState, fallbackInputs);
+      if (restored) {
+        restoredFromPersistence.current = restored.restoredFromPersistence;
+        setInputs(restored.inputs);
+        setEnvelope(restored.envelope);
+        setSelectedSeriesId(restored.selectedSeriesId);
+        setLastCommittedInputs(restored.lastCommittedInputs);
+        setIsDirty(restored.isDirty);
       }
 
       setIsPersistenceReady(true);
@@ -210,13 +198,16 @@ export function useBondCalculator(initialInputs?: BondInputs) {
       return;
     }
 
-    savePersistedCalculatorState(STORAGE_KEY, {
-      inputs,
-      envelope,
-      selectedSeriesId,
-      lastCommittedInputs,
-      isDirty,
-    });
+    savePersistedCalculatorState(
+      SINGLE_CALCULATOR_STORAGE_KEY,
+      buildPersistedSingleCalculatorState({
+        inputs,
+        envelope,
+        selectedSeriesId,
+        lastCommittedInputs,
+        isDirty,
+      }),
+    );
   }, [
     envelope,
     initialInputs,

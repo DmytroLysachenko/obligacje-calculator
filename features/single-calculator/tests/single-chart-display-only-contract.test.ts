@@ -8,6 +8,7 @@ const root = process.cwd();
 const files = {
   hook: 'features/single-calculator/hooks/useBondCalculator.ts',
   actions: 'features/single-calculator/lib/single-calculator-actions.ts',
+  persistence: 'features/single-calculator/lib/single-calculator-persistence.ts',
   chart: 'features/single-calculator/components/BondChart.tsx',
   container: 'features/single-calculator/components/BondCalculatorContainer.tsx',
   panels: 'features/single-calculator/components/BondCalculatorPanels.tsx',
@@ -30,9 +31,9 @@ function expectNotContains(source: string, fragment: string) {
 
 describe('single calculator chart display-only contract', () => {
   it('keeps chart granularity out of single calculator calculation state defaults', () => {
-    const source = read(files.hook);
+    const source = read(files.persistence);
 
-    expectContains(source, 'stripDisplayOnlyInputs,');
+    expectContains(source, 'stripDisplayOnlyInputs');
     expectNotContains(source, 'function withoutDisplayOnlyInputs');
     expectNotContains(source, 'function getDefaultChartStep');
     expectNotContains(source, 'nextChartStep');
@@ -41,16 +42,20 @@ describe('single calculator chart display-only contract', () => {
   });
 
   it('normalizes restored persistence before it re-enters single calculator state', () => {
-    const source = read(files.hook);
+    const hook = read(files.hook);
+    const persistence = read(files.persistence);
 
+    expectContains(hook, 'restoreSingleCalculatorState(restoredState, fallbackInputs)');
+    expectContains(hook, 'setInputs(restored.inputs);');
+    expectContains(hook, 'setLastCommittedInputs(restored.lastCommittedInputs);');
+    expectContains(hook, 'savePersistedCalculatorState(');
+    expectContains(hook, 'SINGLE_CALCULATOR_STORAGE_KEY');
+    expectContains(persistence, 'const restoredEnvelope = restoreVersionedEnvelope');
+    expectContains(persistence, 'stripDisplayOnlyInputs(restoredState.inputs) ?? fallbackInputs');
     expectContains(
-      source,
-      'setInputs(stripDisplayOnlyInputs(restoredState.inputs) ?? fallbackInputs);',
+      persistence,
+      'stripDisplayOnlyInputs(restoredState.lastCommittedInputs ?? null)',
     );
-    expectContains(source, 'setLastCommittedInputs(');
-    expectContains(source, 'restoredEnvelope');
-    expectContains(source, 'stripDisplayOnlyInputs(restoredState.lastCommittedInputs ?? null)');
-    expectContains(source, 'savePersistedCalculatorState(STORAGE_KEY');
   });
 
   it('keeps chart granularity local to the single value chart toolbar', () => {
@@ -106,7 +111,7 @@ describe('single calculator chart display-only contract', () => {
   });
 
   it('keeps legacy display-only inputs out of committed single scenarios', () => {
-    const source = `${read(files.hook)}\n${read(files.actions)}`;
+    const source = `${read(files.hook)}\n${read(files.actions)}\n${read(files.persistence)}`;
 
     expectContains(source, 'let finalInputs = { ...inputs };');
     expectContains(source, 'setLastCommittedInputs(finalInputs);');
