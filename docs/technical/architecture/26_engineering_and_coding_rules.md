@@ -193,6 +193,12 @@ operator scripts before removal. Confirmed dead code should be deleted; intended
 dynamic entrypoints should be documented or added to the scan config with a
 specific reason.
 
+The maintained baseline is zero confirmed unused files. Remaining Knip export
+findings are reviewed API-surface candidates: route/auth exports, scenario
+schemas and request types, shadcn-style UI primitive exports, and framework- or
+test-facing types should remain exported unless a focused ownership review proves
+they are internal-only.
+
 ## 5. Components Must Stay Small and Focused
 
 ### 5.1 Responsibility

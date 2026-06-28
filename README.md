@@ -74,6 +74,10 @@ pnpm exec tsc --noEmit
 pnpm scan:unused
 ```
 
+`pnpm scan:unused` should not report confirmed unused files. Export findings are
+triaged as API-surface candidates because framework exports, scenario schemas,
+and UI primitive barrels can be intentionally retained.
+
 ### Data Sync
 
 The repo already contains both the full sync path and a bond-offer-focused operator alias:

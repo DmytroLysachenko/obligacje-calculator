@@ -116,6 +116,8 @@ Do not add empty folders as placeholders. Use the vocabulary when a feature actu
 - Unused-code inventory is collected with `pnpm scan:unused`. Treat findings as
   candidates: remove confirmed dead code, but document or ignore framework,
   route, schema, seed, or operator entrypoints that Knip cannot infer safely.
+  The current target is no confirmed unused files; remaining unused-export
+  findings are API-surface review items, not automatic deletion work.
 
 ## Documentation Ownership
 
