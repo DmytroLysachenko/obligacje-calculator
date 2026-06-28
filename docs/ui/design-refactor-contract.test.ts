@@ -155,7 +155,6 @@ const sharedShellFiles = [
   'shared/components/chrome/SidebarSyncSummary.tsx',
   'shared/components/chrome/SidebarUtilityGroup.tsx',
   'shared/components/chrome/SidebarWorkspaceUtility.tsx',
-  'shared/components/chrome/ThemeToggle.tsx',
   'shared/components/charts/ChartContainer.tsx',
   'shared/components/feedback/ErrorBoundary.tsx',
   'shared/components/page/CalculatorPageShell.tsx',
