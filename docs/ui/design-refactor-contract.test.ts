@@ -40,8 +40,6 @@ const singleCalculatorRefinedFiles = [
   'features/single-calculator/components/BondResultsSummary.tsx',
   'features/single-calculator/components/BondTimeline.tsx',
   'features/single-calculator/components/CalculationAuditTrace.tsx',
-  'features/single-calculator/components/SavedScenariosPanel.tsx',
-  'features/single-calculator/components/ScenarioStarterPanel.tsx',
   'features/single-calculator/components/sections/BondConfigSection.tsx',
 ] as const;
 
