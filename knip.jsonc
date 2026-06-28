@@ -19,5 +19,5 @@
   ],
   "ignore": [".next/**", "coverage/**", "node_modules/**", "next-env.d.ts", "tsconfig.tsbuildinfo"],
   "ignoreBinaries": ["bash"],
-  "ignoreDependencies": ["shadcn", "tailwindcss-animate", "tw-animate-css"],
+  "ignoreDependencies": ["shadcn", "tailwindcss", "tailwindcss-animate", "tw-animate-css"],
 }
