@@ -41,7 +41,7 @@ export function createSavedScenario(
   };
 }
 
-export function loadSavedScenarios(): SavedScenarioRecord[] {
+function loadSavedScenarios(): SavedScenarioRecord[] {
   if (typeof window === 'undefined') {
     return [];
   }
@@ -79,8 +79,4 @@ export function saveScenarioRecord(record: SavedScenarioRecord): SavedScenarioRe
   const next = [record, ...current.filter((item) => item.id !== record.id)];
   persistSavedScenarios(next);
   return sortScenarios(next).slice(0, MAX_SCENARIOS);
-}
-
-export function getScenarioStorageKey() {
-  return STORAGE_KEY;
 }

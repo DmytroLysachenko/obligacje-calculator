@@ -17,7 +17,7 @@ import { sanitizeScenarioOverride } from './comparison-scenario-state';
 export type SharedComparisonConfig = IndependentBondComparisonPayload['sharedConfig'];
 export type ScenarioOverride = IndependentBondComparisonPayload['scenarioA'];
 
-export const DEFAULT_HORIZON_MONTHS = 120;
+const DEFAULT_HORIZON_MONTHS = 120;
 export const DEFAULT_SCENARIO_A: ScenarioOverride = {
   bondType: BondType.EDO,
   isRebought: false,

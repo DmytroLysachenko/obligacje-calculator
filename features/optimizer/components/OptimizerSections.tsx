@@ -8,13 +8,13 @@ import {
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 
-export interface OptimizerReadyStep {
+interface OptimizerReadyStep {
   id: string;
   title: string;
   description: string;
 }
 
-export interface OptimizerMetricLabels {
+interface OptimizerMetricLabels {
   leadingPayoutLabel: string;
   leadingPayoutDetail: string;
   leadingBondLabel: string;
@@ -79,7 +79,7 @@ interface OptimizerRankedOutcomesSectionProps {
   };
 }
 
-export function OptimizerSupportMetric({ label, value, detail }: OptimizerSupportMetricProps) {
+function OptimizerSupportMetric({ label, value, detail }: OptimizerSupportMetricProps) {
   return (
     <div className="border-t border-border py-5">
       <p className="ui-metadata text-muted-foreground">{label}</p>

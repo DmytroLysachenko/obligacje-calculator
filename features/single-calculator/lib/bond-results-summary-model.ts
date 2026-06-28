@@ -5,7 +5,7 @@ import { MetricStripItem } from '@/shared/components/results/MetricStrip';
 type Translate = (key: string, values?: Record<string, string | number>) => string;
 type FormatCurrency = (value: number) => string;
 
-export function getTaxStrategyDisplayLabel(
+function getTaxStrategyDisplayLabel(
   strategy: BondInputs['taxStrategy'],
   t: (key: string) => string,
 ) {

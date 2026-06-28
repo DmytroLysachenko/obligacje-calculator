@@ -45,7 +45,7 @@ export interface ComparisonAssetBreakdownProps {
   language: 'en' | 'pl';
 }
 
-export interface MultiAssetTooltipPayloadEntry {
+interface MultiAssetTooltipPayloadEntry {
   name: string;
   value: number;
   color: string;

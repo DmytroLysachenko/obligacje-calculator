@@ -18,10 +18,7 @@ export interface OptimizerMacroDefaults {
   expectedNbpRate: number;
 }
 
-export const OPTIMIZER_MACRO_KEYS = new Set<OptimizerInputKey>([
-  'expectedInflation',
-  'expectedNbpRate',
-]);
+const OPTIMIZER_MACRO_KEYS = new Set<OptimizerInputKey>(['expectedInflation', 'expectedNbpRate']);
 
 export function buildDefaultOptimizerInputs(now = new Date()): OptimizerInputs {
   return {

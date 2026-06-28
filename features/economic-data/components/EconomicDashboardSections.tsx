@@ -87,7 +87,7 @@ export function RangeActions({ period, setPeriod, rangeLabel, hint }: RangeActio
   );
 }
 
-export function SeriesStatusCard({ title, meta, isLoading, language }: SeriesStatusCardProps) {
+function SeriesStatusCard({ title, meta, isLoading, language }: SeriesStatusCardProps) {
   const { t } = useAppI18n();
   const labels = {
     source: t('common.source'),

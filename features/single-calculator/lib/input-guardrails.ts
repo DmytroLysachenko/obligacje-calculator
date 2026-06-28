@@ -2,7 +2,7 @@ import { isFamilyBondType } from '@/features/bond-core/support-matrix';
 import { BondInputs, TaxStrategy } from '@/features/bond-core/types';
 import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 
-export type GuardrailSeverity = 'info' | 'caution' | 'blocking';
+type GuardrailSeverity = 'info' | 'caution' | 'blocking';
 
 export interface InputGuardrailIssue {
   id: string;

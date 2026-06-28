@@ -12,7 +12,7 @@ type PostCalculation = <TResponse>(
   options?: { preferWorker?: boolean },
 ) => Promise<TResponse>;
 
-export function buildIndependentComparisonPayload({
+function buildIndependentComparisonPayload({
   sharedConfig,
   scenarioA,
   scenarioB,
