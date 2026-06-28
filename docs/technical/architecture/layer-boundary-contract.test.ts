@@ -48,10 +48,9 @@ describe('layer boundary contract', () => {
 
   it('keeps calculation UI clients pointed at endpoint abstractions', () => {
     const clients = [
-      'features/single-calculator/hooks/useBondCalculator.ts',
+      'features/single-calculator/lib/single-calculator-actions.ts',
       'features/regular-investment/hooks/useRegularInvestmentCalculator.ts',
-      'features/comparison-engine/hooks/useComparison.ts',
-      'features/comparison-engine/components/BondComparisonContainer.tsx',
+      'features/comparison-engine/lib/comparison-actions.ts',
       'features/ladder-strategy/hooks/useLadder.ts',
       'features/retirement/components/RetirementPlannerContainer.tsx',
       'app/optimize/BondOptimizerClient.tsx',

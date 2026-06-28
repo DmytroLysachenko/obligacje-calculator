@@ -104,6 +104,6 @@ describe('deployment documentation contract', () => {
     expect(projectMap).toContain('regular-investment-orchestration.ts');
     expect(projectMap).toContain('OptimizerInputPanel.tsx');
     expect(projectMap).toContain('EconomicDashboardSections.tsx');
-    expect(projectMap).toContain('results-dashboard-model.ts');
+    expect(projectMap).toContain('comparison-results-panel-model.ts');
   });
 });

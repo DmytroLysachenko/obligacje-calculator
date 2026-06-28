@@ -95,8 +95,9 @@ areas into clearer layers:
   `OptimizerInputPanel` owns form controls
 - economic-data page: the client owns data hooks and tab composition;
   `EconomicDashboardSections` owns reference/status/guide sections
-- comparison results: UI rendering uses `results-dashboard-model.ts` for
-  modeled-value, ranking, runner-up, and spread decisions
+- comparison results: UI rendering uses `comparison-results-panel-model.ts` and
+  `comparison-results-chart-model.ts` for metrics, chart rows, domains, and
+  context-series decisions
 - server runtime: readiness, admin auth, Auth.js, and production config checks
   read environment through centralized runtime helpers
 - release contracts: retained-route scope, calculation route parsing, chart

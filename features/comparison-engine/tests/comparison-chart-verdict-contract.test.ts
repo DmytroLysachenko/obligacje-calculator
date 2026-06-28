@@ -143,7 +143,6 @@ describe('comparison chart and verdict contracts', () => {
     const resultsContract = read(files.resultsContract);
 
     expectContains(chartLegendContract, 'keeps chart legend strip readable and divider-led');
-    expectContains(resultsContract, 'keeps comparison cards and empty steps divider-led');
     expectContains(resultsContract, 'keeps two-scenario export actions inline with results');
   });
 });

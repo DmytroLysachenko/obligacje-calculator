@@ -38,9 +38,6 @@ const flattenedSurfaceFiles = [
   'features/notebook/components/portfolio-details/PortfolioLotsTab.tsx',
   'features/notebook/components/portfolio-details/PortfolioAnalyticsTab.tsx',
   'features/comparison-engine/components/ScenarioOverrideCard.tsx',
-  'features/comparison-engine/components/bond-comparison/ComparisonConfigurationPanel.tsx',
-  'features/comparison-engine/components/bond-comparison/ComparisonResultsDashboard.tsx',
-  'features/comparison-engine/components/bond-comparison/ComparisonResultsDashboardParts.tsx',
 ] as const;
 
 const oldSurfaceFragments = [
@@ -204,15 +201,5 @@ describe('flattened shared surface system contract', () => {
     expect(
       sourceByPath.get('features/comparison-engine/components/ScenarioOverrideCard.tsx'),
     ).toContain("import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
-    expect(
-      sourceByPath.get(
-        'features/comparison-engine/components/bond-comparison/ComparisonConfigurationPanel.tsx',
-      ),
-    ).toContain("import { SectionBlock } from '@/shared/components/page/SectionBlock';");
-    expect(
-      sourceByPath.get(
-        'features/comparison-engine/components/bond-comparison/ComparisonResultsDashboard.tsx',
-      ),
-    ).toContain("import { SectionBlock } from '@/shared/components/page/SectionBlock';");
   });
 });

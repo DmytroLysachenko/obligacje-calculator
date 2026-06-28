@@ -44,7 +44,6 @@ const singleCalculatorRefinedFiles = [
 ] as const;
 
 const comparisonRefinedFiles = [
-  'features/comparison-engine/components/BondComparisonContainer.tsx',
   'features/comparison-engine/components/ComparisonAssetBreakdown.tsx',
   'features/comparison-engine/components/MultiAssetComparisonChart.tsx',
   'features/comparison-engine/components/ComparisonContainer.tsx',
@@ -56,8 +55,6 @@ const comparisonRefinedFiles = [
   'features/comparison-engine/components/MultiAssetComparisonContainer.tsx',
   'features/comparison-engine/components/MultiAssetComparisonPanels.tsx',
   'features/comparison-engine/components/ScenarioOverrideCard.tsx',
-  'features/comparison-engine/components/bond-comparison/ComparisonConfigurationPanel.tsx',
-  'features/comparison-engine/components/bond-comparison/ComparisonResultsDashboard.tsx',
 ] as const;
 
 const recurringAndRetirementRefinedFiles = [
