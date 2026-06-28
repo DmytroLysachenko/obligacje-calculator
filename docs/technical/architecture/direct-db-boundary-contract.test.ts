@@ -70,7 +70,6 @@ describe('direct database boundary contract', () => {
 
     expect(cleanCodeContract).toContain("'app/api/readiness/route.ts'");
     expect(cleanCodeContract).toContain("'shared/hooks/useQuerySync.ts'");
-    expect(cleanCodeContract).toContain("'lib/sync/seed-series.ts'");
     expect(projectMap).toContain('Direct database reads are intentional in this layer');
     expect(projectMap).toContain('Seed scripts may use direct database access');
     expect(projectMap).toContain(

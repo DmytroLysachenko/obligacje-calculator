@@ -101,10 +101,7 @@ describe('clean code architecture contract', () => {
   });
 
   it('keeps broad lint and comment escape hatches explicit', () => {
-    const approvedDisableFiles = new Set([
-      'shared/hooks/useQuerySync.ts',
-      'lib/sync/seed-series.ts',
-    ]);
+    const approvedDisableFiles = new Set(['shared/hooks/useQuerySync.ts']);
     const disallowedMarkers = filesContaining(/TODO|FIXME|debugger|@ts-ignore/).filter(
       (file) => !file.endsWith('clean-code-contract.test.ts'),
     );
