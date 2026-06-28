@@ -32,7 +32,7 @@ This file provides the necessary architectural and operational context for Gemin
 - `lib/api-clients/`: External provider clients and fetch adapters.
 - `shared/components/`: Reusable UI grouped by subdomain such as `page`, `feedback`, `results`, `chrome`, `insights`, and `charts`.
 - `shared/`: Isomorphic components, hooks, and UI-facing helpers used across features.
-- `db/schemas/`: Grouped schema entrypoints by connected data-model domains.
+- `db/schema.ts`: Canonical Drizzle schema entrypoint used by Drizzle Kit and runtime code.
 - `db/seed/`: Seed modules split by concern plus top-level orchestration entrypoints.
 - `docs/`: Extensive project documentation (Product, Domain, Architecture, Plans).
 - `scripts/`: Maintenance and data utility scripts.
@@ -122,7 +122,7 @@ Key requirements:
 
 - `features/bond-core/application-service.ts`: Central orchestration for all calculation scenarios.
 - `features/bond-core/utils/calculations.ts`: The low-level math engine for interest accrual.
-- `db/schemas/**`: Grouped schema entrypoints for the database model.
+- `db/schema.ts`: Canonical schema entrypoint for the database model.
 - `lib/data/market-data.ts`: Optimized data retrieval with caching.
 - `lib/server/http/api-handler.ts`: Standard API handler wrapper for rate limiting and consistent error handling.
 - `lib/server/http/calculation-route.ts`: Shared thin-route helper for calculation endpoints.

@@ -37,7 +37,7 @@ Important code boundaries:
 - `shared/lib/`: shared display/export/workspace helpers
 - `lib/data/`: cached read models and data retrieval helpers
 - `lib/server/`: server-only services, repositories, sync/admin orchestration, HTTP helpers
-- `db/schemas/`: grouped schema entrypoints
+- `db/schema.ts`: canonical Drizzle schema entrypoint
 - `db/seed/`: seed modules split by concern
 
 Current production-readiness notes:

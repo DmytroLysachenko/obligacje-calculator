@@ -24,7 +24,7 @@ The repo no longer treats `db/schema.ts` as the canonical long-term structure.
 
 Current layout:
 
-- `db/schemas/**`: grouped schema entrypoints by connected model domains
+- `db/schema.ts`: canonical Drizzle schema entrypoint
 - `db/seed/**`: seed modules split by concern
 - `db/schema.ts`: compatibility aggregate export surface where still needed by current imports
 

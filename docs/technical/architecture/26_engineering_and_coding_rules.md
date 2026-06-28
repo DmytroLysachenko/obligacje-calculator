@@ -439,7 +439,7 @@ Required boundaries:
 - `shared/lib/`: reusable display/export/presentation helpers and shared client-workspace state that are not server infrastructure
 - `lib/data/`: shared data retrieval and cached read models
 - `lib/server/`: server-only services, repositories, HTTP helpers, admin/sync orchestration, and ownership/auth support
-- `db/schemas/`: grouped schema entrypoints by connected model domains
+- `db/schema.ts`: canonical Drizzle schema entrypoint used by Drizzle Kit and runtime code
 - `db/seed/`: seed modules split by concern with explicit top-level orchestrators
 
 Do not flatten new files into old catch-all directories when a bounded subdomain already exists.
