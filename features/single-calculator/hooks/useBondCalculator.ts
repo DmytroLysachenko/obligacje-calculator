@@ -8,9 +8,7 @@ import {
   loadPersistedCalculatorState,
   savePersistedCalculatorState,
 } from '@/shared/lib/calculator-persistence';
-import { preserveStableState } from '@/shared/lib/calculator-state';
 import { logClientError } from '@/shared/lib/client-logger';
-import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
 
 import { BondInputs, BondType } from '../../bond-core/types';
 import { SingleBondCalculationEnvelope } from '../../bond-core/types/scenarios';
@@ -20,13 +18,18 @@ import {
   runSingleBondCalculation,
 } from '../lib/single-calculator-actions';
 import {
+  applySingleCalculatorMacroDefaults,
+  type MacroDefaults,
+  reconcilePersistedSingleCalculatorMacroDefaults,
+  resolveDefinitionSyncedInputs,
+} from '../lib/single-calculator-effect-state';
+import {
   buildPersistedSingleCalculatorState,
   PersistedSingleCalculatorState,
   restoreSingleCalculatorState,
   SINGLE_CALCULATOR_STORAGE_KEY,
 } from '../lib/single-calculator-persistence';
 import {
-  applyDefinitionToInputs,
   buildFallbackInputs,
   isMacroAssumptionInputKey,
   normalizeSingleCalculatorInputs,
@@ -56,39 +59,30 @@ export function useBondCalculator(initialInputs?: BondInputs) {
 
   const { isCalculating, isError, clearError, post } = useCalculationRequest();
 
-  const applyMacroDefaults = useEffectEvent(
-    (defaults: { expectedInflation: number; expectedNbpRate: number }) => {
-      setInputs((previous) => {
-        const next = {
-          ...previous,
-          expectedInflation: defaults.expectedInflation,
-          expectedNbpRate: defaults.expectedNbpRate,
-        };
+  const applyMacroDefaults = useEffectEvent((defaults: MacroDefaults) => {
+    setInputs((previous) => {
+      return applySingleCalculatorMacroDefaults(previous, defaults);
+    });
+  });
 
-        return preserveStableState(previous, next);
-      });
-    },
-  );
-
-  const reconcilePersistedMacroDefaults = useEffectEvent(
-    (defaults: { expectedInflation: number; expectedNbpRate: number }) => {
-      setInputs((previous) => {
-        const next = applyMacroDefaultsToBaseline(previous, defaults);
-        return preserveStableState(previous, next);
-      });
-    },
-  );
+  const reconcilePersistedMacroDefaults = useEffectEvent((defaults: MacroDefaults) => {
+    setInputs((previous) => {
+      return reconcilePersistedSingleCalculatorMacroDefaults(previous, defaults);
+    });
+  });
 
   useEffect(() => {
     if (!definitions || !definitions[inputs.bondType]) {
       return;
     }
 
-    const definition = definitions[inputs.bondType];
     const timer = window.setTimeout(() => {
       setInputs((previous) => {
-        const next = applyDefinitionToInputs(previous, definition, selectedSeriesId);
-        return preserveStableState(previous, next);
+        return resolveDefinitionSyncedInputs({
+          previous,
+          definitions,
+          selectedSeriesId,
+        });
       });
     }, 0);
 
