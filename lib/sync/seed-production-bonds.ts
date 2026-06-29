@@ -3,6 +3,10 @@ import 'dotenv/config';
 import { db } from '@/db';
 import { polishBonds } from '@/db/schema';
 
+import { createSyncLogger } from './sync-logger';
+
+const logger = createSyncLogger('SeedProductionBonds');
+
 async function seedBonds() {
   const bonds = [
     {
@@ -127,7 +131,7 @@ async function seedBonds() {
     },
   ];
 
-  console.log('[Seed] Seeding production bond types...');
+  logger.info('Seeding production bond types');
 
   for (const b of bonds) {
     try {
@@ -144,13 +148,13 @@ async function seedBonds() {
             updatedAt: new Date(),
           },
         });
-      console.log(`[Seed] Seeded/Updated: ${b.symbol}`);
+      logger.info(`Seeded/Updated: ${b.symbol}`);
     } catch (error) {
-      console.error(`[Seed] Failed to seed ${b.symbol}:`, error);
+      logger.error(`Failed to seed ${b.symbol}`, error);
     }
   }
 
-  console.log('[Seed] Bond types seeding completed.');
+  logger.info('Bond types seeding completed');
 }
 
 seedBonds().then(() => process.exit(0));

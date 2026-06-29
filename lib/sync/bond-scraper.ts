@@ -4,6 +4,9 @@
  * obligacjeskarbowe.pl HTML, and only then to curated official constants.
  */
 import { fetchSyncText } from './http-gateway';
+import { createSyncLogger } from './sync-logger';
+
+const logger = createSyncLogger('BondScraper');
 
 export interface ScrapedBondRate {
   symbol: string;
@@ -173,7 +176,7 @@ export async function scrapeCurrentBondRates(): Promise<ScrapedBondRate[]> {
         fallback,
     );
   } catch (error) {
-    console.error('Error scraping bonds:', error);
+    logger.error('Error scraping bonds', error);
     return OFFICIAL_FALLBACK_RATES;
   }
 }

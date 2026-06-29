@@ -3,6 +3,9 @@ import 'dotenv/config';
 import { pathToFileURL } from 'node:url';
 
 import { createDefaultSyncEngine } from './create-sync-engine';
+import { createSyncLogger } from './sync-logger';
+
+const logger = createSyncLogger('SyncMarketHistory');
 
 export async function syncMarketHistory() {
   const engine = createDefaultSyncEngine('SyncMarketHistory');
@@ -18,12 +21,12 @@ export async function syncMarketHistory() {
 
 export async function main() {
   const result = await syncMarketHistory();
-  console.log('[SyncMarketHistory] Completed incremental sync', result);
+  logger.info('Completed incremental sync', result);
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
   main().catch((error) => {
-    console.error('[SyncMarketHistory] Failed', error);
+    logger.error('Failed', error);
     process.exit(1);
   });
 }

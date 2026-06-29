@@ -4,6 +4,9 @@ import { pathToFileURL } from 'node:url';
 
 import { createDefaultSyncEngine } from './create-sync-engine';
 import { seedSeriesMetadata } from './seed-series-runner';
+import { createSyncLogger } from './sync-logger';
+
+const logger = createSyncLogger('SeedMarketHistory');
 
 export async function seedMarketHistory() {
   await seedSeriesMetadata();
@@ -20,12 +23,12 @@ export async function seedMarketHistory() {
 
 export async function main() {
   const result = await seedMarketHistory();
-  console.log('[SeedMarketHistory] Completed history seed', result);
+  logger.info('Completed history seed', result);
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
   main().catch((error) => {
-    console.error('[SeedMarketHistory] Failed', error);
+    logger.error('Failed', error);
     process.exit(1);
   });
 }

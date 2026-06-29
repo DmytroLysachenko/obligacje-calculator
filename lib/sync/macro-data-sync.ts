@@ -7,6 +7,10 @@ import { recordSyncRun } from '@/lib/server/sync/run-history';
 import { GusCpiApiClient } from '../api-clients/gus-cpi';
 import { NbpApiClient } from '../api-clients/nbp';
 
+import { createSyncLogger } from './sync-logger';
+
+const logger = createSyncLogger('MacroDataSync');
+
 /**
  * Helper to retry a function with exponential backoff.
  */
@@ -189,7 +193,7 @@ export async function syncMacroData() {
 
     return results;
   } catch (error) {
-    console.error('Macro sync failed:', error);
+    logger.error('Macro sync failed', error);
     const cpiSeries = await db.query.dataSeries.findFirst({
       where: eq(dataSeries.slug, 'pl-cpi'),
     });

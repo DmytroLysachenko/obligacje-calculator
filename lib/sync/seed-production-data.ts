@@ -8,6 +8,9 @@ import { GusCpiApiClient } from '@/lib/api-clients/gus-cpi';
 
 import { YahooFinanceSyncProvider } from './providers/yahoo-finance';
 import { fetchSyncResponse } from './http-gateway';
+import { createSyncLogger } from './sync-logger';
+
+const logger = createSyncLogger('SeedProductionData');
 
 interface NbpRateItem {
   obowiazuje_od: string;
@@ -57,7 +60,7 @@ async function seedMacroAndMarket() {
     },
   ];
 
-  console.log('[Seed] Seeding metadata series...');
+  logger.info('Seeding metadata series');
 
   for (const s of seriesMetadata) {
     await db
@@ -73,7 +76,7 @@ async function seedMacroAndMarket() {
   }
 
   // 1. Fetch and seed NBP Rate
-  console.log('[Seed] Fetching NBP Reference Rate...');
+  logger.info('Fetching NBP Reference Rate');
   try {
     const rateSeries = await db.query.dataSeries.findFirst({
       where: eq(dataSeries.slug, 'nbp-ref-rate'),
@@ -92,15 +95,15 @@ async function seedMacroAndMarket() {
         }));
 
         await db.insert(dataPoints).values(points).onConflictDoNothing();
-        console.log(`[Seed] Seeded ${points.length} NBP rate points.`);
+        logger.info(`Seeded ${points.length} NBP rate points`);
       }
     }
   } catch (e) {
-    console.error('[Seed] Failed to fetch NBP rates:', e);
+    logger.error('Failed to fetch NBP rates', e);
   }
 
   // 2. Fetch and seed S&P 500 (Yahoo Finance)
-  console.log('[Seed] Fetching S&P 500 data...');
+  logger.info('Fetching S&P 500 data');
   try {
     const spxSeries = await db.query.dataSeries.findFirst({ where: eq(dataSeries.slug, 'sp500') });
     if (spxSeries) {
@@ -120,7 +123,7 @@ async function seedMacroAndMarket() {
           .values(points.slice(i, i + 100))
           .onConflictDoNothing();
       }
-      console.log(`[Seed] Seeded ${points.length} S&P 500 points.`);
+      logger.info(`Seeded ${points.length} S&P 500 points`);
 
       await db
         .insert(investmentInstruments)
@@ -138,11 +141,11 @@ async function seedMacroAndMarket() {
         });
     }
   } catch (e) {
-    console.error('[Seed] Failed to fetch S&P 500 data:', e);
+    logger.error('Failed to fetch S&P 500 data', e);
   }
 
   // 3. Seed official CPI history from the GUS monthly archive CSV.
-  console.log('[Seed] Fetching official GUS CPI history...');
+  logger.info('Fetching official GUS CPI history');
   const cpiSeries = await db.query.dataSeries.findFirst({ where: eq(dataSeries.slug, 'pl-cpi') });
   if (cpiSeries) {
     const inflationPoints = await gusCpiClient.fetchHistoricalData();
@@ -166,10 +169,10 @@ async function seedMacroAndMarket() {
           sourceMetadata: GusCpiApiClient.archivePageUrl,
         },
       });
-    console.log(`[Seed] Seeded ${inflationPoints.length} historical CPI points from GUS.`);
+    logger.info(`Seeded ${inflationPoints.length} historical CPI points from GUS`);
   }
 
-  console.log('[Seed] Data seeding completed.');
+  logger.info('Data seeding completed');
 }
 
 seedMacroAndMarket().then(() => process.exit(0));
