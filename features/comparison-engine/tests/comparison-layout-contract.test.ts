@@ -11,6 +11,10 @@ const files = {
   results: 'features/comparison-engine/components/ComparisonResultsPanel.tsx',
   table: 'features/comparison-engine/components/ComparisonTable.tsx',
   tableParts: 'features/comparison-engine/components/comparison-table/ComparisonTableParts.tsx',
+  tablePagination:
+    'features/comparison-engine/components/comparison-table/ComparisonTablePaginationControls.tsx',
+  tableScenarioCells:
+    'features/comparison-engine/components/comparison-table/ComparisonTableScenarioCells.tsx',
   tableModel: 'features/comparison-engine/lib/comparison-table-model.ts',
   calculatorState: 'features/comparison-engine/lib/comparison-calculator-state.ts',
   persistence: 'features/comparison-engine/lib/comparison-persistence.ts',
@@ -92,6 +96,8 @@ describe('comparison layout contract', () => {
   it('keeps comparison table date-aligned instead of pairing timeline rows by index', () => {
     const table = read(files.table);
     const tableParts = read(files.tableParts);
+    const tablePagination = read(files.tablePagination);
+    const tableScenarioCells = read(files.tableScenarioCells);
     const tableModel = read(files.tableModel);
 
     expect(table).toContain('buildComparisonAlignedTableRows');
@@ -103,11 +109,11 @@ describe('comparison layout contract', () => {
     expect(tableModel).toContain('getComparisonTablePageRows');
     expect(tableModel).toContain('getComparisonTablePageCount');
     expect(tableParts).toContain('ComparisonTablePaginationControls');
-    expect(tableParts).toContain('MobileComparisonScenario');
-    expect(tableParts).toContain('ComparisonScenarioSnapshot');
+    expect(tableScenarioCells).toContain('MobileComparisonScenario');
+    expect(tableScenarioCells).toContain('ComparisonScenarioSnapshot');
     expect(table).toContain('<ComparisonTablePaginationControls');
-    expect(tableParts).toContain('disabled={page <= 1}');
-    expect(tableParts).toContain('disabled={page >= totalPages}');
+    expect(tablePagination).toContain('disabled={page <= 1}');
+    expect(tablePagination).toContain('disabled={page >= totalPages}');
     expect(table).toContain('COMPARISON_TABLE_GRANULARITY_OPTIONS.map');
     const tableConstants = read('features/comparison-engine/constants/comparison-table.ts');
     expect(tableConstants).toContain("'monthly'");
