@@ -30,7 +30,9 @@ The recovery work already completed has materially changed the product:
   setup to focused helpers while keeping calculation truth covered by engine
   and golden tests
 - feature/client error logging goes through `shared/lib/client-logger.ts`;
-  server, sync, API, and global error-boundary logging remain separate
+  server/API logging goes through `lib/server/logging.ts`, sync logging goes
+  through `lib/sync/sync-logger.ts`, and the global error boundary remains a
+  separate client boundary
 
 This is real progress, but it is **not** the same as production readiness.
 The next step is narrower: review the unused-code scan baseline, remove or
@@ -42,9 +44,9 @@ and collect final release-gate evidence.
 - core bond calculation logic exists and can be evolved
 - the UI surface area is still larger than the trusted release scope
 - some secondary features remain intentionally conditional, experimental, or limited
-- unused-code inventory is now scanable with `pnpm scan:unused`; the first
-  baseline still reports unused files, exports, and candidate dependencies that
-  need human review before removal
+- unused-code inventory is now scanable with `pnpm scan:unused`; the current
+  baseline reports export/type candidates that need human review before removal,
+  with no confirmed unused files
 - some live surfaces should still be treated as experimental until proven stable
 - documentation previously overstated maturity and completion
 

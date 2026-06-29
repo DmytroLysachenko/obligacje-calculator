@@ -193,11 +193,12 @@ operator scripts before removal. Confirmed dead code should be deleted; intended
 dynamic entrypoints should be documented or added to the scan config with a
 specific reason.
 
-The maintained baseline is zero confirmed unused files. Remaining Knip export
-findings are reviewed API-surface candidates: route/auth exports, scenario
-schemas and request types, shadcn-style UI primitive exports, and framework- or
-test-facing types should remain exported unless a focused ownership review proves
-they are internal-only.
+The maintained baseline is zero confirmed unused files. As of June 29, 2026,
+`pnpm scan:unused --reporter compact --max-show-issues 160` reports 28 unused
+exports and 22 unused exported types. These remaining Knip findings are reviewed
+API-surface candidates: route/auth exports, scenario schemas and request types,
+shadcn-style UI primitive exports, and framework- or test-facing types should
+remain exported unless a focused ownership review proves they are internal-only.
 
 ## 5. Components Must Stay Small and Focused
 
@@ -286,6 +287,10 @@ Formatting rules belong here too:
   endpoint request details when a client gateway exists
 - browser feature logging belongs behind `shared/lib/client-logger.ts`; feature
   hooks and client components should not add direct `console.error` calls
+- server/API logging belongs behind `lib/server/logging.ts`; route controllers
+  and server services should not add direct `console.*` calls
+- sync CLI/provider logging belongs behind `lib/sync/sync-logger.ts`; sync
+  entrypoints should not add direct `console.*` calls
 - browser-facing code should import DB row shapes through app-facing type
   barrels such as `shared/types/portfolio.ts`; direct `db/schema` imports belong
   in repositories, data layers, server services, schema tests, or the type barrel
