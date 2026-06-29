@@ -16,7 +16,11 @@ import {
   createSingleBondCheckpoint,
   resolveSingleBondCycleSettlement,
 } from './single-bond-checkpoint';
-import { resolveSingleBondCycleDates, resolveSingleBondCycleInvestment } from './single-bond-cycle';
+import {
+  resolveNextSingleBondCycleState,
+  resolveSingleBondCycleDates,
+  resolveSingleBondCycleInvestment,
+} from './single-bond-cycle';
 import {
   createCyclePurchaseEvent,
   createEarlyRedemptionFeeEvent,
@@ -369,12 +373,18 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
       });
     }
 
-    currentInitialInvestment = netProceeds;
-    leftoverCash = new Decimal(0);
-    globalAccumulatedNetInterest = new Decimal(0);
-    currentPurchaseDate = actualCycleEndDate;
-    applySwapDiscountThisCycle = isRebought;
-    cycleIndex += 1;
+    const nextCycleState = resolveNextSingleBondCycleState({
+      netProceeds,
+      actualCycleEndDate,
+      isRebought,
+      nextCycleIndex: cycleIndex + 1,
+    });
+    currentInitialInvestment = nextCycleState.currentInitialInvestment;
+    leftoverCash = nextCycleState.leftoverCash;
+    globalAccumulatedNetInterest = nextCycleState.globalAccumulatedNetInterest;
+    currentPurchaseDate = nextCycleState.currentPurchaseDate;
+    applySwapDiscountThisCycle = nextCycleState.applySwapDiscountThisCycle;
+    cycleIndex = nextCycleState.cycleIndex;
   }
 
   throw createNumericFaultError(

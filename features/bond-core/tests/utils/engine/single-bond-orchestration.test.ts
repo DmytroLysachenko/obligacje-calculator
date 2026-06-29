@@ -1,6 +1,8 @@
+import { Decimal } from 'decimal.js';
 import { describe, expect, it } from 'vitest';
 
 import { TaxStrategy } from '../../../types';
+import { resolveNextSingleBondCycleState } from '../../../utils/engine/single-bond-cycle';
 import { applySingleBondTaxRelief } from '../../../utils/engine/single-bond-tax-relief';
 import {
   buildSingleBondTerminalNotes,
@@ -81,5 +83,22 @@ describe('single bond orchestration helpers', () => {
     ).toEqual([
       'Rollover is disabled; the simulation stops at the first bond cycle or selected withdrawal date.',
     ]);
+  });
+
+  it('resets rollover cycle state before the next bond purchase', () => {
+    const actualCycleEndDate = new Date('2027-06-16T00:00:00.000Z');
+    const state = resolveNextSingleBondCycleState({
+      netProceeds: new Decimal(10_650),
+      actualCycleEndDate,
+      isRebought: true,
+      nextCycleIndex: 2,
+    });
+
+    expect(state.currentInitialInvestment.toNumber()).toBe(10650);
+    expect(state.leftoverCash.toNumber()).toBe(0);
+    expect(state.globalAccumulatedNetInterest.toNumber()).toBe(0);
+    expect(state.currentPurchaseDate).toBe(actualCycleEndDate);
+    expect(state.applySwapDiscountThisCycle).toBe(true);
+    expect(state.cycleIndex).toBe(2);
   });
 });

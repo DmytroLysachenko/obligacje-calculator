@@ -49,3 +49,26 @@ export function resolveSingleBondCycleInvestment({
     nominalStartingValue: rolloverParams.numberOfBonds.times(nominalValue),
   };
 }
+
+interface NextSingleBondCycleStateInput {
+  netProceeds: Decimal;
+  actualCycleEndDate: Date;
+  isRebought: boolean;
+  nextCycleIndex: number;
+}
+
+export function resolveNextSingleBondCycleState({
+  netProceeds,
+  actualCycleEndDate,
+  isRebought,
+  nextCycleIndex,
+}: NextSingleBondCycleStateInput) {
+  return {
+    currentInitialInvestment: netProceeds,
+    leftoverCash: new Decimal(0),
+    globalAccumulatedNetInterest: new Decimal(0),
+    currentPurchaseDate: actualCycleEndDate,
+    applySwapDiscountThisCycle: isRebought,
+    cycleIndex: nextCycleIndex,
+  };
+}
