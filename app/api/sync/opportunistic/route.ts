@@ -1,10 +1,13 @@
 import { cookies } from 'next/headers';
 
 import { okJson } from '@/lib/server/http/responses';
+import { createServerLogger } from '@/lib/server/logging';
 import {
   getOpportunisticSyncStatus,
   triggerOpportunisticSync,
 } from '@/lib/server/sync/opportunistic-service';
+
+const logger = createServerLogger('OpportunisticSyncApi');
 
 export async function GET() {
   const cookieStore = await cookies();
@@ -26,7 +29,7 @@ export async function GET() {
     try {
       await triggerOpportunisticSync();
     } catch (error) {
-      console.error('[OpportunisticSync] Background sync failed:', error);
+      logger.error('Background sync failed', error);
     }
   })();
 

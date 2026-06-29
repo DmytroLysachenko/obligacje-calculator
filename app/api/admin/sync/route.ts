@@ -10,6 +10,9 @@ import {
 } from '@/lib/server/admin/service';
 import { readOptionalJsonBody } from '@/lib/server/http/read-json-body';
 import { createUnauthorizedResponse, errorJson, okJson } from '@/lib/server/http/responses';
+import { createServerLogger } from '@/lib/server/logging';
+
+const logger = createServerLogger('AdminSyncApi');
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
@@ -26,7 +29,7 @@ export async function POST(req: NextRequest) {
       return createUnauthorizedResponse();
     }
 
-    console.error('[AdminSync] Sync failed:', error);
+    logger.error('Sync failed', error);
     return errorJson('Sync failed', 'SYNC_FAILED', String(error), { status: 500 });
   }
 }

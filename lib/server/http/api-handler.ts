@@ -1,11 +1,14 @@
 import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
+import { createServerLogger } from '@/lib/server/logging';
+
 import { mapApiErrorToProblemDetails } from './problem-details';
 
 const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
 const RATE_LIMIT_MAX = 100;
 const RATE_LIMIT_WINDOW = 60 * 1000;
+const logger = createServerLogger('ApiHandler');
 
 function checkRateLimit(ip: string): {
   success: boolean;
@@ -80,7 +83,7 @@ export function apiHandler<TContext = { params: Promise<Record<string, never>> }
       const problem = mapApiErrorToProblemDetails(error, {
         includeInternalMessage: process.env.NODE_ENV === 'development',
       });
-      console.error(`[API Error] ${req.method} ${req.nextUrl.pathname}:`, error);
+      logger.error(`${req.method} ${req.nextUrl.pathname}`, error);
 
       return NextResponse.json(problem, { status: problem.status });
     }

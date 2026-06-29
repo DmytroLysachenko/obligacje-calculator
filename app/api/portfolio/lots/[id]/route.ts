@@ -4,11 +4,14 @@ import { InvestmentLotSchema } from '@/features/bond-core/types/portfolio-schema
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
 import { errorJson, okJson } from '@/lib/server/http/responses';
+import { createServerLogger } from '@/lib/server/logging';
 import { deleteOwnerLot, updateOwnerLot } from '@/lib/server/portfolio/commands';
 import {
   portfolioDomainErrorResponse,
   withAuthenticatedPortfolioOwner,
 } from '@/lib/server/portfolio/http';
+
+const logger = createServerLogger('PortfolioLotApi');
 
 export const PATCH = apiHandler<{ params: Promise<{ id: string }> }>(
   async (req: NextRequest, { params }) => {
@@ -23,7 +26,7 @@ export const PATCH = apiHandler<{ params: Promise<{ id: string }> }>(
         const response = portfolioDomainErrorResponse(error);
         if (response) return response;
 
-        console.error('Failed to update lot:', error);
+        logger.error('Failed to update lot', error);
         return errorJson('Database error', 'DATABASE_ERROR', undefined, { status: 500 });
       }
     });
@@ -42,7 +45,7 @@ export const DELETE = apiHandler<{ params: Promise<{ id: string }> }>(
         const response = portfolioDomainErrorResponse(error);
         if (response) return response;
 
-        console.error('Failed to delete lot:', error);
+        logger.error('Failed to delete lot', error);
         return errorJson('Database error', 'DATABASE_ERROR', undefined, { status: 500 });
       }
     });

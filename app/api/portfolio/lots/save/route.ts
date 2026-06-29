@@ -4,11 +4,14 @@ import { z } from 'zod';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
 import { errorJson, okJson } from '@/lib/server/http/responses';
+import { createServerLogger } from '@/lib/server/logging';
 import { createPortfolioLotWithBuyTransaction } from '@/lib/server/portfolio/commands';
 import {
   portfolioDomainErrorResponse,
   withAuthenticatedPortfolioOwner,
 } from '@/lib/server/portfolio/http';
+
+const logger = createServerLogger('PortfolioLotSaveApi');
 
 const SavePortfolioLotPayloadSchema = z.object({
   portfolioId: z.string().uuid(),
@@ -41,7 +44,7 @@ export const POST = apiHandler(async (req: NextRequest) => {
       const response = portfolioDomainErrorResponse(error);
       if (response) return response;
 
-      console.error('Failed to save lot transactionally:', error);
+      logger.error('Failed to save lot transactionally', error);
       return errorJson('Internal error', 'INTERNAL_ERROR', undefined, { status: 500 });
     }
   });

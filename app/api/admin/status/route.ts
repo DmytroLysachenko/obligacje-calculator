@@ -2,6 +2,9 @@ import { NextRequest } from 'next/server';
 
 import { assertAdminSyncAuthorization, getAdminStatusSnapshot } from '@/lib/server/admin/service';
 import { createUnauthorizedResponse, errorJson, okJson } from '@/lib/server/http/responses';
+import { createServerLogger } from '@/lib/server/logging';
+
+const logger = createServerLogger('AdminStatusApi');
 
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('authorization');
@@ -16,7 +19,7 @@ export async function GET(req: NextRequest) {
       return createUnauthorizedResponse();
     }
 
-    console.error('[AdminStatus] Failed to fetch status:', error);
+    logger.error('Failed to fetch status', error);
     return errorJson('Failed to fetch status', 'ADMIN_STATUS_FAILED', undefined, { status: 500 });
   }
 }

@@ -8,6 +8,9 @@ import {
   findBondDefinitionBySymbol,
   findBondSeriesByIdForBond,
 } from '@/lib/server/bonds/offer-terms-repository';
+import { createServerLogger } from '@/lib/server/logging';
+
+const logger = createServerLogger('BondOfferTerms');
 
 export interface ResolvedBondOfferTerms {
   firstYearRate: number;
@@ -100,7 +103,7 @@ export async function resolveBondOfferTerms(
       emissionMonth: activeSeries.emissionMonth,
     };
   } catch (error) {
-    console.error('Failed to resolve bond offer terms:', error);
+    logger.error('Failed to resolve bond offer terms', error);
     return fallback;
   }
 }
@@ -135,7 +138,7 @@ export async function resolveStoredBondLotContext(
       seriesCode: activeSeries?.seriesCode,
     };
   } catch (error) {
-    console.error('Failed to resolve stored bond lot context:', error);
+    logger.error('Failed to resolve stored bond lot context', error);
     return { bondTypeId: null, bondSeriesId: null };
   }
 }

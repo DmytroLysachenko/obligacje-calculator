@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 
 import { auth } from '@/auth';
 import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
+import { createServerLogger } from '@/lib/server/logging';
 import {
   ensureGuestPortfolioOwner,
   findOwnedLotByOwner,
@@ -12,6 +13,7 @@ import {
 
 const GUEST_PORTFOLIO_COOKIE = 'guest_portfolio_owner_id';
 const GUEST_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+const logger = createServerLogger('PortfolioAccess');
 
 export interface PortfolioOwnerContext {
   ownerId: string;
@@ -64,7 +66,7 @@ async function resolveAuthenticatedOwner() {
     };
   } catch (error) {
     if (isMissingSecretError(error) || isMissingAuthTableError(error)) {
-      console.warn('[PortfolioAccess] Auth unavailable, falling back to guest notebook mode.');
+      logger.warn('Auth unavailable, falling back to guest notebook mode');
       return null;
     }
 
@@ -77,9 +79,7 @@ async function ensureGuestOwner(ownerId: string) {
     await ensureGuestPortfolioOwner(ownerId);
   } catch (error) {
     if (isMissingAuthTableError(error)) {
-      console.warn(
-        '[PortfolioAccess] Auth user table missing, using detached guest notebook owner.',
-      );
+      logger.warn('Auth user table missing, using detached guest notebook owner');
       return;
     }
 

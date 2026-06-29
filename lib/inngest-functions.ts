@@ -1,5 +1,8 @@
+import { createServerLogger } from './server/logging';
 import { createDefaultSyncEngine } from './sync/create-sync-engine';
 import { inngest } from './inngest';
+
+const logger = createServerLogger('InngestSync');
 
 export const syncEconomicData = inngest.createFunction(
   {
@@ -14,7 +17,7 @@ export const syncEconomicData = inngest.createFunction(
       try {
         return await engine.runFullSync();
       } catch (error) {
-        console.error('Unified Sync Error:', error);
+        logger.error('Unified sync error', error);
         throw error;
       }
     });
