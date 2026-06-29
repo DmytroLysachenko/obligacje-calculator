@@ -8,10 +8,8 @@ import { SimulationEvent, SimulationEventType } from '../../types/simulation';
 import { withMathGuard } from '../engine-guards';
 
 import { calculatePeriodAccrual } from './accrual';
-import { getHistoricalValue } from './historical-data';
-import { calculateCumulativeInflation, getExpectedInflationForYearIndex } from './inflation';
+import { calculateCumulativeInflation } from './inflation';
 import { normalizeBondInputs } from './input-normalization';
-import { resolveSingleBondRateContext } from './rate-context';
 import { createFinalSingleBondResult, createInitialTimelinePoint } from './result-assembly';
 import { resolveSingleBondCheckpointValues } from './single-bond-accounting';
 import {
@@ -30,6 +28,7 @@ import {
   createRateResetEvent,
   createWithdrawalEvent,
 } from './single-bond-events';
+import { resolveSingleBondPeriodRateState } from './single-bond-period-rate';
 import { applySingleBondTaxRelief } from './single-bond-tax-relief';
 import {
   buildSingleBondTerminalNotes,
@@ -143,7 +142,6 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
     for (let i = 0; i < periods.length; i++) {
       const period = periods[i];
       const events: SimulationEvent[] = [];
-      const monthsIntoCycle = differenceInMonths(period.startDate, currentPurchaseDate);
 
       if (i === 0) {
         events.push(
@@ -156,45 +154,21 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
         );
       }
 
-      const periodYearIndex = Math.floor(differenceInMonths(period.startDate, startDate) / 12);
-      const activeExpectedInflation = getExpectedInflationForYearIndex(
-        expectedInflation,
-        inputs.customInflation,
-        periodYearIndex,
-      );
-
-      const { value: lagInflation, isProjected: isInflationProjected } = getHistoricalValue(
-        period.startDate,
-        'inflation',
-        2,
-        historicalData,
-      );
-      const { value: lagNbp, isProjected: isNbpProjected } = getHistoricalValue(
-        period.startDate,
-        'nbpRate',
-        0,
-        historicalData,
-      );
-
-      const inflationResetYearIndex = Math.max(0, periodYearIndex - 1);
-      const customInfValue = inputs.customInflation?.[inflationResetYearIndex];
-      const customNbpVal = inputs.customNbpRate?.[periodYearIndex];
-
-      const rateContext = resolveSingleBondRateContext({
+      const periodRateState = resolveSingleBondPeriodRateState({
+        periodStartDate: period.startDate,
+        cyclePurchaseDate: currentPurchaseDate,
+        simulationStartDate: startDate,
         bondType,
-        monthsIntoCycle,
         firstYearRate,
-        activeExpectedInflation,
+        expectedInflation,
         expectedNbpRate,
         margin,
         isInflationIndexed,
-        lagInflation,
-        lagNbp,
-        customInflationValue: customInfValue,
-        customNbpValue: customNbpVal,
-        isInflationProjected,
-        isNbpProjected,
+        customInflation: inputs.customInflation,
+        customNbpRate: inputs.customNbpRate,
+        historicalData,
       });
+      const { rateContext } = periodRateState;
       const {
         currentInterestRate,
         rateSource,
@@ -337,9 +311,8 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
           cumulativeInflation,
           isMaturity: period.isMaturity,
           isWithdrawal: period.endDate.getTime() === targetWithdrawalDate.getTime(),
-          inflationReference:
-            customInfValue ?? (lagInflation !== undefined ? lagInflation : activeExpectedInflation),
-          nbpReference: customNbpVal ?? (lagNbp !== undefined ? lagNbp : expectedNbpRate),
+          inflationReference: periodRateState.inflationReference,
+          nbpReference: periodRateState.nbpReference,
           events,
         }),
       );
