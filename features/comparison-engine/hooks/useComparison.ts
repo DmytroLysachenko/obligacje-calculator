@@ -23,12 +23,9 @@ import {
   DEFAULT_SCENARIO_A,
   DEFAULT_SCENARIO_B,
   getComparisonDirtyState,
-  isComparisonMacroConfigKey,
   type ScenarioOverride,
   type SharedComparisonConfig,
   splitComparisonEnvelope,
-  updateScenarioBondType,
-  updateSharedComparisonConfig,
 } from '../lib/comparison-calculator-state';
 import {
   buildPersistedComparisonState,
@@ -37,9 +34,14 @@ import {
   restoreComparisonState,
 } from '../lib/comparison-persistence';
 import {
-  setScenarioCustomHorizonMonths,
-  toggleScenarioCustomHorizon,
-} from '../lib/comparison-scenario-state';
+  applyScenarioBondTypeUpdate,
+  applyScenarioCustomHorizonEnabled,
+  applyScenarioCustomHorizonMonths,
+  applyScenarioOverrideUpdate,
+  applySharedComparisonConfigUpdate,
+  type ComparisonUpdateValue,
+  isSharedComparisonMacroUpdate,
+} from '../lib/comparison-update-actions';
 
 export function useComparison() {
   const { definitions } = useBondDefinitions();
@@ -118,43 +120,34 @@ export function useComparison() {
     }
   }, [inputsA, inputsB, post, scenarioA, scenarioB, sharedConfig]);
 
-  const updateSharedConfig = (
-    key: keyof SharedComparisonConfig,
-    value: string | number | boolean | undefined,
-  ) => {
+  const updateSharedConfig = (key: keyof SharedComparisonConfig, value: ComparisonUpdateValue) => {
     setIsDirty(true);
-    if (isComparisonMacroConfigKey(key)) {
+    if (isSharedComparisonMacroUpdate(key)) {
       hasTouchedMacroAssumptions.current = true;
     }
     setSharedConfig((prev) => {
-      return updateSharedComparisonConfig(prev, key, value);
+      return applySharedComparisonConfigUpdate(prev, key, value);
     });
   };
 
-  const updateScenarioA = (
-    key: keyof ScenarioOverride,
-    value: string | number | boolean | undefined,
-  ) => {
+  const updateScenarioA = (key: keyof ScenarioOverride, value: ComparisonUpdateValue) => {
     setIsDirty(true);
-    setScenarioA((prev) => ({ ...prev, [key]: value }));
+    setScenarioA((prev) => applyScenarioOverrideUpdate(prev, key, value));
   };
 
-  const updateScenarioB = (
-    key: keyof ScenarioOverride,
-    value: string | number | boolean | undefined,
-  ) => {
+  const updateScenarioB = (key: keyof ScenarioOverride, value: ComparisonUpdateValue) => {
     setIsDirty(true);
-    setScenarioB((prev) => ({ ...prev, [key]: value }));
+    setScenarioB((prev) => applyScenarioOverrideUpdate(prev, key, value));
   };
 
   const setBondTypeA = (type: BondType) => {
     setIsDirty(true);
-    setScenarioA((prev) => updateScenarioBondType(prev, type));
+    setScenarioA((prev) => applyScenarioBondTypeUpdate(prev, type));
   };
 
   const setBondTypeB = (type: BondType) => {
     setIsDirty(true);
-    setScenarioB((prev) => updateScenarioBondType(prev, type));
+    setScenarioB((prev) => applyScenarioBondTypeUpdate(prev, type));
   };
 
   useEffect(() => {
@@ -231,7 +224,9 @@ export function useComparison() {
   const setScenarioACustomHorizonEnabled = useCallback(
     (enabled: boolean) => {
       setIsDirty(true);
-      setScenarioA((previous) => toggleScenarioCustomHorizon(sharedConfig, previous, enabled));
+      setScenarioA((previous) =>
+        applyScenarioCustomHorizonEnabled(sharedConfig, previous, enabled),
+      );
     },
     [sharedConfig],
   );
@@ -239,7 +234,9 @@ export function useComparison() {
   const setScenarioBCustomHorizonEnabled = useCallback(
     (enabled: boolean) => {
       setIsDirty(true);
-      setScenarioB((previous) => toggleScenarioCustomHorizon(sharedConfig, previous, enabled));
+      setScenarioB((previous) =>
+        applyScenarioCustomHorizonEnabled(sharedConfig, previous, enabled),
+      );
     },
     [sharedConfig],
   );
@@ -247,7 +244,7 @@ export function useComparison() {
   const setScenarioACustomHorizonMonths = useCallback(
     (value: number | undefined) => {
       setIsDirty(true);
-      setScenarioA((previous) => setScenarioCustomHorizonMonths(sharedConfig, previous, value));
+      setScenarioA((previous) => applyScenarioCustomHorizonMonths(sharedConfig, previous, value));
     },
     [sharedConfig],
   );
@@ -255,7 +252,7 @@ export function useComparison() {
   const setScenarioBCustomHorizonMonths = useCallback(
     (value: number | undefined) => {
       setIsDirty(true);
-      setScenarioB((previous) => setScenarioCustomHorizonMonths(sharedConfig, previous, value));
+      setScenarioB((previous) => applyScenarioCustomHorizonMonths(sharedConfig, previous, value));
     },
     [sharedConfig],
   );
