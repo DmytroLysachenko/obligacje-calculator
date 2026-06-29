@@ -14,8 +14,8 @@ import { logClientError } from '@/shared/lib/client-logger';
 import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
 
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
-import { BondInputs, BondType } from '../../bond-core/types';
-import { BondComparisonCalculationEnvelope } from '../../bond-core/types/scenarios';
+import { type BondInputs,BondType } from '../../bond-core/types';
+import type { BondComparisonCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { runComparisonCalculation } from '../lib/comparison-actions';
 import {
   buildDefaultSharedConfig,
@@ -31,22 +31,15 @@ import {
   updateSharedComparisonConfig,
 } from '../lib/comparison-calculator-state';
 import {
-  sanitizeScenarioOverride,
+  buildPersistedComparisonState,
+  COMPARISON_CALCULATOR_STORAGE_KEY,
+  type PersistedComparisonState,
+  restoreComparisonState,
+} from '../lib/comparison-persistence';
+import {
   setScenarioCustomHorizonMonths,
   toggleScenarioCustomHorizon,
 } from '../lib/comparison-scenario-state';
-
-const STORAGE_KEY = 'obligacje.comparison-calculator.v3';
-
-interface PersistedComparisonState {
-  sharedConfig: SharedComparisonConfig;
-  scenarioA: ScenarioOverride;
-  scenarioB: ScenarioOverride;
-  comparisonEnvelope: BondComparisonCalculationEnvelope | null;
-  committedInputsA: BondInputs | null;
-  committedInputsB: BondInputs | null;
-  isDirty: boolean;
-}
 
 export function useComparison() {
   const { definitions } = useBondDefinitions();
@@ -170,17 +163,20 @@ export function useComparison() {
     }
 
     const timer = window.setTimeout(() => {
-      const restoredState = loadPersistedCalculatorState<PersistedComparisonState>(STORAGE_KEY);
+      const restoredState = loadPersistedCalculatorState<PersistedComparisonState>(
+        COMPARISON_CALCULATOR_STORAGE_KEY,
+      );
       hasRestoredState.current = true;
-      if (restoredState) {
-        restoredFromPersistence.current = true;
-        setSharedConfig(restoredState.sharedConfig);
-        setScenarioA(sanitizeScenarioOverride(restoredState.sharedConfig, restoredState.scenarioA));
-        setScenarioB(sanitizeScenarioOverride(restoredState.sharedConfig, restoredState.scenarioB));
-        setComparisonEnvelope(restoredState.comparisonEnvelope ?? null);
-        setCommittedInputsA(restoredState.committedInputsA ?? null);
-        setCommittedInputsB(restoredState.committedInputsB ?? null);
-        setIsDirty(restoredState.isDirty ?? true);
+      const restored = restoreComparisonState(restoredState);
+      if (restored) {
+        restoredFromPersistence.current = restored.restoredFromPersistence;
+        setSharedConfig(restored.sharedConfig);
+        setScenarioA(restored.scenarioA);
+        setScenarioB(restored.scenarioB);
+        setComparisonEnvelope(restored.comparisonEnvelope);
+        setCommittedInputsA(restored.committedInputsA);
+        setCommittedInputsB(restored.committedInputsB);
+        setIsDirty(restored.isDirty);
       }
 
       setIsPersistenceReady(true);
@@ -209,15 +205,18 @@ export function useComparison() {
       return;
     }
 
-    savePersistedCalculatorState(STORAGE_KEY, {
-      sharedConfig,
-      scenarioA: sanitizeScenarioOverride(sharedConfig, scenarioA),
-      scenarioB: sanitizeScenarioOverride(sharedConfig, scenarioB),
-      comparisonEnvelope,
-      committedInputsA,
-      committedInputsB,
-      isDirty: displayIsDirty,
-    });
+    savePersistedCalculatorState(
+      COMPARISON_CALCULATOR_STORAGE_KEY,
+      buildPersistedComparisonState({
+        sharedConfig,
+        scenarioA,
+        scenarioB,
+        comparisonEnvelope,
+        committedInputsA,
+        committedInputsB,
+        isDirty: displayIsDirty,
+      }),
+    );
   }, [
     committedInputsA,
     committedInputsB,

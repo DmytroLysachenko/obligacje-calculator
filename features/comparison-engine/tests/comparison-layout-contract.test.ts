@@ -13,6 +13,7 @@ const files = {
   tableParts: 'features/comparison-engine/components/comparison-table/ComparisonTableParts.tsx',
   tableModel: 'features/comparison-engine/lib/comparison-table-model.ts',
   calculatorState: 'features/comparison-engine/lib/comparison-calculator-state.ts',
+  persistence: 'features/comparison-engine/lib/comparison-persistence.ts',
   hook: 'features/comparison-engine/hooks/useComparison.ts',
 } as const;
 
@@ -52,11 +53,14 @@ describe('comparison layout contract', () => {
 
   it('invalidates old persisted comparison envelopes after rollover and chart fixes', () => {
     const hook = read(files.hook);
+    const persistence = read(files.persistence);
 
-    expect(hook).toContain("const STORAGE_KEY = 'obligacje.comparison-calculator.v3';");
-    expect(hook).not.toContain("const STORAGE_KEY = 'obligacje.comparison-calculator.v1';");
-    expect(hook).not.toContain("const STORAGE_KEY = 'obligacje.comparison-calculator.v2';");
-    expect(hook).toContain('committedInputsA: BondInputs | null;');
+    expect(persistence).toContain(
+      "COMPARISON_CALCULATOR_STORAGE_KEY = 'obligacje.comparison-calculator.v3';",
+    );
+    expect(persistence).not.toContain("'obligacje.comparison-calculator.v1'");
+    expect(persistence).not.toContain("'obligacje.comparison-calculator.v2'");
+    expect(persistence).toContain('committedInputsA: BondInputs | null;');
     expect(hook).toContain('setCommittedInputsA(inputsA);');
     expect(hook).toContain('setCommittedInputsB(inputsB);');
   });
