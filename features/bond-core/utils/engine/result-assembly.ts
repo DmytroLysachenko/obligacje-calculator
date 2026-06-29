@@ -114,7 +114,7 @@ export function createFinalSingleBondResult({
   };
 }
 
-export function calculateRealAnnualizedReturn(
+function calculateRealAnnualizedReturn(
   totalHorizon: number,
   totalInvested: Decimal,
   lastPoint: RegularTimelinePoint,

@@ -11,7 +11,7 @@ export type SyncMode =
   | 'market-history-sync'
   | 'metadata-seed';
 
-export const ADMIN_SYNC_MODES = [
+const ADMIN_SYNC_MODES = [
   'full-sync',
   'metadata-seed',
   'market-history-seed',

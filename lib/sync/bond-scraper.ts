@@ -143,7 +143,7 @@ export function parseOfferFromGovPage(
   };
 }
 
-export function parseOfferFromObligacjePage(
+function parseOfferFromObligacjePage(
   html: string,
   fallback: ScrapedBondRate,
 ): ScrapedBondRate | null {

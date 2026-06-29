@@ -1,6 +1,5 @@
 import { NewSyncRun } from '@/db/schema';
 import {
-  ensureSyncRunsSchemaRepository,
   findLatestSyncRunForSeries,
   findRecentSyncRuns,
   insertSyncRun,
@@ -44,10 +43,6 @@ function isMissingSyncRunsTableError(error: unknown) {
     maybeDbError.cause?.code === '42P01' ||
     error.message.includes('relation "sync_runs" does not exist')
   );
-}
-
-export async function ensureSyncRunsSchema() {
-  return ensureSyncRunsSchemaRepository();
 }
 
 export async function recordSyncRun(input: RecordSyncRunInput) {
