@@ -16,14 +16,16 @@ import {
   OptimizerReadyState,
 } from '@/features/optimizer/components/OptimizerSections';
 import {
+  applyOptimizerClientInputUpdate,
+  buildOptimizerTaxStrategyLabels,
+  getOptimizerClientViewState,
+} from '@/features/optimizer/lib/optimizer-client-state';
+import {
   applyOptimizerMacroDefaults,
   buildDefaultOptimizerInputs,
   buildOptimizerReadySteps,
-  formatOptimizerHorizonYears,
-  isOptimizerMacroKey,
   type OptimizerInputKey,
   type OptimizerInputs,
-  updateOptimizerInput,
 } from '@/features/optimizer/lib/optimizer-state';
 import { useAppI18n } from '@/i18n/client';
 import { RecalculateButton } from '@/shared/components/feedback/RecalculateButton';
@@ -65,11 +67,9 @@ export default function BondOptimizerClient() {
     );
   }, [macroDefaults]);
 
-  const results = envelope?.result;
-  const leadingScenario = results?.highestPayout;
-  const horizonYears = useMemo(
-    () => formatOptimizerHorizonYears(inputs.investmentHorizonMonths),
-    [inputs.investmentHorizonMonths],
+  const { results, leadingScenario, horizonYears, hasResults } = useMemo(
+    () => getOptimizerClientViewState({ inputs, envelope }),
+    [envelope, inputs],
   );
   const formatCurrency = React.useCallback(
     (value: number) => currencyFormatter.format(value),
@@ -80,19 +80,21 @@ export default function BondOptimizerClient() {
     [percentFormatter],
   );
   const taxStrategyLabels: Record<TaxStrategy, string> = useMemo(
-    () => ({
-      [TaxStrategy.STANDARD]: t('optimizer_page.tax_strategies.standard'),
-      [TaxStrategy.IKE]: t('optimizer_page.tax_strategies.ike'),
-      [TaxStrategy.IKZE]: t('optimizer_page.tax_strategies.ikze'),
-    }),
+    () =>
+      buildOptimizerTaxStrategyLabels({
+        standard: t('optimizer_page.tax_strategies.standard'),
+        ike: t('optimizer_page.tax_strategies.ike'),
+        ikze: t('optimizer_page.tax_strategies.ikze'),
+      }),
     [t],
   );
 
   const updateInput = (key: OptimizerInputKey, value: string | number | boolean) => {
-    if (isOptimizerMacroKey(key)) {
+    const update = applyOptimizerClientInputUpdate(inputs, key, value);
+    if (update.touchedMacroAssumptions) {
       hasTouchedMacroAssumptions.current = true;
     }
-    setInputs((prev) => updateOptimizerInput(prev, key, value));
+    setInputs(update.inputs);
     setIsDirty(true);
   };
 
@@ -116,7 +118,7 @@ export default function BondOptimizerClient() {
       icon={<TrendingUp className="h-8 w-8" />}
       isCalculating={isCalculating}
       isDirty={isDirty}
-      hasResults={!!results}
+      hasResults={hasResults}
     >
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
         <aside className="space-y-6 xl:col-span-4">
@@ -242,7 +244,7 @@ export default function BondOptimizerClient() {
       <RecalculateButton
         isDirty={isDirty}
         loading={isCalculating}
-        hasResults={!!results}
+        hasResults={hasResults}
         onClick={handleCalculate}
       />
     </CalculatorPageShell>

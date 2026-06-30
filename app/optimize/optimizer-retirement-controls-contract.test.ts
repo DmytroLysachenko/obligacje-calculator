@@ -138,7 +138,10 @@ describe('optimizer and retirement control surface contracts', () => {
     expectContains(disclosure, 'border-l-2 border-border pl-3 pt-0.5 text-muted-foreground');
     expectContains(notice, 'border-l-2 px-4 py-3 text-sm leading-6');
     expectContains(notice, 'title?: React.ReactNode;');
-    expectContains(designSystem, "const optimizer = read('app/optimize/BondOptimizerClient.tsx');");
+    expectContains(
+      designSystem,
+      "const optimizerInputPanel = read('features/optimizer/components/OptimizerInputPanel.tsx');",
+    );
     expectContains(designSystem, "expectUsesShared(source, 'FormSelect');");
   });
 });
