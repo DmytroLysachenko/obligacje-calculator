@@ -25,14 +25,16 @@ describe('notebook workflow action contract', () => {
 
   it('keeps active portfolio selection separate from detail navigation', () => {
     const source = read('features/notebook/components/NotebookContainer.tsx');
+    const containerHook = read('features/notebook/hooks/useNotebookContainerWorkspace.ts');
     const hook = read('features/notebook/hooks/useNotebookWorkspaceActions.ts');
 
-    expect(source).toContain(
+    expect(source).toContain("from '@/features/notebook/hooks/useNotebookContainerWorkspace'");
+    expect(containerHook).toContain(
       'const [detailPortfolioId, setDetailPortfolioId] = useState<string | null>(null);',
     );
-    expect(source).toContain('setSelectedPortfolioId(portfolio.id);');
-    expect(source).toContain('persistSelectedPortfolioId(portfolio.id);');
-    expect(source).toContain('setDetailPortfolioId(portfolio.id);');
+    expect(containerHook).toContain('setSelectedPortfolioId(portfolio.id);');
+    expect(containerHook).toContain('persistSelectedPortfolioId(portfolio.id);');
+    expect(containerHook).toContain('setDetailPortfolioId(portfolio.id);');
     expect(hook).toContain('clearDetailPortfolio(portfolio.id);');
   });
 

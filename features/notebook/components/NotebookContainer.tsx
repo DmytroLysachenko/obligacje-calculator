@@ -1,8 +1,9 @@
 'use client';
 import { BookOpen, RefreshCcw } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { useNotebookContainerWorkspace } from '@/features/notebook/hooks/useNotebookContainerWorkspace';
 import { useNotebookWorkspaceActions } from '@/features/notebook/hooks/useNotebookWorkspaceActions';
 import { buildNotebookWorkspaceViewModel } from '@/features/notebook/lib/notebook-workspace-model';
 import { useAppI18n } from '@/i18n/client';
@@ -15,8 +16,6 @@ import { MetricStrip } from '@/shared/components/results/MetricStrip';
 import { useDateFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 import { useWorkspacePortfolios } from '@/shared/hooks/useWorkspacePortfolios';
-import { persistSelectedPortfolioId } from '@/shared/lib/workspace/notebook-state';
-import { UserPortfolio } from '@/shared/types/portfolio';
 
 import { NotebookPortfolioListSection, NotebookScopeNote } from './NotebookContainerPanels';
 import { EmptyPortfolioState, NotebookLoadingState } from './NotebookStates';
@@ -25,9 +24,6 @@ import { WorkspaceActionStrip } from './WorkspaceActionStrip';
 import { WorkspaceStatusCard } from './WorkspaceStatusCard';
 export const NotebookContainer: React.FC = () => {
   const { t, locale: language } = useAppI18n();
-  const [portfolioPendingDelete, setPortfolioPendingDelete] = useState<UserPortfolio | null>(null);
-  const [detailPortfolioId, setDetailPortfolioId] = useState<string | null>(null);
-  const importRef = useRef<HTMLInputElement | null>(null);
   const { canManageWorkspace, isGuestWorkspace } = usePortfolioAccess();
   const dateFormatter = useDateFormatter(language);
   const {
@@ -40,6 +36,19 @@ export const NotebookContainer: React.FC = () => {
     upsertPortfolio: mergePortfolioIntoState,
     removePortfolio: removePortfolioFromState,
   } = useWorkspacePortfolios();
+  const {
+    portfolioPendingDelete,
+    setPortfolioPendingDelete,
+    detailPortfolioId,
+    importRef,
+    clearDetailPortfolio,
+    handleImportClick,
+    handleOpenPortfolio,
+    handleClosePortfolioDetails,
+  } = useNotebookContainerWorkspace({
+    fetchPortfolios,
+    setSelectedPortfolioId,
+  });
   const {
     error,
     setError,
@@ -70,9 +79,7 @@ export const NotebookContainer: React.FC = () => {
     mergePortfolioIntoState,
     removePortfolioFromState,
     setSelectedPortfolioId,
-    clearDetailPortfolio: (portfolioId) => {
-      setDetailPortfolioId((current) => (current === portfolioId ? null : current));
-    },
+    clearDetailPortfolio,
   });
   useEffect(() => {
     if (requestError) {
@@ -95,24 +102,13 @@ export const NotebookContainer: React.FC = () => {
       t,
     });
 
-  const handleImportClick = () => {
-    importRef.current?.click();
-  };
-  const handleOpenPortfolio = (portfolio: UserPortfolio) => {
-    setSelectedPortfolioId(portfolio.id);
-    persistSelectedPortfolioId(portfolio.id);
-    setDetailPortfolioId(portfolio.id);
-  };
   if (detailPortfolioId && canManageWorkspace) {
     return detailPortfolio ? (
       <PortfolioDetails
         portfolio={detailPortfolio}
         onDelete={handleDeletePortfolio}
         onPortfolioUpdate={mergePortfolioIntoState}
-        onBack={() => {
-          void fetchPortfolios();
-          setDetailPortfolioId(null);
-        }}
+        onBack={handleClosePortfolioDetails}
       />
     ) : (
       <NotebookLoadingState />
