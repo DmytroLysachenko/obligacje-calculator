@@ -8,6 +8,7 @@ const root = process.cwd();
 const files = {
   optimizer: 'app/optimize/BondOptimizerClient.tsx',
   optimizerInputPanel: 'features/optimizer/components/OptimizerInputPanel.tsx',
+  optimizerResultsPanel: 'features/optimizer/components/OptimizerResultsPanel.tsx',
   optimizerSections: 'features/optimizer/components/OptimizerSections.tsx',
   retirement: 'features/retirement/components/RetirementInputsPanel.tsx',
   advancedDisclosure: 'shared/components/forms/AdvancedAssumptionsDisclosure.tsx',
@@ -43,6 +44,7 @@ describe('optimizer and retirement control surface contracts', () => {
   it('keeps optimizer advanced controls on shared disclosure and form notices', () => {
     const source = read(files.optimizer);
     const inputPanel = read(files.optimizerInputPanel);
+    const resultsPanel = read(files.optimizerResultsPanel);
 
     expectContains(
       source,
@@ -54,7 +56,7 @@ describe('optimizer and retirement control surface contracts', () => {
       "import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';",
     );
     expectContains(
-      source,
+      resultsPanel,
       "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';",
     );
     expectContains(inputPanel, '<AdvancedAssumptionsDisclosure');
@@ -68,6 +70,7 @@ describe('optimizer and retirement control surface contracts', () => {
     );
     expectContains(inputPanel, "description={t('optimizer_page.macro_scope.indexed')}");
     expectContains(inputPanel, "description={t('optimizer_page.macro_scope.floating')}");
+    expectContains(resultsPanel, '<FormInlineNotice');
 
     expectNoFragments(source, [
       "from '@/components/ui/accordion'",
@@ -82,17 +85,22 @@ describe('optimizer and retirement control surface contracts', () => {
 
   it('keeps optimizer result support cards flattened after the input pass', () => {
     const source = read(files.optimizer);
+    const resultsPanel = read(files.optimizerResultsPanel);
     const sections = read(files.optimizerSections);
 
-    expectContains(source, '<OptimizerLeadingDetailSection');
-    expectContains(source, '<OptimizerRankedOutcomesSection');
+    expectContains(source, '<OptimizerResultsPanel');
+    expectContains(resultsPanel, '<OptimizerLeadingDetailSection');
+    expectContains(resultsPanel, '<OptimizerRankedOutcomesSection');
     expectContains(sections, 'border-l-2 border-border px-4 py-3 text-right');
     expectContains(sections, 'title={`${leadingScenario.name} (${leadingScenario.bondType})`}');
     expectContains(sections, 'description={leadingScenario.scenarioReason}');
     expectContains(sections, 'buildOptimizerLeadingDetailMetrics');
     expectContains(sections, 'buildOptimizerRankedOutcomeRows');
-    expectContains(source, "description={t('optimizer_page.guardrail_points.assumption_shift')}");
-    expectContains(source, "description={t('optimizer_page.guardrail_points.suitability')}");
+    expectContains(
+      resultsPanel,
+      "description={t('optimizer_page.guardrail_points.assumption_shift')}",
+    );
+    expectContains(resultsPanel, "description={t('optimizer_page.guardrail_points.suitability')}");
 
     expectNoFragments(source, [
       'rounded-lg bg-muted/35 px-4 py-3 text-right',
