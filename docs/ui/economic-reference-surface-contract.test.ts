@@ -31,6 +31,10 @@ function expectNoFragments(source: string, fragments: readonly string[]) {
   }
 }
 
+function expectTransparentCompactNotice(source: string) {
+  expect(source).toMatch(/<Notice[\s\S]*?\bcompact\b[\s\S]*?className="border-0 bg-transparent px-0"/);
+}
+
 describe('economic reference surface contracts', () => {
   it('keeps reference hero metrics spaced without cell-table density', () => {
     const source = read(files.hero);
@@ -78,7 +82,7 @@ describe('economic reference surface contracts', () => {
   it('keeps fallback status inline rather than alert-box-like', () => {
     const source = read(files.frame);
 
-    expectContains(source, 'compact className="border-0 bg-transparent px-0"');
+    expectTransparentCompactNotice(source);
     expectContains(source, 'flex flex-wrap items-start gap-x-4 gap-y-1.5');
     expectContains(source, 'inline-flex items-center gap-2 border-l-2 pl-3 text-xs font-semibold');
     expectContains(source, 'max-w-4xl text-sm leading-6 text-muted-foreground');

@@ -34,6 +34,10 @@ function expectNoFragments(source: string, fragments: readonly string[]) {
   }
 }
 
+function expectTransparentCompactNotice(source: string) {
+  expect(source).toMatch(/<Notice[\s\S]*?\bcompact\b[\s\S]*?className="border-0 bg-transparent px-0"/);
+}
+
 describe('screenshot regression contracts', () => {
   it('keeps education sections spaced after the flattened concept card pass', () => {
     const source = read(files.education);
@@ -114,7 +118,7 @@ describe('screenshot regression contracts', () => {
 
     expectContains(source, "import { Notice } from '@/shared/components/feedback/Notice';");
     expectContains(source, "tone={fallbackTone === 'warning' ? 'warning' : 'success'}");
-    expectContains(source, 'compact className="border-0 bg-transparent px-0"');
+    expectTransparentCompactNotice(source);
     expectContains(source, 'gap-x-4 gap-y-1.5');
     expectContains(source, 'inline-flex items-center gap-2 border-l-2 pl-3 text-xs font-semibold');
     expectContains(source, 'max-w-4xl text-sm leading-6 text-muted-foreground');

@@ -34,6 +34,10 @@ function expectNoFragments(source: string, fragments: readonly string[]) {
   }
 }
 
+function expectTransparentCompactNotice(source: string) {
+  expect(source).toMatch(/<Notice[\s\S]*?\bcompact\b[\s\S]*?className="border-0 bg-transparent px-0"/);
+}
+
 describe('final layout regression contracts', () => {
   it('keeps education page sections separated enough to scan', () => {
     const page = read(files.education);
@@ -133,7 +137,7 @@ describe('final layout regression contracts', () => {
   it('keeps economic fallback notices inline instead of boxed alerts', () => {
     const source = read(files.economicFrame);
 
-    expectContains(source, 'compact className="border-0 bg-transparent px-0"');
+    expectTransparentCompactNotice(source);
     expectContains(source, 'flex flex-wrap items-start gap-x-4 gap-y-1.5');
     expectContains(source, 'inline-flex items-center gap-2 border-l-2 pl-3 text-xs font-semibold');
     expectContains(source, 'max-w-4xl text-sm leading-6 text-muted-foreground');
