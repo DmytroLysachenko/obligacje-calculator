@@ -11,6 +11,7 @@ const files = {
   sidebarUtilities: 'shared/components/chrome/SidebarUtilityGroup.tsx',
   sidebarSettings: 'shared/components/chrome/SidebarSettingsUtility.tsx',
   marketAssumptions: 'shared/components/MarketAssumptionsForm.tsx',
+  marketAssumptionControls: 'shared/components/market-assumptions/AssumptionSectionControls.tsx',
   regularSummary: 'features/regular-investment/components/RegularInvestmentResultsSummary.tsx',
   recentLots: 'shared/components/results/RecentLotList.tsx',
   economicFrame: 'shared/components/charts/ReferenceChartFrame.tsx',
@@ -35,7 +36,9 @@ function expectNoFragments(source: string, fragments: readonly string[]) {
 }
 
 function expectTransparentCompactNotice(source: string) {
-  expect(source).toMatch(/<Notice[\s\S]*?\bcompact\b[\s\S]*?className="border-0 bg-transparent px-0"/);
+  expect(source).toMatch(
+    /<Notice[\s\S]*?\bcompact\b[\s\S]*?className="border-0 bg-transparent px-0"/,
+  );
 }
 
 describe('final layout regression contracts', () => {
@@ -70,19 +73,21 @@ describe('final layout regression contracts', () => {
   });
 
   it('keeps shared controls unified instead of page-local selector variants', () => {
-    const source = read(files.marketAssumptions);
+    const form = read(files.marketAssumptions);
+    const controls = read(files.marketAssumptionControls);
 
+    expectContains(form, "from '@/shared/components/market-assumptions/MarketAssumptionSections';");
     expectContains(
-      source,
+      controls,
       "import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';",
     );
-    expectContains(source, 'function ProjectionModeButtons');
-    expectContains(source, 'function AssumptionHeader');
-    expectContains(source, 'function CurrentAssumptionValue');
-    expectContains(source, 'className="grid-cols-3"');
-    expectContains(source, 'border-l border-border pl-4 text-right');
+    expectContains(controls, 'function ProjectionModeButtons');
+    expectContains(controls, 'function AssumptionHeader');
+    expectContains(controls, 'function CurrentAssumptionValue');
+    expectContains(controls, 'className="grid-cols-3"');
+    expectContains(controls, 'border-l border-border pl-4 text-right');
 
-    expectNoFragments(source, [
+    expectNoFragments(`${form}\n${controls}`, [
       "import { Button } from '@/components/ui/button';",
       'inline-flex rounded-lg bg-muted/35 p-1',
       'grid grid-cols-3 gap-2',
