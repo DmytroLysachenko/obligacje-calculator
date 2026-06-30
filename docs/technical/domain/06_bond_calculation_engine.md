@@ -11,6 +11,7 @@ The engine has been refactored into focused, specialized modules following the 2
 - **`engine/input-normalization.ts`**: Standardizes and validates input dates and parameters.
 - **`engine/timeline-builder.ts`**: Generates the discrete periods for the bond lifecycle.
 - **`engine/accrual.ts`**: Pure logic for interest accrual within a single period.
+- **`engine/single-bond-period-step.ts`**: Single-bond period orchestration for rate state, reset/accrual events, and accrual inputs before tax/checkpoint settlement.
 - **`engine/rate-resolution.ts`**: Logic for determining the annual interest rate for a given period, including support for historical inflation lookups with a 2-month lag.
 - **`engine/tax-settlement.ts`**: Handles the "Belka" tax calculation with official rounding rules.
 - **`engine/redemption.ts`**: Implements early withdrawal fees and fee capping.

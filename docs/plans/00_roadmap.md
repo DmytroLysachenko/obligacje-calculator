@@ -25,10 +25,12 @@ The recovery work already completed has materially changed the product:
   `components`, `hooks`, `lib`, `types`, `constants`, and `tests`
 - large calculator surfaces have been split further: single timeline rows now
   have mobile/desktop render components, comparison chart modeling is separate
-  from result metrics, and notebook workspace view state is pure model output
+  from result metrics, optimizer result rendering is a feature component, and
+  notebook workspace/detail state is split between pure model output and a
+  focused container hook
 - single-bond and regular-investment engines now delegate more orchestration
-  setup to focused helpers while keeping calculation truth covered by engine
-  and golden tests
+  setup to focused helpers, including single-bond period rate/accrual setup,
+  while keeping calculation truth covered by engine and golden tests
 - feature/client error logging goes through `shared/lib/client-logger.ts`;
   server/API logging goes through `lib/server/logging.ts`, sync logging goes
   through `lib/sync/sync-logger.ts`, and the global error boundary remains a
