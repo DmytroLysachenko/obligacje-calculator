@@ -7,7 +7,6 @@ import { BondInputs, CalculationResult, YearlyTimelinePoint } from '../../types'
 import { SimulationEvent, SimulationEventType } from '../../types/simulation';
 import { withMathGuard } from '../engine-guards';
 
-import { calculatePeriodAccrual } from './accrual';
 import { calculateCumulativeInflation } from './inflation';
 import { normalizeBondInputs } from './input-normalization';
 import { createFinalSingleBondResult, createInitialTimelinePoint } from './result-assembly';
@@ -25,14 +24,12 @@ import {
   createCyclePurchaseEvent,
   createEarlyRedemptionFeeEvent,
   createFinalTaxSettlementEvent,
-  createInterestAccrualEvent,
   createMaturityEvent,
   createPayoutEvent,
   createPeriodicTaxSettlementEvent,
-  createRateResetEvent,
   createWithdrawalEvent,
 } from './single-bond-events';
-import { resolveSingleBondPeriodRateState } from './single-bond-period-rate';
+import { resolveSingleBondPeriodAccrualStep } from './single-bond-period-step';
 import { applySingleBondTaxRelief } from './single-bond-tax-relief';
 import {
   buildSingleBondTerminalNotes,
@@ -145,6 +142,22 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
 
     for (let i = 0; i < periods.length; i++) {
       const period = periods[i];
+      const periodStep = resolveSingleBondPeriodAccrualStep({
+        period,
+        cyclePurchaseDate: currentPurchaseDate,
+        simulationStartDate: startDate,
+        bondType,
+        firstYearRate,
+        expectedInflation,
+        expectedNbpRate,
+        margin,
+        isInflationIndexed,
+        customInflation: inputs.customInflation,
+        customNbpRate: inputs.customNbpRate,
+        historicalData,
+        currentNominalValue,
+        payoutFrequency,
+      });
       const events: SimulationEvent[] = [];
 
       if (i === 0) {
@@ -157,22 +170,9 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
           }),
         );
       }
+      events.push(...periodStep.events);
 
-      const periodRateState = resolveSingleBondPeriodRateState({
-        periodStartDate: period.startDate,
-        cyclePurchaseDate: currentPurchaseDate,
-        simulationStartDate: startDate,
-        bondType,
-        firstYearRate,
-        expectedInflation,
-        expectedNbpRate,
-        margin,
-        isInflationIndexed,
-        customInflation: inputs.customInflation,
-        customNbpRate: inputs.customNbpRate,
-        historicalData,
-      });
-      const { rateContext } = periodRateState;
+      const { periodRateState, rateContext } = periodStep;
       const {
         currentInterestRate,
         rateSource,
@@ -181,37 +181,12 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
         usedProjectedRate,
       } = rateContext;
 
-      if (rateContext.shouldRecordRateReset && rateContext.rateResetDescription) {
-        events.push(
-          createRateResetEvent(
-            period.startDate,
-            rateContext.rateResetDescription,
-            currentInterestRate,
-          ),
-        );
-      }
-
       if (usedProjectedRate) {
         dataQualityFlags.add('projected_rate_segment');
       }
 
-      const accrual = calculatePeriodAccrual(
-        currentNominalValue,
-        currentInterestRate,
-        period.daysHeld,
-        period.daysInPeriod,
-        bondType,
-        payoutFrequency,
-        period.startDate,
-      );
-
-      const interestEarned = accrual.interestEarned;
-      const previousNominalValue = new Decimal(currentNominalValue);
+      const { interestEarned, previousNominalValue } = periodStep;
       totalInterestEarnedSoFar = totalInterestEarnedSoFar.plus(interestEarned);
-
-      if (interestEarned.gt(0)) {
-        events.push(createInterestAccrualEvent(period.endDate, interestEarned));
-      }
 
       let taxDeducted = new Decimal(0);
       if (shouldWithholdPeriodicTax(taxStrategy, isCapitalized)) {
