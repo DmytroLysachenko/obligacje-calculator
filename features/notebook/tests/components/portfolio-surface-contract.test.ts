@@ -10,6 +10,7 @@ const files = {
   details: 'features/notebook/components/PortfolioDetails.tsx',
   overviewHeader: 'features/notebook/components/portfolio-details/PortfolioOverviewHeader.tsx',
   lotsTab: 'features/notebook/components/portfolio-details/PortfolioLotsTab.tsx',
+  lotsTabSections: 'features/notebook/components/portfolio-details/PortfolioLotsTabSections.tsx',
   analyticsTab: 'features/notebook/components/portfolio-details/PortfolioAnalyticsTab.tsx',
   sharedPortfolioPage: 'app/shared-portfolios/[shareId]/page.tsx',
   sharedPageService: 'lib/server/portfolio/shared-page-service.ts',
@@ -90,29 +91,34 @@ describe('portfolio notebook surface contract', () => {
 
   it('keeps portfolio lots and liquidity windows row-based', () => {
     const source = read(files.lotsTab);
+    const sections = read(files.lotsTabSections);
 
     expectContains(
       source,
+      "import {\n  PortfolioLiquidityPanel,\n  PortfolioLotsTableSection,\n  type PortfolioMaturityItem,\n} from './PortfolioLotsTabSections';",
+    );
+    expectContains(
+      sections,
       "import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';",
     );
     expectContains(
-      source,
+      sections,
       "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';",
     );
-    expectContains(source, 'const maturityWindowOptions = [30, 90, 180] as const;');
-    expectContains(source, '<Table className="w-full table-fixed text-sm tabular-nums">');
-    expectContains(source, 'sticky top-0 z-10 h-12 w-[14%] bg-background');
+    expectContains(sections, 'const maturityWindowOptions = [30, 90, 180] as const;');
+    expectContains(sections, '<Table className="w-full table-fixed text-sm tabular-nums">');
+    expectContains(sections, 'sticky top-0 z-10 h-12 w-[14%] bg-background');
     expectContains(
-      source,
+      sections,
       'className="h-14 border-b border-border transition-colors hover:bg-muted/25"',
     );
-    expectContains(source, '<SegmentedControl');
-    expectContains(source, 'className="grid-cols-3"');
-    expectContains(source, '<div className="border-y border-border py-4">');
-    expectContains(source, 'financial-number mt-2 text-2xl font-semibold text-foreground');
-    expectContains(source, '<FormInlineNotice');
+    expectContains(sections, '<SegmentedControl');
+    expectContains(sections, 'className="grid-cols-3"');
+    expectContains(sections, '<div className="border-y border-border py-4">');
+    expectContains(sections, 'financial-number mt-2 text-2xl font-semibold text-foreground');
+    expectContains(sections, '<FormInlineNotice');
 
-    expectNoFragments(source, [
+    expectNoFragments(`${source}\n${sections}`, [
       'rounded-lg bg-muted/30 px-4 py-4',
       'odd:bg-muted/20 hover:bg-muted/40',
       '<Table>',
