@@ -1,17 +1,6 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-import { getIntlLocale } from '@/i18n/locale-utils';
-
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
-}
-export function formatCurrency(value: number, language: string = 'pl') {
-  return new Intl.NumberFormat(getIntlLocale(language), {
-    style: 'currency',
-    currency: 'PLN',
-  }).format(value);
-}
-export function formatPercentage(value: number) {
-  return `${value.toFixed(2)}%`;
 }

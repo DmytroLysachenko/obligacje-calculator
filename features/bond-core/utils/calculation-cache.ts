@@ -3,7 +3,7 @@
  * during rapid slider movements or repeated requests.
  */
 
-export class CalculationCache {
+class CalculationCache {
   private cache = new Map<string, unknown>();
   private readonly maxSize: number;
 

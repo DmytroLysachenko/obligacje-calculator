@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, ReactNode, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useState } from 'react';
 
 /**
  * Context to synchronize the hover index (scrubbing) across multiple charts.
@@ -22,17 +22,4 @@ export function ChartSyncProvider({ children }: { children: ReactNode }) {
       {children}
     </ChartSyncContext.Provider>
   );
-}
-
-/**
- * Hook to access and update the shared hover index for synchronized charts.
- */
-export function useChartSync() {
-  const context = useContext(ChartSyncContext);
-  if (context === undefined) {
-    // If used outside of provider, just return null values to prevent crashes
-    // but still allow the charts to function independently.
-    return { hoverIndex: null, setHoverIndex: () => {} };
-  }
-  return context;
 }
