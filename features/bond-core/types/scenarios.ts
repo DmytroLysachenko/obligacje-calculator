@@ -1,5 +1,3 @@
-import { z } from 'zod';
-
 import { TimingMode } from '@/shared/lib/date-timing';
 
 import {
@@ -60,12 +58,12 @@ export interface CalculationEnvelope<T> {
   historicalAverages?: HistoricalAverages;
 }
 
-export interface SingleBondScenarioRequest {
+interface SingleBondScenarioRequest {
   kind: ScenarioKind.SINGLE_BOND;
   payload: BondInputs;
 }
 
-export interface RegularInvestmentScenarioRequest {
+interface RegularInvestmentScenarioRequest {
   kind: ScenarioKind.REGULAR_INVESTMENT;
   payload: RegularInvestmentInputs;
 }
@@ -80,7 +78,7 @@ export interface RetirementPlannerPayload {
   horizonYears: number;
 }
 
-export interface RetirementPlannerRequest {
+interface RetirementPlannerRequest {
   kind: ScenarioKind.RETIREMENT_PLANNER;
   payload: RetirementPlannerPayload;
 }
@@ -116,7 +114,7 @@ export interface BondComparisonScenarioItem {
   result: CalculationResult;
 }
 
-export type ComparisonMaturityMode =
+type ComparisonMaturityMode =
   | 'hold_to_maturity'
   | 'reinvest_until_horizon'
   | 'cash_after_maturity'
@@ -179,7 +177,7 @@ export interface IndependentBondComparisonPayload {
   };
 }
 
-export interface BondComparisonScenarioRequest {
+interface BondComparisonScenarioRequest {
   kind: ScenarioKind.BOND_COMPARISON;
   payload: NormalizedBondComparisonPayload | IndependentBondComparisonPayload;
 }
@@ -198,7 +196,7 @@ export interface PortfolioSimulationPayload {
   withdrawalDate: string;
 }
 
-export interface PortfolioSimulationRequest {
+interface PortfolioSimulationRequest {
   kind: ScenarioKind.PORTFOLIO_SIMULATION;
   payload: PortfolioSimulationPayload;
 }
@@ -240,7 +238,7 @@ export interface BondOptimizerPayload {
   includeFamilyBonds?: boolean;
 }
 
-export interface BondOptimizerRequest {
+interface BondOptimizerRequest {
   kind: ScenarioKind.BOND_OPTIMIZER;
   payload: BondOptimizerPayload;
 }
@@ -274,6 +272,3 @@ export type CalculationScenarioRequest =
 export type SingleBondCalculationEnvelope = CalculationEnvelope<CalculationResult>;
 export type RegularInvestmentCalculationEnvelope = CalculationEnvelope<RegularInvestmentResult>;
 export type BondComparisonCalculationEnvelope = CalculationEnvelope<BondComparisonScenarioItem[]>;
-export type BondOptimizerCalculationEnvelopeType = CalculationEnvelope<BondOptimizerResult>;
-
-export const ScenarioKindSchema = z.nativeEnum(ScenarioKind);

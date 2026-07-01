@@ -225,12 +225,7 @@ export const PortfolioSimulationPayloadSchema = z
     }
   });
 
-export const RetirementPlannerScenarioRequestSchema = z.object({
-  kind: z.literal(ScenarioKind.RETIREMENT_PLANNER),
-  payload: RetirementPlannerPayloadSchema,
-});
-
-export const CalculationScenarioRequestSchema = z.discriminatedUnion('kind', [
+const CalculationScenarioRequestSchema = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal(ScenarioKind.SINGLE_BOND),
     payload: BondInputsSchema,
