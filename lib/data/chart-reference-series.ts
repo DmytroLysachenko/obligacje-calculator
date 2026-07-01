@@ -30,7 +30,7 @@ interface ReferenceSeriesMetadata {
   sourceUrl?: string;
 }
 
-export const FALLBACK_INFLATION: ChartRatePoint[] = [
+const FALLBACK_INFLATION: ChartRatePoint[] = [
   { date: '2015-01', rate: -0.9 },
   { date: '2016-01', rate: -0.6 },
   { date: '2017-01', rate: 2.0 },
@@ -44,12 +44,12 @@ export const FALLBACK_INFLATION: ChartRatePoint[] = [
   { date: '2025-01', rate: 4.2 },
 ];
 
-export const FALLBACK_NBP: ChartRatePoint[] = NBP_REFERENCE_FALLBACK_SERIES.map((point) => ({
+const FALLBACK_NBP: ChartRatePoint[] = NBP_REFERENCE_FALLBACK_SERIES.map((point) => ({
   date: point.date.substring(0, 7),
   rate: point.rate,
 }));
 
-export const CPI_STALE_THRESHOLD_DAYS = 62;
+const CPI_STALE_THRESHOLD_DAYS = 62;
 
 export function expandMonthlyStepSeries(points: ChartRatePoint[]) {
   if (points.length <= 1) {

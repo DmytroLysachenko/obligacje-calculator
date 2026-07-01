@@ -39,12 +39,12 @@ function shouldPreferBootstrapFirstPeriodRate(bond: PolishBond, symbol: BondType
   );
 }
 
-function isBondOfferFresh(updatedAt?: Date | null) {
+function isBondOfferFresh(updatedAt: Date | null | undefined, asOfDate: string) {
   if (!updatedAt) {
     return false;
   }
 
-  return differenceInDays(new Date(), updatedAt) <= 45;
+  return differenceInDays(new Date(`${asOfDate}T00:00:00.000Z`), updatedAt) <= 45;
 }
 
 export function mergeBondDefinitionsWithSeries(
@@ -63,7 +63,7 @@ export function mergeBondDefinitionsWithSeries(
     const symbol = bond.symbol as BondType;
     const bootstrap = fallbackDefinitions[symbol];
     const activeSeries = activeSeriesByBondTypeId[bond.id];
-    const useDatabaseFallback = isBondOfferFresh(bond.updatedAt);
+    const useDatabaseFallback = isBondOfferFresh(bond.updatedAt, asOfDate);
     const fallbackFirstYearRate = useDatabaseFallback
       ? parseNumeric(bond.firstYearRate, bootstrap.firstYearRate)
       : bootstrap.firstYearRate;
@@ -121,7 +121,7 @@ export function mergeBondDefinitionsWithSeries(
   });
 }
 
-export const getBondDefinitions = cache(async (): Promise<BondDefinition[]> => {
+const getBondDefinitions = cache(async (): Promise<BondDefinition[]> => {
   const cacheKey = 'bond-definitions';
   const cached = getCached<BondDefinition[]>(cacheKey);
   if (cached) return cached;

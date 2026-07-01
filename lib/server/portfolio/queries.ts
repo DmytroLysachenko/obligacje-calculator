@@ -9,7 +9,6 @@ import { getMacroAssumptionDefaults } from '@/lib/data/market-data';
 import { getOwnedPortfolio } from '@/lib/server/portfolio/access';
 import { PortfolioServiceError } from '@/lib/server/portfolio/errors';
 import {
-  findPortfolioByShareId,
   listLotsByPortfolio,
   listLotsByPortfolioIds,
   listPortfoliosByOwner,
@@ -17,7 +16,6 @@ import {
 import { buildPortfolioSimulationPayload } from '@/lib/server/portfolio/simulation';
 export {
   buildSharedPortfolioPageMetadata,
-  getPublicSharedPortfolioByShareId,
   getPublicSharedPortfolioPageData,
 } from './shared-page-service';
 
@@ -158,5 +156,3 @@ export async function summarizeOwnerPortfolios(ownerId: string) {
 
   return envelope.result;
 }
-
-export { findPortfolioByShareId };

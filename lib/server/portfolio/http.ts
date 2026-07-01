@@ -22,7 +22,7 @@ export async function getPortfolioRouteContext(): Promise<PortfolioRouteContext>
   };
 }
 
-export async function getAuthenticatedPortfolioRouteContext(): Promise<
+async function getAuthenticatedPortfolioRouteContext(): Promise<
   { ok: true; context: PortfolioRouteContext } | { ok: false; response: NextResponse }
 > {
   const context = await getPortfolioRouteContext();

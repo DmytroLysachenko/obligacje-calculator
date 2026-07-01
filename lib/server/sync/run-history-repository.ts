@@ -5,7 +5,7 @@ import { NewSyncRun, syncRuns } from '@/db/schema';
 
 let ensureSyncRunsSchemaPromise: Promise<void> | null = null;
 
-export async function ensureSyncRunsSchemaRepository() {
+async function ensureSyncRunsSchemaRepository() {
   if (!ensureSyncRunsSchemaPromise) {
     ensureSyncRunsSchemaPromise = (async () => {
       await db.execute(sql`

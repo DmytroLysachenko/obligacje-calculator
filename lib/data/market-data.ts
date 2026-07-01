@@ -1,7 +1,5 @@
 export {
-  type BondDefinitionRepository,
   bondDefinitionRepository,
-  getBondDefinitions,
   getBondDefinitionsMap,
   getTaxRulesForYear,
   mergeBondDefinitionsWithSeries,
@@ -12,8 +10,4 @@ export {
   getMacroAssumptionDefaults,
   type MacroAssumptionDefaults,
 } from './macro-market-data';
-export {
-  createFallbackMultiAssetHistory,
-  getHistoricalAverages,
-  getMultiAssetHistory,
-} from './multi-asset-history';
+export { getHistoricalAverages, getMultiAssetHistory } from './multi-asset-history';
