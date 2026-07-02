@@ -8,8 +8,13 @@ const root = process.cwd();
 const files = {
   globals: 'app/globals.css',
   single: 'features/single-calculator/components/BondTimeline.tsx',
+  singleDesktopRows: 'features/single-calculator/components/BondTimelineDesktopRows.tsx',
+  singleMobileRows: 'features/single-calculator/components/BondTimelineMobileRows.tsx',
   regular: 'features/regular-investment/components/RegularInvestmentResultsSummary.tsx',
+  regularYearly: 'features/regular-investment/components/RegularInvestmentYearlyBucketsSection.tsx',
   ladder: 'features/ladder-strategy/components/LadderTimeline.tsx',
+  ladderSections: 'features/ladder-strategy/components/LadderTimelineSections.tsx',
+  ladderTable: 'features/ladder-strategy/components/LadderTimelineTable.tsx',
 } as const;
 
 function read(relativePath: string) {
@@ -39,12 +44,13 @@ describe('premium financial table contracts', () => {
   });
 
   it('keeps single calculator schedule table flat and sticky', () => {
-    const source = read(files.single);
+    const source = read(files.singleDesktopRows);
+    const mobile = read(files.singleMobileRows);
 
     expectContains(source, '<div className="hidden w-full border-y border-border lg:block">');
-    expectContains(source, 'className="border-t border-border py-4 first:border-t-0"');
+    expectContains(mobile, 'className="border-t border-border py-4 first:border-t-0"');
     expectContains(
-      source,
+      mobile,
       'className="mt-3 border-l-2 border-border px-3 text-xs leading-5 text-muted-foreground"',
     );
     expectContains(source, '<Table className="w-full table-fixed text-sm tabular-nums">');
@@ -71,7 +77,7 @@ describe('premium financial table contracts', () => {
   });
 
   it('keeps regular investment yearly table sticky and numerically aligned', () => {
-    const source = read(files.regular);
+    const source = read(files.regularYearly);
 
     expectContains(source, '<SectionBlock');
     expectContains(source, 'className="border-y border-border py-6"');
@@ -98,10 +104,13 @@ describe('premium financial table contracts', () => {
     const regular = read(files.regular);
     const recentList = read('shared/components/results/RecentLotList.tsx');
 
-    expectContains(regular, 'const MAX_RECENT_LOTS = 12;');
     expectContains(
       regular,
-      'const recentLots = useMemo(() => buildRecentRegularInvestmentLots(results.lots, MAX_RECENT_LOTS), [results.lots]);',
+      "import { MAX_RECENT_REGULAR_INVESTMENT_LOTS } from '@/features/regular-investment/constants/results';",
+    );
+    expectContains(
+      regular,
+      'buildRecentRegularInvestmentLots(results.lots, MAX_RECENT_REGULAR_INVESTMENT_LOTS)',
     );
     expectContains(
       regular,
@@ -128,7 +137,9 @@ describe('premium financial table contracts', () => {
   });
 
   it('keeps ladder maturity table sticky and numerically aligned', () => {
-    const source = read(files.ladder);
+    const source = [read(files.ladder), read(files.ladderSections), read(files.ladderTable)].join(
+      '\n',
+    );
 
     expectContains(
       source,
@@ -165,9 +176,9 @@ describe('premium financial table contracts', () => {
   });
 
   it('keeps strategy table row controls available after table polish', () => {
-    const regular = read(files.regular);
-    const ladder = read(files.ladder);
-    const single = read(files.single);
+    const regular = read(files.regularYearly);
+    const ladder = read(files.ladderTable);
+    const single = [read(files.single), read(files.singleDesktopRows)].join('\n');
 
     for (const source of [regular, ladder, single]) {
       expectContains(source, '<TableDensityControls');

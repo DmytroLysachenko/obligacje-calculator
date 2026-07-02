@@ -32,10 +32,10 @@ describe('control hierarchy contracts', () => {
       source,
       'focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2',
     );
-    expectContains(source, 'default:\n          "h-9 gap-2 px-3');
+    expectContains(source, "default:\n          'h-9 gap-2 px-3");
     expectContains(source, 'sm: "h-8 gap-1.5 rounded-md px-3 text-xs');
-    expectContains(source, 'lg: "h-10 gap-2 px-4');
-    expectContains(source, 'icon: "size-9"');
+    expectContains(source, "lg: 'h-10 gap-2 px-4");
+    expectContains(source, "icon: 'size-9'");
 
     expectNotContains(source, 'default:\n          "h-8 gap-1.5 px-2.5');
     expectNotContains(source, 'lg: "h-9 gap-1.5 px-2.5');

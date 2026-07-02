@@ -10,6 +10,8 @@ const files = {
   regularYearly: 'features/regular-investment/components/RegularInvestmentYearlyBucketsSection.tsx',
   recentLots: 'shared/components/results/RecentLotList.tsx',
   ladder: 'features/ladder-strategy/components/LadderTimeline.tsx',
+  ladderSections: 'features/ladder-strategy/components/LadderTimelineSections.tsx',
+  ladderTable: 'features/ladder-strategy/components/LadderTimelineTable.tsx',
 } as const;
 
 function read(relativePath: string) {
@@ -85,13 +87,16 @@ describe('strategy result flow contracts', () => {
 
   it('keeps ladder timeline below the shared recurring summary instead of adding another top rail', () => {
     const source = read(files.ladder);
+    const sections = read(files.ladderSections);
+    const table = read(files.ladderTable);
 
     expectContains(source, '<div className="space-y-8">');
     expectContains(source, '<ResultSummaryHero');
     expectContains(source, '<MetricStrip');
-    expectContains(source, '<ChartSection');
-    expectContains(source, '<SectionBlock');
-    expectContains(source, '<TableDensityControls');
+    expectContains(source, '<LadderTimelineChartSection');
+    expectContains(sections, '<ChartSection');
+    expectContains(sections, '<SectionBlock');
+    expectContains(table, '<TableDensityControls');
 
     expectNoFragments(source, [
       '<RecentLotList',

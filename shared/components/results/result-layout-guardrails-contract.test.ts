@@ -11,9 +11,17 @@ const files = {
   sheet: 'shared/components/results/ResponsiveTableSheet.tsx',
   hero: 'shared/components/results/ResultSummaryHero.tsx',
   single: 'features/single-calculator/components/BondTimeline.tsx',
+  singleRows: 'features/single-calculator/components/BondTimelineRows.tsx',
+  singleDesktopRows: 'features/single-calculator/components/BondTimelineDesktopRows.tsx',
+  singleMobileRows: 'features/single-calculator/components/BondTimelineMobileRows.tsx',
   regular: 'features/regular-investment/components/RegularInvestmentResultsSummary.tsx',
+  regularYearly: 'features/regular-investment/components/RegularInvestmentYearlyBucketsSection.tsx',
   ladder: 'features/ladder-strategy/components/LadderTimeline.tsx',
+  ladderSections: 'features/ladder-strategy/components/LadderTimelineSections.tsx',
+  ladderTable: 'features/ladder-strategy/components/LadderTimelineTable.tsx',
   comparison: 'features/comparison-engine/components/ComparisonTable.tsx',
+  comparisonRows:
+    'features/comparison-engine/components/comparison-table/ComparisonTableTimelineRows.tsx',
 } as const;
 
 function read(relativePath: string) {
@@ -32,6 +40,10 @@ function expectNoFragments(source: string, fragments: readonly string[]) {
   for (const fragment of fragments) {
     expectNotContains(source, fragment);
   }
+}
+
+function normalizeWhitespace(source: string) {
+  return source.replace(/\s+/g, ' ');
 }
 
 describe('result layout guardrails', () => {
@@ -71,8 +83,9 @@ describe('result layout guardrails', () => {
     );
     expectContains(
       source,
-      "cn('financial-number ui-large-metric min-w-0 break-words text-foreground', item.tone)",
+      "'financial-number ui-large-metric min-w-0 break-words text-foreground'",
     );
+    expectContains(normalizeWhitespace(source), 'item.tone, )');
     expectContains(source, '<p className="ui-body text-muted-foreground">{item.description}</p>');
 
     expectNoFragments(source, [
@@ -135,16 +148,26 @@ describe('result layout guardrails', () => {
   it('keeps major result tables on mobile sheet plus desktop table pattern', () => {
     const sources = [
       read(files.single),
-      read(files.regular),
+      read(files.singleRows),
+      read(files.singleDesktopRows),
+      read(files.singleMobileRows),
+      read(files.regularYearly),
       read(files.ladder),
+      read(files.ladderSections),
+      read(files.ladderTable),
       read(files.comparison),
+      read(files.comparisonRows),
     ];
 
-    for (const source of sources) {
-      expectContains(source, '<ResponsiveTableSheet');
-      expectContains(source, '<Table className="w-full table-fixed');
-      expectContains(source, 'tabular-nums');
-    }
+    expectContains(read(files.singleMobileRows), '<ResponsiveTableSheet');
+    expectContains(read(files.singleDesktopRows), '<Table className="w-full table-fixed');
+    expectContains(read(files.regularYearly), '<ResponsiveTableSheet');
+    expectContains(read(files.regularYearly), '<Table className="w-full table-fixed');
+    expectContains(read(files.ladderTable), '<ResponsiveTableSheet');
+    expectContains(read(files.ladderTable), '<Table className="w-full table-fixed');
+    expectContains(read(files.comparisonRows), '<ResponsiveTableSheet');
+    expectContains(read(files.comparisonRows), '<Table className="w-full table-fixed');
+    expectContains(sources.join('\n'), 'tabular-nums');
 
     expectContains(sources.join('\n'), '<TableDensityControls');
     expectContains(sources.join('\n'), 'financial-number');

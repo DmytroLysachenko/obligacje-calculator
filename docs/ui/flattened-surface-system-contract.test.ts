@@ -36,6 +36,7 @@ const flattenedSurfaceFiles = [
   'features/notebook/components/PortfolioWorkspaceCard.tsx',
   'features/notebook/components/PortfolioDetails.tsx',
   'features/notebook/components/portfolio-details/PortfolioLotsTab.tsx',
+  'features/notebook/components/portfolio-details/PortfolioLotsTabSections.tsx',
   'features/notebook/components/portfolio-details/PortfolioAnalyticsTab.tsx',
   'features/comparison-engine/components/ScenarioOverrideCard.tsx',
 ] as const;
@@ -188,10 +189,28 @@ describe('flattened shared surface system contract', () => {
     );
     expect(
       sourceByPath.get('features/notebook/components/portfolio-details/PortfolioLotsTab.tsx'),
-    ).toContain("import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';");
+    ).toContain('PortfolioLiquidityPanel');
     expect(
       sourceByPath.get('features/notebook/components/portfolio-details/PortfolioLotsTab.tsx'),
+    ).toContain('PortfolioLotsTableSection');
+    expect(
+      sourceByPath.get(
+        'features/notebook/components/portfolio-details/PortfolioLotsTabSections.tsx',
+      ),
+    ).toContain("import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';");
+    expect(
+      sourceByPath.get(
+        'features/notebook/components/portfolio-details/PortfolioLotsTabSections.tsx',
+      ),
+    ).toContain("import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
+    expect(
+      sourceByPath.get(
+        'features/notebook/components/portfolio-details/PortfolioLotsTabSections.tsx',
+      ),
     ).toContain('financial-number mt-2 text-2xl font-semibold text-foreground');
+    expect(
+      sourceByPath.get('features/notebook/components/portfolio-details/PortfolioLotsTab.tsx'),
+    ).toContain('<PortfolioLiquidityPanel');
     expect(
       sourceByPath.get('features/notebook/components/portfolio-details/PortfolioAnalyticsTab.tsx'),
     ).toContain("import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';");
