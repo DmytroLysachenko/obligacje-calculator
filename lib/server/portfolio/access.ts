@@ -8,7 +8,6 @@ import {
   ensureGuestPortfolioOwner,
   findOwnedLotByOwner,
   findPortfolioByOwner,
-  findPortfolioSummaryByOwner,
 } from '@/lib/server/portfolio/repository';
 
 const GUEST_PORTFOLIO_COOKIE = 'guest_portfolio_owner_id';
@@ -135,9 +134,4 @@ export async function getOwnedPortfolio(ownerId: string, portfolioId: string) {
 export async function getOwnedLot(ownerId: string, lotId: string) {
   await ensurePortfolioSchemaCompat();
   return findOwnedLotByOwner(ownerId, lotId);
-}
-
-export async function getPortfolioSummary(ownerId: string, portfolioId: string) {
-  await ensurePortfolioSchemaCompat();
-  return findPortfolioSummaryByOwner(ownerId, portfolioId);
 }

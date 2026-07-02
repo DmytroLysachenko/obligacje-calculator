@@ -9,7 +9,7 @@ import {
   upsertBondSeriesOffer,
 } from '@/lib/server/bonds/offer-terms-repository';
 
-import { scrapeCurrentBondRates, type ScrapedBondRate } from '../bond-scraper';
+import { scrapeCurrentBondRates } from '../bond-scraper';
 import type { SyncLogger } from '../sync-logger';
 
 import type { SyncRunRecorder } from './sync-run-recorder';
@@ -85,5 +85,3 @@ export class BondOfferSyncService {
     });
   }
 }
-
-export type BondOfferSyncResult = ScrapedBondRate[];

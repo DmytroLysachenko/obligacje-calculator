@@ -5,7 +5,7 @@ import {
   insertSyncRun,
 } from '@/lib/server/sync/run-history-repository';
 
-export type SyncRunStatus = 'success' | 'partial' | 'failed' | 'up-to-date' | 'no-new-data';
+type SyncRunStatus = 'success' | 'partial' | 'failed' | 'up-to-date' | 'no-new-data';
 
 export interface RecordSyncRunInput {
   scope: string;

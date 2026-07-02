@@ -6,5 +6,4 @@ export {
   createAdminSyncSuccessEnvelope,
   getAdminSyncEndpointInfo,
   runAdminSync,
-  type SyncMode,
 } from './sync';

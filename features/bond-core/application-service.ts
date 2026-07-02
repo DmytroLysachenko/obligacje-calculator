@@ -13,8 +13,6 @@ import { sanitizeInputs } from './utils/engine-guards';
 import { HandlerFactory, MODEL_VERSION, ScenarioHandler } from './handlers';
 import { BondType } from './types';
 
-export { MODEL_VERSION };
-
 export interface CalculationServiceDependencies {
   cache: Pick<typeof calculationCache, 'generateKey' | 'get' | 'set'>;
   getDataFreshness: () => Promise<CalculationDataFreshness>;

@@ -10,7 +10,7 @@ import {
   type RuntimeEnv,
 } from '@/lib/server/runtime/env';
 
-export type ReadinessCheckStatus = 'ok' | 'failed';
+type ReadinessCheckStatus = 'ok' | 'failed';
 
 export interface ReadinessCheck {
   status: ReadinessCheckStatus;

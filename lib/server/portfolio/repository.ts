@@ -91,15 +91,6 @@ export async function findOwnedLotByOwner(ownerId: string, lotId: string) {
   return lot;
 }
 
-export function findPortfolioSummaryByOwner(ownerId: string, portfolioId: string) {
-  return db.query.userPortfolios.findFirst({
-    where: and(eq(userPortfolios.id, portfolioId), eq(userPortfolios.userId, ownerId)),
-    with: {
-      lots: true,
-    },
-  });
-}
-
 export function createLot(values: typeof userInvestmentLots.$inferInsert) {
   return db.insert(userInvestmentLots).values(values).returning();
 }

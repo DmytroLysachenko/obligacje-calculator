@@ -11,7 +11,6 @@ import {
 } from '@/shared/lib/admin-client';
 import { ApiClientError } from '@/shared/lib/api-client';
 
-export type SeriesStatus = AdminSeriesStatus;
 export type StatusData = AdminStatusData;
 
 export function useAdminStatusDashboard() {

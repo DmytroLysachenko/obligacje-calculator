@@ -11,7 +11,7 @@ import type { SyncRunRecorder } from './sync-run-recorder';
 
 export type { ProviderSyncRepository } from './provider-sync-repository';
 
-export type ProviderSyncStatus = 'success' | 'up-to-date' | 'no-new-data' | 'failed';
+type ProviderSyncStatus = 'success' | 'up-to-date' | 'no-new-data' | 'failed';
 
 export interface ProviderSyncResult {
   provider: string;
