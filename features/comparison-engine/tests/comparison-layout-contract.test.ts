@@ -17,6 +17,7 @@ const files = {
     'features/comparison-engine/components/comparison-table/ComparisonTableScenarioCells.tsx',
   tableModel: 'features/comparison-engine/lib/comparison-table-model.ts',
   calculatorState: 'features/comparison-engine/lib/comparison-calculator-state.ts',
+  clientState: 'features/comparison-engine/lib/comparison-client-state.ts',
   persistence: 'features/comparison-engine/lib/comparison-persistence.ts',
   hook: 'features/comparison-engine/hooks/useComparison.ts',
 } as const;
@@ -84,12 +85,14 @@ describe('comparison layout contract', () => {
   it('derives comparison dirty state from committed result inputs', () => {
     const hook = read(files.hook);
     const calculatorState = read(files.calculatorState);
+    const clientState = read(files.clientState);
 
     expect(hook).toContain('const displayIsDirty = useMemo(() => {');
     expect(hook).toContain('getComparisonDirtyState({');
     expect(calculatorState).toContain('areCalculatorStatesEqual(inputsA, committedInputsA)');
     expect(calculatorState).toContain('areCalculatorStatesEqual(inputsB, committedInputsB)');
-    expect(hook).toContain('preserveStableState(previous, next)');
+    expect(clientState).toContain('preserveStableState(previous, {');
+    expect(hook).toContain('applyComparisonMacroDefaults(previous, defaults)');
     expect(hook).toContain('isDirty: displayIsDirty');
   });
 

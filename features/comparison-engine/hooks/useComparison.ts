@@ -9,12 +9,10 @@ import {
   loadPersistedCalculatorState,
   savePersistedCalculatorState,
 } from '@/shared/lib/calculator-persistence';
-import { preserveStableState } from '@/shared/lib/calculator-state';
 import { logClientError } from '@/shared/lib/client-logger';
-import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
 
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
-import { type BondInputs,BondType } from '../../bond-core/types';
+import { type BondInputs, BondType } from '../../bond-core/types';
 import type { BondComparisonCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { runComparisonCalculation } from '../lib/comparison-actions';
 import {
@@ -28,7 +26,11 @@ import {
   splitComparisonEnvelope,
 } from '../lib/comparison-calculator-state';
 import {
-  buildPersistedComparisonState,
+  applyComparisonMacroDefaults,
+  buildComparisonPersistenceSnapshot,
+  reconcileComparisonPersistedMacroDefaults,
+} from '../lib/comparison-client-state';
+import {
   COMPARISON_CALCULATOR_STORAGE_KEY,
   type PersistedComparisonState,
   restoreComparisonState,
@@ -63,24 +65,13 @@ export function useComparison() {
 
   const applyMacroDefaults = useEffectEvent(
     (defaults: { expectedInflation: number; expectedNbpRate: number }) => {
-      setSharedConfig((previous) => {
-        const next = {
-          ...previous,
-          expectedInflation: defaults.expectedInflation,
-          expectedNbpRate: defaults.expectedNbpRate,
-        };
-
-        return preserveStableState(previous, next);
-      });
+      setSharedConfig((previous) => applyComparisonMacroDefaults(previous, defaults));
     },
   );
 
   const reconcilePersistedMacroDefaults = useEffectEvent(
     (defaults: { expectedInflation: number; expectedNbpRate: number }) => {
-      setSharedConfig((previous) => {
-        const next = applyMacroDefaultsToBaseline(previous, defaults);
-        return preserveStableState(previous, next);
-      });
+      setSharedConfig((previous) => reconcileComparisonPersistedMacroDefaults(previous, defaults));
     },
   );
 
@@ -200,7 +191,7 @@ export function useComparison() {
 
     savePersistedCalculatorState(
       COMPARISON_CALCULATOR_STORAGE_KEY,
-      buildPersistedComparisonState({
+      buildComparisonPersistenceSnapshot({
         sharedConfig,
         scenarioA,
         scenarioB,
