@@ -76,7 +76,9 @@ pnpm scan:unused
 
 `pnpm scan:unused` should not report confirmed unused files. Export findings are
 triaged as API-surface candidates because framework exports, scenario schemas,
-and UI primitive barrels can be intentionally retained.
+and UI primitive barrels can be intentionally retained. As of July 2, 2026 the
+reviewed baseline is 8 unused value exports and 17 unused exported-type
+candidates.
 
 ### Data Sync
 

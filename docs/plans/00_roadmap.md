@@ -1,6 +1,6 @@
 # 00. Current Product Roadmap
 
-This roadmap reflects the real state of the application as of June 27, 2026.
+This roadmap reflects the real state of the application as of July 2, 2026.
 
 The app is **not production-ready**.
 
@@ -28,6 +28,9 @@ The recovery work already completed has materially changed the product:
   from result metrics, optimizer result rendering is a feature component, and
   notebook workspace/detail state is split between pure model output and a
   focused container hook
+- single and comparison calculator hooks now delegate deterministic client-state
+  and persistence snapshot decisions to feature-local `lib/*-client-state.ts`
+  helpers, with tests under `features/<feature>/tests/lib/**`
 - single-bond and regular-investment engines now delegate more orchestration
   setup to focused helpers, including single-bond period rate/accrual setup,
   while keeping calculation truth covered by engine and golden tests
@@ -47,8 +50,8 @@ and collect final release-gate evidence.
 - the UI surface area is still larger than the trusted release scope
 - some secondary features remain intentionally conditional, experimental, or limited
 - unused-code inventory is now scanable with `pnpm scan:unused`; the current
-  baseline reports export/type candidates that need human review before removal,
-  with no confirmed unused files
+  baseline reports 8 unused value exports and 17 unused exported-type candidates
+  that need human review before removal, with no confirmed unused files
 - some live surfaces should still be treated as experimental until proven stable
 - documentation previously overstated maturity and completion
 

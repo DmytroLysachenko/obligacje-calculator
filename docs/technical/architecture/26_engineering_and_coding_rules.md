@@ -193,12 +193,12 @@ operator scripts before removal. Confirmed dead code should be deleted; intended
 dynamic entrypoints should be documented or added to the scan config with a
 specific reason.
 
-The maintained baseline is zero confirmed unused files. As of June 29, 2026,
-`pnpm scan:unused --reporter compact --max-show-issues 160` reports 28 unused
-exports and 22 unused exported types. These remaining Knip findings are reviewed
-API-surface candidates: route/auth exports, scenario schemas and request types,
-shadcn-style UI primitive exports, and framework- or test-facing types should
-remain exported unless a focused ownership review proves they are internal-only.
+The maintained baseline is zero confirmed unused files. As of July 2, 2026,
+`pnpm scan:unused` reports 8 unused value exports and 17 unused exported types.
+These remaining Knip findings are reviewed API-surface candidates: Auth.js and
+i18n convenience exports, domain/request types, shared UI primitive types, and
+framework- or test-facing types should remain exported unless a focused
+ownership review proves they are internal-only.
 
 ## 5. Components Must Stay Small and Focused
 
@@ -243,6 +243,9 @@ This keeps behavior testable before markup is moved.
 Current calculator and comparison surfaces should follow this pattern:
 
 - feature hooks keep React state, effects, persistence restoration, and user actions
+- `features/<feature>/lib/*-client-state.ts` owns deterministic hook-facing
+  client-state decisions, persistence snapshots, and input-update resolution
+  when those decisions can be tested without React
 - `features/<feature>/lib/*-state.ts` owns deterministic input normalization and bond-type/series updates
 - `features/<feature>/lib/*-model.ts` owns metric arrays, chart rows, summaries, scenario facts, and other render-ready data
 - `features/<feature>/constants/**` owns durable static metadata such as comparison asset definitions

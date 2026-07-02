@@ -3,12 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { useAppI18n } from '@/i18n/client';
-import {
-  adminClient,
-  AdminSeriesStatus,
-  AdminStatusData,
-  AdminSyncMode,
-} from '@/shared/lib/admin-client';
+import { adminClient, AdminStatusData, AdminSyncMode } from '@/shared/lib/admin-client';
 import { ApiClientError } from '@/shared/lib/api-client';
 
 export type StatusData = AdminStatusData;
