@@ -18,40 +18,46 @@ import {
   runSingleBondCalculation,
 } from '../lib/single-calculator-actions';
 import {
+  buildSingleCalculatorPersistenceSnapshot,
+  getInitialSingleCalculatorClientState,
+  resolveSingleCalculatorFieldUpdate,
+  resolveSingleCalculatorReplacementInputs,
+  resolveSingleCalculatorSelectedSeriesUpdate,
+} from '../lib/single-calculator-client-state';
+import {
   applySingleCalculatorMacroDefaults,
   type MacroDefaults,
   reconcilePersistedSingleCalculatorMacroDefaults,
   resolveDefinitionSyncedInputs,
 } from '../lib/single-calculator-effect-state';
 import {
-  buildPersistedSingleCalculatorState,
   PersistedSingleCalculatorState,
   restoreSingleCalculatorState,
   SINGLE_CALCULATOR_STORAGE_KEY,
 } from '../lib/single-calculator-persistence';
-import {
-  buildFallbackInputs,
-  isMacroAssumptionInputKey,
-  normalizeSingleCalculatorInputs,
-  resolveBondTypeInputUpdate,
-  resolveSelectedSeriesInputUpdate,
-} from '../lib/single-calculator-state';
+import { buildFallbackInputs, resolveBondTypeInputUpdate } from '../lib/single-calculator-state';
 
 export function useBondCalculator(initialInputs?: BondInputs) {
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
   const { defaults: macroDefaults } = useMacroAssumptionDefaults();
   const fallbackInputs = useMemo(() => buildFallbackInputs(), []);
-  const [inputs, setInputs] = useState<BondInputs>(initialInputs ?? fallbackInputs);
-  const [envelope, setEnvelope] = useState<SingleBondCalculationEnvelope | null>(null);
-  const [isDirty, setIsDirty] = useState(initialInputs ? false : true);
+  const initialState = useMemo(
+    () => getInitialSingleCalculatorClientState(initialInputs, fallbackInputs),
+    [fallbackInputs, initialInputs],
+  );
+  const [inputs, setInputs] = useState<BondInputs>(initialState.inputs);
+  const [envelope, setEnvelope] = useState<SingleBondCalculationEnvelope | null>(
+    initialState.envelope,
+  );
+  const [isDirty, setIsDirty] = useState(initialState.isDirty);
   const [availableSeries, setAvailableSeries] = useState<BondSeriesMetadata[]>([]);
   const [selectedSeriesId, setSelectedSeriesId] = useState<string | null>(
-    initialInputs?.selectedSeriesId ?? null,
+    initialState.selectedSeriesId,
   );
   const [lastCommittedInputs, setLastCommittedInputs] = useState<BondInputs | null>(
-    initialInputs ?? null,
+    initialState.lastCommittedInputs,
   );
-  const [isPersistenceReady, setIsPersistenceReady] = useState(Boolean(initialInputs));
+  const [isPersistenceReady, setIsPersistenceReady] = useState(initialState.isPersistenceReady);
   const hasRestoredState = useRef(false);
   const hasAutoCalculatedSharedScenario = useRef(false);
   const restoredFromPersistence = useRef(false);
@@ -194,7 +200,7 @@ export function useBondCalculator(initialInputs?: BondInputs) {
 
     savePersistedCalculatorState(
       SINGLE_CALCULATOR_STORAGE_KEY,
-      buildPersistedSingleCalculatorState({
+      buildSingleCalculatorPersistenceSnapshot({
         inputs,
         envelope,
         selectedSeriesId,
@@ -214,25 +220,16 @@ export function useBondCalculator(initialInputs?: BondInputs) {
 
   const results = envelope?.result || null;
 
-  const normalizeInputs = useCallback(
-    (base: BondInputs, nextPartial?: Partial<BondInputs>) =>
-      normalizeSingleCalculatorInputs(base, nextPartial),
-    [],
-  );
-
   const updateInput = (key: string, value: unknown) => {
     setIsDirty(true);
-    if (isMacroAssumptionInputKey(key)) {
-      hasTouchedMacroAssumptions.current = true;
-    }
     if (key === 'selectedSeriesId') {
       const seriesId = value as string | null;
       setSelectedSeriesId(seriesId);
       if (definitions) {
         setInputs((prev) => {
-          const next = resolveSelectedSeriesInputUpdate({
+          const next = resolveSingleCalculatorSelectedSeriesUpdate({
             seriesId,
-            inputs: prev,
+            previous: prev,
             definitions,
             availableSeries,
           });
@@ -242,19 +239,25 @@ export function useBondCalculator(initialInputs?: BondInputs) {
       return;
     }
 
-    setInputs((prev) =>
-      normalizeInputs(prev, { [key as keyof BondInputs]: value } as Partial<BondInputs>),
-    );
+    setInputs((prev) => {
+      const next = resolveSingleCalculatorFieldUpdate({
+        key,
+        value,
+        previous: prev,
+      });
+      if (next.touchedMacroAssumptions) {
+        hasTouchedMacroAssumptions.current = true;
+      }
+      return next.inputs;
+    });
   };
 
-  const replaceInputs = useCallback(
-    (nextInputs: BondInputs) => {
-      setIsDirty(true);
-      setSelectedSeriesId(nextInputs.selectedSeriesId ?? 'current');
-      setInputs(normalizeInputs(nextInputs, nextInputs));
-    },
-    [normalizeInputs],
-  );
+  const replaceInputs = useCallback((nextInputs: BondInputs) => {
+    setIsDirty(true);
+    const replacement = resolveSingleCalculatorReplacementInputs(nextInputs);
+    setSelectedSeriesId(replacement.selectedSeriesId);
+    setInputs(replacement.inputs);
+  }, []);
 
   const setBondType = (type: BondType) => {
     if (!definitions) return;
