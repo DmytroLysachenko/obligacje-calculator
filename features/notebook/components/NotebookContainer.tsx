@@ -1,14 +1,11 @@
 'use client';
-import { BookOpen, RefreshCcw } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 import React, { useEffect } from 'react';
 
-import { Button } from '@/components/ui/button';
 import { useNotebookContainerWorkspace } from '@/features/notebook/hooks/useNotebookContainerWorkspace';
 import { useNotebookWorkspaceActions } from '@/features/notebook/hooks/useNotebookWorkspaceActions';
 import { buildNotebookWorkspaceViewModel } from '@/features/notebook/lib/notebook-workspace-model';
 import { useAppI18n } from '@/i18n/client';
-import { AppToast } from '@/shared/components/feedback/AppToast';
-import { ConfirmActionDialog } from '@/shared/components/feedback/ConfirmActionDialog';
 import { Notice } from '@/shared/components/feedback/Notice';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { SectionBlock } from '@/shared/components/page/SectionBlock';
@@ -19,6 +16,7 @@ import { useWorkspacePortfolios } from '@/shared/hooks/useWorkspacePortfolios';
 
 import { NotebookPortfolioListSection, NotebookScopeNote } from './NotebookContainerPanels';
 import { EmptyPortfolioState, NotebookLoadingState } from './NotebookStates';
+import { NotebookErrorNotice, NotebookWorkspaceFeedback } from './NotebookWorkspaceFeedback';
 import { PortfolioDetails } from './PortfolioDetails';
 import { WorkspaceActionStrip } from './WorkspaceActionStrip';
 import { WorkspaceStatusCard } from './WorkspaceStatusCard';
@@ -131,16 +129,7 @@ export const NotebookContainer: React.FC = () => {
         onChange={handleImportFile}
       />
 
-      {error ? (
-        <Notice tone="warning" title={error}>
-          <div className="mt-3">
-            <Button variant="outline" size="sm" className="gap-2" onClick={fetchPortfolios}>
-              <RefreshCcw className="h-4 w-4" />
-              {t('common.retry')}
-            </Button>
-          </div>
-        </Notice>
-      ) : null}
+      <NotebookErrorNotice error={error} retryLabel={t('common.retry')} onRetry={fetchPortfolios} />
 
       <SectionBlock title={t('notebook.workspace_scope_title')} description={notebookIntro}>
         <div className="space-y-4">
@@ -221,29 +210,25 @@ export const NotebookContainer: React.FC = () => {
         </div>
       )}
 
-      <ConfirmActionDialog
-        open={!!portfolioPendingDelete}
-        title={t('notebook.delete_portfolio')}
-        description={
-          portfolioPendingDelete
-            ? t('notebook.confirm_delete_portfolio_short', {
-                name: portfolioPendingDelete.name,
-              })
-            : ''
-        }
-        confirmLabel={t('common.delete')}
-        cancelLabel={t('common.cancel')}
-        onCancel={() => setPortfolioPendingDelete(null)}
-        onConfirm={async () => {
-          const portfolio = portfolioPendingDelete;
-          setPortfolioPendingDelete(null);
-          if (portfolio) {
-            await handleDeletePortfolio(portfolio);
-          }
+      <NotebookWorkspaceFeedback
+        portfolioPendingDelete={portfolioPendingDelete}
+        statusMessage={statusMessage}
+        labels={{
+          deletePortfolio: t('notebook.delete_portfolio'),
+          confirmDeletePortfolio: (name) =>
+            t('notebook.confirm_delete_portfolio_short', {
+              name,
+            }),
+          delete: t('common.delete'),
+          cancel: t('common.cancel'),
         }}
+        onCancelDelete={() => setPortfolioPendingDelete(null)}
+        onConfirmDelete={async (portfolio) => {
+          setPortfolioPendingDelete(null);
+          await handleDeletePortfolio(portfolio);
+        }}
+        onDismissToast={() => setStatusMessage(null)}
       />
-
-      <AppToast message={statusMessage} onDismiss={() => setStatusMessage(null)} />
     </CalculatorPageShell>
   );
 };
