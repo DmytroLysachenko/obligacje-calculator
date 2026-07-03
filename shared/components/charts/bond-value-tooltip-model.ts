@@ -8,13 +8,13 @@ export interface BondValueTooltipPayloadEntry {
   payload: BondValueChartPoint;
 }
 
-export interface BondValueTooltipContext {
+interface BondValueTooltipContext {
   isProjected: boolean;
   inflation?: number;
   nbp?: number;
 }
 
-export interface StandardBondValueTooltipModel extends BondValueTooltipContext {
+interface StandardBondValueTooltipModel extends BondValueTooltipContext {
   kind: 'standard';
   interestRate?: number;
   rateSource?: string;
@@ -22,7 +22,7 @@ export interface StandardBondValueTooltipModel extends BondValueTooltipContext {
   metrics: BondValueTooltipPayloadEntry[];
 }
 
-export interface ScenarioBondValueTooltipModel extends BondValueTooltipContext {
+interface ScenarioBondValueTooltipModel extends BondValueTooltipContext {
   kind: 'scenario-groups';
   groups: BondValueChartTooltipGroup[];
 }

@@ -24,7 +24,7 @@ export const RETIREMENT_SUPPORTED_BOND_TYPES: BondType[] = [
   BondType.EDO,
 ];
 
-export type BondSupportTone = 'neutral' | 'caution' | 'limited';
+type BondSupportTone = 'neutral' | 'caution' | 'limited';
 
 export interface BondSupportMeta {
   shortLabel: string;

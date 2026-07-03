@@ -3,7 +3,7 @@ export interface WorkspacePortfolioOption {
   name: string;
 }
 
-export type WorkspaceSelectionSource = 'explicit' | 'fallback' | 'empty';
+type WorkspaceSelectionSource = 'explicit' | 'fallback' | 'empty';
 
 export interface WorkspacePortfolioSelection<TPortfolio extends WorkspacePortfolioOption> {
   portfolio: TPortfolio | null;

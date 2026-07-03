@@ -11,5 +11,3 @@ export const pageLayout = {
   stickyScenario: 'space-y-5 xl:sticky xl:top-8 xl:h-fit',
   resultFlow: 'space-y-8 md:space-y-10',
 } as const;
-
-export type PageLayoutKey = keyof typeof pageLayout;
