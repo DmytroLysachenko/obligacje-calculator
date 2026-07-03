@@ -3,7 +3,7 @@ import { Decimal } from 'decimal.js';
 
 import { BOND_DEFINITIONS } from '../../constants/bond-definitions';
 import { createNumericFaultError } from '../../errors';
-import { BondInputs, CalculationResult, YearlyTimelinePoint } from '../../types';
+import { BondInputs, CalculationResult } from '../../types';
 import { SimulationEventType } from '../../types/simulation';
 import { withMathGuard } from '../engine-guards';
 
@@ -16,6 +16,7 @@ import {
   resolveSingleBondCycleInvestment,
 } from './single-bond-cycle';
 import { runSingleBondPeriod } from './single-bond-period-runner';
+import { createSingleBondSimulationState } from './single-bond-simulation-state';
 import { applySingleBondTaxRelief } from './single-bond-tax-relief';
 import {
   buildSingleBondTerminalNotes,
@@ -58,18 +59,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
     taxStrategy,
     ikzeTaxBracket,
   });
-  let currentInitialInvestment = taxRelief.currentInitialInvestment;
-  const calculationNotes: string[] = [...taxRelief.calculationNotes];
-
-  let leftoverCash = new Decimal(0);
-  const globalTimeline: YearlyTimelinePoint[] = [];
-  let totalTaxAcc = new Decimal(0);
-  let totalFeeAcc = new Decimal(0);
-  let globalAccumulatedNetInterest = new Decimal(0);
-  let currentPurchaseDate = startDate;
-  let applySwapDiscountThisCycle = false;
-  let cycleIndex = 1;
-  const dataQualityFlags = new Set<string>();
+  const simulationState = createSingleBondSimulationState({ taxRelief, startDate });
 
   // Add initial starting point for the whole simulation
   const initialPoint = createInitialTimelinePoint({
@@ -87,30 +77,32 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
       value: initialInvestment,
     },
   ];
-  globalTimeline.push(initialPoint);
+  simulationState.globalTimeline.push(initialPoint);
 
   // We loop until we cover the whole simulation period (supporting multiple rollovers)
-  while (isBefore(currentPurchaseDate, targetWithdrawalDate)) {
+  while (isBefore(simulationState.currentPurchaseDate, targetWithdrawalDate)) {
     const bondDef = BOND_DEFINITIONS[bondType];
     const isInflationIndexed = bondDef?.isInflationIndexed ?? false;
     const nominalValue = bondDef?.nominalValue ?? 100;
 
     const { cycleMaturityDate, actualCycleEndDate, isEarlyWithdrawal } =
       resolveSingleBondCycleDates({
-        purchaseDate: currentPurchaseDate,
+        purchaseDate: simulationState.currentPurchaseDate,
         bondDuration,
         targetWithdrawalDate,
       });
 
     // Investment for THIS cycle = cash from previous cycle + any leftovers
-    const totalAvailable = currentInitialInvestment.plus(leftoverCash);
+    const totalAvailable = simulationState.currentInitialInvestment.plus(
+      simulationState.leftoverCash,
+    );
     const cycleInvestment = resolveSingleBondCycleInvestment({
       availableCash: totalAvailable,
       nominalValue,
       rebuyDiscount,
-      applySwapDiscountThisCycle,
+      applySwapDiscountThisCycle: simulationState.applySwapDiscountThisCycle,
     });
-    leftoverCash = cycleInvestment.leftoverCash;
+    simulationState.leftoverCash = cycleInvestment.leftoverCash;
     const numberOfBonds = cycleInvestment.numberOfBonds;
     const nominalStartingValue = cycleInvestment.nominalStartingValue;
 
@@ -119,7 +111,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
     let periodicTaxPaidSoFar = new Decimal(0);
 
     const periods = generateCyclePeriods(
-      currentPurchaseDate,
+      simulationState.currentPurchaseDate,
       cycleMaturityDate,
       actualCycleEndDate,
       payoutFrequency,
@@ -132,8 +124,8 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
         isFirstPeriod: i === 0,
         simulationStartDate: startDate,
         targetWithdrawalDate,
-        cyclePurchaseDate: currentPurchaseDate,
-        cycleIndex,
+        cyclePurchaseDate: simulationState.currentPurchaseDate,
+        cycleIndex: simulationState.cycleIndex,
         bondType,
         firstYearRate,
         expectedInflation,
@@ -146,7 +138,7 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
         currentNominalValue,
         totalInterestEarnedSoFar,
         periodicTaxPaidSoFar,
-        globalAccumulatedNetInterest,
+        globalAccumulatedNetInterest: simulationState.globalAccumulatedNetInterest,
         numberOfBonds,
         nominalStartingValue,
         earlyWithdrawalFee,
@@ -156,17 +148,17 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
         taxStrategy,
         taxRate,
         initialInvestment,
-        leftoverCash,
+        leftoverCash: simulationState.leftoverCash,
       });
       currentNominalValue = periodResult.currentNominalValue;
       totalInterestEarnedSoFar = periodResult.totalInterestEarnedSoFar;
       periodicTaxPaidSoFar = periodResult.periodicTaxPaidSoFar;
-      globalAccumulatedNetInterest = periodResult.globalAccumulatedNetInterest;
+      simulationState.globalAccumulatedNetInterest = periodResult.globalAccumulatedNetInterest;
       if (periodResult.dataQualityFlag) {
-        dataQualityFlags.add(periodResult.dataQualityFlag);
+        simulationState.dataQualityFlags.add(periodResult.dataQualityFlag);
       }
 
-      globalTimeline.push(periodResult.checkpoint);
+      simulationState.globalTimeline.push(periodResult.checkpoint);
 
       if (period.isWithdrawal) break;
     }
@@ -183,11 +175,11 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
       taxStrategy,
       taxRate,
       periodicTaxPaidSoFar,
-      leftoverCash,
+      leftoverCash: simulationState.leftoverCash,
     });
 
-    totalTaxAcc = totalTaxAcc.plus(cycleTax);
-    totalFeeAcc = totalFeeAcc.plus(cycleFee);
+    simulationState.totalTaxAcc = simulationState.totalTaxAcc.plus(cycleTax);
+    simulationState.totalFeeAcc = simulationState.totalFeeAcc.plus(cycleFee);
 
     if (
       shouldStopSingleBondSimulation({
@@ -198,25 +190,25 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
       })
     ) {
       const totalHorizonYears = differenceInDays(actualCycleEndDate, startDate) / 365.25;
-      calculationNotes.push(
+      simulationState.calculationNotes.push(
         ...buildSingleBondTerminalNotes({
           rollover,
-          cycleIndex,
+          cycleIndex: simulationState.cycleIndex,
           isEarlyWithdrawal,
         }),
       );
 
       return createFinalSingleBondResult({
         initialInvestment,
-        timeline: globalTimeline,
+        timeline: simulationState.globalTimeline,
         cycleNetProceeds: netProceeds,
-        totalTax: totalTaxAcc,
-        totalFee: totalFeeAcc,
+        totalTax: simulationState.totalTaxAcc,
+        totalFee: simulationState.totalFeeAcc,
         isEarlyWithdrawal,
         cycleMaturityDate,
         totalHorizonYears,
-        calculationNotes,
-        dataQualityFlags: Array.from(dataQualityFlags),
+        calculationNotes: simulationState.calculationNotes,
+        dataQualityFlags: Array.from(simulationState.dataQualityFlags),
       });
     }
 
@@ -224,14 +216,14 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
       netProceeds,
       actualCycleEndDate,
       isRebought,
-      nextCycleIndex: cycleIndex + 1,
+      nextCycleIndex: simulationState.cycleIndex + 1,
     });
-    currentInitialInvestment = nextCycleState.currentInitialInvestment;
-    leftoverCash = nextCycleState.leftoverCash;
-    globalAccumulatedNetInterest = nextCycleState.globalAccumulatedNetInterest;
-    currentPurchaseDate = nextCycleState.currentPurchaseDate;
-    applySwapDiscountThisCycle = nextCycleState.applySwapDiscountThisCycle;
-    cycleIndex = nextCycleState.cycleIndex;
+    simulationState.currentInitialInvestment = nextCycleState.currentInitialInvestment;
+    simulationState.leftoverCash = nextCycleState.leftoverCash;
+    simulationState.globalAccumulatedNetInterest = nextCycleState.globalAccumulatedNetInterest;
+    simulationState.currentPurchaseDate = nextCycleState.currentPurchaseDate;
+    simulationState.applySwapDiscountThisCycle = nextCycleState.applySwapDiscountThisCycle;
+    simulationState.cycleIndex = nextCycleState.cycleIndex;
   }
 
   throw createNumericFaultError(
@@ -240,8 +232,8 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
       details: {
         purchaseDate: startDate.toISOString(),
         withdrawalDate: targetWithdrawalDate.toISOString(),
-        timelineLength: globalTimeline.length,
-        cycleIndex,
+        timelineLength: simulationState.globalTimeline.length,
+        cycleIndex: simulationState.cycleIndex,
       },
     },
   );
