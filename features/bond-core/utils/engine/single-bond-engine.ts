@@ -1,41 +1,26 @@
-import { differenceInDays, differenceInMonths, isBefore } from 'date-fns';
+import { differenceInDays, isBefore } from 'date-fns';
 import { Decimal } from 'decimal.js';
 
 import { BOND_DEFINITIONS } from '../../constants/bond-definitions';
 import { createNumericFaultError } from '../../errors';
 import { BondInputs, CalculationResult, YearlyTimelinePoint } from '../../types';
-import { SimulationEvent, SimulationEventType } from '../../types/simulation';
+import { SimulationEventType } from '../../types/simulation';
 import { withMathGuard } from '../engine-guards';
 
-import { calculateCumulativeInflation } from './inflation';
 import { normalizeBondInputs } from './input-normalization';
 import { createFinalSingleBondResult, createInitialTimelinePoint } from './result-assembly';
-import { resolveSingleBondCheckpointValues } from './single-bond-accounting';
-import {
-  createSingleBondCheckpoint,
-  resolveSingleBondCycleSettlement,
-} from './single-bond-checkpoint';
+import { resolveSingleBondCycleSettlement } from './single-bond-checkpoint';
 import {
   resolveNextSingleBondCycleState,
   resolveSingleBondCycleDates,
   resolveSingleBondCycleInvestment,
 } from './single-bond-cycle';
-import {
-  createCyclePurchaseEvent,
-  createEarlyRedemptionFeeEvent,
-  createFinalTaxSettlementEvent,
-  createMaturityEvent,
-  createPayoutEvent,
-  createPeriodicTaxSettlementEvent,
-  createWithdrawalEvent,
-} from './single-bond-events';
-import { resolveSingleBondPeriodAccrualStep } from './single-bond-period-step';
+import { runSingleBondPeriod } from './single-bond-period-runner';
 import { applySingleBondTaxRelief } from './single-bond-tax-relief';
 import {
   buildSingleBondTerminalNotes,
   shouldStopSingleBondSimulation,
 } from './single-bond-terminal';
-import { calculateTaxAmount, shouldWithholdPeriodicTax } from './tax-settlement';
 import { generateCyclePeriods } from './timeline-builder';
 
 /**
@@ -142,10 +127,13 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
 
     for (let i = 0; i < periods.length; i++) {
       const period = periods[i];
-      const periodStep = resolveSingleBondPeriodAccrualStep({
+      const periodResult = runSingleBondPeriod({
         period,
-        cyclePurchaseDate: currentPurchaseDate,
+        isFirstPeriod: i === 0,
         simulationStartDate: startDate,
+        targetWithdrawalDate,
+        cyclePurchaseDate: currentPurchaseDate,
+        cycleIndex,
         bondType,
         firstYearRate,
         expectedInflation,
@@ -156,145 +144,29 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
         customNbpRate: inputs.customNbpRate,
         historicalData,
         currentNominalValue,
-        payoutFrequency,
-      });
-      const events: SimulationEvent[] = [];
-
-      if (i === 0) {
-        events.push(
-          createCyclePurchaseEvent({
-            cycleIndex,
-            date: period.startDate,
-            numberOfBonds,
-            nominalStartingValue,
-          }),
-        );
-      }
-      events.push(...periodStep.events);
-
-      const { periodRateState, rateContext } = periodStep;
-      const {
-        currentInterestRate,
-        rateSource,
-        rateReferenceValue,
-        rateMarginApplied,
-        usedProjectedRate,
-      } = rateContext;
-
-      if (usedProjectedRate) {
-        dataQualityFlags.add('projected_rate_segment');
-      }
-
-      const { interestEarned, previousNominalValue } = periodStep;
-      totalInterestEarnedSoFar = totalInterestEarnedSoFar.plus(interestEarned);
-
-      let taxDeducted = new Decimal(0);
-      if (shouldWithholdPeriodicTax(taxStrategy, isCapitalized)) {
-        if (!period.isWithdrawal || !isEarlyWithdrawal) {
-          taxDeducted = calculateTaxAmount(interestEarned, taxStrategy, true, taxRate);
-          periodicTaxPaidSoFar = periodicTaxPaidSoFar.plus(taxDeducted);
-          if (taxDeducted.gt(0)) {
-            events.push(createPeriodicTaxSettlementEvent(period.endDate, taxDeducted));
-            events.push(createPayoutEvent(period.endDate, interestEarned.minus(taxDeducted)));
-          }
-        }
-      } else {
-        if (isCapitalized) {
-          currentNominalValue = currentNominalValue.plus(interestEarned);
-        }
-      }
-
-      const netInterest = interestEarned.minus(taxDeducted);
-      globalAccumulatedNetInterest = globalAccumulatedNetInterest.plus(netInterest);
-
-      const totalMonthsSoFar = differenceInMonths(period.endDate, startDate);
-      const cumulativeInflation = calculateCumulativeInflation(
-        totalMonthsSoFar,
-        expectedInflation,
-        inputs.customInflation,
-        startDate,
-      );
-
-      const checkpointValues = resolveSingleBondCheckpointValues({
-        bondType,
-        isEarlyWithdrawal,
-        isWithdrawal: period.isWithdrawal,
-        isMaturity: period.isMaturity,
         totalInterestEarnedSoFar,
+        periodicTaxPaidSoFar,
+        globalAccumulatedNetInterest,
         numberOfBonds,
+        nominalStartingValue,
         earlyWithdrawalFee,
         isCapitalized,
-        currentNominalValue,
-        nominalStartingValue,
+        payoutFrequency,
+        isEarlyWithdrawal,
         taxStrategy,
         taxRate,
-        periodicTaxPaidSoFar,
-        cumulativeInflation,
         initialInvestment,
         leftoverCash,
       });
-
-      if (period.isWithdrawal && isEarlyWithdrawal && checkpointValues.currentWithdrawalFee.gt(0)) {
-        events.push(
-          createEarlyRedemptionFeeEvent(period.endDate, checkpointValues.currentWithdrawalFee),
-        );
+      currentNominalValue = periodResult.currentNominalValue;
+      totalInterestEarnedSoFar = periodResult.totalInterestEarnedSoFar;
+      periodicTaxPaidSoFar = periodResult.periodicTaxPaidSoFar;
+      globalAccumulatedNetInterest = periodResult.globalAccumulatedNetInterest;
+      if (periodResult.dataQualityFlag) {
+        dataQualityFlags.add(periodResult.dataQualityFlag);
       }
 
-      if (
-        period.isWithdrawal &&
-        !shouldWithholdPeriodicTax(taxStrategy, isCapitalized) &&
-        checkpointValues.currentTaxAtPoint.gt(0)
-      ) {
-        events.push(
-          createFinalTaxSettlementEvent(period.endDate, checkpointValues.currentTaxAtPoint),
-        );
-      }
-
-      if (period.isMaturity) {
-        events.push(createMaturityEvent(period.endDate));
-      }
-
-      if (period.isWithdrawal) {
-        events.push(
-          createWithdrawalEvent(
-            period.endDate,
-            checkpointValues.currentGrossValue
-              .minus(checkpointValues.currentWithdrawalFee)
-              .minus(checkpointValues.currentTaxAtPoint),
-          ),
-        );
-      }
-
-      globalTimeline.push(
-        createSingleBondCheckpoint({
-          totalMonthsSoFar,
-          periodLabel: period.periodLabel,
-          cycleIndex,
-          cycleStartDate: currentPurchaseDate,
-          periodEndDate: period.endDate,
-          currentInterestRate,
-          rateSource,
-          rateReferenceValue,
-          rateMarginApplied,
-          usedProjectedRate,
-          previousNominalValue,
-          interestEarned,
-          taxDeducted,
-          netInterest,
-          currentNominalPrincipal: checkpointValues.currentNominalPrincipal,
-          globalAccumulatedNetInterest,
-          totalValue: checkpointValues.totalValue,
-          realValue: checkpointValues.realValue,
-          checkpointNetProfit: checkpointValues.checkpointNetProfit,
-          hypotheticalEarlyExitValue: checkpointValues.hypotheticalEarlyExitValue,
-          cumulativeInflation,
-          isMaturity: period.isMaturity,
-          isWithdrawal: period.endDate.getTime() === targetWithdrawalDate.getTime(),
-          inflationReference: periodRateState.inflationReference,
-          nbpReference: periodRateState.nbpReference,
-          events,
-        }),
-      );
+      globalTimeline.push(periodResult.checkpoint);
 
       if (period.isWithdrawal) break;
     }
