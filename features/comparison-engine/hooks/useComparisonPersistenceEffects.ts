@@ -133,14 +133,7 @@ export function useComparisonPersistenceEffects({
     }
 
     applyMacroDefaults(macroDefaults);
-  }, [
-    applyMacroDefaults,
-    hasTouchedMacroAssumptions,
-    isPersistenceReady,
-    macroDefaults,
-    reconcilePersistedMacroDefaults,
-    restoredFromPersistence,
-  ]);
+  }, [hasTouchedMacroAssumptions, isPersistenceReady, macroDefaults, restoredFromPersistence]);
 
   useEffect(() => {
     if (!isPersistenceReady) {

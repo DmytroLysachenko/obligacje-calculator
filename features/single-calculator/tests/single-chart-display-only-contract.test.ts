@@ -7,6 +7,7 @@ const root = process.cwd();
 
 const files = {
   hook: 'features/single-calculator/hooks/useBondCalculator.ts',
+  effects: 'features/single-calculator/hooks/useBondCalculatorEffects.ts',
   actions: 'features/single-calculator/lib/single-calculator-actions.ts',
   persistence: 'features/single-calculator/lib/single-calculator-persistence.ts',
   chart: 'features/single-calculator/components/BondChart.tsx',
@@ -43,13 +44,15 @@ describe('single calculator chart display-only contract', () => {
 
   it('normalizes restored persistence before it re-enters single calculator state', () => {
     const hook = read(files.hook);
+    const effects = read(files.effects);
     const persistence = read(files.persistence);
 
-    expectContains(hook, 'restoreSingleCalculatorState(restoredState, fallbackInputs)');
-    expectContains(hook, 'setInputs(restored.inputs);');
-    expectContains(hook, 'setLastCommittedInputs(restored.lastCommittedInputs);');
-    expectContains(hook, 'savePersistedCalculatorState(');
-    expectContains(hook, 'SINGLE_CALCULATOR_STORAGE_KEY');
+    expectContains(hook, 'useBondCalculatorEffects({');
+    expectContains(effects, 'restoreSingleCalculatorState(restoredState, fallbackInputs)');
+    expectContains(effects, 'setInputs(restored.inputs);');
+    expectContains(effects, 'setLastCommittedInputs(restored.lastCommittedInputs);');
+    expectContains(effects, 'savePersistedCalculatorState(');
+    expectContains(effects, 'SINGLE_CALCULATOR_STORAGE_KEY');
     expectContains(persistence, 'const restoredEnvelope = restoreVersionedEnvelope');
     expectContains(persistence, 'stripDisplayOnlyInputs(restoredState.inputs) ?? fallbackInputs');
     expectContains(
