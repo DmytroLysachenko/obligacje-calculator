@@ -10,14 +10,9 @@ import { RecalculateButton } from '@/shared/components/feedback/RecalculateButto
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
-import { getBondColor } from '@/shared/lib/charts/get-bond-color';
 
 import { useComparison } from '../hooks/useComparison';
-import {
-  buildComparisonChartData,
-  getComparisonAssumptionsBondType,
-  usesMixedTimelineCadence,
-} from '../lib/comparison-display';
+import { buildComparisonContainerViewModel } from '../lib/comparison-container-model';
 
 import {
   ComparisonAssumptionsMetaPanel,
@@ -80,46 +75,47 @@ export const ComparisonContainer: React.FC = () => {
     },
     [currencyFormatter, hasMounted],
   );
-  const resultInputsA = committedInputsA ?? inputsA;
-  const resultInputsB = committedInputsB ?? inputsB;
-  const chartData = useMemo(
+  const {
+    resultInputsA,
+    resultInputsB,
+    chartData,
+    hasMixedTimelineCadence,
+    assumptionsBondType,
+    durationMismatch,
+    scenarioAColor,
+    scenarioBColor,
+  } = useMemo(
     () =>
-      resultsA && resultsB
-        ? buildComparisonChartData({
-            purchaseDate: resultInputsA.purchaseDate,
-            withdrawalDateA: resultInputsA.withdrawalDate,
-            withdrawalDateB: resultInputsB.withdrawalDate,
-            resultsA,
-            resultsB,
-            language,
-            t,
-            chartStep,
-          })
-        : [],
+      buildComparisonContainerViewModel({
+        inputsA,
+        inputsB,
+        committedInputsA,
+        committedInputsB,
+        resultsA,
+        resultsB,
+        scenarioABondType: scenarioA.bondType,
+        scenarioBBondType: scenarioB.bondType,
+        definitions,
+        language,
+        t,
+        chartStep,
+      }),
     [
       chartStep,
+      committedInputsA,
+      committedInputsB,
+      definitions,
+      inputsA,
+      inputsB,
       language,
-      resultInputsA.purchaseDate,
-      resultInputsA.withdrawalDate,
-      resultInputsB.withdrawalDate,
       resultsA,
       resultsB,
+      scenarioA.bondType,
+      scenarioB.bondType,
       t,
     ],
   );
-  const hasMixedTimelineCadence = useMemo(
-    () => usesMixedTimelineCadence(resultInputsA, resultInputsB),
-    [resultInputsA, resultInputsB],
-  );
-  const assumptionsBondType = useMemo(
-    () => getComparisonAssumptionsBondType(scenarioA.bondType, scenarioB.bondType),
-    [scenarioA.bondType, scenarioB.bondType],
-  );
-  const durationMismatch =
-    definitions[scenarioA.bondType].duration !== definitions[scenarioB.bondType].duration;
   const durationMismatchText = durationMismatch ? t('comparison.auto_rollover_notice') : null;
-  const scenarioAColor = getBondColor(scenarioA.bondType);
-  const scenarioBColor = getBondColor(scenarioB.bondType);
   return (
     <CalculatorPageShell
       title={t('nav.comparison')}

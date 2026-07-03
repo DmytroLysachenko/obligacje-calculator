@@ -16,6 +16,7 @@ const files = {
   tableScenarioCells:
     'features/comparison-engine/components/comparison-table/ComparisonTableScenarioCells.tsx',
   tableModel: 'features/comparison-engine/lib/comparison-table-model.ts',
+  containerModel: 'features/comparison-engine/lib/comparison-container-model.ts',
   calculatorState: 'features/comparison-engine/lib/comparison-calculator-state.ts',
   clientState: 'features/comparison-engine/lib/comparison-client-state.ts',
   persistenceEffects: 'features/comparison-engine/hooks/useComparisonPersistenceEffects.ts',
@@ -73,12 +74,14 @@ describe('comparison layout contract', () => {
 
   it('renders committed result inputs instead of projecting old results onto edited inputs', () => {
     const container = read(files.container);
+    const containerModel = read(files.containerModel);
 
-    expect(container).toContain('const resultInputsA = committedInputsA ?? inputsA;');
-    expect(container).toContain('const resultInputsB = committedInputsB ?? inputsB;');
-    expect(container).toContain('purchaseDate: resultInputsA.purchaseDate');
-    expect(container).toContain('withdrawalDateA: resultInputsA.withdrawalDate');
-    expect(container).toContain('withdrawalDateB: resultInputsB.withdrawalDate');
+    expect(container).toContain('buildComparisonContainerViewModel({');
+    expect(containerModel).toContain('const resultInputsA = committedInputsA ?? inputsA;');
+    expect(containerModel).toContain('const resultInputsB = committedInputsB ?? inputsB;');
+    expect(containerModel).toContain('purchaseDate: resultInputsA.purchaseDate');
+    expect(containerModel).toContain('withdrawalDateA: resultInputsA.withdrawalDate');
+    expect(containerModel).toContain('withdrawalDateB: resultInputsB.withdrawalDate');
     expect(container).toContain('inputsA={resultInputsA}');
     expect(container).toContain('inputsB={resultInputsB}');
   });
