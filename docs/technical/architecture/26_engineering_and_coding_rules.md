@@ -193,8 +193,8 @@ operator scripts before removal. Confirmed dead code should be deleted; intended
 dynamic entrypoints should be documented or added to the scan config with a
 specific reason.
 
-The maintained baseline is zero confirmed unused files. As of July 2, 2026,
-`pnpm scan:unused` reports 8 unused value exports and 17 unused exported types.
+The maintained baseline is zero confirmed unused files. As of July 3, 2026,
+`pnpm scan:unused` reports 8 unused value exports and 11 unused exported types.
 These remaining Knip findings are reviewed API-surface candidates: Auth.js and
 i18n convenience exports, domain/request types, shared UI primitive types, and
 framework- or test-facing types should remain exported unless a focused
@@ -249,6 +249,10 @@ Current calculator and comparison surfaces should follow this pattern:
 - `features/<feature>/lib/*-state.ts` owns deterministic input normalization and bond-type/series updates
 - `features/<feature>/lib/*-model.ts` owns metric arrays, chart rows, summaries, scenario facts, and other render-ready data
 - `features/<feature>/constants/**` owns durable static metadata such as comparison asset definitions
+- `features/<feature>/hooks/use*Effects.ts` owns React effect wiring such as
+  persistence restore/save, macro/default reconciliation, definition sync,
+  fetch orchestration, and auto-calculation after deterministic transition
+  logic has moved into feature-local `lib/**` helpers
 - components consume prepared model output and render sections; they should not rebuild domain summaries inline when a feature model exists
 - large render surfaces may split into focused section components after pure
   model extraction; source-shape contracts should follow the new section/model
@@ -540,7 +544,7 @@ Single-letter or cryptic names are not acceptable for durable application struct
 Retained calculator surfaces must preserve these contracts:
 
 - `features/bond-core/utils/calculations.ts` is a stable public entrypoint, not the engine implementation. New engine logic belongs in `features/bond-core/utils/engine/**` with focused regression tests.
-- single-bond and regular-investment engines should read as orchestration files; cycle setup, schedule handling, accounting, and lot/contribution helpers belong in focused sibling modules under `features/bond-core/utils/engine/**`
+- single-bond and regular-investment engines should read as orchestration files; cycle setup, schedule handling, period execution, mutable simulation state, accounting, and lot/contribution helpers belong in focused sibling modules under `features/bond-core/utils/engine/**`
 - display settings such as chart granularity may change aggregation only; they must never change engine truth
 - chart, table, quick-audit, CSV, and PDF output for one calculator flow must derive from the same normalized display model
 - CPI and NBP chart overlays must be rendered from truthful reference-series display data; do not fabricate smooth transitions by interpolating reference values through bond checkpoints

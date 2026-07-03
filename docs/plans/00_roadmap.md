@@ -1,6 +1,6 @@
 # 00. Current Product Roadmap
 
-This roadmap reflects the real state of the application as of July 2, 2026.
+This roadmap reflects the real state of the application as of July 3, 2026.
 
 The app is **not production-ready**.
 
@@ -50,8 +50,15 @@ and collect final release-gate evidence.
 - the UI surface area is still larger than the trusted release scope
 - some secondary features remain intentionally conditional, experimental, or limited
 - unused-code inventory is now scanable with `pnpm scan:unused`; the current
-  baseline reports 8 unused value exports and 17 unused exported-type candidates
+  baseline reports 8 unused value exports and 11 unused exported-type candidates
   that need human review before removal, with no confirmed unused files
+- single and comparison calculator hooks now delegate persistence, macro/default,
+  definition-sync, fetch, and auto-calculation effects to feature-local
+  `hooks/use*Effects.ts` modules
+- the single-bond engine delegates period execution and mutable simulation state
+  to focused engine helpers instead of keeping those concerns inline
+- server calculation-service logging now routes through `lib/server/logging.ts`,
+  and clean-code contracts only allow documented console escape hatches
 - some live surfaces should still be treated as experimental until proven stable
 - documentation previously overstated maturity and completion
 
