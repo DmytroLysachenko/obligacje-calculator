@@ -18,6 +18,7 @@ const files = {
   tableModel: 'features/comparison-engine/lib/comparison-table-model.ts',
   calculatorState: 'features/comparison-engine/lib/comparison-calculator-state.ts',
   clientState: 'features/comparison-engine/lib/comparison-client-state.ts',
+  persistenceEffects: 'features/comparison-engine/hooks/useComparisonPersistenceEffects.ts',
   persistence: 'features/comparison-engine/lib/comparison-persistence.ts',
   hook: 'features/comparison-engine/hooks/useComparison.ts',
 } as const;
@@ -86,13 +87,15 @@ describe('comparison layout contract', () => {
     const hook = read(files.hook);
     const calculatorState = read(files.calculatorState);
     const clientState = read(files.clientState);
+    const persistenceEffects = read(files.persistenceEffects);
 
     expect(hook).toContain('const displayIsDirty = useMemo(() => {');
     expect(hook).toContain('getComparisonDirtyState({');
     expect(calculatorState).toContain('areCalculatorStatesEqual(inputsA, committedInputsA)');
     expect(calculatorState).toContain('areCalculatorStatesEqual(inputsB, committedInputsB)');
     expect(clientState).toContain('preserveStableState(previous, {');
-    expect(hook).toContain('applyComparisonMacroDefaults(previous, defaults)');
+    expect(persistenceEffects).toContain('applyComparisonMacroDefaults(previous, defaults)');
+    expect(hook).toContain('useComparisonPersistenceEffects({');
     expect(hook).toContain('isDirty: displayIsDirty');
   });
 

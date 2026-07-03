@@ -1,14 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
-import {
-  loadPersistedCalculatorState,
-  savePersistedCalculatorState,
-} from '@/shared/lib/calculator-persistence';
 import { logClientError } from '@/shared/lib/client-logger';
 
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
@@ -26,16 +22,6 @@ import {
   splitComparisonEnvelope,
 } from '../lib/comparison-calculator-state';
 import {
-  applyComparisonMacroDefaults,
-  buildComparisonPersistenceSnapshot,
-  reconcileComparisonPersistedMacroDefaults,
-} from '../lib/comparison-client-state';
-import {
-  COMPARISON_CALCULATOR_STORAGE_KEY,
-  type PersistedComparisonState,
-  restoreComparisonState,
-} from '../lib/comparison-persistence';
-import {
   applyScenarioBondTypeUpdate,
   applyScenarioCustomHorizonEnabled,
   applyScenarioCustomHorizonMonths,
@@ -44,6 +30,8 @@ import {
   type ComparisonUpdateValue,
   isSharedComparisonMacroUpdate,
 } from '../lib/comparison-update-actions';
+
+import { useComparisonPersistenceEffects } from './useComparisonPersistenceEffects';
 
 export function useComparison() {
   const { definitions } = useBondDefinitions();
@@ -62,18 +50,6 @@ export function useComparison() {
   const restoredFromPersistence = useRef(false);
   const hasTouchedMacroAssumptions = useRef(false);
   const { isCalculating, post } = useCalculationRequest();
-
-  const applyMacroDefaults = useEffectEvent(
-    (defaults: { expectedInflation: number; expectedNbpRate: number }) => {
-      setSharedConfig((previous) => applyComparisonMacroDefaults(previous, defaults));
-    },
-  );
-
-  const reconcilePersistedMacroDefaults = useEffectEvent(
-    (defaults: { expectedInflation: number; expectedNbpRate: number }) => {
-      setSharedConfig((previous) => reconcileComparisonPersistedMacroDefaults(previous, defaults));
-    },
-  );
 
   const inputsA = useMemo(
     () => buildScenarioInputs(sharedConfig, scenarioA, definitions),
@@ -141,76 +117,28 @@ export function useComparison() {
     setScenarioB((prev) => applyScenarioBondTypeUpdate(prev, type));
   };
 
-  useEffect(() => {
-    if (hasRestoredState.current) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      const restoredState = loadPersistedCalculatorState<PersistedComparisonState>(
-        COMPARISON_CALCULATOR_STORAGE_KEY,
-      );
-      hasRestoredState.current = true;
-      const restored = restoreComparisonState(restoredState);
-      if (restored) {
-        restoredFromPersistence.current = restored.restoredFromPersistence;
-        setSharedConfig(restored.sharedConfig);
-        setScenarioA(restored.scenarioA);
-        setScenarioB(restored.scenarioB);
-        setComparisonEnvelope(restored.comparisonEnvelope);
-        setCommittedInputsA(restored.committedInputsA);
-        setCommittedInputsB(restored.committedInputsB);
-        setIsDirty(restored.isDirty);
-      }
-
-      setIsPersistenceReady(true);
-    }, 0);
-
-    return () => window.clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    if (!macroDefaults || !isPersistenceReady || hasTouchedMacroAssumptions.current) {
-      return;
-    }
-
-    if (restoredFromPersistence.current) {
-      const timer = window.setTimeout(() => {
-        reconcilePersistedMacroDefaults(macroDefaults);
-      }, 0);
-      return () => window.clearTimeout(timer);
-    }
-
-    applyMacroDefaults(macroDefaults);
-  }, [isPersistenceReady, macroDefaults]);
-
-  useEffect(() => {
-    if (!isPersistenceReady) {
-      return;
-    }
-
-    savePersistedCalculatorState(
-      COMPARISON_CALCULATOR_STORAGE_KEY,
-      buildComparisonPersistenceSnapshot({
-        sharedConfig,
-        scenarioA,
-        scenarioB,
-        comparisonEnvelope,
-        committedInputsA,
-        committedInputsB,
-        isDirty: displayIsDirty,
-      }),
-    );
-  }, [
-    committedInputsA,
-    committedInputsB,
-    comparisonEnvelope,
-    displayIsDirty,
-    isPersistenceReady,
+  useComparisonPersistenceEffects({
+    sharedConfig,
     scenarioA,
     scenarioB,
-    sharedConfig,
-  ]);
+    comparisonEnvelope,
+    committedInputsA,
+    committedInputsB,
+    displayIsDirty,
+    isPersistenceReady,
+    macroDefaults,
+    hasRestoredState,
+    restoredFromPersistence,
+    hasTouchedMacroAssumptions,
+    setSharedConfig,
+    setScenarioA,
+    setScenarioB,
+    setComparisonEnvelope,
+    setCommittedInputsA,
+    setCommittedInputsB,
+    setIsDirty,
+    setIsPersistenceReady,
+  });
 
   const setScenarioACustomHorizonEnabled = useCallback(
     (enabled: boolean) => {
