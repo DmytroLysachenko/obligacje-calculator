@@ -1,4 +1,5 @@
 import { getBondDefinitionsMap, getGlobalDataFreshness } from '@/lib/data/market-data';
+import { createServerLogger } from '@/lib/server/logging';
 
 import { BondDefinition } from './constants/bond-definitions';
 import {
@@ -12,6 +13,8 @@ import { calculationCache } from './utils/calculation-cache';
 import { sanitizeInputs } from './utils/engine-guards';
 import { HandlerFactory, MODEL_VERSION, ScenarioHandler } from './handlers';
 import { BondType } from './types';
+
+const logger = createServerLogger('CalculationService');
 
 export interface CalculationServiceDependencies {
   cache: Pick<typeof calculationCache, 'generateKey' | 'get' | 'set'>;
@@ -70,7 +73,7 @@ export class CalculationApplicationService {
       this.dependencies.cache.set(cacheKey, response);
       return response;
     } catch (error) {
-      console.error(`[CalculationService] FAILED v=${MODEL_VERSION} kind=${request.kind}`, error);
+      logger.error(`FAILED v=${MODEL_VERSION} kind=${request.kind}`, error);
       throw error;
     }
   }
