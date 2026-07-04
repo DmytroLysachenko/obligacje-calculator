@@ -17,6 +17,11 @@ import {
   type EconomicSeriesPoint,
   type PeriodValue,
 } from '@/features/economic-data/lib/economic-dashboard-model';
+import {
+  buildEconomicHeroMetrics,
+  buildEconomicPageLabels,
+  buildEconomicUsageGuide,
+} from '@/features/economic-data/lib/economic-page-model';
 import { useAppI18n } from '@/i18n/client';
 import { ChartSection } from '@/shared/components/charts/ChartSection';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
@@ -34,24 +39,7 @@ export function EconomicDataPageClient() {
     useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/inflation');
   const { data: nbpMeta, isLoading: isLoadingNbp } =
     useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/nbp-rate');
-  const labels = {
-    panel: t('economic.reference_panel'),
-    series: t('economic.series'),
-    purpose: t('economic.purpose'),
-    mode: t('economic.mode'),
-    goal: t('economic.goal'),
-    context: t('economic.context'),
-    reference: t('economic.reference'),
-    readableContext: t('economic.readable_context'),
-    howToUse: t('economic.how_to_use_page'),
-    dataQuality: t('economic.data_quality_title'),
-    pageScope: t('economic.page_scope_title'),
-    referenceRail: t('economic.reference_rail_title'),
-    statusRail: t('economic.status_rail_title'),
-    tabCharts: t('economic.tab_charts'),
-    tabStatus: t('economic.tab_status'),
-    tabGuide: t('economic.tab_guide'),
-  } as const;
+  const labels = buildEconomicPageLabels(t);
 
   const pageIntro = t('economic.page_intro');
   const floatingRateContext = getBondRateContextCopy(
@@ -60,19 +48,8 @@ export function EconomicDataPageClient() {
     0,
     t,
   );
-
-  const usageGuide = [
-    t('economic.usage_guide_1'),
-    t('economic.usage_guide_2'),
-    floatingRateContext.narrative,
-    t('economic.usage_guide_4'),
-  ];
-  const heroMetrics = [
-    { label: labels.series, value: '2' },
-    { label: labels.purpose, value: labels.context },
-    { label: labels.mode, value: labels.reference },
-    { label: labels.goal, value: labels.readableContext },
-  ];
+  const usageGuide = buildEconomicUsageGuide(t, floatingRateContext);
+  const heroMetrics = buildEconomicHeroMetrics(labels);
 
   return (
     <CalculatorPageShell
