@@ -1,12 +1,12 @@
-import { eq } from 'drizzle-orm';
-
-import { db } from '@/db';
-import { userSettings } from '@/db/schema';
+import {
+  createUserSettings,
+  findUserSettingsByOwner,
+  updateUserSettingsByOwner,
+  type UserSettingsRecord,
+} from './repository';
 
 export async function getOwnerSettings(ownerId: string) {
-  const settings = await db.query.userSettings.findFirst({
-    where: eq(userSettings.userId, ownerId),
-  });
+  const settings = await findUserSettingsByOwner(ownerId);
 
   if (settings) {
     return settings;
@@ -20,7 +20,7 @@ export async function getOwnerSettings(ownerId: string) {
     defaultInflationScenario: 'base',
     chartType: 'area',
     updatedAt: new Date(),
-  } as typeof userSettings.$inferSelect;
+  } as UserSettingsRecord;
 }
 
 export async function updateOwnerSettings(
@@ -32,33 +32,11 @@ export async function updateOwnerSettings(
     chartType?: string;
   },
 ) {
-  const existing = await db.query.userSettings.findFirst({
-    where: eq(userSettings.userId, ownerId),
-  });
+  const existing = await findUserSettingsByOwner(ownerId);
 
   if (existing) {
-    const [updated] = await db
-      .update(userSettings)
-      .set({
-        ...input,
-        updatedAt: new Date(),
-      })
-      .where(eq(userSettings.userId, ownerId))
-      .returning();
-
-    return updated;
+    return updateUserSettingsByOwner(ownerId, input);
   }
 
-  const [created] = await db
-    .insert(userSettings)
-    .values({
-      userId: ownerId,
-      currency: input.currency ?? 'PLN',
-      theme: input.theme ?? 'system',
-      defaultInflationScenario: input.defaultInflationScenario ?? 'base',
-      chartType: input.chartType ?? 'area',
-    })
-    .returning();
-
-  return created;
+  return createUserSettings(ownerId, input);
 }
