@@ -106,7 +106,7 @@ const sideAndOperationalRefinedFiles = [
   'features/comparison-engine/components/MultiAssetPageClient.tsx',
   'features/optimizer/components/BondOptimizerClient.tsx',
   'features/recovery-lab/components/RecoveryLabPageClient.tsx',
-  'features/admin/status/AdminStatusDashboard.tsx',
+  'features/admin/status/components/AdminStatusDashboard.tsx',
 ] as const;
 
 const feedbackRefinedFiles = [

@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/button';
 import { AppToast } from '@/shared/components/feedback/AppToast';
 import { ConfirmActionDialog } from '@/shared/components/feedback/ConfirmActionDialog';
 
-import type { AdminStatusMetrics } from './admin-status-model';
-import type { AdminDashboardCopy } from './admin-status-types';
+import type { AdminStatusMetrics } from '../lib/admin-status-model';
+import type { AdminDashboardCopy } from '../types/admin-status-types';
 
 export { AdminInventoryTable } from './AdminInventoryTable';
 

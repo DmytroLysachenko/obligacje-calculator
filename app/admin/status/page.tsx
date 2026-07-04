@@ -3,8 +3,8 @@
 import { AlertCircle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { AdminStatusDashboard } from '@/features/admin/status/AdminStatusDashboard';
-import { useAdminStatusDashboard } from '@/features/admin/status/useAdminStatusDashboard';
+import { AdminStatusDashboard } from '@/features/admin/status/components/AdminStatusDashboard';
+import { useAdminStatusDashboard } from '@/features/admin/status/hooks/useAdminStatusDashboard';
 import { useAppI18n } from '@/i18n/client';
 
 export default function AdminStatusPage() {

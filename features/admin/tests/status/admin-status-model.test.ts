@@ -7,7 +7,7 @@ import {
   createAdminStatusViewModel,
   hasSeriesDataGap,
   resolveSeriesHealth,
-} from '../../status/admin-status-model';
+} from '../../status/lib/admin-status-model';
 
 const now = new Date('2026-06-15T12:00:00.000Z');
 

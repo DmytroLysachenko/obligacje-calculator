@@ -13,8 +13,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-import type { AdminSeriesRowModel } from './admin-status-model';
-import type { AdminDashboardCopy } from './admin-status-types';
+import type { AdminSeriesRowModel } from '../lib/admin-status-model';
+import type { AdminDashboardCopy } from '../types/admin-status-types';
 
 export function AdminInventoryTable({
   rows,
