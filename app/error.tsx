@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { logClientError } from '@/shared/lib/client-logger';
 
 export default function GlobalError({
   error,
@@ -14,7 +15,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error('[GlobalError]', error);
+    logClientError('[GlobalError]', error);
   }, [error]);
 
   return (
