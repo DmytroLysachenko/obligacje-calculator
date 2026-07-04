@@ -8,6 +8,7 @@ const root = process.cwd();
 const paths = {
   page: 'features/education/components/EducationClient.tsx',
   card: 'features/education/components/BondEducationCard.tsx',
+  constants: 'features/education/constants/education-content.ts',
   en: 'i18n/translations/en.json',
   pl: 'i18n/translations/pl.json',
 } as const;
@@ -33,12 +34,14 @@ function expectNoFragments(source: string, fragments: readonly string[]) {
 describe('education entry layout contracts', () => {
   it('keeps education page as a calculator entry flow', () => {
     const source = read(paths.page);
+    const constants = read(paths.constants);
 
-    expectContains(source, 'const starterGuides = [');
-    expectContains(source, "key: 'short_term'");
-    expectContains(source, "key: 'inflation'");
-    expectContains(source, "key: 'family'");
-    expectContains(source, "key: 'long_term'");
+    expectContains(source, "from '@/features/education/constants/education-content'");
+    expectContains(constants, 'export const starterGuides');
+    expectContains(constants, "key: 'short_term'");
+    expectContains(constants, "key: 'inflation'");
+    expectContains(constants, "key: 'family'");
+    expectContains(constants, "key: 'long_term'");
     expectContains(source, 'href="/single-calculator"');
     expectContains(source, "t('education.starter_title')");
     expectContains(source, "t('education.starter_cta')");

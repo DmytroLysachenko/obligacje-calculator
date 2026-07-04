@@ -4,21 +4,14 @@ import {
   AlertTriangle,
   ArrowRight,
   Briefcase,
-  Clock,
   HelpCircle,
   Info,
-  Layers,
-  LogOut,
-  Percent,
   Scale,
-  ShieldCheck,
   Target,
   TrendingDown,
-  Users,
   Zap,
 } from 'lucide-react';
 import Link from 'next/link';
-import React from 'react';
 
 import {
   Accordion,
@@ -28,6 +21,7 @@ import {
 } from '@/components/ui/accordion';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BondEducationCard } from '@/features/education/components/BondEducationCard';
+import { educationConcepts, starterGuides } from '@/features/education/constants/education-content';
 import { useAppI18n } from '@/i18n/client';
 import { PageTransition } from '@/shared/components/page/PageTransition';
 import { SectionBlock } from '@/shared/components/page/SectionBlock';
@@ -36,36 +30,6 @@ import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 export default function EducationClient() {
   const { t } = useAppI18n();
   const { definitions, isLoading } = useBondDefinitions();
-
-  const concepts = [
-    { key: 'inflation', icon: TrendingDown },
-    { key: 'margin', icon: Target },
-    { key: 'capitalization', icon: Layers },
-    { key: 'belka_tax', icon: Percent },
-    { key: 'early_redemption', icon: LogOut },
-  ];
-  const starterGuides = [
-    {
-      key: 'short_term',
-      icon: Clock,
-      bonds: 'OTS / ROR',
-    },
-    {
-      key: 'inflation',
-      icon: ShieldCheck,
-      bonds: 'COI / EDO',
-    },
-    {
-      key: 'family',
-      icon: Users,
-      bonds: 'ROS / ROD',
-    },
-    {
-      key: 'long_term',
-      icon: Target,
-      bonds: 'EDO / ROD',
-    },
-  ];
 
   if (isLoading || !definitions) {
     return (
@@ -99,7 +63,7 @@ export default function EducationClient() {
           description={t('education.concepts_subtitle')}
         >
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3">
-            {concepts.map((concept) => (
+            {educationConcepts.map((concept) => (
               <article
                 key={concept.key}
                 className="border-t border-border py-5 transition-colors hover:border-foreground/30"

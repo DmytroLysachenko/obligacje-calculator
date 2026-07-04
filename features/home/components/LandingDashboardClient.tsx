@@ -1,31 +1,23 @@
 'use client';
-import {
-  ArrowRight,
-  BarChart2,
-  BookOpen,
-  Calculator,
-  CheckCircle2,
-  Layers,
-  Scale,
-  Sparkles,
-  TrendingUp,
-  Wallet,
-} from 'lucide-react';
+import { ArrowRight, CheckCircle2, Sparkles, Wallet } from 'lucide-react';
 import Link from 'next/link';
-import React from 'react';
 
 import { Button } from '@/components/ui/button';
+import {
+  heroTrustStripKeys,
+  homeStepIds,
+  type HomeToolDefinition,
+  primaryHomeTools,
+  secondaryHomeTools,
+} from '@/features/home/constants/dashboard';
 import { useAppI18n } from '@/i18n/client';
-import { FeatureStatus } from '@/shared/components/feedback/FeatureStatusNotice';
 import { SectionHeading, ToolCard } from '@/shared/components/page/ToolCard';
 type ToolItem = {
   href: string;
   title: string;
   description: string;
-  icon: React.ComponentType<{
-    className?: string;
-  }>;
-  status: FeatureStatus;
+  icon: HomeToolDefinition['icon'];
+  status: HomeToolDefinition['status'];
 };
 type HomeStepItem = {
   id: string;
@@ -68,10 +60,9 @@ function HomeStep({ title, description }: { title: string; description: string }
 }
 function HeroTrustStrip() {
   const { t } = useAppI18n();
-  const itemKeys = ['item_1', 'item_2', 'item_3'] as const;
   return (
     <div className="grid border-y border-border py-2 md:grid-cols-3 md:divide-x md:divide-border">
-      {itemKeys.map((itemKey) => (
+      {heroTrustStripKeys.map((itemKey) => (
         <span
           key={itemKey}
           className="px-1 py-2 text-xs font-semibold leading-5 text-muted-foreground md:px-4"
@@ -84,65 +75,21 @@ function HeroTrustStrip() {
 }
 export function LandingDashboardClient() {
   const { t } = useAppI18n();
-  const stepIds = ['learn-rules', 'run-one', 'expand-later'] as const;
-  const stepCopy: HomeStepItem[] = stepIds.map((id) => ({
+  const stepCopy: HomeStepItem[] = homeStepIds.map((id) => ({
     id,
     title: t(`landing.home_steps.${id}.title`),
     description: t(`landing.home_steps.${id}.description`),
   }));
-  const primaryTools: ToolItem[] = [
-    {
-      href: '/single-calculator',
-      title: t('nav.single_calculator'),
-      description: t('landing.cards.single_calculator'),
-      icon: Calculator,
-      status: 'trusted',
-    },
-    {
-      href: '/education',
-      title: t('nav.education'),
-      description: t('landing.cards.education'),
-      icon: BookOpen,
-      status: 'trusted',
-    },
-    {
-      href: '/economic-data',
-      title: t('nav.economic_data'),
-      description: t('landing.cards.economic_data'),
-      icon: BarChart2,
-      status: 'reference',
-    },
-  ];
-  const secondaryTools: ToolItem[] = [
-    {
-      href: '/compare',
-      title: t('nav.comparison'),
-      description: t('landing.cards.comparison'),
-      icon: Scale,
-      status: 'conditional',
-    },
-    {
-      href: '/regular-investment',
-      title: t('nav.regular_investment'),
-      description: t('landing.cards.regular_investment'),
-      icon: TrendingUp,
-      status: 'conditional',
-    },
-    {
-      href: '/ladder',
-      title: t('nav.ladder'),
-      description: t('landing.cards.ladder'),
-      icon: Layers,
-      status: 'conditional',
-    },
-    {
-      href: '/notebook',
-      title: t('nav.notebook'),
-      description: t('landing.recovery_home.notebook_card'),
-      icon: Wallet,
-      status: 'conditional',
-    },
-  ];
+  const primaryTools: ToolItem[] = primaryHomeTools.map((item) => ({
+    ...item,
+    title: t(item.titleKey),
+    description: t(item.descriptionKey),
+  }));
+  const secondaryTools: ToolItem[] = secondaryHomeTools.map((item) => ({
+    ...item,
+    title: t(item.titleKey),
+    description: t(item.descriptionKey),
+  }));
   const startHereTitle = t('landing.start_here.title');
   const startHereDesc = t('landing.start_here.description');
   const secondaryTitle = t('landing.secondary_tools.title');
