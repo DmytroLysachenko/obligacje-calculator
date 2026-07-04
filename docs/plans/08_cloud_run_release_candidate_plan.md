@@ -91,10 +91,12 @@ Deployment checks:
 The latest production-hardening tranche split several large UI and config
 areas into clearer layers:
 
-- optimizer page: `BondOptimizerClient` owns shell wiring, state, and
-  calculation requests; `OptimizerInputPanel` owns form controls; and
+- optimizer page: `BondOptimizerClient` owns shell composition,
+  `useOptimizerCalculator` owns state and calculation requests,
+  `OptimizerInputPanel` owns form controls, and
   `OptimizerResultsPanel` owns ready/result/audit rendering
 - economic-data page: the client owns data hooks and tab composition;
+  `economic-page-model.ts` owns labels/metrics/guide models, and
   `EconomicDashboardSections` owns reference/status/guide sections
 - comparison results: UI rendering uses `comparison-results-panel-model.ts` and
   `comparison-results-chart-model.ts` for metrics, chart rows, domains, and

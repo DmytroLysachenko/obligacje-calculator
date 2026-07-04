@@ -1,6 +1,6 @@
 # 00. Current Product Roadmap
 
-This roadmap reflects the real state of the application as of July 3, 2026.
+This roadmap reflects the real state of the application as of July 4, 2026.
 
 The app is **not production-ready**.
 
@@ -23,6 +23,8 @@ The recovery work already completed has materially changed the product:
 - retained-core comparison and ladder paths now also have dedicated baseline regression coverage
 - feature folders now consistently use the active vocabulary where useful:
   `components`, `hooks`, `lib`, `types`, `constants`, and `tests`
+- page clients now live under feature ownership; `app/**/page.tsx` files stay
+  thin route composition boundaries
 - large calculator surfaces have been split further: single timeline rows now
   have mobile/desktop render components, comparison chart modeling is separate
   from result metrics, optimizer result rendering is a feature component, and
@@ -31,6 +33,9 @@ The recovery work already completed has materially changed the product:
 - single and comparison calculator hooks now delegate deterministic client-state
   and persistence snapshot decisions to feature-local `lib/*-client-state.ts`
   helpers, with tests under `features/<feature>/tests/lib/**`
+- optimizer calculation wiring lives in a feature hook, economic/home/education
+  page metadata lives in feature constants or models, and notebook/single
+  containers use feature-local label/model helpers
 - single-bond and regular-investment engines now delegate more orchestration
   setup to focused helpers, including single-bond period rate/accrual setup,
   while keeping calculation truth covered by engine and golden tests
@@ -59,6 +64,8 @@ and collect final release-gate evidence.
   to focused engine helpers instead of keeping those concerns inline
 - server calculation-service logging now routes through `lib/server/logging.ts`,
   and clean-code contracts only allow documented console escape hatches
+- admin status, settings, and shared-scenario server services delegate Drizzle
+  access to repository modules
 - some live surfaces should still be treated as experimental until proven stable
 - documentation previously overstated maturity and completion
 

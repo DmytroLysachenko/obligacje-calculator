@@ -449,7 +449,7 @@ Directory structure is part of the architecture, not a cosmetic preference.
 
 Required boundaries:
 
-- `app/`: routes, layouts, metadata, and thin HTTP/page orchestration only
+- `app/`: routes, layouts, metadata, and thin HTTP/page orchestration only; page clients belong in `features/**/components`
 - `app/api/**/route.ts`: request parsing, auth/ownership resolution, validation, and HTTP response shaping only
 - `features/`: domain-specific UI, handlers, adapters, tests, and calculation orchestration by product area
 - `shared/components/`: reusable UI primitives grouped by subdomain such as `page/`, `feedback/`, `results/`, `chrome/`, `insights/`, and `charts/`
