@@ -11,7 +11,7 @@ const files = {
   economicHero: 'shared/components/reference/ReferenceDashboardHero.tsx',
   referenceChartFrame: 'shared/components/charts/ReferenceChartFrame.tsx',
   sidebarSettings: 'shared/components/chrome/SidebarSettingsUtility.tsx',
-  economicLayoutContract: 'app/economic-data/economic-data-layout.test.ts',
+  economicLayoutContract: 'features/economic-data/tests/economic-data-layout.test.ts',
   comparisonContract: 'features/comparison-engine/tests/comparison-fairness-contract.test.ts',
   sidebarContract: 'shared/components/chrome/sidebar-refactor-contract.test.ts',
 } as const;

@@ -9,8 +9,8 @@ const files = {
   hero: 'shared/components/reference/ReferenceDashboardHero.tsx',
   frame: 'shared/components/charts/ReferenceChartFrame.tsx',
   page: 'features/economic-data/components/EconomicDataPageClient.tsx',
-  layoutContract: 'app/economic-data/economic-data-layout.test.ts',
-  healthContract: 'app/economic-data/economic-data-health-contract.test.ts',
+  layoutContract: 'features/economic-data/tests/economic-data-layout.test.ts',
+  healthContract: 'features/economic-data/tests/economic-data-health-contract.test.ts',
 } as const;
 
 function read(relativePath: string) {
