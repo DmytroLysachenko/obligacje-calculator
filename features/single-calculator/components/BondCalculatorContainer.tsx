@@ -27,6 +27,11 @@ import {
   InputGuardrailIssue,
 } from '../lib/input-guardrails';
 import { createSavedScenario, saveScenarioRecord } from '../lib/scenario-storage';
+import {
+  buildSavedSingleScenarioMeta,
+  buildSingleCalculatorReadingGuide,
+  buildSingleReportFilename,
+} from '../lib/single-calculator-container-model';
 
 import { BondCalculatorDetailsPanel, BondCalculatorResultsPanel } from './BondCalculatorPanels';
 import { BondInputsForm } from './BondInputsForm';
@@ -70,11 +75,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     [guardrails],
   );
 
-  const readingGuide = [
-    t('bonds.simulation.reading_guide.summary_first'),
-    t('bonds.simulation.reading_guide.chart_then_timeline'),
-    t('bonds.simulation.reading_guide.stale_until_recalculated'),
-  ];
+  const readingGuide = useMemo(() => buildSingleCalculatorReadingGuide(t), [t]);
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter' && (isDirty || !results)) {
@@ -132,14 +133,12 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
   };
 
   const handleSaveScenario = () => {
-    const label = `Single ${inputs.bondType} ${
-      inputs.investmentHorizonMonths ?? Math.round(inputs.duration * 12)
-    }M`;
+    const scenarioMeta = buildSavedSingleScenarioMeta(inputs, results);
 
     saveScenarioRecord(
       createSavedScenario(inputs, {
-        name: label,
-        description: `Net payout ${results ? results.netPayoutValue.toFixed(2) : 'pending'} PLN`,
+        name: scenarioMeta.name,
+        description: scenarioMeta.description,
       }),
     );
   };
@@ -149,12 +148,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
       return;
     }
 
-    await generateSingleBondReportPdf(
-      results,
-      inputs,
-      language,
-      `bond_report_${inputs.bondType}_${new Date().toISOString().split('T')[0]}.pdf`,
-    );
+    await generateSingleBondReportPdf(results, inputs, language, buildSingleReportFilename(inputs));
   };
 
   const handleShareScenario = async () => {
