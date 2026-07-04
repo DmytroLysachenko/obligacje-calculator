@@ -6,8 +6,8 @@ import { describe, expect, it } from 'vitest';
 const root = process.cwd();
 
 const files = {
-  landing: 'app/LandingDashboardClient.tsx',
-  education: 'app/education/EducationClient.tsx',
+  landing: 'features/home/components/LandingDashboardClient.tsx',
+  education: 'features/education/components/EducationClient.tsx',
   toolCard: 'shared/components/page/ToolCard.tsx',
   educationCard: 'features/education/components/BondEducationCard.tsx',
   designSystem: 'docs/ui/design-system-adoption-v2-contract.test.ts',

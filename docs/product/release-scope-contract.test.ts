@@ -43,9 +43,9 @@ describe('release scope contract', () => {
   });
 
   it('keeps recovery-lab surfaces secondary to the retained release scope', () => {
-    const recoveryLab = read('app/recovery-lab/RecoveryLabPageClient.tsx');
+    const recoveryLab = read('features/recovery-lab/components/RecoveryLabPageClient.tsx');
     const optimizer = read('app/optimize/page.tsx');
-    const multiAsset = read('app/multi-asset/MultiAssetPageClient.tsx');
+    const multiAsset = read('features/comparison-engine/components/MultiAssetPageClient.tsx');
     const retirement = read('app/retirement/page.tsx');
     const matrix = read('docs/product/26_trusted_and_experimental_feature_matrix.md');
 

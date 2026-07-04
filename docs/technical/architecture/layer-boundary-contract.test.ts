@@ -53,7 +53,7 @@ describe('layer boundary contract', () => {
       'features/comparison-engine/lib/comparison-actions.ts',
       'features/ladder-strategy/hooks/useLadder.ts',
       'features/retirement/components/RetirementPlannerContainer.tsx',
-      'app/optimize/BondOptimizerClient.tsx',
+      'features/optimizer/components/BondOptimizerClient.tsx',
     ];
 
     for (const client of clients) {

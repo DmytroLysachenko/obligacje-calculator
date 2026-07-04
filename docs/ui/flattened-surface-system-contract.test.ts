@@ -30,8 +30,8 @@ const flattenedSurfaceFiles = [
   'features/ladder-strategy/components/LadderTimelineTable.tsx',
   'shared/components/results/RecentLotList.tsx',
   'shared/components/page/ToolCard.tsx',
-  'app/LandingDashboardClient.tsx',
-  'app/education/EducationClient.tsx',
+  'features/home/components/LandingDashboardClient.tsx',
+  'features/education/components/EducationClient.tsx',
   'features/notebook/components/WorkspaceStatusCard.tsx',
   'features/notebook/components/PortfolioWorkspaceCard.tsx',
   'features/notebook/components/PortfolioDetails.tsx',
@@ -166,13 +166,13 @@ describe('flattened shared surface system contract', () => {
     expect(sourceByPath.get('shared/components/page/ToolCard.tsx')).toContain(
       'border-l-2 pl-3 pt-0.5',
     );
-    expect(sourceByPath.get('app/LandingDashboardClient.tsx')).toContain(
+    expect(sourceByPath.get('features/home/components/LandingDashboardClient.tsx')).toContain(
       'grid border-y border-border py-2 md:grid-cols-3 md:divide-x md:divide-border',
     );
-    expect(sourceByPath.get('app/education/EducationClient.tsx')).toContain(
+    expect(sourceByPath.get('features/education/components/EducationClient.tsx')).toContain(
       'grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3',
     );
-    expect(sourceByPath.get('app/education/EducationClient.tsx')).toContain(
+    expect(sourceByPath.get('features/education/components/EducationClient.tsx')).toContain(
       'grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3',
     );
     expect(sourceByPath.get('features/notebook/components/WorkspaceStatusCard.tsx')).toContain(

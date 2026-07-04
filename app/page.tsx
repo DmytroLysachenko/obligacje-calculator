@@ -1,6 +1,5 @@
+import { LandingDashboardClient } from '@/features/home/components/LandingDashboardClient';
 import { getLocalizedPageMetadata } from '@/lib/page-metadata';
-
-import { LandingDashboardClient } from './LandingDashboardClient';
 
 export async function generateMetadata() {
   return getLocalizedPageMetadata('home');

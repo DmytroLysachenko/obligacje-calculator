@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 const root = process.cwd();
 
 const files = {
-  education: 'app/education/EducationClient.tsx',
+  education: 'features/education/components/EducationClient.tsx',
   comparisonSharedBase: 'features/comparison-engine/components/ComparisonSharedBaseCard.tsx',
   economicHero: 'shared/components/reference/ReferenceDashboardHero.tsx',
   referenceChartFrame: 'shared/components/charts/ReferenceChartFrame.tsx',
@@ -35,7 +35,9 @@ function expectNoFragments(source: string, fragments: readonly string[]) {
 }
 
 function expectTransparentCompactNotice(source: string) {
-  expect(source).toMatch(/<Notice[\s\S]*?\bcompact\b[\s\S]*?className="border-0 bg-transparent px-0"/);
+  expect(source).toMatch(
+    /<Notice[\s\S]*?\bcompact\b[\s\S]*?className="border-0 bg-transparent px-0"/,
+  );
 }
 
 describe('screenshot regression contracts', () => {

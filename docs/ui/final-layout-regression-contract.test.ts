@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 const root = process.cwd();
 
 const files = {
-  education: 'app/education/EducationClient.tsx',
+  education: 'features/education/components/EducationClient.tsx',
   educationCard: 'features/education/components/BondEducationCard.tsx',
   sidebarUtilities: 'shared/components/chrome/SidebarUtilityGroup.tsx',
   sidebarSettings: 'shared/components/chrome/SidebarSettingsUtility.tsx',

@@ -55,8 +55,8 @@ describe('design system adoption v2 contract', () => {
   });
 
   it('keeps recurring card and section surfaces routed through shared primitives', () => {
-    const education = read('app/education/EducationClient.tsx');
-    const landing = read('app/LandingDashboardClient.tsx');
+    const education = read('features/education/components/EducationClient.tsx');
+    const landing = read('features/home/components/LandingDashboardClient.tsx');
     const toolCard = read('shared/components/page/ToolCard.tsx');
     const sectionBlock = read('shared/components/page/SectionBlock.tsx');
 

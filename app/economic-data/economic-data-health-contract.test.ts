@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 const projectRoot = process.cwd();
 
 const paths = {
-  page: 'app/economic-data/EconomicDataPageClient.tsx',
+  page: 'features/economic-data/components/EconomicDataPageClient.tsx',
   sections: 'features/economic-data/components/EconomicDashboardSections.tsx',
   frame: 'shared/components/charts/ReferenceChartFrame.tsx',
   inflation: 'features/economic-data/components/InflationChart.tsx',

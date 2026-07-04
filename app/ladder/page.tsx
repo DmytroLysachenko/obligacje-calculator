@@ -1,6 +1,5 @@
+import { LadderPageClient } from '@/features/ladder-strategy/components/LadderPageClient';
 import { getLocalizedPageMetadata } from '@/lib/page-metadata';
-
-import { LadderPageClient } from './LadderPageClient';
 
 export async function generateMetadata() {
   return getLocalizedPageMetadata('ladder');

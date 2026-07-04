@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 const root = process.cwd();
 
 const files = {
-  optimizer: 'app/optimize/BondOptimizerClient.tsx',
+  optimizer: 'features/optimizer/components/BondOptimizerClient.tsx',
   optimizerInputPanel: 'features/optimizer/components/OptimizerInputPanel.tsx',
   optimizerResultsPanel: 'features/optimizer/components/OptimizerResultsPanel.tsx',
   optimizerSections: 'features/optimizer/components/OptimizerSections.tsx',

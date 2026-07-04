@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 const repoRoot = process.cwd();
 
-const economicPagePath = 'app/economic-data/EconomicDataPageClient.tsx';
+const economicPagePath = 'features/economic-data/components/EconomicDataPageClient.tsx';
 const economicSectionsPath = 'features/economic-data/components/EconomicDashboardSections.tsx';
 const referenceHeroPath = 'shared/components/reference/ReferenceDashboardHero.tsx';
 const referenceRailPath = 'shared/components/reference/ReferenceGuideRail.tsx';

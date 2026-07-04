@@ -19,7 +19,7 @@ const paths = {
   sharedValueChartParts: 'shared/components/charts/BondValueChartParts.tsx',
   sharedValueChartToolbar: 'shared/components/charts/BondValueChartToolbar.tsx',
   sharedValueChartTooltipParts: 'shared/components/charts/BondValueChartTooltipParts.tsx',
-  multiAssetPage: 'app/multi-asset/MultiAssetPageClient.tsx',
+  multiAssetPage: 'features/comparison-engine/components/MultiAssetPageClient.tsx',
 } as const;
 
 function read(relativePath: string) {

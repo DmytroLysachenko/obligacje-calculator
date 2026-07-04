@@ -8,7 +8,7 @@ const root = process.cwd();
 const files = {
   hero: 'shared/components/reference/ReferenceDashboardHero.tsx',
   frame: 'shared/components/charts/ReferenceChartFrame.tsx',
-  page: 'app/economic-data/EconomicDataPageClient.tsx',
+  page: 'features/economic-data/components/EconomicDataPageClient.tsx',
   layoutContract: 'app/economic-data/economic-data-layout.test.ts',
   healthContract: 'app/economic-data/economic-data-health-contract.test.ts',
 } as const;
@@ -32,7 +32,9 @@ function expectNoFragments(source: string, fragments: readonly string[]) {
 }
 
 function expectTransparentCompactNotice(source: string) {
-  expect(source).toMatch(/<Notice[\s\S]*?\bcompact\b[\s\S]*?className="border-0 bg-transparent px-0"/);
+  expect(source).toMatch(
+    /<Notice[\s\S]*?\bcompact\b[\s\S]*?className="border-0 bg-transparent px-0"/,
+  );
 }
 
 describe('economic reference surface contracts', () => {

@@ -6,8 +6,8 @@ import { describe, expect, it } from 'vitest';
 const repoRoot = process.cwd();
 
 const productSurfaceFiles = [
-  'app/economic-data/EconomicDataPageClient.tsx',
-  'app/education/EducationClient.tsx',
+  'features/economic-data/components/EconomicDataPageClient.tsx',
+  'features/education/components/EducationClient.tsx',
   'app/shared-portfolios/[shareId]/page.tsx',
   'features/economic-data/components/InflationChart.tsx',
   'features/economic-data/components/NBPRateChart.tsx',
@@ -25,8 +25,8 @@ const productSurfaceFiles = [
 ] as const;
 
 const referenceAndEducationRefinedFiles = [
-  'app/economic-data/EconomicDataPageClient.tsx',
-  'app/education/EducationClient.tsx',
+  'features/economic-data/components/EconomicDataPageClient.tsx',
+  'features/education/components/EducationClient.tsx',
   'features/education/components/BondEducationCard.tsx',
   'shared/components/reference/ReferenceDashboardHero.tsx',
   'shared/components/reference/ReferenceGuideRail.tsx',
@@ -100,12 +100,12 @@ const insightRefinedFiles = [
 ] as const;
 
 const sideAndOperationalRefinedFiles = [
-  'app/LandingDashboardClient.tsx',
+  'features/home/components/LandingDashboardClient.tsx',
   'app/admin/status/page.tsx',
   'app/error.tsx',
-  'app/multi-asset/MultiAssetPageClient.tsx',
-  'app/optimize/BondOptimizerClient.tsx',
-  'app/recovery-lab/RecoveryLabPageClient.tsx',
+  'features/comparison-engine/components/MultiAssetPageClient.tsx',
+  'features/optimizer/components/BondOptimizerClient.tsx',
+  'features/recovery-lab/components/RecoveryLabPageClient.tsx',
   'features/admin/status/AdminStatusDashboard.tsx',
 ] as const;
 

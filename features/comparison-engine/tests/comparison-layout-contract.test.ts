@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 const root = process.cwd();
 
 const files = {
-  page: 'app/compare/ComparePageClient.tsx',
+  page: 'features/comparison-engine/components/ComparePageClient.tsx',
   container: 'features/comparison-engine/components/ComparisonContainer.tsx',
   results: 'features/comparison-engine/components/ComparisonResultsPanel.tsx',
   table: 'features/comparison-engine/components/ComparisonTable.tsx',

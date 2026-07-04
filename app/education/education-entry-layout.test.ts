@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 const root = process.cwd();
 
 const paths = {
-  page: 'app/education/EducationClient.tsx',
+  page: 'features/education/components/EducationClient.tsx',
   card: 'features/education/components/BondEducationCard.tsx',
   en: 'i18n/translations/en.json',
   pl: 'i18n/translations/pl.json',
