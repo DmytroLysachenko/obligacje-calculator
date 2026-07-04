@@ -9,11 +9,10 @@ import {
   ScenarioKind,
 } from '../types/scenarios';
 import { BondComparisonScenarioRequestSchema } from '../types/schemas';
-import { calculateBondInvestment } from '../utils/calculations';
 
 import { BaseHandler, HandlerContext, ScenarioHandler } from './base';
+import { calculateComparisonScenarioItem } from './comparison-result';
 import { resolveScenarioInputs } from './resolved-inputs';
-import { shouldAutoRollover } from './rollover';
 
 export class ComparisonHandler
   extends BaseHandler
@@ -58,22 +57,14 @@ export class ComparisonHandler
 
     const results = enrichedScenarios.map((enrichedInputs): BondComparisonScenarioItem => {
       const def = context.dbDefinitions[enrichedInputs.bondType];
-      const resolvedRollover = shouldAutoRollover(enrichedInputs, def.duration);
-      const adjustedInputs = {
-        ...enrichedInputs,
+      return calculateComparisonScenarioItem({
+        inputs: enrichedInputs,
+        definition: def,
         expectedInflation: this.applyInflationScenario(
           enrichedInputs.expectedInflation,
           enrichedInputs.inflationScenario,
         ),
-      };
-      return {
-        type: enrichedInputs.bondType,
-        name: def.fullName.en,
-        result: calculateBondInvestment({
-          ...adjustedInputs,
-          rollover: resolvedRollover,
-        } as BondInputs & { rollover: boolean }),
-      };
+      });
     });
 
     const warnings = this.collectHistoricalWarnings(
@@ -104,42 +95,27 @@ export class ComparisonHandler
       ),
     ]);
 
-    const resultA = calculateBondInvestment({
-      ...{
-        ...scenarioA,
-        expectedInflation: this.applyInflationScenario(
-          scenarioA.expectedInflation,
-          scenarioA.inflationScenario,
-        ),
-      },
-      rollover: shouldAutoRollover(scenarioA, context.dbDefinitions[scenarioA.bondType].duration),
-    } as BondInputs & { rollover: boolean });
+    const resultA = calculateComparisonScenarioItem({
+      scenarioKey: 'scenarioA',
+      inputs: scenarioA,
+      definition: context.dbDefinitions[scenarioA.bondType],
+      expectedInflation: this.applyInflationScenario(
+        scenarioA.expectedInflation,
+        scenarioA.inflationScenario,
+      ),
+    });
 
-    const resultB = calculateBondInvestment({
-      ...{
-        ...scenarioB,
-        expectedInflation: this.applyInflationScenario(
-          scenarioB.expectedInflation,
-          scenarioB.inflationScenario,
-        ),
-      },
-      rollover: shouldAutoRollover(scenarioB, context.dbDefinitions[scenarioB.bondType].duration),
-    } as BondInputs & { rollover: boolean });
+    const resultB = calculateComparisonScenarioItem({
+      scenarioKey: 'scenarioB',
+      inputs: scenarioB,
+      definition: context.dbDefinitions[scenarioB.bondType],
+      expectedInflation: this.applyInflationScenario(
+        scenarioB.expectedInflation,
+        scenarioB.inflationScenario,
+      ),
+    });
 
-    const results: BondComparisonScenarioItem[] = [
-      {
-        scenarioKey: 'scenarioA',
-        type: scenarioA.bondType,
-        name: context.dbDefinitions[scenarioA.bondType].fullName.en,
-        result: resultA,
-      },
-      {
-        scenarioKey: 'scenarioB',
-        type: scenarioB.bondType,
-        name: context.dbDefinitions[scenarioB.bondType].fullName.en,
-        result: resultB,
-      },
-    ];
+    const results: BondComparisonScenarioItem[] = [resultA, resultB];
 
     const warnings = this.collectHistoricalWarnings([
       scenarioA.historicalData,
