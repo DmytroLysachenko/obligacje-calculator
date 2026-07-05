@@ -2,6 +2,7 @@ import { LotBreakdown, YearlyTimelinePoint } from '@/features/bond-core/types';
 import { translateMessage } from '@/i18n/translate';
 import { AppLanguage, buildBondTimelineDisplayRows } from '@/shared/lib/bond-display';
 
+export { convertComparisonToCSV } from './csv-comparison';
 export { downloadFile, downloadJsonFile } from './csv-download';
 import { CSV_SEPARATOR, formatCsvValue, formatExportDate } from './csv-format';
 /**
@@ -87,131 +88,6 @@ export function convertLotsToCSV(
       }
       return formatCsvValue(value, language);
     });
-    csvRows.push(row.join(CSV_SEPARATOR));
-  }
-  return csvRows.join('\r\n');
-}
-export function convertComparisonToCSV(
-  timelineA: YearlyTimelinePoint[],
-  timelineB: YearlyTimelinePoint[],
-  headers: Record<string, string>,
-  language: AppLanguage = 'pl',
-) {
-  const rowsA = buildBondTimelineDisplayRows(timelineA, language);
-  const rowsB = buildBondTimelineDisplayRows(timelineB, language);
-  const csvRows: string[] = [];
-  const scenarioALabel = translateMessage(language, 'comparison.scenario_a');
-  const scenarioBLabel = translateMessage(language, 'comparison.scenario_b');
-  const cashFlowHeaderA = rowsA[0]?.cashFlowLabel
-    ? `${scenarioALabel} ${rowsA[0].cashFlowLabel}`
-    : (headers.cashPaidA ?? 'Scenario A cash paid out');
-  const cashFlowHeaderB = rowsB[0]?.cashFlowLabel
-    ? `${scenarioBLabel} ${rowsB[0].cashFlowLabel}`
-    : (headers.cashPaidB ?? 'Scenario B cash paid out');
-  const columns = [
-    { key: 'date', header: headers.date || 'Date' },
-    { key: 'periodLabel', header: headers.period || 'Period' },
-    { key: 'cycleA', header: headers.cycleA || 'Scenario A cycle' },
-    { key: 'cycleB', header: headers.cycleB || 'Scenario B cycle' },
-    { key: 'cadenceA', header: headers.cadenceA || 'Scenario A meaning' },
-    { key: 'cadenceB', header: headers.cadenceB || 'Scenario B meaning' },
-    { key: 'scenarioA', header: headers.scenarioA || 'Scenario A total wealth' },
-    { key: 'scenarioB', header: headers.scenarioB || 'Scenario B total wealth' },
-    { key: 'realValueA', header: headers.realValueA || 'Scenario A real value' },
-    { key: 'realValueB', header: headers.realValueB || 'Scenario B real value' },
-    { key: 'cashPaidA', header: headers.cashPaidA || cashFlowHeaderA },
-    { key: 'cashPaidB', header: headers.cashPaidB || cashFlowHeaderB },
-    { key: 'leader', header: headers.leader || 'Ahead in this row' },
-    { key: 'netProfitA', header: headers.netProfitA || 'Scenario A net profit' },
-    { key: 'netProfitB', header: headers.netProfitB || 'Scenario B net profit' },
-    { key: 'projectionA', header: headers.projectionA || 'Scenario A mode' },
-    { key: 'projectionB', header: headers.projectionB || 'Scenario B mode' },
-    { key: 'rateA', header: headers.rateA || 'Scenario A rate source' },
-    { key: 'rateB', header: headers.rateB || 'Scenario B rate source' },
-    { key: 'eventsA', header: headers.eventsA || 'Scenario A events' },
-    { key: 'eventsB', header: headers.eventsB || 'Scenario B events' },
-  ];
-  csvRows.push(columns.map((column) => column.header).join(CSV_SEPARATOR));
-  const rowMap = new Map<
-    string,
-    {
-      date: string;
-      periodLabel: string;
-      rowA?: (typeof rowsA)[number];
-      rowB?: (typeof rowsB)[number];
-    }
-  >();
-  for (const [index, rowA] of rowsA.entries()) {
-    const date = formatExportDate(timelineA[index]?.cycleEndDate);
-    const existing = rowMap.get(date) ?? {
-      date,
-      periodLabel: rowA.periodLabel,
-    };
-    existing.rowA = rowA;
-    existing.periodLabel = existing.periodLabel || rowA.periodLabel;
-    rowMap.set(date, existing);
-  }
-  for (const [index, rowB] of rowsB.entries()) {
-    const date = formatExportDate(timelineB[index]?.cycleEndDate);
-    const existing = rowMap.get(date) ?? {
-      date,
-      periodLabel: rowB.periodLabel,
-    };
-    existing.rowB = rowB;
-    existing.periodLabel = existing.periodLabel || rowB.periodLabel;
-    rowMap.set(date, existing);
-  }
-  const sortedRows = Array.from(rowMap.values()).sort((left, right) =>
-    left.date.localeCompare(right.date),
-  );
-  for (const entry of sortedRows) {
-    const rowA = entry.rowA;
-    const rowB = entry.rowB;
-    const leader =
-      rowA && rowB
-        ? rowA.totalWealth === rowB.totalWealth
-          ? translateMessage(language, 'comparison.tie')
-          : rowA.totalWealth > rowB.totalWealth
-            ? translateMessage(language, 'comparison.scenario_a')
-            : translateMessage(language, 'comparison.scenario_b')
-        : rowA
-          ? translateMessage(language, 'comparison.scenario_a')
-          : rowB
-            ? translateMessage(language, 'comparison.scenario_b')
-            : '';
-    const row = [
-      formatCsvValue(entry.date, language),
-      formatCsvValue(entry.periodLabel, language),
-      formatCsvValue(rowA?.cycleLabel ?? '', language),
-      formatCsvValue(rowB?.cycleLabel ?? '', language),
-      formatCsvValue(rowA?.cadenceLabel ?? '', language),
-      formatCsvValue(rowB?.cadenceLabel ?? '', language),
-      formatCsvValue(rowA?.totalWealth ?? '', language),
-      formatCsvValue(rowB?.totalWealth ?? '', language),
-      formatCsvValue(rowA?.realValue ?? '', language),
-      formatCsvValue(rowB?.realValue ?? '', language),
-      formatCsvValue(rowA?.paidOutCash ?? '', language),
-      formatCsvValue(rowB?.paidOutCash ?? '', language),
-      formatCsvValue(leader, language),
-      formatCsvValue(rowA?.netProfit ?? '', language),
-      formatCsvValue(rowB?.netProfit ?? '', language),
-      formatCsvValue(rowA?.projectionLabel ?? '', language),
-      formatCsvValue(rowB?.projectionLabel ?? '', language),
-      formatCsvValue(
-        [rowA?.interestRateLabel, rowA?.rateSourceLabel, rowA?.referenceLabel]
-          .filter(Boolean)
-          .join(' | '),
-        language,
-      ),
-      formatCsvValue(
-        [rowB?.interestRateLabel, rowB?.rateSourceLabel, rowB?.referenceLabel]
-          .filter(Boolean)
-          .join(' | '),
-        language,
-      ),
-      formatCsvValue(rowA?.eventLabels ?? [], language),
-      formatCsvValue(rowB?.eventLabels ?? [], language),
-    ];
     csvRows.push(row.join(CSV_SEPARATOR));
   }
   return csvRows.join('\r\n');
