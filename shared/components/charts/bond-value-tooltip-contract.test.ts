@@ -26,10 +26,11 @@ describe('bond value chart tooltip contract', () => {
     expect(viewSource).toContain('<ScenarioGroupTooltip');
     expect(viewSource).toContain('function TooltipMetricRow');
     expect(viewSource).toContain('function TooltipEventList');
+    expect(viewSource).toContain('function TooltipContextRates');
   });
 
   it('passes comparison scenario groups into the shared chart payload', () => {
-    const source = read('features/comparison-engine/components/ComparisonResultsPanel.tsx');
+    const source = read('features/comparison-engine/lib/comparison-results-chart-model.ts');
 
     expect(source).toContain('BondValueChartTooltipGroup');
     expect(source).toContain('const scenarioGroups: BondValueChartTooltipGroup[]');

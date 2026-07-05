@@ -68,6 +68,104 @@ function TooltipEventList({ eventLabels, t }: { eventLabels: string[]; t: ChartT
   );
 }
 
+function TooltipStatusHeader({
+  label,
+  isProjected,
+  t,
+}: {
+  label?: NameType;
+  isProjected: boolean;
+  t: ChartTranslate;
+}) {
+  return (
+    <div className="mb-3 flex items-center justify-between border-b border-border/50 pb-2">
+      <p className="ui-meta font-semibold uppercase tracking-[0.08em]">{label}</p>
+      <span
+        className={cn(
+          'rounded px-1.5 py-0.5 text-[10px] font-semibold',
+          isProjected ? 'bg-warning/10 text-warning' : 'bg-muted text-muted-foreground',
+        )}
+      >
+        {isProjected ? t('bonds.projected') : t('bonds.historical')}
+      </span>
+    </div>
+  );
+}
+
+function TooltipInterestRate({
+  interestRate,
+  rateSource,
+  t,
+}: {
+  interestRate?: number;
+  rateSource?: string;
+  t: ChartTranslate;
+}) {
+  if (typeof interestRate !== 'number') {
+    return null;
+  }
+
+  return (
+    <div className="rounded-md bg-muted/35 p-2">
+      <div className="flex items-center justify-between">
+        <span className="ui-meta font-semibold uppercase tracking-[0.08em]">
+          {t('bonds.interest_rate')}
+        </span>
+        <span className="text-sm font-semibold text-foreground">{interestRate.toFixed(2)}%</span>
+      </div>
+      {rateSource ? <p className="mt-1 text-[9px] italic text-muted-foreground">{rateSource}</p> : null}
+    </div>
+  );
+}
+
+function TooltipContextRates({
+  inflation,
+  nbp,
+  t,
+  compact = false,
+}: {
+  inflation?: number;
+  nbp?: number;
+  t: ChartTranslate;
+  compact?: boolean;
+}) {
+  if (typeof inflation !== 'number' && typeof nbp !== 'number') {
+    return null;
+  }
+
+  const rowClassName = compact
+    ? 'flex items-center justify-between text-[10px]'
+    : 'flex items-center justify-between gap-4';
+
+  return (
+    <div
+      className={
+        compact
+          ? 'mt-2 space-y-1.5 border-t border-dashed border-border/50 pt-2'
+          : 'mt-3 grid gap-2 border-t border-dashed border-border/50 pt-3 text-[10px] sm:grid-cols-2'
+      }
+    >
+      <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+        {t('common.context_rates')}
+      </p>
+      <div className="space-y-1.5">
+        {typeof inflation === 'number' ? (
+          <div className={rowClassName}>
+            <span className="font-medium text-muted-foreground">{t('bonds.ref_inflation')}:</span>
+            <span className="font-semibold text-warning">{inflation.toFixed(2)}%</span>
+          </div>
+        ) : null}
+        {typeof nbp === 'number' ? (
+          <div className={rowClassName}>
+            <span className="font-medium text-muted-foreground">{t('bonds.nbp_rate_short')}:</span>
+            <span className="font-semibold text-muted-foreground">{nbp.toFixed(2)}%</span>
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 function ScenarioGroupTooltip({
   groups,
   data,
@@ -87,17 +185,7 @@ function ScenarioGroupTooltip({
 
   return (
     <div className="min-w-[360px] max-w-[560px] rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-lg">
-      <div className="mb-3 flex items-center justify-between border-b border-border/50 pb-2">
-        <p className="ui-meta font-semibold uppercase tracking-[0.08em]">{label}</p>
-        <span
-          className={cn(
-            'rounded px-1.5 py-0.5 text-[10px] font-semibold',
-            isProjected ? 'bg-warning/10 text-warning' : 'bg-muted text-muted-foreground',
-          )}
-        >
-          {isProjected ? t('bonds.projected') : t('bonds.historical')}
-        </span>
-      </div>
+      <TooltipStatusHeader label={label} isProjected={isProjected} t={t} />
 
       <div className="grid gap-4 md:grid-cols-2">
         {groups.map((group) => (
@@ -111,21 +199,11 @@ function ScenarioGroupTooltip({
               </p>
               <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: group.color }} />
             </div>
-            {typeof group.interestRate === 'number' ? (
-              <div className="rounded-md bg-muted/35 p-2">
-                <div className="flex items-center justify-between">
-                  <span className="ui-meta font-semibold uppercase tracking-[0.08em]">
-                    {t('bonds.interest_rate')}
-                  </span>
-                  <span className="text-sm font-semibold text-foreground">
-                    {group.interestRate.toFixed(2)}%
-                  </span>
-                </div>
-                {group.rateSource ? (
-                  <p className="mt-1 text-[9px] italic text-muted-foreground">{group.rateSource}</p>
-                ) : null}
-              </div>
-            ) : null}
+            <TooltipInterestRate
+              interestRate={group.interestRate}
+              rateSource={group.rateSource}
+              t={t}
+            />
             <div className="space-y-1.5">
               {group.metrics.map((metric) => (
                 <TooltipMetricRow
@@ -140,31 +218,7 @@ function ScenarioGroupTooltip({
         ))}
       </div>
 
-      {typeof inflation === 'number' || typeof nbp === 'number' ? (
-        <div className="mt-3 grid gap-2 border-t border-dashed border-border/50 pt-3 text-[10px] sm:grid-cols-2">
-          <p className="font-bold uppercase tracking-widest text-muted-foreground">
-            {t('common.context_rates')}
-          </p>
-          <div className="space-y-1.5">
-            {typeof inflation === 'number' ? (
-              <div className="flex items-center justify-between gap-4">
-                <span className="font-medium text-muted-foreground">
-                  {t('bonds.ref_inflation')}:
-                </span>
-                <span className="font-semibold text-warning">{inflation.toFixed(2)}%</span>
-              </div>
-            ) : null}
-            {typeof nbp === 'number' ? (
-              <div className="flex items-center justify-between gap-4">
-                <span className="font-medium text-muted-foreground">
-                  {t('bonds.nbp_rate_short')}:
-                </span>
-                <span className="font-semibold text-muted-foreground">{nbp.toFixed(2)}%</span>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
+      <TooltipContextRates inflation={inflation} nbp={nbp} t={t} />
     </div>
   );
 }
@@ -195,34 +249,14 @@ export function BondValueChartTooltip({
 
   return (
     <div className="min-w-[240px] rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-lg">
-      <div className="mb-3 flex items-center justify-between border-b border-border/50 pb-2">
-        <p className="ui-meta font-semibold uppercase tracking-[0.08em]">{label}</p>
-        <span
-          className={cn(
-            'rounded px-1.5 py-0.5 text-[10px] font-semibold',
-            model.isProjected ? 'bg-warning/10 text-warning' : 'bg-muted text-muted-foreground',
-          )}
-        >
-          {model.isProjected ? t('bonds.projected') : t('bonds.historical')}
-        </span>
-      </div>
+      <TooltipStatusHeader label={label} isProjected={model.isProjected} t={t} />
 
       <div className="space-y-3">
-        {typeof model.interestRate === 'number' ? (
-          <div className="mb-2 rounded-md bg-muted/35 p-2">
-            <div className="flex items-center justify-between">
-              <span className="ui-meta font-semibold uppercase tracking-[0.08em]">
-                {t('bonds.interest_rate')}
-              </span>
-              <span className="text-sm font-semibold text-foreground">
-                {model.interestRate.toFixed(2)}%
-              </span>
-            </div>
-            {model.rateSource ? (
-              <p className="mt-1 text-[9px] italic text-muted-foreground">{model.rateSource}</p>
-            ) : null}
-          </div>
-        ) : null}
+        <TooltipInterestRate
+          interestRate={model.interestRate}
+          rateSource={model.rateSource}
+          t={t}
+        />
 
         <div className="space-y-1.5">
           {model.metrics.map((entry) => (
@@ -238,29 +272,7 @@ export function BondValueChartTooltip({
 
         <TooltipEventList eventLabels={model.eventLabels} t={t} />
 
-        {typeof model.inflation === 'number' || typeof model.nbp === 'number' ? (
-          <div className="mt-2 space-y-1.5 border-t border-dashed border-border/50 pt-2">
-            <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-              {t('common.context_rates')}
-            </p>
-            {typeof model.inflation === 'number' ? (
-              <div className="flex items-center justify-between text-[10px]">
-                <span className="font-medium text-muted-foreground">
-                  {t('bonds.ref_inflation')}:
-                </span>
-                <span className="font-semibold text-warning">{model.inflation.toFixed(2)}%</span>
-              </div>
-            ) : null}
-            {typeof model.nbp === 'number' ? (
-              <div className="flex items-center justify-between text-[10px]">
-                <span className="font-medium text-muted-foreground">
-                  {t('bonds.nbp_rate_short')}:
-                </span>
-                <span className="font-semibold text-muted-foreground">{model.nbp.toFixed(2)}%</span>
-              </div>
-            ) : null}
-          </div>
-        ) : null}
+        <TooltipContextRates inflation={model.inflation} nbp={model.nbp} t={t} compact />
       </div>
     </div>
   );
