@@ -5,6 +5,7 @@ import { AlertTriangle, Target } from 'lucide-react';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
+import { AdvancedRatePathSection } from '@/shared/components/market-assumptions/AdvancedRatePathSection';
 import { AssumptionHistoryPopover } from '@/shared/components/market-assumptions/AssumptionHistoryPopover';
 import {
   InflationPresetControls,
@@ -15,7 +16,6 @@ import {
   CurrentAssumptionValue,
   ProjectionModeButtons,
 } from '@/shared/components/market-assumptions/AssumptionSectionControls';
-import { ProjectedRatePathEditor } from '@/shared/components/market-assumptions/ProjectedRatePathEditor';
 import { AssumptionSetupMode } from '@/shared/lib/market-assumptions-form-model';
 
 type UpdateHandler = {
@@ -122,28 +122,14 @@ export function InflationAssumptionSection({
       )}
 
       {isInflationIndexedBond && activeInflationMode === 'advanced' ? (
-        <div className="space-y-3 border-t border-dashed pt-4">
-          <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-            <div className="space-y-1">
-              <p className="ui-card-title">{t('bonds.market_assumptions.inflation_path_title')}</p>
-              <p className="text-xs leading-5 text-muted-foreground">
-                {t('bonds.market_assumptions.inflation_path_desc')}
-              </p>
-            </div>
-          </div>
-          {customInflation ? (
-            <ProjectedRatePathEditor
-              values={customInflation}
-              prefix="Y"
-              step={0.1}
-              onChange={(values) => onUpdate('customInflation', values)}
-            />
-          ) : (
-            <p className="text-[11px] leading-5 text-muted-foreground">
-              {t('bonds.market_assumptions.inflation_simple_mode_note')}
-            </p>
-          )}
-        </div>
+        <AdvancedRatePathSection
+          title={t('bonds.market_assumptions.inflation_path_title')}
+          description={t('bonds.market_assumptions.inflation_path_desc')}
+          emptyNote={t('bonds.market_assumptions.inflation_simple_mode_note')}
+          values={customInflation}
+          step={0.1}
+          onChange={(values) => onUpdate('customInflation', values)}
+        />
       ) : null}
     </>
   );
@@ -217,28 +203,14 @@ export function NbpAssumptionSection({
           : t('bonds.market_assumptions.nbp_flat_default_note')}
       </p>
       {activeNbpMode === 'advanced' ? (
-        <div className="space-y-3 border-t border-dashed pt-4">
-          <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-            <div className="space-y-1">
-              <p className="ui-card-title">{t('bonds.market_assumptions.nbp_path_title')}</p>
-              <p className="text-xs leading-5 text-muted-foreground">
-                {t('bonds.market_assumptions.nbp_path_desc')}
-              </p>
-            </div>
-          </div>
-          {customNbpRate ? (
-            <ProjectedRatePathEditor
-              values={customNbpRate}
-              prefix="Y"
-              step={0.05}
-              onChange={(values) => onUpdate('customNbpRate', values)}
-            />
-          ) : (
-            <p className="text-[11px] leading-5 text-muted-foreground">
-              {t('bonds.market_assumptions.nbp_simple_mode_note')}
-            </p>
-          )}
-        </div>
+        <AdvancedRatePathSection
+          title={t('bonds.market_assumptions.nbp_path_title')}
+          description={t('bonds.market_assumptions.nbp_path_desc')}
+          emptyNote={t('bonds.market_assumptions.nbp_simple_mode_note')}
+          values={customNbpRate}
+          step={0.05}
+          onChange={(values) => onUpdate('customNbpRate', values)}
+        />
       ) : null}
     </div>
   );
