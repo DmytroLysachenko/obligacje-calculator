@@ -29,11 +29,3 @@ export function getMetadataLocale(language: Language | string) {
 export function getDateFnsLocale(language: Language | string) {
   return dateFnsLocaleByLanguage[language as Language] ?? dateFnsLocaleByLanguage.en;
 }
-
-export function isPolishLanguage(language: Language | string) {
-  return language === 'pl';
-}
-
-export function pickLanguageValue<T>(language: Language | string, values: Record<Language, T>) {
-  return values[language as Language] ?? values.en;
-}

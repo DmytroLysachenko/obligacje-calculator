@@ -37,7 +37,7 @@ export function AppLocaleProvider({ children }: { children: React.ReactNode }) {
   return <AppLocaleContext.Provider value={value}>{children}</AppLocaleContext.Provider>;
 }
 
-export function useAppLocale() {
+function useAppLocale() {
   const context = useContext(AppLocaleContext);
 
   if (!context) {
