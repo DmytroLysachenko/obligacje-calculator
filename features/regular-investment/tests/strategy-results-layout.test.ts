@@ -90,13 +90,16 @@ describe('strategy result layout contracts', () => {
 
   it('keeps regular recent lots grouped without losing dense financial detail', () => {
     const source = readSource(paths.regular);
+    const model = readSource('features/regular-investment/lib/regular-investment-results-model.ts');
     const recentList = readSource('shared/components/results/RecentLotList.tsx');
 
     expectContains(
       source,
-      "import { RecentLotDisplayItem, RecentLotList } from '@/shared/components/results/RecentLotList';",
+      "import { RecentLotList } from '@/shared/components/results/RecentLotList';",
     );
-    expectContains(source, 'const recentLotItems = useMemo<RecentLotDisplayItem[]>(');
+    expectContains(source, 'buildRegularInvestmentRecentLotItems');
+    expectContains(model, 'RecentLotDisplayItem[]');
+    expectContains(model, 'buildRecentRegularInvestmentLots');
     expectContains(source, '<RecentLotList');
     expectContains(recentList, 'space-y-5 border-y border-border py-6');
     expectContains(recentList, 'className?: string;');
