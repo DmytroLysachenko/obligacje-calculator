@@ -1,4 +1,4 @@
-import { addMonths, differenceInMonths, isAfter, isBefore, parseISO } from 'date-fns';
+import { addMonths, isAfter } from 'date-fns';
 import { Decimal } from 'decimal.js';
 
 import {
@@ -6,17 +6,17 @@ import {
   RegularInvestmentInputs,
   RegularInvestmentResult,
   RegularTimelinePoint,
-  TaxStrategy,
 } from '../../types';
 import { SimulationEvent, SimulationEventType } from '../../types/simulation';
 import { withMathGuard } from '../engine-guards';
 
 import { getHistoricalValue } from './historical-data';
-import { getExpectedInflationForYearIndex } from './inflation';
 import { normalizeRegularInvestmentInputs } from './input-normalization';
-import { determineInterestRate } from './rate-resolution';
 import { calculateRealValue } from './real-return';
-import { calculateEarlyWithdrawalFee } from './redemption';
+import {
+  summarizeRegularInvestmentLots,
+  updateRegularInvestmentLotsForMonth,
+} from './regular-investment-lots';
 import {
   resolveRegularInvestmentBondSetup,
   resolveRegularInvestmentPurchaseCash,
@@ -28,7 +28,6 @@ import {
   settleMaturedLots,
 } from './regular-investment-schedule';
 import { createRegularInvestmentResult } from './result-assembly';
-import { calculateTaxAmount, shouldWithholdPeriodicTax } from './tax-settlement';
 
 /**
  * Regular investment calculator using modular engine.
@@ -137,126 +136,35 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
       historicalData,
     );
 
-    // 3. Update all active lots
-    lots.forEach((lot) => {
-      const lotPurchaseDate = parseISO(lot.purchaseDate);
-      const lotMaturityDate = parseISO(lot.maturityDate);
-
-      if (isAfter(currentMonthDate, lotPurchaseDate)) {
-        const monthsHeld = differenceInMonths(currentMonthDate, lotPurchaseDate);
-        const bondDurationMonths = Math.round(bondDuration * 12);
-
-        const dLotGrossValue = new Decimal(lot.grossValue);
-        const dLotAccumulatedInterest = new Decimal(lot.accumulatedInterest);
-        const dLotTax = new Decimal(lot.tax);
-        const shouldWithholdTaxForLot = shouldWithholdPeriodicTax(taxStrategy, isCapitalized);
-
-        if (monthsHeld <= bondDurationMonths) {
-          const monthIndex = monthsHeld - 1;
-          const globalMonthIndex = Math.max(
-            0,
-            differenceInMonths(currentMonthDate, startPurchaseDate),
-          );
-          const globalYearIndex = Math.floor(globalMonthIndex / 12);
-          const inflationResetYearIndex = Math.max(0, globalYearIndex - 1);
-          const projectedInflation = getExpectedInflationForYearIndex(
-            expectedInflation,
-            inputs.customInflation,
-            inflationResetYearIndex,
-          );
-          const customInflationValue = inputs.customInflation?.[inflationResetYearIndex];
-          const customNbpValue = inputs.customNbpRate?.[globalYearIndex];
-          const currentInterestRate = determineInterestRate(
-            bondType,
-            monthIndex,
-            firstYearRate,
-            projectedInflation,
-            expectedNbpRate,
-            margin,
-            bondDef.isInflationIndexed,
-            currentLagInflation,
-            currentLagNbp,
-            customInflationValue,
-            customNbpValue,
-          );
-          const currentMonthlyRate = currentInterestRate.dividedBy(12).dividedBy(100);
-
-          const interestThisMonth = dLotGrossValue.times(currentMonthlyRate);
-          const newAccumulatedInterest = dLotAccumulatedInterest.plus(interestThisMonth);
-          lot.accumulatedInterest = newAccumulatedInterest.toNumber();
-
-          if (isCapitalized) {
-            lot.grossValue = dLotGrossValue.plus(interestThisMonth).toNumber();
-          } else {
-            if (shouldWithholdTaxForLot) {
-              const taxThisMonth = calculateTaxAmount(
-                interestThisMonth,
-                taxStrategy,
-                false,
-                taxRate,
-              );
-              lot.tax = dLotTax.plus(taxThisMonth).toNumber();
-            }
-          }
-        }
-
-        lot.isMatured = !isBefore(currentMonthDate, lotMaturityDate);
-
-        const dFinalAccumulatedInterest = new Decimal(lot.accumulatedInterest);
-        const units = new Decimal(lot.investedAmount).dividedBy(bondPrice).floor();
-
-        const isLotEarlyWithdrawal = !lot.isMatured;
-        const dFinalFee = calculateEarlyWithdrawalFee(
-          bondType,
-          isLotEarlyWithdrawal,
-          isLotEarlyWithdrawal,
-          dFinalAccumulatedInterest,
-          units,
-          earlyWithdrawalFee,
-        );
-        lot.earlyWithdrawalFee = dFinalFee.toNumber();
-
-        const currentGrossValue = isCapitalized
-          ? new Decimal(lot.grossValue)
-          : units.times(nominalValue).plus(dFinalAccumulatedInterest);
-        const currentTaxPaid = shouldWithholdTaxForLot
-          ? new Decimal(lot.tax)
-          : calculateTaxAmount(
-              Decimal.max(
-                0,
-                taxStrategy === TaxStrategy.IKZE
-                  ? currentGrossValue.minus(dFinalFee)
-                  : dFinalAccumulatedInterest.minus(dFinalFee),
-              ),
-              taxStrategy,
-              isWithdrawalStep,
-              taxRate,
-            );
-
-        const finalNetValue = currentGrossValue.minus(currentTaxPaid).minus(dFinalFee);
-        lot.netValue = finalNetValue.toNumber();
-        if (!shouldWithholdTaxForLot) {
-          lot.tax = currentTaxPaid.toNumber();
-        }
-      }
+    updateRegularInvestmentLotsForMonth({
+      lots,
+      currentMonthDate,
+      startPurchaseDate,
+      bondDuration,
+      bondType,
+      firstYearRate,
+      expectedInflation,
+      expectedNbpRate,
+      margin,
+      isInflationIndexed: bondDef.isInflationIndexed,
+      currentLagInflation,
+      currentLagNbp,
+      customInflation: inputs.customInflation,
+      customNbpRate: inputs.customNbpRate,
+      isCapitalized,
+      taxStrategy,
+      taxRate,
+      bondPrice,
+      nominalValue,
+      earlyWithdrawalFee,
+      isWithdrawalStep,
     });
 
-    let currentNominalValueTotal = new Decimal(0);
-    let currentProfitTotal = new Decimal(0);
-    let currentTaxTotal = new Decimal(0);
-    let currentFeesTotal = new Decimal(0);
-
-    lots.forEach((lot) => {
-      const units = new Decimal(lot.investedAmount).dividedBy(bondPrice).floor();
-      const nominalStarting = units.times(nominalValue);
-      currentNominalValueTotal = currentNominalValueTotal.plus(
-        isCapitalized ? lot.grossValue : nominalStarting,
-      );
-      currentProfitTotal = currentProfitTotal.plus(
-        new Decimal(lot.netValue).minus(lot.investedAmount),
-      );
-      currentTaxTotal = currentTaxTotal.plus(lot.tax);
-      currentFeesTotal = currentFeesTotal.plus(lot.earlyWithdrawalFee);
+    const currentLotSummary = summarizeRegularInvestmentLots({
+      lots,
+      bondPrice,
+      nominalValue,
+      isCapitalized,
     });
 
     if (isWithdrawalStep) {
@@ -264,7 +172,10 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
         type: SimulationEventType.WITHDRAWAL,
         date: currentMonthDate.toISOString(),
         description: `Final withdrawal of all lots`,
-        value: currentNominalValueTotal.minus(currentTaxTotal).minus(currentFeesTotal).toNumber(),
+        value: currentLotSummary.nominalValue
+          .minus(currentLotSummary.tax)
+          .minus(currentLotSummary.fees)
+          .toNumber(),
       });
     }
 
@@ -272,11 +183,11 @@ export const calculateRegularInvestment = withMathGuard(function calculateRegula
       month: m,
       date: currentMonthDate.toISOString(),
       totalInvested: totalInvested.toNumber(),
-      nominalValue: currentNominalValueTotal.toNumber(),
-      realValue: calculateRealValue(currentNominalValueTotal, cumulativeInflation).toNumber(),
-      profit: currentProfitTotal.toNumber(),
-      tax: currentTaxTotal.toNumber(),
-      earlyWithdrawalFees: currentFeesTotal.toNumber(),
+      nominalValue: currentLotSummary.nominalValue.toNumber(),
+      realValue: calculateRealValue(currentLotSummary.nominalValue, cumulativeInflation).toNumber(),
+      profit: currentLotSummary.profit.toNumber(),
+      tax: currentLotSummary.tax.toNumber(),
+      earlyWithdrawalFees: currentLotSummary.fees.toNumber(),
       isProjected: currentIsProjected,
       events: events.length > 0 ? events : undefined,
     });
