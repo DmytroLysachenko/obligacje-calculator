@@ -221,6 +221,8 @@ export const ComparisonContainer: React.FC = () => {
               bondTypeA={resultInputsA.bondType}
               bondTypeB={resultInputsB.bondType}
               formatCurrency={formatCurrency}
+              chartStep={chartStep}
+              onChartStepChange={setChartStep}
             />
 
             <ComparisonAssumptionsMetaPanel

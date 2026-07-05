@@ -61,22 +61,26 @@ describe('single calculator chart display-only contract', () => {
     );
   });
 
-  it('keeps chart granularity local to the single value chart toolbar', () => {
-    const source = read(files.chart);
+  it('keeps display granularity local to the single result details surface', () => {
+    const chart = read(files.chart);
+    const panels = read(files.panels);
 
     expectContains(
-      source,
+      panels,
       "const [displayStep, setDisplayStep] = React.useState<ChartStep>('yearly');",
     );
-    expectContains(source, 'defaultGranularity={displayStep}');
-    expectContains(source, 'onGranularityChange={setDisplayStep}');
-    expectNotContains(source, 'chartStep =');
+    expectContains(chart, 'defaultGranularity={displayStep}');
+    expectContains(chart, 'onGranularityChange={onDisplayStepChange}');
+    expectContains(panels, 'displayStep={displayStep}');
+    expectContains(panels, 'onDisplayStepChange={setDisplayStep}');
+    expectNotContains(chart, 'React.useState<ChartStep>');
   });
 
-  it('does not feed single calculator chart granularity into the timeline or chart props', () => {
+  it('feeds display granularity into single chart and timeline without using form inputs', () => {
     const source = read(files.panels);
 
-    expectContains(source, '<BondTimeline results={results} />');
+    expectContains(source, '<BondTimeline results={results} chartStep={displayStep} />');
+    expectContains(source, 'displayStep={displayStep}');
     expectNotContains(source, 'chartStep={inputs.chartStep}');
     expectNotContains(source, 'chartStep={inputs.chartStep}');
   });
@@ -107,7 +111,7 @@ describe('single calculator chart display-only contract', () => {
 
     expectContains(chart, 'buildBondChartDisplayPoints(');
     expectContains(chart, 'displayStep,');
-    expectContains(chart, 'onGranularityChange={setDisplayStep}');
+    expectContains(chart, 'onGranularityChange={onDisplayStepChange}');
     expectNotContains(container, "onUpdate('chartStep'");
     expectNotContains(container, "updateInput('chartStep'");
     expectNotContains(hook, "key === 'chartStep'");

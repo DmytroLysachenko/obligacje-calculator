@@ -1,7 +1,7 @@
 import { addMonths, compareAsc, differenceInMonths, format, parseISO } from 'date-fns';
 
 import { CalculationResult, ChartStep } from '@/features/bond-core/types';
-import { getDateFnsLocale } from '@/i18n/locale-utils';
+import { capitalizePolishDateLabel, getDateFnsLocale } from '@/i18n/locale-utils';
 import { TableRowLimit } from '@/shared/components/results/TableDensityControls';
 
 import { ComparisonSummaryRow } from '../types/comparison-table';
@@ -172,7 +172,12 @@ export function buildComparisonAlignedTableRows({
     return {
       key: date.toISOString(),
       label:
-        index === 0 ? startLabel : format(date, 'MMM yyyy', { locale: getDateFnsLocale(language) }),
+        index === 0
+          ? startLabel
+          : capitalizePolishDateLabel(
+              format(date, 'MMM yyyy', { locale: getDateFnsLocale(language) }),
+              language,
+            ),
       dateLabel: format(date, 'yyyy-MM-dd'),
       scenarioA,
       scenarioB,

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { type YearlyTimelinePoint } from '@/features/bond-core/types';
+import { SimulationEventType } from '@/features/bond-core/types/simulation';
 
 import { buildBondChartDisplayPoints, buildBondTimelineDisplayRows } from './bond-display';
 
@@ -89,6 +90,21 @@ describe('buildBondChartDisplayPoints', () => {
     expect(points[1]?.xLabel).toBe('Jun 2026');
     expect(rows[1]?.periodLabel).toBe('Jun 2026');
     expect(points.at(-1)?.xLabel).toBe('May 2027');
+  });
+
+  it('capitalizes Polish month labels in timeline rows and chart points', () => {
+    const timeline: YearlyTimelinePoint[] = [
+      makeTimelinePoint({
+        periodLabel: 'Purchase',
+        cycleEndDate: '2026-06-12',
+      }),
+    ];
+
+    const points = buildBondChartDisplayPoints(10000, timeline, 'pl', undefined, 'monthly');
+    const rows = buildBondTimelineDisplayRows(timeline, 'pl', 'monthly');
+
+    expect(points[0].xLabel).toBe('Cze 2026');
+    expect(rows[0].periodLabel).toBe('Cze 2026');
   });
 
   it('keeps CPI and NBP reference overlays flat between yearly checkpoints when densifying', () => {
@@ -218,5 +234,63 @@ describe('buildBondChartDisplayPoints', () => {
 
     expect(rows.map((row) => row.periodLabel)).toEqual(['Jun 2026', 'Jun 2027', 'Sept 2027']);
     expect(rows.at(-1)?.totalWealth).toBe(10450);
+  });
+
+  it('aggregates naturally monthly timeline rows when quarterly or yearly display is selected', () => {
+    const timeline: YearlyTimelinePoint[] = Array.from({ length: 25 }, (_, index) =>
+      makeTimelinePoint({
+        periodLabel: `Month ${index}`,
+        cycleEndDate: new Date(Date.UTC(2026, 5 + index, 12)).toISOString().slice(0, 10),
+        totalValue: 10000 + index * 25,
+        realValue: 10000 + index * 10,
+        netProfit: index * 25,
+      }),
+    );
+
+    const monthly = buildBondTimelineDisplayRows(timeline, 'en', 'monthly');
+    const quarterly = buildBondTimelineDisplayRows(timeline, 'en', 'quarterly');
+    const yearly = buildBondTimelineDisplayRows(timeline, 'en', 'yearly');
+
+    expect(monthly).toHaveLength(25);
+    expect(quarterly.map((row) => row.periodLabel)).toEqual([
+      'Jun 2026',
+      'Sept 2026',
+      'Dec 2026',
+      'Mar 2027',
+      'Jun 2027',
+      'Sept 2027',
+      'Dec 2027',
+      'Mar 2028',
+      'Jun 2028',
+    ]);
+    expect(yearly.map((row) => row.periodLabel)).toEqual(['Jun 2026', 'Jun 2027', 'Jun 2028']);
+  });
+
+  it('deduplicates repeated period event badges inside aggregated timeline rows', () => {
+    const timeline: YearlyTimelinePoint[] = Array.from({ length: 12 }, (_, index) =>
+      makeTimelinePoint({
+        periodLabel: `Month ${index}`,
+        cycleEndDate: new Date(Date.UTC(2026, 5 + index, 12)).toISOString().slice(0, 10),
+        totalValue: 10000 + index * 25,
+        realValue: 10000 + index * 10,
+        netProfit: index * 25,
+        events: [
+          {
+            type: SimulationEventType.PAYOUT,
+            date: new Date(Date.UTC(2026, 5 + index, 12)).toISOString().slice(0, 10),
+            description: `Payout ${index}`,
+          },
+          {
+            type: SimulationEventType.TAX_SETTLEMENT,
+            date: new Date(Date.UTC(2026, 5 + index, 12)).toISOString().slice(0, 10),
+            description: `Tax ${index}`,
+          },
+        ],
+      }),
+    );
+
+    const yearly = buildBondTimelineDisplayRows(timeline, 'en', 'yearly');
+
+    expect(yearly[0].eventLabels).toEqual(['Payout', 'Tax settlement']);
   });
 });

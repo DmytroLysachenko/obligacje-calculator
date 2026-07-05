@@ -1,6 +1,6 @@
 import { RateSource, YearlyTimelinePoint } from '@/features/bond-core/types';
 import { SimulationEventType } from '@/features/bond-core/types/simulation';
-import { getIntlLocale } from '@/i18n/locale-utils';
+import { capitalizePolishDateLabel, getIntlLocale } from '@/i18n/locale-utils';
 import { translateMessage } from '@/i18n/translate';
 
 export type AppLanguage = 'pl' | 'en';
@@ -29,10 +29,12 @@ const EVENT_LABEL_KEYS: Record<SimulationEventType, string> = {
 };
 
 export function formatMonthYear(date: string, language: AppLanguage) {
-  return new Intl.DateTimeFormat(getIntlLocale(language), {
+  const label = new Intl.DateTimeFormat(getIntlLocale(language), {
     month: 'short',
     year: 'numeric',
   }).format(new Date(date));
+
+  return capitalizePolishDateLabel(label, language);
 }
 
 export function getRateSourceDisplayLabel(source: RateSource, language: AppLanguage) {

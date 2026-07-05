@@ -13,7 +13,6 @@ import { COMPARISON_TABLE_GRANULARITY_OPTIONS } from '@/features/comparison-engi
 import {
   buildComparisonAlignedTableRows,
   buildComparisonSummaryRows,
-  ComparisonTableGranularity,
   getComparisonTablePageCount,
   getComparisonTablePageRows,
   getComparisonVisibleRangeLabel,
@@ -30,9 +29,10 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
   bondTypeA,
   bondTypeB,
   formatCurrency,
+  chartStep,
+  onChartStepChange,
 }) => {
   const { t, locale: language } = useAppI18n();
-  const [granularity, setGranularity] = React.useState<ComparisonTableGranularity>('yearly');
   const [rowLimit, setRowLimit] = React.useState<TableRowLimit>(12);
   const [currentPage, setCurrentPage] = React.useState(1);
   const higherColumnLabel = t('comparison.table_ahead_in_row');
@@ -49,18 +49,18 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
         resultsA,
         resultsB,
         purchaseDate,
-        granularity,
+        granularity: chartStep === 'daily' ? 'monthly' : chartStep,
         language,
         startLabel: t('comparison.start'),
       }),
-    [granularity, language, purchaseDate, resultsA, resultsB, t],
+    [chartStep, language, purchaseDate, resultsA, resultsB, t],
   );
 
   const totalPages = getComparisonTablePageCount(tableRows.length, rowLimit);
 
   React.useEffect(() => {
     setCurrentPage(1);
-  }, [granularity, rowLimit, resultsA, resultsB]);
+  }, [chartStep, rowLimit, resultsA, resultsB]);
 
   React.useEffect(() => {
     setCurrentPage((page) => Math.min(page, totalPages));
@@ -128,14 +128,14 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
               <button
                 key={step}
                 type="button"
-                aria-pressed={granularity === step}
+                aria-pressed={chartStep === step}
                 className={cn(
                   'rounded-md border px-3 py-1.5 text-xs font-semibold transition-colors',
-                  granularity === step
+                  chartStep === step
                     ? 'border-primary bg-primary text-primary-foreground'
                     : 'border-border bg-background text-muted-foreground hover:text-foreground',
                 )}
-                onClick={() => setGranularity(step)}
+                onClick={() => onChartStepChange(step)}
               >
                 {t(`bonds.chart.periods.${step}`)}
               </button>

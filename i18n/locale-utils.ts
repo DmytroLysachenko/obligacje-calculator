@@ -29,3 +29,11 @@ export function getMetadataLocale(language: Language | string) {
 export function getDateFnsLocale(language: Language | string) {
   return dateFnsLocaleByLanguage[language as Language] ?? dateFnsLocaleByLanguage.en;
 }
+
+export function capitalizePolishDateLabel(label: string, language: Language | string) {
+  if (language !== 'pl' || label.length === 0) {
+    return label;
+  }
+
+  return label.charAt(0).toLocaleUpperCase(getIntlLocale(language)) + label.slice(1);
+}

@@ -1,4 +1,4 @@
-import { CalculationResult } from '@/features/bond-core/types';
+import { CalculationResult, ChartStep } from '@/features/bond-core/types';
 import { ComparisonAlignedTableRow } from '@/features/comparison-engine/lib/comparison-table-model';
 
 export interface ComparisonTableProps {
@@ -8,6 +8,8 @@ export interface ComparisonTableProps {
   bondTypeA: string;
   bondTypeB: string;
   formatCurrency: (val: number) => string;
+  chartStep: ChartStep;
+  onChartStepChange: (step: ChartStep) => void;
 }
 
 export type ComparisonSummaryRow = {

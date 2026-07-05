@@ -11,11 +11,7 @@ import {
   normalizeBondChartDisplayTimeline,
 } from '@/shared/lib/bond-display';
 import { applyChartContextRates } from '@/shared/lib/chart-context-rates';
-import {
-  computeNumericDomain,
-  computeRateDomain,
-  sampleSeriesPoints,
-} from '@/shared/lib/chart-series';
+import { computeNumericDomain, computeRateDomain } from '@/shared/lib/chart-series';
 
 import { BondInputs, CalculationResult, ChartStep } from '../../bond-core/types';
 
@@ -27,11 +23,18 @@ interface BondChartProps {
     'purchaseDate' | 'expectedInflation' | 'expectedNbpRate' | 'customInflation' | 'customNbpRate'
   >;
   showRealValue?: boolean;
+  displayStep: ChartStep;
+  onDisplayStepChange: (step: ChartStep) => void;
 }
 
-export const BondChart: React.FC<BondChartProps> = ({ results, inputs, showRealValue = false }) => {
+export const BondChart: React.FC<BondChartProps> = ({
+  results,
+  inputs,
+  showRealValue = false,
+  displayStep,
+  onDisplayStepChange,
+}) => {
   const { t, locale: language } = useAppI18n();
-  const [displayStep, setDisplayStep] = React.useState<ChartStep>('yearly');
 
   const formatCurrency = React.useMemo(
     () => (value: number) =>
@@ -80,7 +83,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results, inputs, showRealV
       };
     });
 
-    return sampleSeriesPoints(applyChartContextRates(rawData, inputs), 180);
+    return applyChartContextRates(rawData, inputs);
   }, [
     displayStep,
     inputs,
@@ -158,7 +161,7 @@ export const BondChart: React.FC<BondChartProps> = ({ results, inputs, showRealV
       rightDomain={rightDomain}
       summary={chartSummary}
       defaultGranularity={displayStep}
-      onGranularityChange={setDisplayStep}
+      onGranularityChange={onDisplayStepChange}
       ariaLabel={t('bonds.value_chart_label')}
     />
   );

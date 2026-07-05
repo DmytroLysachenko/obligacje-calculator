@@ -112,4 +112,30 @@ describe('comparison display model', () => {
       nominalB: 10800,
     });
   });
+
+  it('preserves every monthly point for a 20-year sparse yearly timeline', () => {
+    const yearlyTimeline = Array.from({ length: 21 }, (_, index) =>
+      point(new Date(Date.UTC(2026 + index, 5, 1)).toISOString().slice(0, 10), 10000 + index * 600),
+    );
+
+    const monthly = buildComparisonChartData({
+      purchaseDate: '2026-06-01',
+      withdrawalDateA: '2046-06-01',
+      withdrawalDateB: '2046-06-01',
+      resultsA: result(yearlyTimeline),
+      resultsB: result(yearlyTimeline),
+      language: 'en',
+      t: (key) => key,
+      chartStep: 'monthly',
+    });
+
+    expect(monthly).toHaveLength(241);
+    expect(monthly.slice(0, 4).map((item) => item.label)).toEqual([
+      'comparison.start',
+      'Jul 2026',
+      'Aug 2026',
+      'Sep 2026',
+    ]);
+    expect(monthly.at(-1)?.label).toBe('Jun 2046');
+  });
 });

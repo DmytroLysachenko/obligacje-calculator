@@ -89,6 +89,19 @@ describe('comparison aligned table model', () => {
     expect(rows[1]?.dateLabel).toBe('2026-09-12');
   });
 
+  it('capitalizes Polish month labels in comparison table rows', () => {
+    const rows = buildComparisonAlignedTableRows({
+      resultsA: result([point('2026-06-12', 10000), point('2026-09-12', 10072.42)]),
+      resultsB: result([point('2026-06-12', 10000), point('2026-09-12', 10052.58)]),
+      purchaseDate: '2026-06-12',
+      granularity: 'monthly',
+      language: 'pl',
+      startLabel: 'Start',
+    });
+
+    expect(rows[1]?.label).toBe('Lip 2026');
+  });
+
   it('keeps yearly table rows on purchase anniversaries and preserves the final withdrawal row', () => {
     const rows = buildComparisonAlignedTableRows({
       resultsA: result([

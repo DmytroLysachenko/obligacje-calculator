@@ -87,11 +87,27 @@ export function BondValueChart({
   const showNbpOverlay = preferences.showNbpOverlay;
   const granularity = preferences.granularity;
   const showContextAxis = showInflationOverlay || showNbpOverlay;
+  const hasSyncedInitialPreference = React.useRef(false);
 
   React.useEffect(() => {
-    if (granularity !== defaultGranularity) {
+    if (!hasSyncedInitialPreference.current) {
+      hasSyncedInitialPreference.current = true;
       onGranularityChange?.(granularity);
+      return;
     }
+
+    setPreferences((current) => {
+      if (current.granularity === defaultGranularity) {
+        return current;
+      }
+
+      const next = {
+        ...current,
+        granularity: defaultGranularity,
+      };
+      saveChartDisplayPreferences(next);
+      return next;
+    });
   }, [defaultGranularity, granularity, onGranularityChange]);
 
   const legendItems = React.useMemo(

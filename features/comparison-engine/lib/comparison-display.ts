@@ -3,7 +3,6 @@ import { addMonths, compareAsc, differenceInMonths, format, parseISO } from 'dat
 import { BondType, CalculationResult, ChartStep } from '@/features/bond-core/types';
 import { BondInputs } from '@/features/bond-core/types';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
-import { sampleSeriesPoints } from '@/shared/lib/chart-series';
 
 type Translator = (key: string, params?: Record<string, string | number>) => string;
 
@@ -153,7 +152,7 @@ export function buildComparisonChartData({
 
   const displayPoints = aggregateComparisonChartPoints(rawPoints, chartStep);
 
-  return sampleSeriesPoints(displayPoints, 180);
+  return displayPoints;
 }
 
 function interpolateValue(start: number, end: number, progress: number) {

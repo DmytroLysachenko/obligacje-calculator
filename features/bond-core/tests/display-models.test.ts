@@ -146,6 +146,30 @@ describe('bond display models', () => {
     expect(normalized.at(-1)?.real).toBe(10050);
   });
 
+  it('preserves every monthly chart point for a 20-year sparse yearly timeline', () => {
+    const timeline = Array.from({ length: 21 }, (_, index) =>
+      makePoint({
+        cycleEndDate: new Date(Date.UTC(2026 + index, 5, 1)).toISOString(),
+        totalValue: 10000 + index * 600,
+        realValue: 10000 + index * 300,
+        nominalValueAfterInterest: 10000 + index * 600,
+      }),
+    );
+
+    const points = buildBondChartDisplayPoints(10000, timeline, 'en', undefined, 'monthly');
+    const rows = buildBondTimelineDisplayRows(timeline, 'en', 'monthly');
+
+    expect(points).toHaveLength(241);
+    expect(rows).toHaveLength(241);
+    expect(points.slice(0, 4).map((point) => point.xLabel)).toEqual([
+      'Jun 2026',
+      'Jul 2026',
+      'Aug 2026',
+      'Sept 2026',
+    ]);
+    expect(points.at(-1)?.xLabel).toBe('Jun 2046');
+  });
+
   it('picks the first meaningful audit checkpoint instead of a raw purchase row', () => {
     const purchaseOnly = makePoint({
       periodLabel: 'May 2026',

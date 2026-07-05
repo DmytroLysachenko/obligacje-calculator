@@ -86,6 +86,19 @@ describe('comparison layout contract', () => {
     expect(container).toContain('inputsB={resultInputsB}');
   });
 
+  it('shares comparison chart granularity with the comparison table', () => {
+    const container = read(files.container);
+    const table = read(files.table);
+
+    expect(container).toContain('chartStep={chartStep}');
+    expect(container).toContain('onChartStepChange={setChartStep}');
+    expect(table).toContain('granularity: chartStep ===');
+    expect(table).toContain('aria-pressed={chartStep === step}');
+    expect(table).toContain('onClick={() => onChartStepChange(step)}');
+    expect(table).not.toContain('useState<ComparisonTableGranularity>');
+    expect(table).not.toContain('setGranularity');
+  });
+
   it('derives comparison dirty state from committed result inputs', () => {
     const hook = read(files.hook);
     const calculatorState = read(files.calculatorState);

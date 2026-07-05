@@ -1,9 +1,12 @@
 'use client';
 
+import React from 'react';
+
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   BondInputs,
   CalculationResult,
+  ChartStep,
   SingleBondCalculationEnvelope,
 } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
@@ -133,6 +136,7 @@ export function BondCalculatorDetailsPanel({
   readingGuide,
 }: BondCalculatorDetailsPanelProps) {
   const { t } = useAppI18n();
+  const [displayStep, setDisplayStep] = React.useState<ChartStep>('yearly');
 
   if (!results) {
     return null;
@@ -158,6 +162,8 @@ export function BondCalculatorDetailsPanel({
           initialInvestment={results.initialInvestment}
           inputs={inputs}
           showRealValue={inputs.showRealValue}
+          displayStep={displayStep}
+          onDisplayStepChange={setDisplayStep}
         />
       </CalculatorSection>
 
@@ -173,7 +179,7 @@ export function BondCalculatorDetailsPanel({
         title={t('bonds.timeline')}
         description={t('bonds.simulation.timeline_section_desc')}
       >
-        <BondTimeline results={results} />
+        <BondTimeline results={results} chartStep={displayStep} />
       </CalculatorSection>
 
       <SecondaryInsightAccordion
