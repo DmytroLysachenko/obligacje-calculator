@@ -33,7 +33,7 @@
     "*.{ts,tsx}": [
       "eslint --fix",
       "bash -c \"pnpm exec tsc --noEmit\"",
-      "pnpm test:core"
+      "bash -c \"pnpm test:core\""
     ]
   },
   "dependencies": {
