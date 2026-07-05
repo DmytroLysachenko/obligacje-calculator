@@ -1,6 +1,6 @@
 'use client';
 
-import { Link2, Target } from 'lucide-react';
+import { Target } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 
 import { useAppI18n } from '@/i18n/client';
@@ -35,6 +35,7 @@ import {
 
 import { BondCalculatorDetailsPanel, BondCalculatorResultsPanel } from './BondCalculatorPanels';
 import { BondInputsForm } from './BondInputsForm';
+import { SharedScenarioNotice } from './SharedScenarioNotice';
 
 interface BondCalculatorContainerProps {
   initialInputs?: import('@/features/bond-core/types').BondInputs;
@@ -184,17 +185,11 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     >
       <div className="space-y-8 md:space-y-10">
         {sharedScenarioTitle ? (
-          <div className="ui-inline-notice">
-            <div className="flex flex-wrap items-center gap-2 font-semibold">
-              <Link2 className="h-4 w-4" />
-              {t('bonds.shared_scenario_badge')}
-            </div>
-            <p className="mt-2 leading-7">
-              {sharedScenarioTitle}
-              {' - '}
-              {t('bonds.shared_scenario_snapshot')}
-            </p>
-          </div>
+          <SharedScenarioNotice
+            title={sharedScenarioTitle}
+            badge={t('bonds.shared_scenario_badge')}
+            snapshotLabel={t('bonds.shared_scenario_snapshot')}
+          />
         ) : null}
 
         <CalculatorWorkspace
