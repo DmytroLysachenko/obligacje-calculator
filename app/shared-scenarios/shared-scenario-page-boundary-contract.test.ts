@@ -13,6 +13,7 @@ describe('shared scenario page boundary', () => {
   it('keeps shared scenario page reads behind the server service boundary', () => {
     const page = read('app/shared-scenarios/[shareId]/page.tsx');
     const service = read('lib/server/shared-scenarios/service.ts');
+    const repository = read('lib/server/shared-scenarios/repository.ts');
 
     expect(page).toContain("from '@/lib/server/shared-scenarios/service'");
     expect(page).toContain('getSharedSingleScenarioMetadata');
@@ -24,7 +25,10 @@ describe('shared scenario page boundary', () => {
 
     expect(service).toContain('getSharedSingleScenarioMetadata');
     expect(service).toContain('getSharedSingleScenarioPageData');
-    expect(service).toContain('db.query.sharedSingleScenarios.findFirst');
+    expect(service).toContain('findSharedSingleScenarioRecord');
+    expect(service).not.toContain("from '@/db'");
+    expect(service).not.toContain('db.query');
     expect(service).toContain('parseSharedSingleScenarioPayload');
+    expect(repository).toContain('db.query.sharedSingleScenarios.findFirst');
   });
 });

@@ -32,8 +32,11 @@ function listCodeFiles(directory: string): string[] {
 }
 
 function filesContaining(pattern: RegExp) {
-  return codeRoots.flatMap(listCodeFiles).filter((file) => pattern.test(read(file)));
+  return codeFiles.filter((file) => pattern.test(sourceByFile.get(file) ?? ''));
 }
+
+const codeFiles = codeRoots.flatMap(listCodeFiles);
+const sourceByFile = new Map(codeFiles.map((file) => [file, read(file)]));
 
 describe('clean code architecture contract', () => {
   it('keeps browser fetch calls behind approved gateway and worker files', () => {
@@ -83,9 +86,7 @@ describe('clean code architecture contract', () => {
 
   it('keeps feature client logging behind the shared client logger', () => {
     const approvedClientConsoleFiles = new Set([
-      'app/error.tsx',
       'features/bond-core/utils/calculation-cache.ts',
-      'shared/components/feedback/ErrorBoundary.tsx',
       'shared/lib/client-logger.ts',
     ]);
     const matches = filesContaining(/console\.(error|warn|log|info)\(/)
