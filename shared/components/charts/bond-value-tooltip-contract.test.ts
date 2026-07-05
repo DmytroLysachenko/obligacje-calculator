@@ -21,12 +21,13 @@ describe('bond value chart tooltip contract', () => {
     expect(modelSource).toContain("!['inflation', 'nbp'].includes(String(entry.dataKey))");
 
     const viewSource = read('shared/components/charts/BondValueChartTooltipParts.tsx');
+    const primitivesSource = read('shared/components/charts/BondValueChartTooltipPrimitives.tsx');
     expect(viewSource).toContain('buildBondValueTooltipModel');
     expect(viewSource).toContain('function ScenarioGroupTooltip');
     expect(viewSource).toContain('<ScenarioGroupTooltip');
-    expect(viewSource).toContain('function TooltipMetricRow');
-    expect(viewSource).toContain('function TooltipEventList');
-    expect(viewSource).toContain('function TooltipContextRates');
+    expect(primitivesSource).toContain('function TooltipMetricRow');
+    expect(primitivesSource).toContain('function TooltipEventList');
+    expect(primitivesSource).toContain('function TooltipContextRates');
   });
 
   it('passes comparison scenario groups into the shared chart payload', () => {
