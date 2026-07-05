@@ -6,6 +6,7 @@ import Google from 'next-auth/providers/google';
 
 import { accounts, sessions, users, verificationTokens } from './db/schema';
 import { getAuthRuntimeConfig } from './lib/server/auth/provider-config';
+import { getDatabaseUrl } from './lib/server/runtime/env';
 import { db } from './db';
 
 const authRuntimeConfig = getAuthRuntimeConfig();
@@ -14,15 +15,18 @@ const providers: Provider[] = authRuntimeConfig.providers.map((provider) =>
     ? Facebook({ clientId: provider.clientId, clientSecret: provider.clientSecret })
     : Google({ clientId: provider.clientId, clientSecret: provider.clientSecret }),
 );
+const adapter = getDatabaseUrl()
+  ? DrizzleAdapter(db, {
+      usersTable: users,
+      accountsTable: accounts,
+      sessionsTable: sessions,
+      verificationTokensTable: verificationTokens,
+    })
+  : undefined;
 
 export const { handlers, auth, signIn } = NextAuth({
   secret: authRuntimeConfig.authSecret,
-  adapter: DrizzleAdapter(db, {
-    usersTable: users,
-    accountsTable: accounts,
-    sessionsTable: sessions,
-    verificationTokensTable: verificationTokens,
-  }),
+  adapter,
   providers,
   pages: {
     signIn: '/login',

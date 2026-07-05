@@ -44,7 +44,7 @@ export const REQUIRED_READINESS_TABLES = [
   'user',
   'account',
   'session',
-  'verification_token',
+  'verificationToken',
 ];
 
 export function checkReadinessEnv(env: ReadinessEnv): ReadinessCheck {
