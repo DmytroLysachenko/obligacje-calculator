@@ -7,6 +7,7 @@ const repoRoot = process.cwd();
 
 const economicPagePath = 'features/economic-data/components/EconomicDataPageClient.tsx';
 const economicSectionsPath = 'features/economic-data/components/EconomicDashboardSections.tsx';
+const economicStatusCardPath = 'features/economic-data/components/EconomicSeriesStatusCard.tsx';
 const referenceHeroPath = 'shared/components/reference/ReferenceDashboardHero.tsx';
 const referenceRailPath = 'shared/components/reference/ReferenceGuideRail.tsx';
 const referenceNotePath = 'shared/components/reference/ReferenceNoteCard.tsx';
@@ -196,7 +197,9 @@ describe('economic data layout source contracts', () => {
   });
 
   it('keeps economic status and usage panels flattened', () => {
-    const source = `${readSource(economicPagePath)}\n${readSource(economicSectionsPath)}`;
+    const source = `${readSource(economicPagePath)}\n${readSource(economicSectionsPath)}\n${readSource(
+      economicStatusCardPath,
+    )}`;
 
     expectContains(source, "'border-t py-5'");
     expectContains(source, 'space-y-3 border-y border-border py-3');
