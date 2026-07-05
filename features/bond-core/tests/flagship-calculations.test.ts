@@ -19,6 +19,19 @@ import {
 import { calculationCache } from '../utils/calculation-cache';
 
 const today = new Date('2026-05-05T00:00:00.000Z');
+const warsawDateFormatter = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'Europe/Warsaw',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
+function formatWarsawDate(isoDate: string) {
+  const parts = warsawDateFormatter.formatToParts(new Date(isoDate));
+  const value = (type: string) => parts.find((part) => part.type === type)?.value;
+
+  return `${value('year')}-${value('month')}-${value('day')}`;
+}
 
 vi.mock('@/lib/data/market-data', async () => {
   const { BOND_DEFINITIONS: runtimeDefinitions } = await import('../constants/bond-definitions');
@@ -140,7 +153,7 @@ describe('Flagship calculation regressions', () => {
       expect(result.totalProfit).toBeLessThan(8000);
       expect(result.nominalAnnualizedReturn).toBeGreaterThan(4);
       expect(result.nominalAnnualizedReturn).toBeLessThan(6);
-      expect(result.maturityDate).toBe('2036-05-04T22:00:00.000Z');
+      expect(formatWarsawDate(result.maturityDate)).toBe('2036-05-05');
     });
 
     it('keeps the TOS baseline within a trustworthy range for a 3-year standard scenario', async () => {
@@ -154,7 +167,7 @@ describe('Flagship calculation regressions', () => {
       expect(result.totalProfit).toBeLessThan(1500);
       expect(result.nominalAnnualizedReturn).toBeGreaterThan(3);
       expect(result.nominalAnnualizedReturn).toBeLessThan(5);
-      expect(result.maturityDate).toBe('2029-05-04T22:00:00.000Z');
+      expect(formatWarsawDate(result.maturityDate)).toBe('2029-05-05');
     });
 
     it('keeps the ROR baseline within a trustworthy range for a 1-year standard scenario', async () => {
@@ -168,7 +181,7 @@ describe('Flagship calculation regressions', () => {
       expect(result.totalProfit).toBeLessThan(500);
       expect(result.nominalAnnualizedReturn).toBeGreaterThan(3.5);
       expect(result.nominalAnnualizedReturn).toBeLessThan(5);
-      expect(result.maturityDate).toBe('2027-05-04T22:00:00.000Z');
+      expect(formatWarsawDate(result.maturityDate)).toBe('2027-05-05');
     });
 
     it.each([

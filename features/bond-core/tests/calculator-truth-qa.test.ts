@@ -26,6 +26,19 @@ import { calculationCache } from '../utils/calculation-cache';
 
 const PURCHASE_DATE = '2024-01-01';
 const INITIAL_INVESTMENT = 10000;
+const warsawMonthFormatter = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'Europe/Warsaw',
+  year: 'numeric',
+  month: '2-digit',
+});
+
+function formatWarsawMonth(isoDate: string) {
+  const parts = warsawMonthFormatter.formatToParts(new Date(isoDate));
+  const value = (type: string) => parts.find((part) => part.type === type)?.value;
+
+  return `${value('year')}-${value('month')}`;
+}
+
 type SingleBondFixture = Parameters<typeof calculationService.calculate>[0] & {
   kind: ScenarioKind.SINGLE_BOND;
 };
@@ -213,7 +226,7 @@ describe('calculator truth QA scenarios', () => {
     expect(result.totalTax).toBeLessThan(1300);
     expect(result.netPayoutValue).toBeGreaterThan(13800);
     expect(result.netPayoutValue).toBeLessThan(15500);
-    expect(result.maturityDate.slice(0, 7)).toBe('2033-12');
+    expect(formatWarsawMonth(result.maturityDate)).toBe('2034-01');
     expect(final.isMaturity).toBe(true);
     expect(final.rateSource).toBe('historical_cpi_lag');
   });
@@ -304,13 +317,18 @@ describe('calculator truth QA scenarios', () => {
       payload: regularPayload(BondType.EDO, 120),
     });
     const result = envelope.result as RegularInvestmentResult;
-    const firstMaturity = result.lots[0]?.maturityDate.slice(0, 7);
-    const lastMaturity = result.lots.at(-1)?.maturityDate.slice(0, 7);
+    const firstMaturity = result.lots[0]?.maturityDate
+      ? formatWarsawMonth(result.lots[0].maturityDate)
+      : undefined;
+    const lastLot = result.lots.at(-1);
+    const lastMaturity = lastLot ? formatWarsawMonth(lastLot.maturityDate) : undefined;
 
     expect(result.lots).toHaveLength(120);
-    expect(firstMaturity).toBe('2033-12');
-    expect(lastMaturity).toBe('2043-11');
-    expect(new Set(result.lots.map((lot) => lot.maturityDate.slice(0, 7)))).toHaveLength(120);
+    expect(firstMaturity).toBe('2034-01');
+    expect(lastMaturity).toBe('2043-12');
+    expect(new Set(result.lots.map((lot) => formatWarsawMonth(lot.maturityDate)))).toHaveLength(
+      120,
+    );
   });
 
   it('keeps independent comparison equal to matching single output for ROR 20y', async () => {
