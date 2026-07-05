@@ -193,12 +193,12 @@ operator scripts before removal. Confirmed dead code should be deleted; intended
 dynamic entrypoints should be documented or added to the scan config with a
 specific reason.
 
-The maintained baseline is zero confirmed unused files. As of July 3, 2026,
-`pnpm scan:unused` reports 8 unused value exports and 11 unused exported types.
-These remaining Knip findings are reviewed API-surface candidates: Auth.js and
-i18n convenience exports, domain/request types, shared UI primitive types, and
-framework- or test-facing types should remain exported unless a focused
-ownership review proves they are internal-only.
+The maintained baseline is zero confirmed unused files and zero confirmed
+unused value exports. As of July 5, 2026, `pnpm scan:unused` reports 11 unused
+exported types. These remaining Knip findings are reviewed API-surface
+candidates: domain/request types, shared UI primitive types, and framework- or
+test-facing types should remain exported unless a focused ownership review
+proves they are internal-only.
 
 ## 5. Components Must Stay Small and Focused
 
