@@ -61,6 +61,11 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 
 - [Archived Plans Index](./archive/plans/index.md) - Historical and completed execution plans preserved for reference.
 
+### 7. Operations
+
+- [Monthly Bond Offer Sync](./operations/01_monthly_bond_offer_sync.md) - Operator workflow for refreshing current retail bond offers and macro data.
+- [Cloud Run Private Preview Access](./operations/02_cloud_run_private_preview.md) - Fast local proxy access to the private Cloud Run preview and required deployment secrets.
+
 ---
 
 _Last Updated: July 4, 2026 - App is in production-readiness cleanup for the trusted-core Cloud Run scope. Active docs distinguish current release work from archived recovery/refactor history, document the current feature folder vocabulary, and track unused-code cleanup through `pnpm scan:unused`._
