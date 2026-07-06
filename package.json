@@ -19,6 +19,7 @@
     "check:release": "pnpm check:types && pnpm lint && pnpm test:release && pnpm build",
     "check:prod-config": "tsx scripts/check-production-config.ts",
     "gcp:proxy": "gcloud run services proxy obligacje-calculator --project bond-calculator-pl --region europe-central2 --port 8080",
+    "ops:verify-prod": "tsx scripts/verify-production.ts",
     "db:seed": "tsx db/seed.ts",
     "seed:series": "tsx lib/sync/seed-series-runner.ts",
     "seed:market-history": "tsx lib/sync/seed-market-history.ts",

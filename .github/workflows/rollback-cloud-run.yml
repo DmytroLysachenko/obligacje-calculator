@@ -1,0 +1,98 @@
+name: Rollback Cloud Run
+
+run-name: Rollback Cloud Run to ${{ inputs.revision }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      revision:
+        description: Cloud Run revision name to receive 100 percent traffic
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: production-cloud-run
+  cancel-in-progress: false
+
+env:
+  PROJECT_ID: bond-calculator-pl
+  REGION: europe-central2
+  SERVICE: obligacje-calculator
+  APP_URL: https://obligacje-calculator-ji72nqwtea-lm.a.run.app
+  DEPLOYER_SERVICE_ACCOUNT: github-actions-deployer@bond-calculator-pl.iam.gserviceaccount.com
+  WORKLOAD_IDENTITY_PROVIDER: projects/738965529859/locations/global/workloadIdentityPools/github-actions/providers/github
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install script dependencies
+        run: HUSKY=0 pnpm install --frozen-lockfile
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.DEPLOYER_SERVICE_ACCOUNT }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Confirm revision exists
+        run: |
+          gcloud run revisions describe "${{ inputs.revision }}" \
+            --project "${PROJECT_ID}" \
+            --region "${REGION}" \
+            --format='value(metadata.name)'
+
+      - name: Route traffic
+        run: |
+          gcloud run services update-traffic "${SERVICE}" \
+            --project "${PROJECT_ID}" \
+            --region "${REGION}" \
+            --to-revisions "${{ inputs.revision }}=100" \
+            --quiet
+
+      - name: Authenticate verification
+        id: verify-auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.DEPLOYER_SERVICE_ACCOUNT }}
+          token_format: id_token
+          id_token_audience: ${{ env.APP_URL }}
+          id_token_include_email: true
+
+      - name: Verify production
+        env:
+          IDENTITY_TOKEN: ${{ steps.verify-auth.outputs.id_token }}
+        run: pnpm ops:verify-prod -- --base-url "${APP_URL}" --allow-missing-oauth
+
+      - name: Rollback summary
+        run: |
+          {
+            echo "### Cloud Run rollback"
+            echo ""
+            echo "- Service: \`${SERVICE}\`"
+            echo "- Region: \`${REGION}\`"
+            echo "- Revision: \`${{ inputs.revision }}\`"
+            echo "- URL: ${APP_URL}"
+          } >> "${GITHUB_STEP_SUMMARY}"

@@ -67,6 +67,22 @@ Expected current state:
 - `/api/readiness`: `503` until Google OAuth credentials are configured
 - readiness database check should be `ok`
 
+For the same smoke checks against the private deployed service, run:
+
+```bash
+pnpm ops:verify-prod -- --allow-missing-oauth
+```
+
+The verifier checks:
+
+- `/api/health`
+- `/`
+- `/single-calculator`
+- `/api/calculation-defaults`
+- `/api/readiness`
+
+`--allow-missing-oauth` is valid only while Google OAuth is intentionally not configured. The database readiness check must still pass.
+
 ## GitHub Actions Deployment Secrets
 
 The manual `Deploy Cloud Run` workflow requires these repository secrets:
@@ -81,3 +97,47 @@ Optional until Google OAuth is configured:
 - `AUTH_GOOGLE_SECRET`
 
 The workflow fails before deployment if the required secrets are missing, so it cannot silently overwrite Cloud Run with empty runtime values.
+
+## CI/CD Flow
+
+Use `dev` as the integration branch for ongoing work. Use `main` as the deployable branch.
+
+Recommended flow:
+
+1. branch from `dev` for focused changes
+2. merge completed batches back into `dev`
+3. open a PR from `dev` to `main` when the batch is ready
+4. wait for CI to pass on `main`
+5. run the manual `Deploy Cloud Run` workflow from `main`
+
+CI runs on pushes to both `dev` and `main`, and on pull requests. Production deploys are guarded so they only run from `main`.
+
+## Manual Deploy
+
+In GitHub:
+
+1. open `Actions`
+2. select `Deploy Cloud Run`
+3. choose `Run workflow`
+4. select branch `main`
+
+The deploy workflow:
+
+- builds and pushes immutable commit-SHA and `latest` image tags
+- uses GitHub Actions cache for Docker layers
+- deploys the private Cloud Run service
+- runs authenticated production smoke checks with `pnpm ops:verify-prod`
+- writes the deployed image and service URL to the workflow summary
+
+## Rollback
+
+List recent revisions:
+
+```bash
+gcloud run revisions list \
+  --project bond-calculator-pl \
+  --region europe-central2 \
+  --service obligacje-calculator
+```
+
+Then run the GitHub `Rollback Cloud Run` workflow and provide the target revision name. The workflow routes 100 percent of traffic to that revision and runs the same authenticated production verification checks.
