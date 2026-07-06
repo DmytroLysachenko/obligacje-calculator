@@ -50,6 +50,23 @@ jobs:
           docker push "${IMAGE}"
           docker push "${LATEST}"
 
+      - name: Validate runtime secrets
+        run: |
+          missing=0
+          if [ -z "${{ secrets.DATABASE_URL }}" ]; then
+            echo "::error::Missing DATABASE_URL repository secret"
+            missing=1
+          fi
+          if [ -z "${{ secrets.AUTH_SECRET }}" ]; then
+            echo "::error::Missing AUTH_SECRET repository secret"
+            missing=1
+          fi
+          if [ -z "${{ secrets.SYNC_SECRET }}" ]; then
+            echo "::error::Missing SYNC_SECRET repository secret"
+            missing=1
+          fi
+          exit "${missing}"
+
       - name: Prepare runtime environment
         run: |
           {
@@ -57,6 +74,7 @@ jobs:
             echo 'AUTH_SECRET: "${{ secrets.AUTH_SECRET }}"'
             echo 'SYNC_SECRET: "${{ secrets.SYNC_SECRET }}"'
             echo 'NEXT_PUBLIC_APP_URL: "${{ env.APP_URL }}"'
+            echo 'AUTH_TRUST_HOST: "true"'
             echo 'AUTH_GOOGLE_ID: "${{ secrets.AUTH_GOOGLE_ID }}"'
             echo 'AUTH_GOOGLE_SECRET: "${{ secrets.AUTH_GOOGLE_SECRET }}"'
           } > .cloud-run-env.yaml
