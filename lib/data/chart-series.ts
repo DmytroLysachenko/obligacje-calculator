@@ -1,6 +1,6 @@
 import { desc, eq, inArray } from 'drizzle-orm';
 
-import { db } from '@/db';
+import { db, isDatabaseConfigured } from '@/db';
 import { dataPoints, dataSeries } from '@/db/schema';
 import { GusCpiApiClient } from '@/lib/api-clients/gus-cpi';
 export type { ChartRatePoint, ChartSeriesEnvelope } from './chart-reference-series';
@@ -15,6 +15,10 @@ import {
 } from './chart-reference-series';
 
 export async function getInflationChartSeries(): Promise<ChartSeriesEnvelope<ChartRatePoint>> {
+  if (!isDatabaseConfigured) {
+    return getFallbackInflationSeries();
+  }
+
   const series = await db.query.dataSeries.findFirst({
     where: inArray(dataSeries.slug, ['pl-cpi', 'inflation-pl']),
   });
@@ -55,6 +59,10 @@ export async function getInflationChartSeries(): Promise<ChartSeriesEnvelope<Cha
 }
 
 export async function getNbpChartSeries(): Promise<ChartSeriesEnvelope<ChartRatePoint>> {
+  if (!isDatabaseConfigured) {
+    return getFallbackNbpSeries();
+  }
+
   const series = await db.query.dataSeries.findFirst({
     where: inArray(dataSeries.slug, ['nbp-ref-rate', 'nbp-reference-rate', 'nbp-rate']),
   });

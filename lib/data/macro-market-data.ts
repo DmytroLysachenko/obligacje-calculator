@@ -2,7 +2,7 @@ import { differenceInCalendarMonths, differenceInDays, format } from 'date-fns';
 import { and, asc, desc, eq, gte, inArray, lte } from 'drizzle-orm';
 import { cache } from 'react';
 
-import { db } from '@/db';
+import { db, isDatabaseConfigured } from '@/db';
 import { dataPoints, dataSeries } from '@/db/schema';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { listRecentSyncRuns } from '@/lib/server/sync/run-history';
@@ -132,6 +132,10 @@ export function resolveGlobalDataFreshness(
 }
 
 export const getGlobalDataFreshness = cache(async (): Promise<CalculationDataFreshness> => {
+  if (!isDatabaseConfigured) {
+    return { status: 'unknown', usedFallback: true };
+  }
+
   const cacheKey = 'global-freshness';
   const cached = getCached<CalculationDataFreshness>(cacheKey);
   if (cached) return cached;
@@ -151,6 +155,10 @@ export const getGlobalDataFreshness = cache(async (): Promise<CalculationDataFre
 });
 
 export const getHistoricalDataMap = cache(async (fromDate: string, toDate: string) => {
+  if (!isDatabaseConfigured) {
+    return {};
+  }
+
   const cacheKey = `historical-map-${fromDate}-${toDate}`;
   const cached = getCached<Record<string, { inflation?: number; nbpRate?: number }>>(cacheKey);
   if (cached) return cached;
@@ -211,6 +219,10 @@ async function getLatestSeriesValue(seriesId?: string) {
 }
 
 export const getMacroAssumptionDefaults = cache(async (): Promise<MacroAssumptionDefaults> => {
+  if (!isDatabaseConfigured) {
+    return FALLBACK_MACRO_ASSUMPTIONS;
+  }
+
   const cacheKey = 'macro-assumption-defaults';
   const cached = getCached<MacroAssumptionDefaults>(cacheKey);
   if (cached) return cached;
