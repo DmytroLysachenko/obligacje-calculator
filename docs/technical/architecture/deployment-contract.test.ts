@@ -132,4 +132,14 @@ describe('deployment documentation contract', () => {
     expect(rollback).toContain('--to-revisions');
     expect(rollback).toContain('pnpm ops:verify-prod');
   });
+
+  it('keeps Docker build context free of local artifacts and secrets', () => {
+    const dockerignore = readFileSync(join(root, '.dockerignore'), 'utf8');
+
+    for (const ignored of ['.git', '.next', 'node_modules', '.env', '.env.*', 'coverage']) {
+      expect(dockerignore).toContain(ignored);
+    }
+
+    expect(dockerignore).toContain('!.env.example');
+  });
 });
