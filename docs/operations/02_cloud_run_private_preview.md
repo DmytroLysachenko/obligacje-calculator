@@ -120,6 +120,12 @@ Recommended flow:
 
 CI runs on pushes to both `dev` and `main`, and on pull requests. Production deploys are guarded so they only run from `main`.
 
+Recommended GitHub branch protection:
+
+- `main`: require pull request reviews, require CI `quality` and `build`, block force pushes, block direct pushes except emergency admin fixes.
+- `dev`: require CI `quality` and `build`, allow feature-branch PR merges, block force pushes.
+- Production environment: require manual approval before `Deploy Cloud Run` and `Rollback Cloud Run`.
+
 ## Manual Deploy
 
 In GitHub:
