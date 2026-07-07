@@ -20,7 +20,15 @@ interface ReadinessResponse {
   };
 }
 
+interface FetchResult {
+  status: number;
+  ok: boolean;
+  body: string;
+  contentType: string;
+}
+
 const DEFAULT_BASE_URL = 'https://obligacje-calculator-ji72nqwtea-lm.a.run.app';
+const BODY_SNIPPET_LENGTH = 240;
 
 function parseArgs(argv: string[]): VerifyOptions {
   const options: VerifyOptions = {
@@ -74,7 +82,7 @@ function getIdentityToken() {
   }
 }
 
-async function fetchPath(options: VerifyOptions, path: string) {
+async function fetchPath(options: VerifyOptions, path: string): Promise<FetchResult> {
   const response = await fetch(`${options.baseUrl}${path}`, {
     headers: options.identityToken
       ? {
@@ -88,7 +96,14 @@ async function fetchPath(options: VerifyOptions, path: string) {
     status: response.status,
     ok: response.ok,
     body,
+    contentType: response.headers.get('content-type') ?? '',
   };
+}
+
+function createResponseSummary(label: string, path: string, response: FetchResult) {
+  const snippet = response.body.replace(/\s+/g, ' ').slice(0, BODY_SNIPPET_LENGTH);
+
+  return `${label} failed at ${path}: status=${response.status} contentType=${response.contentType} body="${snippet}"`;
 }
 
 function assertOk(condition: boolean, message: string) {
@@ -97,9 +112,41 @@ function assertOk(condition: boolean, message: string) {
   }
 }
 
+function parseJson<T>(label: string, path: string, response: FetchResult): T {
+  try {
+    return JSON.parse(response.body) as T;
+  } catch {
+    throw new Error(createResponseSummary(`${label} JSON parse`, path, response));
+  }
+}
+
+function verifyHtmlResponse(label: string, path: string, response: FetchResult) {
+  assertOk(response.ok, createResponseSummary(label, path, response));
+  assertOk(
+    response.contentType.includes('text/html'),
+    `${label} returned non-HTML contentType=${response.contentType}`,
+  );
+  assertOk(
+    response.body.includes('<!DOCTYPE html>') || response.body.includes('__next'),
+    `${label} returned HTML without the expected Next.js document markers`,
+  );
+  console.log(`${label} ok`);
+}
+
+function verifyJsonResponse(label: string, path: string, response: FetchResult) {
+  assertOk(response.ok, createResponseSummary(label, path, response));
+  assertOk(
+    response.contentType.includes('application/json'),
+    `${label} returned non-JSON contentType=${response.contentType}`,
+  );
+  parseJson<unknown>(label, path, response);
+  console.log(`${label} ok`);
+}
+
 async function verifyReadiness(options: VerifyOptions) {
-  const readiness = await fetchPath(options, '/api/readiness');
-  const payload = JSON.parse(readiness.body) as ReadinessResponse;
+  const path = '/api/readiness';
+  const readiness = await fetchPath(options, path);
+  const payload = parseJson<ReadinessResponse>('readiness', path, readiness);
 
   if (readiness.ok && payload.ok) {
     console.log('readiness ok');
@@ -115,7 +162,7 @@ async function verifyReadiness(options: VerifyOptions) {
 
   assertOk(
     onlyOauthMissing,
-    `readiness failed unexpectedly: status=${readiness.status} body=${readiness.body}`,
+    createResponseSummary('readiness failed unexpectedly', path, readiness),
   );
 
   console.log('readiness degraded: OAuth provider intentionally missing; database ok');
@@ -127,18 +174,26 @@ async function main() {
 
   assertOk(Boolean(options.identityToken), 'Missing identity token. Run gcloud auth login first.');
 
-  const smokeChecks = [
-    { path: '/api/health', label: 'health' },
-    { path: '/', label: 'home' },
-    { path: '/single-calculator', label: 'single calculator' },
-    { path: '/api/calculation-defaults', label: 'calculation defaults' },
+  const smokeChecks: Array<{
+    path: string;
+    label: string;
+    kind: 'html' | 'json';
+  }> = [
+    { path: '/api/health', label: 'health', kind: 'json' },
+    { path: '/', label: 'home', kind: 'html' },
+    { path: '/single-calculator', label: 'single calculator', kind: 'html' },
+    { path: '/api/calculation-defaults', label: 'calculation defaults', kind: 'json' },
   ];
 
   for (const check of smokeChecks) {
     const response = await fetchPath(options, check.path);
-    assertOk(response.ok, `${check.label} failed: status=${response.status}`);
     assertOk(response.body.length > 0, `${check.label} returned an empty body`);
-    console.log(`${check.label} ok`);
+
+    if (check.kind === 'html') {
+      verifyHtmlResponse(check.label, check.path, response);
+    } else {
+      verifyJsonResponse(check.label, check.path, response);
+    }
   }
 
   await verifyReadiness(options);
