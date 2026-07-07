@@ -83,6 +83,14 @@ The verifier checks:
 
 `--allow-missing-oauth` is valid only while Google OAuth is intentionally not configured. The database readiness check must still pass.
 
+To inspect the active Cloud Run revision without printing secret values, run:
+
+```bash
+pnpm ops:cloud-run-status
+```
+
+The command prints the service URL, latest ready revision, deployed image, traffic split, and whether each runtime environment variable is set.
+
 ## GitHub Actions Deployment Secrets
 
 The manual `Deploy Cloud Run` workflow requires these repository secrets:

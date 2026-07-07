@@ -24,6 +24,7 @@ describe('package scripts contract', () => {
     expect(pkg.scripts['check:prod-config']).toBe('tsx scripts/check-production-config.ts');
     expect(pkg.scripts['check:release']).not.toContain('check:prod-config');
     expect(pkg.scripts['ops:verify-prod']).toBe('tsx scripts/verify-production.ts');
+    expect(pkg.scripts['ops:cloud-run-status']).toBe('tsx scripts/cloud-run-status.ts');
     expect(pkg.scripts['gcp:proxy']).toContain('gcloud run services proxy obligacje-calculator');
   });
 
