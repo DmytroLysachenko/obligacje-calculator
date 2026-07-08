@@ -122,8 +122,8 @@ CI runs on pushes to both `dev` and `main`, and on pull requests. Production dep
 
 Recommended GitHub branch protection:
 
-- `main`: require pull request reviews, require CI `quality` and `build`, block force pushes, block direct pushes except emergency admin fixes.
-- `dev`: require CI `quality` and `build`, allow feature-branch PR merges, block force pushes.
+- `main`: require pull request reviews, require CI `quality`, `build`, and `browser-smoke`, block force pushes, block direct pushes except emergency admin fixes.
+- `dev`: require CI `quality`, `build`, and `browser-smoke`, allow feature-branch PR merges, block force pushes.
 - Production environment: require manual approval before `Deploy Cloud Run` and `Rollback Cloud Run`.
 
 ## Manual Deploy

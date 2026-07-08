@@ -20,7 +20,8 @@ Financial applications require a rigorous testing strategy to ensure mathematica
 ### C. E2E (End-to-End) Tests
 
 - **Tool:** Playwright.
-- **Scope:** User journeys (e.g., "User fills EDO form -> result matches expectation -> user adds to notebook").
+- **Scope:** runtime smoke checks for the core public routes, with focused user journeys added when a feature needs browser-level regression coverage.
+- **Current CI Gate:** `pnpm test:browser` verifies home, single calculator, comparison, and economic-data routes render without client exceptions, expose the main content landmark, retain navigation, and keep the skip link available.
 - **Visual Regression:** Ensure charts render correctly across Chrome, Firefox, and Safari (Mobile/Desktop).
 
 ## 2. Calculation Verification (Audit)
@@ -31,7 +32,8 @@ Financial applications require a rigorous testing strategy to ensure mathematica
 
 ## 3. Performance Testing
 
-- Use Lighthouse to track Core Web Vitals.
+- Use Lighthouse to track Core Web Vitals before major releases.
+- `pnpm test:web-vitals` runs a conservative browser budget on home and single-calculator routes. It catches blank/error pages, very slow navigation, unusually large script payloads, and late LCP when Chromium exposes the entry.
 - Stress-test the chart rendering with 30 years of daily data points.
 
 ## 4. Manual QA
@@ -46,7 +48,8 @@ Financial applications require a rigorous testing strategy to ensure mathematica
 
 ## 6. Release Contracts
 
-- `pnpm test:release` runs the calculation, worker, data freshness, API readiness, deployment, product readiness, script, and clean-code contract suites.
+- `pnpm test:release` runs the calculation, worker, data freshness, API readiness, deployment, SEO metadata, product readiness, script, and clean-code contract suites.
+- `pnpm test:browser` and `pnpm test:web-vitals` run against a production build through Playwright. CI executes them in the `browser-smoke` job after `pnpm build`.
 - Feature-owned tests live under `features/<feature>/tests/**`. Subfolders mirror the tested ownership when useful, for example `tests/lib/**`, `tests/components/**`, and `tests/utils/**`.
 - `docs/technical/architecture/clean-code-contract.test.ts` blocks broad code-smell regressions in production paths: stale TODO/FIXME/debug markers, unmanaged route responses, direct feature-layer fetch calls, direct sync/provider fetch calls, unmanaged API body parsing, and undocumented lint-disable comments.
 - Feature-local state models require focused unit tests before hook/page rewrites. This applies to calculator state, optimizer readiness/default models, notebook workspace models, dashboard metadata state, chart tooltip models, and similar non-React decision logic.
@@ -63,6 +66,8 @@ Financial applications require a rigorous testing strategy to ensure mathematica
 Before a deploy candidate:
 
 - run `pnpm check:release`
+- run `pnpm test:browser`
+- run `pnpm test:web-vitals`
 - run focused financial regressions for any touched calculation engine family
 - run manual smoke flows for single calculator, comparison, notebook, optimizer, sync-status display, and economic-data dashboard
 - verify generated/exported artifacts use the same display model as on-screen charts and tables

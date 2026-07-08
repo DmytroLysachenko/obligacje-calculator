@@ -69,6 +69,8 @@ Current production-readiness notes:
 ```bash
 pnpm test
 pnpm test:core
+pnpm test:browser
+pnpm test:web-vitals
 pnpm lint
 pnpm exec tsc --noEmit
 pnpm scan:unused
