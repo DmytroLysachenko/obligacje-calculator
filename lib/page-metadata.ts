@@ -23,7 +23,8 @@ export async function getLocalizedPageMetadata(pageKey: string): Promise<Metadat
   const common = await getTranslations('common');
   const site = await getTranslations('site');
   const page = await getTranslations(`metadata.pages.${pageKey}`);
-  const title = `${page('title')} | ${common('title')}`;
+  const title = page('title');
+  const socialTitle = `${title} | ${common('title')}`;
   const description = page('description');
   const canonicalUrl = getCanonicalUrl(pageRouteByKey[pageKey] ?? '/');
 
@@ -34,7 +35,7 @@ export async function getLocalizedPageMetadata(pageKey: string): Promise<Metadat
       canonical: canonicalUrl,
     },
     openGraph: {
-      title,
+      title: socialTitle,
       description,
       url: canonicalUrl,
       siteName: common('title'),
@@ -42,7 +43,7 @@ export async function getLocalizedPageMetadata(pageKey: string): Promise<Metadat
     },
     twitter: {
       card: 'summary',
-      title,
+      title: socialTitle,
       description: site('twitter_description'),
     },
   };

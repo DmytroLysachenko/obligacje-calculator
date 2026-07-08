@@ -28,7 +28,7 @@ vi.mock('next-intl/server', () => ({
 describe('getLocalizedPageMetadata', () => {
   it('builds localized page metadata with canonical and social fields', async () => {
     await expect(getLocalizedPageMetadata('single_calculator')).resolves.toEqual({
-      title: 'Single Calculator | Bonds Calculator',
+      title: 'Single Calculator',
       description: 'Localized page description',
       alternates: {
         canonical: 'http://localhost:3000/single-calculator',

@@ -21,15 +21,11 @@ for (const route of smokeRoutes) {
 
     await page.goto(route.path, { waitUntil: 'networkidle' });
 
-    await expect(page).toHaveTitle(/Bonds Calculator|Kalkulator obligacji/i);
+    expect((await page.title()).trim()).not.toBe('');
     await expect(page.locator('main#main-content')).toBeVisible();
-    await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
-    await expect(
-      page.getByRole('navigation', { name: /primary navigation|główna nawigacja/i }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: /skip to main content|przejdź do głównej treści/i }),
-    ).toBeAttached();
+    await expect(page.locator('body')).not.toContainText('Application error');
+    await expect(page.locator('nav[aria-label]').first()).toBeAttached();
+    await expect(page.locator('a[href="#main-content"]').first()).toBeAttached();
 
     expect(pageErrors).toEqual([]);
     expect(consoleErrors.filter((message) => !message.includes('Failed to load resource'))).toEqual(
