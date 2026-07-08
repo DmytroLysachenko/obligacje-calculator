@@ -55,6 +55,6 @@ describe('SEO metadata contract', () => {
     }
 
     expect(layout).toContain('getCanonicalBaseUrl');
-    expect(layout).toContain("getCanonicalUrl('/single-calculator')");
+    expect(layout).toContain('createAppJsonLd');
   });
 });

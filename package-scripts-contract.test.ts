@@ -12,6 +12,7 @@ describe('package scripts contract', () => {
   it('keeps a single release-check command for Cloud Run promotion gates', () => {
     expect(pkg.scripts['check:types']).toBe('tsc --noEmit');
     expect(pkg.scripts['test:release']).toContain('features/bond-core');
+    expect(pkg.scripts['test:release']).toContain('lib/seo/app-json-ld.test.ts');
     expect(pkg.scripts['test:release']).toContain('app/api/production-readiness-contract.test.ts');
     expect(pkg.scripts['test:release']).toContain('app/api/operational-endpoints-contract.test.ts');
     expect(pkg.scripts['test:release']).toContain(

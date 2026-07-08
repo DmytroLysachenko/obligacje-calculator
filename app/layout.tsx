@@ -10,7 +10,8 @@ import { AppLocaleProvider } from '@/i18n/client';
 import { defaultLocale, type Language } from '@/i18n/config';
 import { getMetadataLocale } from '@/i18n/locale-utils';
 import { getGlobalDataFreshness } from '@/lib/data/market-data';
-import { getCanonicalBaseUrl, getCanonicalUrl } from '@/lib/site-url';
+import { createAppJsonLd } from '@/lib/seo/app-json-ld';
+import { getCanonicalBaseUrl } from '@/lib/site-url';
 import { OpportunisticSyncTrigger } from '@/shared/components/chrome/OpportunisticSyncTrigger';
 import { Sidebar } from '@/shared/components/chrome/Sidebar';
 import { ErrorBoundary } from '@/shared/components/feedback/ErrorBoundary';
@@ -65,38 +66,11 @@ export default async function RootLayout({
   const t = await getTranslations();
   const canonicalBaseUrl = getCanonicalBaseUrl();
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'WebApplication',
-        name: 'Obligacje Calculator',
-        description: 'Educational calculator for Polish Treasury Bonds.',
-        url: canonicalBaseUrl,
-        applicationCategory: 'FinanceApplication',
-        operatingSystem: 'All',
-        offers: {
-          '@type': 'Offer',
-          price: '0',
-          priceCurrency: 'PLN',
-        },
-        potentialAction: {
-          '@type': 'CalculateAction',
-          name: 'Calculate Bond Profit',
-          target: getCanonicalUrl('/single-calculator'),
-        },
-      },
-      {
-        '@type': 'FinancialProduct',
-        name: 'Polish Treasury Bonds',
-        description: 'EDO, COI, ROR, DOR, TOS, OTS bond calculations.',
-        provider: {
-          '@type': 'GovernmentOrganization',
-          name: 'Ministerstwo Finansow',
-        },
-      },
-    ],
-  };
+  const jsonLd = createAppJsonLd({
+    appName: 'Obligacje Calculator',
+    description: 'Educational calculator for Polish Treasury Bonds.',
+    baseUrl: canonicalBaseUrl,
+  });
 
   return (
     <html lang={language} suppressHydrationWarning>
