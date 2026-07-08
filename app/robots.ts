@@ -1,5 +1,7 @@
 import { MetadataRoute } from 'next';
 
+import { getCanonicalUrl } from '@/lib/site-url';
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
@@ -7,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/api/', '/admin/'],
     },
-    sitemap: 'https://obligacje-calculator.vercel.app/sitemap.xml',
+    sitemap: getCanonicalUrl('/sitemap.xml'),
   };
 }

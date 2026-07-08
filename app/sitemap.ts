@@ -1,7 +1,9 @@
 import { MetadataRoute } from 'next';
 
+import { getCanonicalBaseUrl } from '@/lib/site-url';
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://obligacje-calculator.vercel.app';
+  const baseUrl = getCanonicalBaseUrl();
   const lastModified = new Date();
 
   const routes = [
