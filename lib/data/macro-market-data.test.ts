@@ -1,8 +1,15 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { resolveGlobalDataFreshness } from './macro-market-data';
+import { db } from '@/db';
+
+import {
+  getGlobalDataFreshness,
+  getMacroAssumptionDefaults,
+  resolveGlobalDataFreshness,
+} from './macro-market-data';
 
 vi.mock('@/db', () => ({
+  isDatabaseConfigured: true,
   db: {
     query: {
       dataSeries: {
@@ -23,6 +30,11 @@ vi.mock('@/lib/server/sync/run-history', () => ({
 
 type FreshnessSeriesInput = Parameters<typeof resolveGlobalDataFreshness>[0][number];
 type FreshnessRunInput = Parameters<typeof resolveGlobalDataFreshness>[1][number];
+const mockedFindMany = vi.mocked(db.query.dataSeries.findMany);
+
+afterEach(() => {
+  vi.clearAllMocks();
+});
 
 function series(
   input: Partial<FreshnessSeriesInput> & Pick<FreshnessSeriesInput, 'slug'>,
@@ -200,5 +212,24 @@ describe('resolveGlobalDataFreshness', () => {
     );
 
     expect(result.status).toBe('stale');
+  });
+
+  it('falls back to unknown freshness when the database read fails', async () => {
+    mockedFindMany.mockRejectedValueOnce(new Error('database unavailable'));
+
+    await expect(getGlobalDataFreshness()).resolves.toEqual({
+      status: 'unknown',
+      usedFallback: true,
+    });
+  });
+
+  it('falls back to conservative macro defaults when the database read fails', async () => {
+    mockedFindMany.mockRejectedValueOnce(new Error('database unavailable'));
+
+    await expect(getMacroAssumptionDefaults()).resolves.toEqual({
+      expectedInflation: 2.5,
+      expectedNbpRate: 5.25,
+      usedFallback: true,
+    });
   });
 });

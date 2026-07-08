@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+process.env.PLAYWRIGHT_SMOKE = process.env.PLAYWRIGHT_SMOKE ?? '1';
+
 export default defineConfig({
   testDir: './tests/browser',
   timeout: 30_000,
