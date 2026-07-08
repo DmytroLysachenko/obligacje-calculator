@@ -81,3 +81,41 @@ jobs:
             echo ""
             echo "- Production build: \`pnpm build\`"
           } >> "${GITHUB_STEP_SUMMARY}"
+
+  browser-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: HUSKY=0 pnpm install --frozen-lockfile
+
+      - name: Install browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Build
+        run: pnpm build
+
+      - name: Browser smoke
+        run: pnpm test:browser
+
+      - name: Browser smoke summary
+        if: always()
+        run: |
+          {
+            echo "### Browser smoke"
+            echo ""
+            echo "- Routes: home, single calculator, comparison, economic data"
+            echo "- Checks: title, h1, main landmark, navigation label, console/page errors"
+          } >> "${GITHUB_STEP_SUMMARY}"
