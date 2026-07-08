@@ -68,7 +68,7 @@ export function PageHeader({
             <div className="rounded-md bg-muted p-2 text-foreground">{icon}</div>
             <div className="space-y-1">
               {eyebrow ? <p className="ui-metadata text-muted-foreground">{eyebrow}</p> : null}
-              <h2 className="ui-page-title">{title}</h2>
+              <h1 className="ui-page-title">{title}</h1>
               {description ? <p className="ui-body text-muted-foreground">{description}</p> : null}
             </div>
           </div>

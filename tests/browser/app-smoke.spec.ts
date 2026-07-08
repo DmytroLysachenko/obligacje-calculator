@@ -23,6 +23,7 @@ for (const route of smokeRoutes) {
 
     expect((await page.title()).trim()).not.toBe('');
     await expect(page.locator('main#main-content')).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
     await expect(page.locator('body')).not.toContainText('Application error');
     await expect(page.locator('nav[aria-label]').first()).toBeAttached();
     await expect(page.locator('a[href="#main-content"]').first()).toBeAttached();
