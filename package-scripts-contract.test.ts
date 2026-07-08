@@ -18,6 +18,7 @@ describe('package scripts contract', () => {
       'docs/technical/architecture/clean-code-contract.test.ts',
     );
     expect(pkg.scripts['test:browser']).toBe('playwright test tests/browser/app-smoke.spec.ts');
+    expect(pkg.scripts['test:web-vitals']).toBe('playwright test tests/browser/web-vitals.spec.ts');
     expect(pkg.scripts['check:release']).toContain('pnpm check:types');
     expect(pkg.scripts['check:release']).toContain('pnpm lint');
     expect(pkg.scripts['check:release']).toContain('pnpm test:release');

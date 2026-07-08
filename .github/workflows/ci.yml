@@ -110,6 +110,9 @@ jobs:
       - name: Browser smoke
         run: pnpm test:browser
 
+      - name: Web vitals budget
+        run: pnpm test:web-vitals
+
       - name: Browser smoke summary
         if: always()
         run: |
@@ -117,5 +120,6 @@ jobs:
             echo "### Browser smoke"
             echo ""
             echo "- Routes: home, single calculator, comparison, economic data"
-            echo "- Checks: title, h1, main landmark, navigation label, console/page errors"
+            echo "- Checks: title, main landmark, navigation label, console/page errors"
+            echo "- Performance budget: \`pnpm test:web-vitals\`"
           } >> "${GITHUB_STEP_SUMMARY}"
