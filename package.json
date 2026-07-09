@@ -13,6 +13,7 @@
     "scan:unused": "tsx scripts/run-unused-scan.ts",
     "test": "vitest",
     "test:browser": "playwright test tests/browser/app-smoke.spec.ts",
+    "test:browser:ci": "playwright test tests/browser/app-smoke.spec.ts tests/browser/web-vitals.spec.ts --workers=1",
     "test:web-vitals": "playwright test tests/browser/web-vitals.spec.ts",
     "test:ci": "vitest run",
     "test:core": "vitest run features/bond-core",

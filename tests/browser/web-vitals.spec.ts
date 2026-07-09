@@ -43,6 +43,8 @@ for (const route of budgetedRoutes) {
 
     const metrics = await page.evaluate(collectPerformanceEntries);
 
+    console.info(`${route.name} browser budget metrics`, metrics);
+
     expect(pageErrors).toEqual([]);
     expect(metrics.domContentLoadedMs).toBeGreaterThan(0);
     expect(metrics.domContentLoadedMs).toBeLessThan(8_000);
