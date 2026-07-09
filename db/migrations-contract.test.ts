@@ -19,7 +19,11 @@ function migrationNames() {
 describe('database migration contracts', () => {
   it('keeps additive production migrations for sync history and Auth.js tables', () => {
     expect(migrationNames()).toEqual(
-      expect.arrayContaining(['0001_sync_runs.sql', '0002_auth_tables.sql']),
+      expect.arrayContaining([
+        '0001_sync_runs.sql',
+        '0002_auth_tables.sql',
+        '0003_portfolio_lot_indexes.sql',
+      ]),
     );
   });
 
@@ -46,6 +50,27 @@ describe('database migration contracts', () => {
     expect(source).toContain('PRIMARY KEY ("identifier", "token")');
     expect(source).toContain('CREATE INDEX IF NOT EXISTS "account_userId_idx"');
     expect(source).toContain('CREATE INDEX IF NOT EXISTS "session_userId_idx"');
+  });
+
+  it('keeps portfolio lot ownership indexes permissive for real purchase patterns', () => {
+    const source = readMigration('0003_portfolio_lot_indexes.sql');
+
+    expect(source).toContain('ALTER COLUMN "portfolio_id" SET NOT NULL');
+    expect(source).toContain('DROP INDEX IF EXISTS "lot_purchase_date_idx"');
+    expect(source).toContain('DROP INDEX IF EXISTS "lot_portfolio_idx"');
+    expect(source).toContain('CREATE INDEX IF NOT EXISTS "lot_portfolio_idx"');
+    expect(source).toContain('CREATE INDEX IF NOT EXISTS "lot_portfolio_purchase_date_idx"');
+    expect(source).not.toContain('CREATE UNIQUE INDEX');
+  });
+
+  it('keeps portfolio lot schema aligned with non-unique purchase date indexes', () => {
+    const source = readFileSync(join(root, 'db/schema.ts'), 'utf8');
+
+    expect(source).toContain("portfolioId: uuid('portfolio_id')");
+    expect(source).toContain('.notNull()');
+    expect(source).toContain("index('lot_portfolio_idx')");
+    expect(source).toContain("index('lot_portfolio_purchase_date_idx')");
+    expect(source).not.toContain("uniqueIndex('lot_purchase_date_idx')");
   });
 
   it('keeps migrations idempotent for shared preview and production databases', () => {

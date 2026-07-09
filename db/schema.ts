@@ -179,7 +179,9 @@ export const userInvestmentLots = pgTable(
   'user_investment_lots',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    portfolioId: uuid('portfolio_id').references(() => userPortfolios.id, { onDelete: 'cascade' }),
+    portfolioId: uuid('portfolio_id')
+      .notNull()
+      .references(() => userPortfolios.id, { onDelete: 'cascade' }),
     bondType: text('bond_type').notNull(),
     bondTypeId: uuid('bond_type_id').references(() => polishBonds.id),
     bondSeriesId: uuid('bond_series_id').references(() => bondSeries.id),
@@ -190,8 +192,11 @@ export const userInvestmentLots = pgTable(
     createdAt: timestamp('created_at').defaultNow(),
   },
   (table) => ({
-    portfolioIdx: uniqueIndex('lot_portfolio_idx').on(table.portfolioId, table.purchaseDate),
-    purchaseDateIdx: uniqueIndex('lot_purchase_date_idx').on(table.purchaseDate),
+    portfolioIdx: index('lot_portfolio_idx').on(table.portfolioId),
+    portfolioPurchaseDateIdx: index('lot_portfolio_purchase_date_idx').on(
+      table.portfolioId,
+      table.purchaseDate,
+    ),
   }),
 );
 
