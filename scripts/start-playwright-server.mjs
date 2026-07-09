@@ -1,5 +1,5 @@
-import { cpSync, existsSync } from 'node:fs';
 import { spawn } from 'node:child_process';
+import { cpSync, existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
