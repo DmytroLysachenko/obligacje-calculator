@@ -19,6 +19,10 @@ for (const route of smokeRoutes) {
     });
     page.on('pageerror', (error) => pageErrors.push(error.message));
 
+    await page.route('**/api/sync/opportunistic', async (requestRoute) => {
+      await requestRoute.fulfill({ status: 204, body: '' });
+    });
+
     await page.goto(route.path, { waitUntil: 'networkidle' });
 
     expect((await page.title()).trim()).not.toBe('');

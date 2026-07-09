@@ -8,6 +8,7 @@ import {
 } from '@/shared/lib/date-timing';
 
 const DEFAULT_BOND = BondType.EDO;
+const PLAYWRIGHT_SMOKE_DEFAULT_DATE = '2026-07-09T00:00:00.000Z';
 const REVERSE_CALCULATION_TEST_BASE = 10000;
 const MACRO_ASSUMPTION_INPUT_KEYS = new Set([
   'expectedInflation',
@@ -18,7 +19,11 @@ const MACRO_ASSUMPTION_INPUT_KEYS = new Set([
 ]);
 
 export function buildFallbackInputs(now = new Date()): BondInputs {
-  const purchaseDate = toDateString(now);
+  const purchaseDate = toDateString(
+    process.env.PLAYWRIGHT_SMOKE === '1' || process.env.NEXT_PUBLIC_PLAYWRIGHT_SMOKE === '1'
+      ? new Date(PLAYWRIGHT_SMOKE_DEFAULT_DATE)
+      : now,
+  );
 
   return {
     bondType: DEFAULT_BOND,

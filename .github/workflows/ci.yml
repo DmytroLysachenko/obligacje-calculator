@@ -85,6 +85,9 @@ jobs:
   browser-smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    env:
+      PLAYWRIGHT_SMOKE: '1'
+      NEXT_PUBLIC_PLAYWRIGHT_SMOKE: '1'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
