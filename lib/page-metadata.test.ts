@@ -8,7 +8,12 @@ vi.mock('next-intl/server', () => ({
       return (key: string) => ({ title: 'Bonds Calculator' })[key as 'title'];
     }
 
-    if (namespace === 'metadata.pages.singleCalculator') {
+    if (namespace === 'site') {
+      return (key: string) =>
+        ({ twitter_description: 'Twitter description' })[key as 'twitter_description'];
+    }
+
+    if (namespace === 'metadata.pages.single_calculator') {
       return (key: string) =>
         ({
           title: 'Single Calculator',
@@ -21,10 +26,25 @@ vi.mock('next-intl/server', () => ({
 }));
 
 describe('getLocalizedPageMetadata', () => {
-  it('builds localized page title and description', async () => {
-    await expect(getLocalizedPageMetadata('singleCalculator')).resolves.toEqual({
-      title: 'Single Calculator | Bonds Calculator',
+  it('builds localized page metadata with canonical and social fields', async () => {
+    await expect(getLocalizedPageMetadata('single_calculator')).resolves.toEqual({
+      title: 'Single Calculator',
       description: 'Localized page description',
+      alternates: {
+        canonical: 'http://localhost:3000/single-calculator',
+      },
+      openGraph: {
+        title: 'Single Calculator | Bonds Calculator',
+        description: 'Localized page description',
+        url: 'http://localhost:3000/single-calculator',
+        siteName: 'Bonds Calculator',
+        type: 'website',
+      },
+      twitter: {
+        card: 'summary',
+        title: 'Single Calculator | Bonds Calculator',
+        description: 'Twitter description',
+      },
     });
   });
 });

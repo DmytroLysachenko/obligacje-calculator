@@ -28,6 +28,10 @@ const FALLBACK_MACRO_ASSUMPTIONS: MacroAssumptionDefaults = {
   expectedNbpRate: 5.25,
   usedFallback: true,
 };
+const UNKNOWN_DATA_FRESHNESS: CalculationDataFreshness = {
+  status: 'unknown',
+  usedFallback: true,
+};
 
 type FreshnessSeries = Awaited<ReturnType<typeof db.query.dataSeries.findMany>>[number];
 type FreshnessSyncRun = Awaited<ReturnType<typeof listRecentSyncRuns>>[number];
@@ -132,30 +136,34 @@ export function resolveGlobalDataFreshness(
 }
 
 export const getGlobalDataFreshness = cache(async (): Promise<CalculationDataFreshness> => {
-  if (!isDatabaseConfigured) {
-    return { status: 'unknown', usedFallback: true };
+  if (!isDatabaseConfigured || process.env.PLAYWRIGHT_SMOKE === '1') {
+    return UNKNOWN_DATA_FRESHNESS;
   }
 
   const cacheKey = 'global-freshness';
   const cached = getCached<CalculationDataFreshness>(cacheKey);
   if (cached) return cached;
 
-  const allMacroSeries = await db.query.dataSeries.findMany({
-    where: inArray(dataSeries.slug, [...CPI_SLUGS, ...NBP_RATE_SLUGS]),
-  });
+  try {
+    const allMacroSeries = await db.query.dataSeries.findMany({
+      where: inArray(dataSeries.slug, [...CPI_SLUGS, ...NBP_RATE_SLUGS]),
+    });
 
-  if (allMacroSeries.length === 0) {
-    return { status: 'unknown', usedFallback: true };
+    if (allMacroSeries.length === 0) {
+      return UNKNOWN_DATA_FRESHNESS;
+    }
+
+    const recentSyncRuns = await listRecentSyncRuns(20);
+    const result = resolveGlobalDataFreshness(allMacroSeries, recentSyncRuns);
+    setCache(cacheKey, result);
+    return result;
+  } catch {
+    return UNKNOWN_DATA_FRESHNESS;
   }
-
-  const recentSyncRuns = await listRecentSyncRuns(20);
-  const result = resolveGlobalDataFreshness(allMacroSeries, recentSyncRuns);
-  setCache(cacheKey, result);
-  return result;
 });
 
 export const getHistoricalDataMap = cache(async (fromDate: string, toDate: string) => {
-  if (!isDatabaseConfigured) {
+  if (!isDatabaseConfigured || process.env.PLAYWRIGHT_SMOKE === '1') {
     return {};
   }
 
@@ -163,39 +171,43 @@ export const getHistoricalDataMap = cache(async (fromDate: string, toDate: strin
   const cached = getCached<Record<string, { inflation?: number; nbpRate?: number }>>(cacheKey);
   if (cached) return cached;
 
-  const series = await db.query.dataSeries.findMany({
-    where: inArray(dataSeries.slug, [...CPI_SLUGS, ...NBP_RATE_SLUGS]),
-  });
+  try {
+    const series = await db.query.dataSeries.findMany({
+      where: inArray(dataSeries.slug, [...CPI_SLUGS, ...NBP_RATE_SLUGS]),
+    });
 
-  const cpiSeries = series.find((s) => CPI_SLUGS.includes(s.slug));
-  const nbpSeries = series.find((s) => NBP_RATE_SLUGS.includes(s.slug));
+    const cpiSeries = series.find((s) => CPI_SLUGS.includes(s.slug));
+    const nbpSeries = series.find((s) => NBP_RATE_SLUGS.includes(s.slug));
 
-  if (!cpiSeries && !nbpSeries) return {};
+    if (!cpiSeries && !nbpSeries) return {};
 
-  const seriesIds = series.map((s) => s.id);
+    const seriesIds = series.map((s) => s.id);
 
-  const points = await db.query.dataPoints.findMany({
-    where: and(
-      inArray(dataPoints.seriesId, seriesIds),
-      gte(dataPoints.date, fromDate),
-      lte(dataPoints.date, toDate),
-    ),
-    orderBy: [asc(dataPoints.date)],
-  });
+    const points = await db.query.dataPoints.findMany({
+      where: and(
+        inArray(dataPoints.seriesId, seriesIds),
+        gte(dataPoints.date, fromDate),
+        lte(dataPoints.date, toDate),
+      ),
+      orderBy: [asc(dataPoints.date)],
+    });
 
-  const map: Record<string, { inflation?: number; nbpRate?: number }> = {};
+    const map: Record<string, { inflation?: number; nbpRate?: number }> = {};
 
-  points.forEach((item) => {
-    const key = item.date.substring(0, 7);
-    if (!map[key]) map[key] = {};
+    points.forEach((item) => {
+      const key = item.date.substring(0, 7);
+      if (!map[key]) map[key] = {};
 
-    const value = parseFloat(item.value);
-    if (item.seriesId === cpiSeries?.id) map[key].inflation = value;
-    if (item.seriesId === nbpSeries?.id) map[key].nbpRate = value;
-  });
+      const value = parseFloat(item.value);
+      if (item.seriesId === cpiSeries?.id) map[key].inflation = value;
+      if (item.seriesId === nbpSeries?.id) map[key].nbpRate = value;
+    });
 
-  setCache(cacheKey, map);
-  return map;
+    setCache(cacheKey, map);
+    return map;
+  } catch {
+    return {};
+  }
 });
 
 async function getLatestSeriesValue(seriesId?: string) {
@@ -219,7 +231,7 @@ async function getLatestSeriesValue(seriesId?: string) {
 }
 
 export const getMacroAssumptionDefaults = cache(async (): Promise<MacroAssumptionDefaults> => {
-  if (!isDatabaseConfigured) {
+  if (!isDatabaseConfigured || process.env.PLAYWRIGHT_SMOKE === '1') {
     return FALLBACK_MACRO_ASSUMPTIONS;
   }
 
@@ -227,25 +239,29 @@ export const getMacroAssumptionDefaults = cache(async (): Promise<MacroAssumptio
   const cached = getCached<MacroAssumptionDefaults>(cacheKey);
   if (cached) return cached;
 
-  const series = await db.query.dataSeries.findMany({
-    where: inArray(dataSeries.slug, [...CPI_SLUGS, ...NBP_RATE_SLUGS]),
-  });
+  try {
+    const series = await db.query.dataSeries.findMany({
+      where: inArray(dataSeries.slug, [...CPI_SLUGS, ...NBP_RATE_SLUGS]),
+    });
 
-  const cpiSeries = series.find((item) => CPI_SLUGS.includes(item.slug));
-  const nbpSeries = series.find((item) => NBP_RATE_SLUGS.includes(item.slug));
-  const [latestInflation, latestNbpRate] = await Promise.all([
-    getLatestSeriesValue(cpiSeries?.id),
-    getLatestSeriesValue(nbpSeries?.id),
-  ]);
+    const cpiSeries = series.find((item) => CPI_SLUGS.includes(item.slug));
+    const nbpSeries = series.find((item) => NBP_RATE_SLUGS.includes(item.slug));
+    const [latestInflation, latestNbpRate] = await Promise.all([
+      getLatestSeriesValue(cpiSeries?.id),
+      getLatestSeriesValue(nbpSeries?.id),
+    ]);
 
-  const result: MacroAssumptionDefaults = {
-    expectedInflation: latestInflation?.value ?? FALLBACK_MACRO_ASSUMPTIONS.expectedInflation,
-    expectedNbpRate: latestNbpRate?.value ?? FALLBACK_MACRO_ASSUMPTIONS.expectedNbpRate,
-    inflationAsOf: latestInflation?.date,
-    nbpAsOf: latestNbpRate?.date,
-    usedFallback: !latestInflation || !latestNbpRate,
-  };
+    const result: MacroAssumptionDefaults = {
+      expectedInflation: latestInflation?.value ?? FALLBACK_MACRO_ASSUMPTIONS.expectedInflation,
+      expectedNbpRate: latestNbpRate?.value ?? FALLBACK_MACRO_ASSUMPTIONS.expectedNbpRate,
+      inflationAsOf: latestInflation?.date,
+      nbpAsOf: latestNbpRate?.date,
+      usedFallback: !latestInflation || !latestNbpRate,
+    };
 
-  setCache(cacheKey, result);
-  return result;
+    setCache(cacheKey, result);
+    return result;
+  } catch {
+    return FALLBACK_MACRO_ASSUMPTIONS;
+  }
 });

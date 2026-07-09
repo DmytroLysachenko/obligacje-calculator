@@ -83,6 +83,14 @@ The verifier checks:
 
 `--allow-missing-oauth` is valid only while Google OAuth is intentionally not configured. The database readiness check must still pass.
 
+To inspect the active Cloud Run revision without printing secret values, run:
+
+```bash
+pnpm ops:cloud-run-status
+```
+
+The command prints the service URL, latest ready revision, deployed image, traffic split, and whether each runtime environment variable is set.
+
 ## GitHub Actions Deployment Secrets
 
 The manual `Deploy Cloud Run` workflow requires these repository secrets:
@@ -111,6 +119,12 @@ Recommended flow:
 5. run the manual `Deploy Cloud Run` workflow from `main`
 
 CI runs on pushes to both `dev` and `main`, and on pull requests. Production deploys are guarded so they only run from `main`.
+
+Recommended GitHub branch protection:
+
+- `main`: require pull request reviews, require CI `quality`, `build`, and `browser-smoke`, block force pushes, block direct pushes except emergency admin fixes.
+- `dev`: require CI `quality`, `build`, and `browser-smoke`, allow feature-branch PR merges, block force pushes.
+- Production environment: require manual approval before `Deploy Cloud Run` and `Rollback Cloud Run`.
 
 ## Manual Deploy
 

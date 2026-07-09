@@ -6,6 +6,9 @@ import { describe, expect, it } from 'vitest';
 const root = process.cwd();
 const deploymentDoc = 'docs/technical/architecture/24_deployment_and_devops.md';
 const docsIndex = 'docs/index.md';
+const ciWorkflow = '.github/workflows/ci.yml';
+const deployWorkflow = '.github/workflows/deploy-cloud-run.yml';
+const rollbackWorkflow = '.github/workflows/rollback-cloud-run.yml';
 
 function readDoc() {
   return readFileSync(join(root, deploymentDoc), 'utf8');
@@ -105,5 +108,48 @@ describe('deployment documentation contract', () => {
     expect(projectMap).toContain('OptimizerInputPanel.tsx');
     expect(projectMap).toContain('EconomicDashboardSections.tsx');
     expect(projectMap).toContain('comparison-results-panel-model.ts');
+  });
+
+  it('keeps Cloud Run deploy and rollback workflows guarded', () => {
+    const deploy = readFileSync(join(root, deployWorkflow), 'utf8');
+    const rollback = readFileSync(join(root, rollbackWorkflow), 'utf8');
+
+    expect(deploy).toContain('workflow_dispatch');
+    expect(deploy).toContain('refs/heads/main');
+    expect(deploy).toContain('production-cloud-run');
+    expect(deploy).toContain('--no-allow-unauthenticated');
+    expect(deploy).toContain('Validate runtime secrets');
+    expect(deploy).toContain('DATABASE_URL');
+    expect(deploy).toContain('AUTH_SECRET');
+    expect(deploy).toContain('SYNC_SECRET');
+    expect(deploy).toContain('pnpm ops:verify-prod');
+    expect(deploy).toContain('--allow-missing-oauth');
+    expect(deploy).toContain('docker buildx build');
+    expect(deploy).toContain('type=gha');
+
+    expect(rollback).toContain('workflow_dispatch');
+    expect(rollback).toContain('production-cloud-run');
+    expect(rollback).toContain('gcloud run services update-traffic');
+    expect(rollback).toContain('--to-revisions');
+    expect(rollback).toContain('pnpm ops:verify-prod');
+  });
+
+  it('keeps CI wired to release, browser, and performance gates', () => {
+    const ci = readFileSync(join(root, ciWorkflow), 'utf8');
+
+    expect(ci).toContain('pnpm test:release');
+    expect(ci).toContain('browser-smoke');
+    expect(ci).toContain('pnpm test:browser');
+    expect(ci).toContain('pnpm test:web-vitals');
+  });
+
+  it('keeps Docker build context free of local artifacts and secrets', () => {
+    const dockerignore = readFileSync(join(root, '.dockerignore'), 'utf8');
+
+    for (const ignored of ['.git', '.next', 'node_modules', '.env', '.env.*', 'coverage']) {
+      expect(dockerignore).toContain(ignored);
+    }
+
+    expect(dockerignore).toContain('!.env.example');
   });
 });
