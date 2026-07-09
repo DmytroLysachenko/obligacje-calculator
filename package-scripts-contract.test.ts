@@ -13,6 +13,8 @@ describe('package scripts contract', () => {
     expect(pkg.scripts['check:types']).toBe('tsc --noEmit');
     expect(pkg.scripts['test:release']).toContain('features/bond-core');
     expect(pkg.scripts['test:release']).toContain('lib/seo/app-json-ld.test.ts');
+    expect(pkg.scripts['test:release']).toContain('lib/sync/sync-engine.test.ts');
+    expect(pkg.scripts['test:release']).toContain('lib/sync/sync-start-year.test.ts');
     expect(pkg.scripts['test:release']).toContain('app/api/production-readiness-contract.test.ts');
     expect(pkg.scripts['test:release']).toContain('app/api/operational-endpoints-contract.test.ts');
     expect(pkg.scripts['test:release']).toContain(

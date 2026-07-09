@@ -1,9 +1,12 @@
+import { acquireFullSyncLock } from '@/lib/server/sync/sync-lock';
+
 import { BondOfferSyncService } from './services/bond-offer-sync-service';
 import { type ProviderSyncResult, ProviderSyncService } from './services/provider-sync-service';
 import { SyncRunRecorder } from './services/sync-run-recorder';
 import { syncMacroData } from './macro-data-sync';
 import type { SyncLogger } from './sync-logger';
 import { createSyncLogger } from './sync-logger';
+import { resolveFullSyncStartYear } from './sync-start-year';
 import type { SyncProvider } from './types';
 
 export interface FullSyncSummary {
@@ -11,6 +14,8 @@ export interface FullSyncSummary {
   macro: Awaited<ReturnType<typeof syncMacroData>>;
   bondOffers: number;
   historical: ProviderSyncResult[];
+  skipped?: boolean;
+  reason?: 'already-running';
 }
 
 export class SyncEngine {
@@ -31,36 +36,63 @@ export class SyncEngine {
    * High-level orchestrator for all production sync tasks.
    * Public API is intentionally stable for CLI, admin API, and scheduled jobs.
    */
-  async runFullSync(startYear = 1910): Promise<FullSyncSummary> {
+  async runFullSync(startYear?: number): Promise<FullSyncSummary> {
     const startedAt = new Date();
     this.logger.info('Starting full financial sync');
 
-    const macro = await syncMacroData();
-    this.logger.info('Macro data sync complete', macro);
+    const lock = await acquireFullSyncLock();
+    if (!lock.acquired) {
+      this.logger.warn('Full sync already running; skipping overlapping request');
+      await this.recorder.record({
+        scope: 'full-sync',
+        mode: 'full-sync',
+        status: 'up-to-date',
+        message: 'Full sync already running; skipped overlapping request.',
+        startedAt,
+        finishedAt: new Date(),
+      });
 
-    const bondOffers = await this.bondOfferSyncService.syncCurrentOffers();
-    const historical = await this.providerSyncService.syncAll(startYear);
+      return {
+        mode: 'full-sync',
+        macro: null,
+        bondOffers: 0,
+        historical: [],
+        skipped: true,
+        reason: 'already-running',
+      };
+    }
 
-    const summary: FullSyncSummary = {
-      mode: 'full-sync',
-      macro,
-      bondOffers: bondOffers.length,
-      historical,
-    };
+    try {
+      const macro = await syncMacroData();
+      this.logger.info('Macro data sync complete', macro);
 
-    await this.recorder.record({
-      scope: 'full-sync',
-      mode: 'full-sync',
-      status: this.resolveFullSyncStatus(macro, historical),
-      inserted: historical.reduce((sum, result) => sum + (result.inserted ?? 0), 0),
-      updated: historical.reduce((sum, result) => sum + (result.updated ?? 0), 0),
-      skipped: historical.reduce((sum, result) => sum + (result.skipped ?? 0), 0),
-      message: `${macro ? 'Macro sync complete' : 'Macro sync failed'}; ${bondOffers.length} bond offers processed.`,
-      startedAt,
-      finishedAt: new Date(),
-    });
+      const effectiveStartYear = await resolveFullSyncStartYear(startYear);
+      const bondOffers = await this.bondOfferSyncService.syncCurrentOffers();
+      const historical = await this.providerSyncService.syncAll(effectiveStartYear);
 
-    return summary;
+      const summary: FullSyncSummary = {
+        mode: 'full-sync',
+        macro,
+        bondOffers: bondOffers.length,
+        historical,
+      };
+
+      await this.recorder.record({
+        scope: 'full-sync',
+        mode: 'full-sync',
+        status: this.resolveFullSyncStatus(macro, historical),
+        inserted: historical.reduce((sum, result) => sum + (result.inserted ?? 0), 0),
+        updated: historical.reduce((sum, result) => sum + (result.updated ?? 0), 0),
+        skipped: historical.reduce((sum, result) => sum + (result.skipped ?? 0), 0),
+        message: `${macro ? 'Macro sync complete' : 'Macro sync failed'}; ${bondOffers.length} bond offers processed.`,
+        startedAt,
+        finishedAt: new Date(),
+      });
+
+      return summary;
+    } finally {
+      await lock.release();
+    }
   }
 
   async syncAll(startYear = 1910) {
