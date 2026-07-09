@@ -33,6 +33,24 @@ describe('package scripts contract', () => {
     expect(pkg.scripts['gcp:proxy']).toContain('gcloud run services proxy obligacje-calculator');
   });
 
+  it('starts browser tests through the standalone-aware Playwright launcher', () => {
+    const playwrightConfig = readFileSync(join(process.cwd(), 'playwright.config.ts'), 'utf8');
+    const launcher = readFileSync(
+      join(process.cwd(), 'scripts/start-playwright-server.mjs'),
+      'utf8',
+    );
+
+    expect(playwrightConfig).toContain('node scripts/start-playwright-server.mjs');
+    expect(launcher).toContain("existsSync('.next/standalone/server.js')");
+    expect(launcher).toContain("process.platform !== 'win32'");
+    expect(launcher).toContain("cpSync('.next/static'");
+    expect(launcher).toContain("require.resolve('next/dist/bin/next')");
+    expect(launcher).toContain("PLAYWRIGHT_SMOKE: process.env.PLAYWRIGHT_SMOKE ?? '1'");
+    expect(launcher).toContain(
+      "NEXT_PUBLIC_PLAYWRIGHT_SMOKE: process.env.NEXT_PUBLIC_PLAYWRIGHT_SMOKE ?? '1'",
+    );
+  });
+
   it('keeps lint-staged full-repo checks isolated from staged filenames', () => {
     expect(pkg['lint-staged']['*.{ts,tsx}']).toEqual(
       expect.arrayContaining(['bash -c "pnpm exec tsc --noEmit"', 'bash -c "pnpm test:core"']),

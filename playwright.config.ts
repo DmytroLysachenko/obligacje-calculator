@@ -14,7 +14,7 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   webServer: {
-    command: 'pnpm exec next start --port 3100',
+    command: 'node scripts/start-playwright-server.mjs',
     url: process.env.PLAYWRIGHT_BASE_URL ?? 'http://127.0.0.1:3100',
     reuseExistingServer: false,
     timeout: 60_000,
