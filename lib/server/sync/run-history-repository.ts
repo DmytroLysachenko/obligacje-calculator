@@ -64,3 +64,11 @@ export async function findLatestSyncRunForSeries(seriesSlug: string) {
     orderBy: [desc(syncRuns.startedAt)],
   });
 }
+
+export async function findLatestSyncRunForScope(scope: string) {
+  await ensureSyncRunsSchemaRepository();
+  return db.query.syncRuns.findFirst({
+    where: eq(syncRuns.scope, scope),
+    orderBy: [desc(syncRuns.startedAt)],
+  });
+}
