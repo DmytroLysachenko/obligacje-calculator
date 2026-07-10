@@ -47,7 +47,7 @@ describe('production readiness contract', () => {
     expect(cloudbuild).toContain(
       '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/${_SERVICE}:latest',
     );
-    expect(cloudbuild).toContain('--allow-unauthenticated');
+    expect(cloudbuild).toContain('--no-allow-unauthenticated');
     expect(cloudbuild).toContain('--platform');
     expect(cloudbuild).toContain('managed');
   });

@@ -138,9 +138,33 @@ describe('deployment documentation contract', () => {
     const ci = readFileSync(join(root, ciWorkflow), 'utf8');
 
     expect(ci).toContain('pnpm test:release');
+    expect(ci).toContain('docker-build');
+    expect(ci).toContain('docker/build-push-action');
     expect(ci).toContain('browser-smoke');
-    expect(ci).toContain('pnpm test:browser');
-    expect(ci).toContain('pnpm test:web-vitals');
+    expect(ci).toContain('pnpm test:browser:ci');
+    expect(ci).toContain('actions/upload-artifact');
+  });
+
+  it('keeps local container workflow discoverable and no-secret by default', () => {
+    const compose = readFileSync(join(root, 'compose.yaml'), 'utf8');
+    const taskfile = readFileSync(join(root, 'Taskfile.yml'), 'utf8');
+    const envExample = readFileSync(join(root, '.env.example'), 'utf8');
+
+    expect(compose).toContain('postgres:17-alpine');
+    expect(compose).toContain('postgresql://obligacje:obligacje@postgres:5432/obligacje');
+    expect(taskfile).toContain('dev:container');
+    expect(taskfile).toContain('smoke:container');
+    expect(taskfile).toContain('db:reset-local');
+    expect(envExample).toContain('postgresql://obligacje:obligacje@localhost:5432/obligacje');
+    expect(envExample).toContain('AUTH_GOOGLE_ID=');
+  });
+
+  it('keeps Cloud Build aligned with private Cloud Run preview policy', () => {
+    const cloudBuild = readFileSync(join(root, 'cloudbuild.yaml'), 'utf8');
+    const cloudBuildLines = cloudBuild.split(/\r?\n/).map((line) => line.trim());
+
+    expect(cloudBuild).toContain('--no-allow-unauthenticated');
+    expect(cloudBuildLines).not.toContain('- --allow-unauthenticated');
   });
 
   it('keeps Docker build context free of local artifacts and secrets', () => {

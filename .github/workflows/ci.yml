@@ -82,6 +82,35 @@ jobs:
             echo "- Production build: \`pnpm build\`"
           } >> "${GITHUB_STEP_SUMMARY}"
 
+  docker-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build production image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: obligacje-calculator:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Docker build summary
+        if: always()
+        run: |
+          {
+            echo "### Docker build"
+            echo ""
+            echo "- Production image: \`docker/build-push-action\`"
+            echo "- Push: disabled"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
   browser-smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 25
@@ -112,6 +141,16 @@ jobs:
 
       - name: Browser smoke and web vitals
         run: pnpm test:browser:ci
+
+      - name: Upload browser reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-smoke-report
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: ignore
 
       - name: Browser smoke summary
         if: always()
