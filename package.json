@@ -21,6 +21,7 @@
     "check:types": "tsc --noEmit",
     "check:release": "pnpm check:types && pnpm lint && pnpm test:release && pnpm build",
     "check:prod-config": "tsx scripts/check-production-config.ts",
+    "smoke:local": "tsx scripts/smoke-local.ts",
     "gcp:proxy": "gcloud run services proxy obligacje-calculator --project bond-calculator-pl --region europe-central2 --port 8080",
     "ops:cloud-run-status": "tsx scripts/cloud-run-status.ts",
     "ops:verify-prod": "tsx scripts/verify-production.ts",
