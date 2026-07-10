@@ -8,11 +8,21 @@ unless they pass the same calculation and UX checks.
 
 - **Platform:** Google Cloud Run.
 - **Container:** checked-in `Dockerfile` builds the Next.js standalone output.
-- **Build:** checked-in `cloudbuild.yaml` builds, pushes, and deploys the image.
+- **Build:** GitHub Actions builds and pushes production images for deployment.
+  The checked-in `cloudbuild.yaml` is kept aligned with private Cloud Run policy
+  for manual Google Cloud Build usage.
 - **Default region:** `europe-central2`, close to Polish users and supported by
   Cloud Run and Artifact Registry.
 - **Runtime port:** Cloud Run provides `PORT`; the container exposes `8080` and
   runs the standalone `server.js` with `HOSTNAME=0.0.0.0`.
+
+## 1.1 Local Development Workflow
+
+WSL 2 with Docker Desktop WSL integration is the recommended local development
+path. Use `compose.yaml` for the local app and Postgres stack, and `Taskfile.yml`
+as the command layer for setup, local DB lifecycle, browser smoke checks, Docker
+builds, and the Cloud Run proxy. Windows-native `pnpm` commands remain supported
+as a fallback for simple host-only work.
 
 ## 2. Required Production Migrations
 
@@ -141,6 +151,8 @@ Secret Manager. Do not commit `.env` files.
   start at the purchase date and preserve the final withdrawal value.
 - Verify single, comparison, regular investment, ladder, notebook, and economic
   data routes load on desktop and mobile widths.
+- Verify the local Compose workflow with `task smoke:container` before changing
+  container, database, or startup behavior.
 
 ## 6. Monitoring & Operations
 
