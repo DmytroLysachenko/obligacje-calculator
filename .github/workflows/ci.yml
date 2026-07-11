@@ -89,6 +89,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install script dependencies
+        run: HUSKY=0 pnpm install --frozen-lockfile
+
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -97,9 +109,34 @@ jobs:
         with:
           context: .
           push: false
+          load: true
           tags: obligacje-calculator:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Start production image
+        run: |
+          docker run --detach --name obligacje-calculator-ci \
+            --publish 8080:8080 \
+            --env DATABASE_URL=postgresql://obligacje:obligacje@localhost:5432/obligacje?sslmode=disable \
+            --env AUTH_SECRET=ci-development-auth-secret-change-me \
+            --env SYNC_SECRET=ci-development-sync-secret-change-me \
+            --env NEXT_PUBLIC_APP_URL=http://127.0.0.1:8080 \
+            --env AUTH_TRUST_HOST=true \
+            --env PLAYWRIGHT_SMOKE=1 \
+            --env NEXT_PUBLIC_PLAYWRIGHT_SMOKE=1 \
+            obligacje-calculator:ci
+
+      - name: Smoke production image
+        run: pnpm smoke:local -- --base-url http://127.0.0.1:8080 --check-content-type
+
+      - name: Print container logs
+        if: failure()
+        run: docker logs obligacje-calculator-ci
+
+      - name: Stop production image
+        if: always()
+        run: docker rm --force obligacje-calculator-ci || true
 
       - name: Docker build summary
         if: always()
@@ -108,6 +145,7 @@ jobs:
             echo "### Docker build"
             echo ""
             echo "- Production image: \`docker/build-push-action\`"
+            echo "- Production smoke: \`pnpm smoke:local -- --base-url http://127.0.0.1:8080 --check-content-type\`"
             echo "- Push: disabled"
           } >> "${GITHUB_STEP_SUMMARY}"
 
