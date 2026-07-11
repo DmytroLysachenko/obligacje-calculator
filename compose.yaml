@@ -22,6 +22,26 @@ services:
       - app_node_modules:/app/node_modules
       - app_next:/app/.next
 
+  app-prod:
+    profiles:
+      - prod
+    build:
+      context: .
+      target: runner
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://obligacje:obligacje@postgres:5432/obligacje?sslmode=disable
+      AUTH_SECRET: local-development-auth-secret-change-me
+      SYNC_SECRET: local-development-sync-secret-change-me
+      NEXT_PUBLIC_APP_URL: http://localhost:8080
+      AUTH_TRUST_HOST: 'true'
+      HOSTNAME: 0.0.0.0
+      PORT: '8080'
+    ports:
+      - '8080:8080'
+
   postgres:
     image: postgres:17-alpine
     environment:

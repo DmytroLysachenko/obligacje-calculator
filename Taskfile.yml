@@ -60,6 +60,16 @@ tasks:
     cmds:
       - docker run --rm -p 8080:8080 --env-file .env.local obligacje-calculator:local
 
+  prod:container:
+    desc: Start the local production-image Compose stack.
+    cmds:
+      - docker compose --profile prod up app-prod
+
+  smoke:prod-container:
+    desc: Verify the local production-image Compose app is responding.
+    cmds:
+      - pnpm smoke:local -- --base-url http://localhost:8080
+
   db:up:
     desc: Start only the local Postgres service.
     cmds:
