@@ -7,7 +7,9 @@ unless they pass the same calculation and UX checks.
 ## 1. Hosting Environment
 
 - **Platform:** Google Cloud Run.
-- **Container:** checked-in `Dockerfile` builds the Next.js standalone output.
+- **Container:** checked-in `Dockerfile` builds the Next.js standalone output,
+  runs as the non-root `node` user, exposes `PORT=8080`, and includes a local
+  `/api/health` healthcheck.
 - **Build:** GitHub Actions builds and pushes production images for deployment.
   The checked-in `cloudbuild.yaml` is kept aligned with private Cloud Run policy
   for manual Google Cloud Build usage.
@@ -23,6 +25,17 @@ path. Use `compose.yaml` for the local app and Postgres stack, and `Taskfile.yml
 as the command layer for setup, local DB lifecycle, browser smoke checks, Docker
 builds, and the Cloud Run proxy. Windows-native `pnpm` commands remain supported
 as a fallback for simple host-only work.
+
+For production-image verification before touching CI/CD behavior, use:
+
+```bash
+task prod:container
+task smoke:prod-container
+```
+
+The production Compose profile runs the final Docker image against local
+Postgres on `http://localhost:8080`; the smoke command checks the same route
+set used by the CI container boot gate.
 
 ## 2. Required Production Migrations
 
@@ -100,6 +113,8 @@ This operator check validates `DATABASE_URL`, `AUTH_SECRET` or
 `NEXTAUTH_SECRET`, `NEXT_PUBLIC_APP_URL`, `SYNC_SECRET`, and at least one
 complete OAuth provider pair. It is intentionally not part of `check:release`
 because CI and local developer machines should not require production secrets.
+During private preview only, pass `--allow-missing-oauth` when OAuth credentials
+are intentionally absent; this does not waive database, URL, or secret checks.
 
 Apply migrations and seed/sync the target database before promoting traffic:
 
@@ -118,7 +133,9 @@ gcloud builds submit \
 ```
 
 Set secrets and environment variables through Cloud Run service configuration or
-Secret Manager. Do not commit `.env` files.
+Secret Manager. Do not commit `.env` files. GitHub Actions is the production
+source of truth for normal deploys; `cloudbuild.yaml` is kept as a manual
+fallback and runs the same release gate before building.
 
 ## 5. Deployment Guardrails
 
@@ -153,6 +170,8 @@ Secret Manager. Do not commit `.env` files.
   data routes load on desktop and mobile widths.
 - Verify the local Compose workflow with `task smoke:container` before changing
   container, database, or startup behavior.
+- Verify the production image with `task smoke:prod-container` before changing
+  the Dockerfile, Cloud Run runtime flags, or CI Docker job.
 
 ## 6. Monitoring & Operations
 

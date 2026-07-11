@@ -134,6 +134,16 @@ container and build files are:
 Deployment details, required environment variables, migration order, and smoke
 checks live in [Deployment & DevOps](./docs/technical/architecture/24_deployment_and_devops.md).
 
+For local production-image verification:
+
+```bash
+task prod:container
+task smoke:prod-container
+```
+
+GitHub Actions is the production Cloud Run deployment source of truth. The
+checked-in `cloudbuild.yaml` remains an aligned manual fallback.
+
 ## Product Guardrails
 
 - no hardcoded translated UI copy in code
