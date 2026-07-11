@@ -82,9 +82,79 @@ jobs:
             echo "- Production build: \`pnpm build\`"
           } >> "${GITHUB_STEP_SUMMARY}"
 
+  docker-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install script dependencies
+        run: HUSKY=0 pnpm install --frozen-lockfile
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build production image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true
+          tags: obligacje-calculator:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Start production image
+        run: |
+          docker run --detach --name obligacje-calculator-ci \
+            --publish 8080:8080 \
+            --env DATABASE_URL=postgresql://obligacje:obligacje@localhost:5432/obligacje?sslmode=disable \
+            --env AUTH_SECRET=ci-development-auth-secret-change-me \
+            --env SYNC_SECRET=ci-development-sync-secret-change-me \
+            --env NEXT_PUBLIC_APP_URL=http://127.0.0.1:8080 \
+            --env AUTH_TRUST_HOST=true \
+            --env PLAYWRIGHT_SMOKE=1 \
+            --env NEXT_PUBLIC_PLAYWRIGHT_SMOKE=1 \
+            obligacje-calculator:ci
+
+      - name: Smoke production image
+        run: pnpm smoke:local -- --base-url http://127.0.0.1:8080 --check-content-type
+
+      - name: Print container logs
+        if: failure()
+        run: docker logs obligacje-calculator-ci
+
+      - name: Stop production image
+        if: always()
+        run: docker rm --force obligacje-calculator-ci || true
+
+      - name: Docker build summary
+        if: always()
+        run: |
+          {
+            echo "### Docker build"
+            echo ""
+            echo "- Production image: \`docker/build-push-action\`"
+            echo "- Production smoke: \`pnpm smoke:local -- --base-url http://127.0.0.1:8080 --check-content-type\`"
+            echo "- Push: disabled"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
   browser-smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    env:
+      PLAYWRIGHT_SMOKE: '1'
+      NEXT_PUBLIC_PLAYWRIGHT_SMOKE: '1'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -107,11 +177,18 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Browser smoke
-        run: pnpm test:browser
+      - name: Browser smoke and web vitals
+        run: pnpm test:browser:ci
 
-      - name: Web vitals budget
-        run: pnpm test:web-vitals
+      - name: Upload browser reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-smoke-report
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: ignore
 
       - name: Browser smoke summary
         if: always()
@@ -121,5 +198,5 @@ jobs:
             echo ""
             echo "- Routes: home, single calculator, comparison, economic data"
             echo "- Checks: title, main landmark, navigation label, console/page errors"
-            echo "- Performance budget: \`pnpm test:web-vitals\`"
+            echo "- Browser gate: \`pnpm test:browser:ci\`"
           } >> "${GITHUB_STEP_SUMMARY}"

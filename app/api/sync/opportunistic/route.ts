@@ -13,7 +13,7 @@ export async function GET() {
   const cookieStore = await cookies();
   const lastSyncCookie = cookieStore.get('last_sync_check')?.value;
 
-  const syncStatus = getOpportunisticSyncStatus(lastSyncCookie);
+  const syncStatus = await getOpportunisticSyncStatus(lastSyncCookie);
   if (syncStatus.status === 'cooldown') {
     return okJson(syncStatus);
   }

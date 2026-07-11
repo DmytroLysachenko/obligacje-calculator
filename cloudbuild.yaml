@@ -4,13 +4,25 @@ substitutions:
   _AR_REPOSITORY: obligacje-calculator
 
 steps:
+  - name: node:24-bookworm-slim
+    entrypoint: bash
+    args:
+      - -lc
+      - corepack enable && HUSKY=0 pnpm install --frozen-lockfile && pnpm check:release
+
   - name: gcr.io/cloud-builders/docker
+    env:
+      - DOCKER_BUILDKIT=1
     args:
       - build
       - -t
       - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/${_SERVICE}:$SHORT_SHA
       - -t
       - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/${_SERVICE}:latest
+      - --label
+      - managed-by=cloud-build
+      - --label
+      - commit-sha=$COMMIT_SHA
       - .
 
   - name: gcr.io/cloud-builders/docker
@@ -35,9 +47,21 @@ steps:
       - ${_REGION}
       - --platform
       - managed
-      - --allow-unauthenticated
+      - --no-allow-unauthenticated
       - --port
       - '8080'
+      - --min-instances
+      - '0'
+      - --max-instances
+      - '1'
+      - --memory
+      - 512Mi
+      - --cpu
+      - '1'
+      - --execution-environment
+      - gen2
+      - --labels
+      - managed-by=cloud-build,commit-sha=$COMMIT_SHA
 
 images:
   - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPOSITORY}/${_SERVICE}:$SHORT_SHA

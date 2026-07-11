@@ -1,5 +1,6 @@
 import { NewSyncRun } from '@/db/schema';
 import {
+  findLatestSyncRunForScope,
   findLatestSyncRunForSeries,
   findRecentSyncRuns,
   insertSyncRun,
@@ -88,6 +89,18 @@ export async function listRecentSyncRuns(limit = 25) {
 export async function getLatestSyncRunForSeries(seriesSlug: string) {
   try {
     return await findLatestSyncRunForSeries(seriesSlug);
+  } catch (error) {
+    if (isMissingSyncRunsTableError(error)) {
+      return null;
+    }
+
+    throw error;
+  }
+}
+
+export async function getLatestSyncRunForScope(scope: string) {
+  try {
+    return await findLatestSyncRunForScope(scope);
   } catch (error) {
     if (isMissingSyncRunsTableError(error)) {
       return null;

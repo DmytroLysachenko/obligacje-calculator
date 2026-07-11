@@ -1,0 +1,107 @@
+version: '3'
+
+vars:
+  LOCAL_DATABASE_URL: postgresql://obligacje:obligacje@localhost:5432/obligacje?sslmode=disable
+
+tasks:
+  setup:
+    desc: Install project dependencies on the host.
+    cmds:
+      - corepack enable
+      - HUSKY=0 pnpm install --frozen-lockfile
+
+  dev:
+    desc: Start the recommended WSL/Docker Compose development stack.
+    cmds:
+      - docker compose up app
+
+  dev:container:
+    desc: Start the Docker Compose application stack.
+    cmds:
+      - docker compose up app
+
+  dev:host:
+    desc: Start Next.js directly on the host.
+    cmds:
+      - pnpm dev
+
+  test:
+    desc: Run the default Vitest suite.
+    cmds:
+      - pnpm test
+
+  test:release:
+    desc: Run the trusted release checks.
+    cmds:
+      - pnpm check:release
+
+  smoke:
+    desc: Run the browser smoke and web-vitals gate.
+    cmds:
+      - pnpm test:browser:ci
+
+  smoke:container:
+    desc: Verify the local Compose app is responding.
+    cmds:
+      - pnpm smoke:local -- --base-url http://localhost:3000
+
+  build:
+    desc: Build the Next.js application.
+    cmds:
+      - pnpm build
+
+  docker:build:
+    desc: Build the production Docker image locally.
+    cmds:
+      - docker build -t obligacje-calculator:local .
+
+  docker:run:
+    desc: Run the local production Docker image.
+    cmds:
+      - docker run --rm -p 8080:8080 --env-file .env.local obligacje-calculator:local
+
+  prod:container:
+    desc: Start the local production-image Compose stack.
+    cmds:
+      - docker compose --profile prod up app-prod
+
+  smoke:prod-container:
+    desc: Verify the local production-image Compose app is responding.
+    cmds:
+      - pnpm smoke:local -- --base-url http://localhost:8080
+
+  db:up:
+    desc: Start only the local Postgres service.
+    cmds:
+      - docker compose up -d postgres
+
+  db:down:
+    desc: Stop local Compose services.
+    cmds:
+      - docker compose down
+
+  db:migrate:
+    desc: Apply Drizzle schema to local Postgres.
+    env:
+      DATABASE_URL: '{{.LOCAL_DATABASE_URL}}'
+    cmds:
+      - pnpm exec drizzle-kit push
+
+  db:seed:
+    desc: Seed local reference data.
+    env:
+      DATABASE_URL: '{{.LOCAL_DATABASE_URL}}'
+    cmds:
+      - pnpm db:seed
+
+  db:reset-local:
+    desc: Reset the local Compose Postgres volume and apply schema.
+    cmds:
+      - docker compose down -v
+      - docker compose up -d postgres
+      - task: db:migrate
+
+  gcp:proxy:
+    desc: Open the authenticated Cloud Run private preview proxy.
+    cmds:
+      - pnpm gcp:proxy

@@ -27,6 +27,7 @@ vi.mock('@/db', () => ({
 
 vi.mock('@/db/schema', () => ({
   syncRuns: {
+    scope: 'scope',
     startedAt: 'started_at',
     seriesSlug: 'series_slug',
   },
@@ -90,10 +91,30 @@ describe('sync run history repository', () => {
     );
   });
 
+  it('ensures the sync_runs schema before reading the latest run for a scope', async () => {
+    dbMocks.findFirst.mockResolvedValue({ id: 'latest-full-sync' });
+    const { getLatestSyncRunForScope } = await import('./run-history');
+
+    await expect(getLatestSyncRunForScope('full-sync')).resolves.toEqual({
+      id: 'latest-full-sync',
+    });
+
+    expect(dbMocks.execute).toHaveBeenCalledTimes(4);
+    expect(dbMocks.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.anything(),
+      }),
+    );
+  });
+
   it('keeps missing sync_runs table fallbacks safe for freshness reads and writes', async () => {
     dbMocks.execute.mockRejectedValue(new Error('relation "sync_runs" does not exist'));
-    const { getLatestSyncRunForSeries, listRecentSyncRuns, recordSyncRun } =
-      await import('./run-history');
+    const {
+      getLatestSyncRunForScope,
+      getLatestSyncRunForSeries,
+      listRecentSyncRuns,
+      recordSyncRun,
+    } = await import('./run-history');
 
     await expect(
       recordSyncRun({
@@ -104,5 +125,6 @@ describe('sync run history repository', () => {
     ).resolves.toBeNull();
     await expect(listRecentSyncRuns()).resolves.toEqual([]);
     await expect(getLatestSyncRunForSeries('pl-cpi')).resolves.toBeNull();
+    await expect(getLatestSyncRunForScope('full-sync')).resolves.toBeNull();
   });
 });

@@ -2,7 +2,7 @@ import { differenceInDays } from 'date-fns';
 import { desc, eq } from 'drizzle-orm';
 import { cache } from 'react';
 
-import { db } from '@/db';
+import { db, isDatabaseConfigured } from '@/db';
 import { type BondSeries, bondSeries, type PolishBond, taxRules } from '@/db/schema';
 import { BOND_DEFINITIONS, BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { BondType, InterestPayout } from '@/features/bond-core/types';
@@ -122,24 +122,32 @@ export function mergeBondDefinitionsWithSeries(
 }
 
 const getBondDefinitions = cache(async (): Promise<BondDefinition[]> => {
+  if (!isDatabaseConfigured || process.env.PLAYWRIGHT_SMOKE === '1') {
+    return Object.values(BOND_DEFINITIONS);
+  }
+
   const cacheKey = 'bond-definitions';
   const cached = getCached<BondDefinition[]>(cacheKey);
   if (cached) return cached;
 
-  const [bonds, series] = await Promise.all([
-    db.query.polishBonds.findMany(),
-    db.query.bondSeries.findMany({
-      orderBy: [desc(bondSeries.emissionMonth)],
-    }),
-  ]);
+  try {
+    const [bonds, series] = await Promise.all([
+      db.query.polishBonds.findMany(),
+      db.query.bondSeries.findMany({
+        orderBy: [desc(bondSeries.emissionMonth)],
+      }),
+    ]);
 
-  if (bonds.length === 0) {
+    if (bonds.length === 0) {
+      return Object.values(BOND_DEFINITIONS);
+    }
+
+    const result = mergeBondDefinitionsWithSeries(bonds, series, BOND_DEFINITIONS);
+    setCache(cacheKey, result);
+    return result;
+  } catch {
     return Object.values(BOND_DEFINITIONS);
   }
-
-  const result = mergeBondDefinitionsWithSeries(bonds, series, BOND_DEFINITIONS);
-  setCache(cacheKey, result);
-  return result;
 });
 
 export const getBondDefinitionsMap = cache(async (): Promise<Record<BondType, BondDefinition>> => {
@@ -164,20 +172,28 @@ export const bondDefinitionRepository: BondDefinitionRepository = {
 };
 
 export const getTaxRulesForYear = cache(async (year: number) => {
+  if (!isDatabaseConfigured || process.env.PLAYWRIGHT_SMOKE === '1') {
+    return null;
+  }
+
   const cacheKey = `tax-rules-${year}`;
   const cached = getCached<typeof taxRules.$inferSelect>(cacheKey);
   if (cached) return cached;
 
-  const rules = await db.query.taxRules.findFirst({
-    where: eq(taxRules.year, year),
-  });
-
-  if (!rules) {
-    return db.query.taxRules.findFirst({
-      orderBy: [desc(taxRules.year)],
+  try {
+    const rules = await db.query.taxRules.findFirst({
+      where: eq(taxRules.year, year),
     });
-  }
 
-  setCache(cacheKey, rules);
-  return rules;
+    if (!rules) {
+      return db.query.taxRules.findFirst({
+        orderBy: [desc(taxRules.year)],
+      });
+    }
+
+    setCache(cacheKey, rules);
+    return rules;
+  } catch {
+    return null;
+  }
 });

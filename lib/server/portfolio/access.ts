@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 import { auth } from '@/auth';
+import { isDatabaseConfigured } from '@/db';
 import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
 import { createServerLogger } from '@/lib/server/logging';
 import {
@@ -74,6 +75,10 @@ async function resolveAuthenticatedOwner() {
 }
 
 async function ensureGuestOwner(ownerId: string) {
+  if (!isDatabaseConfigured || process.env.PLAYWRIGHT_SMOKE === '1') {
+    return;
+  }
+
   try {
     await ensureGuestPortfolioOwner(ownerId);
   } catch (error) {

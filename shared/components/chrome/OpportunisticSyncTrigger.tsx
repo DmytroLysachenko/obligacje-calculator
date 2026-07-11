@@ -10,6 +10,10 @@ export const OpportunisticSyncTrigger = () => {
       return;
     }
 
+    if (process.env.PLAYWRIGHT_SMOKE === '1' || process.env.NEXT_PUBLIC_PLAYWRIGHT_SMOKE === '1') {
+      return;
+    }
+
     const timer = setTimeout(() => {
       syncClient.triggerOpportunisticSync().catch(() => {});
     }, 2000);

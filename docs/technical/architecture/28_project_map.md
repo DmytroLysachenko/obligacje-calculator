@@ -42,6 +42,11 @@ Use it before adding files or moving logic.
   and CLI entrypoints use `sync-logger.ts` for operational logging rather than
   direct console calls.
 - `db/**`: Drizzle schema, migrations, seed data, and low-level database connection code.
+- `compose.yaml` and `Taskfile.yml`: local development orchestration. WSL with
+  Docker Compose is the recommended path; Windows-native `pnpm` scripts remain
+  available as fallback commands.
+- `scripts/smoke-local.ts`: no-secret local container smoke checks for the app
+  shell, health endpoint, and calculation defaults.
 
 ## Domain Ownership
 

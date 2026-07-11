@@ -51,6 +51,9 @@ jobs:
       - name: Install script dependencies
         run: HUSKY=0 pnpm install --frozen-lockfile
 
+      - name: Release gate
+        run: pnpm check:release
+
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
@@ -127,6 +130,7 @@ jobs:
             --memory 512Mi \
             --cpu 1 \
             --execution-environment gen2 \
+            --labels "managed-by=github-actions,commit-sha=${GITHUB_SHA},github-run-id=${GITHUB_RUN_ID}" \
             --env-vars-file .cloud-run-env.yaml \
             --quiet
 
@@ -143,7 +147,7 @@ jobs:
       - name: Verify production
         env:
           IDENTITY_TOKEN: ${{ steps.health-auth.outputs.id_token }}
-        run: pnpm ops:verify-prod -- --base-url "${APP_URL}" --allow-missing-oauth
+        run: pnpm ops:verify-prod -- --base-url "${APP_URL}" --allow-missing-oauth --expected-image "${IMAGE}"
 
       - name: Deployment summary
         run: |

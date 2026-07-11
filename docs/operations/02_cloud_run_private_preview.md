@@ -91,6 +91,21 @@ pnpm ops:cloud-run-status
 
 The command prints the service URL, latest ready revision, deployed image, traffic split, and whether each runtime environment variable is set.
 
+## Local Production-Image Check
+
+Before changing Docker, Cloud Run flags, or deployment workflows, run the final
+image locally:
+
+```bash
+task prod:container
+task smoke:prod-container
+```
+
+The production Compose profile starts `app-prod` on `http://localhost:8080`
+against local Postgres. The smoke command checks `/`, `/single-calculator`,
+`/api/health`, and `/api/calculation-defaults`, including content type when CI
+runs the same gate.
+
 ## GitHub Actions Deployment Secrets
 
 The manual `Deploy Cloud Run` workflow requires these repository secrets:
@@ -137,10 +152,13 @@ In GitHub:
 
 The deploy workflow:
 
+- runs `pnpm check:release` before building the image
 - builds and pushes immutable commit-SHA and `latest` image tags
 - uses GitHub Actions cache for Docker layers
 - deploys the private Cloud Run service
-- runs authenticated production smoke checks with `pnpm ops:verify-prod`
+- labels the revision with the commit and GitHub run
+- runs authenticated production smoke checks with `pnpm ops:verify-prod`,
+  including an image match check for the just-deployed image
 - writes the deployed image and service URL to the workflow summary
 
 ## Rollback
