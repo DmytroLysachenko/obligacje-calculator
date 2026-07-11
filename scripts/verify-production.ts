@@ -4,6 +4,10 @@ interface VerifyOptions {
   baseUrl: string;
   identityToken?: string;
   allowMissingOauth: boolean;
+  expectedImage?: string;
+  project: string;
+  region: string;
+  service: string;
 }
 
 interface ReadinessResponse {
@@ -28,6 +32,9 @@ interface FetchResult {
 }
 
 const DEFAULT_BASE_URL = 'https://obligacje-calculator-ji72nqwtea-lm.a.run.app';
+const DEFAULT_PROJECT_ID = 'bond-calculator-pl';
+const DEFAULT_REGION = 'europe-central2';
+const DEFAULT_SERVICE = 'obligacje-calculator';
 const BODY_SNIPPET_LENGTH = 240;
 
 function parseArgs(argv: string[]): VerifyOptions {
@@ -35,6 +42,10 @@ function parseArgs(argv: string[]): VerifyOptions {
     baseUrl: process.env.PROD_BASE_URL ?? DEFAULT_BASE_URL,
     identityToken: process.env.IDENTITY_TOKEN,
     allowMissingOauth: process.env.ALLOW_MISSING_OAUTH === 'true',
+    expectedImage: process.env.EXPECTED_IMAGE,
+    project: process.env.GCP_PROJECT_ID ?? DEFAULT_PROJECT_ID,
+    region: process.env.GCP_REGION ?? DEFAULT_REGION,
+    service: process.env.CLOUD_RUN_SERVICE ?? DEFAULT_SERVICE,
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -55,6 +66,30 @@ function parseArgs(argv: string[]): VerifyOptions {
 
     if (arg === '--allow-missing-oauth') {
       options.allowMissingOauth = true;
+      continue;
+    }
+
+    if (arg === '--expected-image' && next) {
+      options.expectedImage = next;
+      index += 1;
+      continue;
+    }
+
+    if (arg === '--project' && next) {
+      options.project = next;
+      index += 1;
+      continue;
+    }
+
+    if (arg === '--region' && next) {
+      options.region = next;
+      index += 1;
+      continue;
+    }
+
+    if (arg === '--service' && next) {
+      options.service = next;
+      index += 1;
     }
   }
 
@@ -80,6 +115,45 @@ function getIdentityToken() {
   } catch {
     return undefined;
   }
+}
+
+function runGcloud(args: string[]) {
+  if (process.platform === 'win32') {
+    return execSync(`gcloud ${args.join(' ')}`, {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+    }).trim();
+  }
+
+  return execFileSync('gcloud', args, {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  }).trim();
+}
+
+function verifyExpectedImage(options: VerifyOptions) {
+  if (!options.expectedImage) {
+    return;
+  }
+
+  const deployedImage = runGcloud([
+    'run',
+    'services',
+    'describe',
+    options.service,
+    '--project',
+    options.project,
+    '--region',
+    options.region,
+    '--format=value(spec.template.spec.containers[0].image)',
+  ]);
+
+  assertOk(
+    deployedImage === options.expectedImage,
+    `Cloud Run image mismatch: expected ${options.expectedImage}, found ${deployedImage}`,
+  );
+
+  console.log(`Cloud Run image ok: ${deployedImage}`);
 }
 
 async function fetchPath(options: VerifyOptions, path: string): Promise<FetchResult> {
@@ -197,6 +271,7 @@ async function main() {
   }
 
   await verifyReadiness(options);
+  verifyExpectedImage(options);
   console.log(`Production verification passed for ${options.baseUrl}`);
 }
 
