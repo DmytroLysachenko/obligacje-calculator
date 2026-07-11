@@ -119,10 +119,14 @@ describe('deployment documentation contract', () => {
     expect(deploy).toContain('production-cloud-run');
     expect(deploy).toContain('--no-allow-unauthenticated');
     expect(deploy).toContain('Validate runtime secrets');
+    expect(deploy).toContain('Release gate');
+    expect(deploy).toContain('pnpm check:release');
     expect(deploy).toContain('DATABASE_URL');
     expect(deploy).toContain('AUTH_SECRET');
     expect(deploy).toContain('SYNC_SECRET');
     expect(deploy).toContain('pnpm ops:verify-prod');
+    expect(deploy).toContain('--expected-image');
+    expect(deploy).toContain('managed-by=github-actions');
     expect(deploy).toContain('--allow-missing-oauth');
     expect(deploy).toContain('docker buildx build');
     expect(deploy).toContain('type=gha');
@@ -140,6 +144,9 @@ describe('deployment documentation contract', () => {
     expect(ci).toContain('pnpm test:release');
     expect(ci).toContain('docker-build');
     expect(ci).toContain('docker/build-push-action');
+    expect(ci).toContain(
+      'pnpm smoke:local -- --base-url http://127.0.0.1:8080 --check-content-type',
+    );
     expect(ci).toContain('browser-smoke');
     expect(ci).toContain('pnpm test:browser:ci');
     expect(ci).toContain('actions/upload-artifact');
@@ -153,7 +160,9 @@ describe('deployment documentation contract', () => {
     expect(compose).toContain('postgres:17-alpine');
     expect(compose).toContain('postgresql://obligacje:obligacje@postgres:5432/obligacje');
     expect(taskfile).toContain('dev:container');
+    expect(taskfile).toContain('prod:container');
     expect(taskfile).toContain('smoke:container');
+    expect(taskfile).toContain('smoke:prod-container');
     expect(taskfile).toContain('db:reset-local');
     expect(envExample).toContain('postgresql://obligacje:obligacje@localhost:5432/obligacje');
     expect(envExample).toContain('AUTH_GOOGLE_ID=');
@@ -164,13 +173,27 @@ describe('deployment documentation contract', () => {
     const cloudBuildLines = cloudBuild.split(/\r?\n/).map((line) => line.trim());
 
     expect(cloudBuild).toContain('--no-allow-unauthenticated');
+    expect(cloudBuild).toContain('pnpm check:release');
+    expect(cloudBuild).toContain('--execution-environment');
+    expect(cloudBuild).toContain('gen2');
+    expect(cloudBuild).toContain('managed-by=cloud-build');
     expect(cloudBuildLines).not.toContain('- --allow-unauthenticated');
   });
 
   it('keeps Docker build context free of local artifacts and secrets', () => {
     const dockerignore = readFileSync(join(root, '.dockerignore'), 'utf8');
 
-    for (const ignored of ['.git', '.next', 'node_modules', '.env', '.env.*', 'coverage']) {
+    for (const ignored of [
+      '.git',
+      '.next',
+      '.vercel',
+      '.turbo',
+      'node_modules',
+      '.env',
+      '.env.*',
+      'coverage',
+      'test-results',
+    ]) {
       expect(dockerignore).toContain(ignored);
     }
 

@@ -18,6 +18,7 @@ describe('package scripts contract', () => {
     expect(pkg.scripts['test:release']).toContain('lib/sync/sync-start-year.test.ts');
     expect(pkg.scripts['test:release']).toContain('app/api/production-readiness-contract.test.ts');
     expect(pkg.scripts['test:release']).toContain('app/api/operational-endpoints-contract.test.ts');
+    expect(pkg.scripts['test:release']).toContain('scripts/check-production-config.test.ts');
     expect(pkg.scripts['test:release']).toContain(
       'docs/technical/architecture/clean-code-contract.test.ts',
     );
@@ -36,6 +37,11 @@ describe('package scripts contract', () => {
     expect(pkg.scripts['ops:verify-prod']).toBe('tsx scripts/verify-production.ts');
     expect(pkg.scripts['ops:cloud-run-status']).toBe('tsx scripts/cloud-run-status.ts');
     expect(pkg.scripts['gcp:proxy']).toContain('gcloud run services proxy obligacje-calculator');
+
+    const smokeLocal = readFileSync(join(process.cwd(), 'scripts/smoke-local.ts'), 'utf8');
+    expect(smokeLocal).toContain('--check-content-type');
+    expect(smokeLocal).toContain('--route');
+    expect(smokeLocal).toContain('--retries');
   });
 
   it('starts browser tests through the standalone-aware Playwright launcher', () => {

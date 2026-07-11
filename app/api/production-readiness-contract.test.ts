@@ -17,8 +17,13 @@ describe('production readiness contract', () => {
     expect(dockerfile).toContain('FROM node:24-bookworm-slim AS base');
     expect(dockerfile).toContain('ENV NODE_ENV=production');
     expect(dockerfile).toContain('ENV HOSTNAME=0.0.0.0');
-    expect(dockerfile).toContain('COPY --from=builder /app/.next/standalone ./');
-    expect(dockerfile).toContain('COPY --from=builder /app/.next/static ./.next/static');
+    expect(dockerfile).toContain('ENV PORT=8080');
+    expect(dockerfile).toContain('COPY --from=builder --chown=node:node /app/.next/standalone ./');
+    expect(dockerfile).toContain(
+      'COPY --from=builder --chown=node:node /app/.next/static ./.next/static',
+    );
+    expect(dockerfile).toContain('USER node');
+    expect(dockerfile).toContain('HEALTHCHECK');
     expect(dockerfile).toContain('EXPOSE 8080');
     expect(dockerfile).toContain('CMD ["node", "server.js"]');
     expect(cloudbuild).toContain('gcr.io/cloud-builders/docker');
@@ -50,6 +55,9 @@ describe('production readiness contract', () => {
     expect(cloudbuild).toContain('--no-allow-unauthenticated');
     expect(cloudbuild).toContain('--platform');
     expect(cloudbuild).toContain('managed');
+    expect(cloudbuild).toContain('pnpm check:release');
+    expect(cloudbuild).toContain('--execution-environment');
+    expect(cloudbuild).toContain('gen2');
   });
 
   it('exposes liveness and readiness routes with safe checks', () => {
@@ -96,6 +104,9 @@ describe('production readiness contract', () => {
     expect(packageJson.scripts['test:release']).toContain(
       'app/api/production-readiness-contract.test.ts',
     );
+    expect(packageJson.scripts['test:release']).toContain(
+      'scripts/check-production-config.test.ts',
+    );
     expect(packageJson.scripts['check:release']).toBe(
       'pnpm check:types && pnpm lint && pnpm test:release && pnpm build',
     );
@@ -104,5 +115,7 @@ describe('production readiness contract', () => {
     expect(prodConfigScript).toContain('getDatabaseUrl');
     expect(prodConfigScript).toContain('hasAuthSecret');
     expect(prodConfigScript).toContain('getSyncSecret');
+    expect(prodConfigScript).toContain('--allow-missing-oauth');
+    expect(prodConfigScript).toContain('isStrongSecret');
   });
 });
