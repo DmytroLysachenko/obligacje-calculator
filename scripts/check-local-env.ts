@@ -1,4 +1,7 @@
 import { spawnSync } from 'node:child_process';
+import { existsSync, readdirSync } from 'node:fs';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 type Status = 'pass' | 'warn' | 'fail';
@@ -74,6 +77,58 @@ function playwrightCheck(options: LocalEnvOptions): Check {
   };
 }
 
+function findChromiumShell() {
+  const cacheRoot = join(homedir(), '.cache', 'ms-playwright');
+
+  if (!existsSync(cacheRoot)) {
+    return undefined;
+  }
+
+  return readdirSync(cacheRoot)
+    .filter((entry) => entry.startsWith('chromium_headless_shell-'))
+    .map((entry) =>
+      join(cacheRoot, entry, 'chrome-headless-shell-linux64', 'chrome-headless-shell'),
+    )
+    .find((executable) => existsSync(executable));
+}
+
+function chromiumLibrariesCheck(options: LocalEnvOptions): Check {
+  if (process.platform !== 'linux') {
+    return {
+      label: 'Chromium shared libraries',
+      status: 'pass',
+      detail: 'not required on this platform',
+    };
+  }
+
+  const executable = findChromiumShell();
+
+  if (!executable) {
+    return {
+      label: 'Chromium shared libraries',
+      status: options.requirePlaywright ? 'fail' : 'warn',
+      detail: 'Playwright Chromium executable is not installed',
+      hint: 'Run pnpm exec playwright install chromium.',
+    };
+  }
+
+  const result = run('ldd', [executable]);
+  const missing = result.output
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.includes('not found'));
+
+  return {
+    label: 'Chromium shared libraries',
+    status: missing.length === 0 ? 'pass' : options.requirePlaywright ? 'fail' : 'warn',
+    detail: missing.length === 0 ? 'all linked libraries resolved' : missing.join('; '),
+    hint:
+      missing.length === 0
+        ? undefined
+        : 'Run pnpm exec playwright install-deps chromium, or install the missing packages through apt.',
+  };
+}
+
 export function createChecks(options: LocalEnvOptions): Check[] {
   return [
     {
@@ -84,6 +139,7 @@ export function createChecks(options: LocalEnvOptions): Check[] {
     commandVersion('pnpm', 'pnpm', ['--version']),
     gitWorktreeCheck(),
     playwrightCheck(options),
+    chromiumLibrariesCheck(options),
     optionalCommand(
       'Docker daemon',
       'docker',
