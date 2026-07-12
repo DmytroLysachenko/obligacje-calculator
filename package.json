@@ -20,6 +20,7 @@
     "test:release": "vitest run features/bond-core i18n/locale-parity.test.ts lib/data/bond-series.test.ts lib/data/macro-market-data.test.ts lib/data/market-data-cache.test.ts lib/page-metadata.test.ts lib/seo/app-json-ld.test.ts lib/sync/sync-engine.test.ts lib/sync/sync-start-year.test.ts shared/lib/data-freshness-display.test.ts shared/lib/regular-investment-display.test.ts shared/lib/bond-display.test.ts shared/workers/calculation-worker-contract.test.ts app/api/production-readiness-contract.test.ts app/api/operational-endpoints-contract.test.ts app/seo-metadata-contract.test.ts docs/ui/interactive-trigger-markup-contract.test.ts docs/technical/architecture/deployment-contract.test.ts docs/technical/architecture/clean-code-contract.test.ts docs/product/product-readiness-contract.test.ts docs/product/release-scope-contract.test.ts scripts/check-production-config.test.ts package-scripts-contract.test.ts",
     "check:types": "tsc --noEmit",
     "check:release": "pnpm check:types && pnpm lint && pnpm test:release && pnpm build",
+    "check:local-env": "tsx scripts/check-local-env.ts",
     "check:prod-config": "tsx scripts/check-production-config.ts",
     "smoke:local": "tsx scripts/smoke-local.ts",
     "gcp:proxy": "gcloud run services proxy obligacje-calculator --project bond-calculator-pl --region europe-central2 --port 8080",
