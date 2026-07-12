@@ -148,6 +148,8 @@ describe('deployment documentation contract', () => {
       'pnpm smoke:local -- --base-url http://127.0.0.1:8080 --check-content-type',
     );
     expect(ci).toContain('browser-smoke');
+    expect(ci).toContain('Browser environment preflight');
+    expect(ci).toContain('pnpm check:local-env -- --require-playwright');
     expect(ci).toContain('pnpm test:browser:ci');
     expect(ci).toContain('actions/upload-artifact');
   });

@@ -174,6 +174,9 @@ jobs:
       - name: Install browser
         run: pnpm exec playwright install --with-deps chromium
 
+      - name: Browser environment preflight
+        run: pnpm check:local-env -- --require-playwright
+
       - name: Build
         run: pnpm build
 
@@ -197,6 +200,7 @@ jobs:
             echo "### Browser smoke"
             echo ""
             echo "- Routes: home, single calculator, comparison, economic data"
-            echo "- Checks: title, main landmark, navigation label, console/page errors"
+            echo "- Checks: title, main landmark, navigation label, console/page errors, failed requests, 5xx responses"
+            echo "- Diagnostics: browser-diagnostics attachment and Playwright trace on failure"
             echo "- Browser gate: \`pnpm test:browser:ci\`"
           } >> "${GITHUB_STEP_SUMMARY}"
