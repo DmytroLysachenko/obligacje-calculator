@@ -15,10 +15,10 @@ export function ReferenceGuideRail({ value, icon, title, children }: ReferenceGu
   return (
     <AccordionItem value={value} className="border-b border-border px-0 last:border-b-0">
       <AccordionTrigger className="py-4 text-left hover:no-underline">
-        <div className="flex items-center gap-2">
+        <span className="flex items-center gap-2">
           {icon}
-          <p className="ui-card-title">{title}</p>
-        </div>
+          <span className="ui-card-title">{title}</span>
+        </span>
       </AccordionTrigger>
       <AccordionContent className="space-y-4 pb-5 pt-1">{children}</AccordionContent>
     </AccordionItem>
