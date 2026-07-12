@@ -1,5 +1,11 @@
 import { expect, test } from '@playwright/test';
 
+import {
+  expectNoBrowserDiagnostics,
+  installBrowserDiagnostics,
+  stubOpportunisticSync,
+} from './browser-diagnostics';
+
 const smokeRoutes = [
   { path: '/', name: 'home' },
   { path: '/single-calculator', name: 'single calculator' },
@@ -8,21 +14,10 @@ const smokeRoutes = [
 ];
 
 for (const route of smokeRoutes) {
-  test(`${route.name} renders without runtime errors`, async ({ page }) => {
-    const consoleErrors: string[] = [];
-    const pageErrors: string[] = [];
+  test(`${route.name} renders without runtime errors`, async ({ page }, testInfo) => {
+    const diagnostics = installBrowserDiagnostics(page);
 
-    page.on('console', (message) => {
-      if (message.type() === 'error') {
-        consoleErrors.push(message.text());
-      }
-    });
-    page.on('pageerror', (error) => pageErrors.push(error.message));
-
-    await page.route('**/api/sync/opportunistic', async (requestRoute) => {
-      await requestRoute.fulfill({ status: 204, body: '' });
-    });
-
+    await stubOpportunisticSync(page);
     await page.goto(route.path, { waitUntil: 'networkidle' });
 
     expect((await page.title()).trim()).not.toBe('');
@@ -32,9 +27,6 @@ for (const route of smokeRoutes) {
     await expect(page.locator('nav[aria-label]').first()).toBeAttached();
     await expect(page.locator('a[href="#main-content"]').first()).toBeAttached();
 
-    expect(pageErrors).toEqual([]);
-    expect(consoleErrors.filter((message) => !message.includes('Failed to load resource'))).toEqual(
-      [],
-    );
+    await expectNoBrowserDiagnostics(testInfo, diagnostics);
   });
 }

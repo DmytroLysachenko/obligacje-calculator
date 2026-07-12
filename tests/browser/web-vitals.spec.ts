@@ -1,5 +1,11 @@
 import { expect, test } from '@playwright/test';
 
+import {
+  expectNoBrowserDiagnostics,
+  installBrowserDiagnostics,
+  stubOpportunisticSync,
+} from './browser-diagnostics';
+
 const budgetedRoutes = [
   { path: '/', name: 'home' },
   { path: '/single-calculator', name: 'single calculator' },
@@ -33,11 +39,10 @@ function collectPerformanceEntries(): BrowserMetrics {
 }
 
 for (const route of budgetedRoutes) {
-  test(`${route.name} stays within baseline browser budgets`, async ({ page }) => {
-    const pageErrors: string[] = [];
+  test(`${route.name} stays within baseline browser budgets`, async ({ page }, testInfo) => {
+    const diagnostics = installBrowserDiagnostics(page);
 
-    page.on('pageerror', (error) => pageErrors.push(error.message));
-
+    await stubOpportunisticSync(page);
     await page.goto(route.path, { waitUntil: 'networkidle' });
     await expect(page.locator('main#main-content')).toBeVisible();
 
@@ -45,7 +50,7 @@ for (const route of budgetedRoutes) {
 
     console.info(`${route.name} browser budget metrics`, metrics);
 
-    expect(pageErrors).toEqual([]);
+    await expectNoBrowserDiagnostics(testInfo, diagnostics);
     expect(metrics.domContentLoadedMs).toBeGreaterThan(0);
     expect(metrics.domContentLoadedMs).toBeLessThan(8_000);
     expect(metrics.loadEventMs).toBeLessThan(12_000);
