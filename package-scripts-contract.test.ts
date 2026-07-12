@@ -18,6 +18,7 @@ describe('package scripts contract', () => {
     expect(pkg.scripts['test:release']).toContain('lib/sync/sync-start-year.test.ts');
     expect(pkg.scripts['test:release']).toContain('app/api/production-readiness-contract.test.ts');
     expect(pkg.scripts['test:release']).toContain('app/api/operational-endpoints-contract.test.ts');
+    expect(pkg.scripts['test:release']).toContain('app/provider-boundary-contract.test.ts');
     expect(pkg.scripts['test:release']).toContain(
       'docs/ui/interactive-trigger-markup-contract.test.ts',
     );
