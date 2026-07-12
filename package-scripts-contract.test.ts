@@ -23,6 +23,7 @@ describe('package scripts contract', () => {
     );
     expect(pkg.scripts['test:release']).toContain('scripts/check-production-config.test.ts');
     expect(pkg.scripts['test:release']).toContain('scripts/verify-production.test.ts');
+    expect(pkg.scripts['test:release']).toContain('tests/browser/browser-diagnostics.test.ts');
     expect(pkg.scripts['test:release']).toContain(
       'docs/technical/architecture/clean-code-contract.test.ts',
     );

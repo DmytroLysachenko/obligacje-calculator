@@ -1,6 +1,6 @@
 import { expect, Page, TestInfo } from '@playwright/test';
 
-type DiagnosticEntry = {
+export type DiagnosticEntry = {
   kind: 'console' | 'pageerror' | 'requestfailed' | 'response';
   message: string;
   url?: string;
@@ -15,6 +15,33 @@ function enrichMessage(message: string) {
   }
 
   return message;
+}
+
+function isAbortedRscPrefetch(entry: DiagnosticEntry) {
+  if (entry.kind !== 'requestfailed' || entry.message !== 'net::ERR_ABORTED' || !entry.url) {
+    return false;
+  }
+
+  try {
+    return new URL(entry.url).searchParams.has('_rsc');
+  } catch {
+    return false;
+  }
+}
+
+export function isActionableDiagnosticEntry(entry: DiagnosticEntry) {
+  if (
+    entry.kind === 'console' &&
+    ignoredConsoleErrors.some((ignored) => entry.message.includes(ignored))
+  ) {
+    return false;
+  }
+
+  if (isAbortedRscPrefetch(entry)) {
+    return false;
+  }
+
+  return true;
 }
 
 export function installBrowserDiagnostics(page: Page) {
@@ -62,11 +89,7 @@ export async function expectNoBrowserDiagnostics(
   testInfo: TestInfo,
   entries: readonly DiagnosticEntry[],
 ) {
-  const actionableEntries = entries.filter(
-    (entry) =>
-      entry.kind !== 'console' ||
-      !ignoredConsoleErrors.some((ignored) => entry.message.includes(ignored)),
-  );
+  const actionableEntries = entries.filter(isActionableDiagnosticEntry);
 
   if (actionableEntries.length > 0) {
     await testInfo.attach('browser-diagnostics.json', {
