@@ -36,6 +36,11 @@ describe('advanced assumptions disclosure contracts', () => {
     expectContains(source, 'Accordion type="single" collapsible defaultValue=""');
     expectContains(source, 'value="advanced-assumptions"');
     expectContains(source, 'border-0 border-b border-border px-0 py-4');
+    expectContains(source, '<span className="flex items-start gap-3 text-left">');
+    expectContains(
+      source,
+      '<span className="block text-sm font-semibold text-foreground">{title}</span>',
+    );
     expectContains(source, 'border-l-2 border-border pl-3 pt-0.5 text-muted-foreground');
     expectContains(source, 'max-w-2xl text-xs font-medium leading-5 text-muted-foreground');
     expectContains(source, '<div className="space-y-6 pt-4">{children}</div>');
@@ -47,6 +52,9 @@ describe('advanced assumptions disclosure contracts', () => {
       'border border-border bg-card',
       'className="border-b border-border px-0 py-4',
       'defaultValue="advanced"',
+      '<div className="flex items-start gap-3 text-left">',
+      '<h3 className="text-sm font-semibold text-foreground">{title}</h3>',
+      '<p className="max-w-2xl text-xs font-medium leading-5 text-muted-foreground">',
     ]);
   });
 

@@ -18,7 +18,12 @@ describe('package scripts contract', () => {
     expect(pkg.scripts['test:release']).toContain('lib/sync/sync-start-year.test.ts');
     expect(pkg.scripts['test:release']).toContain('app/api/production-readiness-contract.test.ts');
     expect(pkg.scripts['test:release']).toContain('app/api/operational-endpoints-contract.test.ts');
+    expect(pkg.scripts['test:release']).toContain(
+      'docs/ui/interactive-trigger-markup-contract.test.ts',
+    );
     expect(pkg.scripts['test:release']).toContain('scripts/check-production-config.test.ts');
+    expect(pkg.scripts['test:release']).toContain('scripts/verify-production.test.ts');
+    expect(pkg.scripts['test:release']).toContain('tests/browser/browser-diagnostics.test.ts');
     expect(pkg.scripts['test:release']).toContain(
       'docs/technical/architecture/clean-code-contract.test.ts',
     );
@@ -31,6 +36,7 @@ describe('package scripts contract', () => {
     expect(pkg.scripts['check:release']).toContain('pnpm lint');
     expect(pkg.scripts['check:release']).toContain('pnpm test:release');
     expect(pkg.scripts['check:release']).toContain('pnpm build');
+    expect(pkg.scripts['check:local-env']).toBe('tsx scripts/check-local-env.ts');
     expect(pkg.scripts['check:prod-config']).toBe('tsx scripts/check-production-config.ts');
     expect(pkg.scripts['check:release']).not.toContain('check:prod-config');
     expect(pkg.scripts['smoke:local']).toBe('tsx scripts/smoke-local.ts');

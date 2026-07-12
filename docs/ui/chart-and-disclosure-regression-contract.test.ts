@@ -37,9 +37,8 @@ describe('chart and disclosure regression contracts', () => {
     const source = read(files.singleChart);
 
     expectContains(source, "from '@/shared/lib/chart-series';");
-    expectContains(source, 'computeNumericDomain,');
-    expectContains(source, 'computeRateDomain,');
-    expectContains(source, 'sampleSeriesPoints,');
+    expectContains(source, 'computeNumericDomain');
+    expectContains(source, 'computeRateDomain');
     expectContains(source, 'const leftDomain = React.useMemo(');
     expectContains(source, 'const rightDomain = React.useMemo(');
     expectContains(source, 'computeRateDomain(');

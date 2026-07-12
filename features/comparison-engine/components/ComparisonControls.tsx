@@ -90,14 +90,14 @@ export const ComparisonControls: React.FC<ComparisonControlsProps> = ({
           <Accordion type="single" collapsible defaultValue="">
             <AccordionItem value="advanced" className="border-none">
               <AccordionTrigger className="rounded-lg bg-muted/35 px-4 py-4 hover:no-underline">
-                <div className="space-y-1 text-left">
-                  <p className="text-sm font-semibold text-foreground">
+                <span className="space-y-1 text-left">
+                  <span className="block text-sm font-semibold text-foreground">
                     {t('comparison.controls.advanced_title')}
-                  </p>
-                  <p className="text-xs leading-5 text-muted-foreground">
+                  </span>
+                  <span className="block text-xs leading-5 text-muted-foreground">
                     {t('comparison.controls.advanced_description')}
-                  </p>
-                </div>
+                  </span>
+                </span>
               </AccordionTrigger>
               <AccordionContent className="space-y-5 px-1 pt-4">
                 <div className="space-y-4">

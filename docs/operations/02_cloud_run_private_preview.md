@@ -83,6 +83,17 @@ The verifier checks:
 
 `--allow-missing-oauth` is valid only while Google OAuth is intentionally not configured. The database readiness check must still pass.
 
+After a deploy or rollback, pass the expected Cloud Run revision when checking
+traffic routing:
+
+```bash
+pnpm ops:verify-prod -- --allow-missing-oauth --expected-revision obligacje-calculator-00042-abc
+```
+
+The verifier fails if that revision is not receiving 100 percent of service
+traffic. Deploys also pass `--expected-image` so the ready service is checked
+against the commit-SHA image built by the workflow.
+
 To inspect the active Cloud Run revision without printing secret values, run:
 
 ```bash
@@ -97,6 +108,7 @@ Before changing Docker, Cloud Run flags, or deployment workflows, run the final
 image locally:
 
 ```bash
+task preflight
 task prod:container
 task smoke:prod-container
 ```
@@ -157,9 +169,11 @@ The deploy workflow:
 - uses GitHub Actions cache for Docker layers
 - deploys the private Cloud Run service
 - labels the revision with the commit and GitHub run
+- captures the latest ready Cloud Run revision
 - runs authenticated production smoke checks with `pnpm ops:verify-prod`,
-  including an image match check for the just-deployed image
-- writes the deployed image and service URL to the workflow summary
+  including image and 100 percent revision traffic checks for the just-deployed
+  image and revision
+- writes the deployed image, revision, and service URL to the workflow summary
 
 ## Rollback
 
@@ -172,4 +186,4 @@ gcloud run revisions list \
   --service obligacje-calculator
 ```
 
-Then run the GitHub `Rollback Cloud Run` workflow and provide the target revision name. The workflow routes 100 percent of traffic to that revision and runs the same authenticated production verification checks.
+Then run the GitHub `Rollback Cloud Run` workflow and provide the target revision name. The workflow routes 100 percent of traffic to that revision and runs the same authenticated production verification checks with `--expected-revision`.

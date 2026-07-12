@@ -5,6 +5,7 @@ interface VerifyOptions {
   identityToken?: string;
   allowMissingOauth: boolean;
   expectedImage?: string;
+  expectedRevision?: string;
   project: string;
   region: string;
   service: string;
@@ -31,18 +32,28 @@ interface FetchResult {
   contentType: string;
 }
 
+interface CloudRunService {
+  status?: {
+    traffic?: Array<{
+      percent?: number;
+      revisionName?: string;
+    }>;
+  };
+}
+
 const DEFAULT_BASE_URL = 'https://obligacje-calculator-ji72nqwtea-lm.a.run.app';
 const DEFAULT_PROJECT_ID = 'bond-calculator-pl';
 const DEFAULT_REGION = 'europe-central2';
 const DEFAULT_SERVICE = 'obligacje-calculator';
 const BODY_SNIPPET_LENGTH = 240;
 
-function parseArgs(argv: string[]): VerifyOptions {
+export function parseArgs(argv: string[]): VerifyOptions {
   const options: VerifyOptions = {
     baseUrl: process.env.PROD_BASE_URL ?? DEFAULT_BASE_URL,
     identityToken: process.env.IDENTITY_TOKEN,
     allowMissingOauth: process.env.ALLOW_MISSING_OAUTH === 'true',
     expectedImage: process.env.EXPECTED_IMAGE,
+    expectedRevision: process.env.EXPECTED_REVISION,
     project: process.env.GCP_PROJECT_ID ?? DEFAULT_PROJECT_ID,
     region: process.env.GCP_REGION ?? DEFAULT_REGION,
     service: process.env.CLOUD_RUN_SERVICE ?? DEFAULT_SERVICE,
@@ -71,6 +82,12 @@ function parseArgs(argv: string[]): VerifyOptions {
 
     if (arg === '--expected-image' && next) {
       options.expectedImage = next;
+      index += 1;
+      continue;
+    }
+
+    if (arg === '--expected-revision' && next) {
+      options.expectedRevision = next;
       index += 1;
       continue;
     }
@@ -154,6 +171,35 @@ function verifyExpectedImage(options: VerifyOptions) {
   );
 
   console.log(`Cloud Run image ok: ${deployedImage}`);
+}
+
+function verifyExpectedRevision(options: VerifyOptions) {
+  if (!options.expectedRevision) {
+    return;
+  }
+
+  const service = JSON.parse(
+    runGcloud([
+      'run',
+      'services',
+      'describe',
+      options.service,
+      '--project',
+      options.project,
+      '--region',
+      options.region,
+      '--format=json',
+    ]),
+  ) as CloudRunService;
+
+  const activeTraffic = service.status?.traffic?.find((target) => target.percent === 100);
+
+  assertOk(
+    activeTraffic?.revisionName === options.expectedRevision,
+    `Cloud Run revision mismatch: expected ${options.expectedRevision} at 100% traffic, found ${activeTraffic?.revisionName ?? 'none'}`,
+  );
+
+  console.log(`Cloud Run revision ok: ${options.expectedRevision}`);
 }
 
 async function fetchPath(options: VerifyOptions, path: string): Promise<FetchResult> {
@@ -272,6 +318,7 @@ async function main() {
 
   await verifyReadiness(options);
   verifyExpectedImage(options);
+  verifyExpectedRevision(options);
   console.log(`Production verification passed for ${options.baseUrl}`);
 }
 

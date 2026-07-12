@@ -38,13 +38,15 @@ export function SecondaryInsightAccordion({
     >
       <AccordionItem value="content" className="surface-panel overflow-hidden">
         <AccordionTrigger className="px-4 py-4 text-left hover:no-underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40 md:px-5">
-          <div className="flex min-w-0 flex-1 items-start justify-between gap-4 pr-4 text-left">
-            <div className="min-w-0 space-y-1.5">
-              <p className="ui-card-title">{title}</p>
-              <p className="max-w-3xl text-sm leading-6 text-muted-foreground">{description}</p>
-            </div>
+          <span className="flex min-w-0 flex-1 items-start justify-between gap-4 pr-4 text-left">
+            <span className="min-w-0 space-y-1.5">
+              <span className="block ui-card-title">{title}</span>
+              <span className="block max-w-3xl text-sm leading-6 text-muted-foreground">
+                {description}
+              </span>
+            </span>
             {badge ? <span className="surface-chip mt-0.5 shrink-0">{badge}</span> : null}
-          </div>
+          </span>
         </AccordionTrigger>
         <AccordionContent
           className={cn(

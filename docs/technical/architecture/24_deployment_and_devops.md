@@ -91,6 +91,7 @@ gcloud artifacts repositories create obligacje-calculator \
 Run release checks before building:
 
 ```bash
+pnpm check:local-env
 pnpm check:release
 ```
 
@@ -143,6 +144,9 @@ fallback and runs the same release gate before building.
 - Run `pnpm check:release` before promoting a build. This is the trusted-core
   Cloud Run gate; run `pnpm test:ci` separately when reconciling the broader
   legacy UI contract inventory.
+- Run `pnpm check:local-env` on WSL or a release workstation before local Docker
+  and browser verification. It reports Node, pnpm, git, Playwright, Docker,
+  gcloud, and GitHub CLI readiness without requiring production secrets.
 - Run `pnpm check:prod-config` against the environment that will back the Cloud
   Run revision before applying migrations or promoting traffic.
 - Keep browser API calls behind shared clients (`admin-client`,
@@ -158,6 +162,9 @@ fallback and runs the same release gate before building.
   setup are complete.
 - Verify `/api/health` and `/api/readiness` keep operational payloads delegated
   to `lib/server/health` and `lib/server/readiness`.
+- Verify deploys and rollbacks with `pnpm ops:verify-prod -- --expected-revision
+<revision>`. Deploys should also pass `--expected-image` for the commit-SHA
+  image.
 - Verify `/login` shows the configured OAuth providers.
 - Verify `/api/portfolio/access` reports `canManageWorkspace: true` after sign-in.
 - Verify `/admin/status` shows recent `sync_runs` rows after a manual sync and

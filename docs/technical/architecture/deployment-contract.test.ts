@@ -22,6 +22,8 @@ describe('deployment documentation contract', () => {
     expect(source).toContain('Dockerfile');
     expect(source).toContain('cloudbuild.yaml');
     expect(source).toContain('pnpm check:prod-config');
+    expect(source).toContain('pnpm check:local-env');
+    expect(source).toContain('--expected-revision');
     expect(source).toContain('europe-central2');
     expect(source).toContain('standalone `server.js`');
     expect(source).toContain('retained-route release scope');
@@ -126,6 +128,8 @@ describe('deployment documentation contract', () => {
     expect(deploy).toContain('SYNC_SECRET');
     expect(deploy).toContain('pnpm ops:verify-prod');
     expect(deploy).toContain('--expected-image');
+    expect(deploy).toContain('--expected-revision');
+    expect(deploy).toContain('Capture deployed revision');
     expect(deploy).toContain('managed-by=github-actions');
     expect(deploy).toContain('--allow-missing-oauth');
     expect(deploy).toContain('docker buildx build');
@@ -136,6 +140,7 @@ describe('deployment documentation contract', () => {
     expect(rollback).toContain('gcloud run services update-traffic');
     expect(rollback).toContain('--to-revisions');
     expect(rollback).toContain('pnpm ops:verify-prod');
+    expect(rollback).toContain('--expected-revision');
   });
 
   it('keeps CI wired to release, browser, and performance gates', () => {
@@ -148,6 +153,8 @@ describe('deployment documentation contract', () => {
       'pnpm smoke:local -- --base-url http://127.0.0.1:8080 --check-content-type',
     );
     expect(ci).toContain('browser-smoke');
+    expect(ci).toContain('Browser environment preflight');
+    expect(ci).toContain('pnpm check:local-env -- --require-playwright');
     expect(ci).toContain('pnpm test:browser:ci');
     expect(ci).toContain('actions/upload-artifact');
   });
@@ -160,6 +167,7 @@ describe('deployment documentation contract', () => {
     expect(compose).toContain('postgres:17-alpine');
     expect(compose).toContain('postgresql://obligacje:obligacje@postgres:5432/obligacje');
     expect(taskfile).toContain('dev:container');
+    expect(taskfile).toContain('preflight');
     expect(taskfile).toContain('prod:container');
     expect(taskfile).toContain('smoke:container');
     expect(taskfile).toContain('smoke:prod-container');

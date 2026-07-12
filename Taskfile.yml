@@ -10,6 +10,11 @@ tasks:
       - corepack enable
       - HUSKY=0 pnpm install --frozen-lockfile
 
+  preflight:
+    desc: Check local WSL, Docker, Playwright, gcloud, and GitHub CLI readiness.
+    cmds:
+      - pnpm check:local-env
+
   dev:
     desc: Start the recommended WSL/Docker Compose development stack.
     cmds:
