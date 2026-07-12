@@ -126,6 +126,8 @@ describe('deployment documentation contract', () => {
     expect(deploy).toContain('SYNC_SECRET');
     expect(deploy).toContain('pnpm ops:verify-prod');
     expect(deploy).toContain('--expected-image');
+    expect(deploy).toContain('--expected-revision');
+    expect(deploy).toContain('Capture deployed revision');
     expect(deploy).toContain('managed-by=github-actions');
     expect(deploy).toContain('--allow-missing-oauth');
     expect(deploy).toContain('docker buildx build');
@@ -136,6 +138,7 @@ describe('deployment documentation contract', () => {
     expect(rollback).toContain('gcloud run services update-traffic');
     expect(rollback).toContain('--to-revisions');
     expect(rollback).toContain('pnpm ops:verify-prod');
+    expect(rollback).toContain('--expected-revision');
   });
 
   it('keeps CI wired to release, browser, and performance gates', () => {

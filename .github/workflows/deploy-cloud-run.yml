@@ -134,6 +134,19 @@ jobs:
             --env-vars-file .cloud-run-env.yaml \
             --quiet
 
+      - name: Capture deployed revision
+        run: |
+          REVISION="$(gcloud run services describe "${SERVICE}" \
+            --project "${PROJECT_ID}" \
+            --region "${REGION}" \
+            --format='value(status.latestReadyRevisionName)')"
+          if [ -z "${REVISION}" ]; then
+            echo "::error::Cloud Run did not report a ready revision"
+            exit 1
+          fi
+          echo "REVISION=${REVISION}" >> "${GITHUB_ENV}"
+          echo "Deployed revision: ${REVISION}"
+
       - name: Authenticate health check
         id: health-auth
         uses: google-github-actions/auth@v2
@@ -147,7 +160,7 @@ jobs:
       - name: Verify production
         env:
           IDENTITY_TOKEN: ${{ steps.health-auth.outputs.id_token }}
-        run: pnpm ops:verify-prod -- --base-url "${APP_URL}" --allow-missing-oauth --expected-image "${IMAGE}"
+        run: pnpm ops:verify-prod -- --base-url "${APP_URL}" --allow-missing-oauth --expected-image "${IMAGE}" --expected-revision "${REVISION}"
 
       - name: Deployment summary
         run: |
@@ -157,5 +170,6 @@ jobs:
             echo "- Service: \`${SERVICE}\`"
             echo "- Region: \`${REGION}\`"
             echo "- Image: \`${IMAGE}\`"
+            echo "- Revision: \`${REVISION}\`"
             echo "- URL: ${APP_URL}"
           } >> "${GITHUB_STEP_SUMMARY}"

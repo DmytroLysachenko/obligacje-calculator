@@ -84,7 +84,7 @@ jobs:
       - name: Verify production
         env:
           IDENTITY_TOKEN: ${{ steps.verify-auth.outputs.id_token }}
-        run: pnpm ops:verify-prod -- --base-url "${APP_URL}" --allow-missing-oauth
+        run: pnpm ops:verify-prod -- --base-url "${APP_URL}" --allow-missing-oauth --expected-revision "${{ inputs.revision }}"
 
       - name: Rollback summary
         run: |
