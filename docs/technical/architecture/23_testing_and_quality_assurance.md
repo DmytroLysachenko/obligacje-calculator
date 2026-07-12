@@ -49,7 +49,8 @@ Financial applications require a rigorous testing strategy to ensure mathematica
 ## 6. Release Contracts
 
 - `pnpm test:release` runs the calculation, worker, data freshness, API readiness, deployment, SEO metadata, product readiness, script, and clean-code contract suites.
-- `pnpm test:browser` and `pnpm test:web-vitals` run against a production build through Playwright. CI executes them in the `browser-smoke` job after `pnpm build`.
+- `pnpm test:browser` and `pnpm test:web-vitals` run against a production build through Playwright. CI executes them in the `browser-smoke` job after `pnpm build` and `pnpm check:local-env -- --require-playwright`.
+- Browser failures should preserve `browser-diagnostics.json` and Playwright traces so hydration errors, console errors, failed requests, and 5xx responses are visible from CI artifacts.
 - Feature-owned tests live under `features/<feature>/tests/**`. Subfolders mirror the tested ownership when useful, for example `tests/lib/**`, `tests/components/**`, and `tests/utils/**`.
 - `docs/technical/architecture/clean-code-contract.test.ts` blocks broad code-smell regressions in production paths: stale TODO/FIXME/debug markers, unmanaged route responses, direct feature-layer fetch calls, direct sync/provider fetch calls, unmanaged API body parsing, and undocumented lint-disable comments.
 - Feature-local state models require focused unit tests before hook/page rewrites. This applies to calculator state, optimizer readiness/default models, notebook workspace models, dashboard metadata state, chart tooltip models, and similar non-React decision logic.
@@ -66,6 +67,7 @@ Financial applications require a rigorous testing strategy to ensure mathematica
 Before a deploy candidate:
 
 - run `pnpm check:release`
+- run `pnpm check:local-env`
 - run `pnpm test:browser`
 - run `pnpm test:web-vitals`
 - run focused financial regressions for any touched calculation engine family

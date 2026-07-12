@@ -22,6 +22,8 @@ describe('deployment documentation contract', () => {
     expect(source).toContain('Dockerfile');
     expect(source).toContain('cloudbuild.yaml');
     expect(source).toContain('pnpm check:prod-config');
+    expect(source).toContain('pnpm check:local-env');
+    expect(source).toContain('--expected-revision');
     expect(source).toContain('europe-central2');
     expect(source).toContain('standalone `server.js`');
     expect(source).toContain('retained-route release scope');
@@ -165,6 +167,7 @@ describe('deployment documentation contract', () => {
     expect(compose).toContain('postgres:17-alpine');
     expect(compose).toContain('postgresql://obligacje:obligacje@postgres:5432/obligacje');
     expect(taskfile).toContain('dev:container');
+    expect(taskfile).toContain('preflight');
     expect(taskfile).toContain('prod:container');
     expect(taskfile).toContain('smoke:container');
     expect(taskfile).toContain('smoke:prod-container');

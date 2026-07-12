@@ -16,6 +16,7 @@ volume behavior.
 
 ```bash
 task setup
+task preflight
 task dev
 ```
 
@@ -43,6 +44,7 @@ Use `.env.example` as the no-secret template. Do not commit `.env`,
 ```bash
 task dev:container      # Compose app + local Postgres
 task dev:host           # Next.js directly on the host
+task preflight          # WSL, Docker, Playwright, gcloud, and gh readiness
 task db:up              # local Postgres only
 task db:migrate         # apply Drizzle schema to local Postgres
 task db:seed            # seed local reference data
@@ -74,3 +76,7 @@ Run the broader browser gate with:
 ```bash
 task smoke
 ```
+
+If Playwright fails in CI, download the `browser-smoke-report` artifact. The
+browser tests attach `browser-diagnostics.json` on failure and keep Playwright
+traces for console errors, page errors, failed requests, and 5xx responses.
