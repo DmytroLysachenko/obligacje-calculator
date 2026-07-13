@@ -65,9 +65,10 @@ The app now enforces part of it directly through UI behavior:
 The remaining gap is deeper calculator validation, not only labeling.
 
 The current production-readiness target is a first Google Cloud Run deployment
-for trusted core routes only. Conditional and experimental surfaces may stay
-visible only when their copy and navigation treatment remain clearly narrower
-than the trusted-core promise.
+for the admitted trusted-core routes only: education, single calculator, and
+economic data. Conditional and experimental surfaces may remain visible in the
+private preview, but are excluded from release admission until they pass their
+own evidence gates.
 
 ## Current Matrix
 

@@ -17,7 +17,7 @@ describe('product readiness documentation contract', () => {
     expect(roadmap).toContain('Current release-candidate preparation');
     expect(roadmap).toContain('first Google Cloud Run deployment');
     expect(matrix).toContain('first Google Cloud Run deployment');
-    expect(matrix).toContain('trusted core routes only');
+    expect(matrix).toContain('admitted trusted-core routes only');
   });
 
   it('keeps completed refactor execution plans out of the active plan index', () => {
