@@ -66,6 +66,7 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [Monthly Bond Offer Sync](./operations/01_monthly_bond_offer_sync.md) - Operator workflow for refreshing current retail bond offers and macro data.
 - [Cloud Run Private Preview Access](./operations/02_cloud_run_private_preview.md) - Fast local proxy access to the private Cloud Run preview and required deployment secrets.
 - [Local Development Workflow](./operations/03_local_development.md) - WSL-first Docker Compose, Taskfile, local DB, and smoke-check workflow.
+- [Private Preview Verification](./operations/04_private_preview_verification.md) - Redacted operational readiness evidence and manual checks.
 
 ---
 
