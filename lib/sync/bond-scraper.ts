@@ -15,6 +15,8 @@ export interface ScrapedBondRate {
   seriesCode?: string;
 }
 
+type BondOfferFallback = Omit<ScrapedBondRate, 'source'>;
+
 const CURRENT_GOV_OFFER_URL = 'https://www.gov.pl/web/finanse/biezaca-oferta2';
 const OBLIGACJE_OFFER_URL = 'https://www.obligacjeskarbowe.pl/oferta-obligacji/';
 
@@ -88,7 +90,7 @@ function extractSection(html: string, symbol: string) {
   return html.slice(start, end);
 }
 
-function parseFirstYearRate(section: string, fallback: ScrapedBondRate) {
+function parseFirstYearRate(section: string, fallback: BondOfferFallback) {
   const normalized = normalizeMarkup(section);
   const patterns = [
     /pierwszym miesiecznym[\s\S]{0,120}?<strong[^>]*>\s*(\d+(?:,\d+)?)\s*%?/i,
@@ -107,7 +109,7 @@ function parseFirstYearRate(section: string, fallback: ScrapedBondRate) {
   return fallback.firstYearRate;
 }
 
-function parseMargin(section: string, fallback: ScrapedBondRate) {
+function parseMargin(section: string, fallback: BondOfferFallback) {
   const normalized = normalizeMarkup(section);
   const patterns = [
     /marzy[\s\S]{0,60}?<strong[^>]*>\s*(\d+(?:,\d+)?)\s*%/i,
@@ -126,7 +128,7 @@ function parseMargin(section: string, fallback: ScrapedBondRate) {
 
 export function parseOfferFromGovPage(
   html: string,
-  fallback: ScrapedBondRate,
+  fallback: BondOfferFallback,
 ): ScrapedBondRate | null {
   const section = extractSection(html, fallback.symbol);
   if (!section) {
@@ -145,7 +147,7 @@ export function parseOfferFromGovPage(
 
 function parseOfferFromObligacjePage(
   html: string,
-  fallback: ScrapedBondRate,
+  fallback: BondOfferFallback,
 ): ScrapedBondRate | null {
   const section = extractSection(html, fallback.symbol);
   if (!section) {
