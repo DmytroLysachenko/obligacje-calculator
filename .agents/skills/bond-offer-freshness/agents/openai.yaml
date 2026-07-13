@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Bond Offer Freshness'
+  short_description: 'Verify official monthly bond-offer data evidence'
+  default_prompt: 'Use $bond-offer-freshness to verify the current monthly bond-offer evidence.'
