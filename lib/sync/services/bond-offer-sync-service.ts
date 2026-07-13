@@ -35,19 +35,22 @@ export class BondOfferSyncService {
       });
     }
 
+    const sources = [...new Set(bondOffers.map((offer) => offer.source))];
+    const isOfficial = sources.length === 1 && sources[0] === 'gov.pl';
+
     await this.recorder.record({
       scope: 'bond-offers',
-      provider: 'obligacjeskarbowe.pl',
+      provider: sources.join(', '),
       mode: 'bond-offer-sync',
-      status: 'success',
+      status: isOfficial ? 'success' : 'partial',
       inserted: bondOffers.length,
       updated: bondOffers.length,
-      message: `${bondOffers.length} current bond offers synchronized.`,
+      message: `${bondOffers.length} current bond offers synchronized from ${sources.join(', ')}.`,
       startedAt,
       finishedAt: new Date(),
     });
 
-    return bondOffers;
+    return { offers: bondOffers, status: isOfficial ? 'success' : 'partial' as const };
   }
 
   private async upsertCurrentBondOffer(

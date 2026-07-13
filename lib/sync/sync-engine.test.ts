@@ -62,7 +62,10 @@ describe('SyncEngine', () => {
       wibor3m: null,
       wibor6m: null,
     });
-    mocks.bondOfferSyncCurrentOffers.mockResolvedValue([{ symbol: 'EDO' }]);
+    mocks.bondOfferSyncCurrentOffers.mockResolvedValue({
+      offers: [{ symbol: 'EDO' }],
+      status: 'success',
+    });
     mocks.providerSyncAll.mockResolvedValue([
       {
         provider: 'GUS CPI Archive',
@@ -91,6 +94,7 @@ describe('SyncEngine', () => {
       mode: 'full-sync',
       macro: { inflation: 2.5, nbp: 3.75, wibor3m: null, wibor6m: null },
       bondOffers: 1,
+      bondOfferStatus: 'success',
       historical: [
         {
           provider: 'GUS CPI Archive',

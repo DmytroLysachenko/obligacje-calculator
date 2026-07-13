@@ -13,6 +13,7 @@ export interface FullSyncSummary {
   mode: 'full-sync';
   macro: Awaited<ReturnType<typeof syncMacroData>>;
   bondOffers: number;
+  bondOfferStatus?: 'success' | 'partial';
   historical: ProviderSyncResult[];
   skipped?: boolean;
   reason?: 'already-running';
@@ -67,24 +68,25 @@ export class SyncEngine {
       this.logger.info('Macro data sync complete', macro);
 
       const effectiveStartYear = await resolveFullSyncStartYear(startYear);
-      const bondOffers = await this.bondOfferSyncService.syncCurrentOffers();
+      const bondOfferSync = await this.bondOfferSyncService.syncCurrentOffers();
       const historical = await this.providerSyncService.syncAll(effectiveStartYear);
 
       const summary: FullSyncSummary = {
         mode: 'full-sync',
         macro,
-        bondOffers: bondOffers.length,
+        bondOffers: bondOfferSync.offers.length,
+        bondOfferStatus: bondOfferSync.status,
         historical,
       };
 
       await this.recorder.record({
         scope: 'full-sync',
         mode: 'full-sync',
-        status: this.resolveFullSyncStatus(macro, historical),
+        status: this.resolveFullSyncStatus(macro, historical, bondOfferSync.status),
         inserted: historical.reduce((sum, result) => sum + (result.inserted ?? 0), 0),
         updated: historical.reduce((sum, result) => sum + (result.updated ?? 0), 0),
         skipped: historical.reduce((sum, result) => sum + (result.skipped ?? 0), 0),
-        message: `${macro ? 'Macro sync complete' : 'Macro sync failed'}; ${bondOffers.length} bond offers processed.`,
+        message: `${macro ? 'Macro sync complete' : 'Macro sync failed'}; ${bondOfferSync.offers.length} bond offers processed.`,
         startedAt,
         finishedAt: new Date(),
       });
@@ -102,8 +104,9 @@ export class SyncEngine {
   private resolveFullSyncStatus(
     macro: Awaited<ReturnType<typeof syncMacroData>>,
     historical: ProviderSyncResult[],
+    bondOfferStatus: 'success' | 'partial',
   ) {
-    if (!macro || historical.some((result) => result.status === 'failed')) {
+    if (!macro || bondOfferStatus === 'partial' || historical.some((result) => result.status === 'failed')) {
       return 'partial';
     }
 
