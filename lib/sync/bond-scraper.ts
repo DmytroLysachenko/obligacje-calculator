@@ -13,6 +13,7 @@ export interface ScrapedBondRate {
   firstYearRate: number;
   margin: number;
   seriesCode?: string;
+  source: 'gov.pl' | 'obligacjeskarbowe.pl' | 'curated-fallback';
 }
 
 type BondOfferFallback = Omit<ScrapedBondRate, 'source'>;
@@ -21,14 +22,14 @@ const CURRENT_GOV_OFFER_URL = 'https://www.gov.pl/web/finanse/biezaca-oferta2';
 const OBLIGACJE_OFFER_URL = 'https://www.obligacjeskarbowe.pl/oferta-obligacji/';
 
 const OFFICIAL_FALLBACK_RATES: ScrapedBondRate[] = [
-  { symbol: 'OTS', firstYearRate: 2.0, margin: 0 },
-  { symbol: 'ROR', firstYearRate: 4.0, margin: 0 },
-  { symbol: 'DOR', firstYearRate: 4.15, margin: 0.15 },
-  { symbol: 'TOS', firstYearRate: 4.4, margin: 0 },
-  { symbol: 'COI', firstYearRate: 4.75, margin: 1.5 },
-  { symbol: 'EDO', firstYearRate: 5.35, margin: 2.0 },
-  { symbol: 'ROS', firstYearRate: 5.0, margin: 2.0 },
-  { symbol: 'ROD', firstYearRate: 5.6, margin: 2.5 },
+  { symbol: 'OTS', firstYearRate: 2.0, margin: 0, source: 'curated-fallback' },
+  { symbol: 'ROR', firstYearRate: 4.0, margin: 0, source: 'curated-fallback' },
+  { symbol: 'DOR', firstYearRate: 4.15, margin: 0.15, source: 'curated-fallback' },
+  { symbol: 'TOS', firstYearRate: 4.4, margin: 0, source: 'curated-fallback' },
+  { symbol: 'COI', firstYearRate: 4.75, margin: 1.5, source: 'curated-fallback' },
+  { symbol: 'EDO', firstYearRate: 5.35, margin: 2.0, source: 'curated-fallback' },
+  { symbol: 'ROS', firstYearRate: 5.0, margin: 2.0, source: 'curated-fallback' },
+  { symbol: 'ROD', firstYearRate: 5.6, margin: 2.5, source: 'curated-fallback' },
 ];
 
 async function fetchHtml(url: string) {
@@ -142,6 +143,7 @@ export function parseOfferFromGovPage(
     firstYearRate: parseFirstYearRate(section, fallback),
     margin: parseMargin(section, fallback),
     seriesCode: seriesMatch?.[1],
+    source: 'gov.pl',
   };
 }
 
@@ -161,6 +163,7 @@ function parseOfferFromObligacjePage(
     firstYearRate: parseFirstYearRate(section, fallback),
     margin: parseMargin(section, fallback),
     seriesCode: seriesMatch?.[1],
+    source: 'obligacjeskarbowe.pl',
   };
 }
 

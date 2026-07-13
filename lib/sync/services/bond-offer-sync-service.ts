@@ -50,7 +50,10 @@ export class BondOfferSyncService {
       finishedAt: new Date(),
     });
 
-    return { offers: bondOffers, status: isOfficial ? 'success' : 'partial' as const };
+    return {
+      offers: bondOffers,
+      status: (isOfficial ? 'success' : 'partial') as 'success' | 'partial',
+    };
   }
 
   private async upsertCurrentBondOffer(
