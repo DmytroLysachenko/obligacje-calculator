@@ -40,9 +40,19 @@ describe('bond offer scraper', () => {
     });
   });
 
-  it('does not label an incomplete official section as gov.pl data', () => {
+  it.each([
+    ['rate', '<h4><strong>ROR0527</strong></h4><p>Marzy <strong>0,00%</strong></p>'],
+    [
+      'margin',
+      '<h4><strong>ROR0527</strong></h4><p>W pierwszym miesiecznym okresie odsetkowym wynosi <strong>4,00%</strong>.</p>',
+    ],
+    [
+      'series code',
+      '<h4>ROR</h4><p>W pierwszym miesiecznym okresie odsetkowym wynosi <strong>4,00%</strong>. Marzy <strong>0,00%</strong></p>',
+    ],
+  ])('does not label an official section missing its %s as gov.pl data', (_missing, html) => {
     expect(
-      parseOfferFromGovPage('<h4><strong>ROR0527</strong></h4><p>Missing rate</p>', {
+      parseOfferFromGovPage(html, {
         symbol: 'ROR',
         firstYearRate: 4,
         margin: 0,
