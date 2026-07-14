@@ -30,6 +30,22 @@ describe('production config check', () => {
     expect(createChecks({ allowMissingOauth: true }).filter((check) => !check.ok)).toEqual([]);
   });
 
+  it('requires OAuth by default when no temporary exception is supplied', () => {
+    setEnv({
+      NODE_ENV: 'production',
+      DATABASE_URL: 'postgresql://user:pass@db.example.com:5432/app',
+      AUTH_SECRET: 'production-auth-secret-value',
+      SYNC_SECRET: 'production-sync-secret-value',
+      NEXT_PUBLIC_APP_URL: 'https://app.example.com',
+      AUTH_GOOGLE_ID: '',
+      AUTH_GOOGLE_SECRET: '',
+    });
+
+    expect(createChecks({ allowMissingOauth: false }).filter((check) => !check.ok)).toEqual([
+      expect.objectContaining({ label: 'OAuth provider' }),
+    ]);
+  });
+
   it('rejects weak production-like secrets and invalid public URLs', () => {
     setEnv({
       NODE_ENV: 'production',
