@@ -29,12 +29,24 @@ describe('bond offer scraper', () => {
       firstYearRate: 4,
       margin: 0,
       seriesCode: 'ROR0527',
+      source: 'gov.pl',
     });
     expect(edo).toEqual({
       symbol: 'EDO',
       firstYearRate: 5.35,
       margin: 2,
       seriesCode: 'EDO0536',
+      source: 'gov.pl',
     });
+  });
+
+  it('does not label an incomplete official section as gov.pl data', () => {
+    expect(
+      parseOfferFromGovPage('<h4><strong>ROR0527</strong></h4><p>Missing rate</p>', {
+        symbol: 'ROR',
+        firstYearRate: 4,
+        margin: 0,
+      }),
+    ).toBeNull();
   });
 });

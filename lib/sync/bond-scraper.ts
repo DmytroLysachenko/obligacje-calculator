@@ -91,7 +91,7 @@ function extractSection(html: string, symbol: string) {
   return html.slice(start, end);
 }
 
-function parseFirstYearRate(section: string, fallback: BondOfferFallback) {
+function parseFirstYearRate(section: string) {
   const normalized = normalizeMarkup(section);
   const patterns = [
     /pierwszym miesiecznym[\s\S]{0,120}?<strong[^>]*>\s*(\d+(?:,\d+)?)\s*%?/i,
@@ -103,11 +103,11 @@ function parseFirstYearRate(section: string, fallback: BondOfferFallback) {
   for (const pattern of patterns) {
     const match = normalized.match(pattern);
     if (match) {
-      return parsePercent(match[1], fallback.firstYearRate);
+      return parsePercent(match[1], Number.NaN);
     }
   }
 
-  return fallback.firstYearRate;
+  return null;
 }
 
 function parseMargin(section: string, fallback: BondOfferFallback) {
@@ -138,9 +138,15 @@ export function parseOfferFromGovPage(
 
   const seriesMatch = section.match(new RegExp(`(${fallback.symbol}\\d{4})`, 'i'));
 
+  const firstYearRate = parseFirstYearRate(section);
+
+  if (firstYearRate === null || !seriesMatch) {
+    return null;
+  }
+
   return {
     symbol: fallback.symbol,
-    firstYearRate: parseFirstYearRate(section, fallback),
+    firstYearRate,
     margin: parseMargin(section, fallback),
     seriesCode: seriesMatch?.[1],
     source: 'gov.pl',
@@ -158,9 +164,15 @@ function parseOfferFromObligacjePage(
 
   const seriesMatch = section.match(new RegExp(`(${fallback.symbol}\\d{4})`, 'i'));
 
+  const firstYearRate = parseFirstYearRate(section);
+
+  if (firstYearRate === null || !seriesMatch) {
+    return null;
+  }
+
   return {
     symbol: fallback.symbol,
-    firstYearRate: parseFirstYearRate(section, fallback),
+    firstYearRate,
     margin: parseMargin(section, fallback),
     seriesCode: seriesMatch?.[1],
     source: 'obligacjeskarbowe.pl',
