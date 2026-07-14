@@ -5,7 +5,10 @@ import React from 'react';
 
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { useAppI18n } from '@/i18n/client';
-import { getCalculationFreshnessMetaState } from '@/shared/lib/data-freshness-display';
+import {
+  getBondOfferFreshnessState,
+  getCalculationFreshnessMetaState,
+} from '@/shared/lib/data-freshness-display';
 
 interface CalculationMetaPanelProps {
   warnings?: string[];
@@ -146,6 +149,7 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
   }
 
   const freshnessMeta = dataFreshness ? getCalculationFreshnessMetaState(dataFreshness) : null;
+  const bondOffer = getBondOfferFreshnessState(dataFreshness);
 
   return (
     <div className="space-y-5">
@@ -171,6 +175,17 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
             ) : null}
             {freshnessMeta?.usedFallback ? (
               <div className="font-semibold">{t('comparison.fallback_used')}</div>
+            ) : null}
+            <div>
+              {t('comparison.offer_source')}:{' '}
+              <span className="font-semibold">
+                {bondOffer.source
+                  ? t(`sidebar.freshness.offer_sources.${bondOffer.source}`)
+                  : t('sidebar.freshness.offer_sources.unavailable')}
+              </span>
+            </div>
+            {bondOffer.isDegraded ? (
+              <div className="font-semibold">{t('comparison.offer_degraded_warning')}</div>
             ) : null}
           </div>
         </div>

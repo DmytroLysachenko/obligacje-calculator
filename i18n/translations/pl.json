@@ -159,6 +159,14 @@
       "coverage_label": "Zakres danych do",
       "reference_label": "Dane referencyjne",
       "last_checked": "Ostatnio sprawdzono",
+      "offer_source_label": "Biezaca oferta obligacji",
+      "offer_degraded_warning": "Potwierdzenie biezacej oferty jest ograniczone; sprawdz oprocentowanie przed uzyciem wyniku.",
+      "offer_sources": {
+        "gov.pl": "Oficjalne gov.pl",
+        "obligacjeskarbowe.pl": "Wtórne obligacjeskarbowe.pl",
+        "curated-fallback": "Kuratorowany fallback",
+        "unavailable": "Brak potwierdzenia oferty"
+      },
       "no_date": "Brak daty",
       "no_metadata": "Brak metadanych"
     }
@@ -1502,6 +1510,8 @@
     "data_quality_clean_description": "Ten zatwierdzony wynik nie zglosil flag jakosci danych."
   },
   "comparison": {
+    "offer_source": "Zrodlo oferty obligacji",
+    "offer_degraded_warning": "Potwierdzenie oferty obligacji jest ograniczone; stawki moga pochodzic ze zrodla wtórnego lub kuratorowanego.",
     "title_bond_vs_bond": "Bond vs Bond",
     "desc_bond_vs_bond": "Porównaj różne polskie obligacje skarbowe w tych samych warunkach z automatycznym odnowieniem.",
     "shared_scenario": "Wspólny Scenariusz",

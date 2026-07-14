@@ -5,7 +5,7 @@ import React from 'react';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
-import { getFreshnessDisplayState } from '@/shared/lib/data-freshness-display';
+import { getBondOfferFreshnessState, getFreshnessDisplayState } from '@/shared/lib/data-freshness-display';
 
 import { SidebarUtilityPanel } from './SidebarUtilityGroup';
 
@@ -65,6 +65,10 @@ export function SidebarSyncSummary({
     dataFreshness,
     dataFreshness ? t('sidebar.freshness.no_date') : t('sidebar.freshness.no_metadata'),
   );
+  const bondOffer = getBondOfferFreshnessState(dataFreshness);
+  const bondOfferLabel = bondOffer.source
+    ? t(`sidebar.freshness.offer_sources.${bondOffer.source}`)
+    : t('sidebar.freshness.offer_sources.unavailable');
 
   return (
     <SidebarUtilityPanel>
@@ -94,6 +98,21 @@ export function SidebarSyncSummary({
         </div>
 
         <p className="max-w-[14rem] text-[11px] leading-5 text-muted-foreground">{freshnessText}</p>
+        <div className="border-t border-border pt-2 text-[11px] leading-5 text-muted-foreground">
+          <span>{t('sidebar.freshness.offer_source_label')}: </span>
+          <span className="font-semibold text-foreground">{bondOfferLabel}</span>
+          {bondOffer.attemptLabel ? (
+            <span>
+              {' '}
+              · {t('sidebar.freshness.last_checked')}: {bondOffer.attemptLabel}
+            </span>
+          ) : null}
+          {bondOffer.isDegraded ? (
+            <p className="mt-1 font-semibold text-[var(--finance-warning)]">
+              {t('sidebar.freshness.offer_degraded_warning')}
+            </p>
+          ) : null}
+        </div>
       </div>
     </SidebarUtilityPanel>
   );

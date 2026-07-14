@@ -159,6 +159,14 @@
       "coverage_label": "Coverage through",
       "reference_label": "Reference data",
       "last_checked": "Last checked",
+      "offer_source_label": "Current bond offer",
+      "offer_degraded_warning": "Current offer evidence is degraded; verify rates before relying on this result.",
+      "offer_sources": {
+        "gov.pl": "Official gov.pl",
+        "obligacjeskarbowe.pl": "Secondary obligacjeskarbowe.pl",
+        "curated-fallback": "Curated fallback",
+        "unavailable": "Offer evidence unavailable"
+      },
       "no_date": "No date",
       "no_metadata": "No metadata"
     }
@@ -1502,6 +1510,8 @@
     "data_quality_clean_description": "No data-quality flags were reported for this committed calculation."
   },
   "comparison": {
+    "offer_source": "Bond-offer source",
+    "offer_degraded_warning": "Bond-offer evidence is degraded; rates may use a secondary or curated source.",
     "title_bond_vs_bond": "Bond vs Bond",
     "desc_bond_vs_bond": "Compare different Polish Treasury Bonds under the same conditions with automatic rollover.",
     "shared_scenario": "Shared Scenario",
