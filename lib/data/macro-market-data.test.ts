@@ -114,7 +114,10 @@ describe('resolveGlobalDataFreshness', () => {
           updatedAt: new Date('2026-03-28T12:00:00.000Z'),
         }),
       ],
-      [syncRun({ seriesSlug: 'nbp-ref-rate' })],
+      [
+        syncRun({ seriesSlug: 'nbp-ref-rate' }),
+        syncRun({ seriesSlug: null, scope: 'bond-offers', provider: 'gov.pl' }),
+      ],
       now,
     );
 
@@ -140,7 +143,10 @@ describe('resolveGlobalDataFreshness', () => {
           updatedAt: new Date('2026-06-15T09:00:00.000Z'),
         }),
       ],
-      [syncRun({ seriesSlug: 'nbp-ref-rate' })],
+      [
+        syncRun({ seriesSlug: 'nbp-ref-rate' }),
+        syncRun({ seriesSlug: null, scope: 'bond-offers', provider: 'gov.pl' }),
+      ],
       now,
     );
 
@@ -178,6 +184,7 @@ describe('resolveGlobalDataFreshness', () => {
           finishedAt: new Date('2026-06-15T09:01:00.000Z'),
           latestDataPointDate: '2026-03-05',
         }),
+        syncRun({ seriesSlug: null, scope: 'bond-offers', provider: 'gov.pl' }),
       ],
       now,
     );
@@ -190,6 +197,67 @@ describe('resolveGlobalDataFreshness', () => {
       lastSyncedAt: '2026-06-15T09:01:00.000Z',
       lastCheck: '2026-06-15T09:01:00.000Z',
     });
+  });
+
+  it('exposes the latest official bond-offer run without degrading macro freshness', () => {
+    const result = resolveGlobalDataFreshness(
+      [
+        series({ slug: 'pl-cpi', lastDataPointDate: '2026-04-01', lastSyncStatus: 'success' }),
+        series({ slug: 'nbp-ref-rate', lastDataPointDate: '2026-03-05', lastSyncStatus: 'success' }),
+      ],
+      [
+        syncRun({ seriesSlug: 'nbp-ref-rate' }),
+        syncRun({
+          seriesSlug: null,
+          scope: 'bond-offers',
+          provider: 'gov.pl',
+          status: 'success',
+          finishedAt: new Date('2026-06-15T09:02:00.000Z'),
+        }),
+      ],
+      now,
+    );
+
+    expect(result).toMatchObject({
+      status: 'fresh',
+      usedFallback: false,
+      bondOfferSource: 'gov.pl',
+      bondOfferAttemptAt: '2026-06-15T09:02:00.000Z',
+      bondOfferStatus: 'success',
+    });
+  });
+
+  it.each(['partial', 'failed'] as const)(
+    'marks freshness as fallback when the current bond-offer run is %s',
+    (status) => {
+      const result = resolveGlobalDataFreshness(
+        [
+          series({ slug: 'pl-cpi', lastDataPointDate: '2026-04-01', lastSyncStatus: 'success' }),
+          series({ slug: 'nbp-ref-rate', lastDataPointDate: '2026-03-05', lastSyncStatus: 'success' }),
+        ],
+        [
+          syncRun({ seriesSlug: 'nbp-ref-rate' }),
+          syncRun({ seriesSlug: null, scope: 'bond-offers', provider: 'curated-fallback', status }),
+        ],
+        now,
+      );
+
+      expect(result).toMatchObject({ status: 'fallback', usedFallback: true, bondOfferStatus: status });
+    },
+  );
+
+  it('marks freshness as fallback when bond offers have never been synced', () => {
+    const result = resolveGlobalDataFreshness(
+      [
+        series({ slug: 'pl-cpi', lastDataPointDate: '2026-04-01', lastSyncStatus: 'success' }),
+        series({ slug: 'nbp-ref-rate', lastDataPointDate: '2026-03-05', lastSyncStatus: 'success' }),
+      ],
+      [syncRun({ seriesSlug: 'nbp-ref-rate' })],
+      now,
+    );
+
+    expect(result).toMatchObject({ status: 'fallback', usedFallback: true });
+    expect(result.bondOfferStatus).toBeUndefined();
   });
 
   it('marks CPI stale when monthly coverage falls beyond the publication lag', () => {

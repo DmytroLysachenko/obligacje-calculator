@@ -20,6 +20,8 @@ export enum ScenarioKind {
 }
 
 export type DataFreshnessStatus = 'fresh' | 'stale' | 'projected' | 'unknown' | 'fallback';
+export type BondOfferSource = 'gov.pl' | 'obligacjeskarbowe.pl' | 'curated-fallback';
+export type BondOfferSyncStatus = 'success' | 'partial' | 'failed' | 'up-to-date' | 'no-new-data';
 
 export interface CalculationDataFreshness {
   status: DataFreshnessStatus;
@@ -31,6 +33,9 @@ export interface CalculationDataFreshness {
   coverageAsOf?: string;
   lastSyncedAt?: string;
   lastCheck?: string;
+  bondOfferSource?: BondOfferSource | string;
+  bondOfferAttemptAt?: string;
+  bondOfferStatus?: BondOfferSyncStatus | string;
   usedFallback: boolean;
 }
 
