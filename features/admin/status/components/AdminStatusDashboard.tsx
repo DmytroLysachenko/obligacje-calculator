@@ -7,6 +7,7 @@ import { createAdminStatusViewModel } from '../lib/admin-status-model';
 
 import {
   AdminInventoryTable,
+  AdminBondOfferSyncCard,
   AdminMetricsStrip,
   AdminStatusFeedback,
   AdminStatusHeader,
@@ -82,6 +83,13 @@ export function AdminStatusDashboard({
         initial: t('admin.inventory.health.initial'),
       },
     },
+    bondOfferSync: {
+      title: t('admin.bond_offer_sync.title'),
+      source: t('admin.bond_offer_sync.source'),
+      result: t('admin.bond_offer_sync.result'),
+      completed: t('admin.bond_offer_sync.completed'),
+      neverRun: t('admin.bond_offer_sync.never_run'),
+    },
   };
 
   return (
@@ -96,6 +104,7 @@ export function AdminStatusDashboard({
         />
         <AdminStatusNotices error={error} syncing={syncing} syncProgressLabel={copy.syncProgress} />
         <AdminMetricsStrip metrics={viewModel.metrics} copy={copy.metrics} />
+        <AdminBondOfferSyncCard sync={viewModel.latestBondOfferSync} copy={copy.bondOfferSync} />
         <AdminInventoryTable
           rows={viewModel.rows}
           loading={loading}

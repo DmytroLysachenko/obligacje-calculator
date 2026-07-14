@@ -954,6 +954,13 @@
     "sync_confirm": "Czy na pewno chcesz uruchomic {mode}? To moze potrwac kilka minut.",
     "sync_progress": "Trwa reczna synchronizacja... nie zamykaj tego okna.",
     "sync_success": "Synchronizacja zakonczona pomyslnie!",
+    "bond_offer_sync": {
+      "title": "Synchronizacja biezacej oferty obligacji",
+      "source": "Zrodlo",
+      "result": "Wynik",
+      "completed": "Zakonczono",
+      "never_run": "Nigdy nie uruchomiono"
+    },
     "metrics": {
       "series_tracked": "Sledzone serie",
       "series_desc": "Aktywne strumienie danych w bazie",

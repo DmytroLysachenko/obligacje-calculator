@@ -954,6 +954,13 @@
     "sync_confirm": "Are you sure you want to trigger a {mode}? This may take a few minutes.",
     "sync_progress": "Manual synchronization in progress... please do not close this window.",
     "sync_success": "Sync completed successfully!",
+    "bond_offer_sync": {
+      "title": "Current Bond-Offer Sync",
+      "source": "Source",
+      "result": "Result",
+      "completed": "Completed",
+      "never_run": "Never run"
+    },
     "metrics": {
       "series_tracked": "Series Tracked",
       "series_desc": "Active data streams in database",

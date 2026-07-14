@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { createAdminSeriesStatus, createAdminStatusSnapshot } from './status-read-model';
+import {
+  createAdminSeriesStatus,
+  createAdminStatusSnapshot,
+  createLatestBondOfferSyncSummary,
+} from './status-read-model';
 
 const series = {
   id: 'series-1',
@@ -14,6 +18,27 @@ const series = {
 };
 
 describe('admin status read model', () => {
+  it.each([
+    ['success', 'gov.pl', 'Official current-offer sync completed.'],
+    ['partial', 'obligacjeskarbowe.pl', 'Bond-offer sync completed with fallback or secondary evidence.'],
+    ['failed', null, 'Bond-offer sync failed; current-offer evidence is unavailable.'],
+  ])('summarizes a %s bond-offer run with a safe message', (status, provider, message) => {
+    expect(
+      createLatestBondOfferSyncSummary([
+        {
+          scope: 'bond-offers',
+          provider,
+          status,
+          finishedAt: '2026-06-15T11:05:00.000Z',
+        },
+      ]),
+    ).toEqual({ source: provider, status, completedAt: '2026-06-15T11:05:00.000Z', message });
+  });
+
+  it('reports null when bond-offer sync has never run', () => {
+    expect(createLatestBondOfferSyncSummary([])).toBeNull();
+  });
+
   it('uses data-point stats when series metadata has no last data point', () => {
     expect(
       createAdminSeriesStatus(series, [
@@ -112,6 +137,7 @@ describe('admin status read model', () => {
       ],
       systemTime: '2026-06-15T12:00:00.000Z',
       env: 'unknown',
+      latestBondOfferSync: null,
       recentSyncRuns: [
         {
           id: 'sync-1',

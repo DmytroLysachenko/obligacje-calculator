@@ -1,6 +1,10 @@
 import { differenceInMonths, isValid, parseISO } from 'date-fns';
 
-import type { AdminSeriesStatus, AdminStatusData } from '@/shared/lib/admin-client';
+import type {
+  AdminBondOfferSyncSummary,
+  AdminSeriesStatus,
+  AdminStatusData,
+} from '@/shared/lib/admin-client';
 
 export type AdminSeriesHealth = 'healthy' | 'failed' | 'initial';
 
@@ -20,6 +24,7 @@ export interface AdminStatusViewModel {
   metrics: AdminStatusMetrics;
   rows: AdminSeriesRowModel[];
   isEmpty: boolean;
+  latestBondOfferSync: AdminBondOfferSyncSummary | null;
 }
 
 export function hasSeriesDataGap(lastDataPointDate: string | null, now: Date = new Date()) {
@@ -77,5 +82,6 @@ export function createAdminStatusViewModel(
     },
     rows,
     isEmpty: rows.length === 0,
+    latestBondOfferSync: data?.latestBondOfferSync ?? null,
   };
 }

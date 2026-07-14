@@ -8,6 +8,7 @@ import { AppToast } from '@/shared/components/feedback/AppToast';
 import { ConfirmActionDialog } from '@/shared/components/feedback/ConfirmActionDialog';
 
 import type { AdminStatusMetrics } from '../lib/admin-status-model';
+import type { AdminBondOfferSyncSummary } from '@/shared/lib/admin-client';
 import type { AdminDashboardCopy } from '../types/admin-status-types';
 
 export { AdminInventoryTable } from './AdminInventoryTable';
@@ -138,6 +139,30 @@ export function AdminMetricsStrip({
         <p className="mt-2 ui-metadata text-muted-foreground">{copy.envDesc}</p>
       </section>
     </div>
+  );
+}
+
+export function AdminBondOfferSyncCard({
+  sync,
+  copy,
+}: {
+  sync: AdminBondOfferSyncSummary | null;
+  copy: AdminDashboardCopy['bondOfferSync'];
+}) {
+  return (
+    <section className="border-t border-border py-5">
+      <h2 className="ui-meta font-semibold text-foreground">{copy.title}</h2>
+      {sync ? (
+        <dl className="mt-3 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-3">
+          <div><dt className="text-muted-foreground">{copy.source}</dt><dd className="font-semibold">{sync.source ?? copy.neverRun}</dd></div>
+          <div><dt className="text-muted-foreground">{copy.result}</dt><dd className="font-semibold">{sync.status}</dd></div>
+          <div><dt className="text-muted-foreground">{copy.completed}</dt><dd className="font-semibold">{sync.completedAt ?? copy.neverRun}</dd></div>
+          <div className="sm:col-span-3"><dd className="text-muted-foreground">{sync.message}</dd></div>
+        </dl>
+      ) : (
+        <p className="mt-3 text-sm text-muted-foreground">{copy.neverRun}</p>
+      )}
+    </section>
   );
 }
 
