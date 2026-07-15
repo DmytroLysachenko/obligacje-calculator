@@ -121,6 +121,8 @@ describe('deployment documentation contract', () => {
     expect(deploy).toContain('production-cloud-run');
     expect(deploy).toContain('--no-allow-unauthenticated');
     expect(deploy).toContain('Validate runtime secrets');
+    expect(deploy).toContain('Apply reviewed database migrations');
+    expect(deploy).toContain('pnpm exec drizzle-kit migrate');
     expect(deploy).toContain('Release gate');
     expect(deploy).toContain('pnpm check:release');
     expect(deploy).toContain('DATABASE_URL');
@@ -157,6 +159,8 @@ describe('deployment documentation contract', () => {
     expect(ci).toContain('pnpm check:local-env -- --require-playwright');
     expect(ci).toContain('pnpm test:browser:ci');
     expect(ci).toContain('actions/upload-artifact');
+    expect(ci).toContain('dependency-security');
+    expect(ci).toContain('pnpm audit --prod --audit-level=high');
   });
 
   it('keeps local container workflow discoverable and no-secret by default', () => {
