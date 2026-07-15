@@ -1,5 +1,5 @@
 'use client';
-import { ArrowRight, CheckCircle2, Sparkles, Wallet } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
@@ -141,18 +141,6 @@ export function LandingDashboardClient() {
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-3">
-              <Button
-                asChild
-                variant="outline"
-                className="gap-2 rounded-lg text-sm font-semibold focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
-              >
-                <Link href="/notebook">
-                  <Wallet className="h-4 w-4" />
-                  {t('nav.notebook')}
-                </Link>
-              </Button>
-            </div>
           </div>
 
           <aside className="hidden border-l border-border pl-6 lg:block">
@@ -171,7 +159,7 @@ export function LandingDashboardClient() {
         </div>
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-4 lg:hidden">
         <SectionHeading title={startHereTitle} description={startHereDesc} />
         <div className="grid gap-5 lg:grid-cols-3">
           {stepCopy.map((step) => (
