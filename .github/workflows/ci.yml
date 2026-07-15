@@ -12,6 +12,28 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  dependency-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: HUSKY=0 pnpm install --frozen-lockfile
+
+      - name: Audit production dependencies
+        run: pnpm audit --prod --audit-level=high
+
   quality:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -199,7 +221,7 @@ jobs:
           {
             echo "### Browser smoke"
             echo ""
-            echo "- Routes: home, single calculator, comparison, economic data"
+            echo "- Routes: home, education, single calculator, comparison, economic data"
             echo "- Checks: title, main landmark, navigation label, console/page errors, failed requests, 5xx responses"
             echo "- Diagnostics: browser-diagnostics attachment and Playwright trace on failure"
             echo "- Browser gate: \`pnpm test:browser:ci\`"
