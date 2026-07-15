@@ -59,6 +59,9 @@ describe('package scripts contract', () => {
     );
 
     expect(playwrightConfig).toContain('node scripts/start-playwright-server.mjs');
+    expect(playwrightConfig).toContain("screenshot: 'only-on-failure'");
+    expect(playwrightConfig).toContain("video: 'retain-on-failure'");
+    expect(playwrightConfig).toContain("name: 'mobile-chromium'");
     expect(launcher).toContain("existsSync('.next/standalone/server.js')");
     expect(launcher).toContain("process.platform !== 'win32'");
     expect(launcher).toContain("cpSync('.next/static'");
