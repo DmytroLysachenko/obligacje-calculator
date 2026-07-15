@@ -13,6 +13,7 @@ import {
 import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
+import { getFeaturesForNavigation } from '@/shared/lib/feature-catalog';
 
 type NavItem = {
   href: string;
@@ -28,51 +29,29 @@ type NavSection = {
 type SidebarTranslate = (key: string) => string;
 
 export function buildSidebarNavSections(t: SidebarTranslate): NavSection[] {
+  const iconByRoute: Record<string, NavItem['icon']> = {
+    '/education': BookOpen,
+    '/single-calculator': Calculator,
+    '/compare': Scale,
+    '/economic-data': BarChart2,
+    '/regular-investment': TrendingUp,
+    '/ladder': Layers,
+    '/notebook': Wallet,
+  };
+  const toNavItem = ({ route, titleKey }: { route: string; titleKey: string }): NavItem => ({
+    href: route,
+    label: t(titleKey),
+    icon: iconByRoute[route],
+  });
+
   return [
     {
       label: t('sidebar.sections.core'),
-      items: [
-        {
-          href: '/education',
-          label: t('nav.education'),
-          icon: BookOpen,
-        },
-        {
-          href: '/single-calculator',
-          label: t('nav.single_calculator'),
-          icon: Calculator,
-        },
-        {
-          href: '/compare',
-          label: t('nav.comparison'),
-          icon: Scale,
-        },
-        {
-          href: '/economic-data',
-          label: t('nav.economic_data'),
-          icon: BarChart2,
-        },
-      ],
+      items: getFeaturesForNavigation('core').map(toNavItem),
     },
     {
       label: t('sidebar.sections.conditional'),
-      items: [
-        {
-          href: '/regular-investment',
-          label: t('nav.regular_investment'),
-          icon: TrendingUp,
-        },
-        {
-          href: '/ladder',
-          label: t('nav.ladder'),
-          icon: Layers,
-        },
-        {
-          href: '/notebook',
-          label: t('nav.notebook'),
-          icon: Wallet,
-        },
-      ],
+      items: getFeaturesForNavigation('conditional').map(toNavItem),
     },
   ];
 }
@@ -103,16 +82,13 @@ function NavLinkItem({
       className={cn(
         'group relative block rounded-md px-3 py-2.5 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40',
         isActive
-          ? 'bg-card text-foreground shadow-sm before:absolute before:left-0 before:top-1/2 before:h-6 before:w-0.5 before:-translate-y-1/2 before:bg-primary'
-          : 'bg-transparent text-muted-foreground hover:bg-card/70 hover:text-foreground',
+          ? 'bg-muted text-foreground before:absolute before:left-0 before:top-1/2 before:h-6 before:w-0.5 before:-translate-y-1/2 before:bg-primary'
+          : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground',
       )}
     >
       <div className="flex min-w-0 items-center gap-3">
         <div
-          className={cn(
-            'rounded-md p-1.5 transition-colors',
-            isActive ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground',
-          )}
+          className={cn('transition-colors', isActive ? 'text-primary' : 'text-muted-foreground')}
         >
           <Icon className="h-4 w-4" />
         </div>
