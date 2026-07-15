@@ -4,8 +4,9 @@ import React from 'react';
 
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
+import type { FeatureStatus } from '@/shared/types/feature-status';
 
-export type FeatureStatus = 'trusted' | 'conditional' | 'experimental' | 'limited' | 'reference';
+export type { FeatureStatus } from '@/shared/types/feature-status';
 const statusConfig: Record<
   FeatureStatus,
   {
