@@ -1,6 +1,16 @@
 # 18. UX Improvement Plan
 
-This document outlines the strategic plan for improving user experience, adding high-value features, and polishing the application to ensure it's a world-class financial tool.
+This document is a post-release improvement backlog. It does not widen the
+trusted-core admission scope in [the current roadmap](../plans/00_roadmap.md).
+The first release remains education, the single calculator, and economic-data
+reference. Conditional tools stay in private preview until their own evidence
+gate passes.
+
+Already delivered and removed from this backlog:
+
+- Polish is the default locale.
+- OAuth accounts and database-backed workspaces exist.
+- CSV and PDF result exports derive from normalized display models.
 
 ## 1. Onboarding & Education
 
@@ -15,10 +25,8 @@ This document outlines the strategic plan for improving user experience, adding 
 - **Improvement:** Enhanced Tooltips.
   - _Details:_ Replace generic tooltips with "Learn More" links that open small modals with detailed examples.
 
-## 2. Advanced Portfolio Features
+## 2. Deferred Portfolio Features
 
-- **Feature:** User Accounts (Cloud Sync).
-  - _Details:_ Move from purely local storage/link-based sharing to database-backed persistent user profiles.
 - **Feature:** Push Notifications.
   - _Details:_ Notify users when:
     - A bond is maturing in 7 days.
@@ -38,14 +46,7 @@ This document outlines the strategic plan for improving user experience, adding 
 - **Improvement:** Input Validation.
   - _Details:_ Add real-time validation for "Purchase Date" (cannot be in the far future) and "Initial Investment" (must be multiples of 100 for most bonds).
 
-## 4. Export & Reports
-
-- **Feature:** PDF Reports.
-  - _Details:_ Generate a beautiful one-page PDF summary for any calculation result, perfect for printing or sharing.
-- **Feature:** CSV/Excel Export.
-  - _Details:_ Allow users to download the full monthly timeline of their simulation for custom analysis in Excel.
-
-## 5. Technical SEO & Performance
+## 4. Technical SEO & Performance
 
 - **Improvement:** Image Optimization.
   - _Details:_ Ensure all OG images and icons are served in WebP format with proper caching.
@@ -57,8 +58,7 @@ This document outlines the strategic plan for improving user experience, adding 
 
 ### Implementation Priority:
 
-1.  **High:** Skeleton Loaders & Input Validation (Immediate UX win).
-2.  **High:** Default Language to PL.
-3.  **Medium:** Glossary/Tooltips & Mobile Tables.
-4.  **Medium:** CSV Export.
-5.  **Low:** User Accounts & Push Notifications.
+1. **High:** Complete trusted-flow validation, loading, and responsive-result checks.
+2. **High:** Keep feature admission and navigation aligned with verified evidence.
+3. **Medium:** Glossary/learn-more explanations and mobile tables.
+4. **Low:** Notifications and diversification analysis, after their data and calculation evidence is verified.
