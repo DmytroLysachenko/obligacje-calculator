@@ -35,8 +35,8 @@ export default function BondOptimizerClient() {
       isDirty={isDirty}
       hasResults={hasResults}
     >
-      <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
-        <aside className="space-y-6 xl:col-span-4">
+      <div className="grid grid-cols-1 gap-8 xl:grid-cols-12 xl:gap-10">
+        <aside className="space-y-6 xl:sticky xl:top-8 xl:col-span-4 xl:h-fit">
           <OptimizerInputPanel
             inputs={inputs}
             horizonYears={horizonYears}
