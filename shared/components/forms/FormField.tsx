@@ -35,7 +35,7 @@ export function FormField({
           {label ? (
             <Label
               htmlFor={htmlFor}
-              className={cn('text-sm font-semibold text-foreground', labelClassName)}
+              className={cn('text-sm font-medium text-foreground', labelClassName)}
             >
               {label}
             </Label>
@@ -56,7 +56,9 @@ export function FormField({
       ) : null}
       {children}
       {error ? (
-        <p className="text-xs font-medium leading-5 text-destructive">{error}</p>
+        <p role="alert" className="text-xs font-medium leading-5 text-destructive">
+          {error}
+        </p>
       ) : description ? (
         <p className="text-xs leading-5 text-muted-foreground">{description}</p>
       ) : null}

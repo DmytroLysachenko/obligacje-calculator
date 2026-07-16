@@ -65,7 +65,7 @@ export function FormSelect({
         <SelectTrigger
           id={id}
           className={cn(
-            'min-h-12 px-3.5 py-2.5 ui-focus-ring [&>span]:min-w-0 [&>span]:truncate',
+            'min-h-12 px-3.5 py-2.5 text-sm ui-focus-ring [&>span]:min-w-0 [&>span]:truncate',
             triggerClassName,
           )}
         >
