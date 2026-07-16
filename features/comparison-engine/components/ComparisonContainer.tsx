@@ -128,16 +128,18 @@ export const ComparisonContainer: React.FC = () => {
     >
       <div className="space-y-8">
         <div className="grid grid-cols-1 gap-8 2xl:grid-cols-[420px_minmax(0,1fr)] 2xl:items-start 2xl:gap-10">
-          <ComparisonSharedBaseCard
-            sharedConfig={sharedConfig}
-            assumptionsBondType={assumptionsBondType}
-            onUpdateSharedConfig={
-              updateSharedConfig as (
-                key: keyof typeof sharedConfig | string,
-                value: unknown,
-              ) => void
-            }
-          />
+          <aside className="2xl:sticky 2xl:top-8 2xl:h-fit">
+            <ComparisonSharedBaseCard
+              sharedConfig={sharedConfig}
+              assumptionsBondType={assumptionsBondType}
+              onUpdateSharedConfig={
+                updateSharedConfig as (
+                  key: keyof typeof sharedConfig | string,
+                  value: unknown,
+                ) => void
+              }
+            />
+          </aside>
 
           <div className="min-w-0 space-y-8">
             <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">

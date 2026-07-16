@@ -12,8 +12,8 @@ This plan preserves calculation and data behaviour. Each ticket is a self-contai
 | 6   | Primary calculator                 | single-calculator panels and inputs               | Clearer setup/results hierarchy, calm pending/stale state; lint, types, calculator contracts                      | completed — lint, type check, diff review   |
 | 7   | Secondary calculators              | regular investment, ladder, retirement, optimizer | Consistent control/result layouts and result hierarchy; lint, types, related contracts                            | completed — lint, type check, diff review   |
 | 8   | Reference & workspace pages        | home, economic-data, education, notebook          | Better responsive density and page-specific hierarchy; lint, types                                                | completed — lint, type check, diff review   |
-| 9   | Accessibility & feedback           | toast, dialogs, suspense, error state             | Accessible labels/live feedback, reduced motion, clearer errors/loading; lint, types, feedback contracts          | in progress — checks & diff review complete |
-| 10  | Final consistency pass             | comparison, shared headers/notes                  | Eliminate remaining visual outliers and verify cross-route consistency; lint, types, full test suite/build        | pending                                     |
+| 9   | Accessibility & feedback           | toast, dialogs, suspense, error state             | Accessible labels/live feedback, reduced motion, clearer errors/loading; lint, types, feedback contracts          | completed — lint, type check, diff review   |
+| 10  | Final consistency pass             | comparison, shared headers/notes                  | Eliminate remaining visual outliers and verify cross-route consistency; lint, types, full test suite/build        | completed — lint, type check, full test/build pending |
 
 ## Ticket ordering
 
