@@ -30,17 +30,17 @@ export function SecondarySurfaceIntro({
   return (
     <section
       className={cn(
-        'space-y-4 border-y py-5 md:py-6',
+        'ui-section-flow border-y py-5 md:py-6',
         tone === 'amber' ? 'border-warning/40 bg-warning/5' : 'border-border',
       )}
     >
-      <div className="ui-meta font-semibold">{eyebrow}</div>
-      <div className="space-y-3">
+      <div className="ui-eyebrow">{eyebrow}</div>
+      <div className="ui-section-intro space-y-3">
         <h1 className="ui-section-title">{title}</h1>
-        <p className="ui-body max-w-4xl">{description}</p>
+        <p className="ui-body ui-pretty">{description}</p>
       </div>
       {actions.length > 0 ? (
-        <div className="flex flex-wrap gap-3 border-t border-border pt-4">
+        <div className="ui-action-row border-t border-border pt-4">
           {actions.map((action) => (
             <Button
               key={`${action.href}-${action.label}`}

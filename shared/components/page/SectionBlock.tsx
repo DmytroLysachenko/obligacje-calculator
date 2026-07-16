@@ -17,10 +17,10 @@ interface SectionBlockProps {
 }
 
 const variantClass: Record<SectionBlockVariant, string> = {
-  plain: 'space-y-6',
-  divided: 'space-y-6 border-t border-border py-8',
-  surface: 'space-y-6 rounded-lg bg-muted/20 p-5 md:p-6',
-  card: 'space-y-6 rounded-lg border border-border bg-card p-5 md:p-6',
+  plain: 'ui-section-flow',
+  divided: 'ui-section-flow border-t border-border py-8',
+  surface: 'ui-section-flow ui-surface-inset p-5 md:p-6',
+  card: 'ui-section-flow ui-surface p-5 md:p-6',
 };
 
 export function SectionBlock({
@@ -39,22 +39,23 @@ export function SectionBlock({
   return (
     <section className={cn(variantClass[variant], className)}>
       {hasHeader ? (
-        <div
-          className={cn(
-            'flex flex-col gap-4 md:flex-row md:items-start md:justify-between',
-            headerClassName,
-          )}
-        >
-          <div className="max-w-4xl space-y-2">
+        <div className={cn('ui-section-header gap-4', headerClassName)}>
+          <div className="ui-section-intro">
             {title ? (
               <div className="flex items-center gap-2">
-                {icon ? <span className="text-foreground">{icon}</span> : null}
+                {icon ? (
+                  <span className="ui-icon-tile-sm" aria-hidden="true">
+                    {icon}
+                  </span>
+                ) : null}
                 <h3 className="ui-section-title">{title}</h3>
               </div>
             ) : null}
-            {description ? <p className="ui-body text-muted-foreground">{description}</p> : null}
+            {description ? (
+              <p className="ui-body ui-pretty text-muted-foreground">{description}</p>
+            ) : null}
           </div>
-          {action ? <div className="shrink-0">{action}</div> : null}
+          {action ? <div className="ui-action-row shrink-0">{action}</div> : null}
         </div>
       ) : null}
       <div className={contentClassName}>{children}</div>

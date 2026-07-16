@@ -3,6 +3,7 @@
 import { Check, Loader2 } from 'lucide-react';
 import React from 'react';
 
+import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 
 type PageHeaderStatusTone = 'neutral' | 'success' | 'warning' | 'danger';
@@ -31,6 +32,8 @@ const statusToneClass: Record<PageHeaderStatusTone, string> = {
 };
 
 function StatusLine({ status }: { status?: PageHeaderStatus | null }) {
+  const { t } = useAppI18n();
+
   if (!status) {
     return null;
   }
@@ -38,14 +41,18 @@ function StatusLine({ status }: { status?: PageHeaderStatus | null }) {
   const Icon = status.state === 'loading' ? Loader2 : status.state === 'complete' ? Check : null;
 
   return (
-    <div className="flex flex-wrap items-center gap-2 text-xs leading-5 text-muted-foreground">
+    <div className="ui-status-note" role="status" aria-live="polite">
       <span
         className={cn('inline-flex items-center gap-2', statusToneClass[status.tone ?? 'neutral'])}
       >
         {Icon ? (
-          <Icon className={cn('h-4 w-4', status.state === 'loading' && 'animate-spin')} />
+          <Icon
+            className={cn('h-4 w-4', status.state === 'loading' && 'animate-spin')}
+            aria-hidden="true"
+          />
         ) : null}
-        {status.label}
+        <span className="sr-only">{t(`common.status_${status.state ?? 'idle'}`)}: </span>
+        <span>{status.label}</span>
       </span>
     </div>
   );
@@ -61,23 +68,25 @@ export function PageHeader({
   className,
 }: PageHeaderProps) {
   return (
-    <header className={cn('space-y-4 border-b border-border pb-8 md:pb-10', className)}>
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="max-w-[var(--layout-reading-max)] space-y-2">
+    <header className={cn('ui-page-header space-y-4', className)}>
+      <div className="ui-page-header-content">
+        <div className="ui-section-intro">
           <div className="flex items-start gap-3 md:items-center">
-            <div className="rounded-md bg-muted p-2 text-foreground">{icon}</div>
-            <div className="space-y-1">
-              {eyebrow ? <p className="ui-metadata text-muted-foreground">{eyebrow}</p> : null}
+            <div className="ui-icon-tile" aria-hidden="true">
+              {icon}
+            </div>
+            <div className="min-w-0 space-y-1">
+              {eyebrow ? <p className="ui-eyebrow">{eyebrow}</p> : null}
               <h1 className="ui-page-title">{title}</h1>
-              {description ? <p className="ui-body text-muted-foreground">{description}</p> : null}
+              {description ? (
+                <p className="ui-body ui-pretty text-muted-foreground">{description}</p>
+              ) : null}
             </div>
           </div>
           <StatusLine status={status} />
         </div>
 
-        {action ? (
-          <div className="flex flex-wrap items-center gap-2 lg:justify-end">{action}</div>
-        ) : null}
+        {action ? <div className="ui-action-row-end">{action}</div> : null}
       </div>
     </header>
   );
