@@ -59,6 +59,7 @@ export function AppToast({
         <Button
           variant="ghost"
           size="icon"
+          aria-label="Dismiss notification"
           className={cn(
             'h-8 w-8 rounded-full',
             isSuccess
