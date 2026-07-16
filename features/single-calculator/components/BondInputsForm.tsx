@@ -102,7 +102,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
   return (
     <TooltipProvider>
-      <section className="w-full space-y-8 border-y border-border bg-background p-5 md:p-6">
+      <section className="w-full space-y-8 border-y border-border bg-background p-5 md:p-6 xl:sticky xl:top-8">
         {guardrails.length > 0 ? (
           <div className="space-y-3">
             {guardrails.map((issue) => (

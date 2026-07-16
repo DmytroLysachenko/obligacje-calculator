@@ -92,7 +92,7 @@ export function BondCalculatorResultsPanel({
       ) : null}
 
       {isCalculating && !results ? (
-        <div className="space-y-4">
+        <div className="space-y-4" role="status" aria-live="polite">
           <Skeleton className="h-28 w-full rounded-lg md:h-32" />
           <Skeleton className="h-52 w-full rounded-lg md:h-60" />
           <Skeleton className="h-[320px] w-full rounded-lg md:h-[420px]" />
@@ -102,12 +102,12 @@ export function BondCalculatorResultsPanel({
       {results ? (
         <div
           className={cn(
-            'space-y-8 transition-opacity duration-300',
+            'space-y-8 transition-opacity duration-200',
             isCalculating && 'pointer-events-none opacity-50',
           )}
         >
           {isDirty ? (
-            <div className="ui-inline-notice border-warning/30 bg-warning/5 text-foreground">
+            <div className="ui-inline-notice border-warning/30 bg-warning/5 text-foreground" role="status">
               {t('bonds.simulation.stale_results')}{' '}
               <span className="font-semibold">{t('common.recalculate')}</span>.
             </div>
@@ -145,7 +145,7 @@ export function BondCalculatorDetailsPanel({
   return (
     <div
       className={cn(
-        'space-y-8 transition-opacity duration-300',
+        'space-y-8 transition-opacity duration-200',
         isCalculating && 'pointer-events-none opacity-50',
       )}
     >
