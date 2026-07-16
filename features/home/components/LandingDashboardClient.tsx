@@ -95,7 +95,7 @@ export function LandingDashboardClient() {
   const secondaryTitle = t('landing.secondary_tools.title');
   const secondaryDesc = t('landing.secondary_tools.description');
   return (
-    <div className="space-y-8 pb-20 md:space-y-10">
+    <div className="ui-page-flow">
       <section className="border-b border-border pb-8 md:pb-10">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end">
           <div className="max-w-5xl space-y-6 md:space-y-7">

@@ -51,10 +51,10 @@ export default function EducationClient() {
 
   return (
     <PageTransition>
-      <div className="space-y-14 pb-12 md:space-y-16">
+      <div className="ui-page-flow">
         <header className="space-y-4">
           <h2 className="ui-page-title">{t('nav.education')}</h2>
-          <p className="ui-body max-w-3xl">{t('education.subtitle')}</p>
+          <p className="ui-body max-w-3xl text-muted-foreground">{t('education.subtitle')}</p>
         </header>
 
         <SectionBlock
