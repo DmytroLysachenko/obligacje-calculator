@@ -40,7 +40,7 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
   return (
     <div
       className={cn(
-        'relative w-full overflow-hidden rounded-lg border border-border bg-card shadow-sm',
+        'relative w-full overflow-hidden rounded-lg border border-border bg-card',
         responsiveHeightClassName,
         className,
       )}
