@@ -216,7 +216,7 @@
 
 @layer utilities {
   .ui-page-title {
-    @apply text-[34px] leading-[1.1] font-semibold tracking-tight text-foreground md:text-[42px];
+    @apply text-[32px] leading-[1.12] font-semibold tracking-tight text-foreground text-balance md:text-[40px];
   }
   .ui-section-title {
     @apply text-lg leading-7 font-semibold tracking-tight text-foreground;
@@ -231,7 +231,7 @@
     @apply text-xs leading-5 text-muted-foreground;
   }
   .ui-primary-metric {
-    @apply text-[42px] leading-none font-semibold tracking-tight text-foreground md:text-[48px];
+    @apply text-[40px] leading-none font-semibold tracking-tight text-foreground;
   }
   .ui-large-metric {
     @apply text-[30px] leading-none font-semibold tracking-tight text-foreground md:text-[34px];

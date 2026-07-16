@@ -105,9 +105,7 @@ export function LandingDashboardClient() {
             </p>
 
             <div className="space-y-4">
-              <h1 className="max-w-4xl text-[40px] font-semibold leading-none text-foreground md:text-[64px]">
-                {t('landing.recovery_home.title')}
-              </h1>
+              <h1 className="ui-page-title max-w-4xl">{t('landing.recovery_home.title')}</h1>
               <p className="ui-body max-w-3xl text-muted-foreground md:text-base md:leading-8">
                 {t('landing.recovery_home.description')}
               </p>
@@ -140,7 +138,6 @@ export function LandingDashboardClient() {
                 {t('landing.hero_trust_note')}
               </p>
             </div>
-
           </div>
 
           <aside className="hidden border-l border-border pl-6 lg:block">

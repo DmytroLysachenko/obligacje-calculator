@@ -21,26 +21,21 @@ export default function GlobalError({
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-6">
       <section className="w-full max-w-md space-y-6 border-t border-border py-8 text-center">
-        <div className="relative inline-block">
-          <div className="relative rounded-lg bg-muted p-6">
-            <AlertTriangle className="h-12 w-12 text-destructive" />
-          </div>
+        <div className="inline-flex bg-muted p-4 text-destructive">
+          <AlertTriangle className="h-8 w-8" aria-hidden="true" />
         </div>
 
         <div className="space-y-2">
-          <h1 className="text-[32px] font-semibold leading-tight text-foreground">
-            Engine Stall Detected
-          </h1>
+          <h1 className="ui-page-title">We couldn’t complete that calculation</h1>
           <p className="ui-body text-muted-foreground">
-            The calculation engine encountered an unexpected exception. Your data is safe, but we
-            need to reset the current state.
+            The calculation encountered an unexpected issue. Reset the current view and try again.
           </p>
         </div>
 
         {error.digest && (
-          <div className="rounded-lg bg-muted/30 p-2">
-            <code className="ui-metadata font-mono text-muted-foreground">
-              Incident ID: {error.digest}
+          <div className="border-y border-border bg-muted/30 px-3 py-2">
+            <code className="ui-meta font-mono text-muted-foreground">
+              Reference: {error.digest}
             </code>
           </div>
         )}
@@ -48,23 +43,21 @@ export default function GlobalError({
         <div className="flex flex-col gap-3 pt-4">
           <Button
             onClick={() => reset()}
-            className="h-12 gap-2 rounded-lg font-semibold transition-all active:scale-95"
+            className="h-11 gap-2 font-semibold transition-colors active:translate-y-px"
           >
             <RefreshCcw className="h-4 w-4" />
-            RESTART ENGINE
+            Reset & try again
           </Button>
 
-          <Button variant="outline" asChild className="h-12 rounded-lg font-semibold">
+          <Button variant="outline" asChild className="h-11 font-semibold">
             <Link href="/">
               <Home className="h-4 w-4 mr-2" />
-              BACK TO BASE
+              Return to dashboard
             </Link>
           </Button>
         </div>
 
-        <p className="ui-metadata text-muted-foreground/70">
-          Obligacje Calculator • Reliability Layer v2.1
-        </p>
+        <p className="ui-meta text-muted-foreground/70">Obligacje Calculator</p>
       </section>
     </div>
   );
