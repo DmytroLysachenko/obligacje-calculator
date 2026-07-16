@@ -106,14 +106,21 @@ export function Sidebar({ dataFreshness }: { dataFreshness?: CalculationDataFres
 
   return (
     <>
-      <div className="fixed left-3 top-3 z-50 lg:hidden">
+      <div className="fixed inset-x-0 top-0 z-50 flex h-14 items-center justify-between border-b border-border bg-background/95 px-3 backdrop-blur-sm lg:hidden">
+        <Link
+          href="/"
+          className="flex min-w-0 items-center gap-2 text-sm font-semibold tracking-tight text-foreground"
+        >
+          <TrendingUp className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <span className="truncate">{t('common.title')}</span>
+        </Link>
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
             <Button
               variant="outline"
               size="icon"
               aria-label={t('common.open_navigation')}
-              className="border border-border bg-card shadow-none"
+              className="size-11 border-border bg-card shadow-none"
             >
               <Menu className="h-5 w-5" />
               <span className="sr-only">{t('common.open_navigation')}</span>

@@ -99,7 +99,7 @@ export default async function RootLayout({
                       <main
                         id="main-content"
                         tabIndex={-1}
-                        className="flex min-h-screen flex-1 flex-col overflow-x-hidden bg-background outline-none lg:pl-[var(--sidebar-width)]"
+                        className="flex min-h-screen flex-1 flex-col overflow-x-hidden bg-background pt-14 outline-none lg:pl-[var(--sidebar-width)] lg:pt-0"
                       >
                         <div className="flex-1 px-4 py-6 md:px-8 md:py-8 xl:px-10">
                           <div className="mx-auto w-full max-w-[var(--layout-app-max)]">
@@ -108,20 +108,22 @@ export default async function RootLayout({
                         </div>
 
                         <footer className="mt-auto border-t border-border bg-card py-6">
-                          <div className="mx-auto w-full max-w-[var(--layout-app-max)] px-4 text-center text-sm text-muted-foreground">
-                            <p>
-                              {'\u00A9'} {new Date().getFullYear()} {t('common.title')}.{' '}
-                              {t('site.footer_disclaimer')}
-                            </p>
-                            <div className="mt-4 flex justify-center gap-4">
-                              <a
-                                href="https://www.obligacjeskarbowe.pl/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-primary hover:underline"
-                              >
-                                {t('site.official_bonds_link_label')}
-                              </a>
+                          <div className="px-4 md:px-8 xl:px-10">
+                            <div className="mx-auto w-full max-w-[var(--layout-app-max)] text-center text-sm text-muted-foreground">
+                              <p>
+                                {'\u00A9'} {new Date().getFullYear()} {t('common.title')}.{' '}
+                                {t('site.footer_disclaimer')}
+                              </p>
+                              <div className="mt-4 flex justify-center gap-4">
+                                <a
+                                  href="https://www.obligacjeskarbowe.pl/"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-primary hover:underline"
+                                >
+                                  {t('site.official_bonds_link_label')}
+                                </a>
+                              </div>
                             </div>
                           </div>
                         </footer>

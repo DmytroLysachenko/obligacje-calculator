@@ -79,11 +79,12 @@ function NavLinkItem({
     <Link
       href={item.href}
       onClick={onItemClick}
+      aria-current={isActive ? 'page' : undefined}
       className={cn(
-        'group relative block rounded-md px-3 py-2.5 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40',
+        'group relative block rounded-md px-3 py-2.5 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40',
         isActive
-          ? 'bg-muted text-foreground before:absolute before:left-0 before:top-1/2 before:h-6 before:w-0.5 before:-translate-y-1/2 before:bg-primary'
-          : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground',
+          ? 'bg-background text-foreground before:absolute before:left-0 before:top-1/2 before:h-6 before:w-0.5 before:-translate-y-1/2 before:bg-primary'
+          : 'text-muted-foreground hover:bg-background hover:text-foreground',
       )}
     >
       <div className="flex min-w-0 items-center gap-3">
