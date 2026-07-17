@@ -7,10 +7,12 @@ import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
+  TableScrollHint,
 } from '@/components/ui/table';
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { BondType } from '@/features/bond-core/types';
@@ -81,26 +83,49 @@ export function PortfolioLotsTableSection({
                 {t('notebook.lots_count', { count: String(lots.length) })}
               </p>
             </div>
+            <TableScrollHint>{t('notebook.stored_lots_hint')}</TableScrollHint>
             <div className="overflow-x-auto">
-              <Table className="w-full table-fixed text-sm tabular-nums">
+              <Table
+                className="w-full table-fixed text-sm tabular-nums"
+                aria-label={t('notebook.stored_lots_hint')}
+              >
+                <TableCaption>{t('notebook.stored_lots_hint')}</TableCaption>
                 <TableHeader>
                   <TableRow className="h-12 hover:bg-transparent">
-                    <TableHead className="sticky top-0 z-10 h-12 w-[14%] bg-background text-sm font-semibold text-muted-foreground">
+                    <TableHead
+                      scope="col"
+                      className="sticky top-0 z-10 h-12 w-[14%] bg-background text-sm font-semibold text-muted-foreground"
+                    >
                       {t('notebook.column_type')}
                     </TableHead>
-                    <TableHead className="sticky top-0 z-10 h-12 w-[22%] bg-background text-sm font-semibold text-muted-foreground">
+                    <TableHead
+                      scope="col"
+                      className="sticky top-0 z-10 h-12 w-[22%] bg-background text-sm font-semibold text-muted-foreground"
+                    >
                       {t('notebook.column_duration')}
                     </TableHead>
-                    <TableHead className="sticky top-0 z-10 h-12 w-[14%] bg-background text-right text-sm font-semibold text-muted-foreground">
+                    <TableHead
+                      scope="col"
+                      className="sticky top-0 z-10 h-12 w-[14%] bg-background text-right text-sm font-semibold text-muted-foreground"
+                    >
                       {t('notebook.column_amount')}
                     </TableHead>
-                    <TableHead className="sticky top-0 z-10 h-12 w-[18%] bg-background text-sm font-semibold text-muted-foreground">
+                    <TableHead
+                      scope="col"
+                      className="sticky top-0 z-10 h-12 w-[18%] bg-background text-sm font-semibold text-muted-foreground"
+                    >
                       {t('notebook.column_purchase_date')}
                     </TableHead>
-                    <TableHead className="sticky top-0 z-10 h-12 w-[20%] bg-background text-right text-sm font-semibold text-muted-foreground">
+                    <TableHead
+                      scope="col"
+                      className="sticky top-0 z-10 h-12 w-[20%] bg-background text-right text-sm font-semibold text-muted-foreground"
+                    >
                       {t('notebook.column_nominal_value')}
                     </TableHead>
-                    <TableHead className="sticky top-0 z-10 h-12 w-[12%] bg-background text-right text-sm font-semibold text-muted-foreground">
+                    <TableHead
+                      scope="col"
+                      className="sticky top-0 z-10 h-12 w-[12%] bg-background text-right text-sm font-semibold text-muted-foreground"
+                    >
                       {t('notebook.column_action')}
                     </TableHead>
                   </TableRow>

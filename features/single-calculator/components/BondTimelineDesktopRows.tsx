@@ -7,10 +7,12 @@ import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
+  TableScrollHint,
 } from '@/components/ui/table';
 import { BondTimelineRowsProps } from '@/features/single-calculator/types/timeline';
 import { useAppI18n } from '@/i18n/client';
@@ -40,13 +42,9 @@ export function BondTimelineDesktopRows({
 
   return (
     <div className="ui-table-frame hidden w-full lg:block">
-      <p id="bond-timeline-table-caption" className="sr-only">
-        {t('bonds.timeline')}
-      </p>
-      <Table
-        className="w-full table-fixed text-sm tabular-nums"
-        aria-describedby="bond-timeline-table-caption"
-      >
+      <TableScrollHint>{t('bonds.schedule.mobile_sheet_description')}</TableScrollHint>
+      <Table className="w-full table-fixed text-sm tabular-nums" aria-label={t('bonds.timeline')}>
+        <TableCaption>{t('bonds.timeline')}</TableCaption>
         <TableHeader>
           <TableRow className="h-12 hover:bg-transparent">
             <TableHead scope="col" className="sticky top-0 z-10 h-12 w-[11%] bg-background">

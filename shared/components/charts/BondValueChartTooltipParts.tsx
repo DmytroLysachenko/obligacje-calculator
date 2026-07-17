@@ -42,7 +42,11 @@ function ScenarioGroupTooltip({
   const nbp = data.nbp;
 
   return (
-    <div className="min-w-[360px] max-w-[560px] rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-lg">
+    <div
+      className="ui-chart-tooltip min-w-[360px] max-w-[560px] p-4"
+      role="status"
+      aria-live="polite"
+    >
       <TooltipStatusHeader label={label} isProjected={isProjected} t={t} />
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -106,7 +110,7 @@ export function BondValueChartTooltip({
   }
 
   return (
-    <div className="min-w-[240px] rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-lg">
+    <div className="ui-chart-tooltip min-w-[240px] p-4" role="status" aria-live="polite">
       <TooltipStatusHeader label={label} isProjected={model.isProjected} t={t} />
 
       <div className="space-y-3">

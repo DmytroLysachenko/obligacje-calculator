@@ -303,7 +303,8 @@
     @apply min-w-0 border-t border-border pt-3;
   }
   .ui-metric-value {
-    @apply financial-number text-lg font-semibold leading-6 text-foreground;
+    @apply text-lg font-semibold leading-6 text-foreground;
+    font-variant-numeric: tabular-nums;
   }
   .ui-metric-support {
     @apply mt-1 text-xs leading-5 text-muted-foreground;
@@ -379,7 +380,23 @@
     @apply sr-only;
   }
   .ui-table-scroll-region {
-    @apply relative w-full overflow-x-auto overscroll-x-contain custom-scrollbar;
+    @apply relative w-full overflow-x-auto overscroll-x-contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-muted) transparent;
+  }
+  .ui-table-scroll-region::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .ui-table-scroll-region::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .ui-table-scroll-region::-webkit-scrollbar-thumb {
+    background: var(--color-muted);
+    border-radius: 10px;
+  }
+  .ui-table-scroll-region::-webkit-scrollbar-thumb:hover {
+    background: var(--color-muted-foreground);
   }
   .ui-table-scroll-region:focus-visible {
     @apply outline-none ring-2 ring-ring/45 ring-offset-2;
@@ -424,7 +441,8 @@
     @apply min-w-0 space-y-1;
   }
   .ui-list-row-value {
-    @apply financial-number shrink-0 text-right text-sm font-semibold text-foreground;
+    @apply shrink-0 text-right text-sm font-semibold text-foreground;
+    font-variant-numeric: tabular-nums;
   }
   .ui-reading-width {
     max-width: var(--layout-reading-max);

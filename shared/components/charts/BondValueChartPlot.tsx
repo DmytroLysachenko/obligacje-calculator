@@ -107,7 +107,10 @@ export function BondValueChartPlot({
             tickFormatter={(value) => `${Number(value).toFixed(0)}%`}
             domain={rightDomain}
           />
-          <Tooltip content={<BondValueChartTooltip formatCurrency={formatCurrency} t={t} />} />
+          <Tooltip
+            content={<BondValueChartTooltip formatCurrency={formatCurrency} t={t} />}
+            cursor={{ stroke: 'hsl(var(--muted-foreground))', strokeOpacity: 0.35 }}
+          />
           {firstProjectedIndex !== -1 ? (
             <ReferenceLine
               x={data[firstProjectedIndex].label}

@@ -4,10 +4,12 @@ import { Badge } from '@/components/ui/badge';
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
+  TableScrollHint,
 } from '@/components/ui/table';
 import { ComparisonTableTimelineRowsProps } from '@/features/comparison-engine/types/comparison-table';
 import { cn } from '@/lib/utils';
@@ -90,7 +92,9 @@ export function ComparisonTableTimelineRows({
         </div>
 
         <div>
+          <TableScrollHint>{labels.mobileDescription}</TableScrollHint>
           <Table className="w-full table-fixed tabular-nums" aria-label={labels.desktopNote}>
+            <TableCaption>{labels.desktopNote}</TableCaption>
             <TableHeader className="bg-card">
               <TableRow className="border-b hover:bg-transparent">
                 <TableHead

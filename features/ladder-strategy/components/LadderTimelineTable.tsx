@@ -4,10 +4,12 @@ import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
+  TableScrollHint,
 } from '@/components/ui/table';
 import { LADDER_TABLE_FILTERS } from '@/features/ladder-strategy/constants/timeline';
 import { LadderTimelineTableProps } from '@/features/ladder-strategy/types/timeline';
@@ -72,6 +74,7 @@ export function LadderTimelineTable({
       </ResponsiveTableSheet>
 
       <div className="ui-table-frame hidden lg:block">
+        <TableScrollHint>{t('ladder_page.timeline.mobile_sheet_description')}</TableScrollHint>
         <div className="ui-section-header border-b border-border px-4 py-3 text-sm text-muted-foreground">
           <p>{t('ladder_page.timeline.table_summary')}</p>
           <div className="flex flex-wrap items-center gap-2">
@@ -96,6 +99,7 @@ export function LadderTimelineTable({
           className="w-full table-fixed text-sm tabular-nums"
           aria-label={t('ladder_page.timeline.table_summary')}
         >
+          <TableCaption>{t('ladder_page.timeline.table_summary')}</TableCaption>
           <TableHeader>
             <TableRow className="h-12 hover:bg-transparent">
               <TableHead scope="col" className="sticky top-0 z-10 w-[34%] bg-background">
@@ -144,6 +148,7 @@ export function LadderTimelineTable({
             rowsPerPage: t('common.rows_per_page'),
             all: t('common.all'),
           }}
+          className="focus-within:ring-2 focus-within:ring-ring/45"
         />
       </div>
     </>

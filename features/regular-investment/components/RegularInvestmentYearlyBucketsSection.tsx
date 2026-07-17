@@ -3,10 +3,12 @@ import React, { useMemo, useState } from 'react';
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
+  TableScrollHint,
 } from '@/components/ui/table';
 import { useAppI18n } from '@/i18n/client';
 import { SectionBlock } from '@/shared/components/page/SectionBlock';
@@ -92,10 +94,12 @@ export function RegularInvestmentYearlyBucketsSection({
         </ResponsiveTableSheet>
 
         <div className="ui-table-frame hidden lg:block">
+          <TableScrollHint>{t('regular_summary.yearly_mobile_description')}</TableScrollHint>
           <Table
             className="w-full table-fixed text-sm tabular-nums"
             aria-label={t('regular_summary.yearly_title')}
           >
+            <TableCaption>{t('regular_summary.yearly_description')}</TableCaption>
             <TableHeader>
               <TableRow className="h-12 hover:bg-transparent">
                 <TableHead scope="col" className="sticky top-0 z-10 w-[16%] bg-background">
@@ -167,7 +171,7 @@ export function RegularInvestmentYearlyBucketsSection({
               rowsPerPage: t('common.rows_per_page'),
               all: t('common.all'),
             }}
-            className="px-1"
+            className="px-1 focus-within:ring-2 focus-within:ring-ring/45"
           />
         </div>
       </div>
