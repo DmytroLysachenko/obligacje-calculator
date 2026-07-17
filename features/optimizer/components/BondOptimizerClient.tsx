@@ -35,8 +35,11 @@ export default function BondOptimizerClient() {
       isDirty={isDirty}
       hasResults={hasResults}
     >
-      <div className="grid grid-cols-1 gap-8 xl:grid-cols-12 xl:gap-10">
-        <aside className="space-y-6 xl:sticky xl:top-8 xl:col-span-4 xl:h-fit">
+      <div className="ui-page-flow grid grid-cols-1 xl:grid-cols-12 xl:gap-10">
+        <aside
+          className="ui-control-stack xl:sticky xl:top-8 xl:col-span-4 xl:h-fit"
+          aria-label={t('optimizer_page.input_title')}
+        >
           <OptimizerInputPanel
             inputs={inputs}
             horizonYears={horizonYears}
@@ -45,7 +48,7 @@ export default function BondOptimizerClient() {
           />
         </aside>
 
-        <section className="space-y-6 xl:col-span-8">
+        <main className="ui-compact-flow min-w-0 xl:col-span-8" aria-live="polite">
           <OptimizerResultsPanel
             envelope={envelope}
             results={results}
@@ -57,7 +60,7 @@ export default function BondOptimizerClient() {
             formatCurrency={formatCurrency}
             formatPercentValue={formatPercentValue}
           />
-        </section>
+        </main>
       </div>
 
       <RecalculateButton

@@ -43,7 +43,7 @@ export function RegularInvestmentYearlyBucketsSection({
           {t('regular_summary.yearly_badge')}
         </span>
       }
-      className="border-y border-border py-6"
+      className="ui-result-panel"
       contentClassName="space-y-4"
     >
       <div>
@@ -56,7 +56,11 @@ export function RegularInvestmentYearlyBucketsSection({
           })}
         >
           {visibleYearlyBuckets.map((bucket) => (
-            <div key={`mobile-${bucket.year}`} className="border-t border-border py-4">
+            <article
+              key={`mobile-${bucket.year}`}
+              className="border-t border-border py-5"
+              aria-label={String(bucket.year)}
+            >
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-sm font-semibold text-foreground">{bucket.year}</p>
@@ -64,11 +68,11 @@ export function RegularInvestmentYearlyBucketsSection({
                     {t('regular_summary.lots_label')}: {bucket.count}
                   </p>
                 </div>
-                <p className="text-sm font-semibold text-foreground">
+                <p className="financial-number text-right text-sm font-semibold text-foreground">
                   {formatCurrency(bucket.netValue)}
                 </p>
               </div>
-              <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+              <div className="mt-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
                 <MobileBucketValue
                   label={t('regular_summary.invested')}
                   value={formatCurrency(bucket.invested)}
@@ -83,30 +87,48 @@ export function RegularInvestmentYearlyBucketsSection({
                   value={formatCurrency(bucket.netValue)}
                 />
               </div>
-            </div>
+            </article>
           ))}
         </ResponsiveTableSheet>
 
-        <div className="hidden border-y border-border lg:block">
-          <Table className="w-full table-fixed text-sm tabular-nums">
+        <div className="ui-table-frame hidden lg:block">
+          <Table
+            className="w-full table-fixed text-sm tabular-nums"
+            aria-label={t('regular_summary.yearly_title')}
+          >
             <TableHeader>
               <TableRow className="h-12 hover:bg-transparent">
-                <TableHead className="sticky top-0 z-10 w-[16%] bg-background">
+                <TableHead scope="col" className="sticky top-0 z-10 w-[16%] bg-background">
                   {t('common.year')}
                 </TableHead>
-                <TableHead className="sticky top-0 z-10 w-[12%] bg-background text-right">
+                <TableHead
+                  scope="col"
+                  className="sticky top-0 z-10 w-[12%] bg-background text-right"
+                >
                   {t('regular_summary.lots_label')}
                 </TableHead>
-                <TableHead className="sticky top-0 z-10 w-[18%] bg-background text-right">
+                <TableHead
+                  scope="col"
+                  className="sticky top-0 z-10 w-[18%] bg-background text-right"
+                >
                   {t('regular_summary.invested')}
                 </TableHead>
-                <TableHead className="sticky top-0 z-10 w-[18%] bg-background text-right">
+                <TableHead
+                  scope="col"
+                  className="sticky top-0 z-10 w-[18%] bg-background text-right"
+                >
                   {t('regular_summary.interest')}
                 </TableHead>
-                <TableHead className="sticky top-0 z-10 w-[18%] bg-background text-right">
+                <TableHead
+                  scope="col"
+                  className="sticky top-0 z-10 w-[18%] bg-background text-right"
+                >
                   {t('bonds.tax')}
                 </TableHead>
-                <TableHead className="sticky top-0 z-10 w-[18%] bg-background text-right">
+                <TableHead
+                  scope="col"
+                  className="sticky top-0 z-10 w-[18%] bg-background text-right"
+                >
                   {t('regular_summary.net_value')}
                 </TableHead>
               </TableRow>
@@ -155,7 +177,7 @@ export function RegularInvestmentYearlyBucketsSection({
 
 function MobileBucketValue({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border-t border-border px-1 py-2 first:border-t-0">
+    <div className="ui-metric-item px-1 py-2 first:border-t-0">
       <p className="text-xs font-semibold text-muted-foreground">{label}</p>
       <p className="mt-1 text-sm font-semibold text-foreground">{value}</p>
     </div>

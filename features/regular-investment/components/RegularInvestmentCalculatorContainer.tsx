@@ -20,11 +20,11 @@ import { RegularInvestmentChart } from './RegularInvestmentChart';
 import { RegularInvestmentInputsForm } from './RegularInvestmentInputsForm';
 import { RegularInvestmentResultsSummary } from './RegularInvestmentResultsSummary';
 const LoadingState = () => (
-  <div className="space-y-4">
-    <Skeleton className="h-28 w-full rounded-lg md:h-32" />
-    <Skeleton className="h-[280px] w-full rounded-lg md:h-[320px]" />
-    <Skeleton className="h-[320px] w-full rounded-lg md:h-[420px]" />
-    <Skeleton className="h-[220px] w-full rounded-lg md:h-[260px]" />
+  <div className="ui-control-stack" role="status" aria-live="polite">
+    <Skeleton className="h-28 w-full rounded-md md:h-32" />
+    <Skeleton className="h-[280px] w-full rounded-md md:h-[320px]" />
+    <Skeleton className="h-[320px] w-full rounded-md md:h-[420px]" />
+    <Skeleton className="h-[220px] w-full rounded-md md:h-[260px]" />
   </div>
 );
 export const RegularInvestmentCalculatorContainer: React.FC = () => {
@@ -63,6 +63,9 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
       onKeyDown={handleKeyDown}
     >
       <CalculatorWorkspace
+        className="ui-page-flow"
+        resultsClassName="min-w-0"
+        detailsClassName="min-w-0"
         controls={
           <RegularInvestmentInputsForm
             inputs={inputs}
@@ -103,12 +106,15 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
             {results ? (
               <div
                 className={cn(
-                  'space-y-8 transition-opacity duration-200',
+                  'ui-compact-flow transition-opacity duration-200',
                   isCalculating && 'pointer-events-none opacity-50',
                 )}
               >
                 {isDirty ? (
-                  <div className="ui-inline-notice border-warning/30 bg-warning/5 text-foreground">
+                  <div
+                    className="ui-status-note ui-status-note-warning text-foreground"
+                    role="status"
+                  >
                     {t('bonds.simulation.stale_results')}{' '}
                     <span className="font-semibold">{t('common.recalculate')}</span>.
                   </div>
@@ -126,13 +132,14 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
           results ? (
             <div
               className={cn(
-                'space-y-8 transition-opacity duration-200',
+                'ui-compact-flow transition-opacity duration-200',
                 isCalculating && 'pointer-events-none opacity-50',
               )}
             >
               <CalculatorSection
                 title={t('regular_investment_page.chart_title')}
                 description={t('regular_investment_page.chart_description')}
+                className="ui-section-divider"
               >
                 <RegularInvestmentChart results={results} bondType={inputs.bondType} />
               </CalculatorSection>

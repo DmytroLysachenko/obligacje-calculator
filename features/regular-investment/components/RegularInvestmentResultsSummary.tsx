@@ -92,7 +92,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
     [handleExport, t],
   );
   return (
-    <div className="space-y-8">
+    <div className="ui-compact-flow">
       <ResultSummaryHero
         eyebrow={t('regular_summary.plan_eyebrow')}
         value={formatCurrency(results.finalNominalValue)}
@@ -101,15 +101,25 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
         actions={summaryActions}
       />
 
-      <MetricStrip items={primaryStats} columns="grid-cols-1 md:grid-cols-2 xl:grid-cols-4" />
-
-      <MetricStrip items={supportingStats} columns="grid-cols-1 lg:grid-cols-2" />
-
-      <FinancialInsightStrip
-        title={t('financial_insights.title')}
-        description={t('financial_insights.description')}
-        items={financialInsightItems}
+      <MetricStrip
+        items={primaryStats}
+        columns="grid-cols-1 md:grid-cols-2 xl:grid-cols-4"
+        className="ui-result-panel"
       />
+
+      <MetricStrip
+        items={supportingStats}
+        columns="grid-cols-1 lg:grid-cols-2"
+        className="ui-result-panel"
+      />
+
+      <section className="ui-result-panel">
+        <FinancialInsightStrip
+          title={t('financial_insights.title')}
+          description={t('financial_insights.description')}
+          items={financialInsightItems}
+        />
+      </section>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.75fr)] xl:items-start">
         <RegularInvestmentYearlyBucketsSection
