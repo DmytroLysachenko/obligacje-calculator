@@ -39,29 +39,47 @@ export function BondTimelineDesktopRows({
   };
 
   return (
-    <div className="hidden w-full border-y border-border lg:block">
-      <Table className="w-full table-fixed text-sm tabular-nums">
+    <div className="ui-table-frame hidden w-full lg:block">
+      <p id="bond-timeline-table-caption" className="sr-only">
+        {t('bonds.timeline')}
+      </p>
+      <Table
+        className="w-full table-fixed text-sm tabular-nums"
+        aria-describedby="bond-timeline-table-caption"
+      >
         <TableHeader>
           <TableRow className="h-12 hover:bg-transparent">
-            <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-background">
+            <TableHead scope="col" className="sticky top-0 z-10 h-12 w-[11%] bg-background">
               {t('common.period')}
             </TableHead>
-            <TableHead className="sticky top-0 z-10 h-12 w-[22%] bg-background">
+            <TableHead scope="col" className="sticky top-0 z-10 h-12 w-[22%] bg-background">
               {t('bonds.schedule.checkpoint_meaning')}
             </TableHead>
-            <TableHead className="sticky top-0 z-10 h-12 w-[15%] bg-background">
+            <TableHead scope="col" className="sticky top-0 z-10 h-12 w-[15%] bg-background">
               {t('bonds.schedule.rate_and_basis')}
             </TableHead>
-            <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-background">
+            <TableHead
+              scope="col"
+              className="sticky top-0 z-10 h-12 w-[11%] bg-background text-right"
+            >
               {t('bonds.total_wealth')}
             </TableHead>
-            <TableHead className="sticky top-0 z-10 h-12 w-[11%] bg-background">
+            <TableHead
+              scope="col"
+              className="sticky top-0 z-10 h-12 w-[11%] bg-background text-right"
+            >
               {firstCashFlowLabel}
             </TableHead>
-            <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-background">
+            <TableHead
+              scope="col"
+              className="sticky top-0 z-10 h-12 w-[10%] bg-background text-right"
+            >
               {t('common.net_profit')}
             </TableHead>
-            <TableHead className="sticky top-0 z-10 h-12 w-[10%] bg-background">
+            <TableHead
+              scope="col"
+              className="sticky top-0 z-10 h-12 w-[10%] bg-background text-right"
+            >
               {t('bonds.real_value')}
             </TableHead>
             <TableHead className="sticky top-0 z-10 h-12 w-[12%] bg-background text-right">
@@ -133,21 +151,21 @@ export function BondTimelineDesktopRows({
                   ) : null}
                 </div>
               </TableCell>
-              <TableCell className="financial-number py-4 align-top font-mono text-xs">
+              <TableCell className="financial-number py-4 text-right align-top font-mono text-xs">
                 {formatCurrency(row.totalWealth)}
               </TableCell>
-              <TableCell className="financial-number py-4 align-top font-mono text-xs text-muted-foreground">
+              <TableCell className="financial-number py-4 text-right align-top font-mono text-xs text-muted-foreground">
                 {formatCurrency(row.paidOutCash)}
               </TableCell>
               <TableCell
                 className={cn(
-                  'financial-number py-4 align-top font-mono text-xs',
+                  'financial-number py-4 text-right align-top font-mono text-xs',
                   row.netProfit >= 0 ? 'financial-positive' : 'text-destructive',
                 )}
               >
                 {formatCurrency(row.netProfit)}
               </TableCell>
-              <TableCell className="financial-number py-4 align-top font-mono text-xs text-muted-foreground">
+              <TableCell className="financial-number py-4 text-right align-top font-mono text-xs text-muted-foreground">
                 {formatCurrency(row.realValue)}
               </TableCell>
               <TableCell className="financial-number py-4 align-top text-right font-mono text-xs font-semibold">
