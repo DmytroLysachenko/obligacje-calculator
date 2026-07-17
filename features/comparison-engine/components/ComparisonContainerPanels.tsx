@@ -43,15 +43,15 @@ export function ComparisonFairnessPanel({
   const { t } = useAppI18n();
 
   return (
-    <section className="space-y-3 border-y border-border py-4">
-      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <div className="space-y-1">
+    <section className="ui-surface-flush ui-control-stack p-5 md:p-6">
+      <div className="ui-section-header gap-4">
+        <div className="ui-section-intro">
           <h2 className="ui-card-title">{t('comparison.fairness.title')}</h2>
-          <p className="text-sm leading-6 text-muted-foreground">
+          <p className="ui-body text-muted-foreground">
             {t('comparison.auto_rollover_fairness_desc')}
           </p>
         </div>
-        <div className="ui-metadata text-muted-foreground">
+        <div className="ui-status-note shrink-0 text-muted-foreground">
           {t('comparison.fairness.mode_label')}: {t('comparison.auto_rollover_mode_label')}
         </div>
       </div>
@@ -62,14 +62,14 @@ export function ComparisonFairnessPanel({
       ) : null}
       <Button
         type="button"
-        className="h-11 w-full gap-2 text-sm font-semibold md:w-auto"
+        className="h-12 w-full gap-2 text-sm font-semibold md:w-auto"
         onClick={onCalculate}
         disabled={isCalculating}
       >
         {isCalculating ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
         ) : (
-          <RotateCcw className="h-4 w-4" />
+          <RotateCcw className="h-4 w-4" aria-hidden="true" />
         )}
         {hasResults ? t('common.recalculate') : t('common.calculate')}
       </Button>
@@ -112,11 +112,16 @@ export function ComparisonSetupStatePanel({
       ) : null}
 
       {isCalculating && !hasResults ? (
-        <div className="space-y-6">
-          <Skeleton className="h-[300px] w-full rounded-lg md:h-[360px]" />
+        <div className="ui-control-stack" role="status" aria-live="polite">
+          <div className="ui-surface-flush space-y-4 p-5 md:p-6">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-8 w-2/3" />
+            <Skeleton className="h-5 w-full max-w-xl" />
+          </div>
+          <Skeleton className="h-[260px] w-full rounded-md md:h-[340px]" />
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <Skeleton className="h-[180px] rounded-lg md:h-[220px]" />
-            <Skeleton className="h-[180px] rounded-lg md:h-[220px]" />
+            <Skeleton className="h-[180px] rounded-md md:h-[220px]" />
+            <Skeleton className="h-[180px] rounded-md md:h-[220px]" />
           </div>
         </div>
       ) : null}
@@ -154,7 +159,7 @@ export function ComparisonAssumptionsMetaPanel({
     >
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {entries.map((entry) => (
-          <section key={entry.label} className="space-y-4 border-t border-border py-4">
+          <section key={entry.label} className="ui-control-stack border-t border-border py-5">
             <h3 className="ui-card-title">
               {entry.label} {t('comparison.notes_suffix')}
             </h3>

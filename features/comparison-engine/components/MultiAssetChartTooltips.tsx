@@ -18,7 +18,10 @@ export function MultiAssetGrowthTooltip({
   const nbp = data.nbp;
 
   return (
-    <div className="min-w-[220px] rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-lg">
+    <div
+      className="min-w-[220px] rounded-md border border-border bg-popover p-4 text-popover-foreground shadow-lg"
+      role="status"
+    >
       <p className="ui-metadata mb-3 border-b border-border/50 pb-2 font-semibold">{label}</p>
       <div className="space-y-3">
         <div className="space-y-1.5">
@@ -30,9 +33,16 @@ export function MultiAssetGrowthTooltip({
                 !['inflation', 'nbp'].includes(String(entry.dataKey)),
             )
             .map((entry, index) => (
-              <div key={index} className="flex items-center justify-between gap-4 text-xs">
+              <div
+                key={index}
+                className="flex items-center justify-between gap-4 text-xs tabular-nums"
+              >
                 <span className="flex items-center gap-1.5 font-medium">
-                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
+                  <span
+                    className="h-2 w-2 rounded-full"
+                    style={{ backgroundColor: entry.color }}
+                    aria-hidden="true"
+                  />
                   {entry.name}:
                 </span>
                 <span className="font-mono font-semibold text-primary">
@@ -84,11 +94,14 @@ export function MultiAssetDrawdownTooltip({
   if (!active || !payload || !payload.length) return null;
 
   return (
-    <div className="min-w-[180px] rounded-lg border border-border bg-popover p-3 text-popover-foreground shadow-lg">
+    <div
+      className="min-w-[180px] rounded-md border border-border bg-popover p-3 text-popover-foreground shadow-lg"
+      role="status"
+    >
       <p className="ui-metadata mb-2 border-b border-border/50 pb-1 font-semibold">{label}</p>
       <div className="space-y-1.5">
         {payload.map((entry, index) => (
-          <div key={index} className="flex items-center justify-between gap-4 text-xs">
+          <div key={index} className="flex items-center justify-between gap-4 text-xs tabular-nums">
             <span className="flex items-center gap-1.5 font-medium">
               <span className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
               {entry.name}:
