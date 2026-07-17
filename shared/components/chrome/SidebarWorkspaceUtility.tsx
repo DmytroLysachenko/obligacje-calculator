@@ -30,28 +30,26 @@ export function SidebarWorkspaceUtility({ pathname }: { pathname: string }) {
 
   return (
     <SidebarUtilityPanel>
-      <div className="space-y-4">
+      <div className="space-y-5">
         <div className="flex items-start gap-2.5">
-          <div className="rounded-md bg-muted p-2 text-foreground">
-            <FolderKanban className="h-4 w-4" />
+          <div className="ui-icon-tile-sm">
+            <FolderKanban className="h-4 w-4" aria-hidden="true" />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-semibold text-foreground">{t('sidebar.workspace_title')}</p>
-            <p className="mt-0.5 text-[11px] leading-5 text-muted-foreground">
-              {t('sidebar.workspace_desc')}
-            </p>
+            <p className="ui-label">{t('sidebar.workspace_title')}</p>
+            <p className="ui-field-description mt-0.5">{t('sidebar.workspace_desc')}</p>
           </div>
         </div>
 
-        <div className="border-l border-border pl-3.5">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-            {t('sidebar.portfolio_selector_label')}
-          </p>
-          <p className="mt-1 text-sm font-semibold text-foreground">
-            {selectedPortfolio
-              ? t('sidebar.portfolio_selector_active', { name: selectedPortfolio.name })
-              : t('sidebar.portfolio_selector_empty')}
-          </p>
+        <div className="ui-status-note border-l-border">
+          <div className="min-w-0">
+            <p className="ui-kicker">{t('sidebar.portfolio_selector_label')}</p>
+            <p className="mt-1 truncate text-sm font-semibold text-foreground">
+              {selectedPortfolio
+                ? t('sidebar.portfolio_selector_active', { name: selectedPortfolio.name })
+                : t('sidebar.portfolio_selector_empty')}
+            </p>
+          </div>
         </div>
 
         <FormSelect
@@ -67,13 +65,9 @@ export function SidebarWorkspaceUtility({ pathname }: { pathname: string }) {
           }))}
         />
 
-        <Button
-          asChild
-          variant="outline"
-          className="h-9 w-full rounded-md border-border bg-card text-sm"
-        >
+        <Button asChild variant="outline" className="h-10 w-full border-border bg-card text-sm">
           <Link href="/notebook" className="gap-2">
-            <LayoutList className="h-4 w-4" />
+            <LayoutList className="h-4 w-4" aria-hidden="true" />
             {t('sidebar.workspace_manage')}
           </Link>
         </Button>

@@ -57,11 +57,7 @@ export function buildSidebarNavSections(t: SidebarTranslate): NavSection[] {
 }
 
 function SidebarSectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="px-2 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-      {children}
-    </p>
-  );
+  return <p className="ui-kicker px-2">{children}</p>;
 }
 
 function NavLinkItem({
@@ -81,9 +77,9 @@ function NavLinkItem({
       onClick={onItemClick}
       aria-current={isActive ? 'page' : undefined}
       className={cn(
-        'group relative block rounded-md px-3 py-2.5 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40',
+        'ui-interactive-surface group relative block rounded-md px-3 py-2.5',
         isActive
-          ? 'bg-background text-foreground before:absolute before:left-0 before:top-1/2 before:h-6 before:w-0.5 before:-translate-y-1/2 before:bg-primary'
+          ? 'bg-background text-foreground before:absolute before:left-0 before:top-1/2 before:h-7 before:w-0.5 before:-translate-y-1/2 before:bg-primary'
           : 'text-muted-foreground hover:bg-background hover:text-foreground',
       )}
     >
@@ -91,16 +87,19 @@ function NavLinkItem({
         <div
           className={cn('transition-colors', isActive ? 'text-primary' : 'text-muted-foreground')}
         >
-          <Icon className="h-4 w-4" />
+          <Icon className="h-4 w-4" aria-hidden="true" />
         </div>
 
         <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
-          <p className="min-w-0 text-sm font-medium leading-5">{item.label}</p>
+          <span className="min-w-0 flex-1 truncate text-sm font-medium leading-5">
+            {item.label}
+          </span>
           <ChevronRight
             className={cn(
-              'h-4 w-4 shrink-0 transition-transform',
+              'h-4 w-4 shrink-0 transition-transform duration-150',
               isActive ? 'text-foreground' : 'text-muted-foreground group-hover:translate-x-0.5',
             )}
+            aria-hidden="true"
           />
         </div>
       </div>
@@ -118,7 +117,7 @@ function NavSectionBlock({
   onItemClick?: () => void;
 }) {
   return (
-    <div className="space-y-2.5">
+    <section className="space-y-2.5" aria-label={section.label}>
       <SidebarSectionLabel>{section.label}</SidebarSectionLabel>
       <div className="space-y-1.5">
         {section.items.map((item) => (
@@ -130,7 +129,7 @@ function NavSectionBlock({
           />
         ))}
       </div>
-    </div>
+    </section>
   );
 }
 
