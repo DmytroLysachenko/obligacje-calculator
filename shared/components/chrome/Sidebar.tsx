@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronRight, Menu, TrendingUp } from 'lucide-react';
+import { Menu, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
