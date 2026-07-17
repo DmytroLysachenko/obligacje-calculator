@@ -42,27 +42,32 @@ export function NotebookPortfolioListSection({
         {labels.note}
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div
+        className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
+        role="list"
+        aria-label={labels.title}
+      >
         {portfolios.map((portfolio) => (
-          <PortfolioWorkspaceCard
-            key={portfolio.id}
-            portfolio={{
-              id: portfolio.id,
-              name: portfolio.name,
-              description: portfolio.description,
-              isPublic: portfolio.isPublic,
-              createdAtLabelValue: formatDate(new Date(portfolio.createdAt!)),
-            }}
-            createdAtLabel={labels.created}
-            usageLabel={labels.usage}
-            usageDescription={labels.usageDescription}
-            statusLabel={portfolio.isPublic ? labels.statusPublic : labels.statusPrivate}
-            fallbackDescription={labels.fallbackDescription}
-            actionLabel={canManageWorkspace ? labels.openPortfolio : labels.signInRequired}
-            canManageWorkspace={canManageWorkspace}
-            onOpen={() => onOpenPortfolio(portfolio)}
-            onRequestDelete={() => onRequestDelete(portfolio)}
-          />
+          <div key={portfolio.id} role="listitem">
+            <PortfolioWorkspaceCard
+              portfolio={{
+                id: portfolio.id,
+                name: portfolio.name,
+                description: portfolio.description,
+                isPublic: portfolio.isPublic,
+                createdAtLabelValue: formatDate(new Date(portfolio.createdAt!)),
+              }}
+              createdAtLabel={labels.created}
+              usageLabel={labels.usage}
+              usageDescription={labels.usageDescription}
+              statusLabel={portfolio.isPublic ? labels.statusPublic : labels.statusPrivate}
+              fallbackDescription={labels.fallbackDescription}
+              actionLabel={canManageWorkspace ? labels.openPortfolio : labels.signInRequired}
+              canManageWorkspace={canManageWorkspace}
+              onOpen={() => onOpenPortfolio(portfolio)}
+              onRequestDelete={() => onRequestDelete(portfolio)}
+            />
+          </div>
         ))}
       </div>
     </SectionBlock>

@@ -35,13 +35,15 @@ export function EmptyPortfolioState({
   canManageWorkspace,
 }: EmptyPortfolioStateProps) {
   return (
-    <section className="space-y-6 border-t border-border py-8">
+    <section className="ui-empty-state text-left" aria-labelledby="notebook-empty-title">
       <div className="space-y-3">
         <div className="surface-chip">
           <BookOpen className="h-3.5 w-3.5 text-foreground" />
           {badgeLabel}
         </div>
-        <h3 className="ui-section-title">{title}</h3>
+        <h2 id="notebook-empty-title" className="ui-section-title">
+          {title}
+        </h2>
         <p className="ui-body max-w-3xl">{description}</p>
       </div>
 
@@ -100,7 +102,8 @@ export function EmptyPortfolioState({
 
 export function NotebookLoadingState() {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" role="status" aria-live="polite" aria-busy="true">
+      <span className="sr-only">Loading workspace</span>
       <Skeleton className="h-28 w-full rounded-lg" />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         <Skeleton className="h-56 w-full rounded-lg" />

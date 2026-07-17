@@ -20,7 +20,7 @@ export function NotebookErrorNotice({ error, retryLabel, onRetry }: NotebookErro
   }
 
   return (
-    <Notice tone="warning" title={error}>
+    <Notice tone="warning" title={error} role="alert">
       <div className="mt-3">
         <Button variant="outline" size="sm" className="gap-2" onClick={onRetry}>
           <RefreshCcw className="h-4 w-4" />

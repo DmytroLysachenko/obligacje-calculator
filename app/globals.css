@@ -375,6 +375,48 @@
   .ui-table-scroll-hint {
     @apply text-xs leading-5 text-muted-foreground lg:hidden;
   }
+  .ui-table-caption {
+    @apply sr-only;
+  }
+  .ui-table-scroll-region {
+    @apply relative w-full overflow-x-auto overscroll-x-contain custom-scrollbar;
+  }
+  .ui-table-scroll-region:focus-visible {
+    @apply outline-none ring-2 ring-ring/45 ring-offset-2;
+  }
+  .ui-table-scroll-hint-icon {
+    @apply mr-1 inline-block font-mono text-[11px] font-semibold text-foreground;
+  }
+  .ui-chart-tooltip {
+    @apply rounded-md border border-border bg-popover text-popover-foreground shadow-lg;
+  }
+  .ui-chart-tooltip-heading {
+    @apply border-b border-border/70 pb-2 text-xs font-semibold tracking-[0.02em] text-foreground;
+  }
+  .ui-chart-tooltip-row {
+    @apply flex items-center justify-between gap-5 text-xs;
+  }
+  .ui-chart-tooltip-label {
+    @apply flex min-w-0 items-center gap-2 font-medium text-muted-foreground;
+  }
+  .ui-chart-tooltip-value {
+    @apply shrink-0 text-right font-mono font-semibold tabular-nums text-foreground;
+  }
+  .ui-chart-tooltip-dot {
+    @apply h-2 w-2 shrink-0 rounded-full;
+  }
+  .ui-chart-tooltip-context {
+    @apply space-y-1.5 border-t border-dashed border-border/70 pt-2;
+  }
+  .ui-mobile-data-list {
+    @apply divide-y divide-border;
+  }
+  .ui-mobile-data-list > article {
+    @apply py-5 first:pt-0 last:pb-0;
+  }
+  .ui-result-control-row {
+    @apply flex flex-col gap-3 border-b border-border pb-3 sm:flex-row sm:items-center sm:justify-between;
+  }
   .ui-list-row {
     @apply flex min-w-0 items-start justify-between gap-4 border-t border-border py-3 first:border-t-0;
   }

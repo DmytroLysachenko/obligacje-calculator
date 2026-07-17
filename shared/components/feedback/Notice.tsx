@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 
 export type NoticeTone = 'info' | 'warning' | 'success' | 'locked';
 
-interface NoticeProps {
+interface NoticeProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'title'> {
   tone?: NoticeTone;
   title?: React.ReactNode;
   children: React.ReactNode;
@@ -33,6 +33,7 @@ export function Notice({
   children,
   compact = false,
   className,
+  ...props
 }: NoticeProps) {
   const Icon = toneIcon[tone];
 
@@ -44,6 +45,7 @@ export function Notice({
         compact ? 'px-3 py-2' : 'px-4 py-3',
         className,
       )}
+      {...props}
     >
       <div className="flex items-start gap-3">
         <Icon className="mt-0.5 h-4 w-4 shrink-0" />

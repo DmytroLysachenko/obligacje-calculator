@@ -33,15 +33,21 @@ export default function EducationClient() {
 
   if (isLoading || !definitions) {
     return (
-      <div className="space-y-10">
-        <div className="space-y-3">
+      <div className="ui-page-flow" aria-busy="true" aria-live="polite">
+        <span className="sr-only">{t('common.loading')}</span>
+        <div className="ui-section-intro">
           <Skeleton className="h-10 w-64 rounded-md" />
           <Skeleton className="h-5 w-full max-w-2xl rounded-md" />
           <Skeleton className="h-5 w-full max-w-xl rounded-md" />
         </div>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((index) => (
-            <Skeleton key={index} className="h-64 rounded-lg" />
+            <div key={index} className="space-y-3 border-t border-border pt-5">
+              <Skeleton className="h-5 w-2/3 rounded-md" />
+              <Skeleton className="h-5 w-full rounded-md" />
+              <Skeleton className="h-5 w-5/6 rounded-md" />
+              <Skeleton className="h-12 w-full rounded-md" />
+            </div>
           ))}
         </div>
         <Skeleton className="h-80 rounded-lg" />
@@ -52,8 +58,9 @@ export default function EducationClient() {
   return (
     <PageTransition>
       <div className="ui-page-flow">
-        <header className="space-y-4">
-          <h2 className="ui-page-title">{t('nav.education')}</h2>
+        <header className="ui-page-header ui-section-intro">
+          <p className="ui-eyebrow">{t('nav.education')}</p>
+          <h1 className="ui-page-title">{t('nav.education')}</h1>
           <p className="ui-body max-w-3xl text-muted-foreground">{t('education.subtitle')}</p>
         </header>
 
@@ -62,7 +69,7 @@ export default function EducationClient() {
           title={t('education.concepts_title')}
           description={t('education.concepts_subtitle')}
         >
-          <div className="grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-2 lg:grid-cols-3">
             {educationConcepts.map((concept) => (
               <article
                 key={concept.key}
@@ -139,9 +146,9 @@ export default function EducationClient() {
         </SectionBlock>
 
         <SectionBlock icon={<HelpCircle className="h-5 w-5" />} title={t('education.faq')}>
-          <Accordion type="single" collapsible className="w-full">
+          <Accordion type="single" collapsible className="w-full border-t border-border">
             <AccordionItem value="item-1" className="border-b-border">
-              <AccordionTrigger className="text-left text-base font-semibold transition-colors hover:text-foreground">
+              <AccordionTrigger className="ui-focus-ring py-5 text-left text-base font-semibold transition-colors hover:text-foreground">
                 {t('education.q_inflation')}
               </AccordionTrigger>
               <AccordionContent className="leading-relaxed text-muted-foreground">
@@ -153,7 +160,7 @@ export default function EducationClient() {
             </AccordionItem>
 
             <AccordionItem value="item-2" className="border-b-border">
-              <AccordionTrigger className="text-left text-base font-semibold transition-colors hover:text-foreground">
+              <AccordionTrigger className="ui-focus-ring py-5 text-left text-base font-semibold transition-colors hover:text-foreground">
                 {t('education.q_tax')}
               </AccordionTrigger>
               <AccordionContent className="leading-relaxed text-muted-foreground">
@@ -165,7 +172,7 @@ export default function EducationClient() {
             </AccordionItem>
 
             <AccordionItem value="item-3" className="border-b-border">
-              <AccordionTrigger className="text-left text-base font-semibold transition-colors hover:text-foreground">
+              <AccordionTrigger className="ui-focus-ring py-5 text-left text-base font-semibold transition-colors hover:text-foreground">
                 {t('education.q_early_exit')}
               </AccordionTrigger>
               <AccordionContent className="leading-relaxed text-muted-foreground">
@@ -177,7 +184,7 @@ export default function EducationClient() {
             </AccordionItem>
 
             <AccordionItem value="item-4" className="border-b-border">
-              <AccordionTrigger className="text-left text-base font-semibold transition-colors hover:text-foreground">
+              <AccordionTrigger className="ui-focus-ring py-5 text-left text-base font-semibold transition-colors hover:text-foreground">
                 {t('education.q_monthly_payout')}
               </AccordionTrigger>
               <AccordionContent className="leading-relaxed text-muted-foreground">

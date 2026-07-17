@@ -1,5 +1,5 @@
 'use client';
-import { ArrowRight, CheckCircle2, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
@@ -45,17 +45,27 @@ function HomeToolCard({ item }: { item: ToolItem }) {
     />
   );
 }
-function HomeStep({ title, description }: { title: string; description: string }) {
+function HomeStep({
+  index,
+  title,
+  description,
+}: {
+  index: number;
+  title: string;
+  description: string;
+}) {
   return (
-    <div className="border-l-2 border-border py-1 pl-4">
+    <li className="border-l-2 border-border py-1 pl-4">
       <div className="flex items-start gap-3">
-        <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+        <span className="ui-icon-tile-sm mt-0.5 font-mono text-xs font-semibold" aria-hidden="true">
+          {String(index + 1).padStart(2, '0')}
+        </span>
         <div className="space-y-2">
           <p className="text-sm font-semibold text-foreground">{title}</p>
           <p className="ui-body text-muted-foreground">{description}</p>
         </div>
       </div>
-    </div>
+    </li>
   );
 }
 function HeroTrustStrip() {
@@ -140,9 +150,12 @@ export function LandingDashboardClient() {
             </div>
           </div>
 
-          <aside className="hidden border-l border-border pl-6 lg:block">
+          <aside
+            className="hidden border-l border-border pl-6 lg:block"
+            aria-label={startHereTitle}
+          >
             <p className="ui-metadata text-muted-foreground">{startHereTitle}</p>
-            <div className="mt-4 space-y-4">
+            <ol className="mt-4 space-y-4">
               {stepCopy.map((step, index) => (
                 <div key={step.id} className="border-t border-border pt-4">
                   <p className="text-sm font-semibold text-foreground">
@@ -151,18 +164,23 @@ export function LandingDashboardClient() {
                   <p className="mt-1 text-xs leading-5 text-muted-foreground">{step.description}</p>
                 </div>
               ))}
-            </div>
+            </ol>
           </aside>
         </div>
       </section>
 
       <section className="space-y-4 lg:hidden">
         <SectionHeading title={startHereTitle} description={startHereDesc} />
-        <div className="grid gap-5 lg:grid-cols-3">
-          {stepCopy.map((step) => (
-            <HomeStep key={step.id} title={step.title} description={step.description} />
+        <ol className="grid gap-5 sm:grid-cols-3">
+          {stepCopy.map((step, index) => (
+            <HomeStep
+              key={step.id}
+              index={index}
+              title={step.title}
+              description={step.description}
+            />
           ))}
-        </div>
+        </ol>
       </section>
 
       <section className="space-y-4">
@@ -170,7 +188,7 @@ export function LandingDashboardClient() {
           title={t('landing.recovery_home.core_route_title')}
           description={t('landing.recovery_home.core_route_desc')}
         />
-        <div className="grid gap-4 xl:grid-cols-3">
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {primaryTools.map((item) => (
             <HomeToolCard key={item.href} item={item} />
           ))}
@@ -179,7 +197,7 @@ export function LandingDashboardClient() {
 
       <section className="space-y-4">
         <SectionHeading title={secondaryTitle} description={secondaryDesc} />
-        <div className="grid gap-4 xl:grid-cols-2">
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-2">
           {secondaryTools.map((item) => (
             <HomeToolCard key={item.href} item={item} />
           ))}
