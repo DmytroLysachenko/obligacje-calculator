@@ -16,6 +16,8 @@ interface FormFieldProps {
   children: React.ReactNode;
   className?: string;
   labelClassName?: string;
+  required?: boolean;
+  optionalLabel?: React.ReactNode;
 }
 
 export function FormField({
@@ -27,9 +29,13 @@ export function FormField({
   children,
   className,
   labelClassName,
+  required = false,
+  optionalLabel,
 }: FormFieldProps) {
+  const descriptionId = React.useId();
+  const errorId = React.useId();
   return (
-    <div className={cn('space-y-2', className)}>
+    <div className={cn('ui-field-stack', className)}>
       {label || tooltip ? (
         <div className="flex items-center gap-2">
           {label ? (
@@ -38,13 +44,21 @@ export function FormField({
               className={cn('text-sm font-medium text-foreground', labelClassName)}
             >
               {label}
+              {required ? <span className="ml-1 text-destructive">*</span> : null}
             </Label>
           ) : null}
+          {!required && optionalLabel ? <span className="ui-caption">{optionalLabel}</span> : null}
           {tooltip ? (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Info className="h-3.5 w-3.5 cursor-help text-muted-foreground" />
+                  <button
+                    type="button"
+                    className="ui-focus-ring rounded-sm text-muted-foreground"
+                    aria-label="More information"
+                  >
+                    <Info className="h-3.5 w-3.5" aria-hidden="true" />
+                  </button>
                 </TooltipTrigger>
                 <TooltipContent>
                   <div className="max-w-xs text-xs leading-5">{tooltip}</div>
@@ -56,11 +70,13 @@ export function FormField({
       ) : null}
       {children}
       {error ? (
-        <p role="alert" className="text-xs font-medium leading-5 text-destructive">
+        <p id={errorId} role="alert" className="ui-field-error">
           {error}
         </p>
       ) : description ? (
-        <p className="text-xs leading-5 text-muted-foreground">{description}</p>
+        <p id={descriptionId} className="ui-field-description">
+          {description}
+        </p>
       ) : null}
     </div>
   );

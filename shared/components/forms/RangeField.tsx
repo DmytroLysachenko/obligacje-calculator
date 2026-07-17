@@ -17,6 +17,7 @@ interface RangeFieldProps {
   description?: React.ReactNode;
   valueFormatter?: (value: number) => string;
   showInput?: boolean;
+  className?: string;
   onCommit: (value: number) => void;
 }
 
@@ -31,10 +32,11 @@ export function RangeField({
   description,
   valueFormatter,
   showInput = true,
+  className,
   onCommit,
 }: RangeFieldProps) {
   return (
-    <FormField label={label} tooltip={tooltip} description={description}>
+    <FormField label={label} tooltip={tooltip} description={description} className={className}>
       <CommittedSliderInput
         value={value}
         min={min}

@@ -26,16 +26,10 @@ export function FormInlineNotice({
   className,
 }: FormInlineNoticeProps) {
   return (
-    <div
-      className={cn(
-        'flex items-center justify-between gap-4 border-l-2 px-4 py-3 text-sm leading-6',
-        toneClass[tone],
-        className,
-      )}
-    >
-      <div className="min-w-0 space-y-0.5">
-        {title ? <p className="text-sm font-semibold text-foreground">{title}</p> : null}
-        <p className="ui-safe-text text-xs leading-5">{description}</p>
+    <div className={cn('ui-status-note justify-between border-l-2', toneClass[tone], className)}>
+      <div className="min-w-0 space-y-1">
+        {title ? <p className="ui-label">{title}</p> : null}
+        <p className="ui-safe-text ui-field-description">{description}</p>
       </div>
       {action ? <div className="shrink-0">{action}</div> : null}
     </div>
