@@ -30,9 +30,11 @@ describe('package scripts contract', () => {
     );
     expect(pkg.scripts['test:browser']).toBe('playwright test tests/browser/app-smoke.spec.ts');
     expect(pkg.scripts['test:browser:ci']).toContain('tests/browser/app-smoke.spec.ts');
+    expect(pkg.scripts['test:browser:ci']).toContain('tests/browser/home-page.spec.ts');
     expect(pkg.scripts['test:browser:ci']).toContain('tests/browser/web-vitals.spec.ts');
     expect(pkg.scripts['test:browser:ci']).toContain('--workers=1');
     expect(pkg.scripts['test:web-vitals']).toBe('playwright test tests/browser/web-vitals.spec.ts');
+    expect(pkg.scripts['test:home']).toBe('playwright test tests/browser/home-page.spec.ts');
     expect(pkg.scripts['check:release']).toContain('pnpm check:types');
     expect(pkg.scripts['check:release']).toContain('pnpm lint');
     expect(pkg.scripts['check:release']).toContain('pnpm test:release');
