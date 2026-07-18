@@ -929,6 +929,19 @@
       "item_2": "Czytelny kontekst inflacji i NBP",
       "item_3": "Strategie dopiero po wyniku bazowym"
     },
+    "offer_provenance": {
+      "label": "Potwierdzenie aktualnej oferty",
+      "no_date": "Brak daty ostatniego sprawdzenia"
+    },
+    "home_routes": {
+      "primary_title": "Zacznij od jednego scenariusza obligacji",
+      "primary_description": "Podaj jedna kwote, horyzont i typ obligacji. Sprawdz wynik, zanim zaczniesz porownywac kolejne warianty.",
+      "primary_eyebrow": "Glowna sciezka",
+      "primary_action": "Otworz kalkulator",
+      "supporting_title": "Przygotuj scenariusz",
+      "supporting_description": "Skorzystaj z tych materialow, gdy przed obliczeniem potrzebujesz kontekstu.",
+      "supporting_action": "Otworz material"
+    },
     "decision_slip": {
       "eyebrow": "Punkt startowy",
       "title": "Wybierz, co juz wiesz",

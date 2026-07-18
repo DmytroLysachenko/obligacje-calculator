@@ -3,6 +3,7 @@ import { ArrowRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
+import type { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import {
   heroTrustStripKeys,
   type HomeToolDefinition,
@@ -10,9 +11,11 @@ import {
   secondaryHomeTools,
 } from '@/features/home/constants/dashboard';
 import { useAppI18n } from '@/i18n/client';
-import { SectionHeading, ToolCard } from '@/shared/components/page/ToolCard';
+import { SectionHeading } from '@/shared/components/page/ToolCard';
 
 import { HomeDecisionSlip } from './HomeDecisionSlip';
+import { HomeOfferProvenance } from './HomeOfferProvenance';
+import { HomePrimaryRoute, HomeSupportingRoutes } from './HomeRouteSections';
 type ToolItem = {
   href: string;
   title: string;
@@ -20,27 +23,6 @@ type ToolItem = {
   icon: HomeToolDefinition['icon'];
   status: HomeToolDefinition['status'];
 };
-function HomeToolCard({ item }: { item: ToolItem }) {
-  const { t } = useAppI18n();
-  const routeLabel =
-    item.status === 'trusted'
-      ? t('landing.route_labels.primary')
-      : item.status === 'reference'
-        ? t('landing.route_labels.reference')
-        : t('landing.route_labels.next');
-  const emphasis =
-    item.status === 'trusted' ? 'primary' : item.status === 'reference' ? 'reference' : 'secondary';
-  return (
-    <ToolCard
-      href={item.href}
-      title={item.title}
-      description={item.description}
-      icon={<item.icon className="h-5 w-5" />}
-      label={routeLabel}
-      emphasis={emphasis}
-    />
-  );
-}
 function HeroTrustStrip() {
   const { t } = useAppI18n();
   return (
@@ -56,7 +38,11 @@ function HeroTrustStrip() {
     </div>
   );
 }
-export function LandingDashboardClient() {
+export function LandingDashboardClient({
+  dataFreshness,
+}: {
+  dataFreshness?: CalculationDataFreshness;
+}) {
   const { t } = useAppI18n();
   const primaryTools: ToolItem[] = primaryHomeTools.map((item) => ({
     ...item,
@@ -70,6 +56,8 @@ export function LandingDashboardClient() {
   }));
   const secondaryTitle = t('landing.secondary_tools.title');
   const secondaryDesc = t('landing.secondary_tools.description');
+  const primaryTool = primaryTools.find((item) => item.href === '/single-calculator');
+  const supportingTools = primaryTools.filter((item) => item.href !== '/single-calculator');
   return (
     <div className="ui-page-flow">
       <section className="border-b border-border pb-8 md:pb-10">
@@ -110,9 +98,7 @@ export function LandingDashboardClient() {
 
             <div className="max-w-4xl space-y-3">
               <HeroTrustStrip />
-              <p className="ui-metadata leading-6 text-muted-foreground">
-                {t('landing.hero_trust_note')}
-              </p>
+              <HomeOfferProvenance dataFreshness={dataFreshness} />
             </div>
           </div>
 
@@ -128,23 +114,23 @@ export function LandingDashboardClient() {
 
       <section className="space-y-4">
         <SectionHeading
-          title={t('landing.recovery_home.core_route_title')}
-          description={t('landing.recovery_home.core_route_desc')}
+          title={t('landing.home_routes.primary_title')}
+          description={t('landing.home_routes.primary_description')}
         />
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {primaryTools.map((item) => (
-            <HomeToolCard key={item.href} item={item} />
-          ))}
-        </div>
+        {primaryTool ? <HomePrimaryRoute item={primaryTool} /> : null}
+      </section>
+
+      <section className="space-y-4">
+        <SectionHeading
+          title={t('landing.home_routes.supporting_title')}
+          description={t('landing.home_routes.supporting_description')}
+        />
+        <HomeSupportingRoutes items={supportingTools} />
       </section>
 
       <section className="space-y-4">
         <SectionHeading title={secondaryTitle} description={secondaryDesc} />
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-2">
-          {secondaryTools.map((item) => (
-            <HomeToolCard key={item.href} item={item} />
-          ))}
-        </div>
+        <HomeSupportingRoutes items={secondaryTools} optional />
       </section>
     </div>
   );

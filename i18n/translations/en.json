@@ -929,6 +929,19 @@
       "item_2": "Readable inflation and NBP context",
       "item_3": "Strategies only after the baseline result"
     },
+    "offer_provenance": {
+      "label": "Current offer evidence",
+      "no_date": "Last-checked date unavailable"
+    },
+    "home_routes": {
+      "primary_title": "Start with one bond scenario",
+      "primary_description": "Enter one investment amount, horizon, and bond type. Review the result before adding more comparisons.",
+      "primary_eyebrow": "Primary route",
+      "primary_action": "Open calculator",
+      "supporting_title": "Prepare your scenario",
+      "supporting_description": "Use these references when you need context before calculating.",
+      "supporting_action": "Open reference"
+    },
     "decision_slip": {
       "eyebrow": "Starting point",
       "title": "Choose what you know today",
