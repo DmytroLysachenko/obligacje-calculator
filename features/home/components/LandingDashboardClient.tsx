@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import type { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import {
-  heroTrustStripKeys,
   type HomeToolDefinition,
   primaryHomeTools,
   secondaryHomeTools,
@@ -26,16 +25,9 @@ type ToolItem = {
 function HeroTrustStrip() {
   const { t } = useAppI18n();
   return (
-    <div className="grid border-y border-border py-2 md:grid-cols-3 md:divide-x md:divide-border">
-      {heroTrustStripKeys.map((itemKey) => (
-        <span
-          key={itemKey}
-          className="px-1 py-2 text-xs font-semibold leading-5 text-muted-foreground md:px-4"
-        >
-          {t(`landing.hero_trust_strip.${itemKey}`)}
-        </span>
-      ))}
-    </div>
+    <p className="border-t border-border pt-3 text-xs font-semibold leading-5 text-muted-foreground">
+      {t('landing.hero_trust_note')}
+    </p>
   );
 }
 export function LandingDashboardClient({
@@ -114,7 +106,7 @@ export function LandingDashboardClient({
         <HomeDecisionSlip />
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-5">
         <SectionHeading
           title={t('landing.home_routes.primary_title')}
           description={t('landing.home_routes.primary_description')}
@@ -122,7 +114,7 @@ export function LandingDashboardClient({
         {primaryTool ? <HomePrimaryRoute item={primaryTool} /> : null}
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-5 border-y border-border bg-muted/20 px-4 py-7 md:px-6 md:py-8">
         <SectionHeading
           title={t('landing.home_routes.supporting_title')}
           description={t('landing.home_routes.supporting_description')}
@@ -130,7 +122,7 @@ export function LandingDashboardClient({
         <HomeSupportingRoutes items={supportingTools} />
       </section>
 
-      <section className="space-y-4">
+      <section className="space-y-5 border-b border-border pb-8">
         <SectionHeading title={secondaryTitle} description={secondaryDesc} />
         <HomeSupportingRoutes items={secondaryTools} optional />
       </section>

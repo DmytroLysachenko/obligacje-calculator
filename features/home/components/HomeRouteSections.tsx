@@ -17,7 +17,7 @@ export function HomePrimaryRoute({ item }: { item: HomeRouteItem }) {
     <Link href={item.href} className="block ui-focus-ring">
       <article
         data-testid="home-primary-route"
-        className="group border-y border-foreground/30 py-6 transition-colors duration-150 hover:border-foreground/60 md:flex md:items-center md:justify-between md:gap-8"
+        className="group border-y border-foreground/30 bg-muted/25 px-4 py-7 transition-colors duration-150 hover:bg-muted/40 md:flex md:items-center md:justify-between md:gap-8 md:px-6"
       >
         <div className="flex min-w-0 gap-4">
           <div
@@ -30,7 +30,7 @@ export function HomePrimaryRoute({ item }: { item: HomeRouteItem }) {
             <p className="ui-kicker text-muted-foreground">
               {t('landing.home_routes.primary_eyebrow')}
             </p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
+            <h2 className="mt-2 text-[26px] font-semibold tracking-tight text-foreground">
               {item.title}
             </h2>
             <p className="mt-2 max-w-2xl text-[15px] leading-7 text-muted-foreground">
@@ -38,7 +38,7 @@ export function HomePrimaryRoute({ item }: { item: HomeRouteItem }) {
             </p>
           </div>
         </div>
-        <span className="mt-5 inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-foreground md:mt-0">
+        <span className="mt-5 inline-flex shrink-0 items-center gap-2 text-[15px] font-semibold text-foreground md:mt-0">
           {t('landing.home_routes.primary_action')}
           <ArrowRight
             className="size-4 transition-transform duration-150 group-hover:translate-x-0.5"
@@ -62,14 +62,14 @@ export function HomeSupportingRoutes({
     <div className="grid gap-x-8 md:grid-cols-2">
       {items.map((item) => (
         <Link key={item.href} href={item.href} className="block ui-focus-ring">
-          <article className="group border-t border-border py-5 transition-colors duration-150 hover:border-foreground/40">
+          <article className="group border-t border-border py-6 transition-colors duration-150 hover:border-foreground/40">
             <div className="flex items-start gap-3">
               <item.icon
                 className="mt-0.5 size-4 shrink-0 text-muted-foreground"
                 aria-hidden="true"
               />
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-foreground">{item.title}</p>
+                <p className="text-[15px] font-semibold text-foreground">{item.title}</p>
                 <p className="mt-1 text-sm leading-6 text-muted-foreground">{item.description}</p>
                 {!optional ? (
                   <span className="mt-3 inline-flex text-xs font-semibold text-foreground">
