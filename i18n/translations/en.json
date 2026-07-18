@@ -854,6 +854,7 @@
       "eyebrow": "Focused home",
       "title": "Use the core bond calculator first. Keep the rest secondary.",
       "description": "This home page acts as a calm route hub. Start with the flagship single-bond calculator, then move into education, reference data, or narrower strategy tools only when needed.",
+      "primary_cta": "Simulate a bond",
       "secondary_cta": "Review Basics",
       "status_trusted": "Trusted core surfaces",
       "status_explicit": "Explicit calculation flow",
@@ -927,6 +928,25 @@
       "item_1": "One primary calculation at a time",
       "item_2": "Readable inflation and NBP context",
       "item_3": "Strategies only after the baseline result"
+    },
+    "decision_slip": {
+      "eyebrow": "Starting point",
+      "title": "Choose what you know today",
+      "description": "Begin with the next useful step. You can refine the scenario inside the calculator.",
+      "options": {
+        "simulate": {
+          "title": "I know the bond or my horizon",
+          "description": "Build one bond scenario."
+        },
+        "learn": {
+          "title": "I want to understand the rules",
+          "description": "Review bond types, tax, and indexing."
+        },
+        "check-context": {
+          "title": "I want current rate context",
+          "description": "Check inflation and NBP reference data."
+        }
+      }
     },
     "home_steps": {
       "learn-rules": {

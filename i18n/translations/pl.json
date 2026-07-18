@@ -854,6 +854,7 @@
       "eyebrow": "Skupiona strona glowna",
       "title": "Najpierw uzyj glownego kalkulatora obligacji. Reszte traktuj jako drugorzedne.",
       "description": "Ta strona glowna pelni role spokojnego punktu startowego. Zacznij od flagowego kalkulatora pojedynczej obligacji, a dopiero potem przechodz do edukacji, danych referencyjnych lub wezszych narzedzi strategicznych, gdy sa potrzebne.",
+      "primary_cta": "Zasymuluj obligacje",
       "secondary_cta": "Przejrzyj podstawy",
       "status_trusted": "Zaufane powierzchnie glowne",
       "status_explicit": "Jawny przeplyw obliczen",
@@ -927,6 +928,25 @@
       "item_1": "Jedno glowne obliczenie naraz",
       "item_2": "Czytelny kontekst inflacji i NBP",
       "item_3": "Strategie dopiero po wyniku bazowym"
+    },
+    "decision_slip": {
+      "eyebrow": "Punkt startowy",
+      "title": "Wybierz, co juz wiesz",
+      "description": "Zacznij od najblizszego kroku. Scenariusz doprecyzujesz w kalkulatorze.",
+      "options": {
+        "simulate": {
+          "title": "Znam obligacje lub horyzont",
+          "description": "Uloz jeden scenariusz obligacji."
+        },
+        "learn": {
+          "title": "Chce poznac zasady",
+          "description": "Sprawdz typy obligacji, podatek i indeksacje."
+        },
+        "check-context": {
+          "title": "Chce sprawdzic kontekst stop",
+          "description": "Zobacz inflacje i dane referencyjne NBP."
+        }
+      }
     },
     "home_steps": {
       "learn-rules": {

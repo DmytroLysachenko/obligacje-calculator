@@ -5,24 +5,20 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
   heroTrustStripKeys,
-  homeStepIds,
   type HomeToolDefinition,
   primaryHomeTools,
   secondaryHomeTools,
 } from '@/features/home/constants/dashboard';
 import { useAppI18n } from '@/i18n/client';
 import { SectionHeading, ToolCard } from '@/shared/components/page/ToolCard';
+
+import { HomeDecisionSlip } from './HomeDecisionSlip';
 type ToolItem = {
   href: string;
   title: string;
   description: string;
   icon: HomeToolDefinition['icon'];
   status: HomeToolDefinition['status'];
-};
-type HomeStepItem = {
-  id: string;
-  title: string;
-  description: string;
 };
 function HomeToolCard({ item }: { item: ToolItem }) {
   const { t } = useAppI18n();
@@ -45,29 +41,6 @@ function HomeToolCard({ item }: { item: ToolItem }) {
     />
   );
 }
-function HomeStep({
-  index,
-  title,
-  description,
-}: {
-  index: number;
-  title: string;
-  description: string;
-}) {
-  return (
-    <li className="border-l-2 border-border py-1 pl-4">
-      <div className="flex items-start gap-3">
-        <span className="ui-icon-tile-sm mt-0.5 font-mono text-xs font-semibold" aria-hidden="true">
-          {String(index + 1).padStart(2, '0')}
-        </span>
-        <div className="space-y-2">
-          <p className="text-sm font-semibold text-foreground">{title}</p>
-          <p className="ui-body text-muted-foreground">{description}</p>
-        </div>
-      </div>
-    </li>
-  );
-}
 function HeroTrustStrip() {
   const { t } = useAppI18n();
   return (
@@ -85,11 +58,6 @@ function HeroTrustStrip() {
 }
 export function LandingDashboardClient() {
   const { t } = useAppI18n();
-  const stepCopy: HomeStepItem[] = homeStepIds.map((id) => ({
-    id,
-    title: t(`landing.home_steps.${id}.title`),
-    description: t(`landing.home_steps.${id}.description`),
-  }));
   const primaryTools: ToolItem[] = primaryHomeTools.map((item) => ({
     ...item,
     title: t(item.titleKey),
@@ -100,14 +68,12 @@ export function LandingDashboardClient() {
     title: t(item.titleKey),
     description: t(item.descriptionKey),
   }));
-  const startHereTitle = t('landing.start_here.title');
-  const startHereDesc = t('landing.start_here.description');
   const secondaryTitle = t('landing.secondary_tools.title');
   const secondaryDesc = t('landing.secondary_tools.description');
   return (
     <div className="ui-page-flow">
       <section className="border-b border-border pb-8 md:pb-10">
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
           <div className="max-w-5xl space-y-6 md:space-y-7">
             <p className="inline-flex items-center gap-2 border-l-2 border-border px-3 py-1 text-xs font-semibold text-muted-foreground">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
@@ -128,7 +94,7 @@ export function LandingDashboardClient() {
                 className="gap-2 rounded-lg text-sm font-semibold focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
               >
                 <Link href="/single-calculator">
-                  {t('landing.start_calculating')}
+                  {t('landing.recovery_home.primary_cta')}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
@@ -150,37 +116,14 @@ export function LandingDashboardClient() {
             </div>
           </div>
 
-          <aside
-            className="hidden border-l border-border pl-6 lg:block"
-            aria-label={startHereTitle}
-          >
-            <p className="ui-metadata text-muted-foreground">{startHereTitle}</p>
-            <ol className="mt-4 space-y-4">
-              {stepCopy.map((step, index) => (
-                <div key={step.id} className="border-t border-border pt-4">
-                  <p className="text-sm font-semibold text-foreground">
-                    {index + 1}. {step.title}
-                  </p>
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">{step.description}</p>
-                </div>
-              ))}
-            </ol>
-          </aside>
+          <div className="hidden lg:block">
+            <HomeDecisionSlip />
+          </div>
         </div>
       </section>
 
-      <section className="space-y-4 lg:hidden">
-        <SectionHeading title={startHereTitle} description={startHereDesc} />
-        <ol className="grid gap-5 sm:grid-cols-3">
-          {stepCopy.map((step, index) => (
-            <HomeStep
-              key={step.id}
-              index={index}
-              title={step.title}
-              description={step.description}
-            />
-          ))}
-        </ol>
+      <section className="lg:hidden">
+        <HomeDecisionSlip />
       </section>
 
       <section className="space-y-4">
