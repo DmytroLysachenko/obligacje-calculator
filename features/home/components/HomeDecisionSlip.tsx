@@ -38,6 +38,9 @@ export function HomeDecisionSlip() {
                 <span className="mt-0.5 block text-xs leading-5 text-muted-foreground">
                   {t(`landing.decision_slip.options.${item.id}.description`)}
                 </span>
+                <span className="mt-2 block font-mono text-[10px] font-semibold tracking-[0.08em] text-muted-foreground">
+                  {t(`landing.decision_slip.options.${item.id}.detail`)}
+                </span>
               </span>
               <ArrowUpRight
                 className="size-4 shrink-0 text-muted-foreground transition-transform duration-150 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"

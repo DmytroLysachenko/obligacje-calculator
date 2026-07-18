@@ -851,11 +851,11 @@
     "start_calculating": "Start Calculating",
     "financial_tools": "Financial Tools",
     "recovery_home": {
-      "eyebrow": "Focused home",
-      "title": "Use the core bond calculator first. Keep the rest secondary.",
-      "description": "This home page acts as a calm route hub. Start with the flagship single-bond calculator, then move into education, reference data, or narrower strategy tools only when needed.",
+      "eyebrow": "Polish Treasury bonds",
+      "title": "See what one bond decision can be worth.",
+      "description": "Set an amount, horizon, and bond type. Start with one clear scenario, then compare alternatives only when you need to.",
       "primary_cta": "Simulate a bond",
-      "secondary_cta": "Review Basics",
+      "secondary_cta": "Learn bond basics",
       "status_trusted": "Trusted core surfaces",
       "status_explicit": "Explicit calculation flow",
       "status_reference": "Reference data clearly labeled",
@@ -949,15 +949,18 @@
       "options": {
         "simulate": {
           "title": "I know the bond or my horizon",
-          "description": "Build one bond scenario."
+          "description": "Build one bond scenario.",
+          "detail": "ROR · DOR · COI · EDO"
         },
         "learn": {
           "title": "I want to understand the rules",
-          "description": "Review bond types, tax, and indexing."
+          "description": "Review bond types, tax, and indexing.",
+          "detail": "RATE TYPE · TAX · INDEXING"
         },
         "check-context": {
           "title": "I want current rate context",
-          "description": "Check inflation and NBP reference data."
+          "description": "Check inflation and NBP reference data.",
+          "detail": "CPI · NBP REFERENCE RATE"
         }
       }
     },

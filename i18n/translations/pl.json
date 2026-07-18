@@ -851,11 +851,11 @@
     "start_calculating": "Zacznij obliczać",
     "financial_tools": "Narzędzia Finansowe",
     "recovery_home": {
-      "eyebrow": "Skupiona strona glowna",
-      "title": "Najpierw uzyj glownego kalkulatora obligacji. Reszte traktuj jako drugorzedne.",
-      "description": "Ta strona glowna pelni role spokojnego punktu startowego. Zacznij od flagowego kalkulatora pojedynczej obligacji, a dopiero potem przechodz do edukacji, danych referencyjnych lub wezszych narzedzi strategicznych, gdy sa potrzebne.",
+      "eyebrow": "Polskie obligacje skarbowe",
+      "title": "Sprawdz, co moze dac jedna decyzja o obligacji.",
+      "description": "Ustaw kwote, horyzont i typ obligacji. Zacznij od jednego jasnego scenariusza, a porownania dodaj dopiero wtedy, gdy ich potrzebujesz.",
       "primary_cta": "Zasymuluj obligacje",
-      "secondary_cta": "Przejrzyj podstawy",
+      "secondary_cta": "Poznaj podstawy obligacji",
       "status_trusted": "Zaufane powierzchnie glowne",
       "status_explicit": "Jawny przeplyw obliczen",
       "status_reference": "Dane referencyjne jasno opisane",
@@ -949,15 +949,18 @@
       "options": {
         "simulate": {
           "title": "Znam obligacje lub horyzont",
-          "description": "Uloz jeden scenariusz obligacji."
+          "description": "Uloz jeden scenariusz obligacji.",
+          "detail": "ROR · DOR · COI · EDO"
         },
         "learn": {
           "title": "Chce poznac zasady",
-          "description": "Sprawdz typy obligacji, podatek i indeksacje."
+          "description": "Sprawdz typy obligacji, podatek i indeksacje.",
+          "detail": "TYP STOPY · PODATEK · INDEKSACJA"
         },
         "check-context": {
           "title": "Chce sprawdzic kontekst stop",
-          "description": "Zobacz inflacje i dane referencyjne NBP."
+          "description": "Zobacz inflacje i dane referencyjne NBP.",
+          "detail": "CPI · STOPA REFERENCYJNA NBP"
         }
       }
     },

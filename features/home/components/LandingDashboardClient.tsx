@@ -61,15 +61,17 @@ export function LandingDashboardClient({
   return (
     <div className="ui-page-flow">
       <section className="border-b border-border pb-8 md:pb-10">
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
-          <div className="max-w-5xl space-y-6 md:space-y-7">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start xl:gap-12">
+          <div className="max-w-4xl space-y-6 md:space-y-8">
             <p className="inline-flex items-center gap-2 border-l-2 border-border px-3 py-1 text-xs font-semibold text-muted-foreground">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
               {t('landing.recovery_home.eyebrow')}
             </p>
 
             <div className="space-y-4">
-              <h1 className="ui-page-title max-w-4xl">{t('landing.recovery_home.title')}</h1>
+              <h1 className="ui-page-title max-w-3xl xl:text-[46px]">
+                {t('landing.recovery_home.title')}
+              </h1>
               <p className="ui-body max-w-3xl text-muted-foreground md:text-base md:leading-8">
                 {t('landing.recovery_home.description')}
               </p>
@@ -108,7 +110,7 @@ export function LandingDashboardClient({
         </div>
       </section>
 
-      <section className="lg:hidden">
+      <section className="border-b border-border pb-8 lg:hidden">
         <HomeDecisionSlip />
       </section>
 
