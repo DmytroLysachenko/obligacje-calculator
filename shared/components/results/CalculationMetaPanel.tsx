@@ -7,6 +7,7 @@ import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { useAppI18n } from '@/i18n/client';
 import {
   getBondOfferFreshnessState,
+  getBondOfferSourceTranslationKey,
   getCalculationFreshnessMetaState,
 } from '@/shared/lib/data-freshness-display';
 
@@ -179,9 +180,9 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
             <div>
               {t('comparison.offer_source')}:{' '}
               <span className="font-semibold">
-                {bondOffer.source
-                  ? t(`sidebar.freshness.offer_sources.${bondOffer.source}`)
-                  : t('sidebar.freshness.offer_sources.unavailable')}
+                {t(
+                  `sidebar.freshness.offer_sources.${getBondOfferSourceTranslationKey(bondOffer.source)}`,
+                )}
               </span>
             </div>
             {bondOffer.isDegraded ? (

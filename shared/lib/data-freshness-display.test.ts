@@ -5,6 +5,7 @@ import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import {
   formatFreshnessDate,
   getBondOfferFreshnessState,
+  getBondOfferSourceTranslationKey,
   getCalculationFreshnessMetaState,
   getFreshnessCoverageLabel,
   getFreshnessDisplayState,
@@ -47,6 +48,13 @@ describe('data freshness display helpers', () => {
     ]) {
       expect(getBondOfferFreshnessState(freshnessData).isDegraded).toBe(true);
     }
+  });
+
+  it('maps external offer source IDs to i18n-safe keys', () => {
+    expect(getBondOfferSourceTranslationKey('gov.pl')).toBe('gov_pl');
+    expect(getBondOfferSourceTranslationKey('obligacjeskarbowe.pl')).toBe('obligacjeskarbowe_pl');
+    expect(getBondOfferSourceTranslationKey('curated-fallback')).toBe('curated-fallback');
+    expect(getBondOfferSourceTranslationKey('unexpected-source')).toBe('unavailable');
   });
 
   it('keeps coverage date separate from last sync date', () => {

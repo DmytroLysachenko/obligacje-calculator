@@ -165,8 +165,8 @@
       "offer_source_label": "Biezaca oferta obligacji",
       "offer_degraded_warning": "Potwierdzenie biezacej oferty jest ograniczone; sprawdz oprocentowanie przed uzyciem wyniku.",
       "offer_sources": {
-        "gov.pl": "Oficjalne gov.pl",
-        "obligacjeskarbowe.pl": "Wtórne obligacjeskarbowe.pl",
+        "gov_pl": "Oficjalne gov.pl",
+        "obligacjeskarbowe_pl": "Wtórne obligacjeskarbowe.pl",
         "curated-fallback": "Kuratorowany fallback",
         "unavailable": "Brak potwierdzenia oferty"
       },

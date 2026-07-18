@@ -5,7 +5,11 @@ import React from 'react';
 import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
-import { getBondOfferFreshnessState, getFreshnessDisplayState } from '@/shared/lib/data-freshness-display';
+import {
+  getBondOfferFreshnessState,
+  getBondOfferSourceTranslationKey,
+  getFreshnessDisplayState,
+} from '@/shared/lib/data-freshness-display';
 
 import { SidebarUtilityPanel } from './SidebarUtilityGroup';
 
@@ -66,9 +70,9 @@ export function SidebarSyncSummary({
     dataFreshness ? t('sidebar.freshness.no_date') : t('sidebar.freshness.no_metadata'),
   );
   const bondOffer = getBondOfferFreshnessState(dataFreshness);
-  const bondOfferLabel = bondOffer.source
-    ? t(`sidebar.freshness.offer_sources.${bondOffer.source}`)
-    : t('sidebar.freshness.offer_sources.unavailable');
+  const bondOfferLabel = t(
+    `sidebar.freshness.offer_sources.${getBondOfferSourceTranslationKey(bondOffer.source)}`,
+  );
 
   return (
     <SidebarUtilityPanel>

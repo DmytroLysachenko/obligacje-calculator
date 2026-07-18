@@ -30,6 +30,17 @@ function flattenMessageKeys(node: unknown, prefix = ''): string[] {
   return prefix ? [prefix] : [];
 }
 
+function collectKeysContainingDots(node: unknown): string[] {
+  if (!node || typeof node !== 'object' || Array.isArray(node)) {
+    return [];
+  }
+
+  return Object.entries(node as Record<string, unknown>).flatMap(([key, value]) => [
+    ...(key.includes('.') ? [key] : []),
+    ...collectKeysContainingDots(value),
+  ]);
+}
+
 function normalizeArrayIndexes(key: string) {
   return key.replace(/\[\d+\]/g, '[]');
 }
@@ -68,6 +79,11 @@ function collectDirectCommonTranslationKeys() {
 }
 
 describe('locale parity for touched bond and economic helper namespaces', () => {
+  it('keeps message object keys compatible with next-intl namespaces', () => {
+    expect(collectKeysContainingDots(enMessages)).toEqual([]);
+    expect(collectKeysContainingDots(plMessages)).toEqual([]);
+  });
+
   it('keeps full English key coverage available in Polish', () => {
     const englishKeys = flattenMessageKeys(enMessages).map(normalizeArrayIndexes).sort();
     const polishKeys = new Set(flattenMessageKeys(plMessages).map(normalizeArrayIndexes));

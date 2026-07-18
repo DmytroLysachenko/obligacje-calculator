@@ -165,8 +165,8 @@
       "offer_source_label": "Current bond offer",
       "offer_degraded_warning": "Current offer evidence is degraded; verify rates before relying on this result.",
       "offer_sources": {
-        "gov.pl": "Official gov.pl",
-        "obligacjeskarbowe.pl": "Secondary obligacjeskarbowe.pl",
+        "gov_pl": "Official gov.pl",
+        "obligacjeskarbowe_pl": "Secondary obligacjeskarbowe.pl",
         "curated-fallback": "Curated fallback",
         "unavailable": "Offer evidence unavailable"
       },
