@@ -61,7 +61,8 @@ describe('design system adoption v2 contract', () => {
     const sectionBlock = read('shared/components/page/SectionBlock.tsx');
 
     expectUsesShared(education, 'SectionBlock');
-    expectUsesShared(landing, 'ToolCard');
+    expectUsesShared(landing, 'HomePrimaryRoute');
+    expectUsesShared(landing, 'HomeSupportingRoutes');
     expectUsesShared(toolCard, 'ui-safe-text');
     expectUsesShared(toolCard, 'iconAccentClass');
     expectUsesShared(toolCard, 'border-l-2 pl-3 pt-0.5');
@@ -71,7 +72,7 @@ describe('design system adoption v2 contract', () => {
       'grid border-y border-border py-2 md:grid-cols-3 md:divide-x md:divide-border',
     );
     expect(landing).toContain('inline-flex items-center gap-2 border-l-2 border-border px-3 py-1');
-    expect(landing).toContain('border-l-2 border-border py-1 pl-4');
+    expect(landing).toContain('<HomeDecisionSlip />');
     expectAvoidsLocalPattern(
       landing,
       'grid gap-px overflow-hidden rounded-lg border border-border bg-border',

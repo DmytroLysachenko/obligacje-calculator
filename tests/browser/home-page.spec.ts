@@ -34,8 +34,19 @@ test('home primary action opens the single-bond calculator', async ({ page }, te
   await stubOpportunisticSync(page);
   await page.goto('/', { waitUntil: 'networkidle' });
 
-  await expect(
-    page.locator('main#main-content a[href="/single-calculator"]').first(),
-  ).toBeVisible();
+  const primaryAction = page.getByRole('link', { name: 'Zasymuluj obligacje' });
+  await expect(primaryAction).toBeVisible();
+  await primaryAction.click();
+  await expect(page).toHaveURL(/\/single-calculator$/);
+  await expectNoBrowserDiagnostics(testInfo, diagnostics);
+});
+
+test('home keeps the first viewport visually stable', async ({ page }, testInfo) => {
+  const diagnostics = installBrowserDiagnostics(page);
+
+  await stubOpportunisticSync(page);
+  await page.goto('/', { waitUntil: 'networkidle' });
+
+  await expect(page.locator('main#main-content')).toHaveScreenshot('home-first-viewport.png');
   await expectNoBrowserDiagnostics(testInfo, diagnostics);
 });
