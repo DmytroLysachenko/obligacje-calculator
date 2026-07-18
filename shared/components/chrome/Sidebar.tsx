@@ -55,6 +55,7 @@ function SidebarFooter({
   const { t } = useAppI18n();
   const hasMounted = useHasMounted();
   const { canManageWorkspace } = usePortfolioAccess();
+  const showSyncSummary = pathname !== '/';
 
   return (
     <footer className="space-y-5 border-t border-border bg-muted/20 px-3 py-4">
@@ -65,7 +66,7 @@ function SidebarFooter({
       ) : null}
       <SidebarUtilityGroup title={t('common.settings')}>
         <SidebarSettingsUtility />
-        <SidebarSyncSummary dataFreshness={dataFreshness} />
+        {showSyncSummary ? <SidebarSyncSummary dataFreshness={dataFreshness} /> : null}
       </SidebarUtilityGroup>
       <div className="border-t border-border px-0.5 pt-3 text-xs leading-5 text-muted-foreground">
         {'\u00A9'} {hasMounted ? new Date().getFullYear() : '----'} {t('common.title')}
