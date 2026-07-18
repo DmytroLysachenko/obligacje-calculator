@@ -15,7 +15,10 @@ export function HomePrimaryRoute({ item }: { item: HomeRouteItem }) {
   const { t } = useAppI18n();
   return (
     <Link href={item.href} className="block ui-focus-ring">
-      <article className="group border-y border-foreground/30 py-6 transition-colors duration-150 hover:border-foreground/60 md:flex md:items-center md:justify-between md:gap-8">
+      <article
+        data-testid="home-primary-route"
+        className="group border-y border-foreground/30 py-6 transition-colors duration-150 hover:border-foreground/60 md:flex md:items-center md:justify-between md:gap-8"
+      >
         <div className="flex min-w-0 gap-4">
           <div
             className="border-l-2 border-foreground pl-3 pt-0.5 text-foreground"

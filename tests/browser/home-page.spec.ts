@@ -50,3 +50,25 @@ test('home keeps the first viewport visually stable', async ({ page }, testInfo)
   await expect(page.locator('main#main-content')).toHaveScreenshot('home-first-viewport.png');
   await expectNoBrowserDiagnostics(testInfo, diagnostics);
 });
+
+test('home keeps the decision guide ahead of the primary route on mobile', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile-chromium', 'Mobile-specific layout assertion');
+  const diagnostics = installBrowserDiagnostics(page);
+
+  await stubOpportunisticSync(page);
+  await page.goto('/', { waitUntil: 'networkidle' });
+
+  const decisionSlip = page.getByTestId('home-decision-slip');
+  const primaryRoute = page.getByTestId('home-primary-route');
+  await expect(decisionSlip).toBeVisible();
+  await expect(primaryRoute).toBeVisible();
+
+  const [decisionBox, primaryBox] = await Promise.all([
+    decisionSlip.boundingBox(),
+    primaryRoute.boundingBox(),
+  ]);
+  expect(decisionBox?.y).toBeLessThan(primaryBox?.y ?? 0);
+  await expectNoBrowserDiagnostics(testInfo, diagnostics);
+});

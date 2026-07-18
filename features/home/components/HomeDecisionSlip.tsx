@@ -10,7 +10,10 @@ export function HomeDecisionSlip() {
   const { t } = useAppI18n();
 
   return (
-    <aside className="border-y border-border py-4 lg:border-l lg:border-y-0 lg:pl-6 lg:py-0">
+    <aside
+      data-testid="home-decision-slip"
+      className="border-y border-border py-4 lg:border-l lg:border-y-0 lg:pl-6 lg:py-0"
+    >
       <p className="ui-kicker text-muted-foreground">{t('landing.decision_slip.eyebrow')}</p>
       <h2 className="mt-2 text-lg font-semibold tracking-tight text-foreground">
         {t('landing.decision_slip.title')}
