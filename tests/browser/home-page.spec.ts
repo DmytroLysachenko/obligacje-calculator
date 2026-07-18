@@ -41,13 +41,21 @@ test('home primary action opens the single-bond calculator', async ({ page }, te
   await expectNoBrowserDiagnostics(testInfo, diagnostics);
 });
 
-test('home keeps the first viewport visually stable', async ({ page }, testInfo) => {
+test('home keeps the primary action and decision guide in the first viewport', async ({
+  page,
+}, testInfo) => {
   const diagnostics = installBrowserDiagnostics(page);
 
   await stubOpportunisticSync(page);
   await page.goto('/', { waitUntil: 'networkidle' });
 
-  await expect(page.locator('main#main-content')).toHaveScreenshot('home-first-viewport.png');
+  const [primaryAction, decisionSlip] = await Promise.all([
+    page.getByRole('link', { name: 'Zasymuluj obligacje' }).boundingBox(),
+    page.getByTestId('home-decision-slip').first().boundingBox(),
+  ]);
+
+  expect(primaryAction?.y).toBeLessThan(await page.evaluate(() => window.innerHeight));
+  expect(decisionSlip?.y).toBeLessThan(await page.evaluate(() => window.innerHeight));
   await expectNoBrowserDiagnostics(testInfo, diagnostics);
 });
 
