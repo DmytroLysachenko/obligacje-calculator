@@ -269,7 +269,9 @@
       "select": "Wybierz",
       "selected_count": "Wybrano: {count}",
       "compare_selected": "Porównaj wybrane",
-      "select_two": "Wybierz 2 obligacje do porównania"
+      "select_two": "Wybierz 2 obligacje do porównania",
+      "select_bond_label": "Wybierz obligację {bond} do porównania",
+      "selection_limit_label": "Nie można wybrać {bond}: wybierz maksymalnie 2 obligacje"
     },
     "groups": {
       "fixed": {

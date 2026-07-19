@@ -3,7 +3,9 @@
 import Link from 'next/link';
 import { useState } from 'react';
 
+import { Button } from '@/components/ui/button';
 import type { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
+import { BondType } from '@/features/bond-core/types';
 import { educationOfferGroups } from '@/features/education/constants/education-content';
 import { useAppI18n } from '@/i18n/client';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
@@ -20,12 +22,21 @@ export function EducationOfferComparison({
   definitions: Record<string, BondDefinition>;
 }) {
   const { t, locale } = useAppI18n();
-  const [selected, setSelected] = useState<string[]>([]);
+  const [selected, setSelected] = useState<BondType[]>([]);
   const bonds = educationOfferGroups.flatMap((group) =>
     group.bondTypes
       .map((type) => definitions[type])
       .filter((bond): bond is BondDefinition => Boolean(bond)),
   );
+  const canCompare = selected.length === 2;
+  const selectBond = (bondType: BondType) => {
+    setSelected((current) => {
+      const next = current.includes(bondType)
+        ? current.filter((type) => type !== bondType)
+        : [...current, bondType];
+      return bonds.map((bond) => bond.type).filter((type) => next.includes(type));
+    });
+  };
 
   return (
     <div className="space-y-3">
@@ -47,43 +58,45 @@ export function EducationOfferComparison({
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {bonds.map((bond) => (
-                <tr key={bond.type} className="hover:bg-muted/20">
-                  <td className="px-3 py-3">
-                    <input
-                      aria-label={`${t('education.comparison.select')} ${bond.name}`}
-                      type="checkbox"
-                      checked={selected.includes(bond.type)}
-                      disabled={!selected.includes(bond.type) && selected.length === 2}
-                      onChange={() =>
-                        setSelected((current) =>
-                          current.includes(bond.type)
-                            ? current.filter((type) => type !== bond.type)
-                            : [...current, bond.type],
-                        )
-                      }
-                    />
-                  </td>
-                  <th scope="row" className="px-3 py-3 text-sm font-semibold text-foreground">
-                    <Link href={`#bond-${bond.type}`} className="ui-focus-ring rounded-sm">
-                      {bond.name}
-                    </Link>
-                  </th>
-                  <td className="px-3 py-3 text-muted-foreground">
-                    {formatBondDuration(bond.duration, locale)}
-                  </td>
-                  <td className="px-3 py-3 text-muted-foreground">{rateBasis(bond, t)}</td>
-                  <td className="px-3 py-3 font-mono font-semibold tabular-nums text-foreground">
-                    {bond.firstYearRate}%
-                  </td>
-                  <td className="px-3 py-3 text-muted-foreground">
-                    {bond.isCapitalized ? t('bonds.capitalization') : t('bonds.payout')}
-                  </td>
-                  <td className="px-3 py-3 font-mono tabular-nums text-muted-foreground">
-                    {bond.earlyWithdrawalFee.toLocaleString(locale)} PLN
-                  </td>
-                </tr>
-              ))}
+              {bonds.map((bond) => {
+                const isSelected = selected.includes(bond.type);
+                const isSelectionLimitReached = !isSelected && selected.length === 2;
+                return (
+                  <tr key={bond.type} className="hover:bg-muted/20">
+                    <td className="px-3 py-3">
+                      <input
+                        aria-label={
+                          isSelectionLimitReached
+                            ? t('education.comparison.selection_limit_label', { bond: bond.name })
+                            : t('education.comparison.select_bond_label', { bond: bond.name })
+                        }
+                        type="checkbox"
+                        checked={isSelected}
+                        disabled={isSelectionLimitReached}
+                        onChange={() => selectBond(bond.type)}
+                      />
+                    </td>
+                    <th scope="row" className="px-3 py-3 text-sm font-semibold text-foreground">
+                      <Link href={`#bond-${bond.type}`} className="ui-focus-ring rounded-sm">
+                        {bond.name}
+                      </Link>
+                    </th>
+                    <td className="px-3 py-3 text-muted-foreground">
+                      {formatBondDuration(bond.duration, locale)}
+                    </td>
+                    <td className="px-3 py-3 text-muted-foreground">{rateBasis(bond, t)}</td>
+                    <td className="px-3 py-3 font-mono font-semibold tabular-nums text-foreground">
+                      {bond.firstYearRate}%
+                    </td>
+                    <td className="px-3 py-3 text-muted-foreground">
+                      {bond.isCapitalized ? t('bonds.capitalization') : t('bonds.payout')}
+                    </td>
+                    <td className="px-3 py-3 font-mono tabular-nums text-muted-foreground">
+                      {bond.earlyWithdrawalFee.toLocaleString(locale)} PLN
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -92,7 +105,7 @@ export function EducationOfferComparison({
         <p className="text-muted-foreground">
           {t('education.comparison.selected_count', { count: selected.length })}
         </p>
-        {selected.length === 2 ? (
+        {canCompare ? (
           <Link
             href={`/compare?a=${selected[0]}&b=${selected[1]}`}
             className="ui-interactive-surface border-b border-foreground pb-1 font-semibold text-foreground"
@@ -100,7 +113,9 @@ export function EducationOfferComparison({
             {t('education.comparison.compare_selected')}
           </Link>
         ) : (
-          <span className="text-muted-foreground">{t('education.comparison.select_two')}</span>
+          <Button type="button" disabled>
+            {t('education.comparison.compare_selected')}
+          </Button>
         )}
       </div>
     </div>

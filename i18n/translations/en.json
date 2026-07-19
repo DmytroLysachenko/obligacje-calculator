@@ -269,7 +269,9 @@
       "select": "Select",
       "selected_count": "{count} selected",
       "compare_selected": "Compare selected",
-      "select_two": "Select 2 bonds to compare"
+      "select_two": "Select 2 bonds to compare",
+      "select_bond_label": "Select {bond} for comparison",
+      "selection_limit_label": "{bond} cannot be selected: choose no more than 2 bonds"
     },
     "groups": {
       "fixed": {
