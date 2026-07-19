@@ -13,33 +13,22 @@ describe('release scope contract', () => {
   it('keeps retained route smoke inventory aligned with the Cloud Run release scope', () => {
     const releasePlan = read('docs/plans/08_cloud_run_release_candidate_plan.md');
     const matrix = read('docs/product/26_trusted_and_experimental_feature_matrix.md');
-    const appRoutes = [
+    const admittedRoutes = [
       'app/education/page.tsx',
       'app/single-calculator/page.tsx',
-      'app/compare/page.tsx',
-      'app/regular-investment/page.tsx',
-      'app/ladder/page.tsx',
-      'app/notebook/page.tsx',
       'app/economic-data/page.tsx',
     ];
 
-    for (const route of appRoutes) {
+    for (const route of admittedRoutes) {
       expect(read(route)).toBeTruthy();
     }
 
-    for (const routeName of [
-      'education',
-      'single calculator',
-      'comparison',
-      'regular investment',
-      'ladder',
-      'notebook',
-      'economic data',
-    ]) {
+    for (const routeName of ['education', 'single calculator', 'economic data']) {
       expect(releasePlan).toContain(routeName);
     }
 
-    expect(matrix).toContain('trusted core routes only');
+    expect(matrix).toContain('admitted trusted-core routes only');
+    expect(releasePlan).toContain('remain private-preview');
   });
 
   it('keeps recovery-lab surfaces secondary to the retained release scope', () => {

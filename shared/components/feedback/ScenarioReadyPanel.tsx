@@ -50,7 +50,7 @@ export function ScenarioReadyPanel({
         <p className="ui-body max-w-3xl text-muted-foreground">{description}</p>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-3">
+      <div className="grid gap-3 md:grid-cols-3" aria-label="Set up your scenario">
         {steps.map((step) => (
           <ReadyStepCard key={step.id} title={step.title} description={step.description} />
         ))}

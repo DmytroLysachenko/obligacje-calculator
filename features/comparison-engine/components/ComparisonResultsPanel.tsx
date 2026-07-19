@@ -107,30 +107,30 @@ export function ComparisonResultsPanel({
   );
 
   return (
-    <section className="space-y-6 border-t border-border py-6">
-      <div className="space-y-2">
+    <section className="ui-section-divider ui-control-stack">
+      <div className="ui-section-intro">
         <h2 className="flex items-center gap-2 ui-section-title">
-          <LineChart className="h-5 w-5 text-primary" />
+          <LineChart className="h-5 w-5 text-primary" aria-hidden="true" />
           {t('comparison.performance_over_time')}
         </h2>
         <p className="ui-body text-muted-foreground">{t('comparison.chart_header_desc')}</p>
       </div>
-      <div>
-        <div className="mb-5 space-y-3">
+      <div className="ui-control-stack">
+        <div className="ui-control-stack">
           <MetricStrip
             items={differenceMetrics}
             columns="grid-cols-1 md:grid-cols-3"
-            className="shadow-none"
+            className="ui-surface-flush shadow-none"
           />
           <div className="grid gap-3 2xl:grid-cols-[minmax(0,1fr)_280px]">
             <MetricStrip
               items={comparisonMetrics}
               columns="grid-cols-1 md:grid-cols-2"
-              className="shadow-none"
+              className="ui-surface-flush shadow-none"
             />
             <ResultActionGrid
               actions={exportActions}
-              className="border-0 bg-transparent px-0 py-3 lg:w-auto"
+              className="ui-action-row-end border-0 bg-transparent px-0 py-3 lg:w-auto"
             />
           </div>
         </div>
@@ -153,7 +153,7 @@ export function ComparisonResultsPanel({
           heightClassName="h-[360px] md:h-[440px] xl:h-[500px]"
         />
 
-        <div className="mt-6">
+        <div className="ui-result-panel">
           <ComparisonChartHelpSection
             inputsA={inputsA}
             inputsB={inputsB}

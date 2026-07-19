@@ -59,7 +59,7 @@ export function EconomicDataPageClient() {
       isCalculating={false}
       hasResults
     >
-      <div className="space-y-5 md:space-y-6">
+      <div className="ui-page-flow" aria-busy={isLoadingInflation || isLoadingNbp}>
         <ReferenceDashboardHero
           badge={
             <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.08em] text-muted-foreground">
@@ -72,25 +72,25 @@ export function EconomicDataPageClient() {
           metrics={heroMetrics}
         />
 
-        <Tabs defaultValue="charts" className="space-y-5">
+        <Tabs defaultValue="charts" className="space-y-6">
           <TabsList className="h-auto w-fit flex-wrap justify-start gap-1 border-b border-border bg-transparent p-0 shadow-none">
             <TabsTrigger
               value="charts"
-              className="h-9 gap-2 rounded-none border-b-2 border-transparent px-3.5 py-2 data-[state=active]:border-foreground"
+              className="ui-focus-ring h-10 gap-2 rounded-none border-b-2 border-transparent px-3.5 py-2 data-[state=active]:border-foreground"
             >
               <BarChart3 className="h-4 w-4" />
               {labels.tabCharts}
             </TabsTrigger>
             <TabsTrigger
               value="status"
-              className="h-9 gap-2 rounded-none border-b-2 border-transparent px-3.5 py-2 data-[state=active]:border-foreground"
+              className="ui-focus-ring h-10 gap-2 rounded-none border-b-2 border-transparent px-3.5 py-2 data-[state=active]:border-foreground"
             >
               <Database className="h-4 w-4" />
               {labels.tabStatus}
             </TabsTrigger>
             <TabsTrigger
               value="guide"
-              className="h-9 gap-2 rounded-none border-b-2 border-transparent px-3.5 py-2 data-[state=active]:border-foreground"
+              className="ui-focus-ring h-10 gap-2 rounded-none border-b-2 border-transparent px-3.5 py-2 data-[state=active]:border-foreground"
             >
               <Sparkles className="h-4 w-4" />
               {labels.tabGuide}

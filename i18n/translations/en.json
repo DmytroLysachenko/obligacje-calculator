@@ -23,6 +23,9 @@
     "period": "Period",
     "recalculate": "Recalculate",
     "calculating": "Calculating...",
+    "status_idle": "Status update",
+    "status_loading": "Calculation in progress",
+    "status_complete": "Calculation complete",
     "calculated_at": "Calculated At",
     "engine_version": "Engine Version",
     "calculation_audit": "Calculation Audit",
@@ -159,6 +162,14 @@
       "coverage_label": "Coverage through",
       "reference_label": "Reference data",
       "last_checked": "Last checked",
+      "offer_source_label": "Current bond offer",
+      "offer_degraded_warning": "Current offer evidence is degraded; verify rates before relying on this result.",
+      "offer_sources": {
+        "gov_pl": "Official gov.pl",
+        "obligacjeskarbowe_pl": "Secondary obligacjeskarbowe.pl",
+        "curated-fallback": "Curated fallback",
+        "unavailable": "Offer evidence unavailable"
+      },
       "no_date": "No date",
       "no_metadata": "No metadata"
     }
@@ -840,10 +851,11 @@
     "start_calculating": "Start Calculating",
     "financial_tools": "Financial Tools",
     "recovery_home": {
-      "eyebrow": "Focused home",
-      "title": "Use the core bond calculator first. Keep the rest secondary.",
-      "description": "This home page acts as a calm route hub. Start with the flagship single-bond calculator, then move into education, reference data, or narrower strategy tools only when needed.",
-      "secondary_cta": "Review Basics",
+      "eyebrow": "Polish Treasury bonds",
+      "title": "See what one bond decision can be worth.",
+      "description": "Set an amount, horizon, and bond type. Start with one clear scenario, then compare alternatives only when you need to.",
+      "primary_cta": "Simulate a bond",
+      "secondary_cta": "Learn bond basics",
       "status_trusted": "Trusted core surfaces",
       "status_explicit": "Explicit calculation flow",
       "status_reference": "Reference data clearly labeled",
@@ -917,6 +929,41 @@
       "item_2": "Readable inflation and NBP context",
       "item_3": "Strategies only after the baseline result"
     },
+    "offer_provenance": {
+      "label": "Current offer evidence",
+      "no_date": "Last-checked date unavailable"
+    },
+    "home_routes": {
+      "primary_title": "Start with one bond scenario",
+      "primary_description": "Enter one investment amount, horizon, and bond type. Review the result before adding more comparisons.",
+      "primary_eyebrow": "Primary route",
+      "primary_action": "Open calculator",
+      "supporting_title": "Prepare your scenario",
+      "supporting_description": "Use these references when you need context before calculating.",
+      "supporting_action": "Open reference"
+    },
+    "decision_slip": {
+      "eyebrow": "Starting point",
+      "title": "Choose what you know today",
+      "description": "Begin with the next useful step. You can refine the scenario inside the calculator.",
+      "options": {
+        "simulate": {
+          "title": "I know the bond or my horizon",
+          "description": "Build one bond scenario.",
+          "detail": "ROR · DOR · COI · EDO"
+        },
+        "learn": {
+          "title": "I want to understand the rules",
+          "description": "Review bond types, tax, and indexing.",
+          "detail": "RATE TYPE · TAX · INDEXING"
+        },
+        "check-context": {
+          "title": "I want current rate context",
+          "description": "Check inflation and NBP reference data.",
+          "detail": "CPI · NBP REFERENCE RATE"
+        }
+      }
+    },
     "home_steps": {
       "learn-rules": {
         "title": "Learn the rules",
@@ -946,6 +993,13 @@
     "sync_confirm": "Are you sure you want to trigger a {mode}? This may take a few minutes.",
     "sync_progress": "Manual synchronization in progress... please do not close this window.",
     "sync_success": "Sync completed successfully!",
+    "bond_offer_sync": {
+      "title": "Current Bond-Offer Sync",
+      "source": "Source",
+      "result": "Result",
+      "completed": "Completed",
+      "never_run": "Never run"
+    },
     "metrics": {
       "series_tracked": "Series Tracked",
       "series_desc": "Active data streams in database",
@@ -1502,6 +1556,8 @@
     "data_quality_clean_description": "No data-quality flags were reported for this committed calculation."
   },
   "comparison": {
+    "offer_source": "Bond-offer source",
+    "offer_degraded_warning": "Bond-offer evidence is degraded; rates may use a secondary or curated source.",
     "title_bond_vs_bond": "Bond vs Bond",
     "desc_bond_vs_bond": "Compare different Polish Treasury Bonds under the same conditions with automatic rollover.",
     "shared_scenario": "Shared Scenario",
@@ -1556,6 +1612,7 @@
     "up_to_date": "Comparison up to date",
     "scenario_a": "Scenario A",
     "scenario_b": "Scenario B",
+    "shared_base": "Shared scenario base",
     "shared_base_title": "Shared scenario base",
     "shared_base_desc": "Keep one shared base scenario, then apply scenario-specific overrides only when they truly matter.",
     "shared_base_scope": "The left panel defines amount, purchase date, shared horizon, macro assumptions, and default tax wrapper for both scenarios.",

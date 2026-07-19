@@ -81,7 +81,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
     [formatCurrency, t, yearlyBuckets],
   );
   return (
-    <div className="space-y-8">
+    <div className="ui-compact-flow">
       <ResultSummaryHero
         eyebrow={t('ladder_page.timeline.eyebrow')}
         value={
@@ -92,16 +92,22 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
         description={t('ladder_page.timeline.description')}
         narrative={t('ladder_page.timeline.narrative')}
         aside={
-          <div className="border-l-2 border-border px-4 py-3 text-sm text-foreground">
+          <div className="ui-status-note flex-col text-foreground">
             <p className="text-xs font-semibold text-muted-foreground">
               {t('ladder_page.timeline.month_count')}
             </p>
-            <p className="mt-2 text-lg font-semibold text-foreground">{monthlyBuckets.length}</p>
+            <p className="financial-number mt-2 text-lg font-semibold text-foreground">
+              {monthlyBuckets.length}
+            </p>
           </div>
         }
       />
 
-      <MetricStrip columns="grid-cols-1 md:grid-cols-3" items={metricItems} />
+      <MetricStrip
+        columns="grid-cols-1 md:grid-cols-3"
+        items={metricItems}
+        className="ui-result-panel"
+      />
 
       <LadderYearSummarySection
         yearlySummaryItems={yearlySummaryItems}

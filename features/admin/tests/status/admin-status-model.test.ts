@@ -62,6 +62,12 @@ describe('admin status model', () => {
       ],
       systemTime: '2026-06-15T12:00:00.000Z',
       env: 'production',
+      latestBondOfferSync: {
+        source: 'gov.pl',
+        status: 'success',
+        completedAt: '2026-06-15T11:00:00.000Z',
+        message: 'Official current-offer sync completed.',
+      },
     };
 
     const model = createAdminStatusViewModel(data, now);
@@ -72,6 +78,7 @@ describe('admin status model', () => {
       environment: 'production',
     });
     expect(model.rows.map((row) => row.health)).toEqual(['healthy', 'failed']);
+    expect(model.latestBondOfferSync?.source).toBe('gov.pl');
     expect(model.isEmpty).toBe(false);
   });
 
@@ -84,6 +91,7 @@ describe('admin status model', () => {
       },
       rows: [],
       isEmpty: true,
+      latestBondOfferSync: null,
     });
   });
 });

@@ -6,19 +6,17 @@ core surfaces.
 
 ## Release Scope
 
-Release-blocking routes:
+Default release-admission routes:
 
 - education
 - single calculator
-- comparison
-- regular investment
-- ladder
-- notebook
 - economic data
 
-Recovery-lab and secondary routes may remain visible only if they are clearly
-demoted and do not create stronger production promises than their validation
-supports.
+Comparison, regular investment, ladder, and notebook remain private-preview
+candidates. They require independent evidence before admission and do not block
+the default trusted-core release. Recovery-lab and secondary routes may remain
+visible only if they are clearly demoted and do not create stronger production
+promises than their validation supports.
 
 ## Calculation Trust Gates
 

@@ -98,8 +98,11 @@ export const RetirementPlannerContainer: React.FC = () => {
       isDirty={isDirty}
       hasResults={!!results}
     >
-      <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
-        <aside className="space-y-6 xl:col-span-4">
+      <div className="ui-page-flow grid grid-cols-1 xl:grid-cols-12 xl:gap-10">
+        <aside
+          className="ui-control-stack xl:sticky xl:top-8 xl:col-span-4 xl:h-fit"
+          aria-label={labels.pageTitle}
+        >
           <RetirementInputsPanel
             inputs={inputs}
             language={language}
@@ -111,7 +114,7 @@ export const RetirementPlannerContainer: React.FC = () => {
           />
         </aside>
 
-        <div className="space-y-8 xl:col-span-8">
+        <main className="ui-compact-flow min-w-0 xl:col-span-8" aria-live="polite">
           {results ? (
             <RetirementResultsPanel
               results={results}
@@ -143,7 +146,7 @@ export const RetirementPlannerContainer: React.FC = () => {
             exhaustionDate={results?.result.exhaustionDate}
             labels={labels}
           />
-        </div>
+        </main>
       </div>
 
       <RecalculateButton

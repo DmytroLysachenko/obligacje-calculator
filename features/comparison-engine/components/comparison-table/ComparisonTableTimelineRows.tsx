@@ -4,10 +4,12 @@ import { Badge } from '@/components/ui/badge';
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
+  TableScrollHint,
 } from '@/components/ui/table';
 import { ComparisonTableTimelineRowsProps } from '@/features/comparison-engine/types/comparison-table';
 import { cn } from '@/lib/utils';
@@ -43,60 +45,80 @@ export function ComparisonTableTimelineRows({
         triggerLabel={labels.mobileTrigger}
         triggerCount={labels.mobileCount}
       >
-        {rows.map((row) => (
-          <div key={`mobile-compare-${row.key}`} className="rounded-lg bg-muted/30 p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-sm font-semibold text-foreground">{row.label}</p>
-                <p className="mt-1 text-xs text-muted-foreground">{row.dateLabel}</p>
+        <div className="ui-divider-group">
+          {rows.map((row) => (
+            <article
+              key={`mobile-compare-${row.key}`}
+              className="py-5 first:pt-0"
+              aria-label={row.label}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{row.label}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{row.dateLabel}</p>
+                </div>
               </div>
-            </div>
-            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <MobileComparisonScenario
-                label={`${bondTypeA} (A)`}
-                snapshot={row.scenarioA}
-                formatCurrency={formatCurrency}
-                labels={scenarioLabels}
+              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <MobileComparisonScenario
+                  label={`${bondTypeA} (A)`}
+                  snapshot={row.scenarioA}
+                  formatCurrency={formatCurrency}
+                  labels={scenarioLabels}
+                />
+                <MobileComparisonScenario
+                  label={`${bondTypeB} (B)`}
+                  snapshot={row.scenarioB}
+                  formatCurrency={formatCurrency}
+                  labels={scenarioLabels}
+                />
+              </div>
+              <MobileComparisonValue
+                label={higherColumnLabel}
+                value={
+                  row.leader === 'tie'
+                    ? tieLabel
+                    : `${row.leader === 'A' ? bondTypeA : bondTypeB} ${formatCurrency(Math.abs(row.gap))}`
+                }
               />
-              <MobileComparisonScenario
-                label={`${bondTypeB} (B)`}
-                snapshot={row.scenarioB}
-                formatCurrency={formatCurrency}
-                labels={scenarioLabels}
-              />
-            </div>
-            <MobileComparisonValue
-              label={higherColumnLabel}
-              value={
-                row.leader === 'tie'
-                  ? tieLabel
-                  : `${row.leader === 'A' ? bondTypeA : bondTypeB} ${formatCurrency(Math.abs(row.gap))}`
-              }
-            />
-          </div>
-        ))}
+            </article>
+          ))}
+        </div>
       </ResponsiveTableSheet>
 
-      <div className="hidden rounded-lg bg-card lg:block">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-dashed border-border px-4 py-3 text-sm text-muted-foreground">
+      <div className="ui-table-frame hidden lg:block">
+        <div className="ui-section-header border-b border-border px-4 py-3 text-sm text-muted-foreground">
           <p>{labels.desktopNote}</p>
           <p className="text-sm font-semibold text-muted-foreground">{labels.mobileCount}</p>
         </div>
 
         <div>
-          <Table className="w-full table-fixed tabular-nums">
-            <TableHeader className="bg-white">
+          <TableScrollHint>{labels.mobileDescription}</TableScrollHint>
+          <Table className="w-full table-fixed tabular-nums" aria-label={labels.desktopNote}>
+            <TableCaption>{labels.desktopNote}</TableCaption>
+            <TableHeader className="bg-card">
               <TableRow className="border-b hover:bg-transparent">
-                <TableHead className="sticky left-0 top-0 z-10 h-12 w-[22%] bg-card px-4 text-xs font-semibold text-muted-foreground">
+                <TableHead
+                  scope="col"
+                  className="sticky left-0 top-0 z-10 h-12 w-[22%] bg-card px-4 text-xs font-semibold text-muted-foreground"
+                >
                   {labels.year}
                 </TableHead>
-                <TableHead className="sticky top-0 z-10 h-12 w-[28%] bg-card px-4 text-xs font-semibold text-foreground">
+                <TableHead
+                  scope="col"
+                  className="sticky top-0 z-10 h-12 w-[28%] bg-card px-4 text-xs font-semibold text-foreground"
+                >
                   {bondTypeA} (A)
                 </TableHead>
-                <TableHead className="sticky top-0 z-10 h-12 w-[28%] bg-card px-4 text-xs font-semibold text-foreground">
+                <TableHead
+                  scope="col"
+                  className="sticky top-0 z-10 h-12 w-[28%] bg-card px-4 text-xs font-semibold text-foreground"
+                >
                   {bondTypeB} (B)
                 </TableHead>
-                <TableHead className="sticky top-0 z-10 h-12 w-[22%] bg-card px-4 text-right text-xs font-semibold text-muted-foreground">
+                <TableHead
+                  scope="col"
+                  className="sticky top-0 z-10 h-12 w-[22%] bg-card px-4 text-right text-xs font-semibold text-muted-foreground"
+                >
                   {higherColumnLabel}
                 </TableHead>
               </TableRow>

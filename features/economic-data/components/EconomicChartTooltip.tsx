@@ -23,18 +23,16 @@ export function EconomicChartTooltip({
   if (!active || !payload?.length) return null;
 
   return (
-    <div
-      className={`${minWidthClassName} rounded-md border border-border bg-popover p-3 text-popover-foreground shadow-lg`}
-    >
-      <p className="mb-2 border-b border-border/50 pb-1 text-sm font-semibold">{label}</p>
+    <div className={`${minWidthClassName} ui-chart-tooltip p-3`} role="status" aria-live="polite">
+      <p className="ui-chart-tooltip-heading mb-2">{label}</p>
       <div className="space-y-1.5">
         {payload.map((entry, index) => (
-          <div key={index} className="flex items-center justify-between gap-4 text-sm">
-            <span className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
+          <div key={index} className="ui-chart-tooltip-row">
+            <span className="ui-chart-tooltip-label">
+              <span className="ui-chart-tooltip-dot" style={{ backgroundColor: entry.color }} />
               {metricLabel}:
             </span>
-            <span className="font-mono font-bold">{entry.value}%</span>
+            <span className="ui-chart-tooltip-value">{entry.value}%</span>
           </div>
         ))}
       </div>

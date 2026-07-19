@@ -29,12 +29,34 @@ describe('bond offer scraper', () => {
       firstYearRate: 4,
       margin: 0,
       seriesCode: 'ROR0527',
+      source: 'gov.pl',
     });
     expect(edo).toEqual({
       symbol: 'EDO',
       firstYearRate: 5.35,
       margin: 2,
       seriesCode: 'EDO0536',
+      source: 'gov.pl',
     });
+  });
+
+  it.each([
+    ['rate', '<h4><strong>ROR0527</strong></h4><p>Marzy <strong>0,00%</strong></p>'],
+    [
+      'margin',
+      '<h4><strong>ROR0527</strong></h4><p>W pierwszym miesiecznym okresie odsetkowym wynosi <strong>4,00%</strong>.</p>',
+    ],
+    [
+      'series code',
+      '<h4>ROR</h4><p>W pierwszym miesiecznym okresie odsetkowym wynosi <strong>4,00%</strong>. Marzy <strong>0,00%</strong></p>',
+    ],
+  ])('does not label an official section missing its %s as gov.pl data', (_missing, html) => {
+    expect(
+      parseOfferFromGovPage(html, {
+        symbol: 'ROR',
+        firstYearRate: 4,
+        margin: 0,
+      }),
+    ).toBeNull();
   });
 });

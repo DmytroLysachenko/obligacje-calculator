@@ -117,7 +117,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
   );
   const auditPoint = getAuditTimelinePoint(results.timeline);
   return (
-    <div className="space-y-8">
+    <div className="ui-compact-flow">
       <ResultSummaryHero
         eyebrow={t('bonds.results.summary_eyebrow')}
         value={formatCurrency(headlineValue)}
@@ -132,13 +132,15 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
         </Notice>
       ) : null}
 
-      <MetricStrip items={metricItems} />
+      <MetricStrip items={metricItems} className="ui-result-panel" />
 
-      <FinancialInsightStrip
-        title={t('financial_insights.title')}
-        description={t('financial_insights.description')}
-        items={financialInsightItems}
-      />
+      <section className="ui-result-panel">
+        <FinancialInsightStrip
+          title={t('financial_insights.title')}
+          description={t('financial_insights.description')}
+          items={financialInsightItems}
+        />
+      </section>
 
       {results.overflowInfo ? (
         <SecondaryInsightAccordion
@@ -149,9 +151,9 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
           })}
           badge={t('bonds.simulation.secondary_badge')}
         >
-          <div className="flex items-start gap-3 text-foreground">
-            <Info className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
-            <p>
+          <div className="ui-status-note text-foreground">
+            <Info className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" aria-hidden="true" />
+            <p className="ui-body">
               {t('bonds.results.wrapper_limit_description', {
                 wrapperAmount: formatCurrency(results.overflowInfo.amountInWrapper),
                 standardAmount: formatCurrency(results.overflowInfo.amountInStandard),
@@ -166,8 +168,8 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
         description={t('bonds.results.scenario_facts_description')}
         badge={t('bonds.simulation.meta_badge')}
       >
-        <div className="space-y-5">
-          {auditPoint ? <CalculationAuditTrace point={auditPoint} /> : <div />}
+        <div className="ui-control-stack">
+          {auditPoint ? <CalculationAuditTrace point={auditPoint} /> : null}
 
           <ScenarioFactsBlock
             title={t('bonds.results.scenario_facts_title')}
@@ -181,7 +183,14 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
   );
 };
 const HelpButton = () => (
-  <button className="group" type="button">
-    <Info className="h-4 w-4 cursor-help text-muted-foreground transition-colors group-hover:text-primary" />
+  <button
+    className="ui-focus-ring group rounded-sm"
+    type="button"
+    aria-label="Show calculation details"
+  >
+    <Info
+      className="h-4 w-4 cursor-help text-muted-foreground transition-colors group-hover:text-primary"
+      aria-hidden="true"
+    />
   </button>
 );

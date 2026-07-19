@@ -6,8 +6,11 @@ export interface AdminDataSeriesRecord {
 }
 
 export interface AdminSyncRunRecord {
+  scope?: string | null;
+  provider?: string | null;
   seriesSlug?: string | null;
   status?: string | null;
+  message?: string | null;
   startedAt?: Date | string | null;
   finishedAt?: Date | string | null;
 }
@@ -41,6 +44,14 @@ export interface AdminStatusSnapshot<
   systemTime: string;
   env: string;
   recentSyncRuns: TSyncRun[];
+  latestBondOfferSync: AdminBondOfferSyncSummary | null;
+}
+
+export interface AdminBondOfferSyncSummary {
+  source: string | null;
+  status: string;
+  completedAt: string | null;
+  message: string;
 }
 
 function formatSyncAttemptDate(value: Date | string | null | undefined) {
@@ -49,6 +60,30 @@ function formatSyncAttemptDate(value: Date | string | null | undefined) {
   }
 
   return value instanceof Date ? value.toISOString() : value;
+}
+
+export function createLatestBondOfferSyncSummary(
+  recentSyncRuns: AdminSyncRunRecord[],
+): AdminBondOfferSyncSummary | null {
+  const run = recentSyncRuns.find((item) => item.scope === 'bond-offers');
+  if (!run) return null;
+
+  const status = run.status ?? 'unknown';
+  const message =
+    status === 'success'
+      ? 'Official current-offer sync completed.'
+      : status === 'partial'
+        ? 'Bond-offer sync completed with fallback or secondary evidence.'
+        : status === 'failed'
+          ? 'Bond-offer sync failed; current-offer evidence is unavailable.'
+          : 'Bond-offer sync did not produce current-offer evidence.';
+
+  return {
+    source: run.provider ?? null,
+    status,
+    completedAt: formatSyncAttemptDate(run.finishedAt ?? run.startedAt),
+    message,
+  };
 }
 
 export function createAdminSeriesStatus<TSeries extends AdminDataSeriesRecord>(
@@ -85,5 +120,6 @@ export function createAdminStatusSnapshot<
     systemTime,
     env: env ?? 'unknown',
     recentSyncRuns,
+    latestBondOfferSync: createLatestBondOfferSyncSummary(recentSyncRuns),
   };
 }

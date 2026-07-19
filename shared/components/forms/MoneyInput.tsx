@@ -15,6 +15,7 @@ interface MoneyInputProps {
   step?: number;
   invalid?: boolean;
   className?: string;
+  name?: string;
 }
 
 export function MoneyInput({
@@ -27,25 +28,28 @@ export function MoneyInput({
   step = 100,
   invalid,
   className,
+  name,
 }: MoneyInputProps) {
   return (
     <div className="relative">
       <Input
         id={id}
+        name={name}
         type="number"
         inputMode="decimal"
         min={min}
         max={max}
         step={step}
         className={cn(
-          'h-11 pl-4 pr-14 text-sm font-semibold tabular-nums',
+          'h-12 pl-4 pr-14 text-sm font-semibold tabular-nums',
           invalid && 'border-destructive focus-visible:ring-destructive',
           className,
         )}
         value={value}
+        aria-invalid={invalid || undefined}
         onChange={(event) => onChange(Number(event.target.value))}
       />
-      <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground">
+      <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 ui-caption font-semibold">
         {currency}
       </span>
     </div>

@@ -1,7 +1,8 @@
 import { BarChart2, BookOpen, Calculator, Layers, Scale, TrendingUp, Wallet } from 'lucide-react';
 import type { ComponentType } from 'react';
 
-import type { FeatureStatus } from '@/shared/components/feedback/FeatureStatusNotice';
+import { getFeaturesForPlacement } from '@/shared/lib/feature-catalog';
+import type { FeatureStatus } from '@/shared/types/feature-status';
 
 export type HomeToolDefinition = {
   href: string;
@@ -15,57 +16,24 @@ export const heroTrustStripKeys = ['item_1', 'item_2', 'item_3'] as const;
 
 export const homeStepIds = ['learn-rules', 'run-one', 'expand-later'] as const;
 
-export const primaryHomeTools: HomeToolDefinition[] = [
-  {
-    href: '/single-calculator',
-    titleKey: 'nav.single_calculator',
-    descriptionKey: 'landing.cards.single_calculator',
-    icon: Calculator,
-    status: 'trusted',
-  },
-  {
-    href: '/education',
-    titleKey: 'nav.education',
-    descriptionKey: 'landing.cards.education',
-    icon: BookOpen,
-    status: 'trusted',
-  },
-  {
-    href: '/economic-data',
-    titleKey: 'nav.economic_data',
-    descriptionKey: 'landing.cards.economic_data',
-    icon: BarChart2,
-    status: 'reference',
-  },
-];
+const iconByRoute: Record<string, HomeToolDefinition['icon']> = {
+  '/single-calculator': Calculator,
+  '/education': BookOpen,
+  '/economic-data': BarChart2,
+  '/compare': Scale,
+  '/regular-investment': TrendingUp,
+  '/ladder': Layers,
+  '/notebook': Wallet,
+};
 
-export const secondaryHomeTools: HomeToolDefinition[] = [
-  {
-    href: '/compare',
-    titleKey: 'nav.comparison',
-    descriptionKey: 'landing.cards.comparison',
-    icon: Scale,
-    status: 'conditional',
-  },
-  {
-    href: '/regular-investment',
-    titleKey: 'nav.regular_investment',
-    descriptionKey: 'landing.cards.regular_investment',
-    icon: TrendingUp,
-    status: 'conditional',
-  },
-  {
-    href: '/ladder',
-    titleKey: 'nav.ladder',
-    descriptionKey: 'landing.cards.ladder',
-    icon: Layers,
-    status: 'conditional',
-  },
-  {
-    href: '/notebook',
-    titleKey: 'nav.notebook',
-    descriptionKey: 'landing.recovery_home.notebook_card',
-    icon: Wallet,
-    status: 'conditional',
-  },
-];
+function toHomeToolDefinition({
+  route,
+  titleKey,
+  descriptionKey,
+  status,
+}: ReturnType<typeof getFeaturesForPlacement>[number]): HomeToolDefinition {
+  return { href: route, titleKey, descriptionKey, status, icon: iconByRoute[route] };
+}
+
+export const primaryHomeTools = getFeaturesForPlacement('primary').map(toHomeToolDefinition);
+export const secondaryHomeTools = getFeaturesForPlacement('preview').map(toHomeToolDefinition);

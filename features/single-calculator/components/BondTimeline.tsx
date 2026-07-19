@@ -103,9 +103,9 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
     setRowLimit(12);
   };
   return (
-    <div className="space-y-6">
-      <div className="space-y-4 bg-transparent">
-        <div className="grid gap-3 md:grid-cols-3">
+    <section className="ui-result-panel space-y-6" aria-label={t('bonds.timeline')}>
+      <div className="ui-control-stack bg-transparent">
+        <div className="ui-metric-grid md:grid-cols-3">
           <TimelineStat label={t('bonds.schedule.rows_after_filters')} value={visibleRangeLabel} />
           <TimelineStat
             label={t('bonds.schedule.projected_points')}
@@ -114,26 +114,30 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
           <TimelineStat label={t('bonds.schedule.exit_markers')} value={String(exitMarkers)} />
         </div>
 
-        <div className="border-t border-border px-1 pt-3">
-          <p className="text-sm leading-6 text-muted-foreground">
+        <div className="ui-status-note border-l-border">
+          <p className="ui-body ui-pretty text-muted-foreground">
             {t('bonds.schedule.summary_note')}
           </p>
         </div>
 
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="ui-section-header gap-4">
           <div className="relative w-full md:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search
+              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden="true"
+            />
             <Input
               placeholder={t('common.search') || 'Search...'}
-              className="bg-background pl-9"
+              className="h-12 bg-background pl-9"
+              aria-label={t('common.search') || 'Search timeline'}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
 
-          <div className="flex w-full flex-col gap-2 md:w-auto md:flex-row md:items-center">
+          <div className="ui-action-row w-full md:w-auto">
             <div className="flex w-full items-center gap-2 md:w-auto">
-              <Filter className="h-4 w-4 text-muted-foreground" />
+              <Filter className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
               <FormSelect
                 value={eventTypeFilter}
                 onValueChange={setEventTypeFilter}
@@ -154,10 +158,10 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
                 type="button"
                 variant="outline"
                 size="sm"
-                className="gap-2"
+                className="h-10 gap-2"
                 onClick={resetFilters}
               >
-                <RotateCcw className="h-4 w-4" />
+                <RotateCcw className="h-4 w-4" aria-hidden="true" />
                 {t('common.reset_filters')}
               </Button>
             ) : null}
@@ -185,6 +189,6 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
         onResetFilters={resetFilters}
         formatCurrency={formatCurrency}
       />
-    </div>
+    </section>
   );
 };

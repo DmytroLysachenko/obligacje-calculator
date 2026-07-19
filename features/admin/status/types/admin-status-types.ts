@@ -36,4 +36,11 @@ export interface AdminDashboardCopy {
       initial: string;
     };
   };
+  bondOfferSync: {
+    title: string;
+    source: string;
+    result: string;
+    completed: string;
+    neverRun: string;
+  };
 }

@@ -13,20 +13,23 @@ export interface ScrapedBondRate {
   firstYearRate: number;
   margin: number;
   seriesCode?: string;
+  source: 'gov.pl' | 'obligacjeskarbowe.pl' | 'curated-fallback';
 }
+
+type BondOfferFallback = Omit<ScrapedBondRate, 'source'>;
 
 const CURRENT_GOV_OFFER_URL = 'https://www.gov.pl/web/finanse/biezaca-oferta2';
 const OBLIGACJE_OFFER_URL = 'https://www.obligacjeskarbowe.pl/oferta-obligacji/';
 
 const OFFICIAL_FALLBACK_RATES: ScrapedBondRate[] = [
-  { symbol: 'OTS', firstYearRate: 2.0, margin: 0 },
-  { symbol: 'ROR', firstYearRate: 4.0, margin: 0 },
-  { symbol: 'DOR', firstYearRate: 4.15, margin: 0.15 },
-  { symbol: 'TOS', firstYearRate: 4.4, margin: 0 },
-  { symbol: 'COI', firstYearRate: 4.75, margin: 1.5 },
-  { symbol: 'EDO', firstYearRate: 5.35, margin: 2.0 },
-  { symbol: 'ROS', firstYearRate: 5.0, margin: 2.0 },
-  { symbol: 'ROD', firstYearRate: 5.6, margin: 2.5 },
+  { symbol: 'OTS', firstYearRate: 2.0, margin: 0, source: 'curated-fallback' },
+  { symbol: 'ROR', firstYearRate: 4.0, margin: 0, source: 'curated-fallback' },
+  { symbol: 'DOR', firstYearRate: 4.15, margin: 0.15, source: 'curated-fallback' },
+  { symbol: 'TOS', firstYearRate: 4.4, margin: 0, source: 'curated-fallback' },
+  { symbol: 'COI', firstYearRate: 4.75, margin: 1.5, source: 'curated-fallback' },
+  { symbol: 'EDO', firstYearRate: 5.35, margin: 2.0, source: 'curated-fallback' },
+  { symbol: 'ROS', firstYearRate: 5.0, margin: 2.0, source: 'curated-fallback' },
+  { symbol: 'ROD', firstYearRate: 5.6, margin: 2.5, source: 'curated-fallback' },
 ];
 
 async function fetchHtml(url: string) {
@@ -88,7 +91,7 @@ function extractSection(html: string, symbol: string) {
   return html.slice(start, end);
 }
 
-function parseFirstYearRate(section: string, fallback: ScrapedBondRate) {
+function parseFirstYearRate(section: string) {
   const normalized = normalizeMarkup(section);
   const patterns = [
     /pierwszym miesiecznym[\s\S]{0,120}?<strong[^>]*>\s*(\d+(?:,\d+)?)\s*%?/i,
@@ -100,14 +103,14 @@ function parseFirstYearRate(section: string, fallback: ScrapedBondRate) {
   for (const pattern of patterns) {
     const match = normalized.match(pattern);
     if (match) {
-      return parsePercent(match[1], fallback.firstYearRate);
+      return parsePercent(match[1], Number.NaN);
     }
   }
 
-  return fallback.firstYearRate;
+  return null;
 }
 
-function parseMargin(section: string, fallback: ScrapedBondRate) {
+function parseMargin(section: string) {
   const normalized = normalizeMarkup(section);
   const patterns = [
     /marzy[\s\S]{0,60}?<strong[^>]*>\s*(\d+(?:,\d+)?)\s*%/i,
@@ -117,16 +120,16 @@ function parseMargin(section: string, fallback: ScrapedBondRate) {
   for (const pattern of patterns) {
     const match = normalized.match(pattern);
     if (match) {
-      return parsePercent(match[1], fallback.margin);
+      return parsePercent(match[1], Number.NaN);
     }
   }
 
-  return fallback.margin;
+  return null;
 }
 
 export function parseOfferFromGovPage(
   html: string,
-  fallback: ScrapedBondRate,
+  fallback: BondOfferFallback,
 ): ScrapedBondRate | null {
   const section = extractSection(html, fallback.symbol);
   if (!section) {
@@ -135,17 +138,25 @@ export function parseOfferFromGovPage(
 
   const seriesMatch = section.match(new RegExp(`(${fallback.symbol}\\d{4})`, 'i'));
 
+  const firstYearRate = parseFirstYearRate(section);
+  const margin = parseMargin(section);
+
+  if (firstYearRate === null || margin === null || !seriesMatch) {
+    return null;
+  }
+
   return {
     symbol: fallback.symbol,
-    firstYearRate: parseFirstYearRate(section, fallback),
-    margin: parseMargin(section, fallback),
+    firstYearRate,
+    margin,
     seriesCode: seriesMatch?.[1],
+    source: 'gov.pl',
   };
 }
 
 function parseOfferFromObligacjePage(
   html: string,
-  fallback: ScrapedBondRate,
+  fallback: BondOfferFallback,
 ): ScrapedBondRate | null {
   const section = extractSection(html, fallback.symbol);
   if (!section) {
@@ -154,11 +165,19 @@ function parseOfferFromObligacjePage(
 
   const seriesMatch = section.match(new RegExp(`(${fallback.symbol}\\d{4})`, 'i'));
 
+  const firstYearRate = parseFirstYearRate(section);
+  const margin = parseMargin(section);
+
+  if (firstYearRate === null || margin === null || !seriesMatch) {
+    return null;
+  }
+
   return {
     symbol: fallback.symbol,
-    firstYearRate: parseFirstYearRate(section, fallback),
-    margin: parseMargin(section, fallback),
+    firstYearRate,
+    margin,
     seriesCode: seriesMatch?.[1],
+    source: 'obligacjeskarbowe.pl',
   };
 }
 

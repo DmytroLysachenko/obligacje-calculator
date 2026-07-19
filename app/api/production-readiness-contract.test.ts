@@ -73,6 +73,7 @@ describe('production readiness contract', () => {
     expect(readinessService).toContain('getDatabaseUrl');
     expect(readinessService).toContain('hasAuthSecret');
     expect(readinessService).toContain('getSyncSecret');
+    expect(readinessService).toContain('hasOAuthProvider');
     expect(runtimeEnv).toContain('DATABASE_URL');
     expect(runtimeEnv).toContain('AUTH_SECRET');
     expect(runtimeEnv).toContain('SYNC_SECRET');
@@ -117,5 +118,15 @@ describe('production readiness contract', () => {
     expect(prodConfigScript).toContain('getSyncSecret');
     expect(prodConfigScript).toContain('--allow-missing-oauth');
     expect(prodConfigScript).toContain('isStrongSecret');
+
+    const productionVerifier = read('scripts/verify-production.ts');
+    expect(productionVerifier).toContain('ADMITTED_PREVIEW_SMOKE_CHECKS');
+    expect(productionVerifier).toContain("path: '/education'");
+    expect(productionVerifier).toContain("path: '/single-calculator'");
+    expect(productionVerifier).toContain("path: '/economic-data'");
+    expect(productionVerifier).toContain("path: '/login'");
+    expect(productionVerifier).not.toContain("label: 'home'");
+    expect(productionVerifier).toContain('verifyExpectedRevision');
+    expect(productionVerifier).toContain('login OAuth readiness ok');
   });
 });

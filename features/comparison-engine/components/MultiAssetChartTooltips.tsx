@@ -18,8 +18,8 @@ export function MultiAssetGrowthTooltip({
   const nbp = data.nbp;
 
   return (
-    <div className="min-w-[220px] rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-lg">
-      <p className="ui-metadata mb-3 border-b border-border/50 pb-2 font-semibold">{label}</p>
+    <div className="ui-chart-tooltip min-w-[220px] p-4" role="status" aria-live="polite">
+      <p className="ui-chart-tooltip-heading mb-3">{label}</p>
       <div className="space-y-3">
         <div className="space-y-1.5">
           {payload
@@ -30,12 +30,16 @@ export function MultiAssetGrowthTooltip({
                 !['inflation', 'nbp'].includes(String(entry.dataKey)),
             )
             .map((entry, index) => (
-              <div key={index} className="flex items-center justify-between gap-4 text-xs">
-                <span className="flex items-center gap-1.5 font-medium">
-                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
+              <div key={index} className="ui-chart-tooltip-row">
+                <span className="ui-chart-tooltip-label">
+                  <span
+                    className="ui-chart-tooltip-dot"
+                    style={{ backgroundColor: entry.color }}
+                    aria-hidden="true"
+                  />
                   {entry.name}:
                 </span>
-                <span className="font-mono font-semibold text-primary">
+                <span className="ui-chart-tooltip-value">
                   {formatCurrency(Number(entry.value))}
                 </span>
               </div>
@@ -43,7 +47,7 @@ export function MultiAssetGrowthTooltip({
         </div>
 
         {inflation !== undefined || nbp !== undefined ? (
-          <div className="mt-2 space-y-1.5 border-t border-dashed border-border/50 pt-2">
+          <div className="ui-chart-tooltip-context mt-2">
             <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
               {t('common.context_rates')}
             </p>
@@ -84,16 +88,16 @@ export function MultiAssetDrawdownTooltip({
   if (!active || !payload || !payload.length) return null;
 
   return (
-    <div className="min-w-[180px] rounded-lg border border-border bg-popover p-3 text-popover-foreground shadow-lg">
-      <p className="ui-metadata mb-2 border-b border-border/50 pb-1 font-semibold">{label}</p>
+    <div className="ui-chart-tooltip min-w-[180px] p-3" role="status" aria-live="polite">
+      <p className="ui-chart-tooltip-heading mb-2">{label}</p>
       <div className="space-y-1.5">
         {payload.map((entry, index) => (
-          <div key={index} className="flex items-center justify-between gap-4 text-xs">
-            <span className="flex items-center gap-1.5 font-medium">
-              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color }} />
+          <div key={index} className="ui-chart-tooltip-row">
+            <span className="ui-chart-tooltip-label">
+              <span className="ui-chart-tooltip-dot" style={{ backgroundColor: entry.color }} />
               {entry.name}:
             </span>
-            <span className="font-mono font-bold text-destructive">
+            <span className="ui-chart-tooltip-value text-destructive">
               -{Number(entry.value).toFixed(2)}%
             </span>
           </div>

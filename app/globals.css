@@ -183,6 +183,10 @@
     background-image: none;
     background-attachment: initial;
   }
+  ::selection {
+    background-color: hsl(var(--accent) / 0.2);
+    color: var(--color-foreground);
+  }
   h1,
   h2,
   h3,
@@ -212,13 +216,28 @@
 
 @layer utilities {
   .ui-page-title {
-    @apply text-[34px] leading-[1.1] font-semibold tracking-tight text-foreground md:text-[42px];
+    @apply text-[32px] leading-[1.12] font-semibold tracking-tight text-foreground text-balance md:text-[40px];
   }
   .ui-section-title {
     @apply text-lg leading-7 font-semibold tracking-tight text-foreground;
   }
   .ui-card-title {
     @apply text-[15px] leading-6 font-semibold tracking-tight text-foreground;
+  }
+  .ui-eyebrow {
+    @apply text-xs font-semibold tracking-[0.08em] text-muted-foreground;
+  }
+  .ui-kicker {
+    @apply text-[11px] font-semibold tracking-[0.1em] text-muted-foreground;
+  }
+  .ui-caption {
+    @apply text-xs leading-5 text-muted-foreground;
+  }
+  .ui-label {
+    @apply text-sm font-medium leading-5 text-foreground;
+  }
+  .ui-value-label {
+    @apply text-xs font-medium leading-5 text-muted-foreground;
   }
   .ui-body {
     @apply text-[15px] leading-7 text-foreground;
@@ -227,7 +246,7 @@
     @apply text-xs leading-5 text-muted-foreground;
   }
   .ui-primary-metric {
-    @apply text-[42px] leading-none font-semibold tracking-tight text-foreground md:text-[48px];
+    @apply text-[40px] leading-none font-semibold tracking-tight text-foreground;
   }
   .ui-large-metric {
     @apply text-[30px] leading-none font-semibold tracking-tight text-foreground md:text-[34px];
@@ -235,11 +254,78 @@
   .ui-section-row {
     @apply flex flex-col gap-2 md:flex-row md:items-start md:justify-between;
   }
+  .ui-page-header {
+    @apply border-b border-border pb-8 md:pb-10;
+  }
+  .ui-page-header-content {
+    @apply flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between;
+  }
+  .ui-section-header {
+    @apply flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between;
+  }
+  .ui-section-intro {
+    @apply max-w-[var(--layout-reading-max)] space-y-2;
+  }
+  .ui-action-row {
+    @apply flex flex-wrap items-center gap-2;
+  }
+  .ui-action-row-end {
+    @apply flex flex-wrap items-center gap-2 sm:justify-end;
+  }
+  .ui-control-stack {
+    @apply space-y-5;
+  }
+  .ui-control-group {
+    @apply space-y-3 border-t border-border pt-5;
+  }
+  .ui-control-group:first-child {
+    @apply border-t-0 pt-0;
+  }
+  .ui-field-stack {
+    @apply space-y-2;
+  }
+  .ui-field-description {
+    @apply text-xs leading-5 text-muted-foreground;
+  }
+  .ui-field-error {
+    @apply text-xs font-medium leading-5 text-destructive;
+  }
+  .ui-form-panel {
+    @apply border-y border-border bg-background p-5 md:p-6;
+  }
+  .ui-result-panel {
+    @apply border-t border-border pt-6 md:pt-8;
+  }
+  .ui-metric-grid {
+    @apply grid gap-4 md:gap-5;
+  }
+  .ui-metric-item {
+    @apply min-w-0 border-t border-border pt-3;
+  }
+  .ui-metric-value {
+    @apply text-lg font-semibold leading-6 text-foreground;
+    font-variant-numeric: tabular-nums;
+  }
+  .ui-metric-support {
+    @apply mt-1 text-xs leading-5 text-muted-foreground;
+  }
   .ui-divider-group {
     @apply divide-y divide-border;
   }
   .ui-inline-notice {
     @apply rounded-md border border-border bg-card px-4 py-3 text-sm leading-6 text-muted-foreground;
+  }
+  .ui-status-note {
+    @apply flex items-start gap-3 border-l-2 border-border bg-muted/20 px-4 py-3 text-sm leading-6 text-muted-foreground;
+  }
+  .ui-status-note-success {
+    @apply border-l-success;
+  }
+  .ui-status-note-warning {
+    @apply border-l-warning;
+  }
+  .ui-status-note-danger {
+    @apply border-l-destructive;
   }
   .ui-safe-text {
     overflow-wrap: anywhere;
@@ -249,11 +335,22 @@
     @apply min-w-0 truncate;
   }
   .ui-focus-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/45 focus-visible:ring-offset-2;
   }
   .ui-surface {
     @apply border border-border bg-card;
     border-radius: var(--finance-radius-md);
+  }
+  .ui-surface-raised {
+    @apply border border-border bg-card shadow-sm;
+    border-radius: var(--finance-radius-md);
+  }
+  .ui-surface-inset {
+    @apply border border-border bg-muted/35;
+    border-radius: var(--finance-radius-sm);
+  }
+  .ui-surface-flush {
+    @apply border-y border-border bg-card;
   }
   .ui-section {
     @apply bg-transparent;
@@ -272,6 +369,80 @@
   }
   .ui-section-divider {
     @apply border-t border-border pt-8 md:pt-12;
+  }
+  .ui-table-frame {
+    @apply overflow-hidden border-y border-border bg-card;
+  }
+  .ui-table-scroll-hint {
+    @apply text-xs leading-5 text-muted-foreground lg:hidden;
+  }
+  .ui-table-caption {
+    @apply sr-only;
+  }
+  .ui-table-scroll-region {
+    @apply relative w-full overflow-x-auto overscroll-x-contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-muted) transparent;
+  }
+  .ui-table-scroll-region::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .ui-table-scroll-region::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .ui-table-scroll-region::-webkit-scrollbar-thumb {
+    background: var(--color-muted);
+    border-radius: 10px;
+  }
+  .ui-table-scroll-region::-webkit-scrollbar-thumb:hover {
+    background: var(--color-muted-foreground);
+  }
+  .ui-table-scroll-region:focus-visible {
+    @apply outline-none ring-2 ring-ring/45 ring-offset-2;
+  }
+  .ui-table-scroll-hint-icon {
+    @apply mr-1 inline-block font-mono text-[11px] font-semibold text-foreground;
+  }
+  .ui-chart-tooltip {
+    @apply rounded-md border border-border bg-popover text-popover-foreground shadow-lg;
+  }
+  .ui-chart-tooltip-heading {
+    @apply border-b border-border/70 pb-2 text-xs font-semibold tracking-[0.02em] text-foreground;
+  }
+  .ui-chart-tooltip-row {
+    @apply flex items-center justify-between gap-5 text-xs;
+  }
+  .ui-chart-tooltip-label {
+    @apply flex min-w-0 items-center gap-2 font-medium text-muted-foreground;
+  }
+  .ui-chart-tooltip-value {
+    @apply shrink-0 text-right font-mono font-semibold tabular-nums text-foreground;
+  }
+  .ui-chart-tooltip-dot {
+    @apply h-2 w-2 shrink-0 rounded-full;
+  }
+  .ui-chart-tooltip-context {
+    @apply space-y-1.5 border-t border-dashed border-border/70 pt-2;
+  }
+  .ui-mobile-data-list {
+    @apply divide-y divide-border;
+  }
+  .ui-mobile-data-list > article {
+    @apply py-5 first:pt-0 last:pb-0;
+  }
+  .ui-result-control-row {
+    @apply flex flex-col gap-3 border-b border-border pb-3 sm:flex-row sm:items-center sm:justify-between;
+  }
+  .ui-list-row {
+    @apply flex min-w-0 items-start justify-between gap-4 border-t border-border py-3 first:border-t-0;
+  }
+  .ui-list-row-main {
+    @apply min-w-0 space-y-1;
+  }
+  .ui-list-row-value {
+    @apply shrink-0 text-right text-sm font-semibold text-foreground;
+    font-variant-numeric: tabular-nums;
   }
   .ui-reading-width {
     max-width: var(--layout-reading-max);
@@ -336,6 +507,54 @@
     @apply inline-flex items-center gap-2 border border-border bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground;
     border-radius: var(--finance-radius-sm);
   }
+  .ui-interactive-surface {
+    @apply transition-colors duration-150 hover:border-foreground/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/45 focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+  .ui-icon-tile {
+    @apply inline-flex size-9 shrink-0 items-center justify-center rounded-md bg-muted text-foreground;
+  }
+  .ui-icon-tile-sm {
+    @apply inline-flex size-7 shrink-0 items-center justify-center rounded-md bg-muted text-foreground;
+  }
+  .ui-loading-block {
+    @apply space-y-3 border-y border-border py-6;
+  }
+  .ui-empty-state {
+    @apply border-t border-border py-8 text-center md:py-12;
+  }
+  .ui-empty-state-content {
+    @apply mx-auto max-w-md space-y-3;
+  }
+  .ui-empty-state-actions {
+    @apply mt-5 flex flex-wrap justify-center gap-2;
+  }
+  .ui-disclosure-summary {
+    @apply flex items-center justify-between gap-3 text-sm font-medium text-foreground;
+  }
+  .ui-disclosure-body {
+    @apply border-t border-border pt-4 text-sm leading-6 text-muted-foreground;
+  }
+  .ui-mobile-action-bar {
+    @apply fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 px-4 py-3 backdrop-blur-sm lg:hidden;
+  }
+  .ui-mobile-action-bar-inner {
+    @apply mx-auto flex w-full max-w-[var(--layout-app-max)] items-center gap-3;
+  }
+  .ui-page-gutter {
+    @apply px-4 md:px-8 xl:px-10;
+  }
+  .ui-card-grid {
+    @apply grid grid-cols-1 gap-4 md:gap-5;
+  }
+  .ui-tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .ui-balance {
+    text-wrap: balance;
+  }
+  .ui-pretty {
+    text-wrap: pretty;
+  }
   .animate-in-fade {
     @apply animate-in fade-in duration-700;
   }
@@ -356,6 +575,17 @@
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: var(--color-muted-foreground);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 

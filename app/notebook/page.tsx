@@ -9,7 +9,7 @@ export async function generateMetadata() {
 export default function PortfolioNotebookPage() {
   return (
     <PageTransition>
-      <div className="container mx-auto">
+      <div className="container mx-auto ui-page-flow">
         <NotebookContainer />
       </div>
     </PageTransition>

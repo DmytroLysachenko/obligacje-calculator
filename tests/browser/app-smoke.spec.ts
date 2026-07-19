@@ -8,6 +8,7 @@ import {
 
 const smokeRoutes = [
   { path: '/', name: 'home' },
+  { path: '/education', name: 'education' },
   { path: '/single-calculator', name: 'single calculator' },
   { path: '/compare', name: 'comparison' },
   { path: '/economic-data', name: 'economic data' },

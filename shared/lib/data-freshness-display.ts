@@ -66,3 +66,25 @@ export function getCalculationFreshnessMetaState(freshness: CalculationDataFresh
     dotClass: isFresh ? 'bg-[var(--finance-success)]' : 'bg-[var(--finance-warning)]',
   };
 }
+
+export function getBondOfferFreshnessState(freshness?: CalculationDataFreshness) {
+  const source = freshness?.bondOfferSource;
+  const status = freshness?.bondOfferStatus;
+
+  return {
+    source,
+    attemptLabel: formatFreshnessDate(freshness?.bondOfferAttemptAt),
+    status,
+    isDegraded: !source || status !== 'success' || source !== 'gov.pl',
+  };
+}
+
+export function getBondOfferSourceTranslationKey(source?: string) {
+  const translationKeys: Record<string, string> = {
+    'gov.pl': 'gov_pl',
+    'obligacjeskarbowe.pl': 'obligacjeskarbowe_pl',
+    'curated-fallback': 'curated-fallback',
+  };
+
+  return translationKeys[source ?? ''] ?? 'unavailable';
+}

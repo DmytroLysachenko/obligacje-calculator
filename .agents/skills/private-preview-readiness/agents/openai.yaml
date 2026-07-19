@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Private Preview Readiness'
+  short_description: 'Verify private Cloud Run operational evidence'
+  default_prompt: 'Use $private-preview-readiness to prepare private-preview operational evidence.'

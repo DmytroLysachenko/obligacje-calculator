@@ -37,7 +37,7 @@ export function PortfolioWorkspaceCard({
   onRequestDelete,
 }: PortfolioWorkspaceCardProps) {
   return (
-    <article className="space-y-4 border-t border-border py-5 transition-colors hover:border-foreground/20">
+    <article className="ui-interactive-surface space-y-4 border-t border-border py-5 transition-colors hover:border-foreground/20">
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
           <div className="border-l-2 border-border pl-3 pt-0.5 text-foreground">
@@ -63,6 +63,7 @@ export function PortfolioWorkspaceCard({
             event.stopPropagation();
             onRequestDelete();
           }}
+          aria-label={`Delete ${portfolio.name}`}
         >
           <Trash2 className="h-4 w-4" />
         </Button>

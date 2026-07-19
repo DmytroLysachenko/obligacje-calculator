@@ -27,18 +27,18 @@ export default async function LoginPage() {
 
   return (
     <main className="mx-auto flex min-h-[70vh] w-full max-w-3xl flex-col justify-center px-6 py-16">
-      <section className="space-y-8">
-        <div className="space-y-3 border-b border-border pb-6">
+      <section className="ui-compact-flow">
+        <div className="ui-section-intro border-b border-border pb-6">
           <p className="ui-meta font-semibold text-muted-foreground">{t('login.eyebrow')}</p>
           <h1 className="ui-page-title text-foreground">{t('login.title')}</h1>
           <p className="ui-body max-w-2xl text-muted-foreground">{t('login.description')}</p>
         </div>
 
-        <Card className="rounded-md border-border shadow-none">
+        <Card className="ui-surface-raised rounded-md border-border shadow-none">
           <CardHeader className="border-b border-border">
             <CardTitle className="text-base">{t('login.provider_title')}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 pt-5">
+          <CardContent className="ui-control-stack pt-5">
             {providers.map((provider) => {
               return (
                 <form
@@ -51,7 +51,7 @@ export default async function LoginPage() {
                   <Button
                     type="submit"
                     variant="outline"
-                    className="h-11 w-full justify-start gap-3 rounded-md border-border"
+                    className="ui-focus-ring h-12 w-full justify-start gap-3 rounded-md border-border"
                   >
                     <span className="flex h-4 w-4 items-center justify-center rounded-full border border-border text-[10px] font-black uppercase">
                       {provider.icon}

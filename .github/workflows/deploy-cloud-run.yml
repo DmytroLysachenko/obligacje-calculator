@@ -104,6 +104,11 @@ jobs:
           fi
           exit "${missing}"
 
+      - name: Apply reviewed database migrations
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: pnpm exec drizzle-kit migrate
+
       - name: Prepare runtime environment
         run: |
           {

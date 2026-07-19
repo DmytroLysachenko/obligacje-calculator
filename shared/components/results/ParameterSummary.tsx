@@ -32,7 +32,7 @@ export function ParameterSummary({
       )}
     >
       {title ? (
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.08em] text-foreground">
+        <p className="mb-2 text-xs font-semibold text-foreground">
           {title}
         </p>
       ) : null}

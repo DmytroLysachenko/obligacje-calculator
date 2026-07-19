@@ -93,16 +93,16 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
   });
 
   return (
-    <section className="space-y-6">
-      <div className="space-y-2">
+    <section className="ui-section-divider ui-control-stack">
+      <div className="ui-section-intro">
         <h2 className="ui-section-title flex items-center gap-2">
-          <Scale className="h-5 w-5 text-foreground" />
+          <Scale className="h-5 w-5 text-foreground" aria-hidden="true" />
           {t('comparison.table_title')}
         </h2>
         <p className="ui-body max-w-3xl text-muted-foreground">{t('comparison.table_desc')}</p>
       </div>
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 gap-0 border-b border-dashed px-2 py-3 md:grid-cols-3 md:px-6">
+      <div className="ui-control-stack">
+        <div className="ui-metric-grid grid-cols-1 border-y border-border py-4 md:grid-cols-3">
           <ComparisonTableStat
             label={t('comparison.table_timeline_rows')}
             value={visibleRangeLabel}
@@ -122,7 +122,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
           formatCurrency={formatCurrency}
         />
 
-        <div className="flex flex-col gap-3 border-b border-dashed px-6 pb-4 md:flex-row md:items-center md:justify-between">
+        <div className="ui-section-header border-y border-border py-4">
           <div className="flex flex-wrap items-center gap-2">
             {COMPARISON_TABLE_GRANULARITY_OPTIONS.map((step) => (
               <button
@@ -130,7 +130,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
                 type="button"
                 aria-pressed={chartStep === step}
                 className={cn(
-                  'rounded-md border px-3 py-1.5 text-xs font-semibold transition-colors',
+                  'ui-focus-ring rounded-md border px-3 py-2 text-xs font-semibold transition-colors',
                   chartStep === step
                     ? 'border-primary bg-primary text-primary-foreground'
                     : 'border-border bg-background text-muted-foreground hover:text-foreground',
@@ -141,12 +141,12 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
               </button>
             ))}
           </div>
-          <p className="text-xs font-semibold text-muted-foreground">
+          <p className="ui-meta font-semibold">
             {t('common.rows_shown')}: {visibleRangeLabel}
           </p>
         </div>
 
-        <div className="px-6">
+        <div className="min-w-0">
           <ComparisonTableTimelineRows
             rows={displayedRows}
             bondTypeA={bondTypeA}
@@ -187,7 +187,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
           />
         </div>
 
-        <div className="border-t border-dashed border-border px-6 py-4 text-sm leading-6 text-muted-foreground">
+        <div className="ui-status-note text-muted-foreground">
           {t('comparison.table_footer_note')}
         </div>
       </div>

@@ -13,6 +13,7 @@ import {
 import Link from 'next/link';
 
 import { cn } from '@/lib/utils';
+import { getFeaturesForNavigation } from '@/shared/lib/feature-catalog';
 
 type NavItem = {
   href: string;
@@ -28,61 +29,35 @@ type NavSection = {
 type SidebarTranslate = (key: string) => string;
 
 export function buildSidebarNavSections(t: SidebarTranslate): NavSection[] {
+  const iconByRoute: Record<string, NavItem['icon']> = {
+    '/education': BookOpen,
+    '/single-calculator': Calculator,
+    '/compare': Scale,
+    '/economic-data': BarChart2,
+    '/regular-investment': TrendingUp,
+    '/ladder': Layers,
+    '/notebook': Wallet,
+  };
+  const toNavItem = ({ route, titleKey }: { route: string; titleKey: string }): NavItem => ({
+    href: route,
+    label: t(titleKey),
+    icon: iconByRoute[route],
+  });
+
   return [
     {
       label: t('sidebar.sections.core'),
-      items: [
-        {
-          href: '/education',
-          label: t('nav.education'),
-          icon: BookOpen,
-        },
-        {
-          href: '/single-calculator',
-          label: t('nav.single_calculator'),
-          icon: Calculator,
-        },
-        {
-          href: '/compare',
-          label: t('nav.comparison'),
-          icon: Scale,
-        },
-        {
-          href: '/economic-data',
-          label: t('nav.economic_data'),
-          icon: BarChart2,
-        },
-      ],
+      items: getFeaturesForNavigation('core').map(toNavItem),
     },
     {
       label: t('sidebar.sections.conditional'),
-      items: [
-        {
-          href: '/regular-investment',
-          label: t('nav.regular_investment'),
-          icon: TrendingUp,
-        },
-        {
-          href: '/ladder',
-          label: t('nav.ladder'),
-          icon: Layers,
-        },
-        {
-          href: '/notebook',
-          label: t('nav.notebook'),
-          icon: Wallet,
-        },
-      ],
+      items: getFeaturesForNavigation('conditional').map(toNavItem),
     },
   ];
 }
 
 function SidebarSectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="px-2 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-      {children}
-    </p>
-  );
+  return <p className="ui-kicker px-2">{children}</p>;
 }
 
 function NavLinkItem({
@@ -100,30 +75,31 @@ function NavLinkItem({
     <Link
       href={item.href}
       onClick={onItemClick}
+      aria-current={isActive ? 'page' : undefined}
       className={cn(
-        'group relative block rounded-md px-3 py-2.5 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40',
+        'ui-interactive-surface group relative block rounded-md px-3 py-2.5',
         isActive
-          ? 'bg-card text-foreground shadow-sm before:absolute before:left-0 before:top-1/2 before:h-6 before:w-0.5 before:-translate-y-1/2 before:bg-primary'
-          : 'bg-transparent text-muted-foreground hover:bg-card/70 hover:text-foreground',
+          ? 'bg-background text-foreground before:absolute before:left-0 before:top-1/2 before:h-7 before:w-0.5 before:-translate-y-1/2 before:bg-primary'
+          : 'text-muted-foreground hover:bg-background hover:text-foreground',
       )}
     >
       <div className="flex min-w-0 items-center gap-3">
         <div
-          className={cn(
-            'rounded-md p-1.5 transition-colors',
-            isActive ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground',
-          )}
+          className={cn('transition-colors', isActive ? 'text-primary' : 'text-muted-foreground')}
         >
-          <Icon className="h-4 w-4" />
+          <Icon className="h-4 w-4" aria-hidden="true" />
         </div>
 
         <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
-          <p className="min-w-0 text-sm font-medium leading-5">{item.label}</p>
+          <span className="min-w-0 flex-1 truncate text-sm font-medium leading-5">
+            {item.label}
+          </span>
           <ChevronRight
             className={cn(
-              'h-4 w-4 shrink-0 transition-transform',
+              'h-4 w-4 shrink-0 transition-transform duration-150',
               isActive ? 'text-foreground' : 'text-muted-foreground group-hover:translate-x-0.5',
             )}
+            aria-hidden="true"
           />
         </div>
       </div>
@@ -141,7 +117,7 @@ function NavSectionBlock({
   onItemClick?: () => void;
 }) {
   return (
-    <div className="space-y-2.5">
+    <section className="space-y-2.5" aria-label={section.label}>
       <SidebarSectionLabel>{section.label}</SidebarSectionLabel>
       <div className="space-y-1.5">
         {section.items.map((item) => (
@@ -153,7 +129,7 @@ function NavSectionBlock({
           />
         ))}
       </div>
-    </div>
+    </section>
   );
 }
 

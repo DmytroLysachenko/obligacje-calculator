@@ -18,6 +18,7 @@ describe('package scripts contract', () => {
     expect(pkg.scripts['test:release']).toContain('lib/sync/sync-start-year.test.ts');
     expect(pkg.scripts['test:release']).toContain('app/api/production-readiness-contract.test.ts');
     expect(pkg.scripts['test:release']).toContain('app/api/operational-endpoints-contract.test.ts');
+    expect(pkg.scripts['test:release']).toContain('app/provider-boundary-contract.test.ts');
     expect(pkg.scripts['test:release']).toContain(
       'docs/ui/interactive-trigger-markup-contract.test.ts',
     );
@@ -29,9 +30,11 @@ describe('package scripts contract', () => {
     );
     expect(pkg.scripts['test:browser']).toBe('playwright test tests/browser/app-smoke.spec.ts');
     expect(pkg.scripts['test:browser:ci']).toContain('tests/browser/app-smoke.spec.ts');
+    expect(pkg.scripts['test:browser:ci']).toContain('tests/browser/home-page.spec.ts');
     expect(pkg.scripts['test:browser:ci']).toContain('tests/browser/web-vitals.spec.ts');
     expect(pkg.scripts['test:browser:ci']).toContain('--workers=1');
     expect(pkg.scripts['test:web-vitals']).toBe('playwright test tests/browser/web-vitals.spec.ts');
+    expect(pkg.scripts['test:home']).toBe('playwright test tests/browser/home-page.spec.ts');
     expect(pkg.scripts['check:release']).toContain('pnpm check:types');
     expect(pkg.scripts['check:release']).toContain('pnpm lint');
     expect(pkg.scripts['check:release']).toContain('pnpm test:release');
@@ -58,6 +61,9 @@ describe('package scripts contract', () => {
     );
 
     expect(playwrightConfig).toContain('node scripts/start-playwright-server.mjs');
+    expect(playwrightConfig).toContain("screenshot: 'only-on-failure'");
+    expect(playwrightConfig).toContain("video: 'retain-on-failure'");
+    expect(playwrightConfig).toContain("name: 'mobile-chromium'");
     expect(launcher).toContain("existsSync('.next/standalone/server.js')");
     expect(launcher).toContain("process.platform !== 'win32'");
     expect(launcher).toContain("cpSync('.next/static'");

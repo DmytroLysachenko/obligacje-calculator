@@ -70,12 +70,19 @@ function getNbpCheckDate(series: FreshnessSeries, syncRuns: FreshnessSyncRun[]) 
   );
 }
 
+function getLatestBondOfferRun(syncRuns: FreshnessSyncRun[]) {
+  return syncRuns
+    .filter((run) => run.scope === 'bond-offers')
+    .sort((a, b) => (b.startedAt?.getTime() ?? 0) - (a.startedAt?.getTime() ?? 0))[0];
+}
+
 export function resolveGlobalDataFreshness(
   allSeries: FreshnessSeries[],
   recentSyncRuns: FreshnessSyncRun[],
   now = new Date(),
 ): CalculationDataFreshness {
   const criticalSeries = selectFreshnessSeries(allSeries);
+  const latestBondOfferRun = getLatestBondOfferRun(recentSyncRuns);
 
   if (criticalSeries.length === 0) {
     return { status: 'unknown', usedFallback: true };
@@ -108,8 +115,16 @@ export function resolveGlobalDataFreshness(
   const usesPartialReference = criticalSeries.some(
     (series) => series.lastSyncStatus === 'partial' && series.slug !== CANONICAL_NBP_SLUG,
   );
+  const bondOfferIsDegraded =
+    !latestBondOfferRun ||
+    latestBondOfferRun.status === 'partial' ||
+    latestBondOfferRun.status === 'failed';
   const usedFallback =
-    missingRequiredSeries || missingRequiredDates || hasFailure || usesPartialReference;
+    missingRequiredSeries ||
+    missingRequiredDates ||
+    hasFailure ||
+    usesPartialReference ||
+    bondOfferIsDegraded;
 
   if (!oldestCoverageDate) {
     return {
@@ -118,6 +133,9 @@ export function resolveGlobalDataFreshness(
       coverageAsOf: undefined,
       lastSyncedAt: latestSyncCheck?.toISOString(),
       lastCheck: latestSyncCheck?.toISOString(),
+      bondOfferSource: latestBondOfferRun?.provider ?? undefined,
+      bondOfferAttemptAt: latestBondOfferRun?.finishedAt?.toISOString(),
+      bondOfferStatus: latestBondOfferRun?.status ?? undefined,
       usedFallback: true,
     };
   }
@@ -131,6 +149,9 @@ export function resolveGlobalDataFreshness(
     coverageAsOf: format(oldestCoverageDate, 'yyyy-MM'),
     lastSyncedAt: latestSyncCheck?.toISOString(),
     lastCheck: latestSyncCheck?.toISOString(),
+    bondOfferSource: latestBondOfferRun?.provider ?? undefined,
+    bondOfferAttemptAt: latestBondOfferRun?.finishedAt?.toISOString(),
+    bondOfferStatus: latestBondOfferRun?.status ?? undefined,
     usedFallback,
   };
 }

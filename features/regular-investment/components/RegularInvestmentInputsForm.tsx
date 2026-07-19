@@ -32,7 +32,10 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
 
     if (isLoadingDefs || !definitions) {
       return (
-        <section className="flex h-[600px] w-full items-center justify-center border-y border-border bg-background p-6">
+        <section
+          className="ui-form-panel flex h-[600px] w-full items-center justify-center"
+          aria-busy="true"
+        >
           <p className="text-sm font-semibold text-muted-foreground">{t('common.loading')}</p>
         </section>
       );
@@ -47,14 +50,17 @@ export const RegularInvestmentInputsForm: React.FC<RegularInvestmentInputsFormPr
     const isDivisibleBy100 = inputs.contributionAmount % 100 === 0 && inputs.contributionAmount > 0;
 
     return (
-      <section className="w-full space-y-8 border-y border-border bg-background p-5 md:p-6">
-        <div className="space-y-2 border-b border-border pb-4">
+      <section
+        className="ui-form-panel w-full ui-control-stack"
+        aria-label={t('bonds.regular_calculator')}
+      >
+        <div className="ui-section-intro border-b border-border pb-5">
           <h2 className="ui-section-title">{t('bonds.regular_calculator')}</h2>
           <p className="ui-body text-muted-foreground">
             {t('regular_investment_page.form_description')}
           </p>
         </div>
-        <div className="space-y-8">
+        <div className="ui-control-stack">
           <ScenarioFieldset
             title={t('regular_investment_page.core_plan_title')}
             description={t('regular_investment_page.core_plan_description')}

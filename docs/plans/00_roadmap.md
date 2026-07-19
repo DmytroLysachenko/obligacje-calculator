@@ -192,14 +192,13 @@ Important rule:
 
 ## In-Scope Product Surfaces
 
-The likely retained core:
+The default trusted-core admission scope:
 
 - education
 - single bond calculator
-- comparison calculator
-- regular investment / ladder if calculation rules are verified
-- notebook as a descriptive workspace, not an advisory cockpit
 - economic data only if source/freshness are real and visible
+
+Comparison, regular investment, ladder, and notebook remain private-preview candidates. Each is excluded from release admission until it has independent calculation, UX, and data evidence.
 
 The current navigation stance is:
 

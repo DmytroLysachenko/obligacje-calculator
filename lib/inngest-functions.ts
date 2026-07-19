@@ -1,3 +1,5 @@
+import { cron } from 'inngest';
+
 import { createServerLogger } from './server/logging';
 import { createDefaultSyncEngine } from './sync/create-sync-engine';
 import { inngest } from './inngest';
@@ -8,8 +10,8 @@ export const syncEconomicData = inngest.createFunction(
   {
     id: 'sync-economic-data',
     retries: 3,
+    triggers: [cron('0 2,14 * * *')],
   },
-  { cron: '0 2,14 * * *' }, // Run twice a day (2 AM and 2 PM)
   async ({ step }) => {
     const engine = createDefaultSyncEngine('InngestSync');
 

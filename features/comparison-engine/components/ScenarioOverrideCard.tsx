@@ -107,21 +107,17 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
       title={title}
       description={t('comparison.base_follows_shared_desc')}
       tone={colorClass}
-      meta={
-        <span className="text-[11px] font-semibold text-muted-foreground">
-          {formatBondLabel(bondType)}
-        </span>
-      }
+      meta={<span className="ui-kicker text-muted-foreground">{formatBondLabel(bondType)}</span>}
     >
       <FormSelect
         label={t('bonds.bond.type')}
         value={bondType}
         onValueChange={(value) => onBondTypeChange(value as BondType)}
         options={bondOptions}
-        triggerClassName="font-semibold"
+        triggerClassName="h-12 font-semibold"
       />
       <RateContextNote
-        className="space-y-2 border-t border-border pt-4"
+        className="ui-control-group"
         title={t('comparison.override_scope_title')}
         badges={[
           formatBondLabel(bondType),
@@ -136,9 +132,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
           {t('comparison.family_override_note')}
         </Notice>
       ) : null}
-      <p className="text-xs leading-5 text-muted-foreground">
-        {getBondSupportMeta(bondType, language).description}
-      </p>
+      <p className="ui-field-description">{getBondSupportMeta(bondType, language).description}</p>
 
       <FormInlineNotice
         title={t('comparison.base_follows_shared_title')}
@@ -149,9 +143,9 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
         title={t('comparison.optional_overrides_title')}
         description={t('comparison.optional_overrides_desc')}
         badge={t('comparison.helper_secondary')}
-        className="mt-0"
+        className="ui-result-panel mt-0"
       >
-        <div className="space-y-5">
+        <div className="ui-control-stack">
           <FormSelect
             label={t('bonds.tax_strategy')}
             value={taxStrategy ?? 'shared'}
@@ -162,18 +156,20 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
             description={t('comparison.tax_override_desc')}
           />
 
-          <div className="flex items-center justify-between gap-4 border-l-2 border-border bg-muted/20 px-4 py-3">
+          <div className="ui-status-note justify-between gap-4">
             <div className="min-w-0">
-              <p className="text-sm font-semibold">{t('comparison.custom_horizon')}</p>
-              <p className="text-xs leading-5 text-muted-foreground">
-                {t('comparison.custom_horizon_desc')}
-              </p>
+              <p className="ui-label">{t('comparison.custom_horizon')}</p>
+              <p className="ui-field-description">{t('comparison.custom_horizon_desc')}</p>
             </div>
-            <Switch checked={customHorizonEnabled} onCheckedChange={onCustomHorizonEnabledChange} />
+            <Switch
+              checked={customHorizonEnabled}
+              onCheckedChange={onCustomHorizonEnabledChange}
+              aria-label={t('comparison.custom_horizon')}
+            />
           </div>
 
           {customHorizonEnabled ? (
-            <div className="space-y-3">
+            <div className="ui-field-stack">
               <FormField
                 label={t('comparison.scenario_horizon')}
                 description={t('comparison.horizon_override_desc')}

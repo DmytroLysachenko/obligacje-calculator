@@ -1,4 +1,5 @@
 import { execFileSync, execSync } from 'node:child_process';
+import { pathToFileURL } from 'node:url';
 
 interface VerifyOptions {
   baseUrl: string;
@@ -46,6 +47,19 @@ const DEFAULT_PROJECT_ID = 'bond-calculator-pl';
 const DEFAULT_REGION = 'europe-central2';
 const DEFAULT_SERVICE = 'obligacje-calculator';
 const BODY_SNIPPET_LENGTH = 240;
+
+export const ADMITTED_PREVIEW_SMOKE_CHECKS: Array<{
+  path: string;
+  label: string;
+  kind: 'html' | 'json';
+}> = [
+  { path: '/api/health', label: 'health', kind: 'json' },
+  { path: '/education', label: 'education', kind: 'html' },
+  { path: '/single-calculator', label: 'single calculator', kind: 'html' },
+  { path: '/economic-data', label: 'economic data', kind: 'html' },
+  { path: '/api/calculation-defaults', label: 'calculation defaults', kind: 'json' },
+  { path: '/login', label: 'login', kind: 'html' },
+];
 
 export function parseArgs(argv: string[]): VerifyOptions {
   const options: VerifyOptions = {
@@ -253,6 +267,16 @@ function verifyHtmlResponse(label: string, path: string, response: FetchResult) 
   console.log(`${label} ok`);
 }
 
+function verifyLoginResponse(response: FetchResult) {
+  verifyHtmlResponse('login', '/login', response);
+  assertOk(response.body.includes('<form'), 'login did not render a provider sign-in form');
+  assertOk(
+    !/AUTH_GOOGLE_(?:ID|SECRET)|AUTH_FACEBOOK_(?:ID|SECRET)/.test(response.body),
+    'login response exposed OAuth credential configuration',
+  );
+  console.log('login OAuth readiness ok');
+}
+
 function verifyJsonResponse(label: string, path: string, response: FetchResult) {
   assertOk(response.ok, createResponseSummary(label, path, response));
   assertOk(
@@ -267,6 +291,11 @@ async function verifyReadiness(options: VerifyOptions) {
   const path = '/api/readiness';
   const readiness = await fetchPath(options, path);
   const payload = parseJson<ReadinessResponse>('readiness', path, readiness);
+
+  assertOk(
+    !/AUTH_GOOGLE_(?:ID|SECRET)|AUTH_FACEBOOK_(?:ID|SECRET)/.test(readiness.body),
+    'readiness response exposed OAuth credential configuration',
+  );
 
   if (readiness.ok && payload.ok) {
     console.log('readiness ok');
@@ -288,28 +317,19 @@ async function verifyReadiness(options: VerifyOptions) {
   console.log('readiness degraded: OAuth provider intentionally missing; database ok');
 }
 
-async function main() {
+export async function main() {
   const options = parseArgs(process.argv.slice(2));
   options.identityToken ??= getIdentityToken();
 
   assertOk(Boolean(options.identityToken), 'Missing identity token. Run gcloud auth login first.');
 
-  const smokeChecks: Array<{
-    path: string;
-    label: string;
-    kind: 'html' | 'json';
-  }> = [
-    { path: '/api/health', label: 'health', kind: 'json' },
-    { path: '/', label: 'home', kind: 'html' },
-    { path: '/single-calculator', label: 'single calculator', kind: 'html' },
-    { path: '/api/calculation-defaults', label: 'calculation defaults', kind: 'json' },
-  ];
-
-  for (const check of smokeChecks) {
+  for (const check of ADMITTED_PREVIEW_SMOKE_CHECKS) {
     const response = await fetchPath(options, check.path);
     assertOk(response.body.length > 0, `${check.label} returned an empty body`);
 
-    if (check.kind === 'html') {
+    if (check.path === '/login') {
+      verifyLoginResponse(response);
+    } else if (check.kind === 'html') {
       verifyHtmlResponse(check.label, check.path, response);
     } else {
       verifyJsonResponse(check.label, check.path, response);
@@ -322,7 +342,9 @@ async function main() {
   console.log(`Production verification passed for ${options.baseUrl}`);
 }
 
-main().catch((error: unknown) => {
-  console.error(error instanceof Error ? error.message : error);
-  process.exitCode = 1;
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error: unknown) => {
+    console.error(error instanceof Error ? error.message : error);
+    process.exitCode = 1;
+  });
+}

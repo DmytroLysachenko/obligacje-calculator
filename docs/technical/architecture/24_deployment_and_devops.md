@@ -117,10 +117,12 @@ because CI and local developer machines should not require production secrets.
 During private preview only, pass `--allow-missing-oauth` when OAuth credentials
 are intentionally absent; this does not waive database, URL, or secret checks.
 
-Apply migrations and seed/sync the target database before promoting traffic:
+The protected production deployment applies checked-in Drizzle migrations before
+it promotes traffic. Operators must generate and review the migration files in
+the pull request; never use an ad-hoc schema push against a release database.
+Seed or sync the target database only when the release changes reference data:
 
 ```bash
-npx drizzle-kit push
 pnpm run db:seed:production
 pnpm run sync:full
 ```
@@ -140,7 +142,9 @@ fallback and runs the same release gate before building.
 
 ## 5. Deployment Guardrails
 
-- Run migrations against the target database before warming the app.
+- Review and merge explicit Drizzle migrations before the protected deployment
+  applies them against the target database. Do not run `drizzle-kit push` in a
+  release workflow or against production manually.
 - Run `pnpm check:release` before promoting a build. This is the trusted-core
   Cloud Run gate; run `pnpm test:ci` separately when reconciling the broader
   legacy UI contract inventory.

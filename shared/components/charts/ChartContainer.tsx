@@ -40,7 +40,7 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
   return (
     <div
       className={cn(
-        'relative w-full overflow-hidden rounded-lg border border-border bg-card shadow-sm',
+        'relative w-full overflow-hidden rounded-lg border border-border bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/45 focus-visible:ring-offset-2',
         responsiveHeightClassName,
         className,
       )}
@@ -49,7 +49,11 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
       tabIndex={ariaLabel ? 0 : undefined}
       style={style}
     >
-      {summary ? <div className="sr-only">{summary}</div> : null}
+      {summary ? (
+        <div className="sr-only" aria-live="polite">
+          {summary}
+        </div>
+      ) : null}
       {hasMounted ? children : null}
     </div>
   );

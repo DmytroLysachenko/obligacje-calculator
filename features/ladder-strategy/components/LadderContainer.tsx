@@ -20,10 +20,10 @@ import { LadderTimeline } from './LadderTimeline';
 const LadderEmptyState = () => {
   const { t } = useAppI18n();
   return (
-    <section className="space-y-5 border-t border-border py-6">
-      <div className="space-y-3">
+    <section className="ui-section-divider ui-control-stack">
+      <div className="ui-section-intro">
         <div className="surface-chip">
-          <TrendingUp className="h-3.5 w-3.5 text-primary" />
+          <TrendingUp className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
           {t('bonds.simulation.ready')}
         </div>
         <h3 className="ui-section-title">{t('ladder_page.empty_state_title')}</h3>
@@ -32,7 +32,7 @@ const LadderEmptyState = () => {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="ui-metric-grid md:grid-cols-3">
         <div className="border-t border-border py-5">
           <p className="ui-card-title">{t('ladder_page.empty_cards.plan_title')}</p>
           <p className="ui-body mt-2 text-muted-foreground">
@@ -60,10 +60,10 @@ const LadderEmptyState = () => {
   );
 };
 const LadderLoadingState = () => (
-  <div className="space-y-4">
-    <Skeleton className="h-28 w-full rounded-lg" />
-    <Skeleton className="h-48 w-full rounded-lg" />
-    <Skeleton className="h-[460px] w-full rounded-lg" />
+  <div className="ui-control-stack" role="status">
+    <Skeleton className="h-28 w-full rounded-md" />
+    <Skeleton className="h-48 w-full rounded-md" />
+    <Skeleton className="h-[460px] w-full rounded-md" />
   </div>
 );
 export const LadderContainer: React.FC = () => {
@@ -99,6 +99,9 @@ export const LadderContainer: React.FC = () => {
       onKeyDown={handleKeyDown}
     >
       <CalculatorWorkspace
+        className="ui-page-flow"
+        resultsClassName="min-w-0"
+        detailsClassName="min-w-0"
         controls={
           <RegularInvestmentInputsForm
             inputs={inputs}
@@ -114,12 +117,15 @@ export const LadderContainer: React.FC = () => {
             {results ? (
               <div
                 className={cn(
-                  'space-y-8 transition-opacity duration-200',
+                  'ui-compact-flow transition-opacity duration-200',
                   isCalculating && 'pointer-events-none opacity-50',
                 )}
               >
                 {isDirty ? (
-                  <div className="ui-inline-notice border-warning/30 bg-warning/5 text-foreground">
+                  <div
+                    className="ui-status-note ui-status-note-warning text-foreground"
+                    role="status"
+                  >
                     {t('ladder_page.stale_results')}
                   </div>
                 ) : null}
@@ -136,7 +142,7 @@ export const LadderContainer: React.FC = () => {
           results ? (
             <div
               className={cn(
-                'space-y-10 transition-opacity duration-200',
+                'ui-compact-flow transition-opacity duration-200',
                 isCalculating && 'pointer-events-none opacity-50',
               )}
             >

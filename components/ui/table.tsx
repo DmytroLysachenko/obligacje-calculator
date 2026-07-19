@@ -6,13 +6,34 @@ import { cn } from '@/lib/utils';
 
 function Table({ className, ...props }: React.ComponentProps<'table'>) {
   return (
-    <div data-slot="table-container" className="relative w-full overflow-x-auto custom-scrollbar">
+    <div
+      data-slot="table-container"
+      className="ui-table-scroll-region"
+      role="region"
+      tabIndex={0}
+      aria-label={props['aria-label'] ?? 'Scrollable data table'}
+    >
       <table
         data-slot="table"
         className={cn('w-full caption-bottom border-collapse text-sm', className)}
         {...props}
       />
     </div>
+  );
+}
+
+function TableCaption({ className, ...props }: React.ComponentProps<'caption'>) {
+  return (
+    <caption data-slot="table-caption" className={cn('ui-table-caption', className)} {...props} />
+  );
+}
+
+function TableScrollHint({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="ui-table-scroll-hint" aria-hidden="true">
+      <span className="ui-table-scroll-hint-icon">↔</span>
+      {children}
+    </p>
   );
 }
 
@@ -67,7 +88,7 @@ function TableCell({ className, ...props }: React.ComponentProps<'td'>) {
     <td
       data-slot="table-cell"
       className={cn(
-        'px-3 py-2.5 align-middle whitespace-nowrap text-foreground [&:has([role=checkbox])]:pr-0',
+        'px-3 py-3 align-middle whitespace-nowrap text-foreground [&:has([role=checkbox])]:pr-0',
         className,
       )}
       {...props}
@@ -75,4 +96,13 @@ function TableCell({ className, ...props }: React.ComponentProps<'td'>) {
   );
 }
 
-export { Table, TableBody, TableCell, TableHead, TableHeader, TableRow };
+export {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+  TableScrollHint,
+};

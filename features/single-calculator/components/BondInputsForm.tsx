@@ -77,7 +77,11 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
   if (isLoadingDefs || !definitions || !currentDef) {
     return (
-      <section className="w-full space-y-6 border-y border-border bg-background p-5 md:p-6">
+      <section
+        className="ui-form-panel w-full space-y-6"
+        aria-busy="true"
+        aria-label={t('common.loading')}
+      >
         <div className="space-y-3">
           <Skeleton className="mb-2 h-6 w-48" />
           <Skeleton className="h-4 w-64" />
@@ -102,9 +106,12 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
   return (
     <TooltipProvider>
-      <section className="w-full space-y-8 border-y border-border bg-background p-5 md:p-6">
+      <section
+        className="ui-form-panel w-full space-y-7 xl:sticky xl:top-8"
+        aria-label={t('bonds.single_calculator')}
+      >
         {guardrails.length > 0 ? (
-          <div className="space-y-3">
+          <div className="ui-control-stack" role="status">
             {guardrails.map((issue) => (
               <FormInlineNotice
                 key={issue.id}
@@ -117,7 +124,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
                       type="button"
                       variant="outline"
                       size="sm"
-                      className="shrink-0 text-xs font-medium"
+                      className="ui-focus-ring h-9 shrink-0 text-xs font-medium"
                       onClick={() => onApplyGuardrailFix(issue)}
                     >
                       {issue.autoFixLabel}
@@ -129,17 +136,16 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           </div>
         ) : null}
 
-        <div className="space-y-2 border-b border-border pb-5">
-          <h2 className="flex items-center gap-2 ui-section-title">
-            <Target className="h-5 w-5 text-primary" />
-            {t('bonds.single_calculator')}
-          </h2>
-          <p className="text-sm leading-6 text-muted-foreground">
-            {t('bonds.form.main_path_desc')}
-          </p>
+        <div className="ui-section-intro border-b border-border pb-5">
+          <div className="flex items-center gap-2">
+            <Target className="h-5 w-5 text-primary" aria-hidden="true" />
+            <p className="ui-kicker">{t('bonds.simulation.ready')}</p>
+          </div>
+          <h2 className="ui-section-title">{t('bonds.single_calculator')}</h2>
+          <p className="ui-body text-muted-foreground">{t('bonds.form.main_path_desc')}</p>
         </div>
 
-        <div className="space-y-4">
+        <div className="ui-control-stack">
           <AdvancedAssumptionsDisclosure
             title={t('bonds.step_core')}
             description={t('bonds.form.step_core_desc')}

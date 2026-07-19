@@ -30,6 +30,17 @@ function flattenMessageKeys(node: unknown, prefix = ''): string[] {
   return prefix ? [prefix] : [];
 }
 
+function collectKeysContainingDots(node: unknown): string[] {
+  if (!node || typeof node !== 'object' || Array.isArray(node)) {
+    return [];
+  }
+
+  return Object.entries(node as Record<string, unknown>).flatMap(([key, value]) => [
+    ...(key.includes('.') ? [key] : []),
+    ...collectKeysContainingDots(value),
+  ]);
+}
+
 function normalizeArrayIndexes(key: string) {
   return key.replace(/\[\d+\]/g, '[]');
 }
@@ -52,15 +63,15 @@ function collectSourceFiles(directory: string): string[] {
   });
 }
 
-function collectDirectCommonTranslationKeys() {
+function collectDirectComparisonTranslationKeys() {
   const roots = ['app', 'features', 'shared'];
   const keys = new Set<string>();
 
   for (const filePath of roots.flatMap(collectSourceFiles)) {
     const source = readFileSync(filePath, 'utf8');
 
-    for (const match of source.matchAll(/t\(['"]common\.([A-Za-z0-9_]+)['"]/g)) {
-      keys.add(match[1]);
+    for (const match of source.matchAll(/t\(['"]comparison\.([A-Za-z0-9_]+)['"]/g)) {
+      keys.add(`comparison.${match[1]}`);
     }
   }
 
@@ -68,6 +79,11 @@ function collectDirectCommonTranslationKeys() {
 }
 
 describe('locale parity for touched bond and economic helper namespaces', () => {
+  it('keeps message object keys compatible with next-intl namespaces', () => {
+    expect(collectKeysContainingDots(enMessages)).toEqual([]);
+    expect(collectKeysContainingDots(plMessages)).toEqual([]);
+  });
+
   it('keeps full English key coverage available in Polish', () => {
     const englishKeys = flattenMessageKeys(enMessages).map(normalizeArrayIndexes).sort();
     const polishKeys = new Set(flattenMessageKeys(plMessages).map(normalizeArrayIndexes));
@@ -100,12 +116,10 @@ describe('locale parity for touched bond and economic helper namespaces', () => 
     }
   });
 
-  it('keeps directly referenced common translation keys resolvable', () => {
-    const usedCommonKeys = collectDirectCommonTranslationKeys();
-    const enCommon = enMessages.common as Record<string, unknown>;
-    const plCommon = plMessages.common as Record<string, unknown>;
+  it('keeps directly referenced comparison translation keys resolvable in both locales', () => {
+    const usedKeys = collectDirectComparisonTranslationKeys();
 
-    expect(usedCommonKeys.filter((key) => !(key in enCommon))).toEqual([]);
-    expect(usedCommonKeys.filter((key) => !(key in plCommon))).toEqual([]);
+    expect(usedKeys.filter((key) => getNodeByPath(enMessages, key) === undefined)).toEqual([]);
+    expect(usedKeys.filter((key) => getNodeByPath(plMessages, key) === undefined)).toEqual([]);
   });
 });

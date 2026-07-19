@@ -126,20 +126,25 @@ export const ComparisonContainer: React.FC = () => {
       hasResults={isPersistenceReady && !!resultsA}
       onKeyDown={handleKeyDown}
     >
-      <div className="space-y-8">
+      <div className="ui-page-flow">
         <div className="grid grid-cols-1 gap-8 2xl:grid-cols-[420px_minmax(0,1fr)] 2xl:items-start 2xl:gap-10">
-          <ComparisonSharedBaseCard
-            sharedConfig={sharedConfig}
-            assumptionsBondType={assumptionsBondType}
-            onUpdateSharedConfig={
-              updateSharedConfig as (
-                key: keyof typeof sharedConfig | string,
-                value: unknown,
-              ) => void
-            }
-          />
+          <aside
+            className="2xl:sticky 2xl:top-8 2xl:h-fit"
+            aria-label={t('comparison.shared_base')}
+          >
+            <ComparisonSharedBaseCard
+              sharedConfig={sharedConfig}
+              assumptionsBondType={assumptionsBondType}
+              onUpdateSharedConfig={
+                updateSharedConfig as (
+                  key: keyof typeof sharedConfig | string,
+                  value: unknown,
+                ) => void
+              }
+            />
+          </aside>
 
-          <div className="min-w-0 space-y-8">
+          <div className="min-w-0 ui-compact-flow">
             <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
               <ScenarioOverrideCard
                 title={t('comparison.scenario_a')}
@@ -180,7 +185,12 @@ export const ComparisonContainer: React.FC = () => {
         </div>
 
         {resultsA && resultsB ? (
-          <div className={cn('space-y-8', isCalculating && 'opacity-60')}>
+          <div
+            className={cn(
+              'ui-page-flow min-w-0',
+              isCalculating && 'pointer-events-none opacity-60',
+            )}
+          >
             {isDirty ? (
               <Notice tone="warning" compact>
                 {t('comparison.stale_results')}

@@ -183,7 +183,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
       showImplicitShare={false}
       onKeyDown={handleKeyDown}
     >
-      <div className="space-y-8 md:space-y-10">
+      <div className="ui-page-flow">
         {sharedScenarioTitle ? (
           <SharedScenarioNotice
             title={sharedScenarioTitle}
@@ -193,6 +193,10 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
         ) : null}
 
         <CalculatorWorkspace
+          className="gap-8 xl:gap-10"
+          controlsClassName="xl:self-start"
+          resultsClassName="min-w-0"
+          detailsClassName="min-w-0"
           controls={
             <BondInputsForm
               inputs={inputs}

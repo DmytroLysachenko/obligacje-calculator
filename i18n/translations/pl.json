@@ -23,6 +23,9 @@
     "period": "Okres",
     "recalculate": "Przelicz",
     "calculating": "Obliczanie...",
+    "status_idle": "Aktualizacja statusu",
+    "status_loading": "Trwa obliczanie",
+    "status_complete": "Obliczenia zakończone",
     "calculated_at": "Obliczono",
     "engine_version": "Wersja modelu",
     "calculation_audit": "Audyt obliczeń",
@@ -159,6 +162,14 @@
       "coverage_label": "Zakres danych do",
       "reference_label": "Dane referencyjne",
       "last_checked": "Ostatnio sprawdzono",
+      "offer_source_label": "Biezaca oferta obligacji",
+      "offer_degraded_warning": "Potwierdzenie biezacej oferty jest ograniczone; sprawdz oprocentowanie przed uzyciem wyniku.",
+      "offer_sources": {
+        "gov_pl": "Oficjalne gov.pl",
+        "obligacjeskarbowe_pl": "Wtórne obligacjeskarbowe.pl",
+        "curated-fallback": "Kuratorowany fallback",
+        "unavailable": "Brak potwierdzenia oferty"
+      },
       "no_date": "Brak daty",
       "no_metadata": "Brak metadanych"
     }
@@ -840,10 +851,11 @@
     "start_calculating": "Zacznij obliczać",
     "financial_tools": "Narzędzia Finansowe",
     "recovery_home": {
-      "eyebrow": "Skupiona strona glowna",
-      "title": "Najpierw uzyj glownego kalkulatora obligacji. Reszte traktuj jako drugorzedne.",
-      "description": "Ta strona glowna pelni role spokojnego punktu startowego. Zacznij od flagowego kalkulatora pojedynczej obligacji, a dopiero potem przechodz do edukacji, danych referencyjnych lub wezszych narzedzi strategicznych, gdy sa potrzebne.",
-      "secondary_cta": "Przejrzyj podstawy",
+      "eyebrow": "Polskie obligacje skarbowe",
+      "title": "Sprawdz, co moze dac jedna decyzja o obligacji.",
+      "description": "Ustaw kwote, horyzont i typ obligacji. Zacznij od jednego jasnego scenariusza, a porownania dodaj dopiero wtedy, gdy ich potrzebujesz.",
+      "primary_cta": "Zasymuluj obligacje",
+      "secondary_cta": "Poznaj podstawy obligacji",
       "status_trusted": "Zaufane powierzchnie glowne",
       "status_explicit": "Jawny przeplyw obliczen",
       "status_reference": "Dane referencyjne jasno opisane",
@@ -917,6 +929,41 @@
       "item_2": "Czytelny kontekst inflacji i NBP",
       "item_3": "Strategie dopiero po wyniku bazowym"
     },
+    "offer_provenance": {
+      "label": "Potwierdzenie aktualnej oferty",
+      "no_date": "Brak daty ostatniego sprawdzenia"
+    },
+    "home_routes": {
+      "primary_title": "Zacznij od jednego scenariusza obligacji",
+      "primary_description": "Podaj jedna kwote, horyzont i typ obligacji. Sprawdz wynik, zanim zaczniesz porownywac kolejne warianty.",
+      "primary_eyebrow": "Glowna sciezka",
+      "primary_action": "Otworz kalkulator",
+      "supporting_title": "Przygotuj scenariusz",
+      "supporting_description": "Skorzystaj z tych materialow, gdy przed obliczeniem potrzebujesz kontekstu.",
+      "supporting_action": "Otworz material"
+    },
+    "decision_slip": {
+      "eyebrow": "Punkt startowy",
+      "title": "Wybierz, co juz wiesz",
+      "description": "Zacznij od najblizszego kroku. Scenariusz doprecyzujesz w kalkulatorze.",
+      "options": {
+        "simulate": {
+          "title": "Znam obligacje lub horyzont",
+          "description": "Uloz jeden scenariusz obligacji.",
+          "detail": "ROR · DOR · COI · EDO"
+        },
+        "learn": {
+          "title": "Chce poznac zasady",
+          "description": "Sprawdz typy obligacji, podatek i indeksacje.",
+          "detail": "TYP STOPY · PODATEK · INDEKSACJA"
+        },
+        "check-context": {
+          "title": "Chce sprawdzic kontekst stop",
+          "description": "Zobacz inflacje i dane referencyjne NBP.",
+          "detail": "CPI · STOPA REFERENCYJNA NBP"
+        }
+      }
+    },
     "home_steps": {
       "learn-rules": {
         "title": "Poznaj zasady",
@@ -946,6 +993,13 @@
     "sync_confirm": "Czy na pewno chcesz uruchomic {mode}? To moze potrwac kilka minut.",
     "sync_progress": "Trwa reczna synchronizacja... nie zamykaj tego okna.",
     "sync_success": "Synchronizacja zakonczona pomyslnie!",
+    "bond_offer_sync": {
+      "title": "Synchronizacja biezacej oferty obligacji",
+      "source": "Zrodlo",
+      "result": "Wynik",
+      "completed": "Zakonczono",
+      "never_run": "Nigdy nie uruchomiono"
+    },
     "metrics": {
       "series_tracked": "Sledzone serie",
       "series_desc": "Aktywne strumienie danych w bazie",
@@ -1502,6 +1556,8 @@
     "data_quality_clean_description": "Ten zatwierdzony wynik nie zglosil flag jakosci danych."
   },
   "comparison": {
+    "offer_source": "Zrodlo oferty obligacji",
+    "offer_degraded_warning": "Potwierdzenie oferty obligacji jest ograniczone; stawki moga pochodzic ze zrodla wtórnego lub kuratorowanego.",
     "title_bond_vs_bond": "Bond vs Bond",
     "desc_bond_vs_bond": "Porównaj różne polskie obligacje skarbowe w tych samych warunkach z automatycznym odnowieniem.",
     "shared_scenario": "Wspólny Scenariusz",
@@ -1556,6 +1612,7 @@
     "up_to_date": "Porównanie jest aktualne",
     "scenario_a": "Scenariusz A",
     "scenario_b": "Scenariusz B",
+    "shared_base": "Wspólna baza scenariusza",
     "shared_base_title": "Wspolna baza scenariusza",
     "shared_base_desc": "Utrzymaj jedna baze: kwote, daty i zalozenia. Nadpisania scenariuszy wlaczaj tylko wtedy, gdy rzeczywiscie maja znaczenie.",
     "shared_base_scope": "Lewy panel definiuje kwote, date zakupu, wspolny horyzont, zalozenia makro i domyslne opakowanie podatkowe dla obu scenariuszy.",

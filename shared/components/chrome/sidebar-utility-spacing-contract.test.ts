@@ -38,7 +38,11 @@ describe('sidebar utility spacing contracts', () => {
     expectContains(source, 'space-y-4 border-t border-border bg-muted/20 px-3 py-4');
     expectContains(source, "<SidebarUtilityGroup title={t('common.settings')}>");
     expectContains(source, '<SidebarSettingsUtility />');
-    expectContains(source, '<SidebarSyncSummary dataFreshness={dataFreshness} />');
+    expectContains(source, "const showSyncSummary = pathname !== '/';");
+    expectContains(
+      source,
+      '{showSyncSummary ? <SidebarSyncSummary dataFreshness={dataFreshness} /> : null}',
+    );
     expectContains(
       source,
       'border-t border-border px-0.5 pt-3 text-xs leading-5 text-muted-foreground',

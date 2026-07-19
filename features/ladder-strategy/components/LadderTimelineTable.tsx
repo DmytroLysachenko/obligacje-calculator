@@ -4,10 +4,12 @@ import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
+  TableScrollHint,
 } from '@/components/ui/table';
 import { LADDER_TABLE_FILTERS } from '@/features/ladder-strategy/constants/timeline';
 import { LadderTimelineTableProps } from '@/features/ladder-strategy/types/timeline';
@@ -38,37 +40,42 @@ export function LadderTimelineTable({
         triggerLabel={t('ladder_page.timeline.mobile_sheet_trigger')}
         triggerCount={`${monthlyBuckets.length} ${t('ladder_page.timeline.mobile_sheet_count_suffix')}`}
       >
-        {displayedRows.map((item) => (
-          <div key={`mobile-${item.date}`} className="border-t border-border py-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-sm font-semibold text-foreground">{item.displayDate}</p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {t('ladder_page.timeline.lots_count')}: {item.count}
+        <div className="ui-divider-group">
+          {displayedRows.map((item) => (
+            <article key={`mobile-${item.date}`} className="py-5" aria-label={item.displayDate}>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-foreground">{item.displayDate}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {t('ladder_page.timeline.lots_count')}: {item.count}
+                  </p>
+                </div>
+                <p className="financial-number text-right text-sm font-semibold text-foreground">
+                  {formatCurrency(item.amount)}
                 </p>
               </div>
-              <p className="text-sm font-semibold text-foreground">{formatCurrency(item.amount)}</p>
-            </div>
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              <MobileLadderValue
-                label={t('ladder_page.timeline.mobile_share_of_lots')}
-                value={
-                  monthlyBuckets.length > 0
-                    ? `${((item.count / totalLots) * 100).toFixed(1)}%`
-                    : '-'
-                }
-              />
-              <MobileLadderValue
-                label={t('ladder_page.timeline.mobile_amount')}
-                value={formatCurrency(item.amount)}
-              />
-            </div>
-          </div>
-        ))}
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <MobileLadderValue
+                  label={t('ladder_page.timeline.mobile_share_of_lots')}
+                  value={
+                    monthlyBuckets.length > 0
+                      ? `${((item.count / totalLots) * 100).toFixed(1)}%`
+                      : '-'
+                  }
+                />
+                <MobileLadderValue
+                  label={t('ladder_page.timeline.mobile_amount')}
+                  value={formatCurrency(item.amount)}
+                />
+              </div>
+            </article>
+          ))}
+        </div>
       </ResponsiveTableSheet>
 
-      <div className="hidden border-y border-border lg:block">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-1 py-3 text-sm text-muted-foreground">
+      <div className="ui-table-frame hidden lg:block">
+        <TableScrollHint>{t('ladder_page.timeline.mobile_sheet_description')}</TableScrollHint>
+        <div className="ui-section-header border-b border-border px-4 py-3 text-sm text-muted-foreground">
           <p>{t('ladder_page.timeline.table_summary')}</p>
           <div className="flex flex-wrap items-center gap-2">
             {LADDER_TABLE_FILTERS.map((filter) => (
@@ -88,19 +95,23 @@ export function LadderTimelineTable({
             </p>
           </div>
         </div>
-        <Table className="w-full table-fixed text-sm tabular-nums">
+        <Table
+          className="w-full table-fixed text-sm tabular-nums"
+          aria-label={t('ladder_page.timeline.table_summary')}
+        >
+          <TableCaption>{t('ladder_page.timeline.table_summary')}</TableCaption>
           <TableHeader>
             <TableRow className="h-12 hover:bg-transparent">
-              <TableHead className="sticky top-0 z-10 w-[34%] bg-background">
+              <TableHead scope="col" className="sticky top-0 z-10 w-[34%] bg-background">
                 {t('ladder_page.timeline.table_month')}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 w-[18%] bg-background text-right">
+              <TableHead scope="col" className="sticky top-0 z-10 w-[18%] bg-background text-right">
                 {t('ladder_page.timeline.table_lots')}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 w-[24%] bg-background text-right">
+              <TableHead scope="col" className="sticky top-0 z-10 w-[24%] bg-background text-right">
                 {t('ladder_page.timeline.table_amount')}
               </TableHead>
-              <TableHead className="sticky top-0 z-10 w-[24%] bg-background text-right">
+              <TableHead scope="col" className="sticky top-0 z-10 w-[24%] bg-background text-right">
                 {t('ladder_page.timeline.table_share')}
               </TableHead>
             </TableRow>
@@ -137,6 +148,7 @@ export function LadderTimelineTable({
             rowsPerPage: t('common.rows_per_page'),
             all: t('common.all'),
           }}
+          className="focus-within:ring-2 focus-within:ring-ring/45"
         />
       </div>
     </>

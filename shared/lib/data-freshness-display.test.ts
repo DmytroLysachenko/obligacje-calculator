@@ -4,6 +4,8 @@ import { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 
 import {
   formatFreshnessDate,
+  getBondOfferFreshnessState,
+  getBondOfferSourceTranslationKey,
   getCalculationFreshnessMetaState,
   getFreshnessCoverageLabel,
   getFreshnessDisplayState,
@@ -20,6 +22,41 @@ function freshness(overrides: Partial<CalculationDataFreshness> = {}): Calculati
 }
 
 describe('data freshness display helpers', () => {
+  it('shows official bond-offer provenance without a degraded warning', () => {
+    expect(
+      getBondOfferFreshnessState(
+        freshness({
+          bondOfferSource: 'gov.pl',
+          bondOfferAttemptAt: '2026-06-15T09:00:00.000Z',
+          bondOfferStatus: 'success',
+        }),
+      ),
+    ).toEqual({
+      source: 'gov.pl',
+      attemptLabel: '2026-06-15',
+      status: 'success',
+      isDegraded: false,
+    });
+  });
+
+  it('marks secondary, fallback, failed, and missing offer evidence as degraded', () => {
+    for (const freshnessData of [
+      freshness({ bondOfferSource: 'obligacjeskarbowe.pl', bondOfferStatus: 'partial' }),
+      freshness({ bondOfferSource: 'curated-fallback', bondOfferStatus: 'partial' }),
+      freshness({ bondOfferSource: 'gov.pl', bondOfferStatus: 'failed' }),
+      freshness(),
+    ]) {
+      expect(getBondOfferFreshnessState(freshnessData).isDegraded).toBe(true);
+    }
+  });
+
+  it('maps external offer source IDs to i18n-safe keys', () => {
+    expect(getBondOfferSourceTranslationKey('gov.pl')).toBe('gov_pl');
+    expect(getBondOfferSourceTranslationKey('obligacjeskarbowe.pl')).toBe('obligacjeskarbowe_pl');
+    expect(getBondOfferSourceTranslationKey('curated-fallback')).toBe('curated-fallback');
+    expect(getBondOfferSourceTranslationKey('unexpected-source')).toBe('unavailable');
+  });
+
   it('keeps coverage date separate from last sync date', () => {
     const state = freshness({
       asOf: '2026-03',

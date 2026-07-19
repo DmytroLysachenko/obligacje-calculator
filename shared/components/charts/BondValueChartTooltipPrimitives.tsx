@@ -16,12 +16,12 @@ export function TooltipMetricRow({
   formatCurrency: (value: number) => string;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 text-xs">
-      <span className="flex items-center gap-1.5 font-medium">
-        <span className="h-2 w-2 rounded-full" style={{ backgroundColor: color }} />
+    <div className="ui-chart-tooltip-row">
+      <span className="ui-chart-tooltip-label">
+        <span className="ui-chart-tooltip-dot" style={{ backgroundColor: color }} />
         {label}:
       </span>
-      <span className="font-mono font-semibold text-foreground">
+      <span className="ui-chart-tooltip-value">
         {currency ? formatCurrency(value) : value.toFixed(2)}
       </span>
     </div>
@@ -38,7 +38,7 @@ export function TooltipEventList({
   if (eventLabels.length === 0) return null;
 
   return (
-    <div className="border-t border-dashed border-border/50 pt-2">
+    <div className="ui-chart-tooltip-context">
       <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
         {t('common.events') || 'Events'}
       </p>
@@ -66,8 +66,8 @@ export function TooltipStatusHeader({
   t: ChartTooltipTranslate;
 }) {
   return (
-    <div className="mb-3 flex items-center justify-between border-b border-border/50 pb-2">
-      <p className="ui-meta font-semibold uppercase tracking-[0.08em]">{label}</p>
+    <div className="mb-3 flex items-center justify-between border-b border-border/70 pb-2">
+      <p className="ui-chart-tooltip-heading border-0 pb-0">{label}</p>
       <span
         className={cn(
           'rounded px-1.5 py-0.5 text-[10px] font-semibold',
@@ -131,8 +131,8 @@ export function TooltipContextRates({
     <div
       className={
         compact
-          ? 'mt-2 space-y-1.5 border-t border-dashed border-border/50 pt-2'
-          : 'mt-3 grid gap-2 border-t border-dashed border-border/50 pt-3 text-[10px] sm:grid-cols-2'
+          ? 'ui-chart-tooltip-context mt-2'
+          : 'ui-chart-tooltip-context mt-3 grid gap-2 sm:grid-cols-2'
       }
     >
       <p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">

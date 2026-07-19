@@ -12,10 +12,18 @@ export interface AdminSeriesStatus {
   lastSyncError: string | null;
 }
 
+export interface AdminBondOfferSyncSummary {
+  source: string | null;
+  status: string;
+  completedAt: string | null;
+  message: string;
+}
+
 export interface AdminStatusData {
   series: AdminSeriesStatus[];
   systemTime: string;
   env: string;
+  latestBondOfferSync: AdminBondOfferSyncSummary | null;
 }
 
 export type AdminSyncMode = 'full-sync';

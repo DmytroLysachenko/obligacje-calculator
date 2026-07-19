@@ -7,6 +7,7 @@ const root = process.cwd();
 
 const files = {
   landing: 'features/home/components/LandingDashboardClient.tsx',
+  decisionSlip: 'features/home/components/HomeDecisionSlip.tsx',
   education: 'features/education/components/EducationClient.tsx',
   toolCard: 'shared/components/page/ToolCard.tsx',
   educationCard: 'features/education/components/BondEducationCard.tsx',
@@ -32,8 +33,9 @@ function expectNoFragments(source: string, fragments: readonly string[]) {
 }
 
 describe('entry surface contracts', () => {
-  it('keeps landing trust and process surfaces divider-led', () => {
+  it('keeps landing trust and starting-point surfaces divider-led', () => {
     const source = read(files.landing);
+    const decisionSlip = read(files.decisionSlip);
 
     expectContains(source, 'function HeroTrustStrip()');
     expectContains(
@@ -45,8 +47,11 @@ describe('entry surface contracts', () => {
       'px-1 py-2 text-xs font-semibold leading-5 text-muted-foreground md:px-4',
     );
     expectContains(source, 'inline-flex items-center gap-2 border-l-2 border-border px-3 py-1');
-    expectContains(source, 'border-l-2 border-border py-1 pl-4');
-    expectContains(source, 'grid gap-5 lg:grid-cols-3');
+    expectContains(source, '<HomeDecisionSlip />');
+    expectContains(source, '<HomePrimaryRoute item={primaryTool} />');
+    expectContains(source, '<HomeSupportingRoutes items={supportingTools} />');
+    expectContains(decisionSlip, 'mt-5 divide-y divide-border border-y border-border');
+    expectContains(decisionSlip, 'font-mono text-[11px] font-semibold text-muted-foreground');
 
     expectNoFragments(source, [
       'grid gap-px overflow-hidden rounded-lg border border-border bg-border',
@@ -152,7 +157,7 @@ describe('entry surface contracts', () => {
       source,
       'grid border-y border-border py-2 md:grid-cols-3 md:divide-x md:divide-border',
     );
-    expectContains(source, 'border-l-2 border-border py-1 pl-4');
+    expectContains(source, '<HomeDecisionSlip />');
     expectContains(source, 'grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3');
     expectContains(source, 'rounded-md bg-muted p-2 text-foreground');
   });
