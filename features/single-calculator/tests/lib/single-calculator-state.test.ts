@@ -9,9 +9,16 @@ import {
   buildFallbackInputs,
   getReverseCalculationTestInputs,
   normalizeSingleCalculatorInputs,
+  parseBondType,
 } from '../../lib/single-calculator-state';
 
 describe('single calculator state model', () => {
+  it('accepts only supported bond types from a calculator URL', () => {
+    expect(parseBondType('OTS')).toBe(BondType.OTS);
+    expect(parseBondType('invalid')).toBeNull();
+    expect(parseBondType(null)).toBeNull();
+  });
+
   it('builds stable fallback inputs from the supplied date', () => {
     const inputs = buildFallbackInputs(new Date('2026-06-16T00:00:00.000Z'));
 

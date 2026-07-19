@@ -49,6 +49,14 @@ export function buildFallbackInputs(now = new Date()): BondInputs {
   };
 }
 
+export function parseBondType(value: string | null | undefined): BondType | null {
+  if (!value || !Object.values(BondType).includes(value as BondType)) {
+    return null;
+  }
+
+  return value as BondType;
+}
+
 export function applyDefinitionToInputs(
   previous: BondInputs,
   definition: (typeof BOND_DEFINITIONS)[BondType],
