@@ -265,7 +265,11 @@
       "exit_fee": "Opłata za wcześniejszy wykup",
       "fixed_rate": "Stałe oprocentowanie",
       "reference_rate": "Stopa referencyjna NBP",
-      "inflation_indexed": "Indeksowane inflacją"
+      "inflation_indexed": "Indeksowane inflacją",
+      "select": "Wybierz",
+      "selected_count": "Wybrano: {count}",
+      "compare_selected": "Porównaj wybrane",
+      "select_two": "Wybierz 2 obligacje do porównania"
     },
     "groups": {
       "fixed": {

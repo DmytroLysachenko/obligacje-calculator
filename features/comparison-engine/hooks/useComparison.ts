@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
@@ -33,7 +33,7 @@ import {
 
 import { useComparisonPersistenceEffects } from './useComparisonPersistenceEffects';
 
-export function useComparison() {
+export function useComparison(initialPair?: readonly [BondType, BondType] | null) {
   const { definitions } = useBondDefinitions();
   const { defaults: macroDefaults } = useMacroAssumptionDefaults();
   const [sharedConfig, setSharedConfig] =
@@ -49,6 +49,7 @@ export function useComparison() {
   const hasRestoredState = useRef(false);
   const restoredFromPersistence = useRef(false);
   const hasTouchedMacroAssumptions = useRef(false);
+  const hasAppliedInitialPair = useRef(false);
   const { isCalculating, post } = useCalculationRequest();
 
   const inputsA = useMemo(
@@ -118,6 +119,7 @@ export function useComparison() {
   };
 
   useComparisonPersistenceEffects({
+    initialPair,
     sharedConfig,
     scenarioA,
     scenarioB,
@@ -139,6 +141,17 @@ export function useComparison() {
     setIsDirty,
     setIsPersistenceReady,
   });
+
+  useEffect(() => {
+    if (!initialPair || !isPersistenceReady || hasAppliedInitialPair.current) return;
+    hasAppliedInitialPair.current = true;
+    setScenarioA({ bondType: initialPair[0], isRebought: false });
+    setScenarioB({ bondType: initialPair[1], isRebought: false });
+    setComparisonEnvelope(null);
+    setCommittedInputsA(null);
+    setCommittedInputsB(null);
+    setIsDirty(true);
+  }, [initialPair, isPersistenceReady]);
 
   const setScenarioACustomHorizonEnabled = useCallback(
     (enabled: boolean) => {

@@ -265,7 +265,11 @@
       "exit_fee": "Early-exit fee",
       "fixed_rate": "Fixed rate",
       "reference_rate": "NBP reference rate",
-      "inflation_indexed": "Inflation indexed"
+      "inflation_indexed": "Inflation indexed",
+      "select": "Select",
+      "selected_count": "{count} selected",
+      "compare_selected": "Compare selected",
+      "select_two": "Select 2 bonds to compare"
     },
     "groups": {
       "fixed": {

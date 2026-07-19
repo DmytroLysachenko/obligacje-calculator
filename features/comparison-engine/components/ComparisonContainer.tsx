@@ -1,8 +1,9 @@
 'use client';
 import { Scale } from 'lucide-react';
-import React, { useMemo, useState } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
+import React, { useMemo, useRef, useState } from 'react';
 
-import { ChartStep } from '@/features/bond-core/types';
+import { BondType, ChartStep } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { Notice } from '@/shared/components/feedback/Notice';
@@ -13,6 +14,7 @@ import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 
 import { useComparison } from '../hooks/useComparison';
 import { buildComparisonContainerViewModel } from '../lib/comparison-container-model';
+import { parseComparisonBondPair, withComparisonBondPair } from '../lib/comparison-deep-link';
 
 import {
   ComparisonAssumptionsMetaPanel,
@@ -25,6 +27,10 @@ import { ComparisonTable } from './ComparisonTable';
 import { ComparisonVerdict } from './ComparisonVerdict';
 import { ScenarioOverrideCard } from './ScenarioOverrideCard';
 export const ComparisonContainer: React.FC = () => {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const initialPair = useMemo(() => parseComparisonBondPair(searchParams), [searchParams]);
+  const hasUserSelectedBond = useRef(false);
   const {
     sharedConfig,
     scenarioA,
@@ -53,9 +59,20 @@ export const ComparisonContainer: React.FC = () => {
     isDirty,
     isPersistenceReady,
     definitions,
-  } = useComparison();
+  } = useComparison(initialPair);
   const { t, locale: language } = useAppI18n();
   const [chartStep, setChartStep] = useState<ChartStep>('yearly');
+  const syncPairAfterUserSelection = (nextA: BondType, nextB: BondType) => {
+    if (!hasUserSelectedBond.current) return;
+    window.history.replaceState(
+      null,
+      '',
+      withComparisonBondPair(pathname, new URLSearchParams(searchParams.toString()), [
+        nextA,
+        nextB,
+      ]),
+    );
+  };
   const hasMounted = useHasMounted();
   const currencyFormatter = useCurrencyFormatter(language, {
     style: 'currency',
@@ -150,7 +167,11 @@ export const ComparisonContainer: React.FC = () => {
                 title={t('comparison.scenario_a')}
                 colorClass="scenario-a"
                 bondType={scenarioA.bondType}
-                onBondTypeChange={setBondTypeA}
+                onBondTypeChange={(bondType) => {
+                  hasUserSelectedBond.current = true;
+                  setBondTypeA(bondType);
+                  syncPairAfterUserSelection(bondType, scenarioB.bondType);
+                }}
                 taxStrategy={scenarioA.taxStrategy}
                 onTaxStrategyChange={(value) => updateScenarioA('taxStrategy', value)}
                 customHorizonEnabled={scenarioA.investmentHorizonMonths !== undefined}
@@ -162,7 +183,11 @@ export const ComparisonContainer: React.FC = () => {
                 title={t('comparison.scenario_b')}
                 colorClass="scenario-b"
                 bondType={scenarioB.bondType}
-                onBondTypeChange={setBondTypeB}
+                onBondTypeChange={(bondType) => {
+                  hasUserSelectedBond.current = true;
+                  setBondTypeB(bondType);
+                  syncPairAfterUserSelection(scenarioA.bondType, bondType);
+                }}
                 taxStrategy={scenarioB.taxStrategy}
                 onTaxStrategyChange={(value) => updateScenarioB('taxStrategy', value)}
                 customHorizonEnabled={scenarioB.investmentHorizonMonths !== undefined}

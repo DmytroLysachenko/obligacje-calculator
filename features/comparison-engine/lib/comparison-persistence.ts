@@ -2,6 +2,7 @@ import { BondInputs } from '@/features/bond-core/types';
 import { BondComparisonCalculationEnvelope } from '@/features/bond-core/types/scenarios';
 
 import { ScenarioOverride, SharedComparisonConfig } from './comparison-calculator-state';
+import type { ComparisonBondPair } from './comparison-deep-link';
 import { sanitizeScenarioOverride } from './comparison-scenario-state';
 
 export const COMPARISON_CALCULATOR_STORAGE_KEY = 'obligacje.comparison-calculator.v3';
@@ -22,12 +23,13 @@ export interface RestoredComparisonState extends PersistedComparisonState {
 
 export function restoreComparisonState(
   restoredState: PersistedComparisonState | null,
+  initialPair?: ComparisonBondPair | null,
 ): RestoredComparisonState | null {
   if (!restoredState) {
     return null;
   }
 
-  return {
+  const restored = {
     sharedConfig: restoredState.sharedConfig,
     scenarioA: sanitizeScenarioOverride(restoredState.sharedConfig, restoredState.scenarioA),
     scenarioB: sanitizeScenarioOverride(restoredState.sharedConfig, restoredState.scenarioB),
@@ -36,6 +38,20 @@ export function restoreComparisonState(
     committedInputsB: restoredState.committedInputsB ?? null,
     isDirty: restoredState.isDirty ?? true,
     restoredFromPersistence: true,
+  };
+
+  if (!initialPair) {
+    return restored;
+  }
+
+  return {
+    ...restored,
+    scenarioA: { bondType: initialPair[0], isRebought: false },
+    scenarioB: { bondType: initialPair[1], isRebought: false },
+    comparisonEnvelope: null,
+    committedInputsA: null,
+    committedInputsB: null,
+    isDirty: true,
   };
 }
 

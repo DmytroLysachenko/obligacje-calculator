@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
 
 import type { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { educationOfferGroups } from '@/features/education/constants/education-content';
@@ -19,6 +20,7 @@ export function EducationOfferComparison({
   definitions: Record<string, BondDefinition>;
 }) {
   const { t, locale } = useAppI18n();
+  const [selected, setSelected] = useState<string[]>([]);
   const bonds = educationOfferGroups.flatMap((group) =>
     group.bondTypes
       .map((type) => definitions[type])
@@ -34,6 +36,9 @@ export function EducationOfferComparison({
             <caption className="ui-table-caption">{t('education.comparison.caption')}</caption>
             <thead className="border-b border-border bg-muted/25 text-muted-foreground">
               <tr>
+                <th scope="col" className="px-3 py-3 font-semibold">
+                  {t('education.comparison.select')}
+                </th>
                 {['bond', 'term', 'basis', 'first_rate', 'payout', 'exit_fee'].map((key) => (
                   <th key={key} scope="col" className="px-3 py-3 font-semibold whitespace-nowrap">
                     {t(`education.comparison.${key}`)}
@@ -44,6 +49,21 @@ export function EducationOfferComparison({
             <tbody className="divide-y divide-border">
               {bonds.map((bond) => (
                 <tr key={bond.type} className="hover:bg-muted/20">
+                  <td className="px-3 py-3">
+                    <input
+                      aria-label={`${t('education.comparison.select')} ${bond.name}`}
+                      type="checkbox"
+                      checked={selected.includes(bond.type)}
+                      disabled={!selected.includes(bond.type) && selected.length === 2}
+                      onChange={() =>
+                        setSelected((current) =>
+                          current.includes(bond.type)
+                            ? current.filter((type) => type !== bond.type)
+                            : [...current, bond.type],
+                        )
+                      }
+                    />
+                  </td>
                   <th scope="row" className="px-3 py-3 text-sm font-semibold text-foreground">
                     <Link href={`#bond-${bond.type}`} className="ui-focus-ring rounded-sm">
                       {bond.name}
@@ -67,6 +87,21 @@ export function EducationOfferComparison({
             </tbody>
           </table>
         </div>
+      </div>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3 text-sm">
+        <p className="text-muted-foreground">
+          {t('education.comparison.selected_count', { count: selected.length })}
+        </p>
+        {selected.length === 2 ? (
+          <Link
+            href={`/compare?a=${selected[0]}&b=${selected[1]}`}
+            className="ui-interactive-surface border-b border-foreground pb-1 font-semibold text-foreground"
+          >
+            {t('education.comparison.compare_selected')}
+          </Link>
+        ) : (
+          <span className="text-muted-foreground">{t('education.comparison.select_two')}</span>
+        )}
       </div>
     </div>
   );
