@@ -2,7 +2,7 @@
 
 import { Target } from 'lucide-react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useAppI18n } from '@/i18n/client';
 import { AppToast } from '@/shared/components/feedback/AppToast';
@@ -51,6 +51,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const bondFromUrl = parseBondType(searchParams.get('bond'));
+  const shouldSyncBondToUrl = useRef(Boolean(bondFromUrl));
   const {
     inputs,
     results,
@@ -76,6 +77,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     if (
       initialInputs ||
       !isPersistenceReady ||
+      !shouldSyncBondToUrl.current ||
       typeof window === 'undefined' ||
       searchParams.get('bond') === inputs.bondType
     ) {
@@ -86,6 +88,11 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     params.set('bond', inputs.bondType);
     window.history.replaceState(null, '', `${pathname}?${params.toString()}`);
   }, [initialInputs, inputs.bondType, isPersistenceReady, pathname, searchParams]);
+
+  const handleBondTypeChange = (type: import('@/features/bond-core/types').BondType) => {
+    shouldSyncBondToUrl.current = true;
+    setBondType(type);
+  };
   const translate = useMemo(
     () => (key: string, params?: Record<string, string | number>) => t(key, params),
     [t],
@@ -221,7 +228,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
             <BondInputsForm
               inputs={inputs}
               onUpdate={updateInput}
-              onBondTypeChange={setBondType}
+              onBondTypeChange={handleBondTypeChange}
               availableSeries={availableSeries}
               selectedSeriesId={selectedSeriesId}
               guardrails={guardrails}
