@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import type { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { BondEducationCard } from '@/features/education/components/BondEducationCard';
 import { EducationDecisionRail } from '@/features/education/components/EducationDecisionRail';
 import { EducationOfferComparison } from '@/features/education/components/EducationOfferComparison';
@@ -28,6 +29,7 @@ import {
   educationSecondaryConcepts,
 } from '@/features/education/constants/education-content';
 import { useAppI18n } from '@/i18n/client';
+import { OfferProvenance } from '@/shared/components/data/OfferProvenance';
 import { PageTransition } from '@/shared/components/page/PageTransition';
 import { SectionBlock } from '@/shared/components/page/SectionBlock';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
@@ -47,7 +49,11 @@ function EducationLoading() {
   );
 }
 
-export default function EducationClient() {
+export default function EducationClient({
+  dataFreshness,
+}: {
+  dataFreshness?: CalculationDataFreshness;
+}) {
   const { t } = useAppI18n();
   const { definitions, isLoading } = useBondDefinitions();
 
@@ -104,6 +110,7 @@ export default function EducationClient() {
           description={t('education.bond_types_subtitle')}
         >
           <EducationOfferComparison definitions={definitions} />
+          <OfferProvenance dataFreshness={dataFreshness} />
           <div className="ui-status-note border-l-2 border-border bg-muted/20">
             <Info className="mt-0.5 size-4 shrink-0 text-foreground" aria-hidden="true" />
             <p className="ui-field-description">
