@@ -1,7 +1,8 @@
 'use client';
 
 import { Target } from 'lucide-react';
-import React, { useMemo, useState } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { useAppI18n } from '@/i18n/client';
 import { AppToast } from '@/shared/components/feedback/AppToast';
@@ -32,6 +33,7 @@ import {
   buildSingleCalculatorReadingGuide,
   buildSingleReportFilename,
 } from '../lib/single-calculator-container-model';
+import { parseBondType } from '../lib/single-calculator-state';
 
 import { BondCalculatorDetailsPanel, BondCalculatorResultsPanel } from './BondCalculatorPanels';
 import { BondInputsForm } from './BondInputsForm';
@@ -46,6 +48,9 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
   initialInputs,
   sharedScenarioTitle,
 }) => {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const bondFromUrl = parseBondType(searchParams.get('bond'));
   const {
     inputs,
     results,
@@ -61,11 +66,26 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     selectedSeriesId,
     lastCommittedInputs,
     isPersistenceReady,
-  } = useBondCalculator(initialInputs);
+  } = useBondCalculator(initialInputs, bondFromUrl);
   const { t, locale: language } = useAppI18n();
   const { canManageWorkspace } = usePortfolioAccess();
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [statusTone, setStatusTone] = useState<'success' | 'error'>('success');
+
+  useEffect(() => {
+    if (
+      initialInputs ||
+      !isPersistenceReady ||
+      typeof window === 'undefined' ||
+      searchParams.get('bond') === inputs.bondType
+    ) {
+      return;
+    }
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('bond', inputs.bondType);
+    window.history.replaceState(null, '', `${pathname}?${params.toString()}`);
+  }, [initialInputs, inputs.bondType, isPersistenceReady, pathname, searchParams]);
   const translate = useMemo(
     () => (key: string, params?: Record<string, string | number>) => t(key, params),
     [t],
