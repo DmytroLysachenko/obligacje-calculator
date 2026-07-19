@@ -239,7 +239,12 @@
     }
   },
   "education": {
-    "subtitle": "Understand the mechanisms of the Polish treasury bond market and make informed investment decisions.",
+    "subtitle": "Learn how Polish treasury bonds work, compare the current offer, and start a calculation with a bond that matches your time horizon.",
+    "hero_title": "Start with the bond question that matters to you.",
+    "hero_primary_cta": "Choose a starting point",
+    "hero_secondary_cta": "Compare current offers",
+    "decision_title": "Choose a starting point",
+    "decision_subtitle": "This guide narrows the offer by your goal. It is a place to begin an analysis, not a recommendation.",
     "concepts_title": "Fundamental Financial Concepts",
     "concepts_subtitle": "Key terms essential to understanding your investments.",
     "starter_title": "Which bond should I check first?",
@@ -247,7 +252,57 @@
     "starter_cta": "Open calculator",
     "bond_types": "Current Bond Offers",
     "bond_types_subtitle": "Compare the current offer by duration, rate mechanism, capitalization, and early redemption cost before running a scenario.",
-    "calculate_this_bond": "Calculate this bond",
+    "calculate_this_bond": "Calculate {bond}",
+    "more_concepts": "See tax and early-redemption basics",
+    "comparison": {
+      "caption": "Current Polish treasury bond offer comparison",
+      "scroll_hint": "Scroll horizontally to compare every column.",
+      "bond": "Bond",
+      "term": "Term",
+      "basis": "Rate basis",
+      "first_rate": "First-period rate",
+      "payout": "Interest handling",
+      "exit_fee": "Early-exit fee",
+      "fixed_rate": "Fixed rate",
+      "reference_rate": "NBP reference rate",
+      "inflation_indexed": "Inflation indexed"
+    },
+    "groups": {
+      "fixed": {
+        "title": "Fixed-rate bonds",
+        "description": "The rate is known when you buy. Compare term length and how interest is handled."
+      },
+      "reference": {
+        "title": "NBP reference-rate bonds",
+        "description": "Monthly interest follows the NBP reference rate after the initial period."
+      },
+      "inflation": {
+        "title": "Inflation-indexed bonds",
+        "description": "After the initial fixed period, the rate follows inflation plus a fixed margin."
+      },
+      "family": {
+        "title": "Family bonds",
+        "description": "Available only to eligible 800+ beneficiaries; they combine inflation indexing with long horizons."
+      }
+    },
+    "decision": {
+      "short_term": {
+        "label": "Need access sooner",
+        "description": "Start with fixed-rate bonds when flexibility matters more than long compounding."
+      },
+      "inflation": {
+        "label": "Protect purchasing power",
+        "description": "Compare inflation-indexed bonds when future buying power is the main concern."
+      },
+      "family": {
+        "label": "Eligible for family bonds",
+        "description": "Check family bonds only when the 800+ eligibility condition applies."
+      },
+      "long_term": {
+        "label": "Saving for the long term",
+        "description": "Look at long horizons when annual capitalisation can make a meaningful difference."
+      }
+    },
     "faq": "Frequently Asked Questions",
     "q_inflation": "How does inflation indexing work?",
     "a_inflation": "Inflation-indexed bonds (e.g., COI or EDO) have a fixed rate in the first year. In subsequent years, the interest rate is calculated as the inflation rate from the previous year plus a fixed margin.",

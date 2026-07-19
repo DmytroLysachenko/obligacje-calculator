@@ -239,7 +239,12 @@
     }
   },
   "education": {
-    "subtitle": "Zrozum mechanizmy polskiego rynku obligacji skarbowych i podejmuj świadome decyzje inwestycyjne.",
+    "subtitle": "Poznaj mechanizmy polskich obligacji skarbowych, porównaj aktualną ofertę i rozpocznij kalkulację dla obligacji dopasowanej do swojego horyzontu.",
+    "hero_title": "Zacznij od pytania, które ma znaczenie dla Twoich oszczędności.",
+    "hero_primary_cta": "Wybierz punkt startowy",
+    "hero_secondary_cta": "Porównaj aktualną ofertę",
+    "decision_title": "Wybierz punkt startowy",
+    "decision_subtitle": "Ten przewodnik zawęża ofertę według Twojego celu. To punkt wyjścia do analizy, nie rekomendacja.",
     "concepts_title": "Podstawowe Pojęcia Finansowe",
     "concepts_subtitle": "Kluczowe terminy niezbędne do zrozumienia Twoich inwestycji.",
     "starter_title": "Ktora obligacje sprawdzic najpierw?",
@@ -247,7 +252,57 @@
     "starter_cta": "Otworz kalkulator",
     "bond_types": "Aktualna Oferta Obligacji",
     "bond_types_subtitle": "Porownaj oferte wedlug czasu trwania, mechanizmu oprocentowania, kapitalizacji i kosztu wczesniejszego wykupu przed uruchomieniem scenariusza.",
-    "calculate_this_bond": "Policz te obligacje",
+    "calculate_this_bond": "Policz {bond}",
+    "more_concepts": "Zobacz podstawy podatku i wcześniejszego wykupu",
+    "comparison": {
+      "caption": "Porównanie aktualnej oferty polskich obligacji skarbowych",
+      "scroll_hint": "Przewiń poziomo, aby porównać wszystkie kolumny.",
+      "bond": "Obligacja",
+      "term": "Okres",
+      "basis": "Podstawa oprocentowania",
+      "first_rate": "Oprocentowanie początkowe",
+      "payout": "Obsługa odsetek",
+      "exit_fee": "Opłata za wcześniejszy wykup",
+      "fixed_rate": "Stałe oprocentowanie",
+      "reference_rate": "Stopa referencyjna NBP",
+      "inflation_indexed": "Indeksowane inflacją"
+    },
+    "groups": {
+      "fixed": {
+        "title": "Obligacje stałooprocentowane",
+        "description": "Oprocentowanie znasz w dniu zakupu. Porównaj długość okresu i sposób obsługi odsetek."
+      },
+      "reference": {
+        "title": "Obligacje oparte na stopie NBP",
+        "description": "Po okresie początkowym miesięczne odsetki zależą od stopy referencyjnej NBP."
+      },
+      "inflation": {
+        "title": "Obligacje indeksowane inflacją",
+        "description": "Po okresie początkowym oprocentowanie zależy od inflacji powiększonej o stałą marżę."
+      },
+      "family": {
+        "title": "Obligacje rodzinne",
+        "description": "Są dostępne wyłącznie dla uprawnionych beneficjentów 800+ i łączą indeksację inflacją z długim horyzontem."
+      }
+    },
+    "decision": {
+      "short_term": {
+        "label": "Potrzebujesz dostępu do środków",
+        "description": "Zacznij od obligacji o stałym oprocentowaniu, gdy elastyczność jest ważniejsza niż długie składanie odsetek."
+      },
+      "inflation": {
+        "label": "Chcesz chronić siłę nabywczą",
+        "description": "Porównaj obligacje indeksowane inflacją, gdy najważniejsza jest przyszła wartość pieniędzy."
+      },
+      "family": {
+        "label": "Masz prawo do obligacji rodzinnych",
+        "description": "Sprawdź obligacje rodzinne tylko wtedy, gdy spełniasz warunek uprawnienia do 800+."
+      },
+      "long_term": {
+        "label": "Oszczędzasz długoterminowo",
+        "description": "Rozważ długi horyzont, gdy roczna kapitalizacja może mieć istotne znaczenie."
+      }
+    },
     "faq": "Często Zadawane Pytania",
     "q_inflation": "Jak działa indeksowanie inflacją?",
     "a_inflation": "Obligacje indeksowane inflacją (np. COI lub EDO) mają stałe oprocentowanie w pierwszym roku. W kolejnych latach oprocentowanie jest obliczane jako stopa inflacji z poprzedniego roku plus stała marża.",
