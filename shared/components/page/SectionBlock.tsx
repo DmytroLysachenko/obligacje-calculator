@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 type SectionBlockVariant = 'plain' | 'divided' | 'surface' | 'card';
 
 interface SectionBlockProps {
+  id?: string;
   title?: React.ReactNode;
   description?: React.ReactNode;
   icon?: React.ReactNode;
@@ -24,6 +25,7 @@ const variantClass: Record<SectionBlockVariant, string> = {
 };
 
 export function SectionBlock({
+  id,
   title,
   description,
   icon,
@@ -37,7 +39,7 @@ export function SectionBlock({
   const hasHeader = title || description || icon || action;
 
   return (
-    <section className={cn(variantClass[variant], className)}>
+    <section id={id} className={cn(variantClass[variant], className)}>
       {hasHeader ? (
         <div className={cn('ui-section-header gap-4', headerClassName)}>
           <div className="ui-section-intro">
