@@ -63,15 +63,15 @@ function collectSourceFiles(directory: string): string[] {
   });
 }
 
-function collectDirectCommonTranslationKeys() {
+function collectDirectComparisonTranslationKeys() {
   const roots = ['app', 'features', 'shared'];
   const keys = new Set<string>();
 
   for (const filePath of roots.flatMap(collectSourceFiles)) {
     const source = readFileSync(filePath, 'utf8');
 
-    for (const match of source.matchAll(/t\(['"]common\.([A-Za-z0-9_]+)['"]/g)) {
-      keys.add(match[1]);
+    for (const match of source.matchAll(/t\(['"]comparison\.([A-Za-z0-9_]+)['"]/g)) {
+      keys.add(`comparison.${match[1]}`);
     }
   }
 
@@ -116,12 +116,10 @@ describe('locale parity for touched bond and economic helper namespaces', () => 
     }
   });
 
-  it('keeps directly referenced common translation keys resolvable', () => {
-    const usedCommonKeys = collectDirectCommonTranslationKeys();
-    const enCommon = enMessages.common as Record<string, unknown>;
-    const plCommon = plMessages.common as Record<string, unknown>;
+  it('keeps directly referenced comparison translation keys resolvable in both locales', () => {
+    const usedKeys = collectDirectComparisonTranslationKeys();
 
-    expect(usedCommonKeys.filter((key) => !(key in enCommon))).toEqual([]);
-    expect(usedCommonKeys.filter((key) => !(key in plCommon))).toEqual([]);
+    expect(usedKeys.filter((key) => getNodeByPath(enMessages, key) === undefined)).toEqual([]);
+    expect(usedKeys.filter((key) => getNodeByPath(plMessages, key) === undefined)).toEqual([]);
   });
 });

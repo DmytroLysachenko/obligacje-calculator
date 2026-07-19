@@ -1612,6 +1612,7 @@
     "up_to_date": "Comparison up to date",
     "scenario_a": "Scenario A",
     "scenario_b": "Scenario B",
+    "shared_base": "Shared scenario base",
     "shared_base_title": "Shared scenario base",
     "shared_base_desc": "Keep one shared base scenario, then apply scenario-specific overrides only when they truly matter.",
     "shared_base_scope": "The left panel defines amount, purchase date, shared horizon, macro assumptions, and default tax wrapper for both scenarios.",

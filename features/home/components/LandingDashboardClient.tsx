@@ -96,14 +96,8 @@ export function LandingDashboardClient({
             </div>
           </div>
 
-          <div className="hidden lg:block">
-            <HomeDecisionSlip />
-          </div>
+          <HomeDecisionSlip />
         </div>
-      </section>
-
-      <section className="border-b border-border pb-8 lg:hidden">
-        <HomeDecisionSlip />
       </section>
 
       <section className="space-y-5">
