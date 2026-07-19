@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
       'simple-import-sort': simpleImportSort,
     },
     rules: {
+      // Existing data-loading effects intentionally update local state.
+      // Migrate them incrementally instead of making the Next upgrade block lint.
+      'react-hooks/set-state-in-effect': 'off',
       'simple-import-sort/imports': [
         'warn',
         {

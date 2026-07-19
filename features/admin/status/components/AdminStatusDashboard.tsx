@@ -6,8 +6,8 @@ import type { StatusData } from '../hooks/useAdminStatusDashboard';
 import { createAdminStatusViewModel } from '../lib/admin-status-model';
 
 import {
-  AdminInventoryTable,
   AdminBondOfferSyncCard,
+  AdminInventoryTable,
   AdminMetricsStrip,
   AdminStatusFeedback,
   AdminStatusHeader,
