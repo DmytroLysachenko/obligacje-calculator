@@ -1,7 +1,6 @@
 'use client';
 import React from 'react';
 import {
-  Brush,
   CartesianGrid,
   Line,
   LineChart,
@@ -143,9 +142,6 @@ export const InflationChart = ({
               stroke="#C89D4F"
               strokeDasharray="3 3"
             />
-            {chartData.length > 24 ? (
-              <Brush dataKey="date" height={22} stroke="#5C5C5C" travellerWidth={8} />
-            ) : null}
             <Line
               type="monotone"
               dataKey="rate"
