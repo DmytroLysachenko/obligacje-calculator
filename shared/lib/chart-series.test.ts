@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import {
   computeNumericDomain,
-  computeReadableRateDomain,
   computeRateDomain,
+  computeReadableRateDomain,
   sampleSeriesPoints,
   sliceSeriesByPeriod,
 } from './chart-series';
