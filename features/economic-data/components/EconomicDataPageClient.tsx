@@ -2,7 +2,7 @@
 
 import { Activity, Database, Info } from 'lucide-react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { BondType } from '@/features/bond-core/types';
 import {
@@ -15,10 +15,8 @@ import { NBPRateChart } from '@/features/economic-data/components/NBPRateChart';
 import {
   type ChartSeriesEnvelope,
   type EconomicSeriesPoint,
-  type PeriodValue,
 } from '@/features/economic-data/lib/economic-dashboard-model';
 import {
-  buildEconomicHeroMetrics,
   buildEconomicPageLabels,
   buildEconomicUsageGuide,
 } from '@/features/economic-data/lib/economic-page-model';
@@ -56,7 +54,6 @@ export function EconomicDataPageClient() {
     t,
   );
   const usageGuide = buildEconomicUsageGuide(t, floatingRateContext);
-  const heroMetrics = buildEconomicHeroMetrics(labels);
   const updateView = useCallback(
     (patch: Partial<EconomicView>) => {
       setView((current) => {
@@ -104,7 +101,7 @@ export function EconomicDataPageClient() {
           }
           title={t('economic.macro_support_title')}
           description={pageIntro}
-          metrics={heroMetrics}
+          decisionTrace={<p className="text-sm leading-6 text-muted-foreground">{usageGuide[1]}</p>}
         />
 
         <SectionBlock
@@ -153,24 +150,6 @@ export function EconomicDataPageClient() {
             />
           </div>
         </details>
-        {/* Kept inline so charts remain the primary reading surface. */}
-        {false ? (
-          <SectionBlock
-            title={t('economic.status_dashboard_title')}
-            description={t('economic.status_dashboard_description')}
-            icon={<Info className="h-4 w-4" />}
-            contentClassName="space-y-5"
-          >
-            <ReferenceStatusPanel
-              inflationMeta={inflationMeta}
-              nbpMeta={nbpMeta}
-              isLoadingInflation={isLoadingInflation}
-              isLoadingNbp={isLoadingNbp}
-              labels={labels}
-              language={language}
-            />
-          </SectionBlock>
-        ) : null}
       </div>
     </CalculatorPageShell>
   );
