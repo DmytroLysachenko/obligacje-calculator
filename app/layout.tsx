@@ -94,7 +94,7 @@ export default async function RootLayout({
                       >
                         {t('common.skip_to_content')}
                       </a>
-                      <Sidebar dataFreshness={dataFreshness} />
+                      <Sidebar />
                       <OpportunisticSyncTrigger />
                       <main
                         id="main-content"

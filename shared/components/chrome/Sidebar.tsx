@@ -19,7 +19,6 @@ import { SidebarWorkspaceUtility } from './SidebarWorkspaceUtility';
 
 interface SidebarContentProps {
   onItemClick?: () => void;
-  dataFreshness?: CalculationDataFreshness;
 }
 
 function SidebarBrand() {
@@ -66,7 +65,7 @@ function SidebarFooter({ pathname }: { pathname: string }) {
   );
 }
 
-function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
+function SidebarContent({ onItemClick }: SidebarContentProps) {
   const pathname = usePathname();
   const { t } = useAppI18n();
 
@@ -109,7 +108,7 @@ function SidebarMobileContext({ pathname }: { pathname: string }) {
   );
 }
 
-export function Sidebar({ dataFreshness }: { dataFreshness?: CalculationDataFreshness }) {
+export function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useAppI18n();
   const pathname = usePathname();
@@ -144,13 +143,13 @@ export function Sidebar({ dataFreshness }: { dataFreshness?: CalculationDataFres
             className="w-[min(22rem,100vw)] overscroll-contain border-none p-0"
           >
             <SheetTitle className="sr-only">{t('common.navigation_menu')}</SheetTitle>
-            <SidebarContent onItemClick={() => setIsOpen(false)} dataFreshness={dataFreshness} />
+            <SidebarContent onItemClick={() => setIsOpen(false)} />
           </SheetContent>
         </Sheet>
       </div>
 
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-[var(--sidebar-width)] border-r border-border bg-secondary/70 lg:block">
-        <SidebarContent dataFreshness={dataFreshness} />
+        <SidebarContent />
       </aside>
     </>
   );
