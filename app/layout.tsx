@@ -59,7 +59,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const dataFreshness = await getGlobalDataFreshness();
   const locale = await getLocale();
   const messages = await getMessages();
   const language = (locale as Language) || defaultLocale;

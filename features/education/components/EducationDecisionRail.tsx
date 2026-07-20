@@ -10,12 +10,12 @@ export function EducationDecisionRail() {
   const { t } = useAppI18n();
 
   return (
-    <ol className="divide-y divide-border border-y border-border md:grid md:grid-cols-2 md:divide-x md:divide-y-0 xl:grid-cols-4">
+    <ol className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
       {educationDecisionRoutes.map((route, index) => (
         <li key={route.key} className="min-w-0">
           <Link
             href={`#offers-${route.groupKey}`}
-            className="ui-interactive-surface group flex h-full gap-3 px-0 py-4 md:px-4 md:first:pl-0 xl:relative xl:block xl:px-5 xl:first:pl-0"
+            className="ui-interactive-surface group flex h-full gap-3 rounded-md border border-border bg-card px-4 py-4 hover:border-foreground/30 hover:bg-muted/30 xl:relative xl:block"
           >
             <span
               className="font-mono text-[11px] font-semibold text-muted-foreground"
