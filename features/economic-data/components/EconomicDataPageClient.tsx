@@ -21,9 +21,9 @@ import {
   buildEconomicUsageGuide,
 } from '@/features/economic-data/lib/economic-page-model';
 import {
+  type EconomicView,
   parseEconomicView,
   serializeEconomicView,
-  type EconomicView,
 } from '@/features/economic-data/lib/economic-view';
 import { useAppI18n } from '@/i18n/client';
 import { ChartSection } from '@/shared/components/charts/ChartSection';

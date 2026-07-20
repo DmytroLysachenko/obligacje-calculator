@@ -15,12 +15,12 @@ import {
   type EconomicSeriesPoint,
   type PeriodValue,
 } from '@/features/economic-data/lib/economic-dashboard-model';
-import { useAppI18n } from '@/i18n/client';
-import { cn } from '@/lib/utils';
 import type {
   EconomicSeriesKey,
   InflationScaleMode,
 } from '@/features/economic-data/lib/economic-view';
+import { useAppI18n } from '@/i18n/client';
+import { cn } from '@/lib/utils';
 import { ReferenceGuideRail } from '@/shared/components/reference/ReferenceGuideRail';
 import { ReferenceNoteCard } from '@/shared/components/reference/ReferenceNoteCard';
 

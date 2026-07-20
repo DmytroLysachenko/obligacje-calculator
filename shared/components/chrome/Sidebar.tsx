@@ -14,7 +14,6 @@ import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 
 import { buildSidebarNavSections, SidebarNavigation } from './SidebarNavigation';
 import { SidebarSettingsUtility } from './SidebarSettingsUtility';
-import { SidebarSyncSummary } from './SidebarSyncSummary';
 import { SidebarUtilityGroup } from './SidebarUtilityGroup';
 import { SidebarWorkspaceUtility } from './SidebarWorkspaceUtility';
 
@@ -45,17 +44,10 @@ function SidebarBrand() {
   );
 }
 
-function SidebarFooter({
-  dataFreshness,
-  pathname,
-}: {
-  dataFreshness?: CalculationDataFreshness;
-  pathname: string;
-}) {
+function SidebarFooter({ pathname }: { pathname: string }) {
   const { t } = useAppI18n();
   const hasMounted = useHasMounted();
   const { canManageWorkspace } = usePortfolioAccess();
-  const showSyncSummary = pathname !== '/';
 
   return (
     <footer className="space-y-5 border-t border-border bg-muted/20 px-3 py-4">
@@ -66,7 +58,6 @@ function SidebarFooter({
       ) : null}
       <SidebarUtilityGroup title={t('common.settings')}>
         <SidebarSettingsUtility />
-        {showSyncSummary ? <SidebarSyncSummary dataFreshness={dataFreshness} /> : null}
       </SidebarUtilityGroup>
       <div className="border-t border-border px-0.5 pt-3 text-xs leading-5 text-muted-foreground">
         {'\u00A9'} {hasMounted ? new Date().getFullYear() : '----'} {t('common.title')}
@@ -96,7 +87,7 @@ function SidebarContent({ onItemClick, dataFreshness }: SidebarContentProps) {
         />
       </nav>
 
-      <SidebarFooter dataFreshness={dataFreshness} pathname={pathname} />
+      <SidebarFooter pathname={pathname} />
     </div>
   );
 }
