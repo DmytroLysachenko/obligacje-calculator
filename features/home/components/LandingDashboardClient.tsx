@@ -25,7 +25,7 @@ type ToolItem = {
 function HeroTrustStrip() {
   const { t } = useAppI18n();
   return (
-    <p className="border-t border-border pt-3 text-xs font-semibold leading-5 text-muted-foreground">
+    <p className="border-l-2 border-success/70 pl-3 text-xs font-semibold leading-5 text-muted-foreground">
       {t('landing.hero_trust_note')}
     </p>
   );
@@ -52,7 +52,7 @@ export function LandingDashboardClient({
   const supportingTools = primaryTools.filter((item) => item.href !== '/single-calculator');
   return (
     <div className="ui-page-flow mx-auto max-w-[var(--layout-content-max)]">
-      <section className="border-b border-border pb-8 md:pb-10">
+      <section className="pb-8 md:pb-10">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start xl:gap-12">
           <div className="max-w-4xl space-y-6 md:space-y-8">
             <p className="inline-flex items-center gap-2 border-l-2 border-border px-3 py-1 text-xs font-semibold text-muted-foreground">
@@ -108,7 +108,7 @@ export function LandingDashboardClient({
         {primaryTool ? <HomePrimaryRoute item={primaryTool} /> : null}
       </section>
 
-      <section className="space-y-5 border-y border-border bg-muted/20 px-4 py-7 md:px-6 md:py-8">
+      <section className="space-y-5 bg-muted/20 px-4 py-7 md:rounded-md md:px-6 md:py-8">
         <SectionHeading
           title={t('landing.home_routes.supporting_title')}
           description={t('landing.home_routes.supporting_description')}
@@ -116,7 +116,7 @@ export function LandingDashboardClient({
         <HomeSupportingRoutes items={supportingTools} />
       </section>
 
-      <section className="space-y-5 border-b border-border pb-8">
+      <section className="space-y-5 pb-8">
         <SectionHeading title={secondaryTitle} description={secondaryDesc} />
         <HomeSupportingRoutes items={secondaryTools} optional />
       </section>
