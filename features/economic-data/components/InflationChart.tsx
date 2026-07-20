@@ -29,14 +29,21 @@ import {
 
 import { EconomicChartTooltip } from './EconomicChartTooltip';
 
-export const InflationChart = ({ period = 'ALL' }: { period?: PeriodValue }) => {
+export const InflationChart = ({
+  period = 'ALL',
+  scaleMode = 'readable',
+  onScaleChange,
+}: {
+  period?: PeriodValue;
+  scaleMode?: 'readable' | 'full';
+  onScaleChange?: (mode: 'readable' | 'full') => void;
+}) => {
   const { t, locale: language } = useAppI18n();
   const {
     data: response,
     isLoading,
     isError,
   } = useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/inflation');
-  const [scaleMode, setScaleMode] = React.useState<'readable' | 'full'>('readable');
   const chartData = React.useMemo(() => {
     const rawData = response?.data ?? [];
     return sampleSeriesPoints(sliceSeriesByPeriod(rawData, period), 160);
@@ -72,7 +79,7 @@ export const InflationChart = ({ period = 'ALL' }: { period?: PeriodValue }) => 
             type="button"
             size="sm"
             variant={scaleMode === 'readable' ? 'default' : 'outline'}
-            onClick={() => setScaleMode('readable')}
+            onClick={() => onScaleChange?.('readable')}
             className="rounded-md"
           >
             {t('economic.readable_scale')}
@@ -81,7 +88,7 @@ export const InflationChart = ({ period = 'ALL' }: { period?: PeriodValue }) => 
             type="button"
             size="sm"
             variant={scaleMode === 'full' ? 'default' : 'outline'}
-            onClick={() => setScaleMode('full')}
+            onClick={() => onScaleChange?.('full')}
             className="rounded-md"
           >
             {t('economic.full_scale')}
