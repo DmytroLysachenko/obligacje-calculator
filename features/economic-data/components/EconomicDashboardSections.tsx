@@ -5,6 +5,7 @@ import {
   Database,
   ShieldAlert,
   Sparkles,
+  TrendingDown,
 } from 'lucide-react';
 
 import { Accordion } from '@/components/ui/accordion';
@@ -16,6 +17,10 @@ import {
 } from '@/features/economic-data/lib/economic-dashboard-model';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
+import type {
+  EconomicSeriesKey,
+  InflationScaleMode,
+} from '@/features/economic-data/lib/economic-view';
 import { ReferenceGuideRail } from '@/shared/components/reference/ReferenceGuideRail';
 import { ReferenceNoteCard } from '@/shared/components/reference/ReferenceNoteCard';
 
@@ -24,6 +29,10 @@ import { EconomicSeriesStatusCard } from './EconomicSeriesStatusCard';
 interface RangeActionsProps {
   period: PeriodValue;
   setPeriod: (value: PeriodValue) => void;
+  series: EconomicSeriesKey;
+  setSeries: (value: EconomicSeriesKey) => void;
+  scale: InflationScaleMode;
+  setScale: (value: InflationScaleMode) => void;
   rangeLabel: string;
   hint: string;
 }
@@ -49,11 +58,48 @@ interface ReferenceStatusPanelProps {
   language: 'pl' | 'en';
 }
 
-export function RangeActions({ period, setPeriod, rangeLabel, hint }: RangeActionsProps) {
+export function RangeActions({
+  period,
+  setPeriod,
+  series,
+  setSeries,
+  scale,
+  setScale,
+  rangeLabel,
+  hint,
+}: RangeActionsProps) {
   return (
-    <div className="space-y-2 border-y border-border py-3">
-      <div className="flex flex-wrap items-center gap-1">
-        <span className="inline-flex items-center gap-1 px-3 text-sm font-medium text-muted-foreground">
+    <div className="space-y-3 border-t border-border pt-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="inline-flex rounded-md bg-muted/45 p-1" aria-label="Series">
+          <button
+            type="button"
+            aria-pressed={series === 'cpi'}
+            onClick={() => setSeries('cpi')}
+            className={cn(
+              'rounded px-3 py-1.5 text-xs font-semibold ui-focus-ring',
+              series === 'cpi'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground',
+            )}
+          >
+            <TrendingDown className="mr-1 inline size-3.5" aria-hidden="true" /> CPI
+          </button>
+          <button
+            type="button"
+            aria-pressed={series === 'nbp'}
+            onClick={() => setSeries('nbp')}
+            className={cn(
+              'rounded px-3 py-1.5 text-xs font-semibold ui-focus-ring',
+              series === 'nbp'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground',
+            )}
+          >
+            NBP
+          </button>
+        </div>
+        <span className="inline-flex items-center gap-1 px-1 text-sm font-medium text-muted-foreground">
           <CalendarRange className="h-3.5 w-3.5" />
           {rangeLabel}
         </span>
@@ -64,7 +110,7 @@ export function RangeActions({ period, setPeriod, rangeLabel, hint }: RangeActio
             aria-pressed={period === item.value}
             onClick={() => setPeriod(item.value)}
             className={cn(
-              'rounded px-3 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2',
+              'rounded px-3 py-1.5 text-sm transition-colors ui-focus-ring',
               period === item.value
                 ? 'bg-foreground font-semibold text-background'
                 : 'text-muted-foreground hover:bg-muted hover:text-foreground',
@@ -73,8 +119,28 @@ export function RangeActions({ period, setPeriod, rangeLabel, hint }: RangeActio
             {item.label}
           </button>
         ))}
+        {series === 'cpi' ? (
+          <div className="ml-auto inline-flex rounded-md border border-border p-1">
+            {(['readable', 'full'] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                aria-pressed={scale === mode}
+                onClick={() => setScale(mode)}
+                className={cn(
+                  'rounded px-2.5 py-1 text-xs font-semibold ui-focus-ring',
+                  scale === mode
+                    ? 'bg-foreground text-background'
+                    : 'text-muted-foreground hover:text-foreground',
+                )}
+              >
+                {mode === 'readable' ? 'Readable scale' : 'Full scale'}
+              </button>
+            ))}
+          </div>
+        ) : null}
       </div>
-      <p className="px-3 text-xs leading-5 text-muted-foreground">{hint}</p>
+      <p className="text-xs leading-5 text-muted-foreground">{hint}</p>
     </div>
   );
 }
