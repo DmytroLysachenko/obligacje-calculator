@@ -17,7 +17,11 @@ import { useAppI18n } from '@/i18n/client';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
 import { ReferenceChartFrame } from '@/shared/components/charts/ReferenceChartFrame';
 import { useChartData } from '@/shared/hooks/useChartData';
-import { sampleSeriesPoints, sliceSeriesByPeriod } from '@/shared/lib/chart-series';
+import {
+  computeReadableRateDomain,
+  sampleSeriesPoints,
+  sliceSeriesByPeriod,
+} from '@/shared/lib/chart-series';
 import { getReferenceMetaItems } from '@/shared/lib/data-reference';
 
 import {
@@ -48,16 +52,12 @@ export const InflationChart = ({
     return sampleSeriesPoints(sliceSeriesByPeriod(rawData, period), 160);
   }, [period, response?.data]);
   const maxRate = Math.max(...chartData.map((point) => point.rate), 0);
-  const secondLargest =
-    [...chartData.map((point) => point.rate)].sort((a, b) => b - a)[1] ?? maxRate;
-  const clippedMax = Math.max(20, Math.ceil(secondLargest * 1.25));
+  const readableDomain = computeReadableRateDomain(chartData.map((point) => point.rate));
+  const clippedMax = readableDomain[1];
   const yDomain: [number, number] | undefined =
     scaleMode === 'full'
       ? undefined
-      : [
-          Math.min(0, Math.floor(Math.min(...chartData.map((point) => point.rate), 0))),
-          Math.min(maxRate, clippedMax),
-        ];
+      : [readableDomain[0], Math.min(maxRate, clippedMax)];
   if (isLoading) {
     return <Skeleton className="h-[470px] w-full rounded-lg" />;
   }

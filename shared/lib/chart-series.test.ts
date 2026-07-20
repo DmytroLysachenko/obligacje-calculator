@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   computeNumericDomain,
+  computeReadableRateDomain,
   computeRateDomain,
   sampleSeriesPoints,
   sliceSeriesByPeriod,
@@ -102,5 +103,9 @@ describe('chart-series helpers', () => {
 
     expect(domain[0]).toBeLessThanOrEqual(-1);
     expect(domain[1]).toBeGreaterThanOrEqual(6);
+  });
+
+  it('keeps readable rate domains stable around isolated spikes', () => {
+    expect(computeReadableRateDomain([1.5, 2.1, 2.4, 2.8, 3.2, 14.4])).toEqual([-1, 6]);
   });
 });

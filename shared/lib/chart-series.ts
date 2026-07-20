@@ -105,6 +105,16 @@ export function computeRateDomain(values: number[]) {
   ];
 }
 
+export function computeReadableRateDomain(values: number[]): [number, number] {
+  if (values.length === 0) return [-1, 1];
+
+  const sorted = values.toSorted((left, right) => left - right);
+  const percentile = sorted[Math.floor((sorted.length - 1) * 0.9)] ?? 1;
+  const upper = Math.max(6, Math.ceil(percentile * 1.15));
+  const lower = Math.min(-1, Math.floor((sorted[0] ?? 0) - 0.5));
+  return [lower, upper];
+}
+
 export function formatMoneyAxisTick(value: number) {
   const numericValue = Number(value);
 
