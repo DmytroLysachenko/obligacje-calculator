@@ -89,7 +89,7 @@ export function EconomicDataPageClient() {
       description={t('economic.subtitle')}
       icon={<Activity className="h-8 w-8" />}
       isCalculating={false}
-      hasResults
+      hasResults={false}
     >
       <div className="ui-page-flow" aria-busy={isLoadingInflation || isLoadingNbp}>
         <ReferenceDashboardHero

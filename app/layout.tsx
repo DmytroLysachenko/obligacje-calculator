@@ -9,7 +9,6 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { AppLocaleProvider } from '@/i18n/client';
 import { defaultLocale, type Language } from '@/i18n/config';
 import { getMetadataLocale } from '@/i18n/locale-utils';
-import { getGlobalDataFreshness } from '@/lib/data/market-data';
 import { createAppJsonLd } from '@/lib/seo/app-json-ld';
 import { getCanonicalBaseUrl } from '@/lib/site-url';
 import { OpportunisticSyncTrigger } from '@/shared/components/chrome/OpportunisticSyncTrigger';
