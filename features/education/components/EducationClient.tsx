@@ -109,22 +109,7 @@ export default function EducationClient({
           title={t('education.bond_types')}
           description={t('education.bond_types_subtitle')}
         >
-          <EducationOfferComparison definitions={definitions} />
           <OfferProvenance dataFreshness={dataFreshness} />
-          <div className="ui-status-note border-l-2 border-border bg-muted/20">
-            <Info className="mt-0.5 size-4 shrink-0 text-foreground" aria-hidden="true" />
-            <p className="ui-field-description">
-              {t('education.disclaimer')}{' '}
-              <a
-                href="https://www.obligacjeskarbowe.pl/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold text-foreground underline underline-offset-4 hover:text-muted-foreground"
-              >
-                {t('site.official_bonds_link_label')}
-              </a>
-            </p>
-          </div>
           <div className="space-y-12">
             {educationOfferGroups.map((group) => {
               const bonds = group.bondTypes.map((type) => definitions[type]).filter(Boolean);
@@ -152,6 +137,28 @@ export default function EducationClient({
               );
             })}
           </div>
+          <details className="border-t border-border pt-5">
+            <summary className="ui-focus-ring cursor-pointer text-sm font-semibold text-foreground">
+              {t('education.comparison.compare_selected')}
+            </summary>
+            <div className="mt-5">
+              <EducationOfferComparison definitions={definitions} />
+            </div>
+          </details>
+          <div className="ui-status-note border-l-2 border-border bg-muted/20">
+            <Info className="mt-0.5 size-4 shrink-0 text-foreground" aria-hidden="true" />
+            <p className="ui-field-description">
+              {t('education.disclaimer')}{' '}
+              <a
+                href="https://www.obligacjeskarbowe.pl/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-foreground underline underline-offset-4 hover:text-muted-foreground"
+              >
+                {t('site.official_bonds_link_label')}
+              </a>
+            </p>
+          </div>
         </SectionBlock>
 
         <SectionBlock
@@ -161,7 +168,7 @@ export default function EducationClient({
         >
           <div className="grid gap-x-8 gap-y-5 md:grid-cols-3">
             {educationConcepts.map((concept) => (
-              <article key={concept.key} className="border-t border-border py-5">
+              <article key={concept.key} className="py-3">
                 <div className="flex items-center gap-3">
                   <concept.icon className="size-4 text-foreground" aria-hidden="true" />
                   <h3 className="ui-card-title">{t(`education.concepts.${concept.key}.title`)}</h3>
@@ -169,7 +176,7 @@ export default function EducationClient({
                 <p className="ui-body ui-pretty mt-3">
                   {t(`education.concepts.${concept.key}.desc`)}
                 </p>
-                <p className="mt-3 border-t border-border pt-3 font-mono text-[11px] leading-5 text-muted-foreground">
+                <p className="mt-3 font-mono text-[11px] leading-5 text-muted-foreground">
                   {t(`education.concepts.${concept.key}.formula`)}
                 </p>
               </article>
