@@ -11,6 +11,7 @@ import {
 
 import { BondValueChartToolbar } from './BondValueChartParts';
 import { BondValueChartPlot } from './BondValueChartPlot';
+import { ChartDataTable } from './ChartDataTable';
 
 export interface BondValueChartSeries {
   key: string;
@@ -189,6 +190,7 @@ export function BondValueChart({
         heightClassName={heightClassName}
         t={t}
       />
+      <ChartDataTable data={data} series={series} formatCurrency={formatCurrency} />
     </div>
   );
 }
