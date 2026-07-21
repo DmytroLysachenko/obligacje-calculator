@@ -44,6 +44,8 @@ interface BondCalculatorContainerProps {
   sharedScenarioTitle?: string;
 }
 
+const SINGLE_CALCULATOR_FORM_ID = 'single-calculator-inputs';
+
 export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = ({
   initialInputs,
   sharedScenarioTitle,
@@ -105,8 +107,9 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
 
   const readingGuide = useMemo(() => buildSingleCalculatorReadingGuide(t), [t]);
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter' && (isDirty || !results)) {
+  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!isCalculating && blockingGuardrails.length === 0) {
       calculate();
     }
   };
@@ -208,7 +211,6 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
       hasResults={isPersistenceReady && !!results}
       onShare={handleShareScenario}
       showImplicitShare={false}
-      onKeyDown={handleKeyDown}
     >
       <div className="ui-page-flow">
         {sharedScenarioTitle ? (
@@ -226,6 +228,8 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
           detailsClassName="min-w-0"
           controls={
             <BondInputsForm
+              formId={SINGLE_CALCULATOR_FORM_ID}
+              onSubmit={handleFormSubmit}
               inputs={inputs}
               onUpdate={updateInput}
               onBondTypeChange={handleBondTypeChange}
@@ -266,6 +270,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
         hasResults={!!results}
         loading={isCalculating}
         disabled={blockingGuardrails.length > 0}
+        formId={SINGLE_CALCULATOR_FORM_ID}
         onClick={() => calculate()}
       />
 

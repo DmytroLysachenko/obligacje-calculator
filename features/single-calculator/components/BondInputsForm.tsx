@@ -39,6 +39,8 @@ interface BondSeries {
 }
 
 interface BondInputsFormProps {
+  formId?: string;
+  onSubmit?: React.FormEventHandler<HTMLFormElement>;
   inputs: BondInputs;
   onUpdate: (key: keyof BondInputs, value: unknown) => void;
   onBondTypeChange: (type: BondType) => void;
@@ -49,6 +51,8 @@ interface BondInputsFormProps {
 }
 
 export const BondInputsForm: React.FC<BondInputsFormProps> = ({
+  formId,
+  onSubmit,
   inputs,
   onUpdate,
   onBondTypeChange,
@@ -113,7 +117,9 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
   return (
     <TooltipProvider>
-      <section
+      <form
+        id={formId}
+        onSubmit={onSubmit}
         className="ui-form-panel w-full space-y-7 xl:sticky xl:top-8"
         aria-label={t('bonds.single_calculator')}
       >
@@ -236,7 +242,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           maturityDate={maturityDate}
           hasMounted={hasMounted}
         />
-      </section>
+      </form>
     </TooltipProvider>
   );
 };
