@@ -758,6 +758,7 @@
       "scenario_facts_title": "Scenario facts",
       "scenario_facts_description": "The minimum set of facts needed to read this run correctly.",
       "actions_label": "Result actions",
+      "more_actions": "More actions",
       "show_calculation_details": "Show calculation details"
     },
     "scenario_fields": {

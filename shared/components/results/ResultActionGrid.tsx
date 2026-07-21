@@ -16,6 +16,7 @@ export interface ResultAction {
   variant?: 'default' | 'outline';
   disabled?: boolean;
   kind?: ResultActionKind;
+  priority?: 'primary' | 'secondary';
 }
 
 interface ResultActionGridProps {
@@ -49,6 +50,9 @@ export const ResultActionGrid = React.memo(function ResultActionGrid({
     return null;
   }
 
+  const primaryActions = actions.filter((action) => action.priority !== 'secondary');
+  const secondaryActions = actions.filter((action) => action.priority === 'secondary');
+
   return (
     <div
       className={cn(
@@ -57,7 +61,7 @@ export const ResultActionGrid = React.memo(function ResultActionGrid({
       )}
       aria-label={t('bonds.results.actions_label')}
     >
-      {actions.map((action) => {
+      {primaryActions.map((action) => {
         const kind = action.kind ?? (action.variant === 'default' ? 'primary' : 'secondary');
         const variant = action.variant ?? (kind === 'primary' ? 'default' : 'outline');
 
@@ -80,6 +84,36 @@ export const ResultActionGrid = React.memo(function ResultActionGrid({
           </Button>
         );
       })}
+      {secondaryActions.length ? (
+        <details className="col-span-full border-t border-border pt-2">
+          <summary className="ui-focus-ring cursor-pointer rounded-sm text-xs font-semibold text-muted-foreground">
+            {t('bonds.results.more_actions')}
+          </summary>
+          <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {secondaryActions.map((action) => {
+              const kind = action.kind ?? 'secondary';
+              return (
+                <Button
+                  type="button"
+                  key={action.label}
+                  variant="outline"
+                  className={cn(
+                    'h-10 min-w-0 justify-center gap-2 px-3 text-xs font-semibold ui-focus-ring',
+                    actionKindClass[kind],
+                  )}
+                  onClick={action.onClick}
+                  disabled={action.disabled}
+                >
+                  <span className="shrink-0" aria-hidden={!action.icon}>
+                    {action.icon ?? <DefaultActionIcon kind={kind} />}
+                  </span>
+                  <span className="ui-truncate-flex">{action.label}</span>
+                </Button>
+              );
+            })}
+          </div>
+        </details>
+      ) : null}
     </div>
   );
 });

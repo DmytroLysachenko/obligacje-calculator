@@ -97,6 +97,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
         icon: <Plus className="h-4 w-4" />,
         onClick: onAddToNotebook,
         kind: 'secondary' as const,
+        priority: 'secondary' as const,
         disabled: !canManageWorkspace,
       },
       {
@@ -104,6 +105,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
         icon: <FileText className="h-4 w-4" />,
         onClick: onExportPDF,
         kind: 'pdf' as const,
+        priority: 'secondary' as const,
         disabled: !onExportPDF,
       },
       {
@@ -111,6 +113,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
         icon: <FileSpreadsheet className="h-4 w-4" />,
         onClick: handleExportCSV,
         kind: 'csv' as const,
+        priority: 'secondary' as const,
       },
     ],
     [canManageWorkspace, handleExportCSV, onAddToNotebook, onExportPDF, onSaveScenario, t],

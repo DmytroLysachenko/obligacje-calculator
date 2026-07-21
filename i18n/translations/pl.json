@@ -758,6 +758,7 @@
       "scenario_facts_title": "Fakty scenariusza",
       "scenario_facts_description": "Minimalny zestaw parametrow potrzebny do poprawnego odczytu wyniku.",
       "actions_label": "Działania dla wyniku",
+      "more_actions": "Więcej działań",
       "show_calculation_details": "Pokaż szczegóły obliczeń"
     },
     "scenario_fields": {
