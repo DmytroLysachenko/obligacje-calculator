@@ -60,8 +60,11 @@ interface BondValueChartProps {
   rightDomain: [number, number] | ['auto', 'auto'];
   summary: string;
   defaultGranularity?: ChartStep;
+  availableGranularities?: ChartStep[];
   onGranularityChange?: (step: ChartStep) => void;
   showContextControls?: boolean;
+  showInflationControl?: boolean;
+  showNbpControl?: boolean;
   ariaLabel: string;
   heightClassName?: string;
 }
@@ -74,8 +77,11 @@ export function BondValueChart({
   rightDomain,
   summary,
   defaultGranularity = 'yearly',
+  availableGranularities = ['monthly', 'quarterly', 'yearly'],
   onGranularityChange,
   showContextControls = true,
+  showInflationControl = true,
+  showNbpControl = true,
   ariaLabel,
   heightClassName = 'h-[360px] md:h-[460px] xl:h-[520px]',
 }: BondValueChartProps) {
@@ -157,10 +163,13 @@ export function BondValueChart({
     <div className="space-y-4">
       <BondValueChartToolbar
         granularity={granularity}
+        availableGranularities={availableGranularities}
         legendItems={legendItems}
         showContextControls={showContextControls}
         showInflationOverlay={showInflationOverlay}
         showNbpOverlay={showNbpOverlay}
+        showInflationControl={showInflationControl}
+        showNbpControl={showNbpControl}
         onGranularityChange={handleGranularityChange}
         onOverlayChange={updateOverlayPreference}
         t={t}
