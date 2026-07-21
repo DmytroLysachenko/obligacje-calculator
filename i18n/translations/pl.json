@@ -840,6 +840,8 @@
       "exit_markers": "Znaczniki wyjscia",
       "results_announcement": "Pokazano {visible} z {total} wierszy harmonogramu. Aktywne filtry: {filters}. Punkty prognozy: {projections}.",
       "no_results_announcement": "Zadne wiersze harmonogramu nie odpowiadaja biezacym filtrom. Aktywne filtry: {filters}. Punkty prognozy: {projections}.",
+      "active_filters": "Aktywne filtry harmonogramu",
+      "jump_to_rows": "Przejdz do pasujacych okresow",
       "summary_note": "Kazdy wiersz to punkt kontrolny scenariusza, a nie osobny zakup. Czytaj od lewej do prawej, aby zobaczyc co sie dzieje, jaka baza zostala uzyta i jaka wartosc opuszcza obligacje w tym momencie.",
       "mobile_sheet_title": "Szczegolowy harmonogram",
       "mobile_sheet_description": "Otworz harmonogram punkt po punkcie w widoku przyjaznym dla telefonu.",

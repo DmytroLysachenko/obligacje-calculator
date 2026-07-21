@@ -156,7 +156,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
             />
           </div>
 
-          <div className="ui-action-row w-full md:w-auto">
+          <div className="ui-action-row w-full sm:w-auto">
             <div className="flex w-full items-center gap-2 md:w-auto">
               <Filter className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
               <FormSelect
@@ -165,7 +165,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
                 value={eventTypeFilter}
                 onValueChange={setEventTypeFilter}
                 placeholder={t('bonds.filter_events') || 'Filter Events'}
-                triggerClassName="w-full bg-background md:w-56"
+                triggerClassName="w-full bg-background sm:w-56"
                 options={[
                   {
                     value: 'all',
@@ -181,7 +181,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-10 gap-2"
+                className="h-11 gap-2"
                 onClick={resetFilters}
               >
                 <RotateCcw className="h-4 w-4" aria-hidden="true" />
@@ -190,6 +190,23 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
             ) : null}
           </div>
         </div>
+        {activeFilterCount > 0 ? (
+          <div className="flex flex-wrap gap-2" aria-label={t('bonds.schedule.active_filters')}>
+            {deferredSearchQuery.trim() ? (
+              <span className="rounded-full bg-muted px-3 py-2 text-xs font-semibold text-foreground">
+                {t('common.search')}: {deferredSearchQuery}
+              </span>
+            ) : null}
+            {eventTypeFilter !== 'all' ? (
+              <span className="rounded-full bg-muted px-3 py-2 text-xs font-semibold text-foreground">
+                {getSimulationEventDisplayLabel(
+                  eventTypeFilter as SimulationEventType,
+                  language as AppLanguage,
+                )}
+              </span>
+            ) : null}
+          </div>
+        ) : null}
         <TableDensityControls
           value={rowLimit}
           totalRows={filteredTimeline.length}
@@ -199,6 +216,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
             rowsShown: t('common.rows_shown'),
             rowsPerPage: t('common.rows_per_page'),
             all: t('common.all'),
+            jumpToRows: t('bonds.schedule.jump_to_rows'),
           }}
         />
       </div>

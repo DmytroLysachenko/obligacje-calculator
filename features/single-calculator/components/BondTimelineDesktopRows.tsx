@@ -43,6 +43,7 @@ export function BondTimelineDesktopRows({
     rowsShown: t('common.rows_shown'),
     rowsPerPage: t('common.rows_per_page'),
     all: t('common.all'),
+    jumpToRows: t('bonds.schedule.jump_to_rows'),
   };
 
   return (
