@@ -7,6 +7,8 @@ import { BondTimelineDesktopRows } from './BondTimelineDesktopRows';
 import { BondTimelineMobileRows } from './BondTimelineMobileRows';
 
 export function BondTimelineRows({
+  mobileResultsId,
+  desktopResultsId,
   displayedTimeline,
   filteredTimelineLength,
   activeFilterCount,
@@ -21,12 +23,14 @@ export function BondTimelineRows({
   return (
     <>
       <BondTimelineMobileRows
+        resultsId={mobileResultsId}
         displayedTimeline={displayedTimeline}
         filteredTimelineLength={filteredTimelineLength}
         formatCurrency={formatCurrency}
       />
 
       <BondTimelineDesktopRows
+        resultsId={desktopResultsId}
         displayedTimeline={displayedTimeline}
         filteredTimelineLength={filteredTimelineLength}
         activeFilterCount={activeFilterCount}

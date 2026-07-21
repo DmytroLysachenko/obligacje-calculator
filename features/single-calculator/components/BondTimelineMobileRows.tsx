@@ -10,9 +10,12 @@ import { MobileValue } from './BondTimelineValues';
 type BondTimelineMobileRowsProps = Pick<
   BondTimelineRowsProps,
   'displayedTimeline' | 'filteredTimelineLength' | 'formatCurrency'
->;
+> & {
+  resultsId: string;
+};
 
 export function BondTimelineMobileRows({
+  resultsId,
   displayedTimeline,
   filteredTimelineLength,
   formatCurrency,
@@ -25,6 +28,7 @@ export function BondTimelineMobileRows({
       description={t('bonds.schedule.mobile_sheet_description')}
       triggerLabel={t('bonds.schedule.mobile_sheet_trigger')}
       triggerCount={`${filteredTimelineLength} ${t('bonds.schedule.mobile_sheet_count_suffix')}`}
+      resultsId={resultsId}
     >
       <div className="ui-divider-group">
         {displayedTimeline.map((row) => (

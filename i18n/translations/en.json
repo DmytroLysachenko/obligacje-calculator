@@ -838,6 +838,8 @@
       "rows_after_filters": "Rows after filters",
       "projected_points": "Projected points",
       "exit_markers": "Exit markers",
+      "results_announcement": "{visible} of {total} schedule rows shown. {filters} active filters. {projections} projected points.",
+      "no_results_announcement": "No schedule rows match the current filters. {filters} active filters. {projections} projected points.",
       "summary_note": "Each row is a scenario checkpoint, not a separate purchase. Read left to right to see what happens, what basis was used, and what value leaves the bond at that point.",
       "mobile_sheet_title": "Detailed schedule",
       "mobile_sheet_description": "Open the checkpoint-by-checkpoint schedule in a mobile-friendly view.",

@@ -19,6 +19,7 @@ interface ResponsiveTableSheetProps {
   triggerLabel: string;
   triggerCount?: string;
   sheetLabel?: string;
+  resultsId?: string;
   children: React.ReactNode;
 }
 
@@ -28,6 +29,7 @@ export function ResponsiveTableSheet({
   triggerLabel,
   triggerCount,
   sheetLabel,
+  resultsId,
   children,
 }: ResponsiveTableSheetProps) {
   const titleId = React.useId();
@@ -78,6 +80,7 @@ export function ResponsiveTableSheet({
             </SheetDescription>
           </SheetHeader>
           <div
+            id={resultsId}
             role="region"
             aria-labelledby={titleId}
             className="custom-scrollbar min-h-0 flex-1 overflow-y-auto px-4 pb-8 pt-4"

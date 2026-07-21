@@ -19,11 +19,16 @@ import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { TableDensityControls } from '@/shared/components/results/TableDensityControls';
 
-type BondTimelineDesktopRowsProps = BondTimelineRowsProps & {
+type BondTimelineDesktopRowsProps = Omit<
+  BondTimelineRowsProps,
+  'mobileResultsId' | 'desktopResultsId'
+> & {
+  resultsId: string;
   firstCashFlowLabel: string;
 };
 
 export function BondTimelineDesktopRows({
+  resultsId,
   displayedTimeline,
   filteredTimelineLength,
   activeFilterCount,
@@ -41,7 +46,7 @@ export function BondTimelineDesktopRows({
   };
 
   return (
-    <div className="ui-table-frame hidden w-full lg:block">
+    <div id={resultsId} className="ui-table-frame hidden w-full lg:block">
       <TableScrollHint>{t('bonds.schedule.mobile_sheet_description')}</TableScrollHint>
       <Table className="w-full table-fixed text-sm tabular-nums" aria-label={t('bonds.timeline')}>
         <TableCaption>{t('bonds.timeline')}</TableCaption>
