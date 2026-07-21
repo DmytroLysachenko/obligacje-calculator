@@ -16,8 +16,8 @@ export const pageLayout = {
   controlStack: 'ui-control-stack',
   resultPanel: 'ui-result-panel',
   calculatorGrid:
-    'grid grid-cols-1 gap-8 xl:grid-cols-[420px_minmax(0,1fr)] xl:items-start xl:gap-10',
-  stickyScenario: 'space-y-5 xl:sticky xl:top-8 xl:h-fit',
+    'grid grid-cols-1 gap-8 lg:grid-cols-[minmax(19rem,0.72fr)_minmax(0,1.28fr)] lg:items-start lg:gap-8 xl:grid-cols-[420px_minmax(0,1fr)] xl:gap-10',
+  stickyScenario: 'space-y-5 lg:sticky lg:top-8 lg:h-fit',
   stickySidebar: 'space-y-5 lg:sticky lg:top-8 lg:h-fit',
   compactCalculatorGrid:
     'grid grid-cols-1 gap-6 lg:grid-cols-[minmax(18rem,0.7fr)_minmax(0,1.3fr)] lg:items-start lg:gap-8',
@@ -26,7 +26,7 @@ export const pageLayout = {
   metricGridTwo: 'grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-5',
   metricGridThree: 'grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 md:gap-5',
   metricGridFour: 'grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 md:gap-5',
-  mobileActionSpace: 'pb-20 lg:pb-0',
+  mobileActionSpace: 'pb-28 [padding-bottom:calc(7rem+env(safe-area-inset-bottom))] lg:pb-0',
   mobileActionBar: 'ui-mobile-action-bar',
   mobileActionBarInner: 'ui-mobile-action-bar-inner',
   resultFlow: 'space-y-8 md:space-y-10',

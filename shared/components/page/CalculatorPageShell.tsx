@@ -105,7 +105,7 @@ export function CalculatorPageShell({
     ) : null;
 
   return (
-    <div className={pageLayout.pageFlow} onKeyDown={onKeyDown}>
+    <div className={`${pageLayout.pageFlow} ${pageLayout.mobileActionSpace}`} onKeyDown={onKeyDown}>
       <PageHeader
         icon={icon}
         title={title}
