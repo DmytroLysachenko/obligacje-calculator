@@ -14,15 +14,6 @@ export type FeatureDefinition = {
 
 const featureCatalog = [
   {
-    route: '/education',
-    navigationSection: 'core',
-    status: 'trusted',
-    placement: 'primary',
-    admittedToTrustedRelease: true,
-    titleKey: 'nav.education',
-    descriptionKey: 'landing.cards.education',
-  },
-  {
     route: '/single-calculator',
     navigationSection: 'core',
     status: 'trusted',
@@ -39,6 +30,15 @@ const featureCatalog = [
     admittedToTrustedRelease: true,
     titleKey: 'nav.economic_data',
     descriptionKey: 'landing.cards.economic_data',
+  },
+  {
+    route: '/education',
+    navigationSection: 'core',
+    status: 'trusted',
+    placement: 'primary',
+    admittedToTrustedRelease: true,
+    titleKey: 'nav.education',
+    descriptionKey: 'landing.cards.education',
   },
   {
     route: '/compare',
