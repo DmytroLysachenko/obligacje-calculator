@@ -1,5 +1,6 @@
 {
   "common": {
+    "dismiss_notification": "Dismiss notification",
     "title": "Bonds Calculator",
     "description": "Professional calculator for Polish treasury bonds.",
     "settings": "Settings",
@@ -558,6 +559,7 @@
     "goal_progress": "Goal Progress: {percent}%",
     "target": "Target",
     "simulation": {
+      "ready_steps_label": "Set up your scenario",
       "ready": "Ready to simulate",
       "ready_title": "One calculator. One committed run.",
       "ready_desc": "Complete the left-side inputs first, keep advanced assumptions collapsed unless necessary, then run one clean calculation and inspect the summary before going deeper.",

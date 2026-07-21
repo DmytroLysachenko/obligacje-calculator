@@ -1,5 +1,6 @@
 {
   "common": {
+    "dismiss_notification": "Zamknij powiadomienie",
     "title": "Obligacje Calculator",
     "description": "Profesjonalny kalkulator polskich obligacji skarbowych.",
     "settings": "Ustawienia",
@@ -558,6 +559,7 @@
     "goal_progress": "Postęp celu: {percent}%",
     "target": "Cel",
     "simulation": {
+      "ready_steps_label": "Skonfiguruj scenariusz",
       "ready": "Gotowy na symulację?",
       "ready_title": "Jeden kalkulator. Jeden zatwierdzony przebieg.",
       "ready_desc": "Najpierw domknij dane po lewej stronie, zostaw zalozenia zaawansowane jako drugorzedne, a potem uruchom jedno czyste obliczenie i zacznij od podsumowania.",

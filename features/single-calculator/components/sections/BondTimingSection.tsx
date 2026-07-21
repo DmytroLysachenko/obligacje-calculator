@@ -91,7 +91,10 @@ export const BondTimingSection: React.FC<BondTimingSectionProps> = React.memo(
               </PopoverContent>
             </Popover>
             {hasMounted && isFutureDate && (
-              <div className="flex items-center gap-2 text-[10px] font-medium text-destructive">
+              <div
+                className="flex items-center gap-2 text-xs font-medium text-destructive"
+                role="alert"
+              >
                 <AlertCircle className="h-3 w-3" />
                 <span>{t('bonds.error_future_date')}</span>
               </div>

@@ -88,6 +88,7 @@ export function BondCalculatorResultsPanel({
               ? t('bonds.simulation.fix_blocking')
               : t('bonds.simulation.results_stable')
           }
+          stepsLabel={t('bonds.simulation.ready_steps_label')}
         />
       ) : null}
 
