@@ -175,8 +175,8 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           </AdvancedAssumptionsDisclosure>
 
           <AdvancedAssumptionsDisclosure
-            title="3. Inflation setup"
-            description="Choose fixed presets, one simple inflation value, or a yearly inflation path."
+            title={t('bonds.form.step_inflation_title')}
+            description={t('bonds.form.step_inflation_desc')}
           >
             <MarketAssumptionsForm
               expectedInflation={inputs.expectedInflation}
@@ -195,8 +195,8 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           </AdvancedAssumptionsDisclosure>
 
           <AdvancedAssumptionsDisclosure
-            title="4. NBP rate setup"
-            description="Choose fixed presets, one simple NBP rate, or a yearly NBP path."
+            title={t('bonds.form.step_nbp_title')}
+            description={t('bonds.form.step_nbp_desc')}
           >
             <MarketAssumptionsForm
               expectedInflation={inputs.expectedInflation}

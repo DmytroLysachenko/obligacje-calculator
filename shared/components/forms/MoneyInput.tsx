@@ -37,6 +37,7 @@ export function MoneyInput({
         name={name}
         type="number"
         inputMode="decimal"
+        autoComplete="off"
         min={min}
         max={max}
         step={step}

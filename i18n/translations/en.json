@@ -82,7 +82,8 @@
     "navigation_menu": "Navigation menu",
     "calculation_in_progress": "Calculation in progress. Recalculation only ends once the scenario is fully modeled.",
     "initial_calculation_hint": "Run the scenario once to see the full result.",
-    "recalculation_hint": "Inputs changed. Recalculate only when the scenario is ready."
+    "recalculation_hint": "Inputs changed. Recalculate only when the scenario is ready.",
+    "more_information": "More information"
   },
   "site": {
     "default_title_suffix": "Educational bond calculator",
@@ -527,7 +528,11 @@
       "step_timing_desc": "Commit purchase date, horizon, withdrawal timing, and tax wrapper before you calculate.",
       "advanced_desc": "Inflation assumptions, NBP path, chart display, and other secondary controls.",
       "display_summary_title": "Display controls",
-      "display_summary_desc": "Chart granularity is controlled directly in the chart toolbar and does not change the calculation result."
+      "display_summary_desc": "Chart granularity is controlled directly in the chart toolbar and does not change the calculation result.",
+      "step_inflation_title": "3. Inflation setup",
+      "step_inflation_desc": "Choose fixed presets, one simple inflation value, or a yearly inflation path.",
+      "step_nbp_title": "4. NBP rate setup",
+      "step_nbp_desc": "Choose fixed presets, one simple NBP rate, or a yearly NBP path."
     },
     "tax_standard": "Standard Account (19% Tax)",
     "tax_ike": "IKE Account (0% Tax)",
@@ -751,7 +756,9 @@
       "wrapper_limit_title": "Tax wrapper limit reached.",
       "wrapper_limit_description": "{wrapperAmount} stayed inside the wrapper, while {standardAmount} spilled into a standard account.",
       "scenario_facts_title": "Scenario facts",
-      "scenario_facts_description": "The minimum set of facts needed to read this run correctly."
+      "scenario_facts_description": "The minimum set of facts needed to read this run correctly.",
+      "actions_label": "Result actions",
+      "show_calculation_details": "Show calculation details"
     },
     "scenario_fields": {
       "bond_type": "Bond type",

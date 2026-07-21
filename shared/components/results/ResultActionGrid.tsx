@@ -4,6 +4,7 @@ import { FileSpreadsheet, FileText } from 'lucide-react';
 import React from 'react';
 
 import { Button } from '@/components/ui/button';
+import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 
 export type ResultActionKind = 'primary' | 'secondary' | 'csv' | 'pdf';
@@ -43,6 +44,7 @@ export const ResultActionGrid = React.memo(function ResultActionGrid({
   actions,
   className,
 }: ResultActionGridProps) {
+  const { t } = useAppI18n();
   if (!actions.length) {
     return null;
   }
@@ -53,7 +55,7 @@ export const ResultActionGrid = React.memo(function ResultActionGrid({
         'grid min-w-0 grid-cols-1 gap-2 border-t border-border bg-muted/30 p-4 sm:grid-cols-2 lg:w-[380px] lg:shrink-0 lg:border-l lg:border-t-0',
         className,
       )}
-      aria-label="Result actions"
+      aria-label={t('bonds.results.actions_label')}
     >
       {actions.map((action) => {
         const kind = action.kind ?? (action.variant === 'default' ? 'primary' : 'secondary');

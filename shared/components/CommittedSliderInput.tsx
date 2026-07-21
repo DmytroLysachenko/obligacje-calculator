@@ -130,6 +130,7 @@ export function CommittedSliderInput({
             <Input
               type="number"
               inputMode="decimal"
+              autoComplete="off"
               step={step}
               min={min}
               max={max}

@@ -182,15 +182,18 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
     </div>
   );
 };
-const HelpButton = () => (
-  <button
-    className="ui-focus-ring group rounded-sm"
-    type="button"
-    aria-label="Show calculation details"
-  >
-    <Info
-      className="h-4 w-4 cursor-help text-muted-foreground transition-colors group-hover:text-primary"
-      aria-hidden="true"
-    />
-  </button>
-);
+const HelpButton = () => {
+  const { t } = useAppI18n();
+  return (
+    <button
+      className="ui-focus-ring group rounded-sm"
+      type="button"
+      aria-label={t('bonds.results.show_calculation_details')}
+    >
+      <Info
+        className="h-4 w-4 cursor-help text-muted-foreground transition-colors group-hover:text-primary"
+        aria-hidden="true"
+      />
+    </button>
+  );
+};

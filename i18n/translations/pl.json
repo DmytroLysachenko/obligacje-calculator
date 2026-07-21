@@ -82,7 +82,8 @@
     "navigation_menu": "Menu nawigacji",
     "calculation_in_progress": "Trwa obliczanie. Przeliczenie konczy sie dopiero po zamodelowaniu calego scenariusza.",
     "initial_calculation_hint": "Uruchom scenariusz, aby zobaczyc pelny wynik.",
-    "recalculation_hint": "Dane sie zmienily. Przelicz dopiero, gdy scenariusz jest gotowy."
+    "recalculation_hint": "Dane sie zmienily. Przelicz dopiero, gdy scenariusz jest gotowy.",
+    "more_information": "Więcej informacji"
   },
   "site": {
     "default_title_suffix": "Edukacyjny kalkulator obligacji",
@@ -527,7 +528,11 @@
       "step_timing_desc": "Ustal date zakupu, horyzont, tryb wyjscia i opakowanie podatkowe przed uruchomieniem obliczen.",
       "advanced_desc": "Zalozenia inflacyjne, sciezka NBP, ustawienia wykresu i inne drugorzedne kontrolki.",
       "display_summary_title": "Kontrolki wyswietlania",
-      "display_summary_desc": "Granulacja wykresu jest sterowana bezposrednio w pasku wykresu i nie zmienia wyniku obliczen."
+      "display_summary_desc": "Granulacja wykresu jest sterowana bezposrednio w pasku wykresu i nie zmienia wyniku obliczen.",
+      "step_inflation_title": "3. Ustawienia inflacji",
+      "step_inflation_desc": "Wybierz stałe ustawienie, prostą wartość inflacji albo roczną ścieżkę inflacji.",
+      "step_nbp_title": "4. Ustawienia stopy NBP",
+      "step_nbp_desc": "Wybierz stałe ustawienie, prostą stopę NBP albo roczną ścieżkę stopy NBP."
     },
     "tax_standard": "Konto standardowe (19% podatek)",
     "tax_ike": "Konto IKE (0% podatek)",
@@ -751,7 +756,9 @@
       "wrapper_limit_title": "Limit opakowania podatkowego zostal osiagniety.",
       "wrapper_limit_description": "{wrapperAmount} pozostalo w opakowaniu, a {standardAmount} przeszlo na konto standardowe.",
       "scenario_facts_title": "Fakty scenariusza",
-      "scenario_facts_description": "Minimalny zestaw parametrow potrzebny do poprawnego odczytu wyniku."
+      "scenario_facts_description": "Minimalny zestaw parametrow potrzebny do poprawnego odczytu wyniku.",
+      "actions_label": "Działania dla wyniku",
+      "show_calculation_details": "Pokaż szczegóły obliczeń"
     },
     "scenario_fields": {
       "bond_type": "Typ obligacji",
