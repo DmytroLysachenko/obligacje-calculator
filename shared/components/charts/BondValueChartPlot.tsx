@@ -50,10 +50,19 @@ export function BondValueChartPlot({
   heightClassName,
   t,
 }: BondValueChartPlotProps) {
+  const hasData = data.length > 0;
   const firstProjectedIndex = React.useMemo(
     () => data.findIndex((point) => point.isProjected),
     [data],
   );
+
+  if (!hasData) {
+    return (
+      <div className="flex min-h-60 items-center justify-center border border-dashed border-border bg-muted/20 px-6 text-center text-sm leading-6 text-muted-foreground" role="status">
+        {t('bonds.simulation.chart_empty')}
+      </div>
+    );
+  }
 
   return (
     <ChartContainer
@@ -62,7 +71,7 @@ export function BondValueChartPlot({
       responsiveHeightClassName={heightClassName}
     >
       <ResponsiveContainer width="100%" height="100%" key={`chart-${data.length}`}>
-        <ComposedChart data={data} margin={{ top: 12, right: 52, left: 40, bottom: 20 }}>
+        <ComposedChart data={data} margin={{ top: 12, right: 44, left: 24, bottom: 20 }}>
           <defs>
             {series.map((item) => (
               <linearGradient key={item.key} id={`value-${item.key}`} x1="0" y1="0" x2="0" y2="1">
@@ -82,7 +91,7 @@ export function BondValueChartPlot({
             tickLine={false}
             axisLine={false}
             dy={10}
-            minTickGap={30}
+            minTickGap={42}
             tickFormatter={(value: string) => (value.length <= 9 ? value : value.slice(0, 9))}
           />
           <YAxis
@@ -96,7 +105,7 @@ export function BondValueChartPlot({
           <YAxis
             yAxisId="right"
             orientation="right"
-            width={44}
+            width={38}
             tick={
               showContextAxis
                 ? { fontSize: 10, fill: 'hsl(var(--muted-foreground))', fontWeight: 'bold' }
