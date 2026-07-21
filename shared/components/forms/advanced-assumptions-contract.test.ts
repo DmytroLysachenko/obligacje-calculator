@@ -37,13 +37,9 @@ describe('advanced assumptions disclosure contracts', () => {
     expectContains(source, 'value="advanced-assumptions"');
     expectContains(source, 'border-0 border-b border-border px-0 py-4');
     expectContains(source, '<span className="flex items-start gap-3 text-left">');
-    expectContains(
-      source,
-      '<span className="block text-sm font-semibold text-foreground">{title}</span>',
-    );
-    expectContains(source, 'border-l-2 border-border pl-3 pt-0.5 text-muted-foreground');
-    expectContains(source, 'max-w-2xl text-xs font-medium leading-5 text-muted-foreground');
-    expectContains(source, '<div className="space-y-6 pt-4">{children}</div>');
+    expectContains(source, '<span className="block ui-label">{title}</span>');
+    expectContains(source, 'block max-w-2xl ui-field-description');
+    expectContains(source, '<div className="ui-control-stack pt-4">{children}</div>');
 
     expectNoFragments(source, [
       'rounded-lg bg-muted/35 px-4 py-4',
@@ -58,7 +54,7 @@ describe('advanced assumptions disclosure contracts', () => {
     ]);
   });
 
-  it('keeps single calculator sidebar groups on the shared disclosure primitive', () => {
+  it('keeps only optional single-calculator assumptions on the shared disclosure primitive', () => {
     const source = read(files.single);
 
     expectContains(
@@ -66,10 +62,12 @@ describe('advanced assumptions disclosure contracts', () => {
       "import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';",
     );
     expectContains(source, '<AdvancedAssumptionsDisclosure');
+    expectContains(source, "import { FormSection } from '@/shared/components/forms/FormSection';");
+    expectContains(source, '<FormSection');
     expectContains(source, "title={t('bonds.step_core')}");
     expectContains(source, "title={t('bonds.step_timing')}");
-    expectContains(source, 'title="3. Inflation setup"');
-    expectContains(source, 'title="4. NBP rate setup"');
+    expectContains(source, "title={t('bonds.form.step_inflation_title')}");
+    expectContains(source, "title={t('bonds.form.step_nbp_title')}");
     expectContains(source, '<MarketAssumptionsForm');
     expectContains(source, 'section="inflation"');
     expectContains(source, 'section="nbp"');

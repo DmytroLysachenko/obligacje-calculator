@@ -10,6 +10,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { useAppI18n } from '@/i18n/client';
 import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
+import { FormSection } from '@/shared/components/forms/FormSection';
 import {
   AssumptionSetupMode,
   MarketAssumptionsForm,
@@ -146,9 +147,11 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
         </div>
 
         <div className="ui-control-stack">
-          <AdvancedAssumptionsDisclosure
+          <FormSection
             title={t('bonds.step_core')}
             description={t('bonds.form.step_core_desc')}
+            headingLevel="h3"
+            contentClassName="pt-2"
           >
             <BondConfigSection
               inputs={inputs}
@@ -158,11 +161,13 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               availableSeries={availableSeries}
               selectedSeriesId={selectedSeriesId}
             />
-          </AdvancedAssumptionsDisclosure>
+          </FormSection>
 
-          <AdvancedAssumptionsDisclosure
+          <FormSection
             title={t('bonds.step_timing')}
             description={t('bonds.form.step_timing_desc')}
+            headingLevel="h3"
+            contentClassName="pt-2"
           >
             <BondTimingSection
               inputs={inputs}
@@ -172,7 +177,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               currentDef={currentDef}
               hasMounted={hasMounted}
             />
-          </AdvancedAssumptionsDisclosure>
+          </FormSection>
 
           <AdvancedAssumptionsDisclosure
             title={t('bonds.form.step_inflation_title')}

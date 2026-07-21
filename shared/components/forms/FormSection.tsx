@@ -13,6 +13,8 @@ interface FormSectionProps {
   defaultOpen?: boolean;
   collapsible?: boolean;
   className?: string;
+  contentClassName?: string;
+  headingLevel?: 'h2' | 'h3';
 }
 
 export function FormSection({
@@ -23,6 +25,8 @@ export function FormSection({
   defaultOpen = true,
   collapsible = false,
   className,
+  contentClassName,
+  headingLevel: Heading = 'h3',
 }: FormSectionProps) {
   const [open, setOpen] = React.useState(defaultOpen);
   const contentId = React.useId();
@@ -47,13 +51,17 @@ export function FormSection({
               />
             </button>
           ) : (
-            <h3 className="ui-card-title">{title}</h3>
+            <Heading className="ui-card-title">{title}</Heading>
           )}
           {description ? <div className="ui-field-description ui-pretty">{description}</div> : null}
         </div>
         {aside ? <div className="shrink-0">{aside}</div> : null}
       </div>
-      <div id={contentId} className="ui-control-stack pt-1" hidden={!visible}>
+      <div
+        id={contentId}
+        className={cn('ui-control-stack pt-1', contentClassName)}
+        hidden={!visible}
+      >
         {children}
       </div>
     </section>
