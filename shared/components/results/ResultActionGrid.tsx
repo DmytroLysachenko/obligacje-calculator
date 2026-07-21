@@ -12,7 +12,7 @@ export type ResultActionKind = 'primary' | 'secondary' | 'csv' | 'pdf';
 export interface ResultAction {
   label: string;
   icon?: React.ReactNode;
-  onClick?: () => void;
+  onClick?: () => void | Promise<void>;
   variant?: 'default' | 'outline';
   disabled?: boolean;
   kind?: ResultActionKind;
@@ -46,12 +46,22 @@ export const ResultActionGrid = React.memo(function ResultActionGrid({
   className,
 }: ResultActionGridProps) {
   const { t } = useAppI18n();
+  const [pendingAction, setPendingAction] = React.useState<string | null>(null);
   if (!actions.length) {
     return null;
   }
 
   const primaryActions = actions.filter((action) => action.priority !== 'secondary');
   const secondaryActions = actions.filter((action) => action.priority === 'secondary');
+  const runAction = async (action: ResultAction) => {
+    if (!action.onClick || pendingAction) return;
+    setPendingAction(action.label);
+    try {
+      await action.onClick();
+    } finally {
+      setPendingAction(null);
+    }
+  };
 
   return (
     <div
@@ -60,6 +70,7 @@ export const ResultActionGrid = React.memo(function ResultActionGrid({
         className,
       )}
       aria-label={t('bonds.results.actions_label')}
+      aria-busy={Boolean(pendingAction)}
     >
       {primaryActions.map((action) => {
         const kind = action.kind ?? (action.variant === 'default' ? 'primary' : 'secondary');
@@ -74,13 +85,15 @@ export const ResultActionGrid = React.memo(function ResultActionGrid({
               'h-10 min-w-0 justify-center gap-2 px-3 text-xs font-semibold ui-focus-ring',
               variant === 'outline' ? actionKindClass[kind] : '',
             )}
-            onClick={action.onClick}
-            disabled={action.disabled}
+            onClick={() => runAction(action)}
+            disabled={action.disabled || Boolean(pendingAction)}
           >
             <span className="shrink-0" aria-hidden={!action.icon}>
               {action.icon ?? <DefaultActionIcon kind={kind} />}
             </span>
-            <span className="ui-truncate-flex">{action.label}</span>
+            <span className="ui-truncate-flex">
+              {pendingAction === action.label ? t('common.loading') : action.label}
+            </span>
           </Button>
         );
       })}
@@ -101,13 +114,15 @@ export const ResultActionGrid = React.memo(function ResultActionGrid({
                     'h-10 min-w-0 justify-center gap-2 px-3 text-xs font-semibold ui-focus-ring',
                     actionKindClass[kind],
                   )}
-                  onClick={action.onClick}
-                  disabled={action.disabled}
+                  onClick={() => runAction(action)}
+                  disabled={action.disabled || Boolean(pendingAction)}
                 >
                   <span className="shrink-0" aria-hidden={!action.icon}>
                     {action.icon ?? <DefaultActionIcon kind={kind} />}
                   </span>
-                  <span className="ui-truncate-flex">{action.label}</span>
+                  <span className="ui-truncate-flex">
+                    {pendingAction === action.label ? t('common.loading') : action.label}
+                  </span>
                 </Button>
               );
             })}

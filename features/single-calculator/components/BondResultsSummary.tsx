@@ -28,9 +28,9 @@ import { CalculationAuditTrace } from './CalculationAuditTrace';
 interface BondResultsSummaryProps {
   results: CalculationResult;
   inputs: BondInputs;
-  onSaveScenario?: () => void;
-  onAddToNotebook?: () => void;
-  onExportPDF?: () => void;
+  onSaveScenario?: () => void | Promise<void>;
+  onAddToNotebook?: () => void | Promise<void>;
+  onExportPDF?: () => void | Promise<void>;
   canManageWorkspace?: boolean;
   dataQualityFlags?: string[];
 }
