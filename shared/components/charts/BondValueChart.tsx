@@ -68,6 +68,7 @@ interface BondValueChartProps {
   showNbpControl?: boolean;
   ariaLabel: string;
   heightClassName?: string;
+  preferenceScope?: string;
 }
 
 export function BondValueChart({
@@ -85,10 +86,11 @@ export function BondValueChart({
   showNbpControl = true,
   ariaLabel,
   heightClassName = 'h-[360px] md:h-[460px] xl:h-[520px]',
+  preferenceScope,
 }: BondValueChartProps) {
   const { t } = useAppI18n();
   const [preferences, setPreferences] = React.useState(() =>
-    loadChartDisplayPreferences(defaultGranularity),
+    loadChartDisplayPreferences(defaultGranularity, preferenceScope),
   );
   const showInflationOverlay = preferences.showInflationOverlay;
   const showNbpOverlay = preferences.showNbpOverlay;
@@ -112,10 +114,10 @@ export function BondValueChart({
         ...current,
         granularity: defaultGranularity,
       };
-      saveChartDisplayPreferences(next);
+      saveChartDisplayPreferences(next, preferenceScope);
       return next;
     });
-  }, [defaultGranularity, granularity, onGranularityChange]);
+  }, [defaultGranularity, granularity, onGranularityChange, preferenceScope]);
 
   const legendItems = React.useMemo(
     () => [
@@ -140,7 +142,7 @@ export function BondValueChart({
         ...current,
         granularity: nextStep,
       };
-      saveChartDisplayPreferences(next);
+      saveChartDisplayPreferences(next, preferenceScope);
       return next;
     });
     onGranularityChange?.(nextStep);
@@ -155,7 +157,7 @@ export function BondValueChart({
         ...current,
         [key]: value,
       };
-      saveChartDisplayPreferences(next);
+      saveChartDisplayPreferences(next, preferenceScope);
       return next;
     });
   };
