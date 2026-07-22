@@ -60,6 +60,16 @@ describe('comparison layout contract', () => {
     expect(results).not.toContain('grid gap-3 xl:grid-cols-[minmax(0,1fr)_280px]');
   });
 
+  it('keeps shared assumptions secondary while preserving connected amount input metadata', () => {
+    const sharedBase = read('features/comparison-engine/components/ComparisonSharedBaseCard.tsx');
+
+    expect(sharedBase).toContain('<SecondaryInsightAccordion');
+    expect(sharedBase).toContain("title={t('comparison.shared_assumptions_title')}");
+    expect(sharedBase).toContain('id="comparison-initial-investment"');
+    expect(sharedBase).toContain('htmlFor="comparison-initial-investment"');
+    expect(sharedBase).toContain('inputMode="decimal"');
+  });
+
   it('invalidates old persisted comparison envelopes after rollover and chart fixes', () => {
     const hook = read(files.hook);
     const persistence = read(files.persistence);

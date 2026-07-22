@@ -27,14 +27,11 @@ describe('scenario override controls contract', () => {
       source,
       "import { FormSelect, FormSelectOption } from '@/shared/components/forms/FormSelect';",
     );
-    expectContains(
-      source,
-      "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';",
-    );
     expectContains(source, '<ScenarioSetupCard');
-    expectContains(source, 'triggerClassName="font-semibold"');
-    expectContains(source, '<FormInlineNotice');
-    expectContains(source, '<Switch checked={customHorizonEnabled}');
+    expectContains(source, 'triggerClassName="h-12 font-semibold"');
+    expectContains(source, "description={t('comparison.scenario_card_desc')}");
+    expectContains(source, "t('comparison.base_follows_shared_title')");
+    expectContains(source, 'checked={customHorizonEnabled}');
     expect(source).not.toContain('isRebought?: boolean');
     expect(source).not.toContain('<Switch checked={!!isRebought}');
 
@@ -45,6 +42,8 @@ describe('scenario override controls contract', () => {
       'triggerClassName="bg-card font-semibold"',
       'rounded-lg border border-border bg-muted/20 px-3 py-3',
       'flex items-center justify-between gap-4 rounded-lg border border-border bg-muted/20',
+      '<RateContextNote',
+      '<FormInlineNotice',
     ]);
   });
 });
