@@ -13,7 +13,8 @@ import {
 } from '@/components/ui/table';
 import { ComparisonTableTimelineRowsProps } from '@/features/comparison-engine/types/comparison-table';
 import { cn } from '@/lib/utils';
-import { ResponsiveTableSheet } from '@/shared/components/results/ResponsiveTableSheet';
+
+import { comparisonLayout } from '../comparison-layout';
 
 import {
   ComparisonScenarioCell,
@@ -39,17 +40,16 @@ export function ComparisonTableTimelineRows({
 
   return (
     <>
-      <ResponsiveTableSheet
-        title={labels.mobileTitle}
-        description={labels.mobileDescription}
-        triggerLabel={labels.mobileTrigger}
-        triggerCount={labels.mobileCount}
+      <div
+        className={comparisonLayout.tabletSchedule}
+        role="region"
+        aria-label={labels.desktopNote}
       >
-        <div className="ui-divider-group">
+        <div className="grid gap-px border-y border-border bg-border md:grid-cols-2">
           {rows.map((row) => (
             <article
               key={`mobile-compare-${row.key}`}
-              className="py-5 first:pt-0"
+              className="bg-background p-4 sm:p-5"
               aria-label={row.label}
             >
               <div className="flex items-start justify-between gap-3">
@@ -83,16 +83,16 @@ export function ComparisonTableTimelineRows({
             </article>
           ))}
         </div>
-      </ResponsiveTableSheet>
+      </div>
 
-      <div className="ui-table-frame hidden lg:block">
+      <div className={`ui-table-frame ${comparisonLayout.desktopSchedule}`}>
         <div className="ui-section-header border-b border-border px-4 py-3 text-sm text-muted-foreground">
           <p>{labels.desktopNote}</p>
           <p className="text-sm font-semibold text-muted-foreground">{labels.mobileCount}</p>
         </div>
 
         <div>
-          <TableScrollHint>{labels.mobileDescription}</TableScrollHint>
+          <TableScrollHint>{labels.desktopNote}</TableScrollHint>
           <Table className="w-full table-fixed tabular-nums" aria-label={labels.desktopNote}>
             <TableCaption>{labels.desktopNote}</TableCaption>
             <TableHeader className="bg-card">

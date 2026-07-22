@@ -98,15 +98,17 @@ describe('comparison layout contract', () => {
     expect(container).toContain('inputsB={resultInputsB}');
   });
 
-  it('shares comparison chart granularity with the comparison table', () => {
+  it('shares comparison chart cadence with the comparison table without duplicating controls', () => {
     const container = read(files.container);
     const table = read(files.table);
 
     expect(container).toContain('chartStep={chartStep}');
     expect(container).toContain('onChartStepChange={setChartStep}');
     expect(table).toContain('granularity: chartStep ===');
-    expect(table).toContain('aria-pressed={chartStep === step}');
-    expect(table).toContain('onClick={() => onChartStepChange(step)}');
+    expect(table).toContain("t('comparison.table_grouped_by', {");
+    expect(table).toContain('role="status" aria-live="polite"');
+    expect(table).not.toContain('aria-pressed={chartStep === step}');
+    expect(table).not.toContain('onClick={() => onChartStepChange(step)}');
     expect(table).not.toContain('useState<ComparisonTableGranularity>');
     expect(table).not.toContain('setGranularity');
   });
@@ -148,7 +150,9 @@ describe('comparison layout contract', () => {
     expect(table).toContain('<ComparisonTablePaginationControls');
     expect(tablePagination).toContain('disabled={page <= 1}');
     expect(tablePagination).toContain('disabled={page >= totalPages}');
-    expect(table).toContain('COMPARISON_TABLE_GRANULARITY_OPTIONS.map');
+    expect(table).toContain("t('comparison.table_grouped_by', {");
+    expect(table).toContain('role="status" aria-live="polite"');
+    expect(table).not.toContain('COMPARISON_TABLE_GRANULARITY_OPTIONS.map');
     const tableConstants = read('features/comparison-engine/constants/comparison-table.ts');
     expect(tableConstants).toContain("'monthly'");
     expect(tableConstants).toContain("'quarterly'");
@@ -156,5 +160,19 @@ describe('comparison layout contract', () => {
     expect(table).not.toContain('resultsA.timeline[i]');
     expect(table).not.toContain('resultsB.timeline[i]');
     expect(table).not.toContain('Array.from({ length: maxLen })');
+  });
+
+  it('keeps schedule checkpoints visible below the wide desktop breakpoint', () => {
+    const rows = read(
+      'features/comparison-engine/components/comparison-table/ComparisonTableTimelineRows.tsx',
+    );
+    const pagination = read(files.tablePagination);
+
+    expect(rows).toContain('className={comparisonLayout.tabletSchedule}');
+    expect(rows).toContain('grid gap-px border-y border-border bg-border md:grid-cols-2');
+    expect(rows).toContain('comparisonLayout.desktopSchedule');
+    expect(rows).not.toContain('<ResponsiveTableSheet');
+    expect(pagination).toContain('h-11 min-w-11');
+    expect(pagination).toContain('h-11 px-3');
   });
 });

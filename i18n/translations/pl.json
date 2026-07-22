@@ -1780,6 +1780,7 @@
     "table_mobile_desc": "Na mniejszych ekranach porownuj scenariusze jako liste punktow zamiast szerokiej tabeli.",
     "table_mobile_trigger": "Otworz tabele porownania",
     "table_mobile_count": "{count} wierszy osi czasu",
+    "table_grouped_by": "Harmonogram pogrupowany wedlug: {cadence}",
     "growth_chart_label": "Wykres wzrostu porownania",
     "drawdown_chart_label": "Wykres obsuniec porownania",
     "chart_accessible_summary_empty": "Wykres porownania nie ma jeszcze widocznych danych aktywow.",

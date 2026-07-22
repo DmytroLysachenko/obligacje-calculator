@@ -35,9 +35,6 @@ export interface ComparisonTableTimelineRowsProps {
   tieLabel: string;
   formatCurrency: (val: number) => string;
   labels: {
-    mobileTitle: string;
-    mobileDescription: string;
-    mobileTrigger: string;
     mobileCount: string;
     desktopNote: string;
     year: string;

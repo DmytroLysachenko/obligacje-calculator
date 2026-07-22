@@ -9,7 +9,6 @@ import {
 } from '@/features/comparison-engine/components/comparison-table/ComparisonTableParts';
 import { ComparisonTableSummaryGrid } from '@/features/comparison-engine/components/comparison-table/ComparisonTableSummaryGrid';
 import { ComparisonTableTimelineRows } from '@/features/comparison-engine/components/comparison-table/ComparisonTableTimelineRows';
-import { COMPARISON_TABLE_GRANULARITY_OPTIONS } from '@/features/comparison-engine/constants/comparison-table';
 import {
   buildComparisonAlignedTableRows,
   buildComparisonSummaryRows,
@@ -19,7 +18,6 @@ import {
 } from '@/features/comparison-engine/lib/comparison-table-model';
 import { ComparisonTableProps } from '@/features/comparison-engine/types/comparison-table';
 import { useAppI18n } from '@/i18n/client';
-import { cn } from '@/lib/utils';
 import { TableRowLimit } from '@/shared/components/results/TableDensityControls';
 
 export const ComparisonTable: React.FC<ComparisonTableProps> = ({
@@ -123,25 +121,12 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
         />
 
         <div className="ui-section-header border-y border-border py-4">
-          <div className="flex flex-wrap items-center gap-2">
-            {COMPARISON_TABLE_GRANULARITY_OPTIONS.map((step) => (
-              <button
-                key={step}
-                type="button"
-                aria-pressed={chartStep === step}
-                className={cn(
-                  'ui-focus-ring rounded-md border px-3 py-2 text-xs font-semibold transition-colors',
-                  chartStep === step
-                    ? 'border-primary bg-primary text-primary-foreground'
-                    : 'border-border bg-background text-muted-foreground hover:text-foreground',
-                )}
-                onClick={() => onChartStepChange(step)}
-              >
-                {t(`bonds.chart.periods.${step}`)}
-              </button>
-            ))}
-          </div>
           <p className="ui-meta font-semibold">
+            {t('comparison.table_grouped_by', {
+              cadence: t(`bonds.chart.periods.${chartStep}`),
+            })}
+          </p>
+          <p className="ui-meta font-semibold" role="status" aria-live="polite">
             {t('common.rows_shown')}: {visibleRangeLabel}
           </p>
         </div>
@@ -156,9 +141,6 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
             tieLabel={tieLabel}
             formatCurrency={formatCurrency}
             labels={{
-              mobileTitle: t('comparison.table_mobile_title'),
-              mobileDescription: t('comparison.table_mobile_desc'),
-              mobileTrigger: t('comparison.table_mobile_trigger'),
               mobileCount: t('comparison.table_mobile_count', { count: tableRows.length }),
               desktopNote: t('comparison.table_desktop_note'),
               year: t('common.year'),

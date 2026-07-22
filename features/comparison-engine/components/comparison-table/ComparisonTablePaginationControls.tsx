@@ -53,7 +53,7 @@ export function ComparisonTablePaginationControls({
               type="button"
               variant={rowLimit === option ? 'default' : 'outline'}
               size="sm"
-              className="h-8 min-w-10 px-3 text-xs font-semibold"
+              className="h-11 min-w-11 px-3 text-xs font-semibold"
               onClick={() => onRowLimitChange(option)}
             >
               {option === 'all' ? labels.all : option}
@@ -67,7 +67,7 @@ export function ComparisonTablePaginationControls({
             type="button"
             variant="outline"
             size="sm"
-            className="h-8 px-3 text-xs font-semibold"
+            className="h-11 px-3 text-xs font-semibold"
             disabled={page <= 1}
             onClick={() => onPageChange(Math.max(1, page - 1))}
           >
@@ -80,7 +80,7 @@ export function ComparisonTablePaginationControls({
             type="button"
             variant="outline"
             size="sm"
-            className="h-8 px-3 text-xs font-semibold"
+            className="h-11 px-3 text-xs font-semibold"
             disabled={page >= totalPages}
             onClick={() => onPageChange(Math.min(totalPages, page + 1))}
           >

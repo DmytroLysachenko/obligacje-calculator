@@ -1780,6 +1780,7 @@
     "table_mobile_desc": "On smaller screens, compare the scenarios as a list of checkpoints instead of a wide table.",
     "table_mobile_trigger": "Open comparison table",
     "table_mobile_count": "{count} timeline rows",
+    "table_grouped_by": "Schedule grouped by: {cadence}",
     "growth_chart_label": "Comparison growth chart",
     "drawdown_chart_label": "Comparison drawdown chart",
     "chart_accessible_summary_empty": "The comparison chart has no visible asset data yet.",
