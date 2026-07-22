@@ -1,10 +1,20 @@
-import { expect, test } from '@playwright/test';
+import { expect, Page, test } from '@playwright/test';
 
 import {
   expectNoBrowserDiagnostics,
   installBrowserDiagnostics,
   stubOpportunisticSync,
 } from './browser-diagnostics';
+
+async function openOfferComparison(page: Page) {
+  const disclosure = page
+    .locator('details')
+    .filter({ has: page.locator('summary') })
+    .first();
+  await disclosure.locator('summary').click();
+  await expect(disclosure).toHaveAttribute('open', '');
+  return disclosure;
+}
 
 test('education compares two selected offers in table order without browser diagnostics', async ({
   page,
@@ -14,7 +24,8 @@ test('education compares two selected offers in table order without browser diag
   await stubOpportunisticSync(page);
   await page.goto('/education', { waitUntil: 'networkidle' });
 
-  const checkboxes = page.getByRole('checkbox');
+  const comparison = await openOfferComparison(page);
+  const checkboxes = comparison.getByRole('checkbox');
   await checkboxes.nth(1).check();
   await checkboxes.nth(0).check();
 
@@ -34,7 +45,8 @@ test('education comparison table remains keyboard-focusable and horizontally scr
   await stubOpportunisticSync(page);
   await page.goto('/education', { waitUntil: 'networkidle' });
 
-  const scrollRegion = page.locator('.ui-table-scroll-region').first();
+  const comparison = await openOfferComparison(page);
+  const scrollRegion = comparison.locator('.ui-table-scroll-region');
   await scrollRegion.focus();
   await expect(scrollRegion).toBeFocused();
   expect(await scrollRegion.evaluate((element) => element.scrollWidth > element.clientWidth)).toBe(
