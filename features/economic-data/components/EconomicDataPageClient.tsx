@@ -71,11 +71,7 @@ export function EconomicDataPageClient() {
         title={t('economic.inflation_title')}
         description={t('economic.inflation_desc')}
       >
-        <InflationChart
-          period={view.range}
-          scaleMode={view.scale}
-          onScaleChange={(scale) => updateView({ scale })}
-        />
+        <InflationChart period={view.range} scaleMode={view.scale} />
       </ChartSection>
     ) : (
       <ChartSection title={t('economic.nbp_rate_title')} description={t('economic.nbp_rate_desc')}>
@@ -120,6 +116,7 @@ export function EconomicDataPageClient() {
               hint={t('economic.range_hint')}
             />
           }
+          headerClassName="sm:!flex-col 2xl:!flex-row"
           contentClassName="space-y-5"
         >
           {selectedChart}

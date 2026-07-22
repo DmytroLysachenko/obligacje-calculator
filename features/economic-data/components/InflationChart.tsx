@@ -11,7 +11,6 @@ import {
   YAxis,
 } from 'recharts';
 
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppI18n } from '@/i18n/client';
 import { ChartContainer } from '@/shared/components/charts/ChartContainer';
@@ -35,11 +34,9 @@ import { EconomicChartTooltip } from './EconomicChartTooltip';
 export const InflationChart = ({
   period = 'ALL',
   scaleMode = 'readable',
-  onScaleChange,
 }: {
   period?: PeriodValue;
   scaleMode?: 'readable' | 'full';
-  onScaleChange?: (mode: 'readable' | 'full') => void;
 }) => {
   const { t, locale: language } = useAppI18n();
   const {
@@ -55,9 +52,7 @@ export const InflationChart = ({
   const readableDomain = computeReadableRateDomain(chartData.map((point) => point.rate));
   const clippedMax = readableDomain[1];
   const yDomain: [number, number] | undefined =
-    scaleMode === 'full'
-      ? undefined
-      : [readableDomain[0], Math.min(maxRate, clippedMax)];
+    scaleMode === 'full' ? undefined : [readableDomain[0], Math.min(maxRate, clippedMax)];
   if (isLoading) {
     return <Skeleton className="h-[470px] w-full rounded-lg" />;
   }
@@ -72,28 +67,6 @@ export const InflationChart = ({
     <ReferenceChartFrame
       sourceLabel={t('economic.compact_source_header')}
       metaItems={getReferenceMetaItems(response, language)}
-      actions={
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            size="sm"
-            variant={scaleMode === 'readable' ? 'default' : 'outline'}
-            onClick={() => onScaleChange?.('readable')}
-            className="rounded-md"
-          >
-            {t('economic.readable_scale')}
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            variant={scaleMode === 'full' ? 'default' : 'outline'}
-            onClick={() => onScaleChange?.('full')}
-            className="rounded-md"
-          >
-            {t('economic.full_scale')}
-          </Button>
-        </div>
-      }
       notice={
         scaleMode === 'readable' && maxRate > clippedMax
           ? t('economic.inflation_scale_notice', { max: maxRate.toFixed(1) })

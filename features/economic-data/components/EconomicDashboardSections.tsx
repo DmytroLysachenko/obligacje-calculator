@@ -68,6 +68,8 @@ export function RangeActions({
   rangeLabel,
   hint,
 }: RangeActionsProps) {
+  const { t } = useAppI18n();
+
   return (
     <div className="space-y-3 border-t border-border pt-4">
       <div className="flex flex-wrap items-center gap-2">
@@ -77,7 +79,7 @@ export function RangeActions({
             aria-pressed={series === 'cpi'}
             onClick={() => setSeries('cpi')}
             className={cn(
-              'rounded px-3 py-1.5 text-xs font-semibold ui-focus-ring',
+              'min-h-11 rounded px-3 py-1.5 text-xs font-semibold ui-focus-ring',
               series === 'cpi'
                 ? 'bg-background text-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground',
@@ -90,7 +92,7 @@ export function RangeActions({
             aria-pressed={series === 'nbp'}
             onClick={() => setSeries('nbp')}
             className={cn(
-              'rounded px-3 py-1.5 text-xs font-semibold ui-focus-ring',
+              'min-h-11 rounded px-3 py-1.5 text-xs font-semibold ui-focus-ring',
               series === 'nbp'
                 ? 'bg-background text-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground',
@@ -110,7 +112,7 @@ export function RangeActions({
             aria-pressed={period === item.value}
             onClick={() => setPeriod(item.value)}
             className={cn(
-              'rounded px-3 py-1.5 text-sm transition-colors ui-focus-ring',
+              'min-h-11 rounded px-3 py-1.5 text-sm transition-colors ui-focus-ring',
               period === item.value
                 ? 'bg-foreground font-semibold text-background'
                 : 'text-muted-foreground hover:bg-muted hover:text-foreground',
@@ -128,13 +130,13 @@ export function RangeActions({
                 aria-pressed={scale === mode}
                 onClick={() => setScale(mode)}
                 className={cn(
-                  'rounded px-2.5 py-1 text-xs font-semibold ui-focus-ring',
+                  'min-h-11 rounded px-2.5 py-1 text-xs font-semibold ui-focus-ring',
                   scale === mode
                     ? 'bg-foreground text-background'
                     : 'text-muted-foreground hover:text-foreground',
                 )}
               >
-                {mode === 'readable' ? 'Readable scale' : 'Full scale'}
+                {mode === 'readable' ? t('economic.readable_scale') : t('economic.full_scale')}
               </button>
             ))}
           </div>
@@ -149,13 +151,13 @@ export function UsageGuidePanel({ usageGuide, labels }: UsageGuidePanelProps) {
   const { t } = useAppI18n();
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="space-y-6">
       <section className="space-y-5 border-t border-border py-5 md:py-6">
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-primary" />
           <h3 className="ui-section-title">{labels.howToUse}</h3>
         </div>
-        <div className="grid gap-x-6 gap-y-4 border-y border-border py-4 md:grid-cols-2">
+        <div className="grid gap-x-8 gap-y-4 border-y border-border py-4 lg:grid-cols-2">
           {usageGuide.map((item) => (
             <div key={item} className="flex items-start gap-3">
               <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
