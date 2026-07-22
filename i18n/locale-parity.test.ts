@@ -91,6 +91,11 @@ describe('locale parity for touched bond and economic helper namespaces', () => 
     expect(englishKeys.filter((key) => !polishKeys.has(key))).toEqual([]);
   });
 
+  it('resolves the chart data table date heading in both locales', () => {
+    expect(getNodeByPath(enMessages, 'common.date')).toBeTypeOf('string');
+    expect(getNodeByPath(plMessages, 'common.date')).toBeTypeOf('string');
+  });
+
   it('keeps economic.reference_copy aligned between English and Polish', () => {
     expect(getNormalizedNamespaceKeys(enMessages, 'economic.reference_copy')).toEqual(
       getNormalizedNamespaceKeys(plMessages, 'economic.reference_copy'),

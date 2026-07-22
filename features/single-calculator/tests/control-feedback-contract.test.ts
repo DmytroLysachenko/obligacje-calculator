@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises';
+
 import { describe, expect, it } from 'vitest';
 
 const root = process.cwd();
@@ -22,7 +23,9 @@ describe('calculator control feedback contract', () => {
   });
 
   it('announces a future purchase date as an actual field error', async () => {
-    const timing = await read('features/single-calculator/components/sections/BondTimingSection.tsx');
+    const timing = await read(
+      'features/single-calculator/components/sections/BondTimingSection.tsx',
+    );
     expect(timing).toContain('role="alert"');
     expect(timing).toContain('text-xs font-medium text-destructive');
     expect(timing).not.toContain('text-[10px] font-medium text-destructive');
@@ -44,7 +47,9 @@ describe('calculator control feedback contract', () => {
 
   it('uses labels instead of color alone for actionable feedback', async () => {
     const toast = await read('shared/components/feedback/AppToast.tsx');
-    const timing = await read('features/single-calculator/components/sections/BondTimingSection.tsx');
+    const timing = await read(
+      'features/single-calculator/components/sections/BondTimingSection.tsx',
+    );
     expect(toast).toContain('role="status"');
     expect(toast).toContain('aria-live="polite"');
     expect(timing).toContain('<AlertCircle');
@@ -53,7 +58,9 @@ describe('calculator control feedback contract', () => {
 
   it('retains a visible icon beside each announced message', async () => {
     const toast = await read('shared/components/feedback/AppToast.tsx');
-    const timing = await read('features/single-calculator/components/sections/BondTimingSection.tsx');
+    const timing = await read(
+      'features/single-calculator/components/sections/BondTimingSection.tsx',
+    );
 
     expect(toast).toContain('const Icon = isSuccess ? CheckCircle2 : AlertCircle;');
     expect(toast).toContain('<Icon');
@@ -70,6 +77,18 @@ describe('calculator control feedback contract', () => {
     expect(panel).toContain('{ctaLabel && onClick ? (');
     expect(panel).toContain('{footerText ? (');
     expect(panel).toContain('<section className="space-y-6 border-t border-border py-6">');
+  });
+
+  it('reports save and PDF outcomes through the existing announced toast', async () => {
+    const container = await read(
+      'features/single-calculator/components/BondCalculatorContainer.tsx',
+    );
+
+    expect(container).toContain("setStatusMessage(t('bonds.results.scenario_save_success'))");
+    expect(container).toContain("setStatusMessage(t('bonds.results.scenario_save_error'))");
+    expect(container).toContain("setStatusMessage(t('bonds.results.pdf_export_success'))");
+    expect(container).toContain("setStatusMessage(t('bonds.results.pdf_export_error'))");
+    expect(container).toContain('<AppToast');
   });
 
   it('does not introduce a locale-specific string into the calculator panel', async () => {

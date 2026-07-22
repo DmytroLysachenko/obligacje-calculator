@@ -57,6 +57,7 @@
     "usage": "Uzycie",
     "unavailable": "Niedostepne",
     "search": "Szukaj",
+    "date": "Data",
     "all_events": "Wszystkie zdarzenia",
     "all": "Wszystkie",
     "meaning": "Znaczenie",
@@ -76,6 +77,7 @@
     "portfolio_selector_label": "Biezacy portfel",
     "portfolio_selector_empty": "Brak wybranego portfela",
     "month_compact": "mies",
+    "duration_months": "mies.",
     "reset_filters": "Wyczysc filtry",
     "skip_to_content": "Przejdz do glownej tresci",
     "primary_navigation": "Nawigacja glowna",
@@ -754,6 +756,10 @@
     },
     "results": {
       "summary_eyebrow": "Podsumowanie scenariusza",
+      "scenario_save_success": "Scenariusz zapisany.",
+      "scenario_save_error": "Nie mozna zapisac scenariusza. Sprawdz pamiec przegladarki i sprobuj ponownie.",
+      "pdf_export_success": "Utworzono eksport PDF.",
+      "pdf_export_error": "Nie mozna utworzyc eksportu PDF. Sprobuj ponownie.",
       "summary_description": "To jest koncowa wyplata netto dla obecnie zatwierdzonego scenariusza. Zacznij od czterech metryk ponizej, dopiero potem wchodz glebiej tylko wtedy, gdy potrzebujesz szczegolow.",
       "narrative_maturity": "Ten przebieg utrzymuje obligacje do modelowanej sciezki zapadalnosci, wiec wynik odzwierciedla pelny plan.",
       "narrative_early_exit": "Ten przebieg zaklada wczesniejszy wykup przed pelna zapadalnoscia, wiec oplaty lub utracona kapitalizacja moga obnizyc wynik.",
@@ -2144,8 +2150,13 @@
       "structured_summary_note": "Raport PDF jest generowany z uporzadkowanego zestawu danych, a nie ze zrzutu ekranu strony.",
       "title": "Raport symulacji obligacji",
       "generated_label": "Wygenerowano",
+      "summary_heading": "Podsumowanie scenariusza",
+      "informational_disclaimer": "Raport ma wylacznie charakter informacyjny. Nie jest porada inwestycyjna, oferta ani rekomendacja. Przed podjeciem decyzji sprawdz aktualne warunki obligacji u oficjalnego emitenta.",
+      "footer_disclaimer": "Raport informacyjny — nie stanowi porady inwestycyjnej.",
       "run_notes": "Uwagi do przebiegu",
       "data_context": "Kontekst danych",
+      "no_notes": "Nie zgloszono dodatkowych uwag do obliczenia.",
+      "data_context_note": "Kwoty i stopy dotycza zakonczonego scenariusza kalkulatora. Moga roznic sie od aktualnej oferty i nie prognozuja przyszlych wynikow.",
       "normalized_layer_note": "Eksport PDF korzysta z tej samej uporzadkowanej warstwy wynikow, co podsumowanie scenariusza. Nie opiera sie na przechwytywaniu kolorow ani wykresu z DOM."
     }
   }

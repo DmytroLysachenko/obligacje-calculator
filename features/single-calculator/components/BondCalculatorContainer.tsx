@@ -163,15 +163,22 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     }
   };
 
-  const handleSaveScenario = () => {
-    const scenarioMeta = buildSavedSingleScenarioMeta(inputs, results);
-
-    saveScenarioRecord(
-      createSavedScenario(inputs, {
-        name: scenarioMeta.name,
-        description: scenarioMeta.description,
-      }),
-    );
+  const handleSaveScenario = async () => {
+    try {
+      const scenarioMeta = buildSavedSingleScenarioMeta(inputs, results);
+      saveScenarioRecord(
+        createSavedScenario(inputs, {
+          name: scenarioMeta.name,
+          description: scenarioMeta.description,
+        }),
+      );
+      setStatusTone('success');
+      setStatusMessage(t('bonds.results.scenario_save_success'));
+    } catch (error) {
+      logClientError('Scenario save failed:', error);
+      setStatusTone('error');
+      setStatusMessage(t('bonds.results.scenario_save_error'));
+    }
   };
 
   const handleExportPDF = async () => {
@@ -179,7 +186,20 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
       return;
     }
 
-    await generateSingleBondReportPdf(results, inputs, language, buildSingleReportFilename(inputs));
+    try {
+      await generateSingleBondReportPdf(
+        results,
+        inputs,
+        language,
+        buildSingleReportFilename(inputs, language),
+      );
+      setStatusTone('success');
+      setStatusMessage(t('bonds.results.pdf_export_success'));
+    } catch (error) {
+      logClientError('PDF export failed:', error);
+      setStatusTone('error');
+      setStatusMessage(t('bonds.results.pdf_export_error'));
+    }
   };
 
   const handleShareScenario = async () => {

@@ -57,6 +57,7 @@
     "usage": "Use",
     "unavailable": "Unavailable",
     "search": "Search",
+    "date": "Date",
     "all_events": "All Events",
     "all": "All",
     "meaning": "Meaning",
@@ -76,6 +77,7 @@
     "portfolio_selector_label": "Current portfolio",
     "portfolio_selector_empty": "No portfolio selected",
     "month_compact": "mo",
+    "duration_months": "months",
     "reset_filters": "Reset filters",
     "skip_to_content": "Skip to main content",
     "primary_navigation": "Primary navigation",
@@ -754,6 +756,10 @@
     },
     "results": {
       "summary_eyebrow": "Scenario summary",
+      "scenario_save_success": "Scenario saved.",
+      "scenario_save_error": "Could not save the scenario. Check browser storage and try again.",
+      "pdf_export_success": "PDF export created.",
+      "pdf_export_error": "Could not create the PDF export. Try again.",
       "summary_description": "This is the final net payout for the currently committed scenario. Start with the four metrics below, then go deeper only if you need detail.",
       "narrative_maturity": "This run holds the bond to the modeled maturity path, so the final payout reflects the full planned cycle.",
       "narrative_early_exit": "This run assumes early redemption before full maturity, so fees or lost compounding may reduce the payout.",
@@ -2140,8 +2146,13 @@
       "structured_summary_note": "This PDF is generated from a structured data summary rather than a page screenshot.",
       "title": "Bond simulation report",
       "generated_label": "Generated",
+      "summary_heading": "Scenario summary",
+      "informational_disclaimer": "Informational report only. It is not investment advice, an offer, or a recommendation. Verify current bond terms with the official issuer before making a decision.",
+      "footer_disclaimer": "Informational report only — not investment advice.",
       "run_notes": "Run notes",
       "data_context": "Data context",
+      "no_notes": "No additional calculation notes were reported.",
+      "data_context_note": "Amounts and rates reflect this completed calculator scenario. They may differ from the current offer and do not predict future returns.",
       "normalized_layer_note": "This PDF uses the same normalized result layer as the scenario summary. It does not rely on DOM screenshots, color parsing, or chart capture."
     }
   }

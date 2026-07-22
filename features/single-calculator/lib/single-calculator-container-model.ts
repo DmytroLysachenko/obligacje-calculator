@@ -22,6 +22,10 @@ export function buildSavedSingleScenarioMeta(
   };
 }
 
-export function buildSingleReportFilename(inputs: BondInputs, now = new Date()) {
-  return `bond_report_${inputs.bondType}_${now.toISOString().split('T')[0]}.pdf`;
+export function buildSingleReportFilename(
+  inputs: BondInputs,
+  language: 'pl' | 'en',
+  now = new Date(),
+) {
+  return `bond_report_${language}_${inputs.bondType}_${now.toISOString().split('T')[0]}.pdf`;
 }
