@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 interface RecalculateButtonProps {
+  formId?: string;
   isDirty: boolean;
   loading: boolean;
   hasResults?: boolean;
@@ -13,6 +14,7 @@ interface RecalculateButtonProps {
   onClick: () => void;
 }
 export const RecalculateButton = ({
+  formId,
   isDirty,
   loading,
   hasResults = true,
@@ -33,11 +35,11 @@ export const RecalculateButton = ({
       : t('common.recalculation_hint');
   return (
     <div
-      className="fixed inset-x-3 bottom-3 z-50 sm:inset-x-auto sm:bottom-4 sm:right-4 sm:w-[min(22rem,calc(100vw-1.5rem))]"
+      className="fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-50 sm:inset-x-auto sm:bottom-4 sm:right-4 sm:w-[min(22rem,calc(100vw-1.5rem))]"
       role="status"
       aria-live="polite"
     >
-      <div className="border border-border bg-background px-4 py-4 text-foreground shadow-none">
+      <div className="border border-border bg-background/95 px-4 py-4 text-foreground shadow-sm backdrop-blur-sm">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-1">
             <p className="text-xs font-semibold text-muted-foreground">
@@ -52,6 +54,8 @@ export const RecalculateButton = ({
 
         <div className="mt-3 sm:mt-4">
           <Button
+            type={formId ? 'submit' : 'button'}
+            form={formId}
             size="default"
             className={cn(
               'h-11 w-full rounded-md px-5 text-sm font-semibold focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
@@ -59,7 +63,7 @@ export const RecalculateButton = ({
                 ? 'bg-foreground text-background hover:bg-foreground/90'
                 : 'bg-muted text-muted-foreground hover:bg-muted',
             )}
-            onClick={onClick}
+            onClick={formId ? undefined : onClick}
             disabled={loading || disabled}
           >
             {loading ? (

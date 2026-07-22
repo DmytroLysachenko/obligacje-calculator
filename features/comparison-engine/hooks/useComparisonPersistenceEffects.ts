@@ -15,6 +15,7 @@ import {
   buildComparisonPersistenceSnapshot,
   reconcileComparisonPersistedMacroDefaults,
 } from '../lib/comparison-client-state';
+import type { ComparisonBondPair } from '../lib/comparison-deep-link';
 import {
   COMPARISON_CALCULATOR_STORAGE_KEY,
   type PersistedComparisonState,
@@ -27,6 +28,7 @@ interface MacroDefaults {
 }
 
 interface ComparisonPersistenceEffectsInput {
+  initialPair?: ComparisonBondPair | null;
   sharedConfig: SharedComparisonConfig;
   scenarioA: ScenarioOverride;
   scenarioB: ScenarioOverride;
@@ -52,6 +54,7 @@ interface ComparisonPersistenceEffectsInput {
 }
 
 export function useComparisonPersistenceEffects({
+  initialPair,
   sharedConfig,
   scenarioA,
   scenarioB,
@@ -91,7 +94,7 @@ export function useComparisonPersistenceEffects({
         COMPARISON_CALCULATOR_STORAGE_KEY,
       );
       hasRestoredState.current = true;
-      const restored = restoreComparisonState(restoredState);
+      const restored = restoreComparisonState(restoredState, initialPair);
       if (restored) {
         restoredFromPersistence.current = restored.restoredFromPersistence;
         setSharedConfig(restored.sharedConfig);
@@ -109,6 +112,7 @@ export function useComparisonPersistenceEffects({
     return () => window.clearTimeout(timer);
   }, [
     hasRestoredState,
+    initialPair,
     restoredFromPersistence,
     setCommittedInputsA,
     setCommittedInputsB,

@@ -3,19 +3,28 @@ import { describe, expect, it } from 'vitest';
 import {
   computeNumericDomain,
   computeRateDomain,
+  computeReadableRateDomain,
   sampleSeriesPoints,
   sliceSeriesByPeriod,
 } from './chart-series';
 
 describe('chart-series helpers', () => {
-  it('slices series by declared range windows', () => {
-    const series = Array.from({ length: 400 }).map((_, index) => index + 1);
+  it('slices series by calendar coverage, not record count', () => {
+    const annual = Array.from({ length: 11 }).map((_, index) => ({
+      date: `${2015 + index}-01`,
+      value: index,
+    }));
 
-    expect(sliceSeriesByPeriod(series, '1Y')).toHaveLength(12);
-    expect(sliceSeriesByPeriod(series, '5Y')).toHaveLength(60);
-    expect(sliceSeriesByPeriod(series, '10Y')).toHaveLength(120);
-    expect(sliceSeriesByPeriod(series, '30Y')).toHaveLength(360);
-    expect(sliceSeriesByPeriod(series, 'ALL')).toHaveLength(400);
+    expect(sliceSeriesByPeriod(annual, '1Y').map((point) => point.date)).toEqual(['2025-01']);
+    expect(sliceSeriesByPeriod(annual, '5Y').map((point) => point.date)).toEqual([
+      '2021-01',
+      '2022-01',
+      '2023-01',
+      '2024-01',
+      '2025-01',
+    ]);
+    expect(sliceSeriesByPeriod(annual, '10Y')).toHaveLength(10);
+    expect(sliceSeriesByPeriod(annual, 'ALL')).toHaveLength(11);
   });
 
   it('samples long series while preserving first and last points', () => {
@@ -33,7 +42,7 @@ describe('chart-series helpers', () => {
 
   it('preserves terminal values when range slicing is followed by sampling', () => {
     const series = Array.from({ length: 480 }).map((_, index) => ({
-      date: `month-${index}`,
+      date: new Date(Date.UTC(1986, index, 1)).toISOString().slice(0, 7),
       nominalValue: 10_000 + index * 100,
       realValue: 9_500 + index * 80,
     }));
@@ -57,7 +66,7 @@ describe('chart-series helpers', () => {
     const series = [
       purchaseDatePoint,
       ...Array.from({ length: 36 }).map((_, index) => ({
-        date: `month-${index + 1}`,
+        date: new Date(Date.UTC(2026, index + 1, 5)).toISOString().slice(0, 10),
         nominalValue: 10_100 + index * 100,
         realValue: 10_050 + index * 90,
       })),
@@ -94,5 +103,9 @@ describe('chart-series helpers', () => {
 
     expect(domain[0]).toBeLessThanOrEqual(-1);
     expect(domain[1]).toBeGreaterThanOrEqual(6);
+  });
+
+  it('keeps readable rate domains stable around isolated spikes', () => {
+    expect(computeReadableRateDomain([1.5, 2.1, 2.4, 2.8, 3.2, 14.4])).toEqual([-1, 6]);
   });
 });

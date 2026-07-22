@@ -19,7 +19,7 @@ import { buildFallbackInputs, resolveBondTypeInputUpdate } from '../lib/single-c
 
 import { useBondCalculatorEffects } from './useBondCalculatorEffects';
 
-export function useBondCalculator(initialInputs?: BondInputs) {
+export function useBondCalculator(initialInputs?: BondInputs, bondFromUrl?: BondType | null) {
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
   const { defaults: macroDefaults } = useMacroAssumptionDefaults();
   const fallbackInputs = useMemo(() => buildFallbackInputs(), []);
@@ -78,6 +78,7 @@ export function useBondCalculator(initialInputs?: BondInputs) {
     isCalculating,
     isPersistenceReady,
     initialInputs,
+    bondFromUrl,
     fallbackInputs,
     definitions,
     macroDefaults,

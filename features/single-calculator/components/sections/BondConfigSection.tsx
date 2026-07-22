@@ -41,7 +41,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(
       t,
     );
     const formatDurationLabel = (type: BondType) =>
-      `${Math.round((definitions[type]?.duration ?? 1) * 12)} ${t('common.month_compact')}`;
+      `${Math.round((definitions[type]?.duration ?? 1) * 12)} ${t('common.duration_months')}`;
     const maxBondUnits = 1000;
     const bondUnits = Math.max(1, Math.round(inputs.initialInvestment / 100));
     const purchaseValueLabel = inputs.initialInvestment.toLocaleString(getIntlLocale(language));
@@ -93,7 +93,11 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(
             </div>
             <div className="relative">
               <Input
+                id="savingsGoal"
+                name="savingsGoal"
                 type="number"
+                inputMode="decimal"
+                autoComplete="off"
                 placeholder={t('bonds.example_goal')}
                 className="pl-4 pr-12"
                 value={inputs.savingsGoal || ''}
@@ -193,11 +197,13 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(
               <div className="relative">
                 <Input
                   id="bondUnits"
+                  name="bondUnits"
                   type="number"
                   min={1}
                   max={maxBondUnits}
                   step={1}
                   inputMode="numeric"
+                  autoComplete="off"
                   className="pl-4 pr-16 text-sm font-medium"
                   value={bondUnits}
                   onChange={(e) => handleBondUnitsChange(Number(e.target.value))}

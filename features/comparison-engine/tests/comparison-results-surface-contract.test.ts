@@ -28,7 +28,7 @@ describe('comparison results surface contracts', () => {
     const source = read(files.panel);
 
     expectContains(source, '<ResultActionGrid');
-    expectContains(source, 'className="border-0 bg-transparent px-0 py-3 lg:w-auto"');
+    expectContains(source, 'className="ui-action-row-end border-0 bg-transparent px-0 py-3 lg:w-auto"');
 
     expectNoFragments(source, [
       'className="border border-border bg-card p-3 lg:w-auto lg:border"',

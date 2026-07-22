@@ -94,7 +94,7 @@ describe('flattened shared surface system contract', () => {
       "cn('border-y border-border', className)",
     );
     expect(sourceByPath.get('shared/components/results/ScenarioFactsBlock.tsx')).toContain(
-      'border-y border-border py-4',
+      'grid gap-x-6 gap-y-4 sm:grid-cols-2',
     );
     expect(sourceByPath.get('shared/components/results/CalculationMetaPanel.tsx')).toContain(
       'border-y border-border py-3',

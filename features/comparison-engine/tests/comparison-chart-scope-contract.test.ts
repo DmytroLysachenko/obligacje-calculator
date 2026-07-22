@@ -78,7 +78,7 @@ describe('comparison chart ownership contract', () => {
 
     expectContains(shared, 'showContextControls = true');
     expectContains(sharedPlot, 'orientation="right"');
-    expectContains(sharedPlot, 'width={44}');
+    expectContains(sharedPlot, 'width={38}');
     expectContains(shared, '<BondValueChartToolbar');
     expectContains(sharedPlot, '<BondValueChartTooltip');
     expectContains(sharedParts, "export { BondValueChartToolbar } from './BondValueChartToolbar';");

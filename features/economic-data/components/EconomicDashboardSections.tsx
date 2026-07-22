@@ -5,6 +5,7 @@ import {
   Database,
   ShieldAlert,
   Sparkles,
+  TrendingDown,
 } from 'lucide-react';
 
 import { Accordion } from '@/components/ui/accordion';
@@ -14,6 +15,10 @@ import {
   type EconomicSeriesPoint,
   type PeriodValue,
 } from '@/features/economic-data/lib/economic-dashboard-model';
+import type {
+  EconomicSeriesKey,
+  InflationScaleMode,
+} from '@/features/economic-data/lib/economic-view';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { ReferenceGuideRail } from '@/shared/components/reference/ReferenceGuideRail';
@@ -24,6 +29,10 @@ import { EconomicSeriesStatusCard } from './EconomicSeriesStatusCard';
 interface RangeActionsProps {
   period: PeriodValue;
   setPeriod: (value: PeriodValue) => void;
+  series: EconomicSeriesKey;
+  setSeries: (value: EconomicSeriesKey) => void;
+  scale: InflationScaleMode;
+  setScale: (value: InflationScaleMode) => void;
   rangeLabel: string;
   hint: string;
 }
@@ -49,11 +58,50 @@ interface ReferenceStatusPanelProps {
   language: 'pl' | 'en';
 }
 
-export function RangeActions({ period, setPeriod, rangeLabel, hint }: RangeActionsProps) {
+export function RangeActions({
+  period,
+  setPeriod,
+  series,
+  setSeries,
+  scale,
+  setScale,
+  rangeLabel,
+  hint,
+}: RangeActionsProps) {
+  const { t } = useAppI18n();
+
   return (
-    <div className="space-y-2 border-y border-border py-3">
-      <div className="flex flex-wrap items-center gap-1">
-        <span className="inline-flex items-center gap-1 px-3 text-sm font-medium text-muted-foreground">
+    <div className="space-y-3 border-t border-border pt-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="inline-flex rounded-md bg-muted/45 p-1" aria-label="Series">
+          <button
+            type="button"
+            aria-pressed={series === 'cpi'}
+            onClick={() => setSeries('cpi')}
+            className={cn(
+              'min-h-11 rounded px-3 py-1.5 text-xs font-semibold ui-focus-ring',
+              series === 'cpi'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground',
+            )}
+          >
+            <TrendingDown className="mr-1 inline size-3.5" aria-hidden="true" /> CPI
+          </button>
+          <button
+            type="button"
+            aria-pressed={series === 'nbp'}
+            onClick={() => setSeries('nbp')}
+            className={cn(
+              'min-h-11 rounded px-3 py-1.5 text-xs font-semibold ui-focus-ring',
+              series === 'nbp'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground',
+            )}
+          >
+            NBP
+          </button>
+        </div>
+        <span className="inline-flex items-center gap-1 px-1 text-sm font-medium text-muted-foreground">
           <CalendarRange className="h-3.5 w-3.5" />
           {rangeLabel}
         </span>
@@ -64,7 +112,7 @@ export function RangeActions({ period, setPeriod, rangeLabel, hint }: RangeActio
             aria-pressed={period === item.value}
             onClick={() => setPeriod(item.value)}
             className={cn(
-              'rounded px-3 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2',
+              'min-h-11 rounded px-3 py-1.5 text-sm transition-colors ui-focus-ring',
               period === item.value
                 ? 'bg-foreground font-semibold text-background'
                 : 'text-muted-foreground hover:bg-muted hover:text-foreground',
@@ -73,8 +121,28 @@ export function RangeActions({ period, setPeriod, rangeLabel, hint }: RangeActio
             {item.label}
           </button>
         ))}
+        {series === 'cpi' ? (
+          <div className="ml-auto inline-flex rounded-md border border-border p-1">
+            {(['readable', 'full'] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                aria-pressed={scale === mode}
+                onClick={() => setScale(mode)}
+                className={cn(
+                  'min-h-11 rounded px-2.5 py-1 text-xs font-semibold ui-focus-ring',
+                  scale === mode
+                    ? 'bg-foreground text-background'
+                    : 'text-muted-foreground hover:text-foreground',
+                )}
+              >
+                {mode === 'readable' ? t('economic.readable_scale') : t('economic.full_scale')}
+              </button>
+            ))}
+          </div>
+        ) : null}
       </div>
-      <p className="px-3 text-xs leading-5 text-muted-foreground">{hint}</p>
+      <p className="text-xs leading-5 text-muted-foreground">{hint}</p>
     </div>
   );
 }
@@ -83,13 +151,13 @@ export function UsageGuidePanel({ usageGuide, labels }: UsageGuidePanelProps) {
   const { t } = useAppI18n();
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+    <div className="space-y-6">
       <section className="space-y-5 border-t border-border py-5 md:py-6">
         <div className="flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-primary" />
           <h3 className="ui-section-title">{labels.howToUse}</h3>
         </div>
-        <div className="grid gap-x-6 gap-y-4 border-y border-border py-4 md:grid-cols-2">
+        <div className="grid gap-x-8 gap-y-4 border-y border-border py-4 lg:grid-cols-2">
           {usageGuide.map((item) => (
             <div key={item} className="flex items-start gap-3">
               <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />

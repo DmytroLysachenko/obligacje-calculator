@@ -8,7 +8,8 @@
       "@grpc/grpc-js": "1.14.4",
       "hono": "4.12.25",
       "path-to-regexp": "8.4.0",
-      "protobufjs": "7.6.1"
+      "protobufjs": "7.6.1",
+      "sharp": "0.35.0"
     }
   },
   "scripts": {
@@ -21,7 +22,7 @@
     "scan:unused": "tsx scripts/run-unused-scan.ts",
     "test": "vitest",
     "test:browser": "playwright test tests/browser/app-smoke.spec.ts",
-    "test:browser:ci": "playwright test tests/browser/app-smoke.spec.ts tests/browser/home-page.spec.ts tests/browser/web-vitals.spec.ts --workers=1",
+    "test:browser:ci": "playwright test tests/browser/app-smoke.spec.ts tests/browser/home-page.spec.ts tests/browser/education.spec.ts tests/browser/web-vitals.spec.ts --workers=1",
     "test:home": "playwright test tests/browser/home-page.spec.ts",
     "test:web-vitals": "playwright test tests/browser/web-vitals.spec.ts",
     "test:ci": "vitest run",
@@ -35,6 +36,7 @@
     "gcp:proxy": "gcloud run services proxy obligacje-calculator --project bond-calculator-pl --region europe-central2 --port 8080",
     "ops:cloud-run-status": "tsx scripts/cloud-run-status.ts",
     "ops:verify-prod": "tsx scripts/verify-production.ts",
+    "deploy:prod": "gh workflow run deploy-cloud-run.yml --ref main",
     "db:seed": "tsx db/seed.ts",
     "seed:series": "tsx lib/sync/seed-series-runner.ts",
     "seed:market-history": "tsx lib/sync/seed-market-history.ts",

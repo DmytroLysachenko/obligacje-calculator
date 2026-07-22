@@ -7,6 +7,7 @@ const projectRoot = process.cwd();
 
 const paths = {
   fieldset: 'shared/components/forms/ScenarioFieldset.tsx',
+  formSection: 'shared/components/forms/FormSection.tsx',
   singleContainer: 'features/single-calculator/components/BondCalculatorContainer.tsx',
   regularContainer:
     'features/regular-investment/components/RegularInvestmentCalculatorContainer.tsx',
@@ -43,10 +44,46 @@ describe('calculator input layout contracts', () => {
     const source = readSource(paths.fieldset);
 
     expectContains(source, 'export function ScenarioFieldset');
-    expectContains(source, "'space-y-5'");
+    expectContains(source, "'ui-control-stack'");
     expectContains(source, "divided && 'border-t border-border pt-6'");
     expectContains(source, '<h3 className="ui-card-title">{title}</h3>');
-    expectContains(source, 'max-w-[var(--layout-reading-max)]');
+    expectContains(source, 'ui-section-intro');
+  });
+
+  it('keeps directly visible scenario sections semantic and optionally collapsible', () => {
+    const source = readSource(paths.formSection);
+
+    expectContains(source, "headingLevel?: 'h2' | 'h3'");
+    expectContains(source, "headingLevel: Heading = 'h3'");
+    expectContains(source, '<Heading className="ui-card-title">{title}</Heading>');
+    expectContains(source, 'aria-expanded={open}');
+    expectContains(source, 'aria-controls={contentId}');
+    expectContains(source, 'hidden={!visible}');
+    expectContains(source, "cn('ui-control-stack pt-1', contentClassName)");
+  });
+
+  it('keeps primary single-calculator inputs visible before optional assumptions', () => {
+    const source = readSource(paths.singleForm);
+    const coreSection = source.indexOf("title={t('bonds.step_core')}");
+    const timingSection = source.indexOf("title={t('bonds.step_timing')}");
+    const inflationDisclosure = source.indexOf("title={t('bonds.form.step_inflation_title')}");
+    const nbpDisclosure = source.indexOf("title={t('bonds.form.step_nbp_title')}");
+
+    expect(coreSection).toBeGreaterThan(-1);
+    expect(timingSection).toBeGreaterThan(coreSection);
+    expect(inflationDisclosure).toBeGreaterThan(timingSection);
+    expect(nbpDisclosure).toBeGreaterThan(inflationDisclosure);
+    expect(source.slice(coreSection - 80, coreSection)).toContain('<FormSection');
+    expect(source.slice(timingSection - 80, timingSection)).toContain('<FormSection');
+    expect(source.slice(inflationDisclosure - 100, inflationDisclosure)).toContain(
+      '<AdvancedAssumptionsDisclosure',
+    );
+    expect(source.slice(nbpDisclosure - 100, nbpDisclosure)).toContain(
+      '<AdvancedAssumptionsDisclosure',
+    );
+    expect(source).toContain('<BondConfigSection');
+    expect(source).toContain('<BondTimingSection');
+    expect(source).toContain('<MarketAssumptionsForm');
   });
 
   it('keeps single and regular calculator pages on the shared two-column rhythm', () => {
@@ -76,14 +113,11 @@ describe('calculator input layout contracts', () => {
   it('groups single calculator inputs into setup, timing, and advanced fieldsets', () => {
     const source = readSource(paths.singleForm);
 
-    expectContains(
-      source,
-      "import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';",
-    );
+    expectContains(source, "import { FormSection } from '@/shared/components/forms/FormSection';");
     expectContains(source, "title={t('bonds.step_core')}");
     expectContains(source, "title={t('bonds.step_timing')}");
-    expectContains(source, 'title="3. Inflation setup"');
-    expectContains(source, 'title="4. NBP rate setup"');
+    expectContains(source, "title={t('bonds.form.step_inflation_title')}");
+    expectContains(source, "title={t('bonds.form.step_nbp_title')}");
     expectContains(source, "description={t('bonds.form.step_core_desc')}");
     expectContains(source, "description={t('bonds.form.step_timing_desc')}");
     expectContains(source, 'section="inflation"');
@@ -92,6 +126,8 @@ describe('calculator input layout contracts', () => {
     expectContains(source, '<BondConfigSection');
     expectContains(source, '<BondTimingSection');
     expectContains(source, '<BondSummaryFooter');
+    expectContains(source, 'headingLevel="h3"');
+    expectContains(source, 'contentClassName="pt-2"');
     expectNotContains(source, 'showCustomTax={showCustomTax}');
     expectNotContains(source, 'setShowCustomTax={setShowCustomTax}');
     expectContains(
@@ -140,7 +176,7 @@ describe('calculator input layout contracts', () => {
     expectContains(sources, '<SegmentedControl');
     expectContains(
       readSource('shared/components/forms/FormInlineNotice.tsx'),
-      'border-l-2 px-4 py-3 text-sm leading-6',
+      "'ui-status-note justify-between border-l-2'",
     );
     expectNoFragments(sources, [
       'rounded-lg bg-muted/35 p-4',

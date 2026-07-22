@@ -45,7 +45,7 @@ export const ResultSummaryHero = React.memo(function ResultSummaryHero({
       </div>
 
       {narrative || deltaText ? (
-        <div className="max-w-4xl space-y-3 border-t border-border bg-background px-5 py-4 md:px-6">
+        <div className="w-full space-y-3 border-t border-border bg-background px-5 py-4 md:px-6">
           {narrative ? <p className="ui-body">{narrative}</p> : null}
           {deltaText ? <p className="ui-meta">{deltaText}</p> : null}
         </div>

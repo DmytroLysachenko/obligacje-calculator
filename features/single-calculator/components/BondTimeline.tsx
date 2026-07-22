@@ -25,6 +25,10 @@ import { SimulationEventType } from '../../bond-core/types/simulation';
 import { BondTimelineRows } from './BondTimelineRows';
 import { TimelineStat } from './BondTimelineValues';
 
+const mobileResultsId = 'bond-timeline-mobile-results';
+const desktopResultsId = 'bond-timeline-desktop-results';
+const timelineResultsIds = `${mobileResultsId} ${desktopResultsId}`;
+
 export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep = 'yearly' }) => {
   const { t, locale: language } = useAppI18n();
   const [hasMounted, setHasMounted] = React.useState(false);
@@ -89,7 +93,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
     [filteredTimeline, rowLimit],
   );
   const activeFilterCount =
-    (searchQuery.trim().length > 0 ? 1 : 0) + (eventTypeFilter !== 'all' ? 1 : 0);
+    (deferredSearchQuery.trim().length > 0 ? 1 : 0) + (eventTypeFilter !== 'all' ? 1 : 0);
   const visibleRangeLabel = getVisibleRowLabel({
     visible: displayedTimeline.length,
     total: filteredTimeline.length,
@@ -97,6 +101,18 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
   });
   const projectionCount = displayRows.filter((row) => !!row.projectionLabel).length;
   const exitMarkers = displayRows.filter((row) => row.isWithdrawal).length;
+  const resultsAnnouncement =
+    filteredTimeline.length === 0
+      ? t('bonds.schedule.no_results_announcement', {
+          filters: activeFilterCount,
+          projections: projectionCount,
+        })
+      : t('bonds.schedule.results_announcement', {
+          visible: displayedTimeline.length,
+          total: filteredTimeline.length,
+          filters: activeFilterCount,
+          projections: projectionCount,
+        });
   const resetFilters = () => {
     setSearchQuery('');
     setEventTypeFilter('all');
@@ -104,6 +120,9 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
   };
   return (
     <section className="ui-result-panel space-y-6" aria-label={t('bonds.timeline')}>
+      <p className="sr-only" aria-live="polite" aria-atomic="true">
+        {resultsAnnouncement}
+      </p>
       <div className="ui-control-stack bg-transparent">
         <div className="ui-metric-grid md:grid-cols-3">
           <TimelineStat label={t('bonds.schedule.rows_after_filters')} value={visibleRangeLabel} />
@@ -127,22 +146,26 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
               aria-hidden="true"
             />
             <Input
+              id="bond-timeline-search"
               placeholder={t('common.search') || 'Search...'}
               className="h-12 bg-background pl-9"
               aria-label={t('common.search') || 'Search timeline'}
+              aria-controls={timelineResultsIds}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
 
-          <div className="ui-action-row w-full md:w-auto">
+          <div className="ui-action-row w-full sm:w-auto">
             <div className="flex w-full items-center gap-2 md:w-auto">
               <Filter className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
               <FormSelect
+                id="bond-timeline-event-filter"
+                ariaControls={timelineResultsIds}
                 value={eventTypeFilter}
                 onValueChange={setEventTypeFilter}
                 placeholder={t('bonds.filter_events') || 'Filter Events'}
-                triggerClassName="w-full bg-background md:w-56"
+                triggerClassName="w-full bg-background sm:w-56"
                 options={[
                   {
                     value: 'all',
@@ -158,7 +181,7 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-10 gap-2"
+                className="h-11 gap-2"
                 onClick={resetFilters}
               >
                 <RotateCcw className="h-4 w-4" aria-hidden="true" />
@@ -167,6 +190,23 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
             ) : null}
           </div>
         </div>
+        {activeFilterCount > 0 ? (
+          <div className="flex flex-wrap gap-2" aria-label={t('bonds.schedule.active_filters')}>
+            {deferredSearchQuery.trim() ? (
+              <span className="rounded-full bg-muted px-3 py-2 text-xs font-semibold text-foreground">
+                {t('common.search')}: {deferredSearchQuery}
+              </span>
+            ) : null}
+            {eventTypeFilter !== 'all' ? (
+              <span className="rounded-full bg-muted px-3 py-2 text-xs font-semibold text-foreground">
+                {getSimulationEventDisplayLabel(
+                  eventTypeFilter as SimulationEventType,
+                  language as AppLanguage,
+                )}
+              </span>
+            ) : null}
+          </div>
+        ) : null}
         <TableDensityControls
           value={rowLimit}
           totalRows={filteredTimeline.length}
@@ -176,11 +216,14 @@ export const BondTimeline: React.FC<BondTimelineProps> = ({ results, chartStep =
             rowsShown: t('common.rows_shown'),
             rowsPerPage: t('common.rows_per_page'),
             all: t('common.all'),
+            jumpToRows: t('bonds.schedule.jump_to_rows'),
           }}
         />
       </div>
 
       <BondTimelineRows
+        mobileResultsId={mobileResultsId}
+        desktopResultsId={desktopResultsId}
         displayedTimeline={displayedTimeline}
         filteredTimelineLength={filteredTimeline.length}
         activeFilterCount={activeFilterCount}

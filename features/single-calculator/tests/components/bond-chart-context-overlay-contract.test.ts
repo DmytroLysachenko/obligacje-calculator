@@ -17,6 +17,10 @@ function expectContains(source: string, fragment: string) {
   expect(source).toContain(fragment);
 }
 
+function expectNotContains(source: string, fragment: string) {
+  expect(source).not.toContain(fragment);
+}
+
 describe('single calculator chart context overlay contract', () => {
   it('keeps macro context rates optional through chart toolbar controls', () => {
     const source = read(chartPath);
@@ -34,14 +38,16 @@ describe('single calculator chart context overlay contract', () => {
     expectContains(source, "t('common.real_value')");
     expectContains(source, 'computeRateDomain');
     expectContains(source, 'const rightDomain');
-    expectContains(shared, 'loadChartDisplayPreferences(defaultGranularity)');
+    expectContains(source, 'showInflationControl');
+    expectNotContains(source, 'showInflationControl={isInflationIndexedBondType');
+    expectContains(shared, 'loadChartDisplayPreferences(defaultGranularity, preferenceScope)');
     expectContains(shared, 'const showInflationOverlay = preferences.showInflationOverlay;');
     expectContains(shared, 'const showNbpOverlay = preferences.showNbpOverlay;');
     expectContains(shared, 'const showContextAxis = showInflationOverlay || showNbpOverlay;');
-    expectContains(sharedPlot, 'margin={{ top: 12, right: 52, left: 40, bottom: 20 }}');
+    expectContains(sharedPlot, 'margin={{ top: 12, right: 44, left: 24, bottom: 20 }}');
     expectContains(sharedPlot, 'yAxisId="right"');
     expectContains(sharedPlot, 'orientation="right"');
-    expectContains(sharedPlot, 'width={44}');
+    expectContains(sharedPlot, 'width={38}');
     expectContains(sharedToolbar, 'aria-pressed={showInflationOverlay}');
     expectContains(sharedToolbar, 'aria-pressed={showNbpOverlay}');
     expectContains(

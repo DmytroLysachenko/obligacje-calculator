@@ -36,7 +36,7 @@ describe('financial insight contracts', () => {
       source,
       'export const FinancialInsightStrip = React.memo(function FinancialInsightStrip',
     );
-    expectContains(source, 'space-y-5 border-t border-border py-5');
+    expectContains(source, 'space-y-5');
     expectContains(source, 'grid gap-3 md:grid-cols-3');
     expectContains(source, 'border-l-2 px-4 py-3 text-sm leading-6');
     expectContains(source, 'financial-number mt-1 text-lg font-semibold');

@@ -25,6 +25,8 @@ export interface ChartSeriesEnvelope<T> {
   syncStatus?: 'success' | 'partial' | 'failed' | 'stale';
   coverageNote?: string;
   sourceUrl?: string;
+  cadence?: 'monthly' | 'irregular' | 'annual-reference';
+  coverageQuality?: 'synced' | 'partial' | 'sparse-reference';
 }
 
 export type PeriodValue = '1Y' | '5Y' | '10Y' | '30Y' | 'ALL';

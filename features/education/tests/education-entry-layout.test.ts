@@ -3,142 +3,64 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-const root = process.cwd();
+import { BondType } from '@/features/bond-core/types';
+import {
+  educationDecisionRoutes,
+  educationOfferGroups,
+} from '@/features/education/constants/education-content';
 
-const paths = {
-  page: 'features/education/components/EducationClient.tsx',
-  card: 'features/education/components/BondEducationCard.tsx',
-  constants: 'features/education/constants/education-content.ts',
-  en: 'i18n/translations/en.json',
-  pl: 'i18n/translations/pl.json',
-} as const;
+const root = process.cwd();
 
 function read(relativePath: string) {
   return readFileSync(join(root, relativePath), 'utf8').replace(/\r\n/g, '\n');
 }
 
-function expectContains(source: string, fragment: string) {
-  expect(source).toContain(fragment);
-}
+describe('education entry layout', () => {
+  it('assigns every supported bond to one and only one offer group', () => {
+    const assigned = educationOfferGroups.flatMap((group) => group.bondTypes);
 
-function expectNotContains(source: string, fragment: string) {
-  expect(source).not.toContain(fragment);
-}
-
-function expectNoFragments(source: string, fragments: readonly string[]) {
-  for (const fragment of fragments) {
-    expectNotContains(source, fragment);
-  }
-}
-
-describe('education entry layout contracts', () => {
-  it('keeps education page as a calculator entry flow', () => {
-    const source = read(paths.page);
-    const constants = read(paths.constants);
-
-    expectContains(source, "from '@/features/education/constants/education-content'");
-    expectContains(constants, 'export const starterGuides');
-    expectContains(constants, "key: 'short_term'");
-    expectContains(constants, "key: 'inflation'");
-    expectContains(constants, "key: 'family'");
-    expectContains(constants, "key: 'long_term'");
-    expectContains(source, 'href="/single-calculator"');
-    expectContains(source, "t('education.starter_title')");
-    expectContains(source, "t('education.starter_cta')");
-    expectContains(source, "t('education.bond_types_subtitle')");
-
-    expectNoFragments(source, ['shadow-xl', 'bg-gradient', 'hero']);
+    expect(assigned).toHaveLength(Object.values(BondType).length);
+    expect(new Set(assigned)).toEqual(new Set(Object.values(BondType)));
   });
 
-  it('keeps starter guidance section grouped and dense', () => {
-    const source = read(paths.page);
+  it('keeps each decision route connected to a visible offer group', () => {
+    const groupKeys = new Set(educationOfferGroups.map((group) => group.key));
 
-    expectContains(source, "import { SectionBlock } from '@/shared/components/page/SectionBlock';");
-    expectContains(source, '<SectionBlock');
-    expectContains(source, "title={t('education.starter_title')}");
-    expectContains(source, 'space-y-14 pb-12 md:space-y-16');
-    expectContains(source, 'grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 xl:grid-cols-4');
-    expectContains(source, '<article key={guide.key} className="border-t border-border py-5">');
-    expectContains(source, 'text-[32px] font-semibold leading-none text-foreground');
-    expectContains(source, 'ui-body mt-3 text-muted-foreground');
-
-    expectNoFragments(source, [
-      'surface-panel',
-      '<section className="surface-shell space-y-5 p-5 md:p-6">',
-      '<article key={guide.key} className="rounded-lg border border-border bg-card p-4">',
-      'space-y-12 pb-12 md:space-y-14',
-      'grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 xl:grid-cols-4',
-      '<article key={guide.key} className="border-t border-border py-4">',
-      'grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4',
-      'grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4',
-    ]);
+    for (const route of educationDecisionRoutes) {
+      expect(groupKeys.has(route.groupKey)).toBe(true);
+      expect(route.bondTypes.length).toBeGreaterThan(0);
+    }
   });
 
-  it('keeps bond offer cards grouped without shadcn badge shells', () => {
-    const source = read(paths.card);
+  it('keeps the page as a decision-to-calculator journey', () => {
+    const source = read('features/education/components/EducationClient.tsx');
+    const card = read('features/education/components/BondEducationCard.tsx');
 
-    expectContains(source, "import Link from 'next/link';");
-    expectContains(source, 'surface-chip border-foreground text-foreground');
-    expectContains(source, 'surface-chip text-foreground');
-    expectContains(source, 'border-t border-border py-6');
-    expectContains(source, 'flex flex-1 flex-col space-y-5 pt-5');
-    expectContains(source, 'mt-auto space-y-5 pt-6');
-    expectContains(
-      source,
-      '<dl className="grid min-h-[132px] grid-cols-1 gap-x-4 divide-y divide-border border-y border-border',
-    );
-    expectContains(
-      source,
-      "import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';",
-    );
-    expectContains(source, '<FormInlineNotice');
-    expectContains(source, "t('education.calculate_this_bond')");
-    expectContains(source, '<ArrowRight className="h-4 w-4" />');
-
-    expectNoFragments(source, [
-      "import { Badge } from '@/components/ui/badge';",
-      "import { Notice } from '@/shared/components/feedback/Notice';",
-      '<Badge',
-      '</Badge>',
-      'border-t border-border py-5',
-      'flex-1 space-y-4 pt-4',
-      'mt-auto space-y-4 pt-1',
-      'rounded-lg border border-border bg-card p-5 shadow-sm',
-      'rounded-lg border border-border bg-muted/20 p-4',
-      'rounded-md border border-warning/30 bg-warning/5',
-    ]);
+    expect(source).toContain('<EducationDecisionRail />');
+    expect(source).toContain('<EducationOfferComparison definitions={definitions} />');
+    expect(source).toContain('id={`offers-${group.key}`}');
+    expect(card).toContain('href={`/single-calculator?bond=${bond.type}`}');
+    expect(source).not.toContain('shadow-xl');
+    expect(source).not.toContain('bg-gradient');
   });
 
-  it('keeps offer cards connected to the calculator without mutating scenarios', () => {
-    const source = read(paths.card);
-
-    expectContains(source, 'href="/single-calculator"');
-    expectContains(source, 'inline-flex h-9 items-center gap-2 border-b border-foreground');
-
-    expectNoFragments(source, [
-      '?bondType=',
-      '?bond=',
-      'replaceInputs',
-      'setBondType',
-      'localStorage',
-    ]);
-  });
-
-  it('keeps education translations in parity for the starter flow', () => {
-    const en = read(paths.en);
-    const pl = read(paths.pl);
+  it('keeps education translations in parity for the redesigned journey', () => {
+    const en = read('i18n/translations/en.json');
+    const pl = read('i18n/translations/pl.json');
 
     for (const source of [en, pl]) {
-      expectContains(source, '"starter_title"');
-      expectContains(source, '"starter_subtitle"');
-      expectContains(source, '"starter_cta"');
-      expectContains(source, '"bond_types_subtitle"');
-      expectContains(source, '"calculate_this_bond"');
-      expectContains(source, '"starter"');
-      expectContains(source, '"short_term"');
-      expectContains(source, '"inflation"');
-      expectContains(source, '"family"');
-      expectContains(source, '"long_term"');
+      for (const key of [
+        'hero_title',
+        'decision_title',
+        'comparison',
+        'fixed_rate',
+        'reference_rate',
+        'inflation_indexed',
+        'short_term',
+        'long_term',
+      ]) {
+        expect(source).toContain(`\"${key}\"`);
+      }
     }
   });
 });

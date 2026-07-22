@@ -5,6 +5,7 @@ import React from 'react';
 
 import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 
 interface FormFieldProps {
@@ -32,6 +33,7 @@ export function FormField({
   required = false,
   optionalLabel,
 }: FormFieldProps) {
+  const { t } = useAppI18n();
   const descriptionId = React.useId();
   const errorId = React.useId();
   return (
@@ -55,7 +57,7 @@ export function FormField({
                   <button
                     type="button"
                     className="ui-focus-ring rounded-sm text-muted-foreground"
-                    aria-label="More information"
+                    aria-label={t('common.more_information')}
                   >
                     <Info className="h-3.5 w-3.5" aria-hidden="true" />
                   </button>

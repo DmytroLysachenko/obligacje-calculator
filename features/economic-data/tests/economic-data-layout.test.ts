@@ -3,291 +3,54 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-const repoRoot = process.cwd();
+const root = process.cwd();
+const read = (path: string) => readFileSync(join(root, path), 'utf8');
 
-const economicPagePath = 'features/economic-data/components/EconomicDataPageClient.tsx';
-const economicSectionsPath = 'features/economic-data/components/EconomicDashboardSections.tsx';
-const economicStatusCardPath = 'features/economic-data/components/EconomicSeriesStatusCard.tsx';
-const referenceHeroPath = 'shared/components/reference/ReferenceDashboardHero.tsx';
-const referenceRailPath = 'shared/components/reference/ReferenceGuideRail.tsx';
-const referenceNotePath = 'shared/components/reference/ReferenceNoteCard.tsx';
-const referenceChartFramePath = 'shared/components/charts/ReferenceChartFrame.tsx';
-const chartSectionPath = 'shared/components/charts/ChartSection.tsx';
-
-function readSource(relativePath: string) {
-  return readFileSync(join(repoRoot, relativePath), 'utf8');
-}
-
-function expectContains(source: string, fragment: string) {
-  expect(source).toContain(fragment);
-}
-
-function expectNotContains(source: string, fragment: string) {
-  expect(source).not.toContain(fragment);
-}
-
-function getClassLine(source: string, anchor: string) {
-  const line = source.split('\n').find((candidate) => candidate.includes(anchor));
-
-  expect(line, `Missing source line containing ${anchor}`).toBeTruthy();
-
-  return line ?? '';
-}
-
-function getJsxClass(source: string, component: string, value?: string) {
-  const valueFragment = value ? String.raw`\s+value="${value}"` : '';
-  const pattern = new RegExp(
-    String.raw`<${component}${valueFragment}[\s\S]*?className="([^"]+)"`,
-    'm',
-  );
-  const match = source.match(pattern);
-
-  expect(match, `Missing ${component}${value ? ` value="${value}"` : ''} className`).toBeTruthy();
-
-  return match?.[1] ?? '';
-}
-
-function expectNoFragments(source: string, fragments: readonly string[]) {
-  for (const fragment of fragments) {
-    expect(source).not.toContain(fragment);
-  }
-}
-
-function expectContainsNormalized(source: string, fragment: string) {
-  expect(source.replace(/\s+/g, ' ')).toContain(fragment);
-}
-
-describe('economic data layout source contracts', () => {
-  it('keeps shared tabs oriented by Radix data-orientation attributes', () => {
-    const source = readSource('components/ui/tabs.tsx');
-
-    expectContains(source, 'data-[orientation=horizontal]:flex-col');
-    expectContains(source, 'data-[orientation=vertical]:flex-row');
-    expectContains(source, 'group-data-[orientation=horizontal]/tabs:h-10');
-    expectContains(source, 'group-data-[orientation=vertical]/tabs:flex-col');
-    expectNotContains(source, 'data-horizontal:flex-col');
-    expectNotContains(source, 'group-data-horizontal/tabs');
-    expectNotContains(source, 'group-data-vertical/tabs');
+describe('economic data layout', () => {
+  it('uses one chart reading surface instead of a scrollable dashboard tab strip', () => {
+    const source = read('features/economic-data/components/EconomicDataPageClient.tsx');
+    expect(source).toContain('<RangeActions');
+    expect(source).toContain('<details className="border-t border-border pt-5">');
+    expect(source).not.toContain('<TabsList');
+    expect(source).not.toContain('tab_guide');
   });
 
-  it('keeps the economic page tabs compact and divider-led', () => {
-    const source = readSource(economicPagePath);
-    const tabsListClass = getJsxClass(source, 'TabsList');
-
-    expect(tabsListClass).toContain('w-fit');
-    expect(tabsListClass).toContain('gap-1');
-    expect(tabsListClass).toContain('border-b');
-    expect(tabsListClass).toContain('bg-transparent');
-    expect(tabsListClass).toContain('p-0');
-    expect(tabsListClass).not.toContain('w-full');
-    expect(tabsListClass).not.toContain('rounded-[1.5rem]');
-    expect(tabsListClass).not.toContain('rounded-md');
-    expect(tabsListClass).not.toContain('p-2');
+  it('keeps series, range, and CPI scale in the same accessible control bar', () => {
+    const source = read('features/economic-data/components/EconomicDashboardSections.tsx');
+    expect(source).toContain("aria-pressed={series === 'cpi'}");
+    expect(source).toContain('aria-pressed={period === item.value}');
+    expect(source).toContain("(['readable', 'full'] as const)");
+    expect(source).toContain('ui-focus-ring');
+    expect(source).toContain("t('economic.readable_scale')");
+    expect(source).toContain("t('economic.full_scale')");
+    expect(source).toContain('min-h-11');
   });
 
-  it('keeps each economic page tab trigger at toolbar scale', () => {
-    const source = readSource(economicPagePath);
-    const triggerValues = ['charts', 'status', 'guide'] as const;
+  it('keeps the economic controls below their introduction until the layout is truly wide', () => {
+    const source = read('features/economic-data/components/EconomicDataPageClient.tsx');
 
-    for (const value of triggerValues) {
-      const triggerClass = getJsxClass(source, 'TabsTrigger', value);
-
-      expect(triggerClass).toContain('h-9');
-      expect(triggerClass).toContain('px-3.5');
-      expect(triggerClass).toContain('py-2');
-      expect(triggerClass).toContain('rounded-none');
-      expect(triggerClass).toContain('border-b-2');
-      expect(triggerClass).toContain('data-[state=active]:border-foreground');
-      expect(triggerClass).not.toContain('px-4');
-      expect(triggerClass).not.toContain('py-2.5');
-    }
+    expect(source).toContain('headerClassName="sm:!flex-col 2xl:!flex-row"');
   });
 
-  it('keeps CPI and NBP charts separated inside chart sub-tabs', () => {
-    const source = readSource(economicPagePath);
-
-    expectContains(source, '<Tabs defaultValue="cpi" className="space-y-5">');
-    expectContains(source, '<TabsTrigger value="cpi" className="h-8 px-3 text-xs font-semibold">');
-    expectContains(source, '<TabsTrigger value="nbp" className="h-8 px-3 text-xs font-semibold">');
-    expectContains(source, '<TabsContent value="cpi">');
-    expectContains(source, '<TabsContent value="nbp">');
-    expectContains(
-      source,
-      "import { ChartSection } from '@/shared/components/charts/ChartSection';",
-    );
-    expectContains(source, '<ChartSection');
-    expectContains(source, '<InflationChart period={period} />');
-    expectContains(source, '<NBPRateChart period={period} />');
-    expectNoFragments(source, ['<div className="space-y-8 md:space-y-10">']);
+  it('uses a compact decision trace rather than static reference metrics', () => {
+    const source = read('shared/components/reference/ReferenceDashboardHero.tsx');
+    expect(source).toContain('decisionTrace?: React.ReactNode;');
+    expect(source).toContain('border-l-2 border-success/70');
   });
 
-  it('keeps chart sections shared and divider-led', () => {
-    const source = readSource(chartSectionPath);
+  it('keeps expanded reference guidance in one readable flow instead of a sparse side rail', () => {
+    const source = read('features/economic-data/components/EconomicDashboardSections.tsx');
 
-    expectContains(source, 'export function ChartSection');
-    expectContains(source, 'space-y-5 border-t border-border py-5');
-    expectContains(source, 'controls?: React.ReactNode');
-    expectContains(source, '<BarChart3 className="h-4 w-4" />');
-    expectContains(source, '<div className="shrink-0 lg:max-w-[520px]">');
-    expectContains(source, 'border-l-2 border-border pl-3');
-    expectNoFragments(source, [
-      "from '@/components/ui/card'",
-      '<Card',
-      'rounded-lg border border-border bg-card',
-    ]);
+    expect(source).toContain('<div className="space-y-6">');
+    expect(source).toContain('gap-x-8 gap-y-4 border-y border-border py-4 lg:grid-cols-2');
+    expect(source).not.toContain('lg:grid-cols-[minmax(0,1fr)_320px]');
   });
 
-  it('keeps the reference hero as a compact dashboard surface', () => {
-    const source = readSource(referenceHeroPath);
-    const sectionLine = getClassLine(source, '<section className=');
-    const gridLine = getClassLine(source, 'xl:grid-cols');
+  it('uses one page-level range control instead of chart brushes', () => {
+    const inflationChart = read('features/economic-data/components/InflationChart.tsx');
 
-    expect(sectionLine).toContain('border-y border-border');
-    expect(sectionLine).toContain('py-5');
-    expect(sectionLine).not.toContain('rounded-lg');
-    expect(sectionLine).not.toContain('bg-card');
-    expect(sectionLine).not.toContain('p-5');
-    expect(sectionLine).not.toContain('shadow-none');
-    expect(sectionLine).not.toContain('md:px-8');
-    expect(sectionLine).not.toContain('md:py-8');
-
-    expect(gridLine).toContain('gap-5');
-    expect(gridLine).toContain('minmax(260px,440px)');
-    expect(gridLine).not.toContain('gap-6');
-    expect(gridLine).not.toContain('minmax(280px,0.8fr)');
-  });
-
-  it('keeps hero typography dashboard-sized, not landing-page-sized', () => {
-    const source = readSource(referenceHeroPath);
-    const titleLine = getClassLine(source, '<h2');
-    const descriptionLine = getClassLine(source, '<p className="ui-body');
-
-    expect(titleLine).toContain('ui-section-title');
-    expect(titleLine).not.toContain('text-4xl');
-
-    expect(descriptionLine).toContain('ui-body');
-    expect(descriptionLine).not.toContain('leading-8');
-  });
-
-  it('keeps hero metric tiles dense and grouped', () => {
-    const source = readSource(referenceHeroPath);
-    const metricGridLine = getClassLine(source, 'grid gap-x-8 gap-y-5 border-y');
-    const tilePaddingLine = getClassLine(source, 'border-l border-border/70 pl-4');
-    const valueLine = getClassLine(source, 'text-base font-semibold');
-
-    expect(metricGridLine).toContain('gap-x-8');
-    expect(metricGridLine).toContain('gap-y-5');
-    expect(metricGridLine).toContain('border-y border-border');
-    expect(metricGridLine).toContain('py-4');
-    expect(metricGridLine).toContain('sm:grid-cols-2');
-    expect(metricGridLine).toContain('sm:border-y-0');
-    expect(metricGridLine).not.toContain('overflow-hidden');
-    expect(metricGridLine).not.toContain('bg-border');
-    expect(metricGridLine).not.toContain('rounded-[1.5rem]');
-
-    expect(tilePaddingLine).toContain('pl-4');
-    expect(tilePaddingLine).toContain('first:border-l-0');
-    expect(tilePaddingLine).not.toContain('pt-3');
-    expect(tilePaddingLine).not.toContain('sm:[&:nth-child(2)]:border-l');
-
-    expect(valueLine).toContain('mt-1.5');
-    expect(valueLine).toContain('text-base');
-    expect(valueLine).toContain('leading-6');
-    expect(valueLine).not.toContain('text-xl');
-  });
-
-  it('keeps economic status and usage panels flattened', () => {
-    const source = `${readSource(economicPagePath)}\n${readSource(economicSectionsPath)}\n${readSource(
-      economicStatusCardPath,
-    )}`;
-
-    expectContains(source, "'border-t py-5'");
-    expectContains(source, 'space-y-3 border-y border-border py-3');
-    expectContains(source, "t('economic.data_health')");
-    expectContains(source, '<dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2">');
-    expectContains(source, "import { SectionBlock } from '@/shared/components/page/SectionBlock';");
-    expectContains(source, '<SectionBlock');
-    expectContains(source, 'contentClassName="space-y-5"');
-    expectContains(source, 'space-y-2 border-y border-border py-3');
-    expectContains(source, "hint={t('economic.range_hint')}");
-    expectContains(source, 'aria-pressed={period === item.value}');
-    expectContains(
-      source,
-      'focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2',
-    );
-    expectContains(source, 'grid gap-x-6 gap-y-4 border-y border-border py-4 md:grid-cols-2');
-    expectContains(source, '<RangeActions');
-    expectNotContains(source, 'extraHeaderActions={');
-    expectNoFragments(source, [
-      "from '@/components/ui/card'",
-      '<Card',
-      '<CardContent',
-      'rounded-lg border shadow-none',
-      'divide-y divide-border border-y border-border',
-      'rounded-full border border-border bg-muted/40',
-      'rounded-md border border-border sm:grid-cols-2',
-      'overflow-hidden rounded-md border',
-      'function DashboardTabFrame',
-      'actions?: React.ReactNode',
-    ]);
-  });
-
-  it('keeps chart source metadata compact instead of table-like', () => {
-    const source = readSource(referenceChartFramePath);
-
-    expectContains(source, 'sourceLabel');
-    expectContains(source, '<dl className="grid gap-x-8 gap-y-2.5');
-    expectContains(source, 'space-y-3 border-y border-border py-3');
-    expectContainsNormalized(source, "const healthToneClass = fallbackTone === 'warning'");
-    expectContains(source, 'fallbackStatusLabel?: string;');
-    expectContains(source, 'syncedStatusLabel?: string;');
-    expectContains(source, 'inline-flex items-center gap-2 border-l-2 pl-3 text-xs font-semibold');
-    expectContains(source, 'max-w-4xl text-sm leading-6 text-muted-foreground');
-    expectContains(source, 'border-0 bg-transparent px-0');
-    expectContains(source, 'border-t border-border pt-3');
-    expectNoFragments(source, [
-      'rounded-lg border border-border bg-card',
-      'overflow-hidden rounded-md border border-border',
-      'grid w-full gap-0',
-      'sm:border-r',
-      'shadow-none',
-      'bg-card p-4',
-    ]);
-  });
-
-  it('keeps economic charts passing localized compact source labels', () => {
-    const inflationSource = readSource('features/economic-data/components/InflationChart.tsx');
-    const nbpSource = readSource('features/economic-data/components/NBPRateChart.tsx');
-
-    for (const source of [inflationSource, nbpSource]) {
-      expectContains(source, "sourceLabel={t('economic.compact_source_header')}");
-      expectContains(source, 'getReferenceMetaItems(response, language)');
-      expectNotContains(source, 'sourceLabel="Data source"');
-    }
-  });
-
-  it('keeps reference support components free of shadcn card wrappers and decorative shapes', () => {
-    const sources = [
-      readSource(referenceHeroPath),
-      readSource(referenceRailPath),
-      readSource(referenceNotePath),
-      readSource(referenceChartFramePath),
-    ];
-
-    for (const source of sources) {
-      expectNoFragments(source, [
-        "from '@/components/ui/card'",
-        '<Card',
-        '<CardContent',
-        '<CardHeader',
-        '<CardTitle',
-        '<CardDescription',
-        'shadow-none',
-        'shadow-sm',
-        'rounded-2xl',
-        'rounded-3xl',
-        'shadow-2xl',
-      ]);
-    }
+    expect(inflationChart).not.toContain('<Brush');
+    expect(inflationChart).not.toContain('actions={');
+    expect(read('features/economic-data/components/NBPRateChart.tsx')).not.toContain('<Brush');
   });
 });

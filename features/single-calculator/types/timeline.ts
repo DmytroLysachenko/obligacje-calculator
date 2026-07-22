@@ -8,6 +8,8 @@ export interface BondTimelineProps {
 }
 
 export interface BondTimelineRowsProps {
+  mobileResultsId: string;
+  desktopResultsId: string;
   displayedTimeline: BondTimelineDisplayRow[];
   filteredTimelineLength: number;
   activeFilterCount: number;

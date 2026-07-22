@@ -44,6 +44,7 @@ describe('comparison fairness contracts', () => {
       '<Notice tone="warning" title={t(\'comparison.duration_mismatch.title\')}>',
     );
     expect(source).not.toContain('maturityMode={maturityMode}');
+    expect(source).toContain('{!hasResults ? (');
   });
 
   it('explains why a scenario leads instead of only showing a winner', () => {

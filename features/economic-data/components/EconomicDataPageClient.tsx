@@ -1,9 +1,9 @@
 'use client';
 
-import { Activity, BarChart3, Database, Info, Sparkles } from 'lucide-react';
-import React, { useState } from 'react';
+import { Activity, Database, Info } from 'lucide-react';
+import { usePathname, useSearchParams } from 'next/navigation';
+import React, { useCallback, useState } from 'react';
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BondType } from '@/features/bond-core/types';
 import {
   RangeActions,
@@ -15,13 +15,16 @@ import { NBPRateChart } from '@/features/economic-data/components/NBPRateChart';
 import {
   type ChartSeriesEnvelope,
   type EconomicSeriesPoint,
-  type PeriodValue,
 } from '@/features/economic-data/lib/economic-dashboard-model';
 import {
-  buildEconomicHeroMetrics,
   buildEconomicPageLabels,
   buildEconomicUsageGuide,
 } from '@/features/economic-data/lib/economic-page-model';
+import {
+  type EconomicView,
+  parseEconomicView,
+  serializeEconomicView,
+} from '@/features/economic-data/lib/economic-view';
 import { useAppI18n } from '@/i18n/client';
 import { ChartSection } from '@/shared/components/charts/ChartSection';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
@@ -34,7 +37,9 @@ import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
 export function EconomicDataPageClient() {
   const { t, locale: language } = useAppI18n();
   const { definitions } = useBondDefinitions();
-  const [period, setPeriod] = useState<PeriodValue>('10Y');
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [view, setView] = useState<EconomicView>(() => parseEconomicView(searchParams));
   const { data: inflationMeta, isLoading: isLoadingInflation } =
     useChartData<ChartSeriesEnvelope<EconomicSeriesPoint>>('/api/charts/inflation');
   const { data: nbpMeta, isLoading: isLoadingNbp } =
@@ -49,7 +54,30 @@ export function EconomicDataPageClient() {
     t,
   );
   const usageGuide = buildEconomicUsageGuide(t, floatingRateContext);
-  const heroMetrics = buildEconomicHeroMetrics(labels);
+  const updateView = useCallback(
+    (patch: Partial<EconomicView>) => {
+      setView((current) => {
+        const next = { ...current, ...patch };
+        const query = serializeEconomicView(next);
+        window.history.replaceState(window.history.state, '', `${pathname}?${query}`);
+        return next;
+      });
+    },
+    [pathname],
+  );
+  const selectedChart =
+    view.series === 'cpi' ? (
+      <ChartSection
+        title={t('economic.inflation_title')}
+        description={t('economic.inflation_desc')}
+      >
+        <InflationChart period={view.range} scaleMode={view.scale} />
+      </ChartSection>
+    ) : (
+      <ChartSection title={t('economic.nbp_rate_title')} description={t('economic.nbp_rate_desc')}>
+        <NBPRateChart period={view.range} />
+      </ChartSection>
+    );
 
   return (
     <CalculatorPageShell
@@ -57,7 +85,7 @@ export function EconomicDataPageClient() {
       description={t('economic.subtitle')}
       icon={<Activity className="h-8 w-8" />}
       isCalculating={false}
-      hasResults
+      hasResults={false}
     >
       <div className="ui-page-flow" aria-busy={isLoadingInflation || isLoadingNbp}>
         <ReferenceDashboardHero
@@ -69,115 +97,56 @@ export function EconomicDataPageClient() {
           }
           title={t('economic.macro_support_title')}
           description={pageIntro}
-          metrics={heroMetrics}
+          decisionTrace={<p className="text-sm leading-6 text-muted-foreground">{usageGuide[1]}</p>}
         />
 
-        <Tabs defaultValue="charts" className="space-y-6">
-          <TabsList className="h-auto w-fit flex-wrap justify-start gap-1 border-b border-border bg-transparent p-0 shadow-none">
-            <TabsTrigger
-              value="charts"
-              className="ui-focus-ring h-10 gap-2 rounded-none border-b-2 border-transparent px-3.5 py-2 data-[state=active]:border-foreground"
-            >
-              <BarChart3 className="h-4 w-4" />
-              {labels.tabCharts}
-            </TabsTrigger>
-            <TabsTrigger
-              value="status"
-              className="ui-focus-ring h-10 gap-2 rounded-none border-b-2 border-transparent px-3.5 py-2 data-[state=active]:border-foreground"
-            >
-              <Database className="h-4 w-4" />
-              {labels.tabStatus}
-            </TabsTrigger>
-            <TabsTrigger
-              value="guide"
-              className="ui-focus-ring h-10 gap-2 rounded-none border-b-2 border-transparent px-3.5 py-2 data-[state=active]:border-foreground"
-            >
-              <Sparkles className="h-4 w-4" />
-              {labels.tabGuide}
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="charts" className="space-y-8">
-            <SectionBlock
-              title={t('economic.chart_dashboard_title')}
-              description={t('economic.chart_dashboard_description')}
-              icon={<Info className="h-4 w-4" />}
-              action={
-                <RangeActions
-                  period={period}
-                  setPeriod={setPeriod}
-                  rangeLabel={t('economic.range_data')}
-                  hint={t('economic.range_hint')}
-                />
-              }
-              contentClassName="space-y-5"
-            >
-              <Tabs defaultValue="cpi" className="space-y-5">
-                <TabsList className="h-auto w-fit flex-wrap justify-start gap-1 rounded-md border border-border bg-muted/25 p-1 shadow-none">
-                  <TabsTrigger value="cpi" className="h-8 px-3 text-xs font-semibold">
-                    {t('economic.inflation_title')}
-                  </TabsTrigger>
-                  <TabsTrigger value="nbp" className="h-8 px-3 text-xs font-semibold">
-                    {t('economic.nbp_rate_title')}
-                  </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="cpi">
-                  <ChartSection
-                    title={t('economic.inflation_title')}
-                    description={t('economic.inflation_desc')}
-                  >
-                    <InflationChart period={period} />
-                  </ChartSection>
-                </TabsContent>
-
-                <TabsContent value="nbp">
-                  <ChartSection
-                    title={t('economic.nbp_rate_title')}
-                    description={t('economic.nbp_rate_desc')}
-                  >
-                    <NBPRateChart period={period} />
-                  </ChartSection>
-                </TabsContent>
-              </Tabs>
-            </SectionBlock>
-          </TabsContent>
-
-          <TabsContent value="status">
-            <SectionBlock
-              title={t('economic.status_dashboard_title')}
-              description={t('economic.status_dashboard_description')}
-              icon={<Info className="h-4 w-4" />}
-              contentClassName="space-y-5"
-            >
-              <ReferenceStatusPanel
-                inflationMeta={inflationMeta}
-                nbpMeta={nbpMeta}
-                isLoadingInflation={isLoadingInflation}
-                isLoadingNbp={isLoadingNbp}
-                labels={labels}
-                language={language}
-              />
-            </SectionBlock>
-          </TabsContent>
-
-          <TabsContent value="guide">
-            <SectionBlock
-              title={t('economic.guide_dashboard_title')}
-              description={t('economic.guide_dashboard_description')}
-              icon={<Info className="h-4 w-4" />}
-              contentClassName="space-y-5"
-            >
-              <UsageGuidePanel
-                usageGuide={usageGuide}
-                labels={{
-                  howToUse: labels.howToUse,
-                  dataQuality: labels.dataQuality,
-                }}
-              />
-            </SectionBlock>
-          </TabsContent>
-        </Tabs>
+        <SectionBlock
+          title={t('economic.chart_dashboard_title')}
+          description={t('economic.chart_dashboard_description')}
+          icon={<Info className="h-4 w-4" />}
+          action={
+            <RangeActions
+              period={view.range}
+              setPeriod={(range) => updateView({ range })}
+              series={view.series}
+              setSeries={(series) => updateView({ series })}
+              scale={view.scale}
+              setScale={(scale) => updateView({ scale })}
+              rangeLabel={t('economic.range_data')}
+              hint={t('economic.range_hint')}
+            />
+          }
+          headerClassName="sm:!flex-col 2xl:!flex-row"
+          contentClassName="space-y-5"
+        >
+          {selectedChart}
+        </SectionBlock>
+        <details className="border-t border-border pt-5">
+          <summary className="ui-focus-ring cursor-pointer text-sm font-semibold text-foreground">
+            {t('economic.status_dashboard_title')}
+          </summary>
+          <div className="mt-5">
+            <ReferenceStatusPanel
+              inflationMeta={inflationMeta}
+              nbpMeta={nbpMeta}
+              isLoadingInflation={isLoadingInflation}
+              isLoadingNbp={isLoadingNbp}
+              labels={labels}
+              language={language}
+            />
+          </div>
+        </details>
+        <details className="border-t border-border pt-5">
+          <summary className="ui-focus-ring cursor-pointer text-sm font-semibold text-foreground">
+            {t('economic.guide_dashboard_title')}
+          </summary>
+          <div className="mt-5">
+            <UsageGuidePanel
+              usageGuide={usageGuide}
+              labels={{ howToUse: labels.howToUse, dataQuality: labels.dataQuality }}
+            />
+          </div>
+        </details>
       </div>
     </CalculatorPageShell>
   );

@@ -4,6 +4,7 @@ import { FileSpreadsheet, FileText } from 'lucide-react';
 import React from 'react';
 
 import { Button } from '@/components/ui/button';
+import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 
 export type ResultActionKind = 'primary' | 'secondary' | 'csv' | 'pdf';
@@ -11,10 +12,11 @@ export type ResultActionKind = 'primary' | 'secondary' | 'csv' | 'pdf';
 export interface ResultAction {
   label: string;
   icon?: React.ReactNode;
-  onClick?: () => void;
+  onClick?: () => void | Promise<void>;
   variant?: 'default' | 'outline';
   disabled?: boolean;
   kind?: ResultActionKind;
+  priority?: 'primary' | 'secondary';
 }
 
 interface ResultActionGridProps {
@@ -43,9 +45,23 @@ export const ResultActionGrid = React.memo(function ResultActionGrid({
   actions,
   className,
 }: ResultActionGridProps) {
+  const { t } = useAppI18n();
+  const [pendingAction, setPendingAction] = React.useState<string | null>(null);
   if (!actions.length) {
     return null;
   }
+
+  const primaryActions = actions.filter((action) => action.priority !== 'secondary');
+  const secondaryActions = actions.filter((action) => action.priority === 'secondary');
+  const runAction = async (action: ResultAction) => {
+    if (!action.onClick || pendingAction) return;
+    setPendingAction(action.label);
+    try {
+      await action.onClick();
+    } finally {
+      setPendingAction(null);
+    }
+  };
 
   return (
     <div
@@ -53,9 +69,10 @@ export const ResultActionGrid = React.memo(function ResultActionGrid({
         'grid min-w-0 grid-cols-1 gap-2 border-t border-border bg-muted/30 p-4 sm:grid-cols-2 lg:w-[380px] lg:shrink-0 lg:border-l lg:border-t-0',
         className,
       )}
-      aria-label="Result actions"
+      aria-label={t('bonds.results.actions_label')}
+      aria-busy={Boolean(pendingAction)}
     >
-      {actions.map((action) => {
+      {primaryActions.map((action) => {
         const kind = action.kind ?? (action.variant === 'default' ? 'primary' : 'secondary');
         const variant = action.variant ?? (kind === 'primary' ? 'default' : 'outline');
 
@@ -65,19 +82,53 @@ export const ResultActionGrid = React.memo(function ResultActionGrid({
             key={action.label}
             variant={variant}
             className={cn(
-              'h-10 min-w-0 justify-center gap-2 px-3 text-xs font-semibold ui-focus-ring',
+              'h-11 min-w-0 justify-center gap-2 px-3 text-xs font-semibold ui-focus-ring',
               variant === 'outline' ? actionKindClass[kind] : '',
             )}
-            onClick={action.onClick}
-            disabled={action.disabled}
+            onClick={() => runAction(action)}
+            disabled={action.disabled || Boolean(pendingAction)}
           >
             <span className="shrink-0" aria-hidden={!action.icon}>
               {action.icon ?? <DefaultActionIcon kind={kind} />}
             </span>
-            <span className="ui-truncate-flex">{action.label}</span>
+            <span className="ui-truncate-flex">
+              {pendingAction === action.label ? t('common.loading') : action.label}
+            </span>
           </Button>
         );
       })}
+      {secondaryActions.length ? (
+        <details className="col-span-full border-t border-border pt-2">
+          <summary className="ui-focus-ring cursor-pointer rounded-sm text-xs font-semibold text-muted-foreground">
+            {t('bonds.results.more_actions')}
+          </summary>
+          <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {secondaryActions.map((action) => {
+              const kind = action.kind ?? 'secondary';
+              return (
+                <Button
+                  type="button"
+                  key={action.label}
+                  variant="outline"
+                  className={cn(
+                    'h-11 min-w-0 justify-center gap-2 px-3 text-xs font-semibold ui-focus-ring',
+                    actionKindClass[kind],
+                  )}
+                  onClick={() => runAction(action)}
+                  disabled={action.disabled || Boolean(pendingAction)}
+                >
+                  <span className="shrink-0" aria-hidden={!action.icon}>
+                    {action.icon ?? <DefaultActionIcon kind={kind} />}
+                  </span>
+                  <span className="ui-truncate-flex">
+                    {pendingAction === action.label ? t('common.loading') : action.label}
+                  </span>
+                </Button>
+              );
+            })}
+          </div>
+        </details>
+      ) : null}
     </div>
   );
 });

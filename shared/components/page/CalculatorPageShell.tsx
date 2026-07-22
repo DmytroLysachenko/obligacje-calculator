@@ -33,6 +33,7 @@ export function CalculatorPageShell({
   children,
   isCalculating,
   isDirty = false,
+  isError = false,
   hasResults,
   onShare,
   extraHeaderActions,
@@ -64,6 +65,14 @@ export function CalculatorPageShell({
       };
     }
 
+    if (isError) {
+      return {
+        label: t('common.error'),
+        state: 'idle',
+        tone: 'warning',
+      };
+    }
+
     if (hasResults && isDirty) {
       return {
         label: t('common.recalculation_hint'),
@@ -81,7 +90,7 @@ export function CalculatorPageShell({
     }
 
     return null;
-  }, [hasResults, isCalculating, isDirty, t]);
+  }, [hasResults, isCalculating, isDirty, isError, t]);
 
   const headerAction =
     extraHeaderActions || hasShareAction ? (
@@ -105,7 +114,7 @@ export function CalculatorPageShell({
     ) : null;
 
   return (
-    <div className={pageLayout.pageFlow} onKeyDown={onKeyDown}>
+    <div className={`${pageLayout.pageFlow} ${pageLayout.mobileActionSpace}`} onKeyDown={onKeyDown}>
       <PageHeader
         icon={icon}
         title={title}

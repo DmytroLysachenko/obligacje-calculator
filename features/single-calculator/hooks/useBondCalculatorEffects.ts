@@ -11,6 +11,7 @@ import {
   savePersistedCalculatorState,
 } from '@/shared/lib/calculator-persistence';
 import { logClientError } from '@/shared/lib/client-logger';
+import { getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
 
 import { fetchBondSeriesForSymbol } from '../lib/single-calculator-actions';
 import { buildSingleCalculatorPersistenceSnapshot } from '../lib/single-calculator-client-state';
@@ -25,6 +26,7 @@ import {
   restoreSingleCalculatorState,
   SINGLE_CALCULATOR_STORAGE_KEY,
 } from '../lib/single-calculator-persistence';
+import { resolveBondTypeInputUpdate } from '../lib/single-calculator-state';
 
 interface UseBondCalculatorEffectsInput {
   inputs: BondInputs;
@@ -35,6 +37,7 @@ interface UseBondCalculatorEffectsInput {
   isCalculating: boolean;
   isPersistenceReady: boolean;
   initialInputs: BondInputs | undefined;
+  bondFromUrl?: BondType | null;
   fallbackInputs: BondInputs;
   definitions: typeof BOND_DEFINITIONS | null | undefined;
   macroDefaults: MacroDefaults | null | undefined;
@@ -61,6 +64,7 @@ export function useBondCalculatorEffects({
   isCalculating,
   isPersistenceReady,
   initialInputs,
+  bondFromUrl,
   fallbackInputs,
   definitions,
   macroDefaults,
@@ -108,15 +112,37 @@ export function useBondCalculatorEffects({
   }, [definitions, inputs.bondType, selectedSeriesId, setInputs]);
 
   useEffect(() => {
-    if (initialInputs || hasRestoredStateRef.current) {
+    if (initialInputs || hasRestoredStateRef.current || !definitions) {
       return;
     }
 
     const timer = window.setTimeout(() => {
+      hasRestoredStateRef.current = true;
+
+      if (bondFromUrl) {
+        const selectedInputs = resolveBondTypeInputUpdate(
+          fallbackInputs,
+          bondFromUrl,
+          definitions[bondFromUrl],
+        );
+        const horizonMonths = Math.round(definitions[bondFromUrl].duration * 12);
+        selectedInputs.investmentHorizonMonths = horizonMonths;
+        selectedInputs.withdrawalDate = getWithdrawalDateFromMonths(
+          selectedInputs.purchaseDate,
+          horizonMonths,
+        );
+        setInputs(selectedInputs);
+        setEnvelope(null);
+        setSelectedSeriesId('current');
+        setLastCommittedInputs(null);
+        setIsDirty(true);
+        setIsPersistenceReady(true);
+        return;
+      }
+
       const restoredState = loadPersistedCalculatorState<PersistedSingleCalculatorState>(
         SINGLE_CALCULATOR_STORAGE_KEY,
       );
-      hasRestoredStateRef.current = true;
 
       const restored = restoreSingleCalculatorState(restoredState, fallbackInputs);
       if (restored) {
@@ -134,6 +160,8 @@ export function useBondCalculatorEffects({
     return () => window.clearTimeout(timer);
   }, [
     fallbackInputs,
+    bondFromUrl,
+    definitions,
     hasRestoredStateRef,
     initialInputs,
     restoredFromPersistenceRef,

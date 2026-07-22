@@ -12,7 +12,7 @@ export function HomeDecisionSlip() {
   return (
     <aside
       data-testid="home-decision-slip"
-      className="border-y border-border py-4 lg:border-l lg:border-y-0 lg:pl-6 lg:py-0"
+      className="bg-muted/25 px-4 py-5 lg:rounded-md lg:px-5"
     >
       <p className="ui-kicker text-muted-foreground">{t('landing.decision_slip.eyebrow')}</p>
       <h2 className="mt-2 text-lg font-semibold tracking-tight text-foreground">
@@ -21,12 +21,12 @@ export function HomeDecisionSlip() {
       <p className="mt-2 text-sm leading-6 text-muted-foreground">
         {t('landing.decision_slip.description')}
       </p>
-      <ol className="mt-5 divide-y divide-border border-y border-border">
+      <ol className="mt-5 space-y-1">
         {homeDecisionRoutes.map((item, index) => (
           <li key={item.id}>
             <Link
               href={item.href}
-              className="ui-interactive-surface group flex items-center gap-3 py-3 text-left"
+              className="ui-interactive-surface group flex items-center gap-3 rounded-md px-2 py-3 text-left hover:bg-background"
             >
               <span
                 className="font-mono text-[11px] font-semibold text-muted-foreground"

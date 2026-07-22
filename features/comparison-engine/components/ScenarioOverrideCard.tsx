@@ -2,15 +2,13 @@
 import React from 'react';
 
 import { Switch } from '@/components/ui/switch';
-import { getBondSupportMeta, isFamilyBondType } from '@/features/bond-core/support-matrix';
+import { isFamilyBondType } from '@/features/bond-core/support-matrix';
 import { BondType, TaxStrategy } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { CommittedSliderInput } from '@/shared/components/CommittedSliderInput';
 import { Notice } from '@/shared/components/feedback/Notice';
 import { FormField } from '@/shared/components/forms/FormField';
-import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 import { FormSelect, FormSelectOption } from '@/shared/components/forms/FormSelect';
-import { RateContextNote } from '@/shared/components/results/RateContextNote';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
 import { ScenarioSetupCard } from '@/shared/components/scenario/ScenarioSetupCard';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
@@ -42,15 +40,6 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
 }) => {
   const { t, locale: language } = useAppI18n();
   const { definitions } = useBondDefinitions();
-  const activeDefinition = definitions?.[bondType];
-  const activeRateContext = activeDefinition
-    ? getBondRateContextCopy(
-        bondType,
-        Number(activeDefinition.firstYearRate),
-        Number(activeDefinition.margin),
-        t,
-      )
-    : null;
   const formatBondLabel = React.useCallback(
     (type: BondType) => formatBondDuration(definitions?.[type]?.duration ?? 1, language),
     [definitions, language],
@@ -105,7 +94,7 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
   return (
     <ScenarioSetupCard
       title={title}
-      description={t('comparison.base_follows_shared_desc')}
+      description={t('comparison.scenario_card_desc')}
       tone={colorClass}
       meta={<span className="ui-kicker text-muted-foreground">{formatBondLabel(bondType)}</span>}
     >
@@ -116,29 +105,21 @@ export const ScenarioOverrideCard: React.FC<ScenarioOverrideCardProps> = ({
         options={bondOptions}
         triggerClassName="h-12 font-semibold"
       />
-      <RateContextNote
-        className="ui-control-group"
-        title={t('comparison.override_scope_title')}
-        badges={[
-          formatBondLabel(bondType),
-          ...(formatRateStyle(bondType) ? [formatRateStyle(bondType) as string] : []),
-        ]}
-        narrative={
-          activeRateContext?.narrative ?? getBondSupportMeta(bondType, language).description
-        }
-      />
+      <div className="ui-status-note justify-between gap-3">
+        <span className="min-w-0 text-xs font-medium text-muted-foreground">
+          {t('comparison.base_follows_shared_title')}
+        </span>
+        {formatRateStyle(bondType) ? (
+          <span className="shrink-0 text-xs font-semibold text-foreground">
+            {formatRateStyle(bondType)}
+          </span>
+        ) : null}
+      </div>
       {isFamilyBondType(bondType) ? (
         <Notice tone="warning" compact>
           {t('comparison.family_override_note')}
         </Notice>
       ) : null}
-      <p className="ui-field-description">{getBondSupportMeta(bondType, language).description}</p>
-
-      <FormInlineNotice
-        title={t('comparison.base_follows_shared_title')}
-        description={t('comparison.base_follows_shared_desc')}
-      />
-
       <SecondaryInsightAccordion
         title={t('comparison.optional_overrides_title')}
         description={t('comparison.optional_overrides_desc')}

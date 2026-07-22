@@ -1,20 +1,48 @@
 export type ChartRangePeriod = '1Y' | '5Y' | '10Y' | '30Y' | 'ALL';
 
-function getPeriodPointCount(period: ChartRangePeriod) {
-  if (period === '1Y') return 12;
-  if (period === '5Y') return 60;
-  if (period === '10Y') return 120;
-  if (period === '30Y') return 360;
-  return Number.POSITIVE_INFINITY;
+type DatedChartPoint = { date: string };
+
+function getRangeStartDate(latestDate: Date, period: Exclude<ChartRangePeriod, 'ALL'>) {
+  const monthsByPeriod: Record<Exclude<ChartRangePeriod, 'ALL'>, number> = {
+    '1Y': 12,
+    '5Y': 60,
+    '10Y': 120,
+    '30Y': 360,
+  };
+  const start = new Date(latestDate);
+  start.setUTCMonth(start.getUTCMonth() - (monthsByPeriod[period] - 1), 1);
+  return start;
 }
 
-export function sliceSeriesByPeriod<T>(data: T[], period: ChartRangePeriod) {
+function parseChartDate(value: string) {
+  const normalized = /^\d{4}-\d{2}$/.test(value) ? `${value}-01` : value;
+  const parsed = new Date(`${normalized}T00:00:00.000Z`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+/**
+ * Filters by calendar coverage rather than record count. CPI can be annual or
+ * sparse while NBP can be monthly, so both need identical time semantics.
+ */
+export function sliceSeriesByPeriod<T extends DatedChartPoint>(
+  data: T[],
+  period: ChartRangePeriod,
+) {
   if (period === 'ALL') {
     return data;
   }
 
-  const pointCount = getPeriodPointCount(period);
-  return data.slice(-pointCount);
+  const dated = data
+    .map((point) => ({ point, date: parseChartDate(point.date) }))
+    .filter((entry): entry is { point: T; date: Date } => entry.date !== null)
+    .toSorted((left, right) => left.date.getTime() - right.date.getTime());
+
+  if (dated.length === 0) {
+    return dated.map(({ point }) => point);
+  }
+
+  const start = getRangeStartDate(dated[dated.length - 1].date, period);
+  return dated.filter((entry) => entry.date >= start).map(({ point }) => point);
 }
 
 export function sampleSeriesPoints<T>(data: T[], maxPoints: number) {
@@ -75,6 +103,16 @@ export function computeRateDomain(values: number[]) {
     number,
     number,
   ];
+}
+
+export function computeReadableRateDomain(values: number[]): [number, number] {
+  if (values.length === 0) return [-1, 1];
+
+  const sorted = values.toSorted((left, right) => left - right);
+  const percentile = sorted[Math.floor((sorted.length - 1) * 0.9)] ?? 1;
+  const upper = Math.max(6, Math.ceil(percentile * 1.15));
+  const lower = Math.min(-1, Math.floor((sorted[0] ?? 0) - 0.5));
+  return [lower, upper];
 }
 
 export function formatMoneyAxisTick(value: number) {

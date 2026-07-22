@@ -4,6 +4,7 @@ import { AlertCircle, CheckCircle2, X } from 'lucide-react';
 import React, { useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 
 type AppToastTone = 'success' | 'error';
@@ -21,6 +22,7 @@ export function AppToast({
   onDismiss,
   durationMs = 3200,
 }: AppToastProps) {
+  const { t } = useAppI18n();
   useEffect(() => {
     if (!message || !onDismiss) {
       return;
@@ -59,7 +61,7 @@ export function AppToast({
         <Button
           variant="ghost"
           size="icon"
-          aria-label="Dismiss notification"
+          aria-label={t('common.dismiss_notification')}
           className={cn(
             'h-8 w-8 rounded-full',
             isSuccess

@@ -29,7 +29,7 @@ export const FinancialInsightStrip = React.memo(function FinancialInsightStrip({
   items,
 }: FinancialInsightStripProps) {
   return (
-    <section className="space-y-5 border-t border-border py-5">
+    <section className="space-y-5">
       <div className="space-y-2">
         <h2 className="ui-card-title">{title}</h2>
         <p className="ui-body max-w-[var(--layout-reading-max)] text-muted-foreground">

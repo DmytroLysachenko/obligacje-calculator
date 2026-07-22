@@ -47,9 +47,9 @@ describe('layout system contracts', () => {
     expectContains(tokens, 'calculatorGrid:');
     expectContains(
       tokens,
-      "'grid grid-cols-1 gap-8 xl:grid-cols-[420px_minmax(0,1fr)] xl:items-start xl:gap-10'",
+      "'grid grid-cols-1 gap-8 2xl:grid-cols-[420px_minmax(0,1fr)] 2xl:items-start 2xl:gap-10'",
     );
-    expectContains(tokens, "stickyScenario: 'space-y-5 xl:sticky xl:top-8 xl:h-fit'");
+    expectContains(tokens, "stickyScenario: 'space-y-5 2xl:sticky 2xl:top-8 2xl:h-fit'");
   });
 
   it('keeps root content and footer aligned to the same app width', () => {
@@ -66,15 +66,16 @@ describe('layout system contracts', () => {
     const section = readSource(paths.section);
     const header = readSource(paths.header);
 
-    expectContains(shell, 'className={pageLayout.pageFlow}');
+    expectContains(shell, '${pageLayout.pageFlow}');
     expectContains(shell, '<PageHeader');
-    expectContains(header, 'border-b border-border pb-8 md:pb-10');
-    expectContains(header, 'max-w-[var(--layout-reading-max)]');
+    expectContains(header, 'ui-page-header space-y-4');
+    expectContains(header, 'ui-section-intro');
     expectNotContains(shell, 'surface-shell space-y-3 px-4 py-4');
 
     expectContains(section, 'pageLayout.sectionFlow');
     expectContains(section, 'pageLayout.sectionDivider');
-    expectContains(section, 'max-w-[var(--layout-reading-max)] text-muted-foreground');
+    expectContains(section, 'ui-section-header pb-2');
+    expectContains(section, 'ui-body ui-pretty text-muted-foreground');
   });
 
   it('provides reusable frame primitives for report-driven page work', () => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
@@ -31,9 +31,11 @@ import {
   isSharedComparisonMacroUpdate,
 } from '../lib/comparison-update-actions';
 
+import type { ComparisonUrlState } from '../lib/comparison-deep-link';
+
 import { useComparisonPersistenceEffects } from './useComparisonPersistenceEffects';
 
-export function useComparison() {
+export function useComparison(initialUrlState?: ComparisonUrlState | null) {
   const { definitions } = useBondDefinitions();
   const { defaults: macroDefaults } = useMacroAssumptionDefaults();
   const [sharedConfig, setSharedConfig] =
@@ -49,6 +51,7 @@ export function useComparison() {
   const hasRestoredState = useRef(false);
   const restoredFromPersistence = useRef(false);
   const hasTouchedMacroAssumptions = useRef(false);
+  const hasAppliedInitialUrlState = useRef(false);
   const { isCalculating, post } = useCalculationRequest();
 
   const inputsA = useMemo(
@@ -118,6 +121,9 @@ export function useComparison() {
   };
 
   useComparisonPersistenceEffects({
+    initialPair: initialUrlState
+      ? [initialUrlState.scenarioA.bondType, initialUrlState.scenarioB.bondType]
+      : null,
     sharedConfig,
     scenarioA,
     scenarioB,
@@ -139,6 +145,18 @@ export function useComparison() {
     setIsDirty,
     setIsPersistenceReady,
   });
+
+  useEffect(() => {
+    if (!initialUrlState || !isPersistenceReady || hasAppliedInitialUrlState.current) return;
+    hasAppliedInitialUrlState.current = true;
+    setSharedConfig(initialUrlState.sharedConfig);
+    setScenarioA(initialUrlState.scenarioA);
+    setScenarioB(initialUrlState.scenarioB);
+    setComparisonEnvelope(null);
+    setCommittedInputsA(null);
+    setCommittedInputsB(null);
+    setIsDirty(true);
+  }, [initialUrlState, isPersistenceReady]);
 
   const setScenarioACustomHorizonEnabled = useCallback(
     (enabled: boolean) => {

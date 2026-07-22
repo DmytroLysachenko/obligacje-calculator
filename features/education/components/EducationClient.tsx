@@ -1,15 +1,13 @@
 'use client';
 
 import {
-  AlertTriangle,
-  ArrowRight,
+  ArrowDown,
+  BookOpen,
   Briefcase,
   HelpCircle,
   Info,
   Scale,
-  Target,
   TrendingDown,
-  Zap,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -19,181 +17,212 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import type { CalculationDataFreshness } from '@/features/bond-core/types/scenarios';
 import { BondEducationCard } from '@/features/education/components/BondEducationCard';
-import { educationConcepts, starterGuides } from '@/features/education/constants/education-content';
+import { EducationDecisionRail } from '@/features/education/components/EducationDecisionRail';
+import { EducationOfferComparison } from '@/features/education/components/EducationOfferComparison';
+import {
+  educationConcepts,
+  educationOfferGroups,
+  educationSecondaryConcepts,
+} from '@/features/education/constants/education-content';
 import { useAppI18n } from '@/i18n/client';
+import { OfferProvenance } from '@/shared/components/data/OfferProvenance';
 import { PageTransition } from '@/shared/components/page/PageTransition';
 import { SectionBlock } from '@/shared/components/page/SectionBlock';
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 
-export default function EducationClient() {
+function EducationLoading() {
+  return (
+    <div className="ui-page-flow" aria-busy="true" aria-live="polite">
+      <span className="sr-only">Loading…</span>
+      <div className="space-y-4 border-b border-border pb-10">
+        <Skeleton className="h-4 w-32 rounded-md" />
+        <Skeleton className="h-11 w-full max-w-xl rounded-md" />
+        <Skeleton className="h-6 w-full max-w-3xl rounded-md" />
+      </div>
+      <Skeleton className="h-72 w-full rounded-md" />
+      <Skeleton className="h-96 w-full rounded-md" />
+    </div>
+  );
+}
+
+export default function EducationClient({
+  dataFreshness,
+}: {
+  dataFreshness?: CalculationDataFreshness;
+}) {
   const { t } = useAppI18n();
   const { definitions, isLoading } = useBondDefinitions();
 
-  if (isLoading || !definitions) {
-    return (
-      <div className="ui-page-flow" aria-busy="true" aria-live="polite">
-        <span className="sr-only">{t('common.loading')}</span>
-        <div className="ui-section-intro">
-          <Skeleton className="h-10 w-64 rounded-md" />
-          <Skeleton className="h-5 w-full max-w-2xl rounded-md" />
-          <Skeleton className="h-5 w-full max-w-xl rounded-md" />
-        </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3].map((index) => (
-            <div key={index} className="space-y-3 border-t border-border pt-5">
-              <Skeleton className="h-5 w-2/3 rounded-md" />
-              <Skeleton className="h-5 w-full rounded-md" />
-              <Skeleton className="h-5 w-5/6 rounded-md" />
-              <Skeleton className="h-12 w-full rounded-md" />
-            </div>
-          ))}
-        </div>
-        <Skeleton className="h-80 rounded-lg" />
-      </div>
-    );
-  }
+  if (isLoading || !definitions) return <EducationLoading />;
 
   return (
     <PageTransition>
-      <div className="ui-page-flow">
-        <header className="ui-page-header ui-section-intro">
-          <p className="ui-eyebrow">{t('nav.education')}</p>
-          <h1 className="ui-page-title">{t('nav.education')}</h1>
-          <p className="ui-body max-w-3xl text-muted-foreground">{t('education.subtitle')}</p>
+      <div className="ui-page-flow mx-auto max-w-[var(--layout-content-max)]">
+        <header className="ui-page-header max-w-4xl space-y-5">
+          <p className="inline-flex items-center gap-2 border-l-2 border-border px-3 py-1 ui-eyebrow">
+            <BookOpen className="size-3.5 text-foreground" aria-hidden="true" />
+            {t('nav.education')}
+          </p>
+          <div className="space-y-3">
+            <h1 className="ui-page-title max-w-3xl xl:text-[46px]">{t('education.hero_title')}</h1>
+            <p className="ui-body ui-pretty max-w-3xl text-muted-foreground md:text-base md:leading-8">
+              {t('education.subtitle')}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Button asChild size="lg">
+              <Link href="#choose-a-path">
+                {t('education.hero_primary_cta')}
+                <ArrowDown className="size-4" aria-hidden="true" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg">
+              <Link href="#current-offers">{t('education.hero_secondary_cta')}</Link>
+            </Button>
+          </div>
         </header>
 
-        <SectionBlock
-          icon={<Zap className="h-5 w-5" />}
-          title={t('education.concepts_title')}
-          description={t('education.concepts_subtitle')}
+        <section
+          id="choose-a-path"
+          className="scroll-mt-6 space-y-5 md:scroll-mt-10"
+          aria-labelledby="choose-a-path-title"
         >
-          <div className="grid grid-cols-1 gap-x-8 gap-y-8 md:grid-cols-2 lg:grid-cols-3">
-            {educationConcepts.map((concept) => (
-              <article
-                key={concept.key}
-                className="border-t border-border py-5 transition-colors hover:border-foreground/30"
-              >
-                <div className="pb-2">
-                  <div className="flex items-center gap-3">
-                    <div className="border-l-2 border-border pl-3 text-foreground">
-                      <concept.icon className="h-5 w-5" />
-                    </div>
-                    <h4 className="ui-card-title">
-                      {t(`education.concepts.${concept.key}.title`)}
-                    </h4>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <p className="ui-body">{t(`education.concepts.${concept.key}.desc`)}</p>
-                  <div className="border-t border-border pt-3 font-mono text-[11px] leading-5 text-muted-foreground">
-                    {t(`education.concepts.${concept.key}.formula`)}
-                  </div>
-                </div>
-              </article>
-            ))}
+          <div className="ui-section-intro">
+            <h2 id="choose-a-path-title" className="ui-section-title">
+              {t('education.decision_title')}
+            </h2>
+            <p className="ui-body ui-pretty text-muted-foreground">
+              {t('education.decision_subtitle')}
+            </p>
           </div>
-        </SectionBlock>
+          <EducationDecisionRail />
+        </section>
 
         <SectionBlock
-          icon={<Target className="h-5 w-5" />}
-          title={t('education.starter_title')}
-          description={t('education.starter_subtitle')}
-          action={
-            <Link
-              href="/single-calculator"
-              className="inline-flex h-10 items-center gap-2 border-b border-foreground text-sm font-semibold text-foreground"
-            >
-              {t('education.starter_cta')}
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          }
-        >
-          <div className="grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 xl:grid-cols-4">
-            {starterGuides.map((guide) => (
-              <article key={guide.key} className="border-t border-border py-5">
-                <div className="flex items-center gap-2">
-                  <guide.icon className="h-4 w-4 text-foreground" />
-                  <p className="ui-card-title">{t(`education.starter.${guide.key}.label`)}</p>
-                </div>
-                <p className="mt-2 text-[32px] font-semibold leading-none text-foreground">
-                  {guide.bonds}
-                </p>
-                <p className="ui-body mt-3 text-muted-foreground">
-                  {t(`education.starter.${guide.key}.description`)}
-                </p>
-              </article>
-            ))}
-          </div>
-        </SectionBlock>
-
-        <SectionBlock
-          icon={<Briefcase className="h-5 w-5" />}
+          id="current-offers"
+          className="scroll-mt-6 md:scroll-mt-10"
+          icon={<Briefcase className="size-5" />}
           title={t('education.bond_types')}
           description={t('education.bond_types_subtitle')}
         >
-          <div className="grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3">
-            {Object.values(definitions).map((bond) => (
-              <BondEducationCard key={bond.type} bond={bond} />
-            ))}
+          <OfferProvenance dataFreshness={dataFreshness} />
+          <div className="space-y-12">
+            {educationOfferGroups.map((group) => {
+              const bonds = group.bondTypes.map((type) => definitions[type]).filter(Boolean);
+              return (
+                <section
+                  id={`offers-${group.key}`}
+                  key={group.key}
+                  className="scroll-mt-6 border-t border-border pt-7 md:scroll-mt-10"
+                  aria-labelledby={`offers-${group.key}-title`}
+                >
+                  <div className="ui-section-intro">
+                    <h3 id={`offers-${group.key}-title`} className="ui-section-title">
+                      {t(`education.groups.${group.key}.title`)}
+                    </h3>
+                    <p className="ui-body ui-pretty text-muted-foreground">
+                      {t(`education.groups.${group.key}.description`)}
+                    </p>
+                  </div>
+                  <div className="mt-5 grid gap-x-8 md:grid-cols-2">
+                    {bonds.map((bond) => (
+                      <BondEducationCard key={bond.type} bond={bond} />
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
           </div>
-          <div className="border-t border-dashed border-border pt-4">
-            <p className="max-w-4xl text-xs italic leading-relaxed text-muted-foreground">
-              {t('education.disclaimer')}
+          <details className="border-t border-border pt-5">
+            <summary className="ui-focus-ring cursor-pointer text-sm font-semibold text-foreground">
+              {t('education.comparison.compare_selected')}
+            </summary>
+            <div className="mt-5">
+              <EducationOfferComparison definitions={definitions} />
+            </div>
+          </details>
+          <div className="ui-status-note border-l-2 border-border bg-muted/20">
+            <Info className="mt-0.5 size-4 shrink-0 text-foreground" aria-hidden="true" />
+            <p className="ui-field-description">
+              {t('education.disclaimer')}{' '}
+              <a
+                href="https://www.obligacjeskarbowe.pl/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-foreground underline underline-offset-4 hover:text-muted-foreground"
+              >
+                {t('site.official_bonds_link_label')}
+              </a>
             </p>
           </div>
         </SectionBlock>
 
-        <SectionBlock icon={<HelpCircle className="h-5 w-5" />} title={t('education.faq')}>
+        <SectionBlock
+          icon={<BookOpen className="size-5" />}
+          title={t('education.concepts_title')}
+          description={t('education.concepts_subtitle')}
+        >
+          <div className="grid gap-x-8 gap-y-5 md:grid-cols-3">
+            {educationConcepts.map((concept) => (
+              <article key={concept.key} className="py-3">
+                <div className="flex items-center gap-3">
+                  <concept.icon className="size-4 text-foreground" aria-hidden="true" />
+                  <h3 className="ui-card-title">{t(`education.concepts.${concept.key}.title`)}</h3>
+                </div>
+                <p className="ui-body ui-pretty mt-3">
+                  {t(`education.concepts.${concept.key}.desc`)}
+                </p>
+                <p className="mt-3 font-mono text-[11px] leading-5 text-muted-foreground">
+                  {t(`education.concepts.${concept.key}.formula`)}
+                </p>
+              </article>
+            ))}
+          </div>
+          <Accordion type="single" collapsible className="border-y border-border">
+            <AccordionItem value="secondary-concepts" className="border-0">
+              <AccordionTrigger className="ui-focus-ring py-4 text-left text-sm font-semibold">
+                {t('education.more_concepts')}
+              </AccordionTrigger>
+              <AccordionContent className="grid gap-5 pb-5 md:grid-cols-2">
+                {educationSecondaryConcepts.map((concept) => (
+                  <div key={concept.key}>
+                    <h3 className="ui-card-title">
+                      {t(`education.concepts.${concept.key}.title`)}
+                    </h3>
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                      {t(`education.concepts.${concept.key}.desc`)}
+                    </p>
+                  </div>
+                ))}
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </SectionBlock>
+
+        <SectionBlock icon={<HelpCircle className="size-5" />} title={t('education.faq')}>
           <Accordion type="single" collapsible className="w-full border-t border-border">
-            <AccordionItem value="item-1" className="border-b-border">
-              <AccordionTrigger className="ui-focus-ring py-5 text-left text-base font-semibold transition-colors hover:text-foreground">
-                {t('education.q_inflation')}
-              </AccordionTrigger>
-              <AccordionContent className="leading-relaxed text-muted-foreground">
-                <div className="flex items-start gap-3 py-2">
-                  <TrendingDown className="mt-0.5 h-5 w-5 shrink-0 text-foreground" />
-                  <p>{t('education.a_inflation')}</p>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-2" className="border-b-border">
-              <AccordionTrigger className="ui-focus-ring py-5 text-left text-base font-semibold transition-colors hover:text-foreground">
-                {t('education.q_tax')}
-              </AccordionTrigger>
-              <AccordionContent className="leading-relaxed text-muted-foreground">
-                <div className="flex items-start gap-3 py-2">
-                  <Scale className="mt-0.5 h-5 w-5 shrink-0 text-foreground" />
-                  <p>{t('education.a_tax')}</p>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-3" className="border-b-border">
-              <AccordionTrigger className="ui-focus-ring py-5 text-left text-base font-semibold transition-colors hover:text-foreground">
-                {t('education.q_early_exit')}
-              </AccordionTrigger>
-              <AccordionContent className="leading-relaxed text-muted-foreground">
-                <div className="flex items-start gap-3 py-2">
-                  <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
-                  <p>{t('education.a_early_exit')}</p>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-4" className="border-b-border">
-              <AccordionTrigger className="ui-focus-ring py-5 text-left text-base font-semibold transition-colors hover:text-foreground">
-                {t('education.q_monthly_payout')}
-              </AccordionTrigger>
-              <AccordionContent className="leading-relaxed text-muted-foreground">
-                <div className="flex items-start gap-3 py-2">
-                  <Info className="mt-0.5 h-5 w-5 shrink-0 text-foreground" />
-                  <p>{t('education.a_monthly_payout')}</p>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
+            {[
+              ['inflation', TrendingDown],
+              ['tax', Scale],
+              ['early_exit', Info],
+              ['monthly_payout', Briefcase],
+            ].map(([key, Icon]) => (
+              <AccordionItem key={key as string} value={key as string} className="border-b-border">
+                <AccordionTrigger className="ui-focus-ring py-5 text-left text-base font-semibold">
+                  {t(`education.q_${key}`)}
+                </AccordionTrigger>
+                <AccordionContent className="leading-relaxed text-muted-foreground">
+                  <div className="flex items-start gap-3 py-2">
+                    <Icon className="mt-0.5 size-5 shrink-0 text-foreground" aria-hidden="true" />
+                    <p>{t(`education.a_${key}`)}</p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
           </Accordion>
         </SectionBlock>
       </div>

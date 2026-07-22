@@ -1,6 +1,5 @@
 import { BondDefinition } from '@/features/bond-core/constants/bond-definitions';
 import { BondInputs, BondType, CalculationResult, ChartStep } from '@/features/bond-core/types';
-import { getBondColor } from '@/shared/lib/charts/get-bond-color';
 
 import {
   buildComparisonChartData,
@@ -64,7 +63,9 @@ export function buildComparisonContainerViewModel({
     hasMixedTimelineCadence: usesMixedTimelineCadence(resultInputsA, resultInputsB),
     assumptionsBondType: getComparisonAssumptionsBondType(scenarioABondType, scenarioBBondType),
     durationMismatch,
-    scenarioAColor: getBondColor(scenarioABondType),
-    scenarioBColor: getBondColor(scenarioBBondType),
+    // Scenario identity must stay stable even when either bond type changes.
+    // Solid/dashed line treatment distinguishes nominal and real values.
+    scenarioAColor: '#2563eb',
+    scenarioBColor: '#d97706',
   };
 }

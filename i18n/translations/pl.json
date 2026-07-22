@@ -1,5 +1,6 @@
 {
   "common": {
+    "dismiss_notification": "Zamknij powiadomienie",
     "title": "Obligacje Calculator",
     "description": "Profesjonalny kalkulator polskich obligacji skarbowych.",
     "settings": "Ustawienia",
@@ -56,6 +57,7 @@
     "usage": "Uzycie",
     "unavailable": "Niedostepne",
     "search": "Szukaj",
+    "date": "Data",
     "all_events": "Wszystkie zdarzenia",
     "all": "Wszystkie",
     "meaning": "Znaczenie",
@@ -75,6 +77,7 @@
     "portfolio_selector_label": "Biezacy portfel",
     "portfolio_selector_empty": "Brak wybranego portfela",
     "month_compact": "mies",
+    "duration_months": "mies.",
     "reset_filters": "Wyczysc filtry",
     "skip_to_content": "Przejdz do glownej tresci",
     "primary_navigation": "Nawigacja glowna",
@@ -82,7 +85,8 @@
     "navigation_menu": "Menu nawigacji",
     "calculation_in_progress": "Trwa obliczanie. Przeliczenie konczy sie dopiero po zamodelowaniu calego scenariusza.",
     "initial_calculation_hint": "Uruchom scenariusz, aby zobaczyc pelny wynik.",
-    "recalculation_hint": "Dane sie zmienily. Przelicz dopiero, gdy scenariusz jest gotowy."
+    "recalculation_hint": "Dane sie zmienily. Przelicz dopiero, gdy scenariusz jest gotowy.",
+    "more_information": "Więcej informacji"
   },
   "site": {
     "default_title_suffix": "Edukacyjny kalkulator obligacji",
@@ -239,7 +243,12 @@
     }
   },
   "education": {
-    "subtitle": "Zrozum mechanizmy polskiego rynku obligacji skarbowych i podejmuj świadome decyzje inwestycyjne.",
+    "subtitle": "Poznaj mechanizmy polskich obligacji skarbowych, porównaj aktualną ofertę i rozpocznij kalkulację dla obligacji dopasowanej do swojego horyzontu.",
+    "hero_title": "Zacznij od pytania, które ma znaczenie dla Twoich oszczędności.",
+    "hero_primary_cta": "Wybierz punkt startowy",
+    "hero_secondary_cta": "Porównaj aktualną ofertę",
+    "decision_title": "Wybierz punkt startowy",
+    "decision_subtitle": "Ten przewodnik zawęża ofertę według Twojego celu. To punkt wyjścia do analizy, nie rekomendacja.",
     "concepts_title": "Podstawowe Pojęcia Finansowe",
     "concepts_subtitle": "Kluczowe terminy niezbędne do zrozumienia Twoich inwestycji.",
     "starter_title": "Ktora obligacje sprawdzic najpierw?",
@@ -247,7 +256,63 @@
     "starter_cta": "Otworz kalkulator",
     "bond_types": "Aktualna Oferta Obligacji",
     "bond_types_subtitle": "Porownaj oferte wedlug czasu trwania, mechanizmu oprocentowania, kapitalizacji i kosztu wczesniejszego wykupu przed uruchomieniem scenariusza.",
-    "calculate_this_bond": "Policz te obligacje",
+    "calculate_this_bond": "Policz {bond}",
+    "more_concepts": "Zobacz podstawy podatku i wcześniejszego wykupu",
+    "comparison": {
+      "caption": "Porównanie aktualnej oferty polskich obligacji skarbowych",
+      "scroll_hint": "Przewiń poziomo, aby porównać wszystkie kolumny.",
+      "bond": "Obligacja",
+      "term": "Okres",
+      "basis": "Podstawa oprocentowania",
+      "first_rate": "Oprocentowanie początkowe",
+      "payout": "Obsługa odsetek",
+      "exit_fee": "Opłata za wcześniejszy wykup",
+      "fixed_rate": "Stałe oprocentowanie",
+      "reference_rate": "Stopa referencyjna NBP",
+      "inflation_indexed": "Indeksowane inflacją",
+      "select": "Wybierz",
+      "selected_count": "Wybrano: {count}",
+      "compare_selected": "Porównaj wybrane",
+      "select_two": "Wybierz 2 obligacje do porównania",
+      "select_bond_label": "Wybierz obligację {bond} do porównania",
+      "selection_limit_label": "Nie można wybrać {bond}: wybierz maksymalnie 2 obligacje"
+    },
+    "groups": {
+      "fixed": {
+        "title": "Obligacje stałooprocentowane",
+        "description": "Oprocentowanie znasz w dniu zakupu. Porównaj długość okresu i sposób obsługi odsetek."
+      },
+      "reference": {
+        "title": "Obligacje oparte na stopie NBP",
+        "description": "Po okresie początkowym miesięczne odsetki zależą od stopy referencyjnej NBP."
+      },
+      "inflation": {
+        "title": "Obligacje indeksowane inflacją",
+        "description": "Po okresie początkowym oprocentowanie zależy od inflacji powiększonej o stałą marżę."
+      },
+      "family": {
+        "title": "Obligacje rodzinne",
+        "description": "Są dostępne wyłącznie dla uprawnionych beneficjentów 800+ i łączą indeksację inflacją z długim horyzontem."
+      }
+    },
+    "decision": {
+      "short_term": {
+        "label": "Potrzebujesz dostępu do środków",
+        "description": "Zacznij od obligacji o stałym oprocentowaniu, gdy elastyczność jest ważniejsza niż długie składanie odsetek."
+      },
+      "inflation": {
+        "label": "Chcesz chronić siłę nabywczą",
+        "description": "Porównaj obligacje indeksowane inflacją, gdy najważniejsza jest przyszła wartość pieniędzy."
+      },
+      "family": {
+        "label": "Masz prawo do obligacji rodzinnych",
+        "description": "Sprawdź obligacje rodzinne tylko wtedy, gdy spełniasz warunek uprawnienia do 800+."
+      },
+      "long_term": {
+        "label": "Oszczędzasz długoterminowo",
+        "description": "Rozważ długi horyzont, gdy roczna kapitalizacja może mieć istotne znaczenie."
+      }
+    },
     "faq": "Często Zadawane Pytania",
     "q_inflation": "Jak działa indeksowanie inflacją?",
     "a_inflation": "Obligacje indeksowane inflacją (np. COI lub EDO) mają stałe oprocentowanie w pierwszym roku. W kolejnych latach oprocentowanie jest obliczane jako stopa inflacji z poprzedniego roku plus stała marża.",
@@ -466,7 +531,11 @@
       "step_timing_desc": "Ustal date zakupu, horyzont, tryb wyjscia i opakowanie podatkowe przed uruchomieniem obliczen.",
       "advanced_desc": "Zalozenia inflacyjne, sciezka NBP, ustawienia wykresu i inne drugorzedne kontrolki.",
       "display_summary_title": "Kontrolki wyswietlania",
-      "display_summary_desc": "Granulacja wykresu jest sterowana bezposrednio w pasku wykresu i nie zmienia wyniku obliczen."
+      "display_summary_desc": "Granulacja wykresu jest sterowana bezposrednio w pasku wykresu i nie zmienia wyniku obliczen.",
+      "step_inflation_title": "3. Ustawienia inflacji",
+      "step_inflation_desc": "Wybierz stałe ustawienie, prostą wartość inflacji albo roczną ścieżkę inflacji.",
+      "step_nbp_title": "4. Ustawienia stopy NBP",
+      "step_nbp_desc": "Wybierz stałe ustawienie, prostą stopę NBP albo roczną ścieżkę stopy NBP."
     },
     "tax_standard": "Konto standardowe (19% podatek)",
     "tax_ike": "Konto IKE (0% podatek)",
@@ -492,6 +561,9 @@
     "goal_progress": "Postęp celu: {percent}%",
     "target": "Cel",
     "simulation": {
+      "chart_empty": "Dane wykresu nie są dostępne dla tego scenariusza.",
+      "chart_data_table": "Wyświetl dane wykresu jako tabelę",
+      "ready_steps_label": "Skonfiguruj scenariusz",
       "ready": "Gotowy na symulację?",
       "ready_title": "Jeden kalkulator. Jeden zatwierdzony przebieg.",
       "ready_desc": "Najpierw domknij dane po lewej stronie, zostaw zalozenia zaawansowane jako drugorzedne, a potem uruchom jedno czyste obliczenie i zacznij od podsumowania.",
@@ -684,13 +756,20 @@
     },
     "results": {
       "summary_eyebrow": "Podsumowanie scenariusza",
+      "scenario_save_success": "Scenariusz zapisany.",
+      "scenario_save_error": "Nie mozna zapisac scenariusza. Sprawdz pamiec przegladarki i sprobuj ponownie.",
+      "pdf_export_success": "Utworzono eksport PDF.",
+      "pdf_export_error": "Nie mozna utworzyc eksportu PDF. Sprobuj ponownie.",
       "summary_description": "To jest koncowa wyplata netto dla obecnie zatwierdzonego scenariusza. Zacznij od czterech metryk ponizej, dopiero potem wchodz glebiej tylko wtedy, gdy potrzebujesz szczegolow.",
       "narrative_maturity": "Ten przebieg utrzymuje obligacje do modelowanej sciezki zapadalnosci, wiec wynik odzwierciedla pelny plan.",
       "narrative_early_exit": "Ten przebieg zaklada wczesniejszy wykup przed pelna zapadalnoscia, wiec oplaty lub utracona kapitalizacja moga obnizyc wynik.",
       "wrapper_limit_title": "Limit opakowania podatkowego zostal osiagniety.",
       "wrapper_limit_description": "{wrapperAmount} pozostalo w opakowaniu, a {standardAmount} przeszlo na konto standardowe.",
       "scenario_facts_title": "Fakty scenariusza",
-      "scenario_facts_description": "Minimalny zestaw parametrow potrzebny do poprawnego odczytu wyniku."
+      "scenario_facts_description": "Minimalny zestaw parametrow potrzebny do poprawnego odczytu wyniku.",
+      "actions_label": "Działania dla wyniku",
+      "more_actions": "Więcej działań",
+      "show_calculation_details": "Pokaż szczegóły obliczeń"
     },
     "scenario_fields": {
       "bond_type": "Typ obligacji",
@@ -765,6 +844,10 @@
       "rows_after_filters": "Wiersze po filtrach",
       "projected_points": "Punkty projekcji",
       "exit_markers": "Znaczniki wyjscia",
+      "results_announcement": "Pokazano {visible} z {total} wierszy harmonogramu. Aktywne filtry: {filters}. Punkty prognozy: {projections}.",
+      "no_results_announcement": "Zadne wiersze harmonogramu nie odpowiadaja biezacym filtrom. Aktywne filtry: {filters}. Punkty prognozy: {projections}.",
+      "active_filters": "Aktywne filtry harmonogramu",
+      "jump_to_rows": "Przejdz do pasujacych okresow",
       "summary_note": "Kazdy wiersz to punkt kontrolny scenariusza, a nie osobny zakup. Czytaj od lewej do prawej, aby zobaczyc co sie dzieje, jaka baza zostala uzyta i jaka wartosc opuszcza obligacje w tym momencie.",
       "mobile_sheet_title": "Szczegolowy harmonogram",
       "mobile_sheet_description": "Otworz harmonogram punkt po punkcie w widoku przyjaznym dla telefonu.",
@@ -1616,6 +1699,8 @@
     "shared_base_title": "Wspolna baza scenariusza",
     "shared_base_desc": "Utrzymaj jedna baze: kwote, daty i zalozenia. Nadpisania scenariuszy wlaczaj tylko wtedy, gdy rzeczywiscie maja znaczenie.",
     "shared_base_scope": "Lewy panel definiuje kwote, date zakupu, wspolny horyzont, zalozenia makro i domyslne opakowanie podatkowe dla obu scenariuszy.",
+    "shared_assumptions_title": "Wspolne zalozenia i podatek",
+    "shared_assumptions_desc": "Zmien sciezke makro lub opakowanie podatkowe tylko wtedy, gdy domyslna konfiguracja wymaga korekty.",
     "scenario_a_summary": "Podsumowanie scenariusza A",
     "scenario_b_summary": "Podsumowanie scenariusza B",
     "history_source": "Źródło historii",
@@ -1646,6 +1731,7 @@
     "base_follows_shared_title": "Baza pochodzi ze wspolnego scenariusza",
     "base_follows_shared_desc": "Kwota, data zakupu, inflacja, sciezka NBP i wspolny horyzont pozostaja zgodne, dopoki nie otworzysz opcjonalnych nadpisan.",
     "optional_overrides_title": "Opcjonalne nadpisania scenariusza",
+    "scenario_card_desc": "Wybierz obligacje; termin, kwota i zalozenia sa dziedziczone ze wspolnej bazy.",
     "optional_overrides_desc": "Otwieraj tylko wtedy, gdy jeden scenariusz ma swiadomie odejsc od wspolnej bazy.",
     "summary_leading_bond": "Prowadzaca obligacja",
     "summary_higher_payout": "ma wyzsza modelowana wyplate",
@@ -1672,6 +1758,7 @@
     "verdict": {
       "higher_real_value": "ma obecnie wyzsza wartosc realna",
       "higher_net_payout": "ma obecnie wyzsza modelowana wyplate netto",
+      "headline": "{bond} {outcome} o {gap} w tym horyzoncie {years} lat.",
       "caution_text": "Traktuj to jako odczyt jednego scenariusza, a nie uniwersalny ranking obligacji. Gdy zmieniaja sie zalozenia, zmienia sie tez roznica.",
       "mode_context": "Obsluga zapadalnosci: {mode}. Wniosek jest poprawny tylko w ramach tej reguly porownania.",
       "drivers_title": "Dlaczego ten scenariusz prowadzi",
@@ -1693,6 +1780,7 @@
     "table_mobile_desc": "Na mniejszych ekranach porownuj scenariusze jako liste punktow zamiast szerokiej tabeli.",
     "table_mobile_trigger": "Otworz tabele porownania",
     "table_mobile_count": "{count} wierszy osi czasu",
+    "table_grouped_by": "Harmonogram pogrupowany wedlug: {cadence}",
     "growth_chart_label": "Wykres wzrostu porownania",
     "drawdown_chart_label": "Wykres obsuniec porownania",
     "chart_accessible_summary_empty": "Wykres porownania nie ma jeszcze widocznych danych aktywow.",
@@ -2067,8 +2155,13 @@
       "structured_summary_note": "Raport PDF jest generowany z uporzadkowanego zestawu danych, a nie ze zrzutu ekranu strony.",
       "title": "Raport symulacji obligacji",
       "generated_label": "Wygenerowano",
+      "summary_heading": "Podsumowanie scenariusza",
+      "informational_disclaimer": "Raport ma wylacznie charakter informacyjny. Nie jest porada inwestycyjna, oferta ani rekomendacja. Przed podjeciem decyzji sprawdz aktualne warunki obligacji u oficjalnego emitenta.",
+      "footer_disclaimer": "Raport informacyjny — nie stanowi porady inwestycyjnej.",
       "run_notes": "Uwagi do przebiegu",
       "data_context": "Kontekst danych",
+      "no_notes": "Nie zgloszono dodatkowych uwag do obliczenia.",
+      "data_context_note": "Kwoty i stopy dotycza zakonczonego scenariusza kalkulatora. Moga roznic sie od aktualnej oferty i nie prognozuja przyszlych wynikow.",
       "normalized_layer_note": "Eksport PDF korzysta z tej samej uporzadkowanej warstwy wynikow, co podsumowanie scenariusza. Nie opiera sie na przechwytywaniu kolorow ani wykresu z DOM."
     }
   }

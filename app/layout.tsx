@@ -9,7 +9,6 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { AppLocaleProvider } from '@/i18n/client';
 import { defaultLocale, type Language } from '@/i18n/config';
 import { getMetadataLocale } from '@/i18n/locale-utils';
-import { getGlobalDataFreshness } from '@/lib/data/market-data';
 import { createAppJsonLd } from '@/lib/seo/app-json-ld';
 import { getCanonicalBaseUrl } from '@/lib/site-url';
 import { OpportunisticSyncTrigger } from '@/shared/components/chrome/OpportunisticSyncTrigger';
@@ -59,7 +58,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const dataFreshness = await getGlobalDataFreshness();
   const locale = await getLocale();
   const messages = await getMessages();
   const language = (locale as Language) || defaultLocale;
@@ -94,7 +92,7 @@ export default async function RootLayout({
                       >
                         {t('common.skip_to_content')}
                       </a>
-                      <Sidebar dataFreshness={dataFreshness} />
+                      <Sidebar />
                       <OpportunisticSyncTrigger />
                       <main
                         id="main-content"

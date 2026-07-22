@@ -11,6 +11,7 @@ import {
 
 import { BondValueChartToolbar } from './BondValueChartParts';
 import { BondValueChartPlot } from './BondValueChartPlot';
+import { ChartDataTable } from './ChartDataTable';
 
 export interface BondValueChartSeries {
   key: string;
@@ -60,10 +61,14 @@ interface BondValueChartProps {
   rightDomain: [number, number] | ['auto', 'auto'];
   summary: string;
   defaultGranularity?: ChartStep;
+  availableGranularities?: ChartStep[];
   onGranularityChange?: (step: ChartStep) => void;
   showContextControls?: boolean;
+  showInflationControl?: boolean;
+  showNbpControl?: boolean;
   ariaLabel: string;
   heightClassName?: string;
+  preferenceScope?: string;
 }
 
 export function BondValueChart({
@@ -74,14 +79,18 @@ export function BondValueChart({
   rightDomain,
   summary,
   defaultGranularity = 'yearly',
+  availableGranularities = ['monthly', 'quarterly', 'yearly'],
   onGranularityChange,
   showContextControls = true,
+  showInflationControl = true,
+  showNbpControl = true,
   ariaLabel,
   heightClassName = 'h-[360px] md:h-[460px] xl:h-[520px]',
+  preferenceScope,
 }: BondValueChartProps) {
   const { t } = useAppI18n();
   const [preferences, setPreferences] = React.useState(() =>
-    loadChartDisplayPreferences(defaultGranularity),
+    loadChartDisplayPreferences(defaultGranularity, preferenceScope),
   );
   const showInflationOverlay = preferences.showInflationOverlay;
   const showNbpOverlay = preferences.showNbpOverlay;
@@ -105,10 +114,10 @@ export function BondValueChart({
         ...current,
         granularity: defaultGranularity,
       };
-      saveChartDisplayPreferences(next);
+      saveChartDisplayPreferences(next, preferenceScope);
       return next;
     });
-  }, [defaultGranularity, granularity, onGranularityChange]);
+  }, [defaultGranularity, granularity, onGranularityChange, preferenceScope]);
 
   const legendItems = React.useMemo(
     () => [
@@ -133,7 +142,7 @@ export function BondValueChart({
         ...current,
         granularity: nextStep,
       };
-      saveChartDisplayPreferences(next);
+      saveChartDisplayPreferences(next, preferenceScope);
       return next;
     });
     onGranularityChange?.(nextStep);
@@ -148,7 +157,7 @@ export function BondValueChart({
         ...current,
         [key]: value,
       };
-      saveChartDisplayPreferences(next);
+      saveChartDisplayPreferences(next, preferenceScope);
       return next;
     });
   };
@@ -157,10 +166,13 @@ export function BondValueChart({
     <div className="space-y-4">
       <BondValueChartToolbar
         granularity={granularity}
+        availableGranularities={availableGranularities}
         legendItems={legendItems}
         showContextControls={showContextControls}
         showInflationOverlay={showInflationOverlay}
         showNbpOverlay={showNbpOverlay}
+        showInflationControl={showInflationControl}
+        showNbpControl={showNbpControl}
         onGranularityChange={handleGranularityChange}
         onOverlayChange={updateOverlayPreference}
         t={t}
@@ -180,6 +192,7 @@ export function BondValueChart({
         heightClassName={heightClassName}
         t={t}
       />
+      <ChartDataTable data={data} series={series} formatCurrency={formatCurrency} />
     </div>
   );
 }

@@ -4,21 +4,35 @@ import { BondInputs, CalculationResult } from '@/features/bond-core/types';
 import { getIntlLocale } from '@/i18n/locale-utils';
 import { translateMessage } from '@/i18n/translate';
 
-function formatCurrency(value: number, language: 'pl' | 'en') {
+type ReportLanguage = 'pl' | 'en';
+
+const page = { width: 210, height: 297, margin: 18, bottom: 278 };
+
+function formatCurrency(value: number, language: ReportLanguage) {
   return new Intl.NumberFormat(getIntlLocale(language), {
     style: 'currency',
     currency: 'PLN',
   }).format(value);
 }
-function buildAssumptionRows(
-  results: CalculationResult,
-  inputs: BondInputs,
-  language: 'pl' | 'en',
-) {
+
+function formatDate(value: string, language: ReportLanguage) {
+  const date = new Date(`${value}T12:00:00Z`);
+  return Number.isNaN(date.getTime())
+    ? value
+    : new Intl.DateTimeFormat(getIntlLocale(language), { dateStyle: 'long' }).format(date);
+}
+
+function buildReportRows(results: CalculationResult, inputs: BondInputs, language: ReportLanguage) {
   return [
     [translateMessage(language, 'export.single_bond_pdf.bond_type'), inputs.bondType],
-    [translateMessage(language, 'export.single_bond_pdf.purchase_date'), inputs.purchaseDate],
-    [translateMessage(language, 'export.single_bond_pdf.exit_date'), inputs.withdrawalDate],
+    [
+      translateMessage(language, 'export.single_bond_pdf.purchase_date'),
+      formatDate(inputs.purchaseDate, language),
+    ],
+    [
+      translateMessage(language, 'export.single_bond_pdf.exit_date'),
+      formatDate(inputs.withdrawalDate, language),
+    ],
     [
       translateMessage(language, 'export.single_bond_pdf.initial_investment'),
       formatCurrency(results.initialInvestment, language),
@@ -46,123 +60,138 @@ function buildAssumptionRows(
   ] as const;
 }
 
-function translateReportNote(note: string, language: 'pl' | 'en') {
+function translateReportNote(note: string, language: ReportLanguage) {
   const numericValue = note.match(/-?\d+(?:\.\d+)?/)?.[0] ?? '';
-
   if (note.startsWith('Expected annual inflation:')) {
     return translateMessage(language, 'bonds.engine_messages.expected_inflation', {
       value: numericValue,
     });
   }
-
   if (note.startsWith('Expected NBP reference rate:')) {
     return translateMessage(language, 'bonds.engine_messages.expected_nbp_rate', {
       value: numericValue,
     });
   }
-
   if (note === 'Using custom user-supplied inflation overrides.') {
     return translateMessage(language, 'bonds.engine_messages.custom_inflation');
   }
-
   if (note === 'Using custom user-supplied NBP rate overrides.') {
     return translateMessage(language, 'bonds.engine_messages.custom_nbp');
   }
-
   if (
     note ===
     'Rollover is disabled; the simulation stops at the first bond cycle or selected withdrawal date.'
   ) {
     return translateMessage(language, 'bonds.engine_messages.rollover_disabled');
   }
-
-  if (note === 'Early redemption fee logic was applied before the native maturity date.') {
-    return translateMessage(language, 'bonds.engine_messages.early_redemption_applied');
-  }
-
-  const cycleMatch = note.match(
-    /^Simulation covered (\d+) bond cycles? across the selected horizon\.$/,
-  );
-  if (cycleMatch) {
-    return translateMessage(language, 'bonds.engine_messages.rollover_cycles', {
-      count: cycleMatch[1],
-    });
-  }
-
   return note;
 }
 
 export async function generateSingleBondReportPdf(
   results: CalculationResult,
   inputs: BondInputs,
-  language: 'pl' | 'en',
+  language: ReportLanguage,
   filename = 'bond-report.pdf',
 ) {
   const pdf = new jsPDF('p', 'mm', 'a4');
-  const margin = 18;
-  const contentWidth = 174;
-  const lineHeight = 7;
-  let y = 20;
-  const rows = buildAssumptionRows(results, inputs, language);
-  const notes = results.calculationNotes?.length
-    ? results.calculationNotes
-    : [translateMessage(language, 'export.single_bond_pdf.structured_summary_note')];
-  const writeWrapped = (
-    text: string,
-    {
-      bold = false,
-      indent = 0,
-    }: {
-      bold?: boolean;
-      indent?: number;
-    } = {},
-  ) => {
+  const contentWidth = page.width - page.margin * 2;
+  let y = page.margin;
+
+  const ensureSpace = (height: number) => {
+    if (y + height <= page.bottom) return;
+    pdf.addPage();
+    y = page.margin;
+  };
+  const writeWrapped = (text: string, width = contentWidth, fontSize = 10, bold = false) => {
     pdf.setFont('helvetica', bold ? 'bold' : 'normal');
-    const lines = pdf.splitTextToSize(text, contentWidth - indent);
-    pdf.text(lines, margin + indent, y);
-    y += lineHeight * lines.length;
+    pdf.setFontSize(fontSize);
+    const lines = pdf.splitTextToSize(text, width);
+    const height = lines.length * (fontSize * 0.46);
+    ensureSpace(height);
+    pdf.text(lines, page.margin, y);
+    y += height;
   };
-  const writeSectionHeading = (text: string) => {
-    y += 3;
-    pdf.setDrawColor(220);
-    pdf.line(margin, y, margin + contentWidth, y);
-    y += 7;
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(12);
-    pdf.text(text, margin, y);
-    y += 7;
+  const heading = (text: string) => {
+    ensureSpace(13);
+    if (y > page.margin) y += 4;
+    pdf.setDrawColor(221, 215, 202);
+    pdf.line(page.margin, y, page.margin + contentWidth, y);
+    y += 6;
+    writeWrapped(text, contentWidth, 12, true);
+    y += 2;
   };
-  const writeLabelValueRow = (label: string, value: string) => {
-    pdf.setFontSize(10);
-    pdf.setFont('helvetica', 'bold');
-    pdf.text(label, margin, y);
+  const row = (label: string, value: string) => {
+    const labelWidth = 58;
+    const valueWidth = contentWidth - labelWidth - 5;
+    pdf.setFontSize(9);
+    const labelLines = pdf.splitTextToSize(label, labelWidth);
+    const valueLines = pdf.splitTextToSize(value, valueWidth);
+    const height = Math.max(labelLines.length, valueLines.length) * 5.2 + 3;
+    ensureSpace(height);
     pdf.setFont('helvetica', 'normal');
-    pdf.text(String(value), margin + 72, y);
-    y += 7;
+    pdf.text(labelLines, page.margin, y);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(valueLines, page.margin + labelWidth + 5, y);
+    y += height;
   };
+
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(20);
-  pdf.text(translateMessage(language, 'export.single_bond_pdf.title'), margin, y);
-  y += 10;
-  pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(10);
-  pdf.text(
-    `${translateMessage(language, 'export.single_bond_pdf.generated_label')}: ${new Date().toISOString().slice(0, 10)}`,
-    margin,
-    y,
+  pdf.text(translateMessage(language, 'export.single_bond_pdf.title'), page.margin, y);
+  y += 9;
+  writeWrapped(
+    `${translateMessage(language, 'export.single_bond_pdf.generated_label')}: ${formatDate(new Date().toISOString().slice(0, 10), language)}`,
+    contentWidth,
+    9,
   );
-  y += 10;
-  writeSectionHeading(translateMessage(language, 'export.single_bond_pdf.structured_summary_note'));
-  for (const [label, value] of rows) {
-    writeLabelValueRow(label, value);
-  }
-  writeSectionHeading(translateMessage(language, 'export.single_bond_pdf.run_notes'));
-  pdf.setFontSize(10);
+  y += 4;
+  pdf.setFillColor(248, 246, 241);
+  const disclaimer = translateMessage(language, 'export.single_bond_pdf.informational_disclaimer');
+  const disclaimerLines = pdf.splitTextToSize(disclaimer, contentWidth - 8);
+  const disclaimerHeight = disclaimerLines.length * 4.6 + 8;
+  ensureSpace(disclaimerHeight);
+  pdf.rect(page.margin, y, contentWidth, disclaimerHeight, 'F');
+  pdf.setTextColor(82, 75, 66);
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(9);
+  pdf.text(disclaimerLines, page.margin + 4, y + 5);
+  pdf.setTextColor(0, 0, 0);
+  y += disclaimerHeight;
+
+  heading(translateMessage(language, 'export.single_bond_pdf.summary_heading'));
+  for (const [label, value] of buildReportRows(results, inputs, language)) row(label, value);
+
+  const notes = results.calculationNotes?.length
+    ? results.calculationNotes
+    : [translateMessage(language, 'export.single_bond_pdf.no_notes')];
+  heading(translateMessage(language, 'export.single_bond_pdf.run_notes'));
   for (const note of notes) {
-    writeWrapped(`- ${translateReportNote(note, language)}`);
+    writeWrapped(`• ${translateReportNote(note, language)}`, contentWidth - 3, 9);
+    y += 2;
   }
-  writeSectionHeading(translateMessage(language, 'export.single_bond_pdf.data_context'));
-  pdf.setFontSize(10);
-  writeWrapped(translateMessage(language, 'export.single_bond_pdf.normalized_layer_note'));
+
+  heading(translateMessage(language, 'export.single_bond_pdf.data_context'));
+  writeWrapped(
+    translateMessage(language, 'export.single_bond_pdf.data_context_note'),
+    contentWidth,
+    9,
+  );
+
+  const pageCount = pdf.getNumberOfPages();
+  for (let index = 1; index <= pageCount; index += 1) {
+    pdf.setPage(index);
+    pdf.setDrawColor(221, 215, 202);
+    pdf.line(page.margin, 284, page.margin + contentWidth, 284);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(8);
+    pdf.setTextColor(102, 95, 85);
+    pdf.text(
+      translateMessage(language, 'export.single_bond_pdf.footer_disclaimer'),
+      page.margin,
+      289,
+    );
+    pdf.text(`${index}/${pageCount}`, page.margin + contentWidth, 289, { align: 'right' });
+    pdf.setTextColor(0, 0, 0);
+  }
   pdf.save(filename);
 }

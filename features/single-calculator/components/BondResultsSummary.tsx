@@ -28,9 +28,9 @@ import { CalculationAuditTrace } from './CalculationAuditTrace';
 interface BondResultsSummaryProps {
   results: CalculationResult;
   inputs: BondInputs;
-  onSaveScenario?: () => void;
-  onAddToNotebook?: () => void;
-  onExportPDF?: () => void;
+  onSaveScenario?: () => void | Promise<void>;
+  onAddToNotebook?: () => void | Promise<void>;
+  onExportPDF?: () => void | Promise<void>;
   canManageWorkspace?: boolean;
   dataQualityFlags?: string[];
 }
@@ -97,6 +97,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
         icon: <Plus className="h-4 w-4" />,
         onClick: onAddToNotebook,
         kind: 'secondary' as const,
+        priority: 'secondary' as const,
         disabled: !canManageWorkspace,
       },
       {
@@ -104,6 +105,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
         icon: <FileText className="h-4 w-4" />,
         onClick: onExportPDF,
         kind: 'pdf' as const,
+        priority: 'secondary' as const,
         disabled: !onExportPDF,
       },
       {
@@ -111,6 +113,7 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
         icon: <FileSpreadsheet className="h-4 w-4" />,
         onClick: handleExportCSV,
         kind: 'csv' as const,
+        priority: 'secondary' as const,
       },
     ],
     [canManageWorkspace, handleExportCSV, onAddToNotebook, onExportPDF, onSaveScenario, t],
@@ -132,9 +135,9 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
         </Notice>
       ) : null}
 
-      <MetricStrip items={metricItems} className="ui-result-panel" />
+      <MetricStrip items={metricItems} />
 
-      <section className="ui-result-panel">
+      <section className="pt-2">
         <FinancialInsightStrip
           title={t('financial_insights.title')}
           description={t('financial_insights.description')}
@@ -182,15 +185,18 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
     </div>
   );
 };
-const HelpButton = () => (
-  <button
-    className="ui-focus-ring group rounded-sm"
-    type="button"
-    aria-label="Show calculation details"
-  >
-    <Info
-      className="h-4 w-4 cursor-help text-muted-foreground transition-colors group-hover:text-primary"
-      aria-hidden="true"
-    />
-  </button>
-);
+const HelpButton = () => {
+  const { t } = useAppI18n();
+  return (
+    <button
+      className="ui-focus-ring group rounded-sm"
+      type="button"
+      aria-label={t('bonds.results.show_calculation_details')}
+    >
+      <Info
+        className="h-4 w-4 cursor-help text-muted-foreground transition-colors group-hover:text-primary"
+        aria-hidden="true"
+      />
+    </button>
+  );
+};

@@ -19,11 +19,16 @@ import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { TableDensityControls } from '@/shared/components/results/TableDensityControls';
 
-type BondTimelineDesktopRowsProps = BondTimelineRowsProps & {
+type BondTimelineDesktopRowsProps = Omit<
+  BondTimelineRowsProps,
+  'mobileResultsId' | 'desktopResultsId'
+> & {
+  resultsId: string;
   firstCashFlowLabel: string;
 };
 
 export function BondTimelineDesktopRows({
+  resultsId,
   displayedTimeline,
   filteredTimelineLength,
   activeFilterCount,
@@ -38,49 +43,62 @@ export function BondTimelineDesktopRows({
     rowsShown: t('common.rows_shown'),
     rowsPerPage: t('common.rows_per_page'),
     all: t('common.all'),
+    jumpToRows: t('bonds.schedule.jump_to_rows'),
   };
 
   return (
-    <div className="ui-table-frame hidden w-full lg:block">
+    <div id={resultsId} className="hidden w-full overflow-hidden bg-card 2xl:block">
       <TableScrollHint>{t('bonds.schedule.mobile_sheet_description')}</TableScrollHint>
       <Table className="w-full table-fixed text-sm tabular-nums" aria-label={t('bonds.timeline')}>
         <TableCaption>{t('bonds.timeline')}</TableCaption>
         <TableHeader>
-          <TableRow className="h-12 hover:bg-transparent">
-            <TableHead scope="col" className="sticky top-0 z-10 h-12 w-[11%] bg-background">
+          <TableRow className="hover:bg-transparent">
+            <TableHead
+              scope="col"
+              className="sticky top-0 z-10 w-[10%] whitespace-normal bg-background py-3 leading-4"
+            >
               {t('common.period')}
             </TableHead>
-            <TableHead scope="col" className="sticky top-0 z-10 h-12 w-[22%] bg-background">
+            <TableHead
+              scope="col"
+              className="sticky top-0 z-10 w-[19%] whitespace-normal bg-background py-3 leading-4"
+            >
               {t('bonds.schedule.checkpoint_meaning')}
             </TableHead>
-            <TableHead scope="col" className="sticky top-0 z-10 h-12 w-[15%] bg-background">
+            <TableHead
+              scope="col"
+              className="sticky top-0 z-10 w-[14%] whitespace-normal bg-background py-3 leading-4"
+            >
               {t('bonds.schedule.rate_and_basis')}
             </TableHead>
             <TableHead
               scope="col"
-              className="sticky top-0 z-10 h-12 w-[11%] bg-background text-right"
+              className="sticky top-0 z-10 w-[11%] whitespace-normal bg-background py-3 text-right leading-4"
             >
               {t('bonds.total_wealth')}
             </TableHead>
             <TableHead
               scope="col"
-              className="sticky top-0 z-10 h-12 w-[11%] bg-background text-right"
+              className="sticky top-0 z-10 w-[11%] whitespace-normal bg-background py-3 text-right leading-4"
             >
               {firstCashFlowLabel}
             </TableHead>
             <TableHead
               scope="col"
-              className="sticky top-0 z-10 h-12 w-[10%] bg-background text-right"
+              className="sticky top-0 z-10 w-[10%] whitespace-normal bg-background py-3 text-right leading-4"
             >
               {t('common.net_profit')}
             </TableHead>
             <TableHead
               scope="col"
-              className="sticky top-0 z-10 h-12 w-[10%] bg-background text-right"
+              className="sticky top-0 z-10 w-[10%] whitespace-normal bg-background py-3 text-right leading-4"
             >
               {t('bonds.real_value')}
             </TableHead>
-            <TableHead className="sticky top-0 z-10 h-12 w-[12%] bg-background text-right">
+            <TableHead
+              scope="col"
+              className="sticky top-0 z-10 w-[15%] whitespace-normal bg-background py-3 text-right leading-4"
+            >
               {t('bonds.early_exit_payout')}
             </TableHead>
           </TableRow>
@@ -90,11 +108,11 @@ export function BondTimelineDesktopRows({
             <TableRow
               key={row.key}
               className={cn(
-                'h-14 border-b border-border transition-colors hover:bg-muted/25',
-                row.isWithdrawal ? 'bg-muted/45 font-semibold' : '',
+                'border-b border-border bg-background transition-colors hover:bg-muted/25',
+                row.isWithdrawal ? 'font-semibold' : '',
               )}
             >
-              <TableCell className="py-4 align-top">
+              <TableCell className="py-3 align-top">
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-medium text-foreground">{row.periodLabel}</span>
@@ -126,7 +144,7 @@ export function BondTimelineDesktopRows({
                   ) : null}
                 </div>
               </TableCell>
-              <TableCell className="min-w-0 py-4 align-top text-xs text-muted-foreground">
+              <TableCell className="min-w-0 py-3 align-top text-xs text-muted-foreground">
                 <div className="max-w-[28ch] space-y-1 pr-3">
                   <p className="whitespace-normal break-words font-medium leading-5 text-foreground">
                     {row.cadenceLabel}
@@ -136,7 +154,7 @@ export function BondTimelineDesktopRows({
                   </p>
                 </div>
               </TableCell>
-              <TableCell className="py-4 align-top">
+              <TableCell className="py-3 align-top">
                 <div className="flex flex-col gap-1 pr-2">
                   <span className="financial-number font-mono text-xs font-semibold text-foreground">
                     {row.interestRateLabel}
@@ -149,24 +167,24 @@ export function BondTimelineDesktopRows({
                   ) : null}
                 </div>
               </TableCell>
-              <TableCell className="financial-number py-4 text-right align-top font-mono text-xs">
+              <TableCell className="financial-number py-3 text-right align-top font-mono text-xs">
                 {formatCurrency(row.totalWealth)}
               </TableCell>
-              <TableCell className="financial-number py-4 text-right align-top font-mono text-xs text-muted-foreground">
+              <TableCell className="financial-number py-3 text-right align-top font-mono text-xs text-muted-foreground">
                 {formatCurrency(row.paidOutCash)}
               </TableCell>
               <TableCell
                 className={cn(
-                  'financial-number py-4 text-right align-top font-mono text-xs',
+                  'financial-number py-3 text-right align-top font-mono text-xs',
                   row.netProfit >= 0 ? 'financial-positive' : 'text-destructive',
                 )}
               >
                 {formatCurrency(row.netProfit)}
               </TableCell>
-              <TableCell className="financial-number py-4 text-right align-top font-mono text-xs text-muted-foreground">
+              <TableCell className="financial-number py-3 text-right align-top font-mono text-xs text-muted-foreground">
                 {formatCurrency(row.realValue)}
               </TableCell>
-              <TableCell className="financial-number py-4 align-top text-right font-mono text-xs font-semibold">
+              <TableCell className="financial-number py-3 align-top text-right font-mono text-xs font-semibold">
                 {formatCurrency(row.earlyExitValue)}
               </TableCell>
             </TableRow>
@@ -179,7 +197,7 @@ export function BondTimelineDesktopRows({
         totalRows={filteredTimelineLength}
         visibleRows={displayedTimeline.length}
         onChange={onRowLimitChange}
-        className="border-t border-border px-1"
+        className="px-1"
         labels={densityLabels}
       />
 

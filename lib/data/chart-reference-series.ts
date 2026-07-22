@@ -15,6 +15,8 @@ export interface ChartSeriesEnvelope<T> {
   syncStatus?: 'success' | 'partial' | 'failed' | 'stale';
   coverageNote?: string;
   sourceUrl?: string;
+  cadence?: 'monthly' | 'irregular' | 'annual-reference';
+  coverageQuality?: 'synced' | 'partial' | 'sparse-reference';
 }
 
 export type ChartRatePoint = {
@@ -83,16 +85,19 @@ export function expandMonthlyStepSeries(points: ChartRatePoint[]) {
 }
 
 export function getFallbackInflationSeries(): ChartSeriesEnvelope<ChartRatePoint> {
+  const expandedFallbackCoverage = expandMonthlyStepSeries(FALLBACK_INFLATION);
   return {
-    data: FALLBACK_INFLATION,
+    data: expandedFallbackCoverage,
     source: 'fallback',
     usedFallback: true,
     dataSource: 'static fallback dataset',
     seriesName: 'Inflation fallback',
-    coverageStart: FALLBACK_INFLATION[0]?.date,
-    coverageEnd: FALLBACK_INFLATION[FALLBACK_INFLATION.length - 1]?.date,
+    coverageStart: expandedFallbackCoverage[0]?.date,
+    coverageEnd: expandedFallbackCoverage[expandedFallbackCoverage.length - 1]?.date,
     syncStatus: 'failed',
     coverageNote: 'cpi-fallback-reference',
+    cadence: 'annual-reference',
+    coverageQuality: 'sparse-reference',
   };
 }
 
@@ -108,6 +113,8 @@ export function getFallbackNbpSeries(): ChartSeriesEnvelope<ChartRatePoint> {
     coverageEnd: expandedFallbackCoverage[expandedFallbackCoverage.length - 1]?.date,
     syncStatus: 'failed',
     coverageNote: 'nbp-fallback-reference',
+    cadence: 'monthly',
+    coverageQuality: 'partial',
   };
 }
 
@@ -151,6 +158,8 @@ export function createInflationSeriesEnvelope({
     coverageEnd: data[data.length - 1]?.date,
     syncStatus,
     coverageNote,
+    cadence: 'monthly',
+    coverageQuality: syncStatus === 'success' ? 'synced' : 'partial',
   };
 }
 
@@ -187,5 +196,7 @@ export function createNbpSeriesEnvelope({
       : sourceUsesPartialCoverage
         ? 'nbp-partial-reference'
         : 'nbp-synced-context',
+    cadence: 'irregular',
+    coverageQuality: sourceUsesPartialCoverage ? 'partial' : 'synced',
   };
 }

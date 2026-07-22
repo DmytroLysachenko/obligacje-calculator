@@ -7,11 +7,11 @@ import {
 } from './feature-catalog';
 
 describe('feature catalog', () => {
-  it('admits only the trusted core and reference routes to release', () => {
+  it('orders the trusted core navigation around calculation, context, and learning', () => {
     expect(getTrustedReleaseFeatures().map(({ route }) => route)).toEqual([
-      '/education',
       '/single-calculator',
       '/economic-data',
+      '/education',
     ]);
   });
 

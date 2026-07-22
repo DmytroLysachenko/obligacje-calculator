@@ -3,7 +3,6 @@ import React from 'react';
 import {
   Area,
   AreaChart,
-  Brush,
   CartesianGrid,
   ReferenceLine,
   ResponsiveContainer,
@@ -81,9 +80,6 @@ export const NBPRateChart = ({ period = 'ALL' }: { period?: PeriodValue }) => {
             />
             <Tooltip content={<EconomicChartTooltip metricLabel={t('bonds.nbp_rate_short')} />} />
             <ReferenceLine y={0} stroke="#000" strokeWidth={1} />
-            {chartData.length > 24 ? (
-              <Brush dataKey="date" height={22} stroke="#5C5C5C" travellerWidth={8} />
-            ) : null}
             <Area
               type="stepAfter"
               dataKey="rate"

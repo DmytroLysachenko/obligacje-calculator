@@ -6,11 +6,15 @@ export interface ChartDisplayPreferences {
   showNbpOverlay: boolean;
 }
 
-const STORAGE_KEY = 'obligacje.chart-display-preferences.v1';
+const STORAGE_KEY_PREFIX = 'obligacje.chart-display-preferences.v3';
+
+function getStorageKey(scope = 'default') {
+  return `${STORAGE_KEY_PREFIX}.${scope}`;
+}
 
 const defaultPreferences: ChartDisplayPreferences = {
   granularity: 'yearly',
-  showInflationOverlay: false,
+  showInflationOverlay: true,
   showNbpOverlay: false,
 };
 
@@ -20,6 +24,7 @@ function isChartStep(value: unknown): value is ChartStep {
 
 export function loadChartDisplayPreferences(
   defaultGranularity: ChartStep = 'yearly',
+  scope?: string,
 ): ChartDisplayPreferences {
   if (typeof window === 'undefined') {
     return {
@@ -29,7 +34,7 @@ export function loadChartDisplayPreferences(
   }
 
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.localStorage.getItem(getStorageKey(scope));
     if (!raw) {
       return {
         ...defaultPreferences,
@@ -52,10 +57,10 @@ export function loadChartDisplayPreferences(
   }
 }
 
-export function saveChartDisplayPreferences(preferences: ChartDisplayPreferences) {
+export function saveChartDisplayPreferences(preferences: ChartDisplayPreferences, scope?: string) {
   if (typeof window === 'undefined') {
     return;
   }
 
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));
+  window.localStorage.setItem(getStorageKey(scope), JSON.stringify(preferences));
 }

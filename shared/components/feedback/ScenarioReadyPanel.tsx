@@ -19,6 +19,7 @@ interface ScenarioReadyPanelProps {
   ctaLabel?: string;
   onClick?: () => void;
   footerText?: string;
+  stepsLabel?: string;
 }
 
 function ReadyStepCard({ title, description }: Pick<ReadyStepItem, 'title' | 'description'>) {
@@ -38,6 +39,7 @@ export function ScenarioReadyPanel({
   ctaLabel,
   onClick,
   footerText,
+  stepsLabel,
 }: ScenarioReadyPanelProps) {
   return (
     <section className="space-y-6 border-t border-border py-6">
@@ -50,7 +52,7 @@ export function ScenarioReadyPanel({
         <p className="ui-body max-w-3xl text-muted-foreground">{description}</p>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-3" aria-label="Set up your scenario">
+      <div className="grid gap-3 md:grid-cols-3" aria-label={stepsLabel}>
         {steps.map((step) => (
           <ReadyStepCard key={step.id} title={step.title} description={step.description} />
         ))}

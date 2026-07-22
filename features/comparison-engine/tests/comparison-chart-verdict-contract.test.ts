@@ -17,6 +17,7 @@ const files = {
   chartLegendContract: 'shared/components/charts/chart-legend-contract.test.ts',
   resultsContract: 'features/comparison-engine/tests/comparison-results-surface-contract.test.ts',
   resultsPanelTypes: 'features/comparison-engine/types/comparison-results-panel.ts',
+  container: 'features/comparison-engine/components/ComparisonContainer.tsx',
 } as const;
 
 function read(relativePath: string) {
@@ -114,7 +115,7 @@ describe('comparison chart and verdict contracts', () => {
   it('keeps comparison verdict badges divider-led instead of pill-heavy', () => {
     const source = read(files.verdict);
 
-    expectContains(source, 'flex flex-wrap gap-x-4 gap-y-2 border-t border-border pt-4');
+    expectContains(source, 'ui-action-row border-t border-border pt-4');
     expectContains(
       source,
       'inline-flex items-center gap-2 border-l-2 border-border pl-3 text-xs font-semibold text-muted-foreground',
@@ -123,10 +124,10 @@ describe('comparison chart and verdict contracts', () => {
       source,
       'inline-flex items-center gap-2 border-l-2 border-warning pl-3 text-xs font-semibold text-warning',
     );
-    expectContains(source, 'border-l-2 border-border px-4 py-4 text-center');
-    expectContains(source, '<Scale className="h-3 w-3" />');
-    expectContains(source, '<ShieldCheck className="h-3 w-3" />');
-    expectContains(source, '<Zap className="h-3 w-3" />');
+    expectContains(source, 'ui-status-note ui-status-note-success flex-col px-4 py-5 text-center');
+    expectContains(source, '<Scale className="h-3 w-3" aria-hidden="true" />');
+    expectContains(source, '<ShieldCheck className="h-3 w-3" aria-hidden="true" />');
+    expectContains(source, '<Zap className="h-3 w-3" aria-hidden="true" />');
 
     expectNoFragments(source, [
       "import { Badge } from '@/components/ui/badge';",
@@ -136,6 +137,17 @@ describe('comparison chart and verdict contracts', () => {
       'border-warning/30 bg-warning/10 text-xs font-semibold text-warning',
       'bg-muted/35 px-4 py-4 text-center',
     ]);
+  });
+
+  it('puts the localized decision before chart evidence', () => {
+    const container = read(files.container);
+    const verdict = read(files.verdict);
+
+    expect(container.indexOf('<ComparisonVerdict')).toBeLessThan(
+      container.indexOf('<ComparisonResultsPanel'),
+    );
+    expectContains(verdict, "t('comparison.verdict.headline', {");
+    expectNotContains(verdict, 'over the alternative in this');
   });
 
   it('keeps comparison cleanup covered by broader chart and surface contracts', () => {

@@ -45,6 +45,7 @@ describe('package scripts contract', () => {
     expect(pkg.scripts['smoke:local']).toBe('tsx scripts/smoke-local.ts');
     expect(pkg.scripts['ops:verify-prod']).toBe('tsx scripts/verify-production.ts');
     expect(pkg.scripts['ops:cloud-run-status']).toBe('tsx scripts/cloud-run-status.ts');
+    expect(pkg.scripts['deploy:prod']).toBe('gh workflow run deploy-cloud-run.yml --ref main');
     expect(pkg.scripts['gcp:proxy']).toContain('gcloud run services proxy obligacje-calculator');
 
     const smokeLocal = readFileSync(join(process.cwd(), 'scripts/smoke-local.ts'), 'utf8');

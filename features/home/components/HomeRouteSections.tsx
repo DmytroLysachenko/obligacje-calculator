@@ -17,7 +17,7 @@ export function HomePrimaryRoute({ item }: { item: HomeRouteItem }) {
     <Link href={item.href} className="block ui-focus-ring">
       <article
         data-testid="home-primary-route"
-        className="group border-y border-foreground/30 bg-muted/25 px-4 py-7 transition-colors duration-150 hover:bg-muted/40 md:flex md:items-center md:justify-between md:gap-8 md:px-6"
+        className="group rounded-md border border-foreground/20 bg-muted/25 px-4 py-7 transition-colors duration-150 hover:border-foreground/40 hover:bg-muted/40 md:flex md:items-center md:justify-between md:gap-8 md:px-6"
       >
         <div className="flex min-w-0 gap-4">
           <div
@@ -62,7 +62,7 @@ export function HomeSupportingRoutes({
     <div className="grid gap-x-8 md:grid-cols-2">
       {items.map((item) => (
         <Link key={item.href} href={item.href} className="block ui-focus-ring">
-          <article className="group border-t border-border py-6 transition-colors duration-150 hover:border-foreground/40">
+          <article className="group rounded-md px-3 py-5 transition-colors duration-150 hover:bg-muted/35">
             <div className="flex items-start gap-3">
               <item.icon
                 className="mt-0.5 size-4 shrink-0 text-muted-foreground"

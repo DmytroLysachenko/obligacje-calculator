@@ -10,6 +10,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { useAppI18n } from '@/i18n/client';
 import { AdvancedAssumptionsDisclosure } from '@/shared/components/forms/AdvancedAssumptionsDisclosure';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
+import { FormSection } from '@/shared/components/forms/FormSection';
 import {
   AssumptionSetupMode,
   MarketAssumptionsForm,
@@ -17,6 +18,10 @@ import {
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { getHorizonMonths, getWithdrawalDateFromMonths } from '@/shared/lib/date-timing';
+import {
+  isFloatingNbpBondType,
+  isInflationIndexedBondType,
+} from '@/shared/lib/market-assumption-semantics';
 
 import { BondInputs, BondType } from '../../bond-core/types';
 import { InputGuardrailIssue } from '../lib/input-guardrails';
@@ -34,6 +39,8 @@ interface BondSeries {
 }
 
 interface BondInputsFormProps {
+  formId?: string;
+  onSubmit?: React.FormEventHandler<HTMLFormElement>;
   inputs: BondInputs;
   onUpdate: (key: keyof BondInputs, value: unknown) => void;
   onBondTypeChange: (type: BondType) => void;
@@ -44,6 +51,8 @@ interface BondInputsFormProps {
 }
 
 export const BondInputsForm: React.FC<BondInputsFormProps> = ({
+  formId,
+  onSubmit,
   inputs,
   onUpdate,
   onBondTypeChange,
@@ -74,6 +83,8 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
       parseISO(getWithdrawalDateFromMonths(inputs.purchaseDate, Math.round(inputs.duration * 12))),
     [inputs.duration, inputs.purchaseDate],
   );
+  const usesInflation = isInflationIndexedBondType(inputs.bondType);
+  const usesNbpRate = isFloatingNbpBondType(inputs.bondType);
 
   if (isLoadingDefs || !definitions || !currentDef) {
     return (
@@ -106,7 +117,9 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
 
   return (
     <TooltipProvider>
-      <section
+      <form
+        id={formId}
+        onSubmit={onSubmit}
         className="ui-form-panel w-full space-y-7 xl:sticky xl:top-8"
         aria-label={t('bonds.single_calculator')}
       >
@@ -146,9 +159,12 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
         </div>
 
         <div className="ui-control-stack">
-          <AdvancedAssumptionsDisclosure
+          <FormSection
             title={t('bonds.step_core')}
             description={t('bonds.form.step_core_desc')}
+            headingLevel="h3"
+            className="border-t-0 pt-0"
+            contentClassName="pt-2"
           >
             <BondConfigSection
               inputs={inputs}
@@ -158,11 +174,14 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               availableSeries={availableSeries}
               selectedSeriesId={selectedSeriesId}
             />
-          </AdvancedAssumptionsDisclosure>
+          </FormSection>
 
-          <AdvancedAssumptionsDisclosure
+          <FormSection
             title={t('bonds.step_timing')}
             description={t('bonds.form.step_timing_desc')}
+            headingLevel="h3"
+            className="border-t-0 pt-0"
+            contentClassName="pt-2"
           >
             <BondTimingSection
               inputs={inputs}
@@ -172,47 +191,51 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
               currentDef={currentDef}
               hasMounted={hasMounted}
             />
-          </AdvancedAssumptionsDisclosure>
+          </FormSection>
 
-          <AdvancedAssumptionsDisclosure
-            title="3. Inflation setup"
-            description="Choose fixed presets, one simple inflation value, or a yearly inflation path."
-          >
-            <MarketAssumptionsForm
-              expectedInflation={inputs.expectedInflation}
-              expectedNbpRate={inputs.expectedNbpRate}
-              bondType={inputs.bondType}
-              customInflation={inputs.customInflation}
-              customNbpRate={inputs.customNbpRate}
-              inflationHorizonYears={Math.max(1, Math.ceil(investmentHorizonMonths / 12))}
-              onUpdate={handleUpdate as (key: string, value: unknown) => void}
-              compact
-              section="inflation"
-              showIntro={false}
-              inflationSetupMode={inflationSetupMode}
-              onInflationSetupModeChange={setInflationSetupMode}
-            />
-          </AdvancedAssumptionsDisclosure>
+          {usesInflation ? (
+            <AdvancedAssumptionsDisclosure
+              title={t('bonds.form.step_inflation_title')}
+              description={t('bonds.form.step_inflation_desc')}
+            >
+              <MarketAssumptionsForm
+                expectedInflation={inputs.expectedInflation}
+                expectedNbpRate={inputs.expectedNbpRate}
+                bondType={inputs.bondType}
+                customInflation={inputs.customInflation}
+                customNbpRate={inputs.customNbpRate}
+                inflationHorizonYears={Math.max(1, Math.ceil(investmentHorizonMonths / 12))}
+                onUpdate={handleUpdate as (key: string, value: unknown) => void}
+                compact
+                section="inflation"
+                showIntro={false}
+                inflationSetupMode={inflationSetupMode}
+                onInflationSetupModeChange={setInflationSetupMode}
+              />
+            </AdvancedAssumptionsDisclosure>
+          ) : null}
 
-          <AdvancedAssumptionsDisclosure
-            title="4. NBP rate setup"
-            description="Choose fixed presets, one simple NBP rate, or a yearly NBP path."
-          >
-            <MarketAssumptionsForm
-              expectedInflation={inputs.expectedInflation}
-              expectedNbpRate={inputs.expectedNbpRate}
-              bondType={inputs.bondType}
-              customInflation={inputs.customInflation}
-              customNbpRate={inputs.customNbpRate}
-              inflationHorizonYears={Math.max(1, Math.ceil(investmentHorizonMonths / 12))}
-              onUpdate={handleUpdate as (key: string, value: unknown) => void}
-              compact
-              section="nbp"
-              showIntro={false}
-              nbpSetupMode={nbpSetupMode}
-              onNbpSetupModeChange={setNbpSetupMode}
-            />
-          </AdvancedAssumptionsDisclosure>
+          {usesNbpRate ? (
+            <AdvancedAssumptionsDisclosure
+              title={t('bonds.form.step_nbp_title')}
+              description={t('bonds.form.step_nbp_desc')}
+            >
+              <MarketAssumptionsForm
+                expectedInflation={inputs.expectedInflation}
+                expectedNbpRate={inputs.expectedNbpRate}
+                bondType={inputs.bondType}
+                customInflation={inputs.customInflation}
+                customNbpRate={inputs.customNbpRate}
+                inflationHorizonYears={Math.max(1, Math.ceil(investmentHorizonMonths / 12))}
+                onUpdate={handleUpdate as (key: string, value: unknown) => void}
+                compact
+                section="nbp"
+                showIntro={false}
+                nbpSetupMode={nbpSetupMode}
+                onNbpSetupModeChange={setNbpSetupMode}
+              />
+            </AdvancedAssumptionsDisclosure>
+          ) : null}
         </div>
 
         <BondSummaryFooter
@@ -221,7 +244,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
           maturityDate={maturityDate}
           hasMounted={hasMounted}
         />
-      </section>
+      </form>
     </TooltipProvider>
   );
 };

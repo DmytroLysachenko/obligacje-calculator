@@ -1,7 +1,8 @@
 'use client';
 
 import { Target } from 'lucide-react';
-import React, { useMemo, useState } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useAppI18n } from '@/i18n/client';
 import { AppToast } from '@/shared/components/feedback/AppToast';
@@ -32,6 +33,7 @@ import {
   buildSingleCalculatorReadingGuide,
   buildSingleReportFilename,
 } from '../lib/single-calculator-container-model';
+import { parseBondType } from '../lib/single-calculator-state';
 
 import { BondCalculatorDetailsPanel, BondCalculatorResultsPanel } from './BondCalculatorPanels';
 import { BondInputsForm } from './BondInputsForm';
@@ -42,10 +44,16 @@ interface BondCalculatorContainerProps {
   sharedScenarioTitle?: string;
 }
 
+const SINGLE_CALCULATOR_FORM_ID = 'single-calculator-inputs';
+
 export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = ({
   initialInputs,
   sharedScenarioTitle,
 }) => {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const bondFromUrl = parseBondType(searchParams.get('bond'));
+  const shouldSyncBondToUrl = useRef(Boolean(bondFromUrl));
   const {
     inputs,
     results,
@@ -61,11 +69,32 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     selectedSeriesId,
     lastCommittedInputs,
     isPersistenceReady,
-  } = useBondCalculator(initialInputs);
+  } = useBondCalculator(initialInputs, bondFromUrl);
   const { t, locale: language } = useAppI18n();
   const { canManageWorkspace } = usePortfolioAccess();
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [statusTone, setStatusTone] = useState<'success' | 'error'>('success');
+
+  useEffect(() => {
+    if (
+      initialInputs ||
+      !isPersistenceReady ||
+      !shouldSyncBondToUrl.current ||
+      typeof window === 'undefined' ||
+      searchParams.get('bond') === inputs.bondType
+    ) {
+      return;
+    }
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('bond', inputs.bondType);
+    window.history.replaceState(null, '', `${pathname}?${params.toString()}`);
+  }, [initialInputs, inputs.bondType, isPersistenceReady, pathname, searchParams]);
+
+  const handleBondTypeChange = (type: import('@/features/bond-core/types').BondType) => {
+    shouldSyncBondToUrl.current = true;
+    setBondType(type);
+  };
   const translate = useMemo(
     () => (key: string, params?: Record<string, string | number>) => t(key, params),
     [t],
@@ -78,8 +107,9 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
 
   const readingGuide = useMemo(() => buildSingleCalculatorReadingGuide(t), [t]);
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter' && (isDirty || !results)) {
+  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!isCalculating && blockingGuardrails.length === 0) {
       calculate();
     }
   };
@@ -133,15 +163,22 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     }
   };
 
-  const handleSaveScenario = () => {
-    const scenarioMeta = buildSavedSingleScenarioMeta(inputs, results);
-
-    saveScenarioRecord(
-      createSavedScenario(inputs, {
-        name: scenarioMeta.name,
-        description: scenarioMeta.description,
-      }),
-    );
+  const handleSaveScenario = async () => {
+    try {
+      const scenarioMeta = buildSavedSingleScenarioMeta(inputs, results);
+      saveScenarioRecord(
+        createSavedScenario(inputs, {
+          name: scenarioMeta.name,
+          description: scenarioMeta.description,
+        }),
+      );
+      setStatusTone('success');
+      setStatusMessage(t('bonds.results.scenario_save_success'));
+    } catch (error) {
+      logClientError('Scenario save failed:', error);
+      setStatusTone('error');
+      setStatusMessage(t('bonds.results.scenario_save_error'));
+    }
   };
 
   const handleExportPDF = async () => {
@@ -149,7 +186,20 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
       return;
     }
 
-    await generateSingleBondReportPdf(results, inputs, language, buildSingleReportFilename(inputs));
+    try {
+      await generateSingleBondReportPdf(
+        results,
+        inputs,
+        language,
+        buildSingleReportFilename(inputs, language),
+      );
+      setStatusTone('success');
+      setStatusMessage(t('bonds.results.pdf_export_success'));
+    } catch (error) {
+      logClientError('PDF export failed:', error);
+      setStatusTone('error');
+      setStatusMessage(t('bonds.results.pdf_export_error'));
+    }
   };
 
   const handleShareScenario = async () => {
@@ -181,7 +231,6 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
       hasResults={isPersistenceReady && !!results}
       onShare={handleShareScenario}
       showImplicitShare={false}
-      onKeyDown={handleKeyDown}
     >
       <div className="ui-page-flow">
         {sharedScenarioTitle ? (
@@ -199,9 +248,11 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
           detailsClassName="min-w-0"
           controls={
             <BondInputsForm
+              formId={SINGLE_CALCULATOR_FORM_ID}
+              onSubmit={handleFormSubmit}
               inputs={inputs}
               onUpdate={updateInput}
-              onBondTypeChange={setBondType}
+              onBondTypeChange={handleBondTypeChange}
               availableSeries={availableSeries}
               selectedSeriesId={selectedSeriesId}
               guardrails={guardrails}
@@ -239,6 +290,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
         hasResults={!!results}
         loading={isCalculating}
         disabled={blockingGuardrails.length > 0}
+        formId={SINGLE_CALCULATOR_FORM_ID}
         onClick={() => calculate()}
       />
 

@@ -42,6 +42,7 @@ interface TableDensityControlsProps {
     rowsShown: string;
     rowsPerPage: string;
     all: string;
+    jumpToRows?: string;
   };
   className?: string;
 }
@@ -71,7 +72,7 @@ export function TableDensityControls({
         {labels.rowsShown}: {visibleRows} / {totalRows}
       </p>
       {needsDensityControls ? (
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2" aria-label={labels.jumpToRows}>
           <span className="text-xs font-semibold text-muted-foreground">{labels.rowsPerPage}</span>
           {tableRowLimitOptions.map((option) => (
             <Button
@@ -79,7 +80,7 @@ export function TableDensityControls({
               type="button"
               variant={value === option ? 'default' : 'outline'}
               size="sm"
-              className="h-8 min-w-10 px-3 text-xs font-semibold"
+              className="h-11 min-w-11 px-3 text-xs font-semibold"
               onClick={() => onChange(option)}
             >
               {option === 'all' ? labels.all : option}
