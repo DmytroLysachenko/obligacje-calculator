@@ -25,6 +25,7 @@ import { ComparisonResultsPanel } from './ComparisonResultsPanel';
 import { ComparisonSharedBaseCard } from './ComparisonSharedBaseCard';
 import { ComparisonTable } from './ComparisonTable';
 import { ComparisonVerdict } from './ComparisonVerdict';
+import { comparisonLayout } from './comparison-layout';
 import { ScenarioOverrideCard } from './ScenarioOverrideCard';
 export const ComparisonContainer: React.FC = () => {
   const pathname = usePathname();
@@ -144,11 +145,8 @@ export const ComparisonContainer: React.FC = () => {
       onKeyDown={handleKeyDown}
     >
       <div className="ui-page-flow">
-        <div className="grid grid-cols-1 gap-8 2xl:grid-cols-[420px_minmax(0,1fr)] 2xl:items-start 2xl:gap-10">
-          <aside
-            className="2xl:sticky 2xl:top-8 2xl:h-fit"
-            aria-label={t('comparison.shared_base')}
-          >
+        <div className={comparisonLayout.workspace}>
+          <aside className={comparisonLayout.sharedBase} aria-label={t('comparison.shared_base')}>
             <ComparisonSharedBaseCard
               sharedConfig={sharedConfig}
               assumptionsBondType={assumptionsBondType}
@@ -162,7 +160,7 @@ export const ComparisonContainer: React.FC = () => {
           </aside>
 
           <div className="min-w-0 ui-compact-flow">
-            <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+            <div className={comparisonLayout.scenarioGrid}>
               <ScenarioOverrideCard
                 title={t('comparison.scenario_a')}
                 colorClass="scenario-a"
@@ -212,7 +210,7 @@ export const ComparisonContainer: React.FC = () => {
         {resultsA && resultsB ? (
           <div
             className={cn(
-              'ui-page-flow min-w-0',
+              comparisonLayout.results,
               isCalculating && 'pointer-events-none opacity-60',
             )}
           >

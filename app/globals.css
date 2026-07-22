@@ -453,16 +453,6 @@
   .ui-wide-width {
     max-width: var(--layout-wide-max);
   }
-  .comparison-wide-frame {
-    width: 100%;
-  }
-  @media (min-width: 1280px) {
-    .comparison-wide-frame {
-      width: calc(100vw - var(--sidebar-width) - 5rem);
-      margin-left: calc((100% - (100vw - var(--sidebar-width) - 5rem)) / 2);
-      margin-right: calc((100% - (100vw - var(--sidebar-width) - 5rem)) / 2);
-    }
-  }
   .ui-muted-panel {
     @apply border border-border bg-muted/45;
     border-radius: var(--finance-radius-md);

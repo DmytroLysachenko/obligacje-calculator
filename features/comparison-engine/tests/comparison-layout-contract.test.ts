@@ -8,6 +8,7 @@ const root = process.cwd();
 const files = {
   page: 'features/comparison-engine/components/ComparePageClient.tsx',
   container: 'features/comparison-engine/components/ComparisonContainer.tsx',
+  layout: 'features/comparison-engine/components/comparison-layout.ts',
   results: 'features/comparison-engine/components/ComparisonResultsPanel.tsx',
   table: 'features/comparison-engine/components/ComparisonTable.tsx',
   tableParts: 'features/comparison-engine/components/comparison-table/ComparisonTableParts.tsx',
@@ -29,29 +30,30 @@ function read(relativePath: string) {
 }
 
 describe('comparison layout contract', () => {
-  it('keeps the comparison route from returning to a narrow centered page cap', () => {
+  it('uses the shared wide page frame instead of viewport arithmetic', () => {
     const source = read(files.page);
     const styles = read('app/globals.css');
 
-    expect(source).toContain('comparison-wide-frame');
-    expect(source).toContain('max-w-none');
+    expect(source).toContain('ui-wide-width mx-auto w-full space-y-8');
+    expect(source).not.toContain('comparison-wide-frame');
     expect(source).not.toContain('-translate-x-1/2');
     expect(source).not.toContain('left-1/2');
     expect(source).not.toContain('max-w-7xl');
-    expect(styles).toContain('.comparison-wide-frame');
-    expect(styles).toContain('width: calc(100vw - var(--sidebar-width) - 5rem);');
-    expect(styles).toContain(
-      'margin-left: calc((100% - (100vw - var(--sidebar-width) - 5rem)) / 2);',
-    );
+    expect(styles).not.toContain('.comparison-wide-frame');
+    expect(styles).not.toContain('width: calc(100vw - var(--sidebar-width) - 5rem);');
   });
 
   it('keeps the A/B comparison workspace wide enough for result-heavy content', () => {
     const container = read(files.container);
     const results = read(files.results);
+    const layout = read(files.layout);
 
-    expect(container).toContain('2xl:grid-cols-[420px_minmax(0,1fr)]');
-    expect(container).toContain('<div className="min-w-0 space-y-8">');
-    expect(container).toContain('xl:grid-cols-2');
+    expect(container).toContain('comparisonLayout.workspace');
+    expect(container).toContain('comparisonLayout.sharedBase');
+    expect(container).toContain('comparisonLayout.scenarioGrid');
+    expect(layout).toContain('2xl:grid-cols-[minmax(20rem,420px)_minmax(0,1fr)]');
+    expect(layout).toContain("scenarioGrid: 'grid grid-cols-1 gap-5 xl:grid-cols-2 xl:gap-6'");
+    expect(layout).toContain("desktopSchedule: 'hidden 2xl:block'");
     expect(container).toContain('scenarioAColor={scenarioAColor}');
     expect(container).toContain('scenarioBColor={scenarioBColor}');
     expect(results).toContain('heightClassName="h-[360px] md:h-[440px] xl:h-[500px]"');
