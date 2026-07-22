@@ -1,7 +1,7 @@
 'use client';
 import { Scale } from 'lucide-react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { BondType, ChartStep } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
@@ -13,8 +13,16 @@ import { useHasMounted } from '@/shared/hooks/useHasMounted';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 
 import { useComparison } from '../hooks/useComparison';
+import { buildDefaultSharedConfig } from '../lib/comparison-calculator-state';
 import { buildComparisonContainerViewModel } from '../lib/comparison-container-model';
-import { parseComparisonBondPair, withComparisonBondPair } from '../lib/comparison-deep-link';
+import { parseComparisonUrlState, withComparisonUrlState } from '../lib/comparison-deep-link';
+import {
+  applyScenarioBondTypeUpdate,
+  applyScenarioCustomHorizonEnabled,
+  applyScenarioCustomHorizonMonths,
+  applyScenarioOverrideUpdate,
+  applySharedComparisonConfigUpdate,
+} from '../lib/comparison-update-actions';
 
 import {
   ComparisonAssumptionsMetaPanel,
@@ -30,8 +38,11 @@ import { ScenarioOverrideCard } from './ScenarioOverrideCard';
 export const ComparisonContainer: React.FC = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const initialPair = useMemo(() => parseComparisonBondPair(searchParams), [searchParams]);
-  const hasUserSelectedBond = useRef(false);
+  const initialUrlState = useMemo(
+    () => parseComparisonUrlState(searchParams, buildDefaultSharedConfig()),
+    [searchParams],
+  );
+  const hasUserEditedSetup = useRef(false);
   const {
     sharedConfig,
     scenarioA,
@@ -60,19 +71,85 @@ export const ComparisonContainer: React.FC = () => {
     isDirty,
     isPersistenceReady,
     definitions,
-  } = useComparison(initialPair);
+  } = useComparison(initialUrlState);
   const { t, locale: language } = useAppI18n();
   const [chartStep, setChartStep] = useState<ChartStep>('yearly');
-  const syncPairAfterUserSelection = (nextA: BondType, nextB: BondType) => {
-    if (!hasUserSelectedBond.current) return;
-    window.history.replaceState(
-      null,
-      '',
-      withComparisonBondPair(pathname, new URLSearchParams(searchParams.toString()), [
-        nextA,
-        nextB,
-      ]),
+  const comparisonUrlState = useMemo(
+    () => ({ sharedConfig, scenarioA, scenarioB }),
+    [scenarioA, scenarioB, sharedConfig],
+  );
+  const syncComparisonUrl = (
+    nextState = comparisonUrlState,
+    historyMode: 'push' | 'replace' = 'push',
+  ) => {
+    if (typeof window === 'undefined') return;
+    const url = withComparisonUrlState(
+      pathname,
+      new URLSearchParams(searchParams.toString()),
+      nextState,
     );
+    window.history[historyMode === 'push' ? 'pushState' : 'replaceState'](null, '', url);
+  };
+  useEffect(() => {
+    if (!hasUserEditedSetup.current) return;
+    syncComparisonUrl(comparisonUrlState, 'replace');
+  }, [comparisonUrlState]);
+
+  const updateSharedConfigWithHistory = (
+    key: keyof typeof sharedConfig,
+    value: string | number | boolean | undefined,
+  ) => {
+    hasUserEditedSetup.current = true;
+    const nextState = {
+      ...comparisonUrlState,
+      sharedConfig: applySharedComparisonConfigUpdate(sharedConfig, key, value),
+    };
+    updateSharedConfig(key, value);
+    syncComparisonUrl(nextState);
+  };
+  const updateScenarioWithHistory = (
+    scenarioKey: 'A' | 'B',
+    key: keyof typeof scenarioA,
+    value: string | number | boolean | undefined,
+  ) => {
+    hasUserEditedSetup.current = true;
+    const updated = applyScenarioOverrideUpdate(
+      scenarioKey === 'A' ? scenarioA : scenarioB,
+      key,
+      value,
+    );
+    const nextState = {
+      ...comparisonUrlState,
+      ...(scenarioKey === 'A' ? { scenarioA: updated } : { scenarioB: updated }),
+    };
+    scenarioKey === 'A' ? updateScenarioA(key, value) : updateScenarioB(key, value);
+    syncComparisonUrl(nextState);
+  };
+  const updateScenarioHorizonWithHistory = (
+    scenarioKey: 'A' | 'B',
+    value: number | undefined,
+    enabled?: boolean,
+  ) => {
+    hasUserEditedSetup.current = true;
+    const currentScenario = scenarioKey === 'A' ? scenarioA : scenarioB;
+    const updated =
+      enabled === undefined
+        ? applyScenarioCustomHorizonMonths(sharedConfig, currentScenario, value)
+        : applyScenarioCustomHorizonEnabled(sharedConfig, currentScenario, enabled);
+    const nextState = {
+      ...comparisonUrlState,
+      ...(scenarioKey === 'A' ? { scenarioA: updated } : { scenarioB: updated }),
+    };
+    if (scenarioKey === 'A') {
+      enabled === undefined
+        ? setScenarioACustomHorizonMonths(value)
+        : setScenarioACustomHorizonEnabled(enabled);
+    } else {
+      enabled === undefined
+        ? setScenarioBCustomHorizonMonths(value)
+        : setScenarioBCustomHorizonEnabled(enabled);
+    }
+    syncComparisonUrl(nextState);
   };
   const hasMounted = useHasMounted();
   const currencyFormatter = useCurrencyFormatter(language, {
@@ -151,7 +228,7 @@ export const ComparisonContainer: React.FC = () => {
               sharedConfig={sharedConfig}
               assumptionsBondType={assumptionsBondType}
               onUpdateSharedConfig={
-                updateSharedConfig as (
+                updateSharedConfigWithHistory as (
                   key: keyof typeof sharedConfig | string,
                   value: unknown,
                 ) => void
@@ -166,32 +243,50 @@ export const ComparisonContainer: React.FC = () => {
                 colorClass="scenario-a"
                 bondType={scenarioA.bondType}
                 onBondTypeChange={(bondType) => {
-                  hasUserSelectedBond.current = true;
+                  hasUserEditedSetup.current = true;
                   setBondTypeA(bondType);
-                  syncPairAfterUserSelection(bondType, scenarioB.bondType);
+                  syncComparisonUrl({
+                    ...comparisonUrlState,
+                    scenarioA: applyScenarioBondTypeUpdate(scenarioA, bondType),
+                  });
                 }}
                 taxStrategy={scenarioA.taxStrategy}
-                onTaxStrategyChange={(value) => updateScenarioA('taxStrategy', value)}
+                onTaxStrategyChange={(value) =>
+                  updateScenarioWithHistory('A', 'taxStrategy', value)
+                }
                 customHorizonEnabled={scenarioA.investmentHorizonMonths !== undefined}
-                onCustomHorizonEnabledChange={setScenarioACustomHorizonEnabled}
+                onCustomHorizonEnabledChange={(enabled) =>
+                  updateScenarioHorizonWithHistory('A', undefined, enabled)
+                }
                 customHorizonMonths={scenarioA.investmentHorizonMonths}
-                onCustomHorizonMonthsChange={setScenarioACustomHorizonMonths}
+                onCustomHorizonMonthsChange={(value) =>
+                  updateScenarioHorizonWithHistory('A', value)
+                }
               />
               <ScenarioOverrideCard
                 title={t('comparison.scenario_b')}
                 colorClass="scenario-b"
                 bondType={scenarioB.bondType}
                 onBondTypeChange={(bondType) => {
-                  hasUserSelectedBond.current = true;
+                  hasUserEditedSetup.current = true;
                   setBondTypeB(bondType);
-                  syncPairAfterUserSelection(scenarioA.bondType, bondType);
+                  syncComparisonUrl({
+                    ...comparisonUrlState,
+                    scenarioB: applyScenarioBondTypeUpdate(scenarioB, bondType),
+                  });
                 }}
                 taxStrategy={scenarioB.taxStrategy}
-                onTaxStrategyChange={(value) => updateScenarioB('taxStrategy', value)}
+                onTaxStrategyChange={(value) =>
+                  updateScenarioWithHistory('B', 'taxStrategy', value)
+                }
                 customHorizonEnabled={scenarioB.investmentHorizonMonths !== undefined}
-                onCustomHorizonEnabledChange={setScenarioBCustomHorizonEnabled}
+                onCustomHorizonEnabledChange={(enabled) =>
+                  updateScenarioHorizonWithHistory('B', undefined, enabled)
+                }
                 customHorizonMonths={scenarioB.investmentHorizonMonths}
-                onCustomHorizonMonthsChange={setScenarioBCustomHorizonMonths}
+                onCustomHorizonMonthsChange={(value) =>
+                  updateScenarioHorizonWithHistory('B', value)
+                }
               />
             </div>
 

@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
-import { BondType } from '@/features/bond-core/types';
+import { BondType, TaxStrategy } from '@/features/bond-core/types';
 
 import { buildDefaultSharedConfig } from '../../lib/comparison-calculator-state';
-import { parseComparisonBondPair, withComparisonBondPair } from '../../lib/comparison-deep-link';
+import {
+  parseComparisonBondPair,
+  parseComparisonUrlState,
+  withComparisonBondPair,
+  withComparisonUrlState,
+} from '../../lib/comparison-deep-link';
 import {
   type PersistedComparisonState,
   restoreComparisonState,
@@ -51,5 +56,60 @@ describe('comparison deep-link state', () => {
     expect(withComparisonBondPair('/compare', current, [BondType.COI, BondType.EDO])).toBe(
       '/compare?view=compact&a=COI&b=EDO',
     );
+  });
+
+  it('round-trips the supported setup without leaking transient UI state', () => {
+    const defaults = buildDefaultSharedConfig(new Date('2026-07-22T00:00:00.000Z'));
+    const state = parseComparisonUrlState(
+      new URLSearchParams(
+        'a=ROR&b=EDO&amount=12500&timing=exact&purchase=2026-08-01&withdrawal=2031-08-01&horizon=60&tax=IKE&inflation=2.8&nbp=4.1&taxB=IKZE&horizonA=36',
+      ),
+      defaults,
+    );
+
+    expect(state).toMatchObject({
+      sharedConfig: {
+        initialInvestment: 12500,
+        purchaseDate: '2026-08-01',
+        withdrawalDate: '2031-08-01',
+        investmentHorizonMonths: 60,
+        timingMode: 'exact',
+        taxStrategy: TaxStrategy.IKE,
+        expectedInflation: 2.8,
+        expectedNbpRate: 4.1,
+      },
+      scenarioA: { bondType: BondType.ROR, investmentHorizonMonths: 36 },
+      scenarioB: { bondType: BondType.EDO, taxStrategy: TaxStrategy.IKZE },
+    });
+    expect(state).not.toBeNull();
+
+    const url = withComparisonUrlState('/compare', new URLSearchParams('panel=chart'), state!);
+    expect(url).toContain('panel=chart');
+    expect(url).toContain('a=ROR');
+    expect(url).toContain('taxB=IKZE');
+    expect(url).not.toContain('chartStep');
+  });
+
+  it('falls back safely when URL fields are malformed or outside the supported range', () => {
+    const defaults = buildDefaultSharedConfig(new Date('2026-07-22T00:00:00.000Z'));
+    const state = parseComparisonUrlState(
+      new URLSearchParams(
+        'a=ROR&b=EDO&amount=oops&purchase=not-a-date&horizon=9999&tax=nope&inflation=500&nbp=NaN&horizonA=-1',
+      ),
+      defaults,
+    );
+
+    expect(state).toMatchObject({
+      sharedConfig: {
+        initialInvestment: defaults.initialInvestment,
+        purchaseDate: defaults.purchaseDate,
+        investmentHorizonMonths: defaults.investmentHorizonMonths,
+        taxStrategy: defaults.taxStrategy,
+        expectedInflation: defaults.expectedInflation,
+      },
+      scenarioA: { bondType: BondType.ROR },
+      scenarioB: { bondType: BondType.EDO },
+    });
+    expect(parseComparisonUrlState(new URLSearchParams('a=BAD&b=EDO'), defaults)).toBeNull();
   });
 });

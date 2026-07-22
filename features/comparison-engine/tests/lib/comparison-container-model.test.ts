@@ -41,7 +41,7 @@ describe('comparison container model', () => {
     expect(model.chartData).toEqual([]);
     expect(model.assumptionsBondType).toBe(BondType.EDO);
     expect(model.durationMismatch).toBe(true);
-    expect(model.scenarioAColor).toBeTruthy();
-    expect(model.scenarioBColor).toBeTruthy();
+    expect(model.scenarioAColor).toBe('#2563eb');
+    expect(model.scenarioBColor).toBe('#d97706');
   });
 });

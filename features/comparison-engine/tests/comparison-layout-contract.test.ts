@@ -175,4 +175,22 @@ describe('comparison layout contract', () => {
     expect(pagination).toContain('h-11 min-w-11');
     expect(pagination).toContain('h-11 px-3');
   });
+
+  it('serializes supported setup state while preserving intentional history entries', () => {
+    const container = read(files.container);
+    const hook = read(files.hook);
+    const deepLink = read('features/comparison-engine/lib/comparison-deep-link.ts');
+
+    expect(container).toContain(
+      'parseComparisonUrlState(searchParams, buildDefaultSharedConfig())',
+    );
+    expect(container).toContain("historyMode: 'push' | 'replace' = 'push'");
+    expect(container).toContain("? 'pushState' : 'replaceState'");
+    expect(container).toContain("syncComparisonUrl(comparisonUrlState, 'replace')");
+    expect(hook).toContain('setSharedConfig(initialUrlState.sharedConfig);');
+    expect(deepLink).toContain('export function parseComparisonUrlState');
+    expect(deepLink).toContain('export function withComparisonUrlState');
+    expect(deepLink).toContain('const URL_KEYS = [');
+    expect(deepLink).toContain("'horizonB'");
+  });
 });

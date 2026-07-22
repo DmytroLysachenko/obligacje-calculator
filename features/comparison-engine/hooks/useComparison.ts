@@ -31,9 +31,11 @@ import {
   isSharedComparisonMacroUpdate,
 } from '../lib/comparison-update-actions';
 
+import type { ComparisonUrlState } from '../lib/comparison-deep-link';
+
 import { useComparisonPersistenceEffects } from './useComparisonPersistenceEffects';
 
-export function useComparison(initialPair?: readonly [BondType, BondType] | null) {
+export function useComparison(initialUrlState?: ComparisonUrlState | null) {
   const { definitions } = useBondDefinitions();
   const { defaults: macroDefaults } = useMacroAssumptionDefaults();
   const [sharedConfig, setSharedConfig] =
@@ -49,7 +51,7 @@ export function useComparison(initialPair?: readonly [BondType, BondType] | null
   const hasRestoredState = useRef(false);
   const restoredFromPersistence = useRef(false);
   const hasTouchedMacroAssumptions = useRef(false);
-  const hasAppliedInitialPair = useRef(false);
+  const hasAppliedInitialUrlState = useRef(false);
   const { isCalculating, post } = useCalculationRequest();
 
   const inputsA = useMemo(
@@ -119,7 +121,9 @@ export function useComparison(initialPair?: readonly [BondType, BondType] | null
   };
 
   useComparisonPersistenceEffects({
-    initialPair,
+    initialPair: initialUrlState
+      ? [initialUrlState.scenarioA.bondType, initialUrlState.scenarioB.bondType]
+      : null,
     sharedConfig,
     scenarioA,
     scenarioB,
@@ -143,15 +147,16 @@ export function useComparison(initialPair?: readonly [BondType, BondType] | null
   });
 
   useEffect(() => {
-    if (!initialPair || !isPersistenceReady || hasAppliedInitialPair.current) return;
-    hasAppliedInitialPair.current = true;
-    setScenarioA({ bondType: initialPair[0], isRebought: false });
-    setScenarioB({ bondType: initialPair[1], isRebought: false });
+    if (!initialUrlState || !isPersistenceReady || hasAppliedInitialUrlState.current) return;
+    hasAppliedInitialUrlState.current = true;
+    setSharedConfig(initialUrlState.sharedConfig);
+    setScenarioA(initialUrlState.scenarioA);
+    setScenarioB(initialUrlState.scenarioB);
     setComparisonEnvelope(null);
     setCommittedInputsA(null);
     setCommittedInputsB(null);
     setIsDirty(true);
-  }, [initialPair, isPersistenceReady]);
+  }, [initialUrlState, isPersistenceReady]);
 
   const setScenarioACustomHorizonEnabled = useCallback(
     (enabled: boolean) => {
