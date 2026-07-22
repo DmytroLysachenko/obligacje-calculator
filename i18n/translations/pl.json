@@ -1758,6 +1758,7 @@
     "verdict": {
       "higher_real_value": "ma obecnie wyzsza wartosc realna",
       "higher_net_payout": "ma obecnie wyzsza modelowana wyplate netto",
+      "headline": "{bond} {outcome} o {gap} w tym horyzoncie {years} lat.",
       "caution_text": "Traktuj to jako odczyt jednego scenariusza, a nie uniwersalny ranking obligacji. Gdy zmieniaja sie zalozenia, zmienia sie tez roznica.",
       "mode_context": "Obsluga zapadalnosci: {mode}. Wniosek jest poprawny tylko w ramach tej reguly porownania.",
       "drivers_title": "Dlaczego ten scenariusz prowadzi",

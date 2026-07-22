@@ -61,7 +61,6 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
   const { t } = useAppI18n();
   const comparisonSnapshotLabel = t('comparison.verdict_snapshot_label');
   const higherText = t('comparison.verdict.higher_net_payout');
-  const overText = t('comparison.verdict_over_text');
   const resultAValue = resultsA.netPayoutValue;
   const resultBValue = resultsB.netPayoutValue;
   const betterBondType = resultAValue > resultBValue ? inputsA.bondType : inputsB.bondType;
@@ -104,7 +103,12 @@ export const ComparisonVerdict: React.FC<ComparisonVerdictProps> = ({
 
           <div className="ui-control-stack">
             <p className="ui-body font-medium">
-              {`${betterBondType} ${higherText} by ${formatCurrency(gap)} ${overText} ${horizonYears}-year setup.`}
+              {t('comparison.verdict.headline', {
+                bond: betterBondType,
+                outcome: higherText,
+                gap: formatCurrency(gap),
+                years: horizonYears,
+              })}
             </p>
             <p className="ui-body text-muted-foreground">
               {t('comparison.verdict.mode_context', {

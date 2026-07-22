@@ -1758,6 +1758,7 @@
     "verdict": {
       "higher_real_value": "currently shows the higher real value",
       "higher_net_payout": "currently shows the higher modeled net payout",
+      "headline": "{bond} {outcome} by {gap} over this {years}-year setup.",
       "caution_text": "Treat this as one scenario read, not a universal bond ranking. If assumptions change, the gap can change too.",
       "mode_context": "Maturity handling: {mode}. The verdict is only valid inside this comparison rule.",
       "drivers_title": "Why this scenario leads",

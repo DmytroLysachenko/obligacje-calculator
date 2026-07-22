@@ -220,6 +220,16 @@ export const ComparisonContainer: React.FC = () => {
               </Notice>
             ) : null}
 
+            <ComparisonVerdict
+              resultsA={resultsA}
+              resultsB={resultsB}
+              inputsA={resultInputsA}
+              inputsB={resultInputsB}
+              expectedInflation={resultInputsA.expectedInflation}
+              taxStrategy={resultInputsA.taxStrategy}
+              formatCurrency={formatCurrency}
+            />
+
             {hasMounted ? (
               <ComparisonResultsPanel
                 chartData={chartData}
@@ -236,16 +246,6 @@ export const ComparisonContainer: React.FC = () => {
                 scenarioBColor={scenarioBColor}
               />
             ) : null}
-
-            <ComparisonVerdict
-              resultsA={resultsA}
-              resultsB={resultsB}
-              inputsA={resultInputsA}
-              inputsB={resultInputsB}
-              expectedInflation={resultInputsA.expectedInflation}
-              taxStrategy={resultInputsA.taxStrategy}
-              formatCurrency={formatCurrency}
-            />
 
             <ComparisonTable
               resultsA={resultsA}

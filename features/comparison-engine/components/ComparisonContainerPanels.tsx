@@ -60,19 +60,21 @@ export function ComparisonFairnessPanel({
           {durationMismatchText}
         </Notice>
       ) : null}
-      <Button
-        type="button"
-        className="h-12 w-full gap-2 text-sm font-semibold md:w-auto"
-        onClick={onCalculate}
-        disabled={isCalculating}
-      >
-        {isCalculating ? (
-          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-        ) : (
-          <RotateCcw className="h-4 w-4" aria-hidden="true" />
-        )}
-        {hasResults ? t('common.recalculate') : t('common.calculate')}
-      </Button>
+      {!hasResults ? (
+        <Button
+          type="button"
+          className="h-12 w-full gap-2 text-sm font-semibold md:w-auto"
+          onClick={onCalculate}
+          disabled={isCalculating}
+        >
+          {isCalculating ? (
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+          ) : (
+            <RotateCcw className="h-4 w-4" aria-hidden="true" />
+          )}
+          {t('common.calculate')}
+        </Button>
+      ) : null}
     </section>
   );
 }
