@@ -36,6 +36,7 @@
     "gcp:proxy": "gcloud run services proxy obligacje-calculator --project bond-calculator-pl --region europe-central2 --port 8080",
     "ops:cloud-run-status": "tsx scripts/cloud-run-status.ts",
     "ops:verify-prod": "tsx scripts/verify-production.ts",
+    "deploy:prod": "gh workflow run deploy-cloud-run.yml --ref main",
     "db:seed": "tsx db/seed.ts",
     "seed:series": "tsx lib/sync/seed-series-runner.ts",
     "seed:market-history": "tsx lib/sync/seed-market-history.ts",

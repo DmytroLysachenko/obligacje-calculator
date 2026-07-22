@@ -143,7 +143,7 @@ Recommended flow:
 2. merge completed batches back into `dev`
 3. open a PR from `dev` to `main` when the batch is ready
 4. wait for CI to pass on `main`
-5. run the manual `Deploy Cloud Run` workflow from `main`
+5. run `pnpm deploy:prod` to dispatch the manual `Deploy Cloud Run` workflow from `main`
 
 CI runs on pushes to both `dev` and `main`, and on pull requests. Production deploys are guarded so they only run from `main`.
 
@@ -154,6 +154,17 @@ Recommended GitHub branch protection:
 - Production environment: require manual approval before `Deploy Cloud Run` and `Rollback Cloud Run`.
 
 ## Manual Deploy
+
+From an authenticated GitHub CLI session, dispatch the protected deployment workflow:
+
+```bash
+pnpm deploy:prod
+gh run watch
+```
+
+The command does not deploy from the local machine. It starts the existing GitHub Actions
+workflow on `main`, where release checks, OIDC authentication, production environment rules,
+and post-deploy verification still apply.
 
 In GitHub:
 
