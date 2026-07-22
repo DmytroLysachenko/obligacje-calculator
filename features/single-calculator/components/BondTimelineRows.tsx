@@ -26,6 +26,8 @@ export function BondTimelineRows({
         resultsId={mobileResultsId}
         displayedTimeline={displayedTimeline}
         filteredTimelineLength={filteredTimelineLength}
+        activeFilterCount={activeFilterCount}
+        onResetFilters={onResetFilters}
         formatCurrency={formatCurrency}
       />
 

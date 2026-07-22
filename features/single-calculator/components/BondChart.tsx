@@ -12,10 +12,7 @@ import {
 } from '@/shared/lib/bond-display';
 import { applyChartContextRates } from '@/shared/lib/chart-context-rates';
 import { computeNumericDomain, computeRateDomain } from '@/shared/lib/chart-series';
-import {
-  isFloatingNbpBondType,
-  isInflationIndexedBondType,
-} from '@/shared/lib/market-assumption-semantics';
+import { isFloatingNbpBondType } from '@/shared/lib/market-assumption-semantics';
 
 import { BondInputs, CalculationResult, ChartStep } from '../../bond-core/types';
 
@@ -172,7 +169,7 @@ export const BondChart: React.FC<BondChartProps> = ({
       defaultGranularity={displayStep}
       onGranularityChange={onDisplayStepChange}
       availableGranularities={['monthly', 'quarterly', 'yearly']}
-      showInflationControl={isInflationIndexedBondType(inputs.bondType)}
+      showInflationControl
       showNbpControl={isFloatingNbpBondType(inputs.bondType)}
       ariaLabel={t('bonds.value_chart_label')}
     />

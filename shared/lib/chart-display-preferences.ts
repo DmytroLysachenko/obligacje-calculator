@@ -6,7 +6,7 @@ export interface ChartDisplayPreferences {
   showNbpOverlay: boolean;
 }
 
-const STORAGE_KEY_PREFIX = 'obligacje.chart-display-preferences.v2';
+const STORAGE_KEY_PREFIX = 'obligacje.chart-display-preferences.v3';
 
 function getStorageKey(scope = 'default') {
   return `${STORAGE_KEY_PREFIX}.${scope}`;
@@ -14,7 +14,7 @@ function getStorageKey(scope = 'default') {
 
 const defaultPreferences: ChartDisplayPreferences = {
   granularity: 'yearly',
-  showInflationOverlay: false,
+  showInflationOverlay: true,
   showNbpOverlay: false,
 };
 

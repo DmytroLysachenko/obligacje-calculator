@@ -11,7 +11,6 @@ const files = {
   mobileRows: 'features/single-calculator/components/BondTimelineMobileRows.tsx',
   desktopRows: 'features/single-calculator/components/BondTimelineDesktopRows.tsx',
   select: 'shared/components/forms/FormSelect.tsx',
-  sheet: 'shared/components/results/ResponsiveTableSheet.tsx',
   en: 'i18n/translations/en.json',
   pl: 'i18n/translations/pl.json',
 } as const;
@@ -68,7 +67,6 @@ describe('timeline filtered-result announcement contract', () => {
     const mobileRows = read(files.mobileRows);
     const desktopRows = read(files.desktopRows);
     const select = read(files.select);
-    const sheet = read(files.sheet);
 
     expect(timeline).toContain("const mobileResultsId = 'bond-timeline-mobile-results';");
     expect(timeline).toContain("const desktopResultsId = 'bond-timeline-desktop-results';");
@@ -79,14 +77,33 @@ describe('timeline filtered-result announcement contract', () => {
     expect(timeline).toContain('ariaControls={timelineResultsIds}');
     expect(rows).toContain('resultsId={mobileResultsId}');
     expect(rows).toContain('resultsId={desktopResultsId}');
-    expect(mobileRows).toContain('resultsId={resultsId}');
+    expect(mobileRows).toContain('id={resultsId}');
+    expect(mobileRows).toContain(
+      'className="2xl:hidden overflow-hidden border-y border-border bg-border"',
+    );
+    expect(mobileRows).toContain('onClick={onResetFilters}');
     expect(desktopRows).toContain(
-      '<div id={resultsId} className="ui-table-frame hidden w-full lg:block">',
+      '<div id={resultsId} className="hidden w-full overflow-hidden bg-card 2xl:block">',
     );
     expect(select).toContain('ariaControls?: string;');
     expect(select).toContain('aria-controls={ariaControls}');
-    expect(sheet).toContain('resultsId?: string;');
-    expect(sheet).toContain('id={resultsId}');
+  });
+
+  it('keeps every revealed desktop row on the same base surface', () => {
+    const desktopRows = read(files.desktopRows);
+
+    expect(desktopRows).toContain('border-b border-border bg-background transition-colors');
+    expect(desktopRows).toContain("row.isWithdrawal ? 'font-semibold' : ''");
+    expect(desktopRows).not.toContain("row.isWithdrawal ? 'bg-muted/45 font-semibold' : ''");
+  });
+
+  it('lets dense desktop schedule headings wrap within a balanced column budget', () => {
+    const desktopRows = read(files.desktopRows);
+
+    expect(desktopRows).toContain('whitespace-normal bg-background py-3');
+    expect(desktopRows).toContain('w-[19%]');
+    expect(desktopRows).toContain('w-[15%]');
+    expect(desktopRows).not.toContain('h-10 w-[12%]');
   });
 
   it('keeps complete localized announcement templates in English and Polish', () => {

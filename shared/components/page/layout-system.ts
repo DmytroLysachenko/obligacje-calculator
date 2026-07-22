@@ -16,8 +16,8 @@ export const pageLayout = {
   controlStack: 'ui-control-stack',
   resultPanel: 'ui-result-panel',
   calculatorGrid:
-    'grid grid-cols-1 gap-8 lg:grid-cols-[minmax(19rem,0.72fr)_minmax(0,1.28fr)] lg:items-start lg:gap-8 xl:grid-cols-[420px_minmax(0,1fr)] xl:gap-10',
-  stickyScenario: 'space-y-5 lg:sticky lg:top-8 lg:h-fit',
+    'grid grid-cols-1 gap-8 2xl:grid-cols-[420px_minmax(0,1fr)] 2xl:items-start 2xl:gap-10',
+  stickyScenario: 'space-y-5 2xl:sticky 2xl:top-8 2xl:h-fit',
   stickySidebar: 'space-y-5 lg:sticky lg:top-8 lg:h-fit',
   compactCalculatorGrid:
     'grid grid-cols-1 gap-6 lg:grid-cols-[minmax(18rem,0.7fr)_minmax(0,1.3fr)] lg:items-start lg:gap-8',
