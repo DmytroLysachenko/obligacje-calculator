@@ -45,4 +45,11 @@ describe('single calculator localized accessibility contract', () => {
     expect(moneyInput).toContain('autoComplete="off"');
     expect(sliderInput).toContain('autoComplete="off"');
   });
+
+  it('uses an explicit localized duration unit in bond selector options', () => {
+    const config = readSource(sources.config);
+
+    expect(config).toContain("t('common.duration_months')");
+    expect(config).not.toContain('formatDurationLabel(type) =>');
+  });
 });

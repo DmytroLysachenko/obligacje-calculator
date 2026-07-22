@@ -201,30 +201,30 @@ export const CalculationMetaPanel: React.FC<CalculationMetaPanelProps> = ({
           title={t('common.warnings')}
           items={warnings.map((item) => translateEngineMessage(item, t))}
           icon={<AlertTriangle className="h-4 w-4" />}
-          className="space-y-3 border-t border-warning/40 py-4 text-foreground"
+          className="space-y-3 bg-warning/5 px-4 py-3 text-foreground"
         />
         <MetaSection
           title={t('common.assumptions')}
           items={assumptions.map((item) => translateEngineMessage(item, t))}
           icon={<Target className="h-4 w-4" />}
-          className="space-y-3 border-t border-border py-4 text-foreground"
+          className="space-y-3 bg-muted/20 px-4 py-3 text-foreground"
         />
         <MetaSection
           title={t('common.notes')}
           items={calculationNotes.map((item) => translateEngineMessage(item, t))}
           icon={<FileText className="h-4 w-4" />}
-          className="space-y-3 border-t border-border py-4 text-foreground"
+          className="space-y-3 bg-muted/20 px-4 py-3 text-foreground"
         />
         <MetaSection
           title={t('common.data_quality')}
           items={dataQualityFlags}
           icon={<ShieldAlert className="h-4 w-4" />}
-          className="space-y-3 border-t border-warning/40 py-4 text-foreground"
+          className="space-y-3 bg-warning/5 px-4 py-3 text-foreground"
           formatItem={(item) => humanizeFlag(item, t)}
         />
       </div>
 
-      <div className="flex flex-col gap-3 border-y border-border py-3 text-sm leading-6 text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-t border-border pt-3 text-sm leading-6 text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           <DatabaseZap className="h-4 w-4 text-primary" />
           <span className="font-semibold text-foreground">{t('common.calculation_audit')}</span>

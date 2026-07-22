@@ -41,7 +41,7 @@ export const BondConfigSection: React.FC<BondConfigSectionProps> = React.memo(
       t,
     );
     const formatDurationLabel = (type: BondType) =>
-      `${Math.round((definitions[type]?.duration ?? 1) * 12)} ${t('common.month_compact')}`;
+      `${Math.round((definitions[type]?.duration ?? 1) * 12)} ${t('common.duration_months')}`;
     const maxBondUnits = 1000;
     const bondUnits = Math.max(1, Math.round(inputs.initialInvestment / 100));
     const purchaseValueLabel = inputs.initialInvestment.toLocaleString(getIntlLocale(language));

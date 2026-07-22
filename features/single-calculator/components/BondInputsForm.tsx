@@ -163,6 +163,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
             title={t('bonds.step_core')}
             description={t('bonds.form.step_core_desc')}
             headingLevel="h3"
+            className="border-t-0 pt-0"
             contentClassName="pt-2"
           >
             <BondConfigSection
@@ -179,6 +180,7 @@ export const BondInputsForm: React.FC<BondInputsFormProps> = ({
             title={t('bonds.step_timing')}
             description={t('bonds.form.step_timing_desc')}
             headingLevel="h3"
+            className="border-t-0 pt-0"
             contentClassName="pt-2"
           >
             <BondTimingSection

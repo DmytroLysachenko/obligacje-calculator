@@ -32,7 +32,7 @@ interface BondCalculatorResultsPanelProps {
   isDirty: boolean;
   blockingGuardrails: InputGuardrailIssue[];
   canManageWorkspace: boolean;
-  onSaveScenario: () => void;
+  onSaveScenario: () => void | Promise<void>;
   onAddToNotebook: () => void | Promise<void>;
   onExportPDF: () => void | Promise<void>;
 }
@@ -168,7 +168,6 @@ export function BondCalculatorDetailsPanel({
       <CalculatorSection
         title={t('bonds.evolution')}
         description={t('bonds.simulation.chart_section_desc')}
-        className="ui-section-divider"
       >
         <ChartSupportNote
           title={t('bonds.simulation.chart_help_title')}

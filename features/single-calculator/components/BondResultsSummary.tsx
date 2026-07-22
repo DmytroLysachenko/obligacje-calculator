@@ -135,9 +135,9 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
         </Notice>
       ) : null}
 
-      <MetricStrip items={metricItems} className="ui-result-panel" />
+      <MetricStrip items={metricItems} />
 
-      <section className="ui-result-panel">
+      <section className="pt-2">
         <FinancialInsightStrip
           title={t('financial_insights.title')}
           description={t('financial_insights.description')}

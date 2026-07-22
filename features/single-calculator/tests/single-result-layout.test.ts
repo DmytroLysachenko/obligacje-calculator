@@ -93,11 +93,8 @@ describe('single calculator result layout contracts', () => {
   it('keeps scenario facts readable without nested bordered cards', () => {
     const source = readSource(paths.facts);
 
-    expectContains(source, '<section className="space-y-4 border-t border-border py-5">');
-    expectContains(
-      source,
-      '<dl className="grid gap-x-6 gap-y-4 border-y border-border py-4 sm:grid-cols-2">',
-    );
+    expectContains(source, '<section className="space-y-4">');
+    expectContains(source, '<dl className="grid gap-x-6 gap-y-4 sm:grid-cols-2">');
     expectContains(source, '<dt className="ui-meta font-semibold">{fact.label}</dt>');
     expectContains(source, 'break-words text-sm font-semibold text-foreground');
 

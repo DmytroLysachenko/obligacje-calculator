@@ -25,7 +25,7 @@ export function CalculatorSection({
     <section
       className={cn(pageLayout.sectionFlow, divided && pageLayout.sectionDivider, className)}
     >
-      <div className="ui-section-header border-b border-border pb-4">
+      <div className="ui-section-header pb-2">
         <div className="ui-section-intro">
           <h3 className="ui-section-title">{title}</h3>
           {description ? (

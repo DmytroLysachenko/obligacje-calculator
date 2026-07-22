@@ -82,7 +82,7 @@ export const ResultActionGrid = React.memo(function ResultActionGrid({
             key={action.label}
             variant={variant}
             className={cn(
-              'h-10 min-w-0 justify-center gap-2 px-3 text-xs font-semibold ui-focus-ring',
+              'h-11 min-w-0 justify-center gap-2 px-3 text-xs font-semibold ui-focus-ring',
               variant === 'outline' ? actionKindClass[kind] : '',
             )}
             onClick={() => runAction(action)}
@@ -111,7 +111,7 @@ export const ResultActionGrid = React.memo(function ResultActionGrid({
                   key={action.label}
                   variant="outline"
                   className={cn(
-                    'h-10 min-w-0 justify-center gap-2 px-3 text-xs font-semibold ui-focus-ring',
+                    'h-11 min-w-0 justify-center gap-2 px-3 text-xs font-semibold ui-focus-ring',
                     actionKindClass[kind],
                   )}
                   onClick={() => runAction(action)}
