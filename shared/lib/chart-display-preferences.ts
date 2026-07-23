@@ -22,6 +22,30 @@ function isChartStep(value: unknown): value is ChartStep {
   return value === 'monthly' || value === 'quarterly' || value === 'yearly' || value === 'daily';
 }
 
+export function getChartGranularityQueryKey(scope = 'default') {
+  return `chart-step-${scope}`;
+}
+
+export function readChartGranularityFromSearchParams(
+  searchParams: Pick<URLSearchParams, 'get'>,
+  availableGranularities: ChartStep[],
+  scope?: string,
+) {
+  const value = searchParams.get(getChartGranularityQueryKey(scope));
+
+  return isChartStep(value) && availableGranularities.includes(value) ? value : undefined;
+}
+
+export function syncChartGranularityToUrl(granularity: ChartStep, scope?: string) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  const url = new URL(window.location.href);
+  url.searchParams.set(getChartGranularityQueryKey(scope), granularity);
+  window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+}
+
 export function loadChartDisplayPreferences(
   defaultGranularity: ChartStep = 'yearly',
   scope?: string,

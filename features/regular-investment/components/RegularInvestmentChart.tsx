@@ -108,6 +108,7 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({
         summary={chartSummary}
         defaultGranularity={displayStep}
         onGranularityChange={setDisplayStep}
+        preferenceScope="regular-investment"
         showContextControls={false}
         leadingControls={
           <SegmentedControl

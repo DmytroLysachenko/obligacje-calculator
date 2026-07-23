@@ -6,7 +6,9 @@ import { ChartStep } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import {
   loadChartDisplayPreferences,
+  readChartGranularityFromSearchParams,
   saveChartDisplayPreferences,
+  syncChartGranularityToUrl,
 } from '@/shared/lib/chart-display-preferences';
 
 import { BondValueChartToolbar } from './BondValueChartParts';
@@ -91,9 +93,23 @@ export function BondValueChart({
   leadingControls,
 }: BondValueChartProps) {
   const { t } = useAppI18n();
-  const [preferences, setPreferences] = React.useState(() =>
-    loadChartDisplayPreferences(defaultGranularity, preferenceScope),
-  );
+  const [preferences, setPreferences] = React.useState(() => {
+    const savedPreferences = loadChartDisplayPreferences(defaultGranularity, preferenceScope);
+
+    if (typeof window === 'undefined') {
+      return savedPreferences;
+    }
+
+    const granularityFromUrl = readChartGranularityFromSearchParams(
+      new URLSearchParams(window.location.search),
+      availableGranularities,
+      preferenceScope,
+    );
+
+    return granularityFromUrl
+      ? { ...savedPreferences, granularity: granularityFromUrl }
+      : savedPreferences;
+  });
   const showInflationOverlay = preferences.showInflationOverlay;
   const showNbpOverlay = preferences.showNbpOverlay;
   const granularity = preferences.granularity;
@@ -145,6 +161,7 @@ export function BondValueChart({
         granularity: nextStep,
       };
       saveChartDisplayPreferences(next, preferenceScope);
+      syncChartGranularityToUrl(nextStep, preferenceScope);
       return next;
     });
     onGranularityChange?.(nextStep);

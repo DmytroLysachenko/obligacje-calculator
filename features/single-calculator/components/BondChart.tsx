@@ -168,6 +168,7 @@ export const BondChart: React.FC<BondChartProps> = ({
       summary={chartSummary}
       defaultGranularity={displayStep}
       onGranularityChange={onDisplayStepChange}
+      preferenceScope={`single-${inputs.bondType}`}
       availableGranularities={['monthly', 'quarterly', 'yearly']}
       showInflationControl
       showNbpControl={isFloatingNbpBondType(inputs.bondType)}

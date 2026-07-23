@@ -149,6 +149,7 @@ export function ComparisonResultsPanel({
           summary={chartSummary}
           defaultGranularity={chartStep}
           onGranularityChange={onChartStepChange}
+          preferenceScope="comparison"
           ariaLabel={t('comparison.performance_over_time')}
           heightClassName="h-[360px] md:h-[440px] xl:h-[500px]"
         />
