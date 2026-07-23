@@ -30,7 +30,9 @@ describe('chart data table contract', () => {
   });
   it('keeps large data sets scrollable without forcing page overflow', async () => {
     const source = await read('shared/components/charts/ChartDataTable.tsx');
-    expect(source).toContain('max-h-80 overflow-auto');
+    expect(source).toContain('const pageSize = 24;');
+    expect(source).toContain('const pageRows = data.slice');
+    expect(source).toContain('onToggle={(event) => setIsOpen(event.currentTarget.open)}');
     expect(source).toContain('min-w-[34rem]');
     expect(source).toContain('sticky top-0');
   });
