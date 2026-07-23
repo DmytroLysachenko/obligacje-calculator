@@ -57,7 +57,7 @@ export function RegularInvestmentYearlyBucketsSection({
             count: yearlyBuckets.length,
           })}
         >
-          {visibleYearlyBuckets.map((bucket) => (
+          {yearlyBuckets.map((bucket) => (
             <article
               key={`mobile-${bucket.year}`}
               className="border-t border-border py-5"

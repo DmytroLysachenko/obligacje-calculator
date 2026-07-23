@@ -26,6 +26,10 @@ export function getVisibleRowLabel({
   total: number;
   allLabel: string;
 }) {
+  if (total === 0) {
+    return '0';
+  }
+
   if (visible >= total) {
     return `${total}`;
   }
@@ -45,6 +49,7 @@ interface TableDensityControlsProps {
     jumpToRows?: string;
   };
   className?: string;
+  emptyMessage?: string;
 }
 
 export function TableDensityControls({
@@ -54,12 +59,23 @@ export function TableDensityControls({
   onChange,
   labels,
   className,
+  emptyMessage,
 }: TableDensityControlsProps) {
   const smallestLimit =
     tableRowLimitOptions.find(
       (option): option is Exclude<TableRowLimit, 'all'> => option !== 'all',
     ) ?? 12;
   const needsDensityControls = totalRows > smallestLimit;
+
+  if (totalRows === 0) {
+    return (
+      <div className={cn('border-t border-border py-4', className)} role="status">
+        <p className="text-sm leading-6 text-muted-foreground">
+          {emptyMessage ?? labels.rowsShown}: 0
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -69,7 +85,12 @@ export function TableDensityControls({
       )}
     >
       <p className="text-xs font-semibold text-muted-foreground">
-        {labels.rowsShown}: {visibleRows} / {totalRows}
+        {labels.rowsShown}:{' '}
+        {getVisibleRowLabel({
+          visible: visibleRows,
+          total: totalRows,
+          allLabel: labels.all,
+        })}
       </p>
       {needsDensityControls ? (
         <div className="flex flex-wrap items-center gap-2" aria-label={labels.jumpToRows}>

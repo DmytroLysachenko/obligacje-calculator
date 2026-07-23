@@ -101,6 +101,7 @@
   --finance-border: #ddd7ca;
   --finance-success: #397454;
   --finance-warning: #b57922;
+  --chart-data: 24, 36%, 34%;
   --finance-radius-sm: 6px;
   --finance-radius-md: 8px;
   --layout-reading-max: 720px;
@@ -141,6 +142,7 @@
   --finance-border: #3d372f;
   --finance-success: #62b083;
   --finance-warning: #d19a45;
+  --chart-data: 35, 50%, 58%;
 }
 
 @layer base {
@@ -249,7 +251,14 @@
     @apply text-[40px] leading-none font-semibold tracking-tight text-foreground;
   }
   .ui-large-metric {
-    @apply text-[30px] leading-none font-semibold tracking-tight text-foreground md:text-[34px];
+    font-size: clamp(1.5rem, 2.4vw, 2.125rem);
+    @apply leading-none font-semibold tracking-tight text-foreground;
+  }
+  .ui-supporting-metric {
+    @apply text-xl leading-none font-semibold tracking-tight text-foreground md:text-2xl;
+  }
+  .ui-metric-strip {
+    @apply border-t border-border;
   }
   .ui-section-row {
     @apply flex flex-col gap-2 md:flex-row md:items-start md:justify-between;

@@ -121,7 +121,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
         />
       </section>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.75fr)] xl:items-start">
+      <div className="grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.75fr)] xl:items-start">
         <RegularInvestmentYearlyBucketsSection
           yearlyBuckets={yearlyBuckets}
           formatCurrency={formatCurrency}
@@ -133,7 +133,9 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
           note={t('regular_summary.recent_note')}
           items={recentLotItems}
           compact
-          className="xl:max-h-[42rem] xl:overflow-y-auto xl:pr-2"
+          initialItemCount={5}
+          showAllLabel={t('common.show_all', { count: recentLotItems.length })}
+          showLessLabel={t('common.show_less')}
         />
       </div>
     </div>
