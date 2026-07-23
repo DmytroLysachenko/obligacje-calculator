@@ -11,6 +11,9 @@ const smokeRoutes = [
   { path: '/education', name: 'education' },
   { path: '/single-calculator', name: 'single calculator' },
   { path: '/compare', name: 'comparison' },
+  { path: '/regular-investment', name: 'regular investment' },
+  { path: '/ladder', name: 'ladder strategy' },
+  { path: '/notebook', name: 'portfolio notebook' },
   { path: '/economic-data', name: 'economic data' },
 ];
 
