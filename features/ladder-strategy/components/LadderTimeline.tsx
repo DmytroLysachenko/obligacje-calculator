@@ -22,14 +22,25 @@ import {
   getLadderChartData,
   getLadderTimelineStats,
 } from '../lib/ladder-timeline-model';
+import {
+  defaultLadderTimelineQueryState,
+  getLadderTimelineUrl,
+  type LadderTimelineQueryState,
+  readLadderTimelineQueryState,
+} from '../lib/ladder-timeline-query';
 
 import { LadderTimelineChartSection, LadderYearSummarySection } from './LadderTimelineSections';
 
 export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
   const { t, locale: language } = useAppI18n();
-  const [rowLimit, setRowLimit] = useState<TableRowLimit>(12);
-  const [chartMode, setChartMode] = useState<LadderChartMode>('yearly');
-  const [tableFilter, setTableFilter] = useState<LadderTableFilter>('all');
+  const [initialQueryState] = useState(() =>
+    typeof window === 'undefined'
+      ? defaultLadderTimelineQueryState
+      : readLadderTimelineQueryState(new URLSearchParams(window.location.search)),
+  );
+  const [rowLimit, setRowLimit] = useState<TableRowLimit>(initialQueryState.rowLimit);
+  const [chartMode, setChartMode] = useState<LadderChartMode>(initialQueryState.chartMode);
+  const [tableFilter, setTableFilter] = useState<LadderTableFilter>(initialQueryState.tableFilter);
   const dateLocale = getDateFnsLocale(language);
   const currencyFormatter = useCurrencyFormatter(language, {
     style: 'currency',
@@ -80,6 +91,36 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
     () => buildLadderYearlySummaryItems(yearlyBuckets, formatCurrency, t),
     [formatCurrency, t, yearlyBuckets],
   );
+  const syncTimelineUrl = useCallback((nextState: LadderTimelineQueryState) => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const url = new URL(window.location.href);
+    const nextUrl = getLadderTimelineUrl(url, nextState);
+    window.history.replaceState(window.history.state, '', nextUrl);
+  }, []);
+  const handleChartModeChange = useCallback(
+    (nextChartMode: LadderChartMode) => {
+      setChartMode(nextChartMode);
+      syncTimelineUrl({ chartMode: nextChartMode, tableFilter, rowLimit });
+    },
+    [rowLimit, syncTimelineUrl, tableFilter],
+  );
+  const handleTableFilterChange = useCallback(
+    (nextTableFilter: LadderTableFilter) => {
+      setTableFilter(nextTableFilter);
+      syncTimelineUrl({ chartMode, tableFilter: nextTableFilter, rowLimit });
+    },
+    [chartMode, rowLimit, syncTimelineUrl],
+  );
+  const handleRowLimitChange = useCallback(
+    (nextRowLimit: TableRowLimit) => {
+      setRowLimit(nextRowLimit);
+      syncTimelineUrl({ chartMode, tableFilter, rowLimit: nextRowLimit });
+    },
+    [chartMode, syncTimelineUrl, tableFilter],
+  );
   return (
     <div className="ui-compact-flow">
       <ResultSummaryHero
@@ -129,9 +170,9 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
         totalLots={results.lots.length}
         peakMonth={timelineStats.peakMonth}
         peakShare={timelineStats.peakShare}
-        onChartModeChange={setChartMode}
-        onTableFilterChange={setTableFilter}
-        onRowLimitChange={setRowLimit}
+        onChartModeChange={handleChartModeChange}
+        onTableFilterChange={handleTableFilterChange}
+        onRowLimitChange={handleRowLimitChange}
         formatCurrency={formatCurrency}
         t={t}
       />

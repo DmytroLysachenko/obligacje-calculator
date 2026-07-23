@@ -70,7 +70,7 @@ describe('ladder summary contracts', () => {
     );
     expectContains(
       source,
-      "const [tableFilter, setTableFilter] = useState<LadderTableFilter>('all');",
+      'const [tableFilter, setTableFilter] = useState<LadderTableFilter>(initialQueryState.tableFilter);',
     );
     expectContains(source, 'const filteredMonthlyBuckets = useMemo(() => {');
     expectContains(source, "if (tableFilter === 'peak')");
