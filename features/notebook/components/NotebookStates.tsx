@@ -1,9 +1,9 @@
 import { BookOpen, CheckCircle2, Plus, Upload } from 'lucide-react';
+import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { type NotebookStepItem } from '@/features/notebook/lib/notebook-workspace-model';
-import { Notice } from '@/shared/components/feedback/Notice';
 
 interface EmptyPortfolioStateProps {
   onCreate: () => void;
@@ -47,12 +47,6 @@ export function EmptyPortfolioState({
         <p className="ui-body max-w-3xl">{description}</p>
       </div>
 
-      {!canManageWorkspace ? (
-        <Notice tone="locked" title={createLabel} compact>
-          {description}
-        </Notice>
-      ) : null}
-
       <div className="space-y-4">
         <p className="ui-card-title">{capabilitiesTitle}</p>
         <div className="grid gap-x-6 gap-y-4 border-y border-border py-4 md:grid-cols-2">
@@ -73,29 +67,35 @@ export function EmptyPortfolioState({
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-3">
-        <Button onClick={onCreate} className="gap-2 rounded-md" disabled={!canManageWorkspace}>
-          <Plus className="h-4 w-4" />
-          {createLabel}
+      {canManageWorkspace ? (
+        <div className="flex flex-wrap gap-3">
+          <Button onClick={onCreate} className="gap-2 rounded-md" disabled={!canManageWorkspace}>
+            <Plus className="h-4 w-4" />
+            {createLabel}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={onCreateDemo}
+            className="gap-2 rounded-md border-border"
+            disabled={!canManageWorkspace}
+          >
+            {demoLabel}
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={onImport}
+            className="gap-2 rounded-md"
+            disabled={!canManageWorkspace}
+          >
+            <Upload className="h-4 w-4" />
+            {importLabel}
+          </Button>
+        </div>
+      ) : (
+        <Button asChild className="w-full sm:w-auto">
+          <Link href="/login">{createLabel}</Link>
         </Button>
-        <Button
-          variant="outline"
-          onClick={onCreateDemo}
-          className="gap-2 rounded-md border-border"
-          disabled={!canManageWorkspace}
-        >
-          {demoLabel}
-        </Button>
-        <Button
-          variant="ghost"
-          onClick={onImport}
-          className="gap-2 rounded-md"
-          disabled={!canManageWorkspace}
-        >
-          <Upload className="h-4 w-4" />
-          {importLabel}
-        </Button>
-      </div>
+      )}
     </section>
   );
 }

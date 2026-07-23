@@ -78,7 +78,7 @@ describe('notebook locked and empty state contracts', () => {
       source,
       '<Notice tone="locked" title={t(\'workspace.sign_in_required_short\')}>',
     );
-    expectContains(states, '<Notice tone="locked" title={createLabel} compact>');
+    expectContains(states, '<Link href="/login">{createLabel}</Link>');
     expectContains(states, 'disabled={!canManageWorkspace}');
 
     expectNoFragments(source, [

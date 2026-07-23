@@ -131,23 +131,27 @@ export const NotebookContainer: React.FC = () => {
             </Notice>
           ) : null}
 
-          <WorkspaceStatusCard
-            isGuestWorkspace={isGuestWorkspace}
-            canManageWorkspace={canManageWorkspace}
-            selectedPortfolio={selectedPortfolio}
-            portfolios={portfolios}
-            onActivePortfolioChange={setSelectedPortfolioId}
-          />
+          {canManageWorkspace ? (
+            <>
+              <WorkspaceStatusCard
+                isGuestWorkspace={isGuestWorkspace}
+                canManageWorkspace={canManageWorkspace}
+                selectedPortfolio={selectedPortfolio}
+                portfolios={portfolios}
+                onActivePortfolioChange={setSelectedPortfolioId}
+              />
 
-          <WorkspaceActionStrip
-            canManageWorkspace={canManageWorkspace}
-            onImport={handleImportClick}
-            onCreateDemo={handleCreateDemo}
-            onRefresh={fetchPortfolios}
-            onCreatePortfolio={handleCreateDefault}
-          />
+              <WorkspaceActionStrip
+                canManageWorkspace={canManageWorkspace}
+                onImport={handleImportClick}
+                onCreateDemo={handleCreateDemo}
+                onRefresh={fetchPortfolios}
+                onCreatePortfolio={handleCreateDefault}
+              />
 
-          <MetricStrip items={notebookStats} columns="grid-cols-1 md:grid-cols-3" />
+              <MetricStrip items={notebookStats} columns="grid-cols-1 md:grid-cols-3" />
+            </>
+          ) : null}
         </div>
       </SectionBlock>
 
