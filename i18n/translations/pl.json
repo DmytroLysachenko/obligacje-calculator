@@ -1279,6 +1279,7 @@
       },
       "empty_filter": "Zaden miesiac zapadalnosci nie pasuje do tego widoku.",
       "show_all_months": "Pokaz wszystkie miesiace zapadalnosci",
+      "cluster_threshold": "Co najmniej {count} partie zapadaja w tym samym miesiacu.",
       "table_count_suffix": "miesiecy",
       "table_month": "Miesiac",
       "table_lots": "Partie",

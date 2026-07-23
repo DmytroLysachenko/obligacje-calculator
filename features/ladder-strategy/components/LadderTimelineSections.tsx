@@ -71,6 +71,7 @@ interface LadderTimelineChartSectionProps {
   filteredRows: LadderMaturityBucket[];
   monthlyBuckets: LadderMaturityBucket[];
   filteredRowCount: number;
+  clusteredThreshold: number;
   tableFilter: LadderTableFilter;
   rowLimit: TableRowLimit;
   totalLots: number;
@@ -90,6 +91,7 @@ export function LadderTimelineChartSection({
   filteredRows,
   monthlyBuckets,
   filteredRowCount,
+  clusteredThreshold,
   tableFilter,
   rowLimit,
   totalLots,
@@ -165,6 +167,7 @@ export function LadderTimelineChartSection({
         filteredRows={filteredRows}
         monthlyBuckets={monthlyBuckets}
         filteredRowCount={filteredRowCount}
+        clusteredThreshold={clusteredThreshold}
         tableFilter={tableFilter}
         rowLimit={rowLimit}
         totalLots={totalLots}

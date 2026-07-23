@@ -1210,6 +1210,7 @@
       },
       "empty_filter": "No maturity months match this view.",
       "show_all_months": "Show all maturity months",
+      "cluster_threshold": "At least {count} lots mature in the same month.",
       "table_count_suffix": "months",
       "table_month": "Month",
       "table_lots": "Lots",

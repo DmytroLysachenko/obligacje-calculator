@@ -15,6 +15,7 @@ export interface LadderTimelineTableProps {
   filteredRows: LadderMaturityBucket[];
   monthlyBuckets: LadderMaturityBucket[];
   filteredRowCount: number;
+  clusteredThreshold: number;
   tableFilter: LadderTableFilter;
   rowLimit: TableRowLimit;
   totalLots: number;

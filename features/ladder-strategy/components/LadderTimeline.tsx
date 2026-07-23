@@ -123,6 +123,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
         filteredRows={filteredMonthlyBuckets}
         monthlyBuckets={monthlyBuckets}
         filteredRowCount={filteredMonthlyBuckets.length}
+        clusteredThreshold={timelineStats.clusteredThreshold}
         tableFilter={tableFilter}
         rowLimit={rowLimit}
         totalLots={results.lots.length}

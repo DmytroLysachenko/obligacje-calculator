@@ -24,6 +24,7 @@ export function LadderTimelineTable({
   filteredRows,
   monthlyBuckets,
   filteredRowCount,
+  clusteredThreshold,
   tableFilter,
   rowLimit,
   totalLots,
@@ -41,37 +42,53 @@ export function LadderTimelineTable({
         triggerLabel={t('ladder_page.timeline.mobile_sheet_trigger')}
         triggerCount={`${monthlyBuckets.length} ${t('ladder_page.timeline.mobile_sheet_count_suffix')}`}
       >
-        <div className="ui-divider-group">
-          {filteredRows.map((item) => (
-            <article key={`mobile-${item.date}`} className="py-5" aria-label={item.displayDate}>
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-sm font-semibold text-foreground">{item.displayDate}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {t('ladder_page.timeline.lots_count')}: {item.count}
+        {filteredRows.length === 0 ? (
+          <div className="py-8 text-center" role="status">
+            <p className="text-sm leading-6 text-muted-foreground">
+              {t('ladder_page.timeline.empty_filter')}
+            </p>
+            <Button
+              type="button"
+              variant="link"
+              size="sm"
+              onClick={() => onTableFilterChange('all')}
+            >
+              {t('ladder_page.timeline.show_all_months')}
+            </Button>
+          </div>
+        ) : (
+          <div className="ui-divider-group">
+            {filteredRows.map((item) => (
+              <article key={`mobile-${item.date}`} className="py-5" aria-label={item.displayDate}>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">{item.displayDate}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {t('ladder_page.timeline.lots_count')}: {item.count}
+                    </p>
+                  </div>
+                  <p className="financial-number text-right text-sm font-semibold text-foreground">
+                    {formatCurrency(item.amount)}
                   </p>
                 </div>
-                <p className="financial-number text-right text-sm font-semibold text-foreground">
-                  {formatCurrency(item.amount)}
-                </p>
-              </div>
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                <MobileLadderValue
-                  label={t('ladder_page.timeline.mobile_share_of_lots')}
-                  value={
-                    monthlyBuckets.length > 0
-                      ? `${((item.count / totalLots) * 100).toFixed(1)}%`
-                      : '-'
-                  }
-                />
-                <MobileLadderValue
-                  label={t('ladder_page.timeline.mobile_amount')}
-                  value={formatCurrency(item.amount)}
-                />
-              </div>
-            </article>
-          ))}
-        </div>
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  <MobileLadderValue
+                    label={t('ladder_page.timeline.mobile_share_of_lots')}
+                    value={
+                      monthlyBuckets.length > 0
+                        ? `${((item.count / totalLots) * 100).toFixed(1)}%`
+                        : '-'
+                    }
+                  />
+                  <MobileLadderValue
+                    label={t('ladder_page.timeline.mobile_amount')}
+                    value={formatCurrency(item.amount)}
+                  />
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </ResponsiveTableSheet>
 
       <div className="ui-table-frame hidden lg:block">
@@ -91,6 +108,11 @@ export function LadderTimelineTable({
                 {t(`ladder_page.timeline.table_filters.${filter}`)}
               </Button>
             ))}
+            {tableFilter === 'clustered' ? (
+              <span className="text-xs text-muted-foreground">
+                {t('ladder_page.timeline.cluster_threshold', { count: clusteredThreshold })}
+              </span>
+            ) : null}
             <p className="text-xs font-semibold text-muted-foreground">
               {filteredRowCount} {t('ladder_page.timeline.table_count_suffix')}
             </p>
