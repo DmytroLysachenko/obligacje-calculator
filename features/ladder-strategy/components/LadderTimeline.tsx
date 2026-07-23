@@ -120,6 +120,7 @@ export const LadderTimeline: React.FC<LadderTimelineProps> = ({ results }) => {
         chartMode={chartMode}
         chartData={chartData}
         displayedRows={displayedRows}
+        filteredRows={filteredMonthlyBuckets}
         monthlyBuckets={monthlyBuckets}
         filteredRowCount={filteredMonthlyBuckets.length}
         tableFilter={tableFilter}

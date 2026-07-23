@@ -1273,10 +1273,12 @@
       "mobile_amount": "Kwota",
       "table_summary": "Kazdy wiersz pokazuje jeden miesiac zapadalnosci, liczbe konczacych sie tam partii i zwracana wartosc netto.",
       "table_filters": {
-        "all": "Wszystkie miesiace",
-        "peak": "Tylko szczyt",
-        "clustered": "Skupione"
+        "all": "Wszystkie miesiace zapadalnosci",
+        "peak": "Szczytowy miesiac zapadalnosci",
+        "clustered": "Skupione zapadalnosci"
       },
+      "empty_filter": "Zaden miesiac zapadalnosci nie pasuje do tego widoku.",
+      "show_all_months": "Pokaz wszystkie miesiace zapadalnosci",
       "table_count_suffix": "miesiecy",
       "table_month": "Miesiac",
       "table_lots": "Partie",

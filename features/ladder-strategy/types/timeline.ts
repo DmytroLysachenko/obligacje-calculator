@@ -12,6 +12,7 @@ export type LadderTableFilter = 'all' | 'peak' | 'clustered';
 
 export interface LadderTimelineTableProps {
   displayedRows: LadderMaturityBucket[];
+  filteredRows: LadderMaturityBucket[];
   monthlyBuckets: LadderMaturityBucket[];
   filteredRowCount: number;
   tableFilter: LadderTableFilter;
