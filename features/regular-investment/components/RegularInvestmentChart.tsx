@@ -3,11 +3,11 @@
 import { format } from 'date-fns';
 import React from 'react';
 
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChartStep, RegularInvestmentResult } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { getDateFnsLocale } from '@/i18n/locale-utils';
 import { BondValueChart, BondValueChartPoint } from '@/shared/components/charts/BondValueChart';
+import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { computeNumericDomain } from '@/shared/lib/chart-series';
 import { getBondColor } from '@/shared/lib/charts/get-bond-color';
@@ -98,24 +98,7 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({
   );
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-center">
-        <Tabs
-          value={view}
-          onValueChange={(v) => setView(v as 'nominal' | 'real')}
-          className="w-fit rounded-lg bg-muted/50 p-1"
-        >
-          <TabsList className="grid h-10 w-full grid-cols-2">
-            <TabsTrigger value="nominal" className="px-6 text-xs font-semibold">
-              {t('common.nominal_value')}
-            </TabsTrigger>
-            <TabsTrigger value="real" className="px-6 text-xs font-semibold">
-              {t('common.real_value')}
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
-
+    <div>
       <BondValueChart
         data={chartData}
         series={chartSeries}
@@ -126,6 +109,19 @@ export const RegularInvestmentChart: React.FC<RegularInvestmentChartProps> = ({
         defaultGranularity={displayStep}
         onGranularityChange={setDisplayStep}
         showContextControls={false}
+        leadingControls={
+          <SegmentedControl
+            value={view}
+            label={t('regular_investment_page.value_chart_label')}
+            options={[
+              { value: 'nominal', label: t('common.nominal_value') },
+              { value: 'real', label: t('common.real_value') },
+            ]}
+            onValueChange={setView}
+            className="w-full sm:w-auto"
+            itemClassName="min-h-9"
+          />
+        }
         ariaLabel={t('regular_investment_page.value_chart_label')}
         heightClassName="h-[360px] md:h-[450px] xl:h-[500px]"
       />

@@ -69,6 +69,7 @@ interface BondValueChartProps {
   ariaLabel: string;
   heightClassName?: string;
   preferenceScope?: string;
+  leadingControls?: React.ReactNode;
 }
 
 export function BondValueChart({
@@ -87,6 +88,7 @@ export function BondValueChart({
   ariaLabel,
   heightClassName = 'h-[360px] md:h-[460px] xl:h-[520px]',
   preferenceScope,
+  leadingControls,
 }: BondValueChartProps) {
   const { t } = useAppI18n();
   const [preferences, setPreferences] = React.useState(() =>
@@ -175,6 +177,7 @@ export function BondValueChart({
         showNbpControl={showNbpControl}
         onGranularityChange={handleGranularityChange}
         onOverlayChange={updateOverlayPreference}
+        leadingControls={leadingControls}
         t={t}
       />
 
