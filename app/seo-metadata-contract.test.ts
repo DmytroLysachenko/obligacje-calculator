@@ -42,6 +42,7 @@ describe('SEO metadata contract', () => {
           'https://seo.example/economic-data',
         ]),
       );
+      expect(sitemap().every((item) => item.lastModified === undefined)).toBe(true);
     } finally {
       process.env.NEXT_PUBLIC_APP_URL = previous;
       process.env.NEXT_PUBLIC_DEPLOYMENT_TIER = previousTier;

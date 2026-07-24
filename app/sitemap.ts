@@ -8,8 +8,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   const baseUrl = getCanonicalBaseUrl();
-  const lastModified = new Date();
-
   const routes = [
     '',
     '/single-calculator',
@@ -24,7 +22,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/retirement',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
-    lastModified,
     changeFrequency: 'weekly' as const,
     priority: route === '' ? 1 : 0.8,
   }));
