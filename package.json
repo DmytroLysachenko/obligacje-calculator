@@ -8,6 +8,7 @@
       "@grpc/grpc-js": "1.14.4",
       "hono": "4.12.25",
       "path-to-regexp": "8.4.0",
+      "postcss": "8.5.18",
       "protobufjs": "7.6.1",
       "sharp": "0.35.0"
     }
@@ -57,7 +58,7 @@
     ]
   },
   "dependencies": {
-    "@auth/drizzle-adapter": "^1.11.1",
+    "@auth/drizzle-adapter": "^1.11.3",
     "@neondatabase/serverless": "^1.0.2",
     "@phosphor-icons/react": "^2.1.10",
     "class-variance-authority": "^0.7.1",
@@ -68,8 +69,8 @@
     "inngest": "^4.13.0",
     "jspdf": "^4.2.1",
     "lucide-react": "^0.577.0",
-    "next": "16.2.6",
-    "next-auth": "5.0.0-beta.30",
+    "next": "16.2.11",
+    "next-auth": "5.0.0-beta.32",
     "next-intl": "^4.13.2",
     "postgres": "^3.4.8",
     "radix-ui": "^1.4.3",
@@ -93,7 +94,7 @@
     "dotenv": "^17.3.1",
     "drizzle-kit": "^0.31.9",
     "eslint": "^9",
-    "eslint-config-next": "16.2.6",
+    "eslint-config-next": "16.2.11",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-simple-import-sort": "^13.0.0",
     "husky": "^9.1.7",
