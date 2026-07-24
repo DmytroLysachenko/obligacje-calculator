@@ -11,7 +11,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((keys) =>
       Promise.all(
         keys.map((key) => {
-          if (key !== CACHE_NAME) {
+          if (key.startsWith('bond-calculator-') && key !== CACHE_NAME) {
             return caches.delete(key);
           }
           return Promise.resolve(false);
@@ -38,13 +38,27 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Always prefer fresh HTML so route UI cannot drift across deployments.
+  // Dynamic HTML must stay network-only. Returning an uncached fallback here
+  // produces an invalid response and can show stale financial data.
   if (isNavigationRequest) {
-    event.respondWith(fetch(event.request).catch(() => caches.match('/')));
     return;
   }
 
   if (STATIC_ASSETS.includes(url.pathname)) {
-    event.respondWith(caches.match(event.request).then((cached) => cached ?? fetch(event.request)));
+    event.respondWith(
+      caches.match(event.request).then((cached) => {
+        if (cached) {
+          return cached;
+        }
+
+        return fetch(event.request).then((response) => {
+          if (response.ok) {
+            const responseCopy = response.clone();
+            event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseCopy)));
+          }
+          return response;
+        });
+      }),
+    );
   }
 });

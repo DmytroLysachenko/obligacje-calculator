@@ -52,13 +52,13 @@ for (const route of budgetedRoutes) {
 
     await expectNoBrowserDiagnostics(testInfo, diagnostics);
     expect(metrics.domContentLoadedMs).toBeGreaterThan(0);
-    expect(metrics.domContentLoadedMs).toBeLessThan(8_000);
-    expect(metrics.loadEventMs).toBeLessThan(12_000);
+    expect(metrics.domContentLoadedMs).toBeLessThan(4_000);
+    expect(metrics.loadEventMs).toBeLessThan(6_000);
     expect(metrics.scriptCount).toBeLessThan(80);
-    expect(metrics.scriptTransferBytes).toBeLessThan(8_000_000);
+    expect(metrics.scriptTransferBytes).toBeLessThan(1_500_000);
 
     if (metrics.lcpMs !== null) {
-      expect(metrics.lcpMs).toBeLessThan(6_000);
+      expect(metrics.lcpMs).toBeLessThan(2_500);
     }
   });
 }
