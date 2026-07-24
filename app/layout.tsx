@@ -11,7 +11,7 @@ import { AppLocaleProvider } from '@/i18n/client';
 import { defaultLocale, type Language } from '@/i18n/config';
 import { getMetadataLocale } from '@/i18n/locale-utils';
 import { createAppJsonLd } from '@/lib/seo/app-json-ld';
-import { getCanonicalBaseUrl } from '@/lib/site-url';
+import { getCanonicalBaseUrl, isIndexableDeployment } from '@/lib/site-url';
 import { OpportunisticSyncTrigger } from '@/shared/components/chrome/OpportunisticSyncTrigger';
 import { Sidebar } from '@/shared/components/chrome/Sidebar';
 import { ErrorBoundary } from '@/shared/components/feedback/ErrorBoundary';
@@ -32,6 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const language = (locale as Language) || defaultLocale;
   const t = await getTranslations();
   const canonicalBaseUrl = getCanonicalBaseUrl();
+  const indexable = isIndexableDeployment();
 
   return {
     metadataBase: new URL(canonicalBaseUrl),
@@ -41,6 +42,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: t('common.description'),
     manifest: '/manifest.json',
+    robots: indexable ? undefined : { index: false, follow: false },
     openGraph: {
       type: 'website',
       locale: getMetadataLocale(language),

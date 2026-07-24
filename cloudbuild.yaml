@@ -48,6 +48,8 @@ steps:
       - --platform
       - managed
       - --no-allow-unauthenticated
+      - --set-env-vars
+      - NEXT_PUBLIC_DEPLOYMENT_TIER=preview
       - --port
       - '8080'
       - --min-instances

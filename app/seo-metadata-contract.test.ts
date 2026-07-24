@@ -3,7 +3,7 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { getCanonicalBaseUrl, getCanonicalUrl } from '@/lib/site-url';
+import { getCanonicalBaseUrl, getCanonicalUrl, isIndexableDeployment } from '@/lib/site-url';
 
 import robots from './robots';
 import sitemap from './sitemap';
@@ -29,7 +29,9 @@ describe('SEO metadata contract', () => {
 
   it('keeps robots and sitemap on the configured public app URL', () => {
     const previous = process.env.NEXT_PUBLIC_APP_URL;
+    const previousTier = process.env.NEXT_PUBLIC_DEPLOYMENT_TIER;
     process.env.NEXT_PUBLIC_APP_URL = 'https://seo.example';
+    process.env.NEXT_PUBLIC_DEPLOYMENT_TIER = 'production';
 
     try {
       expect(robots().sitemap).toBe('https://seo.example/sitemap.xml');
@@ -42,7 +44,17 @@ describe('SEO metadata contract', () => {
       );
     } finally {
       process.env.NEXT_PUBLIC_APP_URL = previous;
+      process.env.NEXT_PUBLIC_DEPLOYMENT_TIER = previousTier;
     }
+  });
+
+  it('keeps private previews out of search indexes', () => {
+    expect(
+      isIndexableDeployment({ NODE_ENV: 'test', NEXT_PUBLIC_DEPLOYMENT_TIER: 'preview' }),
+    ).toBe(false);
+    expect(
+      isIndexableDeployment({ NODE_ENV: 'test', NEXT_PUBLIC_DEPLOYMENT_TIER: 'production' }),
+    ).toBe(true);
   });
 
   it('keeps root layout metadata and JSON-LD free of legacy Vercel URLs', () => {

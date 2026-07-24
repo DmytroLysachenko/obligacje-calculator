@@ -1,8 +1,12 @@
 import { MetadataRoute } from 'next';
 
-import { getCanonicalBaseUrl } from '@/lib/site-url';
+import { getCanonicalBaseUrl, isIndexableDeployment } from '@/lib/site-url';
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  if (!isIndexableDeployment()) {
+    return [];
+  }
+
   const baseUrl = getCanonicalBaseUrl();
   const lastModified = new Date();
 
@@ -16,6 +20,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/education',
     '/multi-asset',
     '/notebook',
+    '/optimize',
+    '/retirement',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified,
