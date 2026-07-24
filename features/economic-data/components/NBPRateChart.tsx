@@ -61,7 +61,11 @@ export const NBPRateChart = ({ period = 'ALL' }: { period?: PeriodValue }) => {
       fallbackStatusLabel={t('economic.reference_state.fallback')}
       syncedStatusLabel={t('economic.reference_state.synced')}
     >
-      <ChartContainer height={420}>
+      <ChartContainer
+        height={420}
+        ariaLabel={t('bonds.nbp_rate_short')}
+        summary={t('economic.nbp_target')}
+      >
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={chartData}>
             <defs>

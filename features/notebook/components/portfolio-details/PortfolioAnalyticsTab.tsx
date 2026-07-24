@@ -49,7 +49,11 @@ export function PortfolioAnalyticsTab({
             {t('notebook.simulating_projection')}
           </div>
         ) : simulation?.aggregatedTimeline ? (
-          <ChartContainer height={360}>
+          <ChartContainer
+            height={360}
+            ariaLabel={t('notebook.projection_title')}
+            summary={t('notebook.projection_desc')}
+          >
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
                 data={

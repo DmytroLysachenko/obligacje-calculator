@@ -74,7 +74,11 @@ export function RetirementResultsOverview({
 
       <ChartSupportNote title={labels.howToRead} description={labels.howToReadDesc} />
 
-      <ChartContainer responsiveHeightClassName="h-[340px] md:h-[400px] xl:h-[440px]">
+      <ChartContainer
+        responsiveHeightClassName="h-[340px] md:h-[400px] xl:h-[440px]"
+        ariaLabel={labels.balance}
+        summary={labels.howToReadDesc}
+      >
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={chartData}>
             <defs>

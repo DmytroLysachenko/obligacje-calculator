@@ -131,7 +131,11 @@ export function LadderTimelineChartSection({
         </span>{' '}
         {t('ladder_page.timeline.chart_note_description')}
       </p>
-      <ChartContainer responsiveHeightClassName="h-[320px] md:h-[360px]">
+      <ChartContainer
+        responsiveHeightClassName="h-[320px] md:h-[360px]"
+        ariaLabel={t('ladder_page.timeline.chart_title')}
+        summary={t('ladder_page.timeline.chart_description')}
+      >
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData} margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
             <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="hsl(var(--border))" />

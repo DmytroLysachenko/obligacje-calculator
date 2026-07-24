@@ -82,7 +82,11 @@ export const InflationChart = ({
       fallbackStatusLabel={t('economic.reference_state.fallback')}
       syncedStatusLabel={t('economic.reference_state.synced')}
     >
-      <ChartContainer height={420}>
+      <ChartContainer
+        height={420}
+        ariaLabel={t('bonds.inflation.rate')}
+        summary={t('economic.inflation_scale_notice', { max: maxRate.toFixed(1) })}
+      >
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />

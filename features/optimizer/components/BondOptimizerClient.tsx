@@ -48,7 +48,7 @@ export default function BondOptimizerClient() {
           />
         </aside>
 
-        <main className="ui-compact-flow min-w-0 xl:col-span-8" aria-live="polite">
+        <section className="ui-compact-flow min-w-0 xl:col-span-8" aria-live="polite">
           <OptimizerResultsPanel
             envelope={envelope}
             results={results}
@@ -60,7 +60,7 @@ export default function BondOptimizerClient() {
             formatCurrency={formatCurrency}
             formatPercentValue={formatPercentValue}
           />
-        </main>
+        </section>
       </div>
 
       <RecalculateButton

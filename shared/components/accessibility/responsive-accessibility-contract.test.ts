@@ -44,7 +44,7 @@ describe('responsive accessibility contract', () => {
       'features/comparison-engine/components/MultiAssetComparisonChart.tsx',
     );
 
-    expect(singleChart).toContain('ariaLabel={t("bonds.value_chart_label")}');
+    expect(singleChart).toContain("ariaLabel={t('bonds.value_chart_label')}");
     expect(singleChart).toContain('chart_accessible_summary');
     expect(regularChart).toContain("ariaLabel={t('regular_investment_page.value_chart_label')}");
     expect(regularChart).toContain('regular_investment_page.chart_accessible_summary');

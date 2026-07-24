@@ -114,7 +114,7 @@ export const RetirementPlannerContainer: React.FC = () => {
           />
         </aside>
 
-        <main className="ui-compact-flow min-w-0 xl:col-span-8" aria-live="polite">
+        <section className="ui-compact-flow min-w-0 xl:col-span-8" aria-live="polite">
           {results ? (
             <RetirementResultsPanel
               results={results}
@@ -146,7 +146,7 @@ export const RetirementPlannerContainer: React.FC = () => {
             exhaustionDate={results?.result.exhaustionDate}
             labels={labels}
           />
-        </main>
+        </section>
       </div>
 
       <RecalculateButton
