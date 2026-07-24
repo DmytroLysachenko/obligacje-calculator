@@ -33,6 +33,7 @@ interface FormSelectProps {
   description?: React.ReactNode;
   error?: React.ReactNode;
   id?: string;
+  ariaLabel?: string;
   ariaControls?: string;
   className?: string;
   triggerClassName?: string;
@@ -51,6 +52,7 @@ export function FormSelect({
   description,
   error,
   id,
+  ariaLabel,
   ariaControls,
   className,
   triggerClassName,
@@ -73,7 +75,7 @@ export function FormSelect({
         <SelectTrigger
           id={id}
           aria-controls={ariaControls}
-          aria-label={typeof label === 'string' ? label : undefined}
+          aria-label={ariaLabel ?? (typeof label === 'string' ? label : undefined)}
           className={cn(
             'min-h-12 px-3.5 py-2.5 text-sm ui-focus-ring [&>span]:min-w-0 [&>span]:truncate disabled:bg-muted',
             triggerClassName,
