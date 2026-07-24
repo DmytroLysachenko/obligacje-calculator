@@ -88,7 +88,7 @@
   --destructive-foreground: 0, 0%, 98%;
   --success: 150, 34%, 34%;
   --success-foreground: 0, 0%, 100%;
-  --warning: 38, 58%, 46%;
+  --warning: 38, 60%, 30%;
   --warning-foreground: 30, 8%, 9%;
   --border: 45, 10%, 84%;
   --input: 45, 10%, 84%;
@@ -100,7 +100,7 @@
   --finance-muted: #665f55;
   --finance-border: #ddd7ca;
   --finance-success: #397454;
-  --finance-warning: #b57922;
+  --finance-warning: #805700;
   --chart-data: 24, 36%, 34%;
   --finance-radius-sm: 6px;
   --finance-radius-md: 8px;
