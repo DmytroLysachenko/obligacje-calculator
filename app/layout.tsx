@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono, Inter } from 'next/font/google';
+import { headers } from 'next/headers';
 import Script from 'next/script';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages, getTranslations } from 'next-intl/server';
@@ -63,6 +64,7 @@ export default async function RootLayout({
   const language = (locale as Language) || defaultLocale;
   const t = await getTranslations();
   const canonicalBaseUrl = getCanonicalBaseUrl();
+  const nonce = (await headers()).get('x-csp-nonce') ?? undefined;
 
   const jsonLd = createAppJsonLd({
     appName: 'Obligacje Calculator',
@@ -76,6 +78,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} bg-background text-foreground antialiased`}
       >
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
@@ -134,7 +137,7 @@ export default async function RootLayout({
           </AppLocaleProvider>
         </NextIntlClientProvider>
 
-        <Script id="register-sw" strategy="afterInteractive">
+        <Script id="register-sw" nonce={nonce} strategy="afterInteractive">
           {`
             if ('serviceWorker' in navigator) {
               window.addEventListener('load', async function() {
