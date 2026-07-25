@@ -20,7 +20,7 @@ describe('chart section contract', () => {
   });
 
   it('keeps ladder maturity charts on the shared chart section', () => {
-    const source = read('features/ladder-strategy/components/LadderTimeline.tsx');
+    const source = read('features/ladder-strategy/components/LadderTimelineSections.tsx');
 
     expect(source).toContain(
       "import { ChartSection } from '@/shared/components/charts/ChartSection';",

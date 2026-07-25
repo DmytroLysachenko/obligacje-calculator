@@ -49,11 +49,7 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
       tabIndex={ariaLabel ? 0 : undefined}
       style={style}
     >
-      {summary ? (
-        <div className="sr-only" aria-live="polite">
-          {summary}
-        </div>
-      ) : null}
+      {summary ? <div className="sr-only">{summary}</div> : null}
       {hasMounted ? children : null}
     </div>
   );

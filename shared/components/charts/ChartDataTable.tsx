@@ -20,6 +20,10 @@ export function ChartDataTable({ data, series, formatCurrency }: ChartDataTableP
   const totalPages = Math.max(1, Math.ceil(data.length / pageSize));
   const pageRows = data.slice((page - 1) * pageSize, page * pageSize);
 
+  React.useEffect(() => {
+    setPage((current) => Math.min(current, totalPages));
+  }, [totalPages]);
+
   if (!data.length || !series.length) return null;
 
   return (
@@ -31,7 +35,11 @@ export function ChartDataTable({ data, series, formatCurrency }: ChartDataTableP
         {t('bonds.simulation.chart_data_table')}
       </summary>
       {isOpen ? (
-        <div className="mt-3 overflow-x-auto rounded-md border border-border">
+        <div
+          className="mt-3 overflow-x-auto rounded-md border border-border"
+          aria-label={t('bonds.simulation.chart_data_table')}
+          tabIndex={0}
+        >
           <table className="w-full min-w-[34rem] border-collapse text-left text-xs">
             <caption className="sr-only">{t('bonds.simulation.chart_data_table')}</caption>
             <thead className="sticky top-0 bg-muted text-muted-foreground">
@@ -66,14 +74,14 @@ export function ChartDataTable({ data, series, formatCurrency }: ChartDataTableP
           </table>
           {totalPages > 1 ? (
             <div className="flex items-center justify-between gap-3 border-t border-border px-3 py-2">
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground" aria-live="polite">
                 {t('common.rows_shown')}: {(page - 1) * pageSize + 1}–
                 {Math.min(page * pageSize, data.length)} / {data.length}
               </p>
               <div className="flex gap-2">
                 <button
                   type="button"
-                  className="ui-focus-ring min-h-9 rounded-md border border-border px-3 text-xs font-semibold disabled:opacity-50"
+                  className="ui-focus-ring min-h-11 rounded-md border border-border px-3 text-xs font-semibold disabled:opacity-50"
                   disabled={page === 1}
                   onClick={() => setPage((current) => current - 1)}
                 >
@@ -81,7 +89,7 @@ export function ChartDataTable({ data, series, formatCurrency }: ChartDataTableP
                 </button>
                 <button
                   type="button"
-                  className="ui-focus-ring min-h-9 rounded-md border border-border px-3 text-xs font-semibold disabled:opacity-50"
+                  className="ui-focus-ring min-h-11 rounded-md border border-border px-3 text-xs font-semibold disabled:opacity-50"
                   disabled={page === totalPages}
                   onClick={() => setPage((current) => current + 1)}
                 >
