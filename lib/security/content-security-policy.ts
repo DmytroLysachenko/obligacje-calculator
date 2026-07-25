@@ -16,7 +16,16 @@ export function createContentSecurityPolicy(nonce: string, isDevelopment = false
     ? `script-src 'self' 'nonce-${nonce}' 'unsafe-eval'`
     : `script-src 'self' 'nonce-${nonce}'`;
 
-  return [...baseDirectives, scriptSource, `style-src 'self' 'nonce-${nonce}'`].join('; ');
+  // Recharts and Radix set presentation-only style attributes at runtime. CSP
+  // nonces do not apply to attributes, so keep elements nonce-protected while
+  // granting the smallest compatible exception for style attributes.
+  return [
+    ...baseDirectives,
+    scriptSource,
+    `style-src 'self' 'nonce-${nonce}'`,
+    `style-src-elem 'self' 'nonce-${nonce}'`,
+    "style-src-attr 'unsafe-inline'",
+  ].join('; ');
 }
 
 export const permissionsPolicy = [

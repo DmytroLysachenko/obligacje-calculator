@@ -10,6 +10,9 @@ describe('content security policy', () => {
     expect(policy).toContain("script-src 'self' 'nonce-request-nonce'");
     expect(policy).not.toContain("script-src 'self' 'nonce-request-nonce' 'unsafe-eval'");
     expect(policy).toContain("style-src 'self' 'nonce-request-nonce'");
+    expect(policy).toContain("style-src-elem 'self' 'nonce-request-nonce'");
+    expect(policy).toContain("style-src-attr 'unsafe-inline'");
+    expect(policy).not.toContain("style-src 'self' 'nonce-request-nonce' 'unsafe-inline'");
     expect(policy).toContain("object-src 'none'");
     expect(policy).toContain("frame-ancestors 'self'");
     expect(policy).toContain("worker-src 'self'");
