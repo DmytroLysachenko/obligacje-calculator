@@ -11,7 +11,6 @@ import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShel
 import { CalculatorWorkspace } from '@/shared/components/page/CalculatorWorkspace';
 import { usePortfolioAccess } from '@/shared/hooks/usePortfolioAccess';
 import { logClientError } from '@/shared/lib/client-logger';
-import { generateSingleBondReportPdf } from '@/shared/lib/pdf-utils';
 import { portfolioClient } from '@/shared/lib/portfolio-client';
 import { scenarioShareClient } from '@/shared/lib/scenario-share-client';
 import { buildSharedSingleScenarioPayload } from '@/shared/lib/single-scenario-share';
@@ -187,6 +186,7 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
     }
 
     try {
+      const { generateSingleBondReportPdf } = await import('@/shared/lib/pdf-utils');
       await generateSingleBondReportPdf(
         results,
         inputs,
