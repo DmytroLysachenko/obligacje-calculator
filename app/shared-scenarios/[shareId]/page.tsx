@@ -28,12 +28,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       title: `${page('title')} | ${common('title')}`,
       description: page('description'),
+      robots: { index: false, follow: false },
     };
   }
 
   return {
     title: `${scenario.title} | ${page('title')}`,
     description: scenario.description || page('description'),
+    robots: { index: false, follow: false },
   };
 }
 

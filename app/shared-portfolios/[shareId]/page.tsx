@@ -18,12 +18,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { shareId } = await params;
   const portfolio = await getPublicSharedPortfolioPageData(shareId);
 
-  return buildSharedPortfolioPageMetadata({
-    portfolio,
-    pageTitle: page('title'),
-    pageDescription: page('description'),
-    appTitle: common('title'),
-  });
+  return {
+    ...buildSharedPortfolioPageMetadata({
+      portfolio,
+      pageTitle: page('title'),
+      pageDescription: page('description'),
+      appTitle: common('title'),
+    }),
+    robots: { index: false, follow: false },
+  };
 }
 
 export default async function SharedPortfolioPage({ params }: Props) {
