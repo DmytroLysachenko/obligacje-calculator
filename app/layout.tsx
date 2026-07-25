@@ -42,6 +42,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: t('common.description'),
     manifest: '/manifest.json',
+    themeColor: '#f8f6f1',
     robots: indexable ? undefined : { index: false, follow: false },
     openGraph: {
       type: 'website',
@@ -76,7 +77,7 @@ export default async function RootLayout({
   });
 
   return (
-    <html lang={language} suppressHydrationWarning>
+    <html lang={language} suppressHydrationWarning style={{ colorScheme: 'light dark' }}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} bg-background text-foreground antialiased`}
       >
@@ -112,7 +113,7 @@ export default async function RootLayout({
                           </div>
                         </div>
 
-                        <footer className="mt-auto border-t border-border bg-card py-6">
+                        <footer className="mt-auto border-t border-border bg-background py-6">
                           <div className="px-4 md:px-8 xl:px-10">
                             <div className="mx-auto w-full max-w-[var(--layout-app-max)] text-center text-sm text-muted-foreground">
                               <p>
