@@ -46,7 +46,11 @@ export function FormField({
               className={cn('text-sm font-medium text-foreground', labelClassName)}
             >
               {label}
-              {required ? <span className="ml-1 text-destructive">*</span> : null}
+              {required ? (
+                <span className="ml-1 text-destructive" aria-hidden="true">
+                  *
+                </span>
+              ) : null}
             </Label>
           ) : null}
           {!required && optionalLabel ? <span className="ui-caption">{optionalLabel}</span> : null}
@@ -72,7 +76,7 @@ export function FormField({
       ) : null}
       {children}
       {error ? (
-        <p id={errorId} role="alert" className="ui-field-error">
+        <p id={errorId} role="alert" aria-live="assertive" className="ui-field-error">
           {error}
         </p>
       ) : description ? (
