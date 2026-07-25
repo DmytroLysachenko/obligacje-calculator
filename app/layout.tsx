@@ -43,17 +43,30 @@ export async function generateMetadata(): Promise<Metadata> {
     description: t('common.description'),
     manifest: '/manifest.json',
     themeColor: '#f8f6f1',
+    icons: {
+      icon: [{ url: '/bonds-calculator-icon.png', sizes: '1254x1254', type: 'image/png' }],
+      apple: [{ url: '/bonds-calculator-icon.png', sizes: '1254x1254', type: 'image/png' }],
+    },
     robots: indexable ? undefined : { index: false, follow: false },
     openGraph: {
       type: 'website',
       locale: getMetadataLocale(language),
       url: canonicalBaseUrl,
       siteName: t('common.title'),
+      images: [
+        {
+          url: '/bonds-preview.png',
+          width: 1536,
+          height: 1024,
+          alt: 'Kalkulator Obligacji Skarbowych — calculator preview',
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title: t('common.title'),
       description: t('site.twitter_description'),
+      images: ['/bonds-preview.png'],
     },
   };
 }
