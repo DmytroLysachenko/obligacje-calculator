@@ -16,6 +16,7 @@ export function ChartDataTable({ data, series, formatCurrency }: ChartDataTableP
   const { t } = useAppI18n();
   const [isOpen, setIsOpen] = React.useState(false);
   const [page, setPage] = React.useState(1);
+  // Keep DOM work bounded even for long recurring-investment timelines.
   const pageSize = 24;
   const totalPages = Math.max(1, Math.ceil(data.length / pageSize));
   const pageRows = data.slice((page - 1) * pageSize, page * pageSize);
@@ -56,7 +57,10 @@ export function ChartDataTable({ data, series, formatCurrency }: ChartDataTableP
             </thead>
             <tbody>
               {pageRows.map((point) => (
-                <tr key={point.dateKey ?? point.date} className="border-t border-border">
+                <tr
+                  key={point.dateKey ?? point.date}
+                  className="border-t border-border [content-visibility:auto]"
+                >
                   <th scope="row" className="whitespace-nowrap px-3 py-2 font-medium">
                     {point.label}
                   </th>
