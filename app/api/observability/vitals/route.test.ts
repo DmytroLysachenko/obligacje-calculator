@@ -24,6 +24,7 @@ describe('web vitals endpoint', () => {
       value: 1240,
       rating: 'good',
       path: '/education',
+      navigation_type: 'navigate',
     });
   });
 

@@ -9,13 +9,24 @@ interface VitalPayload {
   value: number;
   rating: 'good' | 'needs-improvement' | 'poor';
   path: string;
+  navigationType: string;
 }
 
-function send(payload: Omit<VitalPayload, 'path'>) {
-  const body = JSON.stringify({ ...payload, path: window.location.pathname });
+function send(payload: Omit<VitalPayload, 'path' | 'navigationType'>) {
+  const navigation = performance.getEntriesByType('navigation')[0] as
+    | PerformanceNavigationTiming
+    | undefined;
+  const body = JSON.stringify({
+    ...payload,
+    path: window.location.pathname,
+    navigationType: navigation?.type ?? 'navigate',
+  });
 
   if (navigator.sendBeacon) {
-    navigator.sendBeacon('/api/observability/vitals', new Blob([body], { type: 'application/json' }));
+    navigator.sendBeacon(
+      '/api/observability/vitals',
+      new Blob([body], { type: 'application/json' }),
+    );
     return;
   }
 

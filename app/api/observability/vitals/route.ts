@@ -9,7 +9,11 @@ const payloadSchema = z.object({
   name: z.enum(['CLS', 'INP', 'LCP']),
   value: z.number().finite().nonnegative().max(60_000),
   rating: z.enum(['good', 'needs-improvement', 'poor']),
-  path: z.string().regex(/^\/[a-z0-9/_-]*$/i).max(160),
+  path: z
+    .string()
+    .regex(/^\/[a-z0-9/_-]*$/i)
+    .max(160),
+  navigationType: z.enum(['navigate', 'reload', 'back_forward', 'prerender']).default('navigate'),
 });
 
 export async function POST(request: NextRequest) {
@@ -25,6 +29,7 @@ export async function POST(request: NextRequest) {
     value: payload.data.value,
     rating: payload.data.rating,
     path: payload.data.path,
+    navigation_type: payload.data.navigationType,
   });
 
   return new NextResponse(null, { status: 204 });
