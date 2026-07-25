@@ -9,9 +9,12 @@ module.exports = {
         'http://127.0.0.1:3100/',
         'http://127.0.0.1:3100/single-calculator',
         'http://127.0.0.1:3100/economic-data',
+        'http://127.0.0.1:3100/compare',
+        'http://127.0.0.1:3100/regular-investment',
       ],
       settings: {
-        chromeFlags: '--no-sandbox --headless=new',
+        chromeFlags:
+          '--no-sandbox --headless=new --user-data-dir=/tmp/obligacje-calculator-lighthouse',
       },
     },
     assert: {
