@@ -15,6 +15,7 @@ import { buildSidebarNavSections, SidebarNavigation } from './SidebarNavigation'
 import { SidebarSettingsUtility } from './SidebarSettingsUtility';
 import { SidebarUtilityGroup } from './SidebarUtilityGroup';
 import { SidebarWorkspaceUtility } from './SidebarWorkspaceUtility';
+import { WorkflowContinue } from './WorkflowContinue';
 
 interface SidebarContentProps {
   onItemClick?: () => void;
@@ -84,6 +85,10 @@ function SidebarContent({ onItemClick }: SidebarContentProps) {
           onItemClick={onItemClick}
         />
       </nav>
+
+      <div className="px-3 pb-3">
+        <WorkflowContinue />
+      </div>
 
       <SidebarFooter pathname={pathname} />
     </div>

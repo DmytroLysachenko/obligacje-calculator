@@ -14,6 +14,7 @@ import { createAppJsonLd } from '@/lib/seo/app-json-ld';
 import { getCanonicalBaseUrl, isIndexableDeployment } from '@/lib/site-url';
 import { OpportunisticSyncTrigger } from '@/shared/components/chrome/OpportunisticSyncTrigger';
 import { Sidebar } from '@/shared/components/chrome/Sidebar';
+import { RouteFocusManager } from '@/shared/components/accessibility/RouteFocusManager';
 import { ErrorBoundary } from '@/shared/components/feedback/ErrorBoundary';
 import { WebVitalsReporter } from '@/shared/components/observability/WebVitalsReporter';
 import { BondDefinitionsProvider } from '@/shared/context/BondDefinitionsContext';
@@ -109,6 +110,7 @@ export default async function RootLayout({
                     <ErrorBoundary>
                       <div className="flex min-h-screen bg-background">
                         <WebVitalsReporter />
+                        <RouteFocusManager />
                         <a
                           href="#main-content"
                           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[80] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-foreground focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring"

@@ -139,6 +139,7 @@
     "retirement": "Retirement Planner"
   },
   "sidebar": {
+    "continue_label": "Continue where you left off",
     "workspace_title": "Workspace",
     "workspace_desc": "Choose active portfolio before saving new bond lots.",
     "portfolio_selector_label": "Current portfolio",

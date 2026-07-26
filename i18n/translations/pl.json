@@ -139,6 +139,7 @@
     "retirement": "Planer emerytalny"
   },
   "sidebar": {
+    "continue_label": "Kontynuuj od ostatniego miejsca",
     "workspace_title": "Przestrzen robocza",
     "workspace_desc": "Wybierz aktywny portfel przed zapisaniem nowych partii obligacji.",
     "portfolio_selector_label": "Biezacy portfel",
