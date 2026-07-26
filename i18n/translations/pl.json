@@ -571,6 +571,8 @@
       "results_stable": "Wyniki pozostaja stabilne, dopoki swiadomie nie uruchomisz nowego przeliczenia.",
       "stale_results": "Dane zostaly zmienione. Wyniki ponizej nadal pokazuja poprzedni przebieg, dopoki nie uruchomisz obliczenia ponownie.",
       "draft_saved": "Szkic zapisany na tym urzadzeniu",
+      "chart_key_insight": "Najwazniejszy wniosek z wykresu",
+      "chart_key_insight_copy": "Najpierw przeczytaj wartosci koncowe; ksztalt linii pokazuje przebieg, ale nie zastepuje dokladnych liczb.",
       "decision_summary": "Podsumowanie decyzji",
       "decision_bond": "Obligacja",
       "decision_horizon": "Horyzont",

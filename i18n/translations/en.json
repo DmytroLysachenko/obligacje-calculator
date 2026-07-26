@@ -571,6 +571,8 @@
       "results_stable": "Results stay stable until you intentionally rerun with new committed inputs.",
       "stale_results": "Inputs changed. Results below are stale until you rerun the calculation.",
       "draft_saved": "Draft saved on this device",
+      "chart_key_insight": "Key chart insight",
+      "chart_key_insight_copy": "Read the ending values first; use the line shape to understand the path, not as the only source of exact numbers.",
       "decision_summary": "Decision summary",
       "decision_bond": "Bond",
       "decision_horizon": "Horizon",
