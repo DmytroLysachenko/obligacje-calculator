@@ -80,7 +80,7 @@ describe('sidebar utility spacing contracts', () => {
     ]);
   });
 
-  it('keeps language as the only visible settings control until theme is fully designed', () => {
+  it('keeps language and theme controls aligned in settings', () => {
     const source = read(files.settings);
 
     expectContains(source, '<SidebarUtilityStack>');
@@ -88,8 +88,7 @@ describe('sidebar utility spacing contracts', () => {
     expectContains(source, "title={t('common.language')}");
     expectContains(source, 'action={<LanguageSwitcher />}');
     expectNotContains(source, 'description="PL / EN"');
-    expectNotContains(source, 'ThemeToggle');
-    expectNotContains(source, "title={t('common.theme')}");
+    expectContains(source, "title={t('common.theme')}");
 
     expectNoFragments(source, [
       'mt-3.5 border-t border-border pt-3.5',

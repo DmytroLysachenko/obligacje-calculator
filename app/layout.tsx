@@ -18,6 +18,7 @@ import { ErrorBoundary } from '@/shared/components/feedback/ErrorBoundary';
 import { WebVitalsReporter } from '@/shared/components/observability/WebVitalsReporter';
 import { BondDefinitionsProvider } from '@/shared/context/BondDefinitionsContext';
 import { ChartSyncProvider } from '@/shared/context/ChartSyncContext';
+import { ThemeProvider } from '@/shared/context/ThemeContext';
 
 import './globals.css';
 
@@ -90,7 +91,7 @@ export default async function RootLayout({
   });
 
   return (
-    <html lang={language} suppressHydrationWarning style={{ colorScheme: 'light dark' }}>
+    <html lang={language} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} bg-background text-foreground antialiased`}
       >
@@ -101,57 +102,59 @@ export default async function RootLayout({
         />
         <NextIntlClientProvider locale={language} messages={messages}>
           <AppLocaleProvider>
-            <BondDefinitionsProvider>
-              <ChartSyncProvider>
-                <TooltipProvider>
-                  <ErrorBoundary>
-                    <div className="flex min-h-screen bg-background">
-                      <WebVitalsReporter />
-                      <a
-                        href="#main-content"
-                        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[80] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-foreground focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring"
-                      >
-                        {t('common.skip_to_content')}
-                      </a>
-                      <Sidebar />
-                      <OpportunisticSyncTrigger />
-                      <main
-                        id="main-content"
-                        tabIndex={-1}
-                        className="flex min-h-screen flex-1 flex-col overflow-x-hidden bg-background pt-14 outline-none lg:pl-[var(--sidebar-width)] lg:pt-0"
-                      >
-                        <div className="flex-1 px-4 py-6 md:px-8 md:py-8 xl:px-10">
-                          <div className="mx-auto w-full max-w-[var(--layout-app-max)]">
-                            {children}
-                          </div>
-                        </div>
-
-                        <footer className="mt-auto border-t border-border bg-background py-6">
-                          <div className="px-4 md:px-8 xl:px-10">
-                            <div className="mx-auto w-full max-w-[var(--layout-app-max)] text-center text-sm text-muted-foreground">
-                              <p>
-                                {'\u00A9'} {new Date().getFullYear()} {t('common.title')}.{' '}
-                                {t('site.footer_disclaimer')}
-                              </p>
-                              <div className="mt-4 flex justify-center gap-4">
-                                <a
-                                  href="https://www.obligacjeskarbowe.pl/"
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-primary hover:underline"
-                                >
-                                  {t('site.official_bonds_link_label')}
-                                </a>
-                              </div>
+            <ThemeProvider>
+              <BondDefinitionsProvider>
+                <ChartSyncProvider>
+                  <TooltipProvider>
+                    <ErrorBoundary>
+                      <div className="flex min-h-screen bg-background">
+                        <WebVitalsReporter />
+                        <a
+                          href="#main-content"
+                          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[80] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-foreground focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring"
+                        >
+                          {t('common.skip_to_content')}
+                        </a>
+                        <Sidebar />
+                        <OpportunisticSyncTrigger />
+                        <main
+                          id="main-content"
+                          tabIndex={-1}
+                          className="flex min-h-screen flex-1 flex-col overflow-x-hidden bg-background pt-14 outline-none lg:pl-[var(--sidebar-width)] lg:pt-0"
+                        >
+                          <div className="flex-1 px-4 py-6 md:px-8 md:py-8 xl:px-10">
+                            <div className="mx-auto w-full max-w-[var(--layout-app-max)]">
+                              {children}
                             </div>
                           </div>
-                        </footer>
-                      </main>
-                    </div>
-                  </ErrorBoundary>
-                </TooltipProvider>
-              </ChartSyncProvider>
-            </BondDefinitionsProvider>
+
+                          <footer className="mt-auto border-t border-border bg-background py-6">
+                            <div className="px-4 md:px-8 xl:px-10">
+                              <div className="mx-auto w-full max-w-[var(--layout-app-max)] text-center text-sm text-muted-foreground">
+                                <p>
+                                  {'\u00A9'} {new Date().getFullYear()} {t('common.title')}.{' '}
+                                  {t('site.footer_disclaimer')}
+                                </p>
+                                <div className="mt-4 flex justify-center gap-4">
+                                  <a
+                                    href="https://www.obligacjeskarbowe.pl/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-primary hover:underline"
+                                  >
+                                    {t('site.official_bonds_link_label')}
+                                  </a>
+                                </div>
+                              </div>
+                            </div>
+                          </footer>
+                        </main>
+                      </div>
+                    </ErrorBoundary>
+                  </TooltipProvider>
+                </ChartSyncProvider>
+              </BondDefinitionsProvider>
+            </ThemeProvider>
           </AppLocaleProvider>
         </NextIntlClientProvider>
 

@@ -5,6 +5,7 @@ import React from 'react';
 import { useAppI18n } from '@/i18n/client';
 
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { ThemeToggle } from './ThemeToggle';
 import { SidebarUtilityPanel, SidebarUtilityRow, SidebarUtilityStack } from './SidebarUtilityGroup';
 
 export function SidebarSettingsUtility() {
@@ -14,6 +15,7 @@ export function SidebarSettingsUtility() {
     <SidebarUtilityStack>
       <SidebarUtilityPanel flush>
         <SidebarUtilityRow title={t('common.language')} action={<LanguageSwitcher />} />
+        <SidebarUtilityRow title={t('common.theme')} action={<ThemeToggle />} />
       </SidebarUtilityPanel>
     </SidebarUtilityStack>
   );
