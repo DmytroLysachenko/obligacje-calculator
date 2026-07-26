@@ -10,6 +10,7 @@ import { MetricStrip } from '@/shared/components/results/MetricStrip';
 import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
 import { ScenarioFactsBlock } from '@/shared/components/results/ScenarioFactsBlock';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
+import { ScenarioDecisionRail } from '@/shared/components/results/ScenarioDecisionRail';
 import { useCurrencyFormatter } from '@/shared/hooks/useLocalizedFormatters';
 import { getAuditTimelinePoint } from '@/shared/lib/bond-display';
 import { buildTimelineExportHeaders } from '@/shared/lib/export-headers';
@@ -127,6 +128,13 @@ export const BondResultsSummary: React.FC<BondResultsSummaryProps> = ({
         description={t('bonds.results.summary_description')}
         narrative={summaryNarrative}
         actions={summaryActions}
+      />
+
+      <ScenarioDecisionRail
+        bondType={inputs.bondType}
+        horizonLabel={`${horizonLabel} ${t('common.duration_months')}`}
+        investedLabel={formatCurrency(results.initialInvestment)}
+        outcomeLabel={formatCurrency(headlineValue)}
       />
 
       {!canManageWorkspace ? (

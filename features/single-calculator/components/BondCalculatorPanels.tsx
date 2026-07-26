@@ -160,6 +160,7 @@ export function BondCalculatorDetailsPanel({
 
   return (
     <div
+      id="bond-details"
       className={cn(
         'ui-compact-flow transition-opacity duration-200',
         isCalculating && 'pointer-events-none opacity-50',
