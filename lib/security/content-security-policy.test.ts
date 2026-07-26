@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { createContentSecurityPolicy, permissionsPolicy } from './content-security-policy';
+import {
+  createContentSecurityPolicy,
+  hasCspSource,
+  parseContentSecurityPolicy,
+  permissionsPolicy,
+  supportsRuntimePresentationStyles,
+} from './content-security-policy';
 
 describe('content security policy', () => {
   it('restricts production scripts to the request nonce and same origin', () => {
@@ -21,6 +27,37 @@ describe('content security policy', () => {
   it('permits development tooling without weakening the production policy', () => {
     expect(createContentSecurityPolicy('dev-nonce', true)).toContain("'unsafe-eval'");
     expect(createContentSecurityPolicy('prod-nonce', false)).not.toContain("'unsafe-eval'");
+  });
+
+  it('keeps element styles nonce protected while allowing runtime positioning attributes', () => {
+    const policy = createContentSecurityPolicy('browser-check');
+    const directives = parseContentSecurityPolicy(policy);
+
+    expect(directives['style-src']).toEqual(["'self'", "'nonce-browser-check'"]);
+    expect(directives['style-src-elem']).toEqual(["'self'", "'nonce-browser-check'"]);
+    expect(directives['style-src-attr']).toEqual(["'unsafe-inline'"]);
+    expect(supportsRuntimePresentationStyles(policy)).toBe(true);
+  });
+
+  it('does not report runtime style support for a broadly weakened style source', () => {
+    const policy = [
+      "style-src 'self' 'nonce-browser-check' 'unsafe-inline'",
+      "style-src-elem 'self' 'nonce-browser-check'",
+      "style-src-attr 'unsafe-inline'",
+    ].join('; ');
+
+    expect(supportsRuntimePresentationStyles(policy)).toBe(false);
+  });
+
+  it('parses individual directives without accidentally matching prefixes', () => {
+    const directives = parseContentSecurityPolicy(
+      "script-src 'self'; script-src-elem 'none'; style-src-attr 'unsafe-inline'",
+    );
+
+    expect(hasCspSource(directives, 'script-src', "'self'")).toBe(true);
+    expect(hasCspSource(directives, 'script-src-elem', "'self'")).toBe(false);
+    expect(hasCspSource(directives, 'style-src', "'unsafe-inline'")).toBe(false);
+    expect(hasCspSource(directives, 'style-src-attr', "'unsafe-inline'")).toBe(true);
   });
 
   it('disables browser capabilities the application does not use', () => {

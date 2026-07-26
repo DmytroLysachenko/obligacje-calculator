@@ -14,6 +14,16 @@ const auditedRoutes = [
   { path: '/retirement', name: 'retirement' },
 ];
 
+test('serves the scoped runtime-style CSP required by charts and sheets', async ({ page }) => {
+  const response = await page.goto('/economic-data', { waitUntil: 'domcontentloaded' });
+  const policy = response?.headers()['content-security-policy'] ?? '';
+
+  expect(policy).toContain("style-src-elem 'self' 'nonce-");
+  expect(policy).toContain("style-src-attr 'unsafe-inline'");
+  expect(policy).toMatch(/style-src 'self' 'nonce-[^']+';/);
+  expect(policy).not.toMatch(/style-src[^;]*'unsafe-inline'/);
+});
+
 for (const route of auditedRoutes) {
   test(`${route.name} has no automated accessibility violations`, async ({ page }, testInfo) => {
     const diagnostics = installBrowserDiagnostics(page);
