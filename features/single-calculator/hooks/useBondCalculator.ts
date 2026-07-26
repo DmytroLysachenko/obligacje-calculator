@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { startTransition, useCallback, useMemo, useRef, useState } from 'react';
 
 import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
@@ -57,8 +57,12 @@ export function useBondCalculator(initialInputs?: BondInputs, bondFromUrl?: Bond
           inputs: currentInputs,
           post,
         });
-        setEnvelope(nextEnvelope);
-        setLastCommittedInputs(finalInputs);
+        // The API work has finished. Commit the heavier chart/timeline tree as
+        // non-urgent so the button can paint its feedback before results mount.
+        startTransition(() => {
+          setEnvelope(nextEnvelope);
+          setLastCommittedInputs(finalInputs);
+        });
       } catch (error) {
         if (isCalculationAbort(error)) {
           return;
@@ -98,37 +102,40 @@ export function useBondCalculator(initialInputs?: BondInputs, bondFromUrl?: Bond
 
   const results = envelope?.result || null;
 
-  const updateInput = (key: string, value: unknown) => {
-    setIsDirty(true);
-    if (key === 'selectedSeriesId') {
-      const seriesId = value as string | null;
-      setSelectedSeriesId(seriesId);
-      if (definitions) {
-        setInputs((prev) => {
-          const next = resolveSingleCalculatorSelectedSeriesUpdate({
-            seriesId,
-            previous: prev,
-            definitions,
-            availableSeries,
+  const updateInput = useCallback(
+    (key: string, value: unknown) => {
+      setIsDirty(true);
+      if (key === 'selectedSeriesId') {
+        const seriesId = value as string | null;
+        setSelectedSeriesId(seriesId);
+        if (definitions) {
+          setInputs((prev) => {
+            const next = resolveSingleCalculatorSelectedSeriesUpdate({
+              seriesId,
+              previous: prev,
+              definitions,
+              availableSeries,
+            });
+            return next ?? prev;
           });
-          return next ?? prev;
-        });
+        }
+        return;
       }
-      return;
-    }
 
-    setInputs((prev) => {
-      const next = resolveSingleCalculatorFieldUpdate({
-        key,
-        value,
-        previous: prev,
+      setInputs((prev) => {
+        const next = resolveSingleCalculatorFieldUpdate({
+          key,
+          value,
+          previous: prev,
+        });
+        if (next.touchedMacroAssumptions) {
+          hasTouchedMacroAssumptions.current = true;
+        }
+        return next.inputs;
       });
-      if (next.touchedMacroAssumptions) {
-        hasTouchedMacroAssumptions.current = true;
-      }
-      return next.inputs;
-    });
-  };
+    },
+    [availableSeries, definitions],
+  );
 
   const replaceInputs = useCallback((nextInputs: BondInputs) => {
     setIsDirty(true);
@@ -137,12 +144,15 @@ export function useBondCalculator(initialInputs?: BondInputs, bondFromUrl?: Bond
     setInputs(replacement.inputs);
   }, []);
 
-  const setBondType = (type: BondType) => {
-    if (!definitions) return;
-    setIsDirty(true);
-    setSelectedSeriesId('current');
-    setInputs((prev) => resolveBondTypeInputUpdate(prev, type, definitions[type]));
-  };
+  const setBondType = useCallback(
+    (type: BondType) => {
+      if (!definitions) return;
+      setIsDirty(true);
+      setSelectedSeriesId('current');
+      setInputs((prev) => resolveBondTypeInputUpdate(prev, type, definitions[type]));
+    },
+    [definitions],
+  );
 
   return {
     inputs,
