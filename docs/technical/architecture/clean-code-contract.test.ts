@@ -43,6 +43,7 @@ describe('clean code architecture contract', () => {
     const approvedFetchFiles = new Set([
       'shared/lib/api-client.ts',
       'shared/lib/calculation-client.ts',
+      'shared/components/observability/WebVitalsReporter.tsx',
       'shared/workers/calculation.worker.ts',
     ]);
     const matches = filesContaining(/\bfetch\(/)
@@ -67,7 +68,11 @@ describe('clean code architecture contract', () => {
   });
 
   it('keeps app api route response envelopes on shared helpers', () => {
-    const allowedRawJsonRoutes = new Set(['app/api/health/route.ts', 'app/api/readiness/route.ts']);
+    const allowedRawJsonRoutes = new Set([
+      'app/api/health/route.ts',
+      'app/api/readiness/route.ts',
+      'app/api/observability/vitals/route.ts',
+    ]);
     const matches = filesContaining(/NextResponse\.json/)
       .filter((file) => file.startsWith('app/api/'))
       .filter((file) => !allowedRawJsonRoutes.has(file));

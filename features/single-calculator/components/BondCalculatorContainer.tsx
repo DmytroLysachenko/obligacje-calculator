@@ -36,8 +36,8 @@ import { parseBondType } from '../lib/single-calculator-state';
 
 import { BondCalculatorDetailsPanel, BondCalculatorResultsPanel } from './BondCalculatorPanels';
 import { BondInputsForm } from './BondInputsForm';
-import { SharedScenarioNotice } from './SharedScenarioNotice';
 import { ScenarioDraftStatus } from './ScenarioDraftStatus';
+import { SharedScenarioNotice } from './SharedScenarioNotice';
 
 interface BondCalculatorContainerProps {
   initialInputs?: import('@/features/bond-core/types').BondInputs;

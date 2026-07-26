@@ -5,8 +5,8 @@ import React from 'react';
 import { useAppI18n } from '@/i18n/client';
 
 import { LanguageSwitcher } from './LanguageSwitcher';
-import { ThemeToggle } from './ThemeToggle';
 import { SidebarUtilityPanel, SidebarUtilityRow, SidebarUtilityStack } from './SidebarUtilityGroup';
+import { ThemeToggle } from './ThemeToggle';
 
 export function SidebarSettingsUtility() {
   const { t } = useAppI18n();
