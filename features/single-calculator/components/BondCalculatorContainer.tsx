@@ -37,6 +37,7 @@ import { parseBondType } from '../lib/single-calculator-state';
 import { BondCalculatorDetailsPanel, BondCalculatorResultsPanel } from './BondCalculatorPanels';
 import { BondInputsForm } from './BondInputsForm';
 import { SharedScenarioNotice } from './SharedScenarioNotice';
+import { ScenarioDraftStatus } from './ScenarioDraftStatus';
 
 interface BondCalculatorContainerProps {
   initialInputs?: import('@/features/bond-core/types').BondInputs;
@@ -240,6 +241,8 @@ export const BondCalculatorContainer: React.FC<BondCalculatorContainerProps> = (
             snapshotLabel={t('bonds.shared_scenario_snapshot')}
           />
         ) : null}
+
+        <ScenarioDraftStatus inputs={inputs} isDirty={isDirty} onRestore={replaceInputs} />
 
         <CalculatorWorkspace
           className="gap-8 xl:gap-10"
