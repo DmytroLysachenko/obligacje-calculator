@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
+import { getFieldAriaDescribedBy } from '@/shared/lib/field-validation';
 
 interface FormFieldProps {
   label?: React.ReactNode;
@@ -36,6 +37,15 @@ export function FormField({
   const { t } = useAppI18n();
   const descriptionId = React.useId();
   const errorId = React.useId();
+  const describedBy = getFieldAriaDescribedBy(descriptionId, errorId, Boolean(error));
+  const control = React.isValidElement<{ 'aria-describedby'?: string; 'aria-invalid'?: boolean }>(
+    children,
+  )
+    ? React.cloneElement(children, {
+        'aria-describedby': children.props['aria-describedby'] ?? describedBy,
+        'aria-invalid': error ? true : children.props['aria-invalid'],
+      })
+    : children;
   return (
     <div className={cn('ui-field-stack', className)}>
       {label || tooltip ? (
@@ -74,7 +84,7 @@ export function FormField({
           ) : null}
         </div>
       ) : null}
-      {children}
+      {control}
       {error ? (
         <p id={errorId} role="alert" aria-live="assertive" className="ui-field-error">
           {error}
