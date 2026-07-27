@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono, Inter } from 'next/font/google';
 import { headers } from 'next/headers';
 import Script from 'next/script';
@@ -29,6 +29,10 @@ const inter = Inter({ variable: '--font-inter', subsets: ['latin'] });
 
 export const dynamic = 'force-dynamic';
 
+export const viewport: Viewport = {
+  themeColor: '#f8f6f1',
+};
+
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
   const language = (locale as Language) || defaultLocale;
@@ -44,7 +48,6 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: t('common.description'),
     manifest: '/manifest.json',
-    themeColor: '#f8f6f1',
     icons: {
       icon: [{ url: '/bonds-calculator-icon.png', sizes: '1254x1254', type: 'image/png' }],
       apple: [{ url: '/bonds-calculator-icon.png', sizes: '1254x1254', type: 'image/png' }],

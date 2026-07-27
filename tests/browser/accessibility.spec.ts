@@ -21,7 +21,7 @@ test('serves the scoped runtime-style CSP required by charts and sheets', async 
   expect(policy).toContain("style-src-elem 'self' 'nonce-");
   expect(policy).toContain("style-src-attr 'unsafe-inline'");
   expect(policy).toMatch(/style-src 'self' 'nonce-[^']+';/);
-  expect(policy).not.toMatch(/style-src[^;]*'unsafe-inline'/);
+  expect(policy).not.toMatch(/(?:^|;\s*)style-src\s[^;]*'unsafe-inline'/);
 });
 
 for (const route of auditedRoutes) {
