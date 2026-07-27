@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback } from 'react';
 
 import { MacroAssumptionDefaults } from '@/lib/data/market-data';
 import { apiGet } from '@/shared/lib/api-client';
 import { logClientError } from '@/shared/lib/client-logger';
+import { ClientResource } from '@/shared/lib/client-resource';
 
-let cachedDefaults: MacroAssumptionDefaults | null = null;
+import { useClientResource } from './useClientResource';
 
 const FALLBACK_DEFAULTS: MacroAssumptionDefaults = {
   expectedInflation: 2.5,
@@ -14,43 +15,21 @@ const FALLBACK_DEFAULTS: MacroAssumptionDefaults = {
   usedFallback: true,
 };
 
+const defaultsResource = new ClientResource<MacroAssumptionDefaults>({
+  maxAgeMs: 10 * 60_000,
+  staleAfterMs: 3 * 60_000,
+});
+
 export function useMacroAssumptionDefaults() {
-  const [defaults, setDefaults] = useState<MacroAssumptionDefaults>(
-    cachedDefaults ?? FALLBACK_DEFAULTS,
-  );
-  const [isLoading, setIsLoading] = useState(!cachedDefaults);
-
-  useEffect(() => {
-    if (cachedDefaults) {
-      setIsLoading(false);
-      return;
+  const fetchDefaults = useCallback(async () => {
+    try {
+      return await apiGet<MacroAssumptionDefaults>('/api/calculation-defaults');
+    } catch (error) {
+      logClientError('Failed to fetch macro assumption defaults:', error);
+      throw error;
     }
-
-    let isCancelled = false;
-
-    async function fetchDefaults() {
-      try {
-        cachedDefaults = await apiGet<MacroAssumptionDefaults>('/api/calculation-defaults');
-        if (!isCancelled) {
-          setDefaults(cachedDefaults);
-        }
-      } catch (error) {
-        if (!isCancelled) {
-          logClientError('Failed to fetch macro assumption defaults:', error);
-        }
-      } finally {
-        if (!isCancelled) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    fetchDefaults();
-
-    return () => {
-      isCancelled = true;
-    };
   }, []);
+  const resource = useClientResource(defaultsResource, fetchDefaults);
 
-  return { defaults, isLoading };
+  return { defaults: resource.data ?? FALLBACK_DEFAULTS, ...resource };
 }
