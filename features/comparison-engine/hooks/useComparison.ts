@@ -11,6 +11,7 @@ import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { type BondInputs, BondType } from '../../bond-core/types';
 import type { BondComparisonCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { runComparisonCalculation } from '../lib/comparison-actions';
+import { getComparisonOfferStatus } from '../lib/comparison-offer-status';
 import {
   buildDefaultSharedConfig,
   buildScenarioInputs,
@@ -77,6 +78,24 @@ export function useComparison(initialUrlState?: ComparisonUrlState | null) {
       hasResults: Boolean(resultsA && resultsB),
     });
   }, [committedInputsA, committedInputsB, inputsA, inputsB, isDirty, resultsA, resultsB]);
+  const offerStatusA = useMemo(
+    () =>
+      getComparisonOfferStatus({
+        inputs: inputsA,
+        committedInputs: committedInputsA,
+        envelope: envelopeA,
+      }),
+    [committedInputsA, envelopeA, inputsA],
+  );
+  const offerStatusB = useMemo(
+    () =>
+      getComparisonOfferStatus({
+        inputs: inputsB,
+        committedInputs: committedInputsB,
+        envelope: envelopeB,
+      }),
+    [committedInputsB, envelopeB, inputsB],
+  );
 
   const calculate = useCallback(async () => {
     setIsDirty(false);
@@ -206,6 +225,8 @@ export function useComparison(initialUrlState?: ComparisonUrlState | null) {
     resultsB,
     envelopeA,
     envelopeB,
+    offerStatusA,
+    offerStatusB,
     warningsA: envelopeA?.warnings || [],
     warningsB: envelopeB?.warnings || [],
     isCalculating,
