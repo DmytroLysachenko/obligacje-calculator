@@ -21,11 +21,11 @@ const statusClassNames: Record<FeatureStatus, string> = {
 
 function getStatusLabel(status: FeatureStatus, t: (key: string) => string) {
   const labels: Record<FeatureStatus, string> = {
-    trusted: t('feature_status.trusted'),
-    reference: t('feature_status.reference'),
-    conditional: t('feature_status.conditional'),
-    experimental: t('feature_status.experimental'),
-    limited: t('feature_status.limited'),
+    trusted: t('shared.feature_status.labels.trusted'),
+    reference: t('shared.feature_status.labels.reference'),
+    conditional: t('shared.feature_status.labels.conditional'),
+    experimental: t('shared.feature_status.labels.experimental'),
+    limited: t('shared.feature_status.labels.limited'),
   };
   return labels[status];
 }
