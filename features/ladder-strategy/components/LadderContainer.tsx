@@ -77,6 +77,7 @@ export const LadderContainer: React.FC = () => {
     calculate,
     envelope,
     isPersistenceReady,
+    hasPreviousOfferResult,
   } = useLadder();
   const { t } = useAppI18n();
   const readingGuide = [
@@ -127,6 +128,15 @@ export const LadderContainer: React.FC = () => {
                     role="status"
                   >
                     {t('ladder_page.stale_results')}
+                  </div>
+                ) : null}
+                {hasPreviousOfferResult ? (
+                  <div
+                    className="ui-status-note ui-status-note-warning text-foreground"
+                    role="status"
+                  >
+                    Oferta w wynikach została zapisana przed ostatnią zmianą. Uruchom ponowne
+                    przeliczenie, aby porównać bieżącą ofertę.
                   </div>
                 ) : null}
 

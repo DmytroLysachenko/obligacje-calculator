@@ -1,18 +1,15 @@
 'use client';
 
-import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
+import { useCalculatorSession } from '@/shared/hooks/useCalculatorSession';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
-import {
-  loadPersistedCalculatorState,
-  savePersistedCalculatorState,
-} from '@/shared/lib/calculator-persistence';
 import { preserveStableState } from '@/shared/lib/calculator-state';
+import { applyUntouchedMacroDefaults } from '@/shared/lib/calculator-session-persistence';
 import { logClientError } from '@/shared/lib/client-logger';
-import { applyMacroDefaultsToBaseline } from '@/shared/lib/macro-assumption-defaults';
 
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
 import { BondType, RegularInvestmentInputs } from '../../bond-core/types';
@@ -30,160 +27,92 @@ import {
 
 const STORAGE_KEY = 'obligacje.ladder-calculator.v1';
 
-interface PersistedLadderState {
-  inputs: RegularInvestmentInputs;
-  envelope: RegularInvestmentCalculationEnvelope | null;
-  isDirty: boolean;
-}
-
+/** Ladder keeps worker calculation local while session owns draft and committed snapshots. */
 export function useLadder() {
   const { definitions } = useBondDefinitions();
   const { defaults: macroDefaults } = useMacroAssumptionDefaults();
-  const [inputs, setInputs] = useState<RegularInvestmentInputs>(buildDefaultLadderInputs);
-  const [envelope, setEnvelope] = useState<RegularInvestmentCalculationEnvelope | null>(null);
-  const [isDirty, setIsDirty] = useState(true);
-  const [isPersistenceReady, setIsPersistenceReady] = useState(false);
-  const { isCalculating, post } = useCalculationRequest();
-  const hasRestoredState = useRef(false);
-  const restoredFromPersistence = useRef(false);
+  const fallbackInputs = useMemo(() => buildDefaultLadderInputs(), []);
   const hasTouchedMacroAssumptions = useRef(false);
+  const { isCalculating, post } = useCalculationRequest();
+  const session = useCalculatorSession<
+    RegularInvestmentInputs,
+    RegularInvestmentCalculationEnvelope
+  >({ initialInputs: fallbackInputs, storageKey: STORAGE_KEY });
+  const {
+    draftInputs: inputs,
+    committedResult: envelope,
+    setDraftInputs,
+    runCalculation,
+  } = session;
 
-  const results = envelope?.result || null;
-  const applyDefinitionUpdate = useEffectEvent(
-    (definition: (typeof BOND_DEFINITIONS)[BondType]) => {
-      setInputs((previous) => applyLadderBondDefinition(previous, definition));
+  const updateDraft = useCallback(
+    (update: (previous: RegularInvestmentInputs) => RegularInvestmentInputs) => {
+      setDraftInputs(preserveStableState(inputs, update(inputs)));
     },
-  );
-
-  const applyMacroDefaults = useEffectEvent(
-    (defaults: { expectedInflation: number; expectedNbpRate: number }) => {
-      setInputs((previous) => {
-        const next = {
-          ...previous,
-          expectedInflation: defaults.expectedInflation,
-          expectedNbpRate: defaults.expectedNbpRate,
-        };
-
-        return preserveStableState(previous, next);
-      });
-    },
-  );
-
-  const reconcilePersistedMacroDefaults = useEffectEvent(
-    (defaults: { expectedInflation: number; expectedNbpRate: number }) => {
-      setInputs((previous) => {
-        const next = applyMacroDefaultsToBaseline(previous, defaults);
-        return preserveStableState(previous, next);
-      });
-    },
+    [inputs, setDraftInputs],
   );
 
   useEffect(() => {
-    if (!definitions || !definitions[inputs.bondType]) {
-      return;
-    }
-
-    const definition = definitions[inputs.bondType];
-    applyDefinitionUpdate(definition);
-  }, [definitions, inputs.bondType]);
-
-  useEffect(() => {
-    if (hasRestoredState.current) {
-      return;
-    }
-
+    if (!definitions || !definitions[inputs.bondType]) return;
     const timer = window.setTimeout(() => {
-      const restoredState = loadPersistedCalculatorState<PersistedLadderState>(STORAGE_KEY);
-      hasRestoredState.current = true;
-
-      if (restoredState) {
-        restoredFromPersistence.current = true;
-        setInputs(restoredState.inputs);
-        setEnvelope(restoredState.envelope ?? null);
-        setIsDirty(restoredState.isDirty ?? true);
-      }
-
-      setIsPersistenceReady(true);
+      updateDraft((previous) =>
+        applyLadderBondDefinition(previous, definitions[previous.bondType]),
+      );
     }, 0);
-
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [definitions, inputs.bondType, updateDraft]);
 
   useEffect(() => {
-    if (!macroDefaults || !isPersistenceReady || hasTouchedMacroAssumptions.current) {
-      return;
-    }
-
-    if (restoredFromPersistence.current) {
-      const timer = window.setTimeout(() => {
-        reconcilePersistedMacroDefaults(macroDefaults);
-      }, 0);
-      return () => window.clearTimeout(timer);
-    }
-
-    applyMacroDefaults(macroDefaults);
-  }, [isPersistenceReady, macroDefaults]);
+    if (!macroDefaults || !session.isPersistenceReady || hasTouchedMacroAssumptions.current) return;
+    updateDraft((previous) => applyUntouchedMacroDefaults(previous, macroDefaults, false));
+  }, [macroDefaults, session.isPersistenceReady, updateDraft]);
 
   const calculate = useCallback(async () => {
     try {
-      const data = await post<RegularInvestmentCalculationEnvelope>(
-        getCalculationEndpoint(ScenarioKind.REGULAR_INVESTMENT),
-        inputs,
-        { preferWorker: true },
+      await runCalculation((draftInputs) =>
+        post<RegularInvestmentCalculationEnvelope>(
+          getCalculationEndpoint(ScenarioKind.REGULAR_INVESTMENT),
+          draftInputs,
+          { preferWorker: true },
+        ),
       );
-      setEnvelope(data);
-      setIsDirty(false);
     } catch (error) {
       logClientError('Ladder calculation error:', error);
     }
-  }, [inputs, post]);
+  }, [post, runCalculation]);
 
   const updateInput = useCallback(
     (key: keyof RegularInvestmentInputs, value: string | number | boolean | undefined) => {
-      setIsDirty(true);
-      if (isLadderMacroInputKey(key)) {
-        hasTouchedMacroAssumptions.current = true;
-      }
-      setInputs((previous) =>
+      if (isLadderMacroInputKey(key)) hasTouchedMacroAssumptions.current = true;
+      updateDraft((previous) =>
         normalizeLadderInputs(previous, { [key]: value } as Partial<RegularInvestmentInputs>),
       );
     },
-    [],
+    [updateDraft],
   );
 
   const setBondType = useCallback(
     (type: BondType) => {
-      setIsDirty(true);
-      setInputs((previous) => resolveLadderBondTypeUpdate(previous, type, definitions));
+      updateDraft((previous) => resolveLadderBondTypeUpdate(previous, type, definitions));
     },
-    [definitions],
+    [definitions, updateDraft],
   );
-
-  useEffect(() => {
-    if (!isPersistenceReady) {
-      return;
-    }
-
-    savePersistedCalculatorState(STORAGE_KEY, {
-      inputs,
-      envelope,
-      isDirty,
-    });
-  }, [envelope, inputs, isDirty, isPersistenceReady]);
 
   return {
     inputs,
-    results,
+    results: envelope?.result ?? null,
     envelope,
-    warnings: envelope?.warnings || [],
-    assumptions: envelope?.assumptions || [],
+    warnings: envelope?.warnings ?? [],
+    assumptions: envelope?.assumptions ?? [],
     dataFreshness: envelope?.dataFreshness,
-    isDirty,
+    isDirty: session.isDirty,
     isCalculating,
     calculate,
     updateInput,
     setBondType,
     definitions: definitions ?? BOND_DEFINITIONS,
-    isPersistenceReady,
+    isPersistenceReady: session.isPersistenceReady,
+    committedInputs: session.committedInputs,
+    hasPreviousOfferResult: Boolean(session.committedInputs && session.isDirty),
   };
 }
