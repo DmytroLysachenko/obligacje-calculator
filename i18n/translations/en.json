@@ -372,6 +372,8 @@
   },
   "bonds": {
     "single_calculator": "Investment Simulation",
+    "previous_offer_reference": "This committed calculation uses a previous bond offer. Recalculate to use the current offer.",
+    "recalculate_current_offer": "Use current offer",
     "glossary": {
       "savings_goal": "The amount you want to accumulate by the end of your investment. The calculator helps determine how much you need to invest today to reach this goal.",
       "capitalization": "The process of adding earned interest to the principal, so that in the next period, interest is calculated on a larger amount (compound interest).",

@@ -372,6 +372,8 @@
   },
   "bonds": {
     "single_calculator": "Symulacja Inwestycji",
+    "previous_offer_reference": "Ta zatwierdzona kalkulacja korzysta z poprzedniej oferty obligacji. Przelicz ją ponownie, aby użyć aktualnej oferty.",
+    "recalculate_current_offer": "Użyj aktualnej oferty",
     "glossary": {
       "savings_goal": "Kwota, ktora chcesz zgromadzic na koniec inwestycji. Kalkulator pomoze wyliczyc, ile musisz wplacic dzisiaj, aby osiagnac ten cel.",
       "capitalization": "Proces dopisywania wypracowanych odsetek do kapitalu, dzieki czemu w kolejnym okresie odsetki naliczane sa od wiekszej kwoty (procent skladany).",
