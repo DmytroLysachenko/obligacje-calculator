@@ -40,6 +40,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
     isDirty,
     envelope,
     isPersistenceReady,
+    hasPreviousOfferResult,
   } = useRegularInvestmentCalculator();
   const { t } = useAppI18n();
   const readingGuide = [
@@ -136,6 +137,12 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
                 isCalculating && 'pointer-events-none opacity-50',
               )}
             >
+              {hasPreviousOfferResult ? (
+                <p className="ui-meta border-l-2 border-amber-500/70 pl-3" role="status">
+                  Wyniki dotyczą poprzednio zatwierdzonej oferty. Przelicz symulację po zmianie
+                  parametrów lub oferty obligacji.
+                </p>
+              ) : null}
               <CalculatorSection
                 title={t('regular_investment_page.chart_title')}
                 description={t('regular_investment_page.chart_description')}
