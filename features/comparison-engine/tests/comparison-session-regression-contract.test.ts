@@ -44,7 +44,7 @@ describe('single and comparison session regressions', () => {
   it('keeps URL initialization, series lookup, and local persistence feature-local', () => {
     expect(singleEffects).toContain('fetchBondSeriesForSymbol');
     expect(singleEffects).toContain('SINGLE_CALCULATOR_STORAGE_KEY');
-    expect(comparisonHook).toContain('useComparisonPersistenceEffects');
+    expect(comparisonHook).toContain('COMPARISON_CALCULATOR_STORAGE_KEY');
     expect(comparisonHook).toContain('initialUrlState');
   });
 
@@ -71,9 +71,16 @@ describe('single and comparison session regressions', () => {
   });
 
   it('keeps comparison result commit explicit', () => {
-    expect(comparisonHook).toContain('const calculate = useCallback(async () =>');
-    expect(comparisonHook).toContain('setCommittedInputsA(inputsA)');
-    expect(comparisonHook).toContain('setCommittedInputsB(inputsB)');
+    expect(comparisonHook).toContain("import { useCalculatorSession } from '@/shared/hooks/useCalculatorSession';");
+    expect(comparisonHook).toContain('storageKey: COMPARISON_CALCULATOR_STORAGE_KEY');
+    expect(comparisonHook).toContain('await session.runCalculation');
+    expect(comparisonHook).toContain('session.committedInputs');
+  });
+
+  it('applies macro defaults once instead of writing a new draft each render', () => {
+    expect(comparisonHook).toContain('const hasAppliedMacroDefaults = useRef(false)');
+    expect(comparisonHook).toContain('hasAppliedMacroDefaults.current');
+    expect(comparisonHook).toContain('nextSharedConfig !== session.draftInputs.sharedConfig');
   });
 
   it('renders scenario-level offer disclosure accessibly', () => {
