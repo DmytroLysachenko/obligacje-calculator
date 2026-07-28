@@ -10,7 +10,12 @@ export interface CalculatorSessionState<TInputs, TResult> {
 }
 
 export type CalculatorSessionEvent<TInputs, TResult> =
-  | { type: 'restore'; draftInputs: TInputs; committedInputs: TInputs | null; committedResult: TResult | null }
+  | {
+      type: 'restore';
+      draftInputs: TInputs;
+      committedInputs: TInputs | null;
+      committedResult: TResult | null;
+    }
   | { type: 'set-draft'; draftInputs: TInputs }
   | { type: 'start' }
   | { type: 'succeed'; committedInputs: TInputs; committedResult: TResult }
@@ -38,13 +43,29 @@ export function reduceCalculatorSession<TInputs, TResult>(
 ): CalculatorSessionState<TInputs, TResult> {
   switch (event.type) {
     case 'restore':
-      return { ...state, draftInputs: event.draftInputs, committedInputs: event.committedInputs, committedResult: event.committedResult };
+      return {
+        ...state,
+        draftInputs: event.draftInputs,
+        committedInputs: event.committedInputs,
+        committedResult: event.committedResult,
+      };
     case 'set-draft':
-      return { ...state, draftInputs: event.draftInputs, error: null, phase: state.phase === 'failed' ? 'idle' : state.phase };
+      return {
+        ...state,
+        draftInputs: event.draftInputs,
+        error: null,
+        phase: state.phase === 'failed' ? 'idle' : state.phase,
+      };
     case 'start':
       return { ...state, error: null, phase: 'running' };
     case 'succeed':
-      return { ...state, committedInputs: event.committedInputs, committedResult: event.committedResult, error: null, phase: 'succeeded' };
+      return {
+        ...state,
+        committedInputs: event.committedInputs,
+        committedResult: event.committedResult,
+        error: null,
+        phase: 'succeeded',
+      };
     case 'fail':
       return { ...state, error: event.error, phase: 'failed' };
     case 'cancel':
@@ -56,6 +77,11 @@ export function reduceCalculatorSession<TInputs, TResult>(
   }
 }
 
-export function isCalculatorSessionDirty<TInputs, TResult>(state: CalculatorSessionState<TInputs, TResult>) {
-  return state.committedInputs === null || JSON.stringify(state.draftInputs) !== JSON.stringify(state.committedInputs);
+export function isCalculatorSessionDirty<TInputs, TResult>(
+  state: CalculatorSessionState<TInputs, TResult>,
+) {
+  return (
+    state.committedInputs === null ||
+    JSON.stringify(state.draftInputs) !== JSON.stringify(state.committedInputs)
+  );
 }
