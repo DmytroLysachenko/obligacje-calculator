@@ -30,7 +30,7 @@ import { ChartSection } from '@/shared/components/charts/ChartSection';
 import { CalculatorPageShell } from '@/shared/components/page/CalculatorPageShell';
 import { SectionBlock } from '@/shared/components/page/SectionBlock';
 import { ReferenceDashboardHero } from '@/shared/components/reference/ReferenceDashboardHero';
-import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
+import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { useChartData } from '@/shared/hooks/useChartData';
 import { getBondRateContextCopy } from '@/shared/lib/bond-rate-context';
 

@@ -1,6 +1,6 @@
 import { startTransition, useCallback, useMemo, useRef, useState } from 'react';
 
-import { useBondDefinitions } from '@/shared/hooks/useBondDefinitions';
+import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { BondSeriesMetadata } from '@/shared/lib/bond-series-client';
