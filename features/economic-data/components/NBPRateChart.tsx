@@ -66,7 +66,7 @@ export const NBPRateChart = ({ period = 'ALL' }: { period?: PeriodValue }) => {
         ariaLabel={t('bonds.nbp_rate_short')}
         summary={t('economic.nbp_target')}
       >
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={1}>
           <AreaChart data={chartData}>
             <defs>
               <linearGradient id="colorRate" x1="0" y1="0" x2="0" y2="1">

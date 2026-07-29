@@ -1,7 +1,9 @@
 'use client';
 import { ListTree, TrendingUp } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import React from 'react';
 
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
@@ -16,7 +18,12 @@ import { RegularInvestmentInputsForm } from '../../regular-investment/components
 import { RegularInvestmentResultsSummary } from '../../regular-investment/components/RegularInvestmentResultsSummary';
 import { useLadder } from '../hooks/useLadder';
 
-import { LadderTimeline } from './LadderTimeline';
+const LadderTimeline = dynamic(
+  () => import('./LadderTimeline').then((module) => module.LadderTimeline),
+  {
+    loading: () => <Skeleton className="h-[460px] w-full rounded-md" />,
+  },
+);
 const LadderEmptyState = () => {
   const { t } = useAppI18n();
   return (
@@ -108,6 +115,16 @@ export const LadderContainer: React.FC = () => {
             inputs={inputs}
             onUpdate={updateInput as (key: string, value: unknown) => void}
             onBondTypeChange={setBondType}
+            action={
+              <Button
+                type="button"
+                className="hidden h-11 w-full gap-2 lg:inline-flex"
+                onClick={() => calculate()}
+                disabled={isCalculating}
+              >
+                {!results ? t('common.calculate') : t('common.recalculate')}
+              </Button>
+            }
           />
         }
         results={
@@ -142,6 +159,7 @@ export const LadderContainer: React.FC = () => {
 
                 <RegularInvestmentResultsSummary
                   results={results}
+                  inputs={inputs}
                   dataQualityFlags={envelope?.dataQualityFlags}
                 />
               </div>
@@ -189,6 +207,7 @@ export const LadderContainer: React.FC = () => {
         hasResults={!!results}
         loading={isCalculating}
         onClick={() => calculate()}
+        className="lg:hidden"
       />
     </CalculatorPageShell>
   );

@@ -23,7 +23,7 @@ export function ScenarioDecisionRail({
   return (
     <aside
       aria-label={t('bonds.simulation.decision_summary')}
-      className="border-y border-border bg-muted/20 px-4 py-4 lg:sticky lg:top-4"
+      className="ui-decision-rail ui-section-anchor lg:sticky lg:top-4"
     >
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
@@ -34,7 +34,7 @@ export function ScenarioDecisionRail({
         </div>
         <dl className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:min-w-[34rem]">
           {items.map(({ icon: Icon, label, value }) => (
-            <div key={label} className="flex min-w-0 gap-2 border-l border-border pl-3">
+            <div key={label} className="ui-decision-rail-item flex gap-2">
               <Icon className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
               <div className="min-w-0">
                 <dt className="ui-kicker">{label}</dt>
@@ -51,13 +51,13 @@ export function ScenarioDecisionRail({
         aria-label={t('bonds.simulation.decision_summary')}
       >
         <a
-          href="#bond-report-content"
+          href="#calculator-results"
           className="ui-focus-ring rounded-sm text-foreground hover:underline"
         >
           {t('bonds.simulation.decision_result_link')}
         </a>
         <a
-          href="#bond-details"
+          href="#calculator-details"
           className="ui-focus-ring rounded-sm text-foreground hover:underline"
         >
           {t('bonds.simulation.decision_details_link')}

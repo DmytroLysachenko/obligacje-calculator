@@ -87,7 +87,7 @@ export const InflationChart = ({
         ariaLabel={t('bonds.inflation.rate')}
         summary={t('economic.inflation_scale_notice', { max: maxRate.toFixed(1) })}
       >
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={1}>
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
             <XAxis dataKey="date" fontSize={12} tickLine={false} axisLine={false} minTickGap={24} />

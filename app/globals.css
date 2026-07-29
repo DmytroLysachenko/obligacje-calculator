@@ -112,37 +112,52 @@
 }
 
 .dark {
-  --background: 30, 8%, 8%;
-  --foreground: 45, 18%, 92%;
-  --card: 30, 8%, 10%;
-  --card-foreground: 45, 18%, 92%;
-  --popover: 30, 8%, 10%;
-  --popover-foreground: 45, 18%, 92%;
-  --primary: 45, 18%, 92%;
-  --primary-foreground: 30, 8%, 8%;
-  --secondary: 30, 7%, 15%;
-  --secondary-foreground: 45, 18%, 92%;
-  --muted: 30, 7%, 15%;
-  --muted-foreground: 40, 8%, 68%;
-  --accent: 150, 30%, 44%;
-  --accent-foreground: 30, 8%, 8%;
-  --destructive: 0, 52%, 56%;
+  color-scheme: dark;
+  --canvas: #111315;
+  --surface-1: #171b1e;
+  --surface-2: #1d2327;
+  --ink-strong: #f5f2ea;
+  --ink-muted: #b8b7b0;
+  --trust: #7ca7d8;
+  --positive: #4dba8a;
+  --attention: #d6a85f;
+  --danger: #e3776b;
+  --status-positive: var(--positive);
+  --status-attention: var(--attention);
+  --status-danger: var(--danger);
+  --chart-series-a: var(--trust);
+  --chart-series-attention: var(--attention);
+  --background: 200, 10%, 8%;
+  --foreground: 43, 31%, 94%;
+  --card: 200, 12%, 10%;
+  --card-foreground: 43, 31%, 94%;
+  --popover: 200, 12%, 10%;
+  --popover-foreground: 43, 31%, 94%;
+  --primary: 43, 31%, 94%;
+  --primary-foreground: 200, 10%, 8%;
+  --secondary: 200, 15%, 13%;
+  --secondary-foreground: 43, 31%, 94%;
+  --muted: 200, 15%, 13%;
+  --muted-foreground: 50, 5%, 71%;
+  --accent: 151, 45%, 52%;
+  --accent-foreground: 200, 10%, 8%;
+  --destructive: 6, 67%, 66%;
   --destructive-foreground: 0, 0%, 100%;
-  --success: 150, 30%, 44%;
-  --success-foreground: 30, 8%, 8%;
-  --warning: 38, 58%, 58%;
-  --warning-foreground: 30, 8%, 8%;
-  --border: 30, 6%, 22%;
-  --input: 30, 6%, 22%;
-  --ring: 150, 30%, 44%;
-  --finance-bg: #171512;
-  --finance-surface: #1c1915;
-  --finance-text: #eee7dc;
-  --finance-muted: #b8afa1;
-  --finance-border: #3d372f;
-  --finance-success: #62b083;
-  --finance-warning: #d19a45;
-  --chart-data: 35, 50%, 58%;
+  --success: 151, 45%, 52%;
+  --success-foreground: 200, 10%, 8%;
+  --warning: 38, 58%, 61%;
+  --warning-foreground: 200, 10%, 8%;
+  --border: 200, 10%, 23%;
+  --input: 200, 10%, 23%;
+  --ring: 212, 54%, 67%;
+  --finance-bg: var(--canvas);
+  --finance-surface: var(--surface-1);
+  --finance-text: var(--ink-strong);
+  --finance-muted: var(--ink-muted);
+  --finance-border: #30383d;
+  --finance-success: var(--positive);
+  --finance-warning: var(--attention);
+  --chart-data: 212, 54%, 67%;
 }
 
 @layer base {
@@ -184,6 +199,7 @@
     line-height: 1.5;
     background-image: none;
     background-attachment: initial;
+    text-rendering: optimizeLegibility;
   }
   button,
   a[href],
@@ -218,6 +234,10 @@
   [data-slot='button'],
   [data-slot='select-trigger'] {
     text-wrap: balance;
+  }
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 3px;
   }
 }
 
@@ -269,7 +289,7 @@
     @apply flex flex-col gap-2 md:flex-row md:items-start md:justify-between;
   }
   .ui-page-header {
-    @apply border-b border-border pb-8 md:pb-10;
+    @apply border-b border-border pb-7 md:pb-9;
   }
   .ui-page-header-content {
     @apply flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between;
@@ -305,10 +325,11 @@
     @apply text-xs font-medium leading-5 text-destructive;
   }
   .ui-form-panel {
-    @apply border-y border-border bg-background p-5 md:p-6;
+    @apply border border-border bg-card p-5 md:p-6;
+    border-radius: var(--finance-radius-md);
   }
   .ui-result-panel {
-    @apply border-t border-border pt-6 md:pt-8;
+    @apply border-t-2 border-border pt-6 md:pt-8;
   }
   .ui-metric-grid {
     @apply grid gap-4 md:gap-5;
@@ -579,6 +600,24 @@
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: var(--color-muted-foreground);
+  }
+  .ui-decision-rail {
+    @apply border border-border bg-card p-4 shadow-sm md:p-5;
+    border-radius: var(--finance-radius-md);
+  }
+  .ui-decision-rail-item {
+    @apply min-w-0 border-l-2 border-border pl-3;
+  }
+  .ui-action-dock {
+    @apply border border-border bg-card/95 shadow-lg backdrop-blur-sm;
+    border-radius: var(--finance-radius-md);
+  }
+  .ui-content-visibility {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 900px;
+  }
+  .ui-section-anchor {
+    scroll-margin-top: 1.5rem;
   }
 }
 

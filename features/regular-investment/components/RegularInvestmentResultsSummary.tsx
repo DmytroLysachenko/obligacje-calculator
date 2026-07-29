@@ -15,6 +15,7 @@ import { FinancialInsightStrip } from '@/shared/components/results/FinancialInsi
 import { MetricStrip } from '@/shared/components/results/MetricStrip';
 import { RecentLotList } from '@/shared/components/results/RecentLotList';
 import { ResultSummaryHero } from '@/shared/components/results/ResultSummaryHero';
+import { ScenarioDecisionRail } from '@/shared/components/results/ScenarioDecisionRail';
 import { buildLotsExportHeaders } from '@/shared/lib/export-headers';
 import { buildRegularInvestmentYearBuckets } from '@/shared/lib/regular-investment-display';
 import { buildLotsCsvFilename, exportLotsCsv } from '@/shared/lib/retained-exports';
@@ -23,6 +24,7 @@ import { RegularInvestmentYearlyBucketsSection } from './RegularInvestmentYearly
 
 export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsSummaryProps> = ({
   results,
+  inputs,
   dataQualityFlags = [],
 }) => {
   const { t, locale: language } = useAppI18n();
@@ -99,6 +101,13 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
         description={t('regular_summary.hero_description')}
         narrative={t('regular_summary.hero_narrative')}
         actions={summaryActions}
+      />
+
+      <ScenarioDecisionRail
+        bondType={inputs.bondType}
+        horizonLabel={`${results.timeline.length} ${t('common.duration_months')}`}
+        investedLabel={formatCurrency(results.totalInvested)}
+        outcomeLabel={formatCurrency(results.finalNominalValue)}
       />
 
       <MetricStrip

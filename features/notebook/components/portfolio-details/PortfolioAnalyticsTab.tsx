@@ -54,7 +54,7 @@ export function PortfolioAnalyticsTab({
             ariaLabel={t('notebook.projection_title')}
             summary={t('notebook.projection_desc')}
           >
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={1}>
               <AreaChart
                 data={
                   simulation.aggregatedTimeline.length > 240

@@ -54,9 +54,14 @@ function SidebarFooter({ pathname }: { pathname: string }) {
           <SidebarWorkspaceUtility pathname={pathname} />
         </SidebarUtilityGroup>
       ) : null}
-      <SidebarUtilityGroup title={t('common.settings')}>
-        <SidebarSettingsUtility />
-      </SidebarUtilityGroup>
+      <details className="group border-t border-border pt-3">
+        <summary className="ui-focus-ring flex min-h-11 items-center rounded-sm px-0.5 ui-kicker">
+          {t('common.settings')}
+        </summary>
+        <div className="pt-2">
+          <SidebarSettingsUtility />
+        </div>
+      </details>
       <div className="border-t border-border px-0.5 pt-3 text-xs leading-5 text-muted-foreground">
         {'\u00A9'} {hasMounted ? new Date().getFullYear() : '----'} {t('common.title')}
       </div>

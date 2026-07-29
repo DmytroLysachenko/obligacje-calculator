@@ -93,7 +93,7 @@ export function RegularInvestmentYearlyBucketsSection({
           ))}
         </ResponsiveTableSheet>
 
-        <div className="ui-table-frame hidden lg:block">
+        <div className="ui-table-frame ui-content-visibility hidden lg:block">
           <TableScrollHint>{t('regular_summary.yearly_mobile_description')}</TableScrollHint>
           <Table
             className="w-full table-fixed text-sm tabular-nums"

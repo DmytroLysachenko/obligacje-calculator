@@ -1,7 +1,9 @@
 'use client';
 import { PiggyBank } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import React from 'react';
 
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
@@ -16,9 +18,13 @@ import { SecondaryInsightAccordion } from '@/shared/components/results/Secondary
 
 import { useRegularInvestmentCalculator } from '../hooks/useRegularInvestmentCalculator';
 
-import { RegularInvestmentChart } from './RegularInvestmentChart';
 import { RegularInvestmentInputsForm } from './RegularInvestmentInputsForm';
 import { RegularInvestmentResultsSummary } from './RegularInvestmentResultsSummary';
+
+const RegularInvestmentChart = dynamic(
+  () => import('./RegularInvestmentChart').then((module) => module.RegularInvestmentChart),
+  { loading: () => <Skeleton className="h-[320px] w-full rounded-md md:h-[420px]" /> },
+);
 const LoadingState = () => (
   <div className="ui-control-stack" role="status" aria-live="polite">
     <Skeleton className="h-28 w-full rounded-md md:h-32" />
@@ -72,6 +78,16 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
             inputs={inputs}
             onUpdate={updateInput as (key: string, value: unknown) => void}
             onBondTypeChange={setBondType}
+            action={
+              <Button
+                type="button"
+                className="hidden h-11 w-full gap-2 lg:inline-flex"
+                onClick={() => calculate()}
+                disabled={isCalculating}
+              >
+                {!results ? t('common.calculate') : t('common.recalculate')}
+              </Button>
+            }
           />
         }
         results={
@@ -123,6 +139,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
 
                 <RegularInvestmentResultsSummary
                   results={results}
+                  inputs={inputs}
                   dataQualityFlags={envelope?.dataQualityFlags}
                 />
               </div>
@@ -182,6 +199,7 @@ export const RegularInvestmentCalculatorContainer: React.FC = () => {
         hasResults={!!results}
         loading={isCalculating}
         onClick={() => calculate()}
+        className="lg:hidden"
       />
     </CalculatorPageShell>
   );

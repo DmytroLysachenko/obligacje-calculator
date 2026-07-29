@@ -91,7 +91,7 @@ export function LadderTimelineTable({
         )}
       </ResponsiveTableSheet>
 
-      <div className="ui-table-frame hidden lg:block">
+      <div className="ui-table-frame ui-content-visibility hidden lg:block">
         <TableScrollHint>{t('ladder_page.timeline.mobile_sheet_description')}</TableScrollHint>
         <div className="ui-section-header border-b border-border px-4 py-3 text-sm text-muted-foreground">
           <p>{t('ladder_page.timeline.table_summary')}</p>
