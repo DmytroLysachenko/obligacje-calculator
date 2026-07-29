@@ -1,10 +1,11 @@
 'use client';
 
-import { ArrowRight, History } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAppI18n } from '@/i18n/client';
 
 const STORAGE_KEY = 'bonds-calculator-last-route';
@@ -23,16 +24,17 @@ export function WorkflowContinue() {
   if (!previousPath) return null;
 
   return (
-    <Link
-      href={previousPath}
-      className="ui-interactive-surface flex items-center gap-2 rounded-md border border-border bg-background px-3 py-3 text-left"
-    >
-      <History className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-      <span className="min-w-0 flex-1">
-        <span className="block ui-kicker">{t('sidebar.continue_label')}</span>
-        <span className="block truncate text-xs font-semibold text-foreground">{previousPath}</span>
-      </span>
-      <ArrowRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-    </Link>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Link
+          href={previousPath}
+          aria-label={t('sidebar.continue_label')}
+          className="ui-focus-ring inline-flex size-11 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/5 hover:text-foreground"
+        >
+          <ArrowLeft className="size-4" aria-hidden="true" />
+        </Link>
+      </TooltipTrigger>
+      <TooltipContent>{t('sidebar.continue_label')}</TooltipContent>
+    </Tooltip>
   );
 }

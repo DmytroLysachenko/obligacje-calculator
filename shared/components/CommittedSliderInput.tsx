@@ -129,7 +129,7 @@ export function CommittedSliderInput({
           <div className="relative">
             <Input
               type="number"
-              inputMode="decimal"
+              inputMode={step < 1 ? 'decimal' : 'numeric'}
               autoComplete="off"
               step={step}
               min={min}
@@ -138,7 +138,11 @@ export function CommittedSliderInput({
               aria-label={label ?? unit ?? 'Slider value'}
               className={cn('h-10 w-28 pr-10 text-right text-sm font-semibold', inputClassName)}
               value={draftText}
-              onChange={(event) => setDraftText(event.target.value)}
+              onChange={(event) => {
+                const nextText = event.target.value;
+                if (step >= 1 && !/^\d*$/.test(nextText)) return;
+                setDraftText(nextText);
+              }}
               onBlur={handleInputBlur}
               onKeyDown={(event) => {
                 if (event.key === 'Enter') {
