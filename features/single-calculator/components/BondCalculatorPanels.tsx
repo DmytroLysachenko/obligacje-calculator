@@ -1,5 +1,6 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import React from 'react';
 
 import { Skeleton } from '@/components/ui/skeleton';
@@ -20,9 +21,14 @@ import { SecondaryInsightAccordion } from '@/shared/components/results/Secondary
 
 import { InputGuardrailIssue } from '../lib/input-guardrails';
 
-import { BondChart } from './BondChart';
 import { BondResultsSummary } from './BondResultsSummary';
-import { BondTimeline } from './BondTimeline';
+
+const BondChart = dynamic(() => import('./BondChart').then((module) => module.BondChart), {
+  loading: () => <Skeleton className="h-[360px] w-full rounded-md md:h-[460px]" />,
+});
+const BondTimeline = dynamic(() => import('./BondTimeline').then((module) => module.BondTimeline), {
+  loading: () => <Skeleton className="h-72 w-full rounded-md" />,
+});
 
 interface BondCalculatorResultsPanelProps {
   results: CalculationResult | null;

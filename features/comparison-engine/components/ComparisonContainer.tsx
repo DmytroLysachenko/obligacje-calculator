@@ -1,9 +1,10 @@
 'use client';
 import { Scale } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import { usePathname, useSearchParams } from 'next/navigation';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { BondType, ChartStep } from '@/features/bond-core/types';
+import { ChartStep } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
 import { cn } from '@/lib/utils';
 import { Notice } from '@/shared/components/feedback/Notice';
@@ -24,17 +25,26 @@ import {
   applySharedComparisonConfigUpdate,
 } from '../lib/comparison-update-actions';
 
+import { comparisonLayout } from './comparison-layout';
 import {
   ComparisonAssumptionsMetaPanel,
   ComparisonFairnessPanel,
   ComparisonSetupStatePanel,
 } from './ComparisonContainerPanels';
-import { ComparisonResultsPanel } from './ComparisonResultsPanel';
 import { ComparisonSharedBaseCard } from './ComparisonSharedBaseCard';
-import { ComparisonTable } from './ComparisonTable';
 import { ComparisonVerdict } from './ComparisonVerdict';
-import { comparisonLayout } from './comparison-layout';
 import { ScenarioOverrideCard } from './ScenarioOverrideCard';
+
+const ComparisonResultsPanel = dynamic(
+  () => import('./ComparisonResultsPanel').then((module) => module.ComparisonResultsPanel),
+  { loading: () => <div className="h-[360px] animate-pulse rounded-md bg-muted md:h-[460px]" /> },
+);
+const ComparisonTable = dynamic(
+  () => import('./ComparisonTable').then((module) => module.ComparisonTable),
+  {
+    loading: () => <div className="h-72 animate-pulse rounded-md bg-muted" />,
+  },
+);
 export const ComparisonContainer: React.FC = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -78,22 +88,22 @@ export const ComparisonContainer: React.FC = () => {
     () => ({ sharedConfig, scenarioA, scenarioB }),
     [scenarioA, scenarioB, sharedConfig],
   );
-  const syncComparisonUrl = (
-    nextState = comparisonUrlState,
-    historyMode: 'push' | 'replace' = 'push',
-  ) => {
-    if (typeof window === 'undefined') return;
-    const url = withComparisonUrlState(
-      pathname,
-      new URLSearchParams(searchParams.toString()),
-      nextState,
-    );
-    window.history[historyMode === 'push' ? 'pushState' : 'replaceState'](null, '', url);
-  };
+  const syncComparisonUrl = useCallback(
+    (nextState = comparisonUrlState, historyMode: 'push' | 'replace' = 'push') => {
+      if (typeof window === 'undefined') return;
+      const url = withComparisonUrlState(
+        pathname,
+        new URLSearchParams(searchParams.toString()),
+        nextState,
+      );
+      window.history[historyMode === 'push' ? 'pushState' : 'replaceState'](null, '', url);
+    },
+    [comparisonUrlState, pathname, searchParams],
+  );
   useEffect(() => {
     if (!hasUserEditedSetup.current) return;
     syncComparisonUrl(comparisonUrlState, 'replace');
-  }, [comparisonUrlState]);
+  }, [comparisonUrlState, syncComparisonUrl]);
 
   const updateSharedConfigWithHistory = (
     key: keyof typeof sharedConfig,
@@ -122,7 +132,11 @@ export const ComparisonContainer: React.FC = () => {
       ...comparisonUrlState,
       ...(scenarioKey === 'A' ? { scenarioA: updated } : { scenarioB: updated }),
     };
-    scenarioKey === 'A' ? updateScenarioA(key, value) : updateScenarioB(key, value);
+    if (scenarioKey === 'A') {
+      updateScenarioA(key, value);
+    } else {
+      updateScenarioB(key, value);
+    }
     syncComparisonUrl(nextState);
   };
   const updateScenarioHorizonWithHistory = (
@@ -141,13 +155,17 @@ export const ComparisonContainer: React.FC = () => {
       ...(scenarioKey === 'A' ? { scenarioA: updated } : { scenarioB: updated }),
     };
     if (scenarioKey === 'A') {
-      enabled === undefined
-        ? setScenarioACustomHorizonMonths(value)
-        : setScenarioACustomHorizonEnabled(enabled);
+      if (enabled === undefined) {
+        setScenarioACustomHorizonMonths(value);
+      } else {
+        setScenarioACustomHorizonEnabled(enabled);
+      }
     } else {
-      enabled === undefined
-        ? setScenarioBCustomHorizonMonths(value)
-        : setScenarioBCustomHorizonEnabled(enabled);
+      if (enabled === undefined) {
+        setScenarioBCustomHorizonMonths(value);
+      } else {
+        setScenarioBCustomHorizonEnabled(enabled);
+      }
     }
     syncComparisonUrl(nextState);
   };
@@ -350,7 +368,6 @@ export const ComparisonContainer: React.FC = () => {
               bondTypeB={resultInputsB.bondType}
               formatCurrency={formatCurrency}
               chartStep={chartStep}
-              onChartStepChange={setChartStep}
             />
 
             <ComparisonAssumptionsMetaPanel

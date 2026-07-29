@@ -28,7 +28,6 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({
   bondTypeB,
   formatCurrency,
   chartStep,
-  onChartStepChange,
 }) => {
   const { t, locale: language } = useAppI18n();
   const [rowLimit, setRowLimit] = React.useState<TableRowLimit>(12);

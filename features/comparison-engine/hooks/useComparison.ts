@@ -19,22 +19,22 @@ import {
   DEFAULT_SCENARIO_A,
   DEFAULT_SCENARIO_B,
   getComparisonDirtyState,
-  splitComparisonEnvelope,
   type ScenarioOverride,
   type SharedComparisonConfig,
+  splitComparisonEnvelope,
 } from '../lib/comparison-calculator-state';
 import type { ComparisonUrlState } from '../lib/comparison-deep-link';
 import { getComparisonOfferStatus } from '../lib/comparison-offer-status';
+import { COMPARISON_CALCULATOR_STORAGE_KEY } from '../lib/comparison-persistence';
 import {
   applyScenarioBondTypeUpdate,
   applyScenarioCustomHorizonEnabled,
   applyScenarioCustomHorizonMonths,
   applyScenarioOverrideUpdate,
   applySharedComparisonConfigUpdate,
-  isSharedComparisonMacroUpdate,
   type ComparisonUpdateValue,
+  isSharedComparisonMacroUpdate,
 } from '../lib/comparison-update-actions';
-import { COMPARISON_CALCULATOR_STORAGE_KEY } from '../lib/comparison-persistence';
 
 interface ComparisonDraft {
   sharedConfig: SharedComparisonConfig;
@@ -51,7 +51,7 @@ const initialDraft = (): ComparisonDraft => ({
 export function useComparison(initialUrlState?: ComparisonUrlState | null) {
   const { definitions } = useBondDefinitions();
   const { defaults: macroDefaults } = useMacroAssumptionDefaults();
-  const fallbackDraft = useMemo(initialDraft, []);
+  const fallbackDraft = useMemo(() => initialDraft(), []);
   const hasTouchedMacroAssumptions = useRef(false);
   const hasAppliedMacroDefaults = useRef(false);
   const hasAppliedInitialUrlState = useRef(false);
@@ -129,7 +129,7 @@ export function useComparison(initialUrlState?: ComparisonUrlState | null) {
     if (nextSharedConfig !== session.draftInputs.sharedConfig) {
       session.setDraftInputs({ ...session.draftInputs, sharedConfig: nextSharedConfig });
     }
-  }, [macroDefaults, session.draftInputs, session.isPersistenceReady, session.setDraftInputs]);
+  }, [macroDefaults, session]);
 
   useEffect(() => {
     if (!initialUrlState || !session.isPersistenceReady || hasAppliedInitialUrlState.current)

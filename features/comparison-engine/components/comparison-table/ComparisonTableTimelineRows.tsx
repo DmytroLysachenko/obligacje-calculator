@@ -85,7 +85,7 @@ export function ComparisonTableTimelineRows({
         </div>
       </div>
 
-      <div className={`ui-table-frame ${comparisonLayout.desktopSchedule}`}>
+      <div className={`ui-table-frame ui-content-visibility ${comparisonLayout.desktopSchedule}`}>
         <div className="ui-section-header border-b border-border px-4 py-3 text-sm text-muted-foreground">
           <p>{labels.desktopNote}</p>
           <p className="text-sm font-semibold text-muted-foreground">{labels.mobileCount}</p>

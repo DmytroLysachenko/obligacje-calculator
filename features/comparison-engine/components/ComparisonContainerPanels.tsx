@@ -10,6 +10,7 @@ import { Notice } from '@/shared/components/feedback/Notice';
 import { ScenarioReadyPanel } from '@/shared/components/feedback/ScenarioReadyPanel';
 import { CalculationMetaPanel } from '@/shared/components/results/CalculationMetaPanel';
 import { SecondaryInsightAccordion } from '@/shared/components/results/SecondaryInsightAccordion';
+
 import type { ComparisonOfferStatus } from '../lib/comparison-offer-status';
 
 interface ComparisonFairnessPanelProps {
