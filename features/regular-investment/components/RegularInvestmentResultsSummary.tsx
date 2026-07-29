@@ -130,7 +130,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
         />
       </section>
 
-      <div className="grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.75fr)] xl:items-start">
+      <div className="ui-compact-flow">
         <RegularInvestmentYearlyBucketsSection
           yearlyBuckets={yearlyBuckets}
           formatCurrency={formatCurrency}
@@ -145,6 +145,7 @@ export const RegularInvestmentResultsSummary: React.FC<RegularInvestmentResultsS
           initialItemCount={5}
           showAllLabel={t('common.show_all', { count: recentLotItems.length })}
           showLessLabel={t('common.show_less')}
+          className="border-y border-border py-6"
         />
       </div>
     </div>

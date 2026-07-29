@@ -140,25 +140,28 @@ export function LadderTimelineTable({
           >
             <TableCaption>{t('ladder_page.timeline.table_summary')}</TableCaption>
             <TableHeader>
-              <TableRow className="h-12 hover:bg-transparent">
-                <TableHead scope="col" className="sticky top-0 z-10 w-[34%] bg-background">
+              <TableRow className="h-14 hover:bg-transparent">
+                <TableHead
+                  scope="col"
+                  className="sticky top-0 z-10 w-[34%] whitespace-normal bg-background leading-4"
+                >
                   {t('ladder_page.timeline.table_month')}
                 </TableHead>
                 <TableHead
                   scope="col"
-                  className="sticky top-0 z-10 w-[18%] bg-background text-right"
+                  className="sticky top-0 z-10 w-[18%] whitespace-normal bg-background text-right leading-4"
                 >
                   {t('ladder_page.timeline.table_lots')}
                 </TableHead>
                 <TableHead
                   scope="col"
-                  className="sticky top-0 z-10 w-[24%] bg-background text-right"
+                  className="sticky top-0 z-10 w-[24%] whitespace-normal bg-background text-right leading-4"
                 >
                   {t('ladder_page.timeline.table_amount')}
                 </TableHead>
                 <TableHead
                   scope="col"
-                  className="sticky top-0 z-10 w-[24%] bg-background text-right"
+                  className="sticky top-0 z-10 w-[24%] whitespace-normal bg-background text-right leading-4"
                 >
                   {t('ladder_page.timeline.table_share')}
                 </TableHead>
