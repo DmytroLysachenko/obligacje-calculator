@@ -81,7 +81,7 @@ export class GusCpiApiClient {
       cache: 'no-store',
     });
     const csvPathMatch = archiveHtml.match(
-      /\/download\/gfx\/[^"'<>]+miesieczne_wskazniki_cen_towarow_i_uslug_konsumpcyjnych_od_1982_roku[^"'<>]*\.csv/i,
+      /\/download\/gfx\/[^"'<>]*miesieczne[_-]?wskazniki[_-]?cen[_-]?towarow[_-]?i[_-]?uslug[_-]?konsumpcyjnych[_-]?od[_-]?1982[_-]?roku[^"'<>]*\.csv/i,
     );
 
     if (!csvPathMatch) {
