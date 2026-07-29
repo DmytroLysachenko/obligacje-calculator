@@ -2,7 +2,7 @@
 import { Scale } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { usePathname, useSearchParams } from 'next/navigation';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { ChartStep } from '@/features/bond-core/types';
 import { useAppI18n } from '@/i18n/client';
@@ -52,7 +52,6 @@ export const ComparisonContainer: React.FC = () => {
     () => parseComparisonUrlState(searchParams, buildDefaultSharedConfig()),
     [searchParams],
   );
-  const hasUserEditedSetup = useRef(false);
   const {
     sharedConfig,
     scenarioA,
@@ -100,16 +99,10 @@ export const ComparisonContainer: React.FC = () => {
     },
     [comparisonUrlState, pathname, searchParams],
   );
-  useEffect(() => {
-    if (!hasUserEditedSetup.current) return;
-    syncComparisonUrl(comparisonUrlState, 'replace');
-  }, [comparisonUrlState, syncComparisonUrl]);
-
   const updateSharedConfigWithHistory = (
     key: keyof typeof sharedConfig,
     value: string | number | boolean | undefined,
   ) => {
-    hasUserEditedSetup.current = true;
     const nextState = {
       ...comparisonUrlState,
       sharedConfig: applySharedComparisonConfigUpdate(sharedConfig, key, value),
@@ -122,7 +115,6 @@ export const ComparisonContainer: React.FC = () => {
     key: keyof typeof scenarioA,
     value: string | number | boolean | undefined,
   ) => {
-    hasUserEditedSetup.current = true;
     const updated = applyScenarioOverrideUpdate(
       scenarioKey === 'A' ? scenarioA : scenarioB,
       key,
@@ -144,7 +136,6 @@ export const ComparisonContainer: React.FC = () => {
     value: number | undefined,
     enabled?: boolean,
   ) => {
-    hasUserEditedSetup.current = true;
     const currentScenario = scenarioKey === 'A' ? scenarioA : scenarioB;
     const updated =
       enabled === undefined
@@ -261,7 +252,6 @@ export const ComparisonContainer: React.FC = () => {
                 colorClass="scenario-a"
                 bondType={scenarioA.bondType}
                 onBondTypeChange={(bondType) => {
-                  hasUserEditedSetup.current = true;
                   setBondTypeA(bondType);
                   syncComparisonUrl({
                     ...comparisonUrlState,
@@ -286,7 +276,6 @@ export const ComparisonContainer: React.FC = () => {
                 colorClass="scenario-b"
                 bondType={scenarioB.bondType}
                 onBondTypeChange={(bondType) => {
-                  hasUserEditedSetup.current = true;
                   setBondTypeB(bondType);
                   syncComparisonUrl({
                     ...comparisonUrlState,
