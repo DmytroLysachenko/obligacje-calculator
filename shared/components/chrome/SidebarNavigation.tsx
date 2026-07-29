@@ -28,7 +28,10 @@ type NavSection = {
 
 type SidebarTranslate = (key: string) => string;
 
-export function buildSidebarNavSections(t: SidebarTranslate): NavSection[] {
+export function buildSidebarNavSections(
+  t: SidebarTranslate,
+  canManageWorkspace = false,
+): NavSection[] {
   const iconByRoute: Record<string, NavItem['icon']> = {
     '/education': BookOpen,
     '/single-calculator': Calculator,
@@ -51,7 +54,9 @@ export function buildSidebarNavSections(t: SidebarTranslate): NavSection[] {
     },
     {
       label: t('sidebar.sections.conditional'),
-      items: getFeaturesForNavigation('conditional').map(toNavItem),
+      items: getFeaturesForNavigation('conditional')
+        .filter((feature) => feature.route !== '/notebook' || canManageWorkspace)
+        .map(toNavItem),
     },
   ];
 }

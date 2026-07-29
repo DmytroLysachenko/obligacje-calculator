@@ -105,6 +105,19 @@
     "description": "Calculators stay available without an account. Saving lots, importing portfolios, sharing portfolio links, and exporting notebook data require an authenticated workspace.",
     "provider_title": "Choose an OAuth provider",
     "oauth_only_note": "OAuth sign-in only. Password accounts are not supported.",
+    "use_calculator": "Use the calculator without signing in",
+    "unavailable_title": "Sign-in is not configured",
+    "unavailable_description": "An OAuth provider must be enabled before portfolio access is available.",
+    "benefits": {
+      "organize": {
+        "title": "Keep real bond lots together",
+        "description": "Record purchases, quantities, and maturity dates in one private workspace."
+      },
+      "control": {
+        "title": "Share & export on your terms",
+        "description": "Create portfolio links and exports only after you choose to sign in."
+      }
+    },
     "providers": {
       "google": "Continue with Google",
       "facebook": "Continue with Facebook"

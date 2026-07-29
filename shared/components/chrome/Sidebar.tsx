@@ -14,7 +14,6 @@ import { buildSidebarNavSections, SidebarNavigation } from './SidebarNavigation'
 import { SidebarSettingsUtility } from './SidebarSettingsUtility';
 import { SidebarUtilityGroup } from './SidebarUtilityGroup';
 import { SidebarWorkspaceUtility } from './SidebarWorkspaceUtility';
-import { WorkflowContinue } from './WorkflowContinue';
 
 interface SidebarContentProps {
   onItemClick?: () => void;
@@ -42,16 +41,21 @@ function SidebarBrand() {
   );
 }
 
-function SidebarFooter({ pathname }: { pathname: string }) {
+function SidebarFooter({
+  pathname,
+  canManageWorkspace,
+}: {
+  pathname: string;
+  canManageWorkspace: boolean;
+}) {
   const { t } = useAppI18n();
   const hasMounted = useHasMounted();
-  const { canManageWorkspace } = usePortfolioAccess();
 
   return (
     <footer className="space-y-5 border-t border-border bg-muted/20 px-3 py-4">
       {canManageWorkspace ? (
         <SidebarUtilityGroup title={t('sidebar.workspace_title')}>
-          <SidebarWorkspaceUtility pathname={pathname} />
+          <SidebarWorkspaceUtility pathname={pathname} canManageWorkspace={canManageWorkspace} />
         </SidebarUtilityGroup>
       ) : null}
       <details className="group border-t border-border pt-3">
@@ -72,8 +76,9 @@ function SidebarFooter({ pathname }: { pathname: string }) {
 function SidebarContent({ onItemClick }: SidebarContentProps) {
   const pathname = usePathname();
   const { t } = useAppI18n();
+  const { canManageWorkspace } = usePortfolioAccess();
 
-  const navSections = buildSidebarNavSections(t);
+  const navSections = buildSidebarNavSections(t, canManageWorkspace);
 
   return (
     <div className="flex h-full flex-col bg-secondary/70 text-foreground">
@@ -90,11 +95,7 @@ function SidebarContent({ onItemClick }: SidebarContentProps) {
         />
       </nav>
 
-      <div className="px-3 pb-3">
-        <WorkflowContinue />
-      </div>
-
-      <SidebarFooter pathname={pathname} />
+      <SidebarFooter pathname={pathname} canManageWorkspace={canManageWorkspace} />
     </div>
   );
 }

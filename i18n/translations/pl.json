@@ -105,6 +105,19 @@
     "description": "Kalkulatory pozostaja dostepne bez konta. Zapisywanie partii, import portfeli, udostepnianie linkow i eksport danych notatnika wymagaja zalogowanej przestrzeni.",
     "provider_title": "Wybierz zewnetrznego dostawce OAuth",
     "oauth_only_note": "Tylko logowanie OAuth. Konta z haslem nie sa obslugiwane.",
+    "use_calculator": "Korzystaj z kalkulatora bez logowania",
+    "unavailable_title": "Logowanie nie jest skonfigurowane",
+    "unavailable_description": "Dostawca OAuth musi zostac wlaczony, aby udostepnic przestrzen portfela.",
+    "benefits": {
+      "organize": {
+        "title": "Trzymaj partie obligacji razem",
+        "description": "Zapisuj zakupy, ilosci i daty wykupu w jednej prywatnej przestrzeni."
+      },
+      "control": {
+        "title": "Udostepniaj i eksportuj na swoich zasadach",
+        "description": "Tworz linki do portfela i eksporty dopiero po zalogowaniu."
+      }
+    },
     "providers": {
       "google": "Kontynuuj z Google",
       "facebook": "Kontynuuj z Facebook"
