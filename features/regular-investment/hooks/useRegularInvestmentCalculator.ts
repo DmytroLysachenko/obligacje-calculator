@@ -7,8 +7,8 @@ import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { useCalculatorSession } from '@/shared/hooks/useCalculatorSession';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
-import { preserveStableState, stripDisplayOnlyInputs } from '@/shared/lib/calculator-state';
 import { applyUntouchedMacroDefaults } from '@/shared/lib/calculator-session-persistence';
+import { preserveStableState, stripDisplayOnlyInputs } from '@/shared/lib/calculator-state';
 import { logClientError } from '@/shared/lib/client-logger';
 
 import { BondType, RegularInvestmentInputs } from '../../bond-core/types';

@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises';
+
 import { describe, expect, it } from 'vitest';
 
 const root = process.cwd();
@@ -14,24 +15,32 @@ describe('result action pending feedback contract', () => {
   });
   it('prevents a second action while the first is pending', async () => {
     const content = await source();
-    expect(content).toContain('const [pendingAction, setPendingAction] = React.useState<string | null>(null);');
+    expect(content).toContain(
+      'const [pendingAction, setPendingAction] = React.useState<string | null>(null);',
+    );
     expect(content).toContain('if (!action.onClick || pendingAction) return;');
     expect(content).toContain('disabled={action.disabled || Boolean(pendingAction)}');
   });
   it('communicates busy state to assistive technology', async () => {
     const content = await source();
     expect(content).toContain('aria-busy={Boolean(pendingAction)}');
-    expect(content).toContain("pendingAction === action.label ? t('common.loading') : action.label");
+    expect(content).toContain(
+      "pendingAction === action.label ? t('common.loading') : action.label",
+    );
   });
   it('uses the same feedback path for primary actions', async () => {
     const content = await source();
     expect(content).toContain('onClick={() => runAction(action)}');
-    expect(content).toContain("const primaryActions = actions.filter((action) => action.priority !== 'secondary');");
+    expect(content).toContain(
+      "const primaryActions = actions.filter((action) => action.priority !== 'secondary');",
+    );
     expect(content).toContain('primaryActions.map((action) => {');
   });
   it('uses the same feedback path for secondary actions', async () => {
     const content = await source();
-    expect(content).toContain("const secondaryActions = actions.filter((action) => action.priority === 'secondary');");
+    expect(content).toContain(
+      "const secondaryActions = actions.filter((action) => action.priority === 'secondary');",
+    );
     expect(content).toContain('secondaryActions.map((action) => {');
     expect(content).toContain('<details className="col-span-full border-t border-border pt-2">');
   });

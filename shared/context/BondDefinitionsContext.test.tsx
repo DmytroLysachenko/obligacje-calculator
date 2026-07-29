@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
-
 import { readFileSync } from 'node:fs';
+
+import { describe, expect, it } from 'vitest';
 
 const source = readFileSync('shared/context/BondDefinitionsContext.tsx', 'utf8');
 
@@ -10,7 +10,7 @@ describe('bond definitions provider seam', () => {
     expect(source).toContain('const BondDefinitionsContext');
   });
   it('loads data through the private resource hook', () => {
-    expect(source).toContain("useBondDefinitions as useBondDefinitionsHook");
+    expect(source).toContain('useBondDefinitions as useBondDefinitionsHook');
     expect(source).toContain('useBondDefinitionsHook()');
   });
   it('exposes definitions, loading, and errors as the provider interface', () => {

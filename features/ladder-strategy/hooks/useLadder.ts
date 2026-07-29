@@ -7,8 +7,8 @@ import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { useCalculatorSession } from '@/shared/hooks/useCalculatorSession';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
-import { preserveStableState } from '@/shared/lib/calculator-state';
 import { applyUntouchedMacroDefaults } from '@/shared/lib/calculator-session-persistence';
+import { preserveStableState } from '@/shared/lib/calculator-state';
 import { logClientError } from '@/shared/lib/client-logger';
 
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
