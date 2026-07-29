@@ -80,10 +80,15 @@ export function resolveSingleBondCheckpointValues({
         taxRate,
       );
   const liquidationValue = currentGrossValue.minus(currentWithdrawalFee).minus(currentTaxAtPoint);
-  const hypotheticalEarlyExitValue = currentGrossValue
-    .minus(hypotheticalEarlyExitFee)
-    .minus(currentTaxAtPoint);
+  // The schedule reports the investor's position if they exit at this point,
+  // not merely the cash still locked in the bond. Paid coupons remain theirs
+  // and therefore belong in this amount. A coupon bond at a payment checkpoint
+  // has no retained interest from which an exit fee can be charged, so the
+  // principal is preserved and the already-paid coupons are included.
   const totalValue = liquidationValue.plus(leftoverCash);
+  const hypotheticalEarlyExitValue = isCapitalized
+    ? currentGrossValue.minus(hypotheticalEarlyExitFee).minus(currentTaxAtPoint).plus(leftoverCash)
+    : totalValue;
 
   return {
     currentNominalPrincipal,

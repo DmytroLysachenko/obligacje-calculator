@@ -237,6 +237,22 @@ describe('production scenario calculation regressions', () => {
     expect(finalPoint?.earlyWithdrawalValue).toBeGreaterThanOrEqual(result.initialInvestment);
   });
 
+  it('includes paid monthly coupons in the hypothetical early-exit amount', () => {
+    const result = calculateBondInvestment(
+      singleInputs(BondType.ROR, {
+        initialInvestment: 10000,
+        withdrawalDate: '2027-05-27T00:00:00.000Z',
+        investmentHorizonMonths: 12,
+        rollover: false,
+      }),
+    );
+
+    const monthlyPayout = result.timeline.find((point) => point.accumulatedNetInterest > 0);
+
+    expect(monthlyPayout?.earlyWithdrawalValue).toBeGreaterThan(result.initialInvestment);
+    expect(monthlyPayout?.earlyWithdrawalValue).toBe(monthlyPayout?.totalValue);
+  });
+
   it('keeps monthly EDO regular investment lots and maturity buckets stable', () => {
     const result = calculateRegularInvestment(regularInputs(BondType.EDO));
     const firstLot = result.lots[0];
