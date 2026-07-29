@@ -63,15 +63,19 @@ function collectSourceFiles(directory: string): string[] {
   });
 }
 
-function collectDirectComparisonTranslationKeys() {
+function collectDirectTranslationKeys() {
   const roots = ['app', 'features', 'shared'];
   const keys = new Set<string>();
 
   for (const filePath of roots.flatMap(collectSourceFiles)) {
     const source = readFileSync(filePath, 'utf8');
 
-    for (const match of source.matchAll(/t\(['"]comparison\.([A-Za-z0-9_]+)['"]/g)) {
-      keys.add(`comparison.${match[1]}`);
+    if (!source.startsWith("'use client';") && !source.startsWith('"use client";')) {
+      continue;
+    }
+
+    for (const match of source.matchAll(/\bt\(\s*['"]([A-Za-z0-9_.-]+)['"]/g)) {
+      keys.add(match[1]);
     }
   }
 
@@ -121,8 +125,8 @@ describe('locale parity for touched bond and economic helper namespaces', () => 
     }
   });
 
-  it('keeps directly referenced comparison translation keys resolvable in both locales', () => {
-    const usedKeys = collectDirectComparisonTranslationKeys();
+  it('keeps every literal client translation key resolvable in both locales', () => {
+    const usedKeys = collectDirectTranslationKeys();
 
     expect(usedKeys.filter((key) => getNodeByPath(enMessages, key) === undefined)).toEqual([]);
     expect(usedKeys.filter((key) => getNodeByPath(plMessages, key) === undefined)).toEqual([]);
