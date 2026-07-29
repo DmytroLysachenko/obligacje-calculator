@@ -101,6 +101,9 @@
   --finance-border: #ddd7ca;
   --finance-success: #397454;
   --finance-warning: #805700;
+  --chart-series-primary: #1d4ed8;
+  --chart-series-real: #397454;
+  --chart-series-context: #64748b;
   --chart-data: 24, 36%, 34%;
   --finance-radius-sm: 6px;
   --finance-radius-md: 8px;
@@ -126,7 +129,10 @@
   --status-attention: var(--attention);
   --status-danger: var(--danger);
   --chart-series-a: var(--trust);
+  --chart-series-primary: var(--trust);
+  --chart-series-real: var(--positive);
   --chart-series-attention: var(--attention);
+  --chart-series-context: #9aa7b5;
   --background: 200, 10%, 8%;
   --foreground: 43, 31%, 94%;
   --card: 200, 12%, 10%;

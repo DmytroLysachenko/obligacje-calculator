@@ -83,7 +83,7 @@ export const NBPRateChart = ({ period = 'ALL' }: { period?: PeriodValue }) => {
               axisLine={false}
             />
             <Tooltip content={<EconomicChartTooltip metricLabel={t('bonds.nbp_rate_short')} />} />
-            <ReferenceLine y={0} stroke="#000" strokeWidth={1} />
+            <ReferenceLine y={0} stroke="hsl(var(--border))" strokeWidth={1} />
             <Area
               type="stepAfter"
               dataKey="rate"

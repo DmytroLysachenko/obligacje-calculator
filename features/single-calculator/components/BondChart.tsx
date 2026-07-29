@@ -147,12 +147,12 @@ export const BondChart: React.FC<BondChartProps> = ({
       {
         key: 'primary',
         label: showRealValue ? t('common.real_value') : t('common.nominal_value'),
-        color: showRealValue ? '#4E8F71' : '#111111',
+        color: showRealValue ? 'var(--chart-series-real)' : 'var(--chart-series-primary)',
       },
       {
         key: 'secondary',
         label: showRealValue ? t('common.nominal_value') : t('common.real_value'),
-        color: showRealValue ? '#111111' : '#4E8F71',
+        color: showRealValue ? 'var(--chart-series-primary)' : 'var(--chart-series-real)',
         secondary: true,
       },
     ],

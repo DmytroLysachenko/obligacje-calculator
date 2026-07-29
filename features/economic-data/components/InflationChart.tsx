@@ -107,7 +107,7 @@ export const InflationChart = ({
                 />
               }
             />
-            <ReferenceLine y={0} stroke="#000" strokeWidth={1} />
+            <ReferenceLine y={0} stroke="hsl(var(--border))" strokeWidth={1} />
             <ReferenceLine
               y={2.5}
               label={{
@@ -122,11 +122,11 @@ export const InflationChart = ({
             <Line
               type="monotone"
               dataKey="rate"
-              stroke="#111111"
+              stroke="var(--chart-series-primary)"
               strokeWidth={2}
               dot={
                 chartData.length <= 24
-                  ? { r: 4, fill: '#111111', strokeWidth: 2, stroke: '#fff' }
+                  ? { r: 4, fill: 'var(--chart-series-primary)', strokeWidth: 2, stroke: '#fff' }
                   : false
               }
               activeDot={{ r: 6, strokeWidth: 0 }}

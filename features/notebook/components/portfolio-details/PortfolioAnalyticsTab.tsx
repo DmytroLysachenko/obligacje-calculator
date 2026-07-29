@@ -65,8 +65,8 @@ export function PortfolioAnalyticsTab({
               >
                 <defs>
                   <linearGradient id="portfolioNet" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#111111" stopOpacity={0.14} />
-                    <stop offset="95%" stopColor="#111111" stopOpacity={0} />
+                    <stop offset="5%" stopColor="var(--chart-series-primary)" stopOpacity={0.14} />
+                    <stop offset="95%" stopColor="var(--chart-series-primary)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
@@ -90,7 +90,7 @@ export function PortfolioAnalyticsTab({
                 <Area
                   type="monotone"
                   dataKey="totalNetValue"
-                  stroke="#111111"
+                  stroke="var(--chart-series-primary)"
                   strokeWidth={2}
                   fill="url(#portfolioNet)"
                   isAnimationActive={false}
