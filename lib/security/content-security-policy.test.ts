@@ -25,8 +25,13 @@ describe('content security policy', () => {
   });
 
   it('permits development tooling without weakening the production policy', () => {
-    expect(createContentSecurityPolicy('dev-nonce', true)).toContain("'unsafe-eval'");
-    expect(createContentSecurityPolicy('prod-nonce', false)).not.toContain("'unsafe-eval'");
+    const development = createContentSecurityPolicy('dev-nonce', true);
+    const production = createContentSecurityPolicy('prod-nonce', false);
+
+    expect(development).toContain("'unsafe-eval'");
+    expect(development).toContain("style-src-elem 'self' 'nonce-dev-nonce' 'unsafe-inline'");
+    expect(production).not.toContain("'unsafe-eval'");
+    expect(production).not.toContain("style-src-elem 'self' 'nonce-prod-nonce' 'unsafe-inline'");
   });
 
   it('keeps element styles nonce protected while allowing runtime positioning attributes', () => {

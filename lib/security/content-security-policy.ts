@@ -43,14 +43,22 @@ export function createContentSecurityPolicy(nonce: string, isDevelopment = false
     ? `script-src 'self' 'nonce-${nonce}' 'unsafe-eval'`
     : `script-src 'self' 'nonce-${nonce}'`;
 
-  // Recharts and Radix set presentation-only style attributes at runtime. CSP
-  // nonces do not apply to attributes, so keep elements nonce-protected while
-  // granting the smallest compatible exception for style attributes.
+  // Next Fast Refresh and browser developer tools inject style elements without
+  // access to the request nonce. Keep production nonce-only; the local dev
+  // server may permit those transient elements so diagnostics remain usable.
+  const styleElementSource = isDevelopment
+    ? `style-src 'self' 'nonce-${nonce}' 'unsafe-inline'`
+    : `style-src 'self' 'nonce-${nonce}'`;
+  const styleElementDirective = isDevelopment
+    ? `style-src-elem 'self' 'nonce-${nonce}' 'unsafe-inline'`
+    : `style-src-elem 'self' 'nonce-${nonce}'`;
+
+  // Recharts and Radix set presentation-only style attributes at runtime.
   return [
     ...baseDirectives,
     scriptSource,
-    `style-src 'self' 'nonce-${nonce}'`,
-    `style-src-elem 'self' 'nonce-${nonce}'`,
+    styleElementSource,
+    styleElementDirective,
     "style-src-attr 'unsafe-inline'",
   ].join('; ');
 }
