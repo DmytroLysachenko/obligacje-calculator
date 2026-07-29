@@ -47,4 +47,4 @@ Source contracts intentionally follow concrete ownership after refactors:
 - chart ownership: `features/comparison-engine/tests/comparison-chart-scope-contract.test.ts`
 - chart verdict and tooltip separation: `features/comparison-engine/tests/comparison-chart-verdict-contract.test.ts`
 - multi-asset chart model behavior: `features/comparison-engine/tests/components/multi-asset-chart-model.test.ts`
-- design/token boundaries: `docs/ui/design-refactor-contract.test.ts`
+- design/token guidance: `docs/ui/DESIGN_SYSTEM.md`

@@ -130,7 +130,7 @@ Small:
 Avoid:
 12px+
 
-Default product surfaces should use `rounded-lg` or less. Larger radii are allowed only for low-level primitives where the component itself owns the interaction style and the exception is documented in `docs/ui/design-refactor-contract.test.ts`.
+Default product surfaces should use `rounded-lg` or less. Larger radii are allowed only for low-level primitives where the component itself owns the interaction style. Review exceptions visually and cover interaction behavior with component or browser tests.
 
 ## Borders And Cards
 

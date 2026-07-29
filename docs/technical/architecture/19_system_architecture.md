@@ -78,6 +78,6 @@ Architecture rules are executable where practical:
 - `lib/server/portfolio/portfolio-service-boundary.test.ts` checks portfolio route facade usage.
 - `lib/data/bond-definition-repository-contract.test.ts` checks bond definition repository shape.
 - `features/notebook/notebook-portfolio-gateway-contract.test.ts` checks notebook portfolio gateway usage.
-- `docs/technical/architecture/layer-boundary-contract.test.ts` checks cross-layer endpoint, gateway, route, and response-helper boundaries.
+- `tests/contracts/architecture/layer-boundary-contract.test.ts` checks cross-layer endpoint, gateway, route, and response-helper boundaries.
 
 When changing architecture, update both the implementation and the relevant contract test.

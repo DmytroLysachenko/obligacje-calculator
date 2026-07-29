@@ -37,5 +37,5 @@ The UI must keep those limits visible through the limits section and returned ca
 Current focused tests include:
 
 - `features/retirement/lib/retirement-planner-model.test.ts` for pure model behavior
-- `docs/ui/design-refactor-contract.test.ts` for UI token and surface boundaries
+- `docs/ui/DESIGN_SYSTEM.md` for UI token and surface guidance
 - shared calculation and handler tests under `features/bond-core/tests/**` for engine truth

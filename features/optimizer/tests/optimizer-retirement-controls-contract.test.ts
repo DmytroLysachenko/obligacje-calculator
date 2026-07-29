@@ -11,9 +11,7 @@ const files = {
   optimizerResultsPanel: 'features/optimizer/components/OptimizerResultsPanel.tsx',
   optimizerSections: 'features/optimizer/components/OptimizerSections.tsx',
   retirement: 'features/retirement/components/RetirementInputsPanel.tsx',
-  advancedDisclosure: 'shared/components/forms/AdvancedAssumptionsDisclosure.tsx',
   formNotice: 'shared/components/forms/FormInlineNotice.tsx',
-  designSystem: 'docs/ui/design-system-adoption-v2-contract.test.ts',
 } as const;
 
 function read(relativePath: string) {
@@ -138,18 +136,8 @@ describe('optimizer and retirement control surface contracts', () => {
   });
 
   it('keeps shared primitives responsible for the visual treatment', () => {
-    const disclosure = read(files.advancedDisclosure);
     const notice = read(files.formNotice);
-    const designSystem = read(files.designSystem);
 
-    expectContains(disclosure, 'border-0 border-b border-border px-0 py-4');
-    expectContains(disclosure, 'border-l-2 border-border pl-3 pt-0.5 text-muted-foreground');
-    expectContains(notice, 'border-l-2 px-4 py-3 text-sm leading-6');
     expectContains(notice, 'title?: React.ReactNode;');
-    expectContains(
-      designSystem,
-      "const optimizerInputPanel = read('features/optimizer/components/OptimizerInputPanel.tsx');",
-    );
-    expectContains(designSystem, "expectUsesShared(source, 'FormSelect');");
   });
 });

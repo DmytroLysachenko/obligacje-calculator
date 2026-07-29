@@ -20,13 +20,13 @@ describe('package scripts contract', () => {
     expect(pkg.scripts['test:release']).toContain('app/api/operational-endpoints-contract.test.ts');
     expect(pkg.scripts['test:release']).toContain('app/provider-boundary-contract.test.ts');
     expect(pkg.scripts['test:release']).toContain(
-      'docs/ui/interactive-trigger-markup-contract.test.ts',
+      'tests/contracts/ui/interactive-trigger-markup-contract.test.ts',
     );
     expect(pkg.scripts['test:release']).toContain('scripts/check-production-config.test.ts');
     expect(pkg.scripts['test:release']).toContain('scripts/verify-production.test.ts');
     expect(pkg.scripts['test:release']).toContain('tests/browser/browser-diagnostics.test.ts');
     expect(pkg.scripts['test:release']).toContain(
-      'docs/technical/architecture/clean-code-contract.test.ts',
+      'tests/contracts/architecture/clean-code-contract.test.ts',
     );
     expect(pkg.scripts['test:browser']).toBe('playwright test tests/browser/app-smoke.spec.ts');
     expect(pkg.scripts['test:browser:ci']).toContain('tests/browser/app-smoke.spec.ts');

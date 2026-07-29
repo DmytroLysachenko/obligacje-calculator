@@ -430,7 +430,7 @@ The default review posture for this repository is to reject these patterns rathe
 
 ## 10.1 Release Clean-Code Gates
 
-`docs/technical/architecture/clean-code-contract.test.ts` enforces the current clean-code boundaries:
+`tests/contracts/architecture/clean-code-contract.test.ts` enforces the current clean-code boundaries:
 
 - no stale TODO/FIXME/debug markers in production paths
 - direct browser fetch only through approved client modules

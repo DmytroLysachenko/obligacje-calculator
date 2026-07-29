@@ -1,6 +1,10 @@
 import { describe, it } from 'vitest';
 
-import { expectContains, expectNotContains, readSource } from '@/docs/test-utils/source-contract';
+import {
+  expectContains,
+  expectNotContains,
+  readSource,
+} from '@/tests/contracts/test-utils/source-contract';
 
 const routeFiles = [
   'app/single-calculator/page.tsx',
@@ -43,7 +47,7 @@ describe('provider boundary contract', () => {
     const provider = readSource('shared/context/BondDefinitionsContext.tsx');
     const resourceHook = readSource('shared/hooks/useBondDefinitions.ts');
 
-    expectContains(provider, "useBondDefinitions as useBondDefinitionsHook");
+    expectContains(provider, 'useBondDefinitions as useBondDefinitionsHook');
     expectContains(provider, 'BondDefinitionsProvider');
     expectContains(resourceHook, 'new ClientResource');
     expectContains(resourceHook, "'/api/bond-definitions'");

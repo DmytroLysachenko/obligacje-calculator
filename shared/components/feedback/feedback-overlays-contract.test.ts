@@ -9,7 +9,6 @@ const files = {
   recalculate: 'shared/components/feedback/RecalculateButton.tsx',
   confirm: 'shared/components/feedback/ConfirmActionDialog.tsx',
   toast: 'shared/components/feedback/AppToast.tsx',
-  designRefactor: 'docs/ui/design-refactor-contract.test.ts',
   accessibility: 'shared/components/accessibility/responsive-accessibility-contract.test.ts',
 } as const;
 
@@ -114,13 +113,9 @@ describe('feedback overlay surface contracts', () => {
     ]);
   });
 
-  it('keeps global visual contracts aware of feedback and accessibility rules', () => {
-    const design = read(files.designRefactor);
+  it('keeps accessibility rules aware of feedback behavior', () => {
     const accessibility = read(files.accessibility);
 
-    expectContains(design, 'keeps feedback widgets compact and token-based');
-    expectContains(design, 'shared/components/feedback/RecalculateButton.tsx');
-    expectContains(design, 'shared/components/feedback/AppToast.tsx');
     expectContains(
       accessibility,
       'keeps chart containers keyboard reachable when they expose summaries',

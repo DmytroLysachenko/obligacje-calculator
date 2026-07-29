@@ -56,6 +56,8 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [00. Current Product Roadmap](./plans/00_roadmap.md) - Current roadmap centered on the trusted-core production scope.
 - [01. Long-Term Product Foundation Plan](./plans/01_longterm_product_foundation_plan.md) - Long-term direction after scope narrowing.
 - [08. Cloud Run Release Candidate Plan](./plans/08_cloud_run_release_candidate_plan.md) - First Cloud Run deploy checklist for the trusted-core production scope.
+- [09. Comprehensive Codebase Quality, Security, and Refactor Plan](./plans/09_comprehensive_codebase_quality_security_refactor_plan.md) - Full-codebase audit and prioritized remediation program for security, correctness, data integrity, architecture, testing, performance, UI/UX, accessibility, scalability, operations, and documentation.
+- [10. Security, Resilience, and Adversarial Evidence Audit](./plans/10_security_resilience_evidence_audit.md) - Threat model, endpoint authorization matrix, adversarial runtime evidence, migration and supply-chain verification, load results, cross-browser/accessibility findings, and security acceptance criteria.
 
 ### 6. Archived Plans
 
@@ -70,4 +72,4 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 
 ---
 
-_Last Updated: July 4, 2026 - App is in production-readiness cleanup for the trusted-core Cloud Run scope. Active docs distinguish current release work from archived recovery/refactor history, document the current feature folder vocabulary, and track unused-code cleanup through `pnpm scan:unused`._
+_Last Updated: July 29, 2026 - App is in production-readiness remediation for the trusted-core Cloud Run scope. The comprehensive codebase audit is now the active cross-cutting quality, security, performance, UI/UX, scalability, testing, and documentation plan._

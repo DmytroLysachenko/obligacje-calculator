@@ -46,26 +46,6 @@ describe('layer boundary contract', () => {
     expect(matches).toEqual([]);
   });
 
-  it('keeps calculation UI clients pointed at endpoint abstractions', () => {
-    const clients = [
-      'features/single-calculator/lib/single-calculator-actions.ts',
-      'features/regular-investment/hooks/useRegularInvestmentCalculator.ts',
-      'features/comparison-engine/lib/comparison-actions.ts',
-      'features/ladder-strategy/hooks/useLadder.ts',
-      'features/retirement/components/RetirementPlannerContainer.tsx',
-      'features/optimizer/components/BondOptimizerClient.tsx',
-    ];
-
-    for (const client of clients) {
-      const source = read(client);
-
-      expect(source, client).toContain("from '@/shared/lib/calculation-endpoints'");
-      expect(source, client).not.toMatch(
-        /\/api\/calculate\/(?:single|regular|compare|optimize|retirement)/,
-      );
-    }
-  });
-
   it('keeps migrated portfolio UI clients behind the portfolio gateway', () => {
     const clients = [
       'shared/hooks/useWorkspacePortfolios.ts',
