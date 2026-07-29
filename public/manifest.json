@@ -8,10 +8,10 @@
   "theme_color": "#181512",
   "icons": [
     {
-      "src": "/bonds-calculator-icon.png",
-      "sizes": "1254x1254",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "src": "/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ]
 }

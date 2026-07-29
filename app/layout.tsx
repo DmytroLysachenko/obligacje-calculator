@@ -49,8 +49,8 @@ export async function generateMetadata(): Promise<Metadata> {
     description: t('common.description'),
     manifest: '/manifest.json',
     icons: {
-      icon: [{ url: '/bonds-calculator-icon.png', sizes: '1254x1254', type: 'image/png' }],
-      apple: [{ url: '/bonds-calculator-icon.png', sizes: '1254x1254', type: 'image/png' }],
+      icon: [{ url: '/app-icon.svg', type: 'image/svg+xml' }],
+      apple: [{ url: '/app-icon.svg', type: 'image/svg+xml' }],
     },
     robots: indexable ? undefined : { index: false, follow: false },
     openGraph: {
