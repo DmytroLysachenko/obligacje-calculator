@@ -1,5 +1,26 @@
 # Design Direction
 
+## Financial value formatting
+
+All user-facing financial values use the shared formatter surface in
+`shared/lib/financial-formatters.ts`. Components supply the selected locale and
+a semantic value; they do not assemble decimal separators, currency symbols,
+or dates themselves.
+
+| Value | Formatter | Notes |
+| --- | --- | --- |
+| Monetary amount | `formatCurrency` | Always retains two minor-unit digits for financial comparison. |
+| Rate/return | `formatPercent` | Input is percentage points, not a 0–1 fraction. |
+| Dashboard magnitude | `formatCompactNumber` | Never use for CSV/export or editable values. |
+| Calendar date | `formatIsoDate` | ISO is storage/URL format; display is localized and UTC-stable. |
+
+Machine values remain ISO dates and unformatted numeric strings at API and
+export boundaries. Invalid display-date strings are returned unchanged so a
+validation error remains visible instead of being normalized into a different
+calendar day. Financial assumptions, validation errors, warnings, and freshness
+information use the normal readable body size on mobile; compact text is
+reserved for secondary metadata.
+
 ## Product Type
 
 Professional financial analysis platform.
