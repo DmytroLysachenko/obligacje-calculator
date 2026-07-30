@@ -252,6 +252,22 @@ export const sharedSingleScenarios = pgTable(
   }),
 );
 
+export const adminAuditEvents = pgTable(
+  'admin_audit_events',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    action: text('action').notNull(),
+    actorEmail: text('actor_email'),
+    requestId: text('request_id'),
+    detail: text('detail'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    createdAtIdx: index('admin_audit_events_created_at_idx').on(table.createdAt),
+    requestIdIdx: index('admin_audit_events_request_id_idx').on(table.requestId),
+  }),
+);
+
 export const communityInsights = pgTable(
   'community_insights',
   {

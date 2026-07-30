@@ -1,8 +1,8 @@
-import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
 import { createServerLogger } from '@/lib/server/logging';
 
+import { getClientIdentity } from './client-identity';
 import { mapApiErrorToProblemDetails } from './problem-details';
 import {
   BoundedMemoryRateLimiter,
@@ -32,11 +32,7 @@ export function apiHandler<TContext = { params: Promise<Record<string, never>> }
 ) {
   return async (req: NextRequest, context: TContext) => {
     const requestId = getRequestId(req);
-    const headersList = await headers();
-    const forwardedFor = headersList.get('x-forwarded-for');
-    const ip = forwardedFor ? forwardedFor.split(',')[0] : '127.0.0.1';
-
-    const rateLimit = rateLimiter.consume(ip, rateLimitPolicy);
+    const rateLimit = rateLimiter.consume(getClientIdentity(req), rateLimitPolicy);
 
     if (!rateLimit.allowed) {
       return withRequestId(

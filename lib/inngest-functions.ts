@@ -5,6 +5,7 @@ import { calculationService } from '@/features/bond-core/application-service';
 import { invalidateCached } from './data/market-data-cache';
 import { runAdminSync, type SyncMode } from './server/admin/sync';
 import { createServerLogger } from './server/logging';
+import { deleteExpiredSharedSingleScenarios } from './server/shared-scenarios/repository';
 import { financialDataSyncRequestedEvent, inngest } from './inngest';
 
 const logger = createServerLogger('InngestSync');
@@ -34,5 +35,21 @@ export const syncEconomicData = inngest.createFunction(
     });
 
     return { status: 'completed', mode, results };
+  },
+);
+
+/** Retention is durable and independent from public read traffic. */
+export const cleanupExpiredSharedScenarios = inngest.createFunction(
+  {
+    id: 'cleanup-expired-shared-scenarios',
+    retries: 2,
+    triggers: [cron('15 3 * * *')],
+  },
+  async ({ step }) => {
+    const result = await step.run('delete-expired-shares', async () => {
+      const deleted = await deleteExpiredSharedSingleScenarios();
+      return { deletedCount: deleted.rowCount ?? 0 };
+    });
+    return { status: 'completed', ...result };
   },
 );

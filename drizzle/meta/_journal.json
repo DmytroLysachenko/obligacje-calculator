@@ -43,6 +43,13 @@
       "when": 1773856281994,
       "tag": "0005_share_retention_and_constraints",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1773856281995,
+      "tag": "0006_admin_audit_events",
+      "breakpoints": true
     }
   ]
 }

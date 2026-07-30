@@ -32,6 +32,7 @@ describe('database migration contracts', () => {
         '0003_portfolio_lot_indexes.sql',
         '0004_portfolio_share_schema.sql',
         '0005_share_retention_and_constraints.sql',
+        '0006_admin_audit_events.sql',
       ]),
     );
   });
@@ -45,6 +46,7 @@ describe('database migration contracts', () => {
         '0003_portfolio_lot_indexes',
         '0004_portfolio_share_schema',
         '0005_share_retention_and_constraints',
+        '0006_admin_audit_events',
       ]),
     );
   });
