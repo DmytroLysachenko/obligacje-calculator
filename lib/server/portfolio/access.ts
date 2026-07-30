@@ -123,6 +123,7 @@ export function applyPortfolioOwnerCookie(response: NextResponse, owner: Portfol
   response.cookies.set(GUEST_PORTFOLIO_COOKIE, owner.ownerId, {
     httpOnly: true,
     sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
     path: '/',
     maxAge: GUEST_COOKIE_MAX_AGE,
   });
