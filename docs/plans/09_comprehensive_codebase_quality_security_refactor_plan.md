@@ -1,6 +1,6 @@
 # 09. Comprehensive Codebase Quality, Security, and Refactor Plan
 
-**Status:** Active remediation plan
+**Status:** In progress — completion ledger below records delivered audit items
 **Audit date:** 2026-07-29
 **Scope:** Full tracked application source, tests, scripts, database schema and migrations, CI/CD, runtime configuration, public assets, and documentation
 **Primary stack:** Next.js 16, React 19, TypeScript, Drizzle ORM, PostgreSQL/Neon, Auth.js, Tailwind CSS, Radix UI, Recharts, Playwright, Vitest, Cloud Run
@@ -1525,3 +1525,16 @@ Treat this as a correctness-and-trust program first, a performance program secon
 - one documented release truth.
 
 Once those seams are stable, UI refinements and route-specific performance work will be safer, easier to test, and less likely to be invalidated by another architectural correction.
+
+## 20. Completion Ledger
+
+Each entry is completed only with the behavioral checks named in its delivery commit.
+Operational evidence is redacted before it is linked here.
+
+| Audit item | Status      | Delivery                                                                                                                                                                                     |
+| ---------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SEC-01     | Completed   | `fix(admin): replace browser bearer auth with server-side admin sessions` — production secret validation, constant-time comparison, and fail-closed regression tests.                        |
+| SEC-02     | Completed   | `fix(admin): replace browser bearer auth with server-side admin sessions` — browser secret persistence and bearer transport deleted; admin UI now relies on a server-side Auth.js allowlist. |
+| SEC-03     | In progress | Sanitized errors and removed informational sync GET; endpoint-specific rate limiting and audit events remain for the HTTP-policy commit.                                                     |
+| SEC-11     | In progress | Close with token inventory, retention/revocation runbook, and production evidence in the operations commit.                                                                                  |
+| UI-03      | Completed   | `fix(admin): replace browser bearer auth with server-side admin sessions` — obsolete secret form removed rather than retained.                                                               |
