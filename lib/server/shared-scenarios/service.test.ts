@@ -15,14 +15,36 @@ describe('shared scenario service', () => {
   it('returns a configured canonical URL rather than a caller controlled origin', async () => {
     repository.create.mockResolvedValue({ shareId: '123e4567-e89b-12d3-a456-426614174000' });
     const { createSharedSingleScenario } = await import('./service');
-    const result = await createSharedSingleScenario({
-      inputs: {
-        bondType: 'EDO', initialInvestment: 1000, firstYearRate: 5, expectedInflation: 3,
-        margin: 2, duration: 10, earlyWithdrawalFee: 2, taxRate: 19, isCapitalized: true,
-        payoutFrequency: 'MATURITY', purchaseDate: '2026-01-01', withdrawalDate: '2036-01-01',
-        isRebought: false, rebuyDiscount: 0, taxStrategy: 'STANDARD',
+    const result = await createSharedSingleScenario(
+      {
+        inputs: {
+          bondType: 'EDO',
+          initialInvestment: 1000,
+          firstYearRate: 5,
+          expectedInflation: 3,
+          margin: 2,
+          duration: 10,
+          earlyWithdrawalFee: 2,
+          taxRate: 19,
+          isCapitalized: true,
+          payoutFrequency: 'MATURITY',
+          purchaseDate: '2026-01-01',
+          withdrawalDate: '2036-01-01',
+          isRebought: false,
+          rebuyDiscount: 0,
+          taxStrategy: 'STANDARD',
+        },
       },
-    });
-    expect(result.shareUrl).toBe('https://canonical.example/shared-scenarios/123e4567-e89b-12d3-a456-426614174000');
+      new Date('2026-07-01T00:00:00.000Z'),
+    );
+    expect(result.shareUrl).toBe(
+      'https://canonical.example/shared-scenarios/123e4567-e89b-12d3-a456-426614174000',
+    );
+    expect(result.expiresAt).toBe('2026-07-31T00:00:00.000Z');
+    expect(repository.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        expiresAt: new Date('2026-07-31T00:00:00.000Z'),
+      }),
+    );
   });
 });

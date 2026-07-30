@@ -24,6 +24,7 @@ describe('database migration contracts', () => {
         '0002_auth_tables.sql',
         '0003_portfolio_lot_indexes.sql',
         '0004_portfolio_share_schema.sql',
+        '0005_share_retention_and_constraints.sql',
       ]),
     );
   });
@@ -92,5 +93,15 @@ describe('database migration contracts', () => {
       expect(source).not.toContain('TRUNCATE');
       expect(source).not.toContain('DELETE FROM');
     }
+  });
+
+  it('bounds public share retention and enforces persisted financial invariants', () => {
+    const source = readMigration('0005_share_retention_and_constraints.sql');
+
+    expect(source).toContain('ADD COLUMN IF NOT EXISTS "expires_at"');
+    expect(source).toContain('ALTER COLUMN "expires_at" SET NOT NULL');
+    expect(source).toContain('shared_single_scenarios_expires_at_idx');
+    expect(source).toContain('user_investment_lots_positive_amount');
+    expect(source).toContain('shared_single_scenarios_nonempty_title');
   });
 });

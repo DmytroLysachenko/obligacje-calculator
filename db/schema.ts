@@ -1,5 +1,7 @@
+import { sql } from 'drizzle-orm';
 import {
   boolean,
+  check,
   date,
   index,
   integer,
@@ -197,6 +199,7 @@ export const userInvestmentLots = pgTable(
       table.portfolioId,
       table.purchaseDate,
     ),
+    positiveAmount: check('user_investment_lots_positive_amount', sql`${table.amount} > 0`),
   }),
 );
 
@@ -226,17 +229,28 @@ export const userTransactions = pgTable('user_transactions', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
-export const sharedSingleScenarios = pgTable('shared_single_scenarios', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  shareId: uuid('share_id').defaultRandom().notNull().unique(),
-  title: text('title').notNull(),
-  description: text('description'),
-  scenarioKind: text('scenario_kind').notNull().default('single-bond'),
-  payloadJson: text('payload_json').notNull(),
-  calculationVersion: text('calculation_version'),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
-});
+export const sharedSingleScenarios = pgTable(
+  'shared_single_scenarios',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    shareId: uuid('share_id').defaultRandom().notNull().unique(),
+    title: text('title').notNull(),
+    description: text('description'),
+    scenarioKind: text('scenario_kind').notNull().default('single-bond'),
+    payloadJson: text('payload_json').notNull(),
+    calculationVersion: text('calculation_version'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+    expiresAt: timestamp('expires_at').notNull(),
+  },
+  (table) => ({
+    expiresAtIdx: index('shared_single_scenarios_expires_at_idx').on(table.expiresAt),
+    nonemptyTitle: check(
+      'shared_single_scenarios_nonempty_title',
+      sql`length(trim(${table.title})) > 0`,
+    ),
+  }),
+);
 
 export const communityInsights = pgTable(
   'community_insights',

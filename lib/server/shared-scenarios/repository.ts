@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { and, eq, gt, lte } from 'drizzle-orm';
 
 import { db } from '@/db';
 import { sharedSingleScenarios } from '@/db/schema';
@@ -7,6 +7,7 @@ export async function createSharedSingleScenarioRecord(input: {
   title: string;
   description: string;
   payloadJson: string;
+  expiresAt: Date;
 }) {
   const [created] = await db
     .insert(sharedSingleScenarios)
@@ -16,6 +17,7 @@ export async function createSharedSingleScenarioRecord(input: {
       scenarioKind: 'single-bond',
       payloadJson: input.payloadJson,
       calculationVersion: 'single-bond-v2',
+      expiresAt: input.expiresAt,
     })
     .returning({
       shareId: sharedSingleScenarios.shareId,
@@ -24,8 +26,15 @@ export async function createSharedSingleScenarioRecord(input: {
   return created;
 }
 
-export async function findSharedSingleScenarioRecord(shareId: string) {
+export async function findSharedSingleScenarioRecord(shareId: string, now = new Date()) {
   return db.query.sharedSingleScenarios.findFirst({
-    where: eq(sharedSingleScenarios.shareId, shareId),
+    where: and(
+      eq(sharedSingleScenarios.shareId, shareId),
+      gt(sharedSingleScenarios.expiresAt, now),
+    ),
   });
+}
+
+export async function deleteExpiredSharedSingleScenarios(now = new Date()) {
+  return db.delete(sharedSingleScenarios).where(lte(sharedSingleScenarios.expiresAt, now));
 }

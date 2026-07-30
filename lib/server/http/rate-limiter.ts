@@ -29,9 +29,10 @@ export class BoundedMemoryRateLimiter implements RateLimiter {
   consume(identity: string, policy: RateLimitPolicy, now = Date.now()): RateLimitDecision {
     const key = `${policy.key}:${identity}`;
     const previous = this.counters.get(key);
-    const counter = !previous || previous.resetAt <= now
-      ? { count: 0, resetAt: now + policy.windowMs }
-      : previous;
+    const counter =
+      !previous || previous.resetAt <= now
+        ? { count: 0, resetAt: now + policy.windowMs }
+        : previous;
 
     counter.count += 1;
     this.counters.delete(key);
@@ -58,4 +59,11 @@ export const defaultApiRateLimitPolicy: RateLimitPolicy = {
   key: 'api-read',
   limit: 100,
   windowMs: 60_000,
+};
+
+/** Public share creation persists data and therefore has a deliberately low cost budget. */
+export const shareCreationRateLimitPolicy: RateLimitPolicy = {
+  key: 'share-create',
+  limit: 10,
+  windowMs: 60 * 60_000,
 };

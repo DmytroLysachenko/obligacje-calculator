@@ -1535,7 +1535,7 @@ Operational evidence is redacted before it is linked here.
 | ---------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | SEC-01     | Completed   | `fix(admin): replace browser bearer auth with server-side admin sessions` — production secret validation, constant-time comparison, and fail-closed regression tests.                                                                                                                             |
 | SEC-02     | Completed   | `fix(admin): replace browser bearer auth with server-side admin sessions` — browser secret persistence and bearer transport deleted; admin UI now relies on a server-side Auth.js allowlist.                                                                                                      |
-| SEC-03     | In progress | Sanitized errors and removed informational sync GET; endpoint-specific rate limiting and audit events remain for the HTTP-policy commit.                                                                                                                                                          |
+| SEC-03     | In progress | `feat(sync): enqueue administrative data refreshes` moves sync execution out of the request and returns a safe queued envelope; endpoint-specific admin limiter and audit-event persistence remain.                                                                                               |
 | SEC-11     | In progress | Close with token inventory, retention/revocation runbook, and production evidence in the operations commit.                                                                                                                                                                                       |
 | DATA-01    | Completed   | `fix(database): establish migration-only schema authority` — request-time DDL removed and replaced by ordered migration `0004_portfolio_share_schema.sql`.                                                                                                                                        |
 | ARC-05     | Completed   | `fix(database): establish migration-only schema authority` — migrations, not runtime compatibility code, own persistent schema state.                                                                                                                                                             |
@@ -1550,7 +1550,7 @@ Operational evidence is redacted before it is linked here.
 | PERF-05    | Completed   | `70e420f fix(calculation): version cache and cancel safely` loads independent definitions and freshness concurrently; focused dependency test proves both start before cache lookup.                                                                                                              |
 | SCALE-01   | In progress | `70e420f fix(calculation): version cache and cancel safely` makes cache freshness-aware; shared limiter/cache correctness and bounded worker-controller evidence remain.                                                                                                                          |
 | ARC-03     | In progress | `feat(portfolio): enforce mutation origin policy` centralizes authenticated portfolio request policy; transactional repository operations remain next.                                                                                                                                            |
-| SEC-04     | In progress | `feat(server): introduce bounded rate-limit policy` replaces unbounded module state with a named bounded adapter; a shared production adapter remains required.                                                                                                                                   |
+| SEC-04     | In progress | `feat(sync): enqueue administrative data refreshes` adds endpoint-policy injection and a strict share-creation policy on top of the bounded local adapter; trusted-proxy handling and a shared production adapter remain required.                                                                |
 | ARC-04     | In progress | `feat(server): introduce bounded rate-limit policy` starts extracting HTTP decisions behind explicit policy interfaces.                                                                                                                                                                           |
 | TEST-01    | In progress | `fa6ad18 test(quality): isolate Vitest from browser suites` makes `pnpm test:ci` green by isolating browser and legacy source-shape suites; behavior-level replacement of excluded contracts remains.                                                                                             |
 | TEST-05    | In progress | `test(quality): isolate Vitest from browser suites` adds reproducible V8 coverage for high-risk source areas.                                                                                                                                                                                     |
@@ -1566,17 +1566,17 @@ Operational evidence is redacted before it is linked here.
 | ARC-09     | In progress | `feat(ui): add locale financial formatters` centralizes date, currency, percentage, and compact-number display decisions.                                                                                                                                                                         |
 | COR-02     | In progress | `2ea8fa8 fix(portfolio): validate real ISO calendar dates` adds Gregorian validation for imports with boundary tests; calculator and URL-state adoption remains.                                                                                                                                  |
 | SEC-05     | In progress | `fix(portfolio): validate real ISO calendar dates` restricts imported bond types to the supported enum and rejects impossible dates.                                                                                                                                                              |
-| SEC-07     | Blocked     | Durable Inngest trigger, retries, and dead-letter evidence require deployed Inngest credentials and operator access.                                                                                                                                                                              |
+| SEC-07     | Blocked     | `feat(sync): enqueue administrative data refreshes` wires the administrative event to the retrying Inngest function and removes inline sync execution; deployed signed-delivery, retry, dead-letter, and replay evidence still requires Inngest operator access.                                  |
 | SEC-07     | Blocked     | `docs(sync): define durable orchestration contract` records the repository contract and required tests; deployed Inngest evidence remains required.                                                                                                                                               |
-| SEC-08     | Completed   | `fix(sharing): use canonical scenario URLs` removes request-origin URL construction; focused service test proves configured canonical output.                                                                                                                                                      |
-| SEC-09     | In progress | Share quota, expiry, cleanup, and abuse reporting remain to be implemented.                                                                                                                                                                                                                       |
+| SEC-08     | Completed   | `fix(sharing): use canonical scenario URLs` removes request-origin URL construction; focused service test proves configured canonical output.                                                                                                                                                     |
+| SEC-09     | In progress | `feat(sync): enqueue administrative data refreshes` applies a low share-creation rate policy, expiry-aware reads, an expiry index, and a repository cleanup primitive; scheduled cleanup and abuse-report evidence remain.                                                                        |
 | SEC-10     | In progress | Telemetry sampling, aggregation, and privacy-safe retention remain to be implemented.                                                                                                                                                                                                             |
 | COR-03     | In progress | Financial database constraints require reviewed additive migration and migrated PostgreSQL tests.                                                                                                                                                                                                 |
 | COR-04     | In progress | Persisted-envelope compatibility policy and golden-version fixtures remain to be documented.                                                                                                                                                                                                      |
 | DATA-02    | In progress | `feat(portfolio): make imports transactional and owner-scoped` introduces a single database transaction; real PostgreSQL rollback integration coverage remains.                                                                                                                                   |
-| DATA-03    | Completed   | `fix(portfolio): scope lot updates by owner` adds owner predicates to update and delete repository mutations; repository-boundary tests and type/lint checks cover the seam.                                                                                                                       |
+| DATA-03    | Completed   | `fix(portfolio): scope lot updates by owner` adds owner predicates to update and delete repository mutations; repository-boundary tests and type/lint checks cover the seam.                                                                                                                      |
 | REL-02     | Blocked     | Durable background lifecycle requires deployed Inngest schedule/retry evidence.                                                                                                                                                                                                                   |
-| REL-03     | In progress | `feat(server): add correlated API responses` adds stable request IDs to wrapped successes, rate limits, and problems; remaining bespoke routes require migration.                                                                                                                                |
+| REL-03     | In progress | `feat(server): add correlated API responses` adds stable request IDs to wrapped successes, rate limits, and problems; remaining bespoke routes require migration.                                                                                                                                 |
 | REL-04     | In progress | Readiness dependency checks require database migration-version integration coverage.                                                                                                                                                                                                              |
 | ARC-06     | In progress | Route-specific provider boundaries and static-safe CSP rendering remain to be implemented.                                                                                                                                                                                                        |
 | ARC-07     | In progress | Oversized calculator orchestration components require decision-owner extraction.                                                                                                                                                                                                                  |
@@ -1589,14 +1589,14 @@ Operational evidence is redacted before it is linked here.
 | TEST-08    | In progress | Firefox/WebKit and visual confidence matrix remains to be configured.                                                                                                                                                                                                                             |
 | TEST-09    | In progress | Lighthouse preview/indexability split and portable launcher validation remain.                                                                                                                                                                                                                    |
 | PERF-02    | In progress | Global provider/client infrastructure audit remains.                                                                                                                                                                                                                                              |
-| PERF-02    | In progress | `docs(perf): define rendering performance contract` records route/provider/bundle acceptance rules; implementation remains.                                                                                                                                                                      |
+| PERF-02    | In progress | `docs(perf): define rendering performance contract` records route/provider/bundle acceptance rules; implementation remains.                                                                                                                                                                       |
 | PERF-03    | In progress | Bundle analysis and interaction-boundary lazy loading remain.                                                                                                                                                                                                                                     |
 | PERF-04    | In progress | Font consolidation and Polish-glyph validation remain.                                                                                                                                                                                                                                            |
 | PERF-06    | In progress | Explicit image and LCP asset policy remains.                                                                                                                                                                                                                                                      |
 | PERF-07    | Blocked     | Cloud Run load testing requires production project, service, and monitoring access.                                                                                                                                                                                                               |
 | PERF-08    | Blocked     | Field RUM receipt requires an approved deployed telemetry sink and access to its aggregate evidence.                                                                                                                                                                                              |
 | UI-01      | In progress | Comparison trigger visible/accessible name parity remains.                                                                                                                                                                                                                                        |
-| UI-01      | In progress | `docs(ui): define financial workflow accessibility contract` records required names, focus, chart parity, and verification; route implementation remains.                                                                                                                                        |
+| UI-01      | In progress | `docs(ui): define financial workflow accessibility contract` records required names, focus, chart parity, and verification; route implementation remains.                                                                                                                                         |
 | UI-02      | In progress | Icon-action labels and touch-target audit remains.                                                                                                                                                                                                                                                |
 | UI-05      | In progress | Mobile financial-copy typography audit remains.                                                                                                                                                                                                                                                   |
 | UI-06      | In progress | Decision-first calculator result hierarchy remains.                                                                                                                                                                                                                                               |
@@ -1655,17 +1655,17 @@ ledger rather than a list of intentions.
 
 ### Repository-delivered boundaries
 
-| Delivery | Evidence retained in repository | Ledger implication |
-| --- | --- | --- |
-| Transactional portfolio import | `importPortfolioAtomically` and owner-scoped delete queries | DATA-02/DATA-03 advanced; PostgreSQL rollback proof remains. |
-| Calculation cache | Revision-aware key, explicit TTL, namespace invalidation tests | COR-01 advanced; tax revision/sync event remains. |
-| HTTP response context | Safe request IDs on wrapped successes, errors, and rate limits | REL-03 advanced; bespoke routes remain. |
-| Canonical sharing | Configured canonical URL service test | SEC-08 completed. |
-| Sync contract | Durable event/lock/retry/dead-letter contract | External Inngest observation remains blocked. |
-| Rendering contract | Provider, cache, asset, bundle, and budget acceptance rules | PERF/ARC implementation remains tracked. |
-| Accessibility contract | Financial workflow names, focus, chart parity, and review checks | UI/TEST route implementation remains tracked. |
-| Behavioral test contract | Unit/component/integration/browser seam rules | TEST contract replacement remains tracked. |
-| Evidence gate | Cloud, IAM, backup, sync, and RUM artifact requirements | External items remain blocked. |
+| Delivery                       | Evidence retained in repository                                  | Ledger implication                                           |
+| ------------------------------ | ---------------------------------------------------------------- | ------------------------------------------------------------ |
+| Transactional portfolio import | `importPortfolioAtomically` and owner-scoped delete queries      | DATA-02/DATA-03 advanced; PostgreSQL rollback proof remains. |
+| Calculation cache              | Revision-aware key, explicit TTL, namespace invalidation tests   | COR-01 advanced; tax revision/sync event remains.            |
+| HTTP response context          | Safe request IDs on wrapped successes, errors, and rate limits   | REL-03 advanced; bespoke routes remain.                      |
+| Canonical sharing              | Configured canonical URL service test                            | SEC-08 completed.                                            |
+| Sync contract                  | Durable event/lock/retry/dead-letter contract                    | External Inngest observation remains blocked.                |
+| Rendering contract             | Provider, cache, asset, bundle, and budget acceptance rules      | PERF/ARC implementation remains tracked.                     |
+| Accessibility contract         | Financial workflow names, focus, chart parity, and review checks | UI/TEST route implementation remains tracked.                |
+| Behavioral test contract       | Unit/component/integration/browser seam rules                    | TEST contract replacement remains tracked.                   |
+| Evidence gate                  | Cloud, IAM, backup, sync, and RUM artifact requirements          | External items remain blocked.                               |
 
 ### Required verification per future delivery
 
@@ -1694,21 +1694,21 @@ data.
 
 ### Audit-item handoff matrix
 
-| Area | Repository next action | Evidence gate |
-| --- | --- | --- |
-| Administration | Migrate remaining routes to shared policies | authenticated deployed smoke |
-| Imports | Run rollback and ownership integration tests | migrated PostgreSQL fixture |
-| Sharing | Add quota, retention, and cleanup job | cleanup-run record |
-| Telemetry | Add aggregate sampling/storage boundary | privacy review receipt |
-| Sync | Wire contract into Inngest implementation | signed delivery/retry record |
-| Rendering | Split public/private route provider ownership | cache/CSP observation |
-| Bundles | Capture and ratchet route reports | three-run lab median |
-| Typography | Consolidate font payloads | Polish glyph/layout review |
-| Charts | Add keyboard/touch/table/export parity | manual screen-reader record |
-| Forms | Adopt canonical accessible field primitives | keyboard/focus regression suite |
-| Tests | Replace legacy source contracts behaviorally | full suite/release artifacts |
-| Database | Add invariant constraints and upgrade harness | migration-role and schema evidence |
-| Documentation | Reconcile security, NFR, README, and index | reviewer sign-off |
+| Area           | Repository next action                        | Evidence gate                      |
+| -------------- | --------------------------------------------- | ---------------------------------- |
+| Administration | Migrate remaining routes to shared policies   | authenticated deployed smoke       |
+| Imports        | Run rollback and ownership integration tests  | migrated PostgreSQL fixture        |
+| Sharing        | Add quota, retention, and cleanup job         | cleanup-run record                 |
+| Telemetry      | Add aggregate sampling/storage boundary       | privacy review receipt             |
+| Sync           | Wire contract into Inngest implementation     | signed delivery/retry record       |
+| Rendering      | Split public/private route provider ownership | cache/CSP observation              |
+| Bundles        | Capture and ratchet route reports             | three-run lab median               |
+| Typography     | Consolidate font payloads                     | Polish glyph/layout review         |
+| Charts         | Add keyboard/touch/table/export parity        | manual screen-reader record        |
+| Forms          | Adopt canonical accessible field primitives   | keyboard/focus regression suite    |
+| Tests          | Replace legacy source contracts behaviorally  | full suite/release artifacts       |
+| Database       | Add invariant constraints and upgrade harness | migration-role and schema evidence |
+| Documentation  | Reconcile security, NFR, README, and index    | reviewer sign-off                  |
 
 ### Status discipline
 
