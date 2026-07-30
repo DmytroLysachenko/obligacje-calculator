@@ -198,3 +198,50 @@ Run before handoff:
 pnpm test:ci
 pnpm lint
 ```
+# Calculation Stability Rules
+
+## Session ownership and persisted results
+
+Calculator inputs are draft state. A result becomes committed state only after
+the calculation that started with that exact draft successfully resolves while
+it is still the current request. Starting a newer calculation or unmounting a
+calculator invalidates older completions; an older response may settle its own
+promise but must never overwrite committed output.
+
+Cancellation is explicit, never a successful `null` result. Persisted sessions
+retain drafts separately from committed results and restore a result only when
+its model version matches the active calculator model. Stale results are
+discarded while the user's draft remains available for recalculation.
+
+## Required implementation sequence
+
+1. Validate and normalize an input before starting external work.
+2. Record the current execution epoch with the exact normalized draft.
+3. Abort or supersede any prior client request through the shared request hook.
+4. Commit result and committed inputs only when the execution epoch is current.
+5. Keep the prior committed result visible while a new draft is dirty or while
+   a new request is running; do not flash a false successful empty state.
+6. On cancellation, clear only the active progress state. Do not create an
+   error, mutate committed inputs, or persist a synthetic result.
+7. On failure, expose a safe error for the active request only. A later
+   successful request owns the final session state.
+
+## Persistence compatibility
+
+Storage keys are an implementation detail, not a model-version contract. Every
+persisted session therefore contains both editable draft inputs and optional
+committed output. The restore boundary calls a model-version validator before
+accepting the output. It must reject missing, malformed, or old envelopes.
+
+This policy intentionally favors an available user draft over an apparently
+convenient but unverifiable financial result. A recalculation against the
+current offer/data revision is required before presenting updated output.
+
+## Verification
+
+- Unit-test the execution epoch for overlapping requests and unmount.
+- Unit-test version validation for current, old, and malformed envelopes.
+- Test reducer transitions for cancellation, failure, successful commitment,
+  and draft edits after a result.
+- Add a browser or component interaction test when a calculator changes the
+  visible progress, focus, error, or result hierarchy.

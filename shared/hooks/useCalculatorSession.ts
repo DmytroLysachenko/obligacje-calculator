@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useReducer, useRef } from 'react';
 
 import {
   loadPersistedCalculatorState,
@@ -16,6 +16,7 @@ import {
   type PersistedCalculatorSession,
   restoreCalculatorSession,
 } from '@/shared/lib/calculator-session-persistence';
+import { CalculationSessionExecution } from '@/shared/lib/calculation-session-execution';
 
 import { CalculationCancelled } from './useCalculationRequest';
 
@@ -35,6 +36,9 @@ export function useCalculatorSession<TInputs, TResult>({
     initialInputs,
     createCalculatorSessionState<TInputs, TResult>,
   );
+  const calculationExecutionRef = useRef(new CalculationSessionExecution());
+
+  useEffect(() => () => calculationExecutionRef.current.invalidate(), []);
 
   useEffect(() => {
     if (!storageKey) {
@@ -75,15 +79,20 @@ export function useCalculatorSession<TInputs, TResult>({
   const clearError = useCallback(() => dispatch({ type: 'clear-error' }), []);
   const runCalculation = useCallback(
     async (calculate: (inputs: TInputs) => Promise<TResult>) => {
+      const epoch = calculationExecutionRef.current.start();
+      const inputsAtStart = state.draftInputs;
       dispatch({ type: 'start' });
       try {
-        const result = await calculate(state.draftInputs);
-        dispatch({ type: 'succeed', committedInputs: state.draftInputs, committedResult: result });
+        const result = await calculate(inputsAtStart);
+        if (!calculationExecutionRef.current.isCurrent(epoch)) return result;
+        dispatch({ type: 'succeed', committedInputs: inputsAtStart, committedResult: result });
         return result;
       } catch (error) {
         if (error instanceof CalculationCancelled) {
+          if (calculationExecutionRef.current.isCurrent(epoch)) dispatch({ type: 'cancel' });
           return undefined;
         }
+        if (!calculationExecutionRef.current.isCurrent(epoch)) throw error;
         dispatch({
           type: 'fail',
           error: error instanceof Error ? error : new Error(String(error)),

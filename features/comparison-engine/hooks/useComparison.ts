@@ -6,10 +6,12 @@ import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { useCalculatorSession } from '@/shared/hooks/useCalculatorSession';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
+import { createCalculationEnvelopeVersionValidator } from '@/shared/lib/calculation-envelope-version';
 import { applyUntouchedMacroDefaults } from '@/shared/lib/calculator-session-persistence';
 import { logClientError } from '@/shared/lib/client-logger';
 
 import { BOND_DEFINITIONS } from '../../bond-core/constants/bond-definitions';
+import { MODEL_VERSION } from '../../bond-core/handlers';
 import { BondType } from '../../bond-core/types';
 import type { BondComparisonCalculationEnvelope } from '../../bond-core/types/scenarios';
 import { runComparisonCalculation } from '../lib/comparison-actions';
@@ -59,6 +61,7 @@ export function useComparison(initialUrlState?: ComparisonUrlState | null) {
   const session = useCalculatorSession<ComparisonDraft, BondComparisonCalculationEnvelope>({
     initialInputs: fallbackDraft,
     storageKey: COMPARISON_CALCULATOR_STORAGE_KEY,
+    isCommittedResultValid: createCalculationEnvelopeVersionValidator(MODEL_VERSION),
   });
   const { sharedConfig, scenarioA, scenarioB } = session.draftInputs;
 
