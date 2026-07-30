@@ -47,6 +47,7 @@ describe('CalculationApplicationService dependencies', () => {
         generateKey: vi.fn(() => 'cache-key'),
         get: vi.fn(() => null),
         set: vi.fn(),
+        invalidateNamespace: vi.fn(),
       },
       getDataFreshness: vi.fn(async () => freshness),
       getDefinitions: vi.fn(async () => BOND_DEFINITIONS),
@@ -89,6 +90,7 @@ describe('CalculationApplicationService dependencies', () => {
         generateKey: vi.fn(() => 'revision-aware-key'),
         get: vi.fn(() => envelope),
         set: vi.fn(),
+        invalidateNamespace: vi.fn(),
       },
       getDataFreshness: vi.fn(async () => freshness),
       getDefinitions: vi.fn(async () => BOND_DEFINITIONS),
@@ -127,7 +129,7 @@ describe('CalculationApplicationService dependencies', () => {
       dataFreshness: { status: 'fresh', usedFallback: false },
     };
     const dependencies: CalculationServiceDependencies = {
-      cache: { generateKey: vi.fn(() => 'key'), get: vi.fn(() => null), set: vi.fn() },
+      cache: { generateKey: vi.fn(() => 'key'), get: vi.fn(() => null), set: vi.fn(), invalidateNamespace: vi.fn() },
       getDataFreshness: vi.fn(() => freshnessPromise),
       getDefinitions: vi.fn(() => definitionsPromise),
       getHandler: vi.fn(() => ({

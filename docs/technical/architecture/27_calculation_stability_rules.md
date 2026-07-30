@@ -42,6 +42,48 @@ quarantine/report path before adding a stricter database constraint. This keeps
 the application runtime free of schema repair and makes rollback reasoning
 possible.
 
+## Authoritative calculation context
+
+Calculation cache entries are an optimization, never the source of financial
+truth. Each key combines the normalized scenario request with the model version
+and declared freshness/revision metadata. The service loads independent
+definitions and freshness concurrently before it chooses an entry, so a cached
+result always names the authority it was calculated against.
+
+Entries have a short explicit TTL. A completed synchronization can invalidate
+the matching namespace immediately; expiry remains a safe fallback if an
+invalidation signal is delayed or a process is recycled. Cache values do not
+cross an instance boundary as correctness state: two instances receiving the
+same declared context must calculate the same result whether either has a warm
+entry or not.
+
+When adding a new authoritative input, apply all of the following in one
+delivery:
+
+1. include its stable revision in the cache identity;
+2. expose it in calculation diagnostics/freshness where user understanding
+   needs it;
+3. add hit, changed-revision, expiry, and invalidation tests; and
+4. document how a successful synchronization invalidates the old namespace.
+
+Do not serialize a mutable full database response as a revision contract. Use
+the smallest stable metadata needed to decide whether the financial inputs are
+the same, and keep user-specific data out of the shared cache key.
+
+### Incident response
+
+If an authoritative source is corrected, operators record the affected revision
+and invalidate its cache namespace before describing the result as current. The
+next calculation must show the replacement freshness metadata. A cache issue is
+investigated with the normalized request, declared revisions, model version,
+entry age, and correlation identifier—never with saved customer inputs or
+credentials. This preserves reproducibility while keeping operational logs
+privacy-safe.
+
+Cache invalidation is idempotent. Repeating it is safe; omitting it is not.
+
+Expiry is the final guardrail.
+
 The system should prefer explicit rejection over silent coercion.
 Users can recover from a clear validation error.
 They cannot recover from a successful-looking result that was produced from unsafe input or broken math.

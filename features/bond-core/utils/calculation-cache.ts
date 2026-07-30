@@ -4,7 +4,7 @@
  */
 
 class CalculationCache {
-  private cache = new Map<string, unknown>();
+  private cache = new Map<string, { value: unknown; expiresAt: number }>();
   private readonly maxSize: number;
 
   constructor(maxSize = 100) {
@@ -47,17 +47,21 @@ class CalculationCache {
     }
   }
 
-  get(key: string): unknown {
+  get(key: string, now = Date.now()): unknown {
     const item = this.cache.get(key);
+    if (item && item.expiresAt <= now) {
+      this.cache.delete(key);
+      return undefined;
+    }
     if (item) {
       // Move to end to maintain LRU order
       this.cache.delete(key);
       this.cache.set(key, item);
     }
-    return item;
+    return item?.value;
   }
 
-  set(key: string, value: unknown): void {
+  set(key: string, value: unknown, ttlMs = 5 * 60_000, now = Date.now()): void {
     if (this.cache.has(key)) {
       this.cache.delete(key);
     } else if (this.cache.size >= this.maxSize) {
@@ -67,11 +71,17 @@ class CalculationCache {
         this.cache.delete(oldestKey);
       }
     }
-    this.cache.set(key, value);
+    this.cache.set(key, { value, expiresAt: now + ttlMs });
   }
 
   clear(): void {
     this.cache.clear();
+  }
+
+  invalidateNamespace(prefix: string): void {
+    for (const key of this.cache.keys()) {
+      if (key.startsWith(prefix)) this.cache.delete(key);
+    }
   }
 }
 

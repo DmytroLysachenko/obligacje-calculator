@@ -17,7 +17,7 @@ import { BondType } from './types';
 const logger = createServerLogger('CalculationService');
 
 export interface CalculationServiceDependencies {
-  cache: Pick<typeof calculationCache, 'generateKey' | 'get' | 'set'>;
+  cache: Pick<typeof calculationCache, 'generateKey' | 'get' | 'set' | 'invalidateNamespace'>;
   getDataFreshness: () => Promise<CalculationDataFreshness>;
   getDefinitions: () => Promise<Record<BondType, BondDefinition>>;
   getHandler: (kind: ScenarioKind) => ScenarioHandler<unknown, unknown>;
@@ -81,6 +81,10 @@ export class CalculationApplicationService {
       logger.error(`FAILED v=${MODEL_VERSION} kind=${request.kind}`, error);
       throw error;
     }
+  }
+
+  invalidateAuthoritativeData(namespace = '') {
+    this.dependencies.cache.invalidateNamespace(namespace);
   }
 }
 
