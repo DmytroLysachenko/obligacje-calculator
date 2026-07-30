@@ -36,6 +36,7 @@ export function ComparisonSharedBaseCard({
   onUpdateSharedConfig,
 }: ComparisonSharedBaseCardProps) {
   const { t, locale: language } = useAppI18n();
+  const dateLocale = getDateFnsLocale(language);
 
   return (
     <section className="space-y-6">
@@ -107,7 +108,11 @@ export function ComparisonSharedBaseCard({
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  aria-label={t('bonds.purchase_date')}
+                  aria-label={`${t('bonds.purchase_date')}: ${
+                    sharedConfig.purchaseDate
+                      ? format(parseISO(sharedConfig.purchaseDate), 'PPP', { locale: dateLocale })
+                      : t('common.not_available')
+                  }`}
                   className={cn(
                     'h-11 w-full justify-start text-left font-semibold',
                     !sharedConfig.purchaseDate && 'text-muted-foreground',
