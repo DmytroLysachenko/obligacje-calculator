@@ -2,6 +2,7 @@ export {
   bondDefinitionRepository,
   getBondDefinitionsMap,
   getTaxRulesForYear,
+  getTaxRulesRevision,
   mergeBondDefinitionsWithSeries,
 } from './bond-definition-data';
 export {

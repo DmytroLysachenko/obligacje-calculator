@@ -2,6 +2,8 @@
 
 import { useEffect } from 'react';
 
+import { shouldReportWebVital } from '@/shared/lib/telemetry-controls';
+
 type VitalName = 'CLS' | 'INP' | 'LCP';
 
 interface VitalPayload {
@@ -40,6 +42,14 @@ function send(payload: Omit<VitalPayload, 'path' | 'navigationType'>) {
 
 export function WebVitalsReporter() {
   useEffect(() => {
+    const privacyNavigator = navigator as Navigator & { globalPrivacyControl?: boolean };
+    if (!shouldReportWebVital({
+      doNotTrack: navigator.doNotTrack,
+      globalPrivacyControl: privacyNavigator.globalPrivacyControl,
+    })) {
+      return;
+    }
+
     void import('web-vitals').then(({ onCLS, onINP, onLCP }) => {
       onCLS(send);
       onINP(send);

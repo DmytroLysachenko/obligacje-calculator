@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { info } = vi.hoisted(() => ({ info: vi.fn() }));
 
@@ -9,6 +9,10 @@ vi.mock('@/lib/server/logging', () => ({
 import { POST } from './route';
 
 describe('web vitals endpoint', () => {
+  beforeEach(() => {
+    info.mockClear();
+  });
+
   it('logs only validated anonymous metric fields', async () => {
     const response = await POST(
       new Request('http://localhost/api/observability/vitals', {
@@ -37,5 +41,18 @@ describe('web vitals endpoint', () => {
     );
 
     expect(response.status).toBe(400);
+  });
+
+  it('rejects oversized telemetry before decoding it', async () => {
+    const response = await POST(
+      new Request('http://localhost/api/observability/vitals', {
+        method: 'POST',
+        headers: { 'content-length': '2049' },
+        body: '{}',
+      }) as never,
+    );
+
+    expect(response.status).toBe(400);
+    expect(info).not.toHaveBeenCalled();
   });
 });

@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { createServerLogger } from '@/lib/server/logging';
 
 const logger = createServerLogger('WebVitals');
+const MAX_METRIC_PAYLOAD_BYTES = 2_048;
 
 const payloadSchema = z.object({
   name: z.enum(['CLS', 'INP', 'LCP']),
@@ -17,6 +18,11 @@ const payloadSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  const contentLength = Number(request.headers.get('content-length') ?? 0);
+  if (!Number.isFinite(contentLength) || contentLength > MAX_METRIC_PAYLOAD_BYTES) {
+    return NextResponse.json({ error: 'Invalid metric payload' }, { status: 400 });
+  }
+
   const payload = payloadSchema.safeParse(await request.json().catch(() => null));
 
   if (!payload.success) {

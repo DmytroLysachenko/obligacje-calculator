@@ -1,5 +1,8 @@
 import { cron } from 'inngest';
 
+import { calculationService } from '@/features/bond-core/application-service';
+
+import { invalidateCached } from './data/market-data-cache';
 import { runAdminSync, type SyncMode } from './server/admin/sync';
 import { createServerLogger } from './server/logging';
 import { financialDataSyncRequestedEvent, inngest } from './inngest';
@@ -23,6 +26,11 @@ export const syncEconomicData = inngest.createFunction(
         logger.error(`Sync error for ${mode}`, error);
         throw error;
       }
+    });
+
+    await step.run('invalidate-derived-calculations', async () => {
+      invalidateCached();
+      calculationService.invalidateAuthoritativeData();
     });
 
     return { status: 'completed', mode, results };
