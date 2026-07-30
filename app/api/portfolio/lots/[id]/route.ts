@@ -15,7 +15,7 @@ const logger = createServerLogger('PortfolioLotApi');
 
 export const PATCH = apiHandler<{ params: Promise<{ id: string }> }>(
   async (req: NextRequest, { params }) => {
-    return withAuthenticatedPortfolioOwner(async (owner) => {
+    return withAuthenticatedPortfolioOwner(req, async (owner) => {
       const { id } = await params;
       const validated = await readJsonBody(req, InvestmentLotSchema.partial());
 
@@ -35,7 +35,7 @@ export const PATCH = apiHandler<{ params: Promise<{ id: string }> }>(
 
 export const DELETE = apiHandler<{ params: Promise<{ id: string }> }>(
   async (req: NextRequest, { params }) => {
-    return withAuthenticatedPortfolioOwner(async (owner) => {
+    return withAuthenticatedPortfolioOwner(req, async (owner) => {
       const { id } = await params;
 
       try {

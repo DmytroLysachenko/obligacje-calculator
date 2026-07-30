@@ -23,7 +23,7 @@ const SavePortfolioLotPayloadSchema = z.object({
 });
 
 export const POST = apiHandler(async (req: NextRequest) => {
-  return withAuthenticatedPortfolioOwner(async (owner) => {
+  return withAuthenticatedPortfolioOwner(req, async (owner) => {
     try {
       const { portfolioId, bondType, purchaseDate, amount, isRebought, notes } = await readJsonBody(
         req,

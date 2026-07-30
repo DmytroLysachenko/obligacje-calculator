@@ -8,7 +8,7 @@ import { withAuthenticatedPortfolioOwner } from '@/lib/server/portfolio/http';
 import { ImportPayloadSchema } from '@/lib/server/portfolio/import-schema';
 
 export const POST = apiHandler(async (req: NextRequest) => {
-  return withAuthenticatedPortfolioOwner(async (owner) => {
+  return withAuthenticatedPortfolioOwner(req, async (owner) => {
     const { portfolio } = await readJsonBody(req, ImportPayloadSchema);
     const importedPortfolio = await importOwnerPortfolio(owner.ownerId, portfolio);
 

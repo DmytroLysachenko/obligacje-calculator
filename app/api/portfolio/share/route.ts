@@ -16,7 +16,7 @@ const PortfolioSharePayloadSchema = z.object({
 });
 
 export const POST = apiHandler(async (req: NextRequest) => {
-  return withAuthenticatedPortfolioOwner(async (owner) => {
+  return withAuthenticatedPortfolioOwner(req, async (owner) => {
     const { portfolioId, isPublic } = await readJsonBody(req, PortfolioSharePayloadSchema);
 
     try {

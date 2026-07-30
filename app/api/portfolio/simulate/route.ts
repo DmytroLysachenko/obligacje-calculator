@@ -16,7 +16,7 @@ const PortfolioSimulationPayloadSchema = z.object({
 });
 
 export const POST = apiHandler(async (req: NextRequest) => {
-  return withAuthenticatedPortfolioOwner(async (owner) => {
+  return withAuthenticatedPortfolioOwner(req, async (owner) => {
     const { portfolioId, expectedInflation = 3.5 } = await readJsonBody(
       req,
       PortfolioSimulationPayloadSchema,
