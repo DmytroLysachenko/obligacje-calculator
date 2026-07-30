@@ -268,6 +268,13 @@ export const adminAuditEvents = pgTable(
   }),
 );
 
+export const rateLimitWindows = pgTable('rate_limit_windows', {
+  bucketKey: text('bucket_key').primaryKey(),
+  count: integer('count').notNull(),
+  resetAt: timestamp('reset_at').notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 export const communityInsights = pgTable(
   'community_insights',
   {

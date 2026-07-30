@@ -1,18 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { isDatabaseConfigured } from '@/db';
 import { createServerLogger } from '@/lib/server/logging';
 
 import { getClientIdentity } from './client-identity';
+import { postgresRateLimitStore } from './postgres-rate-limit-store';
 import { mapApiErrorToProblemDetails } from './problem-details';
 import {
   BoundedMemoryRateLimiter,
   defaultApiRateLimitPolicy,
   type RateLimitPolicy,
+  SharedStoreRateLimiter,
 } from './rate-limiter';
 import { addRequestIdToProblem, getRequestId, withRequestId } from './request-context';
 
 const logger = createServerLogger('ApiHandler');
-const rateLimiter = new BoundedMemoryRateLimiter();
+const rateLimiter = isDatabaseConfigured
+  ? new SharedStoreRateLimiter(postgresRateLimitStore)
+  : new BoundedMemoryRateLimiter();
 
 export type ApiHandler<TContext = { params: Promise<Record<string, never>> }> = (
   req: NextRequest,
@@ -32,7 +37,7 @@ export function apiHandler<TContext = { params: Promise<Record<string, never>> }
 ) {
   return async (req: NextRequest, context: TContext) => {
     const requestId = getRequestId(req);
-    const rateLimit = rateLimiter.consume(getClientIdentity(req), rateLimitPolicy);
+    const rateLimit = await rateLimiter.consume(getClientIdentity(req), rateLimitPolicy);
 
     if (!rateLimit.allowed) {
       return withRequestId(

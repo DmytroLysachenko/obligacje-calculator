@@ -33,6 +33,7 @@ describe('database migration contracts', () => {
         '0004_portfolio_share_schema.sql',
         '0005_share_retention_and_constraints.sql',
         '0006_admin_audit_events.sql',
+        '0007_shared_rate_limit_windows.sql',
       ]),
     );
   });
@@ -47,6 +48,7 @@ describe('database migration contracts', () => {
         '0004_portfolio_share_schema',
         '0005_share_retention_and_constraints',
         '0006_admin_audit_events',
+        '0007_shared_rate_limit_windows',
       ]),
     );
   });

@@ -12,7 +12,11 @@ export interface RateLimitDecision {
 }
 
 export interface RateLimiter {
-  consume(identity: string, policy: RateLimitPolicy, now?: number): RateLimitDecision;
+  consume(
+    identity: string,
+    policy: RateLimitPolicy,
+    now?: number,
+  ): RateLimitDecision | Promise<RateLimitDecision>;
 }
 
 interface Counter {
@@ -52,6 +56,34 @@ export class BoundedMemoryRateLimiter implements RateLimiter {
       if (counter.resetAt <= now || this.counters.size <= this.maximumKeys) break;
       this.counters.delete(key);
     }
+  }
+}
+
+export interface SharedRateLimitStore {
+  consume(input: {
+    bucketKey: string;
+    resetAt: Date;
+    now: Date;
+  }): Promise<{ count: number; resetAt: Date }>;
+}
+
+/** Durable adapter for configured PostgreSQL deployments. */
+export class SharedStoreRateLimiter implements RateLimiter {
+  constructor(private readonly store: SharedRateLimitStore) {}
+
+  async consume(identity: string, policy: RateLimitPolicy, now = Date.now()): Promise<RateLimitDecision> {
+    const resetAt = new Date(now + policy.windowMs);
+    const result = await this.store.consume({
+      bucketKey: `${policy.key}:${identity}`,
+      resetAt,
+      now: new Date(now),
+    });
+    return {
+      allowed: result.count <= policy.limit,
+      limit: policy.limit,
+      remaining: Math.max(0, policy.limit - result.count),
+      resetAt: result.resetAt.getTime(),
+    };
   }
 }
 

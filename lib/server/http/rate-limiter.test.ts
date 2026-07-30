@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
-import { BoundedMemoryRateLimiter, type RateLimitPolicy } from './rate-limiter';
+import { BoundedMemoryRateLimiter, type RateLimitPolicy,SharedStoreRateLimiter } from './rate-limiter';
 
 const policy: RateLimitPolicy = { key: 'write', limit: 2, windowMs: 1_000 };
 
@@ -35,5 +35,19 @@ describe('BoundedMemoryRateLimiter', () => {
     limiter.consume('three', policy, 1);
     expect(limiter.consume('one', policy, 2)).toMatchObject({ allowed: true, remaining: 1 });
     expect(limiter.consume('expired', policy, 2_000)).toMatchObject({ allowed: true });
+  });
+});
+
+describe('SharedStoreRateLimiter', () => {
+  it('delegates atomic counter ownership to the shared adapter', async () => {
+    const consume = vi.fn().mockResolvedValue({ count: 3, resetAt: new Date(2_000) });
+    const limiter = new SharedStoreRateLimiter({ consume });
+
+    await expect(limiter.consume('user', policy, 1_000)).resolves.toEqual({
+      allowed: false, limit: 2, remaining: 0, resetAt: 2_000,
+    });
+    expect(consume).toHaveBeenCalledWith({
+      bucketKey: 'write:user', now: new Date(1_000), resetAt: new Date(2_000),
+    });
   });
 });
