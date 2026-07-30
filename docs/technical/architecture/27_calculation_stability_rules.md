@@ -2,6 +2,46 @@
 
 This document records the stability rules for calculation routes, scenario handlers, and API error behavior.
 
+## Calendar-date contract
+
+Domain dates are canonical ISO calendar dates (`YYYY-MM-DD`), not timestamps.
+They are parsed by `IsoCalendarDateSchema`, which verifies Gregorian validity
+instead of relying on permissive `Date.parse` behavior. The value crosses an
+adapter boundary as a date-only string; presentation uses the selected locale
+and UTC-stable formatting. This avoids both impossible dates such as
+`2026-02-30` and timezone shifts that turn a purchase date into the adjacent
+day.
+
+Imports, calculation inputs, and URL state must reuse this contract. Database
+columns remain SQL `date` values and database constraints provide the final
+integrity boundary. APIs reject malformed values with field-level validation
+details rather than silently normalizing them.
+
+### Required boundary tests
+
+Every adapter adopting the date contract must cover the following cases:
+
+- ordinary month boundaries and both leap-year outcomes;
+- a valid leap day (`2024-02-29`) and an invalid one (`2025-02-29`);
+- zero and overflow months/days;
+- non-padded, localized, timestamp, and whitespace-bearing strings;
+- a stored date rendered in Polish and English without changing the day;
+- maturity and withdrawal dates at a calculation period boundary.
+
+Tests should generate dates around month ends where practical. A parser may
+return the original string only at a display boundary for an existing corrupt
+record; untrusted request data is rejected before domain resolution or database
+work. Neither the browser nor an API handler should construct a local-midnight
+`Date` merely to validate a date-only financial value.
+
+### Migration note
+
+Existing rows are not rewritten by request handling. If an audit finds legacy
+invalid values, introduce a reviewed migration with a measured backfill and a
+quarantine/report path before adding a stricter database constraint. This keeps
+the application runtime free of schema repair and makes rollback reasoning
+possible.
+
 The system should prefer explicit rejection over silent coercion.
 Users can recover from a clear validation error.
 They cannot recover from a successful-looking result that was produced from unsafe input or broken math.

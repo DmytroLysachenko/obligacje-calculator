@@ -83,15 +83,14 @@ describe('portfolio import schema', () => {
   });
 
   it.each(['2026-02-30', '2025-02-29', '2026-00-10', '2026-13-01', '2026-01-00'])(
-    'currently accepts calendar-shaped date %s at the transport boundary',
+    'rejects impossible calendar date %s at the transport boundary',
     (purchaseDate) => {
-      // Calendar semantics are enforced by the domain resolver; transport must at least preserve ISO shape.
       expect(
         ImportPayloadSchema.safeParse({
           ...valid,
           portfolio: { ...valid.portfolio, lots: [{ ...valid.portfolio.lots[0], purchaseDate }] },
         }).success,
-      ).toBe(true);
+      ).toBe(false);
     },
   );
 
@@ -184,5 +183,14 @@ describe('portfolio import schema', () => {
     };
     const result = ImportPayloadSchema.safeParse(payload);
     expect(result.success).toBe(false);
+  });
+
+  it('rejects a bond type outside the supported financial product set', () => {
+    expect(
+      ImportPayloadSchema.safeParse({
+        ...valid,
+        portfolio: { ...valid.portfolio, lots: [{ ...valid.portfolio.lots[0], bondType: 'GOVT' }] },
+      }).success,
+    ).toBe(false);
   });
 });

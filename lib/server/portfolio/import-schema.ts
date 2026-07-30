@@ -1,9 +1,12 @@
 import { z } from 'zod';
 
+import { BondType } from '@/features/bond-core/types';
+import { IsoCalendarDateSchema } from '@/features/bond-core/types/iso-calendar-date';
+
 export const ImportedLotSchema = z
   .object({
-    bondType: z.string().trim().min(2).max(16),
-    purchaseDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    bondType: z.enum(BondType),
+    purchaseDate: IsoCalendarDateSchema,
     amount: z
       .union([z.string(), z.number()])
       .refine(
