@@ -48,6 +48,7 @@ export const REQUIRED_READINESS_TABLES = [
   'shared_single_scenarios',
   'admin_audit_events',
   'rate_limit_windows',
+  'web_vital_aggregates',
   '__drizzle_migrations',
 ];
 
