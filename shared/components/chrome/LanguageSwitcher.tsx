@@ -27,7 +27,7 @@ export function LanguageSwitcher() {
             onClick={() => setLanguage(item.code)}
             aria-pressed={active}
             aria-label={item.name}
-            className="h-7 min-w-10 flex-1 rounded-sm px-2 text-[10px] font-semibold focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
+            className="min-h-11 min-w-11 flex-1 rounded-sm px-2 text-xs font-semibold focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
           >
             {item.label}
           </Button>

@@ -32,7 +32,8 @@ describe('responsive accessibility contract', () => {
 
     expect(chartContainer).toContain('ariaLabel?: string');
     expect(chartContainer).toContain('summary?: React.ReactNode');
-    expect(chartContainer).toContain("role={ariaLabel ? 'img' : undefined}");
+    expect(chartContainer).toContain("role={ariaLabel ? 'region' : undefined}");
+    expect(chartContainer).toContain('aria-describedby={summary ? summaryId : undefined}');
     expect(chartContainer).toContain('tabIndex={ariaLabel ? 0 : undefined}');
     expect(chartContainer).toContain('className="sr-only"');
   });

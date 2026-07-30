@@ -112,4 +112,15 @@ describe('comparison deep-link state', () => {
     });
     expect(parseComparisonUrlState(new URLSearchParams('a=BAD&b=EDO'), defaults)).toBeNull();
   });
+
+  it('recovers from impossible calendar dates without passing them to a calculation', () => {
+    const defaults = buildDefaultSharedConfig(new Date('2026-07-22T00:00:00.000Z'));
+    const state = parseComparisonUrlState(
+      new URLSearchParams('a=COI&b=EDO&purchase=2026-02-30&timing=exact&withdrawal=2027-02-30'),
+      defaults,
+    );
+
+    expect(state?.sharedConfig.purchaseDate).toBe(defaults.purchaseDate);
+    expect(state?.sharedConfig.withdrawalDate).toBe(defaults.withdrawalDate);
+  });
 });

@@ -27,6 +27,7 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
     () => false,
   );
   const containerRef = useRef<HTMLDivElement>(null);
+  const summaryId = React.useId();
   const [hasSize, setHasSize] = useState(false);
 
   useEffect(() => {
@@ -63,12 +64,13 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
         responsiveHeightClassName,
         className,
       )}
-      role={ariaLabel ? 'img' : undefined}
+      role={ariaLabel ? 'region' : undefined}
       aria-label={ariaLabel}
+      aria-describedby={summary ? summaryId : undefined}
       tabIndex={ariaLabel ? 0 : undefined}
       style={style}
     >
-      {summary ? <div className="sr-only">{summary}</div> : null}
+      {summary ? <div id={summaryId} className="sr-only">{summary}</div> : null}
       {hasMounted && hasSize ? children : null}
     </div>
   );
