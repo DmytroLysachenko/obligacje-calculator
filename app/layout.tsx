@@ -9,7 +9,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { AppLocaleProvider } from '@/i18n/client';
 import { defaultLocale, type Language } from '@/i18n/config';
 import { getMetadataLocale } from '@/i18n/locale-utils';
-import { createAppJsonLd } from '@/lib/seo/app-json-ld';
+import { createAppJsonLd, serializeJsonLd } from '@/lib/seo/app-json-ld';
 import { getCanonicalBaseUrl, isIndexableDeployment } from '@/lib/site-url';
 import { RouteFocusManager } from '@/shared/components/accessibility/RouteFocusManager';
 import { OpportunisticSyncTrigger } from '@/shared/components/chrome/OpportunisticSyncTrigger';
@@ -101,7 +101,7 @@ export default async function RootLayout({
           nonce={nonce}
           suppressHydrationWarning
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
         />
         <NextIntlClientProvider locale={language} messages={messages}>
           <AppLocaleProvider>

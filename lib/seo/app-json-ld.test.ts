@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { createAppJsonLd } from './app-json-ld';
+import { createAppJsonLd, serializeJsonLd } from './app-json-ld';
 
 describe('createAppJsonLd', () => {
   it('builds canonical structured data for the application and bond product', () => {
@@ -31,5 +31,22 @@ describe('createAppJsonLd', () => {
         }),
       }),
     ]);
+  });
+
+  it('escapes characters that can terminate or mutate an inline script', () => {
+    const serialized = serializeJsonLd({
+      title: '</script><img src=x onerror=alert(1)>',
+      text: 'A & B\u2028next\u2029last',
+    });
+
+    expect(serialized).not.toContain('</script>');
+    expect(serialized).not.toContain('<img');
+    expect(serialized).not.toContain(' & ');
+    expect(serialized).toContain('\\u003c/script\\u003e');
+    expect(serialized).toContain('\\u003cimg');
+    expect(JSON.parse(serialized)).toEqual({
+      title: '</script><img src=x onerror=alert(1)>',
+      text: 'A & B\u2028next\u2029last',
+    });
   });
 });
