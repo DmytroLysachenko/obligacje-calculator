@@ -1650,3 +1650,104 @@ checks pass. A passing local test, workflow YAML file, or runbook template is
 not a substitute for a deployed permission, restore drill, provider schedule,
 or production measurement. This rule keeps the audit useful as a completion
 ledger rather than a list of intentions.
+
+## 21. Delivery Tranche Evidence Record
+
+### Repository-delivered boundaries
+
+| Delivery | Evidence retained in repository | Ledger implication |
+| --- | --- | --- |
+| Transactional portfolio import | `importPortfolioAtomically` and owner-scoped delete queries | DATA-02/DATA-03 advanced; PostgreSQL rollback proof remains. |
+| Calculation cache | Revision-aware key, explicit TTL, namespace invalidation tests | COR-01 advanced; tax revision/sync event remains. |
+| HTTP response context | Safe request IDs on wrapped successes, errors, and rate limits | REL-03 advanced; bespoke routes remain. |
+| Canonical sharing | Configured canonical URL service test | SEC-08 completed. |
+| Sync contract | Durable event/lock/retry/dead-letter contract | External Inngest observation remains blocked. |
+| Rendering contract | Provider, cache, asset, bundle, and budget acceptance rules | PERF/ARC implementation remains tracked. |
+| Accessibility contract | Financial workflow names, focus, chart parity, and review checks | UI/TEST route implementation remains tracked. |
+| Behavioral test contract | Unit/component/integration/browser seam rules | TEST contract replacement remains tracked. |
+| Evidence gate | Cloud, IAM, backup, sync, and RUM artifact requirements | External items remain blocked. |
+
+### Required verification per future delivery
+
+- Run focused tests that exercise the changed decision boundary.
+- Run TypeScript and lint for touched source.
+- Run the default behavioral suite when its configured surface changes.
+- Run the release suite for financial, deployment, or public metadata changes.
+- Run a production build for layout, route, metadata, or configuration changes.
+- Record a redacted external artifact when cloud state is claimed.
+- Update the row for every affected audit ID in the same commit.
+- Delete replaced compatibility paths and stale source-shape checks.
+
+### Explicitly non-completed external controls
+
+- DATA-04: managed backup/PITR and isolated restore drill.
+- PERF-07: Cloud Run load/cold-start/database saturation evidence.
+- PERF-08: aggregate deployed field-Web-Vitals receipt.
+- SCALE-02: production query-plan and connection-budget evidence.
+- SCALE-03: deployed incremental-sync/provider observation.
+- SCALE-04: IAM, Secret Manager, immutable revision, and post-deploy smoke.
+- SEC-07/REL-02: deployed Inngest schedule, retry, dead-letter, and replay.
+
+These remain `Blocked` until the evidence-template record names the artifact,
+date, reviewer, and successful result without exposing credentials or user
+data.
+
+### Audit-item handoff matrix
+
+| Area | Repository next action | Evidence gate |
+| --- | --- | --- |
+| Administration | Migrate remaining routes to shared policies | authenticated deployed smoke |
+| Imports | Run rollback and ownership integration tests | migrated PostgreSQL fixture |
+| Sharing | Add quota, retention, and cleanup job | cleanup-run record |
+| Telemetry | Add aggregate sampling/storage boundary | privacy review receipt |
+| Sync | Wire contract into Inngest implementation | signed delivery/retry record |
+| Rendering | Split public/private route provider ownership | cache/CSP observation |
+| Bundles | Capture and ratchet route reports | three-run lab median |
+| Typography | Consolidate font payloads | Polish glyph/layout review |
+| Charts | Add keyboard/touch/table/export parity | manual screen-reader record |
+| Forms | Adopt canonical accessible field primitives | keyboard/focus regression suite |
+| Tests | Replace legacy source contracts behaviorally | full suite/release artifacts |
+| Database | Add invariant constraints and upgrade harness | migration-role and schema evidence |
+| Documentation | Reconcile security, NFR, README, and index | reviewer sign-off |
+
+### Status discipline
+
+`Completed` is reserved for a delivered implementation with its named tests and
+all required evidence. `In progress` means the repository implementation is not
+finished. `Blocked` means an external action, credential, cloud environment, or
+production observation is specifically required. `Not applicable` must retain a
+plain-language justification. A future tranche must not erase blocked rows to
+make the ledger appear healthier than the actual operating state.
+
+### Release-review questions
+
+- Does the change introduce a new public or authenticated capability?
+- Does the server fail closed when its configuration is missing?
+- Does an authoritative financial revision invalidate derived output?
+- Does a database multi-write path have transactional rollback coverage?
+- Does an HTTP error reveal only a stable safe code and correlation ID?
+- Does an interactive control work with keyboard, touch, and a visible label?
+- Does a performance optimization preserve CSP and private caching?
+- Does a documentation claim link to current implementation or evidence?
+- Does an external control remain honestly blocked until observed?
+
+### Commit review record
+
+For each delivery commit, reviewers record the audit IDs, changed public
+interfaces, deleted legacy path, focused command output, migration impact,
+documentation updates, and external evidence status. This makes a later
+maintenance handoff able to distinguish a code-complete repository boundary
+from a production claim that is still awaiting an operator action.
+
+If a commit intentionally leaves a follow-up, its ledger row names the exact
+missing behavior and the planned successor. Broad statements such as “harden
+later” or “verify in production” are insufficient because they do not identify
+an owner, an observable success condition, or an evidence artifact.
+
+This record is reviewed during release readiness.
+
+It is retained with the release record.
+
+It remains redacted.
+
+It is auditable.
