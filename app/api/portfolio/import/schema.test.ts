@@ -193,4 +193,13 @@ describe('portfolio import schema', () => {
       }).success,
     ).toBe(false);
   });
+
+  it('rejects duplicated lots rather than silently importing a partial portfolio', () => {
+    expect(
+      ImportPayloadSchema.safeParse({
+        ...valid,
+        portfolio: { ...valid.portfolio, lots: [valid.portfolio.lots[0], valid.portfolio.lots[0]] },
+      }).success,
+    ).toBe(false);
+  });
 });

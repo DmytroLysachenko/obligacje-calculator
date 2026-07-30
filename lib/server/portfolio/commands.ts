@@ -182,6 +182,10 @@ export async function importOwnerPortfolio(
         lot.purchaseDate,
       );
 
+      if (!resolvedLotContext.bondTypeId) {
+        throw new PortfolioServiceError('Unsupported bond type', 422, 'UNSUPPORTED_BOND');
+      }
+
       return {
         bondType: lot.bondType,
         bondTypeId: resolvedLotContext.bondTypeId,

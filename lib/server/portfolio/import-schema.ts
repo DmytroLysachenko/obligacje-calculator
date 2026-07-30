@@ -30,4 +30,18 @@ export const ImportPayloadSchema = z
       })
       .strict(),
   })
-  .strict();
+  .strict()
+  .superRefine(({ portfolio }, context) => {
+    const seen = new Set<string>();
+    portfolio.lots.forEach((lot, index) => {
+      const key = `${lot.bondType}:${lot.purchaseDate}:${lot.amount}`;
+      if (seen.has(key)) {
+        context.addIssue({
+          code: 'custom',
+          path: ['portfolio', 'lots', index],
+          message: 'Duplicate import lots are not allowed.',
+        });
+      }
+      seen.add(key);
+    });
+  });

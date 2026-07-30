@@ -73,3 +73,12 @@ turn a browser metric into an application error.
   never an implementation error string.
 - Verify production readiness after migrations so rate-limit and audit tables
   exist before traffic is served.
+
+## Portfolio imports
+
+The authenticated import endpoint accepts one bounded JSON document (256 KiB),
+strictly validates a real ISO calendar date and supported bond code for every
+lot, and rejects duplicate lots. Bond/series resolution completes before the
+owner-scoped repository transaction begins. That transaction creates the import
+portfolio and all lots together; any failed lot rolls back the portfolio metadata
+and every prior lot. The route never accepts a partial import.
