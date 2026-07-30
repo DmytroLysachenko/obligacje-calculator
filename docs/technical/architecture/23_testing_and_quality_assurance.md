@@ -2,6 +2,70 @@
 
 Financial applications require a rigorous testing strategy to ensure mathematical correctness and system stability.
 
+## Runner ownership and required commands
+
+Vitest owns unit, component, service, and contract tests. Playwright owns only
+`tests/browser/**`; that directory is explicitly excluded from Vitest so a
+browser suite can never fail because the wrong runner collected it. Run the
+following commands before review:
+
+```bash
+pnpm check:types
+pnpm lint
+pnpm test:ci
+pnpm test:coverage
+pnpm test:release
+pnpm build
+```
+
+`test:release` is a fast, curated signal and must not replace the full
+`test:ci` gate. Coverage locates missing decision-path tests in calculation,
+authorization, HTTP, and persistence modules; it is not a global percentage
+target. Prefer observable behavior and injected adapters over source spelling.
+
+Legacy `*.contract.test.*` source-shape checks are excluded from the default
+behavioral suite. The curated release command names its remaining critical
+contracts explicitly until each one has a durable behavioral, type, lint, or
+integration replacement. This prevents a cosmetic class/import assertion from
+making the repository-wide correctness signal red while retaining intentional
+release invariants during migration.
+
+### Selecting the right test seam
+
+Use a pure unit test for deterministic calculations, schemas, formatting, state
+transitions, and policy decisions. Use an injected adapter/service test when an
+external boundary must be simulated and its calls are part of the contract. Use
+a real migrated PostgreSQL integration test for transactions, ownership,
+constraints, and migration upgrades. Use a component interaction test when
+focus, accessible names, error association, or user-visible state changes.
+Playwright is reserved for cross-route journeys and browser-specific behavior.
+
+Tests may assert a small source-level invariant only when no runtime boundary
+can express it, such as an intentional build/security invariant. They must not
+freeze file placement, import spelling, or CSS utility sequences. Whenever a
+refactor changes ownership, delete or replace its source-shape contract in the
+same change so the test suite protects behavior rather than a retired design.
+
+### CI failure triage
+
+Classify every test failure before changing an expectation:
+
+1. a product regression is fixed with a behavioral regression test;
+2. an intentional product change updates its public contract and test together;
+3. a stale test is replaced or deleted only after another appropriate seam
+   protects the invariant; and
+4. an environment failure records the required dependency or artifact rather
+   than being hidden by a conditional pass.
+
+The default suite is green only when every included Vitest test passes. Browser
+and Lighthouse failures are separate jobs with preserved diagnostics; excluding
+them from Vitest does not disable them from release verification.
+
+When a test needs timing control, prefer fake timers or an injected clock over
+real sleeps. When it needs network behavior, use a narrowly scoped adapter
+fake. These rules keep the default CI signal fast, deterministic, and useful
+when a financial boundary changes.
+
 ## 1. The Testing Pyramid
 
 ### A. Unit Tests (Engine Level)
