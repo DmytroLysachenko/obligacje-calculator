@@ -5,6 +5,7 @@ import { createServerLogger } from '@/lib/server/logging';
 
 import { mapApiErrorToProblemDetails } from './problem-details';
 import { BoundedMemoryRateLimiter, defaultApiRateLimitPolicy } from './rate-limiter';
+import { addRequestIdToProblem, getRequestId, withRequestId } from './request-context';
 
 const logger = createServerLogger('ApiHandler');
 const rateLimiter = new BoundedMemoryRateLimiter();
@@ -25,6 +26,7 @@ export function apiHandler<TContext = { params: Promise<Record<string, never>> }
   handler: ApiHandler<TContext>,
 ) {
   return async (req: NextRequest, context: TContext) => {
+    const requestId = getRequestId(req);
     const headersList = await headers();
     const forwardedFor = headersList.get('x-forwarded-for');
     const ip = forwardedFor ? forwardedFor.split(',')[0] : '127.0.0.1';
@@ -32,7 +34,7 @@ export function apiHandler<TContext = { params: Promise<Record<string, never>> }
     const rateLimit = rateLimiter.consume(ip, defaultApiRateLimitPolicy);
 
     if (!rateLimit.allowed) {
-      return NextResponse.json(
+      return withRequestId(NextResponse.json(
         {
           type: 'https://api.obligacje.pl/errors/rate-limit-exceeded',
           title: 'Too Many Requests',
@@ -48,18 +50,18 @@ export function apiHandler<TContext = { params: Promise<Record<string, never>> }
             'Retry-After': Math.ceil((rateLimit.resetAt - Date.now()) / 1000).toString(),
           },
         },
-      );
+      ), requestId);
     }
 
     try {
-      return await handler(req, context);
+      return withRequestId(await handler(req, context), requestId);
     } catch (error) {
-      const problem = mapApiErrorToProblemDetails(error, {
+      const problem = addRequestIdToProblem(mapApiErrorToProblemDetails(error, {
         includeInternalMessage: process.env.NODE_ENV === 'development',
-      });
+      }), requestId);
       logger.error(`${req.method} ${req.nextUrl.pathname}`, error);
 
-      return NextResponse.json(problem, { status: problem.status });
+      return withRequestId(NextResponse.json(problem, { status: problem.status }), requestId);
     }
   };
 }
