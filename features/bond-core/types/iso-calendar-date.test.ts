@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { IsoCalendarDateSchema, isIsoCalendarDate } from './iso-calendar-date';
+import { isIsoCalendarDate,IsoCalendarDateSchema } from './iso-calendar-date';
 
 describe('ISO calendar date', () => {
   it.each(['2024-02-29', '2026-01-01', '2000-02-29', '2099-12-31'])('accepts %s', (value) => {

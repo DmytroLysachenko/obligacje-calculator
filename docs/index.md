@@ -69,7 +69,8 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [Cloud Run Private Preview Access](./operations/02_cloud_run_private_preview.md) - Fast local proxy access to the private Cloud Run preview and required deployment secrets.
 - [Local Development Workflow](./operations/03_local_development.md) - WSL-first Docker Compose, Taskfile, local DB, and smoke-check workflow.
 - [Private Preview Verification](./operations/04_private_preview_verification.md) - Redacted operational readiness evidence and manual checks.
+- [Redacted Operational Evidence Template](./operations/evidence-template.md) - Required record for cloud, IAM, backup, load-test, and deployment controls.
 
 ---
 
-_Last Updated: July 29, 2026 - App is in production-readiness remediation for the trusted-core Cloud Run scope. The comprehensive codebase audit is now the active cross-cutting quality, security, performance, UI/UX, scalability, testing, and documentation plan._
+_Last Updated: July 30, 2026 - App is in production-readiness remediation for the trusted-core Cloud Run scope. The comprehensive codebase audit ledger distinguishes repository evidence from pending external operational evidence._

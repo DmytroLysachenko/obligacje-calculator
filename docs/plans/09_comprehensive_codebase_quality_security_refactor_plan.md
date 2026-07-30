@@ -1566,3 +1566,84 @@ Operational evidence is redacted before it is linked here.
 | ARC-09     | In progress | `feat(ui): add locale financial formatters` centralizes date, currency, percentage, and compact-number display decisions.                                                                                                                                                                        |
 | COR-02     | In progress | `fix(portfolio): validate real ISO calendar dates` introduces one Gregorian date parser and applies it to imports; calculator and URL-state adoption remains.                                                                                                                                     |
 | SEC-05     | In progress | `fix(portfolio): validate real ISO calendar dates` restricts imported bond types to the supported enum and rejects impossible dates.                                                                                                                                                              |
+| SEC-07     | Blocked | Durable Inngest trigger, retries, and dead-letter evidence require deployed Inngest credentials and operator access. |
+| SEC-08     | In progress | Canonical application URL validation remains to be applied to share creation. |
+| SEC-09     | In progress | Share quota, expiry, cleanup, and abuse reporting remain to be implemented. |
+| SEC-10     | In progress | Telemetry sampling, aggregation, and privacy-safe retention remain to be implemented. |
+| COR-03     | In progress | Financial database constraints require reviewed additive migration and migrated PostgreSQL tests. |
+| COR-04     | In progress | Persisted-envelope compatibility policy and golden-version fixtures remain to be documented. |
+| DATA-02    | In progress | Portfolio import transaction and rollback integration coverage remain to be implemented. |
+| DATA-03    | In progress | Owner predicates must be folded into every update/delete repository mutation. |
+| REL-02     | Blocked | Durable background lifecycle requires deployed Inngest schedule/retry evidence. |
+| REL-03     | In progress | Route error contracts require remaining bespoke handlers to use the shared mapper. |
+| REL-04     | In progress | Readiness dependency checks require database migration-version integration coverage. |
+| ARC-06     | In progress | Route-specific provider boundaries and static-safe CSP rendering remain to be implemented. |
+| ARC-07     | In progress | Oversized calculator orchestration components require decision-owner extraction. |
+| ARC-08     | In progress | Unused scan findings require dynamic-consumer verification before deletion. |
+| TEST-02    | In progress | Source-shape contracts require behavioral and lint-boundary replacements. |
+| TEST-03    | In progress | React interaction coverage requires a component-test harness and owned scenarios. |
+| TEST-04    | In progress | Real PostgreSQL migration and API integration harness remains to be added. |
+| TEST-06    | In progress | Accessibility suite expansion to trusted routes, zoom, keyboard, and locales remains. |
+| TEST-07    | In progress | Browser LCP observer must fail when no metric is captured. |
+| TEST-08    | In progress | Firefox/WebKit and visual confidence matrix remains to be configured. |
+| TEST-09    | In progress | Lighthouse preview/indexability split and portable launcher validation remain. |
+| PERF-02    | In progress | Global provider/client infrastructure audit remains. |
+| PERF-03    | In progress | Bundle analysis and interaction-boundary lazy loading remain. |
+| PERF-04    | In progress | Font consolidation and Polish-glyph validation remain. |
+| PERF-06    | In progress | Explicit image and LCP asset policy remains. |
+| PERF-07    | Blocked | Cloud Run load testing requires production project, service, and monitoring access. |
+| PERF-08    | Blocked | Field RUM receipt requires an approved deployed telemetry sink and access to its aggregate evidence. |
+| UI-01      | In progress | Comparison trigger visible/accessible name parity remains. |
+| UI-02      | In progress | Icon-action labels and touch-target audit remains. |
+| UI-05      | In progress | Mobile financial-copy typography audit remains. |
+| UI-06      | In progress | Decision-first calculator result hierarchy remains. |
+| UI-07      | In progress | Chart keyboard/touch/table/export parity remains. |
+| UI-08      | In progress | Responsive table overflow semantics remain. |
+| UI-09      | In progress | Shared loading, error, live-region, and focus semantics remain. |
+| UI-10      | In progress | Enforceable motion and focus rules remain. |
+| UI-11      | In progress | Safe URL-state recovery remains. |
+| SEO-01     | In progress | Separate private-preview and production-like indexability checks remain. |
+| SEO-03     | In progress | Route performance work and ratcheted Lighthouse budgets remain. |
+| SCALE-02   | Blocked | Production query plans and Neon/Cloud Run access budgets require deployed database evidence. |
+| SCALE-03   | Blocked | Incremental sync observability requires deployed provider and Inngest evidence. |
+| DOC-01     | In progress | Security/privacy rewrite has started; full current data inventory and operator evidence remain. |
+| DOC-03     | In progress | Measurable SLO rewrite remains pending performance and operational evidence. |
+| DOC-05     | In progress | UI documentation consolidation and archive cleanup remain. |
+| DOC-06     | In progress | Documentation index reconciliation remains. |
+| DOC-07     | In progress | README operational deployment and testing truth remains. |
+| DOC-08     | In progress | Deep-module and dependency-direction rules remain. |
+| DOC-09     | In progress | Archive this execution plan only after all repository items are complete. |
+
+### External evidence gate
+
+Repository changes are not evidence of production state. The following items
+remain blocked until a redacted record based on
+`docs/operations/evidence-template.md` exists: managed backup/PITR and an
+isolated restore drill (DATA-04); deployed Inngest schedule/retry observation
+(SEC-07, REL-02, SCALE-03); Cloud Run IAM, Secret Manager, immutable revision,
+and authenticated post-deploy smoke (SCALE-04); load-test saturation results
+(PERF-07); aggregate field-Web-Vitals receipt (PERF-08); and production database
+query-plan/role evidence (SCALE-02 and the runtime-role portion of DATA-01).
+
+The ledger is deliberately explicit about incomplete work. `In progress` means
+the repository-owned implementation remains outstanding; `Blocked` means the
+missing action is outside repository authority. No item may be relabeled
+`Completed` without the code, its focused tests, and—where listed—the redacted
+external evidence in the same delivery record.
+
+### Repository completion checklist
+
+Before changing an internal item to `Completed`, the delivery commit must show:
+
+1. a narrow public interface or route contract for the changed boundary;
+2. focused tests that exercise both the success path and the relevant failure,
+   authorization, freshness, cancellation, or validation branch;
+3. typecheck, lint, and the applicable release/browser/build verification; and
+4. deletion of the replaced compatibility path, stale test, or documentation
+   claim when one exists.
+
+For an external item, attach a redacted evidence record after the repository
+checks pass. A passing local test, workflow YAML file, or runbook template is
+not a substitute for a deployed permission, restore drill, provider schedule,
+or production measurement. This rule keeps the audit useful as a completion
+ledger rather than a list of intentions.
