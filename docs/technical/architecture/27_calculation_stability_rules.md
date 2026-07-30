@@ -245,3 +245,26 @@ current offer/data revision is required before presenting updated output.
   and draft edits after a result.
 - Add a browser or component interaction test when a calculator changes the
   visible progress, focus, error, or result hierarchy.
+# Session ownership and persisted envelopes
+
+Every interactive calculator owns one shared session with separate draft inputs,
+committed inputs, and committed result. Editing a field never overwrites the last
+valid committed result. A calculation captures its draft at start; only the
+current execution epoch may commit after the asynchronous adapter resolves.
+
+Starting a later calculation or explicitly cancelling invalidates the former
+epoch. A stale completion is observational only: it cannot replace a newer
+result, clear an error, or mutate the persisted session. Cancellation is not a
+successful calculation and must not be rendered as one.
+
+Persisted sessions include the calculation model version. On restore, a version
+mismatch or failed result-envelope validator clears only the committed result and
+committed inputs. The draft remains so a person can review or revise the values
+they entered before running against the current model. Legacy storage without a
+requested model version remains readable for routes that have not opted in.
+
+Calculator caches use authoritative-data/model revision as part of their key.
+When a sync changes those revisions, cache invalidation and persistence validation
+ensure that an old calculation cannot appear current. Golden fixtures should name
+their model version and preserve the source inputs, expected envelope, and
+rounding context.

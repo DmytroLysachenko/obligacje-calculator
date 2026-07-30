@@ -1,55 +1,61 @@
 import { describe, expect, it } from 'vitest';
 
-import { applyUntouchedMacroDefaults, createPersistedCalculatorSession, restoreCalculatorSession } from './calculator-session-persistence';
+import {
+  createPersistedCalculatorSession,
+  restoreCalculatorSession,
+} from './calculator-session-persistence';
 
-describe('calculator session persistence', () => {
-  it('creates a snapshot with distinct draft and committed inputs', () => {
-    expect(createPersistedCalculatorSession({ amount: 200 }, { amount: 100 }, { total: 110 })).toEqual({ draftInputs: { amount: 200 }, committedInputs: { amount: 100 }, committedResult: { total: 110 } });
-  });
-  it('uses fallback state when no snapshot exists', () => {
-    expect(restoreCalculatorSession(null, { amount: 100 })).toEqual({ draftInputs: { amount: 100 }, committedInputs: null, committedResult: null, restoredFromPersistence: false });
-  });
-  it('restores a valid committed result', () => {
-    const restored = restoreCalculatorSession({ draftInputs: { amount: 150 }, committedInputs: { amount: 100 }, committedResult: { total: 110 } }, { amount: 1 }, (result) => result.total > 0);
-    expect(restored).toEqual({ draftInputs: { amount: 150 }, committedInputs: { amount: 100 }, committedResult: { total: 110 }, restoredFromPersistence: true });
-  });
-  it('drops a result rejected by a version validator', () => {
-    const restored = restoreCalculatorSession({ draftInputs: { amount: 150 }, committedInputs: { amount: 100 }, committedResult: { version: 'old' } }, { amount: 1 }, (result) => result.version === 'new');
-    expect(restored.committedInputs).toBeNull();
-    expect(restored.committedResult).toBeNull();
-    expect(restored.draftInputs).toEqual({ amount: 150 });
-  });
-  it('updates untouched macro assumptions', () => {
-    expect(applyUntouchedMacroDefaults({ expectedInflation: 3.5, expectedNbpRate: 5.25 }, { expectedInflation: 2.7, expectedNbpRate: 4.8 }, false)).toEqual({ expectedInflation: 2.7, expectedNbpRate: 4.8 });
-  });
-  it('does not overwrite user macro assumptions', () => {
-    const inputs = { expectedInflation: 7, expectedNbpRate: 6 };
-    expect(applyUntouchedMacroDefaults(inputs, { expectedInflation: 2.7, expectedNbpRate: 4.8 }, true)).toBe(inputs);
-  });
+describe('versioned calculator session persistence', () => {
+  const draft = { amount: 100, term: 12 };
+  const result = { total: 105, modelVersion: '2026.07' };
 
-  it('keeps the same input reference when defaults are already current', () => {
-    const inputs = { expectedInflation: 2.7, expectedNbpRate: 4.8 };
-    expect(applyUntouchedMacroDefaults(inputs, { expectedInflation: 2.7, expectedNbpRate: 4.8 }, false)).toBe(inputs);
-  });
-
-  it('retains a null committed result in a persisted draft-only session', () => {
-    const restored = restoreCalculatorSession({ draftInputs: { amount: 150 }, committedInputs: null, committedResult: null }, { amount: 1 });
-    expect(restored.restoredFromPersistence).toBe(true);
-    expect(restored.committedInputs).toBeNull();
-    expect(restored.committedResult).toBeNull();
-  });
-
-  it('does not invoke validation for a missing result', () => {
-    let calls = 0;
-    restoreCalculatorSession({ draftInputs: { amount: 150 }, committedInputs: null, committedResult: null }, { amount: 1 }, () => {
-      calls += 1;
-      return true;
+  it('restores a current envelope while preserving an edited draft', () => {
+    const persisted = createPersistedCalculatorSession(
+      draft,
+      { amount: 90, term: 12 },
+      result,
+      '2026.07',
+    );
+    expect(
+      restoreCalculatorSession(persisted, { amount: 1, term: 1 }, () => true, '2026.07'),
+    ).toEqual({
+      draftInputs: draft,
+      committedInputs: { amount: 90, term: 12 },
+      committedResult: result,
+      restoredFromPersistence: true,
     });
-    expect(calls).toBe(0);
   });
 
-  it('keeps persisted draft-only state editable', () => {
-    const restored = restoreCalculatorSession({ draftInputs: { amount: 150 }, committedInputs: null, committedResult: null }, { amount: 1 });
-    expect(restored.draftInputs.amount).toBe(150);
+  it('drops only an outdated committed envelope and keeps the user draft', () => {
+    const persisted = createPersistedCalculatorSession(draft, draft, result, 'old-model');
+    expect(
+      restoreCalculatorSession(persisted, { amount: 1, term: 1 }, () => true, '2026.07'),
+    ).toEqual({
+      draftInputs: draft,
+      committedInputs: null,
+      committedResult: null,
+      restoredFromPersistence: true,
+    });
+  });
+
+  it('uses the validator for structurally invalid envelopes', () => {
+    const persisted = createPersistedCalculatorSession(draft, draft, result, '2026.07');
+    const restored = restoreCalculatorSession(
+      persisted,
+      { amount: 1, term: 1 },
+      () => false,
+      '2026.07',
+    );
+    expect(restored.draftInputs).toEqual(draft);
+    expect(restored.committedInputs).toBeNull();
+    expect(restored.committedResult).toBeNull();
+  });
+
+  it('does not require callers without an explicit model version to migrate storage', () => {
+    const legacy = { draftInputs: draft, committedInputs: draft, committedResult: result };
+    expect(restoreCalculatorSession(legacy, { amount: 1, term: 1 })).toMatchObject({
+      committedResult: result,
+      restoredFromPersistence: true,
+    });
   });
 });

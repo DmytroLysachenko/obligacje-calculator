@@ -24,12 +24,14 @@ interface UseCalculatorSessionOptions<TInputs, TResult> {
   initialInputs: TInputs;
   storageKey?: string;
   isCommittedResultValid?: (result: TResult) => boolean;
+  modelVersion?: string;
 }
 
 export function useCalculatorSession<TInputs, TResult>({
   initialInputs,
   storageKey,
   isCommittedResultValid,
+  modelVersion,
 }: UseCalculatorSessionOptions<TInputs, TResult>) {
   const [state, dispatch] = useReducer(
     reduceCalculatorSession<TInputs, TResult>,
@@ -49,6 +51,7 @@ export function useCalculatorSession<TInputs, TResult>({
       loadPersistedCalculatorState<PersistedCalculatorSession<TInputs, TResult>>(storageKey),
       initialInputs,
       isCommittedResultValid,
+      modelVersion,
     );
     dispatch({ type: 'restore', ...restored });
     dispatch({ type: 'ready' });
@@ -62,6 +65,7 @@ export function useCalculatorSession<TInputs, TResult>({
         state.draftInputs,
         state.committedInputs,
         state.committedResult,
+        modelVersion,
       ),
     );
   }, [
@@ -70,6 +74,7 @@ export function useCalculatorSession<TInputs, TResult>({
     state.draftInputs,
     state.isPersistenceReady,
     storageKey,
+    modelVersion,
   ]);
 
   const setDraftInputs = useCallback(
@@ -77,6 +82,10 @@ export function useCalculatorSession<TInputs, TResult>({
     [],
   );
   const clearError = useCallback(() => dispatch({ type: 'clear-error' }), []);
+  const cancelCalculation = useCallback(() => {
+    calculationExecutionRef.current.invalidate();
+    dispatch({ type: 'cancel' });
+  }, []);
   const runCalculation = useCallback(
     async (calculate: (inputs: TInputs) => Promise<TResult>) => {
       const epoch = calculationExecutionRef.current.start();
@@ -108,6 +117,7 @@ export function useCalculatorSession<TInputs, TResult>({
     isDirty: isCalculatorSessionDirty(state),
     setDraftInputs,
     clearError,
+    cancelCalculation,
     runCalculation,
   };
 }
