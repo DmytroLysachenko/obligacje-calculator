@@ -68,7 +68,7 @@ describe('readiness service', () => {
     await expect(checkReadinessDatabase('postgres://example', () => sql)).resolves.toEqual({
       status: 'failed',
       detail:
-        'Missing required tables: data_points, polish_bonds, sync_runs, user, account, session, verificationToken',
+        'Missing required tables: data_points, polish_bonds, sync_runs, user, account, session, verificationToken, shared_single_scenarios, admin_audit_events, rate_limit_windows, __drizzle_migrations',
     });
   });
 
