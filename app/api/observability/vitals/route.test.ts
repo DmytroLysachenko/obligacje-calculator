@@ -18,7 +18,7 @@ describe('web vitals endpoint', () => {
       new Request('http://localhost/api/observability/vitals', {
         method: 'POST',
         body: JSON.stringify({ name: 'LCP', value: 1240, rating: 'good', path: '/education' }),
-      }) as never,
+      }) as never, {} as never,
     );
 
     expect(response.status).toBe(204);
@@ -37,7 +37,7 @@ describe('web vitals endpoint', () => {
       new Request('http://localhost/api/observability/vitals', {
         method: 'POST',
         body: JSON.stringify({ name: 'LCP', value: 1, rating: 'good', path: '/?email=test@example.com' }),
-      }) as never,
+      }) as never, {} as never,
     );
 
     expect(response.status).toBe(400);
@@ -49,7 +49,7 @@ describe('web vitals endpoint', () => {
         method: 'POST',
         headers: { 'content-length': '2049' },
         body: '{}',
-      }) as never,
+      }) as never, {} as never,
     );
 
     expect(response.status).toBe(400);

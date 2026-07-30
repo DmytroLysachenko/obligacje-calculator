@@ -99,3 +99,15 @@ export const shareCreationRateLimitPolicy: RateLimitPolicy = {
   limit: 10,
   windowMs: 60 * 60_000,
 };
+
+export const adminRateLimitPolicy: RateLimitPolicy = {
+  key: 'admin-write',
+  limit: 10,
+  windowMs: 15 * 60_000,
+};
+
+export const observabilityRateLimitPolicy: RateLimitPolicy = {
+  key: 'observability-write',
+  limit: 60,
+  windowMs: 60_000,
+};

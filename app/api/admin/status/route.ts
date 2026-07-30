@@ -1,24 +1,23 @@
-import {
-  assertAdminSessionAuthorization,
-  getAdminStatusSnapshot,
-} from '@/lib/server/admin/service';
-import { createUnauthorizedResponse, errorJson, okJson } from '@/lib/server/http/responses';
-import { createServerLogger } from '@/lib/server/logging';
+import { NextRequest } from 'next/server';
 
-const logger = createServerLogger('AdminStatusApi');
+import { recordAdminAuditEvent } from '@/lib/server/admin/audit';
+import { assertAdminSessionAuthorization, getAdminStatusSnapshot } from '@/lib/server/admin/service';
+import { apiHandler } from '@/lib/server/http/api-handler';
+import { getRequestId } from '@/lib/server/http/request-context';
+import { adminRateLimitPolicy } from '@/lib/server/http/rate-limiter';
+import { createUnauthorizedResponse, okJson } from '@/lib/server/http/responses';
 
-export async function GET() {
+export const GET = apiHandler(async (request: NextRequest) => {
   try {
     await assertAdminSessionAuthorization();
     const statusSnapshot = await getAdminStatusSnapshot();
+    await recordAdminAuditEvent({ action: 'status-read', requestId: getRequestId(request) });
 
     return okJson(statusSnapshot);
   } catch (error) {
     if (error instanceof Error && error.message === 'UNAUTHORIZED_ADMIN_SESSION') {
       return createUnauthorizedResponse();
     }
-
-    logger.error('Failed to fetch status', error);
-    return errorJson('Failed to fetch status', 'ADMIN_STATUS_FAILED', undefined, { status: 500 });
+    throw error;
   }
-}
+}, { rateLimitPolicy: adminRateLimitPolicy });

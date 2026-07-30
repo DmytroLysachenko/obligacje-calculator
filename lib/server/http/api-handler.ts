@@ -15,7 +15,7 @@ import {
 import { addRequestIdToProblem, getRequestId, withRequestId } from './request-context';
 
 const logger = createServerLogger('ApiHandler');
-const rateLimiter = isDatabaseConfigured
+const rateLimiter = isDatabaseConfigured && process.env.NODE_ENV === 'production'
   ? new SharedStoreRateLimiter(postgresRateLimitStore)
   : new BoundedMemoryRateLimiter();
 
@@ -76,4 +76,16 @@ export function apiHandler<TContext = { params: Promise<Record<string, never>> }
       return withRequestId(NextResponse.json(problem, { status: problem.status }), requestId);
     }
   };
+}
+
+/** Wraps a route whose authorization failure has a deliberate public status. */
+export function protectedApiHandler<TContext = { params: Promise<Record<string, never>> }>(
+  authorize: (request: NextRequest) => Promise<void>,
+  handler: ApiHandler<TContext>,
+  options: { rateLimitPolicy?: RateLimitPolicy } = {},
+) {
+  return apiHandler<TContext>(async (request, context) => {
+    await authorize(request);
+    return handler(request, context);
+  }, options);
 }

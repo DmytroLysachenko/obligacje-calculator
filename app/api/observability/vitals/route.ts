@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { createServerLogger } from '@/lib/server/logging';
+import { apiHandler } from '@/lib/server/http/api-handler';
+import { observabilityRateLimitPolicy } from '@/lib/server/http/rate-limiter';
 
 const logger = createServerLogger('WebVitals');
 const MAX_METRIC_PAYLOAD_BYTES = 2_048;
@@ -17,7 +19,7 @@ const payloadSchema = z.object({
   navigationType: z.enum(['navigate', 'reload', 'back_forward', 'prerender']).default('navigate'),
 });
 
-export async function POST(request: NextRequest) {
+export const POST = apiHandler(async (request: NextRequest) => {
   const contentLength = Number(request.headers.get('content-length') ?? 0);
   if (!Number.isFinite(contentLength) || contentLength > MAX_METRIC_PAYLOAD_BYTES) {
     return NextResponse.json({ error: 'Invalid metric payload' }, { status: 400 });
@@ -39,4 +41,4 @@ export async function POST(request: NextRequest) {
   });
 
   return new NextResponse(null, { status: 204 });
-}
+}, { rateLimitPolicy: observabilityRateLimitPolicy });
