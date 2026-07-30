@@ -73,7 +73,8 @@ without revisiting storage, reset, throttling, and abuse controls.
 
 Sync/admin:
 
-- `SYNC_SECRET`: protects admin sync/status endpoints.
+- `ADMIN_EMAIL_ALLOWLIST`: comma-separated normalized emails authorized for browser-based admin status and sync requests.
+- `SYNC_SECRET`: machine-to-machine operational credential only; it is never sent to or persisted by the browser.
 - Inngest signing/event keys if production Inngest is enabled.
 - Any provider-specific sync credentials required by future data providers.
 
@@ -112,7 +113,8 @@ pnpm check:prod-config
 
 This operator check validates `DATABASE_URL`, `AUTH_SECRET` or
 `NEXTAUTH_SECRET`, `NEXT_PUBLIC_APP_URL`, `SYNC_SECRET`, and at least one
-complete OAuth provider pair. It is intentionally not part of `check:release`
+complete OAuth provider pair. Configure `ADMIN_EMAIL_ALLOWLIST` separately for
+browser administration. It is intentionally not part of `check:release`
 because CI and local developer machines should not require production secrets.
 During private preview only, pass `--allow-missing-oauth` when OAuth credentials
 are intentionally absent; this does not waive database, URL, or secret checks.

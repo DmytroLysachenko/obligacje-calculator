@@ -40,6 +40,11 @@ constraints, and migration upgrades. Use a component interaction test when
 focus, accessible names, error association, or user-visible state changes.
 Playwright is reserved for cross-route journeys and browser-specific behavior.
 
+`pnpm test:db` is the PostgreSQL migration/constraint suite. It runs only when
+`TEST_DATABASE_URL` names an isolated disposable database; it applies the
+checked-in Drizzle journal and verifies database-enforced constraints plus a
+transaction rollback. Never point it at a shared preview or production database.
+
 Tests may assert a small source-level invariant only when no runtime boundary
 can express it, such as an intentional build/security invariant. They must not
 freeze file placement, import spelling, or CSS utility sequences. Whenever a

@@ -64,7 +64,7 @@ Current production-readiness notes:
 2. Set environment variables in `.env.local` using the deployment documentation and project-specific secrets.
 3. Prepare the database if needed:
    ```bash
-   npx drizzle-kit generate
+   pnpm db:migrate
    pnpm run db:seed:production
    ```
 4. Start the app:
@@ -75,7 +75,7 @@ Current production-readiness notes:
 ### Quality Checks
 
 ```bash
-pnpm test
+pnpm test:ci
 pnpm test:core
 pnpm test:browser
 pnpm test:web-vitals
@@ -145,8 +145,8 @@ checks live in [Deployment & DevOps](./docs/technical/architecture/24_deployment
 For local production-image verification:
 
 ```bash
-task prod:container
-task smoke:prod-container
+pnpm build
+pnpm smoke:local -- --base-url http://127.0.0.1:3000 --check-content-type
 ```
 
 GitHub Actions is the production Cloud Run deployment source of truth. The
@@ -159,3 +159,4 @@ checked-in `cloudbuild.yaml` remains an aligned manual fallback.
 - no display settings that change engine truth
 - guest users may calculate and preview workspace surfaces, but portfolio/workspace mutations stay gated behind signed-in access
 - secondary tools should remain explicitly demoted and not compete with the flagship calculator flows
+- administrative UI actions require an authenticated session whose email is in `ADMIN_EMAIL_ALLOWLIST`; `SYNC_SECRET` is reserved for machine-to-machine operational requests

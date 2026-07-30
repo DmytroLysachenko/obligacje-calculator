@@ -16,6 +16,13 @@ function migrationNames() {
     .sort();
 }
 
+function journalTags() {
+  const journal = JSON.parse(readFileSync(join(drizzleDir, 'meta/_journal.json'), 'utf8')) as {
+    entries: Array<{ tag: string }>;
+  };
+  return journal.entries.map((entry) => entry.tag);
+}
+
 describe('database migration contracts', () => {
   it('keeps additive production migrations for sync history and Auth.js tables', () => {
     expect(migrationNames()).toEqual(
@@ -25,6 +32,19 @@ describe('database migration contracts', () => {
         '0003_portfolio_lot_indexes.sql',
         '0004_portfolio_share_schema.sql',
         '0005_share_retention_and_constraints.sql',
+      ]),
+    );
+  });
+
+  it('registers every reviewed migration in the Drizzle execution journal', () => {
+    expect(journalTags()).toEqual(
+      expect.arrayContaining([
+        '0000_unified_schema',
+        '0001_sync_runs',
+        '0002_auth_tables',
+        '0003_portfolio_lot_indexes',
+        '0004_portfolio_share_schema',
+        '0005_share_retention_and_constraints',
       ]),
     );
   });
