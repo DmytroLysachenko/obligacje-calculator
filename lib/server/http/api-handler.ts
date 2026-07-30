@@ -4,37 +4,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerLogger } from '@/lib/server/logging';
 
 import { mapApiErrorToProblemDetails } from './problem-details';
+import { BoundedMemoryRateLimiter, defaultApiRateLimitPolicy } from './rate-limiter';
 
-const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
-const RATE_LIMIT_MAX = 100;
-const RATE_LIMIT_WINDOW = 60 * 1000;
 const logger = createServerLogger('ApiHandler');
-
-function checkRateLimit(ip: string): {
-  success: boolean;
-  limit: number;
-  remaining: number;
-  reset: number;
-} {
-  const now = Date.now();
-  const limitData = rateLimitMap.get(ip) || { count: 0, lastReset: now };
-
-  if (now - limitData.lastReset > RATE_LIMIT_WINDOW) {
-    limitData.count = 1;
-    limitData.lastReset = now;
-  } else {
-    limitData.count++;
-  }
-
-  rateLimitMap.set(ip, limitData);
-
-  return {
-    success: limitData.count <= RATE_LIMIT_MAX,
-    limit: RATE_LIMIT_MAX,
-    remaining: Math.max(0, RATE_LIMIT_MAX - limitData.count),
-    reset: limitData.lastReset + RATE_LIMIT_WINDOW,
-  };
-}
+const rateLimiter = new BoundedMemoryRateLimiter();
 
 export type ApiHandler<TContext = { params: Promise<Record<string, never>> }> = (
   req: NextRequest,
@@ -56,9 +29,9 @@ export function apiHandler<TContext = { params: Promise<Record<string, never>> }
     const forwardedFor = headersList.get('x-forwarded-for');
     const ip = forwardedFor ? forwardedFor.split(',')[0] : '127.0.0.1';
 
-    const rateLimit = checkRateLimit(ip);
+    const rateLimit = rateLimiter.consume(ip, defaultApiRateLimitPolicy);
 
-    if (!rateLimit.success) {
+    if (!rateLimit.allowed) {
       return NextResponse.json(
         {
           type: 'https://api.obligacje.pl/errors/rate-limit-exceeded',
@@ -69,9 +42,10 @@ export function apiHandler<TContext = { params: Promise<Record<string, never>> }
         {
           status: 429,
           headers: {
-            'X-RateLimit-Limit': rateLimit.limit.toString(),
-            'X-RateLimit-Remaining': rateLimit.remaining.toString(),
-            'X-RateLimit-Reset': Math.ceil(rateLimit.reset / 1000).toString(),
+            'RateLimit-Limit': rateLimit.limit.toString(),
+            'RateLimit-Remaining': rateLimit.remaining.toString(),
+            'RateLimit-Reset': Math.ceil(rateLimit.resetAt / 1000).toString(),
+            'Retry-After': Math.ceil((rateLimit.resetAt - Date.now()) / 1000).toString(),
           },
         },
       );
