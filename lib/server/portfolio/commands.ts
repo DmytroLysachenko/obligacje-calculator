@@ -9,7 +9,7 @@ import {
   deleteLotByOwner,
   deletePortfolioByOwner,
   importPortfolioAtomically,
-  updateLotById,
+  updateLotByOwner,
   updatePortfolioVisibility,
 } from '@/lib/server/portfolio/repository';
 
@@ -124,7 +124,7 @@ export async function updateOwnerLot(
     updateData.amount = input.amount.toString();
   }
 
-  const [updatedLot] = await updateLotById(lotId, updateData);
+  const [updatedLot] = await updateLotByOwner(ownerId, lotId, updateData);
 
   if (!updatedLot) {
     throw new PortfolioServiceError('Lot not found', 404, 'NOT_FOUND');

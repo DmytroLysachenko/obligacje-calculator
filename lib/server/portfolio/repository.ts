@@ -117,11 +117,21 @@ export async function createLotWithBuyTransaction(values: typeof userInvestmentL
   });
 }
 
-export function updateLotById(lotId: string, values: Record<string, unknown>) {
+export function updateLotByOwner(ownerId: string, lotId: string, values: Record<string, unknown>) {
+  const ownedPortfolioIds = db
+    .select({ id: userPortfolios.id })
+    .from(userPortfolios)
+    .where(eq(userPortfolios.userId, ownerId));
+
   return db
     .update(userInvestmentLots)
     .set(values)
-    .where(eq(userInvestmentLots.id, lotId))
+    .where(
+      and(
+        eq(userInvestmentLots.id, lotId),
+        inArray(userInvestmentLots.portfolioId, ownedPortfolioIds),
+      ),
+    )
     .returning();
 }
 
@@ -135,15 +145,7 @@ export function deleteLotByOwner(ownerId: string, lotId: string) {
     .from(userPortfolios)
     .where(eq(userPortfolios.userId, ownerId));
 
-  return db
-    .delete(userInvestmentLots)
-    .where(
-      and(
-        eq(userInvestmentLots.id, lotId),
-        inArray(userInvestmentLots.portfolioId, ownedPortfolioIds),
-      ),
-    )
-    .returning();
+  return db.delete(userInvestmentLots).where(and(eq(userInvestmentLots.id, lotId), inArray(userInvestmentLots.portfolioId, ownedPortfolioIds))).returning();
 }
 
 export type PreparedPortfolioImportLot = Omit<typeof userInvestmentLots.$inferInsert, 'portfolioId'>;
