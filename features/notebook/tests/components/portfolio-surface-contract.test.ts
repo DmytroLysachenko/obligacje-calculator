@@ -163,7 +163,6 @@ describe('portfolio notebook surface contract', () => {
     );
     expectContains(source, '<PortfolioDetails portfolio={portfolio} onBack={() => {}} />');
     expectContains(service, 'export async function getPublicSharedPortfolioPageData');
-    expectContains(service, 'await ensurePortfolioSchemaCompat();');
     expectContains(service, 'export function buildSharedPortfolioPageMetadata');
 
     expectNoFragments(source, [

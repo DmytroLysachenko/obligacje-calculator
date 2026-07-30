@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 
-import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
 import { createDomainErrorResponse, createUnauthorizedResponse } from '@/lib/server/http/responses';
 
 import {
@@ -15,8 +14,6 @@ export interface PortfolioRouteContext {
 }
 
 export async function getPortfolioRouteContext(): Promise<PortfolioRouteContext> {
-  await ensurePortfolioSchemaCompat();
-
   return {
     owner: await resolvePortfolioOwner(),
   };

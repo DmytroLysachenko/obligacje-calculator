@@ -1,4 +1,3 @@
-import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
 import { findPortfolioByShareId } from '@/lib/server/portfolio/repository';
 
 export async function getPublicSharedPortfolioByShareId(shareId: string) {
@@ -12,8 +11,6 @@ export async function getPublicSharedPortfolioByShareId(shareId: string) {
 }
 
 export async function getPublicSharedPortfolioPageData(shareId: string) {
-  await ensurePortfolioSchemaCompat();
-
   return getPublicSharedPortfolioByShareId(shareId);
 }
 

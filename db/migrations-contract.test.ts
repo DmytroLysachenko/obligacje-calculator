@@ -23,6 +23,7 @@ describe('database migration contracts', () => {
         '0001_sync_runs.sql',
         '0002_auth_tables.sql',
         '0003_portfolio_lot_indexes.sql',
+        '0004_portfolio_share_schema.sql',
       ]),
     );
   });
@@ -61,6 +62,15 @@ describe('database migration contracts', () => {
     expect(source).toContain('CREATE INDEX IF NOT EXISTS "lot_portfolio_idx"');
     expect(source).toContain('CREATE INDEX IF NOT EXISTS "lot_portfolio_purchase_date_idx"');
     expect(source).not.toContain('CREATE UNIQUE INDEX');
+  });
+
+  it('moves portfolio sharing schema changes into an ordered migration', () => {
+    const source = readMigration('0004_portfolio_share_schema.sql');
+
+    expect(source).toContain('ADD COLUMN IF NOT EXISTS "share_id"');
+    expect(source).toContain('ADD COLUMN IF NOT EXISTS "is_public"');
+    expect(source).toContain('CREATE TABLE IF NOT EXISTS "shared_single_scenarios"');
+    expect(source).toContain('CREATE UNIQUE INDEX IF NOT EXISTS "user_portfolios_share_id_idx"');
   });
 
   it('keeps portfolio lot schema aligned with non-unique purchase date indexes', () => {

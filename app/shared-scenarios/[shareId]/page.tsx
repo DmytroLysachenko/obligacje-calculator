@@ -4,7 +4,6 @@ import { getTranslations } from 'next-intl/server';
 import { Suspense } from 'react';
 
 import { BondCalculatorContainer } from '@/features/single-calculator/components/BondCalculatorContainer';
-import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
 import {
   getSharedSingleScenarioMetadata,
   getSharedSingleScenarioPageData,
@@ -17,7 +16,6 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  await ensurePortfolioSchemaCompat();
   const page = await getTranslations('metadata.pages.shared_scenario');
   const common = await getTranslations('common');
   const { shareId } = await params;
@@ -40,7 +38,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function SharedScenarioPage({ params }: Props) {
-  await ensurePortfolioSchemaCompat();
   const { shareId } = await params;
 
   const scenario = await getSharedSingleScenarioPageData(shareId);

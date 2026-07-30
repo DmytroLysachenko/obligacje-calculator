@@ -1,15 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { ensurePortfolioSchemaCompat } from '@/lib/server/db/portfolio-schema-compat';
-
 import {
   buildSharedPortfolioPageMetadata,
   getPublicSharedPortfolioPageData,
 } from './shared-page-service';
-
-vi.mock('@/lib/server/db/portfolio-schema-compat', () => ({
-  ensurePortfolioSchemaCompat: vi.fn(),
-}));
 
 vi.mock('./repository', () => ({
   findPortfolioByShareId: vi.fn(async (shareId: string) => {
@@ -36,10 +30,9 @@ vi.mock('./repository', () => ({
 }));
 
 describe('shared portfolio page service', () => {
-  it('loads public shared portfolio data behind schema compatibility', async () => {
+  it('loads public shared portfolio data through the migrated schema', async () => {
     const portfolio = await getPublicSharedPortfolioPageData('public');
 
-    expect(ensurePortfolioSchemaCompat).toHaveBeenCalledOnce();
     expect(portfolio?.name).toBe('Public Portfolio');
   });
 
