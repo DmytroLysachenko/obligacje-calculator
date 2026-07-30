@@ -57,6 +57,13 @@
       "when": 1773856281996,
       "tag": "0007_shared_rate_limit_windows",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1773856281997,
+      "tag": "0008_web_vital_aggregates",
+      "breakpoints": true
     }
   ]
 }

@@ -34,6 +34,7 @@ describe('database migration contracts', () => {
         '0005_share_retention_and_constraints.sql',
         '0006_admin_audit_events.sql',
         '0007_shared_rate_limit_windows.sql',
+        '0008_web_vital_aggregates.sql',
       ]),
     );
   });
@@ -49,6 +50,7 @@ describe('database migration contracts', () => {
         '0005_share_retention_and_constraints',
         '0006_admin_audit_events',
         '0007_shared_rate_limit_windows',
+        '0008_web_vital_aggregates',
       ]),
     );
   });
@@ -127,5 +129,19 @@ describe('database migration contracts', () => {
     expect(source).toContain('shared_single_scenarios_expires_at_idx');
     expect(source).toContain('user_investment_lots_positive_amount');
     expect(source).toContain('shared_single_scenarios_nonempty_title');
+  });
+
+  it('stores web vitals only as bounded, aggregate-only retention records', () => {
+    const source = readMigration('0008_web_vital_aggregates.sql');
+
+    expect(source).toContain('CREATE TABLE IF NOT EXISTS "web_vital_aggregates"');
+    expect(source).toContain('PRIMARY KEY ("metric", "path", "rating", "time_bucket")');
+    expect(source).toContain('"sample_count" integer NOT NULL');
+    expect(source).toContain('"value_sum" numeric(20, 4)');
+    expect(source).toContain('web_vital_aggregates_time_bucket_idx');
+    expect(source).not.toContain('user_agent');
+    expect(source).not.toContain('account_id');
+    expect(source).not.toContain('raw_url');
+    expect(source).not.toContain('payload');
   });
 });

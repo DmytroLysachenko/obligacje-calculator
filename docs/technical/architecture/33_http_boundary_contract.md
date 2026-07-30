@@ -53,11 +53,14 @@ They never keep an HTTP request open while contacting external providers.
 
 ## Telemetry routes
 
-Web-vital reporting is sampled before network work and honors DNT/GPC. The
-endpoint accepts only metric name, bounded numeric value, rating, pathname, and
-navigation type. Query parameters, account identifiers, scenario inputs, and
-raw user-agent strings are not accepted. A content-length guard rejects an
-oversized body before JSON decoding.
+Web-vital reporting honors DNT/GPC before network work; the route validates and
+samples accepted reports before writing. The aggregate repository keys only on
+metric name, bounded pathname, rating, and UTC hour bucket, then retains count,
+sum, min, and max for 30 days. Query parameters, account identifiers, scenario
+inputs, raw user-agent strings, navigation payloads, and individual events are
+not retained. A content-length guard rejects an oversized body before JSON
+decoding. Persistence failure is logged with safe aggregate fields and does not
+turn a browser metric into an application error.
 
 ## Verification
 

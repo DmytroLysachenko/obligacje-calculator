@@ -20,17 +20,22 @@ relaxation of the default policy.
 
 ## Data classification and operator handling
 
-| Data class | Examples | Handling |
-| --- | --- | --- |
-| Public financial reference data | bond offers, macro series, calculator assumptions | May be cached with a declared source revision and freshness timestamp. |
-| Account data | Auth.js user, session, and OAuth account records | Available only to the authenticated subject and database operators with an audited need. |
-| Portfolio data | lots, notes, exported holdings, shared-workspace state | Enforced by owner-scoped repository queries; never included in public telemetry. |
-| Credentials | OAuth tokens, database URLs, signing/admin secrets | Supplied through runtime secret configuration; never rendered, persisted in browser storage, or logged. |
+| Data class                      | Examples                                               | Handling                                                                                                |
+| ------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| Public financial reference data | bond offers, macro series, calculator assumptions      | May be cached with a declared source revision and freshness timestamp.                                  |
+| Account data                    | Auth.js user, session, and OAuth account records       | Available only to the authenticated subject and database operators with an audited need.                |
+| Portfolio data                  | lots, notes, exported holdings, shared-workspace state | Enforced by owner-scoped repository queries; never included in public telemetry.                        |
+| Credentials                     | OAuth tokens, database URLs, signing/admin secrets     | Supplied through runtime secret configuration; never rendered, persisted in browser storage, or logged. |
 
 Server logs use structured, redacted fields. Error responses expose stable machine
 codes and correlation identifiers, not provider, SQL, OAuth, or token material.
-Performance telemetry is aggregated by route template and application version;
-it excludes query strings, scenario inputs, account identifiers, and full URLs.
+Performance telemetry is sampled server-side and aggregated only by metric,
+validated pathname, rating, and UTC hour bucket. It excludes query strings,
+scenario inputs, account identifiers, full URLs, user agents, navigation payloads,
+and individual-event records. The aggregate store retains count, sum, min, and
+max only for 30 days; its durable Inngest cleanup is idempotent. A deployed
+aggregate receipt remains required external evidence before field-RUM performance
+claims are made.
 
 ## Sessions, authorization, and deletion
 

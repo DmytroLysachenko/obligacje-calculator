@@ -275,6 +275,29 @@ export const rateLimitWindows = pgTable('rate_limit_windows', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+/**
+ * Privacy-preserving field-vital aggregates. This schema intentionally has no
+ * primary identifier, account, URL query, payload, or user-agent column.
+ */
+export const webVitalAggregates = pgTable(
+  'web_vital_aggregates',
+  {
+    metric: text('metric').notNull(),
+    path: text('path').notNull(),
+    rating: text('rating').notNull(),
+    timeBucket: timestamp('time_bucket').notNull(),
+    sampleCount: integer('sample_count').notNull().default(0),
+    valueSum: numeric('value_sum', { precision: 20, scale: 4 }).notNull().default('0'),
+    valueMin: numeric('value_min', { precision: 20, scale: 4 }).notNull(),
+    valueMax: numeric('value_max', { precision: 20, scale: 4 }).notNull(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  (table) => ({
+    primary: primaryKey({ columns: [table.metric, table.path, table.rating, table.timeBucket] }),
+    timeBucketIdx: index('web_vital_aggregates_time_bucket_idx').on(table.timeBucket),
+  }),
+);
+
 export const communityInsights = pgTable(
   'community_insights',
   {

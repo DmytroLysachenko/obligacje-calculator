@@ -5,6 +5,7 @@ import { calculationService } from '@/features/bond-core/application-service';
 import { invalidateCached } from './data/market-data-cache';
 import { runAdminSync, type SyncMode } from './server/admin/sync';
 import { createServerLogger } from './server/logging';
+import { createVitalRetentionCleanup } from './server/observability/vital-aggregates';
 import { deleteExpiredSharedSingleScenarios } from './server/shared-scenarios/repository';
 import { financialDataSyncRequestedEvent, inngest } from './inngest';
 
@@ -50,6 +51,22 @@ export const cleanupExpiredSharedScenarios = inngest.createFunction(
       const deleted = await deleteExpiredSharedSingleScenarios();
       return { deletedCount: deleted.rowCount ?? 0 };
     });
+    return { status: 'completed', ...result };
+  },
+);
+
+/** Aggregate-only telemetry expires independently from request traffic. */
+export const cleanupExpiredVitalAggregates = inngest.createFunction(
+  {
+    id: 'cleanup-expired-web-vital-aggregates',
+    retries: 2,
+    triggers: [cron('30 3 * * *')],
+  },
+  async ({ step }) => {
+    const result = await step.run(
+      'delete-expired-web-vital-aggregates',
+      createVitalRetentionCleanup(),
+    );
     return { status: 'completed', ...result };
   },
 );
