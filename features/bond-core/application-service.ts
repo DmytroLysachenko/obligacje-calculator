@@ -50,18 +50,23 @@ export class CalculationApplicationService {
       payload: sanitizedPayload,
     } as unknown as CalculationScenarioRequest;
 
-    // 2. Check cache with sanitized inputs
+    // Context revisions are part of financial correctness: an identical request
+    // must not reuse a result calculated against an older offer/data snapshot.
+    const [dataFreshness, dbDefinitions] = await Promise.all([
+      this.dependencies.getDataFreshness(),
+      this.dependencies.getDefinitions(),
+    ]);
+
+    // 2. Check cache with sanitized inputs and authoritative freshness metadata.
     const cacheKey = this.dependencies.cache.generateKey({
       modelVersion: MODEL_VERSION,
       request: sanitizedRequest,
+      dataRevision: JSON.stringify(dataFreshness),
     });
     const cachedResult = this.dependencies.cache.get(cacheKey);
     if (cachedResult) {
       return cachedResult as CalculationEnvelope<unknown>;
     }
-
-    const dataFreshness = await this.dependencies.getDataFreshness();
-    const dbDefinitions = await this.dependencies.getDefinitions();
 
     try {
       const handler = this.dependencies.getHandler(sanitizedRequest.kind);

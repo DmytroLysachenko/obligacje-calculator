@@ -18,6 +18,13 @@ interface CalculationRequestOptions {
   preferWorker?: boolean;
 }
 
+export class CalculationCancelled extends Error {
+  constructor() {
+    super('Calculation cancelled');
+    this.name = 'CalculationCancelled';
+  }
+}
+
 export function useCalculationRequest() {
   const [state, dispatch] = useReducer(
     reduceCalculationRequestState,
@@ -55,7 +62,7 @@ export function useCalculationRequest() {
       } catch (error) {
         if (isAbortError(error)) {
           dispatch({ type: 'cancel', requestId });
-          return null as unknown as T;
+          throw new CalculationCancelled();
         }
         dispatch({
           type: 'fail',

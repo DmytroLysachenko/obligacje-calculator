@@ -4,7 +4,7 @@ import {
   CalculationApplicationService,
   CalculationServiceDependencies,
 } from '../application-service';
-import { BOND_DEFINITIONS } from '../constants/bond-definitions';
+import { BOND_DEFINITIONS, type BondDefinition } from '../constants/bond-definitions';
 import { BondType, InterestPayout, TaxStrategy } from '../types';
 import { CalculationDataFreshness, CalculationEnvelope, ScenarioKind } from '../types/scenarios';
 
@@ -66,5 +66,87 @@ describe('CalculationApplicationService dependencies', () => {
       dbDefinitions: BOND_DEFINITIONS,
     });
     expect(dependencies.cache.set).toHaveBeenCalledWith('cache-key', envelope);
+  });
+
+  it('uses the authoritative freshness revision as part of the cache identity', async () => {
+    const envelope: CalculationEnvelope<{ ok: true }> = {
+      result: { ok: true },
+      warnings: [],
+      assumptions: [],
+      calculationNotes: [],
+      dataQualityFlags: [],
+      dataFreshness: { status: 'fresh', usedFallback: false },
+    };
+    const freshness: CalculationDataFreshness = {
+      status: 'fresh',
+      usedFallback: false,
+      bondOfferAttemptAt: '2026-07-01T00:00:00.000Z',
+      coverageAsOf: '2026-07-01',
+    };
+    const handler = { kind: ScenarioKind.SINGLE_BOND, handle: vi.fn(async () => envelope) };
+    const dependencies: CalculationServiceDependencies = {
+      cache: {
+        generateKey: vi.fn(() => 'revision-aware-key'),
+        get: vi.fn(() => envelope),
+        set: vi.fn(),
+      },
+      getDataFreshness: vi.fn(async () => freshness),
+      getDefinitions: vi.fn(async () => BOND_DEFINITIONS),
+      getHandler: vi.fn(() => handler),
+    };
+
+    await new CalculationApplicationService(dependencies).calculate({
+      kind: ScenarioKind.SINGLE_BOND,
+      payload: basePayload,
+    });
+
+    expect(dependencies.cache.generateKey).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dataRevision: JSON.stringify(freshness),
+      }),
+    );
+    expect(handler.handle).not.toHaveBeenCalled();
+    expect(dependencies.cache.set).not.toHaveBeenCalled();
+  });
+
+  it('loads definitions and freshness concurrently before choosing a cache entry', async () => {
+    let releaseFreshness!: () => void;
+    let releaseDefinitions!: () => void;
+    const freshnessPromise = new Promise<CalculationDataFreshness>((resolve) => {
+      releaseFreshness = () => resolve({ status: 'fresh', usedFallback: false });
+    });
+    const definitionsPromise = new Promise<Record<BondType, BondDefinition>>((resolve) => {
+      releaseDefinitions = () => resolve(BOND_DEFINITIONS);
+    });
+    const envelope: CalculationEnvelope<{ ok: true }> = {
+      result: { ok: true },
+      warnings: [],
+      assumptions: [],
+      calculationNotes: [],
+      dataQualityFlags: [],
+      dataFreshness: { status: 'fresh', usedFallback: false },
+    };
+    const dependencies: CalculationServiceDependencies = {
+      cache: { generateKey: vi.fn(() => 'key'), get: vi.fn(() => null), set: vi.fn() },
+      getDataFreshness: vi.fn(() => freshnessPromise),
+      getDefinitions: vi.fn(() => definitionsPromise),
+      getHandler: vi.fn(() => ({
+        kind: ScenarioKind.SINGLE_BOND,
+        handle: vi.fn(async () => envelope),
+      })),
+    };
+    const calculation = new CalculationApplicationService(dependencies).calculate({
+      kind: ScenarioKind.SINGLE_BOND,
+      payload: basePayload,
+    });
+
+    expect(dependencies.getDataFreshness).toHaveBeenCalledOnce();
+    expect(dependencies.getDefinitions).toHaveBeenCalledOnce();
+    expect(dependencies.cache.generateKey).not.toHaveBeenCalled();
+
+    releaseFreshness();
+    releaseDefinitions();
+    await calculation;
+    expect(dependencies.cache.generateKey).toHaveBeenCalledOnce();
   });
 });

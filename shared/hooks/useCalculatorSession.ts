@@ -17,6 +17,8 @@ import {
   restoreCalculatorSession,
 } from '@/shared/lib/calculator-session-persistence';
 
+import { CalculationCancelled } from './useCalculationRequest';
+
 interface UseCalculatorSessionOptions<TInputs, TResult> {
   initialInputs: TInputs;
   storageKey?: string;
@@ -79,6 +81,9 @@ export function useCalculatorSession<TInputs, TResult>({
         dispatch({ type: 'succeed', committedInputs: state.draftInputs, committedResult: result });
         return result;
       } catch (error) {
+        if (error instanceof CalculationCancelled) {
+          return undefined;
+        }
         dispatch({
           type: 'fail',
           error: error instanceof Error ? error : new Error(String(error)),
