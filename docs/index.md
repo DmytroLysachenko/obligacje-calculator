@@ -70,6 +70,8 @@ Welcome to the official documentation for **Obligacje Calculator**. This documen
 - [Local Development Workflow](./operations/03_local_development.md) - WSL-first Docker Compose, Taskfile, local DB, and smoke-check workflow.
 - [Private Preview Verification](./operations/04_private_preview_verification.md) - Redacted operational readiness evidence and manual checks.
 - [Redacted Operational Evidence Template](./operations/evidence-template.md) - Required record for cloud, IAM, backup, load-test, and deployment controls.
+- [Durable Synchronization Contract](./operations/05_durable_sync_contract.md) - Event ownership, retries, retention cleanup, and external Inngest evidence gate.
+- [External Evidence Gate](./operations/06_external_evidence_gate.md) - Redacted proof required before repository controls are described as deployed.
 
 ---
 
