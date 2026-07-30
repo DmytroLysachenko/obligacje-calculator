@@ -9,20 +9,27 @@ import { mapApiErrorToProblemDetails } from './problem-details';
 import {
   BoundedMemoryRateLimiter,
   defaultApiRateLimitPolicy,
+  type RateLimiter,
   type RateLimitPolicy,
   SharedStoreRateLimiter,
 } from './rate-limiter';
 import { addRequestIdToProblem, getRequestId, withRequestId } from './request-context';
 
 const logger = createServerLogger('ApiHandler');
-const rateLimiter = isDatabaseConfigured && process.env.NODE_ENV === 'production'
-  ? new SharedStoreRateLimiter(postgresRateLimitStore)
-  : new BoundedMemoryRateLimiter();
+const rateLimiter =
+  isDatabaseConfigured && process.env.NODE_ENV === 'production'
+    ? new SharedStoreRateLimiter(postgresRateLimitStore)
+    : new BoundedMemoryRateLimiter();
 
 export type ApiHandler<TContext = { params: Promise<Record<string, never>> }> = (
   req: NextRequest,
   context: TContext,
 ) => Promise<NextResponse> | NextResponse;
+
+export interface ApiHandlerDependencies {
+  rateLimiter: RateLimiter;
+  getIdentity?: typeof getClientIdentity;
+}
 
 /**
  * Standardized API Route Handler wrapper.
@@ -35,46 +42,63 @@ export function apiHandler<TContext = { params: Promise<Record<string, never>> }
   handler: ApiHandler<TContext>,
   { rateLimitPolicy = defaultApiRateLimitPolicy }: { rateLimitPolicy?: RateLimitPolicy } = {},
 ) {
-  return async (req: NextRequest, context: TContext) => {
-    const requestId = getRequestId(req);
-    const rateLimit = await rateLimiter.consume(getClientIdentity(req), rateLimitPolicy);
+  return createApiHandler({ rateLimiter })(handler, { rateLimitPolicy });
+}
 
-    if (!rateLimit.allowed) {
-      return withRequestId(
-        NextResponse.json(
-          {
-            type: 'https://api.obligacje.pl/errors/rate-limit-exceeded',
-            title: 'Too Many Requests',
-            status: 429,
-            detail: 'Rate limit exceeded. Please try again in a minute.',
-          },
-          {
-            status: 429,
-            headers: {
-              'RateLimit-Limit': rateLimit.limit.toString(),
-              'RateLimit-Remaining': rateLimit.remaining.toString(),
-              'RateLimit-Reset': Math.ceil(rateLimit.resetAt / 1000).toString(),
-              'Retry-After': Math.ceil((rateLimit.resetAt - Date.now()) / 1000).toString(),
+/**
+ * Builds the correlated HTTP boundary with an explicit limiter dependency.
+ * Production routes use `apiHandler`; tests can exercise a policy without
+ * mutating module-global counters or relying on deployment configuration.
+ */
+export function createApiHandler({
+  rateLimiter: configuredRateLimiter,
+  getIdentity = getClientIdentity,
+}: ApiHandlerDependencies) {
+  return function withApiHandler<TContext = { params: Promise<Record<string, never>> }>(
+    handler: ApiHandler<TContext>,
+    { rateLimitPolicy = defaultApiRateLimitPolicy }: { rateLimitPolicy?: RateLimitPolicy } = {},
+  ) {
+    return async (req: NextRequest, context: TContext) => {
+      const requestId = getRequestId(req);
+      const rateLimit = await configuredRateLimiter.consume(getIdentity(req), rateLimitPolicy);
+
+      if (!rateLimit.allowed) {
+        return withRequestId(
+          NextResponse.json(
+            {
+              type: 'https://api.obligacje.pl/errors/rate-limit-exceeded',
+              title: 'Too Many Requests',
+              status: 429,
+              detail: 'Rate limit exceeded. Please try again in a minute.',
             },
-          },
-        ),
-        requestId,
-      );
-    }
+            {
+              status: 429,
+              headers: {
+                'RateLimit-Limit': rateLimit.limit.toString(),
+                'RateLimit-Remaining': rateLimit.remaining.toString(),
+                'RateLimit-Reset': Math.ceil(rateLimit.resetAt / 1000).toString(),
+                'Retry-After': Math.ceil((rateLimit.resetAt - Date.now()) / 1000).toString(),
+              },
+            },
+          ),
+          requestId,
+        );
+      }
 
-    try {
-      return withRequestId(await handler(req, context), requestId);
-    } catch (error) {
-      const problem = addRequestIdToProblem(
-        mapApiErrorToProblemDetails(error, {
-          includeInternalMessage: process.env.NODE_ENV === 'development',
-        }),
-        requestId,
-      );
-      logger.error(`${req.method} ${req.nextUrl.pathname}`, error);
+      try {
+        return withRequestId(await handler(req, context), requestId);
+      } catch (error) {
+        const problem = addRequestIdToProblem(
+          mapApiErrorToProblemDetails(error, {
+            includeInternalMessage: process.env.NODE_ENV === 'development',
+          }),
+          requestId,
+        );
+        logger.error(`${req.method} ${req.nextUrl.pathname}`, error);
 
-      return withRequestId(NextResponse.json(problem, { status: problem.status }), requestId);
-    }
+        return withRequestId(NextResponse.json(problem, { status: problem.status }), requestId);
+      }
+    };
   };
 }
 

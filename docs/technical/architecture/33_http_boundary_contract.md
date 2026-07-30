@@ -29,7 +29,9 @@ by inventing a forwarded address.
 
 Named policies reflect capability cost:
 
-- ordinary reads use `api-read`;
+- public catalogue, definition, default, and issued-series reads use `public-data-read`;
+- chart-history reads use the separate `public-chart-read` budget;
+- calculator execution uses the lower `calculation-execute` budget;
 - public share creation uses a low hourly write budget;
 - telemetry uses a separate bounded ingestion budget;
 - session-backed administration uses the smallest write budget.
@@ -63,5 +65,8 @@ oversized body before JSON decoding.
 - Test spoofed forwarded headers with and without trusted proxy mode.
 - Test authorization failures and successful audit events.
 - Test telemetry rejection for malformed, query-bearing, and oversized input.
+- Exercise the shared wrapper for success, validation failure, unexpected failure,
+  and rate-limit headers. Endpoint tests must assert a public correlated problem,
+  never an implementation error string.
 - Verify production readiness after migrations so rate-limit and audit tables
   exist before traffic is served.

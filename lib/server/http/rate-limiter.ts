@@ -71,7 +71,11 @@ export interface SharedRateLimitStore {
 export class SharedStoreRateLimiter implements RateLimiter {
   constructor(private readonly store: SharedRateLimitStore) {}
 
-  async consume(identity: string, policy: RateLimitPolicy, now = Date.now()): Promise<RateLimitDecision> {
+  async consume(
+    identity: string,
+    policy: RateLimitPolicy,
+    now = Date.now(),
+  ): Promise<RateLimitDecision> {
     const resetAt = new Date(now + policy.windowMs);
     const result = await this.store.consume({
       bucketKey: `${policy.key}:${identity}`,
@@ -88,8 +92,22 @@ export class SharedStoreRateLimiter implements RateLimiter {
 }
 
 export const defaultApiRateLimitPolicy: RateLimitPolicy = {
-  key: 'api-read',
+  key: 'public-data-read',
   limit: 100,
+  windowMs: 60_000,
+};
+
+/** Cached catalogue/default reads; isolated from heavier chart data queries. */
+export const publicChartReadRateLimitPolicy: RateLimitPolicy = {
+  key: 'public-chart-read',
+  limit: 60,
+  windowMs: 60_000,
+};
+
+/** CPU-bound calculator execution, intentionally lower than ordinary reads. */
+export const calculationRateLimitPolicy: RateLimitPolicy = {
+  key: 'calculation-execute',
+  limit: 30,
   windowMs: 60_000,
 };
 
