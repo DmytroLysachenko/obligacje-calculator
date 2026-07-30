@@ -6,11 +6,12 @@ import {
   createLot,
   createLotWithBuyTransaction,
   createPortfolio,
-  deleteLotById,
-  deletePortfolioById,
+  deleteLotByOwner,
+  deletePortfolioByOwner,
   findPortfolioById,
   updateLotById,
   updatePortfolioVisibility,
+  importPortfolioAtomically,
 } from '@/lib/server/portfolio/repository';
 
 export async function createOwnerPortfolio(
@@ -22,13 +23,8 @@ export async function createOwnerPortfolio(
 }
 
 export async function deleteOwnerPortfolio(ownerId: string, portfolioId: string) {
-  const existingPortfolio = await findPortfolioById(portfolioId);
-
-  if (!existingPortfolio || existingPortfolio.userId !== ownerId) {
-    throw new PortfolioServiceError('Portfolio not found', 404, 'NOT_FOUND');
-  }
-
-  const [deletedPortfolio] = await deletePortfolioById(portfolioId);
+  const [deletedPortfolio] = await deletePortfolioByOwner(ownerId, portfolioId);
+  if (!deletedPortfolio) throw new PortfolioServiceError('Portfolio not found', 404, 'NOT_FOUND');
   return deletedPortfolio;
 }
 
@@ -139,13 +135,7 @@ export async function updateOwnerLot(
 }
 
 export async function deleteOwnerLot(ownerId: string, lotId: string) {
-  const existingLot = await getOwnedLot(ownerId, lotId);
-
-  if (!existingLot) {
-    throw new PortfolioServiceError('Lot not found', 404, 'NOT_FOUND');
-  }
-
-  const [deletedLot] = await deleteLotById(lotId);
+  const [deletedLot] = await deleteLotByOwner(ownerId, lotId);
 
   if (!deletedLot) {
     throw new PortfolioServiceError('Lot not found', 404, 'NOT_FOUND');
@@ -186,13 +176,7 @@ export async function importOwnerPortfolio(
     }>;
   },
 ) {
-  const [createdPortfolio] = await createPortfolio(
-    ownerId,
-    `${input.name} (Imported)`,
-    input.description ?? 'Imported portfolio package',
-  );
-
-  const importedLots = await Promise.all(
+  const preparedLots = await Promise.all(
     input.lots.map(async (lot) => {
       const resolvedLotContext = await resolveStoredBondLotContext(
         lot.bondType as BondType,
@@ -200,7 +184,6 @@ export async function importOwnerPortfolio(
       );
 
       return {
-        portfolioId: createdPortfolio.id,
         bondType: lot.bondType,
         bondTypeId: resolvedLotContext.bondTypeId,
         bondSeriesId: resolvedLotContext.bondSeriesId,
@@ -212,10 +195,9 @@ export async function importOwnerPortfolio(
     }),
   );
 
-  const createdLots = await Promise.all(importedLots.map((lot) => createLot(lot)));
-
-  return {
-    portfolio: createdPortfolio,
-    importedLots: createdLots.flat().length,
-  };
+  return importPortfolioAtomically(ownerId, {
+    name: input.name,
+    description: input.description ?? 'Imported portfolio package',
+    lots: preparedLots,
+  });
 }

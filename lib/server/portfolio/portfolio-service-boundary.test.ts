@@ -38,4 +38,27 @@ describe('portfolio service boundary', () => {
     expect(repository).toContain('export function ensureGuestPortfolioOwner');
     expect(repository).toContain('innerJoin(userPortfolios');
   });
+
+  it('makes destructive operations owner-scoped at the repository boundary', () => {
+    const repository = read('lib/server/portfolio/repository.ts');
+    const commands = read('lib/server/portfolio/commands.ts');
+
+    expect(repository).toContain('export function deletePortfolioByOwner');
+    expect(repository).toContain('export function deleteLotByOwner');
+    expect(repository).toContain('inArray(userInvestmentLots.portfolioId, ownedPortfolioIds)');
+    expect(commands).toContain('deletePortfolioByOwner(ownerId, portfolioId)');
+    expect(commands).toContain('deleteLotByOwner(ownerId, lotId)');
+  });
+
+  it('uses one transaction for an imported portfolio and its complete lot set', () => {
+    const repository = read('lib/server/portfolio/repository.ts');
+    const commands = read('lib/server/portfolio/commands.ts');
+
+    expect(repository).toContain('export async function importPortfolioAtomically');
+    expect(repository).toContain('return db.transaction(async (tx) =>');
+    expect(repository).toContain('tx.insert(userPortfolios)');
+    expect(repository).toContain('tx.insert(userInvestmentLots)');
+    expect(commands).toContain('return importPortfolioAtomically(ownerId');
+    expect(commands).not.toContain('Promise.all(importedLots.map((lot) => createLot(lot)))');
+  });
 });

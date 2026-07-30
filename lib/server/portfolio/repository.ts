@@ -53,6 +53,13 @@ export function deletePortfolioById(portfolioId: string) {
   return db.delete(userPortfolios).where(eq(userPortfolios.id, portfolioId)).returning();
 }
 
+export function deletePortfolioByOwner(ownerId: string, portfolioId: string) {
+  return db
+    .delete(userPortfolios)
+    .where(and(eq(userPortfolios.id, portfolioId), eq(userPortfolios.userId, ownerId)))
+    .returning();
+}
+
 export function updatePortfolioVisibility(ownerId: string, portfolioId: string, isPublic: boolean) {
   return db
     .update(userPortfolios)
@@ -120,4 +127,43 @@ export function updateLotById(lotId: string, values: Record<string, unknown>) {
 
 export function deleteLotById(lotId: string) {
   return db.delete(userInvestmentLots).where(eq(userInvestmentLots.id, lotId)).returning();
+}
+
+export function deleteLotByOwner(ownerId: string, lotId: string) {
+  const ownedPortfolioIds = db
+    .select({ id: userPortfolios.id })
+    .from(userPortfolios)
+    .where(eq(userPortfolios.userId, ownerId));
+
+  return db
+    .delete(userInvestmentLots)
+    .where(
+      and(
+        eq(userInvestmentLots.id, lotId),
+        inArray(userInvestmentLots.portfolioId, ownedPortfolioIds),
+      ),
+    )
+    .returning();
+}
+
+export type PreparedPortfolioImportLot = Omit<typeof userInvestmentLots.$inferInsert, 'portfolioId'>;
+
+/** One transaction owns imported portfolio, lots, and rollback semantics. */
+export async function importPortfolioAtomically(
+  ownerId: string,
+  input: { name: string; description?: string; lots: PreparedPortfolioImportLot[] },
+) {
+  return db.transaction(async (tx) => {
+    const [portfolio] = await tx
+      .insert(userPortfolios)
+      .values({ userId: ownerId, name: `${input.name} (Imported)`, description: input.description })
+      .returning();
+
+    const lots = await tx
+      .insert(userInvestmentLots)
+      .values(input.lots.map((lot) => ({ ...lot, portfolioId: portfolio.id })))
+      .returning();
+
+    return { portfolio, importedLots: lots.length };
+  });
 }
