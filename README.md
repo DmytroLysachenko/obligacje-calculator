@@ -1,5 +1,13 @@
 # Obligacje Calculator
 
+## Offline behavior
+
+The application deliberately does not register a service worker and is not an
+offline calculator. Financial calculations depend on current offer and market
+data, so presenting a silently cached result would be misleading. Browser
+assets follow normal HTTP caching; a failed network request is shown as an
+error rather than an offline financial result.
+
 Production-focused simulation platform for Polish treasury bonds, recurring bond plans, comparison scenarios, and reference macro-data.
 
 The current product direction is conservative and trust-first:

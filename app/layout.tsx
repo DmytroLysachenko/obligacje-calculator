@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono, Inter } from 'next/font/google';
 import { headers } from 'next/headers';
-import Script from 'next/script';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import React from 'react';
@@ -47,7 +46,6 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s | ${t('common.title')}`,
     },
     description: t('common.description'),
-    manifest: '/manifest.json',
     icons: {
       icon: [{ url: '/app-icon.svg', type: 'image/svg+xml' }],
       apple: [{ url: '/app-icon.svg', type: 'image/svg+xml' }],
@@ -164,34 +162,6 @@ export default async function RootLayout({
           </AppLocaleProvider>
         </NextIntlClientProvider>
 
-        <Script id="register-sw" nonce={nonce} strategy="afterInteractive">
-          {`
-            if ('serviceWorker' in navigator) {
-              window.addEventListener('load', async function() {
-                const isLocalhost =
-                  window.location.hostname === 'localhost' ||
-                  window.location.hostname === '127.0.0.1';
-
-                if (${process.env.NODE_ENV === 'production'} && !isLocalhost) {
-                  await navigator.serviceWorker.register('/sw.js');
-                  return;
-                }
-
-                const registrations = await navigator.serviceWorker.getRegistrations();
-                await Promise.all(registrations.map((registration) => registration.unregister()));
-
-                if ('caches' in window) {
-                  const keys = await caches.keys();
-                  await Promise.all(
-                    keys
-                      .filter((key) => key.startsWith('bond-calculator-'))
-                      .map((key) => caches.delete(key))
-                  );
-                }
-              });
-            }
-          `}
-        </Script>
       </body>
     </html>
   );

@@ -1,5 +1,12 @@
 # 18. Non-Functional Requirements
 
+## Offline-data safety
+
+The application does not promise offline calculations. It must show a clear
+network or data failure rather than silently using stale financial inputs. An
+offline mode may be introduced only with versioned assets, explicit data-as-of
+state, update handling, and dedicated browser tests.
+
 Quality and performance standards for the platform.
 
 ## 1. Correctness & Precision
