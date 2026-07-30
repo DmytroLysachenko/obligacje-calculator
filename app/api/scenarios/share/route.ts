@@ -17,7 +17,6 @@ export const POST = apiHandler(async (req: NextRequest) => {
   const shareSnapshot = await createSharedSingleScenario({
     inputs: body.inputs,
     description: body.description,
-    origin: req.nextUrl.origin,
   });
 
   return okJson(shareSnapshot);

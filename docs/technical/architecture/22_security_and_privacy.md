@@ -57,6 +57,72 @@ the operations evidence gate has enabled them.
 
 ## Verification cadence
 
+## Public sharing boundary
+
+Public share identifiers are unguessable references, not authorization
+credentials for private workspace data. A share URL is constructed only from
+the validated canonical application URL; request host, forwarded host, and
+browser origin values never influence a persisted or returned URL.
+
+Creation payloads use strict schemas and bounded text. Creation receives a
+cost-aware rate policy and, where an account exists, combines account and IP
+quota. Shared scenarios have a documented expiry and cleanup process. A public
+share may expose only the serialized scenario selected for publication, never a
+portfolio, owner identifier, session state, raw telemetry, or private notes.
+
+Abuse reports identify the share reference and correlation ID. The report path
+does not reveal whether an identifier exists to an unauthenticated caller.
+Deletion/expiry takes precedence over cache display. Search engines must not
+receive user-generated share pages as public landing content unless a future
+product policy explicitly permits it.
+
+### Share lifecycle controls
+
+The share service has four distinct lifecycle decisions:
+
+1. creation validates a small publishable snapshot and assigns an opaque ID;
+2. reading resolves only a non-expired, published snapshot;
+3. unpublishing removes public visibility immediately; and
+4. scheduled retention cleanup deletes expired rows and records aggregate
+   counts for operators.
+
+The service does not use a share ID to infer ownership. A signed-in owner uses
+the normal portfolio authorization path to publish, unpublish, or delete a
+portfolio. A public reader can load only the intentionally serialized scenario
+or public workspace projection. This prevents later additions to a private
+portfolio from becoming visible through an old URL.
+
+Quota policy is capability-specific. Anonymous creation is limited by trusted
+client identity; authenticated creation also has an account limit. Both limits
+are deliberately lower than inexpensive calculation reads because each accepted
+share consumes retention and moderation capacity. A rate-limit response includes
+only retry metadata and a correlation identifier, never an account/quota value.
+
+Retention cleanup is idempotent. It may run more than once, but an expired share
+must never be restored by a cache miss, an old browser response, or a retry.
+The cleanup job records rows considered/deleted/rejected, duration, and failure
+code without recording scenario payloads. Operators investigate reported abuse
+using the opaque reference and redacted logs.
+
+### Verification matrix
+
+- Host-header and forwarded-host variants return the same canonical URL.
+- A malformed input, unknown key, or overlong description is rejected before a
+  row is created.
+- Quota limits apply independently to anonymous and signed-in identities.
+- An expired or unpublished ID returns the same not-found behavior as an
+  unknown ID.
+- Cleanup is safe to retry and cannot delete an unexpired item.
+- Public response and telemetry payloads omit owner and scenario-private data.
+
+These checks run before a share-policy change is released.
+
+They are required release evidence.
+
+They protect public data boundaries.
+
+They are non-optional.
+
 Every change to an authentication, ownership, import, sharing, synchronization,
 or rendering boundary carries focused regression tests. Release verification
 runs type checking, linting, the full Vitest suite, the curated financial suite,

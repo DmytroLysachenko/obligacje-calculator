@@ -1,4 +1,5 @@
 import { BondInputsSchema } from '@/features/bond-core/types/schemas';
+import { getCanonicalUrl } from '@/lib/site-url';
 import {
   buildSharedSingleScenarioPayload,
   parseSharedSingleScenarioPayload,
@@ -10,7 +11,6 @@ import { createSharedSingleScenarioRecord, findSharedSingleScenarioRecord } from
 export async function createSharedSingleScenario(body: {
   inputs: unknown;
   description?: unknown;
-  origin: string;
 }) {
   const validatedInputs = BondInputsSchema.parse(body.inputs);
   const normalizedPayload = buildSharedSingleScenarioPayload(
@@ -26,7 +26,7 @@ export async function createSharedSingleScenario(body: {
 
   return {
     shareId: created.shareId,
-    shareUrl: `${body.origin}/shared-scenarios/${created.shareId}`,
+    shareUrl: getCanonicalUrl(`/shared-scenarios/${created.shareId}`),
   };
 }
 
