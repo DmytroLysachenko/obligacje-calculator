@@ -3,7 +3,7 @@ import { getTranslations } from 'next-intl/server';
 
 import { getCanonicalUrl } from './site-url';
 
-const pageRouteByKey: Record<string, string> = {
+export const pageRouteByKey: Record<string, string> = {
   home: '/',
   single_calculator: '/single-calculator',
   comparison: '/compare',
