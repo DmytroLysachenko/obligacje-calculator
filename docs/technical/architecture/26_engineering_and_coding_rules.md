@@ -11,6 +11,12 @@ consumers need. HTTP routes declare policy and delegate; repositories enforce
 owner predicates and transactions; adapters isolate external services. Do not
 leave a replacement path active after its migration is complete.
 
+Dependencies point inward: pages and route handlers may compose feature and
+server interfaces; features may depend on domain and shared display modules;
+shared UI may not import server/database code; only `lib/server/**` and
+`lib/data/**` cross the persistence or provider boundary. The module that owns
+an interface also owns its adapter choice, tests, and replacement/deletion plan.
+
 - Untrusted data is decoded once at its boundary and database constraints defend
   values whose corruption would be dangerous.
 - Runtime application identities never execute schema DDL; ordered migrations
@@ -21,6 +27,8 @@ leave a replacement path active after its migration is complete.
 - Browser clients never persist administrator bearer credentials.
 - Refactors delete superseded code and source-spelling contracts when behavior,
   types, lint boundaries, or integration tests protect the real invariant.
+- A delivery updates its relevant documentation in the same change and names
+  the focused behavioral check that proves the boundary still holds.
 
 ## 1. Core Principles
 

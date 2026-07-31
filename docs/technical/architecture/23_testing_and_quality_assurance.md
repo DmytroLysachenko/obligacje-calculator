@@ -102,7 +102,7 @@ when a financial boundary changes.
 ## 3. Performance Testing
 
 - Use Lighthouse to track Core Web Vitals before major releases.
-- `pnpm test:web-vitals` runs a conservative browser budget on home and single-calculator routes. It catches blank/error pages, very slow navigation, unusually large script payloads, and late LCP when Chromium exposes the entry.
+- `pnpm test:web-vitals` installs its LCP observer before navigation and fails if LCP is absent. It currently covers home and single-calculator routes, guarding blank/error pages, slow navigation, oversized script payloads, and late LCP. Extend the route set and ratchet budgets only from captured baselines.
 - Stress-test the chart rendering with 30 years of daily data points.
 
 ## 4. Manual QA

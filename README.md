@@ -46,6 +46,7 @@ Important code boundaries:
 - `lib/data/`: cached read models and data retrieval helpers
 - `lib/server/`: server-only services, repositories, sync/admin orchestration, HTTP helpers
 - `db/schema.ts`: canonical Drizzle schema entrypoint
+- `drizzle/`: ordered, migration-only schema authority; runtime routes never execute DDL
 - `db/seed/`: seed modules split by concern
 
 Current production-readiness notes:
@@ -76,6 +77,8 @@ Current production-readiness notes:
 
 ```bash
 pnpm test:ci
+pnpm test:release
+pnpm test:db # requires an isolated TEST_DATABASE_URL
 pnpm test:core
 pnpm test:browser
 pnpm test:web-vitals
@@ -83,6 +86,10 @@ pnpm lint
 pnpm exec tsc --noEmit
 pnpm scan:unused
 ```
+
+`pnpm test:ci` is the full Vitest suite; `pnpm test:release` is a faster,
+curated release signal and does not replace it. `pnpm test:db` applies the
+checked-in migration journal only to a disposable database.
 
 `pnpm scan:unused` should not report confirmed unused files. Export findings are
 triaged as API-surface candidates because framework exports, scenario schemas,
@@ -150,7 +157,16 @@ pnpm smoke:local -- --base-url http://127.0.0.1:3000 --check-content-type
 ```
 
 GitHub Actions is the production Cloud Run deployment source of truth. The
-checked-in `cloudbuild.yaml` remains an aligned manual fallback.
+checked-in `cloudbuild.yaml` remains an aligned manual fallback. Before a
+production promotion, use the documented migration identity, run
+`pnpm check:prod-config`, and retain the required redacted post-deploy evidence.
+
+## Security reporting
+
+Do not include credentials, tokens, portfolio data, or personal information in
+an issue. Report a suspected vulnerability privately to the project maintainer;
+the maintainer will acknowledge it, coordinate remediation, and document a
+redacted incident record where operational follow-up is required.
 
 ## Product Guardrails
 

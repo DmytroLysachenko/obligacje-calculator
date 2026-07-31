@@ -44,6 +44,7 @@ The production database must include the additive migrations in `drizzle/`:
 1. `0000_unified_schema.sql` creates the core calculator, metadata, and portfolio tables.
 2. `0001_sync_runs.sql` creates sync history used by freshness reporting.
 3. `0002_auth_tables.sql` creates the Auth.js adapter tables for OAuth sessions.
+4. `0003_portfolio_lot_indexes.sql` through `0008_web_vital_aggregates.sql` add portfolio indexes/sharing, retention constraints, audit events, shared rate limits, and aggregate vital storage.
 
 Do not deploy portfolio-auth changes until `0002_auth_tables.sql` is applied.
 Without those tables, Auth.js cannot persist OAuth users, accounts, sessions, or
@@ -121,7 +122,10 @@ are intentionally absent; this does not waive database, URL, or secret checks.
 
 The protected production deployment applies checked-in Drizzle migrations before
 it promotes traffic. Operators must generate and review the migration files in
-the pull request; never use an ad-hoc schema push against a release database.
+the pull request; never use an ad-hoc schema push or request-time compatibility
+DDL against a release database. The migration identity is separate from the
+Cloud Run runtime identity; runtime DDL denial is verified with a redacted
+production evidence record.
 Seed or sync the target database only when the release changes reference data:
 
 ```bash
