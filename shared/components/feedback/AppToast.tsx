@@ -55,6 +55,7 @@ export function AppToast({
         )}
       >
         <Icon
+          aria-hidden="true"
           className={cn('mt-0.5 h-5 w-5 shrink-0', isSuccess ? 'text-success' : 'text-destructive')}
         />
         <p className="flex-1 text-sm leading-6">{message}</p>
@@ -63,14 +64,14 @@ export function AppToast({
           size="icon"
           aria-label={t('common.dismiss_notification')}
           className={cn(
-            'h-8 w-8 rounded-full',
+            'min-h-11 min-w-11 rounded-full',
             isSuccess
               ? 'text-muted-foreground hover:bg-muted hover:text-foreground'
               : 'text-muted-foreground hover:bg-muted hover:text-foreground',
           )}
           onClick={onDismiss}
         >
-          <X className="h-4 w-4" />
+          <X aria-hidden="true" className="h-4 w-4" />
         </Button>
       </div>
     </div>

@@ -1,6 +1,5 @@
 'use client';
 
-import { format } from 'date-fns';
 import { ExternalLink, Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -18,6 +17,7 @@ import { BondDefinition } from '@/features/bond-core/constants/bond-definitions'
 import { BondType } from '@/features/bond-core/types';
 import { FormInlineNotice } from '@/shared/components/forms/FormInlineNotice';
 import { SegmentedControl } from '@/shared/components/forms/SegmentedControl';
+import { formatIsoDate } from '@/shared/lib/financial-formatters';
 import { formatBondDuration } from '@/shared/lib/format-bond-duration';
 import { UserInvestmentLot } from '@/shared/types/portfolio';
 
@@ -147,17 +147,18 @@ export function PortfolioLotsTableSection({
                         {lot.amount}
                       </TableCell>
                       <TableCell className="py-4">
-                        {format(new Date(lot.purchaseDate), 'dd.MM.yyyy')}
+                        {formatIsoDate(lot.purchaseDate, language)}
                       </TableCell>
                       <TableCell className="financial-number py-4 text-right font-semibold">
                         {formatCurrency(Number(lot.amount) * 100)}
                       </TableCell>
                       <TableCell className="py-4 text-right">
-                        <Button variant="outline" size="icon" asChild>
+                        <Button variant="outline" size="icon" className="min-h-11 min-w-11" asChild>
                           <a
                             href={`/single-calculator?bondType=${lot.bondType}&purchaseDate=${lot.purchaseDate}`}
+                            aria-label={t('notebook.open_lot_calculator', { bondType: lot.bondType })}
                           >
-                            <ExternalLink className="h-4 w-4" />
+                            <ExternalLink aria-hidden="true" className="h-4 w-4" />
                           </a>
                         </Button>
                       </TableCell>
@@ -221,7 +222,7 @@ export function PortfolioLiquidityPanel({
                   <div>
                     <p className="font-medium text-foreground">{item.bondType}</p>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      {format(item.maturityDate, 'dd.MM.yyyy')}
+                      {formatIsoDate(item.maturityDate.toISOString().slice(0, 10), language)}
                     </p>
                     <p className="mt-1 text-xs font-semibold text-muted-foreground">
                       {formatBondDuration(

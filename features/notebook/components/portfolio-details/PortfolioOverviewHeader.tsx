@@ -111,8 +111,14 @@ export function PortfolioOverviewHeader({
 
       <div className="flex flex-col gap-4 border-t border-border py-5 md:flex-row md:items-start md:justify-between">
         <div className="flex items-start gap-3">
-          <Button variant="ghost" size="icon" onClick={onBack} className="rounded-md">
-            <ArrowLeft className="h-5 w-5" />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onBack}
+            className="min-h-11 min-w-11 rounded-md"
+            aria-label={t('notebook.back_to_portfolios')}
+          >
+            <ArrowLeft aria-hidden="true" className="h-5 w-5" />
           </Button>
           <div>
             <h2 className="ui-section-title">{portfolio.name}</h2>

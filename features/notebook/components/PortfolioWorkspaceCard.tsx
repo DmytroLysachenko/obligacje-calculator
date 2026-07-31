@@ -58,14 +58,14 @@ export function PortfolioWorkspaceCard({
         <Button
           variant="ghost"
           size="icon"
-          className="h-9 w-9 rounded-md text-muted-foreground hover:text-destructive"
+          className="min-h-11 min-w-11 rounded-md text-muted-foreground hover:text-destructive"
           onClick={(event) => {
             event.stopPropagation();
             onRequestDelete();
           }}
           aria-label={`Delete ${portfolio.name}`}
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 aria-hidden="true" className="h-4 w-4" />
         </Button>
       </div>
 

@@ -1516,6 +1516,8 @@
     "public_share_desc": "This portfolio currently has a public share link.",
     "private_share_desc": "This portfolio is currently kept private.",
     "delete_portfolio": "Delete portfolio",
+    "back_to_portfolios": "Back to portfolios",
+    "open_lot_calculator": "Open {bondType} lot in calculator",
     "column_type": "Type",
     "column_duration": "Duration",
     "column_amount": "Amount",

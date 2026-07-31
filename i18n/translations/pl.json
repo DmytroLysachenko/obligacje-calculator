@@ -1516,6 +1516,8 @@
     "public_share_desc": "Portfel ma aktywny publiczny link.",
     "private_share_desc": "Portfel pozostaje prywatnym szkicem.",
     "delete_portfolio": "Usun portfel",
+    "back_to_portfolios": "Wroc do portfeli",
+    "open_lot_calculator": "Otworz partie {bondType} w kalkulatorze",
     "column_type": "Typ",
     "column_duration": "Okres",
     "column_amount": "Sztuki",

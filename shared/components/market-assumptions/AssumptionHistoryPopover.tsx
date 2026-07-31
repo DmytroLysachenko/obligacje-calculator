@@ -30,8 +30,13 @@ export function AssumptionHistoryPopover({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full hover:bg-primary/10">
-          <History className="h-3.5 w-3.5 text-primary/60" />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="min-h-11 min-w-11 rounded-full hover:bg-primary/10"
+          aria-label={title}
+        >
+          <History aria-hidden="true" className="h-3.5 w-3.5 text-primary/60" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-64 p-3" align="start">

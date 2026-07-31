@@ -14,6 +14,24 @@ const auditedRoutes = [
   { path: '/retirement', name: 'retirement' },
 ];
 
+for (const [locale, label] of [
+  ['pl', /^data zakupu:/i],
+  ['en', /^purchase date:/i],
+] as const) {
+  test(`comparison purchase-date control has a visible-name-compatible ${locale} name`, async ({ page }) => {
+    await page.context().addCookies([
+      { name: 'app-language', value: locale, domain: '127.0.0.1', path: '/' },
+    ]);
+    await stubOpportunisticSync(page);
+    await page.goto('/compare', { waitUntil: 'networkidle' });
+
+    const trigger = page.getByRole('button', { name: label }).first();
+    await expect(trigger).toBeVisible();
+    await expect(trigger).toHaveAccessibleName(label);
+    await expect(trigger).toContainText(/\d{4}/);
+  });
+}
+
 test('serves the scoped runtime-style CSP required by charts and sheets', async ({ page }) => {
   const response = await page.goto('/economic-data', { waitUntil: 'domcontentloaded' });
   const policy = response?.headers()['content-security-policy'] ?? '';
