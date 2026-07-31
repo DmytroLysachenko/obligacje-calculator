@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { NextRequest } from 'next/server';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   importOwnerPortfolio: vi.fn(),
@@ -92,7 +92,10 @@ describe('portfolio import endpoint', () => {
       new NextRequest('https://example.test/api/portfolio/import', {
         method: 'POST',
         body: '{}',
-        headers: { 'content-length': `${256 * 1024 + 1}` },
+        headers: {
+          'content-length': `${256 * 1024 + 1}`,
+          'content-type': 'application/json',
+        },
       }) as never,
       {} as never,
     );
@@ -101,6 +104,27 @@ describe('portfolio import endpoint', () => {
     await expect(response.json()).resolves.toMatchObject({ error: { code: 'PAYLOAD_TOO_LARGE' } });
     expect(mocks.importOwnerPortfolio).not.toHaveBeenCalled();
   });
+
+  it.each([undefined, 'text/plain', 'application/x-www-form-urlencoded'])(
+    'rejects an import body without a JSON content type (%s)',
+    async (contentType) => {
+      const headers = contentType ? { 'content-type': contentType } : undefined;
+      const response = await POST(
+        new NextRequest('https://example.test/api/portfolio/import', {
+          method: 'POST',
+          body: JSON.stringify(valid),
+          headers,
+        }) as never,
+        {} as never,
+      );
+
+      expect(response.status).toBe(400);
+      await expect(response.json()).resolves.toMatchObject({
+        error: { code: 'UNSUPPORTED_MEDIA_TYPE' },
+      });
+      expect(mocks.importOwnerPortfolio).not.toHaveBeenCalled();
+    },
+  );
 
   it('does not accept duplicate input as a partial import', async () => {
     const response = await POST(

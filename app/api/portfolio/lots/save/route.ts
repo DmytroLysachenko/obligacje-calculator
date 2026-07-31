@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 
+import { IsoCalendarDateSchema } from '@/features/bond-core/types/iso-calendar-date';
 import { apiHandler } from '@/lib/server/http/api-handler';
 import { readJsonBody } from '@/lib/server/http/read-json-body';
 import { errorJson, okJson } from '@/lib/server/http/responses';
@@ -16,7 +17,7 @@ const logger = createServerLogger('PortfolioLotSaveApi');
 const SavePortfolioLotPayloadSchema = z.object({
   portfolioId: z.string().uuid(),
   bondType: z.string().min(1),
-  purchaseDate: z.string().min(1),
+  purchaseDate: IsoCalendarDateSchema,
   amount: z.number().positive(),
   isRebought: z.boolean().optional(),
   notes: z.string().optional(),

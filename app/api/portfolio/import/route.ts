@@ -11,6 +11,14 @@ const MAX_IMPORT_BYTES = 256 * 1024;
 
 export const POST = apiHandler(async (req: NextRequest) => {
   return withAuthenticatedPortfolioOwner(req, async (owner) => {
+    const contentType = req.headers.get('content-type')?.toLowerCase() ?? '';
+    if (!contentType.startsWith('application/json')) {
+      return createValidationErrorResponse(
+        'Import payload must be sent as application/json.',
+        'UNSUPPORTED_MEDIA_TYPE',
+      );
+    }
+
     let payload;
     try {
       payload = await readBoundedJsonBody(req, ImportPayloadSchema, MAX_IMPORT_BYTES);

@@ -2,6 +2,10 @@ import { z } from 'zod';
 
 const ISO_CALENDAR_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
 
+declare const isoCalendarDate: unique symbol;
+
+export type IsoCalendarDate = string & { readonly [isoCalendarDate]: true };
+
 export function isIsoCalendarDate(value: string): boolean {
   const match = ISO_CALENDAR_DATE.exec(value);
   if (!match) return false;
@@ -14,6 +18,12 @@ export function isIsoCalendarDate(value: string): boolean {
   );
 }
 
-export const IsoCalendarDateSchema = z.string().refine(isIsoCalendarDate, {
-  message: 'Expected a real ISO calendar date (YYYY-MM-DD).',
-});
+export function parseIsoCalendarDate(value: string): IsoCalendarDate | null {
+  return isIsoCalendarDate(value) ? (value as IsoCalendarDate) : null;
+}
+
+export const IsoCalendarDateSchema = z
+  .string()
+  .refine((value) => parseIsoCalendarDate(value) !== null, {
+    message: 'Expected a real ISO calendar date (YYYY-MM-DD).',
+  });
