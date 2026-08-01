@@ -77,6 +77,7 @@ vi.mock('@/lib/data/market-data', async () => {
       lastCheck: '2024-01-01T00:00:00.000Z',
       usedFallback: false,
     }),
+    getTaxRulesRevision: vi.fn().mockResolvedValue('tax-rules-2026'),
     getHistoricalAverages: vi.fn().mockResolvedValue({
       inflation: { '1y': 3, '5y': 3, '10y': 3 },
       nbpRate: { '1y': 5, '5y': 5, '10y': 5 },

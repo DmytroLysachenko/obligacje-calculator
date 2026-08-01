@@ -52,7 +52,7 @@ integration('reviewed PostgreSQL migrations', () => {
   });
 
   it('enforces aggregate-only vital keys and accepts a migrated aggregate', async () => {
-    const bucket = new Date('2026-07-30T10:00:00.000Z');
+    const bucket = '2026-07-30T10:00:00.000Z';
     await sql`
       insert into web_vital_aggregates
         (metric, path, rating, time_bucket, sample_count, value_sum, value_min, value_max)
@@ -69,7 +69,7 @@ integration('reviewed PostgreSQL migrations', () => {
     await expect(sql`
       insert into web_vital_aggregates
         (metric, path, rating, time_bucket, sample_count, value_sum, value_min, value_max)
-      values ('LCP', '/?email=test@example.com', 'good', ${new Date('2026-07-30T11:00:00.000Z')}, 1, 1, 1, 1)
+      values ('LCP', '/?email=test@example.com', 'good', ${'2026-07-30T11:00:00.000Z'}, 1, 1, 1, 1)
     `).rejects.toThrow();
   });
 
@@ -101,7 +101,7 @@ integration('reviewed PostgreSQL migrations', () => {
       sql.begin(async (transaction) => {
         await transaction.unsafe(
           'insert into shared_single_scenarios (id, share_id, title, payload_json, expires_at) values ($1, $2, $3, $4, $5)',
-          [randomUUID(), randomUUID(), title, '{}', new Date(Date.now() + 60_000)],
+          [randomUUID(), randomUUID(), title, '{}', new Date(Date.now() + 60_000).toISOString()],
         );
         throw new Error('intentional rollback');
       }),

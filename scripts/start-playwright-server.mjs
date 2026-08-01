@@ -11,6 +11,8 @@ const env = {
   PORT: port,
   PLAYWRIGHT_SMOKE: process.env.PLAYWRIGHT_SMOKE ?? '1',
   NEXT_PUBLIC_PLAYWRIGHT_SMOKE: process.env.NEXT_PUBLIC_PLAYWRIGHT_SMOKE ?? '1',
+  AUTH_TRUST_HOST: process.env.AUTH_TRUST_HOST ?? 'true',
+  AUTH_SECRET: process.env.AUTH_SECRET ?? 'playwright-test-auth-secret-change-me',
 };
 
 const useStandalone = process.platform !== 'win32' && existsSync('.next/standalone/server.js');

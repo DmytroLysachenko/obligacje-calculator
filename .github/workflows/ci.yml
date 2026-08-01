@@ -180,7 +180,6 @@ jobs:
         run: |
           docker run --detach --name obligacje-calculator-ci \
             --publish 8080:8080 \
-            --env DATABASE_URL=postgresql://obligacje:obligacje@localhost:5432/obligacje?sslmode=disable \
             --env AUTH_SECRET=ci-development-auth-secret-change-me \
             --env SYNC_SECRET=ci-development-sync-secret-change-me \
             --env NEXT_PUBLIC_APP_URL=http://127.0.0.1:8080 \
