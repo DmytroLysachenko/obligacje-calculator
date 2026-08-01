@@ -54,6 +54,10 @@ export function useComparison(initialUrlState?: ComparisonUrlState | null) {
   const { definitions } = useBondDefinitions();
   const { defaults: macroDefaults } = useMacroAssumptionDefaults();
   const fallbackDraft = useMemo(() => initialDraft(), []);
+  const isCommittedResultValid = useMemo(
+    () => createCalculationEnvelopeVersionValidator(MODEL_VERSION),
+    [],
+  );
   const hasTouchedMacroAssumptions = useRef(false);
   const hasAppliedMacroDefaults = useRef(false);
   const hasAppliedInitialUrlState = useRef(false);
@@ -61,7 +65,7 @@ export function useComparison(initialUrlState?: ComparisonUrlState | null) {
   const session = useCalculatorSession<ComparisonDraft, BondComparisonCalculationEnvelope>({
     initialInputs: fallbackDraft,
     storageKey: COMPARISON_CALCULATOR_STORAGE_KEY,
-    isCommittedResultValid: createCalculationEnvelopeVersionValidator(MODEL_VERSION),
+    isCommittedResultValid,
   });
   const { sharedConfig, scenarioA, scenarioB } = session.draftInputs;
 

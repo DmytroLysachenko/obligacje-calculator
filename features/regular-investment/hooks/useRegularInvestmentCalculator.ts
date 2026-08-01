@@ -6,14 +6,14 @@ import { useBondDefinitions } from '@/shared/context/BondDefinitionsContext';
 import { useCalculationRequest } from '@/shared/hooks/useCalculationRequest';
 import { useCalculatorSession } from '@/shared/hooks/useCalculatorSession';
 import { useMacroAssumptionDefaults } from '@/shared/hooks/useMacroAssumptionDefaults';
-import { createCalculationEnvelopeVersionValidator } from '@/shared/lib/calculation-envelope-version';
 import { getCalculationEndpoint } from '@/shared/lib/calculation-endpoints';
+import { createCalculationEnvelopeVersionValidator } from '@/shared/lib/calculation-envelope-version';
 import { applyUntouchedMacroDefaults } from '@/shared/lib/calculator-session-persistence';
 import { preserveStableState, stripDisplayOnlyInputs } from '@/shared/lib/calculator-state';
 import { logClientError } from '@/shared/lib/client-logger';
 
-import { BondType, RegularInvestmentInputs } from '../../bond-core/types';
 import { MODEL_VERSION } from '../../bond-core/handlers';
+import { BondType, RegularInvestmentInputs } from '../../bond-core/types';
 import {
   RegularInvestmentCalculationEnvelope,
   ScenarioKind,
@@ -33,6 +33,10 @@ export function useRegularInvestmentCalculator() {
   const { definitions, isLoading: isLoadingDefs } = useBondDefinitions();
   const { defaults: macroDefaults } = useMacroAssumptionDefaults();
   const fallbackInputs = useMemo(() => buildRegularInvestmentFallbackInputs(), []);
+  const isCommittedResultValid = useMemo(
+    () => createCalculationEnvelopeVersionValidator(MODEL_VERSION),
+    [],
+  );
   const hasTouchedMacroAssumptions = useRef(false);
   const {
     isCalculating,
@@ -46,7 +50,7 @@ export function useRegularInvestmentCalculator() {
   >({
     initialInputs: fallbackInputs,
     storageKey: STORAGE_KEY,
-    isCommittedResultValid: createCalculationEnvelopeVersionValidator(MODEL_VERSION),
+    isCommittedResultValid,
   });
   const {
     draftInputs: inputs,
