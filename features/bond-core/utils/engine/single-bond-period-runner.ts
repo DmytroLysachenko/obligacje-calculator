@@ -105,7 +105,7 @@ export function runSingleBondPeriod({
   });
   const events: SimulationEvent[] = [];
 
-  if (isFirstPeriod) {
+  if (isFirstPeriod && cycleIndex > 1) {
     events.push(
       createCyclePurchaseEvent({
         cycleIndex,

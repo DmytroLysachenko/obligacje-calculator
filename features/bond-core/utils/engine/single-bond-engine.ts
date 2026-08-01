@@ -15,6 +15,7 @@ import {
   resolveSingleBondCycleDates,
   resolveSingleBondCycleInvestment,
 } from './single-bond-cycle';
+import { createCyclePurchaseEvent } from './single-bond-events';
 import { runSingleBondPeriod } from './single-bond-period-runner';
 import { createSingleBondSimulationState } from './single-bond-simulation-state';
 import { applySingleBondTaxRelief } from './single-bond-tax-relief';
@@ -105,6 +106,17 @@ export const calculateBondInvestment = withMathGuard(function calculateBondInves
     simulationState.leftoverCash = cycleInvestment.leftoverCash;
     const numberOfBonds = cycleInvestment.numberOfBonds;
     const nominalStartingValue = cycleInvestment.nominalStartingValue;
+
+    if (simulationState.cycleIndex === 1) {
+      initialPoint.events = [
+        createCyclePurchaseEvent({
+          cycleIndex: simulationState.cycleIndex,
+          date: simulationState.currentPurchaseDate,
+          numberOfBonds,
+          nominalStartingValue,
+        }),
+      ];
+    }
 
     let currentNominalValue = new Decimal(nominalStartingValue);
     let totalInterestEarnedSoFar = new Decimal(0);
