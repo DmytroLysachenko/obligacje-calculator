@@ -2,7 +2,7 @@
 
 import { useCallback } from 'react';
 
-import { MacroAssumptionDefaults } from '@/lib/data/market-data';
+import type { MacroAssumptionDefaults } from '@/lib/data/market-data';
 import { apiGet } from '@/shared/lib/api-client';
 import { logClientError } from '@/shared/lib/client-logger';
 import { ClientResource } from '@/shared/lib/client-resource';

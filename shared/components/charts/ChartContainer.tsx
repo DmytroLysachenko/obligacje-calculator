@@ -28,7 +28,7 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
   );
   const containerRef = useRef<HTMLDivElement>(null);
   const summaryId = React.useId();
-  const [hasSize, setHasSize] = useState(false);
+  const [size, setSize] = useState<{ width: number; height: number } | null>(null);
 
   useEffect(() => {
     const element = containerRef.current;
@@ -38,7 +38,7 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
 
     const observer = new ResizeObserver(([entry]) => {
       const { width, height: measuredHeight } = entry.contentRect;
-      setHasSize(width > 0 && measuredHeight > 0);
+      setSize(width > 0 && measuredHeight > 0 ? { width, height: measuredHeight } : null);
     });
 
     observer.observe(element);
@@ -70,8 +70,17 @@ export const ChartContainer: React.FC<ChartContainerProps> = ({
       tabIndex={ariaLabel ? 0 : undefined}
       style={style}
     >
-      {summary ? <div id={summaryId} className="sr-only">{summary}</div> : null}
-      {hasMounted && hasSize ? children : null}
+      {summary ? (
+        <div id={summaryId} className="sr-only">
+          {summary}
+        </div>
+      ) : null}
+      {hasMounted && size && React.isValidElement(children)
+        ? React.cloneElement(children as React.ReactElement<{ width?: number; height?: number }>, {
+            width: size.width,
+            height: size.height,
+          })
+        : null}
     </div>
   );
 };

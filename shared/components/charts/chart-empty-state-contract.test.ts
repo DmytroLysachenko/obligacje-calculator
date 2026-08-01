@@ -60,6 +60,14 @@ describe('bond chart empty-state contract', () => {
     expect(plot).toContain('minHeight={1}');
   });
 
+  it('waits for a concrete chart size before mounting a responsive plot', async () => {
+    const container = await source('shared/components/charts/ChartContainer.tsx');
+
+    expect(container).toContain('setSize(width > 0 && measuredHeight > 0');
+    expect(container).toContain('width: size.width');
+    expect(container).toContain('height: size.height');
+  });
+
   it('does not introduce client-only state for a data-derived condition', async () => {
     const plot = await source('shared/components/charts/BondValueChartPlot.tsx');
     expect(plot).toContain('const hasData = data.length > 0;');
