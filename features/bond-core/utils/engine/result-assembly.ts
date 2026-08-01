@@ -45,7 +45,10 @@ export function createInitialTimelinePoint({
     totalValue: initialInvestment,
     realValue: initialInvestment,
     netProfit: 0,
-    earlyWithdrawalValue: 0,
+    // At purchase no interest has accrued, so the statutory early-exit fee
+    // is zero (it cannot exceed accrued interest). The investor can recover
+    // the full invested amount at this initial checkpoint.
+    earlyWithdrawalValue: initialInvestment,
     cumulativeInflation: 1,
     isMaturity: false,
     isWithdrawal: false,
