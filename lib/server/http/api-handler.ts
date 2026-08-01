@@ -7,6 +7,7 @@ import { getClientIdentity } from './client-identity';
 import { postgresRateLimitStore } from './postgres-rate-limit-store';
 import { mapApiErrorToProblemDetails } from './problem-details';
 import {
+  AllowAllRateLimiter,
   BoundedMemoryRateLimiter,
   defaultApiRateLimitPolicy,
   type RateLimiter,
@@ -17,9 +18,11 @@ import { addRequestIdToProblem, getRequestId, withRequestId } from './request-co
 
 const logger = createServerLogger('ApiHandler');
 const rateLimiter =
-  isDatabaseConfigured && process.env.NODE_ENV === 'production'
-    ? new SharedStoreRateLimiter(postgresRateLimitStore)
-    : new BoundedMemoryRateLimiter();
+  process.env.PLAYWRIGHT_SMOKE === '1'
+    ? new AllowAllRateLimiter()
+    : isDatabaseConfigured && process.env.NODE_ENV === 'production'
+      ? new SharedStoreRateLimiter(postgresRateLimitStore)
+      : new BoundedMemoryRateLimiter();
 
 export type ApiHandler<TContext = { params: Promise<Record<string, never>> }> = (
   req: NextRequest,

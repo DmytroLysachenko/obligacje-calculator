@@ -59,6 +59,18 @@ export class BoundedMemoryRateLimiter implements RateLimiter {
   }
 }
 
+/** Test-only adapter for browser suites that intentionally exercise many endpoints from one origin. */
+export class AllowAllRateLimiter implements RateLimiter {
+  consume(_identity: string, policy: RateLimitPolicy, now = Date.now()): RateLimitDecision {
+    return {
+      allowed: true,
+      limit: policy.limit,
+      remaining: policy.limit,
+      resetAt: now + policy.windowMs,
+    };
+  }
+}
+
 export interface SharedRateLimitStore {
   consume(input: {
     bucketKey: string;
