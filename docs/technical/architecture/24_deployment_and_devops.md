@@ -11,7 +11,7 @@ unless they pass the same calculation and UX checks.
   runs as the non-root `node` user, exposes `PORT=8080`, and includes a local
   `/api/health` healthcheck.
 - **Build:** GitHub Actions builds and pushes production images for deployment.
-  The checked-in `cloudbuild.yaml` is kept aligned with private Cloud Run policy
+  The checked-in `cloudbuild.yaml` is kept aligned with the public Cloud Run policy
   for manual Google Cloud Build usage.
 - **Default region:** `europe-central2`, close to Polish users and supported by
   Cloud Run and Artifact Registry.

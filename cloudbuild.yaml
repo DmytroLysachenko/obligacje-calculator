@@ -47,7 +47,7 @@ steps:
       - ${_REGION}
       - --platform
       - managed
-      - --no-allow-unauthenticated
+      - --allow-unauthenticated
       - --set-env-vars
       - NEXT_PUBLIC_DEPLOYMENT_TIER=preview
       - --port

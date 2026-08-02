@@ -50,8 +50,8 @@ export const REQUIRED_READINESS_TABLES = [
   'admin_audit_events',
   'rate_limit_windows',
   'web_vital_aggregates',
-  '__drizzle_migrations',
 ];
+const DRIZZLE_MIGRATIONS_TABLE = 'drizzle.__drizzle_migrations';
 
 export function checkReadinessEnv(env: ReadinessEnv): ReadinessCheck {
   const missing = [
@@ -80,14 +80,17 @@ export async function checkReadinessDatabase(
 
   try {
     await sql`select 1`;
-    const rows = await sql<{ table_name: string }[]>`
-      select table_name
+    const rows = await sql<{ table_schema: string; table_name: string }[]>`
+      select table_schema, table_name
       from information_schema.tables
-      where table_schema = 'public'
-        and table_name in ${sql(REQUIRED_READINESS_TABLES)}
+      where (table_schema = 'public' and table_name in ${sql(REQUIRED_READINESS_TABLES)})
+        or (table_schema = 'drizzle' and table_name = '__drizzle_migrations')
     `;
-    const existingTables = new Set(rows.map((row) => row.table_name));
-    const missingTables = REQUIRED_READINESS_TABLES.filter((table) => !existingTables.has(table));
+    const existingTables = new Set(rows.map((row) => `${row.table_schema}.${row.table_name}`));
+    const missingTables = [
+      ...REQUIRED_READINESS_TABLES.filter((table) => !existingTables.has(`public.${table}`)),
+      ...(existingTables.has(DRIZZLE_MIGRATIONS_TABLE) ? [] : [DRIZZLE_MIGRATIONS_TABLE]),
+    ];
 
     return missingTables.length === 0
       ? { status: 'ok' }

@@ -1,64 +1,23 @@
-# Cloud Run Private Preview Access
+# Cloud Run Preview Access
 
-The production preview service is private. Browser access must go through an authenticated Google Cloud identity that has `roles/run.invoker` on the Cloud Run service.
-
-## Fast Local Access
-
-Run:
-
-```bash
-pnpm gcp:proxy
-```
-
-Then open:
-
-```text
-http://localhost:8080
-```
-
-This starts:
-
-```bash
-gcloud run services proxy obligacje-calculator --project bond-calculator-pl --region europe-central2 --port 8080
-```
-
-The proxy uses the active `gcloud` account to authenticate requests to the private Cloud Run service.
-
-## Prerequisites
-
-Authenticate with Google Cloud:
-
-```bash
-gcloud auth login
-gcloud config set project bond-calculator-pl
-```
-
-Your account must have Cloud Run Invoker on the service:
-
-```bash
-gcloud run services add-iam-policy-binding obligacje-calculator \
-  --project bond-calculator-pl \
-  --region europe-central2 \
-  --member="user:YOUR_EMAIL@gmail.com" \
-  --role="roles/run.invoker"
-```
+The production preview service is public so anyone can open it directly in a browser. Application-level authentication continues to protect user-specific data and actions.
 
 ## Service Details
 
 - GCP project: `bond-calculator-pl`
 - Region: `europe-central2`
 - Cloud Run service: `obligacje-calculator`
-- Private service URL: `https://obligacje-calculator-ji72nqwtea-lm.a.run.app`
+- Public service URL: `https://obligacje-calculator-ji72nqwtea-lm.a.run.app`
 
-Direct browser access to the service URL returns `403` unless the request carries a valid Google identity token. Use `pnpm gcp:proxy` for manual preview testing.
+Open the service URL directly. No Google Cloud account, proxy, or Cloud Run Invoker role is required for browser access.
 
 ## Health Checks
 
-With the proxy running:
+Run directly against the public URL:
 
 ```bash
-curl http://localhost:8080/api/health
-curl http://localhost:8080/api/readiness
+curl https://obligacje-calculator-ji72nqwtea-lm.a.run.app/api/health
+curl https://obligacje-calculator-ji72nqwtea-lm.a.run.app/api/readiness
 ```
 
 Expected current state:
@@ -67,7 +26,7 @@ Expected current state:
 - `/api/readiness`: `503` until Google OAuth credentials are configured
 - readiness database check should be `ok`
 
-For the same smoke checks against the private deployed service, run:
+For the same smoke checks against the deployed service, run:
 
 ```bash
 pnpm ops:verify-prod -- --allow-missing-oauth
@@ -178,10 +137,10 @@ The deploy workflow:
 - runs `pnpm check:release` before building the image
 - builds and pushes immutable commit-SHA and `latest` image tags
 - uses GitHub Actions cache for Docker layers
-- deploys the private Cloud Run service
+- deploys the public Cloud Run service
 - labels the revision with the commit and GitHub run
 - captures the latest ready Cloud Run revision
-- runs authenticated production smoke checks with `pnpm ops:verify-prod`,
+- runs production smoke checks with `pnpm ops:verify-prod`,
   including image and 100 percent revision traffic checks for the just-deployed
   image and revision
 - writes the deployed image, revision, and service URL to the workflow summary
@@ -197,4 +156,4 @@ gcloud run revisions list \
   --service obligacje-calculator
 ```
 
-Then run the GitHub `Rollback Cloud Run` workflow and provide the target revision name. The workflow routes 100 percent of traffic to that revision and runs the same authenticated production verification checks with `--expected-revision`.
+Then run the GitHub `Rollback Cloud Run` workflow and provide the target revision name. The workflow routes 100 percent of traffic to that revision and runs the same production verification checks with `--expected-revision`.
